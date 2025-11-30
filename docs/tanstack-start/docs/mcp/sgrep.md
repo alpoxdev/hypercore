@@ -145,6 +145,18 @@ sgrep search "user data fetching with prisma" -c
 
 ## 설치
 
+### Claude Code Plugin 설치 (권장)
+
+```bash
+# Plugin 추가
+/plugin marketplace add rika-labs/sgrep
+
+# 설치
+/plugin install sgrep
+```
+
+### 수동 설치
+
 ```bash
 # 간편 설치
 curl -fsSL https://raw.githubusercontent.com/rika-labs/sgrep/main/scripts/install.sh | sh

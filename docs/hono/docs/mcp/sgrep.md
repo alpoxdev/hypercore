@@ -71,6 +71,33 @@ function test() {}
 
 ---
 
+## 설치
+
+### Claude Code Plugin 설치 (권장)
+
+```bash
+# Plugin 추가
+/plugin marketplace add rika-labs/sgrep
+
+# 설치
+/plugin install sgrep
+```
+
+### 사용법
+
+```bash
+# 인증 처리 코드 찾기
+sgrep search for where we handle authentication
+
+# API 엔드포인트 검색
+sgrep search API routes definition
+
+# 에러 핸들링 패턴
+sgrep search error handling with HTTPException
+```
+
+---
+
 ## 관련 문서
 
 - [MCP 개요](./index.md)
