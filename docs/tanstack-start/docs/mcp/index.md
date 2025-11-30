@@ -4,18 +4,52 @@
 
 ---
 
+## ⛔ 프로젝트 시작 전 필수 확인
+
+**작업 시작 전 반드시 아래 3가지 MCP가 활성화되어 있는지 확인하세요:**
+
+```
+1. Serena - 프로젝트 활성화 확인
+   → mcp__serena__get_current_config 호출
+   → 프로젝트 미활성화 시: mcp__serena__activate_project
+
+2. Sequential Thinking - 복잡한 문제 분석용
+   → 사용 가능 여부 확인
+
+3. sgrep - 코드베이스 검색용
+   → grep/rg 대신 반드시 sgrep 사용
+```
+
+---
+
 ## 🚨 필수 사용 규칙
 
 ```
+✅ 프로젝트 시작 전 → Serena 활성화 확인 (필수!)
 ✅ 코드베이스 검색 → sgrep 사용 (grep/rg 금지)
 ✅ 복잡한 분석/디버깅 → Sequential Thinking 사용
 ✅ 라이브러리 문서 조회 → Context7 사용
+✅ 세션 컨텍스트 유지 → Serena 메모리 활용
 ✅ 도구 조합: sgrep로 위치 파악 → Sequential로 분석 → Context7로 문서 확인
 ```
 
 ---
 
 ## 🚀 Quick Reference
+
+### Serena - 프로젝트 컨텍스트 관리 (필수)
+
+```
+프로젝트 시작 시 (필수):
+1. get_current_config → 현재 상태 확인
+2. activate_project → 프로젝트 활성화
+3. check_onboarding_performed → 온보딩 확인
+
+사용 시점:
+- 프로젝트 시작/재개 시 (필수)
+- 심볼 탐색/수정
+- 세션 간 컨텍스트 유지 (메모리)
+```
 
 ### Sequential Thinking - 복잡한 문제 해결
 
@@ -28,6 +62,17 @@
 - 성능 최적화 분석
 
 사용법: 문제를 단계별로 분해하여 체계적으로 해결
+```
+
+### sgrep - 코드베이스 검색 (필수)
+
+```
+사용 시점:
+- 코드 위치 파악
+- 자연어 검색
+- 심볼 참조 찾기
+
+주의: grep/rg 대신 반드시 sgrep 사용!
 ```
 
 ### Context7 - 라이브러리 문서 조회
@@ -51,8 +96,9 @@
 ```
 docs/mcp/
 ├── index.md              # 이 문서 (개요)
-├── sgrep.md              # 코드베이스 검색
-├── sequential-thinking.md # Sequential Thinking 상세
+├── serena.md             # Serena 프로젝트 관리 (필수)
+├── sgrep.md              # 코드베이스 검색 (필수)
+├── sequential-thinking.md # Sequential Thinking 상세 (필수)
 └── context7.md           # Context7 상세
 ```
 
@@ -60,15 +106,23 @@ docs/mcp/
 
 ## 📋 도구 목록
 
-| 도구 | 용도 | 사용 시점 |
+| 도구 | 용도 | 필수 여부 |
 |-----|------|----------|
-| [sgrep](./sgrep.md) | 코드베이스 검색 | 코드 위치 파악, 자연어 검색 |
-| [Sequential Thinking](./sequential-thinking.md) | 체계적 문제 해결 | 복잡한 분석, 디버깅, 설계 |
-| [Context7](./context7.md) | 라이브러리 문서 | API 확인, 최신 문법 |
+| [Serena](./serena.md) | 프로젝트 컨텍스트 관리 | ⭐ 필수 |
+| [sgrep](./sgrep.md) | 코드베이스 검색 | ⭐ 필수 |
+| [Sequential Thinking](./sequential-thinking.md) | 체계적 문제 해결 | ⭐ 필수 |
+| [Context7](./context7.md) | 라이브러리 문서 | 권장 |
 
 ---
 
 ## ⚡ 작업별 MCP 선택 가이드
+
+### 프로젝트 시작 (필수)
+```
+1. Serena: get_current_config로 상태 확인
+2. Serena: activate_project로 프로젝트 활성화
+3. Serena: list_memories로 이전 컨텍스트 확인
+```
 
 ### 버그 수정
 ```
@@ -84,6 +138,7 @@ docs/mcp/
 2. Sequential Thinking으로 구현 계획 수립
 3. Context7로 사용할 라이브러리 문서 확인
 4. 단계별 구현
+5. Serena: write_memory로 주요 결정 저장
 ```
 
 ### 라이브러리 사용
@@ -105,6 +160,12 @@ docs/mcp/
 1. sgrep로 자연어 쿼리 검색
 2. 관련 코드 위치 파악
 3. 필요시 Sequential Thinking으로 흐름 분석
+```
+
+### 세션 종료
+```
+1. Serena: write_memory로 진행 상황 저장
+2. 다음 세션에서 read_memory로 복구
 ```
 
 ---
