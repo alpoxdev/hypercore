@@ -52,7 +52,9 @@ docs/
 ├── guides/                   # 개발 가이드
 │   ├── getting-started.md    # 프로젝트 시작
 │   ├── best-practices.md     # 모범 사례
-│   └── project-templates.md  # 템플릿
+│   ├── project-templates.md  # 템플릿
+│   ├── prettier.md           # Prettier 설정
+│   └── husky-lint-staged.md  # Git 훅 설정
 ├── architecture/             # 아키텍처
 │   └── architecture.md
 ├── design/                   # UI/UX 가이드
@@ -95,6 +97,8 @@ docs/
 | [Getting Started](./guides/getting-started.md) | 초기 설정 |
 | [Templates](./guides/project-templates.md) | 복사용 템플릿 |
 | [Architecture](./architecture/architecture.md) | 구조 이해 |
+| [Prettier](./guides/prettier.md) | 코드 포맷팅 |
+| [Husky + lint-staged](./guides/husky-lint-staged.md) | Git 훅 설정 |
 
 ### UI 개발
 | 문서 | 내용 |
