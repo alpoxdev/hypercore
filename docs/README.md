@@ -9,13 +9,15 @@
 ### 패턴 복사용
 
 ```typescript
-// Server Function (GET)
+// ✅ Server Function (GET + 인증)
 export const getData = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])  // ⭐ 인증 미들웨어
   .handler(async () => prisma.table.findMany())
 
-// Server Function (POST)
+// ✅ Server Function (POST + Validation + 인증)
 export const createData = createServerFn({ method: 'POST' })
-  .validator(schema)
+  .middleware([authMiddleware])  // ⭐ 인증 미들웨어
+  .validator(schema)             // ⭐ Zod 스키마
   .handler(async ({ data }) => prisma.table.create({ data }))
 
 // Zod Schema (v4)
@@ -68,6 +70,11 @@ docs/
 │   ├── better-auth/          # 인증
 │   ├── prisma/               # ORM (v7)
 │   └── zod/                  # 검증 (v4)
+├── mcp/                      # MCP 도구
+│   ├── index.md              # 개요
+│   ├── sgrep.md              # 코드베이스 검색
+│   ├── sequential-thinking.md # 체계적 분석
+│   └── context7.md           # 문서 조회
 ├── deployment/               # 배포
 │   ├── index.md              # 개요
 │   ├── nitro.md              # Nitro 설정
@@ -136,6 +143,14 @@ docs/
 |------|------|
 | [Git Workflow](./git/index.md) | 커밋 컨벤션 |
 
+### MCP 도구
+| 문서 | 내용 |
+|------|------|
+| [MCP 가이드](./mcp/index.md) | 개요 |
+| [sgrep](./mcp/sgrep.md) | 코드베이스 검색 |
+| [Sequential Thinking](./mcp/sequential-thinking.md) | 체계적 분석 |
+| [Context7](./mcp/context7.md) | 문서 조회 |
+
 ---
 
 ## 🛠 기술 스택
@@ -161,13 +176,18 @@ app/
 │   ├── index.tsx             # /
 │   └── users/
 │       ├── index.tsx         # /users
-│       └── -components/      # 라우트 제외 (- prefix)
-├── services/user/            # 서비스
-│   ├── schemas.ts            # Zod
-│   ├── queries.ts            # GET
-│   └── mutations.ts          # POST
+│       ├── -components/      # 페이지 전용 컴포넌트
+│       └── -functions/       # 페이지 전용 Server Functions ⭐
+├── functions/                # 공통 Server Functions ⭐
+├── middleware/               # 공통 미들웨어 (auth 등)
 ├── components/ui/            # 공통 UI
 └── database/prisma.ts        # Prisma
+```
+
+### Server Functions 위치 규칙 ⭐
+```
+공통 함수 (여러 라우트)  → @/functions/
+라우트 전용 함수         → routes/[경로]/-functions/
 ```
 
 **Import**: `@/*` → `./app/*`
@@ -175,6 +195,12 @@ app/
 ---
 
 ## ⚡ 핵심 규칙 요약
+
+### Server Functions ⭐
+- `/api` 라우터 금지 → Server Functions 사용
+- POST/PUT/PATCH → `validator` 필수
+- 인증 필요 시 → `middleware` 필수
+- handler 내부 수동 검증/인증 금지
 
 ### TypeScript
 - `const` 선언 (function 아님)
@@ -197,3 +223,8 @@ app/
 - 60-30-10 색상 규칙
 - 8px 그리드
 - WCAG AA 대비
+
+### MCP 도구
+- 코드베이스 검색 → sgrep (grep/rg 금지)
+- 복잡한 분석/디버깅 → Sequential Thinking
+- 라이브러리 문서 → Context7

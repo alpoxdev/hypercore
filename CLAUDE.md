@@ -37,6 +37,22 @@
 ❌ schema.prisma 임의 변경 금지 (요청된 것만)
 ```
 
+### API 구현 금지 사항
+```
+❌ /api 라우터에 함수 생성 금지 (사용자 명시 요청 제외)
+❌ Server Function에 validator 누락 금지 (POST/PUT/PATCH)
+❌ Server Function에 middleware 누락 금지 (인증 필요 시)
+❌ handler 내부에서 수동 검증 금지 (validator 사용)
+❌ handler 내부에서 수동 인증 체크 금지 (middleware 사용)
+```
+
+### 코드 검색 금지 사항
+```
+❌ grep, rg 등 기본 검색 도구 사용 금지
+❌ find 명령어로 코드 검색 금지
+✅ 코드베이스 검색 시 sgrep 사용 필수
+```
+
 ---
 
 ## ✅ ALWAYS DO (필수 실행)
@@ -49,7 +65,15 @@ DB 작업      → docs/library/prisma/ 읽기
 인증 작업    → docs/library/better-auth/ 읽기
 ```
 
-### 2. 작업 완료 후: Git 커밋
+### 2. MCP 도구 적극 활용
+```
+코드베이스 검색     → sgrep 사용 (grep/rg 금지)
+복잡한 분석/디버깅  → Sequential Thinking 사용
+라이브러리 문서     → Context7 사용
+```
+**상세**: `docs/mcp/` 참고
+
+### 3. 작업 완료 후: Git 커밋
 ```bash
 git add .
 git commit -m "<prefix>: <설명>"
@@ -74,6 +98,7 @@ docs: API 문서 업데이트
 |------|----------|----------|
 | **전체 가이드** | `docs/README.md` | 🔴 필수 |
 | **Git 규칙** | `docs/git/index.md` | 🔴 필수 |
+| **MCP 도구** | `docs/mcp/` | 🔴 필수 |
 | **UI 개발** | `docs/design/` | 🟡 해당 시 |
 | **API 개발** | `docs/library/tanstack-start/` | 🟡 해당 시 |
 | **인증** | `docs/library/better-auth/` | 🟡 해당 시 |
@@ -108,17 +133,23 @@ app/
 │   ├── $slug.tsx             # Dynamic route
 │   └── users/
 │       ├── index.tsx         # /users
-│       ├── -components/      # 페이지 전용 (라우트 제외)
-│       └── -hooks/           # 페이지 전용 (라우트 제외)
+│       ├── -components/      # 페이지 전용 컴포넌트
+│       ├── -hooks/           # 페이지 전용 훅
+│       └── -functions/       # 페이지 전용 Server Functions ⭐
+├── functions/                # 공통 Server Functions ⭐
+│   ├── auth.ts               # 인증 관련
+│   └── user.ts               # 사용자 관련
 ├── components/ui/            # 공통 UI 컴포넌트
-├── services/                 # 도메인별 서비스
-│   └── user/
-│       ├── index.ts          # re-export
-│       ├── schemas.ts        # Zod 스키마
-│       ├── queries.ts        # GET (createServerFn)
-│       └── mutations.ts      # POST (createServerFn)
+├── middleware/               # 공통 미들웨어
+│   └── auth.ts               # Better Auth 미들웨어
 ├── database/prisma.ts        # Prisma Client
 └── lib/                      # 유틸리티
+```
+
+### Server Functions 위치 규칙 ⭐
+```
+공통 함수 (여러 라우트에서 사용)  → @/functions/
+라우트 전용 함수 (해당 라우트만)  → routes/[경로]/-functions/
 ```
 
 **`-` prefix**: 라우트에서 제외되는 폴더
@@ -150,17 +181,33 @@ import { getUsers } from '@/services/user'
 
 ## 📝 Quick Patterns (복사용)
 
-### Server Function (GET)
+### Server Function (GET + 인증)
 ```typescript
+// ✅ 올바른 패턴: middleware 사용
 export const getUsers = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])  // ⭐ 인증 미들웨어 필수
   .handler(async () => prisma.user.findMany())
 ```
 
-### Server Function (POST + Validation)
+### Server Function (POST + Validation + 인증)
 ```typescript
+// ✅ 올바른 패턴: validator + middleware 모두 사용
 export const createUser = createServerFn({ method: 'POST' })
-  .validator(createUserSchema)
+  .middleware([authMiddleware])  // ⭐ 인증 미들웨어 필수
+  .validator(createUserSchema)   // ⭐ Zod 스키마 필수
   .handler(async ({ data }) => prisma.user.create({ data }))
+```
+
+### ❌ 잘못된 패턴 (금지)
+```typescript
+// ❌ handler 내부에서 수동 검증 금지
+export const createUser = createServerFn({ method: 'POST' })
+  .handler(async ({ data }) => {
+    // ❌ 이렇게 하지 마세요!
+    if (!data.email) throw new Error('Email required')
+    const session = await getSession()  // ❌ 수동 인증 체크 금지
+    // ...
+  })
 ```
 
 ### Zod Schema (v4 문법!)
@@ -211,5 +258,6 @@ const mutation = useMutation({
 
 - [문서 가이드](./docs/README.md)
 - [Git 규칙](./docs/git/index.md)
+- [MCP 가이드](./docs/mcp/index.md)
 - [디자인 가이드](./docs/design/index.md)
 - [아키텍처](./docs/architecture/architecture.md)

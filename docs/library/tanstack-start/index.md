@@ -4,16 +4,30 @@
 
 ---
 
+## ⛔ 필수 규칙
+
+```
+❌ /api 라우터 사용 금지 → Server Functions 사용
+❌ handler 내부 수동 검증 금지 → validator 사용
+❌ handler 내부 수동 인증 체크 금지 → middleware 사용
+✅ POST/PUT/PATCH에는 반드시 validator 추가
+✅ 인증 필요 시 반드시 middleware 추가
+```
+
+---
+
 ## 🚀 Quick Reference (복사용)
 
 ```typescript
-// Server Function (GET)
+// ✅ Server Function (GET + 인증)
 export const getUsers = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])  // ⭐ 인증 미들웨어
   .handler(async () => prisma.user.findMany())
 
-// Server Function (POST + Validation)
+// ✅ Server Function (POST + Validation + 인증)
 export const createUser = createServerFn({ method: 'POST' })
-  .validator(createUserSchema)  // Zod schema
+  .middleware([authMiddleware])  // ⭐ 인증 미들웨어
+  .validator(createUserSchema)   // ⭐ Zod 스키마
   .handler(async ({ data }) => prisma.user.create({ data }))
 
 // Route with Loader
@@ -39,7 +53,15 @@ routes/
 └── users/
     ├── index.tsx         # /users
     ├── $id.tsx           # /users/:id
-    └── -components/      # 라우트 제외 (- prefix)
+    ├── -components/      # 페이지 전용 컴포넌트
+    └── -functions/       # 페이지 전용 Server Functions ⭐
+```
+
+### Server Functions 위치
+
+```
+공통 함수 (여러 라우트)  → @/functions/
+라우트 전용 함수         → routes/[경로]/-functions/
 ```
 
 ---
