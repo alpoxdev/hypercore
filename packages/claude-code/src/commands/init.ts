@@ -1,7 +1,8 @@
 import prompts from 'prompts';
 import { logger } from '../utils/logger.js';
 import {
-  copyTemplate,
+  copySingleTemplate,
+  copyMultipleTemplates,
   checkExistingFiles,
   listAvailableTemplates,
   listAvailableSkills,
@@ -88,39 +89,58 @@ export const init = async (options: InitOptions): Promise<void> => {
     }
   }
 
-  // 각 템플릿 설치
+  // 템플릿 설치 (단일 vs 다중 분기)
+  const isSingleTemplate = templates.length === 1;
   let totalFiles = 0;
   let totalDirectories = 0;
   const allSkills: string[] = [];
 
-  for (const template of templates) {
-    logger.blank();
-    logger.info(`Installing ${template} template...`);
-    logger.step(`Target: ${targetDir}`);
-    logger.blank();
+  logger.blank();
 
-    try {
-      const result = await copyTemplate(template, targetDir);
-      totalFiles += result.files;
-      totalDirectories += result.directories;
+  try {
+    if (isSingleTemplate) {
+      // 단일 템플릿: CLAUDE.md → 루트, docs/ → 루트/docs/
+      const template = templates[0];
+      logger.info(`Installing ${template} template...`);
+      logger.step(`Target: ${targetDir}`);
+      logger.blank();
+
+      const result = await copySingleTemplate(template, targetDir);
+      totalFiles = result.files;
+      totalDirectories = result.directories;
 
       logger.success(`${template}: ${result.files} files copied`);
 
       // Skills 수집
       const availableSkills = await listAvailableSkills(template);
-      if (availableSkills.length > 0) {
+      allSkills.push(...availableSkills);
+    } else {
+      // 다중 템플릿: 각 템플릿 폴더 → docs/템플릿명/
+      logger.info(`Installing ${templates.length} templates...`);
+      logger.step(`Target: ${targetDir}/docs/`);
+      logger.blank();
+
+      const result = await copyMultipleTemplates(templates, targetDir);
+      totalFiles = result.files;
+      totalDirectories = result.directories;
+
+      for (const template of templates) {
+        logger.success(`${template}: installed to docs/${template}/`);
+
+        // Skills 수집
+        const availableSkills = await listAvailableSkills(template);
         for (const skill of availableSkills) {
           if (!allSkills.includes(skill)) {
             allSkills.push(skill);
           }
         }
       }
-    } catch (error) {
-      logger.error(
-        `Failed to install ${template}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
-      process.exit(1);
     }
+  } catch (error) {
+    logger.error(
+      `Failed to install templates: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    );
+    process.exit(1);
   }
 
   logger.blank();

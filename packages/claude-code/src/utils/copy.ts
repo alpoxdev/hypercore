@@ -14,7 +14,31 @@ export const getTemplatePath = (template: string): string => {
   return path.join(getTemplatesDir(), template);
 };
 
-export const copyTemplate = async (
+const copyRecursive = async (
+  src: string,
+  dest: string,
+  counter: { files: number; directories: number },
+): Promise<void> => {
+  const stat = await fs.stat(src);
+
+  if (stat.isDirectory()) {
+    await fs.ensureDir(dest);
+    counter.directories++;
+
+    const items = await fs.readdir(src);
+    for (const item of items) {
+      await copyRecursive(path.join(src, item), path.join(dest, item), counter);
+    }
+  } else {
+    await fs.copy(src, dest);
+    counter.files++;
+  }
+};
+
+/**
+ * 단일 템플릿 복사 (CLAUDE.md → 루트, docs/ → 루트/docs/)
+ */
+export const copySingleTemplate = async (
   template: string,
   targetDir: string,
 ): Promise<{ files: number; directories: number }> => {
@@ -24,29 +48,59 @@ export const copyTemplate = async (
     throw new Error(`Template "${template}" not found at ${templatePath}`);
   }
 
-  let files = 0;
-  let directories = 0;
+  const counter = { files: 0, directories: 0 };
 
-  const copyRecursive = async (src: string, dest: string): Promise<void> => {
-    const stat = await fs.stat(src);
+  // CLAUDE.md → 루트
+  const claudeMdSrc = path.join(templatePath, 'CLAUDE.md');
+  if (await fs.pathExists(claudeMdSrc)) {
+    await fs.copy(claudeMdSrc, path.join(targetDir, 'CLAUDE.md'));
+    counter.files++;
+  }
 
-    if (stat.isDirectory()) {
-      await fs.ensureDir(dest);
-      directories++;
+  // docs/ → 루트/docs/
+  const docsSrc = path.join(templatePath, 'docs');
+  if (await fs.pathExists(docsSrc)) {
+    await copyRecursive(docsSrc, path.join(targetDir, 'docs'), counter);
+  }
 
-      const items = await fs.readdir(src);
-      for (const item of items) {
-        await copyRecursive(path.join(src, item), path.join(dest, item));
-      }
-    } else {
-      await fs.copy(src, dest);
-      files++;
+  return counter;
+};
+
+/**
+ * 다중 템플릿 복사 (각 템플릿 폴더 전체 → 루트/docs/템플릿명/)
+ */
+export const copyMultipleTemplates = async (
+  templates: string[],
+  targetDir: string,
+): Promise<{ files: number; directories: number }> => {
+  const counter = { files: 0, directories: 0 };
+
+  for (const template of templates) {
+    const templatePath = getTemplatePath(template);
+
+    if (!(await fs.pathExists(templatePath))) {
+      throw new Error(`Template "${template}" not found at ${templatePath}`);
     }
-  };
 
-  await copyRecursive(templatePath, targetDir);
+    // 템플릿 폴더 전체 → docs/템플릿명/
+    await copyRecursive(
+      templatePath,
+      path.join(targetDir, 'docs', template),
+      counter,
+    );
+  }
 
-  return { files, directories };
+  return counter;
+};
+
+/**
+ * @deprecated Use copySingleTemplate or copyMultipleTemplates instead
+ */
+export const copyTemplate = async (
+  template: string,
+  targetDir: string,
+): Promise<{ files: number; directories: number }> => {
+  return copySingleTemplate(template, targetDir);
 };
 
 export const checkExistingFiles = async (
