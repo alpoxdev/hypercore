@@ -1,6 +1,6 @@
 {
-  "name": "@alpoxdev/claude-code",
-  "version": "1.0.0",
+  "name": "@kood/claude-code",
+  "version": "0.1.0",
   "description": "Claude Code documentation installer for projects",
   "type": "module",
   "bin": "./dist/index.js",
