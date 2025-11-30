@@ -24,7 +24,7 @@ schema.safeParse(data)          // { success, data/error }
 
 // TanStack Start 연동
 export const createUser = createServerFn({ method: 'POST' })
-  .validator(schema)
+  .inputValidator(schema)
   .handler(async ({ data }) => prisma.user.create({ data }))
 ```
 

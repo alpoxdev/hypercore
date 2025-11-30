@@ -8,9 +8,9 @@
 
 ```
 ❌ /api 라우터 사용 금지 → Server Functions 사용
-❌ handler 내부 수동 검증 금지 → validator 사용
+❌ handler 내부 수동 검증 금지 → inputValidator 사용
 ❌ handler 내부 수동 인증 체크 금지 → middleware 사용
-✅ POST/PUT/PATCH에는 반드시 validator 추가
+✅ POST/PUT/PATCH에는 반드시 inputValidator 추가
 ✅ 인증 필요 시 반드시 middleware 추가
 ```
 
@@ -26,8 +26,8 @@ export const getUsers = createServerFn({ method: 'GET' })
 
 // ✅ Server Function (POST + Validation + 인증)
 export const createUser = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])  // ⭐ 인증 미들웨어
-  .validator(createUserSchema)   // ⭐ Zod 스키마
+  .middleware([authMiddleware])        // ⭐ 인증 미들웨어
+  .inputValidator(createUserSchema)    // ⭐ Zod 스키마
   .handler(async ({ data }) => prisma.user.create({ data }))
 
 // Route with Loader

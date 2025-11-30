@@ -221,7 +221,7 @@ tracking-widest   0.1em     버튼 텍스트
 ### 완성된 텍스트 스타일 세트
 
 ```tsx
-// app/components/ui/typography.tsx
+// src/components/ui/typography.tsx
 
 // 페이지 제목
 export const PageTitle = ({ children }) => (
@@ -271,7 +271,7 @@ export const Label = ({ children }) => (
 ### Tailwind CSS v4 폰트 설정
 
 ```css
-/* app/styles/app.css */
+/* src/styles/app.css */
 @import "tailwindcss";
 
 @theme {
@@ -285,7 +285,7 @@ export const Label = ({ children }) => (
 
 ```tsx
 // Google Fonts 사용 시
-// app/routes/__root.tsx
+// src/routes/__root.tsx
 import { Link } from '@tanstack/react-router'
 
 export const Route = createRootRoute({

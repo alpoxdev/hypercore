@@ -21,7 +21,7 @@ import type { Config } from 'tailwindcss'
 import safeArea from 'tailwindcss-safe-area'
 
 export default {
-  content: ['./app/**/*.{ts,tsx}'],
+  content: ['./src/**/*.{ts,tsx}'],
   plugins: [safeArea],
 } satisfies Config
 ```
@@ -41,7 +41,7 @@ Safe Area 유틸리티가 작동하려면 `viewport-fit=cover`가 **반드시** 
 TanStack Start에서:
 
 ```typescript
-// app/routes/__root.tsx
+// src/routes/__root.tsx
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -133,7 +133,7 @@ Safe Area가 0일 때 대체 값을 지정할 수 있습니다.
 ### 기본 앱 레이아웃
 
 ```tsx
-// app/components/app-layout.tsx
+// src/components/app-layout.tsx
 export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen-safe flex flex-col">
@@ -163,7 +163,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 ### 전체 화면 모달
 
 ```tsx
-// app/components/fullscreen-modal.tsx
+// src/components/fullscreen-modal.tsx
 export function FullscreenModal({ children }: { children: React.ReactNode }) {
   return (
     <div className="fixed inset-0 bg-white z-50">
@@ -178,7 +178,7 @@ export function FullscreenModal({ children }: { children: React.ReactNode }) {
 ### 고정 하단 버튼
 
 ```tsx
-// app/components/fixed-bottom-button.tsx
+// src/components/fixed-bottom-button.tsx
 export function FixedBottomButton({ children }: { children: React.ReactNode }) {
   return (
     <div className="fixed bottom-0 left-0 right-0 pb-safe-or-4 px-safe-or-4 bg-white border-t">

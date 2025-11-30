@@ -8,7 +8,7 @@ TanStack Start 프로젝트 템플릿 및 구조 가이드입니다.
 
 ```
 my-app/
-├── app/
+├── src/
 │   ├── routes/                     # 파일 기반 라우팅
 │   │   ├── __root.tsx              # Root layout
 │   │   ├── index.tsx               # Home (/)
@@ -525,13 +525,13 @@ import { prisma } from '@/database/prisma'
 import { createUserSchema, updateUserSchema } from './schemas'
 
 export const createUser = createServerFn({ method: 'POST' })
-  .validator(createUserSchema)
+  .inputValidator(createUserSchema)
   .handler(async ({ data }) => {
     return prisma.user.create({ data })
   })
 
 export const updateUser = createServerFn({ method: 'POST' })
-  .validator(updateUserSchema)
+  .inputValidator(updateUserSchema)
   .handler(async ({ data }) => {
     const { id, ...updateData } = data
     return prisma.user.update({ where: { id }, data: updateData })
@@ -656,7 +656,7 @@ enum Role {
 import type { Config } from 'tailwindcss'
 
 export default {
-  content: ['./app/**/*.{js,ts,jsx,tsx}'],
+  content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -687,10 +687,10 @@ export default {
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "@/*": ["./app/*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["app/**/*", "*.config.ts"]
+  "include": ["src/**/*", "*.config.ts"]
 }
 ```
 

@@ -40,9 +40,9 @@
 ### API 구현 금지 사항
 ```
 ❌ /api 라우터에 함수 생성 금지 (사용자 명시 요청 제외)
-❌ Server Function에 validator 누락 금지 (POST/PUT/PATCH)
+❌ Server Function에 inputValidator 누락 금지 (POST/PUT/PATCH)
 ❌ Server Function에 middleware 누락 금지 (인증 필요 시)
-❌ handler 내부에서 수동 검증 금지 (validator 사용)
+❌ handler 내부에서 수동 검증 금지 (inputValidator 사용)
 ❌ handler 내부에서 수동 인증 체크 금지 (middleware 사용)
 ```
 
@@ -142,7 +142,7 @@ docs: API 문서 업데이트
 ## 📁 Directory Structure
 
 ```
-app/
+src/
 ├── routes/                   # File-based routes
 │   ├── __root.tsx            # Root layout
 │   ├── index.tsx             # / (Home)
@@ -186,7 +186,7 @@ app/
 
 ### Import
 ```typescript
-// @/* → ./app/*
+// @/* → ./src/*
 import { prisma } from '@/database/prisma'
 import { getUsers } from '@/services/user'
 ```
@@ -207,10 +207,10 @@ export const getUsers = createServerFn({ method: 'GET' })
 
 ### Server Function (POST + Validation + 인증)
 ```typescript
-// ✅ 올바른 패턴: validator + middleware 모두 사용
+// ✅ 올바른 패턴: inputValidator + middleware 모두 사용
 export const createUser = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])  // ⭐ 인증 미들웨어 필수
-  .validator(createUserSchema)   // ⭐ Zod 스키마 필수
+  .middleware([authMiddleware])        // ⭐ 인증 미들웨어 필수
+  .inputValidator(createUserSchema)    // ⭐ Zod 스키마 필수
   .handler(async ({ data }) => prisma.user.create({ data }))
 ```
 

@@ -51,7 +51,7 @@ npx prisma init
 
 ```
 my-app/
-├── app/
+├── src/
 │   ├── routes/
 │   │   ├── __root.tsx
 │   │   ├── index.tsx
@@ -130,7 +130,7 @@ export default defineConfig({
 ### Root Route
 
 ```tsx
-// app/routes/__root.tsx
+// src/routes/__root.tsx
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 
@@ -158,7 +158,7 @@ const RootComponent = (): JSX.Element => {
 ### Home Route
 
 ```tsx
-// app/routes/index.tsx
+// src/routes/index.tsx
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
@@ -179,7 +179,7 @@ const HomePage = (): JSX.Element => {
 ### Database Setup
 
 ```typescript
-// app/database/prisma.ts
+// src/database/prisma.ts
 import { PrismaClient } from '../../generated/prisma'
 
 const globalForPrisma = globalThis as unknown as {
@@ -200,7 +200,7 @@ if (process.env.NODE_ENV !== 'production') {
 ### Query Client
 
 ```typescript
-// app/lib/query-client.ts
+// src/lib/query-client.ts
 import { QueryClient } from '@tanstack/react-query'
 
 export const createQueryClient = (): QueryClient => {
@@ -218,7 +218,7 @@ export const createQueryClient = (): QueryClient => {
 ### User Service (도메인 폴더 구조)
 
 ```typescript
-// app/services/user/schemas.ts
+// src/services/user/schemas.ts
 import { z } from 'zod'
 
 export const createUserSchema = z.object({
@@ -237,7 +237,7 @@ export type UpdateUserInput = z.infer<typeof updateUserSchema>
 ```
 
 ```typescript
-// app/services/user/queries.ts
+// src/services/user/queries.ts
 import { createServerFn } from '@tanstack/react-start'
 import { prisma } from '@/database/prisma'
 
@@ -257,19 +257,19 @@ export const getUserById = createServerFn({ method: 'GET' })
 ```
 
 ```typescript
-// app/services/user/mutations.ts
+// src/services/user/mutations.ts
 import { createServerFn } from '@tanstack/react-start'
 import { prisma } from '@/database/prisma'
 import { createUserSchema, updateUserSchema } from './schemas'
 
 export const createUser = createServerFn({ method: 'POST' })
-  .validator(createUserSchema)
+  .inputValidator(createUserSchema)
   .handler(async ({ data }) => {
     return prisma.user.create({ data })
   })
 
 export const updateUser = createServerFn({ method: 'POST' })
-  .validator(updateUserSchema)
+  .inputValidator(updateUserSchema)
   .handler(async ({ data }) => {
     const { id, ...updateData } = data
     return prisma.user.update({ where: { id }, data: updateData })
@@ -282,7 +282,7 @@ export const deleteUser = createServerFn({ method: 'POST' })
 ```
 
 ```typescript
-// app/services/user/index.ts
+// src/services/user/index.ts
 export * from './schemas'
 export * from './queries'
 export * from './mutations'

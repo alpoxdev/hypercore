@@ -199,7 +199,7 @@ text-gray-500    ←→     text-gray-400
 ## Tailwind 설정
 
 ```css
-/* app/styles/app.css */
+/* src/styles/app.css */
 @import "tailwindcss";
 
 @theme {

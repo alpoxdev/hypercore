@@ -50,7 +50,7 @@ TanStack Start 애플리케이션의 기술 아키텍처 가이드입니다.
 
 ```
 my-app/
-├── app/
+├── src/
 │   ├── routes/                     # 파일 기반 라우팅
 │   │   ├── __root.tsx              # Root layout
 │   │   ├── index.tsx               # Home (/)
@@ -198,7 +198,7 @@ import { prisma } from '@/database/prisma'
 import { createUserSchema } from './schemas'
 
 export const createUser = createServerFn({ method: 'POST' })
-  .validator(createUserSchema)
+  .inputValidator(createUserSchema)
   .handler(async ({ data }) => {
     return prisma.user.create({ data })
   })
@@ -394,10 +394,10 @@ export const UserListSection = (): JSX.Element => {
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "@/*": ["./app/*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["app/**/*", "*.config.ts"]
+  "include": ["src/**/*", "*.config.ts"]
 }
 ```
 
@@ -474,7 +474,7 @@ docs/
 
 ```typescript
 export const createUser = createServerFn({ method: 'POST' })
-  .validator(createUserSchema)  // 자동 검증
+  .inputValidator(createUserSchema)  // 자동 검증
   .handler(async ({ data }) => {
     // data는 이미 검증됨
   })

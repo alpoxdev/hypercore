@@ -54,7 +54,7 @@ routes/users/
 ### 전체 폴더 구조
 
 ```
-app/
+src/
 ├── routes/                 # 파일 기반 라우팅
 │   ├── __root.tsx
 │   ├── index.tsx
@@ -519,13 +519,13 @@ import { prisma } from '@/database/prisma'
 import { createUserSchema, updateUserSchema } from './schemas'
 
 export const createUser = createServerFn({ method: 'POST' })
-  .validator(createUserSchema)
+  .inputValidator(createUserSchema)
   .handler(async ({ data }) => {
     return prisma.user.create({ data })
   })
 
 export const updateUser = createServerFn({ method: 'POST' })
-  .validator(updateUserSchema)
+  .inputValidator(updateUserSchema)
   .handler(async ({ data }) => {
     const { id, ...updateData } = data
     return prisma.user.update({ where: { id }, data: updateData })
