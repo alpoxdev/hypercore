@@ -5,12 +5,16 @@ import {
   copyTemplate,
   checkExistingFiles,
   listAvailableTemplates,
+  listAvailableSkills,
+  copySkills,
+  checkExistingSkills,
 } from '../utils/copy.js';
 
 interface InitOptions {
   template?: string;
   force?: boolean;
   cwd?: string;
+  skills?: boolean;
 }
 
 const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
@@ -92,6 +96,63 @@ export const init = async (options: InitOptions): Promise<void> => {
     logger.success(`${result.files} files copied`);
     logger.success(`${result.directories} directories created`);
     logger.blank();
+
+    // Skills 설치 여부 확인
+    const availableSkills = await listAvailableSkills(template as string);
+
+    if (availableSkills.length > 0) {
+      let installSkills = options.skills;
+
+      if (installSkills === undefined) {
+        const response = await prompts({
+          type: 'confirm',
+          name: 'installSkills',
+          message: `Install Claude Code skills? (${availableSkills.join(', ')})`,
+          initial: true,
+        });
+
+        installSkills = response.installSkills;
+      }
+
+      if (installSkills) {
+        // 기존 skills 확인
+        const existingSkills = await checkExistingSkills(
+          targetDir,
+          availableSkills,
+        );
+
+        if (existingSkills.length > 0 && !options.force) {
+          logger.warn('The following skills already exist:');
+          existingSkills.forEach((s) => logger.step(s));
+          logger.blank();
+
+          const response = await prompts({
+            type: 'confirm',
+            name: 'overwrite',
+            message: 'Overwrite existing skills?',
+            initial: false,
+          });
+
+          if (!response.overwrite) {
+            logger.info('Skipping skills installation.');
+          } else {
+            const skillsResult = await copySkills(
+              template as string,
+              targetDir,
+            );
+            logger.success(
+              `Skills installed: ${skillsResult.skills.join(', ')}`,
+            );
+            logger.step(`Location: .claude/skills/`);
+          }
+        } else {
+          const skillsResult = await copySkills(template as string, targetDir);
+          logger.success(`Skills installed: ${skillsResult.skills.join(', ')}`);
+          logger.step(`Location: .claude/skills/`);
+        }
+        logger.blank();
+      }
+    }
 
     // 완료 메시지
     logger.success('Claude Code documentation installed!');

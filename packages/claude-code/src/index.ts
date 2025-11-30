@@ -13,6 +13,8 @@ program
 program
   .option('-t, --template <name>', 'template name (tanstack-start, hono)')
   .option('-f, --force', 'overwrite existing files without prompting')
+  .option('-s, --skills', 'install Claude Code skills')
+  .option('--no-skills', 'skip skills installation')
   .option('--cwd <path>', 'target directory (default: current directory)')
   .option('--list', 'list available templates')
   .action(async (options) => {
@@ -32,6 +34,7 @@ program
       template: options.template,
       force: options.force,
       cwd: options.cwd,
+      skills: options.skills,
     });
   });
 
