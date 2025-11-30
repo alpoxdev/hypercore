@@ -1,5 +1,4 @@
 import prompts from 'prompts';
-import path from 'path';
 import { logger } from '../utils/logger.js';
 import {
   copyTemplate,
@@ -11,7 +10,7 @@ import {
 } from '../utils/copy.js';
 
 interface InitOptions {
-  template?: string;
+  templates?: string[];
   force?: boolean;
   cwd?: string;
   skills?: boolean;
@@ -33,32 +32,37 @@ export const init = async (options: InitOptions): Promise<void> => {
     process.exit(1);
   }
 
-  // 템플릿 선택
-  let template = options.template;
+  // 템플릿 선택 (다중 선택 지원)
+  let templates = options.templates || [];
 
-  if (!template) {
+  if (templates.length === 0) {
     const response = await prompts({
-      type: 'select',
-      name: 'template',
-      message: 'Select a template:',
+      type: 'multiselect',
+      name: 'templates',
+      message: 'Select templates (space to select, enter to confirm):',
       choices: availableTemplates.map((t) => ({
         title: t,
         description: TEMPLATE_DESCRIPTIONS[t] || '',
         value: t,
       })),
+      min: 1,
+      hint: '- Space to select. Return to submit',
     });
 
-    if (!response.template) {
+    if (!response.templates || response.templates.length === 0) {
       logger.warn('Operation cancelled.');
       process.exit(0);
     }
 
-    template = response.template;
+    templates = response.templates;
   }
 
   // 템플릿 존재 확인
-  if (!availableTemplates.includes(template)) {
-    logger.error(`Template "${template}" not found.`);
+  const invalidTemplates = templates.filter(
+    (t) => !availableTemplates.includes(t),
+  );
+  if (invalidTemplates.length > 0) {
+    logger.error(`Templates not found: ${invalidTemplates.join(', ')}`);
     logger.info(`Available templates: ${availableTemplates.join(', ')}`);
     process.exit(1);
   }
@@ -84,87 +88,117 @@ export const init = async (options: InitOptions): Promise<void> => {
     }
   }
 
-  // 템플릿 복사
-  logger.blank();
-  logger.info(`Installing ${template} template...`);
-  logger.step(`Target: ${targetDir}`);
-  logger.blank();
+  // 각 템플릿 설치
+  let totalFiles = 0;
+  let totalDirectories = 0;
+  const allSkills: string[] = [];
 
-  try {
-    const result = await copyTemplate(template, targetDir);
-
-    logger.success(`${result.files} files copied`);
-    logger.success(`${result.directories} directories created`);
+  for (const template of templates) {
+    logger.blank();
+    logger.info(`Installing ${template} template...`);
+    logger.step(`Target: ${targetDir}`);
     logger.blank();
 
-    // Skills 설치 여부 확인
-    const availableSkills = await listAvailableSkills(template as string);
+    try {
+      const result = await copyTemplate(template, targetDir);
+      totalFiles += result.files;
+      totalDirectories += result.directories;
 
-    if (availableSkills.length > 0) {
-      let installSkills = options.skills;
+      logger.success(`${template}: ${result.files} files copied`);
 
-      if (installSkills === undefined) {
-        const response = await prompts({
-          type: 'confirm',
-          name: 'installSkills',
-          message: `Install Claude Code skills? (${availableSkills.join(', ')})`,
-          initial: true,
-        });
-
-        installSkills = response.installSkills;
-      }
-
-      if (installSkills) {
-        // 기존 skills 확인
-        const existingSkills = await checkExistingSkills(
-          targetDir,
-          availableSkills,
-        );
-
-        if (existingSkills.length > 0 && !options.force) {
-          logger.warn('The following skills already exist:');
-          existingSkills.forEach((s) => logger.step(s));
-          logger.blank();
-
-          const response = await prompts({
-            type: 'confirm',
-            name: 'overwrite',
-            message: 'Overwrite existing skills?',
-            initial: false,
-          });
-
-          if (!response.overwrite) {
-            logger.info('Skipping skills installation.');
-          } else {
-            const skillsResult = await copySkills(
-              template as string,
-              targetDir,
-            );
-            logger.success(
-              `Skills installed: ${skillsResult.skills.join(', ')}`,
-            );
-            logger.step(`Location: .claude/skills/`);
+      // Skills 수집
+      const availableSkills = await listAvailableSkills(template);
+      if (availableSkills.length > 0) {
+        for (const skill of availableSkills) {
+          if (!allSkills.includes(skill)) {
+            allSkills.push(skill);
           }
-        } else {
-          const skillsResult = await copySkills(template as string, targetDir);
-          logger.success(`Skills installed: ${skillsResult.skills.join(', ')}`);
-          logger.step(`Location: .claude/skills/`);
         }
-        logger.blank();
       }
+    } catch (error) {
+      logger.error(
+        `Failed to install ${template}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      process.exit(1);
+    }
+  }
+
+  logger.blank();
+  logger.success(`Total: ${totalFiles} files, ${totalDirectories} directories`);
+
+  // Skills 설치 (모든 템플릿의 skills 통합)
+  if (allSkills.length > 0) {
+    let installSkills = options.skills;
+
+    if (installSkills === undefined) {
+      logger.blank();
+      const response = await prompts({
+        type: 'confirm',
+        name: 'installSkills',
+        message: `Install Claude Code skills? (${allSkills.join(', ')})`,
+        initial: true,
+      });
+
+      installSkills = response.installSkills;
     }
 
-    // 완료 메시지
-    logger.success('Claude Code documentation installed!');
-    logger.blank();
-    logger.info('Next steps:');
-    logger.step('Read CLAUDE.md for project guidelines');
-    logger.step('Explore docs/ for detailed documentation');
-    logger.blank();
-  } catch (error) {
-    logger.error(
-      `Failed to install template: ${error instanceof Error ? error.message : 'Unknown error'}`,
-    );
-    process.exit(1);
+    if (installSkills) {
+      // 기존 skills 확인
+      const existingSkills = await checkExistingSkills(targetDir, allSkills);
+
+      if (existingSkills.length > 0 && !options.force) {
+        logger.warn('The following skills already exist:');
+        existingSkills.forEach((s) => logger.step(s));
+        logger.blank();
+
+        const response = await prompts({
+          type: 'confirm',
+          name: 'overwrite',
+          message: 'Overwrite existing skills?',
+          initial: false,
+        });
+
+        if (!response.overwrite) {
+          logger.info('Skipping skills installation.');
+        } else {
+          await installAllSkills(templates, targetDir);
+        }
+      } else {
+        await installAllSkills(templates, targetDir);
+      }
+      logger.blank();
+    }
+  }
+
+  // 완료 메시지
+  logger.success('Claude Code documentation installed!');
+  logger.blank();
+  logger.info('Installed templates:');
+  templates.forEach((t) => logger.step(t));
+  logger.blank();
+  logger.info('Next steps:');
+  logger.step('Read CLAUDE.md for project guidelines');
+  logger.step('Explore docs/ for detailed documentation');
+  logger.blank();
+};
+
+const installAllSkills = async (
+  templates: string[],
+  targetDir: string,
+): Promise<void> => {
+  const installedSkills: string[] = [];
+
+  for (const template of templates) {
+    const skillsResult = await copySkills(template, targetDir);
+    for (const skill of skillsResult.skills) {
+      if (!installedSkills.includes(skill)) {
+        installedSkills.push(skill);
+      }
+    }
+  }
+
+  if (installedSkills.length > 0) {
+    logger.success(`Skills installed: ${installedSkills.join(', ')}`);
+    logger.step(`Location: .claude/skills/`);
   }
 };

@@ -11,7 +11,10 @@ program
   .version('1.0.0');
 
 program
-  .option('-t, --template <name>', 'template name (tanstack-start, hono)')
+  .option(
+    '-t, --template <names>',
+    'template names (comma-separated: tanstack-start,hono)',
+  )
   .option('-f, --force', 'overwrite existing files without prompting')
   .option('-s, --skills', 'install Claude Code skills')
   .option('--no-skills', 'skip skills installation')
@@ -31,7 +34,7 @@ program
 
     // 초기화 실행
     await init({
-      template: options.template,
+      templates: options.template?.split(',').map((t: string) => t.trim()),
       force: options.force,
       cwd: options.cwd,
       skills: options.skills,
