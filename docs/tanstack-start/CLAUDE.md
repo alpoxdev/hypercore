@@ -73,7 +73,22 @@ DB 작업      → docs/library/prisma/ 읽기
 ```
 **상세**: `docs/mcp/` 참고
 
-### 3. 작업 완료 후: Git 커밋
+### 3. 복잡한 작업 시: Gemini Review 실행
+```
+아키텍처 설계/변경  → gemini-review (architecture)
+구현 계획 검증      → gemini-review (plan)
+복잡한 코드 리뷰    → gemini-review (code)
+```
+
+**실행 조건**:
+- 3개 이상 파일 수정하는 기능 구현
+- 새로운 아키텍처 패턴 도입
+- 보안 관련 코드 (인증, 권한, 암호화)
+- 성능 크리티컬 코드
+
+**상세**: `docs/skills/gemini-review/SKILL.md` 참고
+
+### 4. 작업 완료 후: Git 커밋
 ```bash
 git add .
 git commit -m "<prefix>: <설명>"
@@ -99,6 +114,7 @@ docs: API 문서 업데이트
 | **전체 가이드** | `docs/README.md` | 🔴 필수 |
 | **Git 규칙** | `docs/git/index.md` | 🔴 필수 |
 | **MCP 도구** | `docs/mcp/` | 🔴 필수 |
+| **Gemini Review** | `docs/skills/gemini-review/` | 🟡 복잡한 작업 시 |
 | **UI 개발** | `docs/design/` | 🟡 해당 시 |
 | **API 개발** | `docs/library/tanstack-start/` | 🟡 해당 시 |
 | **인증** | `docs/library/better-auth/` | 🟡 해당 시 |
