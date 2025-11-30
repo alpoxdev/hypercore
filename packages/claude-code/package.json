@@ -1,0 +1,47 @@
+{
+  "name": "@alpoxdev/claude-code",
+  "version": "1.0.0",
+  "description": "Claude Code documentation installer for projects",
+  "type": "module",
+  "bin": "./dist/index.js",
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "copy-templates": "node scripts/copy-templates.js",
+    "build": "tsup && npm run copy-templates",
+    "dev": "npm run build && node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "documentation",
+    "cli",
+    "tanstack",
+    "hono"
+  ],
+  "author": "alpoxdev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alpoxdev/claude-code"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0",
+    "picocolors": "^1.1.1",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.10.0",
+    "@types/prompts": "^2.4.9",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

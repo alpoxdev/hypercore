@@ -1,0 +1,38 @@
+import { Command } from 'commander';
+import { banner, logger } from './utils/logger.js';
+import { init } from './commands/init.js';
+import { listAvailableTemplates } from './utils/copy.js';
+
+const program = new Command();
+
+program
+  .name('claude-code')
+  .description('Claude Code documentation installer for projects')
+  .version('1.0.0');
+
+program
+  .option('-t, --template <name>', 'template name (tanstack-start, hono)')
+  .option('-f, --force', 'overwrite existing files without prompting')
+  .option('--cwd <path>', 'target directory (default: current directory)')
+  .option('--list', 'list available templates')
+  .action(async (options) => {
+    banner();
+
+    // 템플릿 목록 출력
+    if (options.list) {
+      const templates = await listAvailableTemplates();
+      logger.info('Available templates:');
+      templates.forEach((t) => logger.step(t));
+      logger.blank();
+      return;
+    }
+
+    // 초기화 실행
+    await init({
+      template: options.template,
+      force: options.force,
+      cwd: options.cwd,
+    });
+  });
+
+program.parse();
