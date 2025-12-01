@@ -21,9 +21,6 @@ bun add hono
 
 # yarn
 yarn add hono
-
-# pnpm
-pnpm add hono
 ```
 
 ---
