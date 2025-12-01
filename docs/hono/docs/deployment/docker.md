@@ -14,14 +14,14 @@ FROM node:20-alpine AS base
 
 FROM base AS deps
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
-RUN corepack enable pnpm && pnpm install --frozen-lockfile
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN corepack enable pnpm && pnpm run build
+RUN yarn build
 
 FROM base AS runner
 WORKDIR /app
@@ -105,11 +105,10 @@ FROM base AS deps
 WORKDIR /app
 
 # 패키지 매니저 파일 복사
-COPY package.json pnpm-lock.yaml ./
+COPY package.json yarn.lock ./
 
-# pnpm 활성화 및 의존성 설치
-RUN corepack enable pnpm && \
-    pnpm install --frozen-lockfile --prod=false
+# yarn 의존성 설치
+RUN yarn install --frozen-lockfile
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Stage 3: 빌드
@@ -124,9 +123,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Nitro 빌드
-RUN corepack enable pnpm && \
-    pnpm run build && \
-    pnpm store prune
+RUN yarn build
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Stage 4: 프로덕션 러너
@@ -333,17 +330,17 @@ FROM node:20-alpine
 WORKDIR /app
 
 # 패키지 파일 복사
-COPY package.json pnpm-lock.yaml ./
+COPY package.json yarn.lock ./
 
-# pnpm 설치 및 의존성 설치
-RUN corepack enable pnpm && pnpm install
+# yarn 의존성 설치
+RUN yarn install
 
 # 소스 코드는 볼륨으로 마운트됨
 
 EXPOSE 3000
 
 # 개발 서버 실행
-CMD ["pnpm", "run", "dev"]
+CMD ["yarn", "dev"]
 ```
 
 ---
@@ -449,7 +446,7 @@ FROM node:20-alpine
 # 불필요한 파일 제외 (.dockerignore 활용)
 
 # 프로덕션 의존성만 설치
-RUN pnpm install --prod
+RUN yarn install --production
 
 # 빌드 결과물만 최종 이미지에 포함
 COPY --from=builder /app/.output ./.output
@@ -459,12 +456,12 @@ COPY --from=builder /app/.output ./.output
 
 ```dockerfile
 # 의존성 파일 먼저 복사 (캐시 활용)
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 # 소스 코드는 나중에 복사
 COPY . .
-RUN pnpm build
+RUN yarn build
 ```
 
 ### 보안 강화

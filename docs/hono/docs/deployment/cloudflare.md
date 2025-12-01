@@ -176,7 +176,7 @@ npm install -g wrangler
 wrangler login
 
 # 빌드
-pnpm build
+yarn build
 
 # 배포
 wrangler deploy
@@ -195,7 +195,7 @@ wrangler dev
 2. **빌드 설정**
    ```
    Framework preset: None
-   Build command: pnpm build
+   Build command: yarn build
    Build output directory: .output/public
    ```
 
@@ -463,22 +463,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "pnpm"
+          cache: "yarn"
 
       - name: Install dependencies
-        run: pnpm install
+        run: yarn install --frozen-lockfile
 
       - name: Build
-        run: pnpm build
+        run: yarn build
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
@@ -503,22 +498,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "pnpm"
+          cache: "yarn"
 
       - name: Install dependencies
-        run: pnpm install
+        run: yarn install --frozen-lockfile
 
       - name: Build
-        run: pnpm build
+        run: yarn build
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1

@@ -58,9 +58,6 @@ npm install nitro@3
 
 # yarn
 yarn add nitro@3
-
-# pnpm
-pnpm add nitro@3
 ```
 
 ### 2. 기본 설정 파일

@@ -102,10 +102,10 @@ export default defineNitroConfig({
 ```json
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm build",
+  "buildCommand": "yarn build",
   "outputDirectory": ".vercel/output",
   "framework": null,
-  "installCommand": "pnpm install"
+  "installCommand": "yarn install"
 }
 ```
 
@@ -114,7 +114,7 @@ export default defineNitroConfig({
 ```json
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm build",
+  "buildCommand": "yarn build",
   "outputDirectory": ".vercel/output",
 
   "functions": {
@@ -152,9 +152,9 @@ export default defineNitroConfig({
 
 2. **빌드 설정**
    - Framework Preset: "Other"
-   - Build Command: `pnpm build`
+   - Build Command: `yarn build`
    - Output Directory: `.vercel/output`
-   - Install Command: `pnpm install`
+   - Install Command: `yarn install`
 
 3. **환경 변수 설정**
    - Vercel 대시보드에서 Settings → Environment Variables
@@ -452,22 +452,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "pnpm"
+          cache: "yarn"
 
       - name: Install dependencies
-        run: pnpm install
+        run: yarn install --frozen-lockfile
 
       - name: Build
-        run: pnpm build
+        run: yarn build
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
@@ -528,7 +523,7 @@ export default app;
 | Function Timeout | 실행 시간 초과 | `maxDuration` 증가 또는 최적화 |
 | Edge 호환성 오류 | Node.js API 사용 | Edge 호환 API로 변경 |
 | 환경 변수 누락 | 설정 안됨 | Vercel 대시보드에서 설정 |
-| 빌드 실패 | 의존성 문제 | `pnpm-lock.yaml` 확인 |
+| 빌드 실패 | 의존성 문제 | `yarn.lock` 확인 |
 
 ### 디버깅
 
