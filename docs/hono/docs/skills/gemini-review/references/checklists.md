@@ -1,136 +1,136 @@
-# Review Checklists by Tech Stack
+# 기술 스택별 리뷰 체크리스트
 
-## Hono Checklist
+## Hono 체크리스트
 
-### API Design
-- [ ] RESTful conventions followed (proper HTTP methods, status codes)
-- [ ] Consistent URL naming (kebab-case, plural nouns)
-- [ ] Proper use of path vs query parameters
-- [ ] Response format consistency (c.json, c.text, c.html)
-- [ ] Appropriate use of c.notFound() and error responses
+### API 설계
+- [ ] RESTful 규칙 준수 (적절한 HTTP 메서드, 상태 코드)
+- [ ] 일관된 URL 명명 (kebab-case, 복수형 명사)
+- [ ] path vs query 파라미터 적절한 사용
+- [ ] 응답 형식 일관성 (c.json, c.text, c.html)
+- [ ] c.notFound() 및 에러 응답의 적절한 사용
 
-### Middleware
-- [ ] Middleware order is correct (auth before route handlers)
-- [ ] createMiddleware used for typed middleware
-- [ ] Middleware properly passes control with next()
-- [ ] Built-in middleware configured correctly (cors, logger, etc.)
-- [ ] Custom middleware is reusable and testable
+### 미들웨어
+- [ ] 미들웨어 순서가 올바름 (인증이 라우트 핸들러 전에)
+- [ ] 타입드 미들웨어에 createMiddleware 사용
+- [ ] 미들웨어가 next()로 제어를 올바르게 전달
+- [ ] 빌트인 미들웨어 적절히 설정 (cors, logger 등)
+- [ ] 커스텀 미들웨어가 재사용 가능하고 테스트 가능
 
-### Validation (zValidator)
-- [ ] All POST/PUT/PATCH routes have zValidator
-- [ ] Validation targets correct: json, query, param, header, form
-- [ ] Zod v4 syntax used (z.email(), z.url())
-- [ ] Custom error handling in zValidator callback
-- [ ] Schema reuse across related endpoints
+### 유효성 검사 (zValidator)
+- [ ] 모든 POST/PUT/PATCH 라우트에 zValidator 적용
+- [ ] 유효성 검사 대상 올바름: json, query, param, header, form
+- [ ] Zod v4 문법 사용 (z.email(), z.url())
+- [ ] zValidator 콜백에서 커스텀 에러 처리
+- [ ] 관련 엔드포인트 간 스키마 재사용
 
-### Error Handling
-- [ ] HTTPException used for HTTP errors
-- [ ] Global onError handler configured
-- [ ] Error responses have consistent format
-- [ ] Sensitive information not leaked in errors
-- [ ] Custom error classes for business logic errors
+### 에러 처리
+- [ ] HTTP 에러에 HTTPException 사용
+- [ ] 전역 onError 핸들러 설정
+- [ ] 일관된 에러 응답 형식
+- [ ] 에러에 민감 정보 노출 없음
+- [ ] 비즈니스 로직 에러용 커스텀 에러 클래스
 
-### Type Safety
-- [ ] Bindings type defined for environment variables
-- [ ] Variables type defined for request context
-- [ ] c.env and c.var properly typed
-- [ ] RPC types exported (AppType)
-- [ ] InferRequestType/InferResponseType used in clients
+### 타입 안전성
+- [ ] 환경 변수용 Bindings 타입 정의
+- [ ] 요청 컨텍스트용 Variables 타입 정의
+- [ ] c.env와 c.var 적절히 타입 지정
+- [ ] RPC 타입 내보내기 (AppType)
+- [ ] 클라이언트에서 InferRequestType/InferResponseType 사용
 
-### Security
-- [ ] Authentication middleware on protected routes
-- [ ] Bearer token or JWT validation implemented
-- [ ] CORS configured appropriately
-- [ ] Rate limiting considered
-- [ ] Secrets accessed via c.env, not hardcoded
+### 보안
+- [ ] 보호된 라우트에 인증 미들웨어 적용
+- [ ] Bearer 토큰 또는 JWT 검증 구현
+- [ ] CORS 적절히 설정
+- [ ] 레이트 리미팅 고려
+- [ ] 시크릿은 c.env로 접근, 하드코딩 금지
 
 ---
 
-## Cloudflare Workers Checklist
+## Cloudflare Workers 체크리스트
 
-### Bindings Configuration
-- [ ] wrangler.toml properly configured
-- [ ] All bindings declared (KV, D1, R2, etc.)
-- [ ] Binding types match wrangler.toml
-- [ ] Environment variables set for secrets
-- [ ] compatibility_flags includes nodejs_compat if needed
+### 바인딩 설정
+- [ ] wrangler.toml 적절히 설정
+- [ ] 모든 바인딩 선언 (KV, D1, R2 등)
+- [ ] 바인딩 타입이 wrangler.toml과 일치
+- [ ] 시크릿용 환경 변수 설정
+- [ ] 필요 시 compatibility_flags에 nodejs_compat 포함
 
 ### KV Namespace
-- [ ] Keys are properly namespaced
-- [ ] TTL (expirationTtl) set where appropriate
-- [ ] Metadata used for additional key info
-- [ ] List operations use prefix and cursor for pagination
-- [ ] Error handling for KV operations
+- [ ] 키가 적절히 네임스페이스됨
+- [ ] 적절한 곳에 TTL (expirationTtl) 설정
+- [ ] 추가 키 정보에 메타데이터 사용
+- [ ] List 작업에 prefix와 cursor로 페이지네이션
+- [ ] KV 작업에 에러 처리
 
-### D1 Database
-- [ ] Prepared statements used (no string concatenation)
-- [ ] Batch operations for multiple queries
-- [ ] Error handling for database operations
-- [ ] Schema migrations managed properly
-- [ ] Indexes created for frequently queried columns
+### D1 데이터베이스
+- [ ] Prepared statements 사용 (문자열 연결 금지)
+- [ ] 여러 쿼리에 배치 작업 사용
+- [ ] 데이터베이스 작업에 에러 처리
+- [ ] 스키마 마이그레이션 적절히 관리
+- [ ] 자주 쿼리되는 컬럼에 인덱스 생성
 
 ### R2 Bucket
-- [ ] Content-Type set on uploads
-- [ ] Proper error handling for missing objects
-- [ ] Multipart uploads for large files
-- [ ] Custom metadata used appropriately
-- [ ] Access control configured
+- [ ] 업로드 시 Content-Type 설정
+- [ ] 누락된 객체에 대한 적절한 에러 처리
+- [ ] 대용량 파일에 멀티파트 업로드
+- [ ] 커스텀 메타데이터 적절히 사용
+- [ ] 액세스 제어 설정
 
-### Edge Runtime
-- [ ] No Node.js-specific APIs used
-- [ ] Web APIs used (fetch, Request, Response)
-- [ ] Memory limits considered (<128MB)
-- [ ] CPU time limits considered (<30s)
-- [ ] Subrequests limit considered (<50)
+### 엣지 런타임
+- [ ] Node.js 전용 API 사용 안 함
+- [ ] 웹 API 사용 (fetch, Request, Response)
+- [ ] 메모리 한도 고려 (<128MB)
+- [ ] CPU 시간 한도 고려 (<30s)
+- [ ] 서브리퀘스트 한도 고려 (<50)
 
-### Deployment
-- [ ] Environment-specific wrangler.toml sections
-- [ ] Secrets set via wrangler secret put
-- [ ] Preview deployments working
-- [ ] Production deployment tested
-- [ ] Rollback strategy in place
+### 배포
+- [ ] 환경별 wrangler.toml 섹션
+- [ ] wrangler secret put으로 시크릿 설정
+- [ ] 프리뷰 배포 작동 확인
+- [ ] 프로덕션 배포 테스트
+- [ ] 롤백 전략 마련
 
 ---
 
-## General Checklist
+## 범용 체크리스트
 
-### Code Quality
-- [ ] Single responsibility principle followed
-- [ ] DRY - no unnecessary duplication
-- [ ] Functions/methods are focused and small
-- [ ] Clear naming conventions
-- [ ] Comments explain "why", not "what"
+### 코드 품질
+- [ ] 단일 책임 원칙 준수
+- [ ] DRY - 불필요한 중복 없음
+- [ ] 함수/메서드가 집중적이고 작음
+- [ ] 명확한 명명 규칙
+- [ ] 주석은 "why"를 설명, "what"이 아님
 
-### Logic & Correctness
-- [ ] Edge cases handled (empty, null, boundary values)
-- [ ] Error handling comprehensive
-- [ ] Race conditions considered
-- [ ] Input validation present
-- [ ] Return values checked
+### 로직 및 정확성
+- [ ] 엣지 케이스 처리 (빈 값, null, 경계값)
+- [ ] 포괄적인 에러 처리
+- [ ] 레이스 컨디션 고려
+- [ ] 입력 유효성 검사
+- [ ] 반환값 확인
 
-### Security
-- [ ] No hardcoded secrets
-- [ ] User input sanitized
-- [ ] SQL injection prevented (parameterized queries)
-- [ ] XSS prevention measures
-- [ ] Authentication/authorization proper
+### 보안
+- [ ] 하드코딩된 시크릿 없음
+- [ ] 사용자 입력 살균
+- [ ] SQL 인젝션 방지 (파라미터화된 쿼리)
+- [ ] XSS 방지 조치
+- [ ] 적절한 인증/인가
 
-### Performance
-- [ ] Time complexity acceptable for scale
-- [ ] Space complexity reasonable
-- [ ] No unnecessary loops or iterations
-- [ ] Database queries optimized
-- [ ] Caching considered where appropriate
+### 성능
+- [ ] 스케일에 적합한 시간 복잡도
+- [ ] 적절한 공간 복잡도
+- [ ] 불필요한 반복 없음
+- [ ] 데이터베이스 쿼리 최적화
+- [ ] 적절한 캐싱 고려
 
-### Maintainability
-- [ ] Code is testable
-- [ ] Dependencies minimal and justified
-- [ ] Configuration externalized
-- [ ] Logging present for debugging
-- [ ] Error messages helpful
+### 유지보수성
+- [ ] 테스트 가능한 코드
+- [ ] 최소한의 정당화된 의존성
+- [ ] 설정 외부화
+- [ ] 디버깅을 위한 로깅
+- [ ] 도움이 되는 에러 메시지
 
-### Documentation
-- [ ] Public APIs documented
-- [ ] Complex logic explained
-- [ ] Setup instructions clear
-- [ ] Environment variables documented
+### 문서화
+- [ ] 공개 API 문서화
+- [ ] 복잡한 로직 설명
+- [ ] 명확한 설정 가이드
+- [ ] 환경 변수 문서화
