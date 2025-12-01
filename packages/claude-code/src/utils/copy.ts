@@ -37,6 +37,7 @@ const copyRecursive = async (
 
 /**
  * 단일 템플릿 복사 (CLAUDE.md → 루트, docs/ → 루트/docs/)
+ * 기존 docs 폴더는 삭제 후 새로 복사
  */
 export const copySingleTemplate = async (
   template: string,
@@ -57,10 +58,15 @@ export const copySingleTemplate = async (
     counter.files++;
   }
 
-  // docs/ → 루트/docs/
+  // docs/ → 루트/docs/ (기존 폴더 삭제 후 복사)
   const docsSrc = path.join(templatePath, 'docs');
+  const docsDest = path.join(targetDir, 'docs');
   if (await fs.pathExists(docsSrc)) {
-    await copyRecursive(docsSrc, path.join(targetDir, 'docs'), counter);
+    // 기존 docs 폴더 삭제
+    if (await fs.pathExists(docsDest)) {
+      await fs.remove(docsDest);
+    }
+    await copyRecursive(docsSrc, docsDest, counter);
   }
 
   return counter;
@@ -68,12 +74,19 @@ export const copySingleTemplate = async (
 
 /**
  * 다중 템플릿 복사 (각 템플릿 폴더 전체 → 루트/docs/템플릿명/)
+ * 기존 docs 폴더는 삭제 후 새로 복사
  */
 export const copyMultipleTemplates = async (
   templates: string[],
   targetDir: string,
 ): Promise<{ files: number; directories: number }> => {
   const counter = { files: 0, directories: 0 };
+
+  // 기존 docs 폴더 삭제
+  const docsDir = path.join(targetDir, 'docs');
+  if (await fs.pathExists(docsDir)) {
+    await fs.remove(docsDir);
+  }
 
   for (const template of templates) {
     const templatePath = getTemplatePath(template);
