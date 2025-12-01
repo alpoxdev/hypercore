@@ -235,6 +235,7 @@ app.get('/me', (c) => {
 
 ## 관련 문서
 
+- [환경 변수 설정](./env-setup.md) - .env.development, .env.production 설정 ⭐
 - [미들웨어](./middleware.md)
 - [Zod 검증](./validation.md)
 - [에러 처리](./error-handling.md)
