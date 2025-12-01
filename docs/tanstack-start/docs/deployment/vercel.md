@@ -1,12 +1,13 @@
 # Vercel 배포
 
 > **상위 문서**: [배포](./index.md)
+> **Version**: Nitro 3.x
 
-Vercel은 TanStack Start 앱을 위한 최적화된 배포 플랫폼입니다.
+Vercel은 TanStack Start 앱을 위한 최적화된 서버리스 배포 플랫폼입니다.
 
-## 빠른 시작
+---
 
-### 1. Nitro 설정
+## 🚀 Quick Reference (복사용)
 
 ```typescript
 // nitro.config.ts
@@ -14,47 +15,188 @@ import { defineNitroConfig } from 'nitro/config'
 
 export default defineNitroConfig({
   preset: 'vercel',
+  compatibilityDate: '2024-09-19',
 })
 ```
 
-### 2. 빌드 및 배포
+```json
+// vercel.json
+{
+  "buildCommand": "pnpm build",
+  "outputDirectory": ".vercel/output"
+}
+```
 
 ```bash
-# 빌드
-yarn build
-
-# Vercel CLI로 배포
+# Vercel CLI 배포
+vercel login
 vercel
 ```
 
-## Vercel 설정
+---
 
-### vercel.json
+## Nitro 설정
+
+### 기본 설정
+
+```typescript
+// nitro.config.ts
+import { defineNitroConfig } from 'nitro/config'
+
+export default defineNitroConfig({
+  // Vercel 서버리스 preset
+  preset: 'vercel',
+
+  // 호환성 날짜 (Nitro v3 필수)
+  compatibilityDate: '2024-09-19',
+})
+```
+
+### Edge Functions 설정
+
+```typescript
+// nitro.config.ts
+import { defineNitroConfig } from 'nitro/config'
+
+export default defineNitroConfig({
+  // Vercel Edge Functions preset
+  preset: 'vercel-edge',
+
+  // 호환성 날짜
+  compatibilityDate: '2024-09-19',
+})
+```
+
+### Bun 런타임 설정
+
+```typescript
+// nitro.config.ts
+import { defineNitroConfig } from 'nitro/config'
+
+export default defineNitroConfig({
+  preset: 'vercel',
+  compatibilityDate: '2024-09-19',
+
+  // Bun 런타임 사용
+  vercel: {
+    functions: {
+      runtime: 'bun@1',
+    },
+  },
+})
+```
+
+---
+
+## Vite 설정
+
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite'
+import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import { nitro } from 'nitro/vite'
+import viteReact from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [
+    tanstackStart(),
+    nitro(),
+    viteReact(),
+  ],
+})
+```
+
+---
+
+## vercel.json 설정
+
+### 기본 설정
 
 ```json
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "yarn build",
-  "outputDirectory": ".output",
-  "framework": null
+  "buildCommand": "pnpm build",
+  "outputDirectory": ".vercel/output",
+  "framework": null,
+  "installCommand": "pnpm install"
 }
 ```
 
-### 환경변수
+### 고급 설정
 
-Vercel 대시보드에서 설정하거나 CLI 사용:
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pnpm build",
+  "outputDirectory": ".vercel/output",
+
+  "functions": {
+    "api/**/*.ts": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, OPTIONS" }
+      ]
+    }
+  ],
+
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api" }
+  ]
+}
+```
+
+---
+
+## 배포 방법
+
+### 방법 1: GitHub 연동 (권장)
+
+1. **Vercel 프로젝트 생성**
+   - [Vercel 대시보드](https://vercel.com) 접속
+   - "Add New" → "Project" → GitHub 저장소 선택
+
+2. **빌드 설정**
+   - Framework Preset: "Other"
+   - Build Command: `pnpm build`
+   - Output Directory: `.vercel/output`
+   - Install Command: `pnpm install`
+
+3. **환경 변수 설정**
+   - Vercel 대시보드에서 Settings → Environment Variables
+
+### 방법 2: Vercel CLI
 
 ```bash
-# 환경변수 추가
-vercel env add DATABASE_URL
+# Vercel CLI 설치
+npm install -g vercel
 
-# 환경변수 확인
-vercel env ls
+# 로그인
+vercel login
+
+# 프로젝트 연결 및 배포
+vercel
+
+# 프로덕션 배포
+vercel --prod
+
+# 환경 변수 설정
+vercel env add DATABASE_URL
+vercel env add API_SECRET
 ```
+
+---
 
 ## ISR (Incremental Static Regeneration)
 
-### 기본 ISR 설정
+### ISR 설정
 
 ```typescript
 // nitro.config.ts
@@ -62,12 +204,41 @@ import { defineNitroConfig } from 'nitro/config'
 
 export default defineNitroConfig({
   preset: 'vercel',
+  compatibilityDate: '2024-09-19',
+
+  // ISR 설정
+  vercel: {
+    config: {
+      // 정적 페이지 재생성 간격 (초)
+      isr: {
+        bypassToken: process.env.ISR_BYPASS_TOKEN,
+      },
+    },
+  },
+})
+```
+
+### 라우트별 ISR
+
+```typescript
+// nitro.config.ts
+import { defineNitroConfig } from 'nitro/config'
+
+export default defineNitroConfig({
+  preset: 'vercel',
+  compatibilityDate: '2024-09-19',
+
   routeRules: {
     // 60초마다 재검증
     '/products/**': {
       isr: {
         expiration: 60,
       },
+    },
+
+    // 캐시하지 않음
+    '/api/user/**': {
+      isr: false,
     },
   },
 })
@@ -81,6 +252,8 @@ import { defineNitroConfig } from 'nitro/config'
 
 export default defineNitroConfig({
   preset: 'vercel',
+  compatibilityDate: '2024-09-19',
+
   vercel: {
     config: {
       bypassToken: process.env.VERCEL_BYPASS_TOKEN,
@@ -120,52 +293,36 @@ export default defineHandler(async (event) => {
 })
 ```
 
-## Bun 런타임
+---
 
-### nitro.config.ts 설정
+## 환경변수
 
-```typescript
-import { defineNitroConfig } from 'nitro/config'
+### Vercel 대시보드에서 설정
 
-export default defineNitroConfig({
-  preset: 'vercel',
-  vercel: {
-    functions: {
-      runtime: 'bun1.x',
-    },
-  },
-})
+```
+DATABASE_URL=postgresql://user:pass@host:5432/db
+API_SECRET=your-secret-key
+NODE_ENV=production
 ```
 
-### vercel.json 설정
+### 환경별 설정
 
-```json
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "bunVersion": "1.x"
-}
-```
+Vercel은 환경별로 다른 값 설정 가능:
+- **Production**: 프로덕션 환경
+- **Preview**: PR 프리뷰 환경
+- **Development**: 로컬 개발 환경
 
-## Edge Functions
+### Vercel 자동 제공 변수
 
-### Edge 런타임 설정
+| 변수 | 설명 |
+|------|------|
+| `VERCEL` | Vercel 환경인지 여부 ("1") |
+| `VERCEL_ENV` | 환경 (production, preview, development) |
+| `VERCEL_URL` | 배포 URL |
+| `VERCEL_REGION` | 실행 리전 |
+| `VERCEL_GIT_COMMIT_SHA` | Git 커밋 SHA |
 
-```typescript
-// nitro.config.ts
-import { defineNitroConfig } from 'nitro/config'
-
-export default defineNitroConfig({
-  preset: 'vercel',
-  routeRules: {
-    '/api/edge/**': {
-      // Edge 런타임에서 실행
-      headers: {
-        'x-vercel-edge': '1',
-      },
-    },
-  },
-})
-```
+---
 
 ## 환경별 설정
 
@@ -179,6 +336,8 @@ const isProduction = process.env.VERCEL_ENV === 'production'
 
 export default defineNitroConfig({
   preset: 'vercel',
+  compatibilityDate: '2024-09-19',
+
   routeRules: {
     '/api/**': {
       cors: !isProduction,  // 개발 환경에서만 CORS 허용
@@ -187,6 +346,8 @@ export default defineNitroConfig({
 })
 ```
 
+---
+
 ## 모노레포 설정
 
 ### vercel.json
@@ -194,11 +355,13 @@ export default defineNitroConfig({
 ```json
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "yarn install",
-  "buildCommand": "yarn workspace web build",
-  "outputDirectory": "apps/web/.output"
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm --filter web build",
+  "outputDirectory": "apps/web/.vercel/output"
 }
 ```
+
+---
 
 ## GitHub 통합
 
@@ -224,6 +387,96 @@ export default defineNitroConfig({
 }
 ```
 
+---
+
+## CI/CD 설정
+
+### GitHub Actions
+
+```yaml
+# .github/workflows/vercel.yml
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
+```
+
+---
+
+## 최적화
+
+### Cold Start 최소화
+
+```typescript
+// nitro.config.ts
+import { defineNitroConfig } from 'nitro/config'
+
+export default defineNitroConfig({
+  preset: 'vercel',
+  compatibilityDate: '2024-09-19',
+
+  // 번들 최적화
+  minify: true,
+
+  // 트리 쉐이킹
+  experimental: {
+    wasm: true,
+  },
+})
+```
+
+### Function 크기 최소화
+
+```typescript
+// nitro.config.ts
+import { defineNitroConfig } from 'nitro/config'
+
+export default defineNitroConfig({
+  preset: 'vercel',
+  compatibilityDate: '2024-09-19',
+
+  // 외부 패키지 제외 (번들 크기 감소)
+  externals: ['sharp', 'prisma', '@prisma/client'],
+})
+```
+
+---
+
 ## 도메인 설정
 
 ```bash
@@ -234,35 +487,39 @@ vercel domains add example.com
 vercel domains inspect example.com
 ```
 
+---
+
 ## 트러블슈팅
 
-### 빌드 실패
+### 일반적인 문제
+
+| 문제 | 원인 | 해결 |
+|------|------|------|
+| Function Timeout | 실행 시간 초과 | `maxDuration` 증가 또는 최적화 |
+| Edge 호환성 오류 | Node.js API 사용 | Edge 호환 API로 변경 |
+| 환경 변수 누락 | 설정 안됨 | Vercel 대시보드에서 설정 |
+| 빌드 실패 | 의존성 문제 | `pnpm-lock.yaml` 확인 |
+
+### 디버깅
 
 ```bash
-# 로컬에서 Vercel 빌드 시뮬레이션
-vercel build
+# 로컬에서 Vercel 환경 시뮬레이션
+vercel dev
 
-# 상세 로그 확인
-vercel logs [deployment-url]
-```
+# 로그 확인
+vercel logs
 
-### Function 크기 초과
+# 환경 변수 확인
+vercel env ls
 
-```typescript
-// nitro.config.ts
-export default defineNitroConfig({
-  preset: 'vercel',
-  // 외부 패키지로 분리
-  externals: ['@prisma/client', 'sharp'],
-})
-```
-
-### 환경변수 누락
-
-```bash
-# 환경변수 풀 다운
+# 환경 변수 풀 다운
 vercel env pull .env.local
+
+# 함수 상태 확인
+vercel inspect
 ```
+
+---
 
 ## 유용한 명령어
 
@@ -280,8 +537,26 @@ vercel ls
 vercel rollback [deployment-url]
 ```
 
+---
+
+## package.json 스크립트
+
+```json
+{
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build && tsc --noEmit",
+    "start": "node .output/server/index.mjs",
+    "preview": "vite preview"
+  }
+}
+```
+
+---
+
 ## 참고 자료
 
+- [TanStack Start Hosting](https://tanstack.com/start/latest/docs/framework/react/hosting)
 - [Vercel 공식 문서](https://vercel.com/docs)
 - [Vercel CLI](https://vercel.com/docs/cli)
 - [Nitro Vercel Preset](https://nitro.build/deploy/providers/vercel)
