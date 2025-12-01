@@ -146,6 +146,49 @@ services/
     └── mutations.ts
 ```
 
+## 코드 작성 규칙
+
+### UTF-8 인코딩 유지
+
+모든 한글 텍스트는 UTF-8 인코딩이 깨지지 않도록 작성합니다.
+
+### 한글 주석 작성 규칙
+
+**묶음 단위로 한글 주석을 작성합니다** (너무 세세하게 X)
+
+```typescript
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 사용자 관련 상태
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const [user, setUser] = useState<User | null>(null)
+const [isLoading, setIsLoading] = useState(false)
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 데이터 조회
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const { data: users } = useQuery({
+  queryKey: ['users'],
+  queryFn: () => getUsers(),
+})
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 이벤트 핸들러
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const handleSubmit = () => { /* ... */ }
+const handleDelete = () => { /* ... */ }
+```
+
+### ❌ 너무 세세한 주석 (금지)
+
+```typescript
+// ❌ 이렇게 하지 마세요
+const [user, setUser] = useState(null)  // 사용자 상태
+const [isLoading, setIsLoading] = useState(false)  // 로딩 상태
+const [error, setError] = useState(null)  // 에러 상태
+```
+
+---
+
 ## TypeScript Standards
 
 ### Use `const` for Functions
@@ -234,7 +277,164 @@ const UsersPage = (): JSX.Element => {
 }
 ```
 
-### Page Hook
+### Custom Hook 작성 규칙
+
+**Purpose**: 페이지 또는 섹션의 **모든 로직, 상태, 라이프사이클**을 중앙화합니다.
+
+- 페이지 훅: 페이지 전체 로직 담당
+- 섹션 훅: 해당 섹션의 로직만 담당 (섹션으로 분리한 경우)
+
+### ⚠️ 필수: Custom Hook 내부 순서
+
+훅 내부 코드는 **반드시 아래 순서**를 따릅니다:
+
+```
+1. State (useState, zustand store)
+2. Global Hooks (useParams, useNavigate, useQueryClient 등)
+3. React Query (useQuery → useMutation 순서)
+4. Event Handlers & Functions
+5. useMemo
+6. useEffect
+```
+
+### ✅ 올바른 Custom Hook 예시
+
+```typescript
+// routes/users/-hooks/use-users.ts
+import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useParams, useNavigate } from '@tanstack/react-router'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useServerFn } from '@tanstack/react-start'
+import { useAuthStore } from '@/stores/auth'
+import { getUsers, createUser, deleteUser } from '@/services/user'
+import type { User } from '@/types'
+
+interface UseUsersReturn {
+  users: User[] | undefined
+  filteredUsers: User[]
+  isLoading: boolean
+  error: Error | null
+  search: string
+  setSearch: (value: string) => void
+  handleCreate: (data: { email: string; name: string }) => void
+  handleDelete: (id: string) => void
+  isCreating: boolean
+  isDeleting: boolean
+}
+
+export const useUsers = (): UseUsersReturn => {
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 1. State (useState, zustand store)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const [search, setSearch] = useState('')
+  const { user: currentUser } = useAuthStore()
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 2. Global Hooks
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const params = useParams({ from: '/users/$id' })
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 3. React Query (useQuery → useMutation)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const getUsersFn = useServerFn(getUsers)
+  const createUserFn = useServerFn(createUser)
+  const deleteUserFn = useServerFn(deleteUser)
+
+  const { data: users, isLoading, error } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => getUsersFn(),
+  })
+
+  const createMutation = useMutation({
+    mutationFn: createUserFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteUserFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+    },
+  })
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 4. Event Handlers & Functions
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const handleCreate = useCallback(
+    (data: { email: string; name: string }) => {
+      createMutation.mutate({ data })
+    },
+    [createMutation]
+  )
+
+  const handleDelete = useCallback(
+    (id: string) => {
+      deleteMutation.mutate({ data: id })
+    },
+    [deleteMutation]
+  )
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 5. useMemo
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const filteredUsers = useMemo(() => {
+    if (!users) return []
+    if (!search) return users
+    return users.filter((user) =>
+      user.name.toLowerCase().includes(search.toLowerCase())
+    )
+  }, [users, search])
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 6. useEffect
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  useEffect(() => {
+    if (!currentUser) {
+      navigate({ to: '/login' })
+    }
+  }, [currentUser, navigate])
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Return
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  return {
+    users,
+    filteredUsers,
+    isLoading,
+    error,
+    search,
+    setSearch,
+    handleCreate,
+    handleDelete,
+    isCreating: createMutation.isPending,
+    isDeleting: deleteMutation.isPending,
+  }
+}
+```
+
+### ❌ 잘못된 순서 (금지)
+
+```typescript
+// ❌ 순서가 뒤섞인 잘못된 예시
+export const useBadHook = () => {
+  const queryClient = useQueryClient()  // ❌ Global Hook이 먼저
+
+  useEffect(() => { /* ... */ }, [])    // ❌ useEffect가 중간에
+
+  const [state, setState] = useState()  // ❌ State가 나중에
+
+  const { data } = useQuery({ /* ... */ })  // ❌ Query가 Effect 다음에
+
+  const computed = useMemo(() => {}, [])  // ❌ useMemo 위치 잘못됨
+}
+```
+
+### Page Hook (간단한 예시)
 
 ```typescript
 // routes/users/-hooks/use-users.ts
@@ -253,8 +453,10 @@ interface UseUsersReturn {
 }
 
 export const useUsers = (): UseUsersReturn => {
+  // 2. Global Hooks
   const queryClient = useQueryClient()
 
+  // 3. React Query (useQuery → useMutation)
   const { data: users, isLoading, error } = useQuery({
     queryKey: ['users'],
     queryFn: () => getUsers(),
