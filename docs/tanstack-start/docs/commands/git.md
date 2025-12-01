@@ -1,7 +1,5 @@
 # Git 워크플로우
 
-> TanStack Start + React 프로젝트 Git 컨벤션
-
 ---
 
 ## ⛔ NEVER (절대 금지)
@@ -38,11 +36,11 @@ git add .
 git commit -m "feat: 여러 기능 추가"
 
 # ✅ 올바른 방식: 논리적 단위로 분리
-git add src/routes/auth.tsx src/functions/auth.ts
-git commit -m "feat: 사용자 로그인 기능 추가"
+git add src/auth/
+git commit -m "feat: 사용자 인증 기능 추가"
 
-git add src/routes/profile.tsx src/functions/user.ts
-git commit -m "feat: 프로필 조회 기능 추가"
+git add src/users/
+git commit -m "feat: 사용자 관리 기능 추가"
 
 git add docs/
 git commit -m "docs: API 문서 업데이트"
@@ -64,14 +62,14 @@ git commit -m "docs: API 문서 업데이트"
 
 | Prefix | 용도 | 예시 |
 |--------|------|------|
-| `feat` | 새로운 기능 | `feat: 사용자 로그인 기능 추가` |
-| `fix` | 버그 수정 | `fix: 세션 만료 오류 수정` |
+| `feat` | 새로운 기능 | `feat: 사용자 인증 기능 추가` |
+| `fix` | 버그 수정 | `fix: 토큰 검증 오류 수정` |
 | `refactor` | 리팩토링 | `refactor: 인증 로직 분리` |
-| `style` | 코드 스타일 | `style: eslint 규칙 적용` |
+| `style` | 코드 스타일 | `style: prettier 적용` |
 | `docs` | 문서 수정 | `docs: API 문서 업데이트` |
-| `test` | 테스트 | `test: 로그인 테스트 추가` |
-| `chore` | 빌드/설정 | `chore: vite 설정 업데이트` |
-| `perf` | 성능 개선 | `perf: 이미지 로딩 최적화` |
+| `test` | 테스트 | `test: 인증 테스트 추가` |
+| `chore` | 빌드/설정 | `chore: 의존성 업데이트` |
+| `perf` | 성능 개선 | `perf: 쿼리 최적화` |
 | `ci` | CI/CD | `ci: GitHub Actions 추가` |
 
 ---
@@ -79,11 +77,11 @@ git commit -m "docs: API 문서 업데이트"
 ## ✅ 올바른 예시
 
 ```bash
-feat: 회원가입 폼 유효성 검사 추가
-fix: 비밀번호 재설정 이메일 발송 오류 수정
-refactor: UserService 클래스 구조 개선
+feat: 사용자 로그인 기능 추가
+fix: 세션 만료 오류 수정
+refactor: 서비스 클래스 구조 개선
 docs: README 설치 가이드 추가
-chore: Prisma 7.x 버전 업그레이드
+chore: 의존성 버전 업그레이드
 ```
 
 ---
@@ -92,16 +90,16 @@ chore: Prisma 7.x 버전 업그레이드
 
 ```bash
 # prefix 없음
-회원가입 기능 추가함
+사용자 인증 기능 추가함
 
 # 마침표 불필요
-feat: 회원가입 기능 추가.
+feat: 사용자 인증 추가.
 
 # 대문자 사용
-FEAT: 회원가입 기능 추가
+FEAT: 사용자 인증 추가
 
 # scope 불필요
-feat(auth): 회원가입 추가
+feat(auth): 인증 추가
 
 # AI 작성 표시 (절대 금지!)
 feat: 로그인 기능 추가
@@ -132,16 +130,16 @@ feat: 로그인, 회원가입, 프로필 기능 추가
 git pull origin main
 
 # 2. 기능 A 작업 완료 → 커밋
-git add src/routes/feature-a.tsx src/functions/feature-a.ts
+git add src/feature-a/
 git commit -m "feat: 기능 A 구현"
 
 # 3. 기능 B 작업 완료 → 커밋
-git add src/routes/feature-b.tsx src/functions/feature-b.ts
+git add src/feature-b/
 git commit -m "feat: 기능 B 구현"
 
 # 4. 문서 작업 완료 → 커밋
 git add docs/
-git commit -m "docs: 기능 A, B 문서 추가"
+git commit -m "docs: 기능 문서 추가"
 
 # 5. 푸시
 git push origin main
@@ -159,27 +157,27 @@ git push origin main
 | 버그 수정 + 새 기능 | ✅ 분리 |
 | 코드 변경 + 문서 변경 | ✅ 분리 |
 | 리팩토링 + 기능 추가 | ✅ 분리 |
-| 동일 기능의 라우트 + 함수 | 🔄 묶어도 됨 |
-| 동일 기능의 스키마 + 서비스 | 🔄 묶어도 됨 |
+| 동일 기능의 관련 파일들 | 🔄 묶어도 됨 |
+| 동일 기능의 타입 + 구현 | 🔄 묶어도 됨 |
 
 ### 예시: 사용자 관리 기능 개발
 
 ```bash
 # 1. 인증 기능 커밋
-git add src/routes/auth/ src/functions/auth.ts src/middleware/auth.ts
+git add src/auth/
 git commit -m "feat: 사용자 인증 기능 추가"
 
-# 2. 프로필 기능 커밋
-git add src/routes/profile/ src/functions/user.ts
-git commit -m "feat: 프로필 조회 및 수정 기능 추가"
+# 2. 사용자 관리 커밋
+git add src/users/
+git commit -m "feat: 사용자 CRUD 기능 추가"
 
 # 3. 유효성 검사 커밋
 git add src/validators/
-git commit -m "feat: 사용자 입력 유효성 검사 추가"
+git commit -m "feat: 입력값 유효성 검사 추가"
 
 # 4. 테스트 커밋
 git add tests/
-git commit -m "test: 사용자 관리 기능 테스트 추가"
+git commit -m "test: 사용자 관리 테스트 추가"
 
 # 5. 문서 커밋
 git add docs/
@@ -207,7 +205,7 @@ main
 ```bash
 feature/user-authentication
 feature/payment-integration
-fix/login-session-error
+fix/session-error
 hotfix/security-patch
 ```
 
@@ -251,8 +249,8 @@ git add -p
 node_modules/
 
 # Build
-.output/
 dist/
+.output/
 build/
 
 # Environment
@@ -268,10 +266,10 @@ build/
 # OS
 .DS_Store
 
-# Prisma
-prisma/generated/
-
 # Cache
 .cache/
 .turbo/
+
+# Logs
+*.log
 ```
