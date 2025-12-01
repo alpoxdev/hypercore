@@ -39,35 +39,106 @@ npm install -D prisma
 
 ## Schema 설정
 
-### schema.prisma (v7)
+### ⚠️ 필수: Multi-File 구조 사용
+
+Prisma 스키마는 **반드시 Multi-File 구조**로 작성합니다.
+
+```
+prisma/
+├── schema/
+│   ├── +base.prisma      # datasource, generator 설정
+│   ├── +enum.prisma      # 모든 enum 정의
+│   ├── user.prisma       # User 모델
+│   ├── post.prisma       # Post 모델
+│   └── ...               # 기타 모델별 파일
+```
+
+### ⚠️ 필수: 한글 주석 작성
+
+**Prisma Multi-File의 모든 요소에 한글 주석을 작성해야 합니다.**
+
+```
+✅ 파일별 목적 주석
+✅ 모델별 설명 주석
+✅ 필드별 설명 주석 (용도가 명확하지 않은 경우)
+✅ 관계 설명 주석
+✅ enum 값 설명 주석
+```
+
+### Multi-File 스키마 예시
+
+#### +base.prisma (기본 설정)
 
 ```prisma
-generator client {
-  provider = "prisma-client"     // ✅ v7
-  output   = "./generated/client" // ✅ output 필수
-}
+// prisma/schema/+base.prisma
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Prisma 기본 설정 파일
+// datasource 및 generator 설정
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+// 데이터베이스 연결 설정
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+// Prisma Client 생성 설정
+generator client {
+  provider = "prisma-client"     // Prisma v7 필수
+  output   = "./generated/client"
+}
+```
+
+#### +enum.prisma (열거형 정의)
+
+```prisma
+// prisma/schema/+enum.prisma
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 모든 열거형(enum) 정의 파일
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// 사용자 권한 열거형
+enum Role {
+  USER   // 일반 사용자
+  ADMIN  // 관리자
+}
+```
+
+#### user.prisma (User 모델)
+
+```prisma
+// prisma/schema/user.prisma
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 사용자 모델
+// 시스템의 모든 사용자 정보를 저장
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 model User {
   id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  posts     Post[]
+  email     String   @unique   // 로그인 이메일 (중복 불가)
+  name      String?            // 표시 이름 (선택)
+  posts     Post[]             // 작성한 게시글 목록
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+```
+
+#### post.prisma (Post 모델)
+
+```prisma
+// prisma/schema/post.prisma
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 게시글 모델
+// 사용자가 작성한 게시글 정보
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 model Post {
   id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String
+  title     String              // 게시글 제목
+  content   String?             // 게시글 본문 (선택)
+  published Boolean  @default(false)  // 공개 여부
+  author    User     @relation(fields: [authorId], references: [id])  // 작성자 관계
+  authorId  String              // 작성자 ID (외래키)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -422,6 +493,7 @@ export default app
 
 ## 관련 문서
 
+- [Config 파일](./config.md) - prisma.config.ts 설정 ⭐
 - [Schema 정의](./schema.md)
 - [Relations](./relations.md)
 - [Transactions](./transactions.md)
