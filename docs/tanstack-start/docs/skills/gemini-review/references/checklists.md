@@ -1,150 +1,144 @@
-# Review Checklists by Tech Stack
+# 기술 스택별 리뷰 체크리스트
 
-## FastAPI Checklist
+## TanStack Start 체크리스트
 
-### API Design
-- [ ] RESTful conventions followed (proper HTTP methods, status codes)
-- [ ] Consistent URL naming (kebab-case, plural nouns)
-- [ ] Proper use of path vs query parameters
-- [ ] API versioning strategy (if applicable)
-- [ ] Response model consistency across endpoints
+### 라우팅
+- [ ] 파일 기반 라우팅 구조가 논리적으로 구성됨
+- [ ] 동적 라우트가 적절히 파라미터화됨 (`$param`)
+- [ ] 레이아웃 라우트가 올바르게 중첩됨
+- [ ] 404 및 에러 경계가 적절히 처리됨
+- [ ] 라우트 그룹이 효과적으로 활용됨
 
-### Pydantic Models
-- [ ] Field validation with appropriate constraints (min, max, regex)
-- [ ] Optional vs required fields correctly defined
-- [ ] Proper use of `Field()` for metadata and examples
-- [ ] Config class settings (orm_mode, validate_assignment)
-- [ ] Custom validators where needed
+### 서버 함수
+- [ ] `createServerFn`이 올바르게 사용됨
+- [ ] 서버 함수에서 적절한 유효성 검사 수행
+- [ ] 에러 처리가 일관되게 구현됨
+- [ ] 민감한 데이터가 클라이언트에 노출되지 않음
+- [ ] 적절한 HTTP 메서드 사용 (GET vs POST)
 
-### Async Patterns
-- [ ] Async/await used consistently
-- [ ] No blocking I/O in async functions
-- [ ] Proper use of `asyncio.gather()` for concurrent operations
-- [ ] Background tasks for long-running operations
-- [ ] Connection pooling for databases
+### 데이터 페칭
+- [ ] TanStack Query가 올바르게 통합됨
+- [ ] `queryOptions`가 적절히 정의됨
+- [ ] 로더에서 효율적인 데이터 페칭
+- [ ] 적절한 캐싱 전략 사용
+- [ ] 로딩/에러 상태 처리 완비
 
-### Security
-- [ ] Authentication implemented (OAuth2, JWT, API keys)
-- [ ] Authorization checks on protected endpoints
-- [ ] Input sanitization and validation
-- [ ] CORS configuration appropriate for use case
-- [ ] Rate limiting consideration
-- [ ] Secrets not hardcoded
+### SSR/CSR
+- [ ] SSR이 필요한 곳에 적절히 사용됨
+- [ ] 클라이언트 전용 코드가 올바르게 분리됨
+- [ ] 하이드레이션 미스매치 방지
+- [ ] SEO 필수 페이지에 SSR 적용
+- [ ] 사용자별 데이터는 클라이언트에서 페칭
 
-### Error Handling
-- [ ] Custom exception handlers defined
-- [ ] Consistent error response format
-- [ ] Proper HTTP status codes for errors
-- [ ] Sensitive information not leaked in errors
+### 상태 관리
+- [ ] 서버 상태와 클라이언트 상태가 분리됨
+- [ ] TanStack Query로 서버 상태 관리
+- [ ] 불필요한 전역 상태 최소화
+- [ ] 컨텍스트가 적절히 사용됨
 
-### Performance
-- [ ] Database queries optimized (N+1 problem avoided)
-- [ ] Pagination for list endpoints
-- [ ] Caching strategy where appropriate
-- [ ] Response model excludes unnecessary fields
+### 성능
+- [ ] 코드 스플리팅 적용
+- [ ] 이미지 최적화
+- [ ] 번들 사이즈 모니터링
+- [ ] 불필요한 리렌더링 방지
 
-### Testing
-- [ ] Test client setup with TestClient
-- [ ] Dependency overrides for mocking
-- [ ] Coverage of happy path and edge cases
-
----
-
-## Next.js Checklist
-
-### Rendering Strategy
-- [ ] Appropriate use of SSR vs SSG vs ISR vs CSR
-- [ ] `getStaticProps` for static content
-- [ ] `getServerSideProps` only when necessary
-- [ ] ISR with proper revalidation intervals
-- [ ] Client-side fetching for user-specific data
-
-### Routing
-- [ ] File-based routing structure organized
-- [ ] Dynamic routes properly parameterized
-- [ ] Catch-all routes used appropriately
-- [ ] Route groups for organization (App Router)
-- [ ] Parallel routes if needed
-
-### Data Fetching
-- [ ] SWR or React Query for client-side
-- [ ] Proper loading and error states
-- [ ] Optimistic updates where appropriate
-- [ ] Cache invalidation strategy
-
-### State Management
-- [ ] Server state vs client state separated
-- [ ] Zustand/Jotai for simple state
-- [ ] Context used sparingly
-- [ ] State lifted appropriately
-
-### Performance
-- [ ] Image optimization with next/image
-- [ ] Font optimization with next/font
-- [ ] Code splitting and lazy loading
-- [ ] Bundle size monitored
-- [ ] Core Web Vitals considered
-
-### SEO
-- [ ] Metadata properly configured
-- [ ] Open Graph tags present
-- [ ] Structured data where appropriate
-- [ ] Sitemap generation
-- [ ] robots.txt configured
-
-### Security
-- [ ] API routes protected
-- [ ] Environment variables properly used
-- [ ] CSRF protection if needed
-- [ ] Content Security Policy headers
-
-### TypeScript
-- [ ] Strict mode enabled
-- [ ] Props interfaces defined
-- [ ] API response types defined
-- [ ] No `any` types without justification
+### 타입스크립트
+- [ ] Strict 모드 활성화
+- [ ] Props 인터페이스 정의
+- [ ] API 응답 타입 정의
+- [ ] `any` 타입 사용 최소화
 
 ---
 
-## General Checklist
+## FastAPI 체크리스트
 
-### Code Quality
-- [ ] Single responsibility principle followed
-- [ ] DRY - no unnecessary duplication
-- [ ] Functions/methods are focused and small
-- [ ] Clear naming conventions
-- [ ] Comments explain "why", not "what"
+### API 설계
+- [ ] RESTful 규칙 준수 (적절한 HTTP 메서드, 상태 코드)
+- [ ] 일관된 URL 명명 (kebab-case, 복수형 명사)
+- [ ] path vs query 파라미터 적절한 사용
+- [ ] API 버저닝 전략 (해당 시)
+- [ ] 엔드포인트 간 응답 모델 일관성
 
-### Logic & Correctness
-- [ ] Edge cases handled (empty, null, boundary values)
-- [ ] Error handling comprehensive
-- [ ] Race conditions considered
-- [ ] Input validation present
-- [ ] Return values checked
+### Pydantic 모델
+- [ ] 적절한 제약조건으로 필드 유효성 검사 (min, max, regex)
+- [ ] Optional vs required 필드 올바르게 정의
+- [ ] `Field()`로 메타데이터와 예시 적절히 사용
+- [ ] Config 클래스 설정 (orm_mode, validate_assignment)
+- [ ] 필요 시 커스텀 밸리데이터
 
-### Security
-- [ ] No hardcoded secrets
-- [ ] User input sanitized
-- [ ] SQL injection prevented (parameterized queries)
-- [ ] XSS prevention measures
-- [ ] Authentication/authorization proper
+### 비동기 패턴
+- [ ] async/await 일관되게 사용
+- [ ] async 함수 내 블로킹 I/O 없음
+- [ ] 동시 작업에 `asyncio.gather()` 적절히 사용
+- [ ] 장시간 작업에 백그라운드 태스크 사용
+- [ ] 데이터베이스 연결 풀링
 
-### Performance
-- [ ] Time complexity acceptable for scale
-- [ ] Space complexity reasonable
-- [ ] No unnecessary loops or iterations
-- [ ] Database queries optimized
-- [ ] Caching considered where appropriate
+### 보안
+- [ ] 인증 구현 (OAuth2, JWT, API 키)
+- [ ] 보호된 엔드포인트에 인가 검사
+- [ ] 입력 검증 및 살균
+- [ ] 적절한 CORS 설정
+- [ ] 레이트 리미팅 고려
+- [ ] 하드코딩된 시크릿 없음
 
-### Maintainability
-- [ ] Code is testable
-- [ ] Dependencies minimal and justified
-- [ ] Configuration externalized
-- [ ] Logging present for debugging
-- [ ] Error messages helpful
+### 에러 처리
+- [ ] 커스텀 예외 핸들러 정의
+- [ ] 일관된 에러 응답 형식
+- [ ] 에러에 적절한 HTTP 상태 코드
+- [ ] 에러에 민감 정보 노출 없음
 
-### Documentation
-- [ ] Public APIs documented
-- [ ] Complex logic explained
-- [ ] Setup instructions clear
-- [ ] Environment variables documented
+### 성능
+- [ ] 데이터베이스 쿼리 최적화 (N+1 문제 방지)
+- [ ] 목록 엔드포인트에 페이지네이션
+- [ ] 적절한 캐싱 전략
+- [ ] 응답 모델에서 불필요한 필드 제외
+
+### 테스팅
+- [ ] TestClient로 테스트 클라이언트 설정
+- [ ] 모킹을 위한 의존성 오버라이드
+- [ ] 정상 경로 및 엣지 케이스 커버리지
+
+---
+
+## 범용 체크리스트
+
+### 코드 품질
+- [ ] 단일 책임 원칙 준수
+- [ ] DRY - 불필요한 중복 없음
+- [ ] 함수/메서드가 집중적이고 작음
+- [ ] 명확한 명명 규칙
+- [ ] 주석은 "why"를 설명, "what"이 아님
+
+### 로직 및 정확성
+- [ ] 엣지 케이스 처리 (빈 값, null, 경계값)
+- [ ] 포괄적인 에러 처리
+- [ ] 레이스 컨디션 고려
+- [ ] 입력 유효성 검사
+- [ ] 반환값 확인
+
+### 보안
+- [ ] 하드코딩된 시크릿 없음
+- [ ] 사용자 입력 살균
+- [ ] SQL 인젝션 방지 (파라미터화된 쿼리)
+- [ ] XSS 방지 조치
+- [ ] 적절한 인증/인가
+
+### 성능
+- [ ] 스케일에 적합한 시간 복잡도
+- [ ] 적절한 공간 복잡도
+- [ ] 불필요한 반복 없음
+- [ ] 데이터베이스 쿼리 최적화
+- [ ] 적절한 캐싱 고려
+
+### 유지보수성
+- [ ] 테스트 가능한 코드
+- [ ] 최소한의 정당화된 의존성
+- [ ] 설정 외부화
+- [ ] 디버깅을 위한 로깅
+- [ ] 도움이 되는 에러 메시지
+
+### 문서화
+- [ ] 공개 API 문서화
+- [ ] 복잡한 로직 설명
+- [ ] 명확한 설정 가이드
+- [ ] 환경 변수 문서화
