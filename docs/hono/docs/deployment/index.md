@@ -1,291 +1,259 @@
-# 배포 가이드
+# Nitro v3 배포 가이드
 
-> Hono 애플리케이션 배포 옵션
-
----
-
-## 지원 런타임
-
-Hono는 Web Standards 기반으로 다양한 런타임에서 동작합니다.
-
-| 런타임 | 특징 |
-|--------|------|
-| **Cloudflare Workers** | 엣지 컴퓨팅, 글로벌 배포 |
-| **Deno Deploy** | TypeScript 네이티브 |
-| **Bun** | 빠른 실행 속도 |
-| **Node.js** | 전통적인 서버 환경 |
-| **AWS Lambda** | 서버리스 |
-| **Vercel** | 프론트엔드 통합 |
+> **Version**: Nitro 3.x | Hono 프레임워크 배포
 
 ---
 
-## Cloudflare Workers
-
-### 프로젝트 생성
-
-```bash
-npm create hono@latest my-app
-# cloudflare-workers 템플릿 선택
-```
-
-### wrangler.toml
-
-```toml
-name = "my-hono-app"
-main = "src/index.ts"
-compatibility_date = "2024-01-01"
-
-[vars]
-NODE_ENV = "production"
-```
-
-### 배포
-
-```bash
-# 로컬 개발
-npm run dev
-
-# 배포
-npm run deploy
-# 또는
-npx wrangler deploy
-```
-
-### 환경 변수
-
-```bash
-# 시크릿 설정
-npx wrangler secret put DATABASE_URL
-npx wrangler secret put JWT_SECRET
-```
-
-### 로컬 환경 변수 (.dev.vars)
-
-```
-DATABASE_URL=postgresql://...
-JWT_SECRET=your-secret
-```
-
-### GitHub Actions 배포
-
-```yaml
-name: Deploy
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-```
-
----
-
-## Bun
-
-### 프로젝트 생성
-
-```bash
-bun create hono@latest my-app
-# bun 템플릿 선택
-```
-
-### 실행
-
-```bash
-bun run src/index.ts
-```
-
-### package.json
-
-```json
-{
-  "scripts": {
-    "dev": "bun run --hot src/index.ts",
-    "start": "bun run src/index.ts"
-  }
-}
-```
-
-### Docker 배포
-
-```dockerfile
-FROM oven/bun:1 AS base
-WORKDIR /app
-
-# 의존성 설치
-COPY package.json bun.lockb ./
-RUN bun install --frozen-lockfile
-
-# 소스 복사
-COPY . .
-
-# 실행
-EXPOSE 3000
-CMD ["bun", "run", "src/index.ts"]
-```
-
----
-
-## Node.js
-
-### 설치
-
-```bash
-npm install @hono/node-server
-```
-
-### Entry Point
+## 🚀 Quick Reference (복사용)
 
 ```typescript
-import { serve } from '@hono/node-server'
-import app from './app'
+// nitro.config.ts
+import { defineNitroConfig } from "nitro/config";
 
-serve({
-  fetch: app.fetch,
-  port: 3000,
-})
+export default defineNitroConfig({
+  // 플랫폼별 preset 선택
+  preset: "node" | "cloudflare_module" | "cloudflare_pages" | "vercel",
 
-console.log('Server is running on http://localhost:3000')
+  // 기본 설정
+  compatibilityDate: "2024-09-19",
+
+  // Hono 앱 엔트리포인트
+  renderer: "hono",
+});
 ```
 
-### package.json
-
-```json
-{
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
-  }
-}
-```
-
----
-
-## Deno
-
-### 프로젝트 생성
+### CLI 명령어
 
 ```bash
-deno init --npm hono@latest my-app
-# deno 템플릿 선택
+# 빌드
+npx nitro build
+
+# 개발 서버
+npx nitro dev
+
+# 프리뷰 (빌드 후 로컬 실행)
+npx nitro preview
 ```
 
-### deno.json
+---
 
-```json
-{
-  "tasks": {
-    "dev": "deno run --allow-net --allow-env --watch src/index.ts",
-    "start": "deno run --allow-net --allow-env src/index.ts"
-  }
-}
-```
+## 문서 구조
 
-### Deno Deploy
+| 플랫폼 | 문서 | 특징 |
+|--------|------|------|
+| [Docker](./docker.md) | 컨테이너 배포 | 유연한 인프라, CI/CD 통합 |
+| [Railway](./railway.md) | PaaS 배포 | 간편한 배포, 자동 스케일링 |
+| [Vercel](./vercel.md) | 서버리스 배포 | Edge Functions, ISR 지원 |
+| [Cloudflare](./cloudflare.md) | Edge 배포 | 글로벌 분산, D1/KV 통합 |
+
+---
+
+## Nitro 설치 및 설정
+
+### 1. 의존성 설치
 
 ```bash
-deployctl deploy --project=my-app src/index.ts
+# npm
+npm install nitro@3
+
+# yarn
+yarn add nitro@3
+
+# pnpm
+pnpm add nitro@3
+```
+
+### 2. 기본 설정 파일
+
+```typescript
+// nitro.config.ts
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Nitro v3 기본 설정
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import { defineNitroConfig } from "nitro/config";
+
+export default defineNitroConfig({
+  // 호환성 날짜 (필수)
+  compatibilityDate: "2024-09-19",
+
+  // 소스 디렉토리
+  srcDir: "src",
+
+  // 빌드 출력 디렉토리
+  output: {
+    dir: ".output",
+  },
+});
+```
+
+### 3. Hono 앱 엔트리포인트
+
+```typescript
+// src/server.ts
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Hono 앱 메인 엔트리포인트
+// Nitro에서 이 파일을 서버로 사용합니다
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import { Hono } from "hono";
+import { logger } from "hono/logger";
+import { cors } from "hono/cors";
+
+// Hono 앱 생성
+const app = new Hono();
+
+// 미들웨어
+app.use("*", logger());
+app.use("*", cors());
+
+// 라우트
+app.get("/", (c) => {
+  return c.json({ message: "Hello from Hono + Nitro!" });
+});
+
+app.get("/health", (c) => {
+  return c.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+// Nitro export
+export default app;
 ```
 
 ---
 
-## Vercel
+## 프로젝트 구조
 
-### vercel.json
-
-```json
-{
-  "builds": [
-    {
-      "src": "src/index.ts",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "src/index.ts"
-    }
-  ]
-}
+```
+프로젝트/
+├── nitro.config.ts          # Nitro 설정
+├── src/
+│   ├── server.ts            # Hono 앱 엔트리포인트
+│   ├── routes/              # API 라우트
+│   │   ├── users.ts
+│   │   └── posts.ts
+│   ├── middleware/          # 커스텀 미들웨어
+│   └── lib/                 # 유틸리티
+├── .output/                 # 빌드 결과물 (자동 생성)
+├── package.json
+└── tsconfig.json
 ```
 
 ---
 
-## 환경별 설정
+## 환경 변수 설정
 
-### 환경 변수 타입
+### .env 파일
 
-```typescript
-// types/env.d.ts
-type Bindings = {
-  NODE_ENV: 'development' | 'production' | 'test'
-  DATABASE_URL: string
-  JWT_SECRET: string
-}
-
-// app.ts
-const app = new Hono<{ Bindings: Bindings }>()
-
-app.get('/', (c) => {
-  const env = c.env.NODE_ENV
-  return c.json({ env })
-})
+```env
+# .env
+DATABASE_URL=postgresql://localhost:5432/mydb
+API_SECRET=your-secret-key
+NODE_ENV=development
 ```
 
-### 환경별 설정 분기
+### Nitro에서 환경 변수 접근
 
 ```typescript
-const app = new Hono()
+// src/server.ts
+import { Hono } from "hono";
 
-// 개발 환경에서만 logger
-if (process.env.NODE_ENV === 'development') {
-  app.use(logger())
-}
+const app = new Hono();
 
-// 프로덕션에서만 보안 헤더
-if (process.env.NODE_ENV === 'production') {
-  app.use(secureHeaders())
-}
-```
+app.get("/config", (c) => {
+  // process.env로 접근
+  const dbUrl = process.env.DATABASE_URL;
+  const nodeEnv = process.env.NODE_ENV;
 
----
-
-## 헬스 체크
-
-```typescript
-app.get('/health', (c) => {
   return c.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-  })
-})
+    environment: nodeEnv,
+    hasDbConnection: !!dbUrl
+  });
+});
 
-app.get('/ready', async (c) => {
-  try {
-    // DB 연결 확인
-    await prisma.$queryRaw`SELECT 1`
-    return c.json({ status: 'ready' })
-  } catch {
-    return c.json({ status: 'not ready' }, 503)
-  }
-})
+export default app;
+```
+
+### 런타임 설정 (nitro.config.ts)
+
+```typescript
+// nitro.config.ts
+import { defineNitroConfig } from "nitro/config";
+
+export default defineNitroConfig({
+  compatibilityDate: "2024-09-19",
+
+  // 런타임 환경 변수
+  runtimeConfig: {
+    // 서버 전용 (노출 안됨)
+    apiSecret: process.env.API_SECRET,
+
+    // 공개 설정
+    public: {
+      apiBase: process.env.API_BASE_URL || "/api",
+    },
+  },
+});
 ```
 
 ---
 
-## 관련 문서
+## 빌드 및 실행
 
-- [Cloudflare Workers 상세](./cloudflare.md)
-- [Bun 상세](./bun.md)
-- [Node.js 상세](./nodejs.md)
+### 개발 모드
+
+```bash
+# 개발 서버 실행 (Hot Reload)
+npx nitro dev
+
+# 포트 지정
+npx nitro dev --port 3001
+```
+
+### 프로덕션 빌드
+
+```bash
+# 빌드
+npx nitro build
+
+# 빌드 결과물 실행
+node .output/server/index.mjs
+```
+
+### 로컬 프리뷰
+
+```bash
+# 빌드 후 프로덕션 모드로 로컬 실행
+npx nitro preview
+```
+
+---
+
+## Preset 선택 가이드
+
+| Preset | 용도 | 장점 |
+|--------|------|------|
+| `node` | Node.js 서버 | 범용, Docker 호환 |
+| `cloudflare_module` | Cloudflare Workers | Edge 배포, 낮은 지연시간 |
+| `cloudflare_pages` | Cloudflare Pages | 정적 + 서버리스 |
+| `vercel` | Vercel Functions | 간편한 배포, ISR |
+| `netlify` | Netlify Functions | JAMstack 친화적 |
+| `deno` | Deno Deploy | Deno 런타임 |
+| `bun` | Bun 런타임 | 빠른 실행 속도 |
+
+---
+
+## 다음 단계
+
+플랫폼별 상세 배포 가이드:
+
+1. **[Docker 배포](./docker.md)** - 컨테이너 기반 배포
+2. **[Railway 배포](./railway.md)** - PaaS 간편 배포
+3. **[Vercel 배포](./vercel.md)** - 서버리스 배포
+4. **[Cloudflare 배포](./cloudflare.md)** - Edge 배포
+
+---
+
+## 참고 자료
+
+- [Nitro 공식 문서](https://nitro.build)
+- [Hono 공식 문서](https://hono.dev)
+- [Nitro GitHub](https://github.com/nitrojs/nitro)
