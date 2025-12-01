@@ -8,6 +8,9 @@ import {
   listAvailableSkills,
   copySkills,
   checkExistingSkills,
+  listAvailableCommands,
+  copyCommands,
+  checkExistingCommands,
 } from '../utils/copy.js';
 
 interface InitOptions {
@@ -15,6 +18,7 @@ interface InitOptions {
   force?: boolean;
   cwd?: string;
   skills?: boolean;
+  commands?: boolean;
 }
 
 const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
@@ -95,6 +99,7 @@ export const init = async (options: InitOptions): Promise<void> => {
   let totalFiles = 0;
   let totalDirectories = 0;
   const allSkills: string[] = [];
+  const allCommands: string[] = [];
 
   logger.blank();
 
@@ -115,6 +120,10 @@ export const init = async (options: InitOptions): Promise<void> => {
       // Skills 수집
       const availableSkills = await listAvailableSkills(template);
       allSkills.push(...availableSkills);
+
+      // Commands 수집
+      const availableCommands = await listAvailableCommands(template);
+      allCommands.push(...availableCommands);
     } else {
       // 다중 템플릿: 각 템플릿 폴더 → docs/템플릿명/
       logger.info(`Installing ${templates.length} templates...`);
@@ -133,6 +142,14 @@ export const init = async (options: InitOptions): Promise<void> => {
         for (const skill of availableSkills) {
           if (!allSkills.includes(skill)) {
             allSkills.push(skill);
+          }
+        }
+
+        // Commands 수집
+        const availableCommands = await listAvailableCommands(template);
+        for (const command of availableCommands) {
+          if (!allCommands.includes(command)) {
+            allCommands.push(command);
           }
         }
       }
@@ -191,6 +208,53 @@ export const init = async (options: InitOptions): Promise<void> => {
     }
   }
 
+  // Commands 설치 (모든 템플릿의 commands 통합)
+  if (allCommands.length > 0) {
+    let installCommands = options.commands;
+
+    if (installCommands === undefined) {
+      logger.blank();
+      const response = await prompts({
+        type: 'confirm',
+        name: 'installCommands',
+        message: `Install Claude Code commands? (${allCommands.join(', ')})`,
+        initial: true,
+      });
+
+      installCommands = response.installCommands;
+    }
+
+    if (installCommands) {
+      // 기존 commands 확인
+      const existingCommands = await checkExistingCommands(
+        targetDir,
+        allCommands,
+      );
+
+      if (existingCommands.length > 0 && !options.force) {
+        logger.warn('The following commands already exist:');
+        existingCommands.forEach((c) => logger.step(c));
+        logger.blank();
+
+        const response = await prompts({
+          type: 'confirm',
+          name: 'overwrite',
+          message: 'Overwrite existing commands?',
+          initial: false,
+        });
+
+        if (!response.overwrite) {
+          logger.info('Skipping commands installation.');
+        } else {
+          await installAllCommands(templates, targetDir);
+        }
+      } else {
+        await installAllCommands(templates, targetDir);
+      }
+      logger.blank();
+    }
+  }
+
   // 완료 메시지
   logger.success('Claude Code documentation installed!');
   logger.blank();
@@ -221,5 +285,26 @@ const installAllSkills = async (
   if (installedSkills.length > 0) {
     logger.success(`Skills installed: ${installedSkills.join(', ')}`);
     logger.step(`Location: .claude/skills/`);
+  }
+};
+
+const installAllCommands = async (
+  templates: string[],
+  targetDir: string,
+): Promise<void> => {
+  const installedCommands: string[] = [];
+
+  for (const template of templates) {
+    const commandsResult = await copyCommands(template, targetDir);
+    for (const command of commandsResult.commands) {
+      if (!installedCommands.includes(command)) {
+        installedCommands.push(command);
+      }
+    }
+  }
+
+  if (installedCommands.length > 0) {
+    logger.success(`Commands installed: ${installedCommands.join(', ')}`);
+    logger.step(`Location: .claude/commands/`);
   }
 };

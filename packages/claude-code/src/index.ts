@@ -18,6 +18,8 @@ program
   .option('-f, --force', 'overwrite existing files without prompting')
   .option('-s, --skills', 'install Claude Code skills')
   .option('--no-skills', 'skip skills installation')
+  .option('-c, --commands', 'install Claude Code commands')
+  .option('--no-commands', 'skip commands installation')
   .option('--cwd <path>', 'target directory (default: current directory)')
   .option('--list', 'list available templates')
   .action(async (options) => {
@@ -38,6 +40,7 @@ program
       force: options.force,
       cwd: options.cwd,
       skills: options.skills,
+      commands: options.commands,
     });
   });
 

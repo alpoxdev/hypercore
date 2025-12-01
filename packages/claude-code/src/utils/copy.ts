@@ -236,3 +236,83 @@ export const checkExistingSkills = async (
 
   return existingSkills;
 };
+
+// Commands 관련 함수들
+
+export const getCommandsPath = (template: string): string => {
+  return path.join(getTemplatePath(template), 'docs', 'commands');
+};
+
+export const listAvailableCommands = async (
+  template: string,
+): Promise<string[]> => {
+  const commandsPath = getCommandsPath(template);
+
+  if (!(await fs.pathExists(commandsPath))) {
+    return [];
+  }
+
+  const items = await fs.readdir(commandsPath);
+  const commands: string[] = [];
+
+  for (const item of items) {
+    const itemPath = path.join(commandsPath, item);
+    const stat = await fs.stat(itemPath);
+    // .md 파일만 명령어로 인식
+    if (stat.isFile() && item.endsWith('.md')) {
+      commands.push(item.replace('.md', ''));
+    }
+  }
+
+  return commands;
+};
+
+export const copyCommands = async (
+  template: string,
+  targetDir: string,
+): Promise<{ files: number; commands: string[] }> => {
+  const commandsPath = getCommandsPath(template);
+  const targetCommandsDir = path.join(targetDir, '.claude', 'commands');
+
+  if (!(await fs.pathExists(commandsPath))) {
+    return { files: 0, commands: [] };
+  }
+
+  let files = 0;
+  const installedCommands: string[] = [];
+
+  await fs.ensureDir(targetCommandsDir);
+
+  const items = await fs.readdir(commandsPath);
+  for (const item of items) {
+    const srcPath = path.join(commandsPath, item);
+    const stat = await fs.stat(srcPath);
+
+    // .md 파일만 복사
+    if (stat.isFile() && item.endsWith('.md')) {
+      const destPath = path.join(targetCommandsDir, item);
+      await fs.copy(srcPath, destPath);
+      files++;
+      installedCommands.push(item.replace('.md', ''));
+    }
+  }
+
+  return { files, commands: installedCommands };
+};
+
+export const checkExistingCommands = async (
+  targetDir: string,
+  commands: string[],
+): Promise<string[]> => {
+  const existingCommands: string[] = [];
+  const targetCommandsDir = path.join(targetDir, '.claude', 'commands');
+
+  for (const command of commands) {
+    const commandPath = path.join(targetCommandsDir, `${command}.md`);
+    if (await fs.pathExists(commandPath)) {
+      existingCommands.push(command);
+    }
+  }
+
+  return existingCommands;
+};
