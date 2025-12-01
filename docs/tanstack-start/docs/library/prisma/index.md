@@ -47,8 +47,9 @@ generator client {
 
 ## 문서 구조
 
+- [Config 파일](./config.md) - prisma.config.ts 설정 ⭐
 - [설치 및 설정](./setup.md) - Prisma Client 설정
-- [스키마 정의](./schema.md) - 모델, 관계, Enum 정의
+- [스키마 정의 (Multi-File)](./schema.md) - 모델, 관계, Enum 정의
 - [CRUD 작업](./crud.md) - Create, Read, Update, Delete
 - [관계 쿼리](./relations.md) - 중첩 생성, 관계 포함 조회
 - [트랜잭션](./transactions.md) - 배열 기반 트랜잭션, 인터랙티브 트랜잭션
