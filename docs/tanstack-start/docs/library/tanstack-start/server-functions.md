@@ -4,6 +4,21 @@
 
 Server Functions는 서버에서만 실행되는 타입 안전한 함수입니다.
 
+## ⚠️ 필수: TanStack Query 사용
+
+**Server Function을 클라이언트에서 호출할 때는 반드시 TanStack Query를 사용해야 합니다.**
+
+```
+❌ 금지: Server Function 직접 호출
+✅ 필수: useQuery/useMutation과 함께 사용
+```
+
+**이유**:
+- 자동 캐싱 및 중복 요청 제거
+- 로딩/에러 상태 관리
+- 자동 재시도 및 백그라운드 갱신
+- invalidateQueries로 일관된 데이터 동기화
+
 ## 기본 Server Function
 
 ```typescript
@@ -73,9 +88,9 @@ export const submitForm = createServerFn({ method: 'POST' })
   })
 ```
 
-## 컴포넌트에서 호출
+## 컴포넌트에서 호출 (TanStack Query 필수)
 
-### useServerFn 사용
+### ✅ 올바른 패턴: useQuery 사용 (데이터 조회)
 
 ```tsx
 import { useServerFn } from '@tanstack/react-start'
@@ -100,6 +115,69 @@ function PostList() {
       ))}
     </ul>
   )
+}
+```
+
+### ✅ 올바른 패턴: useMutation 사용 (데이터 변경)
+
+```tsx
+import { useServerFn } from '@tanstack/react-start'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createPost, deletePost } from '~/lib/server-functions'
+
+function PostForm() {
+  const queryClient = useQueryClient()
+  const createPostFn = useServerFn(createPost)
+
+  const mutation = useMutation({
+    mutationFn: (data: { title: string; content: string }) => createPostFn({ data }),
+    onSuccess: () => {
+      // 관련 쿼리 무효화로 데이터 동기화
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+    },
+  })
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    mutation.mutate({
+      title: formData.get('title') as string,
+      content: formData.get('content') as string,
+    })
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input name="title" required />
+      <textarea name="content" required />
+      <button type="submit" disabled={mutation.isPending}>
+        {mutation.isPending ? '저장 중...' : '저장'}
+      </button>
+    </form>
+  )
+}
+```
+
+### ❌ 금지: Server Function 직접 호출
+
+```tsx
+// ❌ 이렇게 하지 마세요!
+function BadExample() {
+  const [posts, setPosts] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setLoading(true)
+    getPosts()
+      .then(setPosts)
+      .finally(() => setLoading(false))
+  }, [])
+
+  // 문제점:
+  // - 중복 요청 발생 가능
+  // - 캐싱 없음
+  // - 에러 처리 수동
+  // - 다른 컴포넌트와 데이터 동기화 안됨
 }
 ```
 
