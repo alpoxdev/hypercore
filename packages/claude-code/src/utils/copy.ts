@@ -93,16 +93,6 @@ export const copyMultipleTemplates = async (
   return counter;
 };
 
-/**
- * @deprecated Use copySingleTemplate or copyMultipleTemplates instead
- */
-export const copyTemplate = async (
-  template: string,
-  targetDir: string,
-): Promise<{ files: number; directories: number }> => {
-  return copySingleTemplate(template, targetDir);
-};
-
 export const checkExistingFiles = async (
   targetDir: string,
 ): Promise<string[]> => {
