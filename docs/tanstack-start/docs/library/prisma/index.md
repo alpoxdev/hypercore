@@ -52,6 +52,7 @@ generator client {
 - [CRUD 작업](./crud.md) - Create, Read, Update, Delete
 - [관계 쿼리](./relations.md) - 중첩 생성, 관계 포함 조회
 - [트랜잭션](./transactions.md) - 배열 기반 트랜잭션, 인터랙티브 트랜잭션
+- [Cloudflare D1](./cloudflare-d1.md) - D1 서버리스 데이터베이스 연동
 
 ## 빠른 시작
 

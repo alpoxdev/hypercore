@@ -112,7 +112,7 @@ docs: API 문서 업데이트
 | 작업 | 문서 경로 | 필독 여부 |
 |------|----------|----------|
 | **전체 가이드** | `docs/README.md` | 🔴 필수 |
-| **Git 규칙** | `docs/git/index.md` | 🔴 필수 |
+| **Git 규칙** | `docs/git/git.md` | 🔴 필수 |
 | **MCP 도구** | `docs/mcp/` | 🔴 필수 |
 | **Gemini Review** | `docs/skills/gemini-review/` | 🟡 복잡한 작업 시 |
 | **UI 개발** | `docs/design/` | 🟡 해당 시 |
@@ -273,7 +273,7 @@ const mutation = useMutation({
 ## 🔗 Quick Links
 
 - [문서 가이드](./docs/README.md)
-- [Git 규칙](./docs/git/index.md)
+- [Git 규칙](./docs/git/git.md)
 - [MCP 가이드](./docs/mcp/index.md)
 - [디자인 가이드](./docs/design/index.md)
 - [아키텍처](./docs/architecture/architecture.md)

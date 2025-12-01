@@ -87,7 +87,7 @@ docs: README 업데이트
 
 | 작업 | 문서 경로 | 필독 여부 |
 |------|----------|----------|
-| **Git 규칙** | `docs/git/index.md` | 🔴 필수 |
+| **Git 규칙** | `docs/git/git.md` | 🔴 필수 |
 | **MCP 도구** | `docs/mcp/` | 🔴 필수 |
 | **Commander** | `docs/library/commander/` | 🔴 필수 |
 | **fs-extra** | `docs/library/fs-extra/` | 🔴 필수 |
@@ -305,5 +305,5 @@ export default defineConfig({
 - [Commander 가이드](./docs/library/commander/index.md)
 - [fs-extra 가이드](./docs/library/fs-extra/index.md)
 - [prompts 가이드](./docs/library/prompts/index.md)
-- [Git 규칙](./docs/git/index.md)
+- [Git 규칙](./docs/git/git.md)
 - [MCP 가이드](./docs/mcp/index.md)

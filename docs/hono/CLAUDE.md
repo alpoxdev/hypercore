@@ -110,7 +110,7 @@ docs: API 문서 업데이트
 
 | 작업 | 문서 경로 | 필독 여부 |
 |------|----------|----------|
-| **Git 규칙** | `docs/git/index.md` | 🔴 필수 |
+| **Git 규칙** | `docs/git/git.md` | 🔴 필수 |
 | **MCP 도구** | `docs/mcp/` | 🔴 필수 |
 | **Gemini Review** | `docs/skills/gemini-review/` | 🟡 복잡한 작업 시 |
 | **API 개발** | `docs/library/hono/` | 🔴 필수 |
@@ -371,6 +371,6 @@ const data = await res.json() // { users: [] }
 ## 🔗 Quick Links
 
 - [Hono 가이드](./docs/library/hono/index.md)
-- [Git 규칙](./docs/git/index.md)
+- [Git 규칙](./docs/git/git.md)
 - [MCP 가이드](./docs/mcp/index.md)
 - [배포 가이드](./docs/deployment/index.md)

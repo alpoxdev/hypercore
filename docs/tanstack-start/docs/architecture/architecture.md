@@ -21,8 +21,9 @@ TanStack Start 애플리케이션의 기술 아키텍처 가이드입니다.
 │                                                                  │
 │  ┌────────────────────────────────────────────────────────────┐ │
 │  │                    Server Functions                         │ │
-│  │   - createServerFn({ method: 'GET' })  → Queries           │ │
-│  │   - createServerFn({ method: 'POST' }) → Mutations         │ │
+│  │   - src/functions/          → 글로벌 서버 함수             │ │
+│  │   - routes/-functions/      → 페이지 전용 서버 함수        │ │
+│  │   - middlewares/            → 공통 미들웨어                │ │
 │  └────────────────────────────┬───────────────────────────────┘ │
 │                               │                                  │
 │  ┌────────────────────────────▼───────────────────────────────┐ │
@@ -54,10 +55,17 @@ my-app/
 │   ├── routes/                     # 파일 기반 라우팅
 │   │   ├── __root.tsx              # Root layout
 │   │   ├── index.tsx               # Home (/)
+│   │   ├── -functions/             # 글로벌 라우트 레벨 서버 함수
+│   │   │   ├── index.ts            # re-export
+│   │   │   └── get-session.ts      # 세션 조회 함수
 │   │   └── users/
 │   │       ├── index.tsx           # /users
 │   │       ├── $id.tsx             # /users/:id
 │   │       ├── route.tsx           # route 설정 (선택)
+│   │       ├── -functions/         # 페이지 전용 서버 함수
+│   │       │   ├── index.ts        # re-export
+│   │       │   ├── get-users.ts    # 사용자 목록 조회
+│   │       │   └── create-user.ts  # 사용자 생성
 │   │       ├── -components/        # 페이지 전용 컴포넌트
 │   │       │   └── user-card.tsx
 │   │       ├── -sections/          # 섹션 분리
@@ -65,6 +73,14 @@ my-app/
 │   │       │   └── user-filter-section.tsx
 │   │       └── -hooks/             # 페이지 전용 훅
 │   │           └── use-users.ts
+│   ├── functions/                  # 글로벌 서버 함수
+│   │   ├── index.ts                # re-export
+│   │   ├── get-current-user.ts     # 현재 사용자 조회
+│   │   ├── validate-session.ts     # 세션 검증
+│   │   └── middlewares/            # 서버 함수 미들웨어
+│   │       ├── index.ts            # re-export
+│   │       ├── auth.ts             # 인증 미들웨어
+│   │       └── rate-limit.ts       # 레이트 리밋 미들웨어
 │   ├── components/                 # 공통 컴포넌트
 │   │   └── ui/
 │   │       ├── button.tsx
@@ -117,6 +133,7 @@ my-app/
 routes/<route-name>/
 ├── index.tsx              # 페이지 컴포넌트
 ├── route.tsx              # route 설정 (loader, beforeLoad)
+├── -functions/            # 페이지 전용 서버 함수
 ├── -components/           # 페이지 전용 컴포넌트
 ├── -sections/             # 섹션 분리 (복잡한 경우)
 └── -hooks/                # 페이지 전용 훅
@@ -124,8 +141,9 @@ routes/<route-name>/
 
 **특징**:
 - `-` 접두사 폴더는 라우트에서 제외
-- 페이지별로 컴포넌트, 섹션, 훅을 분리
+- 페이지별로 서버 함수, 컴포넌트, 섹션, 훅을 분리
 - Section은 UI 영역 단위, Component는 재사용 단위
+- `-functions/`는 해당 페이지에서만 사용하는 서버 함수
 
 ```tsx
 // routes/users/index.tsx
@@ -204,7 +222,119 @@ export const createUser = createServerFn({ method: 'POST' })
   })
 ```
 
-### 3. Database Layer (Data Access)
+### 3. Server Functions Layer
+
+서버 함수를 체계적으로 구성합니다. 파일당 하나의 서버 함수만 정의합니다.
+
+```
+src/functions/                    # 글로벌 서버 함수
+├── index.ts                      # re-export
+├── <function-name>.ts            # 개별 서버 함수
+└── middlewares/                  # 서버 함수 미들웨어
+    ├── index.ts                  # re-export
+    └── <middleware-name>.ts      # 개별 미들웨어
+
+routes/<route-name>/-functions/   # 페이지 전용 서버 함수
+├── index.ts                      # re-export
+└── <function-name>.ts            # 개별 서버 함수
+```
+
+**규칙**:
+- **파일당 하나의 함수**: 각 파일에는 하나의 서버 함수만 정의
+- **명확한 네이밍**: 파일명이 곧 함수의 역할 (`get-users.ts`, `create-user.ts`)
+- **글로벌 vs 로컬**: 여러 페이지에서 사용 → `src/functions/`, 특정 페이지 전용 → `-functions/`
+
+**글로벌 서버 함수** - 여러 페이지에서 공유:
+
+```typescript
+// src/functions/get-current-user.ts
+import { createServerFn } from '@tanstack/react-start'
+import { prisma } from '@/database/prisma'
+import { authMiddleware } from './middlewares'
+
+export const getCurrentUser = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    return prisma.user.findUnique({
+      where: { id: context.userId },
+    })
+  })
+```
+
+```typescript
+// src/functions/index.ts
+export { getCurrentUser } from './get-current-user'
+export { validateSession } from './validate-session'
+```
+
+**페이지 전용 서버 함수** - 특정 페이지에서만 사용:
+
+```typescript
+// routes/users/-functions/get-users.ts
+import { createServerFn } from '@tanstack/react-start'
+import { prisma } from '@/database/prisma'
+
+export const getUsers = createServerFn({ method: 'GET' })
+  .handler(async () => {
+    return prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
+    })
+  })
+```
+
+```typescript
+// routes/users/-functions/create-user.ts
+import { createServerFn } from '@tanstack/react-start'
+import { prisma } from '@/database/prisma'
+import { createUserSchema } from '@/services/user/schemas'
+
+export const createUser = createServerFn({ method: 'POST' })
+  .inputValidator(createUserSchema)
+  .handler(async ({ data }) => {
+    return prisma.user.create({ data })
+  })
+```
+
+```typescript
+// routes/users/-functions/index.ts
+export { getUsers } from './get-users'
+export { createUser } from './create-user'
+```
+
+**미들웨어** - 공통 로직 재사용:
+
+```typescript
+// src/functions/middlewares/auth.ts
+import { createMiddleware } from '@tanstack/react-start'
+
+export const authMiddleware = createMiddleware()
+  .server(async ({ next }) => {
+    const session = await getSession()
+    if (!session) {
+      throw new Error('Unauthorized')
+    }
+    return next({ context: { userId: session.userId } })
+  })
+```
+
+```typescript
+// src/functions/middlewares/rate-limit.ts
+import { createMiddleware } from '@tanstack/react-start'
+
+export const rateLimitMiddleware = createMiddleware()
+  .server(async ({ next }) => {
+    // 레이트 리밋 로직
+    return next()
+  })
+```
+
+```typescript
+// src/functions/middlewares/index.ts
+export { authMiddleware } from './auth'
+export { rateLimitMiddleware } from './rate-limit'
+```
+
+### 4. Database Layer (Data Access)
 
 Prisma를 통한 데이터 액세스를 담당합니다.
 
