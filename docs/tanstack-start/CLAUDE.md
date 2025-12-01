@@ -44,6 +44,7 @@
 ❌ Server Function에 middleware 누락 금지 (인증 필요 시)
 ❌ handler 내부에서 수동 검증 금지 (inputValidator 사용)
 ❌ handler 내부에서 수동 인증 체크 금지 (middleware 사용)
+❌ 클라이언트에서 Server Function 직접 호출 금지 → TanStack Query 필수
 ```
 
 ### 코드 검색 금지 사항
@@ -51,6 +52,36 @@
 ❌ grep, rg 등 기본 검색 도구 사용 금지
 ❌ find 명령어로 코드 검색 금지
 ✅ 코드베이스 검색 시 sgrep 사용 필수
+```
+
+### Custom Hook 순서 금지 사항
+```
+❌ Custom Hook 내부 순서 무시 금지
+✅ 반드시 아래 순서 준수:
+   1. State (useState, zustand store)
+   2. Global Hooks (useParams, useNavigate, useQueryClient 등)
+   3. React Query (useQuery → useMutation 순서)
+   4. Event Handlers & Functions
+   5. useMemo
+   6. useEffect
+```
+
+### 코드 작성 규칙
+```
+✅ 모든 한글 텍스트는 UTF-8 인코딩 유지
+✅ 코드 묶음 단위로 한글 주석 작성 (너무 세세하게 X)
+✅ Prisma Multi-File 모든 요소에 한글 주석 필수
+```
+
+### Prisma Multi-File 구조 (필수)
+```
+prisma/
+├── schema/
+│   ├── +base.prisma      # datasource, generator 설정
+│   ├── +enum.prisma      # 모든 enum 정의
+│   ├── user.prisma       # User 모델
+│   ├── post.prisma       # Post 모델
+│   └── ...               # 기타 모델별 파일
 ```
 
 ---
@@ -243,17 +274,24 @@ export const Route = createFileRoute('/users')({
 })
 ```
 
-### TanStack Query
+### TanStack Query (서버 연동 시 필수)
 ```tsx
+// ✅ 데이터 조회: useQuery 필수
+const getPosts = useServerFn(getServerPosts)
 const { data } = useQuery({
   queryKey: ['users'],
-  queryFn: () => getUsers(),
+  queryFn: () => getPosts(),
 })
 
+// ✅ 데이터 변경: useMutation 필수
+const createPostFn = useServerFn(createPost)
 const mutation = useMutation({
-  mutationFn: createUser,
+  mutationFn: createPostFn,
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
 })
+
+// ❌ 금지: Server Function 직접 호출
+// useEffect(() => { getPosts().then(setData) }, [])
 ```
 
 ---

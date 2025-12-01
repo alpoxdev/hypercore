@@ -52,6 +52,24 @@
 ✅ 코드베이스 검색 시 sgrep 사용 필수
 ```
 
+### 코드 작성 규칙
+```
+✅ 모든 한글 텍스트는 UTF-8 인코딩 유지
+✅ 코드 묶음 단위로 한글 주석 작성 (너무 세세하게 X)
+✅ Prisma Multi-File 모든 요소에 한글 주석 필수
+```
+
+### Prisma Multi-File 구조 (필수)
+```
+prisma/
+├── schema/
+│   ├── +base.prisma      # datasource, generator 설정
+│   ├── +enum.prisma      # 모든 enum 정의
+│   ├── user.prisma       # User 모델
+│   ├── post.prisma       # Post 모델
+│   └── ...               # 기타 모델별 파일
+```
+
 ---
 
 ## ✅ ALWAYS DO (필수 실행)
