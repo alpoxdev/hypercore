@@ -106,7 +106,7 @@ export default defineConfig({
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "pnpm install && pnpm build"
+    "buildCommand": "yarn install && yarn build"
   },
   "deploy": {
     "startCommand": "node .output/server/index.mjs",
@@ -124,7 +124,7 @@ export default defineConfig({
 # railway.toml
 [build]
 builder = "nixpacks"
-buildCommand = "pnpm install && pnpm build"
+buildCommand = "yarn install && yarn build"
 
 [deploy]
 startCommand = "node .output/server/index.mjs"
@@ -141,10 +141,10 @@ restartPolicyMaxRetries = 3
 nixPkgs = ["nodejs_20"]
 
 [phases.install]
-cmds = ["corepack enable pnpm", "pnpm install"]
+cmds = ["yarn install"]
 
 [phases.build]
-cmds = ["pnpm build"]
+cmds = ["yarn build"]
 
 [start]
 cmd = "node .output/server/index.mjs"
@@ -200,10 +200,10 @@ Railway는 Dockerfile을 자동으로 감지합니다.
 # Dockerfile
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
-RUN corepack enable pnpm && pnpm install
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 COPY . .
-RUN pnpm build
+RUN yarn build
 
 FROM node:20-alpine
 WORKDIR /app
@@ -449,7 +449,7 @@ Railway 대시보드에서 설정:
 
 | 문제 | 원인 | 해결 |
 |------|------|------|
-| 빌드 실패 | 의존성 오류 | `pnpm-lock.yaml` 커밋 확인 |
+| 빌드 실패 | 의존성 오류 | `yarn.lock` 커밋 확인 |
 | 포트 바인딩 실패 | 하드코딩된 포트 | `process.env.PORT` 사용 |
 | 메모리 초과 | 메모리 누수 | 리소스 제한 증가 또는 코드 최적화 |
 | 헬스체크 실패 | 엔드포인트 없음 | `/health` 엔드포인트 추가 |
@@ -458,7 +458,7 @@ Railway 대시보드에서 설정:
 
 ```bash
 # 로컬에서 Railway 환경 시뮬레이션
-railway run pnpm dev
+railway run yarn dev
 
 # 환경 변수 확인
 railway variables

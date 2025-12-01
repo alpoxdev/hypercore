@@ -39,7 +39,7 @@ export default defineConfig({
 ```
 
 ```bash
-pnpm build && wrangler deploy
+yarn build && wrangler deploy
 ```
 
 ---
@@ -60,7 +60,7 @@ TanStack Start 공식 권장 방식입니다.
 ### 1. 패키지 설치
 
 ```bash
-pnpm add -D @cloudflare/vite-plugin wrangler
+yarn add -D @cloudflare/vite-plugin wrangler
 ```
 
 ### 2. Vite 설정
@@ -98,13 +98,13 @@ export default defineConfig({
 
 ```bash
 # 빌드
-pnpm build
+yarn build
 
 # 배포
 wrangler deploy
 
 # 또는 한번에
-pnpm build && wrangler deploy
+yarn build && wrangler deploy
 ```
 
 ---
@@ -116,7 +116,7 @@ Nitro 배포 레이어를 사용하는 방식입니다.
 ### 1. Nitro 설치
 
 ```bash
-pnpm add nitro@3
+yarn add nitro@3
 ```
 
 ### 2. Vite 설정
@@ -160,7 +160,7 @@ export default defineNitroConfig({
 
 ```bash
 # 빌드
-pnpm build
+yarn build
 
 # Pages 배포
 wrangler pages deploy .output/public
@@ -439,22 +439,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: pnpm install
+        run: yarn install --frozen-lockfile
 
       - name: Build
-        run: pnpm build
+        run: yarn build
 
       - name: Deploy to Workers
         uses: cloudflare/wrangler-action@v3
@@ -478,22 +473,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: pnpm install
+        run: yarn install --frozen-lockfile
 
       - name: Build
-        run: pnpm build
+        run: yarn build
 
       - name: Deploy to Pages
         uses: cloudflare/wrangler-action@v3
@@ -512,7 +502,7 @@ jobs:
     "dev": "vite dev",
     "build": "vite build && tsc --noEmit",
     "preview": "vite preview",
-    "deploy": "pnpm build && wrangler deploy"
+    "deploy": "yarn build && wrangler deploy"
   }
 }
 ```

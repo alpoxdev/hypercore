@@ -50,7 +50,7 @@ Cloudflare Workers 배포 시 공식 권장 방식입니다.
 ### 1. 패키지 설치
 
 ```bash
-pnpm add -D @cloudflare/vite-plugin wrangler
+yarn add -D @cloudflare/vite-plugin wrangler
 ```
 
 ### 2. Vite 설정
@@ -88,7 +88,7 @@ export default defineConfig({
 
 ```bash
 # 빌드 및 배포
-pnpm build && wrangler deploy
+yarn build && wrangler deploy
 ```
 
 ---
@@ -100,7 +100,7 @@ pnpm build && wrangler deploy
 ### 1. Nitro 설치
 
 ```bash
-pnpm add nitro@3
+yarn add nitro@3
 ```
 
 ### 2. Vite 설정
@@ -140,10 +140,10 @@ export default defineNitroConfig({
 
 ```bash
 # 빌드
-pnpm build
+yarn build
 
 # 또는 환경변수로 preset 지정
-NITRO_PRESET=vercel pnpm build
+NITRO_PRESET=vercel yarn build
 ```
 
 ---
@@ -195,7 +195,7 @@ export default defineConfig({
     "build": "vite build && tsc --noEmit",
     "start": "node .output/server/index.mjs",
     "preview": "vite preview",
-    "deploy": "pnpm build && wrangler deploy"
+    "deploy": "yarn build && wrangler deploy"
   }
 }
 ```

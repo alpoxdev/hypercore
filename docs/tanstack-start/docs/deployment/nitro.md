@@ -21,8 +21,8 @@ export default defineNitroConfig({
 
 ```bash
 # 설치 및 빌드
-pnpm add nitro@3
-pnpm build
+yarn add nitro@3
+yarn build
 ```
 
 ---
@@ -30,8 +30,8 @@ pnpm build
 ## 설치
 
 ```bash
-# pnpm
-pnpm add nitro@3
+# yarn
+yarn add nitro@3
 
 # npm
 npm install nitro@3
@@ -124,7 +124,7 @@ export default defineNitroConfig({
 
 ```bash
 # 빌드 시 환경변수로 지정
-NITRO_PRESET=cloudflare_pages pnpm build
+NITRO_PRESET=cloudflare_pages yarn build
 
 # 또는 CLI 옵션
 nitro build --preset cloudflare_pages
@@ -352,16 +352,16 @@ export default defineHandler(() => {
 
 ```bash
 # 개발 서버
-pnpm dev
+yarn dev
 
 # 프로덕션 빌드
-pnpm build
+yarn build
 
 # 빌드 결과 미리보기
-pnpm preview
+yarn preview
 
 # 특정 preset으로 빌드
-NITRO_PRESET=vercel pnpm build
+NITRO_PRESET=vercel yarn build
 ```
 
 ---
@@ -372,7 +372,7 @@ NITRO_PRESET=vercel pnpm build
 
 ```bash
 # 상세 로그 출력
-DEBUG=nitro:* pnpm build
+DEBUG=nitro:* yarn build
 ```
 
 ### 출력 검사
