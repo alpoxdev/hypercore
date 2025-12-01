@@ -1,4 +1,16 @@
-# Git 워크플로우
+현재 git 상태를 확인하고, 변경사항이 있다면 아래 규칙에 따라 커밋을 진행해주세요.
+
+$ARGUMENTS
+
+---
+
+## 실행 절차
+
+1. `git status`로 현재 상태 확인
+2. `git diff`로 변경 내용 분석
+3. 변경사항을 논리적 단위로 분리
+4. 각 단위별로 커밋 진행
+5. 최종 `git status`로 완료 확인
 
 ---
 
@@ -19,12 +31,13 @@
 
 ## ✅ ALWAYS (필수)
 
-### 작업 완료 후 반드시 실행
+### 커밋 형식
 
-```bash
-git add <관련 파일들>
-git commit -m "<prefix>: <설명>"
 ```
+<prefix>: <설명>
+```
+
+**한 줄로 간결하게** 작성합니다. 본문이나 푸터는 작성하지 않습니다.
 
 ### ⭐ 커밋 분리 원칙
 
@@ -45,16 +58,6 @@ git commit -m "feat: 사용자 관리 기능 추가"
 git add docs/
 git commit -m "docs: API 문서 업데이트"
 ```
-
----
-
-## 📝 커밋 형식
-
-```
-<prefix>: <설명>
-```
-
-**한 줄로 간결하게** 작성합니다. 본문이나 푸터는 작성하지 않습니다.
 
 ---
 
@@ -123,30 +126,6 @@ feat: 로그인, 회원가입, 프로필 기능 추가
 
 ---
 
-## 🔄 작업 흐름
-
-```bash
-# 1. 작업 전 최신 코드 동기화
-git pull origin main
-
-# 2. 기능 A 작업 완료 → 커밋
-git add src/feature-a/
-git commit -m "feat: 기능 A 구현"
-
-# 3. 기능 B 작업 완료 → 커밋
-git add src/feature-b/
-git commit -m "feat: 기능 B 구현"
-
-# 4. 문서 작업 완료 → 커밋
-git add docs/
-git commit -m "docs: 기능 문서 추가"
-
-# 5. 푸시
-git push origin main
-```
-
----
-
 ## 📦 커밋 분리 가이드
 
 ### 언제 커밋을 분리해야 하나요?
@@ -159,117 +138,3 @@ git push origin main
 | 리팩토링 + 기능 추가 | ✅ 분리 |
 | 동일 기능의 관련 파일들 | 🔄 묶어도 됨 |
 | 동일 기능의 타입 + 구현 | 🔄 묶어도 됨 |
-
-### 예시: 사용자 관리 기능 개발
-
-```bash
-# 1. 인증 기능 커밋
-git add src/auth/
-git commit -m "feat: 사용자 인증 기능 추가"
-
-# 2. 사용자 관리 커밋
-git add src/users/
-git commit -m "feat: 사용자 CRUD 기능 추가"
-
-# 3. 유효성 검사 커밋
-git add src/validators/
-git commit -m "feat: 입력값 유효성 검사 추가"
-
-# 4. 테스트 커밋
-git add tests/
-git commit -m "test: 사용자 관리 테스트 추가"
-
-# 5. 문서 커밋
-git add docs/
-git commit -m "docs: 사용자 API 문서 추가"
-```
-
----
-
-## 🌿 브랜치 전략
-
-### 간단한 프로젝트
-```
-main ← 모든 작업 직접 커밋
-```
-
-### 팀 프로젝트
-```
-main
-  └── feature/기능명
-  └── fix/버그명
-  └── hotfix/긴급수정
-```
-
-### 브랜치 명명
-```bash
-feature/user-authentication
-feature/payment-integration
-fix/session-error
-hotfix/security-patch
-```
-
----
-
-## 📋 자주 사용하는 명령어
-
-```bash
-# 상태 확인
-git status
-
-# 변경 내용 확인
-git diff
-
-# 최근 커밋 로그
-git log --oneline -10
-
-# 커밋 취소 (작업 내용 유지)
-git reset --soft HEAD~1
-
-# 스테이징 취소
-git restore --staged .
-
-# 변경사항 임시 저장
-git stash
-git stash pop
-
-# 특정 파일만 스테이징
-git add <파일경로>
-
-# 대화형 스테이징 (부분 커밋용)
-git add -p
-```
-
----
-
-## 📚 .gitignore
-
-```gitignore
-# Dependencies
-node_modules/
-
-# Build
-dist/
-.output/
-build/
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# IDE
-.idea/
-.vscode/
-*.swp
-
-# OS
-.DS_Store
-
-# Cache
-.cache/
-.turbo/
-
-# Logs
-*.log
-```
