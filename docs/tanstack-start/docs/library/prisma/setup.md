@@ -13,10 +13,6 @@ npm install -D prisma@7
 yarn add @prisma/client@7
 yarn add -D prisma@7
 
-# pnpm
-pnpm add @prisma/client@7
-pnpm add -D prisma@7
-
 # bun
 bun add @prisma/client@7
 bun add prisma@7 --dev
@@ -34,9 +30,6 @@ npm install -D prisma@7
 
 # yarn
 yarn up prisma@7 @prisma/client@7
-
-# pnpm
-pnpm upgrade prisma@7 @prisma/client@7
 ```
 
 ### Generator 변경 (필수)

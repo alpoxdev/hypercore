@@ -66,10 +66,6 @@ npm install -D prisma@7
 yarn add @prisma/client@7
 yarn add -D prisma@7
 
-# pnpm
-pnpm add @prisma/client@7
-pnpm add -D prisma@7
-
 # 초기화
 npx prisma init
 ```
