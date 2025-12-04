@@ -113,7 +113,7 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 // Server Function에서 사용
 import { createServerFn } from '@tanstack/react-start'
-import { prisma } from '~/lib/prisma'
+import { prisma } from '@/lib/prisma'
 
 export const getUsers = createServerFn({ method: 'GET' })
   .handler(async () => {

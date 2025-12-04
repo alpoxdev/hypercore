@@ -111,7 +111,7 @@ export const auth = betterAuth({
 
 // Server Function에서 사용
 import { createServerFn } from '@tanstack/react-start'
-import { auth } from '~/lib/auth'
+import { auth } from '@/lib/auth'
 
 export const getSession = createServerFn({ method: 'GET' })
   .handler(async ({ request }) => {

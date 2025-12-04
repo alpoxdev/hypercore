@@ -226,7 +226,7 @@ export const clientEnv = parseClientEnv()
 ```typescript
 // app/server-functions/users.ts
 import { createServerFn } from '@tanstack/react-start'
-import { getServerEnv } from '~/config/env'
+import { getServerEnv } from '@/config/env'
 
 export const getUsers = createServerFn({ method: 'GET' })
   .handler(async () => {
@@ -248,7 +248,7 @@ export const getUsers = createServerFn({ method: 'GET' })
 
 ```tsx
 // app/components/AppHeader.tsx
-import { clientEnv } from '~/config/env'
+import { clientEnv } from '@/config/env'
 
 export const AppHeader = () => {
   return (
@@ -282,7 +282,7 @@ const appName = import.meta.env.VITE_APP_NAME  // ✅ VITE_ 접두사만
 
 ```typescript
 // app/lib/auth.ts
-import { getServerEnv } from '~/config/env'
+import { getServerEnv } from '@/config/env'
 
 export const getAuthConfig = () => {
   const env = getServerEnv()

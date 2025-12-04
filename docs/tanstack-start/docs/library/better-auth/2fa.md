@@ -103,7 +103,7 @@ await authClient.twoFactor.disable({
 ```tsx
 // pages/two-factor.tsx
 import { useState } from 'react'
-import { authClient } from '~/lib/auth-client'
+import { authClient } from '@/lib/auth-client'
 
 export default function TwoFactorPage() {
   const [code, setCode] = useState('')
