@@ -277,21 +277,19 @@ export const Route = createFileRoute('/users')({
 ### TanStack Query (서버 연동 시 필수)
 ```tsx
 // ✅ 데이터 조회: useQuery 필수
-const getPosts = useServerFn(getServerPosts)
 const { data } = useQuery({
-  queryKey: ['users'],
-  queryFn: () => getPosts(),
+  queryKey: ['posts'],
+  queryFn: () => getServerPosts(),
 })
 
 // ✅ 데이터 변경: useMutation 필수
-const createPostFn = useServerFn(createPost)
 const mutation = useMutation({
-  mutationFn: createPostFn,
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
+  mutationFn: createPost,
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['posts'] }),
 })
 
-// ❌ 금지: Server Function 직접 호출
-// useEffect(() => { getPosts().then(setData) }, [])
+// ❌ 금지: Server Function을 TanStack Query 없이 직접 호출
+// useEffect(() => { getServerPosts().then(setData) }, [])
 ```
 
 ---

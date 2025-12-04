@@ -52,15 +52,12 @@ const queryClient = new QueryClient({
 
 ```tsx
 import { useQuery } from '@tanstack/react-query'
-import { useServerFn } from '@tanstack/react-start'
-import { getServerPosts } from '~/lib/server-functions'
+import { getServerPosts } from '@/lib/server-functions'
 
 function PostList() {
-  const getPosts = useServerFn(getServerPosts)
-
   const { data, isLoading, error } = useQuery({
     queryKey: ['posts'],
-    queryFn: () => getPosts(),
+    queryFn: () => getServerPosts(),
   })
 
   if (isLoading) return <div>Loading...</div>

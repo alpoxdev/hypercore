@@ -304,7 +304,6 @@ const UsersPage = (): JSX.Element => {
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useServerFn } from '@tanstack/react-start'
 import { useAuthStore } from '@/stores/auth'
 import { getUsers, createUser, deleteUser } from '@/services/user'
 import type { User } from '@/types'
@@ -339,24 +338,20 @@ export const useUsers = (): UseUsersReturn => {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 3. React Query (useQuery → useMutation)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  const getUsersFn = useServerFn(getUsers)
-  const createUserFn = useServerFn(createUser)
-  const deleteUserFn = useServerFn(deleteUser)
-
   const { data: users, isLoading, error } = useQuery({
     queryKey: ['users'],
-    queryFn: () => getUsersFn(),
+    queryFn: () => getUsers(),
   })
 
   const createMutation = useMutation({
-    mutationFn: createUserFn,
+    mutationFn: createUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
     },
   })
 
   const deleteMutation = useMutation({
-    mutationFn: deleteUserFn,
+    mutationFn: deleteUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
     },

@@ -93,16 +93,13 @@ export const submitForm = createServerFn({ method: 'POST' })
 ### ✅ 올바른 패턴: useQuery 사용 (데이터 조회)
 
 ```tsx
-import { useServerFn } from '@tanstack/react-start'
 import { useQuery } from '@tanstack/react-query'
-import { getServerPosts } from '~/lib/server-functions'
+import { getServerPosts } from '@/lib/server-functions'
 
 function PostList() {
-  const getPosts = useServerFn(getServerPosts)
-
   const { data, isLoading, error } = useQuery({
     queryKey: ['posts'],
-    queryFn: () => getPosts(),
+    queryFn: () => getServerPosts(),
   })
 
   if (isLoading) return <div>Loading...</div>
@@ -121,16 +118,14 @@ function PostList() {
 ### ✅ 올바른 패턴: useMutation 사용 (데이터 변경)
 
 ```tsx
-import { useServerFn } from '@tanstack/react-start'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createPost, deletePost } from '~/lib/server-functions'
+import { createPost, deletePost } from '@/lib/server-functions'
 
 function PostForm() {
   const queryClient = useQueryClient()
-  const createPostFn = useServerFn(createPost)
 
   const mutation = useMutation({
-    mutationFn: (data: { title: string; content: string }) => createPostFn({ data }),
+    mutationFn: (data: { title: string; content: string }) => createPost({ data }),
     onSuccess: () => {
       // 관련 쿼리 무효화로 데이터 동기화
       queryClient.invalidateQueries({ queryKey: ['posts'] })
@@ -180,6 +175,92 @@ function BadExample() {
   // - 다른 컴포넌트와 데이터 동기화 안됨
 }
 ```
+
+## ⚠️ 함수 분리 시 유의사항
+
+Server Function 내부 로직을 별도 함수로 분리할 때 반드시 아래 규칙을 따르세요.
+
+### 규칙
+
+```
+1. 분리한 함수는 createServerFn 내부에서만 호출
+2. 분리한 함수는 createServerFn으로 감싸지 않음
+3. 분리한 함수는 index.ts에서 export 금지 (프론트엔드 import 방지)
+```
+
+### ✅ 올바른 패턴
+
+```typescript
+// services/user/mutations.ts
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 내부 헬퍼 함수 (export 금지!)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const validateUserData = async (email: string) => {
+  const existing = await prisma.user.findUnique({ where: { email } })
+  if (existing) throw new Error('Email already exists')
+  return true
+}
+
+const sendWelcomeEmail = async (userId: string, email: string) => {
+  await emailService.send({
+    to: email,
+    template: 'welcome',
+    data: { userId },
+  })
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Server Function (export 가능)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+export const createUser = createServerFn({ method: 'POST' })
+  .inputValidator(createUserSchema)
+  .handler(async ({ data }) => {
+    // 내부 헬퍼 함수 호출
+    await validateUserData(data.email)
+
+    const user = await prisma.user.create({ data })
+
+    // 내부 헬퍼 함수 호출
+    await sendWelcomeEmail(user.id, user.email)
+
+    return user
+  })
+```
+
+```typescript
+// services/user/index.ts
+
+// ✅ Server Function만 export
+export { createUser, updateUser, deleteUser } from './mutations'
+export { getUsers, getUserById } from './queries'
+
+// ❌ 내부 헬퍼 함수는 export 금지!
+// export { validateUserData, sendWelcomeEmail } from './mutations'
+```
+
+### ❌ 잘못된 패턴
+
+```typescript
+// ❌ 분리한 함수를 createServerFn으로 감싸지 마세요
+export const validateUserData = createServerFn({ method: 'POST' })
+  .handler(async ({ data }) => {
+    // ...
+  })
+
+// ❌ 내부 헬퍼 함수를 export 하지 마세요
+export const sendWelcomeEmail = async (userId: string) => {
+  // 프론트엔드에서 import 가능해져 보안 위험!
+}
+```
+
+### 이유
+
+- **보안**: 내부 로직이 프론트엔드 번들에 포함되지 않음
+- **명확한 API**: Server Function만 외부에 노출되어 API 경계가 명확함
+- **트리 쉐이킹**: export하지 않은 함수는 번들에서 제거됨
+
+---
 
 ## 보안 패턴
 
