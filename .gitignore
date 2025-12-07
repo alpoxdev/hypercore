@@ -42,3 +42,5 @@ coverage/
 # Misc
 *.local
 .cache/
+
+tmp/
