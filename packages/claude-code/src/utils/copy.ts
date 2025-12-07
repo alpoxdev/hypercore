@@ -75,6 +75,7 @@ export const copySingleTemplate = async (
 /**
  * 다중 템플릿 복사 (각 템플릿 폴더 전체 → 루트/docs/템플릿명/)
  * 기존 docs 폴더는 삭제 후 새로 복사
+ * 루트 CLAUDE.md는 각 템플릿의 CLAUDE.md를 인덱싱
  */
 export const copyMultipleTemplates = async (
   templates: string[],
@@ -103,7 +104,34 @@ export const copyMultipleTemplates = async (
     );
   }
 
+  // 루트 CLAUDE.md 생성 (각 템플릿 CLAUDE.md 인덱싱)
+  const indexContent = generateIndexClaudeMd(templates);
+  await fs.writeFile(path.join(targetDir, 'CLAUDE.md'), indexContent);
+  counter.files++;
+
   return counter;
+};
+
+/**
+ * 다중 템플릿용 인덱스 CLAUDE.md 생성
+ */
+const generateIndexClaudeMd = (templates: string[]): string => {
+  const templateLinks = templates
+    .map((t) => `- [${t}](docs/${t}/CLAUDE.md)`)
+    .join('\n');
+
+  return `# CLAUDE.md
+
+> 이 프로젝트는 여러 템플릿의 Claude Code 문서를 포함합니다.
+
+## 템플릿 문서
+
+${templateLinks}
+
+## 사용법
+
+각 템플릿의 \`CLAUDE.md\`를 참조하여 해당 기술 스택의 가이드라인을 확인하세요.
+`;
 };
 
 export const checkExistingFiles = async (
@@ -144,175 +172,4 @@ export const listAvailableTemplates = async (): Promise<string[]> => {
   }
 
   return templates;
-};
-
-export const getSkillsPath = (template: string): string => {
-  return path.join(getTemplatePath(template), 'docs', 'skills');
-};
-
-export const listAvailableSkills = async (
-  template: string,
-): Promise<string[]> => {
-  const skillsPath = getSkillsPath(template);
-
-  if (!(await fs.pathExists(skillsPath))) {
-    return [];
-  }
-
-  const items = await fs.readdir(skillsPath);
-  const skills: string[] = [];
-
-  for (const item of items) {
-    const itemPath = path.join(skillsPath, item);
-    const stat = await fs.stat(itemPath);
-    if (stat.isDirectory()) {
-      skills.push(item);
-    }
-  }
-
-  return skills;
-};
-
-export const copySkills = async (
-  template: string,
-  targetDir: string,
-): Promise<{ files: number; directories: number; skills: string[] }> => {
-  const skillsPath = getSkillsPath(template);
-  const targetSkillsDir = path.join(targetDir, '.claude', 'skills');
-
-  if (!(await fs.pathExists(skillsPath))) {
-    return { files: 0, directories: 0, skills: [] };
-  }
-
-  let files = 0;
-  let directories = 0;
-  const installedSkills: string[] = [];
-
-  const copyRecursive = async (src: string, dest: string): Promise<void> => {
-    const stat = await fs.stat(src);
-
-    if (stat.isDirectory()) {
-      await fs.ensureDir(dest);
-      directories++;
-
-      const items = await fs.readdir(src);
-      for (const item of items) {
-        await copyRecursive(path.join(src, item), path.join(dest, item));
-      }
-    } else {
-      await fs.copy(src, dest);
-      files++;
-    }
-  };
-
-  const skillItems = await fs.readdir(skillsPath);
-  for (const skill of skillItems) {
-    const skillSrcPath = path.join(skillsPath, skill);
-    const skillDestPath = path.join(targetSkillsDir, skill);
-    const stat = await fs.stat(skillSrcPath);
-
-    if (stat.isDirectory()) {
-      await copyRecursive(skillSrcPath, skillDestPath);
-      installedSkills.push(skill);
-    }
-  }
-
-  return { files, directories, skills: installedSkills };
-};
-
-export const checkExistingSkills = async (
-  targetDir: string,
-  skills: string[],
-): Promise<string[]> => {
-  const existingSkills: string[] = [];
-  const targetSkillsDir = path.join(targetDir, '.claude', 'skills');
-
-  for (const skill of skills) {
-    const skillPath = path.join(targetSkillsDir, skill);
-    if (await fs.pathExists(skillPath)) {
-      existingSkills.push(skill);
-    }
-  }
-
-  return existingSkills;
-};
-
-// Commands 관련 함수들
-
-export const getCommandsPath = (template: string): string => {
-  return path.join(getTemplatePath(template), 'docs', 'commands');
-};
-
-export const listAvailableCommands = async (
-  template: string,
-): Promise<string[]> => {
-  const commandsPath = getCommandsPath(template);
-
-  if (!(await fs.pathExists(commandsPath))) {
-    return [];
-  }
-
-  const items = await fs.readdir(commandsPath);
-  const commands: string[] = [];
-
-  for (const item of items) {
-    const itemPath = path.join(commandsPath, item);
-    const stat = await fs.stat(itemPath);
-    // .md 파일만 명령어로 인식
-    if (stat.isFile() && item.endsWith('.md')) {
-      commands.push(item.replace('.md', ''));
-    }
-  }
-
-  return commands;
-};
-
-export const copyCommands = async (
-  template: string,
-  targetDir: string,
-): Promise<{ files: number; commands: string[] }> => {
-  const commandsPath = getCommandsPath(template);
-  const targetCommandsDir = path.join(targetDir, '.claude', 'commands');
-
-  if (!(await fs.pathExists(commandsPath))) {
-    return { files: 0, commands: [] };
-  }
-
-  let files = 0;
-  const installedCommands: string[] = [];
-
-  await fs.ensureDir(targetCommandsDir);
-
-  const items = await fs.readdir(commandsPath);
-  for (const item of items) {
-    const srcPath = path.join(commandsPath, item);
-    const stat = await fs.stat(srcPath);
-
-    // .md 파일만 복사
-    if (stat.isFile() && item.endsWith('.md')) {
-      const destPath = path.join(targetCommandsDir, item);
-      await fs.copy(srcPath, destPath);
-      files++;
-      installedCommands.push(item.replace('.md', ''));
-    }
-  }
-
-  return { files, commands: installedCommands };
-};
-
-export const checkExistingCommands = async (
-  targetDir: string,
-  commands: string[],
-): Promise<string[]> => {
-  const existingCommands: string[] = [];
-  const targetCommandsDir = path.join(targetDir, '.claude', 'commands');
-
-  for (const command of commands) {
-    const commandPath = path.join(targetCommandsDir, `${command}.md`);
-    if (await fs.pathExists(commandPath)) {
-      existingCommands.push(command);
-    }
-  }
-
-  return existingCommands;
 };

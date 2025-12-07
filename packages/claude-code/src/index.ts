@@ -8,7 +8,7 @@ const program = new Command();
 program
   .name('claude-code')
   .description('Claude Code documentation installer for projects')
-  .version('0.1.5');
+  .version('0.1.6');
 
 program
   .option(
@@ -16,10 +16,6 @@ program
     'template names (comma-separated: tanstack-start,hono)',
   )
   .option('-f, --force', 'overwrite existing files without prompting')
-  .option('-s, --skills', 'install Claude Code skills')
-  .option('--no-skills', 'skip skills installation')
-  .option('-c, --commands', 'install Claude Code commands')
-  .option('--no-commands', 'skip commands installation')
   .option('--cwd <path>', 'target directory (default: current directory)')
   .option('--list', 'list available templates')
   .action(async (options) => {
@@ -39,8 +35,6 @@ program
       templates: options.template?.split(',').map((t: string) => t.trim()),
       force: options.force,
       cwd: options.cwd,
-      skills: options.skills,
-      commands: options.commands,
     });
   });
 
