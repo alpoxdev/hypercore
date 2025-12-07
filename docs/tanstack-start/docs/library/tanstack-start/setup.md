@@ -1,15 +1,13 @@
 # TanStack Start - 설치 및 설정
 
-> **상위 문서**: [TanStack Start](./index.md)
-
-## 패키지 설치
+## 설치
 
 ```bash
 yarn add @tanstack/react-start @tanstack/react-router vinxi
 yarn add -D vite @vitejs/plugin-react vite-tsconfig-paths
 ```
 
-## Vite 설정
+## 설정
 
 ```typescript
 // vite.config.ts
@@ -19,18 +17,10 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 
 export default defineConfig({
-  server: {
-    port: 3000,
-  },
-  plugins: [
-    tsConfigPaths(),
-    tanstackStart(),
-    viteReact(),
-  ],
+  server: { port: 3000 },
+  plugins: [tsConfigPaths(), tanstackStart(), viteReact()],
 })
 ```
-
-## TypeScript 설정
 
 ```json
 // tsconfig.json
@@ -40,33 +30,10 @@ export default defineConfig({
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["src/**/*"]
+    "paths": { "@/*": ["./src/*"] }
+  }
 }
-```
-
-## 프로젝트 구조
-
-```
-project/
-├── src/
-│   ├── routes/
-│   │   ├── __root.tsx
-│   │   ├── index.tsx
-│   │   └── about.tsx
-│   ├── lib/
-│   │   └── server-functions.ts
-│   └── start.ts
-├── vite.config.ts
-├── tsconfig.json
-└── package.json
 ```
 
 ## 환경 변수 검증

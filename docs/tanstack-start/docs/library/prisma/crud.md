@@ -1,218 +1,90 @@
 # Prisma - CRUD 작업
 
-> **상위 문서**: [Prisma](./index.md)
-
-## Create (생성)
-
-### 단일 레코드 생성
+## Create
 
 ```typescript
+// 단일
 const user = await prisma.user.create({
-  data: {
-    email: 'alice@prisma.io',
-    name: 'Alice',
-  },
+  data: { email: 'alice@prisma.io', name: 'Alice' },
 })
-```
 
-### 관계 포함 생성
-
-```typescript
-const userWithPosts = await prisma.user.create({
+// 관계 포함
+const user = await prisma.user.create({
   data: {
     email: 'bob@prisma.io',
-    name: 'Bob',
-    posts: {
-      create: [
-        { title: 'Hello World' },
-        { title: 'My Second Post' },
-      ],
-    },
+    posts: { create: [{ title: 'Hello' }, { title: 'World' }] },
   },
-  include: {
-    posts: true,
-  },
-})
-```
-
-### connectOrCreate로 깊은 중첩 생성
-
-```typescript
-const user = await prisma.user.create({
-  include: {
-    posts: {
-      include: {
-        categories: true,
-      },
-    },
-  },
-  data: {
-    email: 'emma@prisma.io',
-    posts: {
-      create: [
-        {
-          title: 'My first post',
-          categories: {
-            connectOrCreate: [
-              {
-                create: { name: 'Introductions' },
-                where: { name: 'Introductions' },
-              },
-              {
-                create: { name: 'Social' },
-                where: { name: 'Social' },
-              },
-            ],
-          },
-        },
-      ],
-    },
-  },
-})
-```
-
-## Read (조회)
-
-### 단일 레코드 조회
-
-```typescript
-const user = await prisma.user.findUnique({
-  where: { email: 'alice@prisma.io' },
-})
-```
-
-### 필터링된 다중 레코드 조회
-
-```typescript
-const users = await prisma.user.findMany({
-  where: { name: 'Alice' },
-})
-```
-
-### 관계 포함 조회
-
-```typescript
-const users = await prisma.user.findMany({
-  where: { role: 'ADMIN' },
   include: { posts: true },
 })
+
+// connectOrCreate
+posts: { create: [{
+  title: 'Post',
+  categories: { connectOrCreate: [{ create: { name: 'Tech' }, where: { name: 'Tech' } }] },
+}]}
 ```
 
-### 특정 필드만 선택
+## Read
 
 ```typescript
+// 단일
+const user = await prisma.user.findUnique({ where: { email } })
+
+// 다중
+const users = await prisma.user.findMany({ where: { name: 'Alice' } })
+
+// 관계 포함
+const users = await prisma.user.findMany({ where: { role: 'ADMIN' }, include: { posts: true } })
+
+// 필드 선택
 const user = await prisma.user.findUnique({
-  where: { email: 'emma@prisma.io' },
-  select: {
-    email: true,
-    posts: {
-      select: { likes: true },
-    },
-  },
+  where: { email },
+  select: { email: true, posts: { select: { title: true } } },
 })
-```
 
-### 관계 필드로 필터링
-
-```typescript
+// 관계로 필터
 const users = await prisma.user.findMany({
-  where: {
-    email: { endsWith: 'prisma.io' },
-    posts: {
-      some: { published: false },
-    },
-  },
+  where: { posts: { some: { published: false } } },
 })
 ```
 
-## Update (수정)
-
-### 단일 레코드 수정
+## Update
 
 ```typescript
-const user = await prisma.user.update({
-  where: { email: 'alice@prisma.io' },
-  data: { name: 'Alice Updated' },
-})
-```
+// 단일
+const user = await prisma.user.update({ where: { id }, data: { name: 'Updated' } })
 
-### 다중 레코드 수정
+// 다중
+await prisma.user.updateMany({ where: { role: 'USER' }, data: { role: 'ADMIN' } })
 
-```typescript
-const updatedUsers = await prisma.user.updateMany({
-  where: { role: 'USER' },
-  data: { role: 'ADMIN' },
-})
-```
-
-### Upsert (있으면 수정, 없으면 생성)
-
-```typescript
+// Upsert
 const user = await prisma.user.upsert({
-  where: { email: 'alice@prisma.io' },
-  update: { name: 'Alice Updated' },
-  create: { email: 'alice@prisma.io', name: 'Alice' },
+  where: { email },
+  update: { name: 'Updated' },
+  create: { email, name: 'New' },
 })
 ```
 
-## Delete (삭제)
-
-### 단일 레코드 삭제
+## Delete
 
 ```typescript
-const deletedUser = await prisma.user.delete({
-  where: { email: 'alice@prisma.io' },
-})
-```
-
-### 모든 레코드 삭제
-
-```typescript
-const deleteUsers = await prisma.user.deleteMany({})
-```
-
-### 조건부 삭제
-
-```typescript
-const deletedPosts = await prisma.post.deleteMany({
-  where: { published: false },
-})
+await prisma.user.delete({ where: { id } })
+await prisma.user.deleteMany({})  // 전체
+await prisma.post.deleteMany({ where: { published: false } })  // 조건부
 ```
 
 ## 필터 연산자
 
 ```typescript
-// 문자열 필터
-where: {
-  email: { contains: 'prisma' },
-  name: { startsWith: 'A' },
-  title: { endsWith: 'guide' },
-}
+// 문자열
+{ contains: 'prisma', startsWith: 'A', endsWith: 'io' }
 
-// 숫자 필터
-where: {
-  age: { gt: 18 },       // greater than
-  age: { gte: 18 },      // greater than or equal
-  age: { lt: 65 },       // less than
-  age: { lte: 65 },      // less than or equal
-}
+// 숫자
+{ gt: 18, gte: 18, lt: 65, lte: 65 }
 
-// 배열 필터
-where: {
-  id: { in: [1, 2, 3] },
-  id: { notIn: [4, 5, 6] },
-}
+// 배열
+{ in: [1, 2, 3], notIn: [4, 5] }
 
-// 논리 연산자
-where: {
-  OR: [
-    { email: { contains: 'prisma' } },
-    { name: { contains: 'Prisma' } },
-  ],
-  AND: [
-    { published: true },
-    { authorId: 1 },
-  ],
-  NOT: { email: { contains: 'test' } },
-}
+// 논리
+{ OR: [...], AND: [...], NOT: {...} }
 ```

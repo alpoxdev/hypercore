@@ -2,6 +2,14 @@
 
 > Hono 서버 프레임워크 프로젝트 작업 지침
 
+## Instructions
+
+@../../commands/git.md
+@docs/library/hono/index.md
+@docs/library/prisma/index.md
+@docs/library/zod/index.md
+@docs/deployment/index.md
+
 ---
 
 ## 🚨 STOP - 작업 전 필수 확인
@@ -103,8 +111,6 @@ DB 작업      → docs/library/prisma/ 읽기
 - 보안 관련 코드 (인증, 권한, 암호화)
 - 성능 크리티컬 코드
 
-**상세**: `docs/skills/gemini-review/SKILL.md` 참고
-
 ### 4. 작업 완료 후: Git 커밋
 ```bash
 git add .
@@ -128,9 +134,7 @@ docs: API 문서 업데이트
 
 | 작업 | 문서 경로 | 필독 여부 |
 |------|----------|----------|
-| **Git 규칙** | `docs/git/git.md` | 🔴 필수 |
-| **MCP 도구** | `docs/mcp/` | 🔴 필수 |
-| **Gemini Review** | `docs/skills/gemini-review/` | 🟡 복잡한 작업 시 |
+| **Git 규칙** | `../../commands/git.md` | 🔴 필수 |
 | **API 개발** | `docs/library/hono/` | 🔴 필수 |
 | **DB** | `docs/library/prisma/` | 🟡 해당 시 |
 | **검증** | `docs/library/zod/` | 🟡 해당 시 |
@@ -389,6 +393,6 @@ const data = await res.json() // { users: [] }
 ## 🔗 Quick Links
 
 - [Hono 가이드](./docs/library/hono/index.md)
-- [Git 규칙](./docs/git/git.md)
+- [Git 규칙](../../commands/git.md)
 - [MCP 가이드](./docs/mcp/index.md)
 - [배포 가이드](./docs/deployment/index.md)

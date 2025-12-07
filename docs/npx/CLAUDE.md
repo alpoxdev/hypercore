@@ -2,6 +2,13 @@
 
 > NPX CLI 도구 프로젝트 작업 지침
 
+## Instructions
+
+@../../commands/git.md
+@docs/library/commander/index.md
+@docs/library/fs-extra/index.md
+@docs/library/prompts/index.md
+
 ---
 
 ## 🚨 STOP - 작업 전 필수 확인
@@ -87,8 +94,7 @@ docs: README 업데이트
 
 | 작업 | 문서 경로 | 필독 여부 |
 |------|----------|----------|
-| **Git 규칙** | `docs/git/git.md` | 🔴 필수 |
-| **MCP 도구** | `docs/mcp/` | 🔴 필수 |
+| **Git 규칙** | `../../commands/git.md` | 🔴 필수 |
 | **Commander** | `docs/library/commander/` | 🔴 필수 |
 | **fs-extra** | `docs/library/fs-extra/` | 🔴 필수 |
 | **prompts** | `docs/library/prompts/` | 🔴 필수 |

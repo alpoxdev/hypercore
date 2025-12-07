@@ -2,6 +2,9 @@
 
 > Type-safe 데이터베이스 ORM
 
+@config.md
+@cloudflare-d1.md
+
 ---
 
 ## ⚠️ 버전 주의
