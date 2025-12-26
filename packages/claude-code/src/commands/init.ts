@@ -5,12 +5,18 @@ import {
   copyMultipleTemplates,
   checkExistingFiles,
   listAvailableTemplates,
+  copySkills,
+  copyCommands,
+  checkSkillsAndCommandsExist,
+  checkExistingClaudeFiles,
 } from '../utils/copy.js';
 
 interface InitOptions {
   templates?: string[];
   force?: boolean;
   cwd?: string;
+  skills?: boolean;
+  commands?: boolean;
 }
 
 const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
@@ -130,11 +136,81 @@ export const init = async (options: InitOptions): Promise<void> => {
   logger.blank();
   logger.success(`Total: ${totalFiles} files, ${totalDirectories} directories`);
 
+  // Skills/Commands 설치
+  if (options.skills || options.commands) {
+    const { hasSkills, hasCommands } =
+      await checkSkillsAndCommandsExist(templates);
+
+    // 기존 .claude 파일 확인
+    const existingClaudeFiles = await checkExistingClaudeFiles(targetDir);
+    if (existingClaudeFiles.length > 0 && !options.force) {
+      logger.warn('The following .claude files/folders already exist:');
+      existingClaudeFiles.forEach((f) => logger.step(f));
+      logger.blank();
+
+      const response = await prompts({
+        type: 'confirm',
+        name: 'overwrite',
+        message: 'Overwrite existing .claude files?',
+        initial: false,
+      });
+
+      if (!response.overwrite) {
+        logger.info('Skipping skills/commands installation.');
+      } else {
+        await installSkillsAndCommands();
+      }
+    } else {
+      await installSkillsAndCommands();
+    }
+
+    async function installSkillsAndCommands(): Promise<void> {
+      if (options.skills && hasSkills) {
+        logger.blank();
+        logger.info('Installing skills...');
+        const skillsResult = await copySkills(templates, targetDir);
+        totalFiles += skillsResult.files;
+        totalDirectories += skillsResult.directories;
+        logger.success(
+          `Skills: ${skillsResult.files} files, ${skillsResult.directories} directories`,
+        );
+      } else if (options.skills && !hasSkills) {
+        logger.warn('No skills found in selected templates.');
+      }
+
+      if (options.commands && hasCommands) {
+        logger.blank();
+        logger.info('Installing commands...');
+        const commandsResult = await copyCommands(templates, targetDir);
+        totalFiles += commandsResult.files;
+        totalDirectories += commandsResult.directories;
+        logger.success(
+          `Commands: ${commandsResult.files} files, ${commandsResult.directories} directories`,
+        );
+      } else if (options.commands && !hasCommands) {
+        logger.warn('No commands found in selected templates.');
+      }
+    }
+  }
+
   // 완료 메시지
+  logger.blank();
   logger.success('Claude Code documentation installed!');
   logger.blank();
   logger.info('Installed templates:');
   templates.forEach((t) => logger.step(t));
+
+  if (options.skills || options.commands) {
+    logger.blank();
+    logger.info('Installed extras:');
+    if (options.skills) {
+      logger.step('Skills → .claude/skills/');
+    }
+    if (options.commands) {
+      logger.step('Commands → .claude/commands/');
+    }
+  }
+
   logger.blank();
   logger.info('Next steps:');
   logger.step('Read CLAUDE.md for project guidelines');

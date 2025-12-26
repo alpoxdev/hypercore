@@ -173,3 +173,98 @@ export const listAvailableTemplates = async (): Promise<string[]> => {
 
   return templates;
 };
+
+/**
+ * Skills 복사 (템플릿의 docs/skills/ → 타겟/.claude/skills/)
+ * Skills는 폴더 기반 구조
+ */
+export const copySkills = async (
+  templates: string[],
+  targetDir: string,
+): Promise<{ files: number; directories: number }> => {
+  const counter = { files: 0, directories: 0 };
+  const targetSkillsDir = path.join(targetDir, '.claude', 'skills');
+
+  for (const template of templates) {
+    const templatePath = getTemplatePath(template);
+    const skillsSrc = path.join(templatePath, 'docs', 'skills');
+
+    if (await fs.pathExists(skillsSrc)) {
+      await fs.ensureDir(targetSkillsDir);
+      await copyRecursive(skillsSrc, targetSkillsDir, counter);
+    }
+  }
+
+  return counter;
+};
+
+/**
+ * Commands 복사 (템플릿의 docs/commands/ → 타겟/.claude/commands/)
+ * Commands는 .md 파일 기반 구조
+ */
+export const copyCommands = async (
+  templates: string[],
+  targetDir: string,
+): Promise<{ files: number; directories: number }> => {
+  const counter = { files: 0, directories: 0 };
+  const targetCommandsDir = path.join(targetDir, '.claude', 'commands');
+
+  for (const template of templates) {
+    const templatePath = getTemplatePath(template);
+    const commandsSrc = path.join(templatePath, 'docs', 'commands');
+
+    if (await fs.pathExists(commandsSrc)) {
+      await fs.ensureDir(targetCommandsDir);
+      await copyRecursive(commandsSrc, targetCommandsDir, counter);
+    }
+  }
+
+  return counter;
+};
+
+/**
+ * Skills와 Commands가 존재하는지 확인
+ */
+export const checkSkillsAndCommandsExist = async (
+  templates: string[],
+): Promise<{ hasSkills: boolean; hasCommands: boolean }> => {
+  let hasSkills = false;
+  let hasCommands = false;
+
+  for (const template of templates) {
+    const templatePath = getTemplatePath(template);
+    const skillsSrc = path.join(templatePath, 'docs', 'skills');
+    const commandsSrc = path.join(templatePath, 'docs', 'commands');
+
+    if (await fs.pathExists(skillsSrc)) {
+      hasSkills = true;
+    }
+    if (await fs.pathExists(commandsSrc)) {
+      hasCommands = true;
+    }
+  }
+
+  return { hasSkills, hasCommands };
+};
+
+/**
+ * 기존 .claude/skills, .claude/commands 파일 확인
+ */
+export const checkExistingClaudeFiles = async (
+  targetDir: string,
+): Promise<string[]> => {
+  const existingFiles: string[] = [];
+
+  const skillsDir = path.join(targetDir, '.claude', 'skills');
+  const commandsDir = path.join(targetDir, '.claude', 'commands');
+
+  if (await fs.pathExists(skillsDir)) {
+    existingFiles.push('.claude/skills/');
+  }
+
+  if (await fs.pathExists(commandsDir)) {
+    existingFiles.push('.claude/commands/');
+  }
+
+  return existingFiles;
+};

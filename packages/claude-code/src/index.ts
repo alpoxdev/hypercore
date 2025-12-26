@@ -18,6 +18,8 @@ program
   .option('-f, --force', 'overwrite existing files without prompting')
   .option('--cwd <path>', 'target directory (default: current directory)')
   .option('--list', 'list available templates')
+  .option('-s, --skills', 'install skills to .claude/skills/')
+  .option('-c, --commands', 'install commands to .claude/commands/')
   .action(async (options) => {
     banner();
 
@@ -35,6 +37,8 @@ program
       templates: options.template?.split(',').map((t: string) => t.trim()),
       force: options.force,
       cwd: options.cwd,
+      skills: options.skills,
+      commands: options.commands,
     });
   });
 
