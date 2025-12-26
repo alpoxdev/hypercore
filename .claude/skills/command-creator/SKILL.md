@@ -1,235 +1,245 @@
 ---
 name: command-creator
-description: Guide for creating effective slash commands. This skill should be used when users want to create a new command (or update an existing command) that extends Claude Code with reusable prompts and workflows.
+description: 슬래시 커맨드 생성 가이드. 새 커맨드를 만들거나 기존 커맨드를 수정할 때 사용. (project)
 license: Complete terms in LICENSE.txt
 ---
 
 # Command Creator
 
-This skill provides guidance for creating effective slash commands.
+Claude Code 확장을 위한 슬래시 커맨드 생성 가이드.
 
-## About Commands
+## 커맨드 개요
 
-Commands are simple, reusable prompts that extend Claude Code with custom workflows. Think of them as "shortcuts" for common tasks—they transform frequently-used instructions into quick `/command-name` invocations.
+커맨드는 재사용 가능한 프롬프트 단축키. `/command-name`으로 호출.
 
-### What Commands Provide
+### 커맨드 제공 요소
 
-1. Reusable prompts - Common instructions triggered with a slash command
-2. Tool permissions - Pre-configured tool access for specific workflows
-3. Argument support - Dynamic values passed at invocation time
-4. Context injection - Automatic inclusion of files or shell output
+| 요소 | 설명 |
+|------|------|
+| 재사용 프롬프트 | 슬래시 커맨드로 트리거 |
+| 도구 권한 | 워크플로우별 사전 설정 |
+| 인수 지원 | 호출 시 동적 값 전달 |
+| 컨텍스트 주입 | 파일 또는 셸 출력 자동 포함 |
 
-### Commands vs Skills
+### 커맨드 vs 스킬
 
-| Feature | Commands | Skills |
-|---------|----------|--------|
-| Structure | Single `.md` file | `SKILL.md` + bundled resources |
-| Complexity | Simple prompts | Multi-step workflows |
-| Resources | None | Scripts, references, assets |
-| Use case | Quick shortcuts | Domain expertise |
+| 특성 | 커맨드 | 스킬 |
+|------|--------|------|
+| 구조 | 단일 `.md` 파일 | `SKILL.md` + 번들 리소스 |
+| 복잡도 | 간단한 프롬프트 | 다단계 워크플로우 |
+| 리소스 | 없음 | scripts, references, assets |
+| 용도 | 빠른 단축키 | 도메인 전문성 |
 
-Use Commands for simple, reusable prompts. Use Skills for complex workflows requiring bundled resources.
-
-### Anatomy of a Command
-
-Every command is a single Markdown file with optional YAML frontmatter:
+### 커맨드 구조
 
 ```
 command-name.md
-├── YAML frontmatter (optional)
-│   ├── description: (recommended)
-│   ├── allowed-tools: (optional)
-│   ├── argument-hint: (optional)
-│   ├── model: (optional)
-│   └── disable-model-invocation: (optional)
-└── Markdown instructions (required)
+├── YAML frontmatter (선택)
+│   ├── description: (권장)
+│   ├── allowed-tools: (선택)
+│   ├── argument-hint: (선택)
+│   ├── model: (선택)
+│   └── disable-model-invocation: (선택)
+└── Markdown 지침 (필수)
 ```
 
-#### File Locations
+### 파일 위치
 
-- **Project commands**: `.claude/commands/` (shared with team via git)
-- **Personal commands**: `~/.claude/commands/` (personal only)
+| 위치 | 경로 | 범위 |
+|------|------|------|
+| 프로젝트 | `.claude/commands/` | git으로 팀 공유 |
+| 개인 | `~/.claude/commands/` | 개인 전용 |
 
-Project commands take precedence if names conflict.
+이름 충돌 시 프로젝트 커맨드 우선.
 
-#### Frontmatter Fields
+### Frontmatter 필드
 
-| Field | Purpose | Default |
-|-------|---------|---------|
-| `description` | Brief description (shows in `/help`) | First line of content |
-| `allowed-tools` | Tools the command can use | Inherits from conversation |
-| `argument-hint` | Expected arguments (for autocomplete) | None |
-| `model` | Specific model to use | Inherits from conversation |
-| `disable-model-invocation` | Prevent SlashCommand tool usage | false |
+| 필드 | 목적 | 기본값 |
+|------|------|--------|
+| `description` | 설명 (/help에 표시) | 첫 줄 |
+| `allowed-tools` | 허용 도구 | 대화 상속 |
+| `argument-hint` | 인수 힌트 (자동완성) | 없음 |
+| `model` | 사용 모델 | 대화 상속 |
+| `disable-model-invocation` | SlashCommand 도구 사용 방지 | false |
 
-#### Naming Convention
+### 명명 규칙
 
-- Filename determines command name: `security-check.md` → `/security-check`
-- Use hyphen-case (lowercase letters, digits, and hyphens only)
-- Max 40 characters recommended
+- 파일명 = 커맨드명: `security-check.md` → `/security-check`
+- hyphen-case (소문자, 숫자, 하이픈만)
+- 최대 40자 권장
 
-## Command Creation Process
+## 생성 프로세스
 
-To create a command, follow the "Command Creation Process" in order.
+### 1단계: 목적 파악
 
-### Step 1: Understanding the Command Purpose
+질문:
+- "어떤 작업을 자동화하나?"
+- "어떤 인수가 필요하나?"
+- "어떤 도구를 허용해야 하나?"
+- "프로젝트용인가 개인용인가?"
 
-To create an effective command, clearly understand the specific use case:
+**좋은 예시**: `/review-security`, `/commit-fix`, `/add-tests`, `/explain-error`
 
-- "What task will this command automate?"
-- "What inputs (arguments) does it need?"
-- "What tools should it be allowed to use?"
-- "Should it be project-specific or personal?"
+### 2단계: 구조 계획
 
-Examples of good command use cases:
-- `/review-security` - Check code for security vulnerabilities
-- `/commit-fix` - Create a commit with conventional format
-- `/add-tests` - Generate unit tests for a file
-- `/explain-error` - Analyze and explain an error message
+| 요소 | 설명 |
+|------|------|
+| 인수 | `$ARGUMENTS` (전체), `$1`, `$2` (위치별) |
+| 도구 | `Bash(git:*)`, `Read`, `Write`, `Edit` 등 |
+| 컨텍스트 | `@filepath` (파일), `` `command` `` (셸 출력) |
 
-### Step 2: Planning the Command Structure
-
-Analyze the command requirements:
-
-1. **Arguments**: What dynamic values are needed?
-   - Use `$ARGUMENTS` for all arguments as a single string
-   - Use `$1`, `$2`, etc. for positional arguments
-
-2. **Tools**: What tools does the command need?
-   - `Bash(git:*)` for git commands
-   - `Read`, `Write`, `Edit` for file operations
-   - Leave empty to inherit from conversation
-
-3. **Context**: What information should be included?
-   - Use `@filepath` to include file contents
-   - Use `!`backtick command`!` for shell output
-
-### Step 3: Initializing the Command
-
-To create a new command from scratch, run the `init_command.py` script:
+### 3단계: 초기화
 
 ```bash
 scripts/init_command.py <command-name> --path <output-directory>
 ```
 
-Options:
-- `--project`: Create in `.claude/commands/` (default)
-- `--personal`: Create in `~/.claude/commands/`
+옵션: `--project` (기본), `--personal`
 
-The script:
-- Creates the command file at the specified path
-- Generates a template with proper frontmatter and TODO placeholders
-- Provides examples for common patterns
+### 4단계: 편집
 
-### Step 4: Edit the Command
+**작성 스타일**: 명령형 사용 ("코드 검토" ← "코드를 검토해 주세요" ❌)
 
-When editing the command, focus on:
+**예시 패턴**:
 
-1. **Clear description**: Explain what the command does
-2. **Minimal tools**: Only request necessary permissions
-3. **Helpful hints**: Provide argument hints for autocomplete
-4. **Concrete instructions**: Be specific about what Claude should do
-
-#### Writing Style
-
-Write using **imperative/infinitive form** (verb-first instructions):
-- "Review the code for..." (not "You should review...")
-- "Generate tests for..." (not "Please generate...")
-
-#### Example Patterns
-
-**Simple command with arguments:**
+인수 사용:
 ```markdown
 ---
-description: Create a commit with conventional format
+description: 커밋 생성
 argument-hint: <type> <message>
 allowed-tools: Bash(git add:*), Bash(git commit:*)
 ---
 
-Create a git commit with type "$1" and message "$2".
-Follow conventional commit format: <type>: <message>
+타입 "$1", 메시지 "$2"로 커밋 생성.
+형식: <type>: <message>
 ```
 
-**Command with file context:**
+파일 컨텍스트:
 ```markdown
 ---
-description: Review code for security issues
+description: 보안 검토
 allowed-tools: Read
 ---
 
-Review the following code for security vulnerabilities:
-
+보안 취약점 검토:
 @$ARGUMENTS
 
-Check for:
-- SQL injection
-- XSS vulnerabilities
-- Sensitive data exposure
+체크: SQL 인젝션, XSS, 민감 데이터 노출
 ```
 
-**Command with shell output:**
+셸 출력:
 ```markdown
 ---
-description: Explain the current git status
+description: git 상태 설명
 allowed-tools: Bash(git:*)
 ---
 
-Current git status:
+현재 상태:
 !`git status`
 
-Recent commits:
+최근 커밋:
 !`git log --oneline -5`
 
-Explain the current state of the repository.
+저장소 상태 설명.
 ```
 
-### Step 5: Packaging Commands
-
-To package commands into a distributable zip file:
+### 5단계: 패키징
 
 ```bash
 scripts/package_command.py <path/to/commands-folder> [output-directory]
 ```
 
-The packaging script will:
-1. **Validate** all command files
-2. **Package** into a zip file for distribution
+### 6단계: 반복
 
-### Step 6: Iterate
+사용 → 문제 발견 → 수정 → 재테스트
 
-After testing the command:
-1. Use the command on real tasks
-2. Notice any issues or missing functionality
-3. Update the command file
-4. Test again
+## Subagent 활용
 
-## Quick Reference
+커맨드 생성 시 subagent를 활용하여 메인 컨텍스트 보호.
 
-### Argument Syntax
+### 활용 시점
 
-| Syntax | Description | Example |
-|--------|-------------|---------|
-| `$ARGUMENTS` | All arguments as string | `/cmd foo bar` → `foo bar` |
-| `$1`, `$2` | Positional arguments | `/cmd foo bar` → `$1=foo`, `$2=bar` |
+```
+1. Explore agent → 기존 커맨드 패턴 분석
+2. Explore agent → 관련 워크플로우 파악
+3. Plan agent → 커맨드 구조 설계
+4. 메인 에이전트 → 설계 기반 작성
+```
 
-### Context Injection
+### 프롬프트 예시
 
-| Syntax | Description |
-|--------|-------------|
-| `@filepath` | Include file contents |
-| `!`command`!` | Include shell output |
+```
+Explore agent에게:
+"프로젝트의 기존 커맨드들을 분석하고 보고해줘:
+- 커맨드 목록 및 용도
+- 공통 패턴 (인수, 도구 권한)
+- 네임스페이스 구조"
+```
 
-### Common Tool Patterns
+```
+Plan agent에게:
+"새 커맨드 구조 설계:
+- 목적 및 사용 시나리오
+- 필요 인수
+- 허용 도구
+- 컨텍스트 주입 방식"
+```
 
-| Pattern | Description |
-|---------|-------------|
-| `Bash(git:*)` | All git commands |
-| `Bash(npm:*)` | All npm commands |
-| `Read`, `Write`, `Edit` | File operations |
-| `WebFetch` | Fetch web content |
+## 빠른 참조
 
-## Namespacing
+### 인수 문법
 
-Use subdirectories to organize commands:
-- `.claude/commands/frontend/component.md` → `/component` (shows as "project:frontend")
-- `.claude/commands/backend/test.md` → `/test` (shows as "project:backend")
+| 문법 | 설명 | 예시 |
+|------|------|------|
+| `$ARGUMENTS` | 전체 인수 | `/cmd foo bar` → `foo bar` |
+| `$1`, `$2` | 위치 인수 | `/cmd foo bar` → `$1=foo`, `$2=bar` |
+
+### 컨텍스트 주입
+
+| 문법 | 설명 |
+|------|------|
+| `@filepath` | 파일 내용 포함 |
+| `` `command` `` | 셸 출력 포함 |
+
+### 도구 패턴
+
+| 패턴 | 설명 |
+|------|------|
+| `Bash(git:*)` | 모든 git 명령 |
+| `Bash(npm:*)` | 모든 npm 명령 |
+| `Read`, `Write`, `Edit` | 파일 작업 |
+| `WebFetch` | 웹 콘텐츠 가져오기 |
+
+### 네임스페이싱
+
+하위 디렉토리로 구성:
+- `.claude/commands/frontend/component.md` → `/component` (project:frontend)
+- `.claude/commands/backend/test.md` → `/test` (project:backend)
+
+## 체크리스트
+
+### 계획 단계
+
+- [ ] 목적 명확히 정의
+- [ ] 필요 인수 파악
+- [ ] 허용 도구 결정
+- [ ] 프로젝트/개인 범위 결정
+
+### 작성 단계
+
+- [ ] 명령형 작성
+- [ ] description 추가
+- [ ] 인수 힌트 설정 (필요 시)
+- [ ] 도구 권한 최소화
+- [ ] 컨텍스트 주입 설정
+
+### 검증 단계
+
+- [ ] 다양한 인수로 테스트
+- [ ] 권한 오류 확인
+- [ ] 팀 공유 시 git 커밋
+
+## 참조
+
+- [Claude Code Commands](https://docs.anthropic.com/en/docs/claude-code/slash-commands)
+- [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
