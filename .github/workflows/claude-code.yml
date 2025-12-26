@@ -30,8 +30,12 @@ jobs:
       - name: Build
         run: yarn workspace @kood/claude-code build
 
+      - name: Configure npm auth
+        run: |
+          yarn config set npmAuthToken ${{ secrets.NPM_TOKEN }}
+          yarn config set npmPublishRegistry https://registry.npmjs.org
+
       - name: Publish to npm
         run: yarn workspace @kood/claude-code npm publish --access public
         env:
-          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
