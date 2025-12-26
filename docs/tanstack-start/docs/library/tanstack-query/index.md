@@ -2,7 +2,6 @@
 
 > 5.x | React Data Fetching Library
 
-@setup.md
 @use-query.md
 @use-mutation.md
 @invalidation.md
@@ -47,7 +46,15 @@ const mutation = useMutation({
 ```tsx
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,   // 5분
+      gcTime: 1000 * 60 * 30,     // 30분 (이전 cacheTime)
+      retry: 3,
+    },
+  },
+})
 
 function App() {
   return (
@@ -56,4 +63,13 @@ function App() {
     </QueryClientProvider>
   )
 }
+```
+
+### Query Keys 패턴
+
+```typescript
+['todos']                       // 단순
+['todo', { id: 5 }]             // 파라미터
+['todos', 'list', { filters }]  // 계층적
+['todos', 'detail', todoId]
 ```

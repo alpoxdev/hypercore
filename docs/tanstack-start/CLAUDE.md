@@ -27,9 +27,6 @@
 - handler 내부에서 수동 검증/인증 체크 금지
 - 클라이언트에서 Server Function 직접 호출 금지 → TanStack Query 필수
 
-### 코드 검색
-- `grep`/`rg`/`find` 금지 → `sgrep` 사용
-
 ### Custom Hook 순서
 1. State (useState, zustand)
 2. Global Hooks (useParams, useNavigate, useQueryClient)
@@ -63,7 +60,6 @@ prisma/schema/
 | 인증 | docs/library/better-auth/ |
 
 ### MCP 도구
-- 코드 검색: sgrep
 - 분석/디버깅: Sequential Thinking
 - 라이브러리 문서: Context7
 

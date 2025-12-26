@@ -2,7 +2,6 @@
 
 > **v4** | TypeScript Schema Validation
 
-@basic-types.md
 @complex-types.md
 @transforms.md
 @validation.md
@@ -55,4 +54,20 @@ z.looseObject({ name: z.string() })   // 추가 키 통과
 
 // Refinement 체이닝 가능
 z.string().refine(val => val.includes("@")).min(5)  // ✅ v4
+```
+
+### v4 추가 API
+
+```typescript
+// 문자열 불리언 (환경변수용)
+z.stringbool()  // "true"/"yes"/"1" → true
+
+// 날짜/시간 ISO 포맷
+z.iso.date()      // 2024-01-15
+z.iso.datetime()  // ISO 날짜시간
+z.iso.duration()  // P1D, PT1H
+
+// 템플릿 리터럴
+const css = z.templateLiteral([z.number(), z.enum(["px", "em", "rem"])])
+// `${number}px` | `${number}em` | `${number}rem`
 ```
