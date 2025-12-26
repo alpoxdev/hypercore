@@ -137,10 +137,38 @@ export const init = async (options: InitOptions): Promise<void> => {
   logger.success(`Total: ${totalFiles} files, ${totalDirectories} directories`);
 
   // Skills/Commands 설치
-  if (options.skills || options.commands) {
-    const { hasSkills, hasCommands } =
-      await checkSkillsAndCommandsExist(templates);
+  const { hasSkills, hasCommands } =
+    await checkSkillsAndCommandsExist(templates);
 
+  // CLI 옵션이 없으면 대화형으로 물어보기
+  let installSkills = options.skills ?? false;
+  let installCommands = options.commands ?? false;
+
+  if (!options.skills && !options.commands && (hasSkills || hasCommands)) {
+    logger.blank();
+
+    if (hasSkills) {
+      const skillsResponse = await prompts({
+        type: 'confirm',
+        name: 'install',
+        message: 'Install skills to .claude/skills/?',
+        initial: true,
+      });
+      installSkills = skillsResponse.install ?? false;
+    }
+
+    if (hasCommands) {
+      const commandsResponse = await prompts({
+        type: 'confirm',
+        name: 'install',
+        message: 'Install commands to .claude/commands/?',
+        initial: true,
+      });
+      installCommands = commandsResponse.install ?? false;
+    }
+  }
+
+  if (installSkills || installCommands) {
     // 기존 .claude 파일 확인
     const existingClaudeFiles = await checkExistingClaudeFiles(targetDir);
     if (existingClaudeFiles.length > 0 && !options.force) {
@@ -157,39 +185,35 @@ export const init = async (options: InitOptions): Promise<void> => {
 
       if (!response.overwrite) {
         logger.info('Skipping skills/commands installation.');
-      } else {
-        await installSkillsAndCommands();
+        installSkills = false;
+        installCommands = false;
       }
-    } else {
-      await installSkillsAndCommands();
     }
 
-    async function installSkillsAndCommands(): Promise<void> {
-      if (options.skills && hasSkills) {
-        logger.blank();
-        logger.info('Installing skills...');
-        const skillsResult = await copySkills(templates, targetDir);
-        totalFiles += skillsResult.files;
-        totalDirectories += skillsResult.directories;
-        logger.success(
-          `Skills: ${skillsResult.files} files, ${skillsResult.directories} directories`,
-        );
-      } else if (options.skills && !hasSkills) {
-        logger.warn('No skills found in selected templates.');
-      }
+    if (installSkills && hasSkills) {
+      logger.blank();
+      logger.info('Installing skills...');
+      const skillsResult = await copySkills(templates, targetDir);
+      totalFiles += skillsResult.files;
+      totalDirectories += skillsResult.directories;
+      logger.success(
+        `Skills: ${skillsResult.files} files, ${skillsResult.directories} directories`,
+      );
+    } else if (installSkills && !hasSkills) {
+      logger.warn('No skills found in selected templates.');
+    }
 
-      if (options.commands && hasCommands) {
-        logger.blank();
-        logger.info('Installing commands...');
-        const commandsResult = await copyCommands(templates, targetDir);
-        totalFiles += commandsResult.files;
-        totalDirectories += commandsResult.directories;
-        logger.success(
-          `Commands: ${commandsResult.files} files, ${commandsResult.directories} directories`,
-        );
-      } else if (options.commands && !hasCommands) {
-        logger.warn('No commands found in selected templates.');
-      }
+    if (installCommands && hasCommands) {
+      logger.blank();
+      logger.info('Installing commands...');
+      const commandsResult = await copyCommands(templates, targetDir);
+      totalFiles += commandsResult.files;
+      totalDirectories += commandsResult.directories;
+      logger.success(
+        `Commands: ${commandsResult.files} files, ${commandsResult.directories} directories`,
+      );
+    } else if (installCommands && !hasCommands) {
+      logger.warn('No commands found in selected templates.');
     }
   }
 
@@ -200,13 +224,13 @@ export const init = async (options: InitOptions): Promise<void> => {
   logger.info('Installed templates:');
   templates.forEach((t) => logger.step(t));
 
-  if (options.skills || options.commands) {
+  if (installSkills || installCommands) {
     logger.blank();
     logger.info('Installed extras:');
-    if (options.skills) {
+    if (installSkills) {
       logger.step('Skills → .claude/skills/');
     }
-    if (options.commands) {
+    if (installCommands) {
       logger.step('Commands → .claude/commands/');
     }
   }
