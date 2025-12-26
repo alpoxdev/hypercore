@@ -12,6 +12,8 @@
     "copy-templates": "node scripts/copy-templates.js",
     "build": "tsup && npm run copy-templates",
     "dev": "npm run build && node dist/index.js",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -38,6 +40,10 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.10.0",
     "@types/prompts": "^2.4.9",
+    "@typescript-eslint/eslint-plugin": "^8.50.1",
+    "@typescript-eslint/parser": "^8.50.1",
+    "eslint": "^9.39.2",
+    "globals": "^16.5.0",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2"
   },
