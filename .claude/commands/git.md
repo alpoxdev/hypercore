@@ -13,10 +13,19 @@ Git 상태 확인 후 아래 규칙에 따라 작업 진행.
 ```
 $ARGUMENTS 있음 → 해당 지시 우선 수행
 $ARGUMENTS 없음 → 기본 동작:
-  1. git status (현재 상태)
-  2. git diff (변경 내용 분석)
-  3. 논리적 단위로 분리하여 git add + git commit
-  4. git status (완료 확인)
+  1. git status + git diff (병렬 실행)
+  2. 논리적 단위로 분리하여 git add + git commit
+  3. git status (완료 확인)
+```
+
+## 병렬 실행
+
+**초기 분석 단계에서 병렬 실행 필수:**
+
+```bash
+# 동시에 실행 (두 Bash 호출을 하나의 응답에서)
+git status
+git diff
 ```
 
 ## CRITICAL: 절대 금지
