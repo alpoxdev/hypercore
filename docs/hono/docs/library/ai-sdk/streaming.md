@@ -1,93 +1,49 @@
-# AI SDK - 텍스트 생성 & 스트리밍 (Hono)
+# AI SDK - 텍스트 생성 & 스트리밍
 
-> **상위 문서**: [AI SDK](./index.md)
-
----
-
-## 개요
-
-AI SDK의 `generateText`와 `streamText`를 Hono에서 사용하는 방법입니다.
+> generateText, streamText 사용법
 
 ---
 
 ## generateText
 
-텍스트를 한 번에 생성합니다. 짧은 응답이나 후처리가 필요한 경우에 적합합니다.
-
-### 기본 사용
+한 번에 텍스트 생성 (비스트리밍).
 
 ```typescript
-import { Hono } from 'hono'
 import { generateText } from 'ai'
 import { openai } from '@ai-sdk/openai'
-
-const app = new Hono()
 
 app.post('/api/generate', async (c) => {
   const { prompt } = await c.req.json()
 
-  const { text } = await generateText({
+  const { text, usage, finishReason } = await generateText({
     model: openai('gpt-4o'),
     prompt,
   })
 
-  return c.json({ text })
-})
-```
-
-### 메시지 형식
-
-```typescript
-import { Hono } from 'hono'
-import { generateText } from 'ai'
-import { openai } from '@ai-sdk/openai'
-
-const app = new Hono()
-
-app.post('/api/chat', async (c) => {
-  const { messages } = await c.req.json()
-
-  const { text } = await generateText({
-    model: openai('gpt-4o'),
-    messages,
-  })
-
-  return c.json({ response: text })
+  return c.json({ text, usage, finishReason })
 })
 ```
 
 ### 시스템 프롬프트
 
 ```typescript
-app.post('/api/assistant', async (c) => {
-  const { prompt } = await c.req.json()
-
-  const { text } = await generateText({
-    model: openai('gpt-4o'),
-    system: 'You are a helpful coding assistant.',
-    prompt,
-  })
-
-  return c.json({ text })
+const { text } = await generateText({
+  model: openai('gpt-4o'),
+  system: 'You are a helpful coding assistant.',
+  prompt,
 })
 ```
 
-### 반환값 활용
+### 메시지 형식
 
 ```typescript
-app.post('/api/analyze', async (c) => {
-  const { prompt } = await c.req.json()
-
-  const result = await generateText({
-    model: openai('gpt-4o'),
-    prompt,
-  })
-
-  return c.json({
-    text: result.text,
-    usage: result.usage, // 토큰 사용량
-    finishReason: result.finishReason, // 완료 이유
-  })
+const { text } = await generateText({
+  model: openai('gpt-4o'),
+  messages: [
+    { role: 'user', content: 'Hello!' },
+    { role: 'assistant', content: 'Hi!' },
+    { role: 'user', content: 'How are you?' },
+  ],
 })
 ```
 
@@ -95,16 +51,10 @@ app.post('/api/analyze', async (c) => {
 
 ## streamText
 
-텍스트를 실시간으로 스트리밍합니다. 긴 응답이나 실시간 피드백이 필요한 경우에 적합합니다.
-
-### 기본 스트리밍
+실시간 텍스트 스트리밍.
 
 ```typescript
-import { Hono } from 'hono'
 import { streamText } from 'ai'
-import { openai } from '@ai-sdk/openai'
-
-const app = new Hono()
 
 app.post('/api/stream', async (c) => {
   const { prompt } = await c.req.json()
@@ -114,41 +64,27 @@ app.post('/api/stream', async (c) => {
     prompt,
   })
 
-  return result.toTextStreamResponse()
-})
-```
-
-### UI 메시지 스트림 (프론트엔드용)
-
-```typescript
-import { Hono } from 'hono'
-import { streamText, convertToModelMessages } from 'ai'
-import { openai } from '@ai-sdk/openai'
-
-const app = new Hono()
-
-app.post('/api/chat', async (c) => {
-  const { messages } = await c.req.json()
-
-  const result = streamText({
-    model: openai('gpt-4o'),
-    messages: convertToModelMessages(messages),
-  })
-
-  // @ai-sdk/react의 useChat과 호환
   return result.toUIMessageStreamResponse()
 })
 ```
 
-### Hono 스트리밍 헬퍼 사용
+### 스트림 응답 타입
 
 ```typescript
-import { Hono } from 'hono'
-import { streamText } from 'ai'
-import { openai } from '@ai-sdk/openai'
-import { stream } from 'hono/streaming'
+// UI 메시지 스트림 (프론트엔드용)
+return result.toUIMessageStreamResponse()
 
-const app = new Hono()
+// 텍스트 스트림 (SSE)
+return result.toTextStreamResponse()
+
+// Data 스트림
+return result.toDataStreamResponse()
+```
+
+### 커스텀 스트림 처리
+
+```typescript
+import { stream } from 'hono/streaming'
 
 app.post('/api/custom-stream', async (c) => {
   const { prompt } = await c.req.json()
@@ -166,282 +102,45 @@ app.post('/api/custom-stream', async (c) => {
 })
 ```
 
-### SSE (Server-Sent Events)
+---
+
+## 옵션
 
 ```typescript
-import { Hono } from 'hono'
-import { streamText } from 'ai'
-import { openai } from '@ai-sdk/openai'
-import { streamSSE } from 'hono/streaming'
-
-const app = new Hono()
-
-app.post('/api/sse', async (c) => {
-  const { prompt } = await c.req.json()
-
-  const result = streamText({
-    model: openai('gpt-4o'),
-    prompt,
-  })
-
-  return streamSSE(c, async (stream) => {
-    for await (const chunk of result.textStream) {
-      await stream.writeSSE({
-        data: chunk,
-        event: 'message',
-      })
-    }
-    await stream.writeSSE({
-      data: '[DONE]',
-      event: 'done',
-    })
-  })
+const result = streamText({
+  model: openai('gpt-4o'),
+  prompt,
+  temperature: 0.7,     // 창의성 (0-2)
+  maxTokens: 1000,      // 최대 토큰
+  topP: 0.9,            // 누적 확률
+  frequencyPenalty: 0,  // 반복 페널티
+  presencePenalty: 0,   // 존재 페널티
+  stopSequences: ['---'], // 중단 시퀀스
 })
 ```
 
 ---
 
-## 스트림 이벤트 처리
-
-### fullStream
-
-모든 이벤트에 접근:
+## 스트림 이벤트
 
 ```typescript
-app.post('/api/full-stream', async (c) => {
-  const { prompt } = await c.req.json()
-
-  const result = streamText({
-    model: openai('gpt-4o'),
-    prompt,
-  })
-
-  return stream(c, async (stream) => {
-    for await (const event of result.fullStream) {
-      switch (event.type) {
-        case 'text-delta':
-          await stream.write(
-            JSON.stringify({ type: 'text', content: event.textDelta }) + '\n'
-          )
-          break
-        case 'tool-call':
-          await stream.write(
-            JSON.stringify({ type: 'tool', name: event.toolName }) + '\n'
-          )
-          break
-        case 'finish':
-          await stream.write(
-            JSON.stringify({
-              type: 'finish',
-              usage: event.usage,
-            }) + '\n'
-          )
-          break
-      }
-    }
-  })
+const result = streamText({
+  model: openai('gpt-4o'),
+  prompt,
+  onChunk: ({ chunk }) => {
+    console.log('Chunk:', chunk)
+  },
+  onFinish: ({ text, usage, finishReason }) => {
+    console.log('Finished:', text)
+    console.log('Usage:', usage)
+  },
 })
 ```
 
 ---
 
-## 시스템 프롬프트 패턴
+## 관련 문서
 
-### 역할 기반 시스템 프롬프트
-
-```typescript
-const systemPrompts = {
-  coder: 'You are an expert programmer. Provide clean, efficient code.',
-  writer: 'You are a professional writer. Create engaging content.',
-  analyst: 'You are a data analyst. Provide insights based on data.',
-}
-
-app.post('/api/chat/:role', async (c) => {
-  const role = c.req.param('role') as keyof typeof systemPrompts
-  const { messages } = await c.req.json()
-
-  const result = streamText({
-    model: openai('gpt-4o'),
-    system: systemPrompts[role] ?? systemPrompts.coder,
-    messages,
-  })
-
-  return result.toUIMessageStreamResponse()
-})
-```
-
-### 컨텍스트 주입
-
-```typescript
-app.post('/api/chat-with-context', async (c) => {
-  const { messages, context } = await c.req.json()
-
-  const result = streamText({
-    model: openai('gpt-4o'),
-    system: `You are a helpful assistant.
-
-Use the following context to answer questions:
-${context}
-
-If the context doesn't contain relevant information, say so.`,
-    messages,
-  })
-
-  return result.toUIMessageStreamResponse()
-})
-```
-
----
-
-## 에러 처리
-
-```typescript
-import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
-import { streamText } from 'ai'
-import { openai } from '@ai-sdk/openai'
-
-const app = new Hono()
-
-app.post('/api/chat', async (c) => {
-  try {
-    const body = await c.req.json()
-
-    if (!body.messages) {
-      throw new HTTPException(400, { message: 'Messages required' })
-    }
-
-    const result = streamText({
-      model: openai('gpt-4o'),
-      messages: body.messages,
-    })
-
-    return result.toUIMessageStreamResponse()
-  } catch (error) {
-    if (error instanceof HTTPException) {
-      throw error
-    }
-
-    console.error('Stream error:', error)
-    throw new HTTPException(500, { message: 'AI processing failed' })
-  }
-})
-```
-
----
-
-## Abort 처리
-
-```typescript
-app.post('/api/stream', async (c) => {
-  const { prompt } = await c.req.json()
-
-  const abortController = new AbortController()
-
-  // 클라이언트 연결 종료 시 abort
-  c.req.raw.signal.addEventListener('abort', () => {
-    abortController.abort()
-  })
-
-  const result = streamText({
-    model: openai('gpt-4o'),
-    prompt,
-    abortSignal: abortController.signal,
-  })
-
-  return result.toTextStreamResponse()
-})
-```
-
----
-
-## 캐싱 패턴
-
-```typescript
-import { Hono } from 'hono'
-import { generateText } from 'ai'
-import { openai } from '@ai-sdk/openai'
-
-type Bindings = {
-  AI_CACHE: KVNamespace // Cloudflare KV
-}
-
-const app = new Hono<{ Bindings: Bindings }>()
-
-app.post('/api/generate', async (c) => {
-  const { prompt } = await c.req.json()
-
-  // 캐시 키 생성
-  const cacheKey = `ai:${btoa(prompt)}`
-
-  // 캐시 확인
-  const cached = await c.env.AI_CACHE.get(cacheKey)
-  if (cached) {
-    return c.json({ text: cached, cached: true })
-  }
-
-  // 새로 생성
-  const { text } = await generateText({
-    model: openai('gpt-4o'),
-    prompt,
-  })
-
-  // 캐시 저장 (1시간)
-  await c.env.AI_CACHE.put(cacheKey, text, { expirationTtl: 3600 })
-
-  return c.json({ text, cached: false })
-})
-```
-
----
-
-## 타임아웃 설정
-
-```typescript
-app.post('/api/generate', async (c) => {
-  const { prompt } = await c.req.json()
-
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 30000) // 30초
-
-  try {
-    const { text } = await generateText({
-      model: openai('gpt-4o'),
-      prompt,
-      abortSignal: controller.signal,
-    })
-
-    return c.json({ text })
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      return c.json({ error: 'Request timed out' }, 408)
-    }
-    throw error
-  } finally {
-    clearTimeout(timeout)
-  }
-})
-```
-
----
-
-## 병렬 생성
-
-```typescript
-app.post('/api/multi-generate', async (c) => {
-  const { prompts } = await c.req.json()
-
-  const results = await Promise.all(
-    prompts.map((prompt: string) =>
-      generateText({
-        model: openai('gpt-4o'),
-        prompt,
-      })
-    )
-  )
-
-  return c.json({
-    texts: results.map((r) => r.text),
-  })
-})
-```
+- [AI SDK 개요](./index.md)
+- [도구](./tools.md)
+- [구조화된 출력](./structured-output.md)
