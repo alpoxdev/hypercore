@@ -228,37 +228,30 @@ EOF
 
 ---
 
-## TanStack Start 특화 추가사항
+## 기술 스택 컨텍스트 추가
 
-tech_stack이 `tanstack-start`일 때 관련 템플릿에 추가:
-
-```
-## TanStack Start 특화 리뷰 포인트
-- 파일 기반 라우팅 구조와 중첩
-- createServerFn 사용 및 보안
-- TanStack Query 통합 패턴
-- SSR/CSR 선택의 적절성
-- 로더와 서버 함수 데이터 페칭 전략
-- 하이드레이션 처리
-- TypeScript 타입 안전성
-```
-
----
-
-## FastAPI 특화 추가사항
-
-tech_stack이 `fastapi`일 때 관련 템플릿에 추가:
+특정 기술 스택에 대한 리뷰 시 다음 형식으로 컨텍스트 추가:
 
 ```
-## FastAPI 특화 리뷰 포인트
-- Pydantic 모델 설계 및 유효성 검사
-- async/await 정확성
-- 의존성 주입 사용
-- OpenAPI 문서 품질
-- 미들웨어 및 예외 핸들러 패턴
+## 기술 스택 특화 리뷰 포인트
+- {해당 스택의 핵심 패턴}
+- {프레임워크 규칙 준수 여부}
+- {보안 고려사항}
+- {성능 최적화 포인트}
+- {타입 안전성}
+```
+
+**예시** (프론트엔드 - React/Next.js/Vue 등):
+- 컴포넌트 구조 및 재사용성
+- 훅/컴포저블 사용 패턴
+- 상태 관리 방식
+- 렌더링 최적화
+
+**예시** (백엔드 - Express/FastAPI/NestJS 등):
+- 미들웨어/의존성 주입
+- 라우터/컨트롤러 구성
+- 에러 핸들링 패턴
 - 데이터베이스 세션 관리
-- 백그라운드 태스크 처리
-```
 
 ---
 
@@ -279,14 +272,3 @@ cat {file_path} | gemini -m gemini-2.5-pro -p "이 코드를 성능 리뷰해주
 cat {file_path} | gemini -m gemini-2.5-pro -p "이 코드에서 버그를 찾아주세요: 로직 오류, 엣지 케이스, null 처리, 레이스 컨디션, 타입 이슈. 각 버그에 대해 수정안을 보여주세요." --output-format json
 ```
 
----
-
-## 템플릿 사용 가이드
-
-1. 적절한 기본 템플릿 선택 (plan/code/architecture)
-2. 모든 `{placeholder}` 필드를 실제 내용으로 채움
-3. 기술 스택에 따라 `checklists.md`에서 관련 체크리스트 로드
-4. 해당 시 기술 스택 특화 추가사항 첨부
-5. Gemini CLI로 실행
-6. JSON 응답을 파싱하여 `.response` 필드 추출
-7. Gemini 원본 응답과 Claude 분석 모두 제시
