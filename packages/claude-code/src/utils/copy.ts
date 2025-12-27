@@ -164,6 +164,10 @@ export const listAvailableTemplates = async (): Promise<string[]> => {
   const templates: string[] = [];
 
   for (const item of items) {
+    // .으로 시작하는 폴더는 제외 (.claude 등)
+    if (item.startsWith('.')) {
+      continue;
+    }
     const itemPath = path.join(templatesDir, item);
     const stat = await fs.stat(itemPath);
     if (stat.isDirectory()) {
