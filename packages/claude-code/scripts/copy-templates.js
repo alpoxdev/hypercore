@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 const packageRoot = path.resolve(__dirname, '..');
 const projectRoot = path.resolve(packageRoot, '../..');
 const docsDir = path.join(projectRoot, 'docs');
+const claudeDir = path.join(projectRoot, '.claude');
 const templatesDir = path.join(packageRoot, 'templates');
 
 async function copyTemplates() {
@@ -29,6 +30,24 @@ async function copyTemplates() {
       await fs.copy(srcPath, destPath);
       console.log(`  ✓ ${item}/`);
     }
+  }
+
+  // Copy .claude/skills and .claude/commands to templates/.claude/
+  console.log('📦 Copying .claude/ → templates/.claude/...');
+  const claudeDestDir = path.join(templatesDir, '.claude');
+  await fs.ensureDir(claudeDestDir);
+
+  const skillsSrc = path.join(claudeDir, 'skills');
+  const commandsSrc = path.join(claudeDir, 'commands');
+
+  if (await fs.pathExists(skillsSrc)) {
+    await fs.copy(skillsSrc, path.join(claudeDestDir, 'skills'));
+    console.log('  ✓ .claude/skills/');
+  }
+
+  if (await fs.pathExists(commandsSrc)) {
+    await fs.copy(commandsSrc, path.join(claudeDestDir, 'commands'));
+    console.log('  ✓ .claude/commands/');
   }
 
   console.log('✅ Templates copied successfully!');

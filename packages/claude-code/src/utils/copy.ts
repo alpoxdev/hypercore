@@ -175,48 +175,40 @@ export const listAvailableTemplates = async (): Promise<string[]> => {
 };
 
 /**
- * Skills 복사 (템플릿의 docs/skills/ → 타겟/.claude/skills/)
+ * Skills 복사 (templates/.claude/skills/ → 타겟/.claude/skills/)
  * Skills는 폴더 기반 구조
  */
 export const copySkills = async (
-  templates: string[],
+  _templates: string[],
   targetDir: string,
 ): Promise<{ files: number; directories: number }> => {
   const counter = { files: 0, directories: 0 };
   const targetSkillsDir = path.join(targetDir, '.claude', 'skills');
+  const skillsSrc = path.join(getTemplatesDir(), '.claude', 'skills');
 
-  for (const template of templates) {
-    const templatePath = getTemplatePath(template);
-    const skillsSrc = path.join(templatePath, 'docs', 'skills');
-
-    if (await fs.pathExists(skillsSrc)) {
-      await fs.ensureDir(targetSkillsDir);
-      await copyRecursive(skillsSrc, targetSkillsDir, counter);
-    }
+  if (await fs.pathExists(skillsSrc)) {
+    await fs.ensureDir(targetSkillsDir);
+    await copyRecursive(skillsSrc, targetSkillsDir, counter);
   }
 
   return counter;
 };
 
 /**
- * Commands 복사 (템플릿의 docs/commands/ → 타겟/.claude/commands/)
+ * Commands 복사 (templates/.claude/commands/ → 타겟/.claude/commands/)
  * Commands는 .md 파일 기반 구조
  */
 export const copyCommands = async (
-  templates: string[],
+  _templates: string[],
   targetDir: string,
 ): Promise<{ files: number; directories: number }> => {
   const counter = { files: 0, directories: 0 };
   const targetCommandsDir = path.join(targetDir, '.claude', 'commands');
+  const commandsSrc = path.join(getTemplatesDir(), '.claude', 'commands');
 
-  for (const template of templates) {
-    const templatePath = getTemplatePath(template);
-    const commandsSrc = path.join(templatePath, 'docs', 'commands');
-
-    if (await fs.pathExists(commandsSrc)) {
-      await fs.ensureDir(targetCommandsDir);
-      await copyRecursive(commandsSrc, targetCommandsDir, counter);
-    }
+  if (await fs.pathExists(commandsSrc)) {
+    await fs.ensureDir(targetCommandsDir);
+    await copyRecursive(commandsSrc, targetCommandsDir, counter);
   }
 
   return counter;
@@ -226,23 +218,14 @@ export const copyCommands = async (
  * Skills와 Commands가 존재하는지 확인
  */
 export const checkSkillsAndCommandsExist = async (
-  templates: string[],
+  _templates: string[],
 ): Promise<{ hasSkills: boolean; hasCommands: boolean }> => {
-  let hasSkills = false;
-  let hasCommands = false;
+  const claudeDir = path.join(getTemplatesDir(), '.claude');
+  const skillsSrc = path.join(claudeDir, 'skills');
+  const commandsSrc = path.join(claudeDir, 'commands');
 
-  for (const template of templates) {
-    const templatePath = getTemplatePath(template);
-    const skillsSrc = path.join(templatePath, 'docs', 'skills');
-    const commandsSrc = path.join(templatePath, 'docs', 'commands');
-
-    if (await fs.pathExists(skillsSrc)) {
-      hasSkills = true;
-    }
-    if (await fs.pathExists(commandsSrc)) {
-      hasCommands = true;
-    }
-  }
+  const hasSkills = await fs.pathExists(skillsSrc);
+  const hasCommands = await fs.pathExists(commandsSrc);
 
   return { hasSkills, hasCommands };
 };
