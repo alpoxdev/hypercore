@@ -1,5 +1,5 @@
 ---
-description: 피드백 기반 코드 위치 탐색 및 수정. ultrathink + sequential thinking 10+ + subagent 필수.
+description: 피드백 기반 코드 위치 탐색 및 수정. ultrathink + sequential thinking 5+ + subagent 필수.
 allowed-tools: Read, Edit, Glob, Grep, Bash(git:*, ast-grep:*), Task, mcp__sequential-thinking__sequentialthinking
 argument-hint: <피드백 내용>
 ---
@@ -14,7 +14,7 @@ argument-hint: <피드백 내용>
 |----------|------|
 | **ARGUMENT 필수** | 피드백 내용 없이 실행 시 되물음 |
 | **Ultrathink** | 깊은 사고로 피드백 분석 |
-| **Sequential Thinking 10+** | 최소 10단계 사고 과정 필수 |
+| **Sequential Thinking 5+** | 최소 5단계, 복잡도에 따라 충분히 |
 | **Subagent (Task)** | 코드 탐색에 Task 도구 활용 |
 
 ## ARGUMENT 확인
@@ -32,7 +32,7 @@ $ARGUMENTS 있음 → 다음 단계 진행
 
 ```
 1. ARGUMENT 확인 (없으면 되물음)
-2. Sequential Thinking 10+로 피드백 분석
+2. Sequential Thinking 5+로 피드백 분석 (복잡도에 따라 조정)
    - 피드백 의도 파악
    - 키워드 추출
    - 수정 대상 추론
@@ -48,18 +48,28 @@ $ARGUMENTS 있음 → 다음 단계 진행
 
 ## Sequential Thinking 가이드
 
-**피드백 분석 시 최소 10단계:**
+**복잡도별 사고 횟수:**
+
+| 복잡도 | 횟수 | 예시 |
+|--------|------|------|
+| 간단 | 5 | 오타 수정, 단순 UI 조정, 명확한 버그 |
+| 보통 | 7-8 | 로직 수정, 컴포넌트 변경 |
+| 복잡 | 10+ | 다중 파일 영향, 아키텍처 관련 |
+
+**기본 사고 흐름 (최소 5단계):**
 
 ```
 thought 1: 피드백 원문 분석 - 무엇을 수정하라는 것인가?
 thought 2: 핵심 키워드 추출 (기능명, 변수명, 컴포넌트명 등)
 thought 3: 피드백 유형 분류 (버그, UI, 로직, 성능 등)
-thought 4: 예상 파일 위치 추론 (디렉토리, 파일 패턴)
-thought 5: 검색 전략 수립 (ast-grep vs grep vs glob)
+thought 4: 예상 파일 위치 추론 및 검색 전략 수립
+thought 5: 후보 위치 정리 및 수정 방안
+
+(복잡한 경우 추가)
 thought 6: 첫 번째 탐색 결과 분석
 thought 7: 추가 탐색 필요 여부 판단
-thought 8: 후보 위치 정리 및 우선순위
-thought 9: 수정 방안 초안 작성
+thought 8: 후보 위치 우선순위 재정리
+thought 9: 수정 방안 상세화
 thought 10: 수정 영향 범위 분석
 thought 11+: 필요시 추가 분석
 ```
@@ -179,7 +189,7 @@ git commit -m "fix: 여러 파일 수정"       # 구체적이지 않음
 | 금지 항목 |
 |----------|
 | ARGUMENT 없이 수정 시작 |
-| Sequential Thinking 10단계 미만 |
+| Sequential Thinking 5단계 미만 |
 | 코드 탐색 없이 추측으로 수정 |
 | 사용자 컨펌 없이 수정 |
 | "Generated with Claude Code" 포함 |
