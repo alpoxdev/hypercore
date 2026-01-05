@@ -8,7 +8,7 @@ const program = new Command();
 program
   .name('claude-code')
   .description('Claude Code documentation installer for projects')
-  .version('0.2.0');
+  .version('0.2.1');
 
 program
   .option(
@@ -20,6 +20,7 @@ program
   .option('--list', 'list available templates')
   .option('-s, --skills', 'install skills to .claude/skills/')
   .option('-c, --commands', 'install commands to .claude/commands/')
+  .option('-a, --agents', 'install agents to .claude/agents/')
   .action(async (options) => {
     banner();
 
@@ -39,6 +40,7 @@ program
       cwd: options.cwd,
       skills: options.skills,
       commands: options.commands,
+      agents: options.agents,
     });
   });
 
