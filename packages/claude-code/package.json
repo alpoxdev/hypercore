@@ -1,6 +1,6 @@
 {
   "name": "@kood/claude-code",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Claude Code documentation installer for projects",
   "type": "module",
   "bin": "./dist/index.js",
