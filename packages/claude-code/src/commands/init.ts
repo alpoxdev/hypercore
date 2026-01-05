@@ -7,7 +7,8 @@ import {
   listAvailableTemplates,
   copySkills,
   copyCommands,
-  checkSkillsAndCommandsExist,
+  copyAgents,
+  checkAllExtrasExist,
   checkExistingClaudeFiles,
 } from '../utils/copy.js';
 
@@ -17,6 +18,7 @@ interface InitOptions {
   cwd?: string;
   skills?: boolean;
   commands?: boolean;
+  agents?: boolean;
 }
 
 const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
@@ -28,7 +30,6 @@ const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
 export const init = async (options: InitOptions): Promise<void> => {
   const targetDir = options.cwd || process.cwd();
 
-  // 사용 가능한 템플릿 확인
   const availableTemplates = await listAvailableTemplates();
 
   if (availableTemplates.length === 0) {
@@ -36,7 +37,6 @@ export const init = async (options: InitOptions): Promise<void> => {
     process.exit(1);
   }
 
-  // 템플릿 선택 (다중 선택 지원)
   let templates = options.templates || [];
 
   if (templates.length === 0) {
@@ -61,7 +61,6 @@ export const init = async (options: InitOptions): Promise<void> => {
     templates = response.templates;
   }
 
-  // 템플릿 존재 확인
   const invalidTemplates = templates.filter(
     (t) => !availableTemplates.includes(t),
   );
@@ -71,7 +70,6 @@ export const init = async (options: InitOptions): Promise<void> => {
     process.exit(1);
   }
 
-  // 기존 파일 확인
   const existingFiles = await checkExistingFiles(targetDir);
 
   if (existingFiles.length > 0 && !options.force) {
@@ -92,7 +90,6 @@ export const init = async (options: InitOptions): Promise<void> => {
     }
   }
 
-  // 템플릿 설치 (단일 vs 다중 분기)
   const isSingleTemplate = templates.length === 1;
   let totalFiles = 0;
   let totalDirectories = 0;
@@ -101,7 +98,6 @@ export const init = async (options: InitOptions): Promise<void> => {
 
   try {
     if (isSingleTemplate) {
-      // 단일 템플릿: CLAUDE.md → 루트, docs/ → 루트/docs/
       const template = templates[0];
       logger.info(`Installing ${template} template...`);
       logger.step(`Target: ${targetDir}`);
@@ -113,7 +109,6 @@ export const init = async (options: InitOptions): Promise<void> => {
 
       logger.success(`${template}: ${result.files} files copied`);
     } else {
-      // 다중 템플릿: 각 템플릿 폴더 → docs/템플릿명/ + 인덱스 CLAUDE.md
       logger.info(`Installing ${templates.length} templates...`);
       logger.step(`Target: ${targetDir}/docs/`);
       logger.blank();
@@ -136,15 +131,19 @@ export const init = async (options: InitOptions): Promise<void> => {
   logger.blank();
   logger.success(`Total: ${totalFiles} files, ${totalDirectories} directories`);
 
-  // Skills/Commands 설치
-  const { hasSkills, hasCommands } =
-    await checkSkillsAndCommandsExist(templates);
+  const { hasSkills, hasCommands, hasAgents } =
+    await checkAllExtrasExist(templates);
 
-  // CLI 옵션이 없으면 대화형으로 물어보기
   let installSkills = options.skills ?? false;
   let installCommands = options.commands ?? false;
+  let installAgents = options.agents ?? false;
 
-  if (!options.skills && !options.commands && (hasSkills || hasCommands)) {
+  const noOptionsProvided =
+    options.skills === undefined &&
+    options.commands === undefined &&
+    options.agents === undefined;
+
+  if (noOptionsProvided && (hasSkills || hasCommands || hasAgents)) {
     logger.blank();
 
     if (hasSkills) {
@@ -152,7 +151,7 @@ export const init = async (options: InitOptions): Promise<void> => {
         type: 'confirm',
         name: 'install',
         message: 'Install skills to .claude/skills/?',
-        initial: true,
+        initial: false,
       });
       installSkills = skillsResponse.install ?? false;
     }
@@ -162,14 +161,23 @@ export const init = async (options: InitOptions): Promise<void> => {
         type: 'confirm',
         name: 'install',
         message: 'Install commands to .claude/commands/?',
-        initial: true,
+        initial: false,
       });
       installCommands = commandsResponse.install ?? false;
     }
+
+    if (hasAgents) {
+      const agentsResponse = await prompts({
+        type: 'confirm',
+        name: 'install',
+        message: 'Install agents to .claude/agents/?',
+        initial: false,
+      });
+      installAgents = agentsResponse.install ?? false;
+    }
   }
 
-  if (installSkills || installCommands) {
-    // 기존 .claude 파일 확인
+  if (installSkills || installCommands || installAgents) {
     const existingClaudeFiles = await checkExistingClaudeFiles(targetDir);
     if (existingClaudeFiles.length > 0 && !options.force) {
       logger.warn('The following .claude files/folders already exist:');
@@ -184,9 +192,10 @@ export const init = async (options: InitOptions): Promise<void> => {
       });
 
       if (!response.overwrite) {
-        logger.info('Skipping skills/commands installation.');
+        logger.info('Skipping extras installation.');
         installSkills = false;
         installCommands = false;
+        installAgents = false;
       }
     }
 
@@ -215,16 +224,28 @@ export const init = async (options: InitOptions): Promise<void> => {
     } else if (installCommands && !hasCommands) {
       logger.warn('No commands found in selected templates.');
     }
+
+    if (installAgents && hasAgents) {
+      logger.blank();
+      logger.info('Installing agents...');
+      const agentsResult = await copyAgents(templates, targetDir);
+      totalFiles += agentsResult.files;
+      totalDirectories += agentsResult.directories;
+      logger.success(
+        `Agents: ${agentsResult.files} files, ${agentsResult.directories} directories`,
+      );
+    } else if (installAgents && !hasAgents) {
+      logger.warn('No agents found in selected templates.');
+    }
   }
 
-  // 완료 메시지
   logger.blank();
   logger.success('Claude Code documentation installed!');
   logger.blank();
   logger.info('Installed templates:');
   templates.forEach((t) => logger.step(t));
 
-  if (installSkills || installCommands) {
+  if (installSkills || installCommands || installAgents) {
     logger.blank();
     logger.info('Installed extras:');
     if (installSkills) {
@@ -232,6 +253,9 @@ export const init = async (options: InitOptions): Promise<void> => {
     }
     if (installCommands) {
       logger.step('Commands → .claude/commands/');
+    }
+    if (installAgents) {
+      logger.step('Agents → .claude/agents/');
     }
   }
 

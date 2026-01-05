@@ -39,6 +39,7 @@ async function copyTemplates() {
 
   const skillsSrc = path.join(claudeDir, 'skills');
   const commandsSrc = path.join(claudeDir, 'commands');
+  const agentsSrc = path.join(claudeDir, 'agents');
 
   if (await fs.pathExists(skillsSrc)) {
     await fs.copy(skillsSrc, path.join(claudeDestDir, 'skills'));
@@ -48,6 +49,11 @@ async function copyTemplates() {
   if (await fs.pathExists(commandsSrc)) {
     await fs.copy(commandsSrc, path.join(claudeDestDir, 'commands'));
     console.log('  ✓ .claude/commands/');
+  }
+
+  if (await fs.pathExists(agentsSrc)) {
+    await fs.copy(agentsSrc, path.join(claudeDestDir, 'agents'));
+    console.log('  ✓ .claude/agents/');
   }
 
   console.log('✅ Templates copied successfully!');

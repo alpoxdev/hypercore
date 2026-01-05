@@ -235,7 +235,7 @@ export const checkSkillsAndCommandsExist = async (
 };
 
 /**
- * 기존 .claude/skills, .claude/commands 파일 확인
+ * 기존 .claude/skills, .claude/commands, .claude/agents 파일 확인
  */
 export const checkExistingClaudeFiles = async (
   targetDir: string,
@@ -244,6 +244,7 @@ export const checkExistingClaudeFiles = async (
 
   const skillsDir = path.join(targetDir, '.claude', 'skills');
   const commandsDir = path.join(targetDir, '.claude', 'commands');
+  const agentsDir = path.join(targetDir, '.claude', 'agents');
 
   if (await fs.pathExists(skillsDir)) {
     existingFiles.push('.claude/skills/');
@@ -253,5 +254,51 @@ export const checkExistingClaudeFiles = async (
     existingFiles.push('.claude/commands/');
   }
 
+  if (await fs.pathExists(agentsDir)) {
+    existingFiles.push('.claude/agents/');
+  }
+
   return existingFiles;
+};
+
+/**
+ * Agents 복사 (templates/.claude/agents/ → 타겟/.claude/agents/)
+ * Agents는 .md 파일 기반 구조
+ */
+export const copyAgents = async (
+  _templates: string[],
+  targetDir: string,
+): Promise<{ files: number; directories: number }> => {
+  const counter = { files: 0, directories: 0 };
+  const targetAgentsDir = path.join(targetDir, '.claude', 'agents');
+  const agentsSrc = path.join(getTemplatesDir(), '.claude', 'agents');
+
+  if (await fs.pathExists(agentsSrc)) {
+    await fs.ensureDir(targetAgentsDir);
+    await copyRecursive(agentsSrc, targetAgentsDir, counter);
+  }
+
+  return counter;
+};
+
+/**
+ * Skills, Commands, Agents가 존재하는지 확인
+ */
+export const checkAllExtrasExist = async (
+  _templates: string[],
+): Promise<{
+  hasSkills: boolean;
+  hasCommands: boolean;
+  hasAgents: boolean;
+}> => {
+  const claudeDir = path.join(getTemplatesDir(), '.claude');
+  const skillsSrc = path.join(claudeDir, 'skills');
+  const commandsSrc = path.join(claudeDir, 'commands');
+  const agentsSrc = path.join(claudeDir, 'agents');
+
+  const hasSkills = await fs.pathExists(skillsSrc);
+  const hasCommands = await fs.pathExists(commandsSrc);
+  const hasAgents = await fs.pathExists(agentsSrc);
+
+  return { hasSkills, hasCommands, hasAgents };
 };
