@@ -8,7 +8,7 @@ const program = new Command();
 program
   .name('claude-code')
   .description('Claude Code documentation installer for projects')
-  .version('0.2.2');
+  .version('0.2.3');
 
 program
   .option(

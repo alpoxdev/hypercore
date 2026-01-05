@@ -79,6 +79,7 @@ export default {
 import { createServerFn } from '@tanstack/react-start'
 import { drizzle } from 'drizzle-orm/d1'
 import { eq } from 'drizzle-orm'
+import { z } from 'zod'
 import * as schema from '@/db/schema'
 
 // D1 바인딩 접근 (Cloudflare Pages/Workers)
@@ -94,7 +95,7 @@ export const getUsers = createServerFn({ method: 'GET' })
   })
 
 export const createUser = createServerFn({ method: 'POST' })
-  .validator((data: { email: string; name?: string }) => data)
+  .inputValidator(z.object({ email: z.email(), name: z.string().optional() }))
   .handler(async ({ data }) => {
     const db = getDb()
     const [user] = await db.insert(schema.users).values(data).returning()

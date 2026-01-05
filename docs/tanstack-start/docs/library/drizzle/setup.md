@@ -64,6 +64,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { db } from '@/lib/db'
 import { users } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import { z } from 'zod'
 
 export const getUsers = createServerFn({ method: 'GET' })
   .handler(async () => {
@@ -71,14 +72,14 @@ export const getUsers = createServerFn({ method: 'GET' })
   })
 
 export const getUserById = createServerFn({ method: 'GET' })
-  .validator((id: number) => id)
+  .inputValidator(z.coerce.number())
   .handler(async ({ data: id }) => {
     const [user] = await db.select().from(users).where(eq(users.id, id))
     return user
   })
 
 export const createUser = createServerFn({ method: 'POST' })
-  .validator((data: { email: string; name: string }) => data)
+  .inputValidator(z.object({ email: z.email(), name: z.string() }))
   .handler(async ({ data }) => {
     const [user] = await db.insert(users).values(data).returning()
     return user

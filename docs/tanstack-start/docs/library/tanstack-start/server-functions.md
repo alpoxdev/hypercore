@@ -21,7 +21,7 @@ const createUserSchema = z.object({
 })
 
 export const createUser = createServerFn({ method: 'POST' })
-  .inputValidator(zodValidator(createUserSchema))
+  .inputValidator(createUserSchema)
   .handler(async ({ data }) => prisma.user.create({ data }))
 ```
 
