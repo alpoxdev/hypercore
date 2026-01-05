@@ -1,6 +1,6 @@
 ---
 name: gemini-review
-description: Google Gemini CLI를 활용한 코드 리뷰 및 계획 검증 스킬. 구현 계획 검토, 코드 리뷰, 아키텍처 논의 시 Gemini를 세컨드 오피니언으로 활용. gemini-2.5-pro 모델 사용 (무료: 60req/min, 1000req/day).
+description: "Google Gemini CLI를 활용한 코드 리뷰 및 계획 검증 스킬. 구현 계획 검토, 코드 리뷰, 아키텍처 논의 시 Gemini를 세컨드 오피니언으로 활용. gemini-2.5-pro 모델 사용 (무료: 60req/min, 1000req/day)."
 license: Complete terms in LICENSE.txt
 ---
 
