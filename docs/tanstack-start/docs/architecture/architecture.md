@@ -2,6 +2,19 @@
 
 TanStack Start 애플리케이션 아키텍처 가이드.
 
+## 목차
+
+- [System Overview](#system-overview)
+- [Layer Architecture](#layer-architecture)
+  - [Routes Layer](#1-routes-layer)
+  - [Services Layer](#2-services-layer)
+  - [Server Functions Layer](#3-server-functions-layer)
+  - [Database Layer](#4-database-layer)
+- [Data Flow](#data-flow)
+- [Technology Stack](#technology-stack)
+
+---
+
 ## System Overview
 
 ```
@@ -39,12 +52,110 @@ TanStack Start 애플리케이션 아키텍처 가이드.
 
 ```
 routes/<route-name>/
-├── index.tsx              # 페이지 컴포넌트
+├── (main)/                # route group (목록 페이지)
+│   ├── index.tsx          # 페이지 컴포넌트
+│   ├── -components/       # 페이지 전용 컴포넌트
+│   ├── -sections/         # UI 섹션 분리 (200줄+ 페이지)
+│   ├── -tabs/             # 탭 콘텐츠 분리
+│   ├── -hooks/            # 페이지 전용 훅
+│   └── -utils/            # 상수, 헬퍼
+├── new/                   # 생성 페이지 (route group 외부)
+│   └── index.tsx
 ├── route.tsx              # route 설정 (loader, beforeLoad)
-├── -functions/            # 페이지 전용 서버 함수
-├── -components/           # 페이지 전용 컴포넌트
-├── -sections/             # 섹션 분리
-└── -hooks/                # 페이지 전용 훅
+└── -functions/            # 페이지 전용 서버 함수
+```
+
+#### Route Group 패턴 `(main)`
+
+목록 페이지는 반드시 `(main)` route group으로 감싸야 한다:
+
+```
+routes/dashboard/companies/
+├── (main)/                # /dashboard/companies (목록)
+│   ├── index.tsx
+│   └── -components/
+└── new/                   # /dashboard/companies/new (생성)
+    └── index.tsx
+```
+
+**규칙:**
+- 목록 페이지 → `(main)/` 내부
+- 생성/편집 페이지 → `(main)/` 외부
+- URL에 `(main)`은 포함되지 않음
+
+#### 페이지 크기 기준
+
+| 줄 수 | 권장 조치 |
+|-------|----------|
+| ~100줄 | 단일 파일 OK |
+| 100-200줄 | -components 분리 검토 |
+| 200줄+ | -sections 분리 필수 |
+| 탭 UI | -tabs 분리 권장 |
+
+#### `-sections/` 패턴 (200줄+ 페이지)
+
+큰 페이지는 논리적 섹션으로 분리:
+
+```tsx
+// routes/settings/(main)/index.tsx
+import { GeneralSection } from './-sections/general-section'
+import { SecuritySection } from './-sections/security-section'
+import { NotificationSection } from './-sections/notification-section'
+
+function SettingsPage() {
+  return (
+    <div className="space-y-8">
+      <GeneralSection />
+      <SecuritySection />
+      <NotificationSection />
+    </div>
+  )
+}
+```
+
+```
+routes/settings/(main)/
+├── index.tsx
+└── -sections/
+    ├── general-section.tsx
+    ├── security-section.tsx
+    └── notification-section.tsx
+```
+
+#### `-tabs/` 패턴 (탭 UI)
+
+탭 기반 페이지는 각 탭을 별도 파일로 분리:
+
+```tsx
+// routes/project-settings/(main)/index.tsx
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { GeneralTab } from './-tabs/general-tab'
+import { MembersTab } from './-tabs/members-tab'
+import { DangerTab } from './-tabs/danger-tab'
+
+function ProjectSettingsPage() {
+  return (
+    <Tabs defaultValue="general">
+      <TabsList>
+        <TabsTrigger value="general">일반</TabsTrigger>
+        <TabsTrigger value="members">멤버</TabsTrigger>
+        <TabsTrigger value="danger">위험</TabsTrigger>
+      </TabsList>
+      <TabsContent value="general"><GeneralTab /></TabsContent>
+      <TabsContent value="members"><MembersTab /></TabsContent>
+      <TabsContent value="danger"><DangerTab /></TabsContent>
+    </Tabs>
+  )
+}
+```
+
+```
+routes/project-settings/(main)/
+├── index.tsx
+└── -tabs/
+    ├── general-tab.tsx
+    ├── members-tab.tsx
+    └── danger-tab.tsx
 ```
 
 ### 2. Services Layer
