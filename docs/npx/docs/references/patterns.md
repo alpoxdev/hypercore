@@ -1,25 +1,35 @@
 # NPX CLI Patterns
 
-> 복사용 코드 패턴 모음
+> CLI 구현 통합 패턴
 
-## CLI Entry Point
+<patterns>
+
+## CLI 진입점
 
 ```typescript
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { logger } from './utils/logger.js';
+import { initCommand } from './commands/init.js';
 
 const program = new Command();
 
 program
   .name('my-cli')
-  .description('CLI description')
+  .description('CLI tool description')
   .version('1.0.0');
 
 program
   .option('-t, --template <name>', 'template name')
   .option('-f, --force', 'overwrite existing files')
   .action(async (options) => {
-    // 명령어 실행
+    try {
+      await initCommand(options);
+      logger.success('Done!');
+    } catch (error) {
+      logger.error(`Failed: ${error.message}`);
+      process.exit(1);
+    }
   });
 
 program.parse();
@@ -36,49 +46,74 @@ export const logger = {
   warn: (msg: string): void => console.log(pc.yellow('⚠'), msg),
   error: (msg: string): void => console.log(pc.red('✖'), msg),
   step: (msg: string): void => console.log(pc.gray('  →'), msg),
-  blank: (): void => console.log(),
 };
 ```
 
-## Interactive Prompts
+## 대화형 템플릿 선택
 
 ```typescript
 import prompts from 'prompts';
+import fs from 'fs-extra';
+import path from 'path';
+import { logger } from './utils/logger.js';
 
-// Select (단일 선택)
-const { template } = await prompts({
-  type: 'select',
-  name: 'template',
-  message: 'Select a template:',
-  choices: [
-    { title: 'Template A', value: 'a' },
-    { title: 'Template B', value: 'b' },
-  ],
-});
+export const selectAndCopyTemplate = async (
+  templatesDir: string,
+  targetDir: string,
+): Promise<void> => {
+  // 1. 템플릿 선택
+  const { template } = await prompts({
+    type: 'select',
+    name: 'template',
+    message: 'Select a template:',
+    choices: [
+      { title: 'React', value: 'react' },
+      { title: 'Vue', value: 'vue' },
+    ],
+  });
 
-// Multiselect (다중 선택)
-const { templates } = await prompts({
-  type: 'multiselect',
-  name: 'templates',
-  message: 'Select templates:',
-  choices: [
-    { title: 'Template A', value: 'a' },
-    { title: 'Template B', value: 'b' },
-  ],
-  min: 1,
-  hint: '- Space to select. Return to submit',
-});
+  if (!template) {
+    logger.warn('Cancelled.');
+    process.exit(0);
+  }
 
-// Confirm
-const { confirmed } = await prompts({
-  type: 'confirm',
-  name: 'confirmed',
-  message: 'Overwrite existing files?',
-  initial: false,
-});
+  // 2. 덮어쓰기 확인
+  const targetExists = await fs.pathExists(targetDir);
+  if (targetExists) {
+    const { overwrite } = await prompts({
+      type: 'confirm',
+      name: 'overwrite',
+      message: 'Target exists. Overwrite?',
+      initial: false,
+    });
+
+    if (!overwrite) {
+      logger.warn('Cancelled.');
+      process.exit(0);
+    }
+  }
+
+  // 3. 복사
+  const src = path.join(templatesDir, template);
+  await fs.copy(src, targetDir, { overwrite: true });
+  logger.success(`Template copied to ${targetDir}`);
+};
 ```
 
-## File Copy 유틸
+## ESM __dirname 처리
+
+```typescript
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// 템플릿 디렉토리 경로
+const templatesDir = path.resolve(__dirname, '../templates');
+```
+
+## 재귀 복사 with Counter
 
 ```typescript
 import fs from 'fs-extra';
@@ -112,17 +147,7 @@ export const copyRecursive = async (
 };
 ```
 
-## ESM __dirname
-
-```typescript
-import { fileURLToPath } from 'url';
-import path from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-```
-
-## Package.json
+## package.json 설정
 
 ```json
 {
@@ -142,7 +167,7 @@ const __dirname = path.dirname(__filename);
 }
 ```
 
-## tsup.config.ts
+## tsup 설정
 
 ```typescript
 import { defineConfig } from 'tsup';
@@ -158,3 +183,5 @@ export default defineConfig({
   },
 });
 ```
+
+</patterns>

@@ -1,97 +1,197 @@
-# CLAUDE.md - NPX CLI 프로젝트
+# CLAUDE.md - NPX CLI
 
-> Node.js CLI 도구 개발 지침
+> Node.js CLI 도구 개발
 
-## Instructions
+<context>
 
+**Purpose:** Node.js CLI 도구 개발을 위한 작업 지침
+
+**Scope:** npx 배포 가능한 CLI 패키지 구현
+
+**Key Features:**
+- Commander.js 명령어 체계
+- 대화형 프롬프트 (prompts)
+- 파일 시스템 작업 (fs-extra)
+- TypeScript + ESM
+- 색상 출력 (picocolors)
+
+</context>
+
+---
+
+<instructions>
+@../../commands/git.md
 @docs/library/commander/index.md
 @docs/library/fs-extra/index.md
 @docs/library/prompts/index.md
+@docs/references/patterns.md
+</instructions>
 
 ---
 
-## 금지 사항
+<forbidden>
 
-### Git 커밋
-- `Generated with Claude Code` 포함 금지
-- AI 관련 이모지/표시 금지
-- `Co-Authored-By:` 헤더 금지
-- 여러 줄 커밋 메시지 금지
-
-### CLI 구현
-- `process.exit()` 없이 에러 종료 금지
-- `console.log` 직접 사용 금지 (logger 사용)
-- 동기 파일 작업 (`fs.readFileSync` 등) 금지
-- hardcoded 경로 금지 (`path.join` 사용)
-- 사용자 입력 미검증 처리 금지
-
-### 코드 검색
-- `grep`, `rg` 사용 금지 → `ast-grep` 필수
-
----
-
-## 필수 사항
-
-### 작업 전
-| 작업 | 참조 문서 |
+| 분류 | 금지 행동 |
 |------|----------|
-| CLI 작업 | `docs/library/commander/` |
-| 파일 작업 | `docs/library/fs-extra/` |
-| 사용자 입력 | `docs/library/prompts/` |
+| **Git 커밋** | AI 표시 (`Generated with Claude Code`, `🤖`, `Co-Authored-By:`), 여러 줄 메시지, 이모지 |
+| **콘솔 출력** | `console.log` 직접 사용 (logger 함수 사용) |
+| **파일 작업** | 동기 API (`fs.readFileSync` 등), 하드코딩된 경로 (path.join 사용) |
+| **에러 처리** | `process.exit()` 누락, try-catch 없는 async 작업 |
+| **코드 검색** | Bash의 grep/rg/find 명령어 (ast-grep 또는 전용 도구 사용) |
 
-### 커밋 형식
-```
-<prefix>: <설명>
-```
-
-| Prefix | 용도 |
-|--------|------|
-| feat | 새 기능 |
-| fix | 버그 수정 |
-| refactor | 리팩토링 |
-| docs | 문서 수정 |
-| chore | 빌드/설정 |
+</forbidden>
 
 ---
 
-## Tech Stack
+<required>
 
-| 기술 | 버전 | 비고 |
-|------|------|------|
-| Node.js | >= 18 | ESM 모듈 |
-| TypeScript | 5.x | strict mode |
-| Commander | 12.x | CLI 프레임워크 |
-| fs-extra | 11.x | 파일 시스템 |
-| prompts | 2.x | Interactive prompts |
-| picocolors | 1.x | 터미널 색상 |
-| tsup | 8.x | 번들러 |
+| 작업 | 필수 행동 |
+|------|----------|
+| **작업 시작 전** | 관련 docs 읽기 (Commander → commander, 파일 → fs-extra) |
+| **콘솔 출력** | logger 함수 사용 (info/success/error/warn) |
+| **파일 작업** | async API (`fs-extra`), `path.join`으로 경로 조합 |
+| **에러 처리** | try-catch + `process.exit(1)`, 사용자에게 명확한 에러 메시지 |
+| **코드 검색** | ast-grep 사용 (함수/클래스/패턴 검색) |
+| **코드 작성** | UTF-8 인코딩, 코드 묶음별 한글 주석, const 함수 선언 |
+| **복잡한 작업** | Sequential Thinking MCP (5+ 단계 작업) |
+
+</required>
 
 ---
 
-## Directory Structure
+<tech_stack>
 
+| 기술 | 버전 |
+|------|------|
+| Node.js | >= 18 (ESM) |
+| TypeScript | 5.x (strict) |
+| Commander | 12.x |
+| fs-extra | 11.x |
+| prompts | 2.x |
+| picocolors | 1.x |
+| tsup | 8.x |
+
+</tech_stack>
+
+---
+
+<structure>
 ```
 src/
-├── index.ts          # CLI 진입점
-├── commands/         # 명령어 모듈
-│   └── init.ts
-├── utils/            # 유틸리티
-│   ├── copy.ts
-│   └── logger.ts
-└── types/            # 타입 정의
+├── index.ts      # CLI 진입점
+├── commands/     # 명령어 모듈
+├── utils/        # logger, copy
+└── types/        # 타입
 
-templates/            # 템플릿 (빌드 시 복사)
-scripts/              # 빌드 스크립트
-dist/                 # 빌드 결과물
+templates/        # 빌드 시 복사
+dist/             # 빌드 결과물
 ```
+</structure>
 
 ---
 
-## 참조
+<conventions>
 
-| 문서 | 경로 |
-|------|------|
-| Commander 가이드 | [docs/library/commander/](docs/library/commander/index.md) |
-| fs-extra 가이드 | [docs/library/fs-extra/](docs/library/fs-extra/index.md) |
-| prompts 가이드 | [docs/library/prompts/](docs/library/prompts/index.md) |
-| 코드 패턴 | [docs/references/patterns.md](docs/references/patterns.md) |
+**파일명:** kebab-case
+**TypeScript:** const 선언, 명시적 return type, interface(객체)/type(유니온), any→unknown
+**Import 순서:** 외부 → 내부 → type
+
+</conventions>
+
+---
+
+<quick_patterns>
+
+```typescript
+// CLI 진입점 (index.ts)
+#!/usr/bin/env node
+import { Command } from 'commander'
+import { logger } from './utils/logger.js'
+
+const program = new Command()
+  .name('my-cli')
+  .version('1.0.0')
+  .description('CLI tool description')
+
+program
+  .command('init')
+  .description('Initialize project')
+  .option('-f, --force', 'Force overwrite')
+  .action(async (options) => {
+    try {
+      await initCommand(options)
+    } catch (error) {
+      logger.error(`Failed: ${error.message}`)
+      process.exit(1)
+    }
+  })
+
+program.parse()
+```
+
+```typescript
+// Logger (utils/logger.ts)
+import pc from 'picocolors'
+
+export const logger = {
+  info: (msg: string) => console.log(pc.blue('ℹ'), msg),
+  success: (msg: string) => console.log(pc.green('✔'), msg),
+  error: (msg: string) => console.log(pc.red('✖'), msg),
+  warn: (msg: string) => console.log(pc.yellow('⚠'), msg),
+}
+```
+
+```typescript
+// 파일 복사 (utils/copy.ts)
+import path from 'node:path'
+import { copy, pathExists } from 'fs-extra'
+
+export const copyTemplate = async (
+  templatePath: string,
+  targetPath: string,
+  force: boolean = false
+): Promise<void> => {
+  const exists = await pathExists(targetPath)
+
+  if (exists && !force) {
+    throw new Error(`${targetPath} already exists`)
+  }
+
+  await copy(templatePath, targetPath, { overwrite: force })
+}
+```
+
+```typescript
+// 대화형 프롬프트
+import prompts from 'prompts'
+
+const response = await prompts([
+  {
+    type: 'select',
+    name: 'template',
+    message: 'Select template',
+    choices: [
+      { title: 'React', value: 'react' },
+      { title: 'Vue', value: 'vue' },
+    ],
+  },
+  {
+    type: 'confirm',
+    name: 'install',
+    message: 'Install dependencies?',
+    initial: true,
+  },
+])
+```
+
+</quick_patterns>
+
+---
+
+<docs_structure>
+```
+docs/
+├── library/      # commander, fs-extra, prompts
+└── references/   # CLI 패턴, 베스트 프랙티스
+```
+</docs_structure>
