@@ -33,9 +33,19 @@ argument-hint: <new-version | +1 | +minor | +major>
 
 3. **모든 파일 Edit로 업데이트**
 
-4. **커밋**
+4. **스테이징**
    ```bash
-   git add + git commit -m "chore: 버전 X.X.X로 업데이트"
+   git add packages/claude-code/package.json packages/claude-code/src/index.ts
+   ```
+
+5. **커밋**
+   ```bash
+   git commit -m "chore: 버전 X.X.X로 업데이트"
+   ```
+
+6. **완료 확인**
+   ```bash
+   git status
    ```
 
 </workflow>
