@@ -1,77 +1,227 @@
 ---
-description: tsc/eslint 오류 검사 및 하나씩 수정
-allowed-tools: Bash, Read, Edit, mcp__sequential-thinking__sequentialthinking
+description: tsc/eslint 오류 검사 및 하나씩 꼼꼼히 수정. ultrathink + sequential thinking 필수 사용.
+allowed-tools: Bash(tsc:*, npx:*, yarn:*, npm:*, pnpm:*), Read, Edit, mcp__sequential-thinking__sequentialthinking
 argument-hint: [파일/디렉토리 경로...]
 ---
 
-@../instructions/sequential-thinking-guide.md
-@../instructions/common-patterns.md
-
 # Lint Fix Command
 
-tsc/eslint 오류를 하나씩 꼼꼼히 수정.
+> tsc/eslint 오류를 Sequential Thinking으로 분석하여 하나씩 수정
 
-<requirements>
+---
 
-| 분류 | 필수 | 금지 |
-|------|------|------|
-| **Thinking** | Sequential 3-5단계 (각 오류마다) (@sequential-thinking-guide.md) | 분석 없이 수정 |
-| **Tracking** | TodoWrite 오류 목록 (@common-patterns.md) | 진행 상황 미추적 |
-| **Strategy** | 하나씩 수정 + 재검사 | 여러 오류 동시 수정 |
+<forbidden>
 
-</requirements>
+| 분류 | 금지 |
+|------|------|
+| **회피** | `any` 타입, `@ts-ignore`, `eslint-disable` 남발 |
+| **전략** | 여러 오류 동시 수정, 오류 메시지만 보고 급하게 수정 |
+| **분석** | Sequential Thinking 없이 수정 |
+
+</forbidden>
+
+---
+
+<agent_usage>
+
+## @lint-fixer Agent 활용
+
+**언제 사용:**
+- 10개 이상 오류
+- 복잡한 타입 오류 다수
+- 백그라운드에서 자동 수정 원할 때
+
+**호출 방법:**
+```bash
+@lint-fixer
+# 또는 자연어
+"lint 오류 자동으로 수정해줘"
+```
+
+**장점:**
+- 간단한 오류는 즉시 수정 (Sequential Thinking 불필요)
+- 복잡한 오류만 Sequential Thinking 사용 (효율적)
+- 독립적 context에서 실행 (메인 작업 병렬 가능)
+
+**직접 수정 vs Agent:**
+
+| 상황 | 권장 방법 |
+|------|----------|
+| 1-5개 오류, 간단 | 직접 수정 (command) |
+| 10개 이상 오류 | @lint-fixer |
+| 복잡한 타입 오류 다수 | @lint-fixer |
+| 빠른 수정 필요 | 직접 수정 |
+| 백그라운드 실행 | @lint-fixer |
+
+</agent_usage>
+
+---
+
+<required>
+
+| 분류 | 필수 |
+|------|------|
+| **Thinking** | Sequential Thinking 3-5단계 (각 오류마다) |
+| **Tracking** | TodoWrite로 오류 목록 추적 |
+| **Strategy** | 하나씩 수정 → 재검사 → 다음 오류 |
+| **Validation** | 각 파일 수정 후 해당 파일 재검사 |
+| **Parallel** | 5개 이상 독립 오류 → Task 도구로 병렬 분석 |
+
+</required>
+
+---
 
 <workflow>
 
-1. **오류 검사**
-   - `tsc --noEmit` (타입 오류)
-   - `eslint` (린트 오류)
+1. **검사**
+   ```bash
+   npx tsc --noEmit
+   npx eslint .
+   ```
 
 2. **TodoWrite 생성**
-   - 오류 목록 추적
+   - 오류 목록 정리
 
-3. **각 오류 수정** (순차)
-   - Sequential Thinking (3-5단계)
-     * 오류 메시지 분석
-     * 코드 컨텍스트 파악
-     * 근본 원인 식별
-     * 수정 방안 검토
-     * 최적 방안 선택
+3. **순차 수정** (각 오류마다)
+   - Sequential Thinking 3-5단계
    - 수정 적용
+   - 해당 파일 재검사
    - TodoWrite 업데이트 (completed)
-   - 재검사
 
 4. **전체 재검사**
 
 </workflow>
 
-<check_commands>
+---
+
+<sequential_thinking>
+
+**각 오류마다 필수:**
+
+| 단계 | 내용 |
+|------|------|
+| 1 | 오류 메시지 분석 및 이해 |
+| 2 | 관련 코드 컨텍스트 파악 |
+| 3 | 근본 원인 식별 |
+| 4 | 수정 방안 검토 (여러 옵션 고려) |
+| 5 | 최적 수정 방안 선택 및 적용 |
+
+**파라미터:**
+
+```typescript
+{
+  thought: "현재 사고 내용",
+  nextThoughtNeeded: true | false,
+  thoughtNumber: 1, // 현재 단계
+  totalThoughts: 5  // 예상 총 단계 (동적 조정 가능)
+}
+```
+
+</sequential_thinking>
+
+---
+
+<parallel_strategy>
+
+**5개 이상 오류 시:**
+
+```
+1. 독립적 오류 그룹 식별
+2. Task 도구로 병렬 분석 (단일 메시지에 다중 Task 호출)
+3. 분석 결과 취합 후 순차 수정
+```
+
+**규칙:**
+
+| 규칙 | 설명 |
+|------|------|
+| 독립성 확인 | 같은 파일/연관 타입 → 순차 처리 |
+| 분석만 병렬 | 수정 적용은 항상 순차 |
+| 결과 검증 | 충돌 시 Sequential Thinking으로 해결 |
+
+**subagent_type:**
+
+| 유형 | 용도 |
+|------|------|
+| `Explore` | 오류 관련 코드 컨텍스트 탐색 |
+| `general-purpose` | 복잡한 타입 오류 심층 분석 |
+
+</parallel_strategy>
+
+---
+
+<commands>
+
+**검사:**
 
 ```bash
-# TypeScript
-tsc --noEmit
+# TypeScript (전체)
 npx tsc --noEmit
 
-# ESLint
+# TypeScript (특정 파일)
+npx tsc --noEmit $ARGUMENTS
+
+# ESLint (전체)
 npx eslint .
-npx eslint src/
+
+# ESLint (특정 파일/디렉토리)
+npx eslint $ARGUMENTS
 ```
 
-</check_commands>
+**인수 처리:**
 
-<example>
+| 인수 | 동작 |
+|------|------|
+| 없음 | 전체 프로젝트 검사 |
+| 파일 경로 | 해당 파일만 |
+| 디렉토리 | 해당 디렉토리만 |
 
-```bash
-# 타입 오류: Property 'foo' does not exist on type 'Bar'
+</commands>
 
-→ Sequential 5단계:
-  1. 'foo' 프로퍼티 누락
-  2. Bar 타입 정의 확인
-  3. foo 필요 여부 판단
-  4. 옵션: Bar에 foo 추가 vs 다른 타입 사용
-  5. Bar 인터페이스에 foo 추가
-→ 수정 적용
-→ 재검사
+---
+
+<examples>
+
+**Example 1: Sequential Thinking 워크플로우**
+
+```
+1. npx tsc --noEmit 실행
+   → TS2322: Type 'string' is not assignable to type 'number'
+
+2. Sequential Thinking 시작:
+   thought 1: "TS2322 오류. string을 number에 할당 시도"
+   thought 2: "해당 파일의 변수 타입과 값 확인 필요"
+   thought 3: "함수 반환 타입이 number인데 string 반환 중"
+   thought 4: "수정 옵션: 1) 반환값 수정 2) 타입 수정"
+   thought 5: "반환값을 올바른 number로 수정하는 것이 적절"
+
+3. Edit으로 수정 적용
+
+4. npx tsc --noEmit $FILE 재검사 → 해결 확인
+
+5. TodoWrite 업데이트 (completed) → 다음 오류
 ```
 
-</example>
+**Example 2: 병렬 처리 (5개 이상 오류)**
+
+```
+독립적 파일 3개의 오류 발견:
+
+Task 1: "src/utils/api.ts의 TS2322 분석 - 타입 불일치 원인과 수정 방안"
+Task 2: "src/components/Form.tsx의 ESLint no-unused-vars 분석"
+Task 3: "src/hooks/useAuth.ts의 TS2532 분석 - undefined 체크 위치"
+
+→ 3개 Task 병렬 실행 (단일 메시지)
+→ 결과 취합 후 Sequential Thinking으로 수정 순서 결정
+→ 순차 수정 적용
+```
+
+**Example 3: 우선순위**
+
+| 우선순위 | 유형 | 예시 |
+|----------|------|------|
+| 1 | 타입 오류 (컴파일 차단) | TS2322, TS2345 |
+| 2 | 린트 오류 (error 레벨) | no-unused-vars |
+| 3 | 린트 경고 (warning 레벨) | prefer-const |
+
+</examples>
