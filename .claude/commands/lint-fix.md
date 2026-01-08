@@ -1,12 +1,70 @@
 ---
-description: tsc/eslint 오류 검사 및 하나씩 꼼꼼히 수정. ultrathink + sequential thinking 필수 사용.
-allowed-tools: Bash(tsc:*, npx:*, yarn:*, npm:*, pnpm:*), Read, Edit, mcp__sequential-thinking__sequentialthinking
+description: tsc/eslint 오류 검사 및 하나씩 꼼꼼히 수정. @lint-fixer 에이전트 필수 사용.
+allowed-tools: Task
 argument-hint: [파일/디렉토리 경로...]
 ---
 
 # Lint Fix Command
 
-> tsc/eslint 오류를 Sequential Thinking으로 분석하여 하나씩 수정
+> @lint-fixer 에이전트를 사용하여 tsc/eslint 오류를 자동으로 수정.
+
+---
+
+<critical_requirements>
+
+## ⚠️ CRITICAL: 작업 시작 전 필수 확인
+
+**이 커맨드는 반드시 @lint-fixer 에이전트를 사용해야 합니다.**
+
+### MANDATORY: Task 도구로 @lint-fixer 호출
+
+```typescript
+Task({
+  subagent_type: 'lint-fixer',
+  description: 'tsc/eslint 오류 수정',
+  prompt: `
+    $ARGUMENTS 처리:
+    ${$ARGUMENTS ? `특정 경로: ${$ARGUMENTS}` : '전체 프로젝트 검사'}
+
+    수행할 작업:
+    1. tsc + eslint 병렬 검사
+    2. 오류 분류 (간단/복잡)
+    3. TodoWrite로 오류 목록 생성
+    4. 간단한 오류: 즉시 수정
+    5. 복잡한 오류: Sequential Thinking으로 분석 후 수정
+    6. 전체 재검사로 완료 확인
+  `
+})
+```
+
+**❌ 절대 금지:**
+- Bash 도구로 tsc/eslint 직접 실행 후 수동 수정
+- @lint-fixer 없이 오류 수정
+- 커맨드 내에서 직접 오류 분석/수정
+
+**✅ 필수:**
+- Task 도구로 @lint-fixer 에이전트 호출
+- 모든 lint 작업을 에이전트에 위임
+- 에이전트가 자동으로 간단/복잡 판단 후 처리
+
+**@lint-fixer 에이전트 장점:**
+- 간단한 오류는 즉시 수정 (Sequential Thinking 불필요)
+- 복잡한 오류만 Sequential Thinking 사용 (효율적)
+- TodoWrite로 진행 상황 자동 추적
+- 우선순위 자동 정렬 (타입 오류 → 린트 오류)
+
+---
+
+**진행 전 자가 점검:**
+```text
+□ Task 도구 사용 준비?
+□ @lint-fixer 에이전트로 작업 위임?
+□ Bash로 tsc/eslint 직접 실행 안 함?
+```
+
+**⚠️ 위 체크리스트를 통과하지 않으면 작업을 시작하지 마세요.**
+
+</critical_requirements>
 
 ---
 
