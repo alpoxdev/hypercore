@@ -1,22 +1,17 @@
 # TanStack Start - Routing
 
-파일 기반 라우팅.
-
-## 기본 패턴
+<patterns>
 
 ```tsx
-// routes/about.tsx
-export const Route = createFileRoute('/about')({
-  component: AboutPage,
-})
+// 기본
+export const Route = createFileRoute('/about')({ component: AboutPage })
 
 // Loader
 export const Route = createFileRoute('/')({
   component: Page,
   loader: async () => fetch('/api/posts').then(r => r.json()),
 })
-
-function Page() {
+const Page = () => {
   const posts = Route.useLoaderData()
   return <ul>{posts.map(p => <li key={p.id}>{p.title}</li>)}</ul>
 }
@@ -29,19 +24,13 @@ export const Route = createFileRoute('/users/$id')({
     return <h1>{user.name}</h1>
   },
 })
-```
 
-## SSR 옵션
-
-```typescript
+// SSR 옵션
 ssr: true       // 전체 SSR (기본값)
 ssr: false      // 클라이언트만
-ssr: 'data-only' // 데이터만 서버, 렌더링은 클라이언트
-```
+ssr: 'data-only' // 데이터만 서버
 
-## Server Routes (API)
-
-```typescript
+// Server Routes (API)
 export const Route = createFileRoute('/api/hello')({
   server: {
     handlers: {
@@ -55,12 +44,16 @@ export const Route = createFileRoute('/api/hello')({
 })
 ```
 
-## 구조
+</patterns>
+
+<structure>
 
 ```
 routes/
-├── __root.tsx      → Root layout
-├── index.tsx       → /
-├── users/$id.tsx   → /users/:id
-├── $.tsx           → Catch-all (404)
+├── __root.tsx      # Root layout
+├── index.tsx       # /
+├── users/$id.tsx   # /users/:id
+├── $.tsx           # Catch-all (404)
 ```
+
+</structure>

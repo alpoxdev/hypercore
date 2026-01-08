@@ -1,32 +1,17 @@
 # TanStack Query - useQuery
 
-## 기본 사용법
+<patterns>
 
 ```tsx
+// 기본
 const { data, isLoading, error } = useQuery({
   queryKey: ['todos'],
   queryFn: getTodos,
 })
-
 if (isLoading) return <div>Loading...</div>
 if (error) return <div>Error: {error.message}</div>
-```
 
-## 반환값
-
-| 속성 | 설명 |
-|------|------|
-| data | 쿼리 결과 |
-| error | 에러 객체 |
-| isLoading | 첫 로딩 중 |
-| isFetching | 백그라운드 페칭 중 |
-| isError/isSuccess | 상태 |
-| refetch | 수동 리페치 |
-| status | 'pending' \| 'error' \| 'success' |
-
-## 주요 옵션
-
-```tsx
+// 옵션
 useQuery({
   queryKey: ['todos'],
   queryFn: fetchTodos,
@@ -39,12 +24,8 @@ useQuery({
   initialData: [],               // 초기 데이터
   select: (data) => data.filter(t => t.done),  // 데이터 변환
 })
-```
 
-## 패턴
-
-```tsx
-// 파라미터 쿼리
+// 파라미터
 useQuery({
   queryKey: ['todo', todoId],
   queryFn: () => fetchTodoById(todoId),
@@ -56,14 +37,14 @@ const { data: user } = useQuery({ queryKey: ['user', userId], queryFn: ... })
 const { data: posts } = useQuery({
   queryKey: ['posts', user?.id],
   queryFn: () => fetchPostsByUserId(user!.id),
-  enabled: !!user?.id,  // user 로드 후 실행
+  enabled: !!user?.id,
 })
 
-// 병렬 쿼리
+// 병렬
 const usersQuery = useQuery({ queryKey: ['users'], queryFn: fetchUsers })
 const postsQuery = useQuery({ queryKey: ['posts'], queryFn: fetchPosts })
 
-// 동적 병렬 쿼리
+// 동적 병렬
 const userQueries = useQueries({
   queries: userIds.map((id) => ({
     queryKey: ['user', id],
@@ -71,3 +52,19 @@ const userQueries = useQueries({
   })),
 })
 ```
+
+</patterns>
+
+<returns>
+
+| 속성 | 설명 |
+|------|------|
+| data | 쿼리 결과 |
+| error | 에러 객체 |
+| isLoading | 첫 로딩 중 |
+| isFetching | 백그라운드 페칭 중 |
+| isError/isSuccess | 상태 |
+| refetch | 수동 리페치 |
+| status | 'pending' \| 'error' \| 'success' |
+
+</returns>

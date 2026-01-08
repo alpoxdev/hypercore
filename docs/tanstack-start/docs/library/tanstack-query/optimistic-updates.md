@@ -1,39 +1,26 @@
 # TanStack Query - Optimistic Updates
 
-서버 응답 전 UI 즉시 업데이트.
-
-## 패턴
+<patterns>
 
 ```tsx
+// 추가
 useMutation({
   mutationFn: addTodo,
   onMutate: async (newTodo) => {
-    // 1. 진행 중인 refetch 취소
     await queryClient.cancelQueries({ queryKey: ['todos'] })
-
-    // 2. 이전 값 스냅샷
     const previousTodos = queryClient.getQueryData(['todos'])
-
-    // 3. 낙관적 업데이트
     queryClient.setQueryData(['todos'], (old) => [...old, newTodo])
-
-    // 4. context로 이전 값 반환
     return { previousTodos }
   },
   onError: (err, newTodo, context) => {
-    // 5. 에러 시 롤백
     queryClient.setQueryData(['todos'], context.previousTodos)
   },
   onSettled: () => {
-    // 6. 서버와 동기화
     queryClient.invalidateQueries({ queryKey: ['todos'] })
   },
 })
-```
 
-## 삭제
-
-```tsx
+// 삭제
 useMutation({
   mutationFn: deleteTodo,
   onMutate: async (todoId) => {
@@ -49,11 +36,8 @@ useMutation({
   },
   onSettled: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
 })
-```
 
-## 토글
-
-```tsx
+// 토글
 useMutation({
   mutationFn: toggleTodo,
   onMutate: async (todoId) => {
@@ -71,11 +55,8 @@ useMutation({
   },
   onSettled: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
 })
-```
 
-## 단일 항목 업데이트
-
-```tsx
+// 단일 항목
 useMutation({
   mutationFn: updateTodo,
   onMutate: async (newTodo) => {
@@ -92,3 +73,5 @@ useMutation({
   },
 })
 ```
+
+</patterns>

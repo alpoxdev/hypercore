@@ -1,6 +1,6 @@
 # TanStack Start - 인증 패턴
 
-## 기본 인증 함수
+<patterns>
 
 ```typescript
 // 로그인
@@ -9,7 +9,6 @@ export const loginFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const user = await authenticateUser(data.email, data.password)
     if (!user) return { error: 'Invalid credentials' }
-
     const session = await useAppSession()
     await session.update({ userId: user.id, email: user.email })
     throw redirect({ to: '/dashboard' })
@@ -30,11 +29,8 @@ export const getCurrentUserFn = createServerFn({ method: 'GET' })
     if (!session.data.userId) return null
     return getUserById(session.data.userId)
   })
-```
 
-## 인증 미들웨어
-
-```typescript
+// 인증 미들웨어
 export const authMiddleware = createMiddleware({ type: 'function' })
   .server(async ({ next }) => {
     const session = await useAppSession()
@@ -43,15 +39,12 @@ export const authMiddleware = createMiddleware({ type: 'function' })
     return next({ context: { user } })
   })
 
-// 사용
+// Server Function에 적용
 export const protectedFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => ({ user: context.user }))
-```
 
-## 보호된 라우트
-
-```tsx
+// 보호된 라우트
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: async () => {
     const user = await getCurrentUserFn()
@@ -63,11 +56,8 @@ export const Route = createFileRoute('/dashboard')({
     return <h1>Welcome, {user.name}!</h1>
   },
 })
-```
 
-## Better Auth 통합
-
-```typescript
+// Better Auth 통합
 export const auth = betterAuth({
   database: prismaAdapter(prisma),
   emailAndPassword: { enabled: true },
@@ -76,3 +66,5 @@ export const auth = betterAuth({
 export const getSession = createServerFn({ method: 'GET' })
   .handler(async ({ request }) => auth.api.getSession({ headers: request.headers }))
 ```
+
+</patterns>

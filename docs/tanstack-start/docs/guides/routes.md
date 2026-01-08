@@ -1,38 +1,63 @@
 # 라우트 구조
 
-TanStack Start 파일 기반 라우팅 패턴.
+> TanStack Start 파일 기반 라우팅
 
-## Route 폴더 구조
+<instructions>
+@../library/tanstack-router/index.md
+</instructions>
 
-```
-routes/<route-name>/
-├── index.tsx              # 페이지 컴포넌트
-├── route.tsx              # route 설정 (필요시)
-├── -components/           # 페이지 전용 컴포넌트
-│   ├── user-card.tsx
-│   └── user-form.tsx
-├── -sections/             # 섹션 분리 (복잡한 경우)
-│   ├── user-list-section.tsx
-│   └── user-filter-section.tsx
-└── -hooks/                # 페이지 전용 훅
-    ├── use-users.ts
-    └── use-user-filter.ts
-```
+---
 
-## `-` 접두사
+<route_structure>
 
-`-` 접두사가 있는 폴더는 라우트에서 제외:
+## 라우트 폴더 구조
 
 ```
-routes/users/
-├── index.tsx          # /users ✅ 라우트
-├── $id.tsx            # /users/:id ✅ 라우트
-├── -components/       # ❌ 라우트 아님
-├── -sections/         # ❌ 라우트 아님
-└── -hooks/            # ❌ 라우트 아님
+routes/
+├── __root.tsx           # Root Layout
+├── index.tsx            # / (Home)
+├── users/
+│   ├── index.tsx        # /users (List)
+│   ├── $id.tsx          # /users/:id (Detail)
+│   ├── -components/     # 페이지 전용 컴포넌트
+│   ├── -sections/       # 섹션 분리 (복잡한 경우)
+│   └── -hooks/          # 페이지 전용 Hook
+└── posts/
+    ├── index.tsx
+    └── $slug.tsx
 ```
 
-## 기본 Route 패턴
+| 접두사 | 용도 | 라우트 생성 |
+|--------|------|-----------|
+| `-` | 라우트 제외 폴더 | ❌ 제외 |
+| `$` | 동적 파라미터 | ✅ 생성 |
+| `_` | Pathless Layout | ✅ 생성 (경로 없음) |
+
+</route_structure>
+
+---
+
+<file_naming>
+
+## 라우트 파일명 규칙
+
+| 경로 | 파일명 | 설명 |
+|------|--------|------|
+| `/` | `index.tsx` | 인덱스 라우트 |
+| `/users` | `users/index.tsx` | 목록 페이지 |
+| `/users/:id` | `users/$id.tsx` | 동적 파라미터 |
+| `/posts/:slug` | `posts/$slug.tsx` | URL 파라미터 |
+| `/dashboard/*` | `dashboard/$.tsx` | Catch-all 라우트 |
+| Layout | `__root.tsx` | Root 레이아웃 |
+| Pathless | `_layout.tsx` | 경로 없는 레이아웃 |
+
+</file_naming>
+
+---
+
+<patterns>
+
+## 기본 라우트 패턴
 
 ```tsx
 // routes/users/index.tsx
@@ -50,6 +75,105 @@ const UsersPage = (): JSX.Element => {
       <h1 className="text-2xl font-bold mb-4">Users</h1>
       <UserFilterSection />
       <UserListSection />
+    </div>
+  )
+}
+```
+
+## 동적 라우트 + Loader
+
+```tsx
+// routes/users/$id.tsx
+import { createFileRoute } from '@tanstack/react-router'
+import { getUserById } from '@/services/user'
+
+export const Route = createFileRoute('/users/$id')({
+  loader: ({ params: { id } }) => getUserById({ data: id }),
+  component: UserDetailPage,
+})
+
+const UserDetailPage = (): JSX.Element => {
+  const user = Route.useLoaderData()
+
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <p>{user.email}</p>
+    </div>
+  )
+}
+```
+
+## Loader with Dependencies
+
+```tsx
+// routes/posts/index.tsx
+import { createFileRoute } from '@tanstack/react-router'
+import { getPosts } from '@/services/post'
+import { z } from 'zod'
+
+const postsSearchSchema = z.object({
+  offset: z.number().default(0),
+  limit: z.number().default(10),
+})
+
+export const Route = createFileRoute('/posts/')({
+  validateSearch: postsSearchSchema,
+  loaderDeps: ({ search: { offset, limit } }) => ({ offset, limit }),
+  loader: ({ deps: { offset, limit } }) => getPosts({ data: { offset, limit } }),
+  component: PostsPage,
+})
+
+const PostsPage = (): JSX.Element => {
+  const posts = Route.useLoaderData()
+  const { offset, limit } = Route.useSearch()
+
+  return (
+    <div>
+      <h1>Posts (offset: {offset}, limit: {limit})</h1>
+      {posts.map((post) => (
+        <div key={post.id}>{post.title}</div>
+      ))}
+    </div>
+  )
+}
+```
+
+## Deferred Data Loading
+
+```tsx
+// routes/dashboard/index.tsx
+import { createFileRoute, Await } from '@tanstack/react-router'
+import { Suspense } from 'react'
+import { getFastData, getSlowData } from '@/services/dashboard'
+
+export const Route = createFileRoute('/dashboard/')({
+  loader: async () => {
+    const slowDataPromise = getSlowData()
+    const fastData = await getFastData()
+
+    return {
+      fastData,
+      deferredSlowData: slowDataPromise,
+    }
+  },
+  component: DashboardPage,
+})
+
+const DashboardPage = (): JSX.Element => {
+  const { fastData, deferredSlowData } = Route.useLoaderData()
+
+  return (
+    <div>
+      <h1>Fast Data</h1>
+      <pre>{JSON.stringify(fastData, null, 2)}</pre>
+
+      <h1>Slow Data (Deferred)</h1>
+      <Suspense fallback={<div>Loading slow data...</div>}>
+        <Await promise={deferredSlowData}>
+          {(slowData) => <pre>{JSON.stringify(slowData, null, 2)}</pre>}
+        </Await>
+      </Suspense>
     </div>
   )
 }
@@ -79,42 +203,6 @@ export const UserListSection = (): JSX.Element => {
           isDeleting={isDeleting}
         />
       ))}
-    </div>
-  )
-}
-```
-
-## Filter Section 패턴
-
-```tsx
-// routes/users/-sections/user-filter-section.tsx
-import { useUserFilter } from '../-hooks/use-user-filter'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-
-export const UserFilterSection = (): JSX.Element => {
-  const { search, setSearch, role, setRole, clearFilters } = useUserFilter()
-
-  return (
-    <div className="flex gap-4 mb-6">
-      <Input
-        placeholder="Search users..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="max-w-xs"
-      />
-      <select
-        value={role}
-        onChange={(e) => setRole(e.target.value)}
-        className="border rounded px-3 py-2"
-      >
-        <option value="">All Roles</option>
-        <option value="USER">User</option>
-        <option value="ADMIN">Admin</option>
-      </select>
-      <Button variant="outline" onClick={clearFilters}>
-        Clear
-      </Button>
     </div>
   )
 }
@@ -164,3 +252,67 @@ export const UserCard = ({
   )
 }
 ```
+
+</patterns>
+
+---
+
+<page_size_rules>
+
+| 페이지 크기 | 구조 | 예시 |
+|------------|------|------|
+| ~100줄 | 단일 파일 | 간단한 페이지, 폼 |
+| 100-200줄 | `-components/` 분리 | 목록 + 필터 |
+| 200줄+ | `-sections/` + `-components/` | 대시보드, 복잡한 UI |
+
+</page_size_rules>
+
+---
+
+<loader_execution>
+
+## Loader 실행 순서
+
+| 단계 | 실행 방식 | 설명 |
+|------|----------|------|
+| 1. `beforeLoad` | 순차 (outermost → innermost) | 인증 체크, 컨텍스트 설정 |
+| 2. `loader` | 병렬 (모든 loader 동시) | 데이터 페칭 |
+
+```tsx
+// Parent Route
+export const Route = createFileRoute('/dashboard')({
+  beforeLoad: async () => {
+    // 1. 먼저 실행 (순차)
+    const auth = await checkAuth()
+    return { auth }
+  },
+  loader: async () => {
+    // 2. 나중에 실행 (병렬)
+    return getDashboardData()
+  },
+})
+
+// Child Route
+export const Route = createFileRoute('/dashboard/users')({
+  beforeLoad: async () => {
+    // 1. Parent beforeLoad 다음 실행
+    return {}
+  },
+  loader: async () => {
+    // 2. Parent loader와 병렬 실행
+    return getUsers()
+  },
+})
+```
+
+</loader_execution>
+
+---
+
+<sources>
+
+- [TanStack Router Data Loading](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading)
+- [TanStack Router Deferred Data Loading](https://tanstack.com/router/latest/docs/framework/react/guide/deferred-data-loading)
+- [TanStack Router File-Based Routing](https://tanstack.com/router/latest/docs/framework/react/guide/file-based-routing)
+
+</sources>

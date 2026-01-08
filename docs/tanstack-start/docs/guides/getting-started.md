@@ -1,11 +1,27 @@
 # Getting Started
 
-TanStack Start 프로젝트 시작 가이드.
+> TanStack Start 프로젝트 빠른 시작
 
-## Prerequisites
+<instructions>
+@conventions.md
+@routes.md
+@services.md
+</instructions>
 
-- Node.js 18+
-- Yarn
+---
+
+<prerequisites>
+
+| 요구사항 | 버전 |
+|----------|------|
+| Node.js | 18+ |
+| 패키지 관리자 | Yarn / npm / pnpm |
+
+</prerequisites>
+
+---
+
+<installation>
 
 ## 프로젝트 생성
 
@@ -15,7 +31,7 @@ cd my-app
 yarn install
 ```
 
-## 필수 패키지 설치
+## 필수 패키지
 
 ```bash
 # Database (Prisma 7.x)
@@ -29,9 +45,25 @@ yarn add zod
 yarn add @tanstack/react-query
 ```
 
-## 초기 설정
+</installation>
 
-### app.config.ts
+---
+
+<project_setup>
+
+## 프로젝트 구조
+
+```
+src/
+├── routes/
+│   ├── __root.tsx       # Root Layout
+│   └── index.tsx        # Home Page
+├── lib/
+│   └── query-client.ts  # Query Client 설정
+└── app.config.ts        # TanStack Start 설정
+```
+
+## app.config.ts
 
 ```typescript
 import { defineConfig } from '@tanstack/react-start/config'
@@ -43,7 +75,7 @@ export default defineConfig({
 })
 ```
 
-### Root Route
+## Root Route
 
 ```tsx
 // src/routes/__root.tsx
@@ -67,7 +99,7 @@ const RootComponent = (): JSX.Element => {
 }
 ```
 
-### Home Route
+## Home Route
 
 ```tsx
 // src/routes/index.tsx
@@ -80,13 +112,16 @@ export const Route = createFileRoute('/')({
 const HomePage = (): JSX.Element => {
   return (
     <div>
-      <h1 className="text-2xl font-bold">Welcome</h1>
+      <h1 className="text-2xl font-bold">Welcome to TanStack Start</h1>
+      <p className="mt-4 text-gray-600">
+        Full-stack React framework powered by TanStack Router
+      </p>
     </div>
   )
 }
 ```
 
-### Query Client
+## Query Client 설정
 
 ```typescript
 // src/lib/query-client.ts
@@ -95,23 +130,49 @@ import { QueryClient } from '@tanstack/react-query'
 export const createQueryClient = (): QueryClient => {
   return new QueryClient({
     defaultOptions: {
-      queries: { staleTime: 60 * 1000, retry: 1 },
+      queries: {
+        staleTime: 60 * 1000,  // 1분
+        retry: 1,
+      },
     },
   })
 }
 ```
 
-## 개발 명령어
+</project_setup>
+
+---
+
+<commands>
 
 | Command | Description |
 |---------|-------------|
-| `yarn dev` | 개발 서버 시작 |
+| `yarn dev` | 개발 서버 시작 (http://localhost:3000) |
 | `yarn build` | 프로덕션 빌드 |
-| `yarn start` | 프로덕션 서버 |
+| `yarn start` | 프로덕션 서버 실행 |
 
-## 다음 단계
+</commands>
 
-- [conventions.md](./conventions.md) - 코드 컨벤션
-- [routes.md](./routes.md) - 라우트 구조
-- [hooks.md](./hooks.md) - Custom Hook 패턴
-- [services.md](./services.md) - Service Layer
+---
+
+<next_steps>
+
+| 문서 | 내용 |
+|------|------|
+| [conventions.md](./conventions.md) | 코드 컨벤션, 파일명 규칙 |
+| [env-setup.md](./env-setup.md) | 환경 변수 설정 |
+| [routes.md](./routes.md) | 라우트 구조, 파일 기반 라우팅 |
+| [services.md](./services.md) | Server Functions, 데이터 레이어 |
+| [hooks.md](./hooks.md) | Custom Hook 패턴 |
+
+</next_steps>
+
+---
+
+<sources>
+
+- [TanStack Start Server Functions](https://tanstack.com/start/latest/docs/framework/react/guide/server-functions)
+- [TanStack Router Data Loading](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading)
+- [TanStack Start Middleware](https://tanstack.com/start/latest/docs/framework/react/guide/middleware)
+
+</sources>
