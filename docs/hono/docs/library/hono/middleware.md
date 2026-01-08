@@ -2,7 +2,7 @@
 
 > 요청/응답 처리 파이프라인
 
----
+<patterns>
 
 ## 기본 사용법
 
@@ -15,11 +15,8 @@ const app = new Hono()
 
 app.use(logger())           // 모든 라우트
 app.use('/api/*', cors())   // 특정 경로
-```
 
-### 실행 순서
-
-```typescript
+// 실행 순서
 app.use(async (c, next) => {
   console.log('1. 요청 전')
   await next()
@@ -34,17 +31,13 @@ app.use(async (c, next) => {
 // 출력: 1 → 2 → handler → 3 → 4
 ```
 
----
-
 ## 커스텀 미들웨어
 
 ```typescript
 import { createMiddleware } from 'hono/factory'
 import { HTTPException } from 'hono/http-exception'
 
-type Env = {
-  Variables: { userId: string }
-}
+type Env = { Variables: { userId: string } }
 
 export const authMiddleware = createMiddleware<Env>(async (c, next) => {
   const token = c.req.header('Authorization')?.replace('Bearer ', '')
@@ -63,68 +56,6 @@ app.get('/me', authMiddleware, (c) => {
   return c.json({ userId: c.get('userId') })
 })
 ```
-
----
-
-## 내장 미들웨어
-
-### Logger
-
-```typescript
-import { logger } from 'hono/logger'
-app.use(logger())
-```
-
-### CORS
-
-```typescript
-import { cors } from 'hono/cors'
-
-app.use('/api/*', cors({
-  origin: ['https://example.com'],
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-}))
-```
-
-### Bearer Auth
-
-```typescript
-import { bearerAuth } from 'hono/bearer-auth'
-
-app.use('/api/*', bearerAuth({
-  verifyToken: async (token) => token === 'valid-token',
-}))
-```
-
-### Secure Headers
-
-```typescript
-import { secureHeaders } from 'hono/secure-headers'
-app.use(secureHeaders())
-```
-
-### Request ID
-
-```typescript
-import { requestId } from 'hono/request-id'
-
-app.use('*', requestId())
-
-app.get('/', (c) => {
-  return c.text(`Request ID: ${c.get('requestId')}`)
-})
-```
-
-### Compress
-
-```typescript
-import { compress } from 'hono/compress'
-app.use(compress())
-```
-
----
 
 ## 타입 안전 미들웨어
 
@@ -159,9 +90,19 @@ app.get('/users', (c) => {
 })
 ```
 
+</patterns>
+
 ---
 
-## 관련 문서
+<builtin>
 
-- [기본 사용법](./index.md)
-- [에러 처리](./error-handling.md)
+| 미들웨어 | 사용 |
+|---------|------|
+| **logger** | `app.use(logger())` |
+| **cors** | `app.use('/api/*', cors({ origin: ['https://example.com'] }))` |
+| **bearerAuth** | `app.use('/api/*', bearerAuth({ verifyToken: async (t) => t === 'valid' }))` |
+| **secureHeaders** | `app.use(secureHeaders())` |
+| **requestId** | `app.use(requestId())` → `c.get('requestId')` |
+| **compress** | `app.use(compress())` |
+
+</builtin>

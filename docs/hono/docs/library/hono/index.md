@@ -1,40 +1,36 @@
-# Hono - Web Framework
+# Hono
 
-> Web Standards 기반 초경량 서버 프레임워크
+> Web Standards 기반 초경량 프레임워크
 
-@env-setup.md
+<references>
 @middleware.md
 @validation.md
 @error-handling.md
 @rpc.md
+</references>
 
 ---
 
-## 설치
-
+<setup>
 ```bash
 npm install hono
 ```
+</setup>
 
 ---
 
-## 기본 사용법
+<quick_patterns>
+
+## 라우트
 
 ```typescript
 import { Hono } from 'hono'
 
 const app = new Hono()
 
-app.get('/', (c) => c.text('Hello Hono!'))
+app.get('/', (c) => c.text('Hello'))
 app.post('/', (c) => c.text('POST /'))
-
-// 동적 파라미터
-app.get('/users/:id', (c) => {
-  const id = c.req.param('id')
-  return c.json({ id })
-})
-
-// 여러 파라미터
+app.get('/users/:id', (c) => c.json({ id: c.req.param('id') }))
 app.get('/posts/:postId/comments/:commentId', (c) => {
   const { postId, commentId } = c.req.param()
   return c.json({ postId, commentId })
@@ -43,13 +39,9 @@ app.get('/posts/:postId/comments/:commentId', (c) => {
 export default app
 ```
 
----
-
-## 라우트 그룹화
+## 라우트 그룹
 
 ```typescript
-const app = new Hono()
-
 const users = new Hono()
 users.get('/', (c) => c.json({ users: [] }))
 users.get('/:id', (c) => c.json({ id: c.req.param('id') }))
@@ -58,13 +50,10 @@ users.post('/', (c) => c.json({ created: true }, 201))
 app.route('/users', users)
 ```
 
----
-
-## Context (c)
-
-### Request
+## Context
 
 ```typescript
+// Request
 app.get('/info', (c) => {
   const url = c.req.url
   const path = c.req.path
@@ -74,11 +63,8 @@ app.get('/info', (c) => {
   const auth = c.req.header('Authorization')
   return c.json({ url, path, method })
 })
-```
 
-### Request Body
-
-```typescript
+// Body
 app.post('/json', async (c) => {
   const body = await c.req.json()
   return c.json(body)
@@ -88,20 +74,15 @@ app.post('/form', async (c) => {
   const body = await c.req.parseBody()
   return c.json(body)
 })
+
+// Response
+c.text('Hello')
+c.json({ message: 'Hello' })
+c.json({ id: 1 }, 201)
+c.html('<h1>Hello</h1>')
+c.redirect('/new')
+c.notFound()
 ```
-
-### Response
-
-```typescript
-c.text('Hello')                    // Text
-c.json({ message: 'Hello' })       // JSON
-c.json({ id: 1 }, 201)             // JSON + status
-c.html('<h1>Hello</h1>')           // HTML
-c.redirect('/new')                 // Redirect
-c.notFound()                       // 404
-```
-
----
 
 ## Bindings & Variables
 
@@ -118,13 +99,13 @@ type Variables = {
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
-// 환경 변수 접근
+// 환경 변수
 app.get('/', (c) => {
   const dbUrl = c.env.DATABASE_URL
   return c.json({ connected: true })
 })
 
-// Variables 설정/사용
+// Variables
 app.use(async (c, next) => {
   c.set('userId', '123')
   await next()
@@ -136,12 +117,4 @@ app.get('/me', (c) => {
 })
 ```
 
----
-
-## 관련 문서
-
-- [환경 변수 설정](./env-setup.md)
-- [미들웨어](./middleware.md)
-- [Zod 검증](./validation.md)
-- [에러 처리](./error-handling.md)
-- [RPC Client](./rpc.md)
+</quick_patterns>

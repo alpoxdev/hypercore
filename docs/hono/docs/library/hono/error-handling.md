@@ -1,8 +1,8 @@
 # Hono 에러 처리
 
-> HTTPException과 onError를 사용한 체계적인 에러 관리
+> HTTPException과 onError로 체계적 에러 관리
 
----
+<patterns>
 
 ## HTTPException
 
@@ -20,21 +20,7 @@ app.get('/users/:id', async (c) => {
 })
 ```
 
-### 일반적인 상태 코드
-
-```typescript
-throw new HTTPException(400, { message: 'Invalid input' })      // Bad Request
-throw new HTTPException(401, { message: 'Unauthorized' })       // 인증 필요
-throw new HTTPException(403, { message: 'Access denied' })      // 권한 없음
-throw new HTTPException(404, { message: 'Not found' })          // 리소스 없음
-throw new HTTPException(409, { message: 'Already exists' })     // 충돌
-throw new HTTPException(422, { message: 'Validation failed' })  // 검증 실패
-throw new HTTPException(429, { message: 'Rate limit exceeded' })// 요청 제한
-```
-
----
-
-## 글로벌 에러 핸들러
+## 글로벌 핸들러
 
 ```typescript
 import { Hono } from 'hono'
@@ -57,9 +43,7 @@ app.notFound((c) => {
 })
 ```
 
----
-
-## 상세 에러 응답
+## 상세 응답
 
 ```typescript
 app.onError((err, c) => {
@@ -85,13 +69,10 @@ app.onError((err, c) => {
 })
 ```
 
----
-
 ## 커스텀 에러 클래스
 
-### lib/errors.ts
-
 ```typescript
+// lib/errors.ts
 import { HTTPException } from 'hono/http-exception'
 
 export class NotFoundError extends HTTPException {
@@ -113,9 +94,8 @@ export class ConflictError extends HTTPException {
 }
 ```
 
-### 사용
-
 ```typescript
+// 사용
 import { NotFoundError, ConflictError } from '@/lib/errors'
 
 app.get('/users/:id', async (c) => {
@@ -131,9 +111,20 @@ app.post('/users', async (c) => {
 })
 ```
 
+</patterns>
+
 ---
 
-## 관련 문서
+<status_codes>
 
-- [기본 사용법](./index.md)
-- [미들웨어](./middleware.md)
+| 코드 | 사용 |
+|-----|------|
+| 400 | Invalid input |
+| 401 | Unauthorized (인증 필요) |
+| 403 | Access denied (권한 없음) |
+| 404 | Not found |
+| 409 | Already exists (충돌) |
+| 422 | Validation failed |
+| 429 | Rate limit exceeded |
+
+</status_codes>

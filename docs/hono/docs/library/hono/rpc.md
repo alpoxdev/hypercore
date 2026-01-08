@@ -2,7 +2,7 @@
 
 > Type-safe API 호출
 
----
+<patterns>
 
 ## 서버 설정
 
@@ -26,14 +26,11 @@ const app = new Hono()
     }
   )
 
-// 타입 export 필수
-export type AppType = typeof app
+export type AppType = typeof app  // ✅ 필수
 export default app
 ```
 
----
-
-## 클라이언트 사용
+## 클라이언트
 
 ```typescript
 // client.ts
@@ -54,13 +51,7 @@ const data = await res.json() // { id: string, name: string }
 const res = await client.users.$post({
   json: { name: 'John', email: 'john@example.com' },
 })
-```
 
----
-
-## 요청 옵션
-
-```typescript
 // Query
 const res = await client.search.$get({
   query: { q: 'hono', page: '1' },
@@ -76,20 +67,13 @@ const res = await client.posts.$post(
   { json: { title: 'Test' } },
   { headers: { 'X-Custom': 'value' } }
 )
-```
 
----
-
-## 클라이언트 설정
-
-```typescript
+// Config
 const client = hc<AppType>('http://localhost:8787/', {
   headers: { Authorization: 'Bearer TOKEN' },
   init: { credentials: 'include' },
 })
 ```
-
----
 
 ## 타입 추론
 
@@ -103,9 +87,7 @@ type UserResponse = InferResponseType<typeof client.users[':id'].$get>
 // { id: string; name: string }
 ```
 
----
-
-## CRUD 예제
+## CRUD 래퍼
 
 ```typescript
 const userApi = {
@@ -134,20 +116,10 @@ const userApi = {
     return res.json()
   },
 }
-```
 
----
-
-## URL 생성
-
-```typescript
+// URL 생성
 const url = client.posts[':id'].$url({ param: { id: '123' } })
 console.log(url.pathname) // /posts/123
 ```
 
----
-
-## 관련 문서
-
-- [기본 사용법](./index.md)
-- [Zod 검증](./validation.md)
+</patterns>

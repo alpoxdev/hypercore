@@ -1,61 +1,105 @@
-# CLAUDE.md - Hono Server Framework
+# CLAUDE.md - Hono
 
-> Web Standards 기반 초경량 서버 프레임워크
+> Web Standards 기반 초경량 프레임워크
 
-## Instructions
-
+<instructions>
 @../../commands/git.md
+@docs/guides/getting-started.md
 @docs/library/hono/index.md
 @docs/library/prisma/index.md
+@docs/library/t3-env/index.md
 @docs/library/zod/index.md
-@docs/deployment/index.md
+</instructions>
 
 ---
 
-## STOP - 금지 사항
+<forbidden>
 
-| 분류 | 금지 항목 |
-|------|----------|
-| **Git** | `Generated with Claude Code`, `🤖`, `Co-Authored-By:`, 여러 줄 커밋, 이모지 |
-| **Prisma** | `db push`, `migrate`, `generate` 자동 실행, schema 임의 변경 |
-| **API** | handler 내부 수동 검증 (→ zValidator), 수동 인증 (→ middleware), 일반 Error throw (→ HTTPException) |
-| **검색** | grep, rg, find (→ ast-grep 사용) |
+| 분류 | 금지 |
+|------|------|
+| **Git** | `Generated with Claude Code`, `🤖`, `Co-Authored-By:`, 여러 줄, 이모지 |
+| **Prisma** | `db push/migrate/generate` 자동 실행, schema 임의 변경 |
+| **API** | handler 내 수동 검증/인증, 일반 Error throw |
+| **검색** | grep, rg, find |
+
+</forbidden>
 
 ---
 
-## ALWAYS - 필수 사항
+<required>
 
 | 작업 | 필수 |
 |------|------|
-| 작업 전 | 관련 docs 읽기 |
-| 코드 검색 | ast-grep 사용 |
-| 복잡한 분석 | Sequential Thinking MCP |
-| 3+ 파일 수정 | gemini-review 실행 |
-| 코드 작성 | UTF-8, 코드 묶음별 한글 주석 |
-| Prisma | Multi-File 구조, 모든 요소 한글 주석 |
+| 작업 전 | 관련 docs 읽기 (API→hono, DB→prisma) |
+| 코드 검색 | ast-grep |
+| 복잡한 작업 | Sequential Thinking MCP |
+| 3+ 파일 수정 | gemini-review |
+| Validation | zValidator, HTTPException 에러 처리 |
+| 코드 작성 | UTF-8, 코드 묶음별 한글 주석, Prisma Multi-File 모든 요소 주석 |
+
+</required>
 
 ---
 
-## Tech Stack
+<tech_stack>
 
-| 기술 | 버전 | 주의사항 |
-|------|------|----------|
-| Hono | 최신 | Web Standards 기반 |
-| TypeScript | 5.x | strict mode |
+| 기술 | 버전 | 주의 |
+|------|------|------|
+| Hono | 최신 | - |
+| TypeScript | 5.x | strict |
 | Prisma | **7.x** | `prisma-client`, output 필수 |
-| Zod | **4.x** | `z.email()`, `z.url()` (v4 문법) |
+| Zod | **4.x** | `z.email()`, `z.url()` |
+
+</tech_stack>
 
 ---
 
-## Quick Patterns
+<structure>
+```
+src/
+├── routes/
+│   ├── index.ts       # Root routes
+│   ├── users.ts       # /users/*
+│   └── posts.ts       # /posts/*
+├── middleware/        # Auth, CORS, Logger
+├── services/          # Business logic
+├── lib/
+│   ├── prisma.ts
+│   └── env.ts
+└── types/
+```
 
-### App + 에러 핸들러
+공통 로직 → `src/services/`, 라우트별 로직 → 각 route 파일
+</structure>
+
+---
+
+<conventions>
+
+파일명: kebab-case
+TypeScript: const 선언, 명시적 return type, interface(객체)/type(유니온), any→unknown
+Import 순서: 외부 → 내부 → 상대경로 → type
+
+Prisma Multi-File:
+```
+prisma/schema/
+├── +base.prisma   # datasource, generator
+├── +enum.prisma   # enum
+└── [model].prisma # 모델별 (한글 주석!)
+```
+
+</conventions>
+
+---
+
+<quick_patterns>
 
 ```typescript
+// App + 에러 핸들러
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 
-type Bindings = { DATABASE_URL: string; JWT_SECRET: string }
+type Bindings = { DATABASE_URL: string }
 
 const app = new Hono<{ Bindings: Bindings }>()
 
@@ -67,21 +111,18 @@ app.onError((err, c) => {
   return c.json({ error: 'Internal Server Error' }, 500)
 })
 
-app.notFound((c) => c.json({ error: 'Not Found' }, 404))
-
 export default app
 ```
 
-### Zod 검증 (v4 문법)
-
 ```typescript
+// Zod v4 + Validation
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 
 const schema = z.object({
-  email: z.email(),           // ✅ v4
+  email: z.email(),
   name: z.string().min(1).trim(),
-  website: z.url().optional() // ✅ v4
+  website: z.url().optional()
 })
 
 app.post('/users', zValidator('json', schema), (c) => {
@@ -90,36 +131,40 @@ app.post('/users', zValidator('json', schema), (c) => {
 })
 ```
 
-### Prisma Multi-File 구조
+```typescript
+// Middleware
+import { createMiddleware } from 'hono/factory'
+import { HTTPException } from 'hono/http-exception'
 
-```
-prisma/schema/
-├── +base.prisma    # datasource, generator
-├── +enum.prisma    # enum 정의
-├── user.prisma     # User 모델 (한글 주석 필수)
-└── post.prisma     # Post 모델
+export const authMiddleware = createMiddleware(async (c, next) => {
+  const token = c.req.header('Authorization')?.replace('Bearer ', '')
+  if (!token) throw new HTTPException(401, { message: 'Unauthorized' })
+
+  c.set('userId', decoded.sub)
+  await next()
+})
+
+// 사용
+app.use('/api/*', authMiddleware)
 ```
 
 ```prisma
-// +base.prisma
+// +base.prisma (Prisma 7.x)
 generator client {
-  provider = "prisma-client"      // ✅ v7
-  output   = "./generated/client" // ✅ 필수
+  provider = "prisma-client"
+  output   = "./generated/client"
 }
 ```
 
+</quick_patterns>
+
 ---
 
-## 문서 구조
-
+<docs_structure>
 ```
 docs/
-├── library/
-│   ├── hono/       # 라우팅, 미들웨어, 검증, RPC
-│   ├── prisma/     # CRUD, 관계, D1 연동
-│   ├── zod/        # v4 문법, 검증 패턴
-│   ├── ai-sdk/     # LLM 통합 (streaming, tools)
-│   └── pino/       # 로깅
-├── deployment/     # Docker, Railway, Vercel, Cloudflare
-└── architecture/   # 아키텍처 패턴
+├── guides/       # getting-started, conventions, env-setup
+├── library/      # hono, prisma, t3-env, zod
+└── deployment/   # cloudflare, docker, railway, vercel
 ```
+</docs_structure>
