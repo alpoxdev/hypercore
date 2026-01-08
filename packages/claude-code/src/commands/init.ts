@@ -245,16 +245,20 @@ export const init = async (options: InitOptions): Promise<void> => {
   logger.info('Installed templates:');
   templates.forEach((t) => logger.step(t));
 
-  if (installSkills || installCommands || installAgents) {
+  if (
+    (installSkills && hasSkills) ||
+    (installCommands && hasCommands) ||
+    (installAgents && hasAgents)
+  ) {
     logger.blank();
     logger.info('Installed extras:');
-    if (installSkills) {
+    if (installSkills && hasSkills) {
       logger.step('Skills → .claude/skills/');
     }
-    if (installCommands) {
+    if (installCommands && hasCommands) {
       logger.step('Commands → .claude/commands/');
     }
-    if (installAgents) {
+    if (installAgents && hasAgents) {
       logger.step('Agents → .claude/agents/');
     }
   }

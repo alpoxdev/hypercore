@@ -10,6 +10,13 @@ export const getTemplatesDir = (): string => {
   return path.resolve(__dirname, '../templates');
 };
 
+// 디렉토리에 파일이 실제로 존재하는지 체크
+const hasFiles = async (dir: string): Promise<boolean> => {
+  if (!(await fs.pathExists(dir))) return false;
+  const items = await fs.readdir(dir);
+  return items.length > 0;
+};
+
 export const getTemplatePath = (template: string): string => {
   return path.join(getTemplatesDir(), template);
 };
@@ -296,9 +303,9 @@ export const checkAllExtrasExist = async (
   const commandsSrc = path.join(claudeDir, 'commands');
   const agentsSrc = path.join(claudeDir, 'agents');
 
-  const hasSkills = await fs.pathExists(skillsSrc);
-  const hasCommands = await fs.pathExists(commandsSrc);
-  const hasAgents = await fs.pathExists(agentsSrc);
+  const hasSkills = await hasFiles(skillsSrc);
+  const hasCommands = await hasFiles(commandsSrc);
+  const hasAgents = await hasFiles(agentsSrc);
 
   return { hasSkills, hasCommands, hasAgents };
 };

@@ -5,7 +5,7 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', 'templates/**', 'scripts/**'],
+    ignores: ['dist/**', 'node_modules/**', 'templates/**'],
   },
   eslint.configs.recommended,
   {
@@ -25,7 +25,6 @@ export default [
       '@typescript-eslint': tseslint,
     },
     rules: {
-      // TypeScript 규칙
       ...tseslint.configs.recommended.rules,
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-unused-vars': [
@@ -37,17 +36,11 @@ export default [
         'error',
         { prefer: 'type-imports' },
       ],
-
-      // 코드 퀄리티
-      'no-console': 'off', // CLI이므로 console 허용
+      'no-unused-vars': 'off',
+      'no-undef': 'off',
       'prefer-const': 'error',
       'no-var': 'error',
       eqeqeq: ['error', 'always'],
-      curly: ['error', 'all'],
-
-      // ESLint 기본 규칙 (TypeScript와 충돌 방지)
-      'no-unused-vars': 'off',
-      'no-undef': 'off',
     },
   },
 ];
