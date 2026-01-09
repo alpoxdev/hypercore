@@ -18,7 +18,6 @@
 | **API** | `/api` 라우터 생성 (Server Functions 사용) |
 | **레이어** | Service Layer 건너뛰기, Routes에서 직접 DB 접근 |
 | **검증** | Handler 내부 수동 검증, 인증 로직 분산 |
-| **Server Fn** | `createServerFn` 사용 (명시 요청 없으면 `createServerOnlyFn`) |
 | **Barrel Export** | `functions/index.ts` 생성 (Tree Shaking 실패, 서버 라이브러리 Client 오염) |
 
 </forbidden>
@@ -34,7 +33,7 @@
 | **페이지 분리** | 100줄+ → `-components`, 200줄+ → `-sections` |
 | **beforeLoad** | 인증 체크, Context 전달, 리다이렉트 |
 | **loader** | 데이터 로딩 (beforeLoad 완료 후 병렬 실행) |
-| **Server Fn** | `createServerOnlyFn` 기본 사용 |
+| **Server Fn** | `createServerFn` 기본 사용 |
 | **검증** | `inputValidator` (POST/PUT/PATCH), Zod 스키마 |
 | **인증** | `middleware` (authMiddleware) |
 | **에러 처리** | `errorComponent` (라우트), `notFoundComponent` (404) |
@@ -300,7 +299,7 @@ const { data } = useQuery({
 })
 
 // Server Function
-export const getUsers = createServerOnlyFn()
+export const getUsers = createServerFn()
   .middleware([authMiddleware])
   .handler(async () => prisma.user.findMany())
 ```
@@ -327,7 +326,7 @@ const mutation = useMutation({
 })
 
 // Server Function
-export const createUser = createServerOnlyFn({ method: 'POST' })
+export const createUser = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(createUserSchema)
   .handler(async ({ data }) => prisma.user.create({ data }))
@@ -345,12 +344,11 @@ export const createUser = createServerOnlyFn({ method: 'POST' })
 
 | 타입 | 실행 위치 | 사용 시나리오 |
 |------|----------|-------------|
-| **createServerOnlyFn** | 서버 | DB 접근, 비밀키 (기본) |
-| createServerFn | 서버 (RPC) | 일반 서버 로직 |
+| **createServerFn** | 서버 | DB 접근, 비밀키, 서버 로직 (기본) |
 | createClientOnlyFn | 클라이언트 | localStorage, window |
 | createIsomorphicFn | 양쪽 | 환경별 구현 |
 
-**기본 규칙**: 별도 요청 없으면 `createServerOnlyFn` 사용
+**기본 규칙**: 별도 요청 없으면 `createServerFn` 사용
 
 ### Middleware 패턴
 
@@ -364,7 +362,7 @@ export const authMiddleware = createMiddleware()
   })
 
 // 2. 사용
-export const createPost = createServerOnlyFn({ method: 'POST' })
+export const createPost = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(createPostSchema)
   .handler(async ({ data, context }) => {
