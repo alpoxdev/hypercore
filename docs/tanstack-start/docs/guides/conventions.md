@@ -8,12 +8,20 @@
 
 ## 파일 네이밍
 
+> ⚠️ **camelCase 파일명 금지** - 모든 파일명은 **kebab-case** 사용
+
 | 타입 | 규칙 | 예시 |
 |------|------|------|
 | **일반 파일** | kebab-case | `user-profile.tsx`, `auth-service.ts` |
 | **Route 파일** | TanStack Router 규칙 | `__root.tsx`, `index.tsx`, `$id.tsx` |
-| **Hook 파일** | `use-` 접두사 | `use-user-filter.ts`, `use-auth.ts` |
-| **Component** | PascalCase (파일은 kebab) | `UserCard` in `user-card.tsx` |
+| **Hook 파일** | `use-` 접두사 + kebab-case | `use-user-filter.ts`, `use-auth.ts` |
+| **Component** | PascalCase 컴포넌트, kebab-case 파일 | `UserCard` in `user-card.tsx` |
+| **Server Function** | kebab-case | `get-users.ts`, `create-post.ts` |
+
+```
+❌ camelCase 금지: getUserById.ts, authService.ts, useUserFilter.ts
+✅ kebab-case 필수: get-user-by-id.ts, auth-service.ts, use-user-filter.ts
+```
 
 </naming>
 

@@ -19,6 +19,7 @@
 | **레이어** | Service Layer 건너뛰기, Routes에서 직접 DB 접근 |
 | **검증** | Handler 내부 수동 검증, 인증 로직 분산 |
 | **Server Fn** | `createServerFn` 사용 (명시 요청 없으면 `createServerOnlyFn`) |
+| **Barrel Export** | `functions/index.ts` 생성 (Tree Shaking 실패, 서버 라이브러리 Client 오염) |
 
 </forbidden>
 
@@ -144,7 +145,6 @@ services/<domain>/
 
 ```
 functions/                    # 글로벌 (재사용)
-├── index.ts
 ├── <function-name>.ts        # 파일당 하나
 └── middlewares/
     └── <middleware-name>.ts
@@ -152,6 +152,24 @@ functions/                    # 글로벌 (재사용)
 routes/<route>/-functions/    # 페이지 전용
 └── <function-name>.ts
 ```
+
+> ⚠️ **`functions/index.ts` 생성 금지**
+>
+> `functions/` 폴더에 `index.ts` (barrel export) 파일을 만들지 마세요.
+>
+> **문제점:**
+> 1. **Tree Shaking 실패** - 번들러가 사용하지 않는 함수도 포함
+> 2. **Client 번들 오염** - `pg`, `prisma` 등 서버 전용 라이브러리가 클라이언트에 import되어 빌드 에러 발생
+>
+> ```typescript
+> // ❌ functions/index.ts 만들지 말 것
+> export * from './get-users'
+> export * from './create-post'  // pg import → 클라이언트 빌드 실패
+>
+> // ✅ 개별 파일에서 직접 import
+> import { getUsers } from '@/functions/get-users'
+> import { createPost } from '@/functions/create-post'
+> ```
 
 ### 4. Database Layer
 
