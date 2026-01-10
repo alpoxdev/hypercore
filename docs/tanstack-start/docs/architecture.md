@@ -15,6 +15,8 @@
 
 | 분류 | 금지 |
 |------|------|
+| **라우트** | Flat 파일 라우트 (`routes/users.tsx`) |
+| **Route Export** | `export const IndexRoute`, `const Route` (export 안함) |
 | **API** | `/api` 라우터 생성 (Server Functions 사용) |
 | **레이어** | Service Layer 건너뛰기, Routes에서 직접 DB 접근 |
 | **검증** | Handler 내부 수동 검증, 인증 로직 분산 |
@@ -28,6 +30,8 @@
 
 | 분류 | 필수 |
 |------|------|
+| **라우트 구조** | 페이지마다 폴더 생성 (`routes/users/index.tsx`) |
+| **Route Export** | `export const Route = createFileRoute(...)` 필수 |
 | **계층 구조** | Routes → Server Functions → Services → Database |
 | **Route Group** | 목록 → `(main)/`, 생성/편집 → 외부 |
 | **페이지 분리** | 100줄+ → `-components`, 200줄+ → `-sections` |
@@ -80,11 +84,59 @@
 
 ---
 
+<route_export_rule>
+
+## Route Export 규칙
+
+> ⚠️ **`export const Route` 필수**
+>
+> TanStack Router는 모든 라우트 파일에서 **정확히 `Route`라는 이름**으로 내보내야 합니다.
+>
+> `tsr generate` 및 `tsr watch` 명령어가 자동으로 경로를 생성하고 업데이트합니다.
+
+| ❌ 금지 | ✅ 필수 |
+|--------|--------|
+| `const Route = createFileRoute(...)` | `export const Route = createFileRoute(...)` |
+| `export const IndexRoute = ...` | `export const Route = ...` |
+| `export default createFileRoute(...)` | `export const Route = createFileRoute(...)` |
+
+```typescript
+// ❌ 금지: export 없음
+const Route = createFileRoute('/users')({
+  component: UsersPage,
+})
+
+// ❌ 금지: 다른 이름
+export const UsersRoute = createFileRoute('/users')({
+  component: UsersPage,
+})
+
+// ✅ 필수: 정확히 'Route' 이름으로 export
+export const Route = createFileRoute('/users')({
+  component: UsersPage,
+})
+```
+
+</route_export_rule>
+
+---
+
 <layers>
 
 ## Layer Architecture
 
 ### 1. Routes Layer
+
+> ⚠️ **페이지마다 폴더 생성 필수**
+>
+> 모든 페이지는 **반드시 폴더 구조**로 만들어야 합니다. Flat 파일 방식(`routes/users.tsx`)은 금지됩니다.
+>
+> **이유:** -components/, -functions/, -hooks/ 등 페이지 전용 리소스를 체계적으로 관리하기 위함입니다.
+>
+> | ❌ 금지 | ✅ 필수 |
+> |--------|--------|
+> | `routes/users.tsx` | `routes/users/index.tsx` |
+> | `routes/posts.tsx` | `routes/posts/(main)/index.tsx` |
 
 ```
 routes/<route-name>/
