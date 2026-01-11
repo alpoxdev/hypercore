@@ -159,26 +159,57 @@ routes/<route-name>/
 | **-components/** | 100-200줄 | 페이지 전용 컴포넌트 분리 |
 | **-sections/** | 200줄+ | 논리적 섹션 분리 |
 | **-tabs/** | 탭 UI | 탭 콘텐츠 분리 |
-| **_layout/** | Pathless | 공통 레이아웃 (URL 미영향) |
+| **route.tsx** | 레이아웃 | 하위 경로 공통 레이아웃 |
 
 #### Layout Routes 패턴
 
+> ⚠️ **route.tsx로 레이아웃 구성**
+>
+> `route.tsx`는 하위 경로의 공통 레이아웃 역할을 합니다.
+> `index.tsx`는 Route Group `()`으로 묶어야 합니다.
+>
+> **필수:** `route.tsx`는 반드시 `component`를 export해야 합니다.
+>
+> | ❌ 금지 | ✅ 필수 |
+> |--------|--------|
+> | `export const Route = createFileRoute(...)({})` | `export const Route = createFileRoute(...)({ component: ... })` |
+
 ```
 routes/
-├── (auth)/_layout/          # Pathless Layout
-│   ├── route.tsx            # <Outlet />
-│   ├── login.tsx            # /login
-│   └── register.tsx         # /register
+├── (auth)/
+│   ├── route.tsx           # 레이아웃 (<Outlet />)
+│   ├── (main)/
+│   │   └── index.tsx       # /auth (목록/메인)
+│   ├── login/
+│   │   └── index.tsx       # /auth/login
+│   └── register/
+│       └── index.tsx       # /auth/register
 ```
 
 ```typescript
-// routes/(auth)/_layout/route.tsx
-export const Route = createFileRoute('/(auth)/_layout')({
+// ❌ 금지: component 없음
+export const Route = createFileRoute('/(auth)')({
+  beforeLoad: async () => ({ user: await getUser() }),
+})
+
+// ✅ 필수: component 반드시 포함
+// routes/(auth)/route.tsx - 레이아웃
+export const Route = createFileRoute('/(auth)')({
   component: () => (
     <div className="auth-container">
       <Outlet />
     </div>
   ),
+})
+
+// routes/(auth)/(main)/index.tsx - 메인 페이지
+export const Route = createFileRoute('/(auth)/')({
+  component: AuthMainPage,
+})
+
+// routes/(auth)/login/index.tsx
+export const Route = createFileRoute('/(auth)/login')({
+  component: LoginPage,
 })
 ```
 
