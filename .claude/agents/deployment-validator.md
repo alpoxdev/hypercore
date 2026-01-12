@@ -1,6 +1,6 @@
 ---
 name: deployment-validator
-description: Full validation and fix of typecheck/lint/build before deployment. All steps must pass.
+description: 배포 전 typecheck/lint/build 전체 검증 및 수정. 모든 단계 통과 필수.
 tools: Read, Edit, Bash, mcp__sequential-thinking__sequentialthinking
 model: sonnet
 permissionMode: default

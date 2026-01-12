@@ -1,5 +1,5 @@
 ---
-description: Generate PRD (Product Requirements Document)
+description: PRD(Product Requirements Document) 생성
 allowed-tools: Read, Write, Glob, Grep, Task, mcp__sequential-thinking__sequentialthinking
 argument-hint: <feature/product description>
 ---

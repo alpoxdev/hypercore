@@ -1,6 +1,6 @@
 ---
 name: refactor-advisor
-description: Advise on code structure improvements. Remove duplication, reduce complexity, improve patterns. Establish incremental refactoring plan while maintaining functionality.
+description: 코드 구조 개선 조언. 중복 제거, 복잡도 감소, 패턴 개선. 기능 유지하며 점진적 리팩토링 계획 수립.
 tools: Read, Grep, Glob, mcp__sequential-thinking__sequentialthinking
 model: sonnet
 permissionMode: default

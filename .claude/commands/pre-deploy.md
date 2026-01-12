@@ -1,5 +1,5 @@
 ---
-description: Verify and fix typecheck/lint/build before deployment. Sequential thinking required.
+description: 배포 전 typecheck/lint/build 검증 및 수정. ultrathink + sequential thinking 필수 사용.
 allowed-tools: Bash(tsc:*, npx:*, yarn:*, npm:*, pnpm:*), Read, Edit, mcp__sequential-thinking__sequentialthinking
 argument-hint: [file/directory paths...]
 ---

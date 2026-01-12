@@ -1,5 +1,5 @@
 ---
-description: Commit and push only files modified in the current session
+description: 현재 세션에서 수정한 파일만 커밋 후 푸시
 ---
 
 # Git Session Command

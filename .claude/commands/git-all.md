@@ -1,5 +1,5 @@
 ---
-description: Commit all changes then push
+description: 모든 변경사항 커밋 후 푸시
 ---
 
 # Git All Command

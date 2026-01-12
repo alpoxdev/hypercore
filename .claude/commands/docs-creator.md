@@ -1,5 +1,5 @@
 ---
-description: Claude Code documentation writing guide
+description: Claude Code 문서 작성 가이드
 allowed-tools: Read, Write, Glob, Grep
 argument-hint: <document type: CLAUDE.md | SKILL.md | COMMAND.md>
 ---

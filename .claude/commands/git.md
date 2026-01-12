@@ -1,5 +1,5 @@
 ---
-description: Git status check and commit operations
+description: Git 상태 확인 및 커밋 작업
 argument-hint: [push|pull|commit instructions...]
 ---
 

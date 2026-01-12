@@ -1,5 +1,5 @@
 ---
-description: Establish refactoring plan. Prioritize @refactor-advisor. Sequential Thinking 3-7 required. Improvements while maintaining functionality.
+description: 코드 리팩토링 계획 수립. @refactor-advisor 우선 활용. Sequential Thinking 3-7 필수. 기능 유지하며 개선만.
 allowed-tools: Read, Glob, Grep, Bash(git:*, ast-grep:*), Task, Write, mcp__sequential-thinking__sequentialthinking
 argument-hint: <target file/module or improvement goal>
 ---

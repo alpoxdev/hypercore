@@ -1,5 +1,5 @@
 ---
-description: Generate subagent markdown files in .claude/agents/ directory
+description: .claude/agents/ 디렉토리에 서브에이전트 마크다운 파일 생성
 allowed-tools: Read, Write, Bash, Grep, Glob
 argument-hint: <description of agent purpose and functionality>
 ---

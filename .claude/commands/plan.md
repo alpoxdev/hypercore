@@ -1,5 +1,5 @@
 ---
-description: Review development approach and present 2-3 options with pros/cons. Sequential thinking 3-7 required. Plan only, no code changes.
+description: 개발 진행 방법 검토 및 옵션 제시. ultrathink + sequential thinking 3-7 필수. 코드 수정 없이 계획만.
 allowed-tools: Read, Glob, Grep, Bash(git:*, ast-grep:*), Task, Write, mcp__sequential-thinking__sequentialthinking
 argument-hint: <feature to develop or problem to solve>
 ---

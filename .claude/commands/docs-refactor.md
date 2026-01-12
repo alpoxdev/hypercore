@@ -1,5 +1,5 @@
 ---
-description: Improve existing Claude Code documents
+description: 기존 Claude Code 문서 개선
 allowed-tools: Read, Edit, Glob, Grep
 argument-hint: <document path>
 ---

@@ -1,5 +1,5 @@
 ---
-description: Slash command creation guide. Based on ANTHROPIC_CONTEXT_ENGINEERING.md rules.
+description: 슬래시 커맨드 생성 가이드. ANTHROPIC_CONTEXT_ENGINEERING.md 규칙 기반.
 allowed-tools: Read, Write, Glob, Grep
 argument-hint: <command name>
 ---

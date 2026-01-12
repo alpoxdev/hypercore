@@ -1,5 +1,5 @@
 ---
-description: Analyze project and configure ESLint flat config
+description: 프로젝트 분석 후 ESLint flat config 설정
 allowed-tools: Read, Write, Edit, Glob, Bash, mcp__sequential-thinking__sequentialthinking
 ---
 

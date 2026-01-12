@@ -1,5 +1,5 @@
 ---
-description: Execute plan or simple task. ultrathink + sequential thinking 2-5 + TodoWrite required.
+description: 계획 실행 또는 간단한 작업 수행. ultrathink + sequential thinking 2-5 + TodoWrite 필수.
 allowed-tools: Read, Glob, Grep, Bash, Task, Edit, Write, TodoWrite, mcp__sequential-thinking__sequentialthinking
 argument-hint: <task to execute or plan filename>
 ---

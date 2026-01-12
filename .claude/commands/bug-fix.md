@@ -1,5 +1,5 @@
 ---
-description: Analyze bug cause and fix. Sequential thinking 3-5 + Task (Explore) required.
+description: 버그 원인 분석 및 수정. sequential thinking 3-5 + Task (Explore) 필수.
 allowed-tools: Read, Grep, Glob, Task, Edit, Bash(npm:*, yarn:*), mcp__sequential-thinking__sequentialthinking
 argument-hint: <bug description or error message>
 ---

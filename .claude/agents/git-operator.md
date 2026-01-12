@@ -1,6 +1,6 @@
 ---
 name: git-operator
-description: Git commit/push operations. Separate commits by logical units, comply with AI indicator prohibition rules.
+description: Git 커밋/푸시 작업. 논리적 단위 분리 커밋, AI 표시 금지 규칙 준수.
 tools: Bash
 model: inherit
 ---

@@ -1,5 +1,5 @@
 ---
-description: Update project version and commit
+description: 프로젝트 버전 업데이트 및 커밋
 allowed-tools: Bash, Read, Edit
 argument-hint: <new-version | +1 | +minor | +major>
 ---

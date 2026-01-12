@@ -1,5 +1,5 @@
 ---
-description: Check and fix tsc/eslint errors one by one. @lint-fixer agent required.
+description: tsc/eslint 오류 검사 및 하나씩 꼼꼼히 수정. @lint-fixer 에이전트 필수 사용.
 allowed-tools: Task
 argument-hint: [file/directory paths...]
 ---

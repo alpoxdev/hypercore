@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Review code quality, security, and maintainability after writing/modifications. Focused analysis of changes based on git diff.
+description: 코드 작성/수정 후 품질, 보안, 유지보수성 검토. git diff 기반 변경사항 집중 분석.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 permissionMode: default
