@@ -88,8 +88,9 @@
 src/
 ├── routes/          # __root.tsx, index.tsx, $slug.tsx
 │   └── [path]/
-│       ├── -components/  # 페이지 전용
-│       └── -functions/   # 페이지 전용 Server Functions
+│       ├── -components/  # 페이지 전용 (필수)
+│       ├── -hooks/       # 페이지 전용 Custom Hooks (필수)
+│       └── -functions/   # 페이지 전용 Server Functions (필수)
 ├── functions/       # 공통 Server Functions
 ├── components/ui/
 ├── middleware/
@@ -97,7 +98,10 @@ src/
 └── lib/
 ```
 
-공통 → `@/functions/`, 라우트 전용 → `routes/[경로]/-functions/`
+**필수 규칙:**
+- 페이지당 `-components/`, `-hooks/`, `-functions/` 폴더 필수 (줄 수 무관)
+- Custom Hook은 페이지 크기와 무관하게 **반드시** `-hooks/` 폴더에 분리
+- 공통 함수 → `@/functions/`, 라우트 전용 → `routes/[경로]/-functions/`
 </structure>
 
 ---

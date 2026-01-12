@@ -19,12 +19,16 @@ routes/
 ├── users/
 │   ├── index.tsx        # /users (List)
 │   ├── $id.tsx          # /users/:id (Detail)
-│   ├── -components/     # 페이지 전용 컴포넌트
-│   ├── -sections/       # 섹션 분리 (복잡한 경우)
-│   └── -hooks/          # 페이지 전용 Hook
+│   ├── -components/     # 페이지 전용 컴포넌트 (필수)
+│   ├── -hooks/          # 페이지 전용 Hook (필수)
+│   ├── -functions/      # 페이지 전용 Server Functions (필수)
+│   └── -sections/       # 섹션 분리 (선택, 복잡한 경우만)
 └── posts/
     ├── index.tsx
-    └── $slug.tsx
+    ├── $slug.tsx
+    ├── -components/     # 필수
+    ├── -hooks/          # 필수
+    └── -functions/      # 필수
 ```
 
 | 접두사 | 용도 | 라우트 생성 |
@@ -32,6 +36,11 @@ routes/
 | `-` | 라우트 제외 폴더 | ❌ 제외 |
 | `$` | 동적 파라미터 | ✅ 생성 |
 | `_` | Pathless Layout | ✅ 생성 (경로 없음) |
+
+**⚠️ 필수 규칙:**
+- 모든 페이지에 `-components/`, `-hooks/`, `-functions/` 폴더 **필수**
+- 페이지 크기(줄 수)와 **무관**하게 Custom Hook은 반드시 `-hooks/` 폴더에 분리
+- `-sections/`는 200줄 이상 복잡한 페이지에서만 선택적 사용
 
 </route_structure>
 
@@ -257,15 +266,25 @@ export const UserCard = ({
 
 ---
 
-<page_size_rules>
+<folder_structure_rules>
 
-| 페이지 크기 | 구조 | 예시 |
+## 폴더 구조 규칙
+
+**⚠️ 모든 페이지에 필수:**
+- `-components/`: 페이지 전용 컴포넌트
+- `-hooks/`: 페이지 전용 Custom Hook (줄 수 무관)
+- `-functions/`: 페이지 전용 Server Functions
+
+**선택적 사용:**
+- `-sections/`: 200줄+ 복잡한 페이지에서만 사용
+
+| 페이지 크기 | 필수 | 선택 |
 |------------|------|------|
-| ~100줄 | 단일 파일 | 간단한 페이지, 폼 |
-| 100-200줄 | `-components/` 분리 | 목록 + 필터 |
-| 200줄+ | `-sections/` + `-components/` | 대시보드, 복잡한 UI |
+| ~100줄 | `-components/`, `-hooks/`, `-functions/` | - |
+| 100-200줄 | `-components/`, `-hooks/`, `-functions/` | - |
+| 200줄+ | `-components/`, `-hooks/`, `-functions/` | `-sections/` |
 
-</page_size_rules>
+</folder_structure_rules>
 
 ---
 

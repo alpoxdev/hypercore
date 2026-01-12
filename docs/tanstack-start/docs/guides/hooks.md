@@ -10,6 +10,34 @@
 
 ---
 
+<mandatory_separation>
+
+## ⚠️ 필수 규칙: Custom Hook 분리
+
+**모든 페이지는 Custom Hook을 `-hooks/` 폴더에 분리해야 합니다.**
+
+- 페이지 크기(줄 수)와 **무관**하게 반드시 분리
+- 10줄짜리 간단한 페이지도 Hook 분리 필수
+- 페이지 컴포넌트는 오직 UI 렌더링만 담당
+
+```typescript
+// ✅ 올바른 구조
+routes/users/
+├── index.tsx              // UI만
+├── -hooks/
+│   └── use-users.ts       // 모든 로직
+├── -components/
+└── -functions/
+
+// ❌ 잘못된 구조
+routes/users/
+└── index.tsx              // UI + 로직 혼재
+```
+
+</mandatory_separation>
+
+---
+
 <hook_order>
 
 ## Hook 내부 순서 (필수)
