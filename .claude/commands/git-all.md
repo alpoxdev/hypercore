@@ -2,6 +2,21 @@
 description: 모든 변경사항 커밋 후 푸시
 ---
 
+<critical_instruction>
+
+**CRITICAL: 사용자와의 모든 커뮤니케이션은 반드시 한국어로 작성하세요.**
+
+- 내부 사고와 분석은 영어로 해도 됨
+- 설명, 요약, 보고서, 피드백 등 사용자에게 전달하는 모든 내용은 반드시 한국어
+- 사용자가 영어로 말하더라도 답변은 한국어로
+- 진행 상황 업데이트와 상태 보고는 반드시 한국어
+
+이 규칙은 절대적이며 예외가 없습니다.
+
+</critical_instruction>
+
+---
+
 # Git All Command
 
 > Commit all changes and push using @git-operator agent.

@@ -4,6 +4,22 @@ allowed-tools: Read, Write, Glob, Grep
 argument-hint: <document type: CLAUDE.md | SKILL.md | COMMAND.md>
 ---
 
+<critical_instruction>
+
+**CRITICAL: 사용자와의 모든 커뮤니케이션은 반드시 한국어로 작성하세요.**
+
+- 내부 사고와 분석은 영어로 해도 됨
+- 설명, 요약, 보고서, 피드백 등 사용자에게 전달하는 모든 내용은 반드시 한국어
+- 사용자가 영어로 말하더라도 답변은 한국어로
+- 진행 상황 업데이트와 상태 보고는 반드시 한국어
+
+이 규칙은 절대적이며 예외가 없습니다.
+
+</critical_instruction>
+
+---
+
+
 # Docs Creator Command
 
 > Effectively create Claude Code documents (CLAUDE.md, SKILL.md, COMMAND.md) following Anthropic guidelines
