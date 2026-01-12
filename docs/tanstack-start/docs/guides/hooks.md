@@ -1,6 +1,6 @@
-# Custom Hook 패턴
+# Custom Hook Patterns
 
-> 페이지/섹션의 모든 로직, 상태, 라이프사이클 중앙화
+> Centralize all logic, state, and lifecycle for pages/sections
 
 <instructions>
 @../library/tanstack-router/hooks.md
@@ -12,26 +12,26 @@
 
 <mandatory_separation>
 
-## ⚠️ 필수 규칙: Custom Hook 분리
+## ⚠️ Required Rule: Custom Hook Separation
 
-**모든 페이지는 Custom Hook을 `-hooks/` 폴더에 분리해야 합니다.**
+**All pages must separate Custom Hooks into `-hooks/` folder.**
 
-- 페이지 크기(줄 수)와 **무관**하게 반드시 분리
-- 10줄짜리 간단한 페이지도 Hook 분리 필수
-- 페이지 컴포넌트는 오직 UI 렌더링만 담당
+- Must be separated **regardless of page size** (line count)
+- Even simple 10-line pages require Hook separation
+- Page components should only handle UI rendering
 
 ```typescript
-// ✅ 올바른 구조
+// ✅ Correct structure
 routes/users/
-├── index.tsx              // UI만
+├── index.tsx              // UI only
 ├── -hooks/
-│   └── use-users.ts       // 모든 로직
+│   └── use-users.ts       // All logic
 ├── -components/
 └── -functions/
 
-// ❌ 잘못된 구조
+// ❌ Wrong structure
 routes/users/
-└── index.tsx              // UI + 로직 혼재
+└── index.tsx              // UI + logic mixed
 ```
 
 </mandatory_separation>
@@ -40,16 +40,16 @@ routes/users/
 
 <hook_order>
 
-## Hook 내부 순서 (필수)
+## Hook Internal Order (Required)
 
-| 순서 | Hook 타입 | 예시 |
-|------|-----------|------|
+| Order | Hook Type | Examples |
+|-------|-----------|----------|
 | 1 | State | `useState`, zustand store |
 | 2 | Global Hooks | `useParams`, `useNavigate`, `useQueryClient` |
 | 3 | React Query | `useQuery` → `useMutation` |
 | 4 | Event Handlers | `handleCreate`, `handleDelete` |
-| 5 | useMemo | 계산된 값 |
-| 6 | useEffect | 부수 효과 |
+| 5 | useMemo | Computed values |
+| 6 | useEffect | Side effects |
 
 </hook_order>
 
@@ -57,7 +57,7 @@ routes/users/
 
 <patterns>
 
-## Page Hook 패턴
+## Page Hook Pattern
 
 ```typescript
 // routes/users/-hooks/use-users.ts
@@ -159,7 +159,7 @@ export const useUsers = (): UseUsersReturn => {
 }
 ```
 
-## Filter Hook 패턴
+## Filter Hook Pattern
 
 ```typescript
 // routes/users/-hooks/use-user-filter.ts
@@ -186,7 +186,7 @@ export const useUserFilter = (): UseUserFilterReturn => {
 }
 ```
 
-## Form Hook 패턴
+## Form Hook Pattern
 
 ```typescript
 // routes/users/-hooks/use-user-form.ts
@@ -255,24 +255,24 @@ export const useUserForm = (): UseUserFormReturn => {
 
 <anti_patterns>
 
-## ❌ 잘못된 순서
+## ❌ Wrong Order
 
 ```typescript
-// ❌ 순서가 뒤섞인 잘못된 예시
+// ❌ Mixed order (wrong example)
 export const useBadHook = () => {
-  const queryClient = useQueryClient()  // ❌ Global Hook이 먼저
+  const queryClient = useQueryClient()  // ❌ Global Hook first
 
-  useEffect(() => { /* ... */ }, [])    // ❌ useEffect가 중간에
+  useEffect(() => { /* ... */ }, [])    // ❌ useEffect in the middle
 
-  const [state, setState] = useState()  // ❌ State가 나중에
+  const [state, setState] = useState()  // ❌ State later
 
-  const { data } = useQuery({ /* ... */ })  // ❌ Query가 Effect 다음에
+  const { data } = useQuery({ /* ... */ })  // ❌ Query after Effect
 
-  const computed = useMemo(() => {}, [])  // ❌ useMemo 위치 잘못됨
+  const computed = useMemo(() => {}, [])  // ❌ useMemo wrong position
 }
 ```
 
-## ✅ 올바른 순서
+## ✅ Correct Order
 
 ```typescript
 export const useGoodHook = () => {
@@ -306,12 +306,12 @@ export const useGoodHook = () => {
 
 ## TanStack Router Hooks
 
-| Hook | 용도 | 예시 |
-|------|------|------|
-| `useParams` | URL 파라미터 | `const { id } = useParams({ from: '/users/$id' })` |
-| `useNavigate` | 프로그래밍 방식 네비게이션 | `navigate({ to: '/users' })` |
+| Hook | Purpose | Example |
+|------|---------|---------|
+| `useParams` | URL parameters | `const { id } = useParams({ from: '/users/$id' })` |
+| `useNavigate` | Programmatic navigation | `navigate({ to: '/users' })` |
 | `useSearch` | Search params | `const { page } = useSearch({ from: '/users' })` |
-| `useLoaderData` | Loader 데이터 | `const user = Route.useLoaderData()` |
+| `useLoaderData` | Loader data | `const user = Route.useLoaderData()` |
 | `useRouteContext` | Route context | `const { auth } = useRouteContext({ from: '__root__' })` |
 
 ```typescript
@@ -342,11 +342,11 @@ export const useUserDetail = () => {
 
 ## TanStack Query Hooks
 
-| Hook | 용도 | 특징 |
-|------|------|------|
-| `useQuery` | 데이터 조회 (GET) | 자동 캐싱, 재검증 |
-| `useMutation` | 데이터 변경 (POST/PUT/DELETE) | 성공 시 캐시 무효화 |
-| `useQueryClient` | 캐시 제어 | `invalidateQueries`, `setQueryData` |
+| Hook | Purpose | Features |
+|------|---------|----------|
+| `useQuery` | Data fetching (GET) | Auto caching, revalidation |
+| `useMutation` | Data modification (POST/PUT/DELETE) | Cache invalidation on success |
+| `useQueryClient` | Cache control | `invalidateQueries`, `setQueryData` |
 
 ```typescript
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -378,13 +378,13 @@ export const useUsers = () => {
 
 <best_practices>
 
-| 원칙 | 설명 |
-|------|------|
-| **순서 준수** | State → Global → Query → Handlers → Memo → Effect |
-| **타입 정의** | Return 타입 명시 (interface) |
-| **단일 책임** | 하나의 Hook은 하나의 관심사 |
-| **useCallback** | Event handler는 useCallback으로 메모이제이션 |
-| **명확한 네이밍** | `use-users.ts`, `use-user-filter.ts` |
+| Principle | Description |
+|-----------|-------------|
+| **Order Compliance** | State → Global → Query → Handlers → Memo → Effect |
+| **Type Definition** | Explicit return type (interface) |
+| **Single Responsibility** | One Hook, one concern |
+| **useCallback** | Memoize event handlers with useCallback |
+| **Clear Naming** | `use-users.ts`, `use-user-filter.ts` |
 
 </best_practices>
 

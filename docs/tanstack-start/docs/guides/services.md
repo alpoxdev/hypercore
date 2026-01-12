@@ -1,6 +1,6 @@
 # Server Functions
 
-> TanStack Start 데이터 레이어 (Server Functions)
+> TanStack Start Data Layer (Server Functions)
 
 <instructions>
 @../library/tanstack-start/index.md
@@ -10,15 +10,15 @@
 
 <api_naming>
 
-## API 이름 (중요)
+## API Names (Important)
 
-| ✅ 올바른 API | ❌ 잘못된 API | 설명 |
-|-------------|-------------|------|
-| `.inputValidator()` | ~~`.validator()`~~ | TanStack Start는 `inputValidator`만 지원 |
-| `.middleware()` | - | Middleware 체이닝 |
-| `.handler()` | - | 최종 handler 함수 |
+| ✅ Correct API | ❌ Incorrect API | Description |
+|----------------|------------------|-------------|
+| `.inputValidator()` | ~~`.validator()`~~ | TanStack Start only supports `inputValidator` |
+| `.middleware()` | - | Middleware chaining |
+| `.handler()` | - | Final handler function |
 
-**주의:** `validator`는 존재하지 않는 API입니다. 반드시 `inputValidator`를 사용하세요.
+**Note:** `validator` does not exist. Always use `inputValidator`.
 
 </api_naming>
 
@@ -26,15 +26,15 @@
 
 <folder_structure>
 
-## 서비스 폴더 구조
+## Service Folder Structure
 
 ```
 services/
 ├── user/
-│   ├── index.ts         # 진입점 (re-export)
-│   ├── schemas.ts       # Zod 스키마
-│   ├── queries.ts       # GET (읽기)
-│   └── mutations.ts     # POST (쓰기)
+│   ├── index.ts         # Entry point (re-export)
+│   ├── schemas.ts       # Zod schemas
+│   ├── queries.ts       # GET (read)
+│   └── mutations.ts     # POST (write)
 ├── auth/
 │   ├── index.ts
 │   ├── schemas.ts
@@ -47,12 +47,12 @@ services/
     └── mutations.ts
 ```
 
-| 파일 | 용도 |
-|------|------|
-| `index.ts` | 모든 함수 re-export |
-| `schemas.ts` | Zod 검증 스키마 |
-| `queries.ts` | GET 요청 (읽기) |
-| `mutations.ts` | POST/PUT/DELETE (쓰기) |
+| File | Purpose |
+|------|---------|
+| `index.ts` | Re-export all functions |
+| `schemas.ts` | Zod validation schemas |
+| `queries.ts` | GET requests (read) |
+| `mutations.ts` | POST/PUT/DELETE (write) |
 
 </folder_structure>
 
@@ -60,7 +60,7 @@ services/
 
 <patterns>
 
-## Schemas 파일
+## Schemas File
 
 ```typescript
 // services/user/schemas.ts
@@ -81,7 +81,7 @@ export type CreateUserInput = z.infer<typeof createUserSchema>
 export type UpdateUserInput = z.infer<typeof updateUserSchema>
 ```
 
-## Queries 파일 (GET)
+## Queries File (GET)
 
 ```typescript
 // services/user/queries.ts
@@ -108,7 +108,7 @@ export const getUserByEmail = createServerFn({ method: 'GET' })
   })
 ```
 
-## Mutations 파일 (POST)
+## Mutations File (POST)
 
 ```typescript
 // services/user/mutations.ts
@@ -135,7 +135,7 @@ export const deleteUser = createServerFn({ method: 'POST' })
   })
 ```
 
-## 진입점 파일
+## Entry Point File
 
 ```typescript
 // services/user/index.ts
@@ -144,7 +144,7 @@ export * from './queries'
 export * from './mutations'
 ```
 
-## Database 파일
+## Database File
 
 ```typescript
 // database/prisma.ts
@@ -171,7 +171,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 <middleware>
 
-## Middleware 패턴
+## Middleware Pattern
 
 ```typescript
 // middleware/auth.ts
@@ -234,7 +234,7 @@ export const deleteUser = createServerFn({ method: 'POST' })
 
 <usage>
 
-## TanStack Query 연동
+## TanStack Query Integration
 
 ```typescript
 // routes/users/-hooks/use-users.ts
@@ -274,7 +274,7 @@ export const useUsers = () => {
 }
 ```
 
-## Form 연동
+## Form Integration
 
 ```tsx
 // routes/users/-components/create-user-form.tsx
@@ -331,23 +331,23 @@ export const CreateUserForm = (): JSX.Element => {
 
 <method_chaining>
 
-## Method Chaining 순서
+## Method Chaining Order
 
 ```typescript
-// ✅ 올바른 순서
+// ✅ Correct order
 createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])      // 1. middleware (선택)
-  .inputValidator(createUserSchema)  // 2. inputValidator (선택)
-  .handler(async ({ data }) => {})   // 3. handler (필수)
+  .middleware([authMiddleware])      // 1. middleware (optional)
+  .inputValidator(createUserSchema)  // 2. inputValidator (optional)
+  .handler(async ({ data }) => {})   // 3. handler (required)
 
-// ❌ 잘못된 순서 (TypeScript 에러)
+// ❌ Wrong order (TypeScript error)
 createServerFn({ method: 'POST' })
-  .handler(async () => {})           // ❌ handler가 먼저
-  .inputValidator(schema)            // ❌ inputValidator가 나중에
+  .handler(async () => {})           // ❌ handler first
+  .inputValidator(schema)            // ❌ inputValidator after
 
-// ❌ 잘못된 API 이름 (존재하지 않음)
+// ❌ Wrong API name (does not exist)
 createServerFn({ method: 'POST' })
-  .validator(schema)                 // ❌ validator는 없음! inputValidator 사용
+  .validator(schema)                 // ❌ validator doesn't exist! Use inputValidator
   .handler(async ({ data }) => {})
 ```
 
@@ -357,14 +357,14 @@ createServerFn({ method: 'POST' })
 
 <best_practices>
 
-| 원칙 | 설명 |
-|------|------|
-| **파일 분리** | schemas, queries, mutations 분리 필수 |
-| **진입점** | index.ts에서 모든 함수 re-export |
-| **Validation** | POST/PUT/DELETE는 inputValidator 필수 |
-| **Middleware** | 인증/권한은 middleware 사용 |
-| **TanStack Query** | 클라이언트에서 직접 호출 금지, Query/Mutation 사용 |
-| **에러 처리** | 명확한 에러 메시지 throw |
+| Principle | Description |
+|-----------|-------------|
+| **File Separation** | Separate schemas, queries, mutations required |
+| **Entry Point** | Re-export all functions in index.ts |
+| **Validation** | inputValidator required for POST/PUT/DELETE |
+| **Middleware** | Use middleware for auth/permissions |
+| **TanStack Query** | Never call directly from client, use Query/Mutation |
+| **Error Handling** | Throw clear error messages |
 
 </best_practices>
 

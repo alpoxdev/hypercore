@@ -1,12 +1,12 @@
 # Server Actions
 
-> 타입 안전한 서버 함수 (React 19 Server Actions)
+> Type-safe server functions (React 19 Server Actions)
 
 ---
 
-## 기본 사용법
+## Basic Usage
 
-### 파일 상단 선언
+### File-level Declaration
 
 ```typescript
 // app/actions.ts
@@ -28,7 +28,7 @@ export async function createPost(formData: FormData) {
 }
 ```
 
-### 인라인 선언
+### Inline Declaration
 
 ```typescript
 // app/posts/page.tsx
@@ -46,7 +46,7 @@ export default function PostsPage() {
 
 ---
 
-## Zod 검증
+## Zod Validation
 
 ```typescript
 "use server"
@@ -74,7 +74,7 @@ export async function createPost(formData: FormData) {
 
 ---
 
-## 인증
+## Authentication
 
 ```typescript
 "use server"
@@ -92,7 +92,7 @@ export async function deletePost(id: string) {
   await prisma.post.delete({
     where: {
       id,
-      userId: session.user.id, // 본인 게시물만 삭제
+      userId: session.user.id, // Delete only own posts
     },
   })
 
@@ -102,7 +102,7 @@ export async function deletePost(id: string) {
 
 ---
 
-## 에러 처리
+## Error Handling
 
 ```typescript
 "use server"
@@ -116,14 +116,14 @@ export async function updatePost(id: string, data: PostInput) {
     if (error instanceof z.ZodError) {
       return { success: false, errors: error.errors }
     }
-    return { success: false, message: "업데이트 실패" }
+    return { success: false, message: "Update failed" }
   }
 }
 ```
 
 ---
 
-## 클라이언트에서 사용
+## Client Usage
 
 ### Form Action
 
@@ -137,7 +137,7 @@ export function CreatePostForm() {
     <form action={createPost}>
       <input name="title" required />
       <textarea name="content" required />
-      <button type="submit">등록</button>
+      <button type="submit">Submit</button>
     </form>
   )
 }
@@ -173,7 +173,7 @@ export function CreatePostForm() {
     >
       <input name="title" required />
       <button type="submit" disabled={mutation.isPending}>
-        {mutation.isPending ? "등록 중..." : "등록"}
+        {mutation.isPending ? "Submitting..." : "Submit"}
       </button>
     </form>
   )
@@ -191,7 +191,7 @@ export async function createPost(prevState: any, formData: FormData) {
   const title = formData.get("title") as string
 
   if (!title) {
-    return { error: "제목을 입력하세요" }
+    return { error: "Please enter a title" }
   }
 
   const post = await prisma.post.create({ data: { title } })
@@ -212,7 +212,7 @@ export function CreatePostForm() {
     <form action={formAction}>
       <input name="title" />
       {state?.error && <p>{state.error}</p>}
-      <button type="submit">등록</button>
+      <button type="submit">Submit</button>
     </form>
   )
 }
@@ -220,7 +220,7 @@ export function CreatePostForm() {
 
 ---
 
-## 캐시 무효화
+## Cache Invalidation
 
 ### revalidatePath
 
@@ -232,11 +232,11 @@ import { revalidatePath } from "next/cache"
 export async function createPost(data: PostInput) {
   const post = await prisma.post.create({ data })
 
-  // 특정 경로 캐시 무효화
+  // Invalidate specific path cache
   revalidatePath("/posts")
   revalidatePath(`/posts/${post.id}`)
 
-  // 레이아웃 포함 모든 캐시 무효화
+  // Invalidate all caches including layouts
   revalidatePath("/posts", "layout")
 
   return post
@@ -246,19 +246,19 @@ export async function createPost(data: PostInput) {
 ### revalidateTag
 
 ```typescript
-// 데이터 페칭 시 태그 설정
+// Set tag when fetching data
 const posts = await fetch("https://api.example.com/posts", {
   next: { tags: ["posts"] },
 })
 
-// Server Action에서 태그 무효화
+// Invalidate tag in Server Action
 "use server"
 
 import { revalidateTag } from "next/cache"
 
 export async function createPost(data: PostInput) {
   const post = await prisma.post.create({ data })
-  revalidateTag("posts") // "posts" 태그 캐시 무효화
+  revalidateTag("posts") // Invalidate "posts" tag cache
   return post
 }
 ```
@@ -279,13 +279,13 @@ export async function createPost(formData: FormData) {
     },
   })
 
-  redirect(`/posts/${post.id}`) // 페이지 이동
+  redirect(`/posts/${post.id}`) // Navigate to page
 }
 ```
 
 ---
 
-## 파일 업로드
+## File Upload
 
 ```typescript
 "use server"
@@ -297,7 +297,7 @@ export async function uploadFile(formData: FormData) {
   const file = formData.get("file") as File
 
   if (!file) {
-    throw new Error("파일이 없습니다")
+    throw new Error("No file provided")
   }
 
   const bytes = await file.arrayBuffer()
@@ -312,17 +312,17 @@ export async function uploadFile(formData: FormData) {
 
 ---
 
-## 베스트 프랙티스
+## Best Practices
 
 ### ✅ DO
 
 ```typescript
 "use server"
 
-// 1. Zod 검증
+// 1. Zod validation
 const schema = z.object({ title: z.string().min(1) })
 
-// 2. 인증 체크
+// 2. Authentication check
 const session = await auth()
 if (!session) throw new Error("Unauthorized")
 
@@ -332,35 +332,35 @@ try {
   revalidatePath("/posts")
   return { success: true, post }
 } catch (error) {
-  return { success: false, message: "생성 실패" }
+  return { success: false, message: "Creation failed" }
 }
 ```
 
 ### ❌ DON'T
 
 ```typescript
-// 1. 클라이언트 컴포넌트에서 Server Action 정의
+// 1. Defining Server Action in Client Component
 "use client"
 
 async function createPost() {
-  "use server" // ❌ 에러
+  "use server" // ❌ Error
 }
 
-// 2. 검증 없이 사용
+// 2. Using without validation
 export async function createPost(formData: FormData) {
-  const title = formData.get("title") // ❌ 검증 누락
+  const title = formData.get("title") // ❌ Missing validation
   await prisma.post.create({ data: { title } })
 }
 
-// 3. try-catch 없이 사용
+// 3. Using without try-catch
 export async function createPost(data: PostInput) {
-  const post = await prisma.post.create({ data }) // ❌ 에러 처리 누락
+  const post = await prisma.post.create({ data }) // ❌ Missing error handling
   return post
 }
 ```
 
 ---
 
-## 참조
+## References
 
 - [Next.js Server Actions](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)

@@ -1,24 +1,24 @@
 # TanStack Start - Middleware
 
-Server Function 및 라우트에 공통 로직 적용.
+Apply common logic to Server Functions and routes.
 
-## 기본 패턴
+## Basic Pattern
 
 ```typescript
-// 미들웨어 정의
+// Middleware definition
 const loggingMiddleware = createMiddleware({ type: 'function' })
   .server(({ next }) => {
     console.log('Processing request')
     return next()
   })
 
-// 적용
+// Apply
 const fn = createServerFn()
   .middleware([loggingMiddleware])
   .handler(async () => ({ message: 'Hello' }))
 ```
 
-## 인증 미들웨어
+## Auth Middleware
 
 ```typescript
 const authMiddleware = createMiddleware({ type: 'function' })
@@ -28,7 +28,7 @@ const authMiddleware = createMiddleware({ type: 'function' })
     return next({ context: { user: session.user } })
   })
 
-// 사용
+// Usage
 export const protectedFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => ({ user: context.user }))
@@ -47,8 +47,8 @@ const workspaceMiddleware = createMiddleware({ type: 'function' })
 ```typescript
 // src/start.ts
 export const startInstance = createStart(() => ({
-  requestMiddleware: [globalMiddleware],  // 모든 요청
-  functionMiddleware: [loggingMiddleware], // 모든 Server Function
+  requestMiddleware: [globalMiddleware],  // All requests
+  functionMiddleware: [loggingMiddleware], // All Server Functions
 }))
 ```
 
@@ -57,7 +57,7 @@ export const startInstance = createStart(() => ({
 ```typescript
 export const Route = createFileRoute('/hello')({
   server: {
-    middleware: [authMiddleware], // 모든 핸들러
+    middleware: [authMiddleware], // All handlers
     handlers: { GET: async ({ request }) => new Response('Hello') },
   },
 })

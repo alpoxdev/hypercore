@@ -48,8 +48,8 @@ export const Route = createRootRoute({
 export const Route = createFileRoute('/posts')({
   loader: async () => fetchPosts(),
   pendingComponent: () => <Spinner />,
-  pendingMs: 200,     // 200ms 후 표시
-  pendingMinMs: 500,  // 최소 500ms 유지 (깜빡임 방지)
+  pendingMs: 200,     // Show after 200ms
+  pendingMinMs: 500,  // Keep for at least 500ms (prevent flicker)
   component: PostsPage,
 })
 
@@ -61,7 +61,7 @@ export const Route = createFileRoute('/$')({
   },
 })
 
-// 에러 타입 구분
+// Error type discrimination
 const CustomError = ({ error, reset }: ErrorComponentProps) => {
   if (error instanceof TypeError && error.message.includes('fetch')) {
     return <div><p>Network error</p><button onClick={reset}>Retry</button></div>
@@ -77,13 +77,13 @@ const CustomError = ({ error, reset }: ErrorComponentProps) => {
 
 <priority>
 
-| 우선순위 | 컴포넌트 | 조건 |
+| Priority | Component | Condition |
 |---------|---------|------|
-| 1 | `errorComponent` | loader/beforeLoad에서 Error throw |
-| 2 | `notFoundComponent` | `notFound()` throw |
-| 3 | `pendingComponent` | loader 실행 중 (pendingMs 이후) |
-| 4 | `component` | 정상 렌더링 |
+| 1 | `errorComponent` | Error thrown in loader/beforeLoad |
+| 2 | `notFoundComponent` | `notFound()` thrown |
+| 3 | `pendingComponent` | Loader executing (after pendingMs) |
+| 4 | `component` | Normal rendering |
 
-에러 전파: 하위 → 상위 (errorComponent 없으면 부모로 전파)
+Error propagation: Child → Parent (propagates to parent if no errorComponent)
 
 </priority>

@@ -1,6 +1,6 @@
-# Nitro v3 배포 가이드
+# Nitro v3 Deployment Guide
 
-> Hono + Nitro 배포
+> Hono + Nitro deployment
 
 @docker.md
 @railway.md
@@ -9,7 +9,7 @@
 
 ---
 
-## 설치
+## Installation
 
 ```bash
 npm install nitro@3
@@ -17,7 +17,7 @@ npm install nitro@3
 
 ---
 
-## 기본 설정
+## Basic Configuration
 
 ```typescript
 // nitro.config.ts
@@ -32,7 +32,7 @@ export default defineNitroConfig({
 
 ---
 
-## 엔트리포인트
+## Entry Point
 
 ```typescript
 // src/server.ts
@@ -51,19 +51,19 @@ export default app;
 ## CLI
 
 ```bash
-npx nitro dev              # 개발 서버
-npx nitro build            # 빌드
-npx nitro preview          # 프리뷰
-node .output/server/index.mjs  # 실행
+npx nitro dev              # Development server
+npx nitro build            # Build
+npx nitro preview          # Preview
+node .output/server/index.mjs  # Run
 ```
 
 ---
 
-## Preset 선택
+## Preset Selection
 
-| Preset | 용도 |
-|--------|------|
-| `node` | Node.js 서버, Docker |
+| Preset | Usage |
+|--------|-------|
+| `node` | Node.js server, Docker |
 | `cloudflare_module` | Cloudflare Workers |
 | `cloudflare_pages` | Cloudflare Pages |
 | `vercel` | Vercel Functions |
@@ -71,7 +71,7 @@ node .output/server/index.mjs  # 실행
 
 ---
 
-## 환경 변수
+## Environment Variables
 
 ```typescript
 // nitro.config.ts
@@ -97,22 +97,22 @@ app.get("/config", (c) => {
 
 ---
 
-## 프로젝트 구조
+## Project Structure
 
 ```
-프로젝트/
+project/
 ├── nitro.config.ts
 ├── src/
-│   ├── server.ts      # Hono 앱
+│   ├── server.ts      # Hono app
 │   ├── routes/
 │   └── lib/
-├── .output/           # 빌드 결과물
+├── .output/           # Build output
 └── package.json
 ```
 
 ---
 
-## 관련 문서
+## Related Documentation
 
 - [Docker](./docker.md)
 - [Railway](./railway.md)

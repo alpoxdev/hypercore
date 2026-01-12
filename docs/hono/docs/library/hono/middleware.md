@@ -1,10 +1,10 @@
-# Hono 미들웨어
+# Hono Middleware
 
-> 요청/응답 처리 파이프라인
+> Request/Response processing pipeline
 
 <patterns>
 
-## 기본 사용법
+## Basic Usage
 
 ```typescript
 import { Hono } from 'hono'
@@ -13,25 +13,25 @@ import { cors } from 'hono/cors'
 
 const app = new Hono()
 
-app.use(logger())           // 모든 라우트
-app.use('/api/*', cors())   // 특정 경로
+app.use(logger())           // All routes
+app.use('/api/*', cors())   // Specific path
 
-// 실행 순서
+// Execution order
 app.use(async (c, next) => {
-  console.log('1. 요청 전')
+  console.log('1. Before request')
   await next()
-  console.log('4. 응답 후')
+  console.log('4. After response')
 })
 
 app.use(async (c, next) => {
-  console.log('2. 요청 전')
+  console.log('2. Before request')
   await next()
-  console.log('3. 응답 후')
+  console.log('3. After response')
 })
-// 출력: 1 → 2 → handler → 3 → 4
+// Output: 1 → 2 → handler → 3 → 4
 ```
 
-## 커스텀 미들웨어
+## Custom Middleware
 
 ```typescript
 import { createMiddleware } from 'hono/factory'
@@ -51,13 +51,13 @@ export const authMiddleware = createMiddleware<Env>(async (c, next) => {
   await next()
 })
 
-// 사용
+// Usage
 app.get('/me', authMiddleware, (c) => {
   return c.json({ userId: c.get('userId') })
 })
 ```
 
-## 타입 안전 미들웨어
+## Type-safe Middleware
 
 ```typescript
 import { Hono } from 'hono'
@@ -84,8 +84,8 @@ app.use(dbMiddleware)
 app.use(authMiddleware)
 
 app.get('/users', (c) => {
-  const db = c.get('db')      // Database 타입
-  const user = c.get('user')  // User | null 타입
+  const db = c.get('db')      // Database type
+  const user = c.get('user')  // User | null type
   return c.json({ users: [] })
 })
 ```
@@ -96,8 +96,8 @@ app.get('/users', (c) => {
 
 <builtin>
 
-| 미들웨어 | 사용 |
-|---------|------|
+| Middleware | Usage |
+|------------|-------|
 | **logger** | `app.use(logger())` |
 | **cors** | `app.use('/api/*', cors({ origin: ['https://example.com'] }))` |
 | **bearerAuth** | `app.use('/api/*', bearerAuth({ verifyToken: async (t) => t === 'valid' }))` |

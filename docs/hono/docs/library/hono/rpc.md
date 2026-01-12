@@ -1,10 +1,10 @@
 # Hono RPC Client
 
-> Type-safe API 호출
+> Type-safe API calls
 
 <patterns>
 
-## 서버 설정
+## Server Setup
 
 ```typescript
 // server.ts
@@ -26,11 +26,11 @@ const app = new Hono()
     }
   )
 
-export type AppType = typeof app  // ✅ 필수
+export type AppType = typeof app  // ✅ Required
 export default app
 ```
 
-## 클라이언트
+## Client
 
 ```typescript
 // client.ts
@@ -75,7 +75,7 @@ const client = hc<AppType>('http://localhost:8787/', {
 })
 ```
 
-## 타입 추론
+## Type Inference
 
 ```typescript
 import type { InferRequestType, InferResponseType } from 'hono/client'
@@ -87,7 +87,7 @@ type UserResponse = InferResponseType<typeof client.users[':id'].$get>
 // { id: string; name: string }
 ```
 
-## CRUD 래퍼
+## CRUD Wrapper
 
 ```typescript
 const userApi = {
@@ -117,7 +117,7 @@ const userApi = {
   },
 }
 
-// URL 생성
+// URL generation
 const url = client.posts[':id'].$url({ param: { id: '123' } })
 console.log(url.pathname) // /posts/123
 ```

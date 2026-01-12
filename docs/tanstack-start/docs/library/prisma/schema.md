@@ -1,21 +1,21 @@
-# Prisma - 스키마 정의 (Multi-File)
+# Prisma - Schema Definition (Multi-File)
 
-## ⚠️ 필수 규칙
+## ⚠️ Required Rules
 
-1. **Multi-File 구조** 사용
-2. **모든 요소에 한글 주석** (파일, 모델, 필드, enum)
+1. **Multi-File structure** required
+2. **Korean comments on all elements** (files, models, fields, enums)
 
-## 구조
+## Structure
 
 ```
 prisma/schema/
 ├── +base.prisma    # datasource, generator
-├── +enum.prisma    # 모든 enum
-├── user.prisma     # User 모델
-└── post.prisma     # Post 모델
+├── +enum.prisma    # all enums
+├── user.prisma     # User model
+└── post.prisma     # Post model
 ```
 
-## 예시
+## Examples
 
 ```prisma
 // +base.prisma
@@ -31,24 +31,24 @@ generator client {
 
 // +enum.prisma
 enum Role {
-  USER   // 일반 사용자
-  ADMIN  // 관리자
+  USER   // Regular user
+  ADMIN  // Administrator
 }
 
 // user.prisma
 model User {
   id        Int      @id @default(autoincrement())
-  email     String   @unique  // 로그인 이메일
-  name      String?           // 표시 이름
+  email     String   @unique  // Login email
+  name      String?           // Display name
   role      Role     @default(USER)
-  posts     Post[]            // 작성 게시글 (1:N)
-  profile   Profile?          // 프로필 (1:1)
+  posts     Post[]            // Author posts (1:N)
+  profile   Profile?          // Profile (1:1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 ```
 
-## 관계 유형
+## Relation Types
 
 ```prisma
 // 1:1
@@ -64,11 +64,11 @@ model Post {
   authorId Int
 }
 
-// M:N (암묵적)
+// M:N (implicit)
 model Post { categories Category[] }
 model Category { posts Post[] }
 
-// M:N (명시적)
+// M:N (explicit)
 model CategoriesOnPosts {
   post       Post     @relation(fields: [postId], references: [id])
   postId     Int
@@ -78,21 +78,21 @@ model CategoriesOnPosts {
 }
 ```
 
-## 기타
+## Other Features
 
 ```prisma
-// 선택적 관계
+// Optional relation
 author   User? @relation(fields: [authorId], references: [id])
 authorId Int?
 
-// 인덱스
+// Indexes
 @@index([authorId])
 @@index([createdAt])
 
-// 복합 키
+// Composite key
 @@id([postId, tagId])
 
-// 매핑
+// Mapping
 @map("user_id")
 @@map("users")
 ```

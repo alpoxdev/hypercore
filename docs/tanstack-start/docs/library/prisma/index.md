@@ -15,7 +15,7 @@
 ## Quick Reference
 
 ```typescript
-import { PrismaClient } from './generated/prisma'  // v7 경로!
+import { PrismaClient } from './generated/prisma'  // v7 path!
 export const prisma = new PrismaClient()
 
 // CRUD
@@ -24,34 +24,34 @@ const user = await prisma.user.create({ data: { email, name } })
 const updated = await prisma.user.update({ where: { id }, data: { name } })
 const deleted = await prisma.user.delete({ where: { id } })
 
-// 관계 포함
+// Include relations
 const userWithPosts = await prisma.user.findUnique({
   where: { id },
   include: { posts: true },
 })
 ```
 
-### v7 schema.prisma (⚠️ 중요)
+### v7 schema.prisma (⚠️ Important)
 
 ```prisma
 generator client {
-  provider = "prisma-client"        // v7! (prisma-client-js 아님)
-  output   = "../generated/prisma"  // output 필수!
+  provider = "prisma-client"        // v7! (not prisma-client-js)
+  output   = "../generated/prisma"  // output is required!
 }
 ```
 
-### ⛔ Claude Code 금지
+### ⛔ Claude Code Forbidden
 
-| 금지 사항 |
+| Forbidden Actions |
 |----------|
-| prisma db push 자동 실행 |
-| prisma migrate 자동 실행 |
-| prisma generate 자동 실행 |
-| schema.prisma 임의 변경 |
+| Auto-run prisma db push |
+| Auto-run prisma migrate |
+| Auto-run prisma generate |
+| Unauthorized schema.prisma modifications |
 
 ---
 
-## Prisma Client 설정
+## Prisma Client Setup
 
 ```typescript
 // lib/prisma.ts
@@ -62,12 +62,12 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({ log: ['query'
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 ```
 
-## 마이그레이션 명령어
+## Migration Commands
 
 ```bash
-npx prisma migrate dev --name init   # 개발 마이그레이션
-npx prisma migrate deploy            # 프로덕션 마이그레이션
-npx prisma db push                   # 스키마 동기화 (개발용)
-npx prisma generate                  # Client 생성
+npx prisma migrate dev --name init   # Development migration
+npx prisma migrate deploy            # Production migration
+npx prisma db push                   # Schema sync (dev only)
+npx prisma generate                  # Generate Client
 npx prisma studio                    # GUI
 ```

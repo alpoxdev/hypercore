@@ -10,28 +10,28 @@
 
 ---
 
-## ⛔ 필수 규칙
+## ⛔ Required Rules
 
-| 금지 | 대신 |
+| Forbidden | Use Instead |
 |------|------|
-| /api 라우터 | Server Functions |
-| handler 내 수동 검증 | inputValidator |
-| handler 내 수동 인증 | middleware |
+| /api routes | Server Functions |
+| Manual validation in handler | inputValidator |
+| Manual auth in handler | middleware |
 
-✅ POST/PUT/PATCH → inputValidator 필수
-✅ 인증 필요 → middleware 필수
+✅ POST/PUT/PATCH → inputValidator required
+✅ Auth needed → middleware required
 
 ---
 
 ## Quick Reference
 
 ```typescript
-// GET + 인증
+// GET + Auth
 export const getUsers = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async () => prisma.user.findMany())
 
-// POST + Validation + 인증
+// POST + Validation + Auth
 export const createUser = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(createUserSchema)
@@ -43,14 +43,14 @@ export const Route = createFileRoute('/users')({
   loader: async () => ({ users: await getUsers() }),
 })
 
-// Loader 데이터 사용
+// Using Loader data
 const UsersPage = (): JSX.Element => {
   const { users } = Route.useLoaderData()
   return <div>{/* render */}</div>
 }
 ```
 
-### 구조
+### Structure
 
 ```
 routes/
@@ -59,9 +59,9 @@ routes/
 ├── users/
 │   ├── index.tsx       # /users
 │   ├── $id.tsx         # /users/:id
-│   ├── -components/    # 페이지 전용
-│   └── -functions/     # 페이지 전용 Server Functions
+│   ├── -components/    # Page-specific
+│   └── -functions/     # Page-specific Server Functions
 
-공통 함수 → @/functions/
-라우트 전용 → routes/[경로]/-functions/
+Shared functions → @/functions/
+Route-specific → routes/[path]/-functions/
 ```

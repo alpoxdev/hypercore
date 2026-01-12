@@ -1,16 +1,16 @@
 # t3-env - Type-Safe Environment Variables
 
-> Zod 기반 타입 안전 환경 변수 관리
+> Zod-based type-safe environment variable management
 
 <context>
 
-**용도:** 서버 환경 변수 검증, 런타임 타입 안전성
+**Purpose:** Server environment variable validation, runtime type safety
 
-**특징:**
-- Zod 스키마로 검증 + 타입 추론
-- Transform & Default 값 지원
-- 런타임 검증
-- 프레임워크 무관
+**Features:**
+- Validation + type inference with Zod schemas
+- Transform & default value support
+- Runtime validation
+- Framework agnostic
 
 </context>
 
@@ -18,11 +18,11 @@
 
 <forbidden>
 
-| 분류 | 금지 |
-|------|------|
-| **직접 접근** | `process.env` 직접 사용 (env 객체 필수) |
-| **타입** | any 타입으로 env 변수 접근 |
-| **검증 우회** | 스키마 정의 없이 환경 변수 사용 |
+| Category | Prohibited |
+|----------|------------|
+| **Direct Access** | Using `process.env` directly (env object required) |
+| **Types** | Accessing env variables with any type |
+| **Bypass Validation** | Using environment variables without schema definition |
 
 </forbidden>
 
@@ -30,10 +30,10 @@
 
 <required>
 
-| 분류 | 필수 |
-|------|------|
-| **설치** | `@t3-oss/env-core zod` |
-| **구조** | `src/env.ts` 파일 생성 |
+| Category | Required |
+|----------|----------|
+| **Installation** | `@t3-oss/env-core zod` |
+| **Structure** | Create `src/env.ts` file |
 | **Import** | `import { env } from '@/env'` |
 
 </required>
@@ -114,7 +114,7 @@ import { env } from '@/env'
 
 export const prisma = new PrismaClient({
   datasourceUrl: env.DATABASE_URL,
-  //                  ^? string (타입 안전)
+  //                  ^? string (type-safe)
 })
 ```
 
@@ -329,7 +329,7 @@ import { createMiddleware } from 'hono/factory'
 import { env } from '@/env'
 
 export const envMiddleware = createMiddleware(async (c, next) => {
-  // env 객체가 초기화되었는지 확인
+  // Check if env object is initialized
   if (!env.DATABASE_URL) {
     return c.json({ error: 'Server misconfigured' }, 500)
   }
@@ -363,10 +363,10 @@ app.use(
 
 ## Tips
 
-| 상황 | 방법 |
-|------|------|
-| **Cloudflare** | `createWorkerEnv(env)` 패턴 사용 |
-| **Monorepo** | 각 패키지마다 별도 `env.ts` |
+| Scenario | Method |
+|----------|--------|
+| **Cloudflare** | Use `createWorkerEnv(env)` pattern |
+| **Monorepo** | Separate `env.ts` per package |
 | **Testing** | `.env.test` + `NODE_ENV=test` |
 | **Docker** | `docker run -e DATABASE_URL=...` |
 | **CI/CD** | GitHub Secrets → Environment Variables |

@@ -3,7 +3,7 @@
 <patterns>
 
 ```tsx
-// 기본
+// Basic
 export const Route = createFileRoute('/about')({ component: AboutPage })
 
 // Loader
@@ -16,7 +16,7 @@ const Page = () => {
   return <ul>{posts.map(p => <li key={p.id}>{p.title}</li>)}</ul>
 }
 
-// 동적 라우트
+// Dynamic routes
 export const Route = createFileRoute('/users/$id')({
   loader: async ({ params }) => ({ user: await getUserById(params.id) }),
   component: () => {
@@ -25,10 +25,10 @@ export const Route = createFileRoute('/users/$id')({
   },
 })
 
-// SSR 옵션
-ssr: true       // 전체 SSR (기본값)
-ssr: false      // 클라이언트만
-ssr: 'data-only' // 데이터만 서버
+// SSR options
+ssr: true       // Full SSR (default)
+ssr: false      // Client-only
+ssr: 'data-only' // Data only on server
 
 // Server Routes (API)
 export const Route = createFileRoute('/api/hello')({

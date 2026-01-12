@@ -3,20 +3,20 @@
 <patterns>
 
 ```tsx
-// Zod 스키마 + 라우트
+// Zod schema + route
 const searchSchema = z.object({
-  page: z.number().catch(1),            // 기본값
-  search: z.string().optional(),        // 선택
+  page: z.number().catch(1),            // Default value
+  search: z.string().optional(),        // Optional
   sort: z.enum(['newest', 'price']).catch('newest'),
-  tags: z.array(z.string()).catch([]),  // 배열
+  tags: z.array(z.string()).catch([]),  // Array
   inStock: z.boolean().catch(true),     // Boolean
-  from: z.string().date().optional(),   // 날짜
-  minPrice: z.number().min(0).catch(0), // 범위
+  from: z.string().date().optional(),   // Date
+  minPrice: z.number().min(0).catch(0), // Range
 })
 
 export const Route = createFileRoute('/products')({
   validateSearch: searchSchema,
-  loaderDeps: ({ search }) => ({ search }),  // search 변경 시 loader 재실행
+  loaderDeps: ({ search }) => ({ search }),  // Re-run loader on search change
   loader: async ({ deps: { search } }) => fetchProducts(search),
   component: ProductsPage,
 })
@@ -26,11 +26,11 @@ const ProductsPage = () => {
   return <div>Page: {page}, Sort: {sort}</div>
 }
 
-// Link로 업데이트
+// Update via Link
 <Link to="/products" search={{ page: 1, sort: 'newest' }}>Reset</Link>
 <Link to="/products" search={prev => ({ ...prev, page: 2 })}>Next</Link>
 
-// useNavigate로 업데이트
+// Update via useNavigate
 const Pagination = () => {
   const navigate = useNavigate()
   const { page } = Route.useSearch()
@@ -48,7 +48,7 @@ const Pagination = () => {
   )
 }
 
-// 실전: 필터 + 정렬 + 페이지네이션
+// Real-world: Filter + Sort + Pagination
 const PostsPage = () => {
   const { page, search, category, sort } = Route.useSearch()
   const posts = Route.useLoaderData()

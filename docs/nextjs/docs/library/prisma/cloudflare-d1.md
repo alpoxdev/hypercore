@@ -1,17 +1,17 @@
 # Prisma - Cloudflare D1
 
-SQLite 기반 서버리스 DB. 일반 Prisma 마이그레이션과 다른 워크플로우.
+SQLite-based serverless database. Different workflow from standard Prisma migrations.
 
-⚠️ 트랜잭션 미지원 | prisma migrate 불가 - wrangler 사용 | Preview 상태
+⚠️ No transaction support | Cannot use prisma migrate - use wrangler instead | Preview status
 
-## 설정
+## Setup
 
 ```prisma
 // schema.prisma
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
-  runtime  = "cloudflare"  // 필수
+  runtime  = "cloudflare"  // required
 }
 
 datasource db {
@@ -26,7 +26,7 @@ datasource db {
 }
 ```
 
-## 사용법
+## Usage
 
 ```typescript
 import { PrismaClient } from './generated/prisma'
@@ -44,33 +44,33 @@ export default {
 }
 ```
 
-## 마이그레이션 워크플로우
+## Migration Workflow
 
 ```bash
-# 1. D1 생성
+# 1. Create D1
 npx wrangler d1 create my-database
 
-# 2. 마이그레이션 생성
+# 2. Create migration
 npx wrangler d1 migrations create my-database init
 
-# 3. SQL 생성 (초기)
+# 3. Generate SQL (initial)
 npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script --output prisma/migrations/0001.sql
 
-# 4. SQL 생성 (후속)
+# 4. Generate SQL (subsequent)
 npx prisma migrate diff --from-local-d1 --to-schema-datamodel prisma/schema.prisma --script
 
-# 5. 적용
-npx wrangler d1 migrations apply my-database --local   # 로컬
-npx wrangler d1 migrations apply my-database --remote  # 프로덕션
+# 5. Apply
+npx wrangler d1 migrations apply my-database --local   # local
+npx wrangler d1 migrations apply my-database --remote  # production
 
-# 6. Client 생성
+# 6. Generate client
 npx prisma generate
 ```
 
-## 제한사항
+## Limitations
 
-| 항목 | 일반 SQLite | D1 |
-|------|-------------|-----|
-| 마이그레이션 | prisma migrate | wrangler d1 |
-| 트랜잭션 | ✅ | ❌ |
-| 접속 | 직접 | HTTP 어댑터 |
+| Feature | Regular SQLite | D1 |
+|---------|----------------|-----|
+| Migration | prisma migrate | wrangler d1 |
+| Transaction | ✅ | ❌ |
+| Connection | Direct | HTTP adapter |

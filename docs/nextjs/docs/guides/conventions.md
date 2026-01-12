@@ -1,71 +1,71 @@
 # Conventions
 
-> 코드 작성 규칙
+> Code writing rules
 
 ---
 
-## 파일명
+## File Names
 
-| 유형 | 규칙 | 예시 |
-|------|------|------|
-| 컴포넌트 | kebab-case | `user-profile.tsx` |
-| 라우트 | Next.js 규칙 | `page.tsx`, `layout.tsx`, `[id]/page.tsx` |
+| Type | Rule | Example |
+|------|------|---------|
+| Component | kebab-case | `user-profile.tsx` |
+| Route | Next.js convention | `page.tsx`, `layout.tsx`, `[id]/page.tsx` |
 | Server Actions | kebab-case | `create-post.ts`, `posts.ts` |
-| 유틸리티 | kebab-case | `format-date.ts` |
+| Utilities | kebab-case | `format-date.ts` |
 
 ---
 
 ## TypeScript
 
-### 변수 선언
+### Variable Declaration
 
 ```typescript
-// ✅ const 우선
+// ✅ Prefer const
 const user = { name: "Alice" }
 const posts = await prisma.post.findMany()
 
-// ❌ let 최소화
-let count = 0 // 변경 필요시만
+// ❌ Minimize let
+let count = 0 // Only when mutation needed
 ```
 
-### 함수 선언
+### Function Declaration
 
 ```typescript
-// ✅ const 화살표 함수 + 명시적 return type
+// ✅ const arrow function + explicit return type
 const getUser = async (id: string): Promise<User> => {
   return prisma.user.findUnique({ where: { id } })
 }
 
-// ❌ function 키워드 (export default 제외)
+// ❌ function keyword (except export default)
 function getUser(id: string) {
   return prisma.user.findUnique({ where: { id } })
 }
 ```
 
-### 타입 정의
+### Type Definition
 
 ```typescript
-// ✅ interface (객체)
+// ✅ interface (objects)
 interface User {
   id: string
   name: string
   email: string
 }
 
-// ✅ type (유니온, 기타)
+// ✅ type (unions, others)
 type Status = "active" | "inactive"
 type UserOrNull = User | null
 
-// ❌ any 금지 → unknown 사용
+// ❌ No any → use unknown
 const data: unknown = JSON.parse(jsonString)
 ```
 
 ---
 
-## Import 순서
+## Import Order
 
 ```typescript
-// 1. 외부 라이브러리
+// 1. External libraries
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 
@@ -73,21 +73,21 @@ import { useQuery } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { prisma } from "@/database/prisma"
 
-// 3. 상대경로
+// 3. Relative paths
 import { UserProfile } from "./-components/user-profile"
 
-// 4. 타입 (분리)
+// 4. Types (separate)
 import type { User } from "@/types"
 ```
 
 ---
 
-## 컴포넌트
+## Components
 
-### Server Component (기본)
+### Server Component (default)
 
 ```typescript
-// ✅ async 함수 + 직접 데이터 페칭
+// ✅ async function + direct data fetching
 export default async function PostsPage() {
   const posts = await prisma.post.findMany()
   return <PostsList posts={posts} />
@@ -97,7 +97,7 @@ export default async function PostsPage() {
 ### Client Component
 
 ```typescript
-// ✅ "use client" + 상호작용
+// ✅ "use client" + interactivity
 "use client"
 
 import { useState } from "react"
@@ -112,10 +112,10 @@ export function Counter() {
 
 ## Server Actions
 
-### 파일 상단
+### File Top
 
 ```typescript
-// ✅ "use server" + 여러 함수
+// ✅ "use server" + multiple functions
 "use server"
 
 export async function createPost(formData: FormData) {
@@ -127,7 +127,7 @@ export async function deletePost(id: string) {
 }
 ```
 
-### Zod 검증
+### Zod Validation
 
 ```typescript
 "use server"
@@ -151,61 +151,61 @@ export async function createPost(formData: FormData) {
 
 ---
 
-## 주석
+## Comments
 
 ```typescript
-// ✅ 코드 묶음 단위로 한글 주석
-// 사용자 인증 체크
+// ✅ Comments per code block
+// Check user authentication
 const session = await auth.api.getSession({ headers: headers() })
 if (!session?.user) redirect("/login")
 
-// 게시글 조회
+// Fetch posts
 const posts = await prisma.post.findMany({
   where: { userId: session.user.id },
   orderBy: { createdAt: "desc" },
 })
 
-// ❌ 모든 줄마다 주석
-const session = await auth.api.getSession({ headers: headers() }) // 세션 조회
-if (!session?.user) redirect("/login") // 로그인 리다이렉트
+// ❌ Comments on every line
+const session = await auth.api.getSession({ headers: headers() }) // Get session
+if (!session?.user) redirect("/login") // Redirect to login
 ```
 
 ---
 
 ## Prisma
 
-### Multi-File 구조
+### Multi-File Structure
 
 ```
 prisma/schema/
 ├── +base.prisma    # datasource, generator
-├── +enum.prisma    # 모든 enum
-└── user.prisma     # User 모델
+├── +enum.prisma    # all enums
+└── user.prisma     # User model
 ```
 
-### 한글 주석 필수
+### Required Comments
 
 ```prisma
-/// 사용자
+/// User
 model User {
-  id        String   @id @default(cuid())  /// 고유 ID
-  email     String   @unique                /// 이메일 (고유)
-  name      String?                         /// 이름 (옵션)
-  role      Role     @default(USER)         /// 역할
-  createdAt DateTime @default(now())        /// 생성일
-  updatedAt DateTime @updatedAt             /// 수정일
+  id        String   @id @default(cuid())  /// Unique ID
+  email     String   @unique                /// Email (unique)
+  name      String?                         /// Name (optional)
+  role      Role     @default(USER)         /// Role
+  createdAt DateTime @default(now())        /// Created at
+  updatedAt DateTime @updatedAt             /// Updated at
 }
 
-/// 역할
+/// Role
 enum Role {
-  USER   /// 일반 사용자
-  ADMIN  /// 관리자
+  USER   /// Regular user
+  ADMIN  /// Administrator
 }
 ```
 
 ---
 
-## 폴더 구조
+## Folder Structure
 
 ```
 app/
@@ -216,21 +216,21 @@ app/
 │       └── page.tsx
 ├── dashboard/
 │   ├── page.tsx
-│   ├── -components/     # 페이지 전용 (필수)
+│   ├── -components/     # Page-specific (required)
 │   │   ├── stats.tsx
 │   │   └── chart.tsx
 │   └── settings/
 │       └── page.tsx
-└── _components/         # 공통 Client Components
+└── _components/         # Shared Client Components
 ```
 
-**규칙:**
-- `-components/` - 페이지 전용 (밖에서 import 불가)
-- `_components/` - 공통 (라우트에 포함 안됨)
+**Rules:**
+- `-components/` - Page-specific (cannot import from outside)
+- `_components/` - Shared (not included in routes)
 
 ---
 
-## Custom Hook 순서
+## Custom Hook Order
 
 ```typescript
 "use client"
@@ -267,19 +267,19 @@ export function useExample() {
 
 ---
 
-## 베스트 프랙티스
+## Best Practices
 
 ### ✅ DO
 
 ```typescript
-// 1. 명시적 타입
+// 1. Explicit types
 const getUser = async (id: string): Promise<User> => { /* ... */ }
 
-// 2. Zod 검증
+// 2. Zod validation
 const schema = z.object({ email: z.email() })
 const parsed = schema.parse(data)
 
-// 3. 에러 처리
+// 3. Error handling
 try {
   await prisma.post.create({ data })
 } catch (error) {
@@ -295,49 +295,49 @@ revalidatePath("/posts")
 ### ❌ DON'T
 
 ```typescript
-// 1. any 사용
+// 1. Using any
 const data: any = await fetchData() // ❌
 
-// 2. 검증 누락
-const email = formData.get("email") // ❌ Zod 검증 필요
+// 2. Missing validation
+const email = formData.get("email") // ❌ Need Zod validation
 await createUser({ email })
 
-// 3. 에러 무시
-await prisma.post.create({ data }) // ❌ try-catch 필요
+// 3. Ignoring errors
+await prisma.post.create({ data }) // ❌ Need try-catch
 
-// 4. 캐시 무효화 누락
-await prisma.post.create({ data }) // ❌ revalidatePath 필요
+// 4. Missing cache invalidation
+await prisma.post.create({ data }) // ❌ Need revalidatePath
 ```
 
 ---
 
-## Git 커밋
+## Git Commits
 
 ```bash
-# ✅ 한 줄, prefix 사용
-git commit -m "feat: 게시글 생성 기능 추가"
-git commit -m "fix: 로그인 버그 수정"
+# ✅ Single line, with prefix
+git commit -m "feat: add post creation feature"
+git commit -m "fix: resolve login bug"
 
-# ❌ 여러 줄, 이모지, AI 표시
-git commit -m "feat: 게시글 생성 기능 추가
+# ❌ Multiple lines, emojis, AI markers
+git commit -m "feat: add post creation feature
 
-상세 설명...
+Detailed description...
 
 Co-Authored-By: Claude Code <noreply@anthropic.com>"  # ❌
 ```
 
-**Prefix:**
-- `feat` - 새 기능
-- `fix` - 버그 수정
-- `refactor` - 리팩토링
-- `style` - 코드 스타일
-- `docs` - 문서
-- `test` - 테스트
-- `chore` - 기타
+**Prefixes:**
+- `feat` - New feature
+- `fix` - Bug fix
+- `refactor` - Refactoring
+- `style` - Code style
+- `docs` - Documentation
+- `test` - Tests
+- `chore` - Others
 
 ---
 
-## 참조
+## References
 
-- [Next.js 공식 문서](https://nextjs.org/docs)
-- [TypeScript 공식 문서](https://www.typescriptlang.org/)
+- [Next.js Official Docs](https://nextjs.org/docs)
+- [TypeScript Official Docs](https://www.typescriptlang.org/)

@@ -1,6 +1,6 @@
 # Hono
 
-> Web Standards 기반 초경량 프레임워크
+> Ultra-lightweight framework based on Web Standards
 
 <references>
 @middleware.md
@@ -21,7 +21,7 @@ npm install hono
 
 <quick_patterns>
 
-## 라우트
+## Routes
 
 ```typescript
 import { Hono } from 'hono'
@@ -39,7 +39,7 @@ app.get('/posts/:postId/comments/:commentId', (c) => {
 export default app
 ```
 
-## 라우트 그룹
+## Route Groups
 
 ```typescript
 const users = new Hono()
@@ -99,7 +99,7 @@ type Variables = {
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
-// 환경 변수
+// Environment variables
 app.get('/', (c) => {
   const dbUrl = c.env.DATABASE_URL
   return c.json({ connected: true })

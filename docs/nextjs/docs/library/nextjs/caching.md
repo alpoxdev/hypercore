@@ -1,32 +1,32 @@
 # Caching
 
-> Next.js 캐싱 전략
+> Next.js caching strategies
 
 ---
 
-## 캐시 레벨
+## Cache Levels
 
-| 레벨 | 설명 |
-|------|------|
-| **Request Memoization** | 같은 요청 중복 제거 (React) |
-| **Data Cache** | 서버 데이터 캐시 (영구) |
-| **Full Route Cache** | 빌드 시 정적 렌더링 |
-| **Router Cache** | 클라이언트 라우터 캐시 |
+| Level | Description |
+|-------|-------------|
+| **Request Memoization** | Deduplicate same requests (React) |
+| **Data Cache** | Server data cache (persistent) |
+| **Full Route Cache** | Static rendering at build time |
+| **Router Cache** | Client-side router cache |
 
 ---
 
 ## Request Memoization
 
 ```typescript
-// 같은 요청은 한 번만 실행됨
+// Same requests execute only once
 async function getUser(id: string) {
   const res = await fetch(`https://api.example.com/users/${id}`)
   return res.json()
 }
 
 export default async function Page() {
-  const user1 = await getUser("1") // fetch 실행
-  const user2 = await getUser("1") // 캐시 사용 (중복 제거)
+  const user1 = await getUser("1") // fetch executes
+  const user2 = await getUser("1") // cache used (deduplicated)
 
   return <div>{user1.name}</div>
 }
@@ -36,52 +36,52 @@ export default async function Page() {
 
 ## Data Cache (fetch)
 
-### 기본 (캐시 사용)
+### Default (cached)
 
 ```typescript
-// 기본적으로 캐시됨
+// Cached by default
 const res = await fetch("https://api.example.com/posts")
 ```
 
-### 캐시 비활성화
+### Disable Cache
 
 ```typescript
-// 매 요청마다 새로 가져옴
+// Fetch fresh data on every request
 const res = await fetch("https://api.example.com/posts", {
   cache: "no-store",
 })
 ```
 
-### Revalidate (시간 기반)
+### Revalidate (time-based)
 
 ```typescript
-// 60초마다 재검증
+// Revalidate every 60 seconds
 const res = await fetch("https://api.example.com/posts", {
   next: { revalidate: 60 },
 })
 ```
 
-### Tag 기반 캐시
+### Tag-based Cache
 
 ```typescript
-// 태그 설정
+// Set tag
 const res = await fetch("https://api.example.com/posts", {
   next: { tags: ["posts"] },
 })
 
-// Server Action에서 태그 무효화
+// Invalidate tag in Server Action
 "use server"
 import { revalidateTag } from "next/cache"
 
 export async function createPost(data: PostInput) {
   await prisma.post.create({ data })
-  revalidateTag("posts") // "posts" 태그 캐시 무효화
+  revalidateTag("posts") // Invalidate "posts" tag cache
 }
 ```
 
 ---
 
-## unstable_cache (함수 캐싱)
+## unstable_cache (function caching)
 
 ```typescript
 import { unstable_cache } from "next/cache"
@@ -90,10 +90,10 @@ const getCachedPosts = unstable_cache(
   async () => {
     return prisma.post.findMany()
   },
-  ["posts"], // 캐시 키
+  ["posts"], // cache key
   {
-    revalidate: 60, // 60초
-    tags: ["posts"], // 태그
+    revalidate: 60, // 60 seconds
+    tags: ["posts"], // tags
   }
 )
 
@@ -115,11 +115,11 @@ import { revalidatePath } from "next/cache"
 export async function createPost(data: PostInput) {
   const post = await prisma.post.create({ data })
 
-  // 특정 경로 캐시 무효화
+  // Invalidate specific path cache
   revalidatePath("/posts")
   revalidatePath(`/posts/${post.id}`)
 
-  // 레이아웃 포함 모든 캐시 무효화
+  // Invalidate all caches including layout
   revalidatePath("/posts", "layout")
 
   return post
@@ -138,7 +138,7 @@ import { revalidateTag } from "next/cache"
 export async function createPost(data: PostInput) {
   const post = await prisma.post.create({ data })
 
-  // "posts" 태그가 붙은 모든 캐시 무효화
+  // Invalidate all caches with "posts" tag
   revalidateTag("posts")
 
   return post
@@ -147,22 +147,22 @@ export async function createPost(data: PostInput) {
 
 ---
 
-## Full Route Cache (정적 렌더링)
+## Full Route Cache (static rendering)
 
-### 정적 페이지
+### Static Page
 
 ```typescript
-// 빌드 시 생성 (기본)
+// Generated at build time (default)
 export default async function PostsPage() {
   const posts = await prisma.post.findMany()
   return <PostsList posts={posts} />
 }
 ```
 
-### 동적 페이지 (캐시 비활성화)
+### Dynamic Page (disable cache)
 
 ```typescript
-// 매 요청마다 렌더링
+// Render on every request
 export const dynamic = "force-dynamic"
 
 export default async function PostsPage() {
@@ -171,10 +171,10 @@ export default async function PostsPage() {
 }
 ```
 
-### Revalidate (시간 기반)
+### Revalidate (time-based)
 
 ```typescript
-// 60초마다 재생성
+// Regenerate every 60 seconds
 export const revalidate = 60
 
 export default async function PostsPage() {
@@ -190,16 +190,16 @@ export default async function PostsPage() {
 ```typescript
 // app/posts/page.tsx
 
-// 동적 렌더링 강제
+// Force dynamic rendering
 export const dynamic = "force-dynamic" // "auto" | "force-static" | "error"
 
-// Revalidate 주기 (초)
+// Revalidate interval (seconds)
 export const revalidate = 60 // false | 0 | number
 
-// 런타임 설정
+// Runtime configuration
 export const runtime = "nodejs" // "edge"
 
-// 최대 실행 시간 (초)
+// Maximum execution time (seconds)
 export const maxDuration = 60
 
 export default async function PostsPage() {
@@ -209,7 +209,7 @@ export default async function PostsPage() {
 
 ---
 
-## Router Cache (클라이언트)
+## Router Cache (client-side)
 
 ```typescript
 "use client"
@@ -222,8 +222,8 @@ export function Navigation() {
   return (
     <button
       onClick={() => {
-        router.push("/posts") // 캐시된 페이지 사용
-        router.refresh() // 강제 새로고침
+        router.push("/posts") // Use cached page
+        router.refresh() // Force refresh
       }}
     >
       Go to Posts
@@ -234,12 +234,12 @@ export function Navigation() {
 
 ---
 
-## generateStaticParams (동적 라우트)
+## generateStaticParams (dynamic routes)
 
 ```typescript
 // app/posts/[id]/page.tsx
 
-// 빌드 시 생성할 페이지 목록
+// List of pages to generate at build time
 export async function generateStaticParams() {
   const posts = await prisma.post.findMany({ select: { id: true } })
   return posts.map(post => ({ id: post.id }))
@@ -253,40 +253,40 @@ export default async function PostPage({ params }: { params: { id: string } }) {
 
 ---
 
-## 캐싱 플로우
+## Caching Flow
 
-### 정적 페이지
-
-```
-1. 빌드 시 렌더링
-2. Full Route Cache 저장
-3. 이후 요청은 캐시 사용
-4. revalidate 시간 후 재생성
-```
-
-### 동적 페이지
+### Static Page
 
 ```
-1. 매 요청마다 렌더링
-2. 캐시 없음
-3. Server Actions로 데이터 업데이트
-4. revalidatePath로 특정 경로만 무효화
+1. Render at build time
+2. Save to Full Route Cache
+3. Subsequent requests use cache
+4. Regenerate after revalidate time
+```
+
+### Dynamic Page
+
+```
+1. Render on every request
+2. No cache
+3. Update data with Server Actions
+4. Invalidate only specific paths with revalidatePath
 ```
 
 ---
 
-## 캐시 무효화 전략
+## Cache Invalidation Strategies
 
-### 시간 기반
+### Time-based
 
 ```typescript
-// 60초마다 재생성
+// Regenerate every 60 seconds
 export const revalidate = 60
 
 const res = await fetch("...", { next: { revalidate: 60 } })
 ```
 
-### 온디맨드 (Server Actions)
+### On-demand (Server Actions)
 
 ```typescript
 "use server"
@@ -296,34 +296,34 @@ import { revalidatePath, revalidateTag } from "next/cache"
 export async function updatePost(id: string, data: PostInput) {
   await prisma.post.update({ where: { id }, data })
 
-  // 경로 무효화
+  // Path invalidation
   revalidatePath(`/posts/${id}`)
 
-  // 태그 무효화
+  // Tag invalidation
   revalidateTag("posts")
 }
 ```
 
 ---
 
-## 베스트 프랙티스
+## Best Practices
 
 ### ✅ DO
 
 ```typescript
-// 1. 정적 데이터는 기본 캐시 사용
+// 1. Use default cache for static data
 const posts = await fetch("https://api.example.com/posts")
 
-// 2. 동적 데이터는 no-store
+// 2. Use no-store for dynamic data
 const user = await fetch("https://api.example.com/user", {
   cache: "no-store",
 })
 
-// 3. 태그 기반 무효화
+// 3. Tag-based invalidation
 const posts = await fetch("...", { next: { tags: ["posts"] } })
 revalidateTag("posts")
 
-// 4. 함수 캐싱
+// 4. Function caching
 const getCachedData = unstable_cache(
   async () => prisma.post.findMany(),
   ["posts"],
@@ -334,18 +334,18 @@ const getCachedData = unstable_cache(
 ### ❌ DON'T
 
 ```typescript
-// 1. 민감한 데이터 캐싱
-const user = await fetch("/api/user") // ❌ 개인정보 캐싱 금지
+// 1. Caching sensitive data
+const user = await fetch("/api/user") // ❌ Don't cache personal data
 
-// 2. 과도한 revalidatePath
-revalidatePath("/") // ❌ 전체 사이트 무효화
+// 2. Excessive revalidatePath
+revalidatePath("/") // ❌ Invalidates entire site
 
-// 3. 짧은 revalidate
-export const revalidate = 1 // ❌ 부하 증가
+// 3. Short revalidate interval
+export const revalidate = 1 // ❌ Increases load
 ```
 
 ---
 
-## 참조
+## References
 
 - [Next.js Caching](https://nextjs.org/docs/app/building-your-application/caching)

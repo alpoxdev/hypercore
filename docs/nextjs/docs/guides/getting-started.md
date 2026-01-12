@@ -1,10 +1,10 @@
 # Getting Started
 
-> Next.js 15 프로젝트 시작하기
+> Start with Next.js 15
 
 ---
 
-## 프로젝트 생성
+## Create Project
 
 ```bash
 npx create-next-app@latest my-app \
@@ -20,7 +20,7 @@ npm run dev
 
 ---
 
-## 필수 의존성
+## Required Dependencies
 
 ```bash
 # Database
@@ -39,7 +39,7 @@ npm install @tanstack/react-query
 
 ---
 
-## 폴더 구조
+## Folder Structure
 
 ```
 src/
@@ -53,18 +53,18 @@ src/
 │   │       └── page.tsx
 │   ├── dashboard/
 │   │   ├── page.tsx
-│   │   └── -components/        # 페이지 전용
+│   │   └── -components/        # Page-specific
 │   └── api/
 │       └── auth/
 │           └── [...all]/
 │               └── route.ts
-├── actions/                    # Server Actions (공통)
+├── actions/                    # Server Actions (shared)
 │   ├── posts.ts
 │   └── users.ts
 ├── components/
-│   └── ui/                     # UI 컴포넌트
+│   └── ui/                     # UI components
 ├── lib/
-│   ├── auth.ts                 # Better Auth 설정
+│   ├── auth.ts                 # Better Auth setup
 │   ├── auth-client.ts          # Auth Client
 │   ├── prisma.ts               # Prisma Client
 │   └── query-client.ts         # React Query Client
@@ -75,7 +75,7 @@ src/
 
 ---
 
-## 환경 변수
+## Environment Variables
 
 ```bash
 # .env.local
@@ -83,25 +83,25 @@ DATABASE_URL="postgresql://user:password@localhost:5432/mydb"
 BETTER_AUTH_SECRET="your-secret-key"
 BETTER_AUTH_URL="http://localhost:3000"
 
-# 소셜 로그인 (옵션)
+# Social login (optional)
 GOOGLE_CLIENT_ID="..."
 GOOGLE_CLIENT_SECRET="..."
 GITHUB_CLIENT_ID="..."
 GITHUB_CLIENT_SECRET="..."
 
-# 클라이언트 공개 변수
+# Public client variables
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
 ---
 
-## Prisma 설정
+## Prisma Setup
 
 ```bash
-# 초기화
+# Initialize
 npx prisma init
 
-# 스키마 생성
+# Create schema
 mkdir -p prisma/schema
 ```
 
@@ -139,10 +139,10 @@ model User {
 ```
 
 ```bash
-# DB 동기화
+# Sync database
 npx prisma db push
 
-# Client 생성
+# Generate client
 npx prisma generate
 ```
 
@@ -165,7 +165,7 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
 
 ---
 
-## Better Auth 설정
+## Better Auth Setup
 
 ```typescript
 // src/lib/auth.ts
@@ -204,7 +204,7 @@ export const POST = (request: Request) => auth.handler(request)
 
 ---
 
-## React Query 설정
+## React Query Setup
 
 ```typescript
 // src/lib/query-client.ts
@@ -214,7 +214,7 @@ export function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 60 * 1000, // 1분
+        staleTime: 60 * 1000, // 1 minute
       },
     },
   })
@@ -256,7 +256,7 @@ import { Providers } from "./providers"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
+    <html lang="en">
       <body>
         <Providers>{children}</Providers>
       </body>
@@ -267,7 +267,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ---
 
-## 첫 Server Action
+## First Server Action
 
 ```typescript
 // actions/posts.ts
@@ -296,7 +296,7 @@ export async function createPost(formData: FormData) {
 
 ---
 
-## 첫 페이지 (Server Component)
+## First Page (Server Component)
 
 ```typescript
 // app/posts/page.tsx
@@ -320,7 +320,7 @@ export default async function PostsPage() {
 
 ---
 
-## 첫 폼 (Client Component)
+## First Form (Client Component)
 
 ```typescript
 // app/posts/_components/create-post-form.tsx
@@ -359,9 +359,9 @@ export function CreatePostForm() {
 
 ---
 
-## 다음 단계
+## Next Steps
 
-- [Conventions](conventions.md) - 코드 컨벤션
-- [Routes](routes.md) - 라우팅 패턴
-- [Server Actions](server-actions.md) - Server Actions 패턴
-- [Client Components](client-components.md) - Client Components 패턴
+- [Conventions](conventions.md) - Code conventions
+- [Routes](routes.md) - Routing patterns
+- [Server Actions](server-actions.md) - Server Actions patterns
+- [Client Components](client-components.md) - Client Components patterns

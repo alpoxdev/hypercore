@@ -3,7 +3,7 @@
 <patterns>
 
 ```tsx
-// 추가
+// Add
 useMutation({
   mutationFn: addTodo,
   onMutate: async (newTodo) => {
@@ -20,7 +20,7 @@ useMutation({
   },
 })
 
-// 삭제
+// Delete
 useMutation({
   mutationFn: deleteTodo,
   onMutate: async (todoId) => {
@@ -37,7 +37,7 @@ useMutation({
   onSettled: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
 })
 
-// 토글
+// Toggle
 useMutation({
   mutationFn: toggleTodo,
   onMutate: async (todoId) => {
@@ -56,7 +56,7 @@ useMutation({
   onSettled: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
 })
 
-// 단일 항목
+// Single item
 useMutation({
   mutationFn: updateTodo,
   onMutate: async (newTodo) => {

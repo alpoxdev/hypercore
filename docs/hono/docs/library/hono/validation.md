@@ -1,6 +1,6 @@
-# Hono + Zod 검증
+# Hono + Zod Validation
 
-> @hono/zod-validator로 타입 안전 요청 검증
+> Type-safe request validation with @hono/zod-validator
 
 <setup>
 ```bash
@@ -54,7 +54,7 @@ app.get('/users/:id',
   }
 )
 
-// Header (소문자!)
+// Header (lowercase!)
 app.get('/api/protected',
   zValidator('header', z.object({ 'x-api-key': z.string().uuid() })),
   (c) => {
@@ -63,7 +63,7 @@ app.get('/api/protected',
 )
 ```
 
-## 복합 검증
+## Multiple Validators
 
 ```typescript
 app.post(
@@ -80,7 +80,7 @@ app.post(
 )
 ```
 
-## 커스텀 에러
+## Custom Errors
 
 ```typescript
 app.post(
@@ -100,7 +100,7 @@ app.post(
 )
 ```
 
-## 재사용 스키마
+## Reusable Schemas
 
 ```typescript
 // validators/user.ts

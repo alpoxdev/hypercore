@@ -1,8 +1,8 @@
-# Prisma - 트랜잭션
+# Prisma - Transactions
 
-## 배열 기반 트랜잭션
+## Array-based Transaction
 
-하나라도 실패하면 모두 롤백.
+Rolls back all if any operation fails.
 
 ```typescript
 const deletePosts = prisma.post.deleteMany({ where: { authorId: 7 } })
@@ -10,9 +10,9 @@ const deleteUser = prisma.user.delete({ where: { id: 7 } })
 await prisma.$transaction([deletePosts, deleteUser])
 ```
 
-## 인터랙티브 트랜잭션
+## Interactive Transaction
 
-복잡한 로직, 조건부 처리.
+For complex logic and conditional processing.
 
 ```typescript
 const result = await prisma.$transaction(async (tx) => {
@@ -26,17 +26,17 @@ const result = await prisma.$transaction(async (tx) => {
 })
 ```
 
-## 옵션
+## Options
 
 ```typescript
 await prisma.$transaction(async (tx) => { ... }, {
-  maxWait: 5000,              // 최대 대기 (ms)
-  timeout: 10000,             // 타임아웃 (ms)
+  maxWait: 5000,              // maximum wait time (ms)
+  timeout: 10000,             // timeout (ms)
   isolationLevel: 'Serializable',  // ReadUncommitted | ReadCommitted | RepeatableRead | Serializable
 })
 ```
 
-## 에러 처리
+## Error Handling
 
 ```typescript
 try {
@@ -45,6 +45,6 @@ try {
     if (someCondition) throw new Error('Rollback')
   })
 } catch (error) {
-  // 전체 롤백됨
+  // entire transaction rolled back
 }
 ```

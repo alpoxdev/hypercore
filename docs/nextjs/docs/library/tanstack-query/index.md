@@ -40,12 +40,12 @@ const mutation = useMutation({
   },
 })
 
-// 설정
+// Setup
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5,   // 5분
-      gcTime: 1000 * 60 * 30,     // 30분
+      staleTime: 1000 * 60 * 5,   // 5 minutes
+      gcTime: 1000 * 60 * 30,     // 30 minutes
       retry: 3,
     },
   },
@@ -58,9 +58,9 @@ const App = () => (
 )
 
 // Query Keys
-['todos']                       // 단순
-['todo', { id: 5 }]             // 파라미터
-['todos', 'list', { filters }]  // 계층적
+['todos']                       // simple
+['todo', { id: 5 }]             // with parameter
+['todos', 'list', { filters }]  // hierarchical
 ```
 
 </quick_reference>

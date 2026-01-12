@@ -1,6 +1,6 @@
 # Next.js - Index
 
-> Next.js 15 App Router 핵심 개념
+> Next.js 15 App Router core concepts
 
 <context>
 @app-router.md
@@ -12,21 +12,21 @@
 
 ---
 
-## 핵심 개념
+## Core Concepts
 
-| 개념 | 설명 |
-|------|------|
-| **App Router** | 파일 기반 라우팅 (`app/` 디렉토리) |
-| **Server Components** | 기본 컴포넌트 (서버 렌더링) |
-| **Client Components** | `"use client"` 선언 필요 |
-| **Server Actions** | `"use server"` 함수 (타입 안전 API) |
-| **Route Handlers** | REST API 엔드포인트 (`app/api/`) |
+| Concept | Description |
+|---------|-------------|
+| **App Router** | File-based routing (`app/` directory) |
+| **Server Components** | Default components (server rendering) |
+| **Client Components** | Requires `"use client"` declaration |
+| **Server Actions** | `"use server"` functions (type-safe API) |
+| **Route Handlers** | REST API endpoints (`app/api/`) |
 
 ---
 
-## 빠른 시작
+## Quick Start
 
-### 프로젝트 생성
+### Create Project
 
 ```bash
 npx create-next-app@latest my-app --typescript --tailwind --app
@@ -34,10 +34,10 @@ cd my-app
 npm run dev
 ```
 
-### 기본 페이지
+### Basic Page
 
 ```typescript
-// app/page.tsx (Server Component - 기본)
+// app/page.tsx (Server Component - default)
 export default async function HomePage() {
   const data = await fetch('https://api.example.com/data')
   const json = await data.json()
@@ -62,11 +62,11 @@ export function Counter() {
 
 ---
 
-## 파일 구조
+## File Structure
 
 ```
 app/
-├── layout.tsx          # Root layout (필수)
+├── layout.tsx          # Root layout (required)
 ├── page.tsx            # Home (/)
 ├── about/
 │   └── page.tsx        # /about
@@ -81,33 +81,33 @@ app/
 
 ---
 
-## 주요 파일
+## Key Files
 
-| 파일 | 용도 |
-|------|------|
-| `layout.tsx` | 공통 레이아웃 (중첩 가능) |
-| `page.tsx` | 페이지 컴포넌트 |
-| `loading.tsx` | 로딩 UI (Suspense) |
-| `error.tsx` | 에러 UI (Error Boundary) |
-| `not-found.tsx` | 404 페이지 |
-| `route.ts` | API 엔드포인트 |
+| File | Purpose |
+|------|---------|
+| `layout.tsx` | Shared layout (nestable) |
+| `page.tsx` | Page component |
+| `loading.tsx` | Loading UI (Suspense) |
+| `error.tsx` | Error UI (Error Boundary) |
+| `not-found.tsx` | 404 page |
+| `route.ts` | API endpoint |
 
 ---
 
 ## Server vs Client Components
 
-| 구분 | Server | Client |
-|------|--------|--------|
-| 선언 | 기본 | `"use client"` |
-| 데이터 페칭 | ✅ async/await | ❌ (useQuery 사용) |
+| Aspect | Server | Client |
+|--------|--------|--------|
+| Declaration | Default | `"use client"` |
+| Data Fetching | ✅ async/await | ❌ (use useQuery) |
 | Hooks | ❌ | ✅ useState, useEffect |
-| 브라우저 API | ❌ | ✅ window, localStorage |
+| Browser API | ❌ | ✅ window, localStorage |
 | Event Handlers | ❌ | ✅ onClick, onChange |
 
-**규칙:**
-- Server Component가 기본 → Client Component 필요 시만 `"use client"` 추가
-- Server Component 안에 Client Component 포함 가능
-- Client Component 안에 Server Component 불가 (props로 전달은 가능)
+**Rules:**
+- Server Components are default → add `"use client"` only when needed
+- Server Components can contain Client Components
+- Client Components cannot contain Server Components (but can receive them as props)
 
 ---
 
@@ -183,13 +183,13 @@ export const config = {
 
 ---
 
-## 데이터 페칭
+## Data Fetching
 
-### Server Component (권장)
+### Server Component (recommended)
 
 ```typescript
 export default async function PostsPage() {
-  const posts = await prisma.post.findMany() // 직접 DB 접근
+  const posts = await prisma.post.findMany() // Direct DB access
   return <PostsList posts={posts} />
 }
 ```
@@ -213,13 +213,13 @@ export function PostsList() {
 
 ---
 
-## 캐싱
+## Caching
 
-| 함수 | 용도 |
-|------|------|
-| `revalidatePath("/posts")` | 특정 경로 캐시 무효화 |
-| `revalidateTag("posts")` | 태그 기반 캐시 무효화 |
-| `unstable_cache()` | 함수 결과 캐싱 |
+| Function | Purpose |
+|----------|---------|
+| `revalidatePath("/posts")` | Invalidate specific path cache |
+| `revalidateTag("posts")` | Invalidate tag-based cache |
+| `unstable_cache()` | Cache function results |
 
 ```typescript
 import { revalidatePath, revalidateTag } from "next/cache"
@@ -227,8 +227,8 @@ import { revalidatePath, revalidateTag } from "next/cache"
 export async function createPost(data: PostInput) {
   const post = await prisma.post.create({ data })
 
-  revalidatePath("/posts") // /posts 캐시 무효화
-  revalidateTag("posts")   // "posts" 태그 캐시 무효화
+  revalidatePath("/posts") // Invalidate /posts cache
+  revalidateTag("posts")   // Invalidate "posts" tag cache
 
   return post
 }
@@ -236,7 +236,7 @@ export async function createPost(data: PostInput) {
 
 ---
 
-## 환경 변수
+## Environment Variables
 
 ```bash
 # .env.local
@@ -246,15 +246,15 @@ NEXTAUTH_URL="http://localhost:3000"
 NEXT_PUBLIC_API_URL="https://api.example.com"
 ```
 
-**규칙:**
-- `NEXT_PUBLIC_*`: 클라이언트에서 접근 가능
-- 나머지: 서버 전용
+**Rules:**
+- `NEXT_PUBLIC_*`: Accessible in client
+- Others: Server-only
 
 ---
 
-## 배포
+## Deployment
 
-### Vercel (권장)
+### Vercel (recommended)
 
 ```bash
 npm i -g vercel
@@ -282,7 +282,7 @@ npm start
 
 ---
 
-## 참조
+## References
 
 - [App Router](app-router.md)
 - [Server Actions](server-actions.md)

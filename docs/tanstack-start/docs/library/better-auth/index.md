@@ -15,7 +15,7 @@ npm install better-auth
 ## Minimal Setup
 
 ```typescript
-// src/lib/auth.ts - 서버
+// src/lib/auth.ts - Server
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { prisma } from '@/database/prisma'
@@ -25,7 +25,7 @@ export const auth = betterAuth({
   emailAndPassword: { enabled: true },
 })
 
-// src/lib/auth-client.ts - 클라이언트
+// src/lib/auth-client.ts - Client
 import { createAuthClient } from 'better-auth/react'
 
 export const authClient = createAuthClient({
@@ -55,17 +55,17 @@ export const POST = async ({ request }: { request: Request }) => auth.handler(re
 |---------|--------|----------|
 | Prisma | `better-auth/adapters/prisma` | `postgresql`, `mysql`, `sqlite` |
 | Drizzle | `better-auth/adapters/drizzle` | `pg`, `mysql2`, `better-sqlite3` |
-| Kysely | `better-auth/adapters/kysely` | dialect 기반 |
+| Kysely | `better-auth/adapters/kysely` | dialect-based |
 
 ## Auth Config
 
-| 옵션 | 타입 | 기본값 | 설명 |
-|------|------|--------|------|
-| `database` | `Adapter` | 필수 | DB 어댑터 |
-| `baseURL` | `string` | `http://localhost:3000` | 앱 URL |
-| `basePath` | `string` | `/api/auth` | Auth 경로 |
-| `secret` | `string` | 환경변수 | JWT 시크릿 |
-| `trustedOrigins` | `string[]` | `[]` | CORS 허용 오리진 |
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `database` | `Adapter` | Required | DB adapter |
+| `baseURL` | `string` | `http://localhost:3000` | App URL |
+| `basePath` | `string` | `/api/auth` | Auth path |
+| `secret` | `string` | Environment variable | JWT secret |
+| `trustedOrigins` | `string[]` | `[]` | CORS allowed origins |
 
 ## Social Providers
 
@@ -107,22 +107,22 @@ export const auth = betterAuth({
 
 ## Session Config
 
-| 옵션 | 타입 | 기본값 | 설명 |
-|------|------|--------|------|
-| `expiresIn` | `number` | `604800` (7일) | 세션 만료 시간 (초) |
-| `updateAge` | `number` | `86400` (1일) | 세션 갱신 주기 (초) |
-| `cookieCache.enabled` | `boolean` | `true` | 쿠키 캐시 활성화 |
-| `cookieCache.maxAge` | `number` | `300` (5분) | 캐시 유효 시간 (초) |
-| `cookieCache.strategy` | `'compact' \| 'jwt' \| 'jwe'` | `'compact'` | 캐시 전략 |
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `expiresIn` | `number` | `604800` (7 days) | Session expiration time (seconds) |
+| `updateAge` | `number` | `86400` (1 day) | Session renewal period (seconds) |
+| `cookieCache.enabled` | `boolean` | `true` | Enable cookie cache |
+| `cookieCache.maxAge` | `number` | `300` (5 min) | Cache validity time (seconds) |
+| `cookieCache.strategy` | `'compact' \| 'jwt' \| 'jwe'` | `'compact'` | Cache strategy |
 
 ```typescript
 export const auth = betterAuth({
   session: {
-    expiresIn: 604800, // 7일
-    updateAge: 86400,  // 1일마다 갱신
+    expiresIn: 604800, // 7 days
+    updateAge: 86400,  // Renew every day
     cookieCache: {
       enabled: true,
-      maxAge: 300,     // 5분
+      maxAge: 300,     // 5 minutes
       strategy: 'compact',
     },
   },
@@ -132,21 +132,21 @@ export const auth = betterAuth({
 ## Session Methods
 
 ```typescript
-// ✅ 클라이언트
+// ✅ Client
 const session = await authClient.getSession()
 const session = await authClient.getSession({ query: { disableCookieCache: true } })
 
-// ✅ 서버 (TanStack Start)
+// ✅ Server (TanStack Start)
 export const getSession = createServerFn({ method: 'GET' })
   .handler(async ({ request }) => {
     const session = await auth.api.getSession({ headers: request.headers })
     return session
   })
 
-// ✅ 세션 업데이트
+// ✅ Update session
 await authClient.updateUser({ name: 'New Name' })
 
-// ✅ 로그아웃
+// ✅ Sign out
 await authClient.signOut()
 ```
 
@@ -188,30 +188,30 @@ export const auth = betterAuth({
 ## Email/Password
 
 ```typescript
-// ✅ 회원가입
+// ✅ Sign up
 await authClient.signUp.email({
   email: 'user@example.com',
   password: 'password123',
   name: 'User Name',
 })
 
-// ✅ 로그인
+// ✅ Sign in
 await authClient.signIn.email({
   email: 'user@example.com',
   password: 'password123',
 })
 
-// ✅ 비밀번호 재설정 요청
+// ✅ Request password reset
 await authClient.forgetPassword({ email: 'user@example.com' })
 
-// ✅ 비밀번호 재설정
+// ✅ Reset password
 await authClient.resetPassword({ token, password: 'newpassword' })
 ```
 
 ## Social Login
 
 ```typescript
-// ✅ 소셜 로그인
+// ✅ Social sign in
 await authClient.signIn.social({ provider: 'google', callbackURL: '/dashboard' })
 await authClient.signIn.social({ provider: 'github', callbackURL: '/dashboard' })
 
@@ -265,26 +265,26 @@ export const authClient = createAuthClient({
 ### 2FA Usage
 
 ```typescript
-// ✅ TOTP 활성화
+// ✅ Enable TOTP
 const { data } = await authClient.twoFactor.enable({ password: 'current-password' })
 // data: { totpURI: 'otpauth://...', backupCodes: ['ABCD-1234', ...] }
 
-// ✅ TOTP 검증
+// ✅ Verify TOTP
 await authClient.twoFactor.verifyTotp({ code: '123456' })
 
-// ✅ OTP 전송
+// ✅ Send OTP
 await authClient.twoFactor.sendOtp()
 
-// ✅ OTP 검증
+// ✅ Verify OTP
 await authClient.twoFactor.verifyOtp({ code: '123456' })
 
-// ✅ 백업 코드 사용
+// ✅ Use backup code
 await authClient.twoFactor.useBackupCode({ code: 'ABCD-1234' })
 
-// ✅ 백업 코드 재생성
+// ✅ Regenerate backup codes
 const { data } = await authClient.twoFactor.regenerateBackupCodes({ password: 'current-password' })
 
-// ✅ 2FA 비활성화
+// ✅ Disable 2FA
 await authClient.twoFactor.disable({ password: 'current-password' })
 ```
 
@@ -296,35 +296,35 @@ await authClient.twoFactor.disable({ password: 'current-password' })
 
 ## Plugin System
 
-| Plugin | Import | 기능 |
-|--------|--------|------|
-| `multiSession` | `better-auth/plugins` | 다중 세션 관리 |
-| `customSession` | `better-auth/plugins` | 세션 필드 확장 |
-| `twoFactor` | `better-auth/plugins` | 2단계 인증 |
-| `captcha` | `better-auth/plugins` | CAPTCHA 검증 |
+| Plugin | Import | Features |
+|--------|--------|----------|
+| `multiSession` | `better-auth/plugins` | Multi-session management |
+| `customSession` | `better-auth/plugins` | Session field extension |
+| `twoFactor` | `better-auth/plugins` | Two-factor authentication |
+| `captcha` | `better-auth/plugins` | CAPTCHA verification |
 
 ## Multi-Session
 
 ```typescript
-// ✅ 서버
+// ✅ Server
 import { multiSession } from 'better-auth/plugins'
 
 export const auth = betterAuth({
   plugins: [
     multiSession({
-      maximumSessions: 5, // 최대 세션 수
+      maximumSessions: 5, // Maximum number of sessions
     }),
   ],
 })
 
-// ✅ 클라이언트
+// ✅ Client
 import { multiSessionClient } from 'better-auth/client/plugins'
 
 export const authClient = createAuthClient({
   plugins: [multiSessionClient()],
 })
 
-// 사용
+// Usage
 const sessions = await authClient.multiSession.listSessions()
 await authClient.multiSession.revokeSession({ sessionId: 'session-id' })
 await authClient.multiSession.revokeOtherSessions()
@@ -333,7 +333,7 @@ await authClient.multiSession.revokeOtherSessions()
 ## CAPTCHA
 
 ```typescript
-// ✅ 서버
+// ✅ Server
 import { captcha } from 'better-auth/plugins'
 
 export const auth = betterAuth({
@@ -347,7 +347,7 @@ export const auth = betterAuth({
   ],
 })
 
-// ✅ 클라이언트
+// ✅ Client
 import { captchaClient } from 'better-auth/client/plugins'
 
 export const authClient = createAuthClient({
@@ -368,8 +368,8 @@ export const authClient = createAuthClient({
 ## SIWE (Ethereum)
 
 ```typescript
-// 서버: siwe({ domain, uri })
-// 클라이언트:
+// Server: siwe({ domain, uri })
+// Client:
 const { data } = await authClient.siwe.getNonce()
 const message = await authClient.siwe.prepareMessage({ address: '0x...', nonce: data.nonce })
 const signature = await signer.signMessage(message)
@@ -379,7 +379,7 @@ await authClient.siwe.signIn({ message, signature })
 ## Stateless Mode
 
 ```typescript
-// ✅ DB 없이 소셜 로그인만
+// ✅ Social login without DB
 export const auth = betterAuth({
   socialProviders: {
     google: {
@@ -422,8 +422,8 @@ export const auth = betterAuth({
 
 ## TanStack Start Integration
 
-| 패턴 | 용도 |
-|------|------|
+| Pattern | Purpose |
+|---------|---------|
 | API Handler | `src/routes/api/auth/$.ts` |
 | Server Function | `createServerFn` + `auth.api.getSession` |
 | Middleware | `auth.api.getSession` + redirect |
@@ -431,7 +431,7 @@ export const auth = betterAuth({
 ### Server Function Pattern
 
 ```typescript
-// ✅ 인증 체크 Server Function
+// ✅ Auth check Server Function
 export const requireAuth = createServerFn({ method: 'GET' })
   .handler(async ({ request }) => {
     const session = await auth.api.getSession({ headers: request.headers })
@@ -441,7 +441,7 @@ export const requireAuth = createServerFn({ method: 'GET' })
     return session.user
   })
 
-// ✅ 보호된 데이터 조회
+// ✅ Fetch protected data
 export const getProtectedData = createServerFn({ method: 'GET' })
   .handler(async ({ request }) => {
     const user = await requireAuth()
@@ -465,23 +465,23 @@ export const Route = createFileRoute('/dashboard')({
 
 ## Common Patterns
 
-| 작업 | 패턴 |
-|------|------|
-| 로그인 | `authClient.signIn.email({ email, password })` |
-| 회원가입 | `authClient.signUp.email({ email, password, name })` |
-| 로그아웃 | `authClient.signOut()` |
-| 세션 조회 | `authClient.getSession()` |
-| 사용자 업데이트 | `authClient.updateUser({ name })` |
-| 비밀번호 재설정 | `authClient.forgetPassword({ email })` → `authClient.resetPassword({ token, password })` |
+| Action | Pattern |
+|--------|---------|
+| Sign in | `authClient.signIn.email({ email, password })` |
+| Sign up | `authClient.signUp.email({ email, password, name })` |
+| Sign out | `authClient.signOut()` |
+| Get session | `authClient.getSession()` |
+| Update user | `authClient.updateUser({ name })` |
+| Reset password | `authClient.forgetPassword({ email })` → `authClient.resetPassword({ token, password })` |
 
 ## Do's & Don'ts
 
 | ✅ Do | ❌ Don't |
 |-------|----------|
-| `auth.api.getSession()` 서버에서 사용 | 클라이언트에서 직접 세션 조작 |
-| `authClient` 클라이언트에서 사용 | 하드코딩된 시크릿 |
-| 환경변수로 시크릿 관리 | 세션 토큰 로컬스토리지 저장 |
-| HTTPS 프로덕션 필수 | HTTP 프로덕션 배포 |
-| `baseURL` 환경별 설정 | 절대 경로 하드코딩 |
+| Use `auth.api.getSession()` on server | Directly manipulate sessions on client |
+| Use `authClient` on client | Hardcode secrets |
+| Manage secrets via environment variables | Store session tokens in localStorage |
+| HTTPS required in production | Deploy production with HTTP |
+| Configure `baseURL` per environment | Hardcode absolute paths |
 
 </patterns>

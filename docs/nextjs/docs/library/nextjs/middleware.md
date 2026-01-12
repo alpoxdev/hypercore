@@ -1,22 +1,22 @@
 # Middleware
 
-> 요청 처리 전 실행되는 함수
+> Functions executed before request processing
 
 ---
 
-## 기본 사용법
+## Basic Usage
 
 ```typescript
-// middleware.ts (루트)
+// middleware.ts (root)
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 export function middleware(request: NextRequest) {
-  // 로직 실행...
+  // Execute logic...
   return NextResponse.next()
 }
 
-// 매처 설정
+// Matcher configuration
 export const config = {
   matcher: ["/dashboard/:path*", "/api/:path*"],
 }
@@ -24,12 +24,12 @@ export const config = {
 
 ---
 
-## Response 타입
+## Response Types
 
 ### NextResponse.next()
 
 ```typescript
-// 요청을 다음 미들웨어 또는 라우트로 전달
+// Pass request to next middleware or route
 export function middleware(request: NextRequest) {
   return NextResponse.next()
 }
@@ -38,7 +38,7 @@ export function middleware(request: NextRequest) {
 ### NextResponse.redirect()
 
 ```typescript
-// 다른 URL로 리다이렉트
+// Redirect to different URL
 export function middleware(request: NextRequest) {
   return NextResponse.redirect(new URL("/login", request.url))
 }
@@ -47,7 +47,7 @@ export function middleware(request: NextRequest) {
 ### NextResponse.rewrite()
 
 ```typescript
-// URL은 유지하되 다른 페이지 렌더링
+// Render different page while keeping URL
 export function middleware(request: NextRequest) {
   return NextResponse.rewrite(new URL("/dashboard/home", request.url))
 }
@@ -55,7 +55,7 @@ export function middleware(request: NextRequest) {
 
 ---
 
-## 인증
+## Authentication
 
 ```typescript
 import { NextResponse } from "next/server"
@@ -64,7 +64,7 @@ import type { NextRequest } from "next/server"
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")
 
-  // 토큰 없으면 로그인 페이지로
+  // Redirect to login if no token
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url))
   }
@@ -79,9 +79,9 @@ export const config = {
 
 ---
 
-## 쿠키 처리
+## Cookie Handling
 
-### 읽기
+### Reading
 
 ```typescript
 export function middleware(request: NextRequest) {
@@ -94,7 +94,7 @@ export function middleware(request: NextRequest) {
 }
 ```
 
-### 설정
+### Setting
 
 ```typescript
 export function middleware(request: NextRequest) {
@@ -103,7 +103,7 @@ export function middleware(request: NextRequest) {
   response.cookies.set("visited", "true", {
     httpOnly: true,
     secure: true,
-    maxAge: 60 * 60 * 24 * 7, // 7일
+    maxAge: 60 * 60 * 24 * 7, // 7 days
   })
 
   return response
@@ -112,9 +112,9 @@ export function middleware(request: NextRequest) {
 
 ---
 
-## Headers 처리
+## Headers Handling
 
-### 읽기
+### Reading
 
 ```typescript
 export function middleware(request: NextRequest) {
@@ -127,7 +127,7 @@ export function middleware(request: NextRequest) {
 }
 ```
 
-### 설정
+### Setting
 
 ```typescript
 export function middleware(request: NextRequest) {
@@ -142,13 +142,13 @@ export function middleware(request: NextRequest) {
 
 ---
 
-## 경로별 처리
+## Path-based Processing
 
 ```typescript
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // /api/* 경로
+  // /api/* routes
   if (pathname.startsWith("/api/")) {
     const token = request.headers.get("authorization")
 
@@ -157,7 +157,7 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // /admin/* 경로
+  // /admin/* routes
   if (pathname.startsWith("/admin/")) {
     const role = request.cookies.get("role")?.value
 
@@ -172,9 +172,9 @@ export function middleware(request: NextRequest) {
 
 ---
 
-## Matcher 설정
+## Matcher Configuration
 
-### 배열
+### Array
 
 ```typescript
 export const config = {
@@ -182,23 +182,23 @@ export const config = {
 }
 ```
 
-### 정규식
+### Regex
 
 ```typescript
 export const config = {
   matcher: [
     /*
-     * 다음 경로 제외:
-     * - _next/static (정적 파일)
-     * - _next/image (이미지 최적화)
-     * - favicon.ico (파비콘)
+     * Exclude paths:
+     * - _next/static (static files)
+     * - _next/image (image optimization)
+     * - favicon.ico (favicon)
      */
     "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 }
 ```
 
-### 조건부
+### Conditional
 
 ```typescript
 export const config = {
@@ -216,7 +216,7 @@ export const config = {
 
 ---
 
-## 로깅
+## Logging
 
 ```typescript
 export function middleware(request: NextRequest) {
@@ -248,7 +248,7 @@ import type { NextRequest } from "next/server"
 const rateLimit = new Map<string, { count: number; resetAt: number }>()
 
 const LIMIT = 10 // 10 requests
-const WINDOW = 60 * 1000 // 1분
+const WINDOW = 60 * 1000 // 1 minute
 
 export function middleware(request: NextRequest) {
   const ip = request.ip || "unknown"
@@ -296,7 +296,7 @@ export function middleware(request: NextRequest) {
 
 ---
 
-## A/B 테스팅
+## A/B Testing
 
 ```typescript
 import { NextResponse } from "next/server"
@@ -332,12 +332,12 @@ export const config = {
 
 ---
 
-## 베스트 프랙티스
+## Best Practices
 
 ### ✅ DO
 
 ```typescript
-// 1. 가벼운 로직만
+// 1. Keep logic lightweight
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")
 
@@ -348,7 +348,7 @@ export function middleware(request: NextRequest) {
   return NextResponse.next()
 }
 
-// 2. matcher 설정
+// 2. Configure matcher
 export const config = {
   matcher: ["/dashboard/:path*"],
 }
@@ -357,23 +357,23 @@ export const config = {
 ### ❌ DON'T
 
 ```typescript
-// 1. 무거운 DB 쿼리
+// 1. Heavy database queries
 export async function middleware(request: NextRequest) {
-  // ❌ 미들웨어에서 DB 쿼리 금지
+  // ❌ No DB queries in middleware
   const user = await prisma.user.findUnique({ where: { id: "..." } })
   return NextResponse.next()
 }
 
-// 2. matcher 없이 모든 요청 처리
+// 2. Processing all requests without matcher
 export function middleware(request: NextRequest) {
-  // ❌ 성능 저하
+  // ❌ Performance degradation
   return NextResponse.next()
 }
 ```
 
 ---
 
-## NextAuth.js와 함께 사용
+## Using with NextAuth.js
 
 ```typescript
 // middleware.ts
@@ -386,6 +386,6 @@ export const config = {
 
 ---
 
-## 참조
+## References
 
 - [Next.js Middleware](https://nextjs.org/docs/app/building-your-application/routing/middleware)

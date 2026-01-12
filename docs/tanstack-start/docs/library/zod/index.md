@@ -11,7 +11,7 @@
 <quick_reference>
 
 ```typescript
-// 기본
+// Basic
 const schema = z.object({
   email: z.email(),              // v4!
   name: z.string().min(1).trim(),
@@ -20,7 +20,7 @@ const schema = z.object({
 })
 type Input = z.infer<typeof schema>
 
-schema.parse(data)              // 실패 시 throw
+schema.parse(data)              // Throw on failure
 schema.safeParse(data)          // { success, data/error }
 
 // TanStack Start
@@ -34,7 +34,7 @@ export const createUser = createServerFn({ method: 'POST' })
 <v4_changes>
 
 ```typescript
-// ✅ v4 새 API
+// ✅ v4 new API
 z.email()  z.url()  z.uuid()
 z.iso.date()  z.iso.datetime()  z.iso.duration()
 z.stringbool()  // "true"/"yes"/"1" → true
@@ -42,13 +42,13 @@ z.stringbool()  // "true"/"yes"/"1" → true
 // ❌ v3 deprecated
 z.string().email()  z.string().url()
 
-// 변경사항
+// Changes
 z.string().min(5, { error: "Too short." })  // message → error
-z.strictObject({ name: z.string() })  // 추가 키 에러
-z.looseObject({ name: z.string() })   // 추가 키 통과
-z.string().refine(val => val.includes("@")).min(5)  // refinement 체이닝
+z.strictObject({ name: z.string() })  // Error on extra keys
+z.looseObject({ name: z.string() })   // Allow extra keys
+z.string().refine(val => val.includes("@")).min(5)  // Refinement chaining
 
-// 템플릿 리터럴
+// Template literals
 const css = z.templateLiteral([z.number(), z.enum(["px", "em", "rem"])])
 // `${number}px` | `${number}em` | `${number}rem`
 ```

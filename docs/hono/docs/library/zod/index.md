@@ -1,25 +1,25 @@
 # Zod v4 - Schema Validation
 
-> TypeScript-first 스키마 검증
+> TypeScript-first schema validation
 
 ---
 
-## 버전 주의
+## Version Notice
 
 ```typescript
-// ✅ v4 문법
+// ✅ v4 syntax
 z.email()
 z.url()
 z.uuid()
 
-// ❌ v3 문법 (사용 금지)
+// ❌ v3 syntax (prohibited)
 z.string().email()
 z.string().url()
 ```
 
 ---
 
-## 설치
+## Installation
 
 ```bash
 npm install zod
@@ -27,7 +27,7 @@ npm install zod
 
 ---
 
-## 기본 타입
+## Basic Types
 
 ```typescript
 import { z } from 'zod'
@@ -40,28 +40,28 @@ z.undefined()
 z.null()
 ```
 
-### 문자열 (v4)
+### Strings (v4)
 
 ```typescript
-z.email()                    // 이메일
+z.email()                    // Email
 z.url()                      // URL
 z.uuid()                     // UUID
-z.string().min(1).max(100)   // 길이
-z.string().trim()            // 공백 제거
-z.string().regex(/^[a-z]+$/) // 정규식
+z.string().min(1).max(100)   // Length
+z.string().trim()            // Trim whitespace
+z.string().regex(/^[a-z]+$/) // Regex
 ```
 
-### 숫자
+### Numbers
 
 ```typescript
-z.number().int()        // 정수
-z.number().positive()   // 양수
+z.number().int()        // Integer
+z.number().positive()   // Positive
 z.number().min(1).max(100)
 ```
 
 ---
 
-## 객체
+## Objects
 
 ```typescript
 const userSchema = z.object({
@@ -82,7 +82,7 @@ z.string().nullable()   // string | null
 z.string().nullish()    // string | null | undefined
 ```
 
-### 기본값
+### Defaults
 
 ```typescript
 z.string().default('Anonymous')
@@ -92,8 +92,8 @@ z.enum(['user', 'admin']).default('user')
 ### Partial / Pick / Omit
 
 ```typescript
-userSchema.partial()              // 모든 필드 optional
-userSchema.partial({ email: true }) // 특정 필드만
+userSchema.partial()              // All fields optional
+userSchema.partial({ email: true }) // Specific fields only
 userSchema.pick({ id: true, name: true })
 userSchema.omit({ password: true })
 ```
@@ -118,7 +118,7 @@ z.discriminatedUnion('type', [
 
 ---
 
-## Coerce (타입 변환)
+## Coerce (Type Conversion)
 
 ```typescript
 z.coerce.number()   // string → number
@@ -137,27 +137,27 @@ z.string().transform((s) => s.split(','))
 
 ---
 
-## Refine (커스텀 검증)
+## Refine (Custom Validation)
 
 ```typescript
-// 단일 필드
+// Single field
 z.string().refine((val) => val.length >= 8, {
-  message: '8자 이상 필요',
+  message: 'Must be at least 8 characters',
 })
 
-// 객체 전체
+// Entire object
 z.object({
   password: z.string().min(8),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: '비밀번호 불일치',
+  message: 'Passwords do not match',
   path: ['confirmPassword'],
 })
 ```
 
 ---
 
-## 에러 처리
+## Error Handling
 
 ```typescript
 const result = schema.safeParse(input)
@@ -170,16 +170,16 @@ if (result.success) {
 }
 ```
 
-### 커스텀 에러
+### Custom Errors
 
 ```typescript
-z.email({ message: '올바른 이메일 입력' })
-z.string().min(1, { message: '필수 입력' })
+z.email({ message: 'Please enter a valid email' })
+z.string().min(1, { message: 'Required field' })
 ```
 
 ---
 
-## Hono와 함께
+## Usage with Hono
 
 ```typescript
 import { zValidator } from '@hono/zod-validator'
@@ -204,6 +204,6 @@ app.post('/users',
 
 ---
 
-## 관련 문서
+## Related Documentation
 
-- [Hono 검증](../hono/validation.md)
+- [Hono Validation](../hono/validation.md)

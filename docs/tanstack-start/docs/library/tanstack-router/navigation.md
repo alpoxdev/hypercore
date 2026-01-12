@@ -9,7 +9,7 @@
 <Link to="/products" search={{ page: 1, sort: 'newest' }}>Products</Link>
 <Link to="/products" search={prev => ({ ...prev, page: 2 })}>Next</Link>
 
-// Active 스타일
+// Active styles
 <Link
   to="/about"
   activeProps={{ className: 'text-blue-500 font-bold' }}
@@ -33,11 +33,11 @@ const Component = () => {
 }
 
 // Preloading
-<Link to="/posts" preload="intent">Posts</Link>       // hover 시
-<Link to="/dashboard" preload="render">Dash</Link>    // 렌더링 시
-<Link to="/products" preload="viewport">Prod</Link>   // viewport 진입 시
+<Link to="/posts" preload="intent">Posts</Link>       // On hover
+<Link to="/dashboard" preload="render">Dash</Link>    // On render
+<Link to="/products" preload="viewport">Prod</Link>   // On viewport entry
 
-// 조건부 네비게이션
+// Conditional navigation
 const SubmitButton = () => {
   const navigate = useNavigate()
   const [isPending, startTransition] = useTransition()
@@ -57,24 +57,24 @@ const SubmitButton = () => {
 
 <options>
 
-| Link Props | 타입 | 설명 |
+| Link Props | Type | Description |
 |------------|------|------|
-| `to` | string | 목적지 경로 |
-| `params` | object | Path 파라미터 |
+| `to` | string | Destination path |
+| `params` | object | Path parameters |
 | `search` | object \| function | Search params |
 | `hash` | string | Hash |
-| `replace` | boolean | history replace |
-| `preload` | 'intent' \| 'render' \| 'viewport' | Preload 전략 |
-| `activeProps` | object | Active 시 props |
-| `inactiveProps` | object | Inactive 시 props |
+| `replace` | boolean | Use history replace |
+| `preload` | 'intent' \| 'render' \| 'viewport' | Preload strategy |
+| `activeProps` | object | Props when active |
+| `inactiveProps` | object | Props when inactive |
 
-| navigate 옵션 | 타입 | 설명 |
+| navigate Options | Type | Description |
 |---------------|------|------|
-| `to` | string | 목적지 경로 |
-| `params` | object | Path 파라미터 |
+| `to` | string | Destination path |
+| `params` | object | Path parameters |
 | `search` | object \| function | Search params |
 | `hash` | string | Hash |
-| `replace` | boolean | history.replace 사용 |
-| `resetScroll` | boolean | 스크롤 리셋 |
+| `replace` | boolean | Use history.replace |
+| `resetScroll` | boolean | Reset scroll |
 
 </options>

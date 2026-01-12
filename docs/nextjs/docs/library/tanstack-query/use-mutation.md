@@ -3,7 +3,7 @@
 <patterns>
 
 ```tsx
-// 기본
+// Basic
 const queryClient = useQueryClient()
 const mutation = useMutation({
   mutationFn: postTodo,
@@ -11,12 +11,12 @@ const mutation = useMutation({
 })
 mutation.mutate({ title: 'New Todo' })
 
-// 콜백
+// Callbacks
 useMutation({
   mutationFn: updateTodo,
   onMutate: async (newTodo) => {
-    // mutation 시작 전 (optimistic update용)
-    return { previousData }  // context로 전달
+    // before mutation starts (for optimistic updates)
+    return { previousData }  // passed to context
   },
   onSuccess: (data, variables, context) => {},
   onError: (error, variables, context) => {},
@@ -35,7 +35,7 @@ try {
   const result = await mutation.mutateAsync(data)
 } catch (error) { ... }
 
-// 캐시 업데이트
+// Cache update
 useMutation({
   mutationFn: patchTodo,
   onSuccess: (data) => {
@@ -49,15 +49,15 @@ useMutation({
 
 <returns>
 
-| 속성 | 설명 |
-|------|------|
-| data | mutation 결과 |
-| error | 에러 객체 |
-| isPending | 실행 중 |
-| isSuccess/isError | 상태 |
-| mutate | 실행 (비동기) |
-| mutateAsync | 실행 (Promise) |
-| reset | 상태 초기화 |
-| variables | 전달된 변수 |
+| Property | Description |
+|----------|-------------|
+| data | Mutation result |
+| error | Error object |
+| isPending | Execution in progress |
+| isSuccess/isError | Status flags |
+| mutate | Execute (async) |
+| mutateAsync | Execute (Promise) |
+| reset | Reset state |
+| variables | Passed variables |
 
 </returns>

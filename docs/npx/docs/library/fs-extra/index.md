@@ -1,6 +1,6 @@
 # fs-extra
 
-> Node.js 파일 시스템 유틸리티
+> Node.js file system utilities
 
 <patterns>
 
@@ -8,14 +8,14 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-// 존재 확인
+// Check existence
 const exists = await fs.pathExists('/path/to/file');
 
-// 디렉토리 생성
+// Create directory
 await fs.ensureDir('/path/to/nested/dir');
 await fs.mkdir('/path/to/dir');
 
-// 복사
+// Copy
 await fs.copy('/src/file.txt', '/dest/file.txt');
 await fs.copy('/src/dir', '/dest/dir');
 await fs.copy(src, dest, {
@@ -24,18 +24,18 @@ await fs.copy(src, dest, {
   filter: (src) => !src.includes('node_modules'),
 });
 
-// 삭제
+// Remove
 await fs.remove('/path/to/dir');
 
-// 디렉토리 읽기
+// Read directory
 const items = await fs.readdir('/path/to/dir');
 
-// 파일 타입 확인
+// Check file type
 const stat = await fs.stat(itemPath);
 if (stat.isDirectory()) { /* ... */ }
 if (stat.isFile()) { /* ... */ }
 
-// 파일 읽기/쓰기
+// Read/Write files
 const content = await fs.readFile('/path/to/file', 'utf-8');
 await fs.writeFile('/path/to/file', content, 'utf-8');
 
@@ -43,7 +43,7 @@ await fs.writeFile('/path/to/file', content, 'utf-8');
 const data = await fs.readJson('/path/to/file.json');
 await fs.writeJson('/path/to/file.json', data, { spaces: 2 });
 
-// 재귀 복사
+// Recursive copy
 const copyRecursive = async (src: string, dest: string) => {
   const counter = { files: 0, directories: 0 };
 

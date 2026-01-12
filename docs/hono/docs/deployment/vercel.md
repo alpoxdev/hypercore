@@ -1,10 +1,10 @@
-# Nitro - Vercel 배포
+# Nitro - Vercel Deployment
 
-> 서버리스 배포
+> Serverless deployment
 
 ---
 
-## 설정
+## Configuration
 
 ```typescript
 // nitro.config.ts
@@ -26,11 +26,11 @@ export default defineNitroConfig({
 
 ---
 
-## 배포
+## Deployment
 
-### GitHub 연동 (권장)
+### GitHub Integration (Recommended)
 
-1. [Vercel 대시보드](https://vercel.com) → Add New → Project
+1. [Vercel Dashboard](https://vercel.com) → Add New → Project
 2. Build Command: `yarn build`
 3. Output Directory: `.vercel/output`
 
@@ -39,8 +39,8 @@ export default defineNitroConfig({
 ```bash
 npm install -g vercel
 vercel login
-vercel          # 프리뷰
-vercel --prod   # 프로덕션
+vercel          # Preview
+vercel --prod   # Production
 
 vercel env add DATABASE_URL
 ```
@@ -59,7 +59,7 @@ export default defineNitroConfig({
 
 ---
 
-## ISR (캐시)
+## ISR (Caching)
 
 ```typescript
 app.get("/posts", async (c) => {
@@ -68,14 +68,14 @@ app.get("/posts", async (c) => {
 });
 
 app.get("/user/:id", async (c) => {
-  c.header("Cache-Control", "no-store"); // 캐시 안함
+  c.header("Cache-Control", "no-store"); // No cache
   return c.json(await fetchUser(c.req.param("id")));
 });
 ```
 
 ---
 
-## 환경 변수
+## Environment Variables
 
 ```typescript
 app.get("/config", (c) => {
@@ -86,16 +86,16 @@ app.get("/config", (c) => {
 });
 ```
 
-| 자동 제공 변수 | 설명 |
-|---------------|------|
-| `VERCEL` | Vercel 환경 ("1") |
-| `VERCEL_ENV` | 환경 |
-| `VERCEL_URL` | 배포 URL |
-| `VERCEL_REGION` | 실행 리전 |
+| Auto-provided Variables | Description |
+|------------------------|-------------|
+| `VERCEL` | Vercel environment ("1") |
+| `VERCEL_ENV` | Environment |
+| `VERCEL_URL` | Deployment URL |
+| `VERCEL_REGION` | Execution region |
 
 ---
 
-## 데이터베이스
+## Database
 
 ### Vercel Postgres
 
@@ -161,22 +161,22 @@ jobs:
 
 ---
 
-## 문제 해결
+## Troubleshooting
 
-| 문제 | 해결 |
-|------|------|
-| Function Timeout | `maxDuration` 증가 |
-| Edge 호환성 오류 | Edge 호환 API 사용 |
-| 번들 크기 초과 | externals 설정 |
+| Issue | Solution |
+|-------|----------|
+| Function Timeout | Increase `maxDuration` |
+| Edge compatibility errors | Use Edge-compatible APIs |
+| Bundle size exceeded | Configure externals |
 
 ```bash
-vercel dev      # 로컬 시뮬레이션
-vercel logs     # 로그 확인
-vercel env ls   # 환경 변수 확인
+vercel dev      # Local simulation
+vercel logs     # Check logs
+vercel env ls   # Check environment variables
 ```
 
 ---
 
-## 관련 문서
+## Related Documentation
 
-- [배포 가이드](./index.md)
+- [Deployment Guide](./index.md)

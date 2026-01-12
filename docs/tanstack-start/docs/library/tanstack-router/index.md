@@ -13,10 +13,10 @@
 <quick_reference>
 
 ```tsx
-// 기본 라우트
+// Basic route
 export const Route = createFileRoute('/about')({ component: AboutPage })
 
-// Loader + 동적 파라미터
+// Loader + dynamic params
 export const Route = createFileRoute('/posts/$postId')({
   loader: async ({ params }) => ({ post: await getPost(params.postId) }),
   component: PostPage,
@@ -78,10 +78,10 @@ routes/
 └── $.tsx               # Catch-all (404)
 ```
 
-| 파일명 | 경로 |
+| Filename | Path |
 |--------|------|
-| `index.tsx` | 디렉토리 루트 |
-| `$param.tsx` | 동적 세그먼트 |
+| `index.tsx` | Directory root |
+| `$param.tsx` | Dynamic segment |
 | `_layout/` | Pathless layout |
 | `$.tsx` | Catch-all |
 
@@ -89,27 +89,27 @@ routes/
 
 <options>
 
-| 옵션 | 설명 |
+| Option | Description |
 |------|------|
-| `component` | 렌더링할 컴포넌트 |
-| `loader` | 데이터 로드 함수 |
-| `beforeLoad` | 로드 전 실행 (인증 등) |
-| `validateSearch` | Search params 스키마 |
-| `pendingComponent` | 로딩 중 표시 |
-| `errorComponent` | 에러 발생 시 표시 |
-| `notFoundComponent` | Not found 시 표시 |
+| `component` | Component to render |
+| `loader` | Data loading function |
+| `beforeLoad` | Run before loading (auth, etc) |
+| `validateSearch` | Search params schema |
+| `pendingComponent` | Loading state component |
+| `errorComponent` | Error component |
+| `notFoundComponent` | Not found component |
 
 </options>
 
 <hooks>
 
-| Hook | 용도 |
+| Hook | Purpose |
 |------|------|
-| `Route.useLoaderData()` | Loader 반환값 |
-| `Route.useParams()` | Path 파라미터 |
+| `Route.useLoaderData()` | Loader return value |
+| `Route.useParams()` | Path parameters |
 | `Route.useSearch()` | Search params |
 | `Route.useRouteContext()` | Route context |
-| `useNavigate()` | 프로그래밍 네비게이션 |
-| `useMatch({ from })` | 라우트 매치 정보 |
+| `useNavigate()` | Programmatic navigation |
+| `useMatch({ from })` | Route match info |
 
 </hooks>

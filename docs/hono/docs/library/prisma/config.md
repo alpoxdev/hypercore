@@ -1,10 +1,10 @@
-# Prisma - Config 파일
+# Prisma - Config File
 
-> prisma.config.ts 설정 (v7)
+> prisma.config.ts configuration (v7)
 
 ---
 
-## Multi-File 스키마 필수 설정
+## Multi-File Schema Required Configuration
 
 ```typescript
 // prisma.config.ts
@@ -12,7 +12,7 @@ import path from 'node:path'
 import { defineConfig, env } from 'prisma/config'
 
 export default defineConfig({
-  schema: path.join('prisma', 'schema'), // 폴더 경로
+  schema: path.join('prisma', 'schema'), // Folder path
   datasource: {
     url: env('DATABASE_URL'),
   },
@@ -21,13 +21,13 @@ export default defineConfig({
 
 ---
 
-## 파일 위치
+## File Location
 
 ```
-프로젝트/
-├── prisma.config.ts      # 프로젝트 루트
+project/
+├── prisma.config.ts      # Project root
 ├── prisma/
-│   ├── schema/           # Multi-File 스키마
+│   ├── schema/           # Multi-File schema
 │   │   ├── +base.prisma
 │   │   ├── +enum.prisma
 │   │   └── user.prisma
@@ -37,7 +37,7 @@ export default defineConfig({
 
 ---
 
-## 전체 설정 예시
+## Full Configuration Example
 
 ```typescript
 // prisma.config.ts
@@ -69,14 +69,14 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client"  // v7 필수
+  provider = "prisma-client"  // v7 required
   output   = "../../generated/prisma"
 }
 ```
 
 ---
 
-## 시드 스크립트
+## Seed Script
 
 ```typescript
 // prisma/seed.ts
@@ -86,7 +86,7 @@ const prisma = new PrismaClient()
 
 async function main() {
   await prisma.user.create({
-    data: { email: 'admin@example.com', name: '관리자' },
+    data: { email: 'admin@example.com', name: 'Administrator' },
   })
 }
 
@@ -104,18 +104,18 @@ main()
 generator client {
   provider = "prisma-client"
   output   = "../../generated/prisma"
-  runtime  = "workerd"  // Workers 런타임
+  runtime  = "workerd"  // Workers runtime
 }
 
 datasource db {
-  provider = "sqlite"  // D1은 SQLite
+  provider = "sqlite"  // D1 is SQLite
   url      = env("DATABASE_URL")
 }
 ```
 
 ---
 
-## 관련 문서
+## Related Documentation
 
-- [Prisma 개요](./index.md)
+- [Prisma Overview](./index.md)
 - [Cloudflare D1](./cloudflare-d1.md)

@@ -1,6 +1,6 @@
-# 환경 변수 설정
+# Environment Variables Setup
 
-> TanStack Start (Vite 기반) 환경 변수 관리
+> TanStack Start (Vite-based) Environment Variables Management
 
 <instructions>
 @../library/t3-env/index.md
@@ -10,10 +10,10 @@
 
 <environment_types>
 
-| 접근 방식 | 위치 | 용도 | 노출 |
-|-----------|------|------|------|
-| `process.env.*` | Server Function | DB, API 키, 시크릿 | ❌ 서버만 |
-| `import.meta.env.VITE_*` | 클라이언트 + 서버 | 공개 설정 | ✅ 브라우저 노출 |
+| Access Method | Location | Purpose | Exposure |
+|---------------|----------|---------|----------|
+| `process.env.*` | Server Function | DB, API keys, secrets | ❌ Server only |
+| `import.meta.env.VITE_*` | Client + Server | Public configuration | ✅ Browser exposed |
 
 </environment_types>
 
@@ -21,22 +21,22 @@
 
 <file_structure>
 
-## 환경 파일 구조
+## Environment File Structure
 
 ```
-├── .env                    # 기본 (커밋 O)
-├── .env.development        # 개발 (커밋 O)
-├── .env.production         # 프로덕션 (커밋 O)
-├── .env.local              # 로컬 오버라이드 (커밋 X)
-└── src/lib/env.ts          # 검증 및 타입 (t3-env)
+├── .env                    # Default (commit ✓)
+├── .env.development        # Development (commit ✓)
+├── .env.production         # Production (commit ✓)
+├── .env.local              # Local override (commit ✗)
+└── src/lib/env.ts          # Validation and types (t3-env)
 ```
 
-| 우선순위 | 파일 | 설명 |
-|----------|------|------|
-| 1 | `.env.{mode}.local` | 최우선 (gitignore) |
-| 2 | `.env.local` | 로컬 오버라이드 |
-| 3 | `.env.{mode}` | 환경별 설정 |
-| 4 | `.env` | 기본 설정 |
+| Priority | File | Description |
+|----------|------|-------------|
+| 1 | `.env.{mode}.local` | Highest priority (gitignore) |
+| 2 | `.env.local` | Local override |
+| 3 | `.env.{mode}` | Environment-specific config |
+| 4 | `.env` | Default config |
 
 </file_structure>
 
@@ -44,9 +44,9 @@
 
 <patterns>
 
-## 환경 파일 예시
+## Environment File Examples
 
-### .env.local (gitignore, 시크릿)
+### .env.local (gitignore, secrets)
 
 ```env
 DATABASE_URL=postgresql://user:password@localhost:5432/myapp
@@ -70,7 +70,7 @@ VITE_APP_NAME=My App
 VITE_API_URL=https://api.myapp.com
 ```
 
-## 타입 안전한 환경 변수 (t3-env)
+## Type-Safe Environment Variables (t3-env)
 
 ```typescript
 // src/lib/env.ts
@@ -106,7 +106,7 @@ export const env = createEnv({
 })
 ```
 
-## 사용 예시
+## Usage Examples
 
 ### Server Function
 
@@ -118,13 +118,13 @@ import { prisma } from '@/database/prisma'
 
 export const getUsers = createServerFn({ method: 'GET' })
   .handler(async () => {
-    // env.DATABASE_URL은 서버에서만 사용 가능
+    // env.DATABASE_URL is only available on server
     console.log('DB URL:', env.DATABASE_URL)
     return prisma.user.findMany()
   })
 ```
 
-### 클라이언트 컴포넌트
+### Client Component
 
 ```tsx
 // components/app-header.tsx
@@ -149,11 +149,11 @@ export const AppHeader = (): JSX.Element => {
 ## .gitignore
 
 ```gitignore
-# 시크릿 포함 (절대 커밋 X)
+# Contains secrets (never commit)
 .env.local
 .env.*.local
 
-# 공개 설정 (커밋 O)
+# Public config (safe to commit)
 !.env
 !.env.development
 !.env.production
@@ -165,7 +165,7 @@ export const AppHeader = (): JSX.Element => {
 
 <typescript_types>
 
-## TypeScript 타입 (Vite)
+## TypeScript Types (Vite)
 
 ```typescript
 // src/vite-env.d.ts
@@ -181,7 +181,7 @@ interface ImportMeta {
 }
 ```
 
-**참고:** t3-env 사용 시 자동으로 타입 추론됨
+**Note:** Types are automatically inferred when using t3-env
 
 </typescript_types>
 
@@ -189,13 +189,13 @@ interface ImportMeta {
 
 <best_practices>
 
-| 원칙 | 설명 |
-|------|------|
-| **시크릿 분리** | `.env.local`에만 시크릿 저장, 커밋 금지 |
-| **공개 변수** | `VITE_` 접두사 사용, 브라우저 노출 허용 |
-| **타입 안전성** | t3-env 또는 Zod로 검증 |
-| **기본값** | `.env`에 안전한 기본값 설정 |
-| **문서화** | `.env.example` 파일로 필수 변수 목록 제공 |
+| Principle | Description |
+|-----------|-------------|
+| **Separate Secrets** | Store secrets only in `.env.local`, never commit |
+| **Public Variables** | Use `VITE_` prefix, safe for browser exposure |
+| **Type Safety** | Validate with t3-env or Zod |
+| **Default Values** | Set safe defaults in `.env` |
+| **Documentation** | Provide required variable list in `.env.example` |
 
 </best_practices>
 

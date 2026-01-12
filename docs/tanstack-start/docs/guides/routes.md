@@ -1,6 +1,6 @@
-# 라우트 구조
+# Route Structure
 
-> TanStack Start 파일 기반 라우팅
+> TanStack Start File-Based Routing
 
 <instructions>
 @../library/tanstack-router/index.md
@@ -10,7 +10,7 @@
 
 <route_structure>
 
-## 라우트 폴더 구조
+## Route Folder Structure
 
 ```
 routes/
@@ -19,28 +19,28 @@ routes/
 ├── users/
 │   ├── index.tsx        # /users (List)
 │   ├── $id.tsx          # /users/:id (Detail)
-│   ├── -components/     # 페이지 전용 컴포넌트 (필수)
-│   ├── -hooks/          # 페이지 전용 Hook (필수)
-│   ├── -functions/      # 페이지 전용 Server Functions (필수)
-│   └── -sections/       # 섹션 분리 (선택, 복잡한 경우만)
+│   ├── -components/     # Page-specific components (required)
+│   ├── -hooks/          # Page-specific Hooks (required)
+│   ├── -functions/      # Page-specific Server Functions (required)
+│   └── -sections/       # Section separation (optional, complex pages only)
 └── posts/
     ├── index.tsx
     ├── $slug.tsx
-    ├── -components/     # 필수
-    ├── -hooks/          # 필수
-    └── -functions/      # 필수
+    ├── -components/     # Required
+    ├── -hooks/          # Required
+    └── -functions/      # Required
 ```
 
-| 접두사 | 용도 | 라우트 생성 |
-|--------|------|-----------|
-| `-` | 라우트 제외 폴더 | ❌ 제외 |
-| `$` | 동적 파라미터 | ✅ 생성 |
-| `_` | Pathless Layout | ✅ 생성 (경로 없음) |
+| Prefix | Purpose | Route Generation |
+|--------|---------|------------------|
+| `-` | Exclude from routes | ❌ Excluded |
+| `$` | Dynamic parameters | ✅ Generated |
+| `_` | Pathless Layout | ✅ Generated (no path) |
 
-**⚠️ 필수 규칙:**
-- 모든 페이지에 `-components/`, `-hooks/`, `-functions/` 폴더 **필수**
-- 페이지 크기(줄 수)와 **무관**하게 Custom Hook은 반드시 `-hooks/` 폴더에 분리
-- `-sections/`는 200줄 이상 복잡한 페이지에서만 선택적 사용
+**⚠️ Required Rules:**
+- All pages must have `-components/`, `-hooks/`, `-functions/` folders
+- Custom Hooks must always be separated into `-hooks/` folder regardless of page size
+- `-sections/` is optional, use only for complex pages (200+ lines)
 
 </route_structure>
 
@@ -48,17 +48,17 @@ routes/
 
 <file_naming>
 
-## 라우트 파일명 규칙
+## Route File Naming Rules
 
-| 경로 | 파일명 | 설명 |
-|------|--------|------|
-| `/` | `index.tsx` | 인덱스 라우트 |
-| `/users` | `users/index.tsx` | 목록 페이지 |
-| `/users/:id` | `users/$id.tsx` | 동적 파라미터 |
-| `/posts/:slug` | `posts/$slug.tsx` | URL 파라미터 |
-| `/dashboard/*` | `dashboard/$.tsx` | Catch-all 라우트 |
-| Layout | `__root.tsx` | Root 레이아웃 |
-| Pathless | `_layout.tsx` | 경로 없는 레이아웃 |
+| Path | Filename | Description |
+|------|----------|-------------|
+| `/` | `index.tsx` | Index route |
+| `/users` | `users/index.tsx` | List page |
+| `/users/:id` | `users/$id.tsx` | Dynamic parameter |
+| `/posts/:slug` | `posts/$slug.tsx` | URL parameter |
+| `/dashboard/*` | `dashboard/$.tsx` | Catch-all route |
+| Layout | `__root.tsx` | Root layout |
+| Pathless | `_layout.tsx` | Pathless layout |
 
 </file_naming>
 
@@ -66,7 +66,7 @@ routes/
 
 <patterns>
 
-## 기본 라우트 패턴
+## Basic Route Pattern
 
 ```tsx
 // routes/users/index.tsx
@@ -89,7 +89,7 @@ const UsersPage = (): JSX.Element => {
 }
 ```
 
-## 동적 라우트 + Loader
+## Dynamic Route + Loader
 
 ```tsx
 // routes/users/$id.tsx
@@ -188,7 +188,7 @@ const DashboardPage = (): JSX.Element => {
 }
 ```
 
-## Section 패턴
+## Section Pattern
 
 ```tsx
 // routes/users/-sections/user-list-section.tsx
@@ -217,7 +217,7 @@ export const UserListSection = (): JSX.Element => {
 }
 ```
 
-## 컴포넌트 패턴
+## Component Pattern
 
 ```tsx
 // routes/users/-components/user-card.tsx
@@ -268,21 +268,21 @@ export const UserCard = ({
 
 <folder_structure_rules>
 
-## 폴더 구조 규칙
+## Folder Structure Rules
 
-**⚠️ 모든 페이지에 필수:**
-- `-components/`: 페이지 전용 컴포넌트
-- `-hooks/`: 페이지 전용 Custom Hook (줄 수 무관)
-- `-functions/`: 페이지 전용 Server Functions
+**⚠️ Required for All Pages:**
+- `-components/`: Page-specific components
+- `-hooks/`: Page-specific Custom Hooks (regardless of line count)
+- `-functions/`: Page-specific Server Functions
 
-**선택적 사용:**
-- `-sections/`: 200줄+ 복잡한 페이지에서만 사용
+**Optional:**
+- `-sections/`: Use only for complex pages (200+ lines)
 
-| 페이지 크기 | 필수 | 선택 |
-|------------|------|------|
-| ~100줄 | `-components/`, `-hooks/`, `-functions/` | - |
-| 100-200줄 | `-components/`, `-hooks/`, `-functions/` | - |
-| 200줄+ | `-components/`, `-hooks/`, `-functions/` | `-sections/` |
+| Page Size | Required | Optional |
+|-----------|----------|----------|
+| ~100 lines | `-components/`, `-hooks/`, `-functions/` | - |
+| 100-200 lines | `-components/`, `-hooks/`, `-functions/` | - |
+| 200+ lines | `-components/`, `-hooks/`, `-functions/` | `-sections/` |
 
 </folder_structure_rules>
 
@@ -290,23 +290,23 @@ export const UserCard = ({
 
 <loader_execution>
 
-## Loader 실행 순서
+## Loader Execution Order
 
-| 단계 | 실행 방식 | 설명 |
-|------|----------|------|
-| 1. `beforeLoad` | 순차 (outermost → innermost) | 인증 체크, 컨텍스트 설정 |
-| 2. `loader` | 병렬 (모든 loader 동시) | 데이터 페칭 |
+| Step | Execution | Description |
+|------|-----------|-------------|
+| 1. `beforeLoad` | Sequential (outermost → innermost) | Auth check, context setup |
+| 2. `loader` | Parallel (all loaders simultaneously) | Data fetching |
 
 ```tsx
 // Parent Route
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: async () => {
-    // 1. 먼저 실행 (순차)
+    // 1. Runs first (sequential)
     const auth = await checkAuth()
     return { auth }
   },
   loader: async () => {
-    // 2. 나중에 실행 (병렬)
+    // 2. Runs later (parallel)
     return getDashboardData()
   },
 })
@@ -314,11 +314,11 @@ export const Route = createFileRoute('/dashboard')({
 // Child Route
 export const Route = createFileRoute('/dashboard/users')({
   beforeLoad: async () => {
-    // 1. Parent beforeLoad 다음 실행
+    // 1. Runs after Parent beforeLoad
     return {}
   },
   loader: async () => {
-    // 2. Parent loader와 병렬 실행
+    // 2. Runs in parallel with Parent loader
     return getUsers()
   },
 })

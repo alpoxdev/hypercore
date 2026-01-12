@@ -1,8 +1,8 @@
-# Prisma - Config 파일
+# Prisma - Config File
 
-Prisma v7 `prisma.config.ts` 설정.
+Prisma v7 `prisma.config.ts` configuration.
 
-## Multi-File 스키마 (필수)
+## Multi-File Schema (Required)
 
 ```typescript
 // prisma.config.ts
@@ -11,7 +11,7 @@ import path from 'node:path'
 import { defineConfig, env } from 'prisma/config'
 
 export default defineConfig({
-  schema: path.join('prisma', 'schema'),  // 폴더 경로!
+  schema: path.join('prisma', 'schema'),  // folder path!
   migrations: {
     path: 'prisma/migrations',
     seed: 'tsx prisma/seed.ts',
@@ -22,16 +22,16 @@ export default defineConfig({
 })
 ```
 
-## 폴더 구조
+## Folder Structure
 
 ```
-프로젝트/
+project/
 ├── prisma.config.ts
 ├── prisma/
 │   ├── schema/
 │   │   ├── +base.prisma   # datasource, generator
-│   │   ├── +enum.prisma   # enum 정의
-│   │   └── user.prisma    # 모델
+│   │   ├── +enum.prisma   # enum definitions
+│   │   └── user.prisma    # models
 │   └── migrations/
 ```
 
@@ -49,17 +49,17 @@ generator client {
 }
 ```
 
-## 설정 옵션
+## Configuration Options
 
-| 옵션 | 설명 |
-|------|------|
-| `schema` | 스키마 폴더 경로 |
-| `datasource.url` | DB URL (필수) |
-| `datasource.shadowDatabaseUrl` | Shadow DB URL |
-| `migrations.path` | 마이그레이션 폴더 |
-| `migrations.seed` | 시드 명령어 |
+| Option | Description |
+|--------|-------------|
+| `schema` | Schema folder path |
+| `datasource.url` | Database URL (required) |
+| `datasource.shadowDatabaseUrl` | Shadow database URL |
+| `migrations.path` | Migrations folder |
+| `migrations.seed` | Seed command |
 
-## 시드 파일
+## Seed File
 
 ```typescript
 // prisma/seed.ts
@@ -69,7 +69,7 @@ const prisma = new PrismaClient()
 
 async function main() {
   await prisma.user.create({
-    data: { email: 'admin@example.com', name: '관리자', role: 'ADMIN' },
+    data: { email: 'admin@example.com', name: 'Admin', role: 'ADMIN' },
   })
 }
 

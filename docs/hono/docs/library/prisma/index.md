@@ -1,35 +1,35 @@
 # Prisma v7 - Database ORM
 
-> Type-safe 데이터베이스 ORM
+> Type-safe database ORM
 
 @config.md
 @cloudflare-d1.md
 
 ---
 
-## 버전 주의
+## Version Notice
 
 ```prisma
 generator client {
-  provider = "prisma-client"      // ✅ v7 (prisma-client-js 아님!)
-  output   = "./generated/client" // ✅ output 필수
+  provider = "prisma-client"      // ✅ v7 (not prisma-client-js!)
+  output   = "./generated/client" // ✅ output required
 }
 ```
 
 ---
 
-## 금지 사항
+## Prohibited Actions
 
-| 명령 | 설명 |
-|------|------|
-| `prisma db push` | 자동 실행 금지 |
-| `prisma migrate` | 자동 실행 금지 |
-| `prisma generate` | 자동 실행 금지 |
-| schema 변경 | 요청된 것만 |
+| Command | Description |
+|---------|-------------|
+| `prisma db push` | Do not auto-run |
+| `prisma migrate` | Do not auto-run |
+| `prisma generate` | Do not auto-run |
+| Schema changes | Only as requested |
 
 ---
 
-## 설치
+## Installation
 
 ```bash
 npm install prisma-client
@@ -38,20 +38,20 @@ npm install -D prisma
 
 ---
 
-## Multi-File 구조 (필수)
+## Multi-File Structure (Required)
 
 ```
 prisma/schema/
 ├── +base.prisma    # datasource, generator
-├── +enum.prisma    # enum 정의
-├── user.prisma     # User 모델 (한글 주석 필수)
-└── post.prisma     # Post 모델
+├── +enum.prisma    # enum definitions
+├── user.prisma     # User model (Korean comments required)
+└── post.prisma     # Post model
 ```
 
 ### +base.prisma
 
 ```prisma
-// datasource, generator 설정
+// datasource, generator configuration
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -66,12 +66,12 @@ generator client {
 ### user.prisma
 
 ```prisma
-// 사용자 모델
+// User model
 model User {
   id        String   @id @default(cuid())
-  email     String   @unique   // 로그인 이메일
-  name      String?            // 표시 이름
-  posts     Post[]             // 작성 게시글
+  email     String   @unique   // Login email
+  name      String?            // Display name
+  posts     Post[]             // Authored posts
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -110,7 +110,7 @@ const user = await prisma.user.create({
   data: { email: 'user@example.com', name: 'John' },
 })
 
-// 관계와 함께
+// With relations
 const userWithPosts = await prisma.user.create({
   data: {
     email: 'user@example.com',
@@ -131,7 +131,7 @@ const users = await prisma.user.findMany({
   take: 10,
 })
 
-// 관계 포함
+// Include relations
 const userWithPosts = await prisma.user.findUnique({
   where: { id },
   include: { posts: { where: { published: true } } },
@@ -163,24 +163,24 @@ await prisma.user.deleteMany({ where: { email: { contains: '@test.com' } } })
 
 ---
 
-## 필터링
+## Filtering
 
 ```typescript
 await prisma.user.findMany({
   where: {
-    age: { gt: 18, lte: 65 },           // 비교
-    email: { contains: '@gmail.com' },  // 문자열
+    age: { gt: 18, lte: 65 },           // Comparison
+    email: { contains: '@gmail.com' },  // String
     AND: [{ email: { contains: '@' } }, { name: { not: null } }],
     OR: [{ role: 'admin' }, { role: 'moderator' }],
-    id: { in: ['id1', 'id2'] },         // 배열
-    posts: { some: { published: true } }, // 관계
+    id: { in: ['id1', 'id2'] },         // Array
+    posts: { some: { published: true } }, // Relations
   },
 })
 ```
 
 ---
 
-## 트랜잭션
+## Transactions
 
 ```typescript
 // Sequential
@@ -199,7 +199,7 @@ const result = await prisma.$transaction(async (tx) => {
 
 ---
 
-## Hono와 함께 사용
+## Usage with Hono
 
 ```typescript
 import { Hono } from 'hono'
@@ -241,7 +241,7 @@ app.get('/users/:id', async (c) => {
 
 ---
 
-## 관련 문서
+## Related Documentation
 
-- [Config 파일](./config.md) - prisma.config.ts 설정
+- [Config Files](./config.md) - prisma.config.ts configuration
 - [Cloudflare D1](./cloudflare-d1.md)

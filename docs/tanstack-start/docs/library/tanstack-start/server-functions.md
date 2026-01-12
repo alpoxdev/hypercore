@@ -1,13 +1,13 @@
 # TanStack Start - Server Functions
 
-서버에서만 실행되는 타입 안전한 함수.
+Type-safe functions that run only on the server.
 
-## ⚠️ 필수: TanStack Query 사용
+## ⚠️ Required: Use TanStack Query
 
-클라이언트 호출 시 반드시 useQuery/useMutation 사용.
-- 자동 캐싱, 중복 요청 제거, 로딩/에러 상태 관리, invalidateQueries 동기화
+Always use useQuery/useMutation when calling from client.
+- Auto caching, deduplication, loading/error states, invalidateQueries sync
 
-## 기본 패턴
+## Basic Patterns
 
 ```typescript
 // GET
@@ -25,31 +25,31 @@ export const createUser = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => prisma.user.create({ data }))
 ```
 
-## 컴포넌트에서 호출
+## Calling from Components
 
 ```tsx
-// ✅ useQuery (조회)
+// ✅ useQuery (read)
 const { data, isLoading } = useQuery({
   queryKey: ['posts'],
   queryFn: () => getServerPosts(),
 })
 
-// ✅ useMutation (변경)
+// ✅ useMutation (write)
 const mutation = useMutation({
   mutationFn: createPost,
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['posts'] }),
 })
 
-// ❌ 직접 호출 금지 (캐싱 없음, 동기화 안됨)
+// ❌ Direct calls forbidden (no caching, no sync)
 ```
 
-## 함수 분리 규칙
+## Function Separation Rules
 
 ```typescript
-// 내부 헬퍼 (export 금지!)
+// Internal helper (don't export!)
 const validateUserData = async (email: string) => { ... }
 
-// Server Function (export 가능)
+// Server Function (exportable)
 export const createUser = createServerFn({ method: 'POST' })
   .inputValidator(createUserSchema)
   .handler(async ({ data }) => {
@@ -57,19 +57,19 @@ export const createUser = createServerFn({ method: 'POST' })
     return prisma.user.create({ data })
   })
 
-// index.ts: Server Function만 export
+// index.ts: Export only Server Functions
 export { createUser } from './mutations'
-// ❌ export { validateUserData } 금지
+// ❌ export { validateUserData } forbidden
 ```
 
-## 보안
+## Security
 
 ```tsx
-// ❌ loader에서 환경변수 직접 사용 (노출됨)
+// ❌ Environment variables in loader (exposed)
 loader: () => { const secret = process.env.SECRET }
 
-// ✅ Server Function 사용
+// ✅ Use Server Functions
 const fn = createServerFn().handler(() => {
-  const secret = process.env.SECRET // 서버에서만
+  const secret = process.env.SECRET // server-only
 })
 ```

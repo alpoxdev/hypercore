@@ -1,6 +1,6 @@
-# Nitro - Docker 배포
+# Nitro - Docker Deployment
 
-> 컨테이너 배포
+> Container deployment
 
 ---
 
@@ -63,13 +63,13 @@ docs/
 
 ---
 
-## 빌드 및 실행
+## Build and Run
 
 ```bash
 docker build -t my-hono-app .
 docker run -p 3000:3000 my-hono-app
 
-# 환경 변수
+# Environment variables
 docker run -p 3000:3000 \
   -e DATABASE_URL="postgresql://..." \
   my-hono-app
@@ -119,7 +119,7 @@ docker compose down
 
 ---
 
-## 개발용
+## Development
 
 ```yaml
 # docker-compose.dev.yml
@@ -178,13 +178,13 @@ jobs:
 
 ---
 
-## 문제 해결
+## Troubleshooting
 
-| 문제 | 해결 |
-|------|------|
-| 포트 연결 실패 | `HOST=0.0.0.0` 설정 |
-| 권한 오류 | 비-root 사용자 |
-| 메모리 부족 | 멀티스테이지 빌드 |
+| Issue | Solution |
+|-------|----------|
+| Port connection failed | Set `HOST=0.0.0.0` |
+| Permission errors | Use non-root user |
+| Out of memory | Use multi-stage build |
 
 ```bash
 docker exec -it hono-app sh
@@ -194,6 +194,6 @@ docker stats hono-app
 
 ---
 
-## 관련 문서
+## Related Documentation
 
-- [배포 가이드](./index.md)
+- [Deployment Guide](./index.md)
