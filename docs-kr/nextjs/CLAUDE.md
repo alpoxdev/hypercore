@@ -91,22 +91,24 @@ src/
 │   ├── page.tsx                # Home page
 │   ├── [slug]/
 │   │   ├── page.tsx            # Dynamic route
-│   │   └── -components/        # 페이지 전용 Client Components
+│   │   ├── _components/        # 페이지 전용 컴포넌트 (필수)
+│   │   ├── _hooks/             # 페이지 전용 훅 (필수)
+│   │   └── _actions/           # 페이지 전용 Server Actions (필수)
 │   ├── api/
 │   │   └── [endpoint]/
 │   │       └── route.ts        # Route Handler (REST API)
-│   └── _components/            # 공통 Client Components
-├── actions/                    # Server Actions (공통)
-├── components/ui/              # UI 컴포넌트 (Server Components)
+│   └── _actions/               # 공통 Server Actions
+├── components/ui/              # 공통 UI 컴포넌트 (Server Components)
 ├── middleware.ts               # Middleware
 ├── database/prisma.ts
 └── lib/
 ```
 
 **필수 규칙:**
-- 페이지당 `-components/` 폴더 권장 (페이지 전용 Client Components)
+- 페이지당 `_components/`, `_hooks/`, `_actions/` 폴더 필수 (줄 수 무관)
+- Custom Hook은 페이지 크기와 무관하게 **반드시** `_hooks/` 폴더에 분리
 - Server Components가 기본 → `"use client"` 명시 필요 시만 사용
-- Server Actions는 `actions/` 폴더 또는 파일 상단 (`"use server"`)
+- Server Actions는 글로벌(`app/_actions/`) 또는 페이지 전용(`[route]/_actions/`)에 분리
 - Route Handlers는 `/app/api/` 경로에만 생성
 </structure>
 
