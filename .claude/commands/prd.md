@@ -1,30 +1,30 @@
 ---
-description: PRD(Product Requirements Document) 생성
+description: Generate PRD (Product Requirements Document)
 allowed-tools: Read, Write, Glob, Grep, Task, mcp__sequential-thinking__sequentialthinking
-argument-hint: <기능/제품 설명>
+argument-hint: <feature/product description>
 ---
 
 @../instructions/sequential-thinking-guide.md
 
 # PRD Command
 
-기능/제품의 요구사항 문서(PRD)를 작성.
+Write Product Requirements Document (PRD) for feature/product.
 
-**대상**: $ARGUMENTS
+**Target**: $ARGUMENTS
 
 ---
 
 <workflow>
 
-## 실행 흐름
+## Execution Flow
 
-| 단계 | 작업 | 도구 |
+| Step | Task | Tool |
 |------|------|------|
-| 1. 입력 확인 | ARGUMENT 검증, 없으면 질문 | - |
-| 2. Sequential Thinking | 3-5단계로 PRD 구조 분석 | sequentialthinking |
-| 3. 코드베이스 확인 | 관련 코드/문서 탐색 (필요시) | Task (Explore) |
-| 4. PRD 작성 | 15개 섹션 구조로 작성 | Write |
-| 5. 저장 | `.claude/plans/` 또는 `docs/prd/` | - |
+| 1. Validate input | Verify ARGUMENT, ask if missing | - |
+| 2. Sequential Thinking | Analyze PRD structure in 3-5 steps | sequentialthinking |
+| 3. Check codebase | Explore related code/documents (if needed) | Task (Explore) |
+| 4. Write PRD | Write in 15-section structure | Write |
+| 5. Save | Save to `.claude/plans/` or `docs/prd/` | - |
 
 </workflow>
 
@@ -32,12 +32,12 @@ argument-hint: <기능/제품 설명>
 
 <forbidden>
 
-| 분류 | 금지 |
-|------|------|
-| **문제 정의** | 솔루션/기능 목록 포함 |
-| **범위** | In/Out 구분 없이 나열 |
-| **표현** | 모호한 표현 ("좋은 UX", "빠르게") |
-| **스타일** | 마케팅 문구, 과도한 수식어 |
+| Category | Forbidden |
+|----------|-----------|
+| **Problem definition** | Include solutions/feature list |
+| **Scope** | List without In/Out distinction |
+| **Expression** | Vague expressions ("good UX", "fast") |
+| **Style** | Marketing language, excessive adjectives |
 
 </forbidden>
 
@@ -45,13 +45,13 @@ argument-hint: <기능/제품 설명>
 
 <required>
 
-| 분류 | 필수 |
-|------|------|
-| **구조** | 15개 섹션 (메타데이터~템플릿) |
-| **기능 요구사항** | User Stories + Functional + Non-functional |
-| **지표** | 현재값 → 목표값 형태 |
-| **가정/리스크** | 별도 섹션으로 명시 |
-| **스타일** | 짧고 명확한 문장, 구체적 예시 |
+| Category | Required |
+|----------|----------|
+| **Structure** | 15 sections (metadata ~ template) |
+| **Feature requirements** | User Stories + Functional + Non-functional |
+| **Metrics** | Current value → target value format |
+| **Assumptions/Risks** | Specify in separate section |
+| **Style** | Short clear sentences, concrete examples |
 
 </required>
 

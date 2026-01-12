@@ -1,16 +1,16 @@
 ---
-description: 기존 Claude Code 문서 개선
+description: Improve existing Claude Code documents
 allowed-tools: Read, Edit, Glob, Grep
-argument-hint: <문서 경로>
+argument-hint: <document path>
 ---
 
 # Docs Refactor Command
 
-> 기존 CLAUDE.md, SKILL.md, COMMAND.md 문서를 Anthropic 가이드라인에 맞게 개선
+> Improve existing CLAUDE.md, SKILL.md, COMMAND.md documents to align with Anthropic guidelines
 
 <purpose>
 
-**목표:** 토큰 효율 50% 개선, 명확성 향상, 유지보수성 강화
+**Goal:** Improve token efficiency 50%, enhance clarity, strengthen maintainability
 
 </purpose>
 
@@ -18,15 +18,15 @@ argument-hint: <문서 경로>
 
 <trigger_conditions>
 
-| 상황 | 리팩토링 필요 |
-|------|--------------|
-| **토큰 과다** | 파일 500줄 초과 |
-| **가독성 저하** | XML 태그 미사용, 구조 불명확 |
-| **중복 발견** | 동일 내용 2회 이상 반복 |
-| **설명 과다** | 코드 예시보다 설명 많음 |
-| **@imports 미사용** | 공통 규칙 반복 |
-| **모호한 지시** | "적절히", "필요시" 등 |
-| **부정형 과다** | Don't, Never, Avoid 위주 |
+| Situation | Refactoring Needed |
+|-----------|-------------------|
+| **Token overuse** | File exceeds 500 lines |
+| **Readability drop** | No XML tags, unclear structure |
+| **Duplication found** | Same content repeated 2+ times |
+| **Excessive description** | More description than code examples |
+| **@imports unused** | Common rules repeated |
+| **Vague instructions** | "Appropriately", "if needed", etc. |
+| **Negative overuse** | Focused on Don't, Never, Avoid |
 
 </trigger_conditions>
 
@@ -34,12 +34,12 @@ argument-hint: <문서 경로>
 
 <forbidden>
 
-| 분류 | 금지 사항 |
-|------|----------|
-| **구조** | XML 태그 제거, 단순 삭제 |
-| **내용** | 핵심 정보 손실, 버전 정보 제거 |
-| **표현** | 모호한 지시 유지, 부정형 → 부정형 |
-| **스타일** | 일관성 없는 마커 |
+| Category | Prohibited |
+|----------|-----------|
+| **Structure** | Remove XML tags, simple deletion |
+| **Content** | Lose core info, remove version info |
+| **Expression** | Maintain vagueness, negative → negative |
+| **Style** | Inconsistent markers |
 
 </forbidden>
 
@@ -47,13 +47,13 @@ argument-hint: <문서 경로>
 
 <required>
 
-| 분류 | 필수 작업 |
-|------|----------|
-| **분석** | 전체 읽기 → 토큰 확인 → 중복 식별 |
-| **구조화** | XML 태그 적용 |
-| **압축** | 표 형식 변환, 설명 제거 |
-| **예시화** | 설명 → 코드 예시 |
-| **검증** | Before/After 50% 감소 확인 |
+| Category | Required Task |
+|----------|---------------|
+| **Analyze** | Full read → token count → identify duplication |
+| **Structure** | Apply XML tags |
+| **Compress** | Convert to table format, remove description |
+| **Exemplify** | Description → code examples |
+| **Verify** | Confirm Before/After 50% reduction |
 
 </required>
 

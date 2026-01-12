@@ -1,34 +1,34 @@
 ---
-description: 코드 리팩토링 계획 수립. @refactor-advisor 우선 활용. Sequential Thinking 3-7 필수. 기능 유지하며 개선만.
+description: Establish refactoring plan. Prioritize @refactor-advisor. Sequential Thinking 3-7 required. Improvements while maintaining functionality.
 allowed-tools: Read, Glob, Grep, Bash(git:*, ast-grep:*), Task, Write, mcp__sequential-thinking__sequentialthinking
-argument-hint: <대상 파일/모듈 또는 개선 목표>
+argument-hint: <target file/module or improvement goal>
 ---
 
 # Refactor Command
 
-> 코드 품질 개선을 위한 리팩토링 계획 수립 및 실행 전략 제시.
+> Establish refactoring plan for code quality improvement and present execution strategy.
 
-**리팩토링 대상**: $ARGUMENTS
+**Refactoring target**: $ARGUMENTS
 
 ---
 
 <argument_validation>
 
-## ARGUMENT 필수 확인
+## Verify ARGUMENT is provided
 
 ```
-$ARGUMENTS 없음 → 즉시 질문:
+No $ARGUMENTS → Ask immediately:
 
-"무엇을 리팩토링해야 하나요? 구체적으로 알려주세요.
+"What should we refactor? Please be specific.
 
-예시:
-- 특정 파일/모듈 개선
-- 복잡도 감소
-- 중복 코드 제거
-- 구조 개선
-- 성능 최적화"
+Examples:
+- Improve specific file/module
+- Reduce complexity
+- Remove duplicate code
+- Improve structure
+- Optimize performance"
 
-$ARGUMENTS 있음 → 다음 단계 진행
+$ARGUMENTS provided → Proceed to next step
 ```
 
 </argument_validation>
@@ -37,17 +37,17 @@ $ARGUMENTS 있음 → 다음 단계 진행
 
 <workflow>
 
-## 실행 흐름
+## Execution Flow
 
-| 단계 | 작업 | 도구 |
+| Step | Task | Tool |
 |------|------|------|
-| 1. 입력 확인 | ARGUMENT 검증, 없으면 질문 | - |
-| 2. Agent 판단 | @refactor-advisor 사용 여부 결정 | - |
-| 3. 복잡도 판단 | Sequential Thinking으로 분석 범위 결정 | sequentialthinking (1단계) |
-| 4. 코드 분석 | 현재 코드 구조, 문제점 파악 | Task (Explore) + Read/Grep |
-| 5. 개선 옵션 도출 | 가능한 접근 4-5개 → 주요 2-3개 선정 | sequentialthinking (2-6단계) |
-| 6. 옵션 제시 | 장단점, 영향 범위, 추천안 제시 | - |
-| 7. 계획 문서 작성 | 선택 시 리팩토링 계획 생성 | Write |
+| 1. Validate input | Verify ARGUMENT, ask if missing | - |
+| 2. Judge agent usage | Decide whether to use @refactor-advisor | - |
+| 3. Judge complexity | Determine analysis scope with Sequential Thinking | sequentialthinking (step 1) |
+| 4. Analyze code | Understand current code structure, identify issues | Task (Explore) + Read/Grep |
+| 5. Derive improvement options | Generate 4-5 approaches → select 2-3 main | sequentialthinking (steps 2-6) |
+| 6. Present options | Present pros/cons, impact scope, recommendation | - |
+| 7. Create plan document | Generate refactoring plan when selected | Write |
 
 </workflow>
 
@@ -55,46 +55,46 @@ $ARGUMENTS 있음 → 다음 단계 진행
 
 <agent_priority>
 
-## @refactor-advisor Agent 우선 사용
+## Prioritize @refactor-advisor Agent Usage
 
-**기본 원칙:**
+**Basic principle:**
 ```
-리팩토링 요청 → @refactor-advisor 먼저 고려
-```
-
-### 사용 조건
-
-| 조건 | 설명 |
-|------|------|
-| **코드 품질 개선** | 복잡도, 중복, 명명, 구조 개선 |
-| **기능 변경 없음** | 동작은 유지하며 코드만 개선 |
-| **점진적 개선** | 단계적 리팩토링 계획 필요 |
-
-### Agent 활용 흐름
-
-```
-1. @refactor-advisor 호출
-   → 코드 분석, 우선순위별 개선점 도출
-
-2. 분석 결과 기반 옵션 정리
-   → 사용자에게 2-3개 옵션 제시
-
-3. 선택 후 계획 문서 작성
-   → .claude/plans/refactor-[이름].md
+Refactoring request → Consider @refactor-advisor first
 ```
 
-### Agent 미사용 케이스
+### Usage conditions
+
+| Condition | Description |
+|-----------|-------------|
+| **Code quality improvement** | Improve complexity, duplication, naming, structure |
+| **No feature change** | Maintain behavior, improve code only |
+| **Incremental improvement** | Need step-by-step refactoring plan |
+
+### Agent usage flow
 
 ```
-✅ @refactor-advisor 사용:
-- 기존 코드 개선
-- 복잡도/중복 감소
-- 구조 개선
+1. Call @refactor-advisor
+   → Analyze code, derive improvements by priority
 
-❌ 직접 처리:
-- 아키텍처 변경
-- 새 기능 추가와 함께 리팩토링
-- 프레임워크 마이그레이션
+2. Organize options based on analysis results
+   → Present 2-3 options to user
+
+3. Create plan document after selection
+   → .claude/plans/refactor-[name].md
+```
+
+### Cases not using agent
+
+```
+✅ Use @refactor-advisor:
+- Improve existing code
+- Reduce complexity/duplication
+- Improve structure
+
+❌ Direct handling:
+- Architecture change
+- Refactoring with new feature addition
+- Framework migration
 ```
 
 </agent_priority>
@@ -160,28 +160,28 @@ thought 7: 단계별 계획 및 추천안
 
 <refactoring_areas>
 
-## 리팩토링 영역
+## Refactoring areas
 
-### 6가지 개선 영역
+### Six improvement areas
 
-| 영역 | 문제 | 개선 방향 |
-|------|------|----------|
-| **복잡도** | 긴 함수, 깊은 중첩 | 함수 분리, Early Return |
-| **중복** | 동일/유사 코드 반복 | 공통 함수/모듈 추출 |
-| **명명** | 모호한 변수/함수명 | 의도 명확한 이름 |
-| **구조** | 파일/모듈 구조 불명확 | 관심사 분리, 계층화 |
-| **패턴** | 안티패턴 사용 | 디자인 패턴 적용 |
-| **타입** | any 남용, 타입 불안정 | 명시적 타입 정의 |
+| Area | Problem | Improvement |
+|------|---------|-------------|
+| **Complexity** | Long functions, deep nesting | Split functions, Early Return |
+| **Duplication** | Identical/similar code repeats | Extract common functions/modules |
+| **Naming** | Unclear variable/function names | Clear intent names |
+| **Structure** | Unclear file/module structure | Separation of concerns, layering |
+| **Patterns** | Using anti-patterns | Apply design patterns |
+| **Types** | Excessive any, type instability | Explicit type definition |
 
-### 체크리스트
+### Checklist
 
 ```text
-✅ 함수 길이: 20줄 이하 목표
-✅ 중첩 깊이: 3단계 이하 목표
-✅ 파일 길이: 200-300줄 권장
-✅ 순환 의존성: 제거
-✅ 매직 넘버: 상수화
-✅ 주석: 코드로 설명 불가능한 것만
+✅ Function length: target <= 20 lines
+✅ Nesting depth: target <= 3 levels
+✅ File length: recommended 200-300 lines
+✅ Circular dependencies: eliminate
+✅ Magic numbers: constants
+✅ Comments: only what can't be explained by code
 ```
 
 </refactoring_areas>
@@ -289,105 +289,105 @@ thought 7: 단계별 계획 및 추천안
 선택해주세요. (Y/N)
 ```
 
-### 리팩토링 계획 문서 템플릿
+### Refactoring plan document template
 
-**파일 위치:** `.claude/plans/refactor-[이름].md`
+**File location:** `.claude/plans/refactor-[name].md`
 
 ```markdown
-# [모듈명] 리팩토링 계획
+# [Module name] Refactoring Plan
 
-## 개요
+## Overview
 
-**목표:** [무엇을 개선할 것인가]
-**선택된 접근 방식:** [옵션 N]
-**예상 영향 범위:** [파일/모듈 목록]
+**Goal:** [What will be improved]
+**Selected approach:** [Option N]
+**Expected impact scope:** [Files/modules list]
 
-## 현재 상태
+## Current state
 
-### 문제점
+### Issues
 
-| 문제 | 영향 | 우선순위 |
-|------|------|---------|
-| 문제 1 | 설명 | High |
-| 문제 2 | 설명 | Medium |
+| Issue | Impact | Priority |
+|-------|--------|----------|
+| Issue 1 | Description | High |
+| Issue 2 | Description | Medium |
 
-### 메트릭
+### Metrics
 
-- 복잡도: [현재 값]
-- 중복률: [현재 값]
-- 테스트 커버리지: [현재 값]
+- Complexity: [current value]
+- Duplication rate: [current value]
+- Test coverage: [current value]
 
-## 개선 단계
+## Improvement stages
 
-### 1단계: [단계 이름]
+### Stage 1: [Stage name]
 
-**목표:** [이 단계에서 달성할 것]
+**Goal:** [What will be achieved in this stage]
 
-**작업:**
-- [ ] 작업 1
-- [ ] 작업 2
+**Tasks:**
+- [ ] Task 1
+- [ ] Task 2
 
-**변경 파일:**
+**Changed files:**
 - `src/file1.ts`
 - `src/file2.ts`
 
-**검증:**
-- 테스트 통과
-- 빌드 성공
+**Validation:**
+- Tests pass
+- Build success
 
-### 2단계: [단계 이름]
+### Stage 2: [Stage name]
 
-**목표:** [이 단계에서 달성할 것]
+**Goal:** [What will be achieved in this stage]
 
-**작업:**
-- [ ] 작업 3
+**Tasks:**
+- [ ] Task 3
 
-**변경 파일:**
+**Changed files:**
 - `src/file3.ts`
 
-### 3단계: [단계 이름]
+### Stage 3: [Stage name]
 ...
 
-## 개선 후 기대 효과
+## Expected improvements
 
-| 메트릭 | Before | After | 개선율 |
-|--------|--------|-------|--------|
-| 복잡도 | X | Y | -Z% |
-| 중복률 | X | Y | -Z% |
-| 코드 라인 | X | Y | -Z% |
+| Metric | Before | After | Improvement |
+|--------|--------|-------|------------|
+| Complexity | X | Y | -Z% |
+| Duplication rate | X | Y | -Z% |
+| Code lines | X | Y | -Z% |
 
-## 리스크 관리
+## Risk management
 
-### 리스크
+### Risks
 
-| 리스크 | 영향도 | 완화 방안 |
-|--------|--------|----------|
-| 리스크 1 | High | 방안 1 |
-| 리스크 2 | Medium | 방안 2 |
+| Risk | Impact | Mitigation |
+|------|--------|-----------|
+| Risk 1 | High | Plan 1 |
+| Risk 2 | Medium | Plan 2 |
 
-### 롤백 계획
+### Rollback plan
 
-문제 발생 시:
-1. 단계별 커밋 활용
-2. 이전 단계로 되돌리기
-3. 테스트 재실행
+If issues occur:
+1. Use stage-by-stage commits
+2. Revert to previous stage
+3. Rerun tests
 
-## 검증 방법
+## Validation methods
 
-### 기능 검증
-- [ ] 기존 기능 동작 확인
-- [ ] 회귀 테스트 통과
-- [ ] 통합 테스트 통과
+### Functional validation
+- [ ] Verify existing features work
+- [ ] Regression tests pass
+- [ ] Integration tests pass
 
-### 품질 검증
-- [ ] 복잡도 감소 확인
-- [ ] 중복 제거 확인
-- [ ] 타입 안정성 확인
+### Quality validation
+- [ ] Verify complexity reduction
+- [ ] Verify duplication removal
+- [ ] Verify type safety
 
-## 참조
+## References
 
-- 관련 문서 링크
-- 참고 패턴
+- Related document links
+- Reference patterns
 ```
 
 </document_generation>
@@ -396,32 +396,32 @@ thought 7: 단계별 계획 및 추천안
 
 <validation>
 
-## 검증 체크리스트
+## Validation checklist
 
-실행 전 확인:
+Before execution:
 
 ```text
-✅ ARGUMENT 확인 (없으면 질문)
-✅ @refactor-advisor 사용 여부 판단
-✅ Sequential Thinking 최소 3단계
-✅ Task (Explore)로 코드 분석
-✅ 옵션 최소 2개, 권장 3개
-✅ 각 옵션에 장단점 명시
-✅ 영향 범위 및 예상 작업량 제시
-✅ 기능 유지 원칙 강조
+✅ Verify ARGUMENT (ask if missing)
+✅ Judge whether to use @refactor-advisor
+✅ Sequential Thinking minimum 3 steps
+✅ Analyze code with Task (Explore)
+✅ Minimum 2 options, recommended 3
+✅ List pros/cons for each option
+✅ Present impact scope and estimated work
+✅ Emphasize principle of maintaining functionality
 ```
 
-절대 금지:
+Absolutely forbidden:
 
 ```text
-❌ ARGUMENT 없이 분석 시작
-❌ Edit 도구 사용 (코드 수정 금지)
-❌ Sequential Thinking 3단계 미만
-❌ 옵션 1개만 제시
-❌ 코드 분석 없이 추측으로 옵션 제시
-❌ 사용자 선택 없이 구현 시작
-❌ 기능 변경 포함
-❌ 장단점 없이 옵션만 나열
+❌ Start analysis without ARGUMENT
+❌ Use Edit tool (code modification forbidden)
+❌ Sequential Thinking less than 3 steps
+❌ Present only 1 option
+❌ Suggest options by guessing without code analysis
+❌ Start implementation without user choice
+❌ Include feature changes
+❌ List options without pros/cons
 ```
 
 </validation>

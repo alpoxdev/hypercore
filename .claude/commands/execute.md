@@ -1,32 +1,32 @@
 ---
-description: 계획 실행 또는 간단한 작업 수행. ultrathink + sequential thinking 2-5 + TodoWrite 필수.
+description: Execute plan or simple task. ultrathink + sequential thinking 2-5 + TodoWrite required.
 allowed-tools: Read, Glob, Grep, Bash, Task, Edit, Write, TodoWrite, mcp__sequential-thinking__sequentialthinking
-argument-hint: <실행할 작업 또는 계획 파일명>
+argument-hint: <task to execute or plan filename>
 ---
 
 # Execute Command
 
-> 분석 후 즉시 구현하는 커맨드. 옵션 제시 없이 바로 실행.
+> Command to analyze and implement immediately. Execute directly without presenting options.
 
-**실행 대상**: $ARGUMENTS
+**Execution Target**: $ARGUMENTS
 
 ---
 
 <argument_validation>
 
-## ARGUMENT 필수 확인
+## ARGUMENT Verification Required
 
 ```
-$ARGUMENTS 없음 → 즉시 질문:
+No $ARGUMENTS → Ask immediately:
 
-"무엇을 실행해야 하나요? 구체적으로 알려주세요.
+"What needs to be executed? Please provide details.
 
-예시:
-- .claude/plans/*.md 계획 파일
-- 구체적 작업 (기능 추가, 버그 수정, 리팩토링)
-- 간단한 코드 수정"
+Examples:
+- .claude/plans/*.md plan files
+- Specific tasks (add feature, fix bug, refactor)
+- Simple code changes"
 
-$ARGUMENTS 있음 → 다음 단계 진행
+Has $ARGUMENTS → Proceed to next step
 ```
 
 </argument_validation>

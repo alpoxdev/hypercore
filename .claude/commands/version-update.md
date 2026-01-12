@@ -1,5 +1,5 @@
 ---
-description: 프로젝트 버전 업데이트 및 커밋
+description: Update project version and commit
 allowed-tools: Bash, Read, Edit
 argument-hint: <new-version | +1 | +minor | +major>
 ---
@@ -8,42 +8,42 @@ argument-hint: <new-version | +1 | +minor | +major>
 
 # Version Update Command
 
-프로젝트 전체 버전을 업데이트하고 커밋.
+Update and commit entire project version.
 
-**인수**: $ARGUMENTS
+**Argument**: $ARGUMENTS
 
 <version_rules>
 
-| 인수 | 동작 | 예시 |
-|------|------|------|
+| Argument | Action | Example |
+|----------|--------|---------|
 | `+1` | patch +1 | 0.1.13 → 0.1.14 |
 | `+minor` | minor +1 | 0.1.13 → 0.2.0 |
 | `+major` | major +1 | 0.1.13 → 1.0.0 |
-| `x.x.x` | 직접 지정 | 0.1.13 → 2.0.0 |
+| `x.x.x` | Set directly | 0.1.13 → 2.0.0 |
 
 </version_rules>
 
 <workflow>
 
-1. **현재 버전 확인** (병렬 읽기)
+1. **Check current version** (parallel read)
    - packages/claude-code/package.json
    - packages/claude-code/src/index.ts
 
-2. **새 버전 계산**
+2. **Calculate new version**
 
-3. **모든 파일 Edit로 업데이트**
+3. **Update all files with Edit**
 
-4. **스테이징**
+4. **Stage files**
    ```bash
    git add packages/claude-code/package.json packages/claude-code/src/index.ts
    ```
 
-5. **커밋**
+5. **Commit**
    ```bash
-   git commit -m "chore: 버전 X.X.X로 업데이트"
+   git commit -m "chore: Update version to X.X.X"
    ```
 
-6. **완료 확인**
+6. **Verify completion**
    ```bash
    git status
    ```
@@ -52,8 +52,8 @@ argument-hint: <new-version | +1 | +minor | +major>
 
 <update_targets>
 
-| 파일 | 수정 위치 |
-|------|----------|
+| File | Modification location |
+|------|----------------------|
 | `package.json` | `"version": "x.x.x"` |
 | `src/index.ts` | `.version('x.x.x')` |
 
@@ -64,13 +64,13 @@ argument-hint: <new-version | +1 | +minor | +major>
 ```bash
 /version-update +1
 → 0.1.13 → 0.1.14
-→ chore: 버전 0.1.14로 업데이트
+→ chore: Update version to 0.1.14
 
 /version-update +minor
 → 0.1.13 → 0.2.0
 
 /version-update 2.0.0
-→ 직접 지정
+→ Set directly
 ```
 
 </examples>

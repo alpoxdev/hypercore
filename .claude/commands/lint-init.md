@@ -1,5 +1,5 @@
 ---
-description: 프로젝트 분석 후 ESLint flat config 설정
+description: Analyze project and configure ESLint flat config
 allowed-tools: Read, Write, Edit, Glob, Bash, mcp__sequential-thinking__sequentialthinking
 ---
 
@@ -7,15 +7,15 @@ allowed-tools: Read, Write, Edit, Glob, Bash, mcp__sequential-thinking__sequenti
 
 # Lint Init Command
 
-프로젝트 분석 → ESLint flat config 자동 생성.
+Analyze project → automatically generate ESLint flat config.
 
 <requirements>
 
-| 분류 | 필수 |
-|------|------|
-| **Thinking** | Sequential 5-7단계 (@sequential-thinking-guide.md) |
+| Category | Required |
+|----------|----------|
+| **Thinking** | Sequential 5-7 steps (@sequential-thinking-guide.md) |
 | **Config** | ESLint v9+ flat config (`eslint.config.js`) |
-| **Detection** | 언어/프레임워크/런타임 자동 감지 |
+| **Detection** | Auto-detect language/framework/runtime |
 
 </requirements>
 
@@ -24,28 +24,28 @@ allowed-tools: Read, Write, Edit, Glob, Bash, mcp__sequential-thinking__sequenti
 <workflow>
 
 <step number="1">
-<action>Sequential Thinking 시작</action>
-<detail>프로젝트 구조, 의존성, 기존 설정 분석 (5-7단계)</detail>
+<action>Start Sequential Thinking</action>
+<detail>Analyze project structure, dependencies, existing config (5-7 steps)</detail>
 </step>
 
 <step number="2">
-<action>핵심 파일 수집</action>
-<tools>Read (package.json, tsconfig.json, 기존 ESLint 설정)</tools>
+<action>Collect core files</action>
+<tools>Read (package.json, tsconfig.json, existing ESLint config)</tools>
 </step>
 
 <step number="3">
-<action>프로젝트 특성 감지</action>
-<detail>언어(TS/JS), 런타임(Node/Browser), 프레임워크(React/Vue/등)</detail>
+<action>Detect project characteristics</action>
+<detail>Language (TS/JS), runtime (Node/Browser), framework (React/Vue/etc.)</detail>
 </step>
 
 <step number="4">
-<action>ESLint 설정 생성</action>
+<action>Generate ESLint config</action>
 <deliverable>eslint.config.js</deliverable>
 </step>
 
 <step number="5">
-<action>패키지 설치 안내</action>
-<detail>필요 패키지 목록 + npm/yarn/pnpm 명령어</detail>
+<action>Guide package installation</action>
+<detail>Required packages list + npm/yarn/pnpm commands</detail>
 </step>
 
 </workflow>
@@ -54,30 +54,30 @@ allowed-tools: Read, Write, Edit, Glob, Bash, mcp__sequential-thinking__sequenti
 
 <detection>
 
-## 프로젝트 특성 감지
+## Project Characteristic Detection
 
-### 언어
+### Language
 
-| 조건 | 판단 |
-|------|------|
-| `tsconfig.json` 존재 | TypeScript |
+| Condition | Judgment |
+|-----------|----------|
+| `tsconfig.json` exists | TypeScript |
 | `devDependencies.typescript` | TypeScript |
-| `src/**/*.{ts,tsx}` 파일 | TypeScript |
-| 그 외 | JavaScript |
+| `src/**/*.{ts,tsx}` files | TypeScript |
+| Otherwise | JavaScript |
 
-### 프레임워크
+### Framework
 
-| 의존성 | 프레임워크 | 추가 플러그인 |
-|--------|-----------|-------------|
+| Dependency | Framework | Additional Plugins |
+|------------|-----------|-------------------|
 | `react` | React | `eslint-plugin-react`, `eslint-plugin-react-hooks` |
-| `next` | Next.js | React + Next.js 규칙 |
+| `next` | Next.js | React + Next.js rules |
 | `vue` | Vue | `eslint-plugin-vue`, `vue-eslint-parser` |
-| `express`, `hono`, `fastify` | Node.js 서버 | - |
+| `express`, `hono`, `fastify` | Node.js server | - |
 
-### 런타임
+### Runtime
 
-| 조건 | globals |
-|------|---------|
+| Condition | globals |
+|-----------|---------|
 | `express`, `fastify`, `hono` | `globals.node` |
 | `react`, `vue`, `angular` | `globals.browser` |
 | `next`, `nuxt` | `globals.node` + `globals.browser` |
@@ -88,9 +88,9 @@ allowed-tools: Read, Write, Edit, Glob, Bash, mcp__sequential-thinking__sequenti
 
 <templates>
 
-## ESLint Flat Config 패턴
+## ESLint Flat Config Patterns
 
-### 기본 구조 (TypeScript + Node.js)
+### Basic structure (TypeScript + Node.js)
 
 ```javascript
 import eslint from '@eslint/js'
@@ -129,10 +129,10 @@ export default [
 ]
 ```
 
-### React 추가 시
+### When adding React
 
 ```javascript
-// 위 기본 구조에 추가:
+// Add to basic structure above:
 import reactPlugin from 'eslint-plugin-react'
 import reactHooksPlugin from 'eslint-plugin-react-hooks'
 
@@ -149,7 +149,7 @@ export default [
       react: { version: 'detect' },
     },
     rules: {
-      // ... 위 rules +
+      // ... above rules +
       ...reactPlugin.configs.recommended.rules,
       ...reactHooksPlugin.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
@@ -159,7 +159,7 @@ export default [
 ]
 ```
 
-### JavaScript Only
+### JavaScript only
 
 ```javascript
 import eslint from '@eslint/js'
@@ -192,19 +192,19 @@ export default [
 
 <packages>
 
-## 필요 패키지
+## Required packages
 
-| 조건 | 패키지 |
-|------|--------|
-| **기본** | `eslint @eslint/js globals` |
-| **TypeScript** | 위 + `@typescript-eslint/parser @typescript-eslint/eslint-plugin` |
-| **React** | 위 + `eslint-plugin-react eslint-plugin-react-hooks` |
-| **Vue** | 위 + `eslint-plugin-vue vue-eslint-parser` |
+| Condition | Packages |
+|-----------|----------|
+| **Base** | `eslint @eslint/js globals` |
+| **TypeScript** | Above + `@typescript-eslint/parser @typescript-eslint/eslint-plugin` |
+| **React** | Above + `eslint-plugin-react eslint-plugin-react-hooks` |
+| **Vue** | Above + `eslint-plugin-vue vue-eslint-parser` |
 
-### 설치 명령어
+### Installation commands
 
 ```bash
-# 기본 (JavaScript)
+# Base (JavaScript)
 npm install -D eslint @eslint/js globals
 
 # TypeScript
@@ -220,18 +220,18 @@ npm install -D eslint @eslint/js globals @typescript-eslint/parser @typescript-e
 
 <migration>
 
-## 기존 설정 처리
+## Handle existing configuration
 
-| 파일 | 처리 |
-|------|------|
-| `.eslintrc.{json,js,yml}` | flat config 변환 → 백업 후 제거 |
-| `package.json` `eslintConfig` | flat config 변환 → `package.json`에서 제거 |
+| File | Action |
+|------|--------|
+| `.eslintrc.{json,js,yml}` | Convert to flat config → backup and remove |
+| `package.json` `eslintConfig` | Convert to flat config → remove from `package.json` |
 
-**변환 방법:**
-1. 기존 `rules`, `extends`, `plugins` 추출
-2. flat config 형식으로 변환
-3. 원본 백업 (`.eslintrc.backup`)
-4. `eslint.config.js` 생성
+**Conversion method:**
+1. Extract existing `rules`, `extends`, `plugins`
+2. Convert to flat config format
+3. Backup original (`.eslintrc.backup`)
+4. Create `eslint.config.js`
 
 </migration>
 
@@ -239,7 +239,7 @@ npm install -D eslint @eslint/js globals @typescript-eslint/parser @typescript-e
 
 <scripts>
 
-## package.json 스크립트
+## package.json scripts
 
 ```json
 {
@@ -250,7 +250,7 @@ npm install -D eslint @eslint/js globals @typescript-eslint/parser @typescript-e
 }
 ```
 
-설정 완료 후 자동 추가 제안.
+Suggest automatic addition after configuration complete.
 
 </scripts>
 
@@ -258,16 +258,16 @@ npm install -D eslint @eslint/js globals @typescript-eslint/parser @typescript-e
 
 <validation>
 
-## 검증 단계
+## Validation steps
 
 ```bash
-# 1. 설정 문법 확인
+# 1. Verify config syntax
 npx eslint --print-config src/index.ts
 
-# 2. Lint 실행
+# 2. Run lint
 npm run lint
 
-# 3. 자동 수정 테스트
+# 3. Test auto fix
 npm run lint:fix
 ```
 

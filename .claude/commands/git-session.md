@@ -1,54 +1,54 @@
 ---
-description: 현재 세션에서 수정한 파일만 커밋 후 푸시
+description: Commit and push only files modified in the current session
 ---
 
 # Git Session Command
 
-> @git-operator 에이전트를 사용하여 현재 세션 파일만 선택적으로 커밋하고 푸시.
+> Use the @git-operator agent to selectively commit and push only files modified in the current session.
 
 ---
 
 <critical_requirements>
 
-## ⚠️ CRITICAL: 작업 시작 전 필수 확인
+## ⚠️ CRITICAL: Required checks before proceeding
 
-**이 커맨드는 반드시 @git-operator 에이전트를 사용해야 합니다.**
+**This command must use the @git-operator agent.**
 
-### MANDATORY: Task 도구로 @git-operator 호출
+### MANDATORY: Call @git-operator with Task tool
 
 ```typescript
 Task({
   subagent_type: 'git-operator',
-  description: '세션 파일만 커밋 후 푸시',
+  description: 'Commit and push session files only',
   prompt: `
-    세션 커밋 모드:
-    - 현재 세션 관련 파일만 선택적 커밋
-    - 반드시 푸시 (git push)
-    - 이전 세션의 미완성 작업은 제외
+    Session commit mode:
+    - Selectively commit only files related to current session
+    - Must push (git push)
+    - Exclude incomplete work from previous sessions
   `
 })
 ```
 
-**❌ 절대 금지:**
-- Bash 도구로 git 명령 직접 실행
-- @git-operator 없이 커밋/푸시 수행
-- 커맨드 내에서 직접 파일 분석
+**❌ Absolutely forbidden:**
+- Execute git commands directly with Bash tool
+- Perform commit/push without @git-operator
+- Analyze files directly in command
 
-**✅ 필수:**
-- Task 도구로 @git-operator 에이전트 호출
-- 모든 git 작업을 에이전트에 위임
-- 현재 세션 파일만 선택
+**✅ Required:**
+- Call @git-operator agent with Task tool
+- Delegate all git work to agent
+- Select only current session files
 
 ---
 
-**진행 전 자가 점검:**
+**Self-check before proceeding:**
 ```text
-□ Task 도구 사용 준비?
-□ @git-operator 에이전트로 작업 위임?
-□ Bash로 git 직접 실행 안 함?
+□ Task tool ready to use?
+□ Delegating work to @git-operator agent?
+□ Not executing git commands directly with Bash?
 ```
 
-**⚠️ 위 체크리스트를 통과하지 않으면 작업을 시작하지 마세요.**
+**⚠️ Do not start if checklist is not complete.**
 
 </critical_requirements>
 
@@ -56,10 +56,10 @@ Task({
 
 <mode>
 
-**세션 커밋 모드**
+**Session commit mode**
 
-- **현재 세션 관련 파일만** 선택적 커밋
-- **반드시 푸시** (git push)
+- **Selectively commit only files related to current session**
+- **Must push** (git push)
 
 </mode>
 
@@ -67,11 +67,11 @@ Task({
 
 <selection_criteria>
 
-| 포함 | 제외 |
-|------|------|
-| 현재 세션 관련 파일 | 이전 세션의 미완성 작업 |
-| 방금 전 작업한 파일 | 자동 생성 파일 (lock, cache) |
-| 관련 기능의 파일들 | 무관한 변경사항 |
+| Include | Exclude |
+|---------|---------|
+| Files related to current session | Incomplete work from previous sessions |
+| Recently worked files | Auto-generated files (lock, cache) |
+| Related feature files | Unrelated changes |
 
 </selection_criteria>
 
@@ -79,11 +79,11 @@ Task({
 
 <workflow>
 
-1. 모든 변경사항 분석
-2. **현재 세션 관련 파일만 선택**
-3. 논리적 단위로 그룹핑
-4. 각 그룹별 커밋
-5. git push 실행
+1. Analyze all changes
+2. **Select only files related to current session**
+3. Group into logical units
+4. Commit each group
+5. Execute git push
 
 </workflow>
 
@@ -92,15 +92,15 @@ Task({
 <example>
 
 ```bash
-# 상황: 로그인 기능 작업 중, 이전 프로필 기능은 미완성
+# Situation: Working on login feature, previous profile feature incomplete
 
 git status
-# modified: src/auth/login.ts (현재 세션)
-# modified: src/auth/logout.ts (현재 세션)
-# modified: src/profile/edit.ts (이전 세션)
+# modified: src/auth/login.ts (current session)
+# modified: src/auth/logout.ts (current session)
+# modified: src/profile/edit.ts (previous session)
 
-# ✅ 로그인 관련만 커밋
-git add src/auth/login.ts src/auth/logout.ts && git commit -m "feat: 로그인/로그아웃 기능 추가"
+# ✅ Commit only login-related files
+git add src/auth/login.ts src/auth/logout.ts && git commit -m "feat: Add login/logout functionality"
 git push
 ```
 

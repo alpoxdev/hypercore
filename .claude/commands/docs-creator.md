@@ -1,16 +1,16 @@
 ---
-description: Claude Code 문서 작성 가이드
+description: Claude Code documentation writing guide
 allowed-tools: Read, Write, Glob, Grep
-argument-hint: <문서 유형: CLAUDE.md | SKILL.md | COMMAND.md>
+argument-hint: <document type: CLAUDE.md | SKILL.md | COMMAND.md>
 ---
 
 # Docs Creator Command
 
-> Claude Code 문서 (CLAUDE.md, SKILL.md, COMMAND.md)를 Anthropic 가이드라인에 따라 효과적으로 작성
+> Effectively create Claude Code documents (CLAUDE.md, SKILL.md, COMMAND.md) following Anthropic guidelines
 
 <purpose>
 
-**목표:** 고밀도, 실행 가능한, 유지보수 가능한 문서 작성
+**Goal:** Create high-density, executable, maintainable documentation
 
 </purpose>
 
@@ -18,13 +18,13 @@ argument-hint: <문서 유형: CLAUDE.md | SKILL.md | COMMAND.md>
 
 <trigger_conditions>
 
-| 상황 | 작성 필요 |
-|------|----------|
-| **새 프로젝트** | CLAUDE.md 생성 |
-| **새 스킬** | SKILL.md 생성 |
-| **새 커맨드** | COMMAND.md 생성 |
-| **문서 부재** | 프로젝트 규칙 문서화 |
-| **지식 공유** | 팀 온보딩 가이드 |
+| Situation | Create |
+|-----------|--------|
+| **New project** | Create CLAUDE.md |
+| **New skill** | Create SKILL.md |
+| **New command** | Create COMMAND.md |
+| **Missing docs** | Document project rules |
+| **Knowledge sharing** | Team onboarding guide |
 
 </trigger_conditions>
 
@@ -32,13 +32,13 @@ argument-hint: <문서 유형: CLAUDE.md | SKILL.md | COMMAND.md>
 
 <forbidden>
 
-| 분류 | 금지 사항 |
-|------|----------|
-| **설명** | 장황한 설명, 불필요한 텍스트, 중복 정보 |
-| **구조** | XML 태그 없는 복잡 구조, 모호한 지시 |
-| **표현** | 부정형 지시 (Don't X → Do Y) |
-| **복잡도** | 복잡한 조건문, 모든 엣지 케이스 |
-| **강조** | 과도한 강조 (CRITICAL, MUST 남발) |
+| Category | Prohibited |
+|----------|-----------|
+| **Description** | Verbose text, unnecessary content, duplication |
+| **Structure** | Complex without XML tags, vague instructions |
+| **Expression** | Negative instructions (Don't X → Do Y) |
+| **Complexity** | Complex conditionals, all edge cases |
+| **Emphasis** | Excessive (CRITICAL, MUST overuse) |
 
 </forbidden>
 
@@ -46,14 +46,14 @@ argument-hint: <문서 유형: CLAUDE.md | SKILL.md | COMMAND.md>
 
 <required>
 
-| 분류 | 필수 사항 |
-|------|----------|
-| **구조** | XML 태그 섹션 구분, 명확한 계층 |
-| **표현** | 표 형식 압축, ✅/❌ 마커 |
-| **예시** | 코드/예시 중심, 복사 가능 패턴 |
-| **로딩** | @imports로 just-in-time |
-| **지시** | 명시적 지시, 긍정형 표현 |
-| **버전** | 라이브러리 버전 명시 |
+| Category | Required |
+|----------|----------|
+| **Structure** | XML tag sections, clear hierarchy |
+| **Expression** | Compressed tables, ✅/❌ markers |
+| **Examples** | Code-focused, copy-paste-ready patterns |
+| **Loading** | Just-in-time with @imports |
+| **Instructions** | Explicit, positive expression |
+| **Version** | Library versions specified |
 
 </required>
 
@@ -61,40 +61,40 @@ argument-hint: <문서 유형: CLAUDE.md | SKILL.md | COMMAND.md>
 
 <document_types>
 
-## CLAUDE.md - 프로젝트 규칙
+## CLAUDE.md - Project Rules
 
-**용도:** 프로젝트별 코딩 규칙, 금지/필수 사항, 빠른 참조
+**Usage:** Project-specific coding rules, forbidden/required items, quick reference
 
-**구조:**
+**Structure:**
 ```markdown
-# CLAUDE.md - [프로젝트명]
+# CLAUDE.md - [Project Name]
 
 <instructions>
 @path/to/common-rules.md
-@docs/library/[라이브러리]/index.md
+@docs/library/[library]/index.md
 </instructions>
 
 ---
 
 <forbidden>
-| 분류 | 금지 |
-|------|------|
-| **Git** | AI 표시, 이모지, 여러 줄 |
+| Category | Forbidden |
+|----------|----------|
+| **Git** | AI indicators, emoji, multiple lines |
 </forbidden>
 
 ---
 
 <required>
-| 분류 | 필수 |
-|------|------|
-| **타입** | 명시적 return type |
+| Category | Required |
+|----------|----------|
+| **Type** | Explicit return type |
 </required>
 
 ---
 
 <tech_stack>
-| 기술 | 버전 | 주의 |
-|------|------|------|
+| Technology | Version | Note |
+|----------|---------|------|
 | TypeScript | 5.x | strict |
 </tech_stack>
 
@@ -102,7 +102,7 @@ argument-hint: <문서 유형: CLAUDE.md | SKILL.md | COMMAND.md>
 
 <quick_patterns>
 ```typescript
-// 복사 가능한 패턴
+// Copy-paste-ready pattern
 const example = () => { ... }
 ```
 </quick_patterns>
@@ -110,28 +110,28 @@ const example = () => { ... }
 
 ---
 
-## SKILL.md - 재사용 작업
+## SKILL.md - Reusable Task
 
-**용도:** 특정 작업 자동화 스킬 정의
+**Usage:** Define skill for specific task automation
 
-**구조:**
+**Structure:**
 ```markdown
 ---
 name: skill-name
-description: 짧은 설명 (1줄)
+description: Brief description (1 line)
 ---
 
 <trigger_conditions>
-| 키워드/상황 | 반응 |
-|-----------|------|
-| "키워드" | 즉시 실행 |
+| Keyword/Situation | Action |
+|------------------|--------|
+| "keyword" | Execute immediately |
 </trigger_conditions>
 
 ---
 
 <workflow>
 <step number="1">
-<action>액션 설명</action>
+<action>Action description</action>
 <tools>Tool1, Tool2</tools>
 </step>
 </workflow>
@@ -140,39 +140,39 @@ description: 짧은 설명 (1줄)
 
 <examples>
 ```typescript
-// 실제 코드
+// Actual code
 ```
 </examples>
 ```
 
 ---
 
-## COMMAND.md - CLI 커맨드
+## COMMAND.md - CLI Command
 
-**용도:** 슬래시 커맨드 정의 (/commit, /review)
+**Usage:** Define slash command (/commit, /review)
 
-**구조:**
+**Structure:**
 ```markdown
 ---
-description: 커맨드 설명
+description: Command description
 allowed-tools: Read, Edit, Bash
-argument-hint: <인자 설명>
+argument-hint: <argument description>
 ---
 
 <purpose>
-구체적 목표
+Specific goal
 </purpose>
 
 ---
 
 <workflow>
-실행 단계
+Execution steps
 </workflow>
 
 ---
 
 <examples>
-✅/❌ 비교 예시
+✅/❌ Comparison examples
 </examples>
 ```
 

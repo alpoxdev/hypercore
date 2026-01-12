@@ -1,20 +1,20 @@
 ---
-description: 슬래시 커맨드 생성 가이드. ANTHROPIC_CONTEXT_ENGINEERING.md 규칙 기반.
+description: Slash command creation guide. Based on ANTHROPIC_CONTEXT_ENGINEERING.md rules.
 allowed-tools: Read, Write, Glob, Grep
-argument-hint: <커맨드명>
+argument-hint: <command name>
 ---
 
 # Command Creator
 
-> 슬래시 커맨드 생성. @ANTHROPIC_CONTEXT_ENGINEERING.md 규칙 100% 준수. 위치: `.claude/commands/[name].md`
+> Create slash command. 100% compliance with @ANTHROPIC_CONTEXT_ENGINEERING.md rules. Location: `.claude/commands/[name].md`
 
 ---
 
 <argument_validation>
 
 ```
-$ARGUMENTS 없음 → "어떤 커맨드를 만들까요? (예: review-code, optimize, refactor)"
-$ARGUMENTS 있음 → 진행
+No $ARGUMENTS → "What command to create? (e.g., review-code, optimize, refactor)"
+Has $ARGUMENTS → Proceed
 ```
 
 </argument_validation>
@@ -23,14 +23,14 @@ $ARGUMENTS 있음 → 진행
 
 <rules>
 
-| 분류 | ❌ 금지 | ✅ 필수 |
-|------|---------|---------|
-| **설명** | 장황한 설명, 중복 | 표 압축, ✅/❌ 마커 |
-| **구조** | XML 태그 없음, 모호 | XML 섹션, 명확한 계층 |
-| **표현** | Don't X (부정형) | Do Y (긍정형) |
-| **예시** | 추상적 | 복사 가능 코드 |
-| **강조** | CRITICAL 남발 | 필요 시에만 |
-| **메타** | - | YAML frontmatter |
+| Category | ❌ Forbidden | ✅ Required |
+|----------|-------------|-----------|
+| **Description** | Verbose, duplicate | Compressed table, ✅/❌ markers |
+| **Structure** | No XML tags, vague | XML sections, clear hierarchy |
+| **Expression** | Don't X (negative) | Do Y (positive) |
+| **Examples** | Abstract | Copy-paste-ready code |
+| **Emphasis** | CRITICAL overuse | Only when needed |
+| **Meta** | - | YAML frontmatter |
 
 </rules>
 
@@ -38,37 +38,37 @@ $ARGUMENTS 있음 → 진행
 
 <structure_reference>
 
-## 커맨드 파일 구조
+## Command File Structure
 
 ```markdown
 ---
-description: 커맨드 설명 (1줄, 트리거 키워드 포함)
-allowed-tools: Tool1, Tool2  # 선택적
-argument-hint: <인자 설명>
+description: Command description (1 line, include trigger keywords)
+allowed-tools: Tool1, Tool2  # Optional
+argument-hint: <argument description>
 ---
 
 # Command Name
 
-> 목적 (1-2문장)
+> Purpose (1-2 sentences)
 
 ---
 
 <purpose>
-구체적 목표
+Specific goal
 </purpose>
 
 ---
 
 <arguments>
-| 예시 | 동작 |
-|------|------|
-| `arg` | 설명 |
+| Example | Action |
+|---------|--------|
+| `arg` | Description |
 </arguments>
 
 ---
 
 <workflow>
-| 단계 | 작업 | 도구 |
+| Step | Task | Tool |
 |------|------|------|
 | 1. | ... | Tool |
 </workflow>
@@ -76,25 +76,25 @@ argument-hint: <인자 설명>
 ---
 
 <forbidden>
-| 금지 |
-|------|
-| 항목 |
+| Prohibited |
+|----------|
+| Item |
 </forbidden>
 
 ---
 
 <required>
-| 필수 |
-|------|
-| 항목 |
+| Required |
+|----------|
+| Item |
 </required>
 
 ---
 
 <examples>
 ```typescript
-// ✅ 올바른 패턴
-// ❌ 잘못된 패턴
+// ✅ Correct pattern
+// ❌ Wrong pattern
 ```
 </examples>
 
@@ -102,33 +102,33 @@ argument-hint: <인자 설명>
 
 <validation>
 ```text
-✅ 체크리스트
-❌ 금지사항
+✅ Checklist
+❌ Prohibited
 ```
 </validation>
 ```
 
-## 섹션 레퍼런스
+## Section Reference
 
-| 섹션 | 용도 | 형식 | 필수 |
-|------|------|------|------|
-| **\<purpose\>** | 커맨드 목표 | 간결한 문장 | ✅ |
-| **\<arguments\>** | 인자 설명 | 표 (예시\|동작) | ✅ |
-| **\<workflow\>** | 실행 단계 | 표 (단계\|작업\|도구) | ✅ |
-| **\<forbidden\>** | 금지사항 | 표/리스트 | ✅ |
-| **\<required\>** | 필수사항 | 표/리스트 | ✅ |
-| **\<examples\>** | 코드 예시 | 실행 가능 코드 | ✅ |
-| **\<validation\>** | 체크리스트 | ✅/❌ 마커 | ✅ |
-| **\<critical_requirements\>** | 에이전트 위임 | Task 패턴 | 조건부 |
-| **\<thinking_strategy\>** | Sequential Thinking | 복잡도 가이드 | 조건부 |
+| Section | Purpose | Format | Required |
+|---------|---------|--------|----------|
+| **\<purpose\>** | Command goal | Concise sentence | ✅ |
+| **\<arguments\>** | Argument description | Table (example\|action) | ✅ |
+| **\<workflow\>** | Execution steps | Table (step\|task\|tool) | ✅ |
+| **\<forbidden\>** | Prohibited | Table/list | ✅ |
+| **\<required\>** | Required | Table/list | ✅ |
+| **\<examples\>** | Code example | Runnable code | ✅ |
+| **\<validation\>** | Checklist | ✅/❌ markers | ✅ |
+| **\<critical_requirements\>** | Agent delegation | Task pattern | Conditional |
+| **\<thinking_strategy\>** | Sequential Thinking | Complexity guide | Conditional |
 
-## YAML 필드
+## YAML Fields
 
-| 필드 | 설명 | 예시 | 필수 |
-|------|------|------|------|
-| **description** | 트리거 키워드 포함 설명 | `Git 커밋. push/pull 지원.` | ✅ |
-| **argument-hint** | 인자 예시 | `[push\|pull\|메시지...]` | ✅ |
-| **allowed-tools** | 도구 제한 | `Bash, Read, Grep` | ❌ |
+| Field | Description | Example | Required |
+|-------|-------------|---------|----------|
+| **description** | Description with trigger keywords | `Git commit. Support push/pull.` | ✅ |
+| **argument-hint** | Argument example | `[push\|pull\|message...]` | ✅ |
+| **allowed-tools** | Tool restriction | `Bash, Read, Grep` | ❌ |
 
 </structure_reference>
 
