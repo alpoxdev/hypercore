@@ -31,6 +31,7 @@
 | Task | Required |
 |------|----------|
 | Before work | Read related docs (API→hono, DB→prisma) |
+| Document search | serena mcp (document indexing/search, context length optimization) |
 | Code search | ast-grep |
 | Complex tasks | Sequential Thinking MCP |
 | 3+ file changes | gemini-review |

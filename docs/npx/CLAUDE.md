@@ -48,6 +48,7 @@
 | Task | Required Actions |
 |------|-----------------|
 | **Before Starting** | Read relevant docs (Commander → commander, Files → fs-extra) |
+| **Document Search** | Use serena mcp (document indexing/search, context length optimization) |
 | **Console Output** | Use logger functions (info/success/error/warn) |
 | **File Operations** | Async API (`fs-extra`), `path.join` for paths |
 | **Error Handling** | try-catch + `process.exit(1)`, clear error messages to users |

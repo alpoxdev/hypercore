@@ -53,6 +53,7 @@
 | 작업 | 필수 행동 |
 |------|----------|
 | **작업 시작 전** | 관련 docs 읽기 (UI → design, API → nextjs, DB → prisma, 인증 → next-auth) |
+| **문서 검색** | serena mcp 사용 (문서 인덱싱/검색, context 길이 최적화) |
 | **코드 검색** | ast-grep 사용 (함수/컴포넌트/패턴 검색) |
 | **복잡한 작업** | Sequential Thinking MCP (5+ 단계 작업) |
 | **대규모 수정** | gemini-review (3+ 파일 변경, 아키텍처 결정) |
@@ -91,22 +92,24 @@ src/
 │   ├── page.tsx                # Home page
 │   ├── [slug]/
 │   │   ├── page.tsx            # Dynamic route
-│   │   └── -components/        # 페이지 전용 Client Components
+│   │   ├── _components/        # 페이지 전용 컴포넌트 (필수)
+│   │   ├── _hooks/             # 페이지 전용 훅 (필수)
+│   │   └── _actions/           # 페이지 전용 Server Actions (필수)
 │   ├── api/
 │   │   └── [endpoint]/
 │   │       └── route.ts        # Route Handler (REST API)
-│   └── _components/            # 공통 Client Components
-├── actions/                    # Server Actions (공통)
-├── components/ui/              # UI 컴포넌트 (Server Components)
+│   └── _actions/               # 공통 Server Actions
+├── components/ui/              # 공통 UI 컴포넌트 (Server Components)
 ├── middleware.ts               # Middleware
 ├── database/prisma.ts
 └── lib/
 ```
 
 **필수 규칙:**
-- 페이지당 `-components/` 폴더 권장 (페이지 전용 Client Components)
+- 페이지당 `_components/`, `_hooks/`, `_actions/` 폴더 필수 (줄 수 무관)
+- Custom Hook은 페이지 크기와 무관하게 **반드시** `_hooks/` 폴더에 분리
 - Server Components가 기본 → `"use client"` 명시 필요 시만 사용
-- Server Actions는 `actions/` 폴더 또는 파일 상단 (`"use server"`)
+- Server Actions는 글로벌(`app/_actions/`) 또는 페이지 전용(`[route]/_actions/`)에 분리
 - Route Handlers는 `/app/api/` 경로에만 생성
 </structure>
 

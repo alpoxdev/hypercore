@@ -53,14 +53,15 @@
 | Task | Required Actions |
 |------|------------------|
 | **Before Starting** | Read relevant docs (UI → design, API → nextjs, DB → prisma, auth → next-auth) |
+| **Document Search** | Use serena mcp (document indexing/search, context length optimization) |
 | **Code Search** | Use ast-grep (function/component/pattern search) |
 | **Complex Tasks** | Sequential Thinking MCP (5+ step tasks) |
 | **Large Changes** | gemini-review (3+ file changes, architectural decisions) |
 | **Server Actions** | `"use server"` declaration, Zod validation (POST/PUT/PATCH), try-catch + revalidatePath/redirect |
 | **Client API** | Call Server Actions via TanStack Query (`useQuery`/`useMutation`) |
 | **Custom Hook Order** | State → Global Hooks (useParams, useRouter, useSearchParams) → React Query → Handlers → Memo → Effect |
-| **Code Writing** | UTF-8 encoding, comments per code block, const function declarations |
-| **Prisma** | Multi-File structure (`prisma/schema/`), all elements require comments |
+| **Code Writing** | UTF-8 encoding, Korean comments per code block, const function declarations |
+| **Prisma** | Multi-File structure (`prisma/schema/`), Korean comments required for all elements |
 
 </required>
 
@@ -91,22 +92,24 @@ src/
 │   ├── page.tsx                # Home page
 │   ├── [slug]/
 │   │   ├── page.tsx            # Dynamic route
-│   │   └── -components/        # Page-specific Client Components
+│   │   ├── _components/        # Page-specific components (required)
+│   │   ├── _hooks/             # Page-specific hooks (required)
+│   │   └── _actions/           # Page-specific Server Actions (required)
 │   ├── api/
 │   │   └── [endpoint]/
 │   │       └── route.ts        # Route Handler (REST API)
-│   └── _components/            # Shared Client Components
-├── actions/                    # Server Actions (shared)
-├── components/ui/              # UI components (Server Components)
+│   └── _actions/               # Shared Server Actions
+├── components/ui/              # Shared UI components (Server Components)
 ├── middleware.ts               # Middleware
 ├── database/prisma.ts
 └── lib/
 ```
 
 **Required Rules:**
-- Recommended `-components/` folder per page (page-specific Client Components)
+- Each page MUST have `_components/`, `_hooks/`, `_actions/` folders (regardless of line count)
+- Custom Hooks MUST be separated into `_hooks/` folder regardless of page size
 - Server Components by default → use `"use client"` only when necessary
-- Server Actions in `actions/` folder or at file top (`"use server"`)
+- Server Actions: global (`app/_actions/`) or page-specific (`[route]/_actions/`)
 - Route Handlers only in `/app/api/` path
 </structure>
 
@@ -123,7 +126,7 @@ Prisma Multi-File:
 prisma/schema/
 ├── +base.prisma   # datasource, generator
 ├── +enum.prisma   # enum
-└── [model].prisma # per model (with comments!)
+└── [model].prisma # per model (Korean comments required!)
 ```
 
 </conventions>
