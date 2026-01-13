@@ -54,6 +54,7 @@
 | Task | Required Actions |
 |------|-----------------|
 | **Before Starting** | Read related docs (UI → design, API → tanstack-start, DB → prisma, Auth → better-auth) |
+| **Document Search** | Use serena mcp (document indexing/search, context length optimization) |
 | **Code Search** | Use ast-grep (function/component/pattern search) |
 | **Complex Tasks** | Sequential Thinking MCP (5+ step tasks) |
 | **Large Changes** | gemini-review (3+ file changes, architecture decisions) |

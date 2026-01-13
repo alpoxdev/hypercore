@@ -31,6 +31,7 @@
 | 작업 | 필수 |
 |------|------|
 | 작업 전 | 관련 docs 읽기 (API→hono, DB→prisma) |
+| 문서 검색 | serena mcp (문서 인덱싱/검색, context 길이 최적화) |
 | 코드 검색 | ast-grep |
 | 복잡한 작업 | Sequential Thinking MCP |
 | 3+ 파일 수정 | gemini-review |

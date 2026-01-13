@@ -48,6 +48,7 @@
 | 작업 | 필수 행동 |
 |------|----------|
 | **작업 시작 전** | 관련 docs 읽기 (Commander → commander, 파일 → fs-extra) |
+| **문서 검색** | serena mcp 사용 (문서 인덱싱/검색, context 길이 최적화) |
 | **콘솔 출력** | logger 함수 사용 (info/success/error/warn) |
 | **파일 작업** | async API (`fs-extra`), `path.join`으로 경로 조합 |
 | **에러 처리** | try-catch + `process.exit(1)`, 사용자에게 명확한 에러 메시지 |

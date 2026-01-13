@@ -53,6 +53,7 @@
 | 작업 | 필수 행동 |
 |------|----------|
 | **작업 시작 전** | 관련 docs 읽기 (UI → design, API → nextjs, DB → prisma, 인증 → next-auth) |
+| **문서 검색** | serena mcp 사용 (문서 인덱싱/검색, context 길이 최적화) |
 | **코드 검색** | ast-grep 사용 (함수/컴포넌트/패턴 검색) |
 | **복잡한 작업** | Sequential Thinking MCP (5+ 단계 작업) |
 | **대규모 수정** | gemini-review (3+ 파일 변경, 아키텍처 결정) |

@@ -53,6 +53,7 @@
 | Task | Required Actions |
 |------|------------------|
 | **Before Starting** | Read relevant docs (UI → design, API → nextjs, DB → prisma, auth → next-auth) |
+| **Document Search** | Use serena mcp (document indexing/search, context length optimization) |
 | **Code Search** | Use ast-grep (function/component/pattern search) |
 | **Complex Tasks** | Sequential Thinking MCP (5+ step tasks) |
 | **Large Changes** | gemini-review (3+ file changes, architectural decisions) |
