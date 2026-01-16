@@ -186,20 +186,50 @@ export const listAvailableTemplates = async (): Promise<string[]> => {
 };
 
 /**
+ * 템플릿별 스킬 매핑
+ */
+const TEMPLATE_SKILLS_MAP: Record<string, string[]> = {
+  nextjs: ['nextjs-react-best-practices', 'vs-design-diverge'],
+  'tanstack-start': [
+    'tanstack-start-react-best-practices',
+    'vs-design-diverge',
+  ],
+  // hono와 npx는 스킬 없음
+};
+
+/**
  * Skills 복사 (templates/.claude/skills/ → 타겟/.claude/skills/)
- * Skills는 폴더 기반 구조
+ * 선택된 템플릿에 해당하는 스킬만 복사
  */
 export const copySkills = async (
-  _templates: string[],
+  templates: string[],
   targetDir: string,
 ): Promise<{ files: number; directories: number }> => {
   const counter = { files: 0, directories: 0 };
   const targetSkillsDir = path.join(targetDir, '.claude', 'skills');
   const skillsSrc = path.join(getTemplatesDir(), '.claude', 'skills');
 
-  if (await fs.pathExists(skillsSrc)) {
-    await fs.ensureDir(targetSkillsDir);
-    await copyRecursive(skillsSrc, targetSkillsDir, counter);
+  if (!(await fs.pathExists(skillsSrc))) {
+    return counter;
+  }
+
+  await fs.ensureDir(targetSkillsDir);
+
+  // 선택된 템플릿에 해당하는 스킬들 수집
+  const skillsToCopy = new Set<string>();
+  for (const template of templates) {
+    const skills = TEMPLATE_SKILLS_MAP[template] || [];
+    skills.forEach((skill) => skillsToCopy.add(skill));
+  }
+
+  // 매핑된 스킬만 복사
+  for (const skill of skillsToCopy) {
+    const skillSrc = path.join(skillsSrc, skill);
+    const skillDest = path.join(targetSkillsDir, skill);
+
+    if (await fs.pathExists(skillSrc)) {
+      await copyRecursive(skillSrc, skillDest, counter);
+    }
   }
 
   return counter;
@@ -292,18 +322,22 @@ export const copyAgents = async (
  * Skills, Commands, Agents가 존재하는지 확인
  */
 export const checkAllExtrasExist = async (
-  _templates: string[],
+  templates: string[],
 ): Promise<{
   hasSkills: boolean;
   hasCommands: boolean;
   hasAgents: boolean;
 }> => {
   const claudeDir = path.join(getTemplatesDir(), '.claude');
-  const skillsSrc = path.join(claudeDir, 'skills');
   const commandsSrc = path.join(claudeDir, 'commands');
   const agentsSrc = path.join(claudeDir, 'agents');
 
-  const hasSkills = await hasFiles(skillsSrc);
+  // 스킬: 선택된 템플릿에 매핑된 스킬이 있는지 확인
+  const hasSkills = templates.some((template) => {
+    const skills = TEMPLATE_SKILLS_MAP[template];
+    return skills && skills.length > 0;
+  });
+
   const hasCommands = await hasFiles(commandsSrc);
   const hasAgents = await hasFiles(agentsSrc);
 
