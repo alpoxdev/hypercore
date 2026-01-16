@@ -17,8 +17,6 @@
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true
   },
-  "references": [
-    { "path": "packages/mcp-server" }
-  ],
+  "references": [{ "path": "packages/mcp-server" }],
   "files": []
 }
