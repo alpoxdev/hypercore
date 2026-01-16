@@ -10,7 +10,7 @@ metadata:
 
 # TanStack Start React Best Practices
 
-Performance optimization guide for React and TanStack Start applications. Contains 38 rules across 7 categories, prioritized by impact to guide automated refactoring and code generation.
+Performance optimization guide for React and TanStack Start applications. Contains 39 rules across 7 categories, prioritized by impact to guide automated refactoring and code generation.
 
 ---
 
