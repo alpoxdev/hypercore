@@ -5,11 +5,11 @@ impactDescription: prevents rendering 0 or NaN
 tags: rendering, conditional, jsx, falsy-values
 ---
 
-## Use Explicit Conditional Rendering
+## 명시적 조건부 렌더링 사용
 
-Use explicit ternary operators (`? :`) instead of `&&` for conditional rendering when the condition can be `0`, `NaN`, or other falsy values that render.
+조건이 `0`, `NaN` 또는 렌더링되는 다른 falsy 값일 수 있는 경우, 조건부 렌더링에 `&&` 대신 명시적인 삼항 연산자(`? :`)를 사용하세요.
 
-**Incorrect (renders "0" when count is 0):**
+**❌ 잘못된 예시 (count가 0일 때 "0"을 렌더링):**
 
 ```tsx
 function Badge({ count }: { count: number }) {
@@ -20,11 +20,11 @@ function Badge({ count }: { count: number }) {
   )
 }
 
-// When count = 0, renders: <div>0</div>
-// When count = 5, renders: <div><span class="badge">5</span></div>
+// count = 0일 때 렌더링: <div>0</div>
+// count = 5일 때 렌더링: <div><span class="badge">5</span></div>
 ```
 
-**Correct (renders nothing when count is 0):**
+**✅ 올바른 예시 (count가 0일 때 아무것도 렌더링하지 않음):**
 
 ```tsx
 function Badge({ count }: { count: number }) {
@@ -35,6 +35,6 @@ function Badge({ count }: { count: number }) {
   )
 }
 
-// When count = 0, renders: <div></div>
-// When count = 5, renders: <div><span class="badge">5</span></div>
+// count = 0일 때 렌더링: <div></div>
+// count = 5일 때 렌더링: <div><span class="badge">5</span></div>
 ```

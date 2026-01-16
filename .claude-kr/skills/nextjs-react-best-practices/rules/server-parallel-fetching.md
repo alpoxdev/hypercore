@@ -5,11 +5,11 @@ impactDescription: eliminates server-side waterfalls
 tags: server, rsc, parallel-fetching, composition
 ---
 
-## Parallel Data Fetching with Component Composition
+## 컴포넌트 조합을 통한 병렬 데이터 페칭
 
-React Server Components execute sequentially within a tree. Restructure with composition to parallelize data fetching.
+React Server Component는 트리 내에서 순차적으로 실행됩니다. 컴포지션을 활용해 재구성하여 데이터 페칭을 병렬화하세요.
 
-**Incorrect (Sidebar waits for Page's fetch to complete):**
+**잘못된 예 (Sidebar가 Page의 fetch 완료를 기다림):**
 
 ```tsx
 export default async function Page() {
@@ -28,7 +28,7 @@ async function Sidebar() {
 }
 ```
 
-**Correct (both fetch simultaneously):**
+**올바른 예 (둘 다 동시에 fetch):**
 
 ```tsx
 async function Header() {
@@ -51,7 +51,7 @@ export default function Page() {
 }
 ```
 
-**Alternative with children prop:**
+**children prop을 사용한 대안:**
 
 ```tsx
 async function Layout({ children }: { children: ReactNode }) {

@@ -5,20 +5,20 @@ impactDescription: reduces expensive I/O
 tags: javascript, localStorage, storage, caching, performance
 ---
 
-## Cache Storage API Calls
+## Storage API 호출 캐싱
 
-`localStorage`, `sessionStorage`, and `document.cookie` are synchronous and expensive. Cache reads in memory.
+`localStorage`, `sessionStorage`, `document.cookie`는 동기적이고 비용이 큽니다. 읽기를 메모리에 캐시하세요.
 
-**Incorrect (reads storage on every call):**
+**❌ 잘못된 예시 (호출할 때마다 스토리지 읽기):**
 
 ```typescript
 function getTheme() {
   return localStorage.getItem('theme') ?? 'light'
 }
-// Called 10 times = 10 storage reads
+// 10번 호출 = 10번 스토리지 읽기
 ```
 
-**Correct (Map cache):**
+**✅ 올바른 예시 (Map 캐시):**
 
 ```typescript
 const storageCache = new Map<string, string | null>()
@@ -32,13 +32,13 @@ function getLocalStorage(key: string) {
 
 function setLocalStorage(key: string, value: string) {
   localStorage.setItem(key, value)
-  storageCache.set(key, value)  // keep cache in sync
+  storageCache.set(key, value)  // 캐시 동기화 유지
 }
 ```
 
-Use a Map (not a hook) so it works everywhere: utilities, event handlers, not just React components.
+훅이 아닌 Map을 사용하세요. 그래야 유틸리티, 이벤트 핸들러 등 React 컴포넌트뿐만 아니라 어디서나 작동합니다.
 
-**Cookie caching:**
+**쿠키 캐싱:**
 
 ```typescript
 let cookieCache: Record<string, string> | null = null
@@ -53,9 +53,9 @@ function getCookie(name: string) {
 }
 ```
 
-**Important (invalidate on external changes):**
+**중요 (외부 변경 시 무효화):**
 
-If storage can change externally (another tab, server-set cookies), invalidate cache:
+스토리지가 외부에서 변경될 수 있는 경우(다른 탭, 서버 설정 쿠키), 캐시를 무효화하세요:
 
 ```typescript
 window.addEventListener('storage', (e) => {

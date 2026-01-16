@@ -5,11 +5,11 @@ impactDescription: 1M ops to 2K ops
 tags: javascript, map, indexing, optimization, performance
 ---
 
-## Build Index Maps for Repeated Lookups
+## 반복 조회를 위한 인덱스 맵 구축
 
-Multiple `.find()` calls by the same key should use a Map.
+동일한 키로 여러 번 `.find()` 호출하는 경우 Map을 사용하세요.
 
-**Incorrect (O(n) per lookup):**
+**❌ 잘못된 예시 (조회당 O(n)):**
 
 ```typescript
 function processOrders(orders: Order[], users: User[]) {
@@ -20,7 +20,7 @@ function processOrders(orders: Order[], users: User[]) {
 }
 ```
 
-**Correct (O(1) per lookup):**
+**✅ 올바른 예시 (조회당 O(1)):**
 
 ```typescript
 function processOrders(orders: Order[], users: User[]) {
@@ -33,5 +33,5 @@ function processOrders(orders: Order[], users: User[]) {
 }
 ```
 
-Build map once (O(n)), then all lookups are O(1).
-For 1000 orders × 1000 users: 1M ops → 2K ops.
+맵을 한 번만 구축하고(O(n)), 이후 모든 조회는 O(1)입니다.
+1000개 주문 × 1000명 사용자의 경우: 1M 연산 → 2K 연산으로 감소합니다.
