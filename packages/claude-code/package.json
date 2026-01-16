@@ -10,11 +10,11 @@
   ],
   "scripts": {
     "copy-templates": "node scripts/copy-templates.js",
-    "build": "tsup && npm run copy-templates",
-    "dev": "npm run build && node dist/index.js",
+    "build": "yarn tsup && yarn run copy-templates",
+    "dev": "yarn run build && node dist/index.js",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "yarn run build"
   },
   "keywords": [
     "claude",
