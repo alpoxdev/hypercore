@@ -189,10 +189,10 @@ export const listAvailableTemplates = async (): Promise<string[]> => {
  * 템플릿별 스킬 매핑
  */
 const TEMPLATE_SKILLS_MAP: Record<string, string[]> = {
-  nextjs: ['nextjs-react-best-practices', 'vs-design-diverge'],
+  nextjs: ['nextjs-react-best-practices', 'korea-uiux-design'],
   'tanstack-start': [
     'tanstack-start-react-best-practices',
-    'vs-design-diverge',
+    'korea-uiux-design',
   ],
   // hono와 npx는 스킬 없음
 };
@@ -222,12 +222,16 @@ export const copySkills = async (
     skills.forEach((skill) => skillsToCopy.add(skill));
   }
 
-  // 매핑된 스킬만 복사
+  // 매핑된 스킬만 복사 (기존 스킬 폴더는 삭제 후 복사)
   for (const skill of skillsToCopy) {
     const skillSrc = path.join(skillsSrc, skill);
     const skillDest = path.join(targetSkillsDir, skill);
 
     if (await fs.pathExists(skillSrc)) {
+      // 기존 스킬 폴더 삭제
+      if (await fs.pathExists(skillDest)) {
+        await fs.remove(skillDest);
+      }
       await copyRecursive(skillSrc, skillDest, counter);
     }
   }
