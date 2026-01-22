@@ -61,8 +61,7 @@ $ARGUMENTS provided → Proceed to next step
 | 3. Explore codebase | Understand current state, explore related files | Task (Explore) + Read/Grep |
 | 4. Derive options | Generate 4-5 possible approaches → select 2-3 main | sequentialthinking (steps 2-6) |
 | 5. Present options | Present pros/cons, impact scope, recommendation | - |
-| 6. User selection | Wait for option selection | - |
-| 7. Document generation | Generate plan document when selected | Write |
+| 6. User selection & document generation | Wait for option selection, then generate plan document | Write |
 
 </workflow>
 
@@ -323,16 +322,14 @@ Which option would you choose? (A/B)
 
 ## Document generation
 
-### Document creation question
+### Automatic document creation
+
+After user selects an option, automatically create a plan document at `.claude/plans/[feature-name].md`.
 
 ```
 You selected Option [N].
 
-Would you like to create a plan document?
-- Y: Create .claude/plans/[feature-name].md
-- N: Start implementation directly
-
-Please choose. (Y/N)
+Creating plan document at .claude/plans/[feature-name].md...
 ```
 
 ### Plan document template
@@ -479,9 +476,7 @@ User: /plan Change user authentication from JWT to session-based
 
 4. User choice: 1
 
-5. Create document question: Y
-
-6. Create .claude/plans/session-auth.md
+5. Automatically create .claude/plans/session-auth.md
 ```
 
 ### Example 2: Add real-time notifications
@@ -504,7 +499,7 @@ User: /plan Add real-time notification feature
    Option 2: Server-Sent Events
    Option 3: Short Polling
 
-4. After selection, create plan document
+4. After user selection, automatically create plan document
 ```
 
 ### Example 3: Simple refactoring
@@ -525,7 +520,7 @@ User: /plan Convert utils functions to TypeScript
    Option A: Incremental conversion (per file)
    Option B: Batch conversion
 
-4. After choice → implement (skip document creation if possible)
+4. After user choice → create plan document → implement
 ```
 
 </examples>
