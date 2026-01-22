@@ -205,7 +205,9 @@ Generate download links for image assets.
 
 **Workflow:**
 ```bash
+# PNG/JPG → WebP (SVG files should not be converted)
 curl -o hero.png "https://..." && cwebp hero.png -q 80 -o hero.webp && mv hero.webp public/images/
+curl -o banner.jpg "https://..." && cwebp banner.jpg -q 80 -o banner.webp && mv banner.webp public/images/
 ```
 
 ### 6. export_node

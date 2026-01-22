@@ -205,7 +205,9 @@ Text Styles, Color Styles, Effect Styles 추출.
 
 **워크플로우:**
 ```bash
+# PNG/JPG → WebP (SVG 파일은 변환하지 않음)
 curl -o hero.png "https://..." && cwebp hero.png -q 80 -o hero.webp && mv hero.webp public/images/
+curl -o banner.jpg "https://..." && cwebp banner.jpg -q 80 -o banner.webp && mv banner.webp public/images/
 ```
 
 ### 6. export_node

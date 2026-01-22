@@ -267,15 +267,23 @@ get_images → Obtain download URL
 ```
 
 **2. WebP Compression (Required)**
+
+**Note:** Only compress PNG/JPG/JPEG files to WebP. SVG files should remain as-is.
+
 ```bash
 # Using cwebp (Google WebP)
 cwebp -q 80 input.png -o output.webp
+cwebp -q 80 input.jpg -o output.webp
 
 # Or ImageMagick
 convert input.png -quality 80 output.webp
+convert input.jpg -quality 80 output.webp
 
-# Batch conversion
-for file in *.png; do cwebp -q 80 "$file" -o "${file%.png}.webp"; done
+# Batch conversion (PNG/JPG/JPEG only, excludes SVG)
+for file in *.{png,jpg,jpeg}; do
+  [ -f "$file" ] || continue
+  cwebp -q 80 "$file" -o "${file%.*}.webp"
+done
 ```
 
 **Compression Quality Guide:**

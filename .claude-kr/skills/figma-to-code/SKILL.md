@@ -267,15 +267,23 @@ get_images → 다운로드 URL 획득
 ```
 
 **2. WebP 압축 (필수)**
+
+**주의:** PNG/JPG/JPEG 파일만 WebP로 압축합니다. SVG 파일은 변환하지 않고 그대로 사용합니다.
+
 ```bash
 # cwebp 사용 (Google WebP)
 cwebp -q 80 input.png -o output.webp
+cwebp -q 80 input.jpg -o output.webp
 
 # 또는 ImageMagick
 convert input.png -quality 80 output.webp
+convert input.jpg -quality 80 output.webp
 
-# 일괄 변환
-for file in *.png; do cwebp -q 80 "$file" -o "${file%.png}.webp"; done
+# 일괄 변환 (PNG/JPG/JPEG만, SVG 제외)
+for file in *.{png,jpg,jpeg}; do
+  [ -f "$file" ] || continue
+  cwebp -q 80 "$file" -o "${file%.*}.webp"
+done
 ```
 
 **압축 품질 가이드:**
