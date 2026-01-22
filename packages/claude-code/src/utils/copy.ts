@@ -189,10 +189,11 @@ export const listAvailableTemplates = async (): Promise<string[]> => {
  * 템플릿별 스킬 매핑
  */
 const TEMPLATE_SKILLS_MAP: Record<string, string[]> = {
-  nextjs: ['nextjs-react-best-practices', 'korea-uiux-design'],
+  nextjs: ['nextjs-react-best-practices', 'korea-uiux-design', 'figma-to-code'],
   'tanstack-start': [
     'tanstack-start-react-best-practices',
     'korea-uiux-design',
+    'figma-to-code',
   ],
   // hono와 npx는 스킬 없음
 };
