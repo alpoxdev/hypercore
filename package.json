@@ -25,13 +25,13 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "prettier --write"
+      "yarn prettier --write"
     ],
     "*.{json,yml,yaml}": [
-      "prettier --write"
+      "yarn prettier --write"
     ],
     "*.{css,scss}": [
-      "prettier --write"
+      "yarn prettier --write"
     ]
   },
   "engines": {
