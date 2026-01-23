@@ -1,28 +1,28 @@
-# Auto Layout → CSS Mapping
+# Auto Layout → CSS 매핑
 
-Guide for precisely converting Figma Auto Layout to Flexbox/Grid.
+Figma Auto Layout을 Flexbox/Grid로 정확히 변환하는 가이드.
 
 ---
 
-## Auto Layout Fundamentals
+## Auto Layout 기본 개념
 
-Figma Auto Layout maps 1:1 to CSS Flexbox.
+Figma Auto Layout은 CSS Flexbox와 1:1 대응됨.
 
-### Core Properties
+### 핵심 속성
 
-| Figma Property | CSS Property | Description |
-|---------------|----------|-------------|
+| Figma 속성 | CSS 속성 | 설명 |
+|-----------|----------|------|
 | **layoutMode** | `flex-direction` | Horizontal/Vertical |
-| **primaryAxisAlignItems** | `justify-content` | Main axis alignment |
-| **counterAxisAlignItems** | `align-items` | Cross axis alignment |
-| **itemSpacing** | `gap` | Element spacing |
-| **padding** | `padding` | Internal padding |
+| **primaryAxisAlignItems** | `justify-content` | 주축 정렬 |
+| **counterAxisAlignItems** | `align-items` | 교차축 정렬 |
+| **itemSpacing** | `gap` | 요소 간 간격 |
+| **padding** | `padding` | 내부 여백 |
 
 ---
 
 ## Layout Mode
 
-### Horizontal (Row)
+### Horizontal (가로)
 
 **Figma:**
 ```json
@@ -47,7 +47,7 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 </div>
 ```
 
-### Vertical (Column)
+### Vertical (세로)
 
 **Figma:**
 ```json
@@ -74,18 +74,18 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 
 ---
 
-## Primary Axis Alignment (Main Axis)
+## Primary Axis Alignment (주축 정렬)
 
 ### Horizontal Layout
 
-| Figma | CSS | Tailwind | Description |
-|-------|-----|----------|-------------|
-| `MIN` | `justify-content: flex-start` | `justify-start` | Left |
-| `CENTER` | `justify-content: center` | `justify-center` | Center |
-| `MAX` | `justify-content: flex-end` | `justify-end` | Right |
-| `SPACE_BETWEEN` | `justify-content: space-between` | `justify-between` | Both ends |
+| Figma | CSS | Tailwind | 설명 |
+|-------|-----|----------|------|
+| `MIN` | `justify-content: flex-start` | `justify-start` | 왼쪽 |
+| `CENTER` | `justify-content: center` | `justify-center` | 중앙 |
+| `MAX` | `justify-content: flex-end` | `justify-end` | 오른쪽 |
+| `SPACE_BETWEEN` | `justify-content: space-between` | `justify-between` | 양끝 |
 
-**Example:**
+**예시:**
 
 ```json
 // Figma
@@ -98,34 +98,34 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 ```tsx
 // React
 <div className="flex flex-row justify-center">
-  <button>Button 1</button>
-  <button>Button 2</button>
+  <button>버튼 1</button>
+  <button>버튼 2</button>
 </div>
 ```
 
 ### Vertical Layout
 
-| Figma | CSS | Tailwind | Description |
-|-------|-----|----------|-------------|
-| `MIN` | `justify-content: flex-start` | `justify-start` | Top |
-| `CENTER` | `justify-content: center` | `justify-center` | Center |
-| `MAX` | `justify-content: flex-end` | `justify-end` | Bottom |
-| `SPACE_BETWEEN` | `justify-content: space-between` | `justify-between` | Both ends |
+| Figma | CSS | Tailwind | 설명 |
+|-------|-----|----------|------|
+| `MIN` | `justify-content: flex-start` | `justify-start` | 위 |
+| `CENTER` | `justify-content: center` | `justify-center` | 중앙 |
+| `MAX` | `justify-content: flex-end` | `justify-end` | 아래 |
+| `SPACE_BETWEEN` | `justify-content: space-between` | `justify-between` | 양끝 |
 
 ---
 
-## Counter Axis Alignment (Cross Axis)
+## Counter Axis Alignment (교차축 정렬)
 
 ### Horizontal Layout
 
-| Figma | CSS | Tailwind | Description |
-|-------|-----|----------|-------------|
-| `MIN` | `align-items: flex-start` | `items-start` | Top |
-| `CENTER` | `align-items: center` | `items-center` | Center |
-| `MAX` | `align-items: flex-end` | `items-end` | Bottom |
-| `BASELINE` | `align-items: baseline` | `items-baseline` | Baseline |
+| Figma | CSS | Tailwind | 설명 |
+|-------|-----|----------|------|
+| `MIN` | `align-items: flex-start` | `items-start` | 위 |
+| `CENTER` | `align-items: center` | `items-center` | 중앙 |
+| `MAX` | `align-items: flex-end` | `items-end` | 아래 |
+| `BASELINE` | `align-items: baseline` | `items-baseline` | 베이스라인 |
 
-**Example:**
+**예시:**
 
 ```json
 // Figma
@@ -140,22 +140,22 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 // React
 <div className="flex flex-row justify-between items-center">
   <img src="/logo.png" alt="Logo" />
-  <nav>Menu</nav>
-  <button>Login</button>
+  <nav>메뉴</nav>
+  <button>로그인</button>
 </div>
 ```
 
 ### Vertical Layout
 
-| Figma | CSS | Tailwind | Description |
-|-------|-----|----------|-------------|
-| `MIN` | `align-items: flex-start` | `items-start` | Left |
-| `CENTER` | `align-items: center` | `items-center` | Center |
-| `MAX` | `align-items: flex-end` | `items-end` | Right |
+| Figma | CSS | Tailwind | 설명 |
+|-------|-----|----------|------|
+| `MIN` | `align-items: flex-start` | `items-start` | 왼쪽 |
+| `CENTER` | `align-items: center` | `items-center` | 중앙 |
+| `MAX` | `align-items: flex-end` | `items-end` | 오른쪽 |
 
 ---
 
-## Item Spacing (Gap)
+## Item Spacing (간격)
 
 **Figma:**
 ```json
@@ -181,9 +181,9 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 
 ---
 
-## Padding (Internal Spacing)
+## Padding (내부 여백)
 
-### Uniform Padding
+### 균일한 Padding
 
 **Figma:**
 ```json
@@ -198,11 +198,11 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 **Tailwind:**
 ```tsx
 <div className="p-[24px]">
-  Content
+  컨텐츠
 </div>
 ```
 
-### Non-uniform Padding
+### 비균일한 Padding
 
 **Figma:**
 ```json
@@ -217,22 +217,22 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 **Tailwind:**
 ```tsx
 <div className="px-[16px] py-[12px]">
-  Content
+  컨텐츠
 </div>
 ```
 
-**Individual specification:**
+**개별 지정:**
 ```tsx
 <div className="pl-[16px] pr-[16px] pt-[12px] pb-[12px]">
-  Content
+  컨텐츠
 </div>
 ```
 
 ---
 
-## Resizing (Size Adjustment)
+## Resizing (크기 조정)
 
-### Fixed (Set Size)
+### Fixed (고정)
 
 **Figma:**
 ```json
@@ -246,11 +246,11 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 **Tailwind:**
 ```tsx
 <button className="w-[120px] h-[44px]">
-  Button
+  버튼
 </button>
 ```
 
-### Hug Contents (Fit Content)
+### Hug Contents (콘텐츠 맞춤)
 
 **Figma:**
 ```json
@@ -264,11 +264,11 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 **Tailwind:**
 ```tsx
 <button className="w-auto h-auto">
-  Button text
+  버튼 텍스트
 </button>
 ```
 
-### Fill Container (Expand)
+### Fill Container (채우기)
 
 **Figma:**
 ```json
@@ -280,15 +280,15 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 **Tailwind:**
 ```tsx
 <div className="flex-1">
-  Content
+  컨텐츠
 </div>
 ```
 
 ---
 
-## Complex Examples
+## 복합 예제
 
-### Button
+### 버튼
 
 **Figma:**
 ```json
@@ -310,7 +310,7 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 }
 ```
 
-**Code:**
+**코드:**
 ```tsx
 <button className="
   flex flex-row items-center justify-center
@@ -322,11 +322,11 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
   text-white font-semibold text-[14px]
 ">
   <svg className="w-5 h-5" />
-  <span>Button</span>
+  <span>버튼</span>
 </button>
 ```
 
-### Card
+### 카드
 
 **Figma:**
 ```json
@@ -349,7 +349,7 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 }
 ```
 
-**Code:**
+**코드:**
 ```tsx
 <div className="
   flex flex-col items-start justify-start
@@ -360,13 +360,13 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
   border border-gray-200
   rounded-[12px]
 ">
-  <h3 className="text-[18px] font-semibold">Card Title</h3>
-  <p className="text-[14px] text-gray-700">Card content</p>
-  <button className="text-[14px] text-blue-500 font-medium">Details</button>
+  <h3 className="text-[18px] font-semibold">카드 제목</h3>
+  <p className="text-[14px] text-gray-700">카드 내용</p>
+  <button className="text-[14px] text-blue-500 font-medium">자세히</button>
 </div>
 ```
 
-### Header (Horizontal + Space Between)
+### 헤더 (Horizontal + Space Between)
 
 **Figma:**
 ```json
@@ -385,7 +385,7 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 }
 ```
 
-**Code:**
+**코드:**
 ```tsx
 <header className="
   flex flex-row justify-between items-center
@@ -396,22 +396,22 @@ Figma Auto Layout maps 1:1 to CSS Flexbox.
 ">
   <img src="/logo.svg" alt="Logo" className="h-8" />
   <nav className="flex gap-[24px]">
-    <a href="/">Home</a>
-    <a href="/about">About</a>
+    <a href="/">홈</a>
+    <a href="/about">소개</a>
   </nav>
   <button className="px-[16px] py-[8px] bg-blue-500 text-white rounded-lg">
-    Login
+    로그인
   </button>
 </header>
 ```
 
 ---
 
-## Nested Auto Layout
+## 중첩 Auto Layout
 
-### List Item
+### 리스트 아이템
 
-**Figma Structure:**
+**Figma 구조:**
 ```
 Frame "ListItem" (Horizontal, Space Between, Center)
 ├─ Frame "Left" (Horizontal, Center, gap: 12px)
@@ -424,7 +424,7 @@ Frame "ListItem" (Horizontal, Space Between, Center)
    └─ Icon "Arrow"
 ```
 
-**Code:**
+**코드:**
 ```tsx
 <div className="
   flex flex-row justify-between items-center
@@ -435,14 +435,14 @@ Frame "ListItem" (Horizontal, Space Between, Center)
   <div className="flex flex-row items-center gap-[12px]">
     <img src="/thumb.jpg" className="w-[48px] h-[48px] rounded-lg" />
     <div className="flex flex-col gap-[4px]">
-      <div className="text-[14px] font-semibold">Title</div>
-      <div className="text-[13px] text-gray-600">Description</div>
+      <div className="text-[14px] font-semibold">제목</div>
+      <div className="text-[13px] text-gray-600">설명</div>
     </div>
   </div>
 
   {/* Right */}
   <div className="flex flex-row items-center gap-[8px]">
-    <span className="text-[14px] font-semibold">$15.00</span>
+    <span className="text-[14px] font-semibold">15,000원</span>
     <svg className="w-5 h-5 text-gray-400" />
   </div>
 </div>
@@ -450,19 +450,19 @@ Frame "ListItem" (Horizontal, Space Between, Center)
 
 ---
 
-## Constraints (Constraints)
+## Constraints (제약 조건)
 
-Figma Constraints define responsive behavior.
+Figma Constraints는 반응형 동작을 정의함.
 
-| Figma Constraint | CSS Equivalent |
+| Figma Constraint | CSS 대응 |
 |-----------------|----------|
-| **Left + Right** | `width: 100%` (fill parent width) |
-| **Left** | `margin-right: auto` (fixed left) |
-| **Right** | `margin-left: auto` (fixed right) |
-| **Center** | `margin: 0 auto` (center alignment) |
-| **Scale** | `width: 50%` (maintain ratio) |
+| **Left + Right** | `width: 100%` (부모 너비 채움) |
+| **Left** | `margin-right: auto` (왼쪽 고정) |
+| **Right** | `margin-left: auto` (오른쪽 고정) |
+| **Center** | `margin: 0 auto` (중앙 정렬) |
+| **Scale** | `width: 50%` (비율 유지) |
 
-**Example:**
+**예시:**
 
 ```json
 // Figma: Left + Right Constraint
@@ -475,9 +475,9 @@ Figma Constraints define responsive behavior.
 ```
 
 ```tsx
-// Responsive: fill parent width
+// 반응형: 부모 너비 채움
 <div className="w-full">
-  Content
+  컨텐츠
 </div>
 ```
 
@@ -512,34 +512,34 @@ Figma Constraints define responsive behavior.
 
 ---
 
-## Best Practices
+## 베스트 프랙티스
 
 ### DO
 
-| Principle | Description |
-|-----------|-------------|
-| **Auto Layout First** | Use Flexbox instead of Absolute positioning |
-| **Exact gap** | Use `gap-[18px]` not `gap-4` |
+| 원칙 | 설명 |
+|------|------|
+| **Auto Layout 우선** | Absolute 대신 Flexbox 사용 |
+| **정확한 gap** | `gap-4` 대신 `gap-[18px]` |
 | **Hug → auto** | Hug Contents → `w-auto h-auto` |
 | **Fill → flex-1** | Fill Container → `flex-1` |
 
 ### DON'T
 
-| Forbidden | Reason |
-|-----------|--------|
-| **Arbitrary margin** | Auto Layout uses gap |
-| **Use float** | Flexbox is sufficient |
-| **Use inline-block** | Handle as flex item |
+| 금지 사항 | 이유 |
+|----------|------|
+| **임의 margin** | Auto Layout은 gap 사용 |
+| **float 사용** | Flexbox로 충분 |
+| **inline-block** | Flex item으로 처리 |
 
 ---
 
-## Conversion Checklist
+## 변환 체크리스트
 
 ```
 □ layoutMode → flex-direction
 □ primaryAxisAlignItems → justify-content
 □ counterAxisAlignItems → align-items
-□ itemSpacing → gap (exact px)
+□ itemSpacing → gap (정확한 px)
 □ padding → p-[Npx] / px-[Npx] py-[Npx]
 □ layoutGrow → flex-1 / flex-0
 □ width/height → w-[Npx] h-[Npx]
@@ -550,7 +550,7 @@ Figma Constraints define responsive behavior.
 
 ---
 
-## References
+## 참조
 
 - [Figma Auto Layout](https://help.figma.com/hc/en-us/articles/360040451373)
 - [CSS Flexbox Guide](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)

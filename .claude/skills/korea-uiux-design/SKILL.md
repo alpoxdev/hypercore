@@ -16,6 +16,176 @@
 
 ---
 
+<agent_integration>
+
+## 병렬 Agent 활용 (ULTRAWORK MODE)
+
+### 기본 원칙
+
+| 원칙 | 실행 방법 |
+|------|----------|
+| **PARALLEL** | 독립 작업은 단일 메시지에서 동시 Tool 호출 |
+| **DELEGATE** | 전문 에이전트에게 즉시 위임 |
+| **SMART MODEL** | 복잡도별 모델 선택 (haiku/sonnet/opus) |
+
+### Phase별 Agent 활용
+
+#### Phase 1: 탐색 + 디자인 정의
+
+```typescript
+// 단일 메시지에서 병렬 실행
+Task(
+  subagent_type="explore",
+  model="haiku",
+  prompt=`한국형 앱의 기존 디자인 패턴 분석:
+  - 색상 시스템
+  - 컴포넌트 구조
+  - 타이포그래피`
+)
+
+Task(
+  subagent_type="designer",
+  model="sonnet",
+  prompt=`[서비스명] UI/UX 디자인 방향 정의:
+  - 미학적 톤: 테크 미니멀리즘 (토스/플렉스)
+  - 2026 트렌드: 키네틱 타이포, 적응형 테마
+  - 한국형 패턴 참조 (korea-uiux-design 스킬)`
+)
+```
+
+#### Phase 2: 병렬 구현
+
+```typescript
+// 여러 컴포넌트 동시 구현
+Task(
+  subagent_type="designer",
+  model="sonnet",
+  prompt="대시보드 메인 레이아웃 구현 (벤토 그리드)"
+)
+
+Task(
+  subagent_type="designer",
+  model="sonnet",
+  prompt="네비게이션 컴포넌트 구현 (키네틱 타이포)"
+)
+
+Task(
+  subagent_type="implementation-executor",
+  model="sonnet",
+  prompt="Server Functions 및 데이터 페칭 로직 구현"
+)
+```
+
+#### Phase 3: 검증
+
+```typescript
+// 병렬 검증
+Task(
+  subagent_type="deployment-validator",
+  model="sonnet",
+  prompt="typecheck/lint/build 전체 검증"
+)
+
+Task(
+  subagent_type="code-reviewer",
+  model="opus",
+  prompt="UI/UX 구현 품질 리뷰 (접근성, 성능, 2026 트렌드)"
+)
+```
+
+### Agent별 역할
+
+| Agent | 모델 | 역할 | 활용 시점 |
+|-------|------|------|----------|
+| **explore** | haiku | 코드베이스 탐색, 패턴 분석 | 프로젝트 시작, 기존 구조 파악 |
+| **designer** | sonnet/opus | UI/UX 디자인 + 구현 | 컴포넌트, 레이아웃, 디자인 시스템 |
+| **implementation-executor** | sonnet | 로직 구현, API 연동 | 비즈니스 로직, Server Functions |
+| **deployment-validator** | sonnet | 배포 전 검증 | 최종 검증 단계 |
+| **code-reviewer** | opus | 코드 품질 리뷰 | 구현 완료 후 |
+
+### 실전 패턴
+
+**패턴 1: 새 서비스 디자인 시스템 구축**
+
+```typescript
+// Step 1: 병렬 탐색
+Task(subagent_type="explore", model="haiku",
+     prompt="토스/카카오/배민 디자인 패턴 분석")
+Task(subagent_type="explore", model="haiku",
+     prompt="프로젝트 기존 컴포넌트 구조 분석")
+
+// Step 2: 디자인 정의
+Task(subagent_type="designer", model="opus",
+     prompt="브랜드 아이덴티티 반영한 디자인 시스템 설계")
+
+// Step 3: 병렬 구현
+Task(subagent_type="designer", model="sonnet", prompt="컬러 시스템")
+Task(subagent_type="designer", model="sonnet", prompt="타이포그래피")
+Task(subagent_type="designer", model="sonnet", prompt="컴포넌트 라이브러리")
+```
+
+**패턴 2: 대시보드 구현**
+
+```typescript
+// 병렬 실행
+Task(subagent_type="designer", model="sonnet",
+     prompt="대시보드 레이아웃 + 통계 카드 (벤토 그리드)")
+Task(subagent_type="designer", model="sonnet",
+     prompt="차트 컴포넌트 + 마이크로 인터랙션")
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt="대시보드 데이터 페칭 + Server Functions")
+```
+
+**패턴 3: 리뉴얼 프로젝트**
+
+```typescript
+// Step 1: 현황 파악
+Task(subagent_type="explore", model="haiku",
+     prompt="기존 UI 컴포넌트 및 스타일 분석")
+
+// Step 2: 디자인 + 구현 병렬
+Task(subagent_type="designer", model="opus",
+     prompt="2026 트렌드 기반 리뉴얼 디자인 (키네틱/적응형)")
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt="기존 로직 유지하며 마이그레이션 계획")
+
+// Step 3: 검증
+Task(subagent_type="code-reviewer", model="opus",
+     prompt="리뉴얼 품질 검토 (접근성, 성능)")
+```
+
+### Designer Agent 상세
+
+**@designer 에이전트가 제공:**
+- 2026 트렌드 통합 (AI 기반, 공간 UI, 키네틱 타이포, 적응형 테마, 마이크로 인터랙션)
+- 대담한 미학적 방향 정의 (7가지 톤 중 선택)
+- 성능 + 접근성 우선 (WCAG 2.2 AA, 60fps, 배터리/연결 인식)
+- 한국형 패턴과 조화로운 통합 (토스/카카오/배민)
+
+**활용 시점:**
+- 새로운 서비스/제품 디자인 시스템 구축
+- 기존 UI 대규모 리뉴얼
+- 2026 트렌드 적용이 필요한 프로젝트
+- 차별화된 브랜드 경험 필요
+
+**참조:** `.claude-kr/agents/designer.md`
+
+### 체크리스트
+
+작업 전 확인:
+
+- [ ] 이 작업은 독립적인가? → 병렬 agent 고려
+- [ ] 코드베이스 탐색 필요? → explore agent (haiku)
+- [ ] 디자인 + 구현 동시? → designer + executor 병렬
+- [ ] 여러 컴포넌트 동시 작업? → 여러 designer 병렬
+- [ ] 복잡한 아키텍처 결정? → opus 모델 사용
+
+**적극적으로 agent 활용. 혼자 하지 말 것.**
+
+</agent_integration>
+
+---
+
 <core_principles>
 
 ## 디자인 철학

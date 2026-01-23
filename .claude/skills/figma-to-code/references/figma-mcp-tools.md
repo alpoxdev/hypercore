@@ -1,65 +1,65 @@
-# Figma MCP Tools Usage
+# Figma MCP 도구 사용법
 
-Detailed guide to tools and API endpoints provided by Figma MCP.
+Figma MCP가 제공하는 도구와 API 엔드포인트 상세 가이드.
 
 ---
 
-## MCP Connection Types
+## MCP 연결 타입
 
-### Desktop MCP (Local)
+### Desktop MCP (로컬)
 
-**Advantages:**
-- Selection-based: Process only selected layers
-- Fast response
-- No internet connection required
+**장점:**
+- 선택 기반 (Selection-based): 현재 선택한 레이어만 처리
+- 빠른 응답 속도
+- 인터넷 연결 불필요
 
-**Setup:**
+**설정:**
 
 ```bash
-# Add
+# 추가
 claude mcp add --transport http figma-desktop http://127.0.0.1:3845/mcp
 
-# Verify
+# 확인
 claude mcp list
 
-# Restart
+# 재시작
 claude mcp restart figma-desktop
 ```
 
-**Enable:** Figma Desktop → Dev Mode (Shift+D) → Inspect → "Enable desktop MCP server" → Verify: `http://127.0.0.1:3845/health`
+**활성화:** Figma Desktop → Dev Mode (Shift+D) → Inspect → "Enable desktop MCP server" → 확인: `http://127.0.0.1:3845/health`
 
-### Remote MCP (Cloud)
+### Remote MCP (클라우드)
 
-**Advantages:**
-- Access via file URL
-- No desktop app required
-- Better for team collaboration
+**장점:**
+- 파일 URL로 접근 가능
+- 데스크톱 앱 불필요
+- 팀 협업에 유리
 
-**Setup:**
+**설정:**
 
 ```bash
-# Add
+# 추가
 claude mcp add --transport http figma-remote-mcp https://mcp.figma.com/mcp
 
-# Authenticate
+# 인증
 claude mcp login figma-remote-mcp
 ```
 
-**Usage:**
+**사용:**
 ```
-Provide file URL:
+파일 URL 제공:
 https://www.figma.com/file/ABC123/ProjectName
 ```
 
 ---
 
-## Key MCP Tools
+## 주요 MCP 도구
 
 ### 1. get_file_info
 
-Retrieve file metadata and structure (required before starting work).
+파일 메타데이터 및 구조 조회 (작업 시작 전 필수).
 
-**Response:**
+**응답:**
 ```json
 {
   "name": "Design System",
@@ -76,9 +76,9 @@ Retrieve file metadata and structure (required before starting work).
 
 ### 2. get_variables
 
-Extract Variables (Color, Number, String, Boolean).
+Variables (Color, Number, String, Boolean) 추출.
 
-**Response:**
+**응답:**
 ```json
 {
   "variables": [
@@ -116,7 +116,7 @@ Extract Variables (Color, Number, String, Boolean).
 
 ### 3. get_styles
 
-Extract Text Styles, Color Styles, Effect Styles.
+Text Styles, Color Styles, Effect Styles 추출.
 
 **Text Styles:**
 ```json
@@ -155,9 +155,9 @@ Extract Text Styles, Color Styles, Effect Styles.
 
 ### 4. get_node_properties
 
-Retrieve layer properties including layout/Auto Layout/styles/text/images (Desktop MCP: requires layer selection).
+선택된 레이어의 레이아웃/Auto Layout/스타일/텍스트/이미지 속성 (Desktop MCP: 레이어 선택 필수).
 
-**Response:**
+**응답:**
 ```json
 {
   "id": "123:456",
@@ -179,7 +179,7 @@ Retrieve layer properties including layout/Auto Layout/styles/text/images (Deskt
   "children": [
     {
       "type": "TEXT",
-      "characters": "Button text",
+      "characters": "버튼 텍스트",
       "style": { "fontSize": 14, "fontWeight": 600 }
     }
   ]
@@ -189,98 +189,98 @@ Retrieve layer properties including layout/Auto Layout/styles/text/images (Deskt
 **→ TSX:**
 ```tsx
 <button className="flex items-center justify-center gap-[8px] px-[16px] py-[12px] bg-[#3182F6] rounded-[8px] w-[120px] h-[44px]">
-  <span className="text-[14px] font-semibold text-white">Button text</span>
+  <span className="text-[14px] font-semibold text-white">버튼 텍스트</span>
 </button>
 ```
 
 ### 5. get_images
 
-Generate download links for image assets.
+이미지 에셋 다운로드 링크 생성.
 
-**Usage:**
+**사용:**
 ```json
 // Input: image_refs: ["123:456"]
 // Output: { "123:456": "https://s3-alpha.figma.com/..." }
 ```
 
-**Workflow:**
+**워크플로우:**
 ```bash
-# PNG/JPG → WebP (SVG files should not be converted)
+# PNG/JPG → WebP (SVG 파일은 변환하지 않음)
 curl -o hero.png "https://..." && cwebp hero.png -q 80 -o hero.webp && mv hero.webp public/images/
 curl -o banner.jpg "https://..." && cwebp banner.jpg -q 80 -o banner.webp && mv banner.webp public/images/
 ```
 
 ### 6. export_node
 
-Export layer as SVG/PNG/JPG.
+레이어를 SVG/PNG/JPG로 export.
 
-**Settings:**
+**설정:**
 ```json
 { "node_id": "123:456", "format": "SVG", "scale": 2 }
 ```
 
-**Use Cases:** Icons (SVG), Illustrations (PNG/WebP 2x), Logos (SVG)
+**케이스:** 아이콘(SVG), 일러스트(PNG/WebP 2x), 로고(SVG)
 
 ---
 
-## Workflow
+## 워크플로우
 
-| Step | Tool | Output |
-|------|------|--------|
-| 1. File structure | get_file_info | Canvas/Frame structure |
-| 2. Extract tokens | get_variables | CSS Variables |
-| 3. Extract styles | get_styles | Text/Color Styles |
-| 4. Layer properties | get_node_properties | Layout/Auto Layout |
-| 5. Collect images | get_images | Download URLs |
-| 6. Implement code | - | Flexbox/Grid + exact measurements |
-| 7. Validate | DevTools | Measurement comparison |
+| 단계 | 도구 | 출력 |
+|------|------|------|
+| 1. 파일 구조 | get_file_info | Canvas/Frame 구조 |
+| 2. 토큰 추출 | get_variables | CSS Variables |
+| 3. 스타일 추출 | get_styles | Text/Color Styles |
+| 4. 레이어 속성 | get_node_properties | Layout/Auto Layout |
+| 5. 이미지 수집 | get_images | 다운로드 URL |
+| 6. 코드 구현 | - | Flexbox/Grid + 정확한 수치 |
+| 7. 검증 | DevTools | 수치 비교 |
 
 ---
 
-## Important Notes
+## 주의 사항
 
 ### Desktop MCP
 
-| Limitation | Solution |
-|-----------|----------|
-| Layer selection required | Select target layer before work |
-| Limited concurrent execution | One file at a time |
-| Requires local network | Verify firewall (port 3845) |
+| 제약 | 해결 |
+|------|------|
+| 레이어 선택 필수 | 구현 전 대상 레이어 선택 |
+| 동시 실행 제한 | 한 번에 하나의 파일만 |
+| 로컬 네트워크 필요 | 방화벽 확인 (포트 3845) |
 
 ### Remote MCP
 
-| Limitation | Solution |
-|-----------|----------|
-| Authentication required | Run `claude mcp login` |
-| Rate limit | Wait if 429 error occurs |
-| File permissions | Requires View access or higher |
+| 제약 | 해결 |
+|------|------|
+| 인증 필요 | `claude mcp login` 실행 |
+| Rate Limit | 429 에러 시 대기 |
+| 파일 권한 | View 권한 이상 필요 |
 
 ---
 
-## Debugging
+## 디버깅
 
-### Verify MCP Connection
+### MCP 연결 확인
 
 ```bash
-# Desktop MCP status
+# Desktop MCP 상태
 curl http://127.0.0.1:3845/health
 
-# Remote MCP login status
+# Remote MCP 로그인 상태
 claude mcp status figma-remote-mcp
 ```
 
-### Error Troubleshooting
+### 오류 해결
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `Connection refused` | Desktop MCP not enabled | Enable in Figma Dev Mode |
-| `401 Unauthorized` | Remote MCP auth expired | Rerun `claude mcp login` |
-| `404 Not Found` | Invalid node_id | Verify ID in Figma |
-| `429 Too Many Requests` | Rate limit exceeded | Wait 1 minute and retry |
+| 오류 | 원인 | 해결 |
+|------|------|------|
+| `Connection refused` | Desktop MCP 미활성화 | Figma Dev Mode에서 Enable |
+| `401 Unauthorized` | Remote MCP 인증 만료 | `claude mcp login` 재실행 |
+| `404 Not Found` | 잘못된 node_id | Figma에서 ID 재확인 |
+| `429 Too Many Requests` | Rate Limit 초과 | 1분 대기 후 재시도 |
 
 ---
 
-## References
+## 참조
 
 - [Figma MCP Server Documentation](https://developers.figma.com/docs/figma-mcp-server/)
 - [Figma REST API Reference](https://www.figma.com/developers/api)

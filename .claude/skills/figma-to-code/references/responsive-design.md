@@ -1,33 +1,33 @@
-# Responsive Design Implementation Guide
+# 반응형 디자인 구현 가이드
 
-Guide for implementing Figma designs 100% accurately across all devices.
+Figma 디자인을 모든 디바이스에서 100% 정확하게 구현하는 가이드.
 
 ---
 
-## Breakpoints
+## 브레이크포인트
 
-### Standard Breakpoints
+### 표준 브레이크포인트
 
-| Device | Range | Tailwind Prefix |
-|--------|-------|-----------------|
-| **Mobile** | 320px ~ 767px | (default) |
+| 디바이스 | 범위 | Tailwind 접두사 |
+|---------|------|----------------|
+| **Mobile** | 320px ~ 767px | (기본) |
 | **Tablet** | 768px ~ 1023px | `md:` |
 | **Desktop** | 1024px+ | `lg:` |
 
-### Tailwind v4 Media Queries
+### Tailwind v4 미디어 쿼리
 
 ```css
 /* globals.css */
 @import "tailwindcss";
 
 @theme {
-  /* Custom breakpoints (if needed) */
+  /* 커스텀 브레이크포인트 (필요시) */
   --breakpoint-mobile: 320px;
   --breakpoint-tablet: 768px;
   --breakpoint-desktop: 1024px;
 }
 
-/* Or use CSS media queries */
+/* 또는 CSS 미디어 쿼리 */
 @media (min-width: 768px) {
   /* Tablet */
 }
@@ -39,30 +39,30 @@ Guide for implementing Figma designs 100% accurately across all devices.
 
 ---
 
-## Figma Constraints → CSS Mapping
+## Figma Constraints → CSS 매핑
 
 ### Horizontal Constraints
 
-| Figma | CSS | Description |
-|-------|-----|-------------|
-| **Left** | `justify-self: start` | Fixed left |
-| **Right** | `justify-self: end` | Fixed right |
-| **Left + Right** | `width: 100%` | Fill parent width |
-| **Center** | `margin: 0 auto` | Center alignment |
-| **Scale** | `width: 50%` | Maintain ratio |
+| Figma | CSS | 설명 |
+|-------|-----|------|
+| **Left** | `justify-self: start` | 왼쪽 고정 |
+| **Right** | `justify-self: end` | 오른쪽 고정 |
+| **Left + Right** | `width: 100%` | 부모 너비 채움 |
+| **Center** | `margin: 0 auto` | 중앙 정렬 |
+| **Scale** | `width: 50%` | 비율 유지 |
 
 ### Vertical Constraints
 
-| Figma | CSS | Description |
-|-------|-----|-------------|
-| **Top** | `align-self: start` | Fixed top |
-| **Bottom** | `align-self: end` | Fixed bottom |
-| **Top + Bottom** | `height: 100%` | Fill parent height |
-| **Center** | `margin: auto 0` | Vertical center |
+| Figma | CSS | 설명 |
+|-------|-----|------|
+| **Top** | `align-self: start` | 위 고정 |
+| **Bottom** | `align-self: end` | 아래 고정 |
+| **Top + Bottom** | `height: 100%` | 부모 높이 채움 |
+| **Center** | `margin: auto 0` | 세로 중앙 |
 
 ---
 
-## Layout Change Patterns
+## 레이아웃 변화 패턴
 
 ### Grid → List (Desktop → Mobile)
 
@@ -88,7 +88,7 @@ Guide for implementing Figma designs 100% accurately across all devices.
 
 ### Horizontal → Vertical (Desktop → Mobile)
 
-**Desktop: Horizontal alignment**
+**Desktop: 가로 정렬**
 ```tsx
 <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
   <div className="flex-1">Left Content</div>
@@ -96,19 +96,19 @@ Guide for implementing Figma designs 100% accurately across all devices.
 </div>
 ```
 
-**Mobile: Vertical alignment**
-- `flex-col` (default)
+**Mobile: 세로 정렬**
+- `flex-col` (기본)
 - `lg:flex-row` (Desktop)
 
-### Hide/Show
+### 숨김/표시
 
 ```tsx
-{/* Show on mobile only */}
+{/* Mobile만 표시 */}
 <nav className="lg:hidden">
   Mobile Menu
 </nav>
 
-{/* Show on desktop only */}
+{/* Desktop만 표시 */}
 <nav className="hidden lg:block">
   Desktop Menu
 </nav>
@@ -116,38 +116,38 @@ Guide for implementing Figma designs 100% accurately across all devices.
 
 ---
 
-## Responsive Font Sizes
+## 폰트 크기 반응형
 
-### Method 1: Tailwind Responsive Classes
+### 방법 1: Tailwind 반응형 클래스
 
 ```tsx
 <h1 className="text-[24px] md:text-[32px] lg:text-[40px]">
-  Heading
+  제목
 </h1>
 ```
 
-### Method 2: clamp() (Recommended)
+### 방법 2: clamp() (권장)
 
 ```tsx
 <h1 className="text-[clamp(24px,5vw,40px)]">
-  Heading
+  제목
 </h1>
 ```
 
-**clamp(minimum, preferred, maximum):**
-- Minimum: Size at 320px
-- Preferred: Viewport-based size
-- Maximum: Size at 1920px
+**clamp(최소, 선호, 최대):**
+- 최소: 320px에서 크기
+- 선호: 뷰포트 기반 크기
+- 최대: 1920px에서 크기
 
 ---
 
-## Responsive Spacing
+## 간격 반응형
 
 ### Padding
 
 ```tsx
 <div className="p-[16px] md:p-[24px] lg:p-[32px]">
-  Content
+  콘텐츠
 </div>
 ```
 
@@ -162,9 +162,9 @@ Guide for implementing Figma designs 100% accurately across all devices.
 
 ---
 
-## Responsive Images
+## 반응형 이미지
 
-### Method 1: <picture> Tag
+### 방법 1: <picture> 태그
 
 ```tsx
 <picture>
@@ -187,7 +187,7 @@ Guide for implementing Figma designs 100% accurately across all devices.
 </picture>
 ```
 
-### Method 2: srcSet
+### 방법 2: srcSet
 
 ```tsx
 <img
@@ -202,10 +202,10 @@ Guide for implementing Figma designs 100% accurately across all devices.
 />
 ```
 
-### Method 3: Tailwind Responsive Classes
+### 방법 3: Tailwind 반응형 클래스
 
 ```tsx
-{/* Mobile: vertical, Desktop: horizontal */}
+{/* Mobile: 세로, Desktop: 가로 */}
 <img
   src="/images/hero/banner.webp"
   alt="Hero"
@@ -215,28 +215,28 @@ Guide for implementing Figma designs 100% accurately across all devices.
 
 ---
 
-## Container Responsive
+## 컨테이너 반응형
 
 ### Max Width
 
 ```tsx
 <div className="max-w-[375px] md:max-w-[768px] lg:max-w-[1200px] mx-auto px-4 md:px-6 lg:px-8">
-  Content
+  콘텐츠
 </div>
 ```
 
 ### Full Width
 
 ```tsx
-{/* Mobile: full, Desktop: limited */}
+{/* Mobile: full, Desktop: 제한 */}
 <div className="w-full lg:max-w-[1200px] lg:mx-auto">
-  Content
+  콘텐츠
 </div>
 ```
 
 ---
 
-## Responsive Navigation
+## 반응형 네비게이션
 
 ### Hamburger Menu (Mobile)
 
@@ -257,16 +257,16 @@ return (
     {isOpen && (
       <nav className="lg:hidden fixed inset-0 bg-white z-50">
         <ul>
-          <li>Menu 1</li>
-          <li>Menu 2</li>
+          <li>메뉴 1</li>
+          <li>메뉴 2</li>
         </ul>
       </nav>
     )}
 
     {/* Desktop Menu */}
     <nav className="hidden lg:flex gap-8">
-      <a href="/">Menu 1</a>
-      <a href="/">Menu 2</a>
+      <a href="/">메뉴 1</a>
+      <a href="/">메뉴 2</a>
     </nav>
   </header>
 )
@@ -274,90 +274,90 @@ return (
 
 ---
 
-## Validation Checklist
+## 검증 체크리스트
 
 ### Mobile (320-767px)
 
 ```
-□ Layout: Grid → List conversion verified
-□ Font: Small size applied
-□ Spacing: Reduced padding/gap verified
-□ Images: Mobile images load verified
-□ Navigation: Hamburger menu verified
-□ Touch targets: Minimum 44x44px verified
-□ Design matches Figma mobile design 100%
+□ 레이아웃: Grid → List 변환 확인
+□ 폰트: 작은 크기 적용 확인
+□ 간격: 축소된 padding/gap 확인
+□ 이미지: Mobile용 이미지 로드 확인
+□ 네비게이션: Hamburger 메뉴 확인
+□ 터치 타겟: 최소 44x44px 확인
+□ Figma Mobile 디자인과 100% 일치
 ```
 
 ### Tablet (768-1023px)
 
 ```
-□ Layout: 2-column grid verified
-□ Font: Medium size applied
-□ Spacing: Medium padding/gap verified
-□ Images: Tablet images load verified
-□ Design matches Figma tablet design 100%
+□ 레이아웃: 2단 그리드 확인
+□ 폰트: 중간 크기 적용 확인
+□ 간격: 중간 padding/gap 확인
+□ 이미지: Tablet용 이미지 로드 확인
+□ Figma Tablet 디자인과 100% 일치
 ```
 
 ### Desktop (1024px+)
 
 ```
-□ Layout: 4-column grid verified
-□ Font: Large size applied
-□ Spacing: Wide padding/gap verified
-□ Images: Desktop images load verified
-□ Navigation: Full menu displayed
-□ Design matches Figma desktop design 100%
+□ 레이아웃: 4단 그리드 확인
+□ 폰트: 큰 크기 적용 확인
+□ 간격: 넓은 padding/gap 확인
+□ 이미지: Desktop용 이미지 로드 확인
+□ 네비게이션: 전체 메뉴 표시 확인
+□ Figma Desktop 디자인과 100% 일치
 ```
 
 ---
 
-## Debugging
+## 디버깅
 
 ### Chrome DevTools
 
 ```
-1. Open DevTools (F12)
+1. DevTools 열기 (F12)
 2. Toggle Device Toolbar (Ctrl+Shift+M)
-3. Select device or enter custom size
-4. Verify at each breakpoint:
-   - Layout changes
-   - Font sizes
-   - Spacing
-   - Image loading
+3. 디바이스 선택 또는 커스텀 크기 입력
+4. 각 브레이크포인트에서 확인:
+   - 레이아웃 변화
+   - 폰트 크기
+   - 간격
+   - 이미지 로드
 ```
 
-### Media Query Verification
+### 미디어 쿼리 확인
 
 ```js
-// Check current media query in Console
+// Console에서 현재 미디어 쿼리 확인
 window.matchMedia('(min-width: 768px)').matches // true/false
 ```
 
 ---
 
-## Best Practices
+## 베스트 프랙티스
 
 ### DO
 
-| Principle | Description |
-|-----------|-------------|
-| **Mobile First** | Base styles → md: → lg: order |
-| **Exact Breakpoints** | Match Figma breakpoints exactly |
-| **Test All Devices** | Verify mobile/tablet/desktop |
-| **Responsive Images** | Provide device-specific images |
+| 원칙 | 설명 |
+|------|------|
+| **Mobile First** | 기본 스타일 → md: → lg: 순서 |
+| **Exact Breakpoints** | Figma 브레이크포인트 정확히 일치 |
+| **Test All Devices** | Mobile/Tablet/Desktop 모두 테스트 |
+| **Responsive Images** | 디바이스별 이미지 제공 |
 
 ### DON'T
 
-| Forbidden | Reason |
-|-----------|--------|
-| **Desktop Only** | Ignoring mobile causes mismatch |
-| **Fixed Sizes** | `width: 375px` breaks responsiveness |
-| **Arbitrary Breakpoints** | Must match Figma |
-| **Single Image** | Inefficient for all devices |
+| 금지 사항 | 이유 |
+|----------|------|
+| **Desktop Only** | Mobile 무시하면 디자인 불일치 |
+| **고정 크기** | `width: 375px` → 반응형 깨짐 |
+| **브레이크포인트 임의 변경** | Figma와 불일치 |
+| **하나의 이미지** | 모든 디바이스에 동일 이미지 비효율 |
 
 ---
 
-## References
+## 참조
 
 - [Figma Constraints](https://help.figma.com/hc/en-us/articles/360039957734)
 - [Tailwind Responsive Design](https://tailwindcss.com/docs/responsive-design)

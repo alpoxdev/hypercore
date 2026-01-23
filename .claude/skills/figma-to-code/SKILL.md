@@ -2,24 +2,24 @@
 
 <context>
 
-**Purpose:** Convert Figma designs to 100% accurate code. Extract design tokens/layouts/assets via Figma MCP to ensure pixel-perfect accuracy.
+**Purpose:** Figma 디자인을 100% 정확하게 코드로 변환. Figma MCP로 디자인 토큰/레이아웃/에셋을 추출하여 픽셀 단위 정확도 보장.
 
-**Trigger:** Implementing Figma designs, generating design system code, developing UI components
+**Trigger:** Figma 디자인 구현, 디자인 시스템 코드 생성, UI 컴포넌트 개발
 
 **Key Features:**
-- Pixel-perfect accuracy (no approximations)
-- Automatic design token extraction (Variables, Styles)
-- Real asset downloads (no AI-generated assets)
-- Accurate Auto Layout → Flexbox/Grid mapping
-- Responsive design implementation required
-- Asset WebP compression and structured organization
+- 픽셀 단위 정확도 (근사치 금지)
+- 디자인 토큰 자동 추출 (Variables, Styles)
+- 실제 에셋 다운로드 (AI 생성 금지)
+- Auto Layout → Flexbox/Grid 정확한 매핑
+- 반응형 디자인 필수 구현
+- 에셋 WebP 압축 및 구조화
 
-**Critical Rules (must be followed):**
-1. Do not arbitrarily interpret designs or create "similar-looking" versions
-2. Use only precise values extracted from Figma for all measurements
-3. Implement responsive breakpoints for all devices (mobile/tablet/desktop)
-4. Always compress images to WebP and organize in appropriate folders
-5. Use only Figma assets (AI-generated assets absolutely forbidden)
+**Critical Rules (무조건 준수):**
+1. 디자인을 임의로 해석하거나 "비슷하게" 만들지 않음
+2. 모든 수치는 Figma에서 추출한 정확한 값 사용
+3. 반응형 브레이크포인트 필수 구현 (모바일/태블릿/데스크톱)
+4. 이미지는 반드시 WebP 압축 후 적재적소 폴더링
+5. Figma 에셋만 사용 (AI 생성 절대 금지)
 
 </context>
 
@@ -27,32 +27,32 @@
 
 <prerequisites>
 
-## Pre-requisites
+## 사전 준비
 
-### Verify Figma MCP Connection
+### Figma MCP 연결 확인
 
 ```bash
-# Desktop MCP (local, selection-based)
+# Desktop MCP (로컬, 선택 기반)
 claude mcp add --transport http figma-desktop http://127.0.0.1:3845/mcp
 
-# Remote MCP (cloud)
+# Remote MCP (클라우드)
 claude mcp add --transport http figma-remote-mcp https://mcp.figma.com/mcp
 ```
 
-**Enable Desktop MCP:**
-1. Launch Figma Desktop app
-2. Open file → Switch to Dev Mode
-3. In Inspect panel, click "Enable desktop MCP server"
+**Desktop MCP 활성화:**
+1. Figma 데스크톱 앱 실행
+2. 파일 열기 → Dev Mode 전환
+3. Inspect 패널에서 "Enable desktop MCP server" 클릭
 
-### Organize Figma File Structure (Designer Guide)
+### Figma 파일 구조화 (디자이너 가이드)
 
-| Item | Requirement |
-|------|-------------|
-| **Auto Layout** | Apply Auto Layout to all Frames |
-| **Variables** | Define colors/spacing/font sizes as Variables |
-| **Components** | Separate reusable elements as Components |
-| **Naming** | Layer names in PascalCase (Button, CardHeader) |
-| **Annotations** | Document interactions (hover, click) in comments |
+| 항목 | 필수 사항 |
+|------|----------|
+| **Auto Layout** | 모든 Frame에 Auto Layout 적용 |
+| **Variables** | 색상/간격/폰트 크기를 Variables로 정의 |
+| **Components** | 재사용 요소는 Component로 분리 |
+| **Naming** | 레이어명: PascalCase (Button, CardHeader) |
+| **Annotations** | 호버/클릭 등 인터랙션 주석으로 설명 |
 
 </prerequisites>
 
@@ -60,18 +60,18 @@ claude mcp add --transport http figma-remote-mcp https://mcp.figma.com/mcp
 
 <workflow>
 
-## Workflow (5 Phases)
+## 워크플로우 (5단계)
 
-### Phase 0: Understand Project Environment
+### Phase 0: 프로젝트 환경 파악
 
-**Goal:** Detect Vite/Next.js environment and verify existing tokens
+**목표:** Vite/Next.js 환경 감지 및 기존 토큰 확인
 
 ```
-1. Detect framework
-   - Vite: Check for vite.config.js/ts existence
-   - Next.js: Check for next.config.js/ts existence
+1. 프레임워크 감지
+   - Vite: vite.config.js/ts 존재 여부 확인
+   - Next.js: next.config.js/ts 존재 여부 확인
 
-2. Locate globals.css
+2. globals.css 위치 파악
    Vite:
    - src/index.css
    - src/main.css
@@ -81,7 +81,7 @@ claude mcp add --transport http figma-remote-mcp https://mcp.figma.com/mcp
    - app/globals.css (App Router)
    - styles/globals.css (Pages Router)
 
-3. Verify existing @theme block
+3. 기존 @theme 블록 확인
    @import "tailwindcss";
 
    @theme {
@@ -90,76 +90,76 @@ claude mcp add --transport http figma-remote-mcp https://mcp.figma.com/mcp
      ...
    }
 
-4. Verify Tailwind CSS version
-   - Confirm v4 usage (tailwindcss: ^4.0.0 in package.json)
-   - Recommend upgrade if not v4
+4. Tailwind CSS 버전 확인
+   - v4 사용 확인 (package.json에서 tailwindcss: ^4.0.0)
+   - v4 아닐 경우 업그레이드 권장
 ```
 
-**Tailwind v4 Characteristics:**
-- **No Config File**: Remove tailwind.config.js → Write @theme directly in CSS
-- **Auto Class Generation**: `@theme { --color-primary: #xxx; }` → `bg-primary` generated automatically
-- **Integrated globals.css**: Manage all tokens in one place
+**Tailwind v4 특징:**
+- **설정 파일 없음**: tailwind.config.js 제거 → CSS 파일에 @theme 직접 작성
+- **자동 클래스 생성**: `@theme { --color-primary: #xxx; }` → `bg-primary` 자동
+- **globals.css 통합**: 모든 토큰을 한 곳에서 관리
 
-### Phase 1: Extract
+### Phase 1: 분석 (Extract)
 
-**Goal:** Extract precise design data from Figma
+**목표:** Figma에서 정확한 디자인 데이터 추출
 
 ```
-1. Verify Figma file/component selection
-   - Desktop MCP: Select target layers before work
-   - Remote MCP: Provide file URL
+1. Figma 파일/컴포넌트 선택 확인
+   - Desktop MCP: 레이어 선택 후 작업
+   - Remote MCP: 파일 URL 제공
 
-2. Extract Variables & Styles
-   - Colors: Color Variables → CSS Variables / Tailwind config
-   - Typography: Text Styles → font-size, line-height, weight
-   - Spacing: Spacing Variables → margin, padding, gap
+2. Variables & Styles 추출
+   - 색상: Color Variables → CSS Variables / Tailwind config
+   - 타이포그래피: Text Styles → font-size, line-height, weight
+   - 간격: Spacing Variables → margin, padding, gap
 
-3. Analyze Auto Layout structure
+3. Auto Layout 구조 파악
    - Direction: Horizontal → flex-row, Vertical → flex-col
    - Alignment: align-items, justify-content
-   - Spacing: gap value
+   - Spacing: gap 값
 
-4. Create asset list
-   - Images: Extract download links
-   - Icons: SVG export
-   - Logos/Illustrations: PNG/WebP
-   - Categorize by type (hero/icons/logos/illustrations)
+4. 에셋 목록 생성
+   - 이미지: 다운로드 링크 추출
+   - 아이콘: SVG export
+   - 로고/일러스트: PNG/WebP
+   - 에셋 타입별 분류 (hero/icons/logos/illustrations)
 
-5. Verify responsive breakpoints (required)
-   Analyze Figma Constraints:
+5. 반응형 브레이크포인트 확인 (필수)
+   Figma Constraints 분석:
    - Mobile: 320px ~ 767px
    - Tablet: 768px ~ 1023px
    - Desktop: 1024px+
 
-   Check each breakpoint:
-   - Layout changes (Grid → List, Horizontal → Vertical)
-   - Font size changes
-   - Spacing adjustments
-   - Hidden/visible elements
+   각 브레이크포인트별 확인:
+   - 레이아웃 변화 (Grid → List, Horizontal → Vertical)
+   - 폰트 크기 변화
+   - 간격 조정
+   - 숨김/표시 요소
 ```
 
-**Details:** [references/figma-mcp-tools.md](references/figma-mcp-tools.md)
+**상세:** [references/figma-mcp-tools.md](references/figma-mcp-tools.md)
 
-### Phase 2: Structure
+### Phase 2: 구조화 (Structure)
 
-**Goal:** Convert Figma Frame hierarchy → React component structure + Tailwind v4 tokens
+**목표:** Figma Frame 계층 → React 컴포넌트 구조 + Tailwind v4 토큰 생성
 
 ```
-1. Analyze Frame Hierarchy
+1. Frame Hierarchy 분석
    Frame "Header"
    ├─ Frame "Logo" → <div className="logo">
    ├─ Frame "Navigation" → <nav>
    └─ Frame "Actions" → <div className="actions">
 
-2. Design Tokens → @theme block (Tailwind v4)
+2. Design Tokens → @theme 블록 (Tailwind v4)
 
-   A. Verify globals.css
-      - If existing @theme block exists, merge with it
-      - Otherwise, create new one
+   A. globals.css 확인
+      - 기존 @theme 블록이 있으면 병합
+      - 없으면 새로 생성
 
-   B. Map Figma Variables → @theme
+   B. Figma Variables → @theme 매핑
 
-   Vite (src/index.css or src/main.css):
+   Vite (src/index.css 또는 src/main.css):
    ```css
    @import "tailwindcss";
 
@@ -181,8 +181,8 @@ claude mcp add --transport http figma-remote-mcp https://mcp.figma.com/mcp
      --font-weight-regular: 400;
      --font-weight-semibold: 600;
 
-     /* Prevent conflicts with existing tokens */
-     /* --color-brand: #xxx; (existing) */
+     /* 기존 토큰이 있다면 충돌 방지 */
+     /* --color-brand: #xxx; (기존) */
    }
    ```
 
@@ -191,140 +191,140 @@ claude mcp add --transport http figma-remote-mcp https://mcp.figma.com/mcp
    @import "tailwindcss";
 
    @theme {
-     /* Same structure */
+     /* 동일한 구조 */
    }
    ```
 
-   C. Verify auto class generation
+   C. 자동 클래스 생성 확인
       @theme { --color-primary: #3182F6; }
-      → bg-primary, text-primary, border-primary generated automatically
+      → bg-primary, text-primary, border-primary 자동 생성
 
-   D. Merge existing globals.css tokens
+   D. 기존 globals.css 토큰 병합
       ```css
       @theme {
-        /* Existing tokens (maintain) */
+        /* 기존 토큰 (유지) */
         --color-brand: #FF5733;
 
-        /* Tokens extracted from Figma (add) */
+        /* Figma에서 추출한 토큰 (추가) */
         --color-primary: #3182F6;
         --spacing-md: 16px;
       }
       ```
 
-3. Component separation criteria
-   - Reusable → Separate component
-   - Used once → Inline
+3. Component 분리 기준
+   - 재사용 가능 → 별도 컴포넌트
+   - 한 번만 사용 → inline
 ```
 
-**Details:**
+**상세:**
 - [references/design-tokens.md](references/design-tokens.md)
 - [references/layout-mapping.md](references/layout-mapping.md)
 
-### Phase 3: Implement
+### Phase 3: 구현 (Implement)
 
-**Goal:** Write code with exact measurements
+**목표:** 정확한 수치로 코드 작성
 
-#### Layout Implementation
+#### 레이아웃 구현
 
 ```tsx
-// ❌ Arbitrary values
+// ❌ 임의의 값
 <div className="flex gap-4 p-6">
 
-// ✅ Precise Figma values
+// ✅ Figma 정확한 값
 <div className="flex gap-[18px] p-[24px]">
 </div>
 ```
 
-#### Color Implementation
+#### 색상 구현
 
 ```tsx
-// ❌ Similar color
+// ❌ 비슷한 색상
 <button className="bg-blue-500">
 
-// ✅ @theme token (Tailwind v4)
+// ✅ @theme 토큰 (Tailwind v4)
 <button className="bg-primary">
 
-// ✅ Or precise HEX
+// ✅ 또는 정확한 HEX
 <button className="bg-[#3182F6]">
 ```
 
-#### Typography Implementation
+#### 타이포그래피 구현
 
 ```tsx
-// ❌ Approximation
+// ❌ 근사치
 <h1 className="text-2xl font-bold">
 
-// ✅ Exact values
+// ✅ 정확한 값
 <h1 className="text-[28px] leading-[36px] font-semibold tracking-[-0.02em]">
 ```
 
-#### Asset Handling (Required)
+#### 에셋 처리 (필수)
 
-**1. Download Assets from Figma**
+**1. Figma에서 에셋 다운로드**
 ```bash
-# Generate download link via Figma MCP
-get_images → Obtain download URL
+# Figma MCP로 이미지 다운로드 링크 생성
+get_images → 다운로드 URL 획득
 ```
 
-**2. WebP Compression (Required)**
+**2. WebP 압축 (필수)**
 
-**Note:** Only compress PNG/JPG/JPEG files to WebP. SVG files should remain as-is.
+**주의:** PNG/JPG/JPEG 파일만 WebP로 압축합니다. SVG 파일은 변환하지 않고 그대로 사용합니다.
 
 ```bash
-# Using cwebp (Google WebP)
+# cwebp 사용 (Google WebP)
 cwebp -q 80 input.png -o output.webp
 cwebp -q 80 input.jpg -o output.webp
 
-# Or ImageMagick
+# 또는 ImageMagick
 convert input.png -quality 80 output.webp
 convert input.jpg -quality 80 output.webp
 
-# Batch conversion (PNG/JPG/JPEG only, excludes SVG)
+# 일괄 변환 (PNG/JPG/JPEG만, SVG 제외)
 for file in *.{png,jpg,jpeg}; do
   [ -f "$file" ] || continue
   cwebp -q 80 "$file" -o "${file%.*}.webp"
 done
 ```
 
-**Compression Quality Guide:**
-| Use Case | Quality | Size |
-|----------|---------|------|
-| Hero images | 85-90 | High quality |
-| General images | 75-85 | Balanced |
-| Thumbnails | 60-75 | Optimized |
+**압축 품질 가이드:**
+| 용도 | 품질 | 용량 |
+|------|------|------|
+| Hero 이미지 | 85-90 | 고화질 |
+| 일반 이미지 | 75-85 | 균형 |
+| 썸네일 | 60-75 | 최적화 |
 
-**3. Organize public Folder (Required)**
+**3. public 폴더 구조화 (필수)**
 ```
 public/
 ├── images/
-│   ├── hero/           # Hero section images
+│   ├── hero/           # Hero 섹션 이미지
 │   │   ├── banner.webp
 │   │   └── background.webp
-│   ├── products/       # Product images
+│   ├── products/       # 제품 이미지
 │   │   ├── product-1.webp
 │   │   └── product-2.webp
-│   ├── team/           # Team photos
+│   ├── team/           # 팀 사진
 │   │   └── member-1.webp
-│   └── thumbnails/     # Thumbnails
+│   └── thumbnails/     # 썸네일
 │       └── thumb-1.webp
-├── icons/              # Icons (SVG)
+├── icons/              # 아이콘 (SVG)
 │   ├── social/
 │   │   ├── facebook.svg
 │   │   └── twitter.svg
 │   └── ui/
 │       ├── arrow.svg
 │       └── close.svg
-└── logos/              # Logos
+└── logos/              # 로고
     ├── logo.svg
     └── logo-white.svg
 ```
 
-**4. Use in Code**
+**4. 코드에서 사용**
 ```tsx
-// ❌ AI-generated/arbitrary images
+// ❌ AI 생성/임의 이미지
 <img src="/placeholder.jpg" alt="Hero" />
 
-// ✅ Real Figma assets + WebP + organized path
+// ✅ Figma 실제 에셋 + WebP + 구조화된 경로
 <img
   src="/images/hero/banner.webp"
   alt="Hero Banner"
@@ -333,14 +333,14 @@ public/
   loading="lazy"
 />
 
-// Icons
+// 아이콘
 <img src="/icons/ui/arrow.svg" alt="" width={24} height={24} />
 
-// Logo
+// 로고
 <img src="/logos/logo.svg" alt="Company Logo" width={120} height={40} />
 ```
 
-**5. Responsive Images**
+**5. 반응형 이미지**
 ```tsx
 <picture>
   <source media="(min-width: 1024px)" srcSet="/images/hero/banner-desktop.webp" />
@@ -349,34 +349,34 @@ public/
 </picture>
 ```
 
-### Phase 4: Verify
+### Phase 4: 검증 (Verify)
 
-**Goal:** Validate design and code accuracy
+**목표:** 디자인과 코드의 정확도 검증
 
 ```
-Checklist:
-□ Colors: Compare Figma Color Picker with DevTools
-□ Spacing: All margin/padding/gap values match exactly
-□ Typography: size, weight, line-height match precisely
-□ Layout: Auto Layout structure reflected in code
+체크리스트:
+□ 색상: Figma Color Picker와 Dev Tools 비교
+□ 간격: 모든 margin/padding/gap 값 일치
+□ 폰트: size, weight, line-height 정확히 일치
+□ 레이아웃: Auto Layout 구조 그대로 반영
 
-□ Assets (Required):
-  □ Use actual files downloaded from Figma
-  □ WebP compression completed (PNG/JPG → WebP)
-  □ public/ folder organized (images/icons/logos)
-  □ Clear filenames (hero-banner.webp, product-1.webp)
-  □ Appropriate compression quality (hero: 85-90, general: 75-85)
+□ 에셋 (필수):
+  □ Figma에서 다운로드한 실제 파일 사용
+  □ WebP 압축 완료 (PNG/JPG → WebP)
+  □ public/ 폴더 구조화 (images/icons/logos)
+  □ 파일명 명확 (hero-banner.webp, product-1.webp)
+  □ 적절한 압축 품질 (hero: 85-90, 일반: 75-85)
 
-□ Responsive (Required):
-  □ Mobile (320-767px) layout verified
-  □ Tablet (768-1023px) layout verified
-  □ Desktop (1024px+) layout verified
-  □ Media query breakpoints exact
-  □ Responsive images (<picture> or srcSet)
-  □ All devices match Figma design
+□ 반응형 (필수):
+  □ Mobile (320-767px) 레이아웃 확인
+  □ Tablet (768-1023px) 레이아웃 확인
+  □ Desktop (1024px+) 레이아웃 확인
+  □ 미디어 쿼리 정확한 브레이크포인트
+  □ 반응형 이미지 (<picture> 또는 srcSet)
+  □ 모든 디바이스에서 Figma 디자인 일치
 ```
 
-**Details:** [references/verification.md](references/verification.md)
+**상세:** [references/verification.md](references/verification.md)
 
 </workflow>
 
@@ -384,69 +384,69 @@ Checklist:
 
 <best_practices>
 
-## Best Practices
+## 베스트 프랙티스
 
 ### DO
 
-| Principle | Description |
-|-----------|-------------|
-| **Exact Values** | Use `px-[18px]` instead of `px-4` (exact value) |
-| **@theme First** | Figma Variables → @theme block (Tailwind v4) |
-| **Merge Existing Tokens** | Maintain existing globals.css tokens + merge new ones |
-| **Extract Before Implement** | Complete all token/asset extraction before coding |
-| **WebP Only** | Compress all images to WebP (PNG/JPG forbidden) |
-| **Structured Assets** | Organize with public/images/[category]/ folder structure |
-| **Responsive Required** | Implement all three breakpoints (Mobile/Tablet/Desktop) |
-| **Cross-Validate** | Figma Dev Mode + MCP + manual verification |
-| **Document Mapping** | Annotate with Figma properties in comments |
+| 원칙 | 설명 |
+|------|------|
+| **Exact Values** | `px-4` 대신 `px-[18px]` (정확한 값) |
+| **@theme First** | Figma Variables → @theme 블록 (Tailwind v4) |
+| **Merge Existing Tokens** | globals.css 기존 토큰 유지 + 새 토큰 병합 |
+| **Extract Before Implement** | 구현 전 모든 토큰/에셋 추출 완료 |
+| **WebP Only** | 모든 이미지 WebP 압축 (PNG/JPG 금지) |
+| **Structured Assets** | public/images/[category]/ 폴더 구조 |
+| **Responsive Required** | Mobile/Tablet/Desktop 모두 구현 |
+| **Cross-Validate** | Figma Dev Mode + MCP + 수동 확인 |
+| **Document Mapping** | 주석으로 Figma 속성 명시 |
 
 ### DON'T
 
-| Forbidden | Reason |
-|-----------|--------|
-| **Use Approximations** | "Similar values" cause design mismatches |
-| **AI-Generated Assets** | Use only real assets created by designers |
-| **PNG/JPG Files** | Must compress to WebP before use |
-| **Images in public/ Root** | Folder structure required (images/icons/logos) |
-| **Skip Responsive** | All three breakpoints are mandatory |
-| **Arbitrary Interpretation** | Ignore Auto Layout and use manual layout |
-| **Tailwind Defaults** | Use exact `gap-[18px]` not `gap-4` |
-| **Use tailwind.config.js** | Tailwind v4 uses @theme block |
-| **Overwrite Existing Tokens** | Maintain existing globals.css tokens |
+| 금지 사항 | 이유 |
+|----------|------|
+| **근사치 사용** | "비슷한 값"은 디자인 불일치 유발 |
+| **AI 생성 에셋** | 디자이너가 제작한 실제 에셋만 사용 |
+| **PNG/JPG 사용** | 반드시 WebP 압축 후 사용 |
+| **public/ 루트에 이미지** | 폴더 구조화 필수 (images/icons/logos) |
+| **반응형 생략** | Mobile/Tablet/Desktop 모두 필수 |
+| **임의 해석** | Auto Layout 무시하고 수동 레이아웃 |
+| **Tailwind 기본값** | `gap-4` 대신 정확한 `gap-[18px]` |
+| **tailwind.config.js 사용** | Tailwind v4는 @theme 블록 사용 |
+| **기존 토큰 덮어쓰기** | globals.css 기존 토큰 유지 필수 |
 
-### Prompt Example
+### 프롬프트 예시
 
 ```
-Convert this Figma component to code.
+이 Figma 컴포넌트를 코드로 만들어줘.
 
-Environment:
-- Vite/Next.js (verify project structure)
-- Tailwind CSS v4 in use
-- Maintain existing globals.css tokens
+환경:
+- Vite/Next.js (프로젝트 구조 확인)
+- Tailwind CSS v4 사용
+- globals.css 기존 토큰 유지
 
-Critical Rules (must follow):
-1. Phase 0: Understand project environment (Vite/Next.js, globals.css location)
-2. Phase 1: Extract Variables, Text Styles, Auto Layout, breakpoints via Figma MCP
-3. Phase 2: Add tokens to @theme block (merge with existing tokens)
-4. Phase 3: All measurements match exactly (no approximations)
+Critical Rules (무조건 준수):
+1. Phase 0: 프로젝트 환경 파악 (Vite/Next.js, globals.css 위치)
+2. Phase 1: Figma MCP로 Variables, Text Styles, Auto Layout, 브레이크포인트 추출
+3. Phase 2: @theme 블록에 토큰 추가 (기존 토큰 병합)
+4. Phase 3: 모든 수치는 정확히 일치 (근사치 금지)
 
-Asset Handling (Required):
-- Download from Figma (absolutely no AI-generated assets)
-- Compress PNG/JPG → WebP (quality 75-90)
-- Organize in public/images/[category]/
-- Clear filenames (hero-banner.webp, product-1.webp)
+에셋 처리 (필수):
+- Figma에서 다운로드 (AI 생성 절대 금지)
+- PNG/JPG → WebP 압축 (품질 75-90)
+- public/images/[category]/ 구조화
+- 파일명 명확 (hero-banner.webp, product-1.webp)
 
-Responsive (Required):
-- Mobile (320-767px): Verify layout changes
-- Tablet (768-1023px): Verify layout changes
-- Desktop (1024px+): Verify layout changes
-- Responsive images (<picture> or srcSet)
+반응형 (필수):
+- Mobile (320-767px): 레이아웃 변화 확인
+- Tablet (768-1023px): 레이아웃 변화 확인
+- Desktop (1024px+): 레이아웃 변화 확인
+- 반응형 이미지 (<picture> 또는 srcSet)
 
-Validation:
-- Colors/spacing/typography: 100% match with Figma
-- Assets: WebP compression and folder structure confirmed
-- Responsive: All devices match Figma design
-- @theme tokens auto-generate classes
+검증:
+- 색상/간격/폰트: Figma와 100% 일치
+- 에셋: WebP 압축 및 폴더 구조 확인
+- 반응형: 모든 디바이스에서 Figma 디자인 일치
+- @theme 토큰 자동 클래스 생성 확인
 ```
 
 </best_practices>
@@ -455,15 +455,15 @@ Validation:
 
 <troubleshooting>
 
-## Troubleshooting
+## 문제 해결
 
-| Problem | Cause | Solution |
-|---------|-------|----------|
-| MCP not connecting | Desktop MCP not enabled | Enable in Figma Dev Mode |
-| Color mismatch | Using direct colors instead of Variables | Extract Variables first |
-| Spacing error | Using Tailwind defaults | Override with exact px values |
-| Layout broken | Ignoring Auto Layout structure | Convert Frame hierarchy directly |
-| Missing assets | Export settings not verified | Verify Export Settings before download |
+| 문제 | 원인 | 해결 |
+|------|------|------|
+| MCP 연결 안 됨 | Desktop MCP 미활성화 | Figma Dev Mode에서 Enable |
+| 색상 불일치 | Variables 대신 직접 색상 사용 | Variables 먼저 추출 |
+| 간격 오차 | Tailwind 기본값 사용 | 정확한 px 값으로 override |
+| 레이아웃 깨짐 | Auto Layout 구조 무시 | Frame 계층 그대로 변환 |
+| 에셋 누락 | export 설정 미확인 | Export Settings 확인 후 다운로드 |
 
 </troubleshooting>
 
@@ -471,17 +471,17 @@ Validation:
 
 <references>
 
-## Detailed Documentation
+## 상세 문서
 
-| Document | Content |
-|----------|---------|
-| [figma-mcp-tools.md](references/figma-mcp-tools.md) | Figma MCP tools usage, API endpoints |
-| [design-tokens.md](references/design-tokens.md) | Variables/Styles extraction and Tailwind v4 mapping |
-| [layout-mapping.md](references/layout-mapping.md) | Auto Layout → Flexbox/Grid conversion rules |
-| [responsive-design.md](references/responsive-design.md) | Responsive implementation guide (breakpoints, images) |
-| [verification.md](references/verification.md) | Design-code accuracy verification checklist |
+| 문서 | 내용 |
+|------|------|
+| [figma-mcp-tools.md](references/figma-mcp-tools.md) | Figma MCP 도구 사용법, API 엔드포인트 |
+| [design-tokens.md](references/design-tokens.md) | Variables/Styles 추출 및 Tailwind v4 매핑 |
+| [layout-mapping.md](references/layout-mapping.md) | Auto Layout → Flexbox/Grid 변환 규칙 |
+| [responsive-design.md](references/responsive-design.md) | 반응형 구현 가이드 (브레이크포인트, 이미지) |
+| [verification.md](references/verification.md) | 디자인-코드 정확도 검증 체크리스트 |
 
-## External References
+## 외부 참조
 
 - [Figma MCP Server Documentation](https://developers.figma.com/docs/figma-mcp-server/)
 - [Design Tokens with Figma](https://blog.prototypr.io/design-tokens-with-figma-aef25c42430f)
