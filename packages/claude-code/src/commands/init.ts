@@ -8,6 +8,7 @@ import {
   copySkills,
   copyCommands,
   copyAgents,
+  copyInstructions,
   checkAllExtrasExist,
   checkExistingClaudeFiles,
 } from '../utils/copy.js';
@@ -19,6 +20,7 @@ interface InitOptions {
   skills?: boolean;
   commands?: boolean;
   agents?: boolean;
+  instructions?: boolean;
 }
 
 const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
@@ -131,19 +133,24 @@ export const init = async (options: InitOptions): Promise<void> => {
   logger.blank();
   logger.success(`Total: ${totalFiles} files, ${totalDirectories} directories`);
 
-  const { hasSkills, hasCommands, hasAgents } =
+  const { hasSkills, hasCommands, hasAgents, hasInstructions } =
     await checkAllExtrasExist(templates);
 
   let installSkills = options.skills ?? false;
   let installCommands = options.commands ?? false;
   let installAgents = options.agents ?? false;
+  let installInstructions = options.instructions ?? false;
 
   const noOptionsProvided =
     options.skills === undefined &&
     options.commands === undefined &&
-    options.agents === undefined;
+    options.agents === undefined &&
+    options.instructions === undefined;
 
-  if (noOptionsProvided && (hasSkills || hasCommands || hasAgents)) {
+  if (
+    noOptionsProvided &&
+    (hasSkills || hasCommands || hasAgents || hasInstructions)
+  ) {
     logger.blank();
 
     if (hasSkills) {
@@ -175,9 +182,24 @@ export const init = async (options: InitOptions): Promise<void> => {
       });
       installAgents = agentsResponse.install ?? false;
     }
+
+    if (hasInstructions) {
+      const instructionsResponse = await prompts({
+        type: 'confirm',
+        name: 'install',
+        message: 'Install instructions to .claude/instructions/?',
+        initial: false,
+      });
+      installInstructions = instructionsResponse.install ?? false;
+    }
   }
 
-  if (installSkills || installCommands || installAgents) {
+  if (
+    installSkills ||
+    installCommands ||
+    installAgents ||
+    installInstructions
+  ) {
     const existingClaudeFiles = await checkExistingClaudeFiles(targetDir);
     if (existingClaudeFiles.length > 0 && !options.force) {
       logger.warn('The following .claude files/folders already exist:');
@@ -196,6 +218,7 @@ export const init = async (options: InitOptions): Promise<void> => {
         installSkills = false;
         installCommands = false;
         installAgents = false;
+        installInstructions = false;
       }
     }
 
@@ -237,6 +260,19 @@ export const init = async (options: InitOptions): Promise<void> => {
     } else if (installAgents && !hasAgents) {
       logger.warn('No agents found in selected templates.');
     }
+
+    if (installInstructions && hasInstructions) {
+      logger.blank();
+      logger.info('Installing instructions...');
+      const instructionsResult = await copyInstructions(templates, targetDir);
+      totalFiles += instructionsResult.files;
+      totalDirectories += instructionsResult.directories;
+      logger.success(
+        `Instructions: ${instructionsResult.files} files, ${instructionsResult.directories} directories`,
+      );
+    } else if (installInstructions && !hasInstructions) {
+      logger.warn('No instructions found in selected templates.');
+    }
   }
 
   logger.blank();
@@ -248,7 +284,8 @@ export const init = async (options: InitOptions): Promise<void> => {
   if (
     (installSkills && hasSkills) ||
     (installCommands && hasCommands) ||
-    (installAgents && hasAgents)
+    (installAgents && hasAgents) ||
+    (installInstructions && hasInstructions)
   ) {
     logger.blank();
     logger.info('Installed extras:');
@@ -260,6 +297,9 @@ export const init = async (options: InitOptions): Promise<void> => {
     }
     if (installAgents && hasAgents) {
       logger.step('Agents → .claude/agents/');
+    }
+    if (installInstructions && hasInstructions) {
+      logger.step('Instructions → .claude/instructions/');
     }
   }
 

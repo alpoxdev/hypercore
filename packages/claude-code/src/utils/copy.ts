@@ -277,7 +277,7 @@ export const checkSkillsAndCommandsExist = async (
 };
 
 /**
- * 기존 .claude/skills, .claude/commands, .claude/agents 파일 확인
+ * 기존 .claude/skills, .claude/commands, .claude/agents, .claude/instructions 파일 확인
  */
 export const checkExistingClaudeFiles = async (
   targetDir: string,
@@ -287,6 +287,7 @@ export const checkExistingClaudeFiles = async (
   const skillsDir = path.join(targetDir, '.claude', 'skills');
   const commandsDir = path.join(targetDir, '.claude', 'commands');
   const agentsDir = path.join(targetDir, '.claude', 'agents');
+  const instructionsDir = path.join(targetDir, '.claude', 'instructions');
 
   if (await fs.pathExists(skillsDir)) {
     existingFiles.push('.claude/skills/');
@@ -298,6 +299,10 @@ export const checkExistingClaudeFiles = async (
 
   if (await fs.pathExists(agentsDir)) {
     existingFiles.push('.claude/agents/');
+  }
+
+  if (await fs.pathExists(instructionsDir)) {
+    existingFiles.push('.claude/instructions/');
   }
 
   return existingFiles;
@@ -324,7 +329,31 @@ export const copyAgents = async (
 };
 
 /**
- * Skills, Commands, Agents가 존재하는지 확인
+ * Instructions 복사 (templates/.claude/instructions/ → 타겟/.claude/instructions/)
+ * Instructions는 .md 파일 기반 구조
+ */
+export const copyInstructions = async (
+  _templates: string[],
+  targetDir: string,
+): Promise<{ files: number; directories: number }> => {
+  const counter = { files: 0, directories: 0 };
+  const targetInstructionsDir = path.join(targetDir, '.claude', 'instructions');
+  const instructionsSrc = path.join(
+    getTemplatesDir(),
+    '.claude',
+    'instructions',
+  );
+
+  if (await fs.pathExists(instructionsSrc)) {
+    await fs.ensureDir(targetInstructionsDir);
+    await copyRecursive(instructionsSrc, targetInstructionsDir, counter);
+  }
+
+  return counter;
+};
+
+/**
+ * Skills, Commands, Agents, Instructions가 존재하는지 확인
  */
 export const checkAllExtrasExist = async (
   templates: string[],
@@ -332,10 +361,12 @@ export const checkAllExtrasExist = async (
   hasSkills: boolean;
   hasCommands: boolean;
   hasAgents: boolean;
+  hasInstructions: boolean;
 }> => {
   const claudeDir = path.join(getTemplatesDir(), '.claude');
   const commandsSrc = path.join(claudeDir, 'commands');
   const agentsSrc = path.join(claudeDir, 'agents');
+  const instructionsSrc = path.join(claudeDir, 'instructions');
 
   // 스킬: 선택된 템플릿에 매핑된 스킬이 있는지 확인
   const hasSkills = templates.some((template) => {
@@ -345,6 +376,7 @@ export const checkAllExtrasExist = async (
 
   const hasCommands = await hasFiles(commandsSrc);
   const hasAgents = await hasFiles(agentsSrc);
+  const hasInstructions = await hasFiles(instructionsSrc);
 
-  return { hasSkills, hasCommands, hasAgents };
+  return { hasSkills, hasCommands, hasAgents, hasInstructions };
 };

@@ -32,7 +32,7 @@ async function copyTemplates() {
     }
   }
 
-  // Copy .claude/skills and .claude/commands to templates/.claude/
+  // Copy .claude/skills, commands, agents, instructions to templates/.claude/
   console.log('📦 Copying .claude/ → templates/.claude/...');
   const claudeDestDir = path.join(templatesDir, '.claude');
   await fs.ensureDir(claudeDestDir);
@@ -40,6 +40,7 @@ async function copyTemplates() {
   const skillsSrc = path.join(claudeDir, 'skills');
   const commandsSrc = path.join(claudeDir, 'commands');
   const agentsSrc = path.join(claudeDir, 'agents');
+  const instructionsSrc = path.join(claudeDir, 'instructions');
 
   if (await fs.pathExists(skillsSrc)) {
     await fs.copy(skillsSrc, path.join(claudeDestDir, 'skills'));
@@ -54,6 +55,11 @@ async function copyTemplates() {
   if (await fs.pathExists(agentsSrc)) {
     await fs.copy(agentsSrc, path.join(claudeDestDir, 'agents'));
     console.log('  ✓ .claude/agents/');
+  }
+
+  if (await fs.pathExists(instructionsSrc)) {
+    await fs.copy(instructionsSrc, path.join(claudeDestDir, 'instructions'));
+    console.log('  ✓ .claude/instructions/');
   }
 
   console.log('✅ Templates copied successfully!');
