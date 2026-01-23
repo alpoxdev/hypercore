@@ -9,6 +9,21 @@ export default [
   },
   eslint.configs.recommended,
   {
+    files: ['scripts/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'prefer-const': 'error',
+      'no-var': 'error',
+      eqeqeq: ['error', 'always'],
+    },
+  },
+  {
     files: ['src/**/*.ts'],
     languageOptions: {
       parser: tsparser,
