@@ -62,6 +62,13 @@ async function copyTemplates() {
     console.log('  ✓ .claude/instructions/');
   }
 
+  // Copy AGENTS.md
+  const agentsMdSrc = path.join(claudeDir, 'AGENTS.md');
+  if (await fs.pathExists(agentsMdSrc)) {
+    await fs.copy(agentsMdSrc, path.join(claudeDestDir, 'AGENTS.md'));
+    console.log('  ✓ .claude/AGENTS.md');
+  }
+
   console.log('✅ Templates copied successfully!');
 }
 
