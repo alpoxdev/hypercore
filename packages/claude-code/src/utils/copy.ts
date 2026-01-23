@@ -186,21 +186,34 @@ export const listAvailableTemplates = async (): Promise<string[]> => {
 };
 
 /**
- * 템플릿별 스킬 매핑
+ * 프레임워크별 스킬 매핑 (React 프레임워크 전용)
  */
-const TEMPLATE_SKILLS_MAP: Record<string, string[]> = {
+const FRAMEWORK_SPECIFIC_SKILLS_MAP: Record<string, string[]> = {
   nextjs: ['nextjs-react-best-practices', 'korea-uiux-design', 'figma-to-code'],
   'tanstack-start': [
     'tanstack-start-react-best-practices',
     'korea-uiux-design',
     'figma-to-code',
   ],
-  // hono와 npx는 스킬 없음
+  // hono와 npx는 프레임워크별 스킬 없음
 };
 
 /**
+ * 공통 스킬 (프레임워크 무관하게 항상 설치)
+ */
+const COMMON_SKILLS: string[] = [
+  'global-uiux-design',
+  'docs-creator',
+  'docs-refactor',
+  'plan',
+  'prd',
+  'ralph',
+  'execute',
+];
+
+/**
  * Skills 복사 (templates/.claude/skills/ → 타겟/.claude/skills/)
- * 선택된 템플릿에 해당하는 스킬만 복사
+ * 공통 스킬 + 선택된 템플릿에 해당하는 프레임워크별 스킬 복사
  */
 export const copySkills = async (
   templates: string[],
@@ -216,14 +229,19 @@ export const copySkills = async (
 
   await fs.ensureDir(targetSkillsDir);
 
-  // 선택된 템플릿에 해당하는 스킬들 수집
+  // 복사할 스킬 수집
   const skillsToCopy = new Set<string>();
+
+  // 1. 공통 스킬 추가 (항상 설치)
+  COMMON_SKILLS.forEach((skill) => skillsToCopy.add(skill));
+
+  // 2. 선택된 템플릿에 해당하는 프레임워크별 스킬 추가
   for (const template of templates) {
-    const skills = TEMPLATE_SKILLS_MAP[template] || [];
+    const skills = FRAMEWORK_SPECIFIC_SKILLS_MAP[template] || [];
     skills.forEach((skill) => skillsToCopy.add(skill));
   }
 
-  // 매핑된 스킬만 복사 (기존 스킬 폴더는 삭제 후 복사)
+  // 수집된 스킬 복사 (기존 스킬 폴더는 삭제 후 복사)
   for (const skill of skillsToCopy) {
     const skillSrc = path.join(skillsSrc, skill);
     const skillDest = path.join(targetSkillsDir, skill);
@@ -368,11 +386,12 @@ export const checkAllExtrasExist = async (
   const agentsSrc = path.join(claudeDir, 'agents');
   const instructionsSrc = path.join(claudeDir, 'instructions');
 
-  // 스킬: 선택된 템플릿에 매핑된 스킬이 있는지 확인
-  const hasSkills = templates.some((template) => {
-    const skills = TEMPLATE_SKILLS_MAP[template];
+  // 스킬: 공통 스킬이 있거나 선택된 템플릿에 프레임워크별 스킬이 있으면 true
+  const hasFrameworkSkills = templates.some((template) => {
+    const skills = FRAMEWORK_SPECIFIC_SKILLS_MAP[template];
     return skills && skills.length > 0;
   });
+  const hasSkills = COMMON_SKILLS.length > 0 || hasFrameworkSkills;
 
   const hasCommands = await hasFiles(commandsSrc);
   const hasAgents = await hasFiles(agentsSrc);
