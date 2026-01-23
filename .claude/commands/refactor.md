@@ -1,50 +1,34 @@
 ---
 description: 코드 리팩토링 계획 수립. @refactor-advisor 우선 활용. Sequential Thinking 3-7 필수. 기능 유지하며 개선만.
 allowed-tools: Read, Glob, Grep, Bash(git:*, ast-grep:*), Task, Write, mcp__sequential-thinking__sequentialthinking
-argument-hint: <target file/module or improvement goal>
+argument-hint: <대상 파일/모듈 또는 개선 목표>
 ---
-
-<critical_instruction>
-
-**CRITICAL: 사용자와의 모든 커뮤니케이션은 반드시 한국어로 작성하세요.**
-
-- 내부 사고와 분석은 영어로 해도 됨
-- 설명, 요약, 보고서, 피드백 등 사용자에게 전달하는 모든 내용은 반드시 한국어
-- 사용자가 영어로 말하더라도 답변은 한국어로
-- 진행 상황 업데이트와 상태 보고는 반드시 한국어
-
-이 규칙은 절대적이며 예외가 없습니다.
-
-</critical_instruction>
-
----
-
 
 # Refactor Command
 
-> Establish refactoring plan for code quality improvement and present execution strategy.
+> 코드 품질 개선을 위한 리팩토링 계획 수립 및 실행 전략 제시.
 
-**Refactoring target**: $ARGUMENTS
+**리팩토링 대상**: $ARGUMENTS
 
 ---
 
 <argument_validation>
 
-## Verify ARGUMENT is provided
+## ARGUMENT 필수 확인
 
 ```
-No $ARGUMENTS → Ask immediately:
+$ARGUMENTS 없음 → 즉시 질문:
 
-"What should we refactor? Please be specific.
+"무엇을 리팩토링해야 하나요? 구체적으로 알려주세요.
 
-Examples:
-- Improve specific file/module
-- Reduce complexity
-- Remove duplicate code
-- Improve structure
-- Optimize performance"
+예시:
+- 특정 파일/모듈 개선
+- 복잡도 감소
+- 중복 코드 제거
+- 구조 개선
+- 성능 최적화"
 
-$ARGUMENTS provided → Proceed to next step
+$ARGUMENTS 있음 → 다음 단계 진행
 ```
 
 </argument_validation>
@@ -53,17 +37,17 @@ $ARGUMENTS provided → Proceed to next step
 
 <workflow>
 
-## Execution Flow
+## 실행 흐름
 
-| Step | Task | Tool |
+| 단계 | 작업 | 도구 |
 |------|------|------|
-| 1. Validate input | Verify ARGUMENT, ask if missing | - |
-| 2. Judge agent usage | Decide whether to use @refactor-advisor | - |
-| 3. Judge complexity | Determine analysis scope with Sequential Thinking | sequentialthinking (step 1) |
-| 4. Analyze code | Understand current code structure, identify issues | Task (Explore) + Read/Grep |
-| 5. Derive improvement options | Generate 4-5 approaches → select 2-3 main | sequentialthinking (steps 2-6) |
-| 6. Present options | Present pros/cons, impact scope, recommendation | - |
-| 7. Create plan document | Generate refactoring plan when selected | Write |
+| 1. 입력 확인 | ARGUMENT 검증, 없으면 질문 | - |
+| 2. Agent 판단 | @refactor-advisor 사용 여부 결정 | - |
+| 3. 복잡도 판단 | Sequential Thinking으로 분석 범위 결정 | sequentialthinking (1단계) |
+| 4. 코드 분석 | 현재 코드 구조, 문제점 파악 | Task (Explore) + Read/Grep |
+| 5. 개선 옵션 도출 | 가능한 접근 4-5개 → 주요 2-3개 선정 | sequentialthinking (2-6단계) |
+| 6. 옵션 제시 | 장단점, 영향 범위, 추천안 제시 | - |
+| 7. 계획 문서 작성 | 선택 시 리팩토링 계획 생성 | Write |
 
 </workflow>
 
@@ -71,49 +55,310 @@ $ARGUMENTS provided → Proceed to next step
 
 <agent_priority>
 
-## Prioritize @refactor-advisor Agent Usage
+## @refactor-advisor Agent 우선 사용
 
-**Basic principle:**
+**기본 원칙:**
 ```
-Refactoring request → Consider @refactor-advisor first
-```
-
-### Usage conditions
-
-| Condition | Description |
-|-----------|-------------|
-| **Code quality improvement** | Improve complexity, duplication, naming, structure |
-| **No feature change** | Maintain behavior, improve code only |
-| **Incremental improvement** | Need step-by-step refactoring plan |
-
-### Agent usage flow
-
-```
-1. Call @refactor-advisor
-   → Analyze code, derive improvements by priority
-
-2. Organize options based on analysis results
-   → Present 2-3 options to user
-
-3. Create plan document after selection
-   → .claude/plans/refactor-[name].md
+리팩토링 요청 → @refactor-advisor 먼저 고려
 ```
 
-### Cases not using agent
+### 사용 조건
+
+| 조건 | 설명 |
+|------|------|
+| **코드 품질 개선** | 복잡도, 중복, 명명, 구조 개선 |
+| **기능 변경 없음** | 동작은 유지하며 코드만 개선 |
+| **점진적 개선** | 단계적 리팩토링 계획 필요 |
+
+### Agent 활용 흐름
 
 ```
-✅ Use @refactor-advisor:
-- Improve existing code
-- Reduce complexity/duplication
-- Improve structure
+1. @refactor-advisor 호출
+   → 코드 분석, 우선순위별 개선점 도출
 
-❌ Direct handling:
-- Architecture change
-- Refactoring with new feature addition
-- Framework migration
+2. 분석 결과 기반 옵션 정리
+   → 사용자에게 2-3개 옵션 제시
+
+3. 선택 후 계획 문서 작성
+   → .claude/plans/refactor-[이름].md
+```
+
+### Agent 미사용 케이스
+
+```
+✅ @refactor-advisor 사용:
+- 기존 코드 개선
+- 복잡도/중복 감소
+- 구조 개선
+
+❌ 직접 처리:
+- 아키텍처 변경
+- 새 기능 추가와 함께 리팩토링
+- 프레임워크 마이그레이션
 ```
 
 </agent_priority>
+
+---
+
+<parallel_agent_execution>
+
+## 병렬 Agent 실행
+
+**복잡한 리팩토링은 여러 Agent를 병렬로 실행하여 효율 향상.**
+
+### 권장 Agent
+
+| Agent | Model | 역할 |
+|-------|-------|------|
+| **@refactor-advisor** | sonnet | 리팩토링 계획 수립, 우선순위 분석 |
+| **@architect** | sonnet/opus | 아키텍처 분석, 구조 개선 방향 제시 |
+| **@implementation-executor** | sonnet | 리팩토링 구현 실행 |
+| **@code-reviewer** | sonnet | 리팩토링 후 품질 검증 |
+
+### 병렬 실행 패턴
+
+#### 1. 독립적 모듈 병렬 리팩토링
+
+```typescript
+// ✅ 여러 모듈을 동시에 리팩토링
+Task({
+  subagent_type: "implementation-executor",
+  model: "sonnet",
+  prompt: "User 모듈 리팩토링: 복잡도 감소, 중복 제거"
+})
+
+Task({
+  subagent_type: "implementation-executor",
+  model: "sonnet",
+  prompt: "Product 모듈 리팩토링: 타입 안정성 개선"
+})
+
+Task({
+  subagent_type: "implementation-executor",
+  model: "sonnet",
+  prompt: "Order 모듈 리팩토링: 함수 분리"
+})
+```
+
+#### 2. 분석 + 계획 병렬
+
+```typescript
+// ✅ 아키텍처 분석과 리팩토링 계획을 동시에
+Task({
+  subagent_type: "architect",
+  model: "opus",
+  prompt: "현재 아키텍처 문제점 및 개선 방향 분석"
+})
+
+Task({
+  subagent_type: "refactor-advisor",
+  model: "sonnet",
+  prompt: "리팩토링 우선순위 계획 및 단계별 전략"
+})
+```
+
+#### 3. 리팩토링 + 문서화 병렬
+
+```typescript
+// ✅ 구현과 문서 작성을 동시에
+Task({
+  subagent_type: "implementation-executor",
+  model: "sonnet",
+  prompt: "API 레이어 리팩토링 실행"
+})
+
+Task({
+  subagent_type: "document-writer",
+  model: "sonnet",
+  prompt: "리팩토링 변경 사항 문서화"
+})
+```
+
+#### 4. 검증 병렬
+
+```typescript
+// ✅ 리팩토링 후 여러 관점 검증
+Task({
+  subagent_type: "code-reviewer",
+  model: "sonnet",
+  prompt: "리팩토링된 코드 품질 검증"
+})
+
+Task({
+  subagent_type: "analyst",
+  model: "sonnet",
+  prompt: "성능 및 복잡도 메트릭 분석"
+})
+```
+
+### Model Routing (복잡도별)
+
+| 복잡도 | 리팩토링 유형 | Model | 예시 |
+|--------|--------------|-------|------|
+| **LOW** | 단순 개선 | haiku | 변수명 변경, 코드 포맷팅, 주석 정리 |
+| **MEDIUM** | 일반 리팩토링 | sonnet | 함수 분리, 중복 제거, 타입 개선 |
+| **HIGH** | 복잡한 구조 변경 | opus | 아키텍처 재설계, 모듈 분리, 디자인 패턴 적용 |
+
+### 병렬 실행 예시
+
+#### 예시 1: 대규모 코드베이스 리팩토링
+
+```typescript
+// 1단계: 분석 병렬
+Task({
+  subagent_type: "architect",
+  model: "opus",
+  prompt: "전체 아키텍처 분석 및 개선점 도출"
+})
+
+Task({
+  subagent_type: "analyst",
+  model: "sonnet",
+  prompt: "코드 복잡도 및 중복률 메트릭 분석"
+})
+
+// 2단계: 모듈별 병렬 리팩토링
+Task({
+  subagent_type: "implementation-executor",
+  model: "sonnet",
+  prompt: "인증 모듈 리팩토링"
+})
+
+Task({
+  subagent_type: "implementation-executor",
+  model: "sonnet",
+  prompt: "데이터베이스 레이어 리팩토링"
+})
+
+Task({
+  subagent_type: "implementation-executor",
+  model: "sonnet",
+  prompt: "API 엔드포인트 리팩토링"
+})
+
+// 3단계: 검증
+Task({
+  subagent_type: "code-reviewer",
+  model: "sonnet",
+  prompt: "전체 리팩토링 품질 검증 및 개선점 제안"
+})
+```
+
+#### 예시 2: 점진적 리팩토링
+
+```typescript
+// Phase 1: 복잡도 감소
+Task({
+  subagent_type: "implementation-executor",
+  model: "sonnet",
+  prompt: "긴 함수들을 작은 함수로 분리 (utils/, services/)"
+})
+
+// Phase 2: 중복 제거 (병렬)
+Task({
+  subagent_type: "implementation-executor",
+  model: "haiku",
+  prompt: "중복 코드 제거 - components/"
+})
+
+Task({
+  subagent_type: "implementation-executor",
+  model: "haiku",
+  prompt: "중복 코드 제거 - hooks/"
+})
+
+// Phase 3: 타입 안정성
+Task({
+  subagent_type: "implementation-executor",
+  model: "sonnet",
+  prompt: "any 타입 제거 및 명시적 타입 정의"
+})
+```
+
+#### 예시 3: 아키텍처 변경
+
+```typescript
+// 분석 단계 (병렬)
+Task({
+  subagent_type: "architect",
+  model: "opus",
+  prompt: "현재 아키텍처 문제점: 순환 의존성, 결합도 분석"
+})
+
+Task({
+  subagent_type: "refactor-advisor",
+  model: "sonnet",
+  prompt: "레이어드 아키텍처 전환 계획 수립"
+})
+
+// 구현 단계 (순차적 - 의존성 있음)
+// 먼저 베이스 레이어
+Task({
+  subagent_type: "implementation-executor",
+  model: "sonnet",
+  prompt: "도메인 레이어 분리 및 구현"
+})
+
+// 이후 상위 레이어 (병렬 가능)
+Task({
+  subagent_type: "implementation-executor",
+  model: "sonnet",
+  prompt: "서비스 레이어 구현"
+})
+
+Task({
+  subagent_type: "implementation-executor",
+  model: "sonnet",
+  prompt: "API 레이어 구현"
+})
+```
+
+### 병렬 실행 시 주의사항
+
+```text
+✅ 권장:
+- 독립적인 모듈/파일 → 병렬 실행
+- 분석 작업 → 병렬 실행
+- 읽기 전용 작업 → 병렬 실행
+
+❌ 금지:
+- 같은 파일 동시 수정
+- 의존성 있는 작업 병렬화
+- 순차 실행 필요한 단계 병렬화
+```
+
+### Model 선택 가이드
+
+```typescript
+// ✅ 적절한 모델 선택
+Task({
+  subagent_type: "implementation-executor",
+  model: "haiku",        // 단순 작업: 변수명 변경
+  prompt: "..."
+})
+
+Task({
+  subagent_type: "refactor-advisor",
+  model: "sonnet",       // 일반 작업: 함수 분리 계획
+  prompt: "..."
+})
+
+Task({
+  subagent_type: "architect",
+  model: "opus",         // 복잡한 작업: 아키텍처 재설계
+  prompt: "..."
+})
+
+// ❌ 잘못된 모델 선택
+Task({
+  subagent_type: "architect",
+  model: "haiku",        // 복잡한 작업에 haiku 사용 금지
+  prompt: "아키텍처 재설계..."
+})
+```
+
+</parallel_agent_execution>
 
 ---
 
@@ -176,28 +421,28 @@ thought 7: 단계별 계획 및 추천안
 
 <refactoring_areas>
 
-## Refactoring areas
+## 리팩토링 영역
 
-### Six improvement areas
+### 6가지 개선 영역
 
-| Area | Problem | Improvement |
-|------|---------|-------------|
-| **Complexity** | Long functions, deep nesting | Split functions, Early Return |
-| **Duplication** | Identical/similar code repeats | Extract common functions/modules |
-| **Naming** | Unclear variable/function names | Clear intent names |
-| **Structure** | Unclear file/module structure | Separation of concerns, layering |
-| **Patterns** | Using anti-patterns | Apply design patterns |
-| **Types** | Excessive any, type instability | Explicit type definition |
+| 영역 | 문제 | 개선 방향 |
+|------|------|----------|
+| **복잡도** | 긴 함수, 깊은 중첩 | 함수 분리, Early Return |
+| **중복** | 동일/유사 코드 반복 | 공통 함수/모듈 추출 |
+| **명명** | 모호한 변수/함수명 | 의도 명확한 이름 |
+| **구조** | 파일/모듈 구조 불명확 | 관심사 분리, 계층화 |
+| **패턴** | 안티패턴 사용 | 디자인 패턴 적용 |
+| **타입** | any 남용, 타입 불안정 | 명시적 타입 정의 |
 
-### Checklist
+### 체크리스트
 
 ```text
-✅ Function length: target <= 20 lines
-✅ Nesting depth: target <= 3 levels
-✅ File length: recommended 200-300 lines
-✅ Circular dependencies: eliminate
-✅ Magic numbers: constants
-✅ Comments: only what can't be explained by code
+✅ 함수 길이: 20줄 이하 목표
+✅ 중첩 깊이: 3단계 이하 목표
+✅ 파일 길이: 200-300줄 권장
+✅ 순환 의존성: 제거
+✅ 매직 넘버: 상수화
+✅ 주석: 코드로 설명 불가능한 것만
 ```
 
 </refactoring_areas>
@@ -305,105 +550,105 @@ thought 7: 단계별 계획 및 추천안
 선택해주세요. (Y/N)
 ```
 
-### Refactoring plan document template
+### 리팩토링 계획 문서 템플릿
 
-**File location:** `.claude/plans/refactor-[name].md`
+**파일 위치:** `.claude/plans/refactor-[이름].md`
 
 ```markdown
-# [Module name] Refactoring Plan
+# [모듈명] 리팩토링 계획
 
-## Overview
+## 개요
 
-**Goal:** [What will be improved]
-**Selected approach:** [Option N]
-**Expected impact scope:** [Files/modules list]
+**목표:** [무엇을 개선할 것인가]
+**선택된 접근 방식:** [옵션 N]
+**예상 영향 범위:** [파일/모듈 목록]
 
-## Current state
+## 현재 상태
 
-### Issues
+### 문제점
 
-| Issue | Impact | Priority |
-|-------|--------|----------|
-| Issue 1 | Description | High |
-| Issue 2 | Description | Medium |
+| 문제 | 영향 | 우선순위 |
+|------|------|---------|
+| 문제 1 | 설명 | High |
+| 문제 2 | 설명 | Medium |
 
-### Metrics
+### 메트릭
 
-- Complexity: [current value]
-- Duplication rate: [current value]
-- Test coverage: [current value]
+- 복잡도: [현재 값]
+- 중복률: [현재 값]
+- 테스트 커버리지: [현재 값]
 
-## Improvement stages
+## 개선 단계
 
-### Stage 1: [Stage name]
+### 1단계: [단계 이름]
 
-**Goal:** [What will be achieved in this stage]
+**목표:** [이 단계에서 달성할 것]
 
-**Tasks:**
-- [ ] Task 1
-- [ ] Task 2
+**작업:**
+- [ ] 작업 1
+- [ ] 작업 2
 
-**Changed files:**
+**변경 파일:**
 - `src/file1.ts`
 - `src/file2.ts`
 
-**Validation:**
-- Tests pass
-- Build success
+**검증:**
+- 테스트 통과
+- 빌드 성공
 
-### Stage 2: [Stage name]
+### 2단계: [단계 이름]
 
-**Goal:** [What will be achieved in this stage]
+**목표:** [이 단계에서 달성할 것]
 
-**Tasks:**
-- [ ] Task 3
+**작업:**
+- [ ] 작업 3
 
-**Changed files:**
+**변경 파일:**
 - `src/file3.ts`
 
-### Stage 3: [Stage name]
+### 3단계: [단계 이름]
 ...
 
-## Expected improvements
+## 개선 후 기대 효과
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|------------|
-| Complexity | X | Y | -Z% |
-| Duplication rate | X | Y | -Z% |
-| Code lines | X | Y | -Z% |
+| 메트릭 | Before | After | 개선율 |
+|--------|--------|-------|--------|
+| 복잡도 | X | Y | -Z% |
+| 중복률 | X | Y | -Z% |
+| 코드 라인 | X | Y | -Z% |
 
-## Risk management
+## 리스크 관리
 
-### Risks
+### 리스크
 
-| Risk | Impact | Mitigation |
-|------|--------|-----------|
-| Risk 1 | High | Plan 1 |
-| Risk 2 | Medium | Plan 2 |
+| 리스크 | 영향도 | 완화 방안 |
+|--------|--------|----------|
+| 리스크 1 | High | 방안 1 |
+| 리스크 2 | Medium | 방안 2 |
 
-### Rollback plan
+### 롤백 계획
 
-If issues occur:
-1. Use stage-by-stage commits
-2. Revert to previous stage
-3. Rerun tests
+문제 발생 시:
+1. 단계별 커밋 활용
+2. 이전 단계로 되돌리기
+3. 테스트 재실행
 
-## Validation methods
+## 검증 방법
 
-### Functional validation
-- [ ] Verify existing features work
-- [ ] Regression tests pass
-- [ ] Integration tests pass
+### 기능 검증
+- [ ] 기존 기능 동작 확인
+- [ ] 회귀 테스트 통과
+- [ ] 통합 테스트 통과
 
-### Quality validation
-- [ ] Verify complexity reduction
-- [ ] Verify duplication removal
-- [ ] Verify type safety
+### 품질 검증
+- [ ] 복잡도 감소 확인
+- [ ] 중복 제거 확인
+- [ ] 타입 안정성 확인
 
-## References
+## 참조
 
-- Related document links
-- Reference patterns
+- 관련 문서 링크
+- 참고 패턴
 ```
 
 </document_generation>
@@ -412,32 +657,32 @@ If issues occur:
 
 <validation>
 
-## Validation checklist
+## 검증 체크리스트
 
-Before execution:
+실행 전 확인:
 
 ```text
-✅ Verify ARGUMENT (ask if missing)
-✅ Judge whether to use @refactor-advisor
-✅ Sequential Thinking minimum 3 steps
-✅ Analyze code with Task (Explore)
-✅ Minimum 2 options, recommended 3
-✅ List pros/cons for each option
-✅ Present impact scope and estimated work
-✅ Emphasize principle of maintaining functionality
+✅ ARGUMENT 확인 (없으면 질문)
+✅ @refactor-advisor 사용 여부 판단
+✅ Sequential Thinking 최소 3단계
+✅ Task (Explore)로 코드 분석
+✅ 옵션 최소 2개, 권장 3개
+✅ 각 옵션에 장단점 명시
+✅ 영향 범위 및 예상 작업량 제시
+✅ 기능 유지 원칙 강조
 ```
 
-Absolutely forbidden:
+절대 금지:
 
 ```text
-❌ Start analysis without ARGUMENT
-❌ Use Edit tool (code modification forbidden)
-❌ Sequential Thinking less than 3 steps
-❌ Present only 1 option
-❌ Suggest options by guessing without code analysis
-❌ Start implementation without user choice
-❌ Include feature changes
-❌ List options without pros/cons
+❌ ARGUMENT 없이 분석 시작
+❌ Edit 도구 사용 (코드 수정 금지)
+❌ Sequential Thinking 3단계 미만
+❌ 옵션 1개만 제시
+❌ 코드 분석 없이 추측으로 옵션 제시
+❌ 사용자 선택 없이 구현 시작
+❌ 기능 변경 포함
+❌ 장단점 없이 옵션만 나열
 ```
 
 </validation>

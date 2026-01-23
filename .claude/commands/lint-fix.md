@@ -1,84 +1,68 @@
 ---
 description: tsc/eslint 오류 검사 및 하나씩 꼼꼼히 수정. @lint-fixer 에이전트 필수 사용.
 allowed-tools: Task
-argument-hint: [file/directory paths...]
+argument-hint: [파일/디렉토리 경로...]
 ---
-
-<critical_instruction>
-
-**CRITICAL: 사용자와의 모든 커뮤니케이션은 반드시 한국어로 작성하세요.**
-
-- 내부 사고와 분석은 영어로 해도 됨
-- 설명, 요약, 보고서, 피드백 등 사용자에게 전달하는 모든 내용은 반드시 한국어
-- 사용자가 영어로 말하더라도 답변은 한국어로
-- 진행 상황 업데이트와 상태 보고는 반드시 한국어
-
-이 규칙은 절대적이며 예외가 없습니다.
-
-</critical_instruction>
-
----
-
 
 # Lint Fix Command
 
-> Automatically fix tsc/eslint errors using the @lint-fixer agent.
+> @lint-fixer 에이전트를 사용하여 tsc/eslint 오류를 자동으로 수정.
 
 ---
 
 <critical_requirements>
 
-## ⚠️ CRITICAL: Required checks before proceeding
+## ⚠️ CRITICAL: 작업 시작 전 필수 확인
 
-**This command must use the @lint-fixer agent.**
+**이 커맨드는 반드시 @lint-fixer 에이전트를 사용해야 합니다.**
 
-### MANDATORY: Call @lint-fixer with Task tool
+### MANDATORY: Task 도구로 @lint-fixer 호출
 
 ```typescript
 Task({
   subagent_type: 'lint-fixer',
-  description: 'Fix tsc/eslint errors',
+  description: 'tsc/eslint 오류 수정',
   prompt: `
-    Handle $ARGUMENTS:
-    ${$ARGUMENTS ? `Specific paths: ${$ARGUMENTS}` : 'Check entire project'}
+    $ARGUMENTS 처리:
+    ${$ARGUMENTS ? `특정 경로: ${$ARGUMENTS}` : '전체 프로젝트 검사'}
 
-    Tasks to perform:
-    1. Run tsc + eslint in parallel
-    2. Classify errors (simple/complex)
-    3. Create error list with TodoWrite
-    4. Simple errors: fix immediately
-    5. Complex errors: analyze with Sequential Thinking then fix
-    6. Verify with full recheck
+    수행할 작업:
+    1. tsc + eslint 병렬 검사
+    2. 오류 분류 (간단/복잡)
+    3. TodoWrite로 오류 목록 생성
+    4. 간단한 오류: 즉시 수정
+    5. 복잡한 오류: Sequential Thinking으로 분석 후 수정
+    6. 전체 재검사로 완료 확인
   `
 })
 ```
 
-**❌ Absolutely forbidden:**
-- Execute tsc/eslint directly with Bash tool and manually fix
-- Fix errors without @lint-fixer
-- Analyze/fix errors directly in command
+**❌ 절대 금지:**
+- Bash 도구로 tsc/eslint 직접 실행 후 수동 수정
+- @lint-fixer 없이 오류 수정
+- 커맨드 내에서 직접 오류 분석/수정
 
-**✅ Required:**
-- Call @lint-fixer agent with Task tool
-- Delegate all lint work to agent
-- Agent automatically judges simple/complex and handles accordingly
+**✅ 필수:**
+- Task 도구로 @lint-fixer 에이전트 호출
+- 모든 lint 작업을 에이전트에 위임
+- 에이전트가 자동으로 간단/복잡 판단 후 처리
 
-**@lint-fixer agent benefits:**
-- Simple errors fixed immediately (no Sequential Thinking needed)
-- Complex errors analyzed with Sequential Thinking only (efficient)
-- Auto-track progress with TodoWrite
-- Auto-prioritize (type errors → lint errors)
+**@lint-fixer 에이전트 장점:**
+- 간단한 오류는 즉시 수정 (Sequential Thinking 불필요)
+- 복잡한 오류만 Sequential Thinking 사용 (효율적)
+- TodoWrite로 진행 상황 자동 추적
+- 우선순위 자동 정렬 (타입 오류 → 린트 오류)
 
 ---
 
-**Self-check before proceeding:**
+**진행 전 자가 점검:**
 ```text
-□ Task tool ready to use?
-□ Delegating work to @lint-fixer agent?
-□ Not executing tsc/eslint directly with Bash?
+□ Task 도구 사용 준비?
+□ @lint-fixer 에이전트로 작업 위임?
+□ Bash로 tsc/eslint 직접 실행 안 함?
 ```
 
-**⚠️ Do not start if checklist is not complete.**
+**⚠️ 위 체크리스트를 통과하지 않으면 작업을 시작하지 마세요.**
 
 </critical_requirements>
 
@@ -86,11 +70,11 @@ Task({
 
 <forbidden>
 
-| Category | Forbidden |
-|----------|-----------|
-| **Avoidance** | Excessive `any` type, `@ts-ignore`, `eslint-disable` |
-| **Strategy** | Fix multiple errors simultaneously, fix hastily based on error message alone |
-| **Analysis** | Fix without Sequential Thinking |
+| 분류 | 금지 |
+|------|------|
+| **회피** | `any` 타입, `@ts-ignore`, `eslint-disable` 남발 |
+| **전략** | 여러 오류 동시 수정, 오류 메시지만 보고 급하게 수정 |
+| **분석** | Sequential Thinking 없이 수정 |
 
 </forbidden>
 
@@ -98,48 +82,130 @@ Task({
 
 <agent_usage>
 
-## @lint-fixer Agent Usage
+## @lint-fixer Agent 활용
 
-**When to use:**
-- 10+ errors
-- Multiple complex type errors
-- Want automatic fixing in background
+**언제 사용:**
+- 10개 이상 오류
+- 복잡한 타입 오류 다수
+- 백그라운드에서 자동 수정 원할 때
 
-**How to call:**
+**호출 방법:**
 ```bash
 @lint-fixer
-# or natural language
-"Fix lint errors automatically"
+# 또는 자연어
+"lint 오류 자동으로 수정해줘"
 ```
 
-**Benefits:**
-- Simple errors fixed immediately (no Sequential Thinking needed)
-- Complex errors analyzed with Sequential Thinking only (efficient)
-- Run in independent context (can parallelize with main work)
+**장점:**
+- 간단한 오류는 즉시 수정 (Sequential Thinking 불필요)
+- 복잡한 오류만 Sequential Thinking 사용 (효율적)
+- 독립적 context에서 실행 (메인 작업 병렬 가능)
 
-**Direct fix vs Agent:**
+**직접 수정 vs Agent:**
 
-| Situation | Recommended |
-|-----------|-------------|
-| 1-5 simple errors | Direct fix (command) |
-| 10+ errors | @lint-fixer |
-| Multiple complex type errors | @lint-fixer |
-| Quick fix needed | Direct fix |
-| Background execution | @lint-fixer |
+| 상황 | 권장 방법 |
+|------|----------|
+| 1-5개 오류, 간단 | 직접 수정 (command) |
+| 10개 이상 오류 | @lint-fixer |
+| 복잡한 타입 오류 다수 | @lint-fixer |
+| 빠른 수정 필요 | 직접 수정 |
+| 백그라운드 실행 | @lint-fixer |
 
 </agent_usage>
 
 ---
 
+<parallel_agent_execution>
+
+## 병렬 에이전트 실행
+
+**Recommended Agents:**
+
+| Agent | Model | 용도 |
+|-------|-------|------|
+| @lint-fixer | haiku/sonnet | 오류 수정 |
+| @explore | haiku | 관련 파일 탐색 |
+| @code-reviewer | haiku | 수정 후 검증 |
+
+**Parallel Execution Patterns:**
+
+1. **파일별 병렬 수정:** 각 파일마다 별도 lint-fixer
+2. **오류 타입별 병렬:** 타입 오류와 린트 오류 동시 수정
+3. **수정 + 검증 병렬:** 여러 파일 동시 수정 후 검증
+
+**Model Routing:**
+
+| 복잡도 | 오류 범위 | 모델 |
+|--------|----------|------|
+| LOW | 단순 오류 (1-5개) | haiku |
+| MEDIUM | 일반 오류 (6-20개) | sonnet |
+| HIGH | 복잡한 오류 (타입 추론) | sonnet/opus |
+
+**Practical Examples:**
+
+```typescript
+// ✅ 파일별 병렬 수정
+Task({
+  subagent_type: 'lint-fixer',
+  model: 'haiku',
+  prompt: 'src/utils/format.ts 린트 오류 수정'
+})
+Task({
+  subagent_type: 'lint-fixer',
+  model: 'haiku',
+  prompt: 'src/components/Button.tsx 린트 오류 수정'
+})
+
+// ✅ 타입 + 린트 병렬
+Task({
+  subagent_type: 'lint-fixer',
+  model: 'sonnet',
+  prompt: '타입 오류 수정'
+})
+Task({
+  subagent_type: 'lint-fixer',
+  model: 'haiku',
+  prompt: 'ESLint 오류 수정'
+})
+
+// ✅ 수정 + 검증 병렬
+Task({
+  subagent_type: 'lint-fixer',
+  model: 'haiku',
+  prompt: 'src/utils/*.ts 파일들 린트 오류 수정'
+})
+Task({
+  subagent_type: 'code-reviewer',
+  model: 'haiku',
+  prompt: '수정된 파일들 코드 품질 검증'
+})
+
+// ✅ 탐색 + 수정 병렬
+Task({
+  subagent_type: 'explore',
+  model: 'haiku',
+  prompt: '타입 정의 파일 위치 탐색'
+})
+Task({
+  subagent_type: 'lint-fixer',
+  model: 'sonnet',
+  prompt: '타입 오류 수정'
+})
+```
+
+</parallel_agent_execution>
+
+---
+
 <required>
 
-| Category | Required |
-|----------|----------|
-| **Thinking** | Sequential Thinking 3-5 steps per error |
-| **Tracking** | Track error list with TodoWrite |
-| **Strategy** | Fix one → recheck → next error |
-| **Validation** | Recheck each file after fixing |
-| **Parallel** | 5+ independent errors → parallel analysis with Task |
+| 분류 | 필수 |
+|------|------|
+| **Thinking** | Sequential Thinking 3-5단계 (각 오류마다) |
+| **Tracking** | TodoWrite로 오류 목록 추적 |
+| **Strategy** | 하나씩 수정 → 재검사 → 다음 오류 |
+| **Validation** | 각 파일 수정 후 해당 파일 재검사 |
+| **Parallel** | 5개 이상 독립 오류 → Task 도구로 병렬 분석 |
 
 </required>
 
@@ -147,22 +213,22 @@ Task({
 
 <workflow>
 
-1. **Check**
+1. **검사**
    ```bash
    npx tsc --noEmit
    npx eslint .
    ```
 
-2. **Create TodoWrite**
-   - Organize error list
+2. **TodoWrite 생성**
+   - 오류 목록 정리
 
-3. **Sequential fix** (per error)
-   - Sequential Thinking 3-5 steps
-   - Apply fix
-   - Recheck file
-   - Update TodoWrite (completed)
+3. **순차 수정** (각 오류마다)
+   - Sequential Thinking 3-5단계
+   - 수정 적용
+   - 해당 파일 재검사
+   - TodoWrite 업데이트 (completed)
 
-4. **Full recheck**
+4. **전체 재검사**
 
 </workflow>
 
@@ -170,24 +236,24 @@ Task({
 
 <sequential_thinking>
 
-**Required for each error:**
+**각 오류마다 필수:**
 
-| Step | Content |
-|------|---------|
-| 1 | Analyze and understand error message |
-| 2 | Identify relevant code context |
-| 3 | Identify root cause |
-| 4 | Review fix options (consider multiple) |
-| 5 | Select and apply optimal fix |
+| 단계 | 내용 |
+|------|------|
+| 1 | 오류 메시지 분석 및 이해 |
+| 2 | 관련 코드 컨텍스트 파악 |
+| 3 | 근본 원인 식별 |
+| 4 | 수정 방안 검토 (여러 옵션 고려) |
+| 5 | 최적 수정 방안 선택 및 적용 |
 
-**Parameters:**
+**파라미터:**
 
 ```typescript
 {
-  thought: "Current thinking content",
+  thought: "현재 사고 내용",
   nextThoughtNeeded: true | false,
-  thoughtNumber: 1, // current step
-  totalThoughts: 5  // expected total steps (dynamic)
+  thoughtNumber: 1, // 현재 단계
+  totalThoughts: 5  // 예상 총 단계 (동적 조정 가능)
 }
 ```
 
@@ -197,28 +263,28 @@ Task({
 
 <parallel_strategy>
 
-**With 5+ errors:**
+**5개 이상 오류 시:**
 
 ```
-1. Identify independent error groups
-2. Parallel analysis with Task (multiple Task calls in single message)
-3. Combine results then sequential fix
+1. 독립적 오류 그룹 식별
+2. Task 도구로 병렬 분석 (단일 메시지에 다중 Task 호출)
+3. 분석 결과 취합 후 순차 수정
 ```
 
-**Rules:**
+**규칙:**
 
-| Rule | Description |
-|------|-------------|
-| Check independence | Same file/related type → sequential |
-| Parallel analysis only | Always sequential fix application |
-| Validate results | Conflicts → resolve with Sequential Thinking |
+| 규칙 | 설명 |
+|------|------|
+| 독립성 확인 | 같은 파일/연관 타입 → 순차 처리 |
+| 분석만 병렬 | 수정 적용은 항상 순차 |
+| 결과 검증 | 충돌 시 Sequential Thinking으로 해결 |
 
 **subagent_type:**
 
-| Type | Purpose |
-|------|---------|
-| `Explore` | Explore code context related to error |
-| `general-purpose` | Deep analysis of complex type errors |
+| 유형 | 용도 |
+|------|------|
+| `Explore` | 오류 관련 코드 컨텍스트 탐색 |
+| `general-purpose` | 복잡한 타입 오류 심층 분석 |
 
 </parallel_strategy>
 
@@ -226,29 +292,29 @@ Task({
 
 <commands>
 
-**Check:**
+**검사:**
 
 ```bash
-# TypeScript (all)
+# TypeScript (전체)
 npx tsc --noEmit
 
-# TypeScript (specific file)
+# TypeScript (특정 파일)
 npx tsc --noEmit $ARGUMENTS
 
-# ESLint (all)
+# ESLint (전체)
 npx eslint .
 
-# ESLint (specific file/directory)
+# ESLint (특정 파일/디렉토리)
 npx eslint $ARGUMENTS
 ```
 
-**Argument handling:**
+**인수 처리:**
 
-| Argument | Action |
-|----------|--------|
-| None | Check entire project |
-| File path | Check that file only |
-| Directory | Check that directory only |
+| 인수 | 동작 |
+|------|------|
+| 없음 | 전체 프로젝트 검사 |
+| 파일 경로 | 해당 파일만 |
+| 디렉토리 | 해당 디렉토리만 |
 
 </commands>
 
@@ -256,46 +322,46 @@ npx eslint $ARGUMENTS
 
 <examples>
 
-**Example 1: Sequential Thinking workflow**
+**Example 1: Sequential Thinking 워크플로우**
 
 ```
-1. Run npx tsc --noEmit
+1. npx tsc --noEmit 실행
    → TS2322: Type 'string' is not assignable to type 'number'
 
-2. Start Sequential Thinking:
-   thought 1: "TS2322 error. Assigning string to number"
-   thought 2: "Need to check variable type and value in file"
-   thought 3: "Function return type is number but returning string"
-   thought 4: "Fix options: 1) Fix return value 2) Change type"
-   thought 5: "Fixing return value to correct number is appropriate"
+2. Sequential Thinking 시작:
+   thought 1: "TS2322 오류. string을 number에 할당 시도"
+   thought 2: "해당 파일의 변수 타입과 값 확인 필요"
+   thought 3: "함수 반환 타입이 number인데 string 반환 중"
+   thought 4: "수정 옵션: 1) 반환값 수정 2) 타입 수정"
+   thought 5: "반환값을 올바른 number로 수정하는 것이 적절"
 
-3. Apply fix with Edit
+3. Edit으로 수정 적용
 
-4. Recheck with npx tsc --noEmit $FILE → confirm resolution
+4. npx tsc --noEmit $FILE 재검사 → 해결 확인
 
-5. Update TodoWrite (completed) → next error
+5. TodoWrite 업데이트 (completed) → 다음 오류
 ```
 
-**Example 2: Parallel processing (5+ errors)**
+**Example 2: 병렬 처리 (5개 이상 오류)**
 
 ```
-Found 3 independent file errors:
+독립적 파일 3개의 오류 발견:
 
-Task 1: "Analyze TS2322 in src/utils/api.ts - type mismatch cause and fix"
-Task 2: "Analyze ESLint no-unused-vars in src/components/Form.tsx"
-Task 3: "Analyze TS2532 in src/hooks/useAuth.ts - undefined check location"
+Task 1: "src/utils/api.ts의 TS2322 분석 - 타입 불일치 원인과 수정 방안"
+Task 2: "src/components/Form.tsx의 ESLint no-unused-vars 분석"
+Task 3: "src/hooks/useAuth.ts의 TS2532 분석 - undefined 체크 위치"
 
-→ Run 3 Tasks in parallel (single message)
-→ Combine results then use Sequential Thinking to determine fix order
-→ Apply sequential fixes
+→ 3개 Task 병렬 실행 (단일 메시지)
+→ 결과 취합 후 Sequential Thinking으로 수정 순서 결정
+→ 순차 수정 적용
 ```
 
-**Example 3: Priority**
+**Example 3: 우선순위**
 
-| Priority | Type | Example |
-|----------|------|---------|
-| 1 | Type errors (blocks compile) | TS2322, TS2345 |
-| 2 | Lint errors (error level) | no-unused-vars |
-| 3 | Lint warnings (warning level) | prefer-const |
+| 우선순위 | 유형 | 예시 |
+|----------|------|------|
+| 1 | 타입 오류 (컴파일 차단) | TS2322, TS2345 |
+| 2 | 린트 오류 (error 레벨) | no-unused-vars |
+| 3 | 린트 경고 (warning 레벨) | prefer-const |
 
 </examples>

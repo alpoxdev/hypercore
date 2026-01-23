@@ -4,67 +4,51 @@ description: 현재 세션에서 수정한 파일만 커밋 후 푸시
 
 # Git Session Command
 
-<critical_instruction>
-
-**CRITICAL: 사용자와의 모든 커뮤니케이션은 반드시 한국어로 작성하세요.**
-
-- 내부 사고와 분석은 영어로 해도 됨
-- 설명, 요약, 보고서, 피드백 등 사용자에게 전달하는 모든 내용은 반드시 한국어
-- 사용자가 영어로 말하더라도 답변은 한국어로
-- 진행 상황 업데이트와 상태 보고는 반드시 한국어
-
-이 규칙은 절대적이며 예외가 없습니다.
-
-</critical_instruction>
-
----
-
-
-> Use the @git-operator agent to selectively commit and push only files modified in the current session.
+> @git-operator 에이전트를 사용하여 현재 세션 파일만 선택적으로 커밋하고 푸시.
 
 ---
 
 <critical_requirements>
 
-## ⚠️ CRITICAL: Required checks before proceeding
+## ⚠️ CRITICAL: 작업 시작 전 필수 확인
 
-**This command must use the @git-operator agent.**
+**이 커맨드는 반드시 @git-operator 에이전트를 사용해야 합니다.**
 
-### MANDATORY: Call @git-operator with Task tool
+### MANDATORY: Task 도구로 @git-operator 호출
 
 ```typescript
 Task({
   subagent_type: 'git-operator',
-  description: 'Commit and push session files only',
+  description: '세션 파일만 커밋 후 푸시',
   prompt: `
-    Session commit mode:
-    - Selectively commit only files related to current session
-    - Must push (git push)
-    - Exclude incomplete work from previous sessions
+    세션 커밋 모드:
+    - 현재 세션 관련 파일만 선택적 커밋
+    - 반드시 푸시 (git push)
+    - 이전 세션의 미완성 작업은 제외
   `
 })
 ```
 
-**❌ Absolutely forbidden:**
-- Execute git commands directly with Bash tool
-- Perform commit/push without @git-operator
-- Analyze files directly in command
+**❌ 절대 금지:**
+- Bash 도구로 git 명령 직접 실행
+- @git-operator 없이 커밋/푸시 수행
+- 커맨드 내에서 직접 파일 분석
 
-**✅ Required:**
-- Call @git-operator agent with Task tool
-- Delegate all git work to agent
-- Select only current session files
+**✅ 필수:**
+- Task 도구로 @git-operator 에이전트 호출
+- 모든 git 작업을 에이전트에 위임
+- 현재 세션 파일만 선택
 
 ---
 
-**Self-check before proceeding:**
+**진행 전 자가 점검:**
 ```text
-□ Task tool ready to use?
-□ Delegating work to @git-operator agent?
-□ Not executing git commands directly with Bash?
+□ Task 도구 사용 준비?
+□ @git-operator 에이전트로 작업 위임?
+□ Bash로 git 직접 실행 안 함?
 ```
 
-**⚠️ Do not start if checklist is not complete.**
+**⚠️ 위 체크리스트를 통과하지 않으면 작업을 시작하지 마세요.**
 
 </critical_requirements>
 
@@ -72,10 +56,10 @@ Task({
 
 <mode>
 
-**Session commit mode**
+**세션 커밋 모드**
 
-- **Selectively commit only files related to current session**
-- **Must push** (git push)
+- **현재 세션 관련 파일만** 선택적 커밋
+- **반드시 푸시** (git push)
 
 </mode>
 
@@ -83,11 +67,11 @@ Task({
 
 <selection_criteria>
 
-| Include | Exclude |
-|---------|---------|
-| Files related to current session | Incomplete work from previous sessions |
-| Recently worked files | Auto-generated files (lock, cache) |
-| Related feature files | Unrelated changes |
+| 포함 | 제외 |
+|------|------|
+| 현재 세션 관련 파일 | 이전 세션의 미완성 작업 |
+| 방금 전 작업한 파일 | 자동 생성 파일 (lock, cache) |
+| 관련 기능의 파일들 | 무관한 변경사항 |
 
 </selection_criteria>
 
@@ -95,11 +79,11 @@ Task({
 
 <workflow>
 
-1. Analyze all changes
-2. **Select only files related to current session**
-3. Group into logical units
-4. Commit each group
-5. Execute git push
+1. 모든 변경사항 분석
+2. **현재 세션 관련 파일만 선택**
+3. 논리적 단위로 그룹핑
+4. 각 그룹별 커밋
+5. git push 실행
 
 </workflow>
 
@@ -108,16 +92,88 @@ Task({
 <example>
 
 ```bash
-# Situation: Working on login feature, previous profile feature incomplete
+# 상황: 로그인 기능 작업 중, 이전 프로필 기능은 미완성
 
 git status
-# modified: src/auth/login.ts (current session)
-# modified: src/auth/logout.ts (current session)
-# modified: src/profile/edit.ts (previous session)
+# modified: src/auth/login.ts (현재 세션)
+# modified: src/auth/logout.ts (현재 세션)
+# modified: src/profile/edit.ts (이전 세션)
 
-# ✅ Commit only login-related files
-git add src/auth/login.ts src/auth/logout.ts && git commit -m "feat: Add login/logout functionality"
+# ✅ 로그인 관련만 커밋
+git add src/auth/login.ts src/auth/logout.ts && git commit -m "feat: 로그인/로그아웃 기능 추가"
 git push
 ```
 
 </example>
+
+---
+
+<parallel_agent_execution>
+
+## Recommended Agents
+
+| Agent | Model | Purpose |
+|-------|-------|---------|
+| **@git-operator** | haiku | Git 커밋/푸시 작업 (필수) |
+| **@code-reviewer** | haiku/sonnet | 세션 변경사항 검토 |
+| **@explore** | haiku | 세션 파일 탐색 |
+
+---
+
+## Parallel Execution Patterns
+
+| Pattern | Description |
+|---------|-------------|
+| **검토 + 탐색 병렬** | @code-reviewer와 @explore 동시 실행 |
+| **분석 후 순차 커밋** | 병렬 분석 → 순차 git 작업 |
+
+**❌ Git 커밋은 순차 실행:**
+- git-session은 단일 커밋 흐름
+- 병렬화 불필요
+
+---
+
+## Model Routing
+
+| Complexity | Model | Scenario |
+|------------|-------|----------|
+| **LOW** | haiku | 단순 세션 커밋 (1-3 files) |
+| **MEDIUM** | haiku/sonnet | 일반 세션 커밋 (4-10 files) |
+
+---
+
+## Practical Examples
+
+```typescript
+// ✅ 검토 + 탐색 병렬
+Task({
+  subagent_type: 'code-reviewer',
+  model: 'haiku',
+  prompt: '세션 변경사항 검토'
+})
+Task({
+  subagent_type: 'explore',
+  model: 'haiku',
+  prompt: '세션 파일 목록 확인'
+})
+
+// 분석 완료 후 순차 커밋
+Task({
+  subagent_type: 'git-operator',
+  model: 'haiku',
+  prompt: `
+    세션 커밋 모드:
+    - 현재 세션 관련 파일만 선택적 커밋
+    - 반드시 푸시 (git push)
+  `
+})
+```
+
+```typescript
+// ❌ Git 커밋 병렬화 시도
+// git-session은 단일 커밋이므로 병렬화 불필요
+Task({ subagent_type: 'git-operator', prompt: '파일 A 커밋' })
+Task({ subagent_type: 'git-operator', prompt: '파일 B 커밋' })  // 불필요
+```
+
+</parallel_agent_execution>

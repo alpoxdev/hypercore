@@ -1,48 +1,33 @@
 ---
 description: 버그 원인 분석 및 수정. sequential thinking 3-5 + Task (Explore) 필수.
 allowed-tools: Read, Grep, Glob, Task, Edit, Bash(npm:*, yarn:*), mcp__sequential-thinking__sequentialthinking
-argument-hint: <bug description or error message>
----
-
-<critical_instruction>
-
-**CRITICAL: 사용자와의 모든 커뮤니케이션은 반드시 한국어로 작성하세요.**
-
-- 내부 사고와 분석은 영어로 해도 됨
-- 설명, 요약, 보고서, 피드백 등 사용자에게 전달하는 모든 내용은 반드시 한국어
-- 사용자가 영어로 말하더라도 답변은 한국어로
-- 진행 상황 업데이트와 상태 보고는 반드시 한국어
-
-이 규칙은 절대적이며 예외가 없습니다.
-
-</critical_instruction>
-
+argument-hint: <버그 설명 또는 에러 메시지>
 ---
 
 # Bug Fix Command
 
-> Command for bug cause analysis, fix option presentation, and implementation.
+> 버그 원인 분석, 수정 옵션 제시, 구현까지 처리하는 커맨드.
 
-**Bug Target**: $ARGUMENTS
+**버그 대상**: $ARGUMENTS
 
 ---
 
 <argument_validation>
 
-## ARGUMENT Verification Required
+## ARGUMENT 필수 확인
 
 ```
-No $ARGUMENTS → Ask immediately:
+$ARGUMENTS 없음 → 즉시 질문:
 
-"What bug needs fixing? Please provide details.
+"어떤 버그를 수정해야 하나요? 구체적으로 알려주세요.
 
-Examples:
-- Error message and location
-- Expected vs actual behavior
-- How to reproduce
-- Relevant file paths"
+예시:
+- 에러 메시지 및 발생 위치
+- 예상 동작 vs 실제 동작
+- 재현 방법
+- 관련 파일 경로"
 
-Has $ARGUMENTS → Proceed to next step
+$ARGUMENTS 있음 → 다음 단계 진행
 ```
 
 </argument_validation>
@@ -51,19 +36,19 @@ Has $ARGUMENTS → Proceed to next step
 
 <workflow>
 
-## Execution Flow
+## 실행 흐름
 
-| Step | Task | Tool |
+| 단계 | 작업 | 도구 |
 |------|------|------|
-| 1. Input Verify | Validate ARGUMENT, ask if missing | - |
-| 2. Complexity Judge | Determine analysis scope with Sequential Thinking | sequentialthinking (step 1) |
-| 3. Reproduce Bug | Reproduce error, identify related files | Read/Grep/Glob |
-| 4. Analyze Cause | Explore related code with Task (Explore) | Task (Explore) |
-| 5. Derive Options | Generate 2-3 fix methods | sequentialthinking (steps 2-4) |
-| 6. Present Options | Show pros/cons and impact scope | - |
-| 7. User Choice | Wait for user to select fix method | - |
-| 8. Implement | Fix code with selected method | Edit |
-| 9. Verify | Run tests, confirm build | Bash |
+| 1. 입력 확인 | ARGUMENT 검증, 없으면 질문 | - |
+| 2. 복잡도 판단 | Sequential Thinking으로 분석 범위 결정 | sequentialthinking (1단계) |
+| 3. 버그 재현 | 에러 재현, 관련 파일 파악 | Read/Grep/Glob |
+| 4. 원인 분석 | Task (Explore)로 관련 코드 탐색 | Task (Explore) |
+| 5. 옵션 도출 | 수정 방법 2-3개 도출 | sequentialthinking (2-4단계) |
+| 6. 옵션 제시 | 장단점, 영향 범위 제시 | - |
+| 7. 사용자 선택 | 수정 방법 선택 대기 | - |
+| 8. 구현 | 선택된 방법으로 코드 수정 | Edit |
+| 9. 검증 | 테스트 실행, 빌드 확인 | Bash |
 
 </workflow>
 
@@ -71,43 +56,43 @@ Has $ARGUMENTS → Proceed to next step
 
 <thinking_strategy>
 
-## Sequential Thinking Guide
+## Sequential Thinking 가이드
 
-### Complexity Judgment (thought 1)
-
-```
-thought 1: Complexity judgment
-- Error type: syntax/runtime/logic/type
-- Impact scope: single file vs multiple files
-- Dependencies: external libraries, API integration
-- Reproducibility: always vs intermittent
-```
-
-### Complexity Strategy
-
-| Complexity | Thoughts | Criteria | Pattern |
-|------------|----------|----------|---------|
-| **Simple** | 3 | Clear error, 1-2 files | Judge → Analyze cause → Fix method |
-| **Normal** | 5 | Logic error, 3-5 files | Judge → Reproduce → Analyze → Compare options → Recommend |
-| **Complex** | 7+ | Intermittent error, multi-module | Judge → Try reproduce → Deep analyze → Explore options → Compare → Recommend |
-
-### Normal Complexity Pattern (5 steps)
+### 복잡도 판단 (thought 1)
 
 ```
-thought 1: Complexity judgment and analysis scope
-thought 2: Bug reproduction and error message analysis
-thought 3: Related code exploration and cause identification
-thought 4: Compare 2-3 fix methods
-thought 5: Final recommendation and rationale
+thought 1: 복잡도 판단
+- 에러 유형: syntax/runtime/logic/type
+- 영향 범위: 단일 파일 vs 다중 파일
+- 의존성: 외부 라이브러리, API 연동
+- 재현 가능성: 항상 발생 vs 간헐적
 ```
 
-### Core Principles
+### 복잡도별 전략
+
+| 복잡도 | 사고 횟수 | 판단 기준 | 사고 패턴 |
+|--------|----------|----------|------------|
+| **간단** | 3 | 명확한 에러, 1-2 파일 | 복잡도 판단 → 원인 분석 → 수정 방법 |
+| **보통** | 5 | 논리 오류, 3-5 파일 | 복잡도 판단 → 재현 → 원인 분석 → 옵션 비교 → 추천안 |
+| **복잡** | 7+ | 간헐적 오류, 다중 모듈 | 복잡도 판단 → 재현 시도 → 심층 분석 → 옵션 탐색 → 비교 → 추천안 |
+
+### 보통 복잡도 패턴 (5단계)
+
+```
+thought 1: 복잡도 판단 및 분석 범위
+thought 2: 버그 재현 및 에러 메시지 분석
+thought 3: 관련 코드 탐색 및 원인 파악
+thought 4: 수정 방법 2-3개 비교 분석
+thought 5: 최종 추천안 및 근거
+```
+
+### 핵심 원칙
 
 ```text
-✅ Output thinking process for actual thinking to happen
-✅ Judge high when uncertain (expandable 3→5)
-✅ Concrete analysis required in each thought (no abstract)
-✅ Use isRevision to modify previous thought if needed
+✅ 사고 과정을 출력해야 실제로 생각이 일어남
+✅ 복잡도가 불확실하면 높게 책정 (3→5로 확장 가능)
+✅ 각 thought에서 구체적 분석 필요 (추상적 설명 금지)
+✅ 필요 시 isRevision으로 이전 사고 수정
 ```
 
 </thinking_strategy>
@@ -116,65 +101,65 @@ thought 5: Final recommendation and rationale
 
 <exploration>
 
-## Task (Explore) Usage
+## Task (Explore) 활용
 
-### Exploration Strategy
+### 탐색 전략
 
-| Bug Type | Explore Target | Prompt Example |
-|----------|-----------------|-----------------|
-| **Type Error** | Type definition, usage | "Find type X definition and usage files" |
-| **Runtime Error** | Function call chain | "Find function Y call path and related files" |
-| **Logic Error** | State management, data flow | "Find where state Z changes and its impact" |
-| **API Error** | Endpoint, request/response | "Find API /path related code structure" |
+| 버그 유형 | 탐색 대상 | prompt 예시 |
+|----------|----------|-------------|
+| **타입 에러** | 타입 정의, 사용처 | "타입 X 정의 위치 및 사용 파일 탐색" |
+| **런타임 에러** | 함수 호출 체인 | "함수 Y 호출 경로 및 관련 파일" |
+| **논리 오류** | 상태 관리, 데이터 흐름 | "상태 Z 변경 위치 및 영향 범위" |
+| **API 에러** | 엔드포인트, 요청/응답 | "API /path 관련 코드 구조" |
 
-### Task Invocation Pattern
+### Task 호출 패턴
 
-**Single Exploration:**
+**단일 탐색:**
 
 ```typescript
 Task({
   subagent_type: 'Explore',
-  description: 'Explore error-related code',
+  description: '에러 관련 코드 탐색',
   prompt: `
-    Understand error-related code structure:
-    - Exact location where error occurs
-    - Related functions/components
-    - Dependent modules/libraries
-    - Recent change history (git blame)
+    에러 발생 관련 코드 구조 파악:
+    - 에러가 발생하는 정확한 위치
+    - 관련 함수/컴포넌트
+    - 의존하는 모듈/라이브러리
+    - 최근 수정 이력 (git blame)
   `
 })
 ```
 
-**Parallel Exploration (complex cases):**
+**병렬 탐색 (복잡한 경우):**
 
 ```typescript
-// Multiple Task calls in single message
+// 단일 메시지에 다중 Task 호출
 Task({
   subagent_type: 'Explore',
-  prompt: 'Analyze frontend error component'
+  prompt: '프론트엔드 에러 발생 컴포넌트 분석'
 })
 
 Task({
   subagent_type: 'Explore',
-  prompt: 'Analyze backend API endpoint'
+  prompt: '백엔드 API 엔드포인트 분석'
 })
 
 Task({
   subagent_type: 'Explore',
-  prompt: 'Analyze type definitions and interfaces'
+  prompt: '타입 정의 및 인터페이스 분석'
 })
 
-// → Collect results and identify cause
+// → 결과 취합 후 원인 파악
 ```
 
-### Exploration Checklist
+### 탐색 체크리스트
 
 ```text
-✅ Exact error location
-✅ Related functions/classes/components
-✅ Data flow and state changes
-✅ External dependencies (libraries, APIs)
-✅ Recent changes (git log/blame)
+✅ 에러 발생 정확한 위치
+✅ 관련 함수/클래스/컴포넌트
+✅ 데이터 흐름 및 상태 변경
+✅ 외부 의존성 (라이브러리, API)
+✅ 최근 변경 사항 (git log/blame)
 ```
 
 </exploration>
@@ -183,70 +168,70 @@ Task({
 
 <option_presentation>
 
-## Option Presentation Format
+## 옵션 제시 형식
 
-### Present 2-3 Options
+### 옵션 2-3개 제시
 
 ```markdown
-## Bug Analysis Results
+## 버그 분석 결과
 
-**Cause:** [Cause explanation]
+**원인:** [원인 설명]
 
-**Impact Scope:** [File and module list]
+**영향 범위:** [파일 및 모듈 목록]
 
 ---
 
-### Option 1: [Fix Method] (Recommended)
+### 옵션 1: [수정 방법] (추천)
 
-**Fix Content:**
-- Change 1
-- Change 2
+**수정 내용:**
+- 변경 사항 1
+- 변경 사항 2
 
-| Pros | Cons |
+| 장점 | 단점 |
 |------|------|
-| Pro 1 | Con 1 |
-| Pro 2 | Con 2 |
+| 장점 1 | 단점 1 |
+| 장점 2 | 단점 2 |
 
-**Files to Fix:**
+**수정 파일:**
 - `src/file1.ts:line`
 - `src/file2.ts:line`
 
-**Risk:** Low
+**리스크:** 낮음
 
 ---
 
-### Option 2: [Fix Method]
+### 옵션 2: [수정 방법]
 
-**Fix Content:**
+**수정 내용:**
 ...
 
-| Pros | Cons |
+| 장점 | 단점 |
 |------|------|
 | ... | ... |
 
-**Files to Fix:**
+**수정 파일:**
 ...
 
-**Risk:** Medium
+**리스크:** 중간
 
 ---
 
-### Option 3: [Fix Method] (Temporary)
+### 옵션 3: [수정 방법] (임시 해결)
 
-**Fix Content:**
+**수정 내용:**
 ...
 
-**Risk:** High (not root cause fix)
+**리스크:** 높음 (근본 해결 아님)
 
 ---
 
-## Recommendation and Rationale
+## 추천 및 근거
 
-Recommend Option 1.
-- Rationale 1
-- Rationale 2
+옵션 1을 추천합니다.
+- 근거 1
+- 근거 2
 
-Which option to use? (1/2/3)
+어떤 옵션으로 수정하시겠습니까? (1/2/3)
 ```
 
 </option_presentation>
@@ -255,75 +240,179 @@ Which option to use? (1/2/3)
 
 <implementation>
 
-## Implementation Guide
+## 구현 가이드
 
-### Fix Steps
+### 수정 단계
 
 ```
-1. Wait for user option selection
-2. Fix code with Edit tool
-3. Explain changes
-4. Run tests/build (optional)
-5. Verify results
+1. 사용자 옵션 선택 대기
+2. Edit 도구로 코드 수정
+3. 수정 내용 설명
+4. 테스트/빌드 실행 (선택)
+5. 결과 확인
 ```
 
-### Post-Fix Verification
+### 수정 후 검증
 
 ```bash
-# Type check
+# 타입 체크
 npm run typecheck
-# Or
+# 또는
 tsc --noEmit
 
-# Run tests
+# 테스트 실행
 npm test
-# Or
-npm test -- <related test file>
+# 또는
+npm test -- <관련 테스트 파일>
 
-# Verify build
+# 빌드 확인
 npm run build
 ```
 
-### Verification Checklist
+### 검증 체크리스트
 
 ```text
-✅ Error resolved
-✅ Existing functionality intact
-✅ No type errors
-✅ Tests pass
-✅ Build succeeds
+✅ 에러 해결 확인
+✅ 기존 기능 영향 없음
+✅ 타입 에러 없음
+✅ 테스트 통과
+✅ 빌드 성공
 ```
 
 </implementation>
 
 ---
 
-<validation>
+<parallel_agent_execution>
 
-## Validation Checklist
+## Parallel Agent Execution
 
-Before execution:
+### Recommended Agents
 
-```text
-✅ Verify ARGUMENT (ask if missing)
-✅ Sequential Thinking minimum 3 steps
-✅ Code exploration with Task (Explore)
-✅ Cause analysis clear
-✅ Minimum 2 options, recommend 3
-✅ Specify pros/cons for each option
-✅ Specify file location to fix (include line)
+| Agent | Model | 용도 |
+|-------|-------|------|
+| **@explore** | haiku/sonnet | 버그 재현 경로 탐색 |
+| **@architect** | sonnet | 버그 원인 분석 및 설계 논의 |
+| **@implementation-executor** | sonnet | 버그 수정 구현 |
+| **@code-reviewer** | haiku | 수정 후 검증 |
+
+### Parallel Execution Patterns
+
+**여러 버그 동시 수정:**
+- 각 버그마다 별도 executor 할당
+- 독립적인 파일/모듈 수정 시 병렬 실행
+
+**탐색 + 분석 병렬:**
+- explore와 architect 동시 실행
+- 재현 경로 파악과 근본 원인 분석을 동시에 진행
+
+**수정 + 문서화 병렬:**
+- executor와 document-writer 동시 실행
+- 코드 수정과 동시에 변경 사항 문서화
+
+### Model Routing
+
+| 복잡도 | 버그 유형 | 모델 |
+|--------|----------|------|
+| **LOW** | 단순 버그 (오타, 명백한 로직 오류) | haiku |
+| **MEDIUM** | 일반 버그 (기능 오작동) | sonnet |
+| **HIGH** | 복잡한 버그 (아키텍처, 성능) | opus |
+
+### Practical Examples
+
+**여러 버그 병렬 수정:**
+
+```typescript
+// ✅ 각 버그를 독립적으로 수정
+Task({
+  subagent_type: 'implementation-executor',
+  model: 'sonnet',
+  prompt: '로그인 버그 수정: src/auth/login.ts에서 토큰 만료 처리 누락'
+})
+
+Task({
+  subagent_type: 'implementation-executor',
+  model: 'sonnet',
+  prompt: '결제 버그 수정: src/payment/checkout.ts에서 금액 계산 오류'
+})
+
+// → 두 버그가 동시에 수정됨
 ```
 
-Absolute prohibitions:
+**탐색 + 분석 병렬:**
+
+```typescript
+// ✅ 재현과 분석을 동시에 진행
+Task({
+  subagent_type: 'explore',
+  model: 'haiku',
+  prompt: '간헐적 500 에러 재현 경로 탐색 및 재현 조건 파악'
+})
+
+Task({
+  subagent_type: 'architect',
+  model: 'sonnet',
+  prompt: '500 에러 패턴 분석 및 근본 원인 파악 (로그, 스택 트레이스 기반)'
+})
+
+// → 탐색 결과와 분석 결과를 종합하여 수정 방향 결정
+```
+
+**복잡도별 모델 선택:**
+
+```typescript
+// ✅ LOW: 단순 오타 수정
+Task({
+  subagent_type: 'implementation-executor',
+  model: 'haiku',
+  prompt: 'typo 수정: src/utils/format.ts의 함수명 오타'
+})
+
+// ✅ MEDIUM: 일반 버그 수정
+Task({
+  subagent_type: 'implementation-executor',
+  model: 'sonnet',
+  prompt: '사용자 목록 중복 렌더링 버그 수정'
+})
+
+// ✅ HIGH: 복잡한 성능 이슈
+Task({
+  subagent_type: 'architect',
+  model: 'opus',
+  prompt: 'N+1 쿼리 문제 분석 및 최적화 방안 설계'
+})
+```
+
+</parallel_agent_execution>
+
+---
+
+<validation>
+
+## 검증 체크리스트
+
+실행 전 확인:
 
 ```text
-❌ Start analysis without ARGUMENT
-❌ Less than 3 Sequential Thinking steps
-❌ Fix by guess without code exploration
-❌ Present only 1 option
-❌ Start fixing without user choice
-❌ Skip verification after fix
-❌ List fix methods without pros/cons
+✅ ARGUMENT 확인 (없으면 질문)
+✅ Sequential Thinking 최소 3단계
+✅ Task (Explore)로 코드 탐색
+✅ 원인 분석 명확히
+✅ 옵션 최소 2개, 권장 3개
+✅ 각 옵션에 장단점 명시
+✅ 수정 파일 위치 명시 (line 포함)
+```
+
+절대 금지:
+
+```text
+❌ ARGUMENT 없이 분석 시작
+❌ Sequential Thinking 3단계 미만
+❌ 코드 탐색 없이 추측으로 수정
+❌ 옵션 1개만 제시
+❌ 사용자 선택 없이 수정 시작
+❌ 수정 후 검증 생략
+❌ 장단점 없이 수정 방법만 나열
 ```
 
 </validation>
@@ -332,90 +421,90 @@ Absolute prohibitions:
 
 <examples>
 
-## Real-world Examples
+## 실전 예시
 
-### Example 1: Type Error
+### 예시 1: 타입 에러
 
 ```bash
-User: /bug-fix Property 'name' does not exist on type 'User'
+사용자: /bug-fix Property 'name' does not exist on type 'User'
 
-1. Sequential Thinking (3 steps):
-   thought 1: "Type error - simple, check User type definition"
-   thought 2: "Need to explore User type and usage locations"
-   thought 3: "2 options: modify type definition vs modify usage"
+1. Sequential Thinking (3단계):
+   thought 1: "타입 에러 - 간단, User 타입 정의 확인"
+   thought 2: "User 타입 및 사용처 탐색 필요"
+   thought 3: "옵션 2개: 타입 정의 수정 vs 사용처 수정"
 
-2. Task Exploration:
-   Task (Explore): "Find User type definition location and usage files"
-   → Identified src/types/user.ts, src/components/UserProfile.tsx
+2. Task 탐색:
+   Task (Explore): "User 타입 정의 위치 및 사용 파일 탐색"
+   → src/types/user.ts, src/components/UserProfile.tsx 파악
 
-3. Cause Analysis:
-   name property missing from User type
+3. 원인 분석:
+   User 타입에 name 속성 누락
 
-4. Option Presentation:
-   Option 1: Add name property to User type (Recommended)
-   - Pro: Root cause fix
-   - Con: None
+4. 옵션 제시:
+   옵션 1: User 타입에 name 속성 추가 (추천)
+   - 장점: 근본 해결
+   - 단점: 없음
 
-   Option 2: Remove name from usage
-   - Pro: Quick fix
-   - Con: Feature loss
+   옵션 2: 사용처에서 name 제거
+   - 장점: 빠른 수정
+   - 단점: 기능 손실
 
-5. User Selection: 1
+5. 사용자 선택: 1
 
 6. Edit:
    src/types/user.ts:3
    + name: string;
 
-7. Verification:
-   npm run typecheck → Success
+7. 검증:
+   npm run typecheck → 성공
 ```
 
-### Example 2: Runtime Error
+### 예시 2: 런타임 에러
 
 ```bash
-User: /bug-fix Cannot read property 'data' of undefined
+사용자: /bug-fix Cannot read property 'data' of undefined
 
-1. Sequential Thinking (5 steps):
-   thought 1: "Runtime error - normal complexity, missing null check"
-   thought 2: "Need to identify error location, check stack trace"
-   thought 3: "Explore related code: API calls, data access patterns"
-   thought 4: "Fix methods: optional chaining, null check, init"
-   thought 5: "Recommend optional chaining - concise and safe"
+1. Sequential Thinking (5단계):
+   thought 1: "런타임 에러 - 보통 복잡도, null/undefined 체크 누락"
+   thought 2: "에러 발생 위치 파악 필요, 스택 트레이스 확인"
+   thought 3: "관련 코드 탐색: API 호출, 데이터 접근 패턴"
+   thought 4: "수정 방법: optional chaining, null 체크, 초기화"
+   thought 5: "optional chaining 추천 - 간결하고 안전"
 
-2. Task Exploration:
-   Task (Explore): "Analyze error code and data flow"
-   → Found src/hooks/useUserData.ts:15, missing API response check
+2. Task 탐색:
+   Task (Explore): "undefined 에러 발생 코드 및 데이터 흐름 분석"
+   → src/hooks/useUserData.ts:15, API 응답 체크 누락
 
-3. Cause Analysis:
-   response is undefined when API call fails
+3. 원인 분석:
+   API 응답 실패 시 response가 undefined
 
-4. Options:
-   Option 1: Use optional chaining (Recommended)
-   Option 2: Null check with if statement
-   Option 3: Wrap with try-catch
+4. 옵션:
+   옵션 1: optional chaining 사용 (추천)
+   옵션 2: if 문으로 null 체크
+   옵션 3: try-catch로 감싸기
 
-5. After selection → Implementation → Verification
+5. 선택 후 구현 → 검증
 ```
 
-### Example 3: Logic Error
+### 예시 3: 논리 오류
 
 ```bash
-User: /bug-fix User list showing duplicates
+사용자: /bug-fix 사용자 목록이 중복으로 표시됨
 
-1. Sequential Thinking (5 steps):
-   thought 1: "Logic error - normal complexity, state management issue"
-   thought 2: "Suspect duplicate rerender or data fetch"
-   thought 3: "Explore related component and state management code"
-   thought 4: "Options: fix useEffect dependencies, add duplicate logic"
-   thought 5: "Recommend useEffect dependency fix"
+1. Sequential Thinking (5단계):
+   thought 1: "논리 오류 - 보통 복잡도, 상태 관리 이슈"
+   thought 2: "리렌더링 또는 데이터 fetch 중복 추측"
+   thought 3: "관련 컴포넌트 및 상태 관리 코드 탐색"
+   thought 4: "옵션: useEffect 의존성 수정, 중복 제거 로직 추가"
+   thought 5: "useEffect 의존성 수정 추천"
 
-2. Task Exploration:
-   Task (Explore): "Analyze user list render and state management"
-   → Found UserList.tsx, useEffect dependency array issue
+2. Task 탐색:
+   Task (Explore): "사용자 목록 렌더링 컴포넌트 및 상태 관리"
+   → UserList.tsx, useEffect 의존성 배열 문제 발견
 
-3. Cause: useEffect missing dependency, fetching every render
+3. 원인: useEffect 의존성 배열 누락으로 매번 fetch
 
-4. Option presentation → Selection → Implementation → Verification
+4. 옵션 제시 → 선택 → 구현 → 검증
 ```
 
 </examples>

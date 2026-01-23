@@ -3,35 +3,19 @@ description: 프로젝트 분석 후 ESLint flat config 설정
 allowed-tools: Read, Write, Edit, Glob, Bash, mcp__sequential-thinking__sequentialthinking
 ---
 
-
-<critical_instruction>
-
-**CRITICAL: 사용자와의 모든 커뮤니케이션은 반드시 한국어로 작성하세요.**
-
-- 내부 사고와 분석은 영어로 해도 됨
-- 설명, 요약, 보고서, 피드백 등 사용자에게 전달하는 모든 내용은 반드시 한국어
-- 사용자가 영어로 말하더라도 답변은 한국어로
-- 진행 상황 업데이트와 상태 보고는 반드시 한국어
-
-이 규칙은 절대적이며 예외가 없습니다.
-
-</critical_instruction>
-
----
-
 @../instructions/sequential-thinking-guide.md
 
 # Lint Init Command
 
-Analyze project → automatically generate ESLint flat config.
+프로젝트 분석 → ESLint flat config 자동 생성.
 
 <requirements>
 
-| Category | Required |
-|----------|----------|
-| **Thinking** | Sequential 5-7 steps (@sequential-thinking-guide.md) |
+| 분류 | 필수 |
+|------|------|
+| **Thinking** | Sequential 5-7단계 (@sequential-thinking-guide.md) |
 | **Config** | ESLint v9+ flat config (`eslint.config.js`) |
-| **Detection** | Auto-detect language/framework/runtime |
+| **Detection** | 언어/프레임워크/런타임 자동 감지 |
 
 </requirements>
 
@@ -40,28 +24,28 @@ Analyze project → automatically generate ESLint flat config.
 <workflow>
 
 <step number="1">
-<action>Start Sequential Thinking</action>
-<detail>Analyze project structure, dependencies, existing config (5-7 steps)</detail>
+<action>Sequential Thinking 시작</action>
+<detail>프로젝트 구조, 의존성, 기존 설정 분석 (5-7단계)</detail>
 </step>
 
 <step number="2">
-<action>Collect core files</action>
-<tools>Read (package.json, tsconfig.json, existing ESLint config)</tools>
+<action>핵심 파일 수집</action>
+<tools>Read (package.json, tsconfig.json, 기존 ESLint 설정)</tools>
 </step>
 
 <step number="3">
-<action>Detect project characteristics</action>
-<detail>Language (TS/JS), runtime (Node/Browser), framework (React/Vue/etc.)</detail>
+<action>프로젝트 특성 감지</action>
+<detail>언어(TS/JS), 런타임(Node/Browser), 프레임워크(React/Vue/등)</detail>
 </step>
 
 <step number="4">
-<action>Generate ESLint config</action>
+<action>ESLint 설정 생성</action>
 <deliverable>eslint.config.js</deliverable>
 </step>
 
 <step number="5">
-<action>Guide package installation</action>
-<detail>Required packages list + npm/yarn/pnpm commands</detail>
+<action>패키지 설치 안내</action>
+<detail>필요 패키지 목록 + npm/yarn/pnpm 명령어</detail>
 </step>
 
 </workflow>
@@ -70,30 +54,30 @@ Analyze project → automatically generate ESLint flat config.
 
 <detection>
 
-## Project Characteristic Detection
+## 프로젝트 특성 감지
 
-### Language
+### 언어
 
-| Condition | Judgment |
-|-----------|----------|
-| `tsconfig.json` exists | TypeScript |
+| 조건 | 판단 |
+|------|------|
+| `tsconfig.json` 존재 | TypeScript |
 | `devDependencies.typescript` | TypeScript |
-| `src/**/*.{ts,tsx}` files | TypeScript |
-| Otherwise | JavaScript |
+| `src/**/*.{ts,tsx}` 파일 | TypeScript |
+| 그 외 | JavaScript |
 
-### Framework
+### 프레임워크
 
-| Dependency | Framework | Additional Plugins |
-|------------|-----------|-------------------|
+| 의존성 | 프레임워크 | 추가 플러그인 |
+|--------|-----------|-------------|
 | `react` | React | `eslint-plugin-react`, `eslint-plugin-react-hooks` |
-| `next` | Next.js | React + Next.js rules |
+| `next` | Next.js | React + Next.js 규칙 |
 | `vue` | Vue | `eslint-plugin-vue`, `vue-eslint-parser` |
-| `express`, `hono`, `fastify` | Node.js server | - |
+| `express`, `hono`, `fastify` | Node.js 서버 | - |
 
-### Runtime
+### 런타임
 
-| Condition | globals |
-|-----------|---------|
+| 조건 | globals |
+|------|---------|
 | `express`, `fastify`, `hono` | `globals.node` |
 | `react`, `vue`, `angular` | `globals.browser` |
 | `next`, `nuxt` | `globals.node` + `globals.browser` |
@@ -104,9 +88,9 @@ Analyze project → automatically generate ESLint flat config.
 
 <templates>
 
-## ESLint Flat Config Patterns
+## ESLint Flat Config 패턴
 
-### Basic structure (TypeScript + Node.js)
+### 기본 구조 (TypeScript + Node.js)
 
 ```javascript
 import eslint from '@eslint/js'
@@ -145,10 +129,10 @@ export default [
 ]
 ```
 
-### When adding React
+### React 추가 시
 
 ```javascript
-// Add to basic structure above:
+// 위 기본 구조에 추가:
 import reactPlugin from 'eslint-plugin-react'
 import reactHooksPlugin from 'eslint-plugin-react-hooks'
 
@@ -165,7 +149,7 @@ export default [
       react: { version: 'detect' },
     },
     rules: {
-      // ... above rules +
+      // ... 위 rules +
       ...reactPlugin.configs.recommended.rules,
       ...reactHooksPlugin.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
@@ -175,7 +159,7 @@ export default [
 ]
 ```
 
-### JavaScript only
+### JavaScript Only
 
 ```javascript
 import eslint from '@eslint/js'
@@ -208,19 +192,19 @@ export default [
 
 <packages>
 
-## Required packages
+## 필요 패키지
 
-| Condition | Packages |
-|-----------|----------|
-| **Base** | `eslint @eslint/js globals` |
-| **TypeScript** | Above + `@typescript-eslint/parser @typescript-eslint/eslint-plugin` |
-| **React** | Above + `eslint-plugin-react eslint-plugin-react-hooks` |
-| **Vue** | Above + `eslint-plugin-vue vue-eslint-parser` |
+| 조건 | 패키지 |
+|------|--------|
+| **기본** | `eslint @eslint/js globals` |
+| **TypeScript** | 위 + `@typescript-eslint/parser @typescript-eslint/eslint-plugin` |
+| **React** | 위 + `eslint-plugin-react eslint-plugin-react-hooks` |
+| **Vue** | 위 + `eslint-plugin-vue vue-eslint-parser` |
 
-### Installation commands
+### 설치 명령어
 
 ```bash
-# Base (JavaScript)
+# 기본 (JavaScript)
 npm install -D eslint @eslint/js globals
 
 # TypeScript
@@ -236,18 +220,18 @@ npm install -D eslint @eslint/js globals @typescript-eslint/parser @typescript-e
 
 <migration>
 
-## Handle existing configuration
+## 기존 설정 처리
 
-| File | Action |
-|------|--------|
-| `.eslintrc.{json,js,yml}` | Convert to flat config → backup and remove |
-| `package.json` `eslintConfig` | Convert to flat config → remove from `package.json` |
+| 파일 | 처리 |
+|------|------|
+| `.eslintrc.{json,js,yml}` | flat config 변환 → 백업 후 제거 |
+| `package.json` `eslintConfig` | flat config 변환 → `package.json`에서 제거 |
 
-**Conversion method:**
-1. Extract existing `rules`, `extends`, `plugins`
-2. Convert to flat config format
-3. Backup original (`.eslintrc.backup`)
-4. Create `eslint.config.js`
+**변환 방법:**
+1. 기존 `rules`, `extends`, `plugins` 추출
+2. flat config 형식으로 변환
+3. 원본 백업 (`.eslintrc.backup`)
+4. `eslint.config.js` 생성
 
 </migration>
 
@@ -255,7 +239,7 @@ npm install -D eslint @eslint/js globals @typescript-eslint/parser @typescript-e
 
 <scripts>
 
-## package.json scripts
+## package.json 스크립트
 
 ```json
 {
@@ -266,24 +250,77 @@ npm install -D eslint @eslint/js globals @typescript-eslint/parser @typescript-e
 }
 ```
 
-Suggest automatic addition after configuration complete.
+설정 완료 후 자동 추가 제안.
 
 </scripts>
 
 ---
 
+<parallel_agent_execution>
+
+## 병렬 Agent 실행
+
+### Recommended Agents
+
+| Agent | Model | 역할 |
+|-------|-------|------|
+| **@implementation-executor** | sonnet | ESLint 설정 구현 |
+| **@explore** | haiku | 프로젝트 구조 탐색 |
+| **@analyst** | sonnet | 프로젝트 패턴 분석 |
+
+### Parallel Execution Patterns
+
+| 패턴 | 병렬 작업 | 효과 |
+|------|-----------|------|
+| **탐색 + 분석** | explore (haiku) + analyst (sonnet) | 프로젝트 이해 속도 향상 |
+| **설정 + 문서** | implementation-executor + document-writer | 구현과 문서화 동시 진행 |
+
+### Model Routing
+
+| 복잡도 | 모델 | 조건 |
+|--------|------|------|
+| **LOW** | haiku / sonnet | 기본 JS/TS 프로젝트, 단일 프레임워크 |
+| **MEDIUM** | sonnet | 커스텀 룰 설정, 여러 프레임워크 혼재 |
+| **HIGH** | opus | 복잡한 모노레포, 레거시 마이그레이션 |
+
+### Practical Examples
+
+```typescript
+// ✅ 탐색 + 분석 병렬
+Task(subagent_type="explore", model="haiku",
+     prompt="프로젝트 파일 구조 파악 (package.json, tsconfig.json, src/)")
+
+Task(subagent_type="analyst", model="sonnet",
+     prompt="코드 패턴 및 스타일 분석 (import 방식, 파일명 컨벤션)")
+
+// ✅ 설정 + 문서 병렬
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt="ESLint flat config 생성 (TypeScript + React)")
+
+Task(subagent_type="document-writer", model="haiku",
+     prompt="린트 설정 가이드 작성 (패키지 설치 명령어, 사용법)")
+
+// ✅ 복잡한 마이그레이션
+Task(subagent_type="implementation-executor", model="opus",
+     prompt=".eslintrc.json → flat config 변환 (커스텀 룰 200+ 보존)")
+```
+
+</parallel_agent_execution>
+
+---
+
 <validation>
 
-## Validation steps
+## 검증 단계
 
 ```bash
-# 1. Verify config syntax
+# 1. 설정 문법 확인
 npx eslint --print-config src/index.ts
 
-# 2. Run lint
+# 2. Lint 실행
 npm run lint
 
-# 3. Test auto fix
+# 3. 자동 수정 테스트
 npm run lint:fix
 ```
 
