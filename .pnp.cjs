@@ -498,6 +498,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/claude-code", {\
         "packageLocation": "./packages/claude-code/",\
         "packageDependencies": [\
+          ["@eslint/js", "npm:9.39.2"],\
           ["@kood/claude-code", "workspace:packages/claude-code"],\
           ["@types/fs-extra", "npm:11.0.4"],\
           ["@types/node", "npm:22.19.7"],\
