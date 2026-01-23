@@ -5,11 +5,11 @@ impactDescription: reduces iterations
 tags: javascript, arrays, loops, performance
 ---
 
-## Combine Multiple Array Iterations
+## 여러 배열 반복 결합
 
-Multiple `.filter()` or `.map()` calls iterate the array multiple times. Combine into one loop.
+여러 `.filter()` 또는 `.map()` 호출은 배열을 여러 번 반복합니다. 하나의 루프로 결합하세요.
 
-**Incorrect (3 iterations):**
+**❌ 잘못된 예시 (3번 반복):**
 
 ```typescript
 const admins = users.filter(u => u.isAdmin)
@@ -17,7 +17,7 @@ const testers = users.filter(u => u.isTester)
 const inactive = users.filter(u => !u.isActive)
 ```
 
-**Correct (1 iteration):**
+**✅ 올바른 예시 (1번 반복):**
 
 ```typescript
 const admins: User[] = []

@@ -1,47 +1,29 @@
 ---
 name: nextjs-react-best-practices
-description: React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.
+description: Vercel Engineering의 React와 Next.js 성능 최적화 가이드. React 컴포넌트, Next.js 페이지 작성/리뷰/리팩토링 시 최적 성능 패턴 보장. React 컴포넌트, Next.js 페이지, 데이터 페칭, 번들 최적화, 성능 개선 작업에 트리거.
 license: MIT
 metadata:
   author: vercel
   version: "1.0.0"
 ---
 
-# Next.js React Best Practices
+# Next.js React 베스트 프랙티스
 
-Comprehensive performance optimization guide for React and Next.js applications maintained by Vercel. Contains 45 rules across 8 categories, prioritized by impact to guide automated refactoring and code generation.
-
----
-
-<communication>
-
-## User Communication
-
-**IMPORTANT: Always communicate with the user in Korean (한국어), even though this document is in English.**
-
-When:
-- Asking questions
-- Providing summaries
-- Explaining decisions
-- Reporting progress
-
-Use Korean for all user-facing communication while applying these English guidelines internally.
-
-</communication>
+Vercel에서 관리하는 React와 Next.js 애플리케이션 종합 성능 최적화 가이드. 8개 카테고리, 45개 규칙 포함. 영향도별 우선순위로 자동 리팩토링과 코드 생성 가이드 제공.
 
 ---
 
 <when_to_use>
 
-## When to Apply
+## 사용 시점
 
-| Situation | Description |
-|-----------|-------------|
-| **Writing Components** | Creating new React components or Next.js pages |
-| **Data Fetching** | Implementing client-side or server-side data fetching |
-| **Code Review** | Reviewing code for performance issues |
-| **Refactoring** | Improving existing React/Next.js code |
-| **Optimization** | Optimizing bundle size or load times |
+| 상황 | 설명 |
+|------|------|
+| **컴포넌트 작성** | React 컴포넌트, Next.js 페이지 신규 작성 |
+| **데이터 페칭** | 클라이언트/서버 사이드 데이터 페칭 구현 |
+| **코드 리뷰** | 성능 이슈 검토 |
+| **리팩토링** | 기존 React/Next.js 코드 개선 |
+| **최적화** | 번들 크기, 로딩 시간 최적화 |
 
 </when_to_use>
 
@@ -49,18 +31,18 @@ Use Korean for all user-facing communication while applying these English guidel
 
 <categories>
 
-## Rule Categories by Priority
+## 카테고리별 우선순위
 
-| Priority | Category | Impact | Prefix |
-|----------|----------|--------|--------|
-| 1 | Eliminating Waterfalls | **CRITICAL** | `async-` |
-| 2 | Bundle Size Optimization | **CRITICAL** | `bundle-` |
-| 3 | Server-Side Performance | HIGH | `server-` |
-| 4 | Client-Side Data Fetching | MEDIUM-HIGH | `client-` |
-| 5 | Re-render Optimization | MEDIUM | `rerender-` |
-| 6 | Rendering Performance | MEDIUM | `rendering-` |
-| 7 | JavaScript Performance | LOW-MEDIUM | `js-` |
-| 8 | Advanced Patterns | LOW | `advanced-` |
+| 우선순위 | 카테고리 | 영향도 | 접두사 |
+|---------|---------|--------|--------|
+| 1 | Waterfall 제거 | **CRITICAL** | `async-` |
+| 2 | 번들 크기 최적화 | **CRITICAL** | `bundle-` |
+| 3 | 서버 사이드 성능 | HIGH | `server-` |
+| 4 | 클라이언트 데이터 페칭 | MEDIUM-HIGH | `client-` |
+| 5 | Re-render 최적화 | MEDIUM | `rerender-` |
+| 6 | 렌더링 성능 | MEDIUM | `rendering-` |
+| 7 | JavaScript 성능 | LOW-MEDIUM | `js-` |
+| 8 | 고급 패턴 | LOW | `advanced-` |
 
 </categories>
 
@@ -68,92 +50,92 @@ Use Korean for all user-facing communication while applying these English guidel
 
 <rules>
 
-## Quick Reference
+## 빠른 참조
 
-### 1. Eliminating Waterfalls (CRITICAL)
+### 1. Waterfall 제거 (CRITICAL)
 
-| Rule | Description |
-|------|-------------|
-| `async-defer-await` | Move await into branches where actually used |
-| `async-parallel` | Use Promise.all() for independent operations |
-| `async-dependencies` | Use better-all for partial dependencies |
-| `async-api-routes` | Start promises early, await late in API routes |
-| `async-suspense-boundaries` | Use Suspense to stream content |
+| 규칙 | 설명 |
+|------|------|
+| `async-defer-await` | await를 실제 사용 지점으로 이동 |
+| `async-parallel` | 독립 작업은 Promise.all() 사용 |
+| `async-dependencies` | 부분 의존성은 better-all 사용 |
+| `async-api-routes` | Promise 일찍 시작, 늦게 await |
+| `async-suspense-boundaries` | Suspense로 콘텐츠 스트리밍 |
 
-### 2. Bundle Size Optimization (CRITICAL)
+### 2. 번들 크기 최적화 (CRITICAL)
 
-| Rule | Description |
-|------|-------------|
-| `bundle-barrel-imports` | Import directly, avoid barrel files |
-| `bundle-dynamic-imports` | Use next/dynamic for heavy components |
-| `bundle-defer-third-party` | Load analytics/logging after hydration |
-| `bundle-conditional` | Load modules only when feature is activated |
-| `bundle-preload` | Preload on hover/focus for perceived speed |
+| 규칙 | 설명 |
+|------|------|
+| `bundle-barrel-imports` | 직접 import, barrel 파일 회피 |
+| `bundle-dynamic-imports` | 무거운 컴포넌트는 next/dynamic 사용 |
+| `bundle-defer-third-party` | 분석/로깅은 hydration 후 로드 |
+| `bundle-conditional` | 기능 활성화 시에만 모듈 로드 |
+| `bundle-preload` | hover/focus 시 preload로 체감 속도 향상 |
 
-### 3. Server-Side Performance (HIGH)
+### 3. 서버 사이드 성능 (HIGH)
 
-| Rule | Description |
-|------|-------------|
-| `server-cache-react` | Use React.cache() for per-request deduplication |
-| `server-cache-lru` | Use LRU cache for cross-request caching |
-| `server-serialization` | Minimize data passed to client components |
-| `server-parallel-fetching` | Restructure components to parallelize fetches |
-| `server-after-nonblocking` | Use after() for non-blocking operations |
+| 규칙 | 설명 |
+|------|------|
+| `server-cache-react` | React.cache()로 요청별 중복 제거 |
+| `server-cache-lru` | LRU 캐시로 요청 간 캐싱 |
+| `server-serialization` | 클라이언트로 전달 데이터 최소화 |
+| `server-parallel-fetching` | 컴포넌트 재구성으로 병렬 페칭 |
+| `server-after-nonblocking` | after()로 비차단 작업 실행 |
 
-### 4. Client-Side Data Fetching (MEDIUM-HIGH)
+### 4. 클라이언트 데이터 페칭 (MEDIUM-HIGH)
 
-| Rule | Description |
-|------|-------------|
-| `client-swr-dedup` | Use SWR for automatic request deduplication |
-| `client-event-listeners` | Deduplicate global event listeners |
+| 규칙 | 설명 |
+|------|------|
+| `client-swr-dedup` | SWR로 자동 요청 중복 제거 |
+| `client-event-listeners` | 전역 이벤트 리스너 중복 제거 |
 
-### 5. Re-render Optimization (MEDIUM)
+### 5. Re-render 최적화 (MEDIUM)
 
-| Rule | Description |
-|------|-------------|
-| `rerender-defer-reads` | Don't subscribe to state only used in callbacks |
-| `rerender-memo` | Extract expensive work into memoized components |
-| `rerender-dependencies` | Use primitive dependencies in effects |
-| `rerender-derived-state` | Subscribe to derived booleans, not raw values |
-| `rerender-functional-setstate` | Use functional setState for stable callbacks |
-| `rerender-lazy-state-init` | Pass function to useState for expensive values |
-| `rerender-transitions` | Use startTransition for non-urgent updates |
+| 규칙 | 설명 |
+|------|------|
+| `rerender-defer-reads` | 콜백 전용 상태는 구독 안 함 |
+| `rerender-memo` | 비싼 작업은 memoized 컴포넌트로 추출 |
+| `rerender-dependencies` | effect에 원시값 의존성 사용 |
+| `rerender-derived-state` | 파생 boolean 구독, raw 값 구독 회피 |
+| `rerender-functional-setstate` | 안정적 콜백용 함수형 setState |
+| `rerender-lazy-state-init` | 비싼 초기값은 함수로 useState에 전달 |
+| `rerender-transitions` | 비긴급 업데이트는 startTransition |
 
-### 6. Rendering Performance (MEDIUM)
+### 6. 렌더링 성능 (MEDIUM)
 
-| Rule | Description |
-|------|-------------|
-| `rendering-animate-svg-wrapper` | Animate div wrapper, not SVG element |
-| `rendering-content-visibility` | Use content-visibility for long lists |
-| `rendering-hoist-jsx` | Extract static JSX outside components |
-| `rendering-svg-precision` | Reduce SVG coordinate precision |
-| `rendering-hydration-no-flicker` | Use inline script for client-only data |
-| `rendering-activity` | Use Activity component for show/hide |
-| `rendering-conditional-render` | Use ternary, not && for conditionals |
+| 규칙 | 설명 |
+|------|------|
+| `rendering-animate-svg-wrapper` | SVG 대신 wrapper div 애니메이션 |
+| `rendering-content-visibility` | 긴 리스트는 content-visibility 사용 |
+| `rendering-hoist-jsx` | 정적 JSX 컴포넌트 외부로 추출 |
+| `rendering-svg-precision` | SVG 좌표 정밀도 감소 |
+| `rendering-hydration-no-flicker` | 인라인 스크립트로 클라이언트 전용 데이터 처리 |
+| `rendering-activity` | show/hide는 Activity 컴포넌트 사용 |
+| `rendering-conditional-render` | 조건부 렌더링은 &&가 아닌 삼항 연산자 |
 
-### 7. JavaScript Performance (LOW-MEDIUM)
+### 7. JavaScript 성능 (LOW-MEDIUM)
 
-| Rule | Description |
-|------|-------------|
-| `js-batch-dom-css` | Group CSS changes via classes or cssText |
-| `js-index-maps` | Build Map for repeated lookups |
-| `js-cache-property-access` | Cache object properties in loops |
-| `js-cache-function-results` | Cache function results in module-level Map |
-| `js-cache-storage` | Cache localStorage/sessionStorage reads |
-| `js-combine-iterations` | Combine multiple filter/map into one loop |
-| `js-length-check-first` | Check array length before expensive comparison |
-| `js-early-exit` | Return early from functions |
-| `js-hoist-regexp` | Hoist RegExp creation outside loops |
-| `js-min-max-loop` | Use loop for min/max instead of sort |
-| `js-set-map-lookups` | Use Set/Map for O(1) lookups |
-| `js-tosorted-immutable` | Use toSorted() for immutability |
+| 규칙 | 설명 |
+|------|------|
+| `js-batch-dom-css` | CSS 변경은 클래스나 cssText로 그룹화 |
+| `js-index-maps` | 반복 조회용 Map 빌드 |
+| `js-cache-property-access` | 루프에서 객체 속성 캐싱 |
+| `js-cache-function-results` | 함수 결과를 모듈 레벨 Map에 캐싱 |
+| `js-cache-storage` | localStorage/sessionStorage 읽기 캐싱 |
+| `js-combine-iterations` | 여러 filter/map을 하나의 루프로 결합 |
+| `js-length-check-first` | 비싼 비교 전 배열 길이 먼저 체크 |
+| `js-early-exit` | 함수에서 조기 반환 |
+| `js-hoist-regexp` | RegExp 생성을 루프 밖으로 |
+| `js-min-max-loop` | sort 대신 루프로 min/max |
+| `js-set-map-lookups` | O(1) 조회용 Set/Map 사용 |
+| `js-tosorted-immutable` | 불변성용 toSorted() 사용 |
 
-### 8. Advanced Patterns (LOW)
+### 8. 고급 패턴 (LOW)
 
-| Rule | Description |
-|------|-------------|
-| `advanced-event-handler-refs` | Store event handlers in refs |
-| `advanced-use-latest` | useLatest for stable callback refs |
+| 규칙 | 설명 |
+|------|------|
+| `advanced-event-handler-refs` | ref에 이벤트 핸들러 저장 |
+| `advanced-use-latest` | 안정적 콜백 ref용 useLatest |
 
 </rules>
 
@@ -161,17 +143,17 @@ Use Korean for all user-facing communication while applying these English guidel
 
 <patterns>
 
-## Core Patterns
+## 핵심 패턴
 
-### ✅ Eliminate Waterfalls
+### ✅ Waterfall 제거
 
 ```typescript
-// ❌ Sequential execution, 3 round trips
+// ❌ 순차 실행, 3번 왕복
 const user = await fetchUser()
 const posts = await fetchPosts()
 const comments = await fetchComments()
 
-// ✅ Parallel execution, 1 round trip
+// ✅ 병렬 실행, 1번 왕복
 const [user, posts, comments] = await Promise.all([
   fetchUser(),
   fetchPosts(),
@@ -179,18 +161,18 @@ const [user, posts, comments] = await Promise.all([
 ])
 ```
 
-### ✅ Bundle Optimization
+### ✅ 번들 최적화
 
 ```tsx
-// ❌ Import entire library (1583 modules, ~2.8s)
+// ❌ 전체 라이브러리 import (1583개 모듈, ~2.8초)
 import { Check, X, Menu } from 'lucide-react'
 
-// ✅ Direct imports (3 modules only)
+// ✅ 직접 import (3개 모듈만)
 import Check from 'lucide-react/dist/esm/icons/check'
 import X from 'lucide-react/dist/esm/icons/x'
 import Menu from 'lucide-react/dist/esm/icons/menu'
 
-// ✅ Next.js 13.5+ auto-optimization
+// ✅ Next.js 13.5+ 자동 최적화
 // next.config.js
 module.exports = {
   experimental: {
@@ -199,12 +181,12 @@ module.exports = {
 }
 ```
 
-### ✅ Server Caching
+### ✅ 서버 캐싱
 
 ```typescript
 import { cache } from 'react'
 
-// Per-request deduplication
+// 요청별 중복 제거
 export const getCurrentUser = cache(async () => {
   const session = await auth()
   if (!session?.user?.id) return null
@@ -212,15 +194,15 @@ export const getCurrentUser = cache(async () => {
 })
 ```
 
-### ✅ Re-render Optimization
+### ✅ Re-render 최적화
 
 ```tsx
-// ❌ items as dependency, recreated every time
+// ❌ items가 의존성, 매번 재생성
 const addItems = useCallback((newItems: Item[]) => {
   setItems([...items, ...newItems])
 }, [items])
 
-// ✅ Stable callback, never recreated
+// ✅ 안정적 콜백, 재생성 없음
 const addItems = useCallback((newItems: Item[]) => {
   setItems(curr => [...curr, ...newItems])
 }, [])
@@ -232,9 +214,9 @@ const addItems = useCallback((newItems: Item[]) => {
 
 <usage>
 
-## Usage
+## 사용법
 
-**Detailed rules and examples:**
+**상세 규칙 및 예시:**
 
 ```
 rules/async-parallel.md
@@ -242,13 +224,13 @@ rules/bundle-barrel-imports.md
 rules/_sections.md
 ```
 
-Each rule file contains:
-- ❌ Incorrect code example with explanation
-- ✅ Correct code example with explanation
-- Additional context and references
-- Why it matters
+각 규칙 파일 포함 내용:
+- 중요한 이유 설명
+- ❌ 잘못된 코드 예시 + 설명
+- ✅ 올바른 코드 예시 + 설명
+- 추가 컨텍스트 및 참조
 
-**Full compiled document:** `AGENTS.md`
+**전체 컴파일 문서:** `PARALLEL_AGENTS.md`
 
 </usage>
 
@@ -256,14 +238,14 @@ Each rule file contains:
 
 <references>
 
-## References
+## 참고 자료
 
-1. [React](https://react.dev)
-2. [Next.js](https://nextjs.org)
+1. [React 공식 문서](https://react.dev)
+2. [Next.js 공식 문서](https://nextjs.org)
 3. [SWR](https://swr.vercel.app)
 4. [better-all](https://github.com/shuding/better-all)
 5. [node-lru-cache](https://github.com/isaacs/node-lru-cache)
-6. [Next.js Package Import Optimization](https://vercel.com/blog/how-we-optimized-package-imports-in-next-js)
-7. [How We Made the Vercel Dashboard Twice as Fast](https://vercel.com/blog/how-we-made-the-vercel-dashboard-twice-as-fast)
+6. [Next.js Package Import 최적화](https://vercel.com/blog/how-we-optimized-package-imports-in-next-js)
+7. [Vercel Dashboard 2배 빠르게 만들기](https://vercel.com/blog/how-we-made-the-vercel-dashboard-twice-as-fast)
 
 </references>

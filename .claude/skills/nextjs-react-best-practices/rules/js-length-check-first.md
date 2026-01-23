@@ -5,32 +5,32 @@ impactDescription: avoids expensive operations when lengths differ
 tags: javascript, arrays, performance, optimization, comparison
 ---
 
-## Early Length Check for Array Comparisons
+## 배열 비교 시 길이 우선 체크
 
-When comparing arrays with expensive operations (sorting, deep equality, serialization), check lengths first. If lengths differ, the arrays cannot be equal.
+정렬, 깊은 비교, 직렬화 등 비용이 큰 연산으로 배열을 비교할 때는 길이를 먼저 확인하세요. 길이가 다르면 배열이 같을 수 없습니다.
 
-In real-world applications, this optimization is especially valuable when the comparison runs in hot paths (event handlers, render loops).
+실제 애플리케이션에서 이 최적화는 비교가 핫 패스(이벤트 핸들러, 렌더 루프)에서 실행될 때 특히 유용합니다.
 
-**Incorrect (always runs expensive comparison):**
+**❌ 잘못된 예 (항상 비싼 비교 실행):**
 
 ```typescript
 function hasChanges(current: string[], original: string[]) {
-  // Always sorts and joins, even when lengths differ
+  // 길이가 다른 경우에도 항상 정렬과 join 실행
   return current.sort().join() !== original.sort().join()
 }
 ```
 
-Two O(n log n) sorts run even when `current.length` is 5 and `original.length` is 100. There is also overhead of joining the arrays and comparing the strings.
+`current.length`가 5이고 `original.length`가 100인 경우에도 두 개의 O(n log n) 정렬이 실행됩니다. 배열을 join하고 문자열을 비교하는 오버헤드도 발생합니다.
 
-**Correct (O(1) length check first):**
+**✅ 올바른 예 (O(1) 길이 체크 우선):**
 
 ```typescript
 function hasChanges(current: string[], original: string[]) {
-  // Early return if lengths differ
+  // 길이가 다르면 조기 반환
   if (current.length !== original.length) {
     return true
   }
-  // Only sort/join when lengths match
+  // 길이가 같을 때만 정렬/join
   const currentSorted = current.toSorted()
   const originalSorted = original.toSorted()
   for (let i = 0; i < currentSorted.length; i++) {
@@ -42,8 +42,8 @@ function hasChanges(current: string[], original: string[]) {
 }
 ```
 
-This new approach is more efficient because:
-- It avoids the overhead of sorting and joining the arrays when lengths differ
-- It avoids consuming memory for the joined strings (especially important for large arrays)
-- It avoids mutating the original arrays
-- It returns early when a difference is found
+이 새로운 접근 방식이 더 효율적인 이유:
+- 길이가 다를 때 정렬과 join의 오버헤드를 피함
+- join된 문자열을 위한 메모리 소비를 피함 (특히 큰 배열에 중요)
+- 원본 배열 변형을 피함
+- 차이를 발견하면 조기 반환

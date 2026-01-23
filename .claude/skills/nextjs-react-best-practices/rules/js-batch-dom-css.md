@@ -5,15 +5,15 @@ impactDescription: reduces reflows/repaints
 tags: javascript, dom, css, performance, reflow
 ---
 
-## Batch DOM CSS Changes
+## DOM CSS 변경 일괄 처리
 
-Avoid changing styles one property at a time. Group multiple CSS changes together via classes or `cssText` to minimize browser reflows.
+스타일을 한 번에 하나씩 변경하지 마세요. 여러 CSS 변경을 클래스나 `cssText`를 통해 그룹화하여 브라우저 리플로우를 최소화하세요.
 
-**Incorrect (multiple reflows):**
+**❌ 잘못된 예시 (여러 번 리플로우):**
 
 ```typescript
 function updateElementStyles(element: HTMLElement) {
-  // Each line triggers a reflow
+  // 각 줄마다 리플로우 발생
   element.style.width = '100px'
   element.style.height = '200px'
   element.style.backgroundColor = 'blue'
@@ -21,10 +21,10 @@ function updateElementStyles(element: HTMLElement) {
 }
 ```
 
-**Correct (add class - single reflow):**
+**✅ 올바른 예시 (클래스 추가 - 단일 리플로우):**
 
 ```typescript
-// CSS file
+// CSS 파일
 .highlighted-box {
   width: 100px;
   height: 200px;
@@ -38,7 +38,7 @@ function updateElementStyles(element: HTMLElement) {
 }
 ```
 
-**Correct (change cssText - single reflow):**
+**✅ 올바른 예시 (cssText 변경 - 단일 리플로우):**
 
 ```typescript
 function updateElementStyles(element: HTMLElement) {
@@ -51,13 +51,13 @@ function updateElementStyles(element: HTMLElement) {
 }
 ```
 
-**React example:**
+**React 예시:**
 
 ```tsx
-// Incorrect: changing styles one by one
+// ❌ 잘못된 예시: 스타일을 하나씩 변경
 function Box({ isHighlighted }: { isHighlighted: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
-  
+
   useEffect(() => {
     if (ref.current && isHighlighted) {
       ref.current.style.width = '100px'
@@ -65,11 +65,11 @@ function Box({ isHighlighted }: { isHighlighted: boolean }) {
       ref.current.style.backgroundColor = 'blue'
     }
   }, [isHighlighted])
-  
+
   return <div ref={ref}>Content</div>
 }
 
-// Correct: toggle class
+// ✅ 올바른 예시: 클래스 토글
 function Box({ isHighlighted }: { isHighlighted: boolean }) {
   return (
     <div className={isHighlighted ? 'highlighted-box' : ''}>
@@ -79,4 +79,4 @@ function Box({ isHighlighted }: { isHighlighted: boolean }) {
 }
 ```
 
-Prefer CSS classes over inline styles when possible. Classes are cached by the browser and provide better separation of concerns.
+가능하면 인라인 스타일보다 CSS 클래스를 사용하세요. 클래스는 브라우저에 캐시되며 관심사를 더 잘 분리합니다.

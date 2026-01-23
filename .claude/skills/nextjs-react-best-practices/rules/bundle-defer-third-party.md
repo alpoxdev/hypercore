@@ -5,11 +5,11 @@ impactDescription: loads after hydration
 tags: bundle, third-party, analytics, defer
 ---
 
-## Defer Non-Critical Third-Party Libraries
+## 중요하지 않은 서드파티 라이브러리 지연 로드
 
-Analytics, logging, and error tracking don't block user interaction. Load them after hydration.
+분석, 로깅, 오류 추적은 사용자 상호작용을 차단하지 않습니다. 하이드레이션 후에 로드하세요.
 
-**Incorrect (blocks initial bundle):**
+**잘못된 예 (초기 번들을 차단):**
 
 ```tsx
 import { Analytics } from '@vercel/analytics/react'
@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
 }
 ```
 
-**Correct (loads after hydration):**
+**올바른 예 (하이드레이션 후 로드):**
 
 ```tsx
 import dynamic from 'next/dynamic'

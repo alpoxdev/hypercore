@@ -5,11 +5,11 @@ impactDescription: minimizes effect re-runs
 tags: rerender, useEffect, dependencies, optimization
 ---
 
-## Narrow Effect Dependencies
+## Effect 의존성 좁히기
 
-Specify primitive dependencies instead of objects to minimize effect re-runs.
+객체 대신 원시 타입 의존성을 지정하여 effect 재실행을 최소화하세요.
 
-**Incorrect (re-runs on any user field change):**
+**❌ 잘못된 예시 (user의 모든 필드 변경 시 재실행):**
 
 ```tsx
 useEffect(() => {
@@ -17,7 +17,7 @@ useEffect(() => {
 }, [user])
 ```
 
-**Correct (re-runs only when id changes):**
+**✅ 올바른 예시 (id 변경 시에만 재실행):**
 
 ```tsx
 useEffect(() => {
@@ -25,17 +25,17 @@ useEffect(() => {
 }, [user.id])
 ```
 
-**For derived state, compute outside effect:**
+**파생 상태의 경우, effect 밖에서 계산:**
 
 ```tsx
-// Incorrect: runs on width=767, 766, 765...
+// ❌ 잘못된 예시: width=767, 766, 765... 모든 변경 시 실행
 useEffect(() => {
   if (width < 768) {
     enableMobileMode()
   }
 }, [width])
 
-// Correct: runs only on boolean transition
+// ✅ 올바른 예시: boolean 전환 시에만 실행
 const isMobile = width < 768
 useEffect(() => {
   if (isMobile) {

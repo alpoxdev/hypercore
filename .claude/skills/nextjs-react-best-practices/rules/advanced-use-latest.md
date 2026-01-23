@@ -5,11 +5,11 @@ impactDescription: prevents effect re-runs
 tags: advanced, hooks, useLatest, refs, optimization
 ---
 
-## useLatest for Stable Callback Refs
+## 안정적인 콜백 Ref를 위한 useLatest
 
-Access latest values in callbacks without adding them to dependency arrays. Prevents effect re-runs while avoiding stale closures.
+의존성 배열에 추가하지 않고 콜백에서 최신 값에 접근하세요. 오래된 클로저를 피하면서 이펙트 재실행을 방지합니다.
 
-**Implementation:**
+**구현:**
 
 ```typescript
 function useLatest<T>(value: T) {
@@ -21,7 +21,7 @@ function useLatest<T>(value: T) {
 }
 ```
 
-**Incorrect (effect re-runs on every callback change):**
+**❌ 잘못된 예 (매 콜백 변경마다 이펙트 재실행):**
 
 ```tsx
 function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
@@ -34,7 +34,7 @@ function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
 }
 ```
 
-**Correct (stable effect, fresh callback):**
+**✅ 올바른 예 (안정적인 이펙트, 신선한 콜백):**
 
 ```tsx
 function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
