@@ -5,20 +5,20 @@ impactDescription: avoid redundant computation
 tags: javascript, cache, memoization, performance
 ---
 
-## Cache Repeated Function Calls
+## 반복되는 함수 호출 캐싱
 
-Use a module-level Map to cache function results when the same function is called repeatedly with the same inputs during render.
+렌더링 중 동일한 입력으로 동일한 함수가 반복적으로 호출될 때 모듈 레벨 Map을 사용하여 함수 결과를 캐시하세요.
 
-**Incorrect (redundant computation):**
+**❌ 잘못된 예시 (중복 계산):**
 
 ```typescript
 function ProjectList({ projects }: { projects: Project[] }) {
   return (
     <div>
       {projects.map(project => {
-        // slugify() called 100+ times for same project names
+        // slugify()가 동일한 프로젝트 이름에 대해 100번 이상 호출됨
         const slug = slugify(project.name)
-        
+
         return <ProjectCard key={project.id} slug={slug} />
       })}
     </div>
@@ -26,10 +26,10 @@ function ProjectList({ projects }: { projects: Project[] }) {
 }
 ```
 
-**Correct (cached results):**
+**✅ 올바른 예시 (캐시된 결과):**
 
 ```typescript
-// Module-level cache
+// 모듈 레벨 캐시
 const slugifyCache = new Map<string, string>()
 
 function cachedSlugify(text: string): string {
@@ -45,9 +45,9 @@ function ProjectList({ projects }: { projects: Project[] }) {
   return (
     <div>
       {projects.map(project => {
-        // Computed only once per unique project name
+        // 고유한 프로젝트 이름당 한 번만 계산됨
         const slug = cachedSlugify(project.name)
-        
+
         return <ProjectCard key={project.id} slug={slug} />
       })}
     </div>
@@ -55,7 +55,7 @@ function ProjectList({ projects }: { projects: Project[] }) {
 }
 ```
 
-**Simpler pattern for single-value functions:**
+**단일 값 함수를 위한 간단한 패턴:**
 
 ```typescript
 let isLoggedInCache: boolean | null = null
@@ -64,17 +64,17 @@ function isLoggedIn(): boolean {
   if (isLoggedInCache !== null) {
     return isLoggedInCache
   }
-  
+
   isLoggedInCache = document.cookie.includes('auth=')
   return isLoggedInCache
 }
 
-// Clear cache when auth changes
+// 인증이 변경될 때 캐시 초기화
 function onAuthChange() {
   isLoggedInCache = null
 }
 ```
 
-Use a Map (not a hook) so it works everywhere: utilities, event handlers, not just React components.
+Map을 사용하세요 (훅이 아님). 그래야 유틸리티, 이벤트 핸들러 등 어디서든 작동합니다 (React 컴포넌트뿐만 아니라).
 
-Reference: [How we made the Vercel Dashboard twice as fast](https://vercel.com/blog/how-we-made-the-vercel-dashboard-twice-as-fast)
+참고: [How we made the Vercel Dashboard twice as fast](https://vercel.com/blog/how-we-made-the-vercel-dashboard-twice-as-fast)

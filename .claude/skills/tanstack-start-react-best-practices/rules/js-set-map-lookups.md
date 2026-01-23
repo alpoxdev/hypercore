@@ -5,18 +5,18 @@ impactDescription: O(n) to O(1)
 tags: javascript, set, map, data-structures, performance
 ---
 
-## Use Set/Map for O(1) Lookups
+## O(1) 조회를 위해 Set/Map 사용
 
-Convert arrays to Set/Map for repeated membership checks.
+반복적인 멤버십 확인을 위해 배열을 Set/Map으로 변환하세요.
 
-**Incorrect (O(n) per check):**
+**잘못된 예 (확인당 O(n)):**
 
 ```typescript
 const allowedIds = ['a', 'b', 'c', ...]
 items.filter(item => allowedIds.includes(item.id))
 ```
 
-**Correct (O(1) per check):**
+**올바른 예 (확인당 O(1)):**
 
 ```typescript
 const allowedIds = new Set(['a', 'b', 'c', ...])

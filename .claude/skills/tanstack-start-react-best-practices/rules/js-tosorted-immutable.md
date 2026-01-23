@@ -5,15 +5,15 @@ impactDescription: prevents mutation bugs in React state
 tags: javascript, arrays, immutability, react, state, mutation
 ---
 
-## Use toSorted() Instead of sort() for Immutability
+## 불변성을 위해 sort() 대신 toSorted() 사용
 
-`.sort()` mutates the array in place, which can cause bugs with React state and props. Use `.toSorted()` to create a new sorted array without mutation.
+`.sort()`는 배열을 제자리에서 변경하여 React 상태와 props에서 버그를 일으킬 수 있습니다. 변경 없이 새로운 정렬된 배열을 생성하려면 `.toSorted()`를 사용하세요.
 
-**Incorrect (mutates original array):**
+**잘못된 예 (원본 배열 변경):**
 
 ```typescript
 function UserList({ users }: { users: User[] }) {
-  // Mutates the users prop array!
+  // users prop 배열을 변경함!
   const sorted = useMemo(
     () => users.sort((a, b) => a.name.localeCompare(b.name)),
     [users]
@@ -22,11 +22,11 @@ function UserList({ users }: { users: User[] }) {
 }
 ```
 
-**Correct (creates new array):**
+**올바른 예 (새 배열 생성):**
 
 ```typescript
 function UserList({ users }: { users: User[] }) {
-  // Creates new sorted array, original unchanged
+  // 새로운 정렬된 배열 생성, 원본은 변경 없음
   const sorted = useMemo(
     () => users.toSorted((a, b) => a.name.localeCompare(b.name)),
     [users]
@@ -35,23 +35,23 @@ function UserList({ users }: { users: User[] }) {
 }
 ```
 
-**Why this matters in React:**
+**React에서 이것이 중요한 이유:**
 
-1. Props/state mutations break React's immutability model - React expects props and state to be treated as read-only
-2. Causes stale closure bugs - Mutating arrays inside closures (callbacks, effects) can lead to unexpected behavior
+1. Props/state 변경은 React의 불변성 모델을 깨뜨림 - React는 props와 state가 읽기 전용으로 취급되길 기대함
+2. 오래된 클로저 버그 발생 - 클로저(콜백, 이펙트) 내부에서 배열을 변경하면 예상치 못한 동작을 일으킬 수 있음
 
-**Browser support (fallback for older browsers):**
+**브라우저 지원 (구형 브라우저를 위한 폴백):**
 
-`.toSorted()` is available in all modern browsers (Chrome 110+, Safari 16+, Firefox 115+, Node.js 20+). For older environments, use spread operator:
+`.toSorted()`는 모든 최신 브라우저(Chrome 110+, Safari 16+, Firefox 115+, Node.js 20+)에서 사용할 수 있습니다. 구형 환경의 경우 스프레드 연산자를 사용하세요:
 
 ```typescript
-// Fallback for older browsers
+// 구형 브라우저를 위한 폴백
 const sorted = [...items].sort((a, b) => a.value - b.value)
 ```
 
-**Other immutable array methods:**
+**다른 불변 배열 메서드:**
 
-- `.toSorted()` - immutable sort
-- `.toReversed()` - immutable reverse
-- `.toSpliced()` - immutable splice
-- `.with()` - immutable element replacement
+- `.toSorted()` - 불변 정렬
+- `.toReversed()` - 불변 역순
+- `.toSpliced()` - 불변 스플라이스
+- `.with()` - 불변 요소 교체

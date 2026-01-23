@@ -5,9 +5,9 @@ impactDescription: faster initial render
 tags: rendering, css, content-visibility, long-lists
 ---
 
-## CSS content-visibility for Long Lists
+## 긴 목록에 CSS content-visibility 적용
 
-Apply `content-visibility: auto` to defer off-screen rendering.
+`content-visibility: auto`를 적용하여 화면 밖 렌더링을 지연시킵니다.
 
 **CSS:**
 
@@ -18,7 +18,7 @@ Apply `content-visibility: auto` to defer off-screen rendering.
 }
 ```
 
-**Example:**
+**예시:**
 
 ```tsx
 function MessageList({ messages }: { messages: Message[] }) {
@@ -35,4 +35,4 @@ function MessageList({ messages }: { messages: Message[] }) {
 }
 ```
 
-For 1000 messages, browser skips layout/paint for ~990 off-screen items (10× faster initial render).
+1000개의 메시지가 있을 때, 브라우저는 화면 밖 약 990개 항목의 레이아웃/페인트를 건너뛰어 초기 렌더링 속도가 10배 빨라집니다.

@@ -1,15 +1,15 @@
 ---
-title: Use Deferred Data for Non-Critical Content
+title: 중요하지 않은 콘텐츠에 지연 데이터 사용
 impact: HIGH
-impactDescription: faster initial page render
+impactDescription: 초기 페이지 렌더링 속도 향상
 tags: server, streaming, suspense, deferred-data, ux
 ---
 
-## Use Deferred Data for Non-Critical Content
+## 중요하지 않은 콘텐츠에 지연 데이터 (Deferred Data) 사용
 
-Load critical data with `await`, but return non-critical data as Promises for streaming. This allows the page to render immediately while slow queries complete in the background.
+중요한 데이터는 `await`로 로드하고, 중요하지 않은 데이터는 Promise로 반환해 스트리밍. 느린 쿼리가 백그라운드에서 완료되는 동안 페이지를 즉시 렌더링합니다.
 
-**Incorrect (blocks on slow query):**
+**❌ 잘못된 예 (느린 쿼리에서 차단):**
 
 ```typescript
 import { createFileRoute } from '@tanstack/react-router'
@@ -17,15 +17,15 @@ import { getPost, getComments } from '@/functions/data'
 
 export const Route = createFileRoute('/posts/$postId')({
   loader: async ({ params }) => {
-    const post = await getPost(params.postId) // Fast: 50ms
-    const comments = await getComments(params.postId) // Slow: 3s
+    const post = await getPost(params.postId) // 빠름: 50ms
+    const comments = await getComments(params.postId) // 느림: 3s
     return { post, comments }
   }
 })
-// Total wait: 3.05s before page renders
+// 총 대기 시간: 3.05초 후 페이지 렌더링
 ```
 
-**Correct (stream slow data):**
+**✅ 올바른 예 (느린 데이터 스트리밍):**
 
 ```typescript
 import { createFileRoute, Await } from '@tanstack/react-router'
@@ -34,10 +34,10 @@ import { Suspense } from 'react'
 
 export const Route = createFileRoute('/posts/$postId')({
   loader: async ({ params }) => {
-    // Critical: await immediately
+    // 중요: 즉시 await
     const post = await getPost(params.postId)
 
-    // Non-critical: return Promise (don't await)
+    // 중요하지 않음: Promise 반환 (await 하지 않음)
     const deferredComments = getComments(params.postId)
 
     return { post, deferredComments }
@@ -50,7 +50,7 @@ function PostPage() {
 
   return (
     <div>
-      <PostContent post={post} /> {/* Renders immediately */}
+      <PostContent post={post} /> {/* 즉시 렌더링 */}
 
       <Suspense fallback={<CommentsSkeleton />}>
         <Await promise={deferredComments}>
@@ -62,6 +62,6 @@ function PostPage() {
 }
 ```
 
-Page renders in 50ms instead of 3s. Comments stream in when ready. Use for: analytics, recommendations, user activity, social features.
+페이지가 3초 대신 50ms에 렌더링됩니다. 댓글은 준비되면 스트리밍. 다음에 사용: 분석, 추천, 사용자 활동, 소셜 기능.
 
-Reference: [TanStack Router Deferred Data Loading](https://tanstack.com/router/v1/docs/framework/react/guide/deferred-data-loading)
+참고: [TanStack Router Deferred Data Loading](https://tanstack.com/router/v1/docs/framework/react/guide/deferred-data-loading)

@@ -5,11 +5,11 @@ impactDescription: single listener for N components
 tags: client, swr, event-listeners, subscription
 ---
 
-## Deduplicate Global Event Listeners
+## 전역 이벤트 리스너 중복 제거
 
-Use `useSWRSubscription()` to share global event listeners across component instances.
+`useSWRSubscription()`을 사용하여 컴포넌트 인스턴스 간에 전역 이벤트 리스너를 공유합니다.
 
-**Incorrect (N instances = N listeners):**
+**❌ 잘못된 예시 (N개 인스턴스 = N개 리스너):**
 
 ```tsx
 function useKeyboardShortcut(key: string, callback: () => void) {
@@ -25,18 +25,18 @@ function useKeyboardShortcut(key: string, callback: () => void) {
 }
 ```
 
-When using the `useKeyboardShortcut` hook multiple times, each instance will register a new listener.
+`useKeyboardShortcut` 훅을 여러 번 사용하면 각 인스턴스가 새로운 리스너를 등록합니다.
 
-**Correct (N instances = 1 listener):**
+**✅ 올바른 예시 (N개 인스턴스 = 1개 리스너):**
 
 ```tsx
 import useSWRSubscription from 'swr/subscription'
 
-// Module-level Map to track callbacks per key
+// 모듈 레벨 Map으로 키별 콜백 추적
 const keyCallbacks = new Map<string, Set<() => void>>()
 
 function useKeyboardShortcut(key: string, callback: () => void) {
-  // Register this callback in the Map
+  // Map에 이 콜백 등록
   useEffect(() => {
     if (!keyCallbacks.has(key)) {
       keyCallbacks.set(key, new Set())
@@ -66,8 +66,8 @@ function useKeyboardShortcut(key: string, callback: () => void) {
 }
 
 function Profile() {
-  // Multiple shortcuts will share the same listener
-  useKeyboardShortcut('p', () => { /* ... */ }) 
+  // 여러 단축키가 동일한 리스너를 공유함
+  useKeyboardShortcut('p', () => { /* ... */ })
   useKeyboardShortcut('k', () => { /* ... */ })
   // ...
 }

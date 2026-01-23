@@ -5,11 +5,11 @@ impactDescription: reduces lookups
 tags: javascript, loops, optimization, caching
 ---
 
-## Cache Property Access in Loops
+## 루프에서 속성 접근 캐싱
 
-Cache object property lookups in hot paths.
+핫 패스에서 객체 속성 조회를 캐시하세요.
 
-**Incorrect (3 lookups × N iterations):**
+**❌ 잘못된 예시 (3개의 조회 × N번 반복):**
 
 ```typescript
 for (let i = 0; i < arr.length; i++) {
@@ -17,7 +17,7 @@ for (let i = 0; i < arr.length; i++) {
 }
 ```
 
-**Correct (1 lookup total):**
+**✅ 올바른 예시 (총 1번의 조회):**
 
 ```typescript
 const value = obj.config.settings.value

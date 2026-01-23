@@ -5,11 +5,11 @@ impactDescription: reduces perceived latency
 tags: bundle, preload, user-intent, hover
 ---
 
-## Preload Based on User Intent
+## 사용자 의도에 따른 프리로드
 
-Preload heavy bundles before they're needed to reduce perceived latency.
+무거운 번들을 필요하기 전에 프리로드하여 체감 지연 시간을 줄입니다.
 
-**Example (preload on hover/focus):**
+**예시 (호버/포커스 시 프리로드):**
 
 ```tsx
 function EditorButton({ onClick }: { onClick: () => void }) {
@@ -31,7 +31,7 @@ function EditorButton({ onClick }: { onClick: () => void }) {
 }
 ```
 
-**Example (preload when feature flag is enabled):**
+**예시 (기능 플래그가 활성화될 때 프리로드):**
 
 ```tsx
 function FlagsProvider({ children, flags }: Props) {
@@ -47,4 +47,4 @@ function FlagsProvider({ children, flags }: Props) {
 }
 ```
 
-The `typeof window !== 'undefined'` check prevents bundling preloaded modules for SSR, optimizing server bundle size and build speed.
+`typeof window !== 'undefined'` 체크는 프리로드된 모듈이 SSR에서 번들링되는 것을 방지하여 서버 번들 크기와 빌드 속도를 최적화합니다.

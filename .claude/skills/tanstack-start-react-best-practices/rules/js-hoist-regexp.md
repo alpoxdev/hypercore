@@ -5,11 +5,11 @@ impactDescription: avoids recreation
 tags: javascript, regexp, optimization, memoization
 ---
 
-## Hoist RegExp Creation
+## RegExp 생성 호이스팅
 
-Don't create RegExp inside render. Hoist to module scope or memoize with `useMemo()`.
+렌더 내부에서 RegExp를 생성하지 마세요. 모듈 스코프로 호이스트하거나 `useMemo()`로 메모이제이션하세요.
 
-**Incorrect (new RegExp every render):**
+**잘못된 예 (매 렌더마다 새로운 RegExp):**
 
 ```tsx
 function Highlighter({ text, query }: Props) {
@@ -19,7 +19,7 @@ function Highlighter({ text, query }: Props) {
 }
 ```
 
-**Correct (memoize or hoist):**
+**올바른 예 (메모이제이션 또는 호이스팅):**
 
 ```tsx
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -34,9 +34,9 @@ function Highlighter({ text, query }: Props) {
 }
 ```
 
-**Warning (global regex has mutable state):**
+**주의 (전역 정규식은 가변 상태를 가짐):**
 
-Global regex (`/g`) has mutable `lastIndex` state:
+전역 정규식(`/g`)은 가변적인 `lastIndex` 상태를 가집니다:
 
 ```typescript
 const regex = /foo/g

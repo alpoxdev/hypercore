@@ -5,11 +5,11 @@ impactDescription: maintains UI responsiveness
 tags: rerender, transitions, startTransition, performance
 ---
 
-## Use Transitions for Non-Urgent Updates
+## 긴급하지 않은 업데이트에 Transitions 사용
 
-Mark frequent, non-urgent state updates as transitions to maintain UI responsiveness.
+빈번하고 긴급하지 않은 상태 업데이트를 transitions로 표시하여 UI 응답성을 유지하세요.
 
-**Incorrect (blocks UI on every scroll):**
+**잘못된 예시 (스크롤마다 UI 차단):**
 
 ```tsx
 function ScrollTracker() {
@@ -22,7 +22,7 @@ function ScrollTracker() {
 }
 ```
 
-**Correct (non-blocking updates):**
+**올바른 예시 (논블로킹 업데이트):**
 
 ```tsx
 import { startTransition } from 'react'

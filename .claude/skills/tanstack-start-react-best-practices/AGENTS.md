@@ -1,44 +1,23 @@
-# TanStack Start React Best Practices
+# TanStack Start React 베스트 프랙티스
 
 **Version 1.0.0**
-TanStack Start Optimization Guide
+TanStack Start 최적화 가이드
 January 2026
 
-> **Note:**
-> This document is mainly for agents and LLMs to follow when maintaining,
-> generating, or refactoring React and TanStack Start codebases. Humans
-> may also find it useful, but guidance here is optimized for automation
-> and consistency by AI-assisted workflows.
+> **참고:**
+> 이 문서는 주로 에이전트와 LLM이 React 및 TanStack Start 코드베이스를 유지보수, 생성, 리팩토링할 때 따르기 위한 것입니다. 사람도 유용하게 사용할 수 있지만, AI 지원 워크플로의 자동화 및 일관성을 위해 최적화되어 있습니다.
 
 ---
 
-<communication>
+## 요약
 
-## User Communication Protocol
-
-**CRITICAL: Always communicate with the user in Korean (한국어).**
-
-This applies to:
-- Questions and clarifications
-- Progress updates and summaries
-- Explaining decisions and trade-offs
-- Reporting errors or blockers
-
-Internal processing and code comments remain in English. Only user-facing messages must be in Korean.
-
-</communication>
-
----
-
-## Abstract
-
-Comprehensive performance optimization guide for React and TanStack Start applications, designed for AI agents and LLMs. Contains 38 rules across 7 categories, prioritized by impact from critical (eliminating waterfalls, reducing bundle size) to incremental (JavaScript performance). Each rule includes detailed explanations, real-world examples comparing incorrect vs. correct implementations, and specific impact metrics to guide automated refactoring and code generation.
+AI 에이전트와 LLM을 위한 React 및 TanStack Start 애플리케이션 종합 성능 최적화 가이드. 7개 카테고리에 걸쳐 38개 규칙을 포함하며, 영향도별로 우선순위를 매겼습니다 (critical: waterfall 제거, 번들 크기 감소 → incremental: JavaScript 성능). 각 규칙은 자동 리팩토링 및 코드 생성을 위한 상세한 설명, 올바른 구현 대 잘못된 구현을 비교하는 실제 예시, 구체적인 영향 지표를 포함합니다.
 
 ---
 
 <instructions>
 
-## Document Usage Instructions
+## 문서 사용 지침
 
 @rules/async-defer-await.md
 @rules/async-parallel.md
@@ -86,17 +65,17 @@ Comprehensive performance optimization guide for React and TanStack Start applic
 
 <categories>
 
-## Categories by Priority
+## 카테고리별 우선순위
 
-| Priority | Category | Impact | Description |
-|----------|----------|--------|-------------|
-| 1 | Eliminating Waterfalls | **CRITICAL** | Convert sequential awaits to parallel. Biggest gains |
-| 2 | Bundle Size Optimization | **CRITICAL** | Improve TTI and LCP. Faster initial loads |
-| 3 | Server-Side Performance | HIGH | Eliminate server-side waterfalls, reduce response times |
-| 4 | Client-Side Data Fetching | MEDIUM-HIGH | Automatic deduplication, efficient data fetching |
-| 5 | Re-render Optimization | MEDIUM | Minimize unnecessary re-renders, improve UI responsiveness |
-| 6 | Rendering Performance | MEDIUM | Optimize browser rendering work |
-| 7 | JavaScript Performance | LOW-MEDIUM | Hot path micro-optimizations |
+| 우선순위 | 카테고리 | 영향도 | 설명 |
+|---------|---------|--------|------|
+| 1 | Waterfall 제거 | **CRITICAL** | 순차 await를 병렬로 전환. 가장 큰 성능 향상 제공 |
+| 2 | 번들 크기 최적화 | **CRITICAL** | TTI와 LCP 개선. 초기 로딩 속도 향상 |
+| 3 | 서버 사이드 성능 | HIGH | 서버 사이드 waterfall 제거, 응답 시간 단축 |
+| 4 | 클라이언트 데이터 페칭 | MEDIUM-HIGH | 자동 중복 제거, 효율적 데이터 페칭 |
+| 5 | Re-render 최적화 | MEDIUM | 불필요한 re-render 최소화, UI 반응성 향상 |
+| 6 | 렌더링 성능 | MEDIUM | 브라우저 렌더링 작업 최적화 |
+| 7 | JavaScript 성능 | LOW-MEDIUM | Hot path 마이크로 최적화 |
 
 </categories>
 
@@ -104,19 +83,19 @@ Comprehensive performance optimization guide for React and TanStack Start applic
 
 <critical_patterns>
 
-## 1. Eliminating Waterfalls (CRITICAL)
+## 1. Waterfall 제거 (CRITICAL)
 
-Waterfalls are the #1 performance killer. Each sequential await adds full network latency.
+Waterfall은 가장 큰 성능 저해 요소입니다. 순차 await는 전체 네트워크 지연을 추가합니다.
 
-### Parallel Execution
+### 병렬 실행
 
 ```typescript
-// ❌ Sequential execution (3 round trips)
+// ❌ 순차 실행 (3번 왕복)
 const user = await fetchUser()
 const posts = await fetchPosts()
 const comments = await fetchComments()
 
-// ✅ Parallel execution (1 round trip)
+// ✅ 병렬 실행 (1번 왕복)
 const [user, posts, comments] = await Promise.all([
   fetchUser(),
   fetchPosts(),
@@ -124,13 +103,13 @@ const [user, posts, comments] = await Promise.all([
 ])
 ```
 
-### createServerFn + Loader Parallel Fetching
+### createServerFn + Loader에서 병렬 페칭
 
 ```typescript
 import { createServerFn } from '@tanstack/react-start'
 import { createFileRoute } from '@tanstack/react-router'
 
-// Define Server Functions
+// Server Functions 정의
 const getPost = createServerFn().handler(async (postId: string) => {
   return await db.post.findUnique({ where: { id: postId } })
 })
@@ -143,7 +122,7 @@ const getComments = createServerFn().handler(async (postId: string) => {
   return await db.comment.findMany({ where: { postId } })
 })
 
-// ❌ Sequential loading
+// ❌ 순차 로딩
 export const Route = createFileRoute('/posts/$postId')({
   loader: async ({ params }) => {
     const post = await getPost(params.postId)
@@ -153,7 +132,7 @@ export const Route = createFileRoute('/posts/$postId')({
   }
 })
 
-// ✅ Parallel loading (independent data)
+// ✅ 병렬 로딩 (독립 데이터)
 export const Route = createFileRoute('/posts/$postId')({
   loader: async ({ params }) => {
     const [post, comments] = await Promise.all([
@@ -165,12 +144,12 @@ export const Route = createFileRoute('/posts/$postId')({
 })
 ```
 
-### Dependency-Based Parallelization
+### 의존성 기반 병렬화
 
 ```typescript
 import { all } from 'better-all'
 
-// ✅ Maximum parallelization with better-all
+// ✅ better-all로 최대 병렬화
 export const Route = createFileRoute('/posts/$postId')({
   loader: async ({ params }) => {
     const { post, author, comments } = await all({
@@ -190,31 +169,31 @@ export const Route = createFileRoute('/posts/$postId')({
 })
 ```
 
-### Deferred Data for Non-Blocking Loading (Automatic)
+### Deferred Data로 비차단 로딩 (자동 처리)
 
 ```typescript
 import { createServerFn } from '@tanstack/react-start'
 import { createFileRoute, Await } from '@tanstack/react-router'
 import { Suspense } from 'react'
 
-// Fast Server Function
+// 빠른 Server Function
 const getPost = createServerFn().handler(async (postId: string) => {
   return await db.post.findUnique({ where: { id: postId } })
 })
 
-// Slow Server Function
+// 느린 Server Function
 const getComments = createServerFn().handler(async (postId: string) => {
-  await new Promise(r => setTimeout(r, 3000)) // Slow query
+  await new Promise(r => setTimeout(r, 3000)) // 느린 쿼리
   return await db.comment.findMany({ where: { postId } })
 })
 
-// ✅ Await important data, defer non-critical data
+// ✅ 중요 데이터는 await, 비중요 데이터는 Promise 반환
 export const Route = createFileRoute('/posts/$postId')({
   loader: async ({ params }) => {
-    // Important: post loads immediately (await)
+    // 중요: post는 즉시 로드 (await)
     const post = await getPost(params.postId)
 
-    // Non-critical: comments returns Promise (automatically deferred)
+    // 비중요: comments는 Promise 그대로 반환 (자동 deferred)
     const deferredComments = getComments(params.postId)
 
     return {
@@ -229,10 +208,10 @@ function PostPage() {
 
   return (
     <div>
-      {/* post renders immediately */}
+      {/* post는 즉시 렌더링 */}
       <PostContent post={post} />
 
-      {/* comments stream in */}
+      {/* comments는 스트리밍 */}
       <Suspense fallback={<CommentsSkeleton />}>
         <Await promise={deferredComments}>
           {(comments) => <Comments comments={comments} />}
@@ -243,7 +222,7 @@ function PostPage() {
 }
 ```
 
-**Important:** TanStack Start doesn't require calling `defer()` explicitly. Simply return a Promise and it's automatically deferred.
+**중요:** TanStack Start에서는 `defer()` 함수를 명시적으로 호출할 필요가 없습니다. Promise를 그대로 반환하면 자동으로 deferred 처리됩니다.
 
 </critical_patterns>
 
@@ -251,29 +230,29 @@ function PostPage() {
 
 <bundle_optimization>
 
-## 2. Bundle Size Optimization (CRITICAL)
+## 2. 번들 크기 최적화 (CRITICAL)
 
-### Avoid Barrel File Imports
+### Barrel Import 회피
 
 ```tsx
-// ❌ Import entire library (1583 modules, ~2.8s)
+// ❌ 전체 라이브러리 import (1583개 모듈, ~2.8초)
 import { Check, X, Menu } from 'lucide-react'
 
-// ✅ Direct imports (3 modules only)
+// ✅ 직접 import (3개 모듈만)
 import Check from 'lucide-react/dist/esm/icons/check'
 import X from 'lucide-react/dist/esm/icons/x'
 import Menu from 'lucide-react/dist/esm/icons/menu'
 ```
 
-Affected libraries: `lucide-react`, `@mui/material`, `@mui/icons-material`, `@tabler/icons-react`, `react-icons`, `@headlessui/react`, `@radix-ui/react-*`, `lodash`, `ramda`, `date-fns`, `rxjs`, `react-use`
+영향 받는 라이브러리: `lucide-react`, `@mui/material`, `@mui/icons-material`, `@tabler/icons-react`, `react-icons`, `@headlessui/react`, `@radix-ui/react-*`, `lodash`, `ramda`, `date-fns`, `rxjs`, `react-use`
 
-### Route-Based Code Splitting
+### 라우트 기반 코드 스플리팅
 
 ```typescript
 import { lazy } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 
-// ❌ All components bundled in main chunk
+// ❌ 모든 컴포넌트가 메인 번들에 포함
 import { HeavyEditor } from './components/HeavyEditor'
 import { ComplexChart } from './components/ComplexChart'
 
@@ -290,7 +269,7 @@ function DashboardPage() {
   )
 }
 
-// ✅ Heavy components lazy loaded
+// ✅ 무거운 컴포넌트는 lazy load
 const HeavyEditor = lazy(() => import('./components/HeavyEditor'))
 const ComplexChart = lazy(() => import('./components/ComplexChart'))
 
@@ -312,10 +291,10 @@ function DashboardPage() {
 }
 ```
 
-### Conditional Module Loading
+### 조건부 모듈 로딩
 
 ```tsx
-// ❌ Always loaded
+// ❌ 항상 로드
 import { AnimationFrames } from './animation-frames'
 
 function AnimationPlayer({ enabled }: { enabled: boolean }) {
@@ -323,7 +302,7 @@ function AnimationPlayer({ enabled }: { enabled: boolean }) {
   return <Canvas frames={AnimationFrames} />
 }
 
-// ✅ Load only when activated
+// ✅ 활성화 시에만 로드
 function AnimationPlayer({ enabled }: { enabled: boolean }) {
   const [frames, setFrames] = useState<Frame[] | null>(null)
 
@@ -346,16 +325,16 @@ function AnimationPlayer({ enabled }: { enabled: boolean }) {
 
 <server_performance>
 
-## 3. Server-Side Performance (HIGH)
+## 3. 서버 사이드 성능 (HIGH)
 
-### LRU Cache - Cross-Request Caching
+### LRU 캐시 - 요청 간 캐싱
 
 ```typescript
 import { LRUCache } from 'lru-cache'
 
 const cache = new LRUCache<string, any>({
   max: 1000,
-  ttl: 5 * 60 * 1000  // 5 minutes
+  ttl: 5 * 60 * 1000  // 5분
 })
 
 export async function getUser(id: string) {
@@ -367,27 +346,27 @@ export async function getUser(id: string) {
   return user
 }
 
-// Request 1: DB query, result cached
-// Request 2: cache hit, no DB query
+// 요청 1: DB 쿼리, 결과 캐싱
+// 요청 2: 캐시 히트, DB 쿼리 없음
 ```
 
-### Minimize Serialization
+### 직렬화 최소화
 
 ```typescript
-// ❌ Serializes all 50 fields
+// ❌ 50개 필드 모두 직렬화
 export const Route = createFileRoute('/profile')({
   loader: async () => {
-    const user = await fetchUser()  // 50 fields
+    const user = await fetchUser()  // 50개 필드
     return { user }
   }
 })
 
 function ProfilePage() {
   const { user } = Route.useLoaderData()
-  return <div>{user.name}</div>  // uses 1 field
+  return <div>{user.name}</div>  // 1개 필드만 사용
 }
 
-// ✅ Serializes only needed fields
+// ✅ 필요한 필드만 직렬화
 export const Route = createFileRoute('/profile')({
   loader: async () => {
     const user = await fetchUser()
@@ -409,13 +388,13 @@ function ProfilePage() {
 }
 ```
 
-### Parallel Fetching in Loader + createServerFn
+### Loader에서 병렬 페칭 + createServerFn
 
 ```typescript
 import { createServerFn } from '@tanstack/react-start'
 import { createFileRoute } from '@tanstack/react-router'
 
-// Define Server Functions
+// Server Functions 정의
 const getUser = createServerFn().handler(async () => {
   return await db.user.findMany()
 })
@@ -428,7 +407,7 @@ const getNotifications = createServerFn().handler(async () => {
   return await db.notification.findMany()
 })
 
-// ❌ Sequential fetching
+// ❌ 순차 페칭
 export const Route = createFileRoute('/dashboard')({
   loader: async () => {
     const user = await getUser()
@@ -438,7 +417,7 @@ export const Route = createFileRoute('/dashboard')({
   }
 })
 
-// ✅ Parallel fetching
+// ✅ 병렬 페칭
 export const Route = createFileRoute('/dashboard')({
   loader: async () => {
     const [user, stats, notifications] = await Promise.all([
@@ -451,7 +430,7 @@ export const Route = createFileRoute('/dashboard')({
 })
 ```
 
-**Important:** TanStack Start loaders are isomorphic. They run on both server and client, so separate server-only code with `createServerFn()`.
+**중요:** TanStack Start의 loader는 isomorphic입니다. 서버와 클라이언트 둘 다에서 실행될 수 있으므로, 서버 전용 코드는 `createServerFn()`으로 분리하세요.
 
 </server_performance>
 
@@ -459,14 +438,14 @@ export const Route = createFileRoute('/dashboard')({
 
 <client_data_fetching>
 
-## 4. Client-Side Data Fetching (MEDIUM-HIGH)
+## 4. 클라이언트 데이터 페칭 (MEDIUM-HIGH)
 
-### TanStack Query for Automatic Caching
+### TanStack Query로 자동 캐싱
 
 ```tsx
 import { useQuery } from '@tanstack/react-query'
 
-// ❌ No deduplication, each instance fetches
+// ❌ 중복 제거 없음, 각 인스턴스가 fetch
 function UserList() {
   const [users, setUsers] = useState([])
   useEffect(() => {
@@ -476,7 +455,7 @@ function UserList() {
   }, [])
 }
 
-// ✅ Multiple instances share one request
+// ✅ 여러 인스턴스가 하나의 요청 공유
 function UserList() {
   const { data: users } = useQuery({
     queryKey: ['users'],
@@ -496,7 +475,7 @@ function UpdateButton() {
   const mutation = useMutation({
     mutationFn: updateUser,
     onSuccess: () => {
-      // Invalidate cache for automatic refetch
+      // 캐시 무효화로 자동 재페칭
       queryClient.invalidateQueries({ queryKey: ['users'] })
     }
   })
@@ -515,55 +494,55 @@ function UpdateButton() {
 
 <rerender_optimization>
 
-## 5. Re-render Optimization (MEDIUM)
+## 5. Re-render 최적화 (MEDIUM)
 
-### Functional setState
+### 함수형 setState
 
 ```tsx
-// ❌ items as dependency, recreated every time
+// ❌ items가 의존성, 매번 재생성
 function TodoList() {
   const [items, setItems] = useState(initialItems)
 
   const addItems = useCallback((newItems: Item[]) => {
     setItems([...items, ...newItems])
-  }, [items])  // Recreated on items change
+  }, [items])  // items 변경마다 재생성
 }
 
-// ✅ Stable callback, never recreated
+// ✅ 안정적 콜백, 재생성 없음
 function TodoList() {
   const [items, setItems] = useState(initialItems)
 
   const addItems = useCallback((newItems: Item[]) => {
     setItems(curr => [...curr, ...newItems])
-  }, [])  // No dependencies, always uses latest state
+  }, [])  // 의존성 없음, 항상 최신 상태 사용
 }
 ```
 
-### Lazy State Initialization
+### Lazy 상태 초기화
 
 ```tsx
-// ❌ Runs on every render
+// ❌ 매 렌더마다 실행
 function FilteredList({ items }: { items: Item[] }) {
   const [searchIndex, setSearchIndex] = useState(buildSearchIndex(items))
 }
 
-// ✅ Runs only on initial render
+// ✅ 초기 렌더 시에만 실행
 function FilteredList({ items }: { items: Item[] }) {
   const [searchIndex, setSearchIndex] = useState(() => buildSearchIndex(items))
 }
 ```
 
-### Subscribe to Derived State
+### 파생 상태 구독
 
 ```tsx
-// ❌ Re-renders on every pixel change
+// ❌ 픽셀 변경마다 re-render
 function Sidebar() {
-  const width = useWindowWidth()  // continuous updates
+  const width = useWindowWidth()  // 연속 업데이트
   const isMobile = width < 768
   return <nav className={isMobile ? 'mobile' : 'desktop'}>
 }
 
-// ✅ Re-renders only when boolean changes
+// ✅ boolean 변경 시에만 re-render
 function Sidebar() {
   const isMobile = useMediaQuery('(max-width: 767px)')
   return <nav className={isMobile ? 'mobile' : 'desktop'}>
@@ -576,12 +555,12 @@ function Sidebar() {
 
 <rendering_performance>
 
-## 6. Rendering Performance (MEDIUM)
+## 6. 렌더링 성능 (MEDIUM)
 
-### Animate SVG Wrapper
+### SVG 래퍼 애니메이션
 
 ```tsx
-// ❌ Animating SVG directly - no hardware acceleration
+// ❌ SVG 직접 애니메이션 - 하드웨어 가속 없음
 function LoadingSpinner() {
   return (
     <svg className="animate-spin" width="24" height="24">
@@ -590,7 +569,7 @@ function LoadingSpinner() {
   )
 }
 
-// ✅ Animating wrapper div - hardware accelerated
+// ✅ 래퍼 div 애니메이션 - 하드웨어 가속
 function LoadingSpinner() {
   return (
     <div className="animate-spin">
@@ -626,12 +605,12 @@ function MessageList({ messages }: { messages: Message[] }) {
 }
 ```
 
-For 1000 messages, browser skips layout/paint for ~990 off-screen items (10× faster initial render)
+1000개 메시지 기준, 브라우저가 ~990개 오프스크린 항목의 레이아웃/페인트 스킵 (초기 렌더 10배 빠름)
 
 ### JSX Hoisting
 
 ```tsx
-// ❌ Recreated every render
+// ❌ 매 렌더마다 재생성
 function Container() {
   return (
     <div>
@@ -640,7 +619,7 @@ function Container() {
   )
 }
 
-// ✅ Created once
+// ✅ 한 번만 생성
 const loadingSkeleton = (
   <div className="animate-pulse h-20 bg-gray-200" />
 )
@@ -660,9 +639,9 @@ function Container() {
 
 <javascript_performance>
 
-## 7. JavaScript Performance (LOW-MEDIUM)
+## 7. JavaScript 성능 (LOW-MEDIUM)
 
-### Build Index Maps for Repeated Lookups
+### 반복 조회용 Map
 
 ```typescript
 // ❌ O(n) per lookup
@@ -685,15 +664,15 @@ function processOrders(orders: Order[], users: User[]) {
 
 1000 orders × 1000 users: 1M ops → 2K ops
 
-### Early Length Check for Array Comparisons
+### 배열 비교 시 길이 체크
 
 ```typescript
-// ❌ Always runs expensive comparison
+// ❌ 항상 비싼 비교 실행
 function hasChanges(current: string[], original: string[]) {
   return current.sort().join() !== original.sort().join()
 }
 
-// ✅ O(1) length check first
+// ✅ O(1) 길이 체크 먼저
 function hasChanges(current: string[], original: string[]) {
   if (current.length !== original.length) return true
 
@@ -706,10 +685,10 @@ function hasChanges(current: string[], original: string[]) {
 }
 ```
 
-### Use toSorted() for Immutability
+### toSorted()로 불변성 유지
 
 ```typescript
-// ❌ Mutates original array
+// ❌ 원본 배열 변경
 function UserList({ users }: { users: User[] }) {
   const sorted = useMemo(
     () => users.sort((a, b) => a.name.localeCompare(b.name)),
@@ -717,7 +696,7 @@ function UserList({ users }: { users: User[] }) {
   )
 }
 
-// ✅ Creates new array
+// ✅ 새 배열 생성
 function UserList({ users }: { users: User[] }) {
   const sorted = useMemo(
     () => users.toSorted((a, b) => a.name.localeCompare(b.name)),
@@ -732,9 +711,9 @@ function UserList({ users }: { users: User[] }) {
 
 <references>
 
-## References
+## 참고 자료
 
-### TanStack Official Documentation
+### TanStack 공식 문서
 1. [React](https://react.dev)
 2. [TanStack Start Overview](https://tanstack.com/start/latest/docs/framework/react/overview)
 3. [TanStack Start Quick Start](https://tanstack.com/start/latest/docs/framework/react/quick-start)
@@ -743,7 +722,7 @@ function UserList({ users }: { users: User[] }) {
 6. [TanStack Query](https://tanstack.com/query)
 7. [Server Functions Guide](https://tanstack.com/start/latest/docs/framework/react/guide/server-functions)
 
-### External Resources
+### 외부 자료
 8. [better-all](https://github.com/shuding/better-all)
 9. [node-lru-cache](https://github.com/isaacs/node-lru-cache)
 10. [Using Server Functions and TanStack Query](https://www.brenelz.com/posts/using-server-functions-and-tanstack-query/)
