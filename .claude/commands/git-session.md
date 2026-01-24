@@ -114,7 +114,7 @@ git push
 
 | Agent | Model | Purpose |
 |-------|-------|---------|
-| **@git-operator** | haiku | Git 커밋/푸시 작업 (필수) |
+| **@git-operator** | haiku (기본), sonnet (복잡한 경우) | Git 커밋/푸시 작업 (필수) |
 | **@code-reviewer** | haiku/sonnet | 세션 변경사항 검토 |
 | **@explore** | haiku | 세션 파일 탐색 |
 
@@ -137,35 +137,43 @@ git push
 
 | Complexity | Model | Scenario |
 |------------|-------|----------|
-| **LOW** | haiku | 단순 세션 커밋 (1-3 files) |
-| **MEDIUM** | haiku/sonnet | 일반 세션 커밋 (4-10 files) |
+| **LOW** | haiku | 단순 세션 커밋 (1-3 files, 간단한 변경) |
+| **MEDIUM** | sonnet | 일반 세션 커밋 (4-10 files, 로직 변경) |
+
+**선택 기준:**
+- 파일 수 1-3개 + 단순 변경 → haiku
+- 파일 수 4개 이상 또는 로직 변경 → sonnet
 
 ---
 
 ## Practical Examples
 
 ```typescript
-// ✅ 검토 + 탐색 병렬
+// ✅ 병렬 분석 + 적절한 모델 선택
 Task({
   subagent_type: 'code-reviewer',
-  model: 'haiku',
-  prompt: '세션 변경사항 검토'
+  model: 'haiku',  // 간단한 검토
+  prompt: '세션 변경사항 간단 검토'
 })
 Task({
   subagent_type: 'explore',
-  model: 'haiku',
+  model: 'haiku',  // 빠른 탐색
   prompt: '세션 파일 목록 확인'
 })
 
-// 분석 완료 후 순차 커밋
+// 분석 완료 후 복잡도에 맞는 모델로 커밋
+// 단순한 경우
 Task({
   subagent_type: 'git-operator',
-  model: 'haiku',
-  prompt: `
-    세션 커밋 모드:
-    - 현재 세션 관련 파일만 선택적 커밋
-    - 반드시 푸시 (git push)
-  `
+  model: 'haiku',  // 1-3개 파일
+  prompt: '세션 커밋 (간단한 변경)'
+})
+
+// 복잡한 경우
+Task({
+  subagent_type: 'git-operator',
+  model: 'sonnet',  // 4개 이상 또는 로직 변경
+  prompt: '세션 커밋 (여러 파일, 로직 변경)'
 })
 ```
 

@@ -2,7 +2,7 @@
 name: git-operator
 description: Git 커밋/푸시 작업. 논리적 단위 분리 커밋, AI 표시 금지 규칙 준수.
 tools: Bash
-model: inherit
+model: haiku
 ---
 
 <role>
@@ -21,7 +21,23 @@ Git 커밋/푸시 작업을 안전하고 체계적으로 수행하는 전문가.
 |------|------|
 | **병렬 실행** | 불가 (논리적 단위별 순차 커밋) |
 | **연계 Agent** | code-reviewer (커밋 전), deployment-validator (배포 전), lint-fixer (수정 후) |
-| **권장 모델** | inherit (빠른 실행) |
+| **권장 모델** | haiku (기본), sonnet (복잡한 경우) |
+
+### Model Routing
+
+| 복잡도 | 조건 | 모델 | 예시 |
+|--------|------|------|------|
+| **LOW** | 1-3개 파일, 단순 변경 | haiku | 오타 수정, 문서 업데이트 |
+| **MEDIUM** | 4-10개 파일, 로직 변경 | sonnet | 기능 추가, 버그 수정 |
+
+**사용 예시:**
+```typescript
+// 간단한 커밋 (haiku)
+Task({ subagent_type: 'git-operator', model: 'haiku', ... })
+
+// 복잡한 커밋 (sonnet)
+Task({ subagent_type: 'git-operator', model: 'sonnet', ... })
+```
 
 </parallel_execution>
 
@@ -31,11 +47,15 @@ Git 커밋/푸시 작업을 안전하고 체계적으로 수행하는 전문가.
 
 호출 시 즉시 실행:
 
-1. `git status`, `git diff` 병렬 실행
+1. `git status`, `git diff` 병렬 실행 (단일 메시지에서 2개 Bash 동시 호출)
 2. 변경사항을 논리적 단위로 그룹핑
 3. 각 그룹별 `git add [파일] && git commit -m "메시지"` (하나의 Bash 호출)
 4. `git status`로 clean working directory 확인
 5. 사용자 요청 시 `git push`
+
+**병렬 실행 패턴:**
+- git status + git diff → 단일 메시지에서 동시 Bash 호출
+- 논리적 그룹별 커밋 → 순차 실행 (git 저장소 상태 변경으로 병렬 불가)
 
 </workflow>
 
@@ -45,6 +65,7 @@ Git 커밋/푸시 작업을 안전하고 체계적으로 수행하는 전문가.
 
 | 규칙 | 방법 |
 |------|------|
+| **분석 단계** | git status, git diff를 단일 메시지에서 병렬 Bash 호출 |
 | **add + commit** | 반드시 `&&`로 묶어 하나의 Bash 호출 |
 | **논리적 그룹** | 각 그룹은 별도 Bash 호출로 순차 실행 |
 | **push** | 모든 커밋 완료 후 별도 Bash 호출 |
@@ -130,7 +151,7 @@ git commit -m "feat: 로그인, 회원가입, 프로필"               # 여러 
 ## Bash 호출 플로우
 
 ```bash
-# 1. 병렬 분석
+# 1. 병렬 분석 (단일 메시지에서 동시 호출)
 Bash: git status
 Bash: git diff
 
