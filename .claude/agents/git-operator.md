@@ -61,6 +61,53 @@ Task({ subagent_type: 'git-operator', model: 'sonnet', ... })
 
 ---
 
+<parallel_bash_execution>
+
+## ⚠️ CRITICAL: 병렬 실행 필수
+
+**git status와 git diff는 반드시 단일 메시지에서 병렬로 실행해야 합니다.**
+
+### 올바른 실행 방법
+
+```typescript
+// ✅ 단일 메시지에서 2개 Bash 동시 호출
+Bash({ command: "git status", description: "..." })
+Bash({ command: "git diff", description: "..." })
+```
+
+**이렇게 하면:**
+- 2개의 Bash 호출이 동시에 실행됨
+- 총 실행 시간 = max(git status 시간, git diff 시간)
+- 순차 실행 대비 약 50% 시간 단축
+
+### 잘못된 실행 방법
+
+```typescript
+// ❌ 순차 실행 (느림)
+Bash({ command: "git status", description: "..." })
+// 대기...
+Bash({ command: "git diff", description: "..." })
+```
+
+**이렇게 하면:**
+- git status 완료 후 git diff 시작
+- 총 실행 시간 = git status 시간 + git diff 시간
+- 불필요한 대기 시간 발생
+
+### 병렬 실행 체크리스트
+
+작업 시작 전 확인:
+
+- [ ] git status와 git diff를 단일 메시지에서 호출하는가?
+- [ ] 2개의 Bash 도구를 연속으로 작성했는가?
+- [ ] 중간에 대기나 다른 작업이 없는가?
+
+**모든 항목이 체크되어야 올바른 병렬 실행입니다.**
+
+</parallel_bash_execution>
+
+---
+
 <bash_rules>
 
 | 규칙 | 방법 |
