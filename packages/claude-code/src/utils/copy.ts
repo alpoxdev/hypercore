@@ -10,6 +10,55 @@ export const getTemplatesDir = (): string => {
   return path.resolve(__dirname, '../templates');
 };
 
+/**
+ * 템플릿 이름 검증 (Path Traversal 방지)
+ */
+const validateTemplateName = (template: string): void => {
+  // 경로 분리자 및 상위 경로 참조 차단
+  const sanitized = path.basename(template);
+  if (sanitized !== template || template.includes('..')) {
+    throw new Error(`Invalid template name: "${template}"`);
+  }
+};
+
+/**
+ * 대상 디렉토리 검증 (시스템 경로 보호)
+ */
+const validateTargetDir = (targetDir: string): void => {
+  const resolved = path.resolve(targetDir);
+
+  // 시스템 경로 보호 (Unix/Linux/macOS)
+  const protectedPaths = [
+    '/',
+    '/usr',
+    '/etc',
+    '/bin',
+    '/sbin',
+    '/home',
+    '/var',
+    '/root',
+  ];
+
+  // Windows 보호 경로
+  if (process.platform === 'win32') {
+    const winProtected = [
+      'C:\\Windows',
+      'C:\\Program Files',
+      'C:\\Program Files (x86)',
+    ];
+    protectedPaths.push(...winProtected);
+  }
+
+  for (const protectedPath of protectedPaths) {
+    if (
+      resolved === protectedPath ||
+      resolved.startsWith(protectedPath + path.sep)
+    ) {
+      throw new Error(`Cannot modify protected system path: ${resolved}`);
+    }
+  }
+};
+
 // 디렉토리에 파일이 실제로 존재하는지 체크
 const hasFiles = async (dir: string): Promise<boolean> => {
   if (!(await fs.pathExists(dir))) return false;
@@ -18,6 +67,7 @@ const hasFiles = async (dir: string): Promise<boolean> => {
 };
 
 export const getTemplatePath = (template: string): string => {
+  validateTemplateName(template);
   return path.join(getTemplatesDir(), template);
 };
 
@@ -50,6 +100,7 @@ export const copySingleTemplate = async (
   template: string,
   targetDir: string,
 ): Promise<{ files: number; directories: number }> => {
+  validateTargetDir(targetDir);
   const templatePath = getTemplatePath(template);
 
   if (!(await fs.pathExists(templatePath))) {
@@ -88,6 +139,7 @@ export const copyMultipleTemplates = async (
   templates: string[],
   targetDir: string,
 ): Promise<{ files: number; directories: number }> => {
+  validateTargetDir(targetDir);
   const counter = { files: 0, directories: 0 };
 
   // 기존 docs 폴더 삭제
@@ -123,21 +175,58 @@ export const copyMultipleTemplates = async (
  * 다중 템플릿용 인덱스 CLAUDE.md 생성
  */
 const generateIndexClaudeMd = (templates: string[]): string => {
-  const templateLinks = templates
-    .map((t) => `- [${t}](docs/${t}/CLAUDE.md)`)
-    .join('\n');
+  // 템플릿별 메타데이터 정의
+  const templateMetadata: Record<
+    string,
+    { name: string; description: string; stack: string }
+  > = {
+    'tanstack-start': {
+      name: 'TanStack Start',
+      description: 'React + TanStack Router SSR 풀스택 프로젝트',
+      stack: 'React, TanStack Router, Vite, TypeScript',
+    },
+    hono: {
+      name: 'Hono',
+      description: 'Edge Runtime 백엔드 API 프로젝트',
+      stack: 'Hono, TypeScript, Cloudflare Workers',
+    },
+    npx: {
+      name: 'NPX CLI',
+      description: 'NPX로 실행 가능한 CLI 도구 프로젝트',
+      stack: 'Node.js, TypeScript, Commander.js',
+    },
+  };
+
+  const templateSections = templates
+    .map((template) => {
+      const meta = templateMetadata[template] || {
+        name: template,
+        description: `${template} 프로젝트`,
+        stack: 'TypeScript',
+      };
+
+      return `### ${meta.name}
+- **용도:** ${meta.description}
+- **주요 스택:** ${meta.stack}
+- **가이드:** [docs/${template}/CLAUDE.md](docs/${template}/CLAUDE.md)`;
+    })
+    .join('\n\n');
 
   return `# CLAUDE.md
 
-> 이 프로젝트는 여러 템플릿의 Claude Code 문서를 포함합니다.
+> 이 프로젝트는 여러 프레임워크의 Claude Code 가이드를 포함합니다.
 
-## 템플릿 문서
+## 사용 방법
 
-${templateLinks}
+아래 템플릿 중 **현재 프로젝트에 사용 중인 프레임워크**를 선택하여 해당 가이드를 따르세요.
 
-## 사용법
+## 템플릿 목록
 
-각 템플릿의 \`CLAUDE.md\`를 참조하여 해당 기술 스택의 가이드라인을 확인하세요.
+${templateSections}
+
+---
+
+**현재 프로젝트에 맞는 가이드를 CLAUDE.md의 \`@\` 인스트럭션에 추가하세요.**
 `;
 };
 
@@ -218,7 +307,11 @@ const COMMON_SKILLS: string[] = [
 export const copySkills = async (
   templates: string[],
   targetDir: string,
-): Promise<{ files: number; directories: number }> => {
+): Promise<{
+  files: number;
+  directories: number;
+  duplicateSkills?: { skill: string; templates: string[] }[];
+}> => {
   const counter = { files: 0, directories: 0 };
   const targetSkillsDir = path.join(targetDir, '.claude', 'skills');
   const skillsSrc = path.join(getTemplatesDir(), '.claude', 'skills');
@@ -229,16 +322,25 @@ export const copySkills = async (
 
   await fs.ensureDir(targetSkillsDir);
 
-  // 복사할 스킬 수집
+  // 복사할 스킬 수집 및 중복 추적
   const skillsToCopy = new Set<string>();
+  const skillTemplateMap = new Map<string, Set<string>>(); // 스킬명 → 템플릿 Set
 
-  // 1. 공통 스킬 추가 (항상 설치)
+  // 1. 공통 스킬 추가 (항상 설치, 중복 추적 제외)
   COMMON_SKILLS.forEach((skill) => skillsToCopy.add(skill));
 
-  // 2. 선택된 템플릿에 해당하는 프레임워크별 스킬 추가
+  // 2. 선택된 템플릿에 해당하는 프레임워크별 스킬 추가 및 중복 추적
   for (const template of templates) {
     const skills = FRAMEWORK_SPECIFIC_SKILLS_MAP[template] || [];
-    skills.forEach((skill) => skillsToCopy.add(skill));
+    skills.forEach((skill) => {
+      skillsToCopy.add(skill);
+
+      // 중복 추적: 스킬이 어느 템플릿에서 왔는지 기록
+      if (!skillTemplateMap.has(skill)) {
+        skillTemplateMap.set(skill, new Set());
+      }
+      skillTemplateMap.get(skill)!.add(template);
+    });
   }
 
   // 수집된 스킬 복사 (기존 스킬 폴더는 삭제 후 복사)
@@ -255,7 +357,21 @@ export const copySkills = async (
     }
   }
 
-  return counter;
+  // 중복 스킬 목록 생성 (2개 이상의 템플릿에서 사용되는 스킬만)
+  const duplicateSkills: { skill: string; templates: string[] }[] = [];
+  for (const [skill, templateSet] of skillTemplateMap.entries()) {
+    if (templateSet.size > 1) {
+      duplicateSkills.push({
+        skill,
+        templates: Array.from(templateSet).sort(),
+      });
+    }
+  }
+
+  return {
+    ...counter,
+    ...(duplicateSkills.length > 0 && { duplicateSkills }),
+  };
 };
 
 /**

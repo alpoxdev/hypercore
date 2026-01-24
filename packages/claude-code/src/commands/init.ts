@@ -226,11 +226,59 @@ export const init = async (options: InitOptions): Promise<void> => {
       logger.blank();
       logger.info('Installing skills...');
       const skillsResult = await copySkills(templates, targetDir);
-      totalFiles += skillsResult.files;
-      totalDirectories += skillsResult.directories;
-      logger.success(
-        `Skills: ${skillsResult.files} files, ${skillsResult.directories} directories`,
-      );
+
+      // 중복 스킬이 있으면 사용자에게 선택 프롬프트 표시
+      if (
+        skillsResult.duplicateSkills &&
+        skillsResult.duplicateSkills.length > 0
+      ) {
+        logger.blank();
+        logger.warn('The following skills are included in multiple templates:');
+        skillsResult.duplicateSkills.forEach(
+          ({ skill, templates: skillTemplates }) => {
+            logger.step(`${skill} (${skillTemplates.join(', ')})`);
+          },
+        );
+        logger.blank();
+
+        const response = await prompts({
+          type: 'select',
+          name: 'selectedTemplate',
+          message: "Which template's version should be used?",
+          choices: templates.map((t) => ({
+            title: t,
+            value: t,
+          })),
+        });
+
+        if (response.selectedTemplate) {
+          logger.info(
+            `Reinstalling skills with ${response.selectedTemplate} template...`,
+          );
+          const reinstallResult = await copySkills(
+            [response.selectedTemplate],
+            targetDir,
+          );
+          totalFiles += reinstallResult.files;
+          totalDirectories += reinstallResult.directories;
+          logger.success(
+            `Skills: ${reinstallResult.files} files, ${reinstallResult.directories} directories`,
+          );
+        } else {
+          logger.warn('No template selected. Using all templates.');
+          totalFiles += skillsResult.files;
+          totalDirectories += skillsResult.directories;
+          logger.success(
+            `Skills: ${skillsResult.files} files, ${skillsResult.directories} directories`,
+          );
+        }
+      } else {
+        totalFiles += skillsResult.files;
+        totalDirectories += skillsResult.directories;
+        logger.success(
+          `Skills: ${skillsResult.files} files, ${skillsResult.directories} directories`,
+        );
+      }
     } else if (installSkills && !hasSkills) {
       logger.warn('No skills found in selected templates.');
     }
