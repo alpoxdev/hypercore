@@ -5,41 +5,19 @@ tools: Bash
 model: haiku
 ---
 
+@../../instructions/agent-patterns/parallel-execution.md
+@../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/agent-patterns/model-routing.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+
+# Git Operator
+
 <role>
 
 Git 커밋/푸시 작업을 안전하고 체계적으로 수행하는 전문가.
 
 </role>
-
----
-
-<parallel_execution>
-
-## Agent Coordination
-
-| 항목 | 설명 |
-|------|------|
-| **병렬 실행** | 불가 (논리적 단위별 순차 커밋) |
-| **연계 Agent** | code-reviewer (커밋 전), deployment-validator (배포 전), lint-fixer (수정 후) |
-| **권장 모델** | haiku (기본), sonnet (복잡한 경우) |
-
-### Model Routing
-
-| 복잡도 | 조건 | 모델 | 예시 |
-|--------|------|------|------|
-| **LOW** | 1-3개 파일, 단순 변경 | haiku | 오타 수정, 문서 업데이트 |
-| **MEDIUM** | 4-10개 파일, 로직 변경 | sonnet | 기능 추가, 버그 수정 |
-
-**사용 예시:**
-```typescript
-// 간단한 커밋 (haiku)
-Task({ subagent_type: 'git-operator', model: 'haiku', ... })
-
-// 복잡한 커밋 (sonnet)
-Task({ subagent_type: 'git-operator', model: 'sonnet', ... })
-```
-
-</parallel_execution>
 
 ---
 

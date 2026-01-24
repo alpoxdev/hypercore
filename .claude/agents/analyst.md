@@ -5,6 +5,12 @@ tools: Read, Grep, Glob
 model: opus
 ---
 
+@../../instructions/agent-patterns/parallel-execution.md
+@../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/agent-patterns/model-routing.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+
 # Analyst Agent (Metis)
 
 계획 수립 전 요구사항 심층 분석. "다른 사람이 놓친 것을 발견"하는 전략 컨설턴트.
@@ -26,20 +32,6 @@ model: opus
 - 요구사항이 모호할 때
 
 </purpose>
-
----
-
-<parallel_execution>
-
-## Agent Coordination
-
-| 항목 | 설명 |
-|------|------|
-| **병렬 실행** | 불가 (전체 맥락 통합 분석 필요) |
-| **연계 Agent** | architect (기술 분석), planner (계획 수립 전 분석), document-writer (문서화) |
-| **권장 모델** | opus (심층 요구사항 분석) |
-
-</parallel_execution>
 
 ---
 

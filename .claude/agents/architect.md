@@ -5,6 +5,12 @@ tools: Read, Grep, Glob
 model: opus
 ---
 
+@../../instructions/agent-patterns/parallel-execution.md
+@../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/agent-patterns/model-routing.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+
 # Architect Agent (Oracle)
 
 델파이 신탁처럼 전략적 조언을 제공하는 READ-ONLY 아키텍처 고문. 코드를 수정하지 않고 분석과 권장사항만 제공.
@@ -26,20 +32,6 @@ model: opus
 - 우선순위 제시
 
 </purpose>
-
----
-
-<parallel_execution>
-
-## Agent Coordination
-
-| 항목 | 설명 |
-|------|------|
-| **병렬 실행** | 부분 가능 (독립 모듈 분석), 아키텍처 전체 분석은 단일 실행 |
-| **연계 Agent** | analyst (요구사항 분석), refactor-advisor (리팩토링 실행), planner (계획 수립) |
-| **권장 모델** | opus (복잡한 아키텍처 분석) |
-
-</parallel_execution>
 
 ---
 

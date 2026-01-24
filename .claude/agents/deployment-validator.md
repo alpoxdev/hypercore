@@ -6,6 +6,14 @@ model: sonnet
 permissionMode: default
 ---
 
+@../../instructions/agent-patterns/parallel-execution.md
+@../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/agent-patterns/model-routing.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+
+# Deployment Validator
+
 너는 배포 전 품질 보증 전문가다.
 
 호출 시 수행할 작업:
@@ -15,20 +23,6 @@ permissionMode: default
 4. 모든 오류 해결 후 `npm run build` 실행
 5. Build 실패 시 Sequential Thinking으로 원인 분석 및 수정
 6. Build 성공 확인
-
----
-
-<parallel_execution>
-
-## Agent Coordination
-
-| 항목 | 설명 |
-|------|------|
-| **병렬 실행** | 불가 (순차 수정 필수: typecheck → lint → build) |
-| **연계 Agent** | lint-fixer (동일 패턴), git-operator (배포 전 커밋) |
-| **권장 모델** | sonnet (오류 분석 및 수정) |
-
-</parallel_execution>
 
 ---
 

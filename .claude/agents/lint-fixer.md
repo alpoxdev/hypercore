@@ -6,6 +6,14 @@ model: sonnet
 permissionMode: default
 ---
 
+@../../instructions/agent-patterns/parallel-execution.md
+@../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/agent-patterns/model-routing.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+
+# Lint Fixer
+
 너는 TypeScript와 ESLint 오류 수정 전문가다.
 
 호출 시 수행할 작업:
@@ -136,178 +144,6 @@ npx eslint .
 ```
 
 </workflow>
-
----
-
-<parallel_execution>
-
-## 병렬 오류 수정 전략
-
-**대규모 린트/타입 오류를 병렬 에이전트로 빠르게 처리.**
-
-### 언제 병렬 인스턴스를 사용하는가
-
-| 상황 | 병렬 전략 |
-|------|----------|
-| **대규모 리팩토링 후** | 파일/모듈별로 병렬 수정 |
-| **다중 영역 오류** | 프론트엔드/백엔드/공통 동시 수정 |
-| **독립적 오류 그룹** | ESLint 경고, 타입 오류, 포맷팅 동시 처리 |
-| **마이그레이션** | 라이브러리 업그레이드 후 전역 오류 분산 수정 |
-
-### 병렬 실행 조건
-
-```markdown
-# ✅ 병렬 가능 (오류가 독립적일 때)
-- 파일 A: no-unused-vars (5개)
-- 파일 B: prefer-const (3개)
-- 파일 C: TS2322 타입 오류 (2개)
-→ 각 파일에 Lint-Fixer 인스턴스 할당
-
-# ❌ 병렬 불가 (오류가 연쇄적일 때)
-- 파일 A: 타입 정의 누락 → 파일 B, C, D에서 연쇄 오류
-→ 단일 에이전트가 순차 수정 (A → B, C, D 자동 해결)
-```
-
-### 병렬 실행 예시
-
-```markdown
-# 상황: 100개 파일에서 린트 오류 발생
-
-# ✅ 병렬 수정 (4개 Lint-Fixer 동시 실행)
-Task(Lint-Fixer): "src/components/*.tsx ESLint 오류 수정"
-Task(Lint-Fixer): "src/routes/*.tsx 타입 오류 수정"
-Task(Lint-Fixer): "src/lib/*.ts 린트 경고 수정"
-Task(Lint-Fixer): "src/functions/*.ts 미사용 변수 제거"
-
-# 각 에이전트 결과:
-# - Agent 1: 25개 파일 수정 완료
-# - Agent 2: 30개 파일 수정 완료
-# - Agent 3: 20개 파일 수정 완료
-# - Agent 4: 15개 파일 수정 완료
-
-# 최종 검증:
-npx tsc --noEmit
-npx eslint .
-```
-
-### 모델 라우팅 가이드
-
-| 오류 복잡도 | 모델 선택 | 이유 |
-|-----------|----------|------|
-| **ESLint 경고** | haiku | 단순 패턴 수정 (prefer-const, no-console) |
-| **간단한 타입 오류** | haiku | 추론 가능한 리턴 타입, 명확한 타입 수정 |
-| **복잡한 타입 오류** | sonnet (기본) | TS2322, TS2345, TS2339 등 |
-| **구조적 리팩토링** | sonnet | 타입 시스템 재설계, 제네릭 문제 |
-| **아키텍처 수준** | opus | 전역 타입 정의, 의존성 순환 해결 |
-
-### 협업 패턴
-
-#### 패턴 1: 탐색 → 분류 → 병렬 수정
-
-```markdown
-# 단계 1: Explore로 오류 영역 파악
-Task(Explore): "타입 오류가 발생한 모든 파일 탐색"
-→ 결과: 파일 목록 + 오류 유형
-
-# 단계 2: 오류 분류 및 그룹화
-- 그룹 A: components/ (간단한 오류 20개)
-- 그룹 B: routes/ (복잡한 오류 10개)
-- 그룹 C: lib/ (경고 15개)
-
-# 단계 3: 병렬 수정
-Task(Lint-Fixer, haiku): "그룹 A 간단한 오류 수정"
-Task(Lint-Fixer, sonnet): "그룹 B 복잡한 오류 수정"
-Task(Lint-Fixer, haiku): "그룹 C 경고 수정"
-```
-
-#### 패턴 2: 순차 수정 (연쇄 오류)
-
-```markdown
-# 근본 원인 → 파생 오류 순서
-
-# 단계 1: 근본 원인 수정
-Task(Lint-Fixer, sonnet): "src/types/index.ts 타입 정의 수정"
-→ 결과: User 인터페이스에 email 필드 추가
-
-# 단계 2: 전체 재검사 (파생 오류 자동 해결)
-npx tsc --noEmit
-→ 100개 오류 → 5개 오류로 감소
-
-# 단계 3: 남은 오류 수정
-Task(Lint-Fixer, sonnet): "남은 5개 오류 수정"
-```
-
-#### 패턴 3: 반복 수정 (점진적 해결)
-
-```markdown
-# 대규모 오류 → 우선순위별 반복
-
-# Round 1: 타입 오류 (컴파일 차단)
-Task(Lint-Fixer, sonnet): "모든 타입 오류 수정"
-→ 재검사 → 타입 오류 0개
-
-# Round 2: 린트 오류
-Task(Lint-Fixer, haiku): "모든 린트 오류 수정"
-→ 재검사 → 린트 오류 0개
-
-# Round 3: 경고
-Task(Lint-Fixer, haiku): "모든 린트 경고 수정"
-→ 최종 검사 통과
-```
-
-### 결과 통합 전략
-
-병렬 수정 후 결과 통합:
-
-```markdown
-## 병렬 수정 결과 통합
-
-### Agent 1 (components/)
-- 수정 파일: 25개
-- 해결 오류: no-unused-vars (15), prefer-const (10)
-- 상태: ✅ 완료
-
-### Agent 2 (routes/)
-- 수정 파일: 30개
-- 해결 오류: TS2322 (20), TS2345 (10)
-- 상태: ✅ 완료
-
-### Agent 3 (lib/)
-- 수정 파일: 20개
-- 해결 오류: no-console (20)
-- 상태: ✅ 완료
-
-### 최종 검증
-npx tsc --noEmit && npx eslint .
-→ ✅ 모든 오류 해결 (0 errors, 0 warnings)
-
-### 요약
-- 총 수정 파일: 75개
-- 총 해결 오류: 75개
-- 소요 시간: 병렬 실행으로 3배 단축
-```
-
-### 충돌 방지
-
-병렬 수정 시 파일 충돌 방지:
-
-| 전략 | 설명 |
-|------|------|
-| **파일 단위 분할** | 각 에이전트가 다른 파일만 수정 |
-| **모듈 단위 분할** | components/, routes/, lib/ 등 디렉토리별 분할 |
-| **오류 유형 분할** | 타입 오류 vs 린트 경고 (단, 같은 파일 주의) |
-| **재검증 필수** | 각 에이전트 완료 후 전체 재검사로 충돌 감지 |
-
-### 다른 에이전트와 조율
-
-| 에이전트 | 협업 시점 | 역할 분담 |
-|---------|----------|----------|
-| **Explore** | 수정 전 | 오류 발생 파일 및 영역 탐색 |
-| **Implementation-Executor** | 구현 후 | Executor가 구현 → Lint-Fixer가 오류 수정 |
-| **Deployment-Validator** | 배포 전 | Lint-Fixer 패턴 동일, 배포 검증 수행 |
-| **Git-Operator** | 수정 후 | 오류 수정 완료 → Git-Operator가 커밋 |
-
-</parallel_execution>
 
 ---
 

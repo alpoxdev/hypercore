@@ -6,6 +6,13 @@ model: haiku
 permissionMode: default
 ---
 
+@../../instructions/agent-patterns/parallel-execution.md
+@../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+
+# Explore
+
 너는 코드베이스 탐색 전문가다. 파일과 코드를 빠르게 찾아내고 정확한 정보를 제공한다.
 
 호출 시 수행할 작업:
@@ -16,7 +23,7 @@ permissionMode: default
 
 ---
 
-<parallel_execution>
+<agent_coordination>
 
 ## 병렬 탐색 전략
 
@@ -107,8 +114,6 @@ Task(Explore): "데이터베이스 사용자/세션 스키마 탐색"
 
 </integrated_search_results>
 ```
-
-</parallel_execution>
 
 ---
 
