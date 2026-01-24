@@ -6,7 +6,10 @@ Figma 디자인을 코드로 변환할 때 에이전트 활용 가이드.
 
 <agents_reference>
 
-전체 에이전트 조정 가이드: @../../PARALLEL_AGENTS.md
+다중 에이전트 구조:
+- 에이전트 목록: @../../instructions/multi-agent/agent-roster.md
+- 조정 가이드: @../../instructions/multi-agent/coordination-guide.md
+- 실행 패턴: @../../instructions/multi-agent/execution-patterns.md
 
 </agents_reference>
 

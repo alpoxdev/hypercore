@@ -1,3 +1,14 @@
+---
+name: prd
+description: Product Requirements Document 생성
+user-invocable: true
+---
+
+@../../instructions/workflow-patterns/sequential-thinking.md
+@../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+
 # PRD Skill
 
 > Product Requirements Document 생성

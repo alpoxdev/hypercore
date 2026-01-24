@@ -1,3 +1,15 @@
+---
+name: plan
+description: 개발 진행 방법 검토 및 옵션 제시
+user-invocable: true
+---
+
+@../../instructions/workflow-patterns/sequential-thinking.md
+@../../instructions/agent-patterns/parallel-execution.md
+@../../instructions/agent-patterns/model-routing.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+
 # Plan Skill
 
 > 개발 진행 방법 검토 및 옵션 제시
@@ -57,6 +69,35 @@ Task({
 ---
 
 ### Parallel Execution Patterns
+
+### Read 도구 병렬화
+
+**프로젝트 분석 시 파일 병렬 읽기:**
+
+```typescript
+// ❌ 순차 읽기 (느림)
+Read({ file_path: "src/file1.ts" })
+// 대기...
+Read({ file_path: "src/file2.ts" })
+
+// ✅ 병렬 읽기 (빠름)
+Read({ file_path: "src/file1.ts" })
+Read({ file_path: "src/file2.ts" })
+Read({ file_path: "src/file3.ts" })
+Read({ file_path: "docs/api.md" })
+```
+
+**복잡한 탐색은 explore 에이전트 활용:**
+
+```typescript
+// 여러 영역 동시 탐색
+Task(subagent_type="explore", model="haiku",
+     prompt="영역 1 파일 구조 및 패턴 분석")
+Task(subagent_type="explore", model="haiku",
+     prompt="영역 2 의존성 및 관계 분석")
+```
+
+---
 
 **1. 탐색 + 분석 병렬**
 

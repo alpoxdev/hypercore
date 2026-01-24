@@ -8,6 +8,12 @@ metadata:
   adapted_for: tanstack-start
 ---
 
+@../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+@../../instructions/multi-agent/coordination-guide.md
+@../../instructions/multi-agent/execution-patterns.md
+
 # TanStack Start React 베스트 프랙티스
 
 React와 TanStack Start 애플리케이션 성능 최적화 가이드. 7개 카테고리, 38개 규칙 포함. 영향도별 우선순위로 자동 리팩토링과 코드 생성 가이드 제공.

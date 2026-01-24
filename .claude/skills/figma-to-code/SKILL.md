@@ -1,3 +1,13 @@
+---
+name: figma-to-code
+description: Figma 디자인을 100% 정확하게 코드로 변환. Figma MCP로 디자인 토큰/레이아웃/에셋을 추출하여 픽셀 단위 정확도 보장.
+user-invocable: true
+---
+
+@../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+
 # Figma → Code (100% Pixel-Perfect)
 
 <context>

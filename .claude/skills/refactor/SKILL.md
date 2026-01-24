@@ -1,3 +1,15 @@
+---
+name: refactor
+description: 코드 품질 개선을 위한 리팩토링 계획 수립 및 실행 전략 제시
+user-invocable: true
+---
+
+@../../instructions/workflow-patterns/sequential-thinking.md
+@../../instructions/agent-patterns/parallel-execution.md
+@../../instructions/agent-patterns/model-routing.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+
 # Refactor Skill
 
 > 코드 품질 개선을 위한 리팩토링 계획 수립 및 실행 전략 제시
@@ -149,6 +161,35 @@ $ARGUMENTS 있음 → 다음 단계 진행
 | **@document-writer** | haiku/sonnet | 리팩토링 계획 및 결과 문서화 |
 
 ### 병렬 실행 패턴
+
+### Read 도구 병렬화
+
+**프로젝트 분석 시 파일 병렬 읽기:**
+
+```typescript
+// ❌ 순차 읽기 (느림)
+Read({ file_path: "src/file1.ts" })
+// 대기...
+Read({ file_path: "src/file2.ts" })
+
+// ✅ 병렬 읽기 (빠름)
+Read({ file_path: "src/file1.ts" })
+Read({ file_path: "src/file2.ts" })
+Read({ file_path: "src/file3.ts" })
+Read({ file_path: "docs/api.md" })
+```
+
+**복잡한 탐색은 explore 에이전트 활용:**
+
+```typescript
+// 여러 영역 동시 탐색
+Task(subagent_type="explore", model="haiku",
+     prompt="영역 1 파일 구조 및 패턴 분석")
+Task(subagent_type="explore", model="haiku",
+     prompt="영역 2 의존성 및 관계 분석")
+```
+
+---
 
 #### 1. 독립적 모듈 병렬 리팩토링
 

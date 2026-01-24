@@ -1,3 +1,13 @@
+---
+name: korea-uiux-design
+description: 한국 사용자 대상 앱/웹 UI/UX 디자인 구현. shadcn/ui 기본 스타일 대신 토스/카카오/배민/플렉스 등 국내 앱 스타일 적용.
+user-invocable: true
+---
+
+@../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+
 # 한국형 앱 UI/UX 디자인
 
 <context>

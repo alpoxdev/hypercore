@@ -7,6 +7,12 @@ metadata:
   version: "1.0.0"
 ---
 
+@../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/validation/forbidden-patterns.md
+@../../instructions/validation/required-behaviors.md
+@../../instructions/multi-agent/coordination-guide.md
+@../../instructions/multi-agent/execution-patterns.md
+
 # Next.js React 베스트 프랙티스
 
 Vercel에서 관리하는 React와 Next.js 애플리케이션 종합 성능 최적화 가이드. 8개 카테고리, 45개 규칙 포함. 영향도별 우선순위로 자동 리팩토링과 코드 생성 가이드 제공.
