@@ -234,6 +234,122 @@ Task({
 
 ---
 
+<parallel_execution_critical>
+
+## ⚠️ CRITICAL: 병렬 검사 필수
+
+**tsc와 eslint는 반드시 단일 메시지에서 병렬로 실행해야 합니다.**
+
+### 올바른 실행 방법
+
+```typescript
+// ✅ 단일 메시지에서 2개 Bash 동시 호출
+Bash({ command: "npx tsc --noEmit", description: "TypeScript type check" })
+Bash({ command: "npx eslint .", description: "ESLint check" })
+```
+
+**이렇게 하면:**
+- 2개의 검사가 동시에 실행됨
+- 총 실행 시간 = max(tsc 시간, eslint 시간)
+- 순차 실행 대비 약 50% 시간 단축
+
+### 잘못된 실행 방법
+
+```typescript
+// ❌ 순차 실행 (느림)
+Bash({ command: "npx tsc --noEmit", description: "..." })
+// 대기...
+Bash({ command: "npx eslint .", description: "..." })
+```
+
+**이렇게 하면:**
+- tsc 완료 후 eslint 시작
+- 총 실행 시간 = tsc 시간 + eslint 시간
+- 불필요한 대기 시간 발생
+
+### 병렬 검사 체크리스트
+
+작업 시작 전 확인:
+
+- [ ] tsc와 eslint를 단일 메시지에서 호출하는가?
+- [ ] 2개의 Bash 도구를 연속으로 작성했는가?
+- [ ] 중간에 대기나 다른 작업이 없는가?
+
+**모든 항목이 체크되어야 올바른 병렬 실행입니다.**
+
+### 파일별 병렬 수정 패턴
+
+**독립적인 파일의 오류는 병렬 수정 가능:**
+
+```typescript
+// ✅ 서로 다른 파일 동시 수정
+Task({ subagent_type: 'lint-fixer', model: 'haiku',
+       prompt: 'src/utils/format.ts 린트 오류 수정' })
+Task({ subagent_type: 'lint-fixer', model: 'haiku',
+       prompt: 'src/components/Button.tsx 린트 오류 수정' })
+
+// ❌ 같은 파일 동시 수정 (충돌 위험)
+Task({ prompt: 'src/utils/format.ts 타입 오류 수정' })
+Task({ prompt: 'src/utils/format.ts 린트 오류 수정' })
+```
+
+**규칙:**
+- 독립 파일 → 병렬 수정 가능
+- 동일 파일 → 순차 수정 필수
+- 타입 정의 공유 → 순차 수정 필수
+
+### 실제 실행 워크플로우
+
+**Step 1: 병렬 검사 (필수)**
+
+```typescript
+// 커맨드 시작 시 즉시 실행
+Bash({
+  command: "npx tsc --noEmit",
+  description: "TypeScript type check"
+})
+Bash({
+  command: "npx eslint .",
+  description: "ESLint check"
+})
+```
+
+**Step 2: 오류 분석 및 그룹핑**
+
+- 간단한 오류: 즉시 수정 (Sequential Thinking 불필요)
+- 복잡한 오류: Sequential Thinking 3-5단계로 분석
+
+**Step 3: 독립 파일 병렬 수정**
+
+```typescript
+// 서로 다른 파일의 간단한 오류
+Edit({ file_path: "src/utils/format.ts", ... })  // 파일 1
+Edit({ file_path: "src/components/Button.tsx", ... })  // 파일 2
+```
+
+**Step 4: 재검사**
+
+```typescript
+// 수정된 파일들 병렬 재검사
+Bash({
+  command: "npx tsc --noEmit src/utils/format.ts",
+  description: "Verify format.ts fixes"
+})
+Bash({
+  command: "npx tsc --noEmit src/components/Button.tsx",
+  description: "Verify Button.tsx fixes"
+})
+```
+
+**전체 실행 시간:**
+- 순차: 검사(4초) + 수정1(2초) + 재검사1(1초) + 수정2(2초) + 재검사2(1초) = 10초
+- 병렬: 검사(2초) + 수정1,2 병렬(2초) + 재검사(1초) = 5초
+- **개선: 50% 시간 단축**
+
+</parallel_execution_critical>
+
+---
+
 <sequential_thinking>
 
 **각 오류마다 필수:**

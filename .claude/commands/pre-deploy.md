@@ -188,6 +188,146 @@ Task({ prompt: "src/utils/calc.ts 린트 오류 수정" })
 
 ---
 
+<parallel_execution_critical>
+
+## ⚠️ CRITICAL: 병렬 검사 필수
+
+**typecheck와 lint는 반드시 단일 메시지에서 병렬로 실행해야 합니다.**
+
+### 올바른 실행 방법
+
+```typescript
+// ✅ 단일 메시지에서 2개 Bash 동시 호출
+Bash({ command: "npx tsc --noEmit", description: "TypeScript type check" })
+Bash({ command: "npx eslint .", description: "ESLint check" })
+```
+
+**이렇게 하면:**
+- typecheck와 lint가 동시에 실행됨
+- 총 실행 시간 = max(typecheck 시간, lint 시간)
+- 순차 실행 대비 약 50% 시간 단축
+
+### 잘못된 실행 방법
+
+```typescript
+// ❌ 순차 실행 (느림)
+Bash({ command: "npx tsc --noEmit", description: "..." })
+// 대기...
+Bash({ command: "npx eslint .", description: "..." })
+```
+
+**이렇게 하면:**
+- typecheck 완료 후 lint 시작
+- 총 실행 시간 = typecheck 시간 + lint 시간
+- 불필요한 대기 시간 발생
+
+### 병렬 검사 체크리스트
+
+배포 전 확인:
+
+- [ ] typecheck와 lint를 단일 메시지에서 호출하는가?
+- [ ] 2개의 Bash 도구를 연속으로 작성했는가?
+- [ ] 중간에 대기나 분석이 없는가?
+- [ ] 오류 수정은 순차로 진행하는가?
+- [ ] build는 오류 수정 완료 후 실행하는가?
+
+**모든 항목이 체크되어야 올바른 배포 준비입니다.**
+
+### 검증 + 문서화 병렬 패턴
+
+**검증과 문서화는 독립적이므로 병렬 가능:**
+
+```typescript
+// ✅ 검증 + 문서 업데이트 병렬
+Task({ subagent_type: 'deployment-validator', model: 'sonnet',
+       prompt: 'typecheck + lint + build 전체 검증' })
+Task({ subagent_type: 'document-writer', model: 'haiku',
+       prompt: 'CHANGELOG.md 업데이트' })
+
+// ✅ 여러 관점의 코드 리뷰 병렬
+Task({ subagent_type: 'code-reviewer', model: 'opus',
+       prompt: '보안 검토 (SQL Injection, XSS, CSRF)' })
+Task({ subagent_type: 'code-reviewer', model: 'opus',
+       prompt: '성능 검토 (N+1 쿼리, 메모이제이션)' })
+Task({ subagent_type: 'code-reviewer', model: 'opus',
+       prompt: '접근성 검토 (ARIA, 키보드 네비게이션)' })
+```
+
+**규칙:**
+- 검사 단계 → 병렬 실행
+- 오류 수정 → 순차 실행 (파일 충돌 방지)
+- 검증 + 문서화 → 병렬 가능
+- build → 오류 수정 완료 후
+
+### 실제 배포 준비 워크플로우
+
+**Step 1: 병렬 검사 (필수)**
+
+```typescript
+// 배포 준비 시작 시 즉시 실행
+Bash({
+  command: "npx tsc --noEmit",
+  description: "TypeScript type check"
+})
+Bash({
+  command: "npx eslint .",
+  description: "ESLint check"
+})
+```
+
+**Step 2: 오류 수정 (순차)**
+
+- 오류가 있으면 하나씩 수정
+- 각 수정 후 해당 파일만 재검사
+
+**Step 3: 전체 재검사**
+
+```typescript
+// 모든 수정 완료 후 전체 검사
+Bash({
+  command: "npx tsc --noEmit",
+  description: "Final type check"
+})
+Bash({
+  command: "npx eslint .",
+  description: "Final lint check"
+})
+```
+
+**Step 4: Build**
+
+```bash
+npm run build  # 또는 yarn build, pnpm build
+```
+
+**Step 5: 검증 + 문서화 (병렬)**
+
+```typescript
+// build 성공 후 병렬 작업
+Task({
+  subagent_type: 'code-reviewer',
+  model: 'opus',
+  description: '배포 전 최종 코드 리뷰',
+  prompt: '보안, 성능, 접근성 종합 검토'
+})
+Task({
+  subagent_type: 'document-writer',
+  model: 'haiku',
+  description: 'CHANGELOG 업데이트',
+  prompt: '배포 버전 변경사항 문서화'
+})
+```
+
+**전체 실행 시간:**
+- 순차: 검사1(3초) + 검사2(2초) + 수정(5초) + 재검사1(3초) + 재검사2(2초) + build(10초) = 25초
+- 병렬: 검사(3초) + 수정(5초) + 재검사(3초) + build(10초) = 21초
+- **개선: 16% 시간 단축** (검사 단계만 병렬화 시)
+- 검증+문서화까지 병렬화 시 추가 30% 단축 가능
+
+</parallel_execution_critical>
+
+---
+
 <sequential_thinking>
 
 **각 오류마다 필수:**
