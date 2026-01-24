@@ -2,6 +2,9 @@
 description: 현재 세션에서 수정한 파일만 커밋 후 푸시
 ---
 
+@../instructions/multi-agent/coordination-guide.md
+@../instructions/multi-agent/execution-patterns.md
+
 # Git Session Command
 
 > @git-operator 에이전트를 사용하여 현재 세션 파일만 선택적으로 커밋하고 푸시.
@@ -106,82 +109,3 @@ git push
 
 </example>
 
----
-
-<parallel_agent_execution>
-
-## Recommended Agents
-
-| Agent | Model | Purpose |
-|-------|-------|---------|
-| **@git-operator** | haiku (기본), sonnet (복잡한 경우) | Git 커밋/푸시 작업 (필수) |
-| **@code-reviewer** | haiku/sonnet | 세션 변경사항 검토 |
-| **@explore** | haiku | 세션 파일 탐색 |
-
----
-
-## Parallel Execution Patterns
-
-| Pattern | Description |
-|---------|-------------|
-| **검토 + 탐색 병렬** | @code-reviewer와 @explore 동시 실행 |
-| **분석 후 순차 커밋** | 병렬 분석 → 순차 git 작업 |
-
-**❌ Git 커밋은 순차 실행:**
-- git-session은 단일 커밋 흐름
-- 병렬화 불필요
-
----
-
-## Model Routing
-
-| Complexity | Model | Scenario |
-|------------|-------|----------|
-| **LOW** | haiku | 단순 세션 커밋 (1-3 files, 간단한 변경) |
-| **MEDIUM** | sonnet | 일반 세션 커밋 (4-10 files, 로직 변경) |
-
-**선택 기준:**
-- 파일 수 1-3개 + 단순 변경 → haiku
-- 파일 수 4개 이상 또는 로직 변경 → sonnet
-
----
-
-## Practical Examples
-
-```typescript
-// ✅ 병렬 분석 + 적절한 모델 선택
-Task({
-  subagent_type: 'code-reviewer',
-  model: 'haiku',  // 간단한 검토
-  prompt: '세션 변경사항 간단 검토'
-})
-Task({
-  subagent_type: 'explore',
-  model: 'haiku',  // 빠른 탐색
-  prompt: '세션 파일 목록 확인'
-})
-
-// 분석 완료 후 복잡도에 맞는 모델로 커밋
-// 단순한 경우
-Task({
-  subagent_type: 'git-operator',
-  model: 'haiku',  // 1-3개 파일
-  prompt: '세션 커밋 (간단한 변경)'
-})
-
-// 복잡한 경우
-Task({
-  subagent_type: 'git-operator',
-  model: 'sonnet',  // 4개 이상 또는 로직 변경
-  prompt: '세션 커밋 (여러 파일, 로직 변경)'
-})
-```
-
-```typescript
-// ❌ Git 커밋 병렬화 시도
-// git-session은 단일 커밋이므로 병렬화 불필요
-Task({ subagent_type: 'git-operator', prompt: '파일 A 커밋' })
-Task({ subagent_type: 'git-operator', prompt: '파일 B 커밋' })  // 불필요
-```
-
-</parallel_agent_execution>

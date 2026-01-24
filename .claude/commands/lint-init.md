@@ -3,7 +3,8 @@ description: 프로젝트 분석 후 ESLint flat config 설정
 allowed-tools: Read, Write, Edit, Glob, Bash, mcp__sequential-thinking__sequentialthinking
 ---
 
-@../instructions/sequential-thinking-guide.md
+@../instructions/multi-agent/coordination-guide.md
+@../instructions/multi-agent/execution-patterns.md
 
 # Lint Init Command
 
@@ -253,59 +254,6 @@ npm install -D eslint @eslint/js globals @typescript-eslint/parser @typescript-e
 설정 완료 후 자동 추가 제안.
 
 </scripts>
-
----
-
-<parallel_agent_execution>
-
-## 병렬 Agent 실행
-
-### Recommended Agents
-
-| Agent | Model | 역할 |
-|-------|-------|------|
-| **@implementation-executor** | sonnet | ESLint 설정 구현 |
-| **@explore** | haiku | 프로젝트 구조 탐색 |
-| **@analyst** | sonnet | 프로젝트 패턴 분석 |
-
-### Parallel Execution Patterns
-
-| 패턴 | 병렬 작업 | 효과 |
-|------|-----------|------|
-| **탐색 + 분석** | explore (haiku) + analyst (sonnet) | 프로젝트 이해 속도 향상 |
-| **설정 + 문서** | implementation-executor + document-writer | 구현과 문서화 동시 진행 |
-
-### Model Routing
-
-| 복잡도 | 모델 | 조건 |
-|--------|------|------|
-| **LOW** | haiku / sonnet | 기본 JS/TS 프로젝트, 단일 프레임워크 |
-| **MEDIUM** | sonnet | 커스텀 룰 설정, 여러 프레임워크 혼재 |
-| **HIGH** | opus | 복잡한 모노레포, 레거시 마이그레이션 |
-
-### Practical Examples
-
-```typescript
-// ✅ 탐색 + 분석 병렬
-Task(subagent_type="explore", model="haiku",
-     prompt="프로젝트 파일 구조 파악 (package.json, tsconfig.json, src/)")
-
-Task(subagent_type="analyst", model="sonnet",
-     prompt="코드 패턴 및 스타일 분석 (import 방식, 파일명 컨벤션)")
-
-// ✅ 설정 + 문서 병렬
-Task(subagent_type="implementation-executor", model="sonnet",
-     prompt="ESLint flat config 생성 (TypeScript + React)")
-
-Task(subagent_type="document-writer", model="haiku",
-     prompt="린트 설정 가이드 작성 (패키지 설치 명령어, 사용법)")
-
-// ✅ 복잡한 마이그레이션
-Task(subagent_type="implementation-executor", model="opus",
-     prompt=".eslintrc.json → flat config 변환 (커스텀 룰 200+ 보존)")
-```
-
-</parallel_agent_execution>
 
 ---
 

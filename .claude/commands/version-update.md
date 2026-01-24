@@ -4,7 +4,8 @@ allowed-tools: Bash, Read, Edit
 argument-hint: <new-version | +1 | +minor | +major>
 ---
 
-@../instructions/git-rules.md
+@../instructions/multi-agent/coordination-guide.md
+@../instructions/multi-agent/execution-patterns.md
 
 # Version Update Command
 
@@ -249,93 +250,6 @@ Task({ subagent_type: 'code-reviewer', model: 'haiku',
 </parallel_execution_critical>
 
 ---
-
-<parallel_agent_execution>
-
-## Recommended Agents
-
-| Agent | Model | 용도 |
-|-------|-------|------|
-| @git-operator | haiku | 버전 커밋 및 태그 |
-| @document-writer | haiku | CHANGELOG 작성 |
-| @code-reviewer | haiku | 변경사항 검토 |
-
-## Parallel Execution Patterns
-
-```typescript
-// ✅ 문서 작성 병렬 (독립적 작업)
-Task({
-  subagent_type: "document-writer",
-  model: "haiku",
-  prompt: "CHANGELOG.md에 버전 X.X.X 변경사항 추가"
-})
-Task({
-  subagent_type: "document-writer",
-  model: "haiku",
-  prompt: "README.md 버전 정보 업데이트"
-})
-
-// ✅ 검토 + 문서 병렬
-Task({
-  subagent_type: "code-reviewer",
-  model: "haiku",
-  prompt: "버전 업데이트 변경사항 검토"
-})
-Task({
-  subagent_type: "document-writer",
-  model: "haiku",
-  prompt: "CHANGELOG 작성"
-})
-
-// ❌ Git 작업은 순차 필수
-// 버전 커밋 → 태그 생성 → 푸시 순서 보장
-git commit → git tag → git push
-```
-
-## Model Routing
-
-| 복잡도 | 버전 유형 | 모델 | 이유 |
-|--------|----------|------|------|
-| **LOW** | patch (+1) | haiku | 단순 숫자 증가 |
-| **MEDIUM** | minor (+minor) | haiku/sonnet | 기능 추가, 문서 업데이트 |
-| **HIGH** | major (+major) | sonnet | Breaking changes, 마이그레이션 가이드 |
-
-## Practical Examples
-
-```typescript
-// 패치 버전 (haiku 병렬)
-Task({ subagent_type: "document-writer", model: "haiku",
-       prompt: "CHANGELOG: 버그 수정 내역 추가" })
-Task({ subagent_type: "git-operator", model: "haiku",
-       prompt: "버전 0.1.14 커밋" })
-
-// 마이너 버전 (haiku/sonnet 병렬)
-Task({ subagent_type: "document-writer", model: "sonnet",
-       prompt: "CHANGELOG: 새 기능 문서화" })
-Task({ subagent_type: "code-reviewer", model: "haiku",
-       prompt: "API 변경사항 검토" })
-
-// 메이저 버전 (sonnet 순차)
-// 1. Breaking changes 분석 (sonnet)
-// 2. 마이그레이션 가이드 작성 (sonnet)
-// 3. 버전 커밋 (git-operator)
-```
-
-## Git 작업 순서 (순차 필수)
-
-```bash
-# ✅ 올바른 순서
-1. git add [files]
-2. git commit -m "chore: 버전 X.X.X로 업데이트"
-3. git tag vX.X.X
-4. git push origin main
-5. git push origin vX.X.X
-
-# ❌ 병렬 실행 금지
-# Git 작업은 상태 의존성이 있어 순차 실행 필수
-```
-
-</parallel_agent_execution>
 
 <update_targets>
 

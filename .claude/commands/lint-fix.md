@@ -4,6 +4,9 @@ allowed-tools: Task
 argument-hint: [파일/디렉토리 경로...]
 ---
 
+@../instructions/multi-agent/coordination-guide.md
+@../instructions/multi-agent/execution-patterns.md
+
 # Lint Fix Command
 
 > @lint-fixer 에이전트를 사용하여 tsc/eslint 오류를 자동으로 수정.
@@ -112,88 +115,6 @@ Task({
 | 백그라운드 실행 | @lint-fixer |
 
 </agent_usage>
-
----
-
-<parallel_agent_execution>
-
-## 병렬 에이전트 실행
-
-**Recommended Agents:**
-
-| Agent | Model | 용도 |
-|-------|-------|------|
-| @lint-fixer | haiku/sonnet | 오류 수정 |
-| @explore | haiku | 관련 파일 탐색 |
-| @code-reviewer | haiku | 수정 후 검증 |
-
-**Parallel Execution Patterns:**
-
-1. **파일별 병렬 수정:** 각 파일마다 별도 lint-fixer
-2. **오류 타입별 병렬:** 타입 오류와 린트 오류 동시 수정
-3. **수정 + 검증 병렬:** 여러 파일 동시 수정 후 검증
-
-**Model Routing:**
-
-| 복잡도 | 오류 범위 | 모델 |
-|--------|----------|------|
-| LOW | 단순 오류 (1-5개) | haiku |
-| MEDIUM | 일반 오류 (6-20개) | sonnet |
-| HIGH | 복잡한 오류 (타입 추론) | sonnet/opus |
-
-**Practical Examples:**
-
-```typescript
-// ✅ 파일별 병렬 수정
-Task({
-  subagent_type: 'lint-fixer',
-  model: 'haiku',
-  prompt: 'src/utils/format.ts 린트 오류 수정'
-})
-Task({
-  subagent_type: 'lint-fixer',
-  model: 'haiku',
-  prompt: 'src/components/Button.tsx 린트 오류 수정'
-})
-
-// ✅ 타입 + 린트 병렬
-Task({
-  subagent_type: 'lint-fixer',
-  model: 'sonnet',
-  prompt: '타입 오류 수정'
-})
-Task({
-  subagent_type: 'lint-fixer',
-  model: 'haiku',
-  prompt: 'ESLint 오류 수정'
-})
-
-// ✅ 수정 + 검증 병렬
-Task({
-  subagent_type: 'lint-fixer',
-  model: 'haiku',
-  prompt: 'src/utils/*.ts 파일들 린트 오류 수정'
-})
-Task({
-  subagent_type: 'code-reviewer',
-  model: 'haiku',
-  prompt: '수정된 파일들 코드 품질 검증'
-})
-
-// ✅ 탐색 + 수정 병렬
-Task({
-  subagent_type: 'explore',
-  model: 'haiku',
-  prompt: '타입 정의 파일 위치 탐색'
-})
-Task({
-  subagent_type: 'lint-fixer',
-  model: 'sonnet',
-  prompt: '타입 오류 수정'
-})
-```
-
-</parallel_agent_execution>
 
 ---
 

@@ -4,6 +4,9 @@ allowed-tools: Bash(tsc:*, npx:*, yarn:*, npm:*, pnpm:*), Read, Edit, mcp__seque
 argument-hint: [파일/디렉토리 경로...]
 ---
 
+@../instructions/multi-agent/coordination-guide.md
+@../instructions/multi-agent/execution-patterns.md
+
 # Pre-Deploy Command
 
 > 배포 전 typecheck/lint/build를 Sequential Thinking으로 검증하고 수정
@@ -56,88 +59,6 @@ argument-hint: [파일/디렉토리 경로...]
 | 자동화된 검증 | @deployment-validator |
 
 </agent_usage>
-
----
-
-<parallel_agent_execution>
-
-## 병렬 Agent 실행
-
-**권장 Agent:**
-
-| Agent | 모델 | 용도 |
-|-------|------|------|
-| @deployment-validator | sonnet/opus | 전체 검증 자동화 (typecheck + lint + build) |
-| @lint-fixer | haiku/sonnet | 린트 오류 자동 수정 |
-| @code-reviewer | sonnet | 배포 전 코드 품질 리뷰 |
-
-**병렬 실행 패턴:**
-
-| 작업 유형 | 실행 방식 | 이유 |
-|----------|----------|------|
-| typecheck + lint 검사 | ✅ 병렬 가능 | 읽기 전용, 파일 충돌 없음 |
-| 오류 수정 | ❌ 순차 실행 | 동일 파일 동시 수정 방지 |
-| 검증 + 문서화 | ✅ 병렬 가능 | validator + document-writer 독립적 |
-| build + test | ❌ 순차 실행 | build 완료 후 test 실행 |
-
-**모델 라우팅:**
-
-| 복잡도 | 모델 | 사용 시나리오 |
-|--------|------|-------------|
-| LOW | haiku | 간단한 린트 오류, 단순 검증 |
-| MEDIUM | sonnet | 일반적인 typecheck/lint 검증, 수정 |
-| HIGH | opus | 복잡한 타입 오류, 아키텍처 영향 분석 |
-
-**실전 예시:**
-
-```typescript
-// ✅ 병렬 검사 (읽기 전용)
-Task({
-  subagent_type: "deployment-validator",
-  model: "sonnet",
-  prompt: "typecheck 실행 및 검증"
-})
-Task({
-  subagent_type: "deployment-validator",
-  model: "sonnet",
-  prompt: "lint 실행 및 검증"
-})
-
-// ✅ 검증 + 문서화 병렬
-Task({
-  subagent_type: "deployment-validator",
-  model: "sonnet",
-  prompt: "배포 전 전체 검증"
-})
-Task({
-  subagent_type: "document-writer",
-  model: "haiku",
-  prompt: "CHANGELOG.md 업데이트"
-})
-
-// ❌ 수정 작업은 순차 실행 (충돌 방지)
-// 잘못된 예시:
-Task({ prompt: "src/utils/calc.ts 타입 오류 수정" })
-Task({ prompt: "src/utils/calc.ts 린트 오류 수정" })
-// → 동일 파일 동시 수정으로 충돌 발생
-
-// ✅ 올바른 순차 실행:
-// 1. typecheck + lint 병렬 검사
-// 2. 오류 목록 파악
-// 3. 파일별 순차 수정
-// 4. build 실행
-```
-
-**Agent 조합 권장:**
-
-| 목표 | Agent 조합 | 실행 방식 |
-|------|-----------|----------|
-| 빠른 검증 | @deployment-validator (haiku) | 단독 실행 |
-| 전체 검증 + 수정 | @deployment-validator (sonnet) → @lint-fixer (haiku) | 순차 |
-| 배포 준비 | @deployment-validator (sonnet) + @code-reviewer (sonnet) | 병렬 |
-| 자동화된 CI | @deployment-validator (opus) | 단독 실행 |
-
-</parallel_agent_execution>
 
 ---
 
