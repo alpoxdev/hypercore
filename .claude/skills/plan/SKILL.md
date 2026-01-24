@@ -47,7 +47,8 @@ Task({
 
 - 2-3개 옵션 제시 (장단점, 영향 범위)
 - 추천안 및 근거
-- 선택 후 `.claude/plans/[기능명].md` 자동 생성
+- 선택 후 `.claude/plans/[기능명]-{timestamp}/` 폴더에 여러 문서 자동 생성
+  - OVERVIEW.md, OPTIONS.md, IMPLEMENTATION.md, RISKS.md, REFERENCES.md
 
 </when_to_use>
 
@@ -422,6 +423,79 @@ Task({
 
 // → 통합 검증 보고서 생성
 ```
+
+**패턴 9: 계획 문서 병렬 작성 (Plan 특화)**
+
+옵션 선택 후 여러 문서를 동시에 작성:
+
+```typescript
+// 옵션 선택 후 5개 문서 동시 작성
+Task({
+  subagent_type: 'document-writer',
+  model: 'haiku',
+  description: 'OVERVIEW.md 작성',
+  prompt: `
+    OVERVIEW.md 작성:
+    - 개요 (목표, 범위)
+    - 현재 상태 분석
+    - 선택된 옵션 및 이유
+  `
+})
+
+Task({
+  subagent_type: 'document-writer',
+  model: 'haiku',
+  description: 'OPTIONS.md 작성',
+  prompt: `
+    OPTIONS.md 작성:
+    - 모든 옵션 비교표 (1, 2, 3)
+    - 장단점, 영향 범위
+    - 추천 옵션 및 근거
+  `
+})
+
+Task({
+  subagent_type: 'document-writer',
+  model: 'sonnet',
+  description: 'IMPLEMENTATION.md 작성',
+  prompt: `
+    IMPLEMENTATION.md 작성:
+    - 구현 단계 (1단계, 2단계, ...)
+    - 각 단계별 작업 체크리스트
+    - 변경 파일 목록
+  `
+})
+
+Task({
+  subagent_type: 'document-writer',
+  model: 'haiku',
+  description: 'RISKS.md 작성',
+  prompt: `
+    RISKS.md 작성:
+    - 기술적 리스크
+    - 일정 리스크
+    - 완화 방안
+  `
+})
+
+Task({
+  subagent_type: 'document-writer',
+  model: 'haiku',
+  description: 'REFERENCES.md 작성',
+  prompt: `
+    REFERENCES.md 작성:
+    - 코드베이스 분석 결과
+    - 관련 문서 링크
+    - 참고 자료
+  `
+})
+
+// → 5개 문서 병렬 생성으로 빠르게 계획 문서화
+```
+
+**모델 선택:**
+- IMPLEMENTATION.md는 복잡하므로 sonnet
+- 나머지는 haiku로 충분
 
 ---
 
@@ -944,7 +1018,7 @@ Task({
 | 2. 코드베이스 탐색 | 현재 상태 파악, 관련 파일 탐색 | Task (Explore/planner) |
 | 3. 옵션 도출 | 가능한 접근 4-5개 → 주요 2-3개 선정 | sequentialthinking (2-6단계) |
 | 4. 옵션 제시 | 장단점, 영향 범위, 추천안 제시 | - |
-| 5. 문서 생성 | 옵션 선택 대기 후 계획 문서 자동 생성 | Write |
+| 5. 문서 생성 | 옵션 선택 대기 후 계획 문서 병렬 생성 | Task (document-writer) 병렬 |
 
 ### Agent 선택 기준
 
@@ -963,6 +1037,272 @@ Task({
 | **복잡** | 7+ | 다중 모듈, 아키텍처 변경 | 복잡도 판단 → 심층 분석 → 제약사항 → 접근 방식 → 비교 → 상세 분석 → 추천안 |
 
 </workflow>
+
+---
+
+<state_management>
+
+## 상태 관리 및 문서화
+
+### 폴더 구조
+
+옵션 선택 후 `.claude/plans/[기능명]-{timestamp}/` 폴더 생성:
+
+```
+.claude/plans/realtime-notification-2026-01-24_14-30/
+├── OVERVIEW.md        # 개요, 현재 상태, 선택된 옵션
+├── OPTIONS.md         # 모든 옵션 비교 분석 (장단점, 영향 범위)
+├── IMPLEMENTATION.md  # 구현 단계 상세 계획
+├── RISKS.md           # 리스크 및 완화 방안
+└── REFERENCES.md      # 참조 자료, 코드베이스 분석 결과
+```
+
+**폴더명 형식:** `[기능명]-YYYY-MM-DD_HH-MM`
+
+### 문서 역할
+
+| 파일 | 내용 | 담당 에이전트 |
+|------|------|--------------|
+| **OVERVIEW.md** | 개요 (목표, 범위), 현재 상태 분석, 선택된 옵션 및 이유 | document-writer (haiku) |
+| **OPTIONS.md** | 모든 옵션 비교표, 장단점/영향 범위, 추천 옵션 및 근거 | document-writer (haiku) |
+| **IMPLEMENTATION.md** | 구현 단계 (1단계, 2단계, ...), 작업 체크리스트, 변경 파일 목록 | document-writer (sonnet) |
+| **RISKS.md** | 기술적 리스크, 일정 리스크, 완화 방안 | document-writer (haiku) |
+| **REFERENCES.md** | 코드베이스 분석 결과, 관련 문서 링크, 참고 자료 | document-writer (haiku) |
+
+### 문서 작성
+
+**우선순위: document-writer 에이전트 병렬 실행**
+
+| 작업 | 방법 | 모델 |
+|------|------|------|
+| 5개 문서 동시 생성 | `Task(subagent_type="document-writer", ...)` 병렬 호출 | haiku (4개), sonnet (1개) |
+| 복잡한 IMPLEMENTATION.md | `Task(subagent_type="document-writer", model="sonnet", ...)` | sonnet |
+
+**병렬 실행 패턴:**
+
+```typescript
+// ✅ 5개 문서 동시 작성 (빠름)
+Task(subagent_type="document-writer", model="haiku",
+     prompt="OVERVIEW.md 생성: 개요, 현재 상태, 선택된 옵션")
+Task(subagent_type="document-writer", model="haiku",
+     prompt="OPTIONS.md 생성: 옵션 비교 분석")
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="IMPLEMENTATION.md 생성: 구현 단계 상세 계획")
+Task(subagent_type="document-writer", model="haiku",
+     prompt="RISKS.md 생성: 리스크 및 완화 방안")
+Task(subagent_type="document-writer", model="haiku",
+     prompt="REFERENCES.md 생성: 코드베이스 분석 결과")
+
+// ❌ 순차 실행 (느림)
+Write({ file_path: "OVERVIEW.md", ... })  // 대기...
+Write({ file_path: "OPTIONS.md", ... })   // 대기...
+```
+
+### 문서 템플릿
+
+#### OVERVIEW.md
+
+```markdown
+# [기능명] 계획 개요
+
+생성: {{TIMESTAMP}}
+
+## 목표
+
+[무엇을 달성할 것인가]
+
+## 범위
+
+- 포함: [범위 1, 2, 3]
+- 제외: [범위 외 항목]
+
+## 현재 상태 분석
+
+### 코드베이스
+
+- 관련 파일: `src/`, `lib/`
+- 현재 구조: [설명]
+
+### 제약사항
+
+- 제약 1
+- 제약 2
+
+## 선택된 옵션
+
+**옵션 [N]: [옵션 이름]**
+
+**선택 이유:**
+1. 이유 1
+2. 이유 2
+3. 이유 3
+```
+
+#### OPTIONS.md
+
+```markdown
+# 옵션 비교 분석
+
+## 옵션 1: [옵션 이름] (추천)
+
+**접근 방식:**
+- 설명 1
+- 설명 2
+
+| 장점 | 단점 |
+|------|------|
+| 장점 1 | 단점 1 |
+| 장점 2 | 단점 2 |
+
+**영향 범위:**
+- 파일: `src/auth/`, `src/api/`
+- 예상 변경 규모: 중간
+- 리스크: 낮음
+
+---
+
+## 옵션 2: [옵션 이름]
+
+[동일 형식]
+
+---
+
+## 옵션 3: [옵션 이름]
+
+[동일 형식]
+
+---
+
+## 추천 및 근거
+
+옵션 [N]을 추천합니다.
+
+**근거:**
+1. 근거 1
+2. 근거 2
+3. 근거 3
+```
+
+#### IMPLEMENTATION.md
+
+```markdown
+# 구현 단계
+
+## 1단계: [단계 이름]
+
+**작업:**
+- [ ] 작업 1
+- [ ] 작업 2
+- [ ] 작업 3
+
+**변경 파일:**
+- `src/file1.ts`: [변경 내용]
+- `src/file2.ts`: [변경 내용]
+
+**예상 소요 시간:** [시간]
+
+---
+
+## 2단계: [단계 이름]
+
+**작업:**
+- [ ] 작업 4
+- [ ] 작업 5
+
+**변경 파일:**
+- `src/file3.ts`: [변경 내용]
+
+**예상 소요 시간:** [시간]
+
+---
+
+## 3단계: [단계 이름]
+
+[동일 형식]
+
+---
+
+## 검증 방법
+
+- [ ] 테스트 항목 1
+- [ ] 테스트 항목 2
+- [ ] 통합 테스트
+```
+
+#### RISKS.md
+
+```markdown
+# 리스크 및 완화 방안
+
+## 기술적 리스크
+
+| 리스크 | 영향도 | 완화 방안 |
+|--------|--------|----------|
+| 리스크 1 | 높음 | 방안 1 |
+| 리스크 2 | 중간 | 방안 2 |
+| 리스크 3 | 낮음 | 방안 3 |
+
+## 일정 리스크
+
+| 리스크 | 영향도 | 완화 방안 |
+|--------|--------|----------|
+| 병목 구간 1 | 높음 | 완충 시간 확보 |
+| 불확실성 1 | 중간 | 프로토타입 검증 |
+
+## 의존성
+
+- 외부 라이브러리: [목록]
+- 다른 시스템: [목록]
+- 팀 역량: [필요 기술]
+
+## 롤백 계획
+
+문제 발생 시 롤백 방법:
+1. 단계 1
+2. 단계 2
+3. 단계 3
+```
+
+#### REFERENCES.md
+
+```markdown
+# 참조 자료
+
+## 코드베이스 분석 결과
+
+### 현재 구조
+
+- 파일 1: [분석 내용]
+- 파일 2: [분석 내용]
+
+### 패턴 및 규칙
+
+- 패턴 1: [설명]
+- 패턴 2: [설명]
+
+## 관련 문서
+
+- [문서 1](링크)
+- [문서 2](링크)
+
+## 참고 자료
+
+- 라이브러리 문서: [링크]
+- 베스트 프랙티스: [링크]
+- 관련 아티클: [링크]
+
+## 탐색 결과
+
+### Explore Agent 1
+
+[탐색 내용 요약]
+
+### Explore Agent 2
+
+[탐색 내용 요약]
+```
+
+</state_management>
 
 ---
 
@@ -1029,78 +1369,99 @@ Task({
 
 <document_generation>
 
-## 계획 문서 자동 생성
+## 계획 문서 병렬 생성
 
-사용자가 옵션을 선택하면 자동으로 `.claude/plans/[기능명].md`에 계획 문서를 생성합니다.
+사용자가 옵션을 선택하면 `.claude/plans/[기능명]-{timestamp}/` 폴더에 여러 문서를 **병렬로** 생성합니다.
 
-### 계획 문서 템플릿
+### 병렬 생성 워크플로우
 
-**파일 위치:** `.claude/plans/[기능명].md`
-
-```markdown
-# [기능명] 구현 계획
-
-## 개요
-
-**목표:** [무엇을 달성할 것인가]
-**선택된 접근 방식:** [옵션 N]
-**예상 영향 범위:** [파일/모듈 목록]
-
-## 현재 상태
-
-- 현재 구조 설명
-- 관련 코드 위치
-- 기존 제약사항
-
-## 구현 단계
-
-### 1단계: [단계 이름]
-
-**작업:**
-- [ ] 작업 1
-- [ ] 작업 2
-
-**변경 파일:**
-- `src/file1.ts`
-- `src/file2.ts`
-
-### 2단계: [단계 이름]
-
-**작업:**
-- [ ] 작업 3
-
-**변경 파일:**
-- `src/file3.ts`
-
-## 고려사항
-
-### 리스크
-
-| 리스크 | 완화 방안 |
-|--------|----------|
-| 리스크 1 | 방안 1 |
-| 리스크 2 | 방안 2 |
-
-### 의존성
-
-- 외부 라이브러리: [목록]
-- 다른 시스템: [목록]
-
-### 롤백 계획
-
-문제 발생 시 롤백 방법.
-
-## 검증 방법
-
-- 테스트 항목 1
-- 테스트 항목 2
-- 통합 테스트
-
-## 참조
-
-- 관련 문서 링크
-- 참고 자료
+```text
+1. 폴더 생성: .claude/plans/[기능명]-{YYYY-MM-DD_HH-MM}/
+2. document-writer 에이전트 5개 병렬 호출
+   - OVERVIEW.md (haiku)
+   - OPTIONS.md (haiku)
+   - IMPLEMENTATION.md (sonnet)
+   - RISKS.md (haiku)
+   - REFERENCES.md (haiku)
+3. 모든 에이전트 완료 대기
+4. 사용자에게 폴더 경로 안내
 ```
+
+### 에이전트 호출 예시
+
+```typescript
+// 옵션 선택 후 실행
+const projectName = "realtime-notification"
+const timestamp = "2026-01-24_14-30"
+const basePath = `.claude/plans/${projectName}-${timestamp}`
+
+// 5개 문서 병렬 생성
+Task({
+  subagent_type: 'document-writer',
+  model: 'haiku',
+  description: 'OVERVIEW.md 작성',
+  prompt: `
+    ${basePath}/OVERVIEW.md 생성:
+    - 개요: ${목표}, ${범위}
+    - 현재 상태: ${코드베이스_분석}
+    - 선택된 옵션: 옵션 ${선택번호}
+  `
+})
+
+Task({
+  subagent_type: 'document-writer',
+  model: 'haiku',
+  description: 'OPTIONS.md 작성',
+  prompt: `
+    ${basePath}/OPTIONS.md 생성:
+    - 옵션 1, 2, 3 비교표
+    - 장단점, 영향 범위
+    - 추천 근거
+  `
+})
+
+Task({
+  subagent_type: 'document-writer',
+  model: 'sonnet',
+  description: 'IMPLEMENTATION.md 작성',
+  prompt: `
+    ${basePath}/IMPLEMENTATION.md 생성:
+    - 구현 단계 (1, 2, 3, ...)
+    - 작업 체크리스트
+    - 변경 파일 목록
+  `
+})
+
+Task({
+  subagent_type: 'document-writer',
+  model: 'haiku',
+  description: 'RISKS.md 작성',
+  prompt: `
+    ${basePath}/RISKS.md 생성:
+    - 기술적 리스크
+    - 일정 리스크
+    - 완화 방안
+  `
+})
+
+Task({
+  subagent_type: 'document-writer',
+  model: 'haiku',
+  description: 'REFERENCES.md 작성',
+  prompt: `
+    ${basePath}/REFERENCES.md 생성:
+    - 코드베이스 분석 결과
+    - 관련 문서 링크
+    - Explore 에이전트 결과 요약
+  `
+})
+
+// → 모든 문서 동시 생성 완료 후 사용자 안내
+```
+
+### 문서 템플릿
+
+문서 템플릿은 `<state_management>` 섹션 참조.
 
 </document_generation>
 
@@ -1130,7 +1491,8 @@ Task({
 3. planner agent 프로세스:
    - 인터뷰: 요구사항, 제약사항, 리스크 허용도 파악
    - 코드베이스 조사: Explore agent로 현재 구조 분석
-   - 계획 생성: .claude/plans/session-auth.md
+   - 계획 생성: .claude/plans/session-auth-{timestamp}/
+   - 5개 문서 병렬 생성 (OVERVIEW, OPTIONS, IMPLEMENTATION, RISKS, REFERENCES)
    - 사용자 확인 후 핸드오프
 
 → 복잡한 작업은 planner에게 위임하여 체계적으로 처리
@@ -1166,7 +1528,13 @@ Task({
 
 4. 사용자 선택: 1
 
-5. 자동으로 .claude/plans/realtime-notification.md 생성
+5. document-writer 에이전트 5개 병렬 호출로 문서 생성
+   - .claude/plans/realtime-notification-2026-01-24_14-30/
+     ├── OVERVIEW.md
+     ├── OPTIONS.md
+     ├── IMPLEMENTATION.md
+     ├── RISKS.md
+     └── REFERENCES.md
 ```
 
 ### 예시 3: 간단한 리팩토링
@@ -1192,7 +1560,7 @@ Task({
    - 장점: 깔끔함
    - 단점: 테스트 필요
 
-4. 사용자 선택 → 계획 문서 생성
+4. 사용자 선택 → document-writer 에이전트 병렬 호출로 계획 문서 생성
 ```
 
 </examples>
@@ -1211,17 +1579,20 @@ Task({
 ✅ 옵션 최소 2개, 권장 3개
 ✅ 각 옵션에 장단점 명시
 ✅ 영향 범위 및 예상 작업량 제시
+✅ document-writer 에이전트 병렬 호출로 문서 생성
+✅ .claude/plans/[기능명]-{timestamp}/ 폴더 구조 사용
 ```
 
 절대 금지:
 
 ```text
-❌ Edit 도구 사용 (코드 수정 금지)
+❌ Edit/Write 도구 직접 사용 (문서 작성은 document-writer 에이전트)
 ❌ Sequential Thinking 3단계 미만
 ❌ 옵션 1개만 제시
 ❌ 코드 탐색 없이 추측으로 옵션 제시
 ❌ 사용자 선택 없이 구현 시작
 ❌ 장단점 없이 옵션만 나열
+❌ 단일 파일로 문서 생성 (여러 파일로 분리 필수)
 ```
 
 </validation>
