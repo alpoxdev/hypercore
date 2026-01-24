@@ -32,6 +32,231 @@ metadata:
 
 ---
 
+<parallel_agent_execution>
+
+## 병렬 에이전트 실행
+
+**목표:** 독립적인 문서 작업을 동시에 처리하여 작업 시간 최소화, 품질 향상.
+
+### 핵심 원칙
+
+| 원칙 | 실행 방법 | 효과 |
+|------|----------|------|
+| **PARALLEL** | 단일 메시지에서 여러 에이전트 동시 호출 | 5-10배 속도 향상 |
+| **DELEGATE** | 전문 에이전트에게 즉시 위임 | 품질 향상, 컨텍스트 격리 |
+| **SMART MODEL** | 작업 복잡도별 모델 선택 | 비용 최적화 |
+
+**기본 패턴:**
+```typescript
+// ❌ 순차 실행 (느림)
+Task(...) // 60초 대기
+Task(...) // 60초 대기
+// 총 120초
+
+// ✅ 병렬 실행 (빠름) - 단일 메시지에서
+Task(subagent_type="explore", model="haiku", prompt="...")
+Task(subagent_type="document-writer", model="haiku", prompt="...")
+// 총 60초 (가장 긴 작업 기준)
+```
+
+---
+
+### Phase별 에이전트 활용
+
+#### Phase 1: 탐색 + 문서 정의 (병렬)
+
+```typescript
+// 탐색: 프로젝트 구조 파악 (haiku, 빠름)
+Task(subagent_type="explore", model="haiku",
+     prompt="프로젝트 코드베이스 구조 분석 - 주요 패턴, 라이브러리, 컨벤션 파악")
+
+// 분석: 문서 구조 결정 (sonnet, 정확)
+Task(subagent_type="analyst", model="sonnet",
+     prompt="CLAUDE.md 작성을 위한 핵심 규칙 추출 - forbidden, required, patterns 식별")
+```
+
+**예상 시간:** 60초 (병렬 실행)
+
+---
+
+#### Phase 2: 병렬 문서 작성
+
+```typescript
+// 여러 문서 동시 작성 (haiku/sonnet)
+Task(subagent_type="document-writer", model="haiku",
+     prompt=`CLAUDE.md 작성
+     - 프로젝트: TanStack Start
+     - 포함: forbidden, required, tech_stack, quick_patterns
+     - 참조: @docs/library/tanstack-start/index.md`)
+
+Task(subagent_type="document-writer", model="haiku",
+     prompt=`Git 규칙 문서 작성
+     - 파일: .claude/instructions/git-rules.md
+     - 포함: 커밋 메시지 규칙, 브랜치 전략`)
+
+Task(subagent_type="document-writer", model="sonnet",
+     prompt=`Prisma 가이드 작성
+     - 파일: docs/library/prisma/index.md
+     - 버전: 7.x 특화
+     - Multi-file 구조 패턴`)
+```
+
+**예상 시간:** 60초 (3개 문서 동시 작성)
+
+---
+
+#### Phase 3: 검증 (복잡한 경우)
+
+```typescript
+// 아키텍처 문서는 Opus로 검토
+Task(subagent_type="architect", model="opus",
+     prompt=`작성된 CLAUDE.md 검토
+     - XML 구조 올바름
+     - 예시 코드 실행 가능
+     - 토큰 효율성 (500줄 이하)
+     - 버전 명시 확인`)
+```
+
+**적용:** 복잡한 아키텍처 문서, 보안/성능 패턴 문서만.
+
+---
+
+### 에이전트별 역할
+
+| 에이전트 | 모델 | 문서 작업 용도 | 병렬 가능 |
+|---------|------|---------------|----------|
+| **explore** | haiku | 프로젝트 구조 탐색, 기존 패턴 검색 | ✅ |
+| **analyst** | sonnet | 규칙 추출, 문서 구조 결정 | ✅ |
+| **document-writer** | haiku/sonnet | 실제 문서 작성 (CLAUDE.md, SKILL.md) | ✅ |
+| **architect** | opus | 복잡한 아키텍처 문서 검토 | ✅ |
+
+---
+
+### 실전 패턴
+
+#### 패턴 1: 여러 문서 동시 작성
+
+**상황:** CLAUDE.md + 3개 라이브러리 가이드 작성
+
+```typescript
+// 단일 메시지에서 4개 작업 병렬 실행
+Task(subagent_type="document-writer", model="haiku",
+     prompt="CLAUDE.md 작성 - 프로젝트 규칙")
+Task(subagent_type="document-writer", model="haiku",
+     prompt="TanStack Start 가이드 작성")
+Task(subagent_type="document-writer", model="haiku",
+     prompt="Prisma 가이드 작성")
+Task(subagent_type="document-writer", model="haiku",
+     prompt="Zod 가이드 작성")
+```
+
+**효과:**
+- 순차 실행: 240초 (60 × 4)
+- 병렬 실행: 60초
+- **4배 향상**
+
+---
+
+#### 패턴 2: 조사 + 작성 병렬
+
+**상황:** 새 라이브러리 문서 작성 (버전/API 조사 필요)
+
+```typescript
+// 탐색과 작성 동시 진행
+Task(subagent_type="explore", model="haiku",
+     prompt="프로젝트에서 React Query 사용 패턴 조사 - 버전, 주요 패턴")
+
+Task(subagent_type="document-writer", model="haiku",
+     prompt=`React Query 가이드 초안 작성
+     - 기본 구조만 작성 (버전은 나중에 추가)
+     - useQuery, useMutation 패턴
+     - 에러 처리`)
+
+// 탐색 결과 확인 후 버전 정보 추가
+Read(".../react-query-usage.md") // explore 결과
+Edit("docs/library/react-query/index.md", ...) // 버전 정보 추가
+```
+
+**효과:**
+- 대기 시간 제거
+- 초안 작성 중 조사 완료
+
+---
+
+#### 패턴 3: 다중 SKILL 문서
+
+**상황:** 5개 스킬 문서 작성
+
+```typescript
+// 공통 조사 (1회만)
+Task(subagent_type="explore", model="haiku",
+     prompt="프로젝트의 스킬 패턴 분석 - 기존 SKILL.md 구조")
+
+// 병렬 작성 (5개 동시)
+const skills = ["test-runner", "db-migrate", "api-generator", "ui-builder", "deploy"]
+skills.forEach(skill => {
+  Task(subagent_type="document-writer", model="haiku",
+       prompt=`${skill} 스킬 문서 작성
+       - trigger_conditions
+       - workflow
+       - examples`)
+})
+```
+
+**효과:**
+- 순차: 300초 (60 × 5)
+- 병렬: 60초
+- **5배 향상**
+
+---
+
+### 모델 라우팅
+
+| 복잡도 | 모델 | 문서 유형 | 비용 | 속도 |
+|--------|------|----------|------|------|
+| **LOW** | haiku | 간단한 규칙 문서, 반복 패턴 | 💰 | ⚡⚡⚡ |
+| **MEDIUM** | sonnet | CLAUDE.md, 라이브러리 가이드 | 💰💰 | ⚡⚡ |
+| **HIGH** | opus | 아키텍처 문서, 보안/성능 패턴 | 💰💰💰 | ⚡ |
+
+**선택 기준:**
+```typescript
+// ✅ 간단한 문서 → haiku
+Task(subagent_type="document-writer", model="haiku",
+     prompt="Git 커밋 메시지 규칙 문서")
+
+// ✅ 일반 가이드 → sonnet
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="TanStack Start CLAUDE.md 작성")
+
+// ✅ 복잡한 아키텍처 → opus
+Task(subagent_type="architect", model="opus",
+     prompt="마이크로서비스 아키텍처 문서 설계 및 검토")
+```
+
+---
+
+### 체크리스트
+
+**병렬 실행 전:**
+- [ ] 독립적인 작업인가? (서로 의존성 없음)
+- [ ] 3개 이상 작업인가? (2개 이하는 순차도 OK)
+- [ ] 각 작업의 복잡도별 모델 선택했는가?
+
+**실행 중:**
+- [ ] 단일 메시지에서 여러 Task 호출했는가?
+- [ ] explore는 haiku 사용했는가?
+- [ ] document-writer는 haiku/sonnet 적절히 사용했는가?
+
+**실행 후:**
+- [ ] 모든 문서 생성 확인
+- [ ] XML 구조 올바름
+- [ ] 코드 예시 실행 가능
+- [ ] 버전 명시 확인
+
+</parallel_agent_execution>
+
+---
+
 <forbidden>
 
 | 분류 | 금지 사항 |

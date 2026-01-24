@@ -16,173 +16,508 @@
 
 ---
 
-<agent_integration>
+<parallel_agent_execution>
 
-## 병렬 Agent 활용 (ULTRAWORK MODE)
+## 한국형 UI/UX 병렬 에이전트 실행
 
-### 기본 원칙
+### 핵심 원칙
 
-| 원칙 | 실행 방법 |
-|------|----------|
-| **PARALLEL** | 독립 작업은 단일 메시지에서 동시 Tool 호출 |
-| **DELEGATE** | 전문 에이전트에게 즉시 위임 |
-| **SMART MODEL** | 복잡도별 모델 선택 (haiku/sonnet/opus) |
+| 원칙 | 한국 서비스 적용 | 기대 효과 |
+|------|----------------|----------|
+| **PARALLEL** | 본인인증 + 결제 + 주소입력 동시 구현 | 5-10배 속도 향상 |
+| **LOCALIZED** | 날짜/통화/전화번호 형식 병렬 처리 | 지역화 품질 극대화 |
+| **COMPLIANT** | 법규 검증 병렬 실행 (개인정보보호법/전자금융거래법/웹접근성) | 법적 리스크 사전 차단 |
 
-### Phase별 Agent 활용
-
-#### Phase 1: 탐색 + 디자인 정의
-
+**한국 서비스 특화 병렬 패턴:**
 ```typescript
-// 단일 메시지에서 병렬 실행
-Task(
-  subagent_type="explore",
-  model="haiku",
-  prompt=`한국형 앱의 기존 디자인 패턴 분석:
-  - 색상 시스템
-  - 컴포넌트 구조
-  - 타이포그래피`
-)
+// ❌ 순차 실행 (느림)
+Task("본인인증 구현")  // 60초
+Task("결제 구현")      // 60초
+Task("주소입력 구현")  // 60초
+// 총 180초
 
-Task(
-  subagent_type="designer",
-  model="sonnet",
-  prompt=`[서비스명] UI/UX 디자인 방향 정의:
-  - 미학적 톤: 테크 미니멀리즘 (토스/플렉스)
-  - 2026 트렌드: 키네틱 타이포, 적응형 테마
-  - 한국형 패턴 참조 (korea-uiux-design 스킬)`
-)
+// ✅ 병렬 실행 (빠름)
+Task("본인인증 구현")  // 단일 메시지에서
+Task("결제 구현")      // 동시 호출
+Task("주소입력 구현")  // 동시 실행
+// 총 60초 (가장 긴 작업 기준)
 ```
 
-#### Phase 2: 병렬 구현
+---
+
+### 한국형 UI 병렬 패턴
+
+**패턴 1: 본인인증 + KYC 동시 구현**
 
 ```typescript
-// 여러 컴포넌트 동시 구현
-Task(
-  subagent_type="designer",
-  model="sonnet",
-  prompt="대시보드 메인 레이아웃 구현 (벤토 그리드)"
-)
-
-Task(
-  subagent_type="designer",
-  model="sonnet",
-  prompt="네비게이션 컴포넌트 구현 (키네틱 타이포)"
-)
-
-Task(
-  subagent_type="implementation-executor",
-  model="sonnet",
-  prompt="Server Functions 및 데이터 페칭 로직 구현"
-)
-```
-
-#### Phase 3: 검증
-
-```typescript
-// 병렬 검증
-Task(
-  subagent_type="deployment-validator",
-  model="sonnet",
-  prompt="typecheck/lint/build 전체 검증"
-)
-
-Task(
-  subagent_type="code-reviewer",
-  model="opus",
-  prompt="UI/UX 구현 품질 리뷰 (접근성, 성능, 2026 트렌드)"
-)
-```
-
-### Agent별 역할
-
-| Agent | 모델 | 역할 | 활용 시점 |
-|-------|------|------|----------|
-| **explore** | haiku | 코드베이스 탐색, 패턴 분석 | 프로젝트 시작, 기존 구조 파악 |
-| **designer** | sonnet/opus | UI/UX 디자인 + 구현 | 컴포넌트, 레이아웃, 디자인 시스템 |
-| **implementation-executor** | sonnet | 로직 구현, API 연동 | 비즈니스 로직, Server Functions |
-| **deployment-validator** | sonnet | 배포 전 검증 | 최종 검증 단계 |
-| **code-reviewer** | opus | 코드 품질 리뷰 | 구현 완료 후 |
-
-### 실전 패턴
-
-**패턴 1: 새 서비스 디자인 시스템 구축**
-
-```typescript
-// Step 1: 병렬 탐색
-Task(subagent_type="explore", model="haiku",
-     prompt="토스/카카오/배민 디자인 패턴 분석")
-Task(subagent_type="explore", model="haiku",
-     prompt="프로젝트 기존 컴포넌트 구조 분석")
-
-// Step 2: 디자인 정의
-Task(subagent_type="designer", model="opus",
-     prompt="브랜드 아이덴티티 반영한 디자인 시스템 설계")
-
-// Step 3: 병렬 구현
-Task(subagent_type="designer", model="sonnet", prompt="컬러 시스템")
-Task(subagent_type="designer", model="sonnet", prompt="타이포그래피")
-Task(subagent_type="designer", model="sonnet", prompt="컴포넌트 라이브러리")
-```
-
-**패턴 2: 대시보드 구현**
-
-```typescript
-// 병렬 실행
+// 이커머스/핀테크 필수 컴포넌트
 Task(subagent_type="designer", model="sonnet",
-     prompt="대시보드 레이아웃 + 통계 카드 (벤토 그리드)")
+     prompt=`휴대폰 본인인증 컴포넌트 구현
+     - NICE/KCB 인증 모듈 연동
+     - 인증번호 입력 UI
+     - 타이머 (3분 제한)
+     - 한국형 전화번호 형식 (010-XXXX-XXXX)`)
+
 Task(subagent_type="designer", model="sonnet",
-     prompt="차트 컴포넌트 + 마이크로 인터랙션")
+     prompt=`신분증 인증 컴포넌트 구현
+     - 주민등록증/운전면허증 촬영
+     - OCR 연동 UI
+     - 개인정보 마스킹 (주민등록번호 뒷자리)`)
+
 Task(subagent_type="implementation-executor", model="sonnet",
-     prompt="대시보드 데이터 페칭 + Server Functions")
+     prompt=`본인인증 Server Functions
+     - NICE/KCB API 연동
+     - 세션 관리 (인증 상태 저장)
+     - 개인정보 암호화 (AES-256)`)
 ```
 
-**패턴 3: 리뉴얼 프로젝트**
+**패턴 2: 결제 시스템 병렬 구현**
 
 ```typescript
-// Step 1: 현황 파악
-Task(subagent_type="explore", model="haiku",
-     prompt="기존 UI 컴포넌트 및 스타일 분석")
+// 한국 주요 PG사 통합
+Task(subagent_type="designer", model="sonnet",
+     prompt=`결제 수단 선택 UI
+     - 카드/계좌이체/간편결제 (토스/카카오페이/네이버페이)
+     - 할인/포인트 적용
+     - 최종 금액 표시 (원화 3자리 콤마)`)
 
-// Step 2: 디자인 + 구현 병렬
-Task(subagent_type="designer", model="opus",
-     prompt="2026 트렌드 기반 리뉴얼 디자인 (키네틱/적응형)")
 Task(subagent_type="implementation-executor", model="sonnet",
-     prompt="기존 로직 유지하며 마이그레이션 계획")
+     prompt=`PG 연동 Server Functions
+     - 토스페이먼츠/KG이니시스 API
+     - 결제 승인/취소/환불
+     - 전자금융거래법 준수 (거래 로그 7년 보관)`)
 
-// Step 3: 검증
 Task(subagent_type="code-reviewer", model="opus",
-     prompt="리뉴얼 품질 검토 (접근성, 성능)")
+     prompt=`결제 보안 검토
+     - PCI-DSS 준수
+     - 카드번호 비저장 (토큰 방식)
+     - 개인정보 처리방침 확인`)
 ```
 
-### Designer Agent 상세
+**패턴 3: 주소/배송 병렬 구현**
 
-**@designer 에이전트가 제공:**
-- 2026 트렌드 통합 (AI 기반, 공간 UI, 키네틱 타이포, 적응형 테마, 마이크로 인터랙션)
-- 대담한 미학적 방향 정의 (7가지 톤 중 선택)
-- 성능 + 접근성 우선 (WCAG 2.2 AA, 60fps, 배터리/연결 인식)
-- 한국형 패턴과 조화로운 통합 (토스/카카오/배민)
+```typescript
+// 한국 주소 시스템
+Task(subagent_type="designer", model="sonnet",
+     prompt=`주소 입력 컴포넌트
+     - Daum 우편번호 API 연동
+     - 도로명주소 + 지번주소
+     - 상세주소 입력 (필수)`)
 
-**활용 시점:**
-- 새로운 서비스/제품 디자인 시스템 구축
-- 기존 UI 대규모 리뉴얼
-- 2026 트렌드 적용이 필요한 프로젝트
-- 차별화된 브랜드 경험 필요
+Task(subagent_type="designer", model="sonnet",
+     prompt=`배송 추적 UI
+     - 택배사 연동 (CJ대한통운/우체국/로젠)
+     - 실시간 위치 표시
+     - 배송 상태 (배송준비/배송중/배송완료)`)
 
-**참조:** `.claude-kr/agents/designer.md`
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`배송 Server Functions
+     - Daum Postcode API
+     - 택배사 API 연동
+     - 배송지 변경/반품 로직`)
+```
+
+---
+
+### 지역화 요소 병렬 처리
+
+**패턴: 한국 형식 동시 구현**
+
+```typescript
+// 날짜/통화/전화번호/주민등록번호
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`날짜 형식 한국화
+     - YYYY년 MM월 DD일 (일, 월, 화)
+     - 24시간 형식 (HH:mm)
+     - day.js 한국어 로케일`)
+
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`통화 형식 한국화
+     - 원화 표시: 15,000원
+     - 3자리 콤마 (toLocaleString)
+     - 소수점 제거 (정수만)`)
+
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`전화번호 형식 한국화
+     - 010-XXXX-XXXX
+     - 02-XXX-XXXX (서울 지역번호)
+     - 입력 시 자동 하이픈`)
+
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`주민등록번호/사업자등록번호 처리
+     - 형식: XXXXXX-XXXXXXX / XXX-XX-XXXXX
+     - 마스킹: XXXXXX-*******
+     - 암호화 저장 (AES-256)`)
+```
+
+---
+
+### 타이포그래피 병렬 최적화
+
+**패턴: 한글 + 영문 폴백 동시 설정**
+
+```typescript
+// Pretendard + 영문 폴백
+Task(subagent_type="designer", model="sonnet",
+     prompt=`한글 타이포그래피 설정
+     - 주 폰트: Pretendard (가변 폰트)
+     - 크기: 14px/16px (모바일/데스크톱)
+     - 행간: 1.5-1.7 (한글 최적)
+     - 자간: -0.02em (밀도 조절)`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`영문 폴백 설정
+     - Inter/SF Pro (영문 전용)
+     - font-family: Pretendard, -apple-system, Roboto, sans-serif
+     - 숫자: tabular-nums (정렬)`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`웹폰트 최적화
+     - woff2 포맷
+     - font-display: swap
+     - subset: 한글 2,350자 + 영문/숫자`)
+```
+
+---
+
+### 법규 준수 병렬 검증
+
+**패턴: 개인정보보호법 + 전자금융거래법 + 웹접근성 동시 검증**
+
+```typescript
+// 3가지 법규 병렬 검토
+Task(subagent_type="analyst", model="sonnet",
+     prompt=`개인정보보호법 요구사항 분석
+     - 수집 항목 명시 (최소 수집 원칙)
+     - 동의 절차 (필수/선택 구분)
+     - 개인정보 처리방침 필수 표시
+     - 제3자 제공 동의 별도`)
+
+Task(subagent_type="analyst", model="sonnet",
+     prompt=`전자금융거래법 요구사항 분석
+     - 거래 내역 7년 보관
+     - 오류 정정 요구권 안내
+     - 이용약관 명시
+     - 전자서명/공인인증서`)
+
+Task(subagent_type="code-reviewer", model="opus",
+     prompt=`웹접근성 (KWCAG 2.2) 검증
+     - 키보드 접근성 (Tab 순서)
+     - ARIA 레이블 (스크린 리더)
+     - 색상 대비 4.5:1 (WCAG AA)
+     - 대체 텍스트 (이미지)`)
+
+Task(subagent_type="code-reviewer", model="opus",
+     prompt=`보안 검증
+     - XSS/CSRF 방어
+     - SQL Injection 방지 (Prisma)
+     - 비밀번호 암호화 (bcrypt)
+     - HTTPS 강제`)
+```
+
+---
+
+### 반응형 병렬 구현
+
+**패턴: 모바일 우선 + 데스크톱 동시 구현**
+
+```typescript
+// 한국 모바일 사용률 80%+ 고려
+Task(subagent_type="designer", model="sonnet",
+     prompt=`모바일 UI 구현 (우선)
+     - 화면: 375px (iPhone SE 기준)
+     - 터치 타겟: 44-48px (접근성)
+     - 하단 네비게이션 (엄지 영역)
+     - Safe Area (iOS 노치)`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`데스크톱 UI 구현
+     - 화면: 1440px
+     - 사이드바 네비게이션
+     - 마우스 호버 상태
+     - 키보드 단축키`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`반응형 테스트
+     - 브레이크포인트: 375/768/1024/1440
+     - 크로스 브라우징 (Chrome/Safari/Samsung Internet)
+     - 다크모드 대응`)
+```
+
+---
+
+### Model Routing (한국 서비스 특화)
+
+| 작업 유형 | 에이전트 | 모델 | 이유 |
+|----------|---------|------|------|
+| **UI 컴포넌트** | designer | sonnet | 일반적인 UI 구현 |
+| **복잡한 디자인 시스템** | designer | opus | 브랜드 아이덴티티 반영 |
+| **법규 요구사항 분석** | analyst | sonnet | 개인정보보호법/전자금융거래법 |
+| **보안 검토** | code-reviewer | opus | XSS/CSRF/SQL Injection |
+| **API 구현** | implementation-executor | sonnet | Server Functions, Prisma |
+| **배포 검증** | deployment-validator | sonnet | typecheck/lint/build |
+
+**모델 선택 예시:**
+
+```typescript
+// 간단한 UI → sonnet
+Task(subagent_type="designer", model="sonnet",
+     prompt="버튼 컴포넌트 구현")
+
+// 복잡한 디자인 시스템 → opus
+Task(subagent_type="designer", model="opus",
+     prompt="토스 스타일 디자인 시스템 전체 설계")
+
+// 법규 분석 → analyst (sonnet)
+Task(subagent_type="analyst", model="sonnet",
+     prompt="개인정보보호법 요구사항 분석")
+
+// 보안 검토 → code-reviewer (opus)
+Task(subagent_type="code-reviewer", model="opus",
+     prompt="결제 시스템 보안 검증 (PCI-DSS)")
+```
+
+---
+
+### 실전 시나리오
+
+#### 시나리오 1: 이커머스 (쿠팡/네이버쇼핑 스타일)
+
+**목표:** 상품 구매 플로우 전체 구현 (상품 목록 → 상세 → 결제 → 배송)
+
+```typescript
+// Phase 1: UI 병렬 구현
+Task(subagent_type="designer", model="sonnet",
+     prompt=`상품 목록 페이지
+     - 그리드 레이아웃 (2열/3열)
+     - 상품 카드 (이미지/가격/할인율)
+     - 필터/정렬 (가격순/인기순)`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`상품 상세 페이지
+     - 이미지 갤러리 (슬라이드)
+     - 옵션 선택 (색상/사이즈)
+     - 가격 표시 (할인가/원가)
+     - 구매/장바구니 버튼`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`결제 페이지
+     - 주문 정보 (상품/수량)
+     - 주소 입력 (Daum Postcode)
+     - 결제 수단 (카드/간편결제)
+     - 최종 금액 (배송비 포함)`)
+
+// Phase 2: API 병렬 구현
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`상품 API Server Functions
+     - GET /products: 목록 조회
+     - GET /products/:id: 상세 조회
+     - Prisma Product 모델 사용`)
+
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`주문 API Server Functions
+     - POST /orders: 주문 생성
+     - inputValidator로 Zod 검증
+     - 재고 확인 로직`)
+
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`결제 API Server Functions
+     - POST /payments: 토스페이먼츠 연동
+     - 결제 승인/취소/환불
+     - 거래 로그 저장 (전자금융거래법)`)
+
+// Phase 3: 법규 병렬 검증
+Task(subagent_type="analyst", model="sonnet",
+     prompt=`전자상거래법 요구사항 검증
+     - 청약철회권 안내 (7일)
+     - 환불 정책 명시
+     - 사업자 정보 표시`)
+
+Task(subagent_type="code-reviewer", model="opus",
+     prompt=`개인정보 보안 검토
+     - 결제 정보 암호화
+     - 주소 정보 접근 제어
+     - XSS/CSRF 방어`)
+```
+
+---
+
+#### 시나리오 2: 핀테크 (토스/뱅크샐러드 스타일)
+
+**목표:** 금융 계좌 연동 + 자산 관리 대시보드
+
+```typescript
+// Phase 1: KYC + 계좌 인증 병렬
+Task(subagent_type="designer", model="sonnet",
+     prompt=`본인인증 플로우
+     - 휴대폰 인증 (NICE/KCB)
+     - 신분증 촬영 (OCR)
+     - 주민등록번호 마스킹`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`계좌 연동 UI
+     - 은행 선택 (KB/신한/우리/하나)
+     - 1원 인증
+     - 연동 완료 확인`)
+
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`금융 API 연동
+     - 오픈뱅킹 API
+     - 계좌 조회/거래내역
+     - 이체 실행`)
+
+// Phase 2: 대시보드 병렬 구현
+Task(subagent_type="designer", model="sonnet",
+     prompt=`자산 대시보드
+     - 총 자산 (원화 표시)
+     - 계좌별 잔액
+     - 지출 분석 차트`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`거래 내역 리스트
+     - 날짜별 그룹화
+     - 입금/출금 구분
+     - 카테고리 태그`)
+
+// Phase 3: 법규 병렬 검증
+Task(subagent_type="analyst", model="sonnet",
+     prompt=`전자금융거래법 요구사항
+     - 거래 내역 7년 보관
+     - 오류 정정 요구권
+     - 전자서명/공인인증서`)
+
+Task(subagent_type="code-reviewer", model="opus",
+     prompt=`금융 보안 검증
+     - 계좌번호 암호화
+     - 이체 한도 설정
+     - 이상 거래 탐지`)
+```
+
+---
+
+#### 시나리오 3: 공공 서비스 (정부24 스타일)
+
+**목표:** 민원 신청 시스템
+
+```typescript
+// Phase 1: UI 병렬 구현
+Task(subagent_type="designer", model="sonnet",
+     prompt=`민원 신청 폼
+     - 다단계 폼 (개인정보 → 신청내용 → 첨부파일)
+     - 필수/선택 항목 표시
+     - 진행률 표시`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`파일 업로드
+     - 드래그 앤 드롭
+     - 파일 타입 제한 (pdf/hwp/jpg)
+     - 용량 제한 (10MB)`)
+
+// Phase 2: 웹접근성 병렬 검증
+Task(subagent_type="code-reviewer", model="opus",
+     prompt=`KWCAG 2.2 준수 검증
+     - 키보드 접근성 (Tab/Enter)
+     - ARIA 레이블 (스크린 리더)
+     - 색상 대비 4.5:1
+     - 폼 레이블 필수`)
+
+Task(subagent_type="analyst", model="sonnet",
+     prompt=`공공데이터 API 연동 분석
+     - 행정안전부 API
+     - 데이터 형식 (JSON/XML)
+     - 인증 방식 (API 키)`)
+
+// Phase 3: 법규 검증
+Task(subagent_type="analyst", model="sonnet",
+     prompt=`개인정보보호법 검증
+     - 수집 항목 최소화
+     - 동의 절차 명시
+     - 개인정보 처리방침`)
+```
+
+---
+
+#### 시나리오 4: 커뮤니티 (네이버 카페/디시인사이드 스타일)
+
+**목표:** 게시판 + 댓글 시스템
+
+```typescript
+// Phase 1: UI 병렬 구현
+Task(subagent_type="designer", model="sonnet",
+     prompt=`게시판 리스트
+     - 말머리 (공지/일반/질문)
+     - 제목/작성자/날짜/조회수
+     - 페이지네이션`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`게시글 상세
+     - 제목/작성자/날짜
+     - 본문 (Markdown 지원)
+     - 좋아요/신고 버튼`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`댓글 시스템
+     - 대댓글 (nested)
+     - 좋아요/신고
+     - 실시간 업데이트`)
+
+// Phase 2: API 병렬 구현
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`게시글 CRUD API
+     - GET /posts: 목록
+     - POST /posts: 작성 (인증 필수)
+     - PUT /posts/:id: 수정
+     - DELETE /posts/:id: 삭제`)
+
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`댓글 CRUD API
+     - GET /comments: 조회
+     - POST /comments: 작성
+     - nested 구조 (parent_id)`)
+
+// Phase 3: 컨텐츠 정책 검증
+Task(subagent_type="analyst", model="sonnet",
+     prompt=`정보통신망법 요구사항
+     - 불법 정보 신고 절차
+     - 임시조치 (게시 중단)
+     - 명예훼손 대응`)
+```
+
+---
 
 ### 체크리스트
 
-작업 전 확인:
+#### 작업 전 확인
 
-- [ ] 이 작업은 독립적인가? → 병렬 agent 고려
-- [ ] 코드베이스 탐색 필요? → explore agent (haiku)
-- [ ] 디자인 + 구현 동시? → designer + executor 병렬
-- [ ] 여러 컴포넌트 동시 작업? → 여러 designer 병렬
-- [ ] 복잡한 아키텍처 결정? → opus 모델 사용
+**병렬 실행 가능:**
+- [ ] 본인인증 + 결제 + 주소입력 (독립 컴포넌트)
+- [ ] 모바일 UI + 데스크톱 UI (독립 화면)
+- [ ] 개인정보보호법 + 전자금융거래법 + 웹접근성 (독립 검증)
+- [ ] 여러 페이지/컴포넌트 동시 작업
 
-**적극적으로 agent 활용. 혼자 하지 말 것.**
+**순차 실행 필요:**
+- [ ] API 구현 → 검증 (의존성)
+- [ ] 디자인 시스템 설계 → 컴포넌트 구현 (순서)
 
-</agent_integration>
+**한국 서비스 필수 체크:**
+- [ ] 날짜 형식 (YYYY년 MM월 DD일)
+- [ ] 통화 형식 (15,000원)
+- [ ] 전화번호 형식 (010-XXXX-XXXX)
+- [ ] 주소 입력 (Daum Postcode API)
+- [ ] 본인인증 (NICE/KCB)
+- [ ] 결제 (토스페이먼츠/KG이니시스)
+- [ ] 법규 준수 (개인정보보호법/전자금융거래법/웹접근성)
+
+**모델 선택:**
+- [ ] 간단한 UI → designer (sonnet)
+- [ ] 복잡한 디자인 시스템 → designer (opus)
+- [ ] 법규 분석 → analyst (sonnet)
+- [ ] 보안 검토 → code-reviewer (opus)
+- [ ] API 구현 → implementation-executor (sonnet)
+
+**적극적으로 병렬 에이전트 활용. 한국 서비스 특화 패턴 적용.**
+
+</parallel_agent_execution>
 
 ---
 

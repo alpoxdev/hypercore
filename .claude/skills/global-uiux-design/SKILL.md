@@ -16,183 +16,503 @@
 
 ---
 
-<agent_integration>
+<parallel_agent_execution>
 
-## 병렬 Agent 활용 (ULTRAWORK MODE)
+## 병렬 에이전트 실행 (Global UX 특화)
 
-### 기본 원칙
+### 핵심 원칙
 
-| 원칙 | 실행 방법 |
-|------|----------|
-| **PARALLEL** | 독립 작업은 단일 메시지에서 동시 Tool 호출 |
-| **DELEGATE** | 전문 에이전트에게 즉시 위임 |
-| **SMART MODEL** | 복잡도별 모델 선택 (haiku/sonnet/opus) |
+**Goal:** 독립적인 Global UX 작업을 동시에 처리하여 대기 시간 최소화, 다국어/반응형/접근성 병렬 구현.
 
-### Phase별 Agent 활용
+**Performance:** 순차 실행 → 병렬 실행으로 5-15배 성능 향상.
 
-#### Phase 1: 탐색 + 디자인 정의
+| 원칙 | 실행 방법 | Global UX 적용 |
+|------|----------|----------------|
+| **PARALLEL** | 단일 메시지에서 여러 Tool 동시 호출 | 다국어 레이아웃 동시 구현 |
+| **DELEGATE** | 전문 에이전트에게 즉시 위임 | designer (UI), code-reviewer (접근성) |
+| **SMART MODEL** | 복잡도별 모델 선택 | haiku (탐색), sonnet (구현), opus (디자인) |
 
+**핵심 룰:**
 ```typescript
-// 단일 메시지에서 병렬 실행
-Task(
-  subagent_type="explore",
-  model="haiku",
-  prompt=`글로벌 디자인 시스템 패턴 분석:
-  - Material 3, Apple HIG, Fluent 2
-  - 프로젝트 기존 컴포넌트 구조
-  - 크로스 플랫폼 일관성`
-)
+// ❌ 순차 실행 (느림)
+Task(...) // 모바일 레이아웃 60초
+Task(...) // 데스크톱 레이아웃 60초
+Task(...) // 태블릿 레이아웃 60초
+// 총 180초
 
-Task(
-  subagent_type="designer",
-  model="opus",
-  prompt=`[프로젝트명] UI/UX 디자인 방향 정의:
-  - 미학적 톤: 리퀴드 글래스 (Apple HIG)
-  - 2026 트렌드: 공간 UI, AI 기반, 적응형 테마
-  - 글로벌 표준 참조 (global-uiux-design 스킬)`
-)
+// ✅ 병렬 실행 (빠름)
+Task(...) // 모바일
+Task(...) // 데스크톱  → 단일 메시지에서 동시 호출
+Task(...) // 태블릿
+// 총 60초 (가장 긴 작업 기준)
 ```
 
-#### Phase 2: 병렬 구현
+---
 
+### Model Routing (Global UX 특화)
+
+| 작업 유형 | 모델 | 에이전트 | 예시 |
+|----------|------|---------|------|
+| **디자인 시스템 탐색** | haiku | explore | Material 3/Apple HIG 패턴 분석 |
+| **UI 구현** | sonnet | designer | 컴포넌트, 레이아웃, 반응형 |
+| **복잡한 디자인** | opus | designer | 공간 UI, 크로스 플랫폼 일관성 |
+| **접근성 검증** | opus | code-reviewer | WCAG 2.2, ARIA, 키보드 네비게이션 |
+| **성능 검토** | opus | code-reviewer | 60fps 애니메이션, 번들 최적화 |
+| **문서 작성** | haiku | document-writer | 디자인 가이드, 컴포넌트 문서 |
+
+**모델 선택 기준:**
 ```typescript
-// 크로스 플랫폼 컴포넌트 동시 구현
-Task(
-  subagent_type="designer",
-  model="sonnet",
-  prompt="데스크톱 레이아웃 (Material 3 스타일)"
-)
-
-Task(
-  subagent_type="designer",
-  model="sonnet",
-  prompt="모바일 레이아웃 (iOS/Android 적응형)"
-)
-
-Task(
-  subagent_type="designer",
-  model="sonnet",
-  prompt="공간 UI 컴포넌트 (WebGPU 3D 효과)"
-)
-
-Task(
-  subagent_type="implementation-executor",
-  model="sonnet",
-  prompt="API 통합 및 데이터 레이어"
-)
-```
-
-#### Phase 3: 검증
-
-```typescript
-// 병렬 검증
-Task(
-  subagent_type="deployment-validator",
-  model="sonnet",
-  prompt="typecheck/lint/build 전체 검증"
-)
-
-Task(
-  subagent_type="code-reviewer",
-  model="opus",
-  prompt="글로벌 표준 준수 검토 (WCAG 2.2, 크로스 플랫폼)"
-)
-```
-
-### Agent별 역할
-
-| Agent | 모델 | 역할 | 활용 시점 |
-|-------|------|------|----------|
-| **explore** | haiku | 디자인 시스템 분석, 패턴 조사 | 프로젝트 시작, 기존 구조 파악 |
-| **designer** | sonnet/opus | UI/UX 디자인 + 구현 (글로벌 표준) | 컴포넌트, 레이아웃, 디자인 시스템 |
-| **implementation-executor** | sonnet | 로직 구현, API 연동 | 비즈니스 로직, 데이터 레이어 |
-| **deployment-validator** | sonnet | 배포 전 검증 | 최종 검증 단계 |
-| **code-reviewer** | opus | 코드 품질 + 표준 준수 리뷰 | 구현 완료 후 |
-
-### 실전 패턴
-
-**패턴 1: 글로벌 서비스 디자인 시스템**
-
-```typescript
-// Step 1: 병렬 탐색
+// 간단한 탐색 → haiku
 Task(subagent_type="explore", model="haiku",
-     prompt="Material 3, Apple HIG, Fluent 2 최신 패턴 분석")
-Task(subagent_type="explore", model="haiku",
-     prompt="프로젝트 기존 컴포넌트 및 다국어 지원 현황")
+     prompt="프로젝트 기존 다국어 지원 구조 분석")
 
-// Step 2: 디자인 정의
+// 일반 구현 → sonnet
+Task(subagent_type="designer", model="sonnet",
+     prompt="모바일 레이아웃 구현 (Material 3)")
+
+// 복잡한 디자인 → opus
 Task(subagent_type="designer", model="opus",
-     prompt="크로스 플랫폼 디자인 토큰 시스템 설계")
-
-// Step 3: 병렬 구현
-Task(subagent_type="designer", model="sonnet", prompt="컬러 시스템 (다크 모드 포함)")
-Task(subagent_type="designer", model="sonnet", prompt="타이포그래피 (다국어)")
-Task(subagent_type="designer", model="sonnet", prompt="컴포넌트 라이브러리 (웹 컴포넌트)")
+     prompt="4개 언어 동시 지원하는 통합 디자인 시스템 설계")
 ```
 
-**패턴 2: 크로스 플랫폼 애플리케이션**
+---
+
+### 패턴 1: 다국어 디자인 병렬 처리
+
+**목표:** EN/ES/ZH/AR 레이아웃을 동시에 구현하여 시간 단축, RTL/LTR 일관성 확보.
 
 ```typescript
-// 병렬 실행 (플랫폼별)
+// ✅ 4개 언어 레이아웃 동시 구현
 Task(subagent_type="designer", model="sonnet",
-     prompt="웹 인터페이스 (Material 3 기반)")
+     prompt=`영어(EN) 레이아웃 구현
+     - LTR 기본
+     - 짧은 단어 (compact)
+     - Material 3 스타일
+     - components/en/Header.tsx`)
+
 Task(subagent_type="designer", model="sonnet",
-     prompt="iOS 인터페이스 (Apple HIG 준수)")
+     prompt=`스페인어(ES) 레이아웃 구현
+     - LTR, 영어보다 20% 긴 텍스트
+     - 동적 너비 조정
+     - components/es/Header.tsx`)
+
 Task(subagent_type="designer", model="sonnet",
-     prompt="Android 인터페이스 (Material 3 네이티브)")
+     prompt=`중국어(ZH) 레이아웃 구현
+     - 세로쓰기 옵션
+     - CJK 폰트 (Noto Sans CJK)
+     - 컴팩트 레이아웃
+     - components/zh/Header.tsx`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`아랍어(AR) 레이아웃 구현
+     - RTL (direction: rtl)
+     - 미러링 (아이콘, 레이아웃)
+     - 아랍어 폰트 (Noto Sans Arabic)
+     - components/ar/Header.tsx`)
+
+// 병렬 폰트 시스템
 Task(subagent_type="implementation-executor", model="sonnet",
-     prompt="공통 비즈니스 로직 및 상태 관리")
+     prompt=`다국어 폰트 로딩 시스템 구현
+     - Next.js Font Optimization
+     - 언어별 폰트 스택
+     - 폴백 처리`)
 ```
 
-**패턴 3: 공간 UI 프로젝트 (AR/VR)**
+**예상 시간:**
+- 순차 실행: 240초 (60초 × 4)
+- 병렬 실행: 60초 (가장 긴 작업)
+- 개선: 4배 향상
+
+**RTL 처리 체크리스트:**
+- [ ] `direction: rtl` CSS 적용
+- [ ] 아이콘 미러링 (화살표, 햄버거 메뉴)
+- [ ] Flexbox/Grid 자동 반전 (justify-content)
+- [ ] margin/padding 논리 속성 (margin-inline-start)
+
+---
+
+### 패턴 2: 반응형 Breakpoint 병렬 구현
+
+**목표:** Mobile/Tablet/Desktop/4K 레이아웃을 동시에 구현.
 
 ```typescript
-// Step 1: 탐색
-Task(subagent_type="explore", model="haiku",
-     prompt="WebGPU/WebXR 지원 현황 및 공간 UI 패턴")
-
-// Step 2: 디자인 + 구현 병렬
-Task(subagent_type="designer", model="opus",
-     prompt="3D 공간 UI 디자인 (Vision Pro 스타일)")
+// ✅ 4개 Breakpoint 동시 구현
 Task(subagent_type="designer", model="sonnet",
-     prompt="2D 폴백 인터페이스 (점진적 향상)")
-Task(subagent_type="implementation-executor", model="sonnet",
-     prompt="WebXR 통합 및 센서 처리")
+     prompt=`Mobile 레이아웃 (< 640px)
+     - 단일 컬럼
+     - 하단 탭 바
+     - Safe Area 고려
+     - 44px 터치 타겟
+     - components/mobile/Dashboard.tsx`)
 
-// Step 3: 검증
+Task(subagent_type="designer", model="sonnet",
+     prompt=`Tablet 레이아웃 (640-1024px)
+     - 2컬럼 그리드
+     - 사이드바 토글
+     - 제스처 지원 (스와이프)
+     - components/tablet/Dashboard.tsx`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`Desktop 레이아웃 (1024-1920px)
+     - 3컬럼 그리드
+     - 고정 사이드바
+     - 호버 인터랙션
+     - components/desktop/Dashboard.tsx`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`4K/Ultra-Wide 레이아웃 (> 1920px)
+     - 4컬럼 그리드
+     - max-w-screen-2xl 컨테이너
+     - 여백 최적화
+     - 고해상도 이미지
+     - components/4k/Dashboard.tsx`)
+```
+
+**통합 전략:**
+```typescript
+// 단일 컴포넌트로 통합
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`반응형 Dashboard 컴포넌트 통합
+     - Breakpoint별 동적 import
+     - Tailwind responsive classes
+     - 성능 최적화 (code splitting)`)
+```
+
+---
+
+### 패턴 3: A/B 테스트 변형 병렬 생성
+
+**목표:** 디자인 변형을 동시에 구현하여 실험 속도 향상.
+
+```typescript
+// ✅ A/B 테스트 3개 변형 동시 구현
+Task(subagent_type="designer", model="sonnet",
+     prompt=`Variant A: 미니멀 디자인
+     - 단색 배경
+     - 작은 버튼 (h-10)
+     - 텍스트 중심
+     - components/ab-test/VariantA.tsx`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`Variant B: 대담한 디자인
+     - 그라디언트 배경
+     - 큰 버튼 (h-14)
+     - 애니메이션 강조
+     - components/ab-test/VariantB.tsx`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`Variant C: 하이브리드
+     - A와 B의 중간
+     - 조건부 애니메이션
+     - 어댑티브 크기
+     - components/ab-test/VariantC.tsx`)
+
+// 병렬 성능 테스트
 Task(subagent_type="code-reviewer", model="opus",
-     prompt="공간 UI 접근성 및 성능 검토")
+     prompt=`3개 변형 성능 비교
+     - 번들 크기
+     - First Contentful Paint
+     - Interaction to Next Paint
+     - 최적 변형 추천`)
 ```
 
-### Designer Agent 상세
+**A/B 테스트 인프라:**
+```typescript
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt=`A/B 테스트 라우팅 시스템
+     - 사용자 그룹 분배 (33/33/33)
+     - 쿠키 기반 고정
+     - 분석 이벤트 전송`)
+```
 
-**@designer 에이전트가 제공:**
-- 2026 트렌드 통합 (AI 기반, 공간 UI, 키네틱 타이포, 적응형 테마, 마이크로 인터랙션)
-- 대담한 미학적 방향 정의 (7가지 톤 중 선택)
-- 성능 + 접근성 우선 (WCAG 2.2 AA, 60fps, 배터리/연결 인식)
-- 글로벌 디자인 시스템과 조화 (Material 3, Apple HIG, Fluent 2)
+---
 
-**활용 시점:**
-- 글로벌 서비스 디자인 시스템 구축
-- 크로스 플랫폼 일관성 필요
-- 2026 트렌드 선도적 적용
-- 프리미엄 브랜드 경험 구축
+### 패턴 4: 접근성 검증 병렬
 
-**참조:** `.claude-kr/agents/designer.md`
+**목표:** WCAG/ARIA/키보드 네비게이션을 동시에 검증하여 접근성 품질 보장.
+
+```typescript
+// ✅ 3가지 접근성 검증 동시 실행
+Task(subagent_type="code-reviewer", model="opus",
+     prompt=`WCAG 2.2 AA 준수 검증
+     - 색상 대비 (4.5:1 일반, 3:1 큰 텍스트)
+     - 포커스 표시 (2px 아웃라인)
+     - 텍스트 크기 조정 (200%)
+     - 모든 interactive 요소 검토`)
+
+Task(subagent_type="code-reviewer", model="opus",
+     prompt=`ARIA 속성 검증
+     - role, aria-label, aria-labelledby
+     - aria-expanded, aria-controls (동적 UI)
+     - aria-live (실시간 업데이트)
+     - landmark 역할 (navigation, main, aside)`)
+
+Task(subagent_type="code-reviewer", model="opus",
+     prompt=`키보드 네비게이션 검증
+     - Tab 순서 (tabindex)
+     - Enter/Space (버튼 활성화)
+     - Esc (모달 닫기)
+     - 화살표 키 (드롭다운, 슬라이더)
+     - 포커스 트랩 (모달 내부)`)
+
+// 스크린 리더 테스트
+Task(subagent_type="code-reviewer", model="opus",
+     prompt=`스크린 리더 호환성
+     - VoiceOver (Safari)
+     - NVDA (Firefox)
+     - JAWS (Chrome)
+     - 의미적 HTML 구조 검증`)
+```
+
+**자동 수정 패턴:**
+```typescript
+// 검증 후 자동 수정
+Task(subagent_type="lint-fixer", model="sonnet",
+     prompt=`접근성 이슈 자동 수정
+     - 대비 부족 색상 조정
+     - 누락된 alt 추가
+     - aria-label 보완
+     - tabindex 최적화`)
+```
+
+---
+
+### 패턴 5: 디자인 시스템 컴포넌트 병렬 구현
+
+**목표:** 여러 컴포넌트를 동시에 구현하여 디자인 시스템 구축 가속화.
+
+```typescript
+// ✅ 10개 컴포넌트 동시 구현
+Task(subagent_type="designer", model="sonnet",
+     prompt="Button 컴포넌트 (Primary, Secondary, Ghost)")
+
+Task(subagent_type="designer", model="sonnet",
+     prompt="Input 컴포넌트 (Text, Email, Password, Search)")
+
+Task(subagent_type="designer", model="sonnet",
+     prompt="Card 컴포넌트 (Default, Interactive, Elevated)")
+
+Task(subagent_type="designer", model="sonnet",
+     prompt="Modal 컴포넌트 (Dialog, Drawer, Bottom Sheet)")
+
+Task(subagent_type="designer", model="sonnet",
+     prompt="Toast/Notification 컴포넌트")
+
+Task(subagent_type="designer", model="sonnet",
+     prompt="Dropdown/Select 컴포넌트")
+
+Task(subagent_type="designer", model="sonnet",
+     prompt="Tabs 컴포넌트 (Underline, Segment Control)")
+
+Task(subagent_type="designer", model="sonnet",
+     prompt="Avatar 컴포넌트 (User, Group, Fallback)")
+
+Task(subagent_type="designer", model="sonnet",
+     prompt="Badge/Chip 컴포넌트 (Status, Label, Removable)")
+
+Task(subagent_type="designer", model="sonnet",
+     prompt="Skeleton Loader 컴포넌트")
+
+// 병렬 문서 작성
+Task(subagent_type="document-writer", model="haiku",
+     prompt=`Storybook 문서 생성
+     - 10개 컴포넌트 스토리
+     - Props 테이블
+     - 사용 예시`)
+```
+
+**예상 시간:**
+- 순차 실행: 600초 (60초 × 10)
+- 병렬 실행: 60초
+- 개선: 10배 향상
+
+---
+
+### 실전 시나리오
+
+#### 시나리오 1: 글로벌 이커머스 플랫폼
+
+**요구사항:** 10개 언어, 5개 통화, 3개 플랫폼 (Web/iOS/Android)
+
+```typescript
+// Phase 1: 병렬 탐색
+Task(subagent_type="explore", model="haiku",
+     prompt="Shopify Polaris 디자인 패턴 분석")
+Task(subagent_type="explore", model="haiku",
+     prompt="Amazon/Alibaba 다국어 UI 구조 분석")
+Task(subagent_type="explore", model="haiku",
+     prompt="결제 UI 접근성 모범 사례 (Stripe, PayPal)")
+
+// Phase 2: 다국어 레이아웃 병렬 구현
+Task(subagent_type="designer", model="sonnet",
+     prompt="영어/독일어/프랑스어 상품 페이지 (LTR)")
+Task(subagent_type="designer", model="sonnet",
+     prompt="아랍어/히브리어 상품 페이지 (RTL)")
+Task(subagent_type="designer", model="sonnet",
+     prompt="중국어/일본어/한국어 상품 페이지 (CJK)")
+Task(subagent_type="designer", model="sonnet",
+     prompt="통화별 가격 포매팅 컴포넌트 ($, €, ¥, ₩)")
+
+// Phase 3: 반응형 병렬
+Task(subagent_type="designer", model="sonnet",
+     prompt="모바일 체크아웃 (1-step)")
+Task(subagent_type="designer", model="sonnet",
+     prompt="데스크톱 체크아웃 (Multi-step)")
+
+// Phase 4: 접근성 검증
+Task(subagent_type="code-reviewer", model="opus",
+     prompt="결제 폼 접근성 (WCAG 2.2 AA, 스크린 리더)")
+```
+
+**예상 시간:**
+- 순차: 540초 (60초 × 9)
+- 병렬: 60초
+- 개선: 9배 향상
+
+---
+
+#### 시나리오 2: 다국어 SaaS 대시보드
+
+**요구사항:** 4개 언어, 실시간 데이터, 어댑티브 차트
+
+```typescript
+// Phase 1: 디자인 시스템
+Task(subagent_type="designer", model="opus",
+     prompt="SaaS 디자인 토큰 시스템 (Carbon Design 기반)")
+
+// Phase 2: 병렬 구현
+Task(subagent_type="designer", model="sonnet",
+     prompt="대시보드 레이아웃 (4개 언어 동시 지원)")
+Task(subagent_type="designer", model="sonnet",
+     prompt="데이터 테이블 (정렬, 필터, 페이지네이션)")
+Task(subagent_type="designer", model="sonnet",
+     prompt="차트 컴포넌트 (Recharts, 반응형)")
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt="실시간 WebSocket 연동")
+
+// Phase 3: 접근성
+Task(subagent_type="code-reviewer", model="opus",
+     prompt="차트 접근성 (aria-label, 데이터 테이블 대체)")
+Task(subagent_type="code-reviewer", model="opus",
+     prompt="키보드 네비게이션 (테이블, 필터)")
+```
+
+---
+
+#### 시나리오 3: 모바일 우선 소셜 앱
+
+**요구사항:** iOS/Android 네이티브 느낌, 60fps 애니메이션
+
+```typescript
+// Phase 1: 플랫폼별 탐색
+Task(subagent_type="explore", model="haiku",
+     prompt="iOS Human Interface Guidelines 최신 패턴")
+Task(subagent_type="explore", model="haiku",
+     prompt="Material 3 모바일 컴포넌트")
+
+// Phase 2: 병렬 구현
+Task(subagent_type="designer", model="sonnet",
+     prompt="iOS 스타일 피드 (SF Symbols, 네이티브 제스처)")
+Task(subagent_type="designer", model="sonnet",
+     prompt="Android 스타일 피드 (Material 3, FAB)")
+Task(subagent_type="designer", model="sonnet",
+     prompt="공통 스토리 컴포넌트 (Instagram 스타일)")
+Task(subagent_type="implementation-executor", model="sonnet",
+     prompt="60fps 애니메이션 (Framer Motion)")
+
+// Phase 3: 성능 검증
+Task(subagent_type="code-reviewer", model="opus",
+     prompt="성능 검토 (FPS, 메모리, 배터리)")
+```
+
+---
+
+#### 시나리오 4: 엔터프라이즈 디자인 시스템 구축
+
+**요구사항:** 100+ 컴포넌트, Figma 동기화, 접근성 AAA
+
+```typescript
+// Phase 1: 탐색
+Task(subagent_type="explore", model="haiku",
+     prompt="IBM Carbon, Salesforce Lightning 분석")
+Task(subagent_type="explore", model="haiku",
+     prompt="Figma Design Tokens 플러그인 조사")
+
+// Phase 2: 토큰 시스템
+Task(subagent_type="designer", model="opus",
+     prompt="디자인 토큰 시스템 (색상, 타이포, 간격, 그림자)")
+
+// Phase 3: 컴포넌트 병렬 구현 (20개씩 배치)
+// Batch 1
+Task(subagent_type="designer", model="sonnet",
+     prompt="Form 컴포넌트 (Input, Select, Checkbox, Radio, Switch)")
+// Batch 2
+Task(subagent_type="designer", model="sonnet",
+     prompt="Navigation 컴포넌트 (Navbar, Sidebar, Tabs, Breadcrumb)")
+// Batch 3
+Task(subagent_type="designer", model="sonnet",
+     prompt="Feedback 컴포넌트 (Toast, Modal, Alert, Progress)")
+// Batch 4
+Task(subagent_type="designer", model="sonnet",
+     prompt="Data Display 컴포넌트 (Table, Card, List, Badge)")
+
+// Phase 4: 접근성 AAA
+Task(subagent_type="code-reviewer", model="opus",
+     prompt="WCAG 2.2 AAA 검증 (7:1 대비, 모든 인터랙션)")
+
+// Phase 5: 문서
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="Storybook + 디자인 가이드라인 생성")
+```
+
+**예상 시간:**
+- 순차: 1200초 (20분)
+- 병렬: 240초 (4분)
+- 개선: 5배 향상
+
+---
 
 ### 체크리스트
 
-작업 전 확인:
+#### 병렬 실행 전 확인
 
-- [ ] 이 작업은 독립적인가? → 병렬 agent 고려
-- [ ] 디자인 시스템 탐색 필요? → explore agent (haiku)
-- [ ] 크로스 플랫폼 동시 개발? → 플랫폼별 designer 병렬
-- [ ] 공간 UI/AR/VR? → designer (opus) + 전문 구현
-- [ ] 복잡한 접근성/국제화? → opus 모델 사용
+- [ ] 독립적인 작업인가? (의존성 없음)
+- [ ] 같은 파일을 동시 수정하지 않는가?
+- [ ] 컨텍스트 분리 가능한가?
 
-**적극적으로 agent 활용. 혼자 하지 말 것.**
+#### Global UX 특화 확인
 
-</agent_integration>
+- [ ] 다국어 작업 → 언어별 병렬 실행
+- [ ] 반응형 작업 → Breakpoint별 병렬 실행
+- [ ] A/B 테스트 → 변형별 병렬 실행
+- [ ] 접근성 검증 → WCAG/ARIA/키보드 병렬
+- [ ] 디자인 시스템 → 컴포넌트별 병렬 실행
+
+#### 모델 선택 확인
+
+- [ ] 탐색 작업 → haiku
+- [ ] 일반 구현 → sonnet
+- [ ] 복잡한 디자인 → opus
+- [ ] 접근성 검증 → opus
+- [ ] 문서 작성 → haiku
+
+#### 성능 최적화
+
+- [ ] 3-10개 작업 동시 실행
+- [ ] 병렬 실행 시간 예상 (순차 대비 5-15배 향상)
+- [ ] 컨텍스트 크기 모니터링
+- [ ] 실패 시 재시도 전략 (3회 제한)
+
+#### 완료 후 검증
+
+- [ ] 모든 언어 레이아웃 정상 작동
+- [ ] 모든 Breakpoint 반응형 동작
+- [ ] 접근성 WCAG 2.2 AA 통과
+- [ ] 성능 목표 달성 (60fps, LCP < 2.5s)
+
+**적극적으로 병렬 실행 활용. 순차 실행은 의존성이 명확할 때만.**
+
+</parallel_agent_execution>
 
 ---
 

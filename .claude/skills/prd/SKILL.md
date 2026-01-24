@@ -23,99 +23,389 @@
 
 PRD 작성 시 여러 Agent를 병렬로 실행하여 효율성 향상.
 
-### Recommended Agents
+### Recommended Agents & Model Routing
 
-| Agent | Model | 용도 |
-|-------|-------|------|
-| **@analyst** | sonnet/opus | 요구사항 분석, 문제 정의 |
-| **@document-writer** | sonnet | PRD 작성, 문서화 |
-| **@explore** | haiku | 기존 문서/코드 조사 |
-| **@architect** | sonnet | 기술 아키텍처 검토 |
+| Agent | 권장 모델 | 용도 | 복잡도별 모델 |
+|-------|----------|------|--------------|
+| **analyst** | sonnet/opus | 요구사항 분석, 문제 정의, 가정 검증 | LOW: sonnet, HIGH: opus |
+| **planner** | opus | PRD 구조 설계, 아키텍처 검증 | 항상 opus |
+| **document-writer** | haiku/sonnet | PRD 작성, 문서화 | 단순 문서: haiku, 복잡 PRD: sonnet |
+| **explore** | haiku | 기존 문서/코드 조사 | 항상 haiku |
+| **architect** | sonnet/opus | 기술 아키텍처 검토, 설계 분석 | MEDIUM: sonnet, HIGH: opus |
+| **designer** | sonnet/opus | UI/UX 요구사항 설계 | 일반: sonnet, 복잡: opus |
+
+### Smart Model Routing
+
+| 복잡도 | 모델 | PRD 유형 | 기준 |
+|--------|------|----------|------|
+| **LOW** | haiku/sonnet | 단순 기능 PRD | CRUD, 단일 화면, 명확한 요구사항 |
+| **MEDIUM** | sonnet | 일반 기능 PRD | 다중 화면, API 통합, 2-3개 의존성 |
+| **HIGH** | opus | 복잡한 시스템 PRD | 신규 아키텍처, 다중 의존성, 불확실성 높음 |
+
+**에이전트 호출 시 항상 `model` 파라미터 명시:**
+
+```typescript
+Task(subagent_type="analyst", model="sonnet", ...)
+Task(subagent_type="planner", model="opus", ...)
+Task(subagent_type="document-writer", model="haiku", ...)
+```
+
+---
 
 ### Parallel Execution Patterns
 
-| 패턴 | 조합 | 시나리오 |
-|------|------|----------|
-| **조사 + 분석** | explore + analyst | 기존 구조 파악 + 요구사항 분석 |
-| **다중 기능 PRD** | document-writer x N | 독립적인 기능마다 병렬 작성 |
-| **분석 + 아키텍처** | analyst + architect | 요구사항 분석 + 기술 검토 동시 진행 |
+PRD 작성 시 병렬 실행 가능한 8가지 패턴:
 
-### Model Routing
+#### 패턴 1: 사용자 스토리 병렬 작성 (Persona별)
 
-| 복잡도 | Model | 기준 |
-|--------|-------|------|
-| **LOW** | haiku/sonnet | 단순 기능 PRD (CRUD, 단일 화면) |
-| **MEDIUM** | sonnet | 일반 기능 PRD (다중 화면, API 통합) |
-| **HIGH** | opus | 복잡한 시스템 PRD (신규 아키텍처, 다중 의존성) |
-
-### Practical Examples
-
-#### 조사 + 분석 병렬
+**시나리오:** 여러 Persona의 User Stories를 동시에 도출
 
 ```typescript
-// ✅ 기존 인증 구조 조사 + 신규 요구사항 분석
-Task({
-  subagent_type: 'explore',
-  model: 'haiku',
-  prompt: '기존 인증 구조 조사 (Better Auth, 미들웨어, 세션 관리)'
-})
-
-Task({
-  subagent_type: 'analyst',
-  model: 'sonnet',
-  prompt: '소셜 로그인 추가 요구사항 분석 (Google, GitHub)'
-})
+// Persona별로 독립적으로 분석
+Task(subagent_type="analyst", model="sonnet",
+     prompt="Persona 1 (관리자) 사용자 스토리 도출: 권한 관리, 대시보드")
+Task(subagent_type="analyst", model="sonnet",
+     prompt="Persona 2 (일반 사용자) 사용자 스토리 도출: 프로필, 콘텐츠 소비")
+Task(subagent_type="analyst", model="sonnet",
+     prompt="Persona 3 (크리에이터) 사용자 스토리 도출: 콘텐츠 생성, 분석")
 ```
 
-#### 다중 기능 PRD 병렬
+**효과:** 3개 Persona 분석을 순차 대신 병렬로 처리 → 시간 단축
+
+---
+
+#### 패턴 2: 기술 요구사항 동시 분석 (영역별)
+
+**시나리오:** Frontend, Backend, Infrastructure, Security 요구사항 동시 도출
 
 ```typescript
-// ✅ 독립적인 기능마다 PRD 작성
-Task({
-  subagent_type: 'document-writer',
-  model: 'sonnet',
-  prompt: 'User 관리 PRD 작성 (프로필 편집, 권한 관리)'
-})
-
-Task({
-  subagent_type: 'document-writer',
-  model: 'sonnet',
-  prompt: 'Payment 연동 PRD 작성 (결제 플로우, 환불 처리)'
-})
+// 각 영역을 독립적으로 분석
+Task(subagent_type="analyst", model="sonnet",
+     prompt="Frontend 요구사항 분석: UI 컴포넌트, 상태 관리, 라우팅")
+Task(subagent_type="analyst", model="sonnet",
+     prompt="Backend 요구사항 분석: API 엔드포인트, 데이터 모델, 비즈니스 로직")
+Task(subagent_type="architect", model="sonnet",
+     prompt="Infrastructure 요구사항 분석: 배포, 스케일링, 모니터링")
+Task(subagent_type="analyst", model="opus",
+     prompt="Security 요구사항 분석: 인증/인가, 데이터 암호화, 취약점 대응")
 ```
 
-#### 분석 + 아키텍처 병렬
+**효과:** 4개 영역을 동시에 분석 → 종합적 요구사항 빠르게 파악
+
+---
+
+#### 패턴 3: 다중 관점 검증 병렬 (PM/Engineer/Designer/QA)
+
+**시나리오:** PRD 초안 작성 후 여러 관점에서 동시 검토
 
 ```typescript
-// ✅ 요구사항 분석 + 기술 아키텍처 검토
-Task({
-  subagent_type: 'analyst',
-  model: 'sonnet',
-  prompt: '실시간 알림 요구사항 분석 (사용자 니즈, 우선순위)'
-})
-
-Task({
-  subagent_type: 'architect',
-  model: 'sonnet',
-  prompt: '실시간 알림 기술 아키텍처 검토 (WebSocket vs SSE vs Firebase)'
-})
+// 역할별로 독립적으로 검증
+Task(subagent_type="analyst", model="sonnet",
+     prompt="PM 관점 검증: 비즈니스 목표와 정렬, KPI 타당성, 우선순위")
+Task(subagent_type="architect", model="opus",
+     prompt="Engineer 관점 검증: 기술적 실현 가능성, 복잡도, 리스크")
+Task(subagent_type="designer", model="sonnet",
+     prompt="Designer 관점 검증: UX 플로우, 접근성, 디자인 시스템 일관성")
+Task(subagent_type="analyst", model="sonnet",
+     prompt="QA 관점 검증: 테스트 용이성, 엣지 케이스, 회귀 리스크")
 ```
 
-#### 복잡한 시스템 PRD
+**효과:** 4개 관점 동시 검토 → 누락 위험 감소
+
+---
+
+#### 패턴 4: 경쟁사 분석 + 시장 조사 병렬
+
+**시나리오:** 신규 제품/기능 기획 시 경쟁사 및 시장 동시 분석
 
 ```typescript
-// ✅ 조사 → 분석 → PRD 작성 (순차 + 병렬)
+// 경쟁사별, 시장별 동시 조사
+Task(subagent_type="explore", model="haiku",
+     prompt="경쟁사 A 기능 조사: 핵심 기능, 가격 정책, 차별화 포인트")
+Task(subagent_type="explore", model="haiku",
+     prompt="경쟁사 B 기능 조사: 사용자 리뷰, 주요 불만, 강점")
+Task(subagent_type="analyst", model="sonnet",
+     prompt="시장 트렌드 분석: 최근 1년 동향, 신기술 도입 사례")
+Task(subagent_type="analyst", model="sonnet",
+     prompt="사용자 니즈 분석: 설문조사 결과, 커뮤니티 피드백 요약")
+```
+
+**효과:** 경쟁사 2개 + 시장 조사를 병렬 처리 → 빠른 인사이트 도출
+
+---
+
+#### 패턴 5: Acceptance Criteria + Test Scenario 병렬 작성
+
+**시나리오:** 기능별 AC와 테스트 시나리오를 동시에 작성
+
+```typescript
+// 기능별로 AC와 테스트 시나리오 병렬 작성
+Task(subagent_type="document-writer", model="haiku",
+     prompt="기능 1: 사용자 로그인 - Acceptance Criteria 작성")
+Task(subagent_type="document-writer", model="haiku",
+     prompt="기능 1: 사용자 로그인 - Test Scenario 작성 (Happy Path, Edge Cases)")
+
+Task(subagent_type="document-writer", model="haiku",
+     prompt="기능 2: 결제 처리 - Acceptance Criteria 작성")
+Task(subagent_type="document-writer", model="haiku",
+     prompt="기능 2: 결제 처리 - Test Scenario 작성")
+```
+
+**효과:** AC와 테스트 시나리오를 동시 작성 → 문서 완성도 향상
+
+---
+
+#### 패턴 6: 다중 기능 PRD 병렬 작성
+
+**시나리오:** 독립적인 기능마다 별도 PRD 또는 섹션 병렬 작성
+
+```typescript
+// 독립적인 기능마다 PRD 작성
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="User 관리 PRD 작성 (프로필 편집, 권한 관리)")
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="Payment 연동 PRD 작성 (결제 플로우, 환불 처리)")
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="Analytics 대시보드 PRD 작성 (지표 시각화, 리포팅)")
+```
+
+**효과:** 3개 기능을 병렬 작성 → 시간 대폭 단축
+
+---
+
+#### 패턴 7: 조사 + 분석 + 아키텍처 병렬
+
+**시나리오:** 기존 시스템 조사 + 요구사항 분석 + 아키텍처 검토 동시 진행
+
+```typescript
 // 1단계: 조사 (병렬)
-Task({ subagent_type: 'explore', model: 'haiku', prompt: '현재 데이터 구조 조사' })
-Task({ subagent_type: 'explore', model: 'haiku', prompt: '기존 통합 API 조사' })
+Task(subagent_type="explore", model="haiku",
+     prompt="기존 인증 구조 조사 (Better Auth, 미들웨어, 세션 관리)")
+Task(subagent_type="explore", model="haiku",
+     prompt="기존 데이터 구조 조사 (Prisma 스키마, 관계)")
 
 // 2단계: 분석 + 아키텍처 (병렬)
-Task({ subagent_type: 'analyst', model: 'opus', prompt: '신규 시스템 요구사항 분석' })
-Task({ subagent_type: 'architect', model: 'sonnet', prompt: '기술 스택 및 아키텍처 검토' })
-
-// 3단계: PRD 작성
-Task({ subagent_type: 'document-writer', model: 'sonnet', prompt: '통합 PRD 작성' })
+Task(subagent_type="analyst", model="opus",
+     prompt="신규 소셜 로그인 요구사항 분석 (Google, GitHub)")
+Task(subagent_type="architect", model="sonnet",
+     prompt="소셜 로그인 아키텍처 검토 (OAuth 플로우, 토큰 관리)")
 ```
+
+**효과:** 조사와 분석을 순차가 아닌 병렬로 → 빠른 의사결정
+
+---
+
+#### 패턴 8: 복잡한 시스템 PRD (3단계 병렬)
+
+**시나리오:** 대규모 프로젝트에서 조사 → 분석 → 작성 단계마다 병렬 실행
+
+```typescript
+// 1단계: 다중 영역 조사 (병렬)
+Task(subagent_type="explore", model="haiku", prompt="현재 데이터 구조 조사")
+Task(subagent_type="explore", model="haiku", prompt="기존 통합 API 조사")
+Task(subagent_type="explore", model="haiku", prompt="인프라 및 배포 환경 조사")
+
+// 2단계: 다중 관점 분석 + 아키텍처 (병렬)
+Task(subagent_type="analyst", model="opus", prompt="비즈니스 요구사항 분석")
+Task(subagent_type="analyst", model="sonnet", prompt="사용자 요구사항 분석")
+Task(subagent_type="architect", model="opus", prompt="기술 스택 및 아키텍처 검토")
+
+// 3단계: 다중 섹션 PRD 작성 (병렬)
+Task(subagent_type="document-writer", model="sonnet", prompt="PRD 섹션 1-5 작성")
+Task(subagent_type="document-writer", model="sonnet", prompt="PRD 섹션 6-10 작성")
+Task(subagent_type="document-writer", model="haiku", prompt="PRD 섹션 11-15 작성")
+```
+
+**효과:** 3단계 각각에서 병렬 처리 → 대규모 PRD도 빠르게 완성
+
+---
+
+### 실전 시나리오 (Model Routing 포함)
+
+#### 시나리오 1: B2B SaaS - 팀 협업 도구 신규 기능
+
+**요구사항:** "슬랙 연동 기능 추가 - 프로젝트 업데이트 자동 알림"
+
+**복잡도:** MEDIUM (기존 시스템 + 외부 API 연동)
+
+```typescript
+// 1단계: 조사 (병렬, haiku)
+Task(subagent_type="explore", model="haiku",
+     prompt="현재 알림 시스템 구조 조사 (DB, 트리거, 이벤트)")
+Task(subagent_type="explore", model="haiku",
+     prompt="Slack API 문서 조사 (Webhook, OAuth, 메시지 포맷)")
+
+// 2단계: 분석 (병렬, sonnet)
+Task(subagent_type="analyst", model="sonnet",
+     prompt="요구사항 분석: Slack 연동 시나리오, 가정 검증, 엣지 케이스")
+Task(subagent_type="architect", model="sonnet",
+     prompt="아키텍처 분석: Slack API 연동 패턴, 에러 핸들링, 재시도 로직")
+
+// 3단계: PRD 작성 (sonnet)
+Task(subagent_type="document-writer", model="sonnet",
+     prompt=`Slack 연동 PRD 작성 (15개 섹션):
+- 비전: 팀 커뮤니케이션 통합
+- 문제: 수동으로 Slack에 업데이트 공유
+- 목표: 알림 자동화율 90%+
+- 기능 요구사항: Slack 연동 설정, 자동 알림, 메시지 템플릿
+- 기술 요구사항: Slack API, OAuth, Webhook
+- 리스크: API Rate Limit, 네트워크 오류`)
+```
+
+**Model Routing 이유:**
+- explore (haiku): 단순 조사 작업
+- analyst/architect (sonnet): 일반적인 API 연동 분석
+- document-writer (sonnet): MEDIUM 복잡도 PRD
+
+---
+
+#### 시나리오 2: 모바일 앱 - 소셜 피드 기능
+
+**요구사항:** "Instagram 스타일 피드 + 댓글 + 좋아요 기능"
+
+**복잡도:** HIGH (복잡한 UI/UX + 실시간 업데이트 + 성능 최적화)
+
+```typescript
+// 1단계: 조사 + 경쟁사 분석 (병렬)
+Task(subagent_type="explore", model="haiku",
+     prompt="기존 콘텐츠 구조 조사 (Post, User, Media 모델)")
+Task(subagent_type="explore", model="haiku",
+     prompt="Instagram 피드 UX 조사: 무한 스크롤, 이미지 로딩, 캐싱")
+Task(subagent_type="explore", model="haiku",
+     prompt="Twitter 피드 UX 조사: 실시간 업데이트, 최적화 패턴")
+
+// 2단계: 다중 관점 분석 (병렬, opus)
+Task(subagent_type="analyst", model="opus",
+     prompt="사용자 요구사항 분석: Persona별 시나리오, 엣지 케이스")
+Task(subagent_type="architect", model="opus",
+     prompt="아키텍처 분석: 피드 알고리즘, 실시간 업데이트, 캐싱 전략")
+Task(subagent_type="designer", model="opus",
+     prompt="UX 요구사항 분석: 플로우, 접근성, 모바일 최적화")
+
+// 3단계: 다중 섹션 PRD 작성 (병렬, sonnet)
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="소셜 피드 PRD 작성 - 비전, 문제, 목표, 범위 섹션 (1-4)")
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="소셜 피드 PRD 작성 - 페르소나, 사용자 여정 섹션 (5-6)")
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="소셜 피드 PRD 작성 - 기능 요구사항 섹션 (7)")
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="소셜 피드 PRD 작성 - 기술/성능/리스크 섹션 (8-12)")
+```
+
+**Model Routing 이유:**
+- explore (haiku): 조사 작업
+- analyst/architect/designer (opus): 복잡한 UX/아키텍처 분석
+- document-writer (sonnet): 섹션별 병렬 작성 (opus는 과도)
+
+---
+
+#### 시나리오 3: 내부 도구 - 관리자 대시보드
+
+**요구사항:** "사용자 관리 + 지표 모니터링 + 로그 분석 대시보드"
+
+**복잡도:** MEDIUM (내부 도구, 요구사항 명확)
+
+```typescript
+// 1단계: 요구사항 분석 (병렬, sonnet)
+Task(subagent_type="analyst", model="sonnet",
+     prompt="사용자 관리 요구사항 분석: CRUD, 권한, 검색/필터")
+Task(subagent_type="analyst", model="sonnet",
+     prompt="지표 모니터링 요구사항 분석: 차트, 기간 필터, 실시간 업데이트")
+Task(subagent_type="analyst", model="sonnet",
+     prompt="로그 분석 요구사항 분석: 검색, 필터, 내보내기")
+
+// 2단계: 다중 기능 PRD 병렬 작성 (haiku/sonnet)
+Task(subagent_type="document-writer", model="haiku",
+     prompt="사용자 관리 PRD 작성 (간단한 CRUD)")
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="지표 모니터링 PRD 작성 (차트, 쿼리 최적화 포함)")
+Task(subagent_type="document-writer", model="haiku",
+     prompt="로그 분석 PRD 작성 (검색/필터)")
+```
+
+**Model Routing 이유:**
+- analyst (sonnet): 일반적인 내부 도구 요구사항
+- document-writer (haiku): 단순 CRUD PRD
+- document-writer (sonnet): 복잡한 지표 PRD
+
+---
+
+#### 시나리오 4: 데이터 대시보드 - 실시간 분석 플랫폼
+
+**요구사항:** "실시간 데이터 수집 + 대시보드 + 알림 시스템"
+
+**복잡도:** HIGH (실시간 처리 + 대용량 데이터 + 복잡한 아키텍처)
+
+```typescript
+// 1단계: 기술 영역별 분석 (병렬, opus)
+Task(subagent_type="analyst", model="opus",
+     prompt="실시간 데이터 파이프라인 요구사항 분석: 수집, 처리, 저장")
+Task(subagent_type="architect", model="opus",
+     prompt="아키텍처 분석: Kafka vs RabbitMQ, ClickHouse vs TimescaleDB")
+Task(subagent_type="analyst", model="sonnet",
+     prompt="대시보드 요구사항 분석: 차트, 필터, 사용자 커스터마이징")
+Task(subagent_type="analyst", model="sonnet",
+     prompt="알림 요구사항 분석: 트리거 조건, 채널 (이메일/슬랙/SMS)")
+
+// 2단계: 다중 관점 검증 (병렬)
+Task(subagent_type="analyst", model="sonnet",
+     prompt="PM 관점 검증: 비즈니스 가치, 우선순위, ROI")
+Task(subagent_type="architect", model="opus",
+     prompt="Engineer 관점 검증: 기술적 리스크, 복잡도, 타임라인")
+Task(subagent_type="designer", model="sonnet",
+     prompt="Designer 관점 검증: 대시보드 UX, 정보 계층")
+
+// 3단계: PRD 작성 (planner + document-writer)
+Task(subagent_type="planner", model="opus",
+     prompt="PRD 구조 설계: 15개 섹션 우선순위, 핵심 리스크 식별")
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="실시간 분석 플랫폼 PRD 작성 (Planner 구조 기반)")
+```
+
+**Model Routing 이유:**
+- analyst/architect (opus): 복잡한 실시간 시스템 분석
+- planner (opus): PRD 구조 설계 (HIGH 복잡도)
+- document-writer (sonnet): 최종 PRD 작성
+
+---
+
+### 에이전트 활용 체크리스트
+
+PRD 작성 시작 전 확인:
+
+**복잡도 판단**
+- [ ] 단순 기능 (CRUD, 단일 화면) → LOW → haiku/sonnet
+- [ ] 일반 기능 (다중 화면, API 연동) → MEDIUM → sonnet
+- [ ] 복잡한 시스템 (신규 아키텍처, 높은 불확실성) → HIGH → opus
+
+**병렬 실행 가능 확인**
+- [ ] 여러 Persona의 사용자 스토리 → 패턴 1 (analyst x N)
+- [ ] 기술 영역별 요구사항 (Frontend/Backend/Security) → 패턴 2
+- [ ] 다중 관점 검증 (PM/Engineer/Designer/QA) → 패턴 3
+- [ ] 경쟁사 분석 + 시장 조사 → 패턴 4
+- [ ] 기능별 AC + 테스트 시나리오 → 패턴 5
+- [ ] 독립적인 기능 여러 개 → 패턴 6
+
+**에이전트 선택**
+- [ ] 요구사항 분석 → analyst (sonnet/opus)
+- [ ] 아키텍처 검토 → architect (sonnet/opus)
+- [ ] PRD 구조 설계 → planner (opus)
+- [ ] PRD 작성 → document-writer (haiku/sonnet)
+- [ ] 기존 시스템 조사 → explore (haiku)
+- [ ] UI/UX 요구사항 → designer (sonnet/opus)
+
+**Model 선택**
+- [ ] haiku: 조사, 단순 문서, 명확한 요구사항
+- [ ] sonnet: 일반적인 분석/작성, 균형 잡힌 품질
+- [ ] opus: 복잡한 분석, 아키텍처 설계, 불확실성 높은 작업
+
+**실행 순서**
+- [ ] 1단계: 조사 (explore) + 경쟁사 분석 (병렬)
+- [ ] 2단계: 요구사항 분석 (analyst) + 아키텍처 검토 (architect) (병렬)
+- [ ] 3단계: PRD 작성 (document-writer) 또는 섹션별 병렬 작성
+
+**적극적으로 에이전트 활용. 혼자 하지 말 것.**
 
 </parallel_agent_execution>
 

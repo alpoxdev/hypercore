@@ -34,6 +34,118 @@ metadata:
 
 ---
 
+<parallel_agent_execution>
+
+## 병렬 에이전트 실행 (ULTRAWORK MODE)
+
+**목표:** 여러 문서 동시 리팩토링, 대기 시간 최소화, 처리량 극대화.
+
+### 기본 원칙
+
+| 원칙 | 적용 방법 | 효과 |
+|------|----------|------|
+| **PARALLEL** | 독립 문서 동시 리팩토링 | 5-15배 속도 향상 |
+| **DELEGATE** | 에이전트별 전문화 (분석/리팩토링/검증) | 품질 향상 |
+| **SMART MODEL** | 복잡도별 모델 (haiku/sonnet/opus) | 비용 최적화 |
+
+---
+
+### Phase별 에이전트 활용
+
+| Phase | 에이전트 | 모델 | 작업 | 병렬 |
+|-------|---------|------|------|------|
+| **1. 분석** | explore | haiku | 여러 문서 구조 분석 | ✅ |
+| **2. 리팩토링** | document-writer | sonnet | 독립 문서 개선 | ✅ |
+| **3. 검증** | analyst | sonnet | 토큰 감소 확인 | ✅ |
+| **4. 리뷰** | code-reviewer | opus | 정보 손실 체크 | ✅ |
+
+---
+
+### 실전 패턴
+
+#### Pattern 1: 독립 문서 병렬 개선
+
+```typescript
+// 여러 SKILL.md 동시 리팩토링
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="@.claude/skills/bug-fix/SKILL.md 리팩토링 (50% 토큰 감소)")
+
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="@.claude/skills/refactor/SKILL.md 리팩토링 (50% 토큰 감소)")
+
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="@.claude/skills/feature-add/SKILL.md 리팩토링 (50% 토큰 감소)")
+```
+
+**효과:** 순차 180초 → 병렬 60초 (3배 향상)
+
+---
+
+#### Pattern 2: 분석 + 리팩토링 동시
+
+```typescript
+// 현재 문서 리팩토링하며 다음 문서 분석
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="현재 SKILL.md 리팩토링")
+
+Task(subagent_type="explore", model="haiku",
+     prompt="다음 COMMAND.md 구조 분석 및 중복 식별")
+```
+
+---
+
+#### Pattern 3: 배치 처리
+
+```typescript
+// 동일 패턴 여러 문서 (토큰 70-90% 절감)
+Task(subagent_type="document-writer", model="sonnet",
+     prompt=`다음 CLAUDE.md 파일들 일괄 리팩토링:
+
+     파일 목록:
+     - projects/project-a/CLAUDE.md
+     - projects/project-b/CLAUDE.md
+     - projects/project-c/CLAUDE.md
+
+     공통 규칙:
+     1. @imports 분리
+     2. tech_stack 표 형식
+     3. quick_patterns 코드만
+     4. 50% 토큰 감소`)
+```
+
+---
+
+### Model Routing
+
+| 작업 | 모델 | 이유 |
+|------|------|------|
+| **구조 분석** | haiku | 빠르고 저렴 |
+| **리팩토링** | sonnet | 일반 품질 |
+| **검증/리뷰** | opus | 정보 손실 방지 |
+
+---
+
+### 체크리스트
+
+**병렬 실행 전:**
+- [ ] 문서 독립적인가?
+- [ ] 3개 이상 문서인가?
+- [ ] 동일 패턴 적용 가능한가?
+
+**실행 중:**
+- [ ] 단일 메시지에서 다중 Tool 호출
+- [ ] 복잡도별 모델 선택
+- [ ] TaskList로 진행 상황 모니터링
+
+**실행 후:**
+- [ ] 각 문서 50% 토큰 감소 확인
+- [ ] 정보 손실 없는지 검증
+- [ ] XML 태그 중첩 오류 확인
+
+</parallel_agent_execution>
+
+---
+
 <forbidden>
 
 | 분류 | 금지 사항 |

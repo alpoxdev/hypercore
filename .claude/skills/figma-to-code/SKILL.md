@@ -25,6 +25,302 @@
 
 ---
 
+<parallel_agent_execution>
+
+## ULTRAWORK MODE (병렬 에이전트 실행)
+
+### 기본 원칙
+
+| 원칙 | 실행 방법 | 기대 효과 |
+|------|----------|----------|
+| **PARALLEL** | 독립 작업은 단일 메시지에서 동시 Tool 호출 | 5-15배 속도 향상 |
+| **DELEGATE** | 전문 에이전트에게 즉시 위임 | 컨텍스트 격리, 품질 향상 |
+| **SMART MODEL** | 복잡도에 따라 haiku/sonnet/opus 선택 | 비용 최적화 |
+
+**핵심 룰:**
+```typescript
+// ❌ 순차 실행 (느림)
+Task(...) // 60초 대기
+Task(...) // 60초 대기
+// 총 120초
+
+// ✅ 병렬 실행 (빠름)
+Task(...) // 단일 메시지에서
+Task(...) // 동시 호출
+// 총 60초 (가장 긴 작업 기준)
+```
+
+### Phase별 에이전트 활용
+
+| Phase | 작업 | 에이전트 | 모델 | 병렬 실행 |
+|-------|------|---------|------|----------|
+| **0** | 환경 탐색 | explore | haiku | ❌ (단일) |
+| **1** | Figma 데이터 추출 | designer | opus | ❌ (필수) |
+| **1** | 토큰 추출 + 에셋 다운로드 | designer + implementation-executor | opus + haiku | ✅ (독립 작업) |
+| **2** | 컴포넌트 구현 | designer | sonnet | ✅ (여러 컴포넌트) |
+| **2** | 스타일 토큰 병합 | designer | sonnet | ✅ (독립) |
+| **2** | 에셋 압축/구조화 | implementation-executor | haiku | ✅ (독립) |
+| **3** | 반응형 브레이크포인트 | designer | sonnet | ✅ (Mobile/Tablet/Desktop) |
+| **4** | 픽셀 정확도 검증 | code-reviewer | opus | ❌ (순차) |
+
+### 에이전트별 역할
+
+| 에이전트 | 모델 | 용도 | 병렬 가능 |
+|---------|------|------|----------|
+| **explore** | haiku | 프로젝트 구조, globals.css 위치 파악 | ✅ |
+| **designer** | sonnet/opus | Figma MCP 사용, React 컴포넌트 구현, @theme 토큰 생성 | ✅ |
+| **implementation-executor** | sonnet/haiku | 에셋 WebP 압축, public/ 구조화, 로직 구현 | ✅ |
+| **code-reviewer** | opus | 픽셀 정확도 검증, 반응형 품질 검토 | ✅ |
+| **document-writer** | haiku | 컴포넌트 문서, 사용법 가이드 작성 | ✅ |
+
+### 실전 패턴
+
+#### 패턴 1: 환경 분석 → Figma 추출 → 병렬 구현
+
+```typescript
+// Phase 0: 환경 탐색 (단일)
+Task(subagent_type="explore", model="haiku",
+     prompt=`프로젝트 환경 파악:
+     - Vite/Next.js 감지
+     - globals.css 위치
+     - 기존 @theme 토큰 확인`)
+
+// Phase 1: Figma 데이터 추출 (opus로 정확도 보장)
+Task(subagent_type="designer", model="opus",
+     prompt=`Figma MCP로 디자인 데이터 추출:
+     - Variables (색상, 간격, 폰트)
+     - Auto Layout 구조 분석
+     - 에셋 다운로드 링크 생성
+     - 반응형 브레이크포인트 확인`)
+
+// Phase 2: 병렬 구현 (컴포넌트 + 스타일 + 에셋 동시)
+Task(subagent_type="designer", model="sonnet",
+     prompt=`React 컴포넌트 구현:
+     - 정확한 px 값 사용 (근사치 금지)
+     - Auto Layout → Flexbox/Grid 정확한 매핑
+     - 반응형 클래스 포함`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`globals.css @theme 블록 업데이트:
+     - Figma Variables → Tailwind v4 토큰
+     - 기존 토큰 병합 (덮어쓰기 금지)
+     - 자동 클래스 생성 확인`)
+
+Task(subagent_type="implementation-executor", model="haiku",
+     prompt=`에셋 처리:
+     - PNG/JPG → WebP 압축 (품질 75-90)
+     - public/images/[category]/ 구조화
+     - SVG는 압축 없이 public/icons/`)
+```
+
+**효과:** 순차 실행 대비 3배 빠름
+
+---
+
+#### 패턴 2: 반응형 병렬 구현
+
+```typescript
+// Mobile/Tablet/Desktop 동시 작업
+Task(subagent_type="designer", model="sonnet",
+     prompt=`모바일 레이아웃 (320-767px):
+     - 세로 스택 (flex-col)
+     - 폰트 크기 조정
+     - 간격 축소`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`태블릿 레이아웃 (768-1023px):
+     - 2열 그리드
+     - 중간 폰트 크기
+     - 적정 간격`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`데스크톱 레이아웃 (1024px+):
+     - 3-4열 그리드
+     - 큰 폰트 크기
+     - 넉넉한 간격`)
+```
+
+**효과:** 3개 브레이크포인트를 동시 처리
+
+---
+
+#### 패턴 3: 다중 컴포넌트 병렬 변환
+
+```typescript
+// 여러 Figma 컴포넌트 동시 구현
+Task(subagent_type="designer", model="sonnet",
+     prompt=`Header 컴포넌트:
+     - Figma Frame "Header" → React
+     - Auto Layout → Flexbox
+     - 정확한 간격, 색상`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`Footer 컴포넌트:
+     - Figma Frame "Footer" → React
+     - 링크, 아이콘 배치
+     - 반응형 레이아웃`)
+
+Task(subagent_type="designer", model="sonnet",
+     prompt=`Hero 섹션:
+     - 배경 이미지 WebP
+     - 타이포그래피 정확한 값
+     - CTA 버튼 스타일`)
+
+Task(subagent_type="implementation-executor", model="haiku",
+     prompt=`에셋 일괄 처리:
+     - 모든 이미지 WebP 압축
+     - public/images/ 폴더 구조화
+     - 반응형 이미지 (<picture>)`)
+```
+
+**효과:** 4개 작업을 동시 처리
+
+---
+
+#### 패턴 4: 구현 → 다중 검증
+
+```typescript
+// Step 1: 구현 (병렬)
+Task(subagent_type="designer", model="sonnet",
+     prompt="Figma 디자인 → React 컴포넌트")
+
+// Step 2: 여러 관점에서 동시 검증
+Task(subagent_type="code-reviewer", model="opus",
+     prompt=`픽셀 정확도 검증:
+     - 색상: Figma HEX vs 코드
+     - 간격: margin/padding/gap 일치
+     - 폰트: size/weight/line-height`)
+
+Task(subagent_type="code-reviewer", model="opus",
+     prompt=`반응형 품질 검증:
+     - Mobile/Tablet/Desktop 모두 Figma 일치
+     - 브레이크포인트 정확도
+     - 반응형 이미지 사용`)
+
+Task(subagent_type="code-reviewer", model="opus",
+     prompt=`에셋 품질 검증:
+     - WebP 압축 확인
+     - 폴더 구조 적절성
+     - 파일명 명확성`)
+```
+
+**효과:** 3가지 관점에서 동시 품질 검토
+
+---
+
+### Model Routing
+
+| 작업 | 모델 | 이유 |
+|------|------|------|
+| **환경 탐색** | haiku | 빠른 구조 파악 |
+| **Figma 데이터 추출** | opus | 정확한 토큰/레이아웃 분석 |
+| **컴포넌트 구현** | sonnet | UI 코드 변환 |
+| **에셋 처리** | haiku | WebP 압축, 폴더 구조화 |
+| **픽셀 정확도 검증** | opus | 세밀한 비교 |
+| **문서 작성** | haiku | 빠른 문서화 |
+
+### 병렬 실행 체크리스트
+
+작업 시작 전 확인:
+
+- [ ] 이 작업은 독립적인가? → 병렬 에이전트 고려
+- [ ] 여러 컴포넌트 구현? → 여러 designer 병렬 실행
+- [ ] 반응형 필수? → 브레이크포인트별 병렬
+- [ ] 에셋 많은가? → implementation-executor 병렬
+- [ ] 검증 다각도 필요? → 여러 code-reviewer 병렬
+
+**적극적으로 에이전트 활용. 혼자 하지 말 것.**
+
+### 실전 시나리오
+
+#### 시나리오 1: 랜딩 페이지 구현 (병렬)
+
+```typescript
+// Phase 0: 환경
+Task(subagent_type="explore", model="haiku",
+     prompt="Vite/Next.js, globals.css 확인")
+
+// Phase 1: Figma 추출
+Task(subagent_type="designer", model="opus",
+     prompt="Figma MCP: Variables, Auto Layout, 에셋, 브레이크포인트")
+
+// Phase 2: 병렬 구현 (4개 동시)
+Task(subagent_type="designer", model="sonnet",
+     prompt="Hero 섹션: 정확한 px 값, 반응형")
+Task(subagent_type="designer", model="sonnet",
+     prompt="Features 섹션: 3열 그리드, 아이콘")
+Task(subagent_type="designer", model="sonnet",
+     prompt="CTA 섹션: 버튼, 폼 스타일")
+Task(subagent_type="implementation-executor", model="haiku",
+     prompt="에셋 WebP 압축 및 public/images/ 구조화")
+
+// Phase 3: 검증 (병렬)
+Task(subagent_type="code-reviewer", model="opus",
+     prompt="픽셀 정확도 검증")
+Task(subagent_type="code-reviewer", model="opus",
+     prompt="반응형 품질 검증")
+```
+
+**예상 시간:**
+- 순차 실행: 420초 (60 + 60 + 60 + 60 + 60 + 60 + 60)
+- 병렬 실행: 120초 (Phase별 가장 긴 작업)
+- 개선: 3.5배 향상
+
+---
+
+#### 시나리오 2: 디자인 시스템 구축 (병렬)
+
+```typescript
+// Phase 1: Figma Variables 추출
+Task(subagent_type="designer", model="opus",
+     prompt="Figma Variables → @theme 토큰 매핑")
+
+// Phase 2: 병렬 컴포넌트 구현 (5개 동시)
+Task(subagent_type="designer", model="sonnet",
+     prompt="Button: Primary/Secondary/Ghost")
+Task(subagent_type="designer", model="sonnet",
+     prompt="Card: border-radius, shadow, padding")
+Task(subagent_type="designer", model="sonnet",
+     prompt="Input: focus, validation, error")
+Task(subagent_type="designer", model="sonnet",
+     prompt="Modal: overlay, animation, 접근성")
+Task(subagent_type="designer", model="sonnet",
+     prompt="Dropdown: 키보드 네비게이션, 포지셔닝")
+
+// Phase 3: 문서화 (병렬)
+Task(subagent_type="document-writer", model="haiku",
+     prompt="Button 문서: 사용법, props, 예시")
+Task(subagent_type="document-writer", model="haiku",
+     prompt="Card 문서: 레이아웃 패턴, 변형")
+Task(subagent_type="document-writer", model="haiku",
+     prompt="Input 문서: 검증, 에러 처리")
+```
+
+**효과:** 5개 컴포넌트 + 3개 문서 동시 작업
+
+---
+
+### Critical Rules (병렬 실행 시)
+
+**DO:**
+- 환경 탐색 우선 (Vite/Next.js, globals.css)
+- Figma MCP로 정확한 값 추출 (opus)
+- 독립 컴포넌트 병렬 구현 (여러 designer)
+- 에셋 처리 별도 에이전트 (implementation-executor)
+- 반응형 브레이크포인트별 병렬 (3개 designer)
+- 픽셀 정확도 검증 필수 (code-reviewer)
+
+**DON'T:**
+- 순차 실행 (독립 작업인데 대기)
+- 근사치 사용 (`gap-4` 대신 `gap-[18px]`)
+- AI 생성 에셋 (Figma 실제 파일만)
+- 반응형 생략
+- 기존 토큰 덮어쓰기
+
+</parallel_agent_execution>
+
+---
+
 <prerequisites>
 
 ## 사전 준비
