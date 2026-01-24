@@ -1,4 +1,5 @@
 import prompts from 'prompts';
+import fs from 'fs-extra';
 import { logger } from '../utils/logger.js';
 import {
   copySingleTemplate,
@@ -31,6 +32,30 @@ const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
 
 export const init = async (options: InitOptions): Promise<void> => {
   const targetDir = options.cwd || process.cwd();
+
+  // cwd 옵션 검증
+  try {
+    const stat = await fs.stat(targetDir);
+    if (!stat.isDirectory()) {
+      logger.error(`Target is not a directory: ${targetDir}`);
+      process.exit(1);
+    }
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      logger.error(`Target directory does not exist: ${targetDir}`);
+    } else {
+      logger.error(`Cannot access target directory: ${targetDir}`);
+    }
+    process.exit(1);
+  }
+
+  // 쓰기 권한 확인
+  try {
+    await fs.access(targetDir, fs.constants.W_OK);
+  } catch {
+    logger.error(`No write permission for: ${targetDir}`);
+    process.exit(1);
+  }
 
   const availableTemplates = await listAvailableTemplates();
 
