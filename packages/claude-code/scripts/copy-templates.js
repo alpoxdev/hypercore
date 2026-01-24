@@ -62,16 +62,6 @@ async function copyTemplates() {
     console.log('  ✓ .claude/instructions/');
   }
 
-  // Copy PARALLEL_AGENTS.md
-  const parallelAgentsMdSrc = path.join(claudeDir, 'PARALLEL_AGENTS.md');
-  if (await fs.pathExists(parallelAgentsMdSrc)) {
-    await fs.copy(
-      parallelAgentsMdSrc,
-      path.join(claudeDestDir, 'PARALLEL_AGENTS.md'),
-    );
-    console.log('  ✓ .claude/PARALLEL_AGENTS.md');
-  }
-
   console.log('✅ Templates copied successfully!');
 }
 

@@ -198,24 +198,13 @@ export const init = async (options: InitOptions): Promise<void> => {
       installCommands = commandsResponse.install ?? false;
     }
 
+    // Always install agents and instructions (required)
     if (hasAgents) {
-      const agentsResponse = await prompts({
-        type: 'confirm',
-        name: 'install',
-        message: 'Install agents to .claude/agents/?',
-        initial: false,
-      });
-      installAgents = agentsResponse.install ?? false;
+      installAgents = true;
     }
 
     if (hasInstructions) {
-      const instructionsResponse = await prompts({
-        type: 'confirm',
-        name: 'install',
-        message: 'Install instructions to .claude/instructions/?',
-        initial: false,
-      });
-      installInstructions = instructionsResponse.install ?? false;
+      installInstructions = true;
     }
   }
 
