@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import { banner, logger } from './shared/logger.js';
 import { init } from './commands/init.js';
-import { listAvailableTemplates } from './utils/copy/index.js';
+import { listAvailableTemplates } from './features/templates/index.js';
 
 const program = new Command();
 

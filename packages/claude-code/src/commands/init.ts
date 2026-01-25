@@ -6,10 +6,13 @@ import {
   copyMultipleTemplates,
   checkExistingFiles,
   listAvailableTemplates,
+} from '../features/templates/index.js';
+import {
   checkAllExtrasExist,
   installExtras,
-} from '../utils/copy/index.js';
-import type { InstallResult, ExtrasFlags } from '../features/extras/index.js';
+  type InstallResult,
+  type ExtrasFlags,
+} from '../features/extras/index.js';
 import {
   promptTemplateSelection,
   promptOverwrite,
