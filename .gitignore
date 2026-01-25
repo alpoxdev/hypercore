@@ -44,3 +44,8 @@ coverage/
 .cache/
 
 tmp/
+
+# Generated files
+.claude/plans/
+.claude/ralph/
+.claude/refactor/

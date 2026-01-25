@@ -210,16 +210,16 @@
 
 14개 에이전트 모두 다음 문서 참조:
 ```markdown
-@../../instructions/multi-agent/coordination-guide.md
-@../../instructions/multi-agent/agent-roster.md
+@.claude/instructions/multi-agent/coordination-guide.md
+@.claude/instructions/multi-agent/agent-roster.md
 ```
 
 ### Skills 문서
 
 복잡한 스킬은 다음 문서 참조:
 ```markdown
-@../../instructions/multi-agent/execution-patterns.md
-@../../instructions/multi-agent/performance-optimization.md
+@.claude/instructions/multi-agent/execution-patterns.md
+@.claude/instructions/multi-agent/performance-optimization.md
 ```
 
 ---

@@ -237,16 +237,16 @@ Task(git-operator, haiku, "변경사항 커밋")
 
 ### 추가 학습
 
-- @parallel-execution.md - 병렬화 상세 규칙
-- @read-parallelization.md - Read 도구 최적화
-- @model-routing.md - 모델 선택 가이드
-- @agent-coordination.md - 에이전트 역할 정의
+- @.claude/instructions/agent-patterns/parallel-execution.md - 병렬화 상세 규칙
+- @.claude/instructions/agent-patterns/read-parallelization.md - Read 도구 최적화
+- @.claude/instructions/agent-patterns/model-routing.md - 모델 선택 가이드
+- @.claude/instructions/agent-patterns/agent-coordination.md - 에이전트 역할 정의
 
 ### 관련 지침
 
-- @instructions/workflow-patterns/
-- @instructions/context-engineering/
-- @instructions/validation/
+- @.claude/instructions/workflow-patterns/
+- @.claude/instructions/context-engineering/
+- @.claude/instructions/validation/
 
 ---
 

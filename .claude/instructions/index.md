@@ -256,10 +256,10 @@ name: my-agent
 description: 예시 에이전트
 ---
 
-@../../instructions/agent-patterns/parallel-execution.md
-@../../instructions/agent-patterns/model-routing.md
-@../../instructions/workflow-patterns/sequential-thinking.md
-@../../instructions/validation/forbidden-patterns.md
+@.claude/instructions/agent-patterns/parallel-execution.md
+@.claude/instructions/agent-patterns/model-routing.md
+@.claude/instructions/workflow-patterns/sequential-thinking.md
+@.claude/instructions/validation/forbidden-patterns.md
 
 # My Agent
 
@@ -274,8 +274,8 @@ name: my-skill
 description: 예시 스킬
 ---
 
-@../../instructions/workflow-patterns/phase-based-workflow.md
-@../../instructions/validation/verification-checklist.md
+@.claude/instructions/workflow-patterns/phase-based-workflow.md
+@.claude/instructions/validation/verification-checklist.md
 
 # My Skill
 
@@ -289,8 +289,8 @@ description: 예시 스킬
 description: 예시 커맨드
 ---
 
-@../instructions/agent-patterns/parallel-execution.md
-@../instructions/validation/required-behaviors.md
+@.claude/instructions/agent-patterns/parallel-execution.md
+@.claude/instructions/validation/required-behaviors.md
 
 # My Command
 
@@ -337,14 +337,14 @@ description: 예시 커맨드
 
 ```markdown
 # Core Instructions (필수)
-@instructions/agent-patterns/parallel-execution.md
-@instructions/workflow-patterns/sequential-thinking.md
-@instructions/validation/forbidden-patterns.md
-@instructions/validation/required-behaviors.md
+@.claude/instructions/agent-patterns/parallel-execution.md
+@.claude/instructions/workflow-patterns/sequential-thinking.md
+@.claude/instructions/validation/forbidden-patterns.md
+@.claude/instructions/validation/required-behaviors.md
 
 # Task-specific Instructions (선택)
-@instructions/workflow-patterns/phase-based-workflow.md
-@instructions/validation/verification-checklist.md
+@.claude/instructions/workflow-patterns/phase-based-workflow.md
+@.claude/instructions/validation/verification-checklist.md
 ```
 
 **예상 토큰**: 5,000-8,000 (컨텍스트 압축됨)
