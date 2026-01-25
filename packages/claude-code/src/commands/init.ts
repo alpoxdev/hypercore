@@ -33,13 +33,6 @@ const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
   npx: 'NPX CLI 도구 프로젝트',
 };
 
-// skills/commands에서 생성하는 .claude/ 하위 폴더 목록
-const CLAUDE_GENERATED_FOLDERS = [
-  '.claude/plans/',
-  '.claude/ralph/',
-  '.claude/refactor/',
-];
-
 /**
  * 대상 디렉토리 검증 (존재 여부, 쓰기 권한)
  */
