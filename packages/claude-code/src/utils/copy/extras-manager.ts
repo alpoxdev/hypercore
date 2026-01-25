@@ -1,7 +1,10 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { FRAMEWORK_SPECIFIC_SKILLS_MAP, COMMON_SKILLS } from './constants.js';
-import { copyRecursive, hasFiles } from './copy-utils.js';
+import {
+  FRAMEWORK_SPECIFIC_SKILLS_MAP,
+  COMMON_SKILLS,
+} from '../../shared/constants.js';
+import { copyRecursive, hasFiles } from '../../shared/filesystem/index.js';
 import { getTemplatesDir } from './template-manager.js';
 
 /**
