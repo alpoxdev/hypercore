@@ -47,7 +47,8 @@ Task({
 
 - 2-3개 리팩토링 옵션 제시 (장단점, 영향 범위)
 - 추천안 및 근거
-- 선택 후 `.claude/plans/refactor-[이름].md` 자동 생성
+- 선택 후 `.claude/refactor/00.[모듈명]/` 폴더에 3개 문서 병렬 생성
+  - ANALYSIS.md, PLAN.md, METRICS.md
 
 </when_to_use>
 
@@ -85,10 +86,11 @@ $ARGUMENTS 있음 → 다음 단계 진행
 | 1. 입력 확인 | ARGUMENT 검증, 없으면 질문 | - |
 | 2. Agent 판단 | @refactor-advisor 사용 여부 결정 | - |
 | 3. 복잡도 판단 | Sequential Thinking으로 분석 범위 결정 | sequentialthinking (1단계) |
-| 4. 코드 분석 | 현재 코드 구조, 문제점 파악 | Task (Explore) + Read/Grep |
+| 4. 코드 분석 | 현재 코드 구조, 문제점, 메트릭 파악 | Task (Explore) + Read/Grep |
 | 5. 개선 옵션 도출 | 가능한 접근 4-5개 → 주요 2-3개 선정 | sequentialthinking (2-6단계) |
 | 6. 옵션 제시 | 장단점, 영향 범위, 추천안 제시 | - |
-| 7. 계획 문서 작성 | 선택 시 리팩토링 계획 생성 | Write |
+| 7. 문서 생성 | 옵션 선택 대기 후 3개 문서 병렬 생성 | Task (document-writer) 병렬 |
+| 8. 구현 시작 | 문서 완료 즉시 구현 진행 (확인 불필요) | Skill (execute) |
 
 </workflow>
 
@@ -960,25 +962,126 @@ thought 7: 단계별 계획 및 추천안
 
 ---
 
-<document_generation>
+<state_management>
 
-## 계획 문서 작성
+## 상태 관리 및 문서화
 
-### 문서 작성 질문
+### 폴더 구조
+
+옵션 선택 후 `.claude/refactor/00.[모듈명]/` 폴더 생성:
 
 ```
-옵션 [N]을 선택하셨습니다.
-
-리팩토링 계획 문서를 작성할까요?
-- Y: .claude/plans/refactor-[이름].md 생성
-- N: 바로 구현 시작
-
-선택해주세요. (Y/N)
+.claude/refactor/00.인증_모듈/
+├── ANALYSIS.md   # 현재 상태, 문제점, 옵션 비교
+├── PLAN.md       # 단계별 리팩토링 계획, 롤백 가이드
+└── METRICS.md    # 품질 메트릭 Before/After
 ```
 
-### 리팩토링 계획 문서 템플릿
+**폴더명 형식:** `00.[모듈명]` (넘버링 + 한글 설명, 언더스코어로 구분)
+**넘버링:** 기존 refactor 폴더 목록 조회 → 다음 번호 자동 부여 (00, 01, 02...)
 
-**파일 위치:** `.claude/plans/refactor-[이름].md`
+### 문서 역할
+
+| 파일 | 내용 | 담당 에이전트 |
+|------|------|--------------|
+| **ANALYSIS.md** | 현재 상태 분석, 문제점 우선순위, 옵션 비교, 선택된 옵션 및 이유 | document-writer (haiku) |
+| **PLAN.md** | 단계별 리팩토링 계획, 작업 체크리스트, 롤백 가이드, 검증 방법 | document-writer (sonnet) |
+| **METRICS.md** | 품질 메트릭 Before/After, 측정 방법, 성공 기준 | document-writer (haiku) |
+
+### 문서 작성
+
+**우선순위: document-writer 에이전트 병렬 실행**
+
+| 작업 | 방법 | 모델 |
+|------|------|------|
+| 3개 문서 동시 생성 | `Task(subagent_type="document-writer", ...)` 병렬 호출 | haiku (2개), sonnet (1개) |
+| 복잡한 PLAN.md | `Task(subagent_type="document-writer", model="sonnet", ...)` | sonnet |
+
+**병렬 실행 패턴:**
+
+```typescript
+// ✅ 3개 문서 동시 작성 (빠름)
+Task(subagent_type="document-writer", model="haiku",
+     prompt="ANALYSIS.md 생성: 현재 상태, 문제점, 옵션 비교")
+Task(subagent_type="document-writer", model="sonnet",
+     prompt="PLAN.md 생성: 단계별 계획, 체크리스트, 롤백 가이드")
+Task(subagent_type="document-writer", model="haiku",
+     prompt="METRICS.md 생성: Before/After 메트릭, 성공 기준")
+
+// ❌ 순차 실행 (느림)
+Write({ file_path: "ANALYSIS.md", ... })  // 대기...
+Write({ file_path: "PLAN.md", ... })      // 대기...
+```
+
+### 문서 템플릿
+
+#### ANALYSIS.md
+
+```markdown
+# [모듈명] 코드 분석
+
+생성: {{TIMESTAMP}}
+
+## 현재 상태
+
+### 파일 구조
+- 주요 파일: `src/module/file.ts` (200줄)
+- 관련 파일: [목록]
+
+### 복잡도 분석
+- 함수 평균 길이: [N줄]
+- 최대 중첩 깊이: [N단계]
+- 순환 복잡도: [값]
+
+### 문제점 (우선순위별)
+
+| 문제 | 영향 | 우선순위 | 설명 |
+|------|------|---------|------|
+| 문제 1 | High | High | 상세 설명 |
+| 문제 2 | Medium | Medium | 상세 설명 |
+| 문제 3 | Low | Low | 상세 설명 |
+
+## 옵션 비교
+
+### 옵션 1: [옵션 이름] (추천)
+
+**개선 방법:**
+- 방법 1
+- 방법 2
+
+| 장점 | 단점 |
+|------|------|
+| 장점 1 | 단점 1 |
+| 장점 2 | 단점 2 |
+
+**영향 범위:**
+- 파일: `src/module/`
+- 예상 작업량: 중간
+- 리스크: 낮음
+
+---
+
+### 옵션 2: [옵션 이름]
+
+[동일 형식]
+
+---
+
+### 옵션 3: [옵션 이름]
+
+[동일 형식]
+
+## 선택된 옵션
+
+**옵션 [N]: [옵션 이름]**
+
+**선택 이유:**
+1. 이유 1
+2. 이유 2
+3. 이유 3
+```
+
+#### PLAN.md
 
 ```markdown
 # [모듈명] 리팩토링 계획
@@ -986,78 +1089,72 @@ thought 7: 단계별 계획 및 추천안
 ## 개요
 
 **목표:** [무엇을 개선할 것인가]
-**선택된 접근 방식:** [옵션 N]
+**접근 방식:** [선택된 옵션]
 **예상 영향 범위:** [파일/모듈 목록]
 
-## 현재 상태
-
-### 문제점
-
-| 문제 | 영향 | 우선순위 |
-|------|------|---------|
-| 문제 1 | 설명 | High |
-| 문제 2 | 설명 | Medium |
-
-### 메트릭
-
-- 복잡도: [현재 값]
-- 중복률: [현재 값]
-- 테스트 커버리지: [현재 값]
-
-## 개선 단계
+## 단계별 계획
 
 ### 1단계: [단계 이름]
 
 **목표:** [이 단계에서 달성할 것]
 
-**작업:**
+**작업 체크리스트:**
 - [ ] 작업 1
 - [ ] 작업 2
+- [ ] 작업 3
 
 **변경 파일:**
-- `src/file1.ts`
-- `src/file2.ts`
+- `src/file1.ts`: [변경 내용]
+- `src/file2.ts`: [변경 내용]
 
 **검증:**
-- 테스트 통과
-- 빌드 성공
+- [ ] 테스트 통과
+- [ ] 빌드 성공
+- [ ] 타입 체크 통과
+
+---
 
 ### 2단계: [단계 이름]
 
 **목표:** [이 단계에서 달성할 것]
 
-**작업:**
-- [ ] 작업 3
+**작업 체크리스트:**
+- [ ] 작업 4
+- [ ] 작업 5
 
 **변경 파일:**
-- `src/file3.ts`
+- `src/file3.ts`: [변경 내용]
+
+**검증:**
+- [ ] 테스트 통과
+- [ ] 기능 동작 확인
+
+---
 
 ### 3단계: [단계 이름]
-...
 
-## 개선 후 기대 효과
+[동일 형식]
 
-| 메트릭 | Before | After | 개선율 |
-|--------|--------|-------|--------|
-| 복잡도 | X | Y | -Z% |
-| 중복률 | X | Y | -Z% |
-| 코드 라인 | X | Y | -Z% |
+## 롤백 가이드
 
-## 리스크 관리
+### 문제 발생 시
 
-### 리스크
+**단계별 롤백:**
+1. 현재 단계 중단
+2. `git stash` 또는 커밋 되돌리기
+3. 이전 단계로 복구
+4. 테스트 재실행
 
-| 리스크 | 영향도 | 완화 방안 |
-|--------|--------|----------|
-| 리스크 1 | High | 방안 1 |
-| 리스크 2 | Medium | 방안 2 |
+**완전 롤백:**
+1. 모든 변경 취소: `git reset --hard [시작 커밋]`
+2. 의존성 복구: `npm install`
+3. 빌드 확인: `npm run build`
 
-### 롤백 계획
+### 주의사항
 
-문제 발생 시:
-1. 단계별 커밋 활용
-2. 이전 단계로 되돌리기
-3. 테스트 재실행
+- 각 단계 완료 후 커밋
+- 커밋 메시지: "refactor: [단계명] - [변경 내용]"
+- 테스트 실패 시 즉시 중단
 
 ## 검증 방법
 
@@ -1065,19 +1162,260 @@ thought 7: 단계별 계획 및 추천안
 - [ ] 기존 기능 동작 확인
 - [ ] 회귀 테스트 통과
 - [ ] 통합 테스트 통과
+- [ ] E2E 테스트 통과
 
 ### 품질 검증
 - [ ] 복잡도 감소 확인
 - [ ] 중복 제거 확인
 - [ ] 타입 안정성 확인
-
-## 참조
-
-- 관련 문서 링크
-- 참고 패턴
+- [ ] 성능 저하 없음
 ```
 
+#### METRICS.md
+
+```markdown
+# [모듈명] 품질 메트릭
+
+## Before (현재 상태)
+
+### 복잡도
+- 순환 복잡도: [현재 값]
+- 함수 평균 길이: [N줄]
+- 최대 중첩 깊이: [N단계]
+
+### 중복
+- 중복률: [N%]
+- 중복 코드 블록 수: [N개]
+- 중복 라인 수: [N줄]
+
+### 타입 안정성
+- any 사용 횟수: [N개]
+- 명시적 타입 비율: [N%]
+- 타입 에러 가능성: [High/Medium/Low]
+
+### 테스트
+- 테스트 커버리지: [N%]
+- 단위 테스트 수: [N개]
+- 통합 테스트 수: [N개]
+
+### 성능
+- 평균 응답 시간: [Nms]
+- 메모리 사용량: [NMB]
+- 번들 크기: [NKB]
+
+## After (목표)
+
+### 복잡도
+- 순환 복잡도: [목표 값] (-N%)
+- 함수 평균 길이: [N줄] (-N%)
+- 최대 중첩 깊이: [N단계] (-N%)
+
+### 중복
+- 중복률: [N%] (-N%)
+- 중복 코드 블록 수: [N개] (-N%)
+- 중복 라인 수: [N줄] (-N%)
+
+### 타입 안정성
+- any 사용 횟수: [N개] (-N%)
+- 명시적 타입 비율: [N%] (+N%)
+- 타입 에러 가능성: [Low]
+
+### 테스트
+- 테스트 커버리지: [N%] (+N%)
+- 단위 테스트 수: [N개] (+N%)
+- 통합 테스트 수: [N개] (+N%)
+
+### 성능
+- 평균 응답 시간: [Nms] (-N%)
+- 메모리 사용량: [NMB] (-N%)
+- 번들 크기: [NKB] (-N%)
+
+## 측정 방법
+
+### 복잡도 측정
+```bash
+# ESLint complexity 규칙
+npx eslint --rule 'complexity: ["error", { max: 10 }]' src/
+
+# 또는 복잡도 분석 도구
+npx plato -r -d report src/
+```
+
+### 중복 측정
+```bash
+# jscpd 사용
+npx jscpd src/
+```
+
+### 타입 체크
+```bash
+# TypeScript 컴파일러
+npx tsc --noEmit
+
+# any 타입 검색
+grep -r "any" src/ | wc -l
+```
+
+### 테스트 커버리지
+```bash
+# Jest 커버리지
+npm test -- --coverage
+```
+
+### 성능 측정
+```bash
+# 빌드 크기
+npm run build --report
+
+# 런타임 성능
+# (프로파일러, 성능 테스트 도구 사용)
+```
+
+## 성공 기준
+
+| 메트릭 | 현재 | 목표 | 필수/선택 |
+|--------|------|------|----------|
+| 복잡도 | X | -20% | 필수 |
+| 중복률 | X | -30% | 필수 |
+| any 사용 | X | -50% | 필수 |
+| 테스트 커버리지 | X | +10% | 선택 |
+| 번들 크기 | X | 유지 | 필수 |
+| 응답 시간 | X | 유지 | 필수 |
+
+**최소 달성 기준:** 필수 항목 모두 목표 달성
+```
+
+</state_management>
+
+---
+
+<document_generation>
+
+## 계획 문서 병렬 생성
+
+사용자가 옵션을 선택하면 `.claude/refactor/00.[모듈명]/` 폴더에 3개 문서를 **병렬로** 생성합니다.
+
+### 병렬 생성 워크플로우
+
+```text
+1. 넘버링 결정: ls .claude/refactor/ → 다음 번호 자동 부여
+2. 폴더 생성: .claude/refactor/00.[모듈명]/
+3. document-writer 에이전트 3개 병렬 호출
+   - ANALYSIS.md (haiku)
+   - PLAN.md (sonnet)
+   - METRICS.md (haiku)
+4. 모든 에이전트 완료 대기
+5. 사용자에게 폴더 경로 안내
+6. /execute 스킬 즉시 호출 (확인 불필요)
+   - PLAN.md 기반 자동 구현 시작
+```
+
+### 에이전트 호출 예시
+
+```typescript
+// 옵션 선택 후 실행
+// 1. 넘버링 결정
+Bash("ls .claude/refactor/ | grep -E '^[0-9]+' | wc -l")
+const nextNumber = "00" // 결과 기반 계산
+const moduleName = "인증_모듈"
+const basePath = `.claude/refactor/${nextNumber}.${moduleName}`
+
+// 2. 폴더 생성
+Bash(`mkdir -p ${basePath}`)
+
+// 3. 3개 문서 병렬 생성
+Task({
+  subagent_type: 'document-writer',
+  model: 'haiku',
+  description: 'ANALYSIS.md 작성',
+  prompt: `
+    ${basePath}/ANALYSIS.md 생성:
+    - 현재 상태: ${파일_구조}, ${복잡도_분석}
+    - 문제점: ${우선순위별_문제점}
+    - 옵션 비교: ${모든_옵션}
+    - 선택된 옵션: 옵션 ${선택번호}
+  `
+})
+
+Task({
+  subagent_type: 'document-writer',
+  model: 'sonnet',
+  description: 'PLAN.md 작성',
+  prompt: `
+    ${basePath}/PLAN.md 생성:
+    - 단계별 계획: 1단계, 2단계, 3단계...
+    - 작업 체크리스트
+    - 롤백 가이드
+    - 검증 방법
+  `
+})
+
+Task({
+  subagent_type: 'document-writer',
+  model: 'haiku',
+  description: 'METRICS.md 작성',
+  prompt: `
+    ${basePath}/METRICS.md 생성:
+    - Before 메트릭: ${현재_측정값}
+    - After 목표: ${개선_목표치}
+    - 측정 방법
+    - 성공 기준
+  `
+})
+
+// → 3개 문서 병렬 생성으로 빠르게 계획 문서화
+```
+
+**모델 선택:**
+- PLAN.md는 복잡하므로 sonnet
+- 나머지는 haiku로 충분
+
 </document_generation>
+
+---
+
+<auto_implementation>
+
+## 자동 구현 시작
+
+계획 문서 생성 완료 후 **사용자 확인 없이** 즉시 구현을 시작합니다.
+
+### 워크플로우
+
+```text
+1. 계획 문서 병렬 생성 완료
+2. PLAN.md 존재 확인
+3. /execute 스킬 즉시 호출
+4. 1단계부터 순차 구현
+```
+
+### 구현 시작 패턴
+
+```typescript
+// 문서 생성 완료 후 즉시 실행
+Skill({
+  skill: 'execute',
+  args: `@.claude/refactor/${nextNumber}.${moduleName}/PLAN.md 1단계부터 구현`
+})
+```
+
+### 금지 사항
+
+```text
+❌ "구현을 시작할까요?" 물어보기
+❌ "어떤 방식으로 진행할까요?" 선택지 제시
+❌ 사용자 확인 대기
+```
+
+### 허용 사항
+
+```text
+✅ 문서 생성 완료 즉시 /execute 호출
+✅ PLAN.md 1단계부터 자동 시작
+✅ 구현 중 문제 발생 시에만 사용자 확인
+```
+
+</auto_implementation>
 
 ---
 
@@ -1091,10 +1429,13 @@ thought 7: 단계별 계획 및 추천안
 ✅ ARGUMENT 확인 (없으면 질문)
 ✅ @refactor-advisor 사용 여부 판단
 ✅ Sequential Thinking 최소 3단계
-✅ Task (Explore)로 코드 분석
+✅ Task (Explore)로 코드 분석 + 메트릭 수집
 ✅ 옵션 최소 2개, 권장 3개
 ✅ 각 옵션에 장단점 명시
 ✅ 영향 범위 및 예상 작업량 제시
+✅ 넘버링 자동 결정 (ls .claude/refactor/)
+✅ document-writer 에이전트 병렬 호출로 문서 생성
+✅ .claude/refactor/00.[모듈명]/ 폴더 구조 사용 (한글 설명)
 ✅ 기능 유지 원칙 강조
 ```
 
@@ -1102,13 +1443,14 @@ thought 7: 단계별 계획 및 추천안
 
 ```text
 ❌ ARGUMENT 없이 분석 시작
-❌ Edit 도구 사용 (코드 수정 금지)
+❌ Edit/Write 도구 직접 사용 (문서 작성은 document-writer 에이전트)
 ❌ Sequential Thinking 3단계 미만
 ❌ 옵션 1개만 제시
 ❌ 코드 분석 없이 추측으로 옵션 제시
-❌ 사용자 선택 없이 구현 시작
-❌ 기능 변경 포함
 ❌ 장단점 없이 옵션만 나열
+❌ 문서 작성 Y/N 질문 (자동 생성)
+❌ 문서 생성 후 "구현을 시작할까요?" 물어보기 (즉시 진행)
+❌ 기능 변경 포함
 ```
 
 </validation>
@@ -1149,9 +1491,16 @@ thought 7: 단계별 계획 및 추천안
 
 4. 사용자 선택: 1
 
-5. 문서 작성: Y
+5. document-writer 에이전트 3개 병렬 호출로 문서 생성
+   - .claude/refactor/00.auth_유틸/
+     ├── ANALYSIS.md
+     ├── PLAN.md
+     └── METRICS.md
 
-6. .claude/plans/refactor-auth.md 생성
+6. 구현 자동 시작:
+   Skill({ skill: 'execute' })
+   - PLAN.md 읽고 1단계부터 구현
+   - 확인 절차 없이 즉시 진행
 ```
 
 ### 예시 2: 중복 코드 제거
@@ -1178,7 +1527,10 @@ thought 7: 단계별 계획 및 추천안
    옵션 2: 새 유틸리티 모듈 생성
    옵션 3: 커스텀 훅 추출
 
-5. 선택 후 계획 문서 생성
+5. 선택 후 3개 문서 병렬 생성
+   - .claude/refactor/00.중복_제거/
+
+6. 구현 자동 시작 (확인 불필요)
 ```
 
 ### 예시 3: 구조 개선
@@ -1208,7 +1560,13 @@ thought 7: 단계별 계획 및 추천안
    옵션 2: 레이어 기반 재구성
    옵션 3: 기능별 도메인 분리
 
-5. 계획 문서 작성 (필수)
+5. document-writer 병렬 호출로 3개 문서 생성
+   - .claude/refactor/00.구조_개선/
+     ├── ANALYSIS.md (현재 구조, 의존성 그래프)
+     ├── PLAN.md (단계별 이동 계획)
+     └── METRICS.md (복잡도, 결합도 메트릭)
+
+6. 구현 자동 시작 (확인 불필요)
 ```
 
 </examples>

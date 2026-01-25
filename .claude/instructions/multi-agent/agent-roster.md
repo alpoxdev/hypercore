@@ -761,20 +761,20 @@ Phase 7: 커밋 (10-30초)
 - `.claude/agents/*.md` - 개별 에이전트 스펙 (20개 참고 자료)
 
 **각 에이전트별 상세 문서:**
-- `.claude/agents/planner.md`
-- `.claude/agents/analyst.md`
-- `.claude/agents/architect.md`
-- `.claude/agents/explore.md`
-- `.claude/agents/implementation-executor.md`
-- `.claude/agents/designer.md`
-- `.claude/agents/deployment-validator.md`
-- `.claude/agents/lint-fixer.md`
-- `.claude/agents/code-reviewer.md`
-- `.claude/agents/document-writer.md`
-- `.claude/agents/ko-to-en-translator.md`
-- `.claude/agents/git-operator.md`
-- `.claude/agents/dependency-manager.md`
-- `.claude/agents/refactor-advisor.md`
+- `.claude/agents/planning/planner.md`
+- `.claude/agents/planning/analyst.md`
+- `.claude/agents/planning/architect.md`
+- `.claude/agents/implementation/explore.md`
+- `.claude/agents/implementation/implementation-executor.md`
+- `.claude/agents/implementation/designer.md`
+- `.claude/agents/quality/deployment-validator.md`
+- `.claude/agents/quality/lint-fixer.md`
+- `.claude/agents/quality/code-reviewer.md`
+- `.claude/agents/documentation/document-writer.md`
+- `.claude/agents/documentation/ko-to-en-translator.md`
+- `.claude/agents/operations/git-operator.md`
+- `.claude/agents/operations/dependency-manager.md`
+- `.claude/agents/quality/refactor-advisor.md`
 
 ---
 

@@ -537,17 +537,18 @@ Task(subagent_type="ko-to-en-translator", model="haiku",
 
 ### 문서화 폴더 구조
 
-세션 시작 시 `.claude/ralph/{timestamp}/` 폴더 생성:
+세션 시작 시 `.claude/ralph/00.[작업명]/` 폴더 생성:
 
 ```
-.claude/ralph/2026-01-23_14-30/
+.claude/ralph/00.사용자_인증_구현/
 ├── TASKS.md          # 작업 체크리스트
 ├── PROCESS.md        # 진행 단계 및 의사결정
 ├── VERIFICATION.md   # 검증 결과 기록
 └── NOTES.md          # 추가 메모
 ```
 
-**폴더명 형식:** `YYYY-MM-DD_HH-MM`
+**폴더명 형식:** `00.[작업명]` (넘버링 + 한글 설명, 언더스코어로 구분)
+**넘버링:** 기존 ralph 폴더 목록 조회 → 다음 번호 자동 부여 (00, 01, 02...)
 
 ### 문서 역할
 
@@ -680,7 +681,7 @@ Context compaction 후 세션 재개 시:
 
 ```text
 1. pwd 실행 → 작업 디렉토리 확인
-2. ls .claude/ralph/ → 최신 세션 폴더 식별
+2. ls .claude/ralph/ → 최신 세션 폴더 식별 (가장 큰 번호)
 3. TASKS.md 읽기 → 요구사항 및 진행 상태 파악
 4. PROCESS.md 읽기 → 현재 Phase 및 다음 단계 확인
 5. VERIFICATION.md 읽기 → 검증 결과 확인
@@ -700,12 +701,13 @@ Context compaction 후 세션 재개 시:
 
 ```text
 1. 원본 작업 요구사항 분석
-2. .claude/ralph/{timestamp}/ 폴더 생성
-3. TASKS.md 작성 (체크리스트)
-4. PROCESS.md 작성 (Phase 1 시작 기록)
-5. 구현 실행 (병렬/백그라운드 활용)
-6. 각 요구사항 완료 시 TASKS.md 업데이트
-7. 주요 의사결정 시 PROCESS.md 기록
+2. 넘버링 결정 (ls .claude/ralph/)
+3. .claude/ralph/00.[작업명]/ 폴더 생성 (한글 설명)
+4. TASKS.md 작성 (체크리스트)
+5. PROCESS.md 작성 (Phase 1 시작 기록)
+6. 구현 실행 (병렬/백그라운드 활용)
+7. 각 요구사항 완료 시 TASKS.md 업데이트
+8. 주요 의사결정 시 PROCESS.md 기록
 ```
 
 **병렬 에이전트 활용 예시:**
@@ -1045,16 +1047,17 @@ Task(subagent_type="code-reviewer", model="opus", ...)
 [RALPH MODE ON - 작업 시작]
 ```
 1. 원본 작업(`{{PROMPT}}`) 읽기
-2. `.claude/ralph/{YYYY-MM-DD_HH-MM}/` 폴더 생성
-3. TASKS.md, PROCESS.md, VERIFICATION.md 초기화
-4. 요구사항 분석 후 TASKS.md에 체크리스트 작성
+2. 넘버링 결정 (ls .claude/ralph/ → 다음 번호 자동 부여)
+3. `.claude/ralph/00.[작업명]/` 폴더 생성 (한글 설명)
+4. TASKS.md, PROCESS.md, VERIFICATION.md 초기화
+5. 요구사항 분석 후 TASKS.md에 체크리스트 작성
 
 **Context Compaction 후 재개:**
 ```
 [RALPH MODE ON - 작업 재개]
 ```
 1. `pwd` → 작업 디렉토리 확인
-2. `ls .claude/ralph/` → 최신 세션 폴더 찾기
+2. `ls .claude/ralph/` → 최신 세션 폴더 찾기 (가장 큰 번호)
 3. TASKS.md 읽기 → 요구사항 및 완료 상태
 4. PROCESS.md 읽기 → 현재 Phase 및 다음 단계
 5. VERIFICATION.md 읽기 → 검증 결과
