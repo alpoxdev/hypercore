@@ -1,4 +1,3 @@
-import prompts from 'prompts';
 import fs from 'fs-extra';
 import path from 'path';
 import { logger } from '../shared/logger.js';
@@ -7,13 +6,15 @@ import {
   copyMultipleTemplates,
   checkExistingFiles,
   listAvailableTemplates,
-  copySkills,
-  copyCommands,
-  copyAgents,
-  copyInstructions,
   checkAllExtrasExist,
-  checkExistingClaudeFiles,
+  installExtras,
 } from '../utils/copy/index.js';
+import type { InstallResult, ExtrasFlags } from '../features/extras/index.js';
+import {
+  promptTemplateSelection,
+  promptOverwrite,
+  promptExtrasSelection,
+} from '../shared/prompts/index.js';
 
 interface InitOptions {
   templates?: string[];
@@ -23,18 +24,6 @@ interface InitOptions {
   commands?: boolean;
   agents?: boolean;
   instructions?: boolean;
-}
-
-interface InstallResult {
-  files: number;
-  directories: number;
-}
-
-interface ExtrasFlags {
-  installSkills: boolean;
-  installCommands: boolean;
-  installAgents: boolean;
-  installInstructions: boolean;
 }
 
 const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
@@ -84,40 +73,13 @@ async function selectTemplates(
   options: InitOptions,
   availableTemplates: string[],
 ): Promise<string[]> {
-  let templates = options.templates || [];
+  const result = await promptTemplateSelection({
+    providedTemplates: options.templates,
+    availableTemplates,
+    templateDescriptions: TEMPLATE_DESCRIPTIONS,
+  });
 
-  if (templates.length === 0) {
-    const response = await prompts({
-      type: 'multiselect',
-      name: 'templates',
-      message: 'Select templates (space to select, enter to confirm):',
-      choices: availableTemplates.map((t) => ({
-        title: t,
-        description: TEMPLATE_DESCRIPTIONS[t] || '',
-        value: t,
-      })),
-      min: 1,
-      hint: '- Space to select. Return to submit',
-    });
-
-    if (!response.templates || response.templates.length === 0) {
-      logger.warn('Operation cancelled.');
-      process.exit(0);
-    }
-
-    templates = response.templates;
-  }
-
-  const invalidTemplates = templates.filter(
-    (t) => !availableTemplates.includes(t),
-  );
-  if (invalidTemplates.length > 0) {
-    logger.error(`Templates not found: ${invalidTemplates.join(', ')}`);
-    logger.info(`Available templates: ${availableTemplates.join(', ')}`);
-    process.exit(1);
-  }
-
-  return templates;
+  return result.templates;
 }
 
 /**
@@ -129,23 +91,7 @@ async function confirmOverwriteIfNeeded(
 ): Promise<void> {
   const existingFiles = await checkExistingFiles(targetDir);
 
-  if (existingFiles.length > 0 && !force) {
-    logger.warn('The following files/folders already exist:');
-    existingFiles.forEach((f) => logger.step(f));
-    logger.blank();
-
-    const response = await prompts({
-      type: 'confirm',
-      name: 'overwrite',
-      message: 'Overwrite existing files?',
-      initial: false,
-    });
-
-    if (!response.overwrite) {
-      logger.info('Operation cancelled.');
-      process.exit(0);
-    }
-  }
+  await promptOverwrite({ existingFiles, force });
 }
 
 /**
@@ -209,192 +155,16 @@ async function promptForExtrasInstallation(
   hasAgents: boolean,
   hasInstructions: boolean,
 ): Promise<ExtrasFlags> {
-  let installSkills = options.skills ?? false;
-  let installCommands = options.commands ?? false;
-  let installAgents = hasAgents;
-  let installInstructions = hasInstructions;
-
-  const noOptionsProvided =
-    options.skills === undefined &&
-    options.commands === undefined &&
-    options.agents === undefined &&
-    options.instructions === undefined;
-
-  if (
-    noOptionsProvided &&
-    (hasSkills || hasCommands || hasAgents || hasInstructions)
-  ) {
-    logger.blank();
-
-    if (hasSkills) {
-      const skillsResponse = await prompts({
-        type: 'confirm',
-        name: 'install',
-        message: 'Install skills to .claude/skills/?',
-        initial: false,
-      });
-      installSkills = skillsResponse.install ?? false;
-    }
-
-    if (hasCommands) {
-      const commandsResponse = await prompts({
-        type: 'confirm',
-        name: 'install',
-        message: 'Install commands to .claude/commands/?',
-        initial: false,
-      });
-      installCommands = commandsResponse.install ?? false;
-    }
-  }
-
-  return { installSkills, installCommands, installAgents, installInstructions };
-}
-
-/**
- * 스킬/커맨드/에이전트/인스트럭션 설치 (중복 처리 포함)
- */
-async function installExtrasWithDuplicateHandling(
-  templates: string[],
-  targetDir: string,
-  flags: ExtrasFlags,
-  hasSkills: boolean,
-  hasCommands: boolean,
-  hasAgents: boolean,
-  hasInstructions: boolean,
-  force: boolean,
-): Promise<InstallResult> {
-  let { installSkills, installCommands, installAgents, installInstructions } =
-    flags;
-  let totalFiles = 0;
-  let totalDirectories = 0;
-
-  if (
-    installSkills ||
-    installCommands ||
-    installAgents ||
-    installInstructions
-  ) {
-    const existingClaudeFiles = await checkExistingClaudeFiles(targetDir);
-    if (existingClaudeFiles.length > 0 && !force) {
-      logger.warn('The following .claude files/folders already exist:');
-      existingClaudeFiles.forEach((f) => logger.step(f));
-      logger.blank();
-
-      const response = await prompts({
-        type: 'confirm',
-        name: 'overwrite',
-        message: 'Overwrite existing .claude files?',
-        initial: false,
-      });
-
-      if (!response.overwrite) {
-        logger.info('Skipping extras installation.');
-        return { files: 0, directories: 0 };
-      }
-    }
-
-    if (installSkills && hasSkills) {
-      logger.blank();
-      logger.info('Installing skills...');
-      const skillsResult = await copySkills(templates, targetDir);
-
-      // 중복 스킬이 있으면 사용자에게 선택 프롬프트 표시
-      if (
-        skillsResult.duplicateSkills &&
-        skillsResult.duplicateSkills.length > 0
-      ) {
-        logger.blank();
-        logger.warn('The following skills are included in multiple templates:');
-        skillsResult.duplicateSkills.forEach(
-          ({ skill, templates: skillTemplates }) => {
-            logger.step(`${skill} (${skillTemplates.join(', ')})`);
-          },
-        );
-        logger.blank();
-
-        const response = await prompts({
-          type: 'select',
-          name: 'selectedTemplate',
-          message: "Which template's version should be used?",
-          choices: templates.map((t) => ({
-            title: t,
-            value: t,
-          })),
-        });
-
-        if (response.selectedTemplate) {
-          logger.info(
-            `Reinstalling skills with ${response.selectedTemplate} template...`,
-          );
-          const reinstallResult = await copySkills(
-            [response.selectedTemplate],
-            targetDir,
-          );
-          totalFiles += reinstallResult.files;
-          totalDirectories += reinstallResult.directories;
-          logger.success(
-            `Skills: ${reinstallResult.files} files, ${reinstallResult.directories} directories`,
-          );
-        } else {
-          logger.warn('No template selected. Using all templates.');
-          totalFiles += skillsResult.files;
-          totalDirectories += skillsResult.directories;
-          logger.success(
-            `Skills: ${skillsResult.files} files, ${skillsResult.directories} directories`,
-          );
-        }
-      } else {
-        totalFiles += skillsResult.files;
-        totalDirectories += skillsResult.directories;
-        logger.success(
-          `Skills: ${skillsResult.files} files, ${skillsResult.directories} directories`,
-        );
-      }
-    } else if (installSkills && !hasSkills) {
-      logger.warn('No skills found in selected templates.');
-    }
-
-    if (installCommands && hasCommands) {
-      logger.blank();
-      logger.info('Installing commands...');
-      const commandsResult = await copyCommands(templates, targetDir);
-      totalFiles += commandsResult.files;
-      totalDirectories += commandsResult.directories;
-      logger.success(
-        `Commands: ${commandsResult.files} files, ${commandsResult.directories} directories`,
-      );
-    } else if (installCommands && !hasCommands) {
-      logger.warn('No commands found in selected templates.');
-    }
-
-    if (installAgents && hasAgents) {
-      logger.blank();
-      logger.info('Installing agents...');
-      const agentsResult = await copyAgents(templates, targetDir);
-      totalFiles += agentsResult.files;
-      totalDirectories += agentsResult.directories;
-      logger.success(
-        `Agents: ${agentsResult.files} files, ${agentsResult.directories} directories`,
-      );
-    } else if (installAgents && !hasAgents) {
-      logger.warn('No agents found in selected templates.');
-    }
-
-    if (installInstructions && hasInstructions) {
-      logger.blank();
-      logger.info('Installing instructions...');
-      const instructionsResult = await copyInstructions(templates, targetDir);
-      totalFiles += instructionsResult.files;
-      totalDirectories += instructionsResult.directories;
-      logger.success(
-        `Instructions: ${instructionsResult.files} files, ${instructionsResult.directories} directories`,
-      );
-    } else if (installInstructions && !hasInstructions) {
-      logger.warn('No instructions found in selected templates.');
-    }
-  }
-
-  return { files: totalFiles, directories: totalDirectories };
+  return await promptExtrasSelection({
+    skills: options.skills,
+    commands: options.commands,
+    agents: options.agents,
+    instructions: options.instructions,
+    hasSkills,
+    hasCommands,
+    hasAgents,
+    hasInstructions,
+  });
 }
 
 /**
@@ -544,14 +314,11 @@ export const init = async (options: InitOptions): Promise<void> => {
   );
 
   // 8. 스킬/커맨드/에이전트/인스트럭션 설치
-  await installExtrasWithDuplicateHandling(
+  await installExtras(
     templates,
     targetDir,
     flags,
-    hasSkills,
-    hasCommands,
-    hasAgents,
-    hasInstructions,
+    { hasSkills, hasCommands, hasAgents, hasInstructions },
     options.force ?? false,
   );
 
