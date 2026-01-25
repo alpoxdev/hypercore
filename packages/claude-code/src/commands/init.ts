@@ -25,6 +25,18 @@ interface InitOptions {
   instructions?: boolean;
 }
 
+interface InstallResult {
+  files: number;
+  directories: number;
+}
+
+interface ExtrasFlags {
+  installSkills: boolean;
+  installCommands: boolean;
+  installAgents: boolean;
+  installInstructions: boolean;
+}
+
 const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
   'tanstack-start': 'TanStack Start + React 풀스택 프로젝트',
   hono: 'Hono 서버 프레임워크 프로젝트',
@@ -39,71 +51,9 @@ const CLAUDE_GENERATED_FOLDERS = [
 ];
 
 /**
- * .gitignore 파일에 Claude Code 생성 폴더를 추가
- * .gitignore가 없으면 생성, 있으면 기존 내용에 추가 (중복 방지)
+ * 대상 디렉토리 검증 (존재 여부, 쓰기 권한)
  */
-async function ensureGitignore(targetDir: string): Promise<void> {
-  const gitignorePath = path.join(targetDir, '.gitignore');
-  const sectionComment = '# Claude Code generated files';
-
-  let content = '';
-  let hasGitignore = false;
-
-  // 기존 .gitignore 읽기
-  try {
-    content = await fs.readFile(gitignorePath, 'utf-8');
-    hasGitignore = true;
-  } catch (error) {
-    // .gitignore 없음 → 새로 생성
-    content = '';
-  }
-
-  // 이미 Claude Code 섹션이 있는지 확인
-  if (content.includes(sectionComment)) {
-    logger.info('.gitignore already contains Claude Code section');
-    return;
-  }
-
-  // 추가할 패턴 목록 (중복 체크)
-  const linesToAdd: string[] = [];
-  const existingLines = content.split('\n').map((line) => line.trim());
-
-  for (const folder of CLAUDE_GENERATED_FOLDERS) {
-    if (!existingLines.includes(folder)) {
-      linesToAdd.push(folder);
-    }
-  }
-
-  if (linesToAdd.length === 0) {
-    logger.info('.gitignore already contains all Claude Code patterns');
-    return;
-  }
-
-  // 내용 추가
-  let newContent = content;
-  if (newContent && !newContent.endsWith('\n')) {
-    newContent += '\n';
-  }
-  if (newContent) {
-    newContent += '\n';
-  }
-  newContent += sectionComment + '\n';
-  newContent += linesToAdd.join('\n') + '\n';
-
-  // 파일 쓰기
-  await fs.writeFile(gitignorePath, newContent, 'utf-8');
-
-  if (hasGitignore) {
-    logger.success(`.gitignore updated with ${linesToAdd.length} patterns`);
-  } else {
-    logger.success(`.gitignore created with ${linesToAdd.length} patterns`);
-  }
-}
-
-export const init = async (options: InitOptions): Promise<void> => {
-  const targetDir = options.cwd || process.cwd();
-
-  // cwd 옵션 검증
+async function validateTargetDirectory(targetDir: string): Promise<void> {
   try {
     const stat = await fs.stat(targetDir);
     if (!stat.isDirectory()) {
@@ -119,21 +69,21 @@ export const init = async (options: InitOptions): Promise<void> => {
     process.exit(1);
   }
 
-  // 쓰기 권한 확인
   try {
     await fs.access(targetDir, fs.constants.W_OK);
   } catch {
     logger.error(`No write permission for: ${targetDir}`);
     process.exit(1);
   }
+}
 
-  const availableTemplates = await listAvailableTemplates();
-
-  if (availableTemplates.length === 0) {
-    logger.error('No templates found. Package may be corrupted.');
-    process.exit(1);
-  }
-
+/**
+ * 템플릿 선택 (CLI 인자 또는 프롬프트)
+ */
+async function selectTemplates(
+  options: InitOptions,
+  availableTemplates: string[],
+): Promise<string[]> {
   let templates = options.templates || [];
 
   if (templates.length === 0) {
@@ -167,9 +117,19 @@ export const init = async (options: InitOptions): Promise<void> => {
     process.exit(1);
   }
 
+  return templates;
+}
+
+/**
+ * 기존 파일 덮어쓰기 확인
+ */
+async function confirmOverwriteIfNeeded(
+  targetDir: string,
+  force: boolean,
+): Promise<void> {
   const existingFiles = await checkExistingFiles(targetDir);
 
-  if (existingFiles.length > 0 && !options.force) {
+  if (existingFiles.length > 0 && !force) {
     logger.warn('The following files/folders already exist:');
     existingFiles.forEach((f) => logger.step(f));
     logger.blank();
@@ -186,7 +146,15 @@ export const init = async (options: InitOptions): Promise<void> => {
       process.exit(0);
     }
   }
+}
 
+/**
+ * 템플릿 설치 (단일 또는 다중)
+ */
+async function installTemplates(
+  templates: string[],
+  targetDir: string,
+): Promise<InstallResult> {
   const isSingleTemplate = templates.length === 1;
   let totalFiles = 0;
   let totalDirectories = 0;
@@ -228,12 +196,21 @@ export const init = async (options: InitOptions): Promise<void> => {
   logger.blank();
   logger.success(`Total: ${totalFiles} files, ${totalDirectories} directories`);
 
-  const { hasSkills, hasCommands, hasAgents, hasInstructions } =
-    await checkAllExtrasExist(templates);
+  return { files: totalFiles, directories: totalDirectories };
+}
 
+/**
+ * 스킬/커맨드 설치 여부 프롬프트
+ */
+async function promptForExtrasInstallation(
+  options: InitOptions,
+  hasSkills: boolean,
+  hasCommands: boolean,
+  hasAgents: boolean,
+  hasInstructions: boolean,
+): Promise<ExtrasFlags> {
   let installSkills = options.skills ?? false;
   let installCommands = options.commands ?? false;
-  // agents와 instructions는 항상 필수 설치
   let installAgents = hasAgents;
   let installInstructions = hasInstructions;
 
@@ -270,6 +247,27 @@ export const init = async (options: InitOptions): Promise<void> => {
     }
   }
 
+  return { installSkills, installCommands, installAgents, installInstructions };
+}
+
+/**
+ * 스킬/커맨드/에이전트/인스트럭션 설치 (중복 처리 포함)
+ */
+async function installExtrasWithDuplicateHandling(
+  templates: string[],
+  targetDir: string,
+  flags: ExtrasFlags,
+  hasSkills: boolean,
+  hasCommands: boolean,
+  hasAgents: boolean,
+  hasInstructions: boolean,
+  force: boolean,
+): Promise<InstallResult> {
+  let { installSkills, installCommands, installAgents, installInstructions } =
+    flags;
+  let totalFiles = 0;
+  let totalDirectories = 0;
+
   if (
     installSkills ||
     installCommands ||
@@ -277,7 +275,7 @@ export const init = async (options: InitOptions): Promise<void> => {
     installInstructions
   ) {
     const existingClaudeFiles = await checkExistingClaudeFiles(targetDir);
-    if (existingClaudeFiles.length > 0 && !options.force) {
+    if (existingClaudeFiles.length > 0 && !force) {
       logger.warn('The following .claude files/folders already exist:');
       existingClaudeFiles.forEach((f) => logger.step(f));
       logger.blank();
@@ -291,10 +289,7 @@ export const init = async (options: InitOptions): Promise<void> => {
 
       if (!response.overwrite) {
         logger.info('Skipping extras installation.');
-        installSkills = false;
-        installCommands = false;
-        installAgents = false;
-        installInstructions = false;
+        return { files: 0, directories: 0 };
       }
     }
 
@@ -399,11 +394,28 @@ export const init = async (options: InitOptions): Promise<void> => {
     }
   }
 
+  return { files: totalFiles, directories: totalDirectories };
+}
+
+/**
+ * 설치 요약 출력
+ */
+function showInstallationSummary(
+  templates: string[],
+  flags: ExtrasFlags,
+  hasSkills: boolean,
+  hasCommands: boolean,
+  hasAgents: boolean,
+  hasInstructions: boolean,
+): void {
   logger.blank();
   logger.success('Claude Code documentation installed!');
   logger.blank();
   logger.info('Installed templates:');
   templates.forEach((t) => logger.step(t));
+
+  const { installSkills, installCommands, installAgents, installInstructions } =
+    flags;
 
   if (
     (installSkills && hasSkills) ||
@@ -432,8 +444,128 @@ export const init = async (options: InitOptions): Promise<void> => {
   logger.step('Read CLAUDE.md for project guidelines');
   logger.step('Explore docs/ for detailed documentation');
   logger.blank();
+}
 
-  // .gitignore에 Claude Code 생성 폴더 추가
+/**
+ * .gitignore 파일에 Claude Code 생성 폴더를 추가
+ * .gitignore가 없으면 생성, 있으면 기존 내용에 추가 (중복 방지)
+ */
+async function ensureGitignore(targetDir: string): Promise<void> {
+  const gitignorePath = path.join(targetDir, '.gitignore');
+  const sectionComment = '# Claude Code generated files';
+
+  let content = '';
+  let hasGitignore = false;
+
+  // 기존 .gitignore 읽기
+  try {
+    content = await fs.readFile(gitignorePath, 'utf-8');
+    hasGitignore = true;
+  } catch (error) {
+    // .gitignore 없음 → 새로 생성
+    content = '';
+  }
+
+  // 이미 Claude Code 섹션이 있는지 확인
+  if (content.includes(sectionComment)) {
+    logger.info('.gitignore already contains Claude Code section');
+    return;
+  }
+
+  // 추가할 패턴 목록 (중복 체크)
+  const linesToAdd: string[] = [];
+  const existingLines = content.split('\n').map((line) => line.trim());
+
+  for (const folder of CLAUDE_GENERATED_FOLDERS) {
+    if (!existingLines.includes(folder)) {
+      linesToAdd.push(folder);
+    }
+  }
+
+  if (linesToAdd.length === 0) {
+    logger.info('.gitignore already contains all Claude Code patterns');
+    return;
+  }
+
+  // 내용 추가
+  let newContent = content;
+  if (newContent && !newContent.endsWith('\n')) {
+    newContent += '\n';
+  }
+  if (newContent) {
+    newContent += '\n';
+  }
+  newContent += sectionComment + '\n';
+  newContent += linesToAdd.join('\n') + '\n';
+
+  // 파일 쓰기
+  await fs.writeFile(gitignorePath, newContent, 'utf-8');
+
+  if (hasGitignore) {
+    logger.success(`.gitignore updated with ${linesToAdd.length} patterns`);
+  } else {
+    logger.success(`.gitignore created with ${linesToAdd.length} patterns`);
+  }
+}
+
+export const init = async (options: InitOptions): Promise<void> => {
+  const targetDir = options.cwd || process.cwd();
+
+  // 1. 대상 디렉토리 검증
+  await validateTargetDirectory(targetDir);
+
+  // 2. 사용 가능한 템플릿 목록 확인
+  const availableTemplates = await listAvailableTemplates();
+  if (availableTemplates.length === 0) {
+    logger.error('No templates found. Package may be corrupted.');
+    process.exit(1);
+  }
+
+  // 3. 템플릿 선택
+  const templates = await selectTemplates(options, availableTemplates);
+
+  // 4. 기존 파일 덮어쓰기 확인
+  await confirmOverwriteIfNeeded(targetDir, options.force ?? false);
+
+  // 5. 템플릿 설치
+  await installTemplates(templates, targetDir);
+
+  // 6. 스킬/커맨드/에이전트/인스트럭션 존재 여부 확인
+  const { hasSkills, hasCommands, hasAgents, hasInstructions } =
+    await checkAllExtrasExist(templates);
+
+  // 7. 스킬/커맨드 설치 여부 프롬프트
+  const flags = await promptForExtrasInstallation(
+    options,
+    hasSkills,
+    hasCommands,
+    hasAgents,
+    hasInstructions,
+  );
+
+  // 8. 스킬/커맨드/에이전트/인스트럭션 설치
+  await installExtrasWithDuplicateHandling(
+    templates,
+    targetDir,
+    flags,
+    hasSkills,
+    hasCommands,
+    hasAgents,
+    hasInstructions,
+    options.force ?? false,
+  );
+
+  // 9. 설치 요약 출력
+  showInstallationSummary(
+    templates,
+    flags,
+    hasSkills,
+    hasCommands,
+    hasAgents,
+    hasInstructions,
+  );
+
+  // 10. .gitignore에 Claude Code 생성 폴더 추가
   try {
     await ensureGitignore(targetDir);
   } catch (error) {
