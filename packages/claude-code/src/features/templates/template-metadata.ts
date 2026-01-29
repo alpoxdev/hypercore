@@ -37,7 +37,7 @@ export const generateIndexClaudeMd = (templates: string[]): string => {
       return `### ${meta.name}
 - **용도:** ${meta.description}
 - **주요 스택:** ${meta.stack}
-- **가이드:** [docs/${template}/CLAUDE.md](docs/${template}/CLAUDE.md)`;
+- **가이드:** [.claude/docs/${template}/CLAUDE.md](.claude/docs/${template}/CLAUDE.md)`;
     })
     .join('\n\n');
 

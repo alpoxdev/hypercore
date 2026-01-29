@@ -29,9 +29,9 @@ export const copySingleTemplate = async (
     counter.files++;
   }
 
-  // docs/ → 루트/docs/ (기존 폴더 삭제 후 복사)
+  // docs/ → .claude/docs/ (기존 폴더 삭제 후 복사)
   const docsSrc = path.join(templatePath, 'docs');
-  const docsDest = path.join(targetDir, 'docs');
+  const docsDest = path.join(targetDir, '.claude', 'docs');
   if (await fs.pathExists(docsSrc)) {
     // 기존 docs 폴더 삭제
     if (await fs.pathExists(docsDest)) {
@@ -44,7 +44,7 @@ export const copySingleTemplate = async (
 };
 
 /**
- * 다중 템플릿 복사 (각 템플릿 폴더 전체 → 루트/docs/템플릿명/)
+ * 다중 템플릿 복사 (각 템플릿 폴더 전체 → .claude/docs/템플릿명/)
  * 기존 docs 폴더는 삭제 후 새로 복사
  * 루트 CLAUDE.md는 각 템플릿의 CLAUDE.md를 인덱싱
  */
@@ -56,7 +56,7 @@ export const copyMultipleTemplates = async (
   const counter = { files: 0, directories: 0 };
 
   // 기존 docs 폴더 삭제
-  const docsDir = path.join(targetDir, 'docs');
+  const docsDir = path.join(targetDir, '.claude', 'docs');
   if (await fs.pathExists(docsDir)) {
     await fs.remove(docsDir);
   }
@@ -68,10 +68,10 @@ export const copyMultipleTemplates = async (
       throw new Error(`Template "${template}" not found at ${templatePath}`);
     }
 
-    // 템플릿 폴더 전체 → docs/템플릿명/
+    // 템플릿 폴더 전체 → .claude/docs/템플릿명/
     await copyRecursive(
       templatePath,
-      path.join(targetDir, 'docs', template),
+      path.join(targetDir, '.claude', 'docs', template),
       counter,
     );
   }
