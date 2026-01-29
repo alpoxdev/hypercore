@@ -11,13 +11,73 @@ user-invocable: true
 @../../instructions/validation/forbidden-patterns.md
 @../../instructions/validation/required-behaviors.md
 
-# Ralph Skill
+# Ralph Skill - Self-Referential Infinite Loop
 
-**[RALPH MODE ON - 반복 {{ITERATION}}/{{MAX}}]**
+**[RALPH MODE ON - ITERATION {{ITERATION}}]**
 
-작업 미완료 시 자동으로 재실행되는 반복 루프. 이전 시도에서 완료 약속(`<promise>`)을 출력하지 않았으므로 작업을 계속 진행하세요.
+---
 
-> 💡 **상태 메시지:** 실행 시작, 반복, 완료 시점마다 한국어 상태 메시지 출력
+<quick_reference>
+
+## 빠른 참조 (Ralph 핵심)
+
+### Ralph = 무한 루프 스킬
+
+```typescript
+while (true) {
+  // Phase 1: 작업 실행
+  구현()
+
+  // Phase 2: 자동 검증
+  if (!검증통과()) {
+    ITERATION++
+    continue  // ← 즉시 다음 반복
+  }
+
+  // Phase 3: Planner 검증
+  if (!플래너승인()) {
+    ITERATION++
+    continue  // ← 즉시 다음 반복
+  }
+
+  // Phase 4: 완료
+  <promise>출력()
+  break  // ← 유일한 탈출구
+}
+```
+
+### 3가지 핵심 규칙
+
+| # | 규칙 | 설명 |
+|---|------|------|
+| 1 | **무한 반복** | Phase 4 도달까지 자동 재시도. 수동 중단 불가. |
+| 2 | **증거 기반** | 매 반복마다 **새로운** 검증 실행. 이전 결과 재사용 금지. |
+| 3 | **Planner 필수** | Phase 3 우회 불가. 승인 없이 `<promise>` 출력 시 즉시 실패. |
+
+### 루프 종료 유일 조건
+
+```
+✅ Phase 1: 모든 요구사항 100% 완료
+✅ Phase 2: /pre-deploy (새로 실행) + TaskList (새로 조회) 통과
+✅ Phase 3: Planner (새로 생성) 승인
+✅ Phase 4: <promise> 출력
+→ 루프 종료
+```
+
+**하나라도 실패 → ITERATION++ → Phase 1로 복귀**
+
+### 상태 문서 (`.claude/ralph/{{SESSION}}/`)
+
+| 파일 | 역할 | 업데이트 시점 |
+|------|------|--------------|
+| **ITERATION.md** | 반복 히스토리 추적 | 매 반복 끝 |
+| **VERIFICATION.md** | 검증 결과 기록 | 매 검증 실행 시 |
+| **TASKS.md** | 요구사항 체크리스트 | 요구사항 완료 시 |
+| **PROCESS.md** | Phase 진행 상황 | Phase 전환 시 |
+
+**문서 없이는 루프 지속 불가.**
+
+</quick_reference>
 
 ---
 
@@ -37,56 +97,184 @@ user-invocable: true
 
 ---
 
-<completion_protocol>
+<loop_mechanism>
 
-## 완료 프로토콜 (절대 규칙)
+## 무한 루프 메커니즘 (Iron Law)
+
+### 루프 진입 조건
+`/ralph` 스킬 호출 시 즉시 진입. 세션 종료 또는 `<promise>` 출력까지 계속.
+
+### 루프 종료 조건 (AND 조건)
 
 **`<promise>{{PROMISE}}</promise>`를 출력하는 유일한 조건:**
 
 | # | 단계 | 검증 방법 | 통과 기준 |
 |---|------|----------|----------|
 | 1 | 작업 완료 확인 | 원본 요구사항 체크리스트 | 100% 충족 |
-| 2 | 코드 검증 | `/pre-deploy` 스킬 실행 | typecheck/lint/build 모두 통과 |
-| 3 | TODO 확인 | TaskList 조회 | pending/in_progress = 0 |
-| 4 | 플래너 검증 | Planner 에이전트 호출 + 승인 대기 | "승인" 응답 |
+| 2 | 코드 검증 | **새로 실행한** `/pre-deploy` 결과 | typecheck/lint/build 모두 통과 |
+| 3 | TODO 확인 | **새로 실행한** TaskList 조회 | pending/in_progress = 0 |
+| 4 | 플래너 검증 | **새로 생성한** Planner 에이전트 호출 | "승인" 응답 |
+| 5 | 상태 정리 | `.claude/ralph/` 상태 문서 최종 업데이트 | 완료 시각 기록 |
 
-**모든 4단계 통과 후에만 `<promise>` 출력. 하나라도 실패 시 작업 계속.**
+**모든 5단계 통과 후에만 `<promise>` 출력. 하나라도 실패 시 루프 재개.**
+
+### 루프 재개 트리거
+
+다음 상황에서 **즉시** 루프 재개:
+- 검증 실패 (typecheck/lint/build 중 하나라도 실패)
+- TODO 존재 (pending/in_progress > 0)
+- Planner 거절 (추가 작업 요청)
+- 추측성 표현 발견 ("아마도", "probably", "should")
+
+**재개 시 메시지:**
+```
+[RALPH MODE ON - 검증 실패, 재시도 {{ITERATION}}]
+```
+
+</loop_mechanism>
+
+---
+
+<completion_protocol>
+
+## 완료 프로토콜 (절대 규칙)
+
+### 증거 기반 검증 (Fresh Evidence Only)
+
+**금지:** 이전 검증 결과 재사용, 추측, 가정
+**필수:** 매 반복마다 새로운 검증 실행
+
+```typescript
+// ❌ 잘못된 완료 판단
+"이전에 /pre-deploy 통과했으니 완료"
+"아마 작동할 것 같다"
+
+// ✅ 올바른 완료 판단
+Skill("pre-deploy")  // 새로 실행
+TaskList()           // 새로 조회
+Task(subagent_type="planner", model="opus", ...)  // 새로 검증
+```
+
+### 상태 문서 정리
+
+완료 직전 `.claude/ralph/{{SESSION}}/` 최종 업데이트:
+- TASKS.md: 모든 체크박스 완료
+- PROCESS.md: 완료 시각, 총 소요 시간
+- VERIFICATION.md: 최종 검증 결과
+
+**상태 파일은 유지 (삭제 금지). 세션 히스토리로 활용.**
 
 </completion_protocol>
 
 ---
 
+<loop_flow>
+
+## 루프 플로우 (무한 반복 구조)
+
+```
+[시작] → Iteration 1
+    ↓
+┌───────────────────────────────────┐
+│  Phase 1: 작업 실행               │
+│  - 요구사항 구현                   │
+│  - 에이전트 위임 (병렬)           │
+│  - TASKS.md 업데이트              │
+└───────────────┬───────────────────┘
+                ↓
+┌───────────────────────────────────┐
+│  Phase 2: 자동 검증               │
+│  - /pre-deploy (새로 실행)        │
+│  - TaskList (새로 조회)           │
+│  - VERIFICATION.md 업데이트       │
+└───────┬───────────────────────────┘
+        ↓
+    ┌─[실패]─→ ITERATION.md 기록 → Iteration N+1 (Phase 1로 복귀) ─┐
+    │                                                               │
+    ↓[통과]                                                         │
+┌───────────────────────────────────┐                              │
+│  Phase 3: Planner 검증            │                              │
+│  - Planner 에이전트 (새로 생성)   │                              │
+│  - 승인/거절 판단                 │                              │
+│  - VERIFICATION.md 업데이트       │                              │
+└───────┬───────────────────────────┘                              │
+        ↓                                                           │
+    ┌─[거절]─→ ITERATION.md 기록 → Iteration N+1 (Phase 1로 복귀) ─┤
+    │                                                               │
+    ↓[승인]                                                         │
+┌───────────────────────────────────┐                              │
+│  Phase 4: 완료 출력               │                              │
+│  - ITERATION.md 최종 업데이트     │                              │
+│  - <promise> 출력                 │                              │
+└───────────────┬───────────────────┘                              │
+                ↓                                                   │
+            [종료]                                                  │
+                                                                    │
+루프 재개 트리거 (즉시 다음 반복): ←───────────────────────────────┘
+- Phase 2 실패 (typecheck/lint/build)
+- TODO 존재 (pending/in_progress > 0)
+- Phase 3 거절 (Planner 추가 작업 요청)
+- 추측성 표현 발견
+```
+
+**핵심 원리:**
+- 루프는 **자동으로** 재개 (수동 개입 불필요)
+- Phase 4 도달 전까지 **무한 반복**
+- 각 반복은 **독립적인 검증** 실행 (이전 결과 재사용 금지)
+
+</loop_flow>
+
+---
+
 <forbidden>
 
-## 금지 사항 (조기 탈출 방지)
+## 금지 사항 (루프 탈출 방지)
 
-| 조기 탈출 패턴 | 설명 | 대신 할 것 |
+### 조기 탈출 패턴 (절대 금지)
+
+| 조기 탈출 패턴 | 설명 | 올바른 행동 |
 |---------------|------|-----------|
-| ❌ **추측 기반 완료** | "아마 완료된 것 같다" | `/pre-deploy` 실행 |
-| ❌ **부분 검증** | `/pre-deploy` 스킵 | 4단계 모두 실행 |
+| ❌ **추측 기반 완료** | "아마 완료된 것 같다" | 새로 `/pre-deploy` 실행 |
+| ❌ **이전 검증 재사용** | "전에 통과했으니 완료" | 매 반복마다 새로 검증 |
+| ❌ **부분 검증** | `/pre-deploy` 스킵 | 5단계 모두 실행 |
 | ❌ **플래너 스킵** | 검증 없이 `<promise>` 출력 | Planner 호출 필수 |
 | ❌ **만족감 표현** | "잘 작동하네요" | 증거 기반 검증 |
 | ❌ **범위 축소** | "이 정도면 충분" | 원본 요구사항 100% |
 | ❌ **테스트 삭제/수정** | 실패 테스트 제거 | 코드 수정으로 통과 |
 | ❌ **에이전트 미활용** | 모든 작업 혼자 수행 | 적극적으로 에이전트 위임 |
+| ❌ **루프 강제 종료** | "여기서 멈춘다" | Phase 4 도달까지 계속 |
 
-**STOP 조건:** 다음 표현 사용 시 즉시 중단하고 검증 실행
+### STOP 신호 (즉시 검증 실행)
+
+다음 표현 사용 시 **즉시 중단하고 새로운 검증 실행:**
 
 ```text
 ❌ "~해야 한다" "probably" "should" "seems to"
 ❌ "아마도" "~것 같다" "대부분" "거의"
 ❌ "이 정도면" "충분히" "~만 하면 됨"
+❌ "전에 통과했으니" "이전 검증 결과"
+❌ "루프 종료" "여기서 멈춘다"
 ```
 
-**대신 사용:**
+### 대신 사용해야 할 표현
 
 ```text
-✅ "Skill('pre-deploy') 실행"
-✅ "/pre-deploy 결과 확인"
-✅ "Planner 검증 요청"
-✅ "Task(subagent_type='executor', ...) 실행"
-✅ "여러 에이전트 병렬 호출"
+✅ "Skill('pre-deploy') 새로 실행"
+✅ "/pre-deploy 결과 읽기: cat .claude/ralph/.../VERIFICATION.md"
+✅ "TaskList() 새로 조회"
+✅ "Task(subagent_type='planner', model='opus', ...) 새로 생성"
+✅ "ITERATION.md 업데이트 후 다음 반복 시작"
 ```
+
+### 루프 계속 조건
+
+**루프는 다음 상황에서 자동 계속:**
+- Phase 2 실패 → Iteration N+1 (Phase 1로)
+- TODO 남음 → Iteration N+1 (Phase 1로)
+- Planner 거절 → Iteration N+1 (Phase 1로)
+- 추측 발견 → 즉시 검증 실행
+
+**루프 종료 유일 조건:** Phase 4에서 `<promise>` 출력
 
 </forbidden>
 
@@ -533,22 +721,61 @@ Task(subagent_type="ko-to-en-translator", model="haiku",
 
 <state_management>
 
-## 상태 관리 (Context Compaction 대비)
+## 상태 관리 (루프 지속성 보장)
 
 ### 문서화 폴더 구조
 
-세션 시작 시 `.claude/ralph/00.[작업명]/` 폴더 생성:
+**필수:** 세션 시작 시 `.claude/ralph/{{YYMMDD}}-{{N}}-{{작업명}}/` 폴더 생성
 
 ```
-.claude/ralph/00.사용자_인증_구현/
+.claude/ralph/260129-01-사용자_인증_구현/
 ├── TASKS.md          # 작업 체크리스트
 ├── PROCESS.md        # 진행 단계 및 의사결정
-├── VERIFICATION.md   # 검증 결과 기록
+├── VERIFICATION.md   # 검증 결과 기록 (매 반복마다 업데이트)
+├── ITERATION.md      # 반복 히스토리 (매 루프마다 추가)
 └── NOTES.md          # 추가 메모
 ```
 
-**폴더명 형식:** `00.[작업명]` (넘버링 + 한글 설명, 언더스코어로 구분)
-**넘버링:** 기존 ralph 폴더 목록 조회 → 다음 번호 자동 부여 (00, 01, 02...)
+**폴더명 형식:** `YYMMDD-N-작업명` (날짜 + 시퀀스 + 한글 설명)
+- 날짜: 오늘 날짜 (YYMMDD)
+- 시퀀스: 같은 날 여러 세션 시 증가 (01, 02, 03...)
+- 작업명: 한글 설명 (언더스코어로 구분)
+
+**생성 시점:** Ralph 루프 진입 즉시 (첫 반복 시작 전)
+
+### 루프 추적 파일: ITERATION.md
+
+**목적:** 매 반복의 결과를 기록하여 무한 루프 진행 상황 추적
+
+```markdown
+# Iteration History
+
+## Iteration 1 - 2026-01-29 14:30:15
+**Phase:** Phase 1 (작업 실행)
+**완료:** 요구사항 1, 2
+**미완료:** 요구사항 3
+**다음 액션:** 요구사항 3 구현
+
+## Iteration 2 - 2026-01-29 14:45:22
+**Phase:** Phase 2 (검증)
+**완료:** /pre-deploy 통과
+**미완료:** TODO 1개 남음
+**다음 액션:** TODO 완료
+
+## Iteration 3 - 2026-01-29 15:00:10
+**Phase:** Phase 3 (Planner 검증)
+**완료:** /pre-deploy, TODO 0개
+**미완료:** Planner 거절 (성능 개선 필요)
+**다음 액션:** N+1 쿼리 수정 후 재검증
+
+## Iteration 4 - 2026-01-29 15:20:33
+**Phase:** Phase 4 (완료)
+**완료:** 모든 검증 통과
+**Planner 응답:** "승인, 완료"
+**다음 액션:** <promise> 출력
+```
+
+**업데이트 시점:** 매 반복의 끝 (다음 반복 시작 전)
 
 ### 문서 역할
 
@@ -1038,35 +1265,65 @@ Task(subagent_type="code-reviewer", model="opus", ...)
 
 <instructions>
 
-## 작업 지침
+## 작업 지침 (Loop-First Approach)
 
-### 시작 시
+### 루프 진입 (첫 실행)
 
-**첫 실행:**
 ```
-[RALPH MODE ON - 작업 시작]
+[RALPH MODE ON - ITERATION 1]
 ```
+
+**즉시 실행 (순차):**
 1. 원본 작업(`{{PROMPT}}`) 읽기
-2. 넘버링 결정 (ls .claude/ralph/ → 다음 번호 자동 부여)
-3. `.claude/ralph/00.[작업명]/` 폴더 생성 (한글 설명)
-4. TASKS.md, PROCESS.md, VERIFICATION.md 초기화
-5. 요구사항 분석 후 TASKS.md에 체크리스트 작성
+2. 세션 폴더 생성: `.claude/ralph/{{YYMMDD}}-{{N}}-{{작업명}}/`
+   - `ls .claude/ralph/` → 오늘 날짜 폴더 찾기 → 다음 시퀀스 결정
+3. 상태 문서 초기화 (병렬):
+   ```typescript
+   Task(subagent_type="document-writer", model="haiku",
+        prompt="TASKS.md 생성: 요구사항 체크리스트")
+   Task(subagent_type="document-writer", model="haiku",
+        prompt="PROCESS.md 생성: Phase 1 시작 기록")
+   Task(subagent_type="document-writer", model="haiku",
+        prompt="VERIFICATION.md 생성: 초기 상태")
+   Task(subagent_type="document-writer", model="haiku",
+        prompt="ITERATION.md 생성: Iteration 1 시작")
+   ```
+4. Phase 1 시작 (작업 실행)
 
-**Context Compaction 후 재개:**
+### 루프 재개 (다음 반복)
+
 ```
-[RALPH MODE ON - 작업 재개]
+[RALPH MODE ON - ITERATION {{N}}]
 ```
+
+**즉시 실행 (순차):**
+1. ITERATION.md 읽기 → 이전 반복 결과 확인
+2. VERIFICATION.md 읽기 → 마지막 검증 결과
+3. TASKS.md 읽기 → 미완료 항목 확인
+4. 실패 원인 파악 후 다음 액션 결정
+5. ITERATION.md 업데이트 (새 반복 시작 기록)
+6. 작업 계속
+
+### Context Compaction 후 복구
+
+```
+[RALPH MODE ON - ITERATION {{N}} (재개)]
+```
+
+**복구 프로토콜 (순차):**
 1. `pwd` → 작업 디렉토리 확인
-2. `ls .claude/ralph/` → 최신 세션 폴더 찾기 (가장 큰 번호)
-3. TASKS.md 읽기 → 요구사항 및 완료 상태
-4. PROCESS.md 읽기 → 현재 Phase 및 다음 단계
-5. VERIFICATION.md 읽기 → 검증 결과
-6. `git log --oneline -10` → 최근 작업 확인
-7. 중단 지점부터 계속
+2. `ls -lt .claude/ralph/` → 최신 세션 폴더 찾기 (날짜순 정렬)
+3. `cat .claude/ralph/{{SESSION}}/ITERATION.md` → 반복 히스토리 확인
+4. `cat .claude/ralph/{{SESSION}}/VERIFICATION.md` → 마지막 검증 결과
+5. `cat .claude/ralph/{{SESSION}}/TASKS.md` → 미완료 항목
+6. `git log --oneline -10` → 최근 커밋
+7. 현재 Iteration 번호 식별 후 루프 재개
 
-### 실행 중
+### 루프 실행 (각 반복마다)
 
-**작업 실행:**
+**Phase 진행 (순차):**
+
+**Phase 1: 작업 실행**
 1. 병렬 실행 최대 활용 (독립 작업 동시 처리)
 2. 백그라운드 실행 적극 사용 (빌드/테스트)
 3. **에이전트 적극 위임 (혼자 하지 말 것)**
@@ -1074,48 +1331,144 @@ Task(subagent_type="code-reviewer", model="opus", ...)
    - 전문 지식 필요 → 도메인 에이전트 활용
    - 여러 작업 동시 → 병렬 에이전트 실행
    - 복잡도에 맞는 모델 선택 (haiku/sonnet/opus)
+4. 요구사항 완료 시 → TASKS.md 체크박스 업데이트
+5. Phase 완료 → PROCESS.md 업데이트
 
-**문서화 (필수):**
-1. 요구사항 완료 시 → TASKS.md 체크박스 업데이트
-2. Phase 전환 시 → PROCESS.md 업데이트
-3. 검증 실행 시 → VERIFICATION.md 업데이트
-4. 주요 의사결정 시 → PROCESS.md 또는 NOTES.md 기록
-5. 블로커 발견 시 → NOTES.md에 상황 및 해결책 기록
+**Phase 2: 자동 검증**
+1. **새로 실행:** `Skill("pre-deploy")` (이전 결과 재사용 금지)
+2. **새로 조회:** `TaskList()` (pending/in_progress 확인)
+3. VERIFICATION.md 업데이트 (검증 결과 + 시각 기록)
+4. 실패 시 → ITERATION.md 업데이트 후 **즉시 다음 반복** (Phase 1로 복귀)
 
-**문서 작성/수정 스킬:**
-- 새 문서 작성: `Skill("docs-creator")`
-- 기존 문서 개선: `Skill("docs-refactor")`
+**Phase 3: Planner 검증**
+1. Phase 2 통과 확인 (typecheck/lint/build + TODO 0개)
+2. **새로 생성:** Planner 에이전트 (model="opus")
+3. 검증 요청 (원본 작업 + 수행 내용 + 검증 결과 포함)
+4. Planner 응답 대기
+5. VERIFICATION.md 업데이트 (Planner 응답 기록)
+6. 거절 시 → ITERATION.md 업데이트 후 **즉시 다음 반복** (Phase 1로 복귀)
 
-### 완료 판단
-
-1. **Phase 1:** 모든 요구사항 완료 확인 + TASKS.md/PROCESS.md 업데이트
-2. **Phase 2:** `/pre-deploy` 검증 + TODO 확인 + VERIFICATION.md 업데이트
-3. **Phase 3:** Planner 검증 + VERIFICATION.md 업데이트
-4. **Phase 4:** 최종 문서 업데이트 + **"[RALPH MODE - 작업 완료]"** 출력 + `<promise>{{PROMISE}}</promise>` 출력
-
-**4단계 순차 진행. 건너뛰기 절대 금지.**
-
-**완료 시 메시지:**
+**Phase 4: 완료 출력**
+1. Phase 1, 2, 3 모두 통과 확인
+2. ITERATION.md 최종 업데이트 (완료 시각, 총 반복 횟수)
+3. PROCESS.md 최종 업데이트 (완료 시각, 총 소요 시간)
+4. **완료 메시지 출력:**
 ```
-[RALPH MODE - 작업 완료]
+[RALPH MODE - 작업 완료 (총 {{N}}회 반복)]
 <promise>{{PROMISE}}</promise>
 ```
 
-### 실패 시
+**문서 작성 에이전트 활용:**
+- 새 문서 작성: `Task(subagent_type="document-writer", model="haiku", ...)`
+- 기존 문서 업데이트: `Task(subagent_type="document-writer", model="haiku", ...)`
+- 병렬 실행: 여러 문서 동시 업데이트 가능
+
+### 루프 재개 (검증 실패 시)
 
 ```
-[RALPH MODE ON - 검증 실패, 재시도]
+[RALPH MODE ON - ITERATION {{N+1}} (이전 검증 실패)]
 ```
-1. 검증 실패 → NOTES.md에 원인 기록
-2. 수정 작업 → PROCESS.md에 수정 내용 기록
-3. 재검증 → VERIFICATION.md 업데이트
-4. 작업이 진정으로 완료될 때까지 중단하지 말 것
 
-**반복 루프 진입 시 자동으로 "[RALPH MODE ON - 반복 {{ITERATION}}/{{MAX}}]" 메시지 출력**
+**즉시 실행:**
+1. ITERATION.md 읽기 → 이전 실패 원인 확인
+2. VERIFICATION.md 읽기 → 구체적 에러 확인
+3. NOTES.md 업데이트 → 실패 원인 및 해결 방향 기록
+4. Phase 1부터 재시작 (수정 작업)
+
+**루프 종료 조건:** Phase 4에서 `<promise>` 출력할 때만
+
+**절대 원칙:** 작업이 진정으로 완료될 때까지 루프 중단 불가
 
 </instructions>
 
 ---
 
+<core_loop_principle>
+
+## 핵심 루프 원칙 (절대 규칙)
+
+### 1. 무한 반복 = 완료 보장
+
+Ralph는 **무한 루프 기반 스킬**. 작업이 진정으로 완료될 때까지 자동 반복.
+
+```
+Ralph = while (!완료) { 작업 실행 → 검증 → 실패 시 재시도 }
+```
+
+### 2. `<promise>` 출력 = 유일한 탈출구
+
+루프 종료 조건:
+- Phase 1: 모든 요구사항 100% 완료 ✅
+- Phase 2: `/pre-deploy` + `TaskList` 통과 ✅
+- Phase 3: Planner 승인 ✅
+- Phase 4: `<promise>` 출력 → **루프 종료**
+
+**하나라도 실패 → 즉시 다음 반복**
+
+### 3. 매 반복 = 새로운 증거
+
+**금지:** 이전 검증 결과 재사용
+**필수:** 매 반복마다 새로운 검증 실행
+
+```typescript
+// ❌ 잘못된 패턴
+"전에 /pre-deploy 통과했으니 완료"
+
+// ✅ 올바른 패턴
+Skill("pre-deploy")  // Iteration N에서 새로 실행
+TaskList()           // Iteration N에서 새로 조회
+Task(subagent_type="planner", ...) // Iteration N에서 새로 생성
+```
+
+### 4. ITERATION.md = 루프 추적
+
+매 반복마다 ITERATION.md 업데이트:
+- 반복 번호 (1, 2, 3, ...)
+- 실패 원인 (typecheck 실패, TODO 남음, Planner 거절)
+- 다음 액션 (무엇을 수정할 것인가)
+
+**Context compaction 후에도 복구 가능.**
+
+### 5. 루프 재개 = 자동
+
+검증 실패 시 **자동으로** 다음 반복 시작:
+- Phase 2 실패 → Iteration N+1
+- Planner 거절 → Iteration N+1
+- 추측 표현 발견 → 즉시 검증
+
+**수동 중단 불가. Phase 4 도달까지 계속.**
+
+### 6. 문서 = 루프 지속성
+
+`.claude/ralph/{{SESSION}}/` 상태 문서:
+- TASKS.md: 요구사항 체크리스트
+- PROCESS.md: Phase 진행 상황
+- VERIFICATION.md: 매 반복 검증 결과
+- ITERATION.md: 반복 히스토리
+
+**문서 없이는 루프 지속 불가.**
+
+### 요약
+
+| 원칙 | 설명 |
+|------|------|
+| **무한 반복** | 완료까지 자동 재시도 |
+| **증거 기반** | 매 반복 새 검증 |
+| **Planner 필수** | Phase 3 우회 불가 |
+| **문서 추적** | ITERATION.md로 진행 기록 |
+| **자동 재개** | 실패 시 즉시 다음 반복 |
+
+</core_loop_principle>
+
+---
+
 **원본 작업:**
 {{PROMPT}}
+
+---
+
+**루프 시작:**
+
+[RALPH MODE ON - ITERATION 1]
+
+작업을 시작합니다. Phase 4에서 `<promise>` 출력까지 계속 진행합니다.
