@@ -3,7 +3,11 @@ import path from 'path';
 import { logger } from './logger.js';
 
 // Claude Code가 생성하는 폴더 목록
-const CLAUDE_GENERATED_FOLDERS = ['CLAUDE.md', 'docs/', '.claude/'];
+const CLAUDE_GENERATED_FOLDERS = [
+  '.claude/plan/',
+  '.claude/ralph/',
+  '.claude/refactor/',
+];
 
 /**
  * .gitignore 파일에 Claude Code 생성 폴더를 추가
