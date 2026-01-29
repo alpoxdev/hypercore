@@ -1,6 +1,6 @@
 # CLAUDE.md - Hono
 
-> Ultra-lightweight framework based on Web Standards
+> Web Standards 기반 초경량 프레임워크
 
 <instructions>
 @../../commands/git.md
@@ -15,12 +15,12 @@
 
 <forbidden>
 
-| Category | Prohibited |
-|----------|------------|
-| **Git** | `Generated with Claude Code`, `🤖`, `Co-Authored-By:`, multi-line commits, emojis |
-| **Prisma** | Auto-run `db push/migrate/generate`, arbitrary schema changes |
-| **API** | Manual validation/auth in handlers, throwing generic Error |
-| **Search** | grep, rg, find |
+| 분류 | 금지 |
+|------|------|
+| **Git** | `Generated with Claude Code`, `🤖`, `Co-Authored-By:`, 여러 줄, 이모지 |
+| **Prisma** | `db push/migrate/generate` 자동 실행, schema 임의 변경 |
+| **API** | handler 내 수동 검증/인증, 일반 Error throw |
+| **검색** | grep, rg, find |
 
 </forbidden>
 
@@ -28,15 +28,15 @@
 
 <required>
 
-| Task | Required |
-|------|----------|
-| Before work | Read related docs (API→hono, DB→prisma) |
-| Document search | serena mcp (document indexing/search, context length optimization) |
-| Code search | ast-grep |
-| Complex tasks | Sequential Thinking MCP |
-| 3+ file changes | gemini-review |
-| Validation | zValidator, HTTPException error handling |
-| Code writing | UTF-8, Korean comments per code block, Prisma Multi-File all elements commented |
+| 작업 | 필수 |
+|------|------|
+| 작업 전 | 관련 docs 읽기 (API→hono, DB→prisma) |
+| 문서 검색 | serena mcp (문서 인덱싱/검색, context 길이 최적화) |
+| 코드 검색 | ast-grep |
+| 복잡한 작업 | Sequential Thinking MCP |
+| 3+ 파일 수정 | gemini-review |
+| Validation | zValidator, HTTPException 에러 처리 |
+| 코드 작성 | UTF-8, 코드 묶음별 한글 주석, Prisma Multi-File 모든 요소 주석 |
 
 </required>
 
@@ -44,11 +44,11 @@
 
 <tech_stack>
 
-| Technology | Version | Notes |
-|------------|---------|-------|
-| Hono | Latest | - |
+| 기술 | 버전 | 주의 |
+|------|------|------|
+| Hono | 최신 | - |
 | TypeScript | 5.x | strict |
-| Prisma | **7.x** | `prisma-client`, output required |
+| Prisma | **7.x** | `prisma-client`, output 필수 |
 | Zod | **4.x** | `z.email()`, `z.url()` |
 
 </tech_stack>
@@ -70,23 +70,23 @@ src/
 └── types/
 ```
 
-Common logic → `src/services/`, route-specific logic → individual route files
+공통 로직 → `src/services/`, 라우트별 로직 → 각 route 파일
 </structure>
 
 ---
 
 <conventions>
 
-File naming: kebab-case
-TypeScript: const declarations, explicit return types, interface (objects)/type (unions), any→unknown
-Import order: external → internal → relative paths → types
+파일명: kebab-case
+TypeScript: const 선언, 명시적 return type, interface(객체)/type(유니온), any→unknown
+Import 순서: 외부 → 내부 → 상대경로 → type
 
 Prisma Multi-File:
 ```
 prisma/schema/
 ├── +base.prisma   # datasource, generator
-├── +enum.prisma   # enums
-└── [model].prisma # per-model files (Korean comments!)
+├── +enum.prisma   # enum
+└── [model].prisma # 모델별 (한글 주석!)
 ```
 
 </conventions>
@@ -96,7 +96,7 @@ prisma/schema/
 <quick_patterns>
 
 ```typescript
-// App + Error handler
+// App + 에러 핸들러
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 
@@ -145,7 +145,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
   await next()
 })
 
-// Usage
+// 사용
 app.use('/api/*', authMiddleware)
 ```
 

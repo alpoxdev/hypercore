@@ -1,19 +1,19 @@
 # CLAUDE.md - NPX CLI
 
-> Node.js CLI tool development
+> Node.js CLI 도구 개발
 
 <context>
 
-**Purpose:** Work instructions for Node.js CLI tool development
+**Purpose:** Node.js CLI 도구 개발을 위한 작업 지침
 
-**Scope:** Implement CLI packages deployable via npx
+**Scope:** npx 배포 가능한 CLI 패키지 구현
 
 **Key Features:**
-- Commander.js command system
-- Interactive prompts (prompts)
-- File system operations (fs-extra)
+- Commander.js 명령어 체계
+- 대화형 프롬프트 (prompts)
+- 파일 시스템 작업 (fs-extra)
 - TypeScript + ESM
-- Colored output (picocolors)
+- 색상 출력 (picocolors)
 
 </context>
 
@@ -31,13 +31,13 @@
 
 <forbidden>
 
-| Category | Prohibited Actions |
-|----------|-------------------|
-| **Git Commits** | AI markers (`Generated with Claude Code`, `🤖`, `Co-Authored-By:`), multi-line messages, emojis |
-| **Console Output** | Direct `console.log` usage (use logger functions) |
-| **File Operations** | Synchronous APIs (`fs.readFileSync`, etc.), hardcoded paths (use path.join) |
-| **Error Handling** | Missing `process.exit()`, async operations without try-catch |
-| **Code Search** | Bash grep/rg/find commands (use ast-grep or dedicated tools) |
+| 분류 | 금지 행동 |
+|------|----------|
+| **Git 커밋** | AI 표시 (`Generated with Claude Code`, `🤖`, `Co-Authored-By:`), 여러 줄 메시지, 이모지 |
+| **콘솔 출력** | `console.log` 직접 사용 (logger 함수 사용) |
+| **파일 작업** | 동기 API (`fs.readFileSync` 등), 하드코딩된 경로 (path.join 사용) |
+| **에러 처리** | `process.exit()` 누락, try-catch 없는 async 작업 |
+| **코드 검색** | Bash의 grep/rg/find 명령어 (ast-grep 또는 전용 도구 사용) |
 
 </forbidden>
 
@@ -45,16 +45,16 @@
 
 <required>
 
-| Task | Required Actions |
-|------|-----------------|
-| **Before Starting** | Read relevant docs (Commander → commander, Files → fs-extra) |
-| **Document Search** | Use serena mcp (document indexing/search, context length optimization) |
-| **Console Output** | Use logger functions (info/success/error/warn) |
-| **File Operations** | Async API (`fs-extra`), `path.join` for paths |
-| **Error Handling** | try-catch + `process.exit(1)`, clear error messages to users |
-| **Code Search** | Use ast-grep (search functions/classes/patterns) |
-| **Code Writing** | UTF-8 encoding, Korean comments per code block, const function declarations |
-| **Complex Tasks** | Sequential Thinking MCP (5+ step tasks) |
+| 작업 | 필수 행동 |
+|------|----------|
+| **작업 시작 전** | 관련 docs 읽기 (Commander → commander, 파일 → fs-extra) |
+| **문서 검색** | serena mcp 사용 (문서 인덱싱/검색, context 길이 최적화) |
+| **콘솔 출력** | logger 함수 사용 (info/success/error/warn) |
+| **파일 작업** | async API (`fs-extra`), `path.join`으로 경로 조합 |
+| **에러 처리** | try-catch + `process.exit(1)`, 사용자에게 명확한 에러 메시지 |
+| **코드 검색** | ast-grep 사용 (함수/클래스/패턴 검색) |
+| **코드 작성** | UTF-8 인코딩, 코드 묶음별 한글 주석, const 함수 선언 |
+| **복잡한 작업** | Sequential Thinking MCP (5+ 단계 작업) |
 
 </required>
 
@@ -62,8 +62,8 @@
 
 <tech_stack>
 
-| Technology | Version |
-|-----------|---------|
+| 기술 | 버전 |
+|------|------|
 | Node.js | >= 18 (ESM) |
 | TypeScript | 5.x (strict) |
 | Commander | 12.x |
@@ -79,13 +79,13 @@
 <structure>
 ```
 src/
-├── index.ts      # CLI entry point
-├── commands/     # Command modules
+├── index.ts      # CLI 진입점
+├── commands/     # 명령어 모듈
 ├── utils/        # logger, copy
-└── types/        # Types
+└── types/        # 타입
 
-templates/        # Copied during build
-dist/             # Build output
+templates/        # 빌드 시 복사
+dist/             # 빌드 결과물
 ```
 </structure>
 
@@ -93,9 +93,9 @@ dist/             # Build output
 
 <conventions>
 
-**File naming:** kebab-case
-**TypeScript:** const declarations, explicit return types, interface(objects)/type(unions), any→unknown
-**Import order:** external → internal → type
+**파일명:** kebab-case
+**TypeScript:** const 선언, 명시적 return type, interface(객체)/type(유니온), any→unknown
+**Import 순서:** 외부 → 내부 → type
 
 </conventions>
 
@@ -104,7 +104,7 @@ dist/             # Build output
 <quick_patterns>
 
 ```typescript
-// CLI entry point (index.ts)
+// CLI 진입점 (index.ts)
 #!/usr/bin/env node
 import { Command } from 'commander'
 import { logger } from './utils/logger.js'
@@ -143,7 +143,7 @@ export const logger = {
 ```
 
 ```typescript
-// File copying (utils/copy.ts)
+// 파일 복사 (utils/copy.ts)
 import path from 'node:path'
 import { copy, pathExists } from 'fs-extra'
 
@@ -163,7 +163,7 @@ export const copyTemplate = async (
 ```
 
 ```typescript
-// Interactive prompts
+// 대화형 프롬프트
 import prompts from 'prompts'
 
 const response = await prompts([
@@ -193,6 +193,6 @@ const response = await prompts([
 ```
 docs/
 ├── library/      # commander, fs-extra, prompts
-└── references/   # CLI patterns, best practices
+└── references/   # CLI 패턴, 베스트 프랙티스
 ```
 </docs_structure>

@@ -1,10 +1,10 @@
 # NPX CLI Patterns
 
-> Integrated CLI implementation patterns
+> CLI 구현 통합 패턴
 
 <patterns>
 
-## CLI Entry Point
+## CLI 진입점
 
 ```typescript
 #!/usr/bin/env node
@@ -35,7 +35,7 @@ program
 program.parse();
 ```
 
-## Logger Utility
+## Logger 유틸
 
 ```typescript
 import pc from 'picocolors';
@@ -49,7 +49,7 @@ export const logger = {
 };
 ```
 
-## Interactive Template Selection
+## 대화형 템플릿 선택
 
 ```typescript
 import prompts from 'prompts';
@@ -61,7 +61,7 @@ export const selectAndCopyTemplate = async (
   templatesDir: string,
   targetDir: string,
 ): Promise<void> => {
-  // 1. Select template
+  // 1. 템플릿 선택
   const { template } = await prompts({
     type: 'select',
     name: 'template',
@@ -77,7 +77,7 @@ export const selectAndCopyTemplate = async (
     process.exit(0);
   }
 
-  // 2. Confirm overwrite
+  // 2. 덮어쓰기 확인
   const targetExists = await fs.pathExists(targetDir);
   if (targetExists) {
     const { overwrite } = await prompts({
@@ -93,14 +93,14 @@ export const selectAndCopyTemplate = async (
     }
   }
 
-  // 3. Copy files
+  // 3. 복사
   const src = path.join(templatesDir, template);
   await fs.copy(src, targetDir, { overwrite: true });
   logger.success(`Template copied to ${targetDir}`);
 };
 ```
 
-## ESM __dirname Handling
+## ESM __dirname 처리
 
 ```typescript
 import { fileURLToPath } from 'url';
@@ -109,11 +109,11 @@ import path from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Templates directory path
+// 템플릿 디렉토리 경로
 const templatesDir = path.resolve(__dirname, '../templates');
 ```
 
-## Recursive Copy with Counter
+## 재귀 복사 with Counter
 
 ```typescript
 import fs from 'fs-extra';
@@ -147,7 +147,7 @@ export const copyRecursive = async (
 };
 ```
 
-## package.json Configuration
+## package.json 설정
 
 ```json
 {
@@ -167,7 +167,7 @@ export const copyRecursive = async (
 }
 ```
 
-## tsup Configuration
+## tsup 설정
 
 ```typescript
 import { defineConfig } from 'tsup';

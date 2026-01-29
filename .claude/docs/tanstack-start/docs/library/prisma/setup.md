@@ -1,6 +1,6 @@
-# Prisma - Installation and Setup
+# Prisma - 설치 및 설정
 
-## Installation
+## 설치
 
 ```bash
 yarn add @prisma/client@7
@@ -8,15 +8,15 @@ yarn add -D prisma@7
 npx prisma init
 ```
 
-## v6 → v7 Upgrade
+## v6 → v7 업그레이드
 
 ```prisma
-// v6 (old)
+// v6 (이전)
 generator client {
   provider = "prisma-client-js"
 }
 
-// v7 (required)
+// v7 (필수)
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -34,7 +34,7 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({ log: ['query'
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 ```
 
-## TanStack Start Integration
+## TanStack Start 연동
 
 ```typescript
 import { createServerFn } from '@tanstack/react-start'

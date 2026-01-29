@@ -1,6 +1,6 @@
-# Hono Error Handling
+# Hono 에러 처리
 
-> Systematic error management with HTTPException and onError
+> HTTPException과 onError로 체계적 에러 관리
 
 <patterns>
 
@@ -20,7 +20,7 @@ app.get('/users/:id', async (c) => {
 })
 ```
 
-## Global Handler
+## 글로벌 핸들러
 
 ```typescript
 import { Hono } from 'hono'
@@ -43,7 +43,7 @@ app.notFound((c) => {
 })
 ```
 
-## Detailed Response
+## 상세 응답
 
 ```typescript
 app.onError((err, c) => {
@@ -69,7 +69,7 @@ app.onError((err, c) => {
 })
 ```
 
-## Custom Error Classes
+## 커스텀 에러 클래스
 
 ```typescript
 // lib/errors.ts
@@ -95,7 +95,7 @@ export class ConflictError extends HTTPException {
 ```
 
 ```typescript
-// Usage
+// 사용
 import { NotFoundError, ConflictError } from '@/lib/errors'
 
 app.get('/users/:id', async (c) => {
@@ -117,13 +117,13 @@ app.post('/users', async (c) => {
 
 <status_codes>
 
-| Code | Usage |
-|------|-------|
+| 코드 | 사용 |
+|-----|------|
 | 400 | Invalid input |
-| 401 | Unauthorized (authentication required) |
-| 403 | Access denied (insufficient permissions) |
+| 401 | Unauthorized (인증 필요) |
+| 403 | Access denied (권한 없음) |
 | 404 | Not found |
-| 409 | Already exists (conflict) |
+| 409 | Already exists (충돌) |
 | 422 | Validation failed |
 | 429 | Rate limit exceeded |
 

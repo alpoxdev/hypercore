@@ -1,6 +1,6 @@
-# Environment Variables
+# 환경 변수 설정
 
-> Managing Hono environment variables (Node.js, Cloudflare Workers)
+> Hono 환경 변수 관리 (Node.js, Cloudflare Workers)
 
 <instructions>
 @../library/t3-env/index.md
@@ -10,9 +10,9 @@
 
 <runtime_differences>
 
-| Runtime | Environment Access | Use Case |
-|---------|-------------------|----------|
-| **Node.js** | `process.env.*` | General server |
+| 런타임 | 환경 변수 접근 | 용도 |
+|--------|---------------|------|
+| **Node.js** | `process.env.*` | 일반 서버 |
 | **Cloudflare Workers** | `c.env.*` (Bindings) | Edge Runtime |
 | **Deno** | `Deno.env.get()` | Deno Runtime |
 | **Bun** | `process.env.*` | Bun Runtime |
@@ -23,22 +23,22 @@
 
 <file_structure>
 
-## Environment File Structure
+## 환경 파일 구조
 
 ```
-├── .env                    # Defaults (commit YES)
-├── .env.development        # Development (commit YES)
-├── .env.production         # Production (commit YES)
-├── .env.local              # Local override (commit NO)
-└── src/lib/env.ts          # Validation & types (t3-env)
+├── .env                    # 기본 (커밋 O)
+├── .env.development        # 개발 (커밋 O)
+├── .env.production         # 프로덕션 (커밋 O)
+├── .env.local              # 로컬 오버라이드 (커밋 X)
+└── src/lib/env.ts          # 검증 및 타입 (t3-env)
 ```
 
-| Priority | File | Description |
-|----------|------|-------------|
-| 1 | `.env.{mode}.local` | Highest priority (gitignore) |
-| 2 | `.env.local` | Local override |
-| 3 | `.env.{mode}` | Environment-specific |
-| 4 | `.env` | Defaults |
+| 우선순위 | 파일 | 설명 |
+|----------|------|------|
+| 1 | `.env.{mode}.local` | 최우선 (gitignore) |
+| 2 | `.env.local` | 로컬 오버라이드 |
+| 3 | `.env.{mode}` | 환경별 설정 |
+| 4 | `.env` | 기본 설정 |
 
 </file_structure>
 
@@ -46,9 +46,9 @@
 
 <patterns>
 
-## Environment File Examples
+## 환경 파일 예시
 
-### .env.local (gitignore, secrets)
+### .env.local (gitignore, 시크릿)
 
 ```env
 DATABASE_URL=postgresql://user:password@localhost:5432/myapp
@@ -72,9 +72,9 @@ PORT=8080
 LOG_LEVEL=info
 ```
 
-## Node.js Environment Variables
+## Node.js 환경 변수
 
-### Type-safe Environment Variables (t3-env)
+### 타입 안전한 환경 변수 (t3-env)
 
 ```typescript
 // src/lib/env.ts
@@ -94,7 +94,7 @@ export const env = createEnv({
 })
 ```
 
-### Usage Example
+### 사용 예시
 
 ```typescript
 // src/index.ts
@@ -116,9 +116,9 @@ export default {
 }
 ```
 
-## Cloudflare Workers Environment Variables
+## Cloudflare Workers 환경 변수
 
-### Bindings Type Definition
+### Bindings 타입 정의
 
 ```typescript
 // src/types/index.ts
@@ -139,12 +139,12 @@ compatibility_date = "2024-01-01"
 [vars]
 NODE_ENV = "production"
 
-# Set secrets with wrangler secret put command
+# 시크릿은 wrangler secret put 명령어로 설정
 # wrangler secret put DATABASE_URL
 # wrangler secret put JWT_SECRET
 ```
 
-### Usage Example
+### 사용 예시
 
 ```typescript
 // src/index.ts
@@ -154,7 +154,7 @@ import type { Bindings } from './types'
 const app = new Hono<{ Bindings: Bindings }>()
 
 app.get('/', (c) => {
-  // Access environment variables via c.env
+  // c.env를 통해 환경 변수 접근
   const dbUrl = c.env.DATABASE_URL
   const jwtSecret = c.env.JWT_SECRET
 
@@ -167,7 +167,7 @@ app.get('/', (c) => {
 export default app
 ```
 
-### Using in Middleware
+### 미들웨어에서 사용
 
 ```typescript
 // src/middleware/auth.ts
@@ -186,26 +186,26 @@ export const authMiddleware = createMiddleware<{
   const token = c.req.header('Authorization')?.replace('Bearer ', '')
   if (!token) throw new HTTPException(401, { message: 'Unauthorized' })
 
-  // Use JWT Secret
+  // JWT Secret 사용
   const jwtSecret = c.env.JWT_SECRET
-  // JWT verification logic...
+  // JWT 검증 로직...
 
   c.set('userId', 'user-id')
   await next()
 })
 ```
 
-## Cloudflare Workers Secrets Management
+## Cloudflare Workers 시크릿 설정
 
 ```bash
-# Add secret
+# 시크릿 추가
 wrangler secret put DATABASE_URL
 wrangler secret put JWT_SECRET
 
-# List secrets
+# 시크릿 목록 확인
 wrangler secret list
 
-# Delete secret
+# 시크릿 삭제
 wrangler secret delete DATABASE_URL
 ```
 
@@ -218,14 +218,14 @@ wrangler secret delete DATABASE_URL
 ## .gitignore
 
 ```gitignore
-# Contains secrets (NEVER commit)
+# 시크릿 포함 (절대 커밋 X)
 .env.local
 .env.*.local
 
 # Cloudflare Workers
 .dev.vars
 
-# Public config (commit OK)
+# 공개 설정 (커밋 O)
 !.env
 !.env.development
 !.env.production
@@ -237,7 +237,7 @@ wrangler secret delete DATABASE_URL
 
 <typescript_types>
 
-## TypeScript Types
+## TypeScript 타입
 
 ### Node.js
 
@@ -286,13 +286,13 @@ export type Bindings = {
 
 <best_practices>
 
-| Principle | Description |
-|-----------|-------------|
-| **Separate Secrets** | Store secrets only in `.env.local`, never commit |
-| **Type Safety** | Validate with t3-env or Zod |
-| **Defaults** | Set safe defaults in `.env` |
-| **Documentation** | Provide required variables list via `.env.example` |
-| **Runtime Differences** | Node.js uses `process.env`, Cloudflare uses `c.env` |
+| 원칙 | 설명 |
+|------|------|
+| **시크릿 분리** | `.env.local`에만 시크릿 저장, 커밋 금지 |
+| **타입 안전성** | t3-env 또는 Zod로 검증 |
+| **기본값** | `.env`에 안전한 기본값 설정 |
+| **문서화** | `.env.example` 파일로 필수 변수 목록 제공 |
+| **런타임별 차이** | Node.js는 `process.env`, Cloudflare는 `c.env` |
 
 </best_practices>
 
@@ -300,7 +300,7 @@ export type Bindings = {
 
 <cloudflare_specific>
 
-## Cloudflare Workers Additional Features
+## Cloudflare Workers 추가 기능
 
 ### KV Namespace
 
@@ -310,7 +310,7 @@ export type Bindings = {
 binding = "MY_KV"
 id = "your-kv-id"
 
-// Usage
+// 사용
 app.get('/cache/:key', async (c) => {
   const key = c.req.param('key')
   const value = await c.env.MY_KV.get(key)
@@ -327,7 +327,7 @@ binding = "DB"
 database_name = "my-database"
 database_id = "your-db-id"
 
-// Usage
+// 사용
 app.get('/users', async (c) => {
   const { results } = await c.env.DB.prepare('SELECT * FROM users').all()
   return c.json({ users: results })

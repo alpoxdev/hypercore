@@ -1,10 +1,10 @@
-# Nitro - Cloudflare Deployment
+# Nitro - Cloudflare 배포
 
-> Cloudflare Workers/Pages Edge deployment
+> Cloudflare Workers/Pages Edge 배포
 
 ---
 
-## Workers Configuration
+## Workers 설정
 
 ```typescript
 // nitro.config.ts
@@ -22,7 +22,7 @@ export default defineNitroConfig({
 
 ---
 
-## Pages Configuration
+## Pages 설정
 
 ```typescript
 // nitro.config.ts
@@ -65,7 +65,7 @@ bucket_name = "my-bucket"
 
 ---
 
-## Deployment
+## 배포
 
 ```bash
 wrangler login
@@ -78,7 +78,7 @@ wrangler pages deploy .output/public
 
 ---
 
-## Using Bindings
+## Bindings 사용
 
 ### D1
 
@@ -137,7 +137,7 @@ app.get("/download/:name", async (c) => {
 
 ---
 
-## Secrets
+## 시크릿
 
 ```bash
 wrangler secret put API_SECRET
@@ -146,7 +146,7 @@ wrangler secret list
 
 ---
 
-## D1 Migrations
+## D1 마이그레이션
 
 ```bash
 wrangler d1 migrations create my-database create_users
@@ -191,21 +191,21 @@ jobs:
 
 ---
 
-## Troubleshooting
+## 문제 해결
 
-| Issue | Solution |
-|-------|----------|
-| Worker size limit | Configure externals, minify |
-| D1 not found | Check wrangler.toml bindings |
-| Node.js API errors | Add `nodejs_compat` flag |
+| 문제 | 해결 |
+|------|------|
+| Worker size limit | externals 설정, minify |
+| D1 not found | wrangler.toml 바인딩 확인 |
+| Node.js API 오류 | `nodejs_compat` 플래그 |
 
 ```bash
-wrangler tail          # Real-time logs
-wrangler deploy --dry-run  # Validation
+wrangler tail          # 실시간 로그
+wrangler deploy --dry-run  # 검증
 ```
 
 ---
 
-## Related Documentation
+## 관련 문서
 
-- [Deployment Guide](./index.md)
+- [배포 가이드](./index.md)

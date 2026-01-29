@@ -1,6 +1,6 @@
 # Architecture
 
-> Next.js App Router Application Architecture
+> Next.js App Router 애플리케이션 아키텍처
 
 <instructions>
 @library/nextjs/app-router.md
@@ -13,14 +13,14 @@
 
 <forbidden>
 
-| Category | Forbidden |
-|----------|-----------|
-| **Routes** | Flat file routes (`app/users.tsx`), Pages Router (`pages/`) |
-| **Route Export** | Named export (`export const Page`), incorrect file names (`Users.tsx`) |
-| **API** | Pages Router API (`pages/api/`), API Routes overuse (use Server Actions) |
-| **Layers** | Writing business logic directly in app/ folder |
-| **Components** | Using client-only APIs without 'use client' |
-| **Barrel Export** | Creating `actions/index.ts` (Tree Shaking fails) |
+| 분류 | 금지 |
+|------|------|
+| **라우트** | Flat 파일 라우트 (`app/users.tsx`), Pages Router (`pages/`) |
+| **Route Export** | named export (`export const Page`), 잘못된 파일명 (`Users.tsx`) |
+| **API** | Pages Router API (`pages/api/`), API Routes 남용 (Server Actions 사용) |
+| **레이어** | 비즈니스 로직을 app/ 폴더에 직접 작성 |
+| **컴포넌트** | 'use client' 없이 클라이언트 전용 API 사용 |
+| **Barrel Export** | `actions/index.ts` 생성 (Tree Shaking 실패) |
 
 </forbidden>
 
@@ -28,19 +28,19 @@
 
 <required>
 
-| Category | Required |
-|----------|----------|
-| **Route Structure** | Create folder per page (`app/users/page.tsx`) |
-| **Route Export** | `export default function Page()` required |
-| **Layer Structure** | app/ → Server Actions → lib/ → Database |
-| **Route Group** | List pages → `(main)/`, Admin → `(admin)/` |
-| **Page-specific Folders** | `_components/`, `_hooks/`, `_actions/` required (regardless of line count) |
-| **Page Separation** | 100+ lines → `_components/`, 200+ lines → `_sections/` |
-| **Server Actions** | Use Server Actions for mutations (`'use server'`) |
-| **Validation** | Validate input with Zod schemas |
-| **Metadata** | Export `generateMetadata` or `metadata` |
-| **Error Handling** | `error.tsx` (route), `not-found.tsx` (404), `global-error.tsx` (global) |
-| **Type Safety** | TypeScript strict, Prisma types |
+| 분류 | 필수 |
+|------|------|
+| **라우트 구조** | 페이지마다 폴더 생성 (`app/users/page.tsx`) |
+| **Route Export** | `export default function Page()` 필수 |
+| **계층 구조** | app/ → Server Actions → lib/ → Database |
+| **Route Group** | 목록 → `(main)/`, 관리자 → `(admin)/` |
+| **페이지 전용 폴더** | `_components/`, `_hooks/`, `_actions/` 필수 (줄 수 무관) |
+| **페이지 분리** | 100줄+ → `_components/`, 200줄+ → `_sections/` |
+| **Server Actions** | mutations는 Server Actions 사용 (`'use server'`) |
+| **검증** | Zod 스키마로 입력 검증 |
+| **메타데이터** | `generateMetadata` 또는 `metadata` export |
+| **에러 처리** | `error.tsx` (라우트), `not-found.tsx` (404), `global-error.tsx` (전역) |
+| **타입 안전** | TypeScript strict, Prisma 타입 |
 
 </required>
 
@@ -62,12 +62,12 @@
 ┌─────────────────────────────────────────────────────────────────┐
 │                       Next.js Server                             │
 │  ┌────────────────────────────────────────────────────────────┐ │
-│  │              Server Components (default)                    │ │
+│  │              Server Components (기본)                       │ │
 │  │   app/[route]/page.tsx → Server-side rendering             │ │
 │  └────────────────────────────┬───────────────────────────────┘ │
 │  ┌────────────────────────────▼───────────────────────────────┐ │
 │  │                    Server Actions                           │ │
-│  │   'use server' → DB access, Mutations, Revalidation        │ │
+│  │   'use server' → DB 접근, Mutations, Revalidation          │ │
 │  └────────────────────────────┬───────────────────────────────┘ │
 │  ┌────────────────────────────▼───────────────────────────────┐ │
 │  │                    Services Layer                           │ │
@@ -89,34 +89,34 @@
 
 <route_export_rule>
 
-## Route Export Rules
+## Route Export 규칙
 
-> ⚠️ **`export default` required**
+> ⚠️ **`export default` 필수**
 >
-> Next.js App Router requires all page/layout files to export components as **default export**.
+> Next.js App Router는 모든 페이지/레이아웃 파일에서 **default export**로 컴포넌트를 내보내야 합니다.
 >
-> File names must follow Next.js conventions: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`
+> 파일명은 Next.js 규칙을 따라야 합니다: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`
 
-| ❌ Forbidden | ✅ Required |
-|--------------|-------------|
+| ❌ 금지 | ✅ 필수 |
+|--------|--------|
 | `app/users.tsx` | `app/users/page.tsx` |
 | `export const Page = () => {}` | `export default function Page() {}` |
-| `export default Users` (component name != file convention) | `export default function UsersPage() {}` |
+| `export default Users` (컴포넌트명 != 파일명 규칙) | `export default function UsersPage() {}` |
 
 ```typescript
-// ❌ Forbidden: Flat file
+// ❌ 금지: Flat 파일
 // app/users.tsx
 export default function Users() {
   return <div>Users</div>
 }
 
-// ❌ Forbidden: named export
+// ❌ 금지: named export
 // app/users/page.tsx
 export const Page = () => {
   return <div>Users</div>
 }
 
-// ✅ Required: folder + page.tsx + default export
+// ✅ 필수: 폴더 + page.tsx + default export
 // app/users/page.tsx
 export default function UsersPage() {
   return <div>Users</div>
@@ -133,66 +133,66 @@ export default function UsersPage() {
 
 ### 1. Routes Layer (app/)
 
-> ⚠️ **Create folder per page (required)**
+> ⚠️ **페이지마다 폴더 생성 필수**
 >
-> Every page MUST be created using **folder structure**. Flat file approach (`app/users.tsx`) is forbidden.
+> 모든 페이지는 **반드시 폴더 구조**로 만들어야 합니다. Flat 파일 방식(`app/users.tsx`)은 금지됩니다.
 >
-> **Reason:** To systematically manage page-specific resources like `_components/`, `_hooks/`, `_actions/`.
+> **이유:** `_components/`, `_hooks/`, `_actions/` 등 페이지 전용 리소스를 체계적으로 관리하기 위함입니다.
 >
-> | ❌ Forbidden | ✅ Required |
-> |--------------|-------------|
+> | ❌ 금지 | ✅ 필수 |
+> |--------|--------|
 > | `app/users.tsx` | `app/users/page.tsx` |
 > | `app/posts.tsx` | `app/(main)/posts/page.tsx` |
 
 ```
 app/<route-name>/
-├── (main)/                # route group (list page, not in URL)
-│   ├── page.tsx           # page component
-│   ├── _components/       # page-specific components (required)
-│   ├── _hooks/            # page-specific hooks (required)
-│   ├── _sections/         # UI section separation (200+ line pages)
-│   └── _tabs/             # tab content separation
-├── new/                   # creation page (outside route group)
+├── (main)/                # route group (목록 페이지, URL에 미포함)
+│   ├── page.tsx           # 페이지 컴포넌트
+│   ├── _components/       # 페이지 전용 컴포넌트 (필수)
+│   ├── _hooks/            # 페이지 전용 훅 (필수)
+│   ├── _sections/         # UI 섹션 분리 (200줄+ 페이지)
+│   └── _tabs/             # 탭 콘텐츠 분리
+├── new/                   # 생성 페이지 (route group 외부)
 │   └── page.tsx
 ├── [id]/                  # Dynamic segment
 │   └── page.tsx
-├── layout.tsx             # layout (shared across child routes)
-├── loading.tsx            # loading UI (Suspense boundary)
-├── error.tsx              # error UI (Error boundary)
-└── _actions/              # page-specific Server Actions (required)
+├── layout.tsx             # 레이아웃 (하위 경로 공통)
+├── loading.tsx            # 로딩 UI (Suspense boundary)
+├── error.tsx              # 에러 UI (Error boundary)
+└── _actions/              # 페이지 전용 Server Actions (필수)
 ```
 
-**Required Rules:**
-- Each page MUST have `_components/`, `_hooks/`, `_actions/` folders (regardless of line count)
-- Custom Hooks MUST be separated into `_hooks/` folder regardless of page size
-- Server Actions: global (`app/_actions/`) or page-specific (`[route]/_actions/`)
-- Shared components → `components/ui/`, page-specific → `[route]/_components/`
+**필수 규칙:**
+- 페이지당 `_components/`, `_hooks/`, `_actions/` 폴더 필수 (줄 수 무관)
+- Custom Hook은 페이지 크기와 무관하게 **반드시** `_hooks/` 폴더에 분리
+- Server Actions는 글로벌(`app/_actions/`) 또는 페이지 전용(`[route]/_actions/`)에 분리
+- 공통 컴포넌트 → `components/ui/`, 페이지 전용 → `[route]/_components/`
 
-| Pattern | Location | Purpose |
-|---------|----------|---------|
-| **Route Group** | `(main)/` | List page, not in URL |
-| **Private Folder** | `_components/` | Ignored by routing system |
-| **_sections/** | 200+ lines | Logical section separation |
-| **_tabs/** | Tab UI | Tab content separation |
-| **layout.tsx** | Layout | Shared UI for child routes |
+| 패턴 | 위치 | 용도 |
+|------|------|------|
+| **Route Group** | `(main)/` | 목록 페이지, URL에 미포함 |
+| **Private Folder** | `_components/` | 라우팅 시스템이 무시 |
+| **_sections/** | 200줄+ | 논리적 섹션 분리 |
+| **_tabs/** | 탭 UI | 탭 콘텐츠 분리 |
+| **layout.tsx** | 레이아웃 | 하위 경로 공통 UI |
 
-#### Layout Routes Pattern
+#### Layout Routes 패턴
 
-> ⚠️ **Compose layouts with layout.tsx**
+> ⚠️ **layout.tsx로 레이아웃 구성**
 >
-> `layout.tsx` serves as the common layout for child routes.
-> List pages should be wrapped in Route Group `(main)/`.
+> `layout.tsx`는 하위 경로의 공통 레이아웃 역할을 합니다.
+> 목록 페이지는 Route Group `(main)/`으로 묶어야 합니다.
 >
-> | ❌ Forbidden | ✅ Required |
-> |--------------|-------------|
-> | `app/auth.tsx` | `app/(auth)/layout.tsx` + `app/(auth)/(main)/page.tsx` |
+> | ❌ 금지 | ✅ 필수 |
+> |--------|--------|
+| `app/auth.tsx` | `app/(auth)/layout.tsx` + `app/(auth)/(main)/page.tsx` |
 
 ```
 app/
 ├── (auth)/
-│   ├── layout.tsx            # layout (renders children)
+│   ├── layout.tsx            # 레이아웃 (children 렌더링)
 │   ├── (main)/
-│   │   └── page.tsx          # /auth (main)
+│   │   └── page.tsx          # /auth (메인)
 │   ├── login/
 │   │   └── page.tsx          # /auth/login
 │   └── register/
@@ -200,13 +200,13 @@ app/
 ```
 
 ```typescript
-// ❌ Forbidden: flat structure without layout
+// ❌ 금지: layout 없이 flat 구조
 // app/auth/page.tsx
 export default function AuthPage() {
   return <div>Auth</div>
 }
 
-// ✅ Required: wrap common UI with layout.tsx
+// ✅ 필수: layout.tsx로 공통 UI 래핑
 // app/(auth)/layout.tsx
 export default function AuthLayout({
   children,
@@ -235,28 +235,28 @@ export default function LoginPage() {
 ### 2. Server Actions Layer
 
 ```
-app/_actions/                # global (reusable)
-├── <action-name>.ts         # one per file
-└── types.ts                 # shared types
+app/_actions/                # 글로벌 (재사용)
+├── <action-name>.ts         # 파일당 하나
+└── types.ts                 # 공통 타입
 
-app/<route>/_actions/        # page-specific
+app/<route>/_actions/        # 페이지 전용
 └── <action-name>.ts
 ```
 
-> ⚠️ **Do NOT create `app/_actions/index.ts`**
+> ⚠️ **`app/_actions/index.ts` 생성 금지**
 >
-> Do not create `index.ts` (barrel export) file in `app/_actions/` folder.
+> `app/_actions/` 폴더에 `index.ts` (barrel export) 파일을 만들지 마세요.
 >
-> **Problems:**
-> 1. **Tree Shaking fails** - bundler includes unused functions
-> 2. **Client bundle pollution** - server-only libraries like `prisma` get included in client bundle causing build errors
+> **문제점:**
+> 1. **Tree Shaking 실패** - 번들러가 사용하지 않는 함수도 포함
+> 2. **Client 번들 오염** - `prisma` 등 서버 전용 라이브러리가 클라이언트에 포함되어 빌드 에러
 >
 > ```typescript
-> // ❌ Do NOT create app/_actions/index.ts
+> // ❌ app/_actions/index.ts 만들지 말 것
 > export * from './get-users'
-> export * from './create-post'  // prisma import → client build failure
+> export * from './create-post'  // prisma import → 클라이언트 빌드 실패
 >
-> // ✅ Import directly from individual files
+> // ✅ 개별 파일에서 직접 import
 > import { getUsers } from '@/app/_actions/get-users'
 > import { createPost } from '@/app/_actions/create-post'
 > ```
@@ -265,9 +265,9 @@ app/<route>/_actions/        # page-specific
 
 ```
 lib/<domain>/
-├── index.ts            # entry point (re-export)
-├── schemas.ts          # Zod schemas
-├── queries.ts          # GET requests
+├── index.ts            # 진입점 (re-export)
+├── schemas.ts          # Zod 스키마
+├── queries.ts          # GET 요청
 └── mutations.ts        # POST/PUT/PATCH
 ```
 
@@ -298,23 +298,23 @@ if (process.env.NODE_ENV !== 'production') {
 
 ### Server Components vs Client Components
 
-| Item | Server Components | Client Components |
+| 항목 | Server Components | Client Components |
 |------|------------------|-------------------|
-| **Default** | ✅ Default (no declaration needed) | ❌ `'use client'` required |
-| **Execution** | Server | Browser |
-| **Data Fetching** | async/await direct usage | TanStack Query/SWR |
-| **DB Access** | ✅ Possible | ❌ Impossible (use Server Actions) |
-| **Browser API** | ❌ Impossible | ✅ Possible (window, localStorage, etc.) |
-| **State Management** | ❌ Impossible | ✅ Possible (useState, useEffect, etc.) |
-| **Event Handlers** | ❌ Impossible | ✅ Possible (onClick, onChange, etc.) |
+| **기본값** | ✅ 기본 (명시 불필요) | ❌ `'use client'` 필수 |
+| **실행 위치** | 서버 | 브라우저 |
+| **데이터 페칭** | async/await 직접 사용 | TanStack Query/SWR |
+| **DB 접근** | ✅ 가능 | ❌ 불가능 (Server Actions 사용) |
+| **브라우저 API** | ❌ 불가능 | ✅ 가능 (window, localStorage 등) |
+| **상태 관리** | ❌ 불가능 | ✅ 가능 (useState, useEffect 등) |
+| **이벤트 핸들러** | ❌ 불가능 | ✅ 가능 (onClick, onChange 등) |
 
 ```typescript
-// ✅ Server Component (default)
+// ✅ Server Component (기본)
 // app/users/page.tsx
 import { prisma } from '@/lib/db/prisma'
 
 export default async function UsersPage() {
-  // Direct DB query on server
+  // 서버에서 직접 DB 쿼리
   const users = await prisma.user.findMany()
 
   return (
@@ -345,13 +345,13 @@ export default function UserList() {
 }
 ```
 
-### Component Composition Strategy
+### 컴포넌트 구성 전략
 
 ```
 Page (Server Component)
-  ├─ Data fetching (async/await)
+  ├─ 데이터 페칭 (async/await)
   └─ Interactive UI (Client Component)
-       └─ State management, event handlers
+       └─ 상태 관리, 이벤트 핸들러
 ```
 
 </component_types>
@@ -364,35 +364,35 @@ Page (Server Component)
 
 ### Loading & Error Handling
 
-| File | Purpose | Required |
-|------|---------|----------|
-| **loading.tsx** | Loading UI (Suspense boundary) | Optional |
-| **error.tsx** | Error UI (Error boundary) | ✅ |
+| 파일 | 용도 | 필수 |
+|------|------|------|
+| **loading.tsx** | 로딩 UI (Suspense boundary) | 선택 |
+| **error.tsx** | 에러 UI (Error boundary) | ✅ |
 | **not-found.tsx** | 404 UI | ✅ |
-| **global-error.tsx** | Global error UI | Optional |
+| **global-error.tsx** | 전역 에러 UI | 선택 |
 
 ```
 app/
 ├── layout.tsx
-├── loading.tsx          # global loading
-├── error.tsx            # global error
-├── not-found.tsx        # global 404
-├── global-error.tsx     # root error (catches layout.tsx errors too)
+├── loading.tsx          # 전역 로딩
+├── error.tsx            # 전역 에러
+├── not-found.tsx        # 전역 404
+├── global-error.tsx     # Root 에러 (layout.tsx 에러도 캐치)
 └── users/
     ├── page.tsx
-    ├── loading.tsx      # /users loading
-    └── error.tsx        # /users error
+    ├── loading.tsx      # /users 로딩
+    └── error.tsx        # /users 에러
 ```
 
-### Code Patterns
+### 코드 패턴
 
 ```typescript
-// ✅ loading.tsx: loading UI
+// ✅ loading.tsx: 로딩 UI
 export default function Loading() {
   return <div>Loading...</div>
 }
 
-// ✅ error.tsx: error UI (Client Component required)
+// ✅ error.tsx: 에러 UI (Client Component 필수)
 'use client'
 
 export default function Error({
@@ -431,16 +431,16 @@ export default function NotFound() {
 
 ## Data Flow
 
-### Query Flow (Read)
+### Query Flow (읽기)
 
 ```
 Page (Server Component) → Prisma → Database
           ↓
-    Auto caching (fetch cache)
+    자동 캐싱 (fetch cache)
 ```
 
 ```typescript
-// ✅ Direct data fetching in Server Component
+// ✅ Server Component에서 직접 데이터 페칭
 // app/users/page.tsx
 import { prisma } from '@/lib/db/prisma'
 
@@ -456,16 +456,16 @@ export default async function UsersPage() {
   )
 }
 
-// ✅ fetch with cache (default: 'force-cache')
+// ✅ fetch with cache (기본: 'force-cache')
 async function getUsers() {
   const res = await fetch('https://api.example.com/users', {
-    next: { revalidate: 3600 }, // 1 hour cache
+    next: { revalidate: 3600 }, // 1시간 캐시
   })
   return res.json()
 }
 ```
 
-### Mutation Flow (Write)
+### Mutation Flow (쓰기)
 
 ```
 Form (Client) → Server Action → Prisma → Database
@@ -488,7 +488,7 @@ const createUserSchema = z.object({
 })
 
 export async function createUser(formData: FormData) {
-  // Validation
+  // 검증
   const parsed = createUserSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -498,18 +498,18 @@ export async function createUser(formData: FormData) {
     return { error: parsed.error.errors }
   }
 
-  // DB save
+  // DB 저장
   const user = await prisma.user.create({
     data: parsed.data,
   })
 
-  // Cache invalidation
+  // 캐시 무효화
   revalidatePath('/users')
 
   return { success: true, user }
 }
 
-// ✅ Usage in Client Component
+// ✅ Client Component에서 사용
 // app/users/_components/user-form.tsx
 'use client'
 
@@ -544,13 +544,13 @@ export default function UserForm() {
 
 ## Server Actions (Advanced)
 
-### Server Actions Patterns
+### Server Actions 패턴
 
-| Pattern | Description | When to Use |
-|---------|-------------|-------------|
-| **Form Actions** | `<form action={...}>` | Form submission |
-| **Programmatic** | `onClick={() => action()}` | Button click |
-| **Progressive Enhancement** | Works without JS | Accessibility focus |
+| 패턴 | 설명 | 사용 시점 |
+|------|------|----------|
+| **Form Actions** | `<form action={...}>` | 폼 제출 |
+| **Programmatic** | `onClick={() => action()}` | 버튼 클릭 |
+| **Progressive Enhancement** | JS 없이도 동작 | 접근성 중시 |
 
 ```typescript
 // ✅ Form Action (Progressive Enhancement)
@@ -622,7 +622,7 @@ export default function UserList({ users }) {
 }
 ```
 
-### Authentication Pattern
+### 인증 패턴
 
 ```typescript
 // ✅ lib/auth/session.ts
@@ -631,11 +631,11 @@ import { cookies } from 'next/headers'
 export async function getSession() {
   const cookieStore = await cookies()
   const session = cookieStore.get('session')
-  // Session validation logic
+  // 세션 검증 로직
   return session
 }
 
-// ✅ Authentication check in Server Action
+// ✅ Server Action에서 인증 체크
 // app/_actions/create-post.ts
 'use server'
 
@@ -724,14 +724,14 @@ export default async function UserPage({ params }: Props) {
 
 ## Caching
 
-### fetch() Caching
+### fetch() 캐싱
 
-| Option | Description |
-|--------|-------------|
-| `{ cache: 'force-cache' }` | Default, cache indefinitely |
-| `{ cache: 'no-store' }` | No caching |
-| `{ next: { revalidate: 3600 } }` | Revalidate every 3600 seconds |
-| `{ next: { tags: ['users'] } }` | Tag-based invalidation |
+| 옵션 | 설명 |
+|------|------|
+| `{ cache: 'force-cache' }` | 기본값, 무기한 캐시 |
+| `{ cache: 'no-store' }` | 캐시 사용 안 함 |
+| `{ next: { revalidate: 3600 } }` | 3600초마다 재검증 |
+| `{ next: { tags: ['users'] } }` | 태그 기반 무효화 |
 
 ```typescript
 // ✅ fetch with cache
@@ -742,7 +742,7 @@ async function getUsers() {
   return res.json()
 }
 
-// ✅ Cache invalidation
+// ✅ 캐시 무효화
 // app/_actions/create-user.ts
 'use server'
 
@@ -751,18 +751,18 @@ import { revalidateTag, revalidatePath } from 'next/cache'
 export async function createUser(data: any) {
   // ...
 
-  // Tag-based invalidation
+  // 태그 기반 무효화
   revalidateTag('users')
 
-  // Path-based invalidation
+  // 경로 기반 무효화
   revalidatePath('/users')
 }
 ```
 
-### unstable_cache (Prisma, etc.)
+### unstable_cache (Prisma 등)
 
 ```typescript
-// ✅ Prisma query caching
+// ✅ Prisma 쿼리 캐싱
 import { unstable_cache } from 'next/cache'
 import { prisma } from '@/lib/db/prisma'
 

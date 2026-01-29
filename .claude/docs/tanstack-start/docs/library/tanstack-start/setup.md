@@ -1,13 +1,13 @@
-# TanStack Start - Installation and Setup
+# TanStack Start - 설치 및 설정
 
-## Installation
+## 설치
 
 ```bash
 yarn add @tanstack/react-start @tanstack/react-router vinxi
 yarn add -D vite @vitejs/plugin-react vite-tsconfig-paths
 ```
 
-## Configuration
+## 설정
 
 ```typescript
 // vite.config.ts
@@ -36,7 +36,7 @@ export default defineConfig({
 }
 ```
 
-## Environment Variable Validation
+## 환경 변수 검증
 
 ```typescript
 // lib/env.ts

@@ -1,13 +1,13 @@
 # Routes
 
-> Next.js App Router routing patterns
+> Next.js App Router 라우팅 패턴
 
 ---
 
-## Basic Routing
+## 기본 라우팅
 
-| File | Route |
-|------|-------|
+| 파일 | 라우트 |
+|------|--------|
 | `app/page.tsx` | `/` |
 | `app/about/page.tsx` | `/about` |
 | `app/blog/page.tsx` | `/blog` |
@@ -15,9 +15,9 @@
 
 ---
 
-## Dynamic Routes
+## 동적 라우트
 
-### Single Parameter
+### 단일 파라미터
 
 ```typescript
 // app/posts/[id]/page.tsx
@@ -33,7 +33,7 @@ export default async function PostPage({ params }: PageProps) {
   return <article>{post.title}</article>
 }
 
-// Static generation
+// 정적 생성
 export async function generateStaticParams() {
   const posts = await prisma.post.findMany({ select: { id: true } })
   return posts.map(post => ({ id: post.id }))
@@ -57,9 +57,9 @@ export default function DocsPage({ params }: PageProps) {
 
 ---
 
-## Layouts
+## 레이아웃
 
-### Root Layout (required)
+### Root Layout (필수)
 
 ```typescript
 // app/layout.tsx
@@ -67,7 +67,7 @@ import { Providers } from "./providers"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <body>
         <Providers>{children}</Providers>
       </body>
@@ -76,7 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-### Nested Layout
+### 중첩 Layout
 
 ```typescript
 // app/dashboard/layout.tsx
@@ -85,7 +85,7 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  // Auth check
+  // 인증 체크
   const session = await auth.api.getSession({ headers: headers() })
   if (!session?.user) redirect("/login")
 
@@ -115,7 +115,7 @@ app/
         └── page.tsx    # /products
 ```
 
-**Purpose:** Apply different layouts without affecting URLs
+**용도:** URL에 영향 없이 다른 레이아웃 적용
 
 ---
 
@@ -139,8 +139,8 @@ export default function Loading() {
 export default function Error({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div>
-      <h2>Error: {error.message}</h2>
-      <button onClick={reset}>Try again</button>
+      <h2>오류 발생: {error.message}</h2>
+      <button onClick={reset}>다시 시도</button>
     </div>
   )
 }
@@ -151,7 +151,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
 ```typescript
 // app/posts/[id]/not-found.tsx
 export default function NotFound() {
-  return <div>Post not found</div>
+  return <div>게시글을 찾을 수 없습니다</div>
 }
 ```
 
@@ -159,7 +159,7 @@ export default function NotFound() {
 
 ## Metadata
 
-### Static
+### 정적
 
 ```typescript
 // app/about/page.tsx
@@ -175,7 +175,7 @@ export default function AboutPage() {
 }
 ```
 
-### Dynamic
+### 동적
 
 ```typescript
 // app/posts/[id]/page.tsx
@@ -204,7 +204,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 
 ---
 
-## Navigation
+## 네비게이션
 
 ### Link
 
@@ -242,9 +242,9 @@ export function LoginButton() {
 
 ---
 
-## Auth Protection
+## 인증 보호
 
-### Check in Layout
+### Layout에서 체크
 
 ```typescript
 // app/dashboard/layout.tsx
@@ -263,7 +263,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 }
 ```
 
-### Check in Middleware
+### Middleware에서 체크
 
 ```typescript
 // middleware.ts
@@ -288,25 +288,25 @@ export const config = {
 
 ---
 
-## Best Practices
+## 베스트 프랙티스
 
 ### ✅ DO
 
 ```typescript
-// 1. Direct data fetching in Server Components
+// 1. Server Component에서 직접 데이터 페칭
 export default async function PostsPage() {
   const posts = await prisma.post.findMany()
   return <PostsList posts={posts} />
 }
 
-// 2. Auth check in layout
+// 2. 레이아웃에서 인증 체크
 export default async function DashboardLayout({ children }) {
   const session = await auth.api.getSession({ headers: headers() })
   if (!session?.user) redirect("/login")
   return <div>{children}</div>
 }
 
-// 3. Static generation with generateStaticParams
+// 3. generateStaticParams로 정적 생성
 export async function generateStaticParams() {
   const posts = await prisma.post.findMany({ select: { id: true } })
   return posts.map(post => ({ id: post.id }))
@@ -316,26 +316,26 @@ export async function generateStaticParams() {
 ### ❌ DON'T
 
 ```typescript
-// 1. async/await in Client Components
+// 1. Client Component에서 async/await
 "use client"
 export default async function PostsPage() { // ❌
   const posts = await prisma.post.findMany()
   return <PostsList posts={posts} />
 }
 
-// 2. Repeated auth checks per page
+// 2. 페이지마다 인증 체크 반복
 export default async function Page1() {
-  const session = await auth.api.getSession({ headers: headers() }) // ❌ Duplicate
+  const session = await auth.api.getSession({ headers: headers() }) // ❌ 중복
   if (!session) redirect("/login")
 }
 
-// 3. Hardcoded paths
-<Link href="/posts/123">Post</Link> // ❌ Hardcoded
+// 3. 하드코딩된 경로
+<Link href="/posts/123">Post</Link> // ❌ 하드코딩
 ```
 
 ---
 
-## References
+## 참조
 
 - [App Router](../library/nextjs/app-router.md)
 - [Server Actions](server-actions.md)

@@ -1,6 +1,6 @@
-# Prisma - Relation Queries
+# Prisma - 관계 쿼리
 
-## Nested Create
+## 중첩 생성
 
 ```typescript
 const user = await prisma.user.create({
@@ -12,53 +12,53 @@ const user = await prisma.user.create({
 })
 ```
 
-## Relation Operations
+## 관계 연결
 
 ```typescript
-// connect - Link existing record
+// connect - 기존 연결
 author: { connect: { id: 1 } }
 
-// connectOrCreate - Connect if exists, create otherwise
+// connectOrCreate - 있으면 연결, 없으면 생성
 categories: { connectOrCreate: { where: { name: 'Tech' }, create: { name: 'Tech' } } }
 
-// disconnect - Remove relation
+// disconnect - 관계 해제
 author: { disconnect: true }
 ```
 
-## Include Relations
+## 관계 포함 조회
 
 ```typescript
 // include
 const users = await prisma.user.findMany({ include: { posts: true, profile: true } })
 
-// Nested
+// 중첩
 include: { posts: { include: { categories: true } } }
 
-// Filter + Sort
+// 필터 + 정렬
 include: { posts: { where: { published: true }, orderBy: { createdAt: 'desc' }, take: 5 } }
 ```
 
-## Filter by Relations
+## 관계로 필터링
 
 ```typescript
-// some - At least one matches
+// some - 하나라도 만족
 where: { posts: { some: { published: true } } }
 
-// every - All match
+// every - 모두 만족
 where: { posts: { every: { published: true } } }
 
-// none - None match
+// none - 만족 없음
 where: { posts: { none: { published: false } } }
 ```
 
-## Count
+## 카운트
 
 ```typescript
 include: { _count: { select: { posts: true } } }
-// Result: { _count: { posts: 5 } }
+// 결과: { _count: { posts: 5 } }
 ```
 
-## Nested Update/Delete
+## 중첩 수정/삭제
 
 ```typescript
 // updateMany

@@ -1,15 +1,15 @@
 # Prisma - Cloudflare D1
 
-> SQLite-based serverless database
+> SQLite 기반 서버리스 데이터베이스
 
 ---
 
-## Caveats
+## 주의사항
 
 ```
-D1 does not support transactions (no ACID guarantees)
-prisma migrate dev not available → use wrangler CLI
-Prisma ORM D1 support is in Preview
+D1은 트랜잭션 미지원 (ACID 보장 X)
+prisma migrate dev 사용 불가 → wrangler CLI 사용
+Prisma ORM D1 지원은 Preview 상태
 ```
 
 ---
@@ -22,11 +22,11 @@ Prisma ORM D1 support is in Preview
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
-  runtime  = "cloudflare"  // Required for D1
+  runtime  = "cloudflare"  // D1 필수
 }
 
 datasource db {
-  provider = "sqlite"  // D1 is SQLite-based
+  provider = "sqlite"  // D1은 SQLite 기반
 }
 
 model User {
@@ -59,7 +59,7 @@ export default app
 
 ---
 
-## Installation
+## 설치
 
 ```bash
 npm install hono @prisma/client @prisma/adapter-d1
@@ -69,7 +69,7 @@ npx prisma init --datasource-provider sqlite
 
 ---
 
-## Create D1 Database
+## D1 데이터베이스 생성
 
 ```bash
 npx wrangler d1 create my-database
@@ -93,29 +93,29 @@ npx wrangler d1 create my-database
 
 ---
 
-## Migration Workflow
+## 마이그레이션 워크플로우
 
 ```bash
-# 1. Create migration file
+# 1. 마이그레이션 파일 생성
 npx wrangler d1 migrations create my-database create_user_table
 
-# 2. Generate SQL (initial)
+# 2. SQL 생성 (초기)
 npx prisma migrate diff \
   --from-empty \
   --to-schema-datamodel prisma/schema.prisma \
   --script \
   --output prisma/migrations/0001_create_user_table.sql
 
-# 3. Apply locally
+# 3. 로컬 적용
 npx wrangler d1 migrations apply my-database --local
 
-# 4. Apply remotely
+# 4. 원격 적용
 npx wrangler d1 migrations apply my-database --remote
 ```
 
 ---
 
-## Complete CRUD API
+## 완전한 CRUD API
 
 ```typescript
 import { Hono } from 'hono'
@@ -130,7 +130,7 @@ type Variables = { prisma: PrismaClient }
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
-// Prisma middleware
+// Prisma 미들웨어
 app.use('*', async (c, next) => {
   const adapter = new PrismaD1(c.env.DB)
   c.set('prisma', new PrismaClient({ adapter }))
@@ -161,20 +161,20 @@ export default app
 
 ---
 
-## Local Development
+## 로컬 개발
 
 ```bash
-# Run worker
+# Worker 실행
 npx wrangler dev
 
-# Query D1
+# D1 조회
 npx wrangler d1 execute my-database --local \
   --command "SELECT * FROM User;"
 ```
 
 ---
 
-## Deployment
+## 배포
 
 ```bash
 npx prisma generate
@@ -184,17 +184,17 @@ npx wrangler deploy
 
 ---
 
-## Limitations
+## 제한사항
 
-| Feature | D1 |
-|---------|-----|
-| Transactions | ❌ Not supported |
-| Migrations | Use wrangler |
-| Connection | HTTP (adapter) |
+| 항목 | D1 |
+|------|-----|
+| 트랜잭션 | ❌ 미지원 |
+| 마이그레이션 | wrangler 사용 |
+| 접속 방식 | HTTP (어댑터) |
 
 ---
 
-## Related Documentation
+## 관련 문서
 
-- [Prisma Overview](./index.md)
-- [Cloudflare Deployment](../../deployment/cloudflare.md)
+- [Prisma 개요](./index.md)
+- [Cloudflare 배포](../../deployment/cloudflare.md)

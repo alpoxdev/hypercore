@@ -1,6 +1,6 @@
 # Getting Started
 
-> TanStack Start project quick start
+> TanStack Start 프로젝트 빠른 시작
 
 <instructions>
 @conventions.md
@@ -12,10 +12,10 @@
 
 <prerequisites>
 
-| Requirement | Version |
+| 요구사항 | 버전 |
 |----------|------|
 | Node.js | 18+ |
-| Package Manager | Yarn / npm / pnpm |
+| 패키지 관리자 | Yarn / npm / pnpm |
 
 </prerequisites>
 
@@ -23,7 +23,7 @@
 
 <installation>
 
-## Create Project
+## 프로젝트 생성
 
 ```bash
 npx create-tsrouter-app@latest my-app --template start
@@ -31,7 +31,7 @@ cd my-app
 yarn install
 ```
 
-## Required Packages
+## 필수 패키지
 
 ```bash
 # Database (Prisma 7.x)
@@ -51,7 +51,7 @@ yarn add @tanstack/react-query
 
 <project_setup>
 
-## Project Structure
+## 프로젝트 구조
 
 ```
 src/
@@ -59,8 +59,8 @@ src/
 │   ├── __root.tsx       # Root Layout
 │   └── index.tsx        # Home Page
 ├── lib/
-│   └── query-client.ts  # Query Client setup
-└── app.config.ts        # TanStack Start config
+│   └── query-client.ts  # Query Client 설정
+└── app.config.ts        # TanStack Start 설정
 ```
 
 ## app.config.ts
@@ -121,7 +121,7 @@ const HomePage = (): JSX.Element => {
 }
 ```
 
-## Query Client Setup
+## Query Client 설정
 
 ```typescript
 // src/lib/query-client.ts
@@ -131,7 +131,7 @@ export const createQueryClient = (): QueryClient => {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 60 * 1000,  // 1 minute
+        staleTime: 60 * 1000,  // 1분
         retry: 1,
       },
     },
@@ -147,9 +147,9 @@ export const createQueryClient = (): QueryClient => {
 
 | Command | Description |
 |---------|-------------|
-| `yarn dev` | Start development server (http://localhost:3000) |
-| `yarn build` | Production build |
-| `yarn start` | Start production server |
+| `yarn dev` | 개발 서버 시작 (http://localhost:3000) |
+| `yarn build` | 프로덕션 빌드 |
+| `yarn start` | 프로덕션 서버 실행 |
 
 </commands>
 
@@ -157,13 +157,13 @@ export const createQueryClient = (): QueryClient => {
 
 <next_steps>
 
-| Document | Content |
+| 문서 | 내용 |
 |------|------|
-| [conventions.md](./conventions.md) | Code conventions, naming rules |
-| [env-setup.md](./env-setup.md) | Environment variable setup |
-| [routes.md](./routes.md) | Route structure, file-based routing |
-| [services.md](./services.md) | Server Functions, data layer |
-| [hooks.md](./hooks.md) | Custom Hook patterns |
+| [conventions.md](./conventions.md) | 코드 컨벤션, 파일명 규칙 |
+| [env-setup.md](./env-setup.md) | 환경 변수 설정 |
+| [routes.md](./routes.md) | 라우트 구조, 파일 기반 라우팅 |
+| [services.md](./services.md) | Server Functions, 데이터 레이어 |
+| [hooks.md](./hooks.md) | Custom Hook 패턴 |
 
 </next_steps>
 

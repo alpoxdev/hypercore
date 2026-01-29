@@ -3,7 +3,7 @@
 <patterns>
 
 ```tsx
-// beforeLoad: auth check + add context
+// beforeLoad: 인증 체크 + context 추가
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: async ({ context, location }) => {
     if (!context.auth.isAuthenticated) {
@@ -30,7 +30,7 @@ export const Route = createFileRoute('/_authed/dashboard')({
   component: DashboardPage,
 })
 const DashboardPage = () => {
-  const { user } = Route.useRouteContext()  // Context from _authed
+  const { user } = Route.useRouteContext()  // _authed에서 전달된 context
   return <h1>Welcome, {user.name}!</h1>
 }
 
@@ -75,10 +75,10 @@ routes/
 
 <usage>
 
-| Location | Access Method |
+| 위치 | 접근 방법 |
 |------|----------|
-| beforeLoad | `{ context }` parameter |
-| loader | `{ context }` parameter |
+| beforeLoad | `{ context }` 파라미터 |
+| loader | `{ context }` 파라미터 |
 | component | `Route.useRouteContext()` |
 
 </usage>

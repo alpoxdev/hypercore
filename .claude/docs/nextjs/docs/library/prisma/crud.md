@@ -1,14 +1,14 @@
-# Prisma - CRUD Operations
+# Prisma - CRUD 작업
 
 ## Create
 
 ```typescript
-// Single
+// 단일
 const user = await prisma.user.create({
   data: { email: 'alice@prisma.io', name: 'Alice' },
 })
 
-// With relations
+// 관계 포함
 const user = await prisma.user.create({
   data: {
     email: 'bob@prisma.io',
@@ -27,22 +27,22 @@ posts: { create: [{
 ## Read
 
 ```typescript
-// Single
+// 단일
 const user = await prisma.user.findUnique({ where: { email } })
 
-// Multiple
+// 다중
 const users = await prisma.user.findMany({ where: { name: 'Alice' } })
 
-// With relations
+// 관계 포함
 const users = await prisma.user.findMany({ where: { role: 'ADMIN' }, include: { posts: true } })
 
-// Select fields
+// 필드 선택
 const user = await prisma.user.findUnique({
   where: { email },
   select: { email: true, posts: { select: { title: true } } },
 })
 
-// Filter by relation
+// 관계로 필터
 const users = await prisma.user.findMany({
   where: { posts: { some: { published: false } } },
 })
@@ -51,10 +51,10 @@ const users = await prisma.user.findMany({
 ## Update
 
 ```typescript
-// Single
+// 단일
 const user = await prisma.user.update({ where: { id }, data: { name: 'Updated' } })
 
-// Multiple
+// 다중
 await prisma.user.updateMany({ where: { role: 'USER' }, data: { role: 'ADMIN' } })
 
 // Upsert
@@ -69,22 +69,22 @@ const user = await prisma.user.upsert({
 
 ```typescript
 await prisma.user.delete({ where: { id } })
-await prisma.user.deleteMany({})  // all
-await prisma.post.deleteMany({ where: { published: false } })  // conditional
+await prisma.user.deleteMany({})  // 전체
+await prisma.post.deleteMany({ where: { published: false } })  // 조건부
 ```
 
-## Filter Operators
+## 필터 연산자
 
 ```typescript
-// String
+// 문자열
 { contains: 'prisma', startsWith: 'A', endsWith: 'io' }
 
-// Number
+// 숫자
 { gt: 18, gte: 18, lt: 65, lte: 65 }
 
-// Array
+// 배열
 { in: [1, 2, 3], notIn: [4, 5] }
 
-// Logical
+// 논리
 { OR: [...], AND: [...], NOT: {...} }
 ```

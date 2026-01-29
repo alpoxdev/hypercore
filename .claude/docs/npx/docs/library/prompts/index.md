@@ -66,7 +66,7 @@ const { secret } = await prompts({
   message: 'Enter password:',
 });
 
-// Handle cancellation
+// 취소 처리
 const { template } = await prompts({ /* ... */ });
 
 if (!template) {
@@ -74,14 +74,14 @@ if (!template) {
   process.exit(0);
 }
 
-// Multiple questions
+// 연속 질문
 const response = await prompts([
   { type: 'text', name: 'name', message: 'Project name?' },
   { type: 'select', name: 'template', message: 'Template?', choices: [...] },
   { type: 'confirm', name: 'git', message: 'Initialize git?' },
 ]);
 
-// Conditional questions
+// 조건부 질문
 const response = await prompts([
   { type: 'confirm', name: 'useTypescript', message: 'Use TypeScript?' },
   { type: (prev) => prev ? 'confirm' : null, name: 'strict', message: 'Enable strict mode?' },

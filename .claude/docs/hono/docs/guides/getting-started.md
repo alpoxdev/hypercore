@@ -1,6 +1,6 @@
 # Getting Started
 
-> Quick start for Hono projects
+> Hono 프로젝트 빠른 시작
 
 <instructions>
 @conventions.md
@@ -12,10 +12,10 @@
 
 <prerequisites>
 
-| Requirement | Version |
-|-------------|---------|
+| 요구사항 | 버전 |
+|----------|------|
 | Node.js | 18+ |
-| Package Manager | npm / yarn / pnpm |
+| 패키지 관리자 | npm / yarn / pnpm |
 
 </prerequisites>
 
@@ -23,13 +23,13 @@
 
 <installation>
 
-## Create Project
+## 프로젝트 생성
 
 ```bash
 # npm
 npm create hono@latest my-app
 
-# Select template
+# 템플릿 선택
 ? Which template do you want to use?
 ❯ cloudflare-workers
   nodejs
@@ -40,7 +40,7 @@ cd my-app
 npm install
 ```
 
-## Required Packages
+## 필수 패키지
 
 ```bash
 # Validation (Zod 4.x)
@@ -60,11 +60,11 @@ npm install @t3-oss/env-core
 
 <project_setup>
 
-## Project Structure
+## 프로젝트 구조
 
 ```
 src/
-├── index.ts           # App entry point
+├── index.ts           # App 진입점
 ├── routes/
 │   ├── index.ts       # Root routes
 │   ├── users.ts       # /users/*
@@ -82,7 +82,7 @@ src/
     └── index.ts
 ```
 
-## App Configuration
+## App 설정
 
 ```typescript
 // src/index.ts
@@ -101,15 +101,15 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>()
 
-// Middleware
+// 미들웨어
 app.use('*', logger())
 app.use('*', cors())
 
-// Routes
+// 라우트
 app.route('/users', users)
 app.route('/posts', posts)
 
-// Error handler
+// 에러 핸들러
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
     return c.json({ error: err.message }, err.status)
@@ -123,7 +123,7 @@ app.notFound((c) => c.json({ error: 'Not Found' }, 404))
 export default app
 ```
 
-## Route Example
+## 라우트 예시
 
 ```typescript
 // src/routes/users.ts
@@ -171,7 +171,7 @@ users.post('/', zValidator('json', createUserSchema), async (c) => {
 export default users
 ```
 
-## Middleware Example
+## 미들웨어 예시
 
 ```typescript
 // src/middleware/auth.ts
@@ -190,7 +190,7 @@ export const authMiddleware = createMiddleware<{ Variables: Variables }>(
       throw new HTTPException(401, { message: 'Unauthorized' })
     }
 
-    // JWT verification logic
+    // JWT 검증 로직
     // const decoded = await verifyJWT(token)
 
     c.set('userId', 'user-id')
@@ -207,10 +207,10 @@ export const authMiddleware = createMiddleware<{ Variables: Variables }>(
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm start` | Run production server |
-| `npm run deploy` | Deploy (Cloudflare Workers, etc.) |
+| `npm run dev` | 개발 서버 시작 |
+| `npm run build` | 프로덕션 빌드 |
+| `npm start` | 프로덕션 서버 실행 |
+| `npm run deploy` | 배포 (Cloudflare Workers 등) |
 
 </commands>
 
@@ -218,13 +218,13 @@ export const authMiddleware = createMiddleware<{ Variables: Variables }>(
 
 <next_steps>
 
-| Document | Content |
-|----------|---------|
-| [conventions.md](./conventions.md) | Code conventions, file naming rules |
-| [env-setup.md](./env-setup.md) | Environment variable setup |
-| [../library/hono/](../library/hono/) | Detailed Hono API guide |
-| [../library/prisma/](../library/prisma/) | Prisma ORM usage |
-| [../deployment/](../deployment/) | Deployment guides |
+| 문서 | 내용 |
+|------|------|
+| [conventions.md](./conventions.md) | 코드 컨벤션, 파일명 규칙 |
+| [env-setup.md](./env-setup.md) | 환경 변수 설정 |
+| [../library/hono/](../library/hono/) | Hono API 상세 가이드 |
+| [../library/prisma/](../library/prisma/) | Prisma ORM 사용법 |
+| [../deployment/](../deployment/) | 배포 가이드 |
 
 </next_steps>
 

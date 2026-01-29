@@ -1,10 +1,10 @@
-# Prisma - Config File
+# Prisma - Config 파일
 
-> prisma.config.ts configuration (v7)
+> prisma.config.ts 설정 (v7)
 
 ---
 
-## Multi-File Schema Required Configuration
+## Multi-File 스키마 필수 설정
 
 ```typescript
 // prisma.config.ts
@@ -12,7 +12,7 @@ import path from 'node:path'
 import { defineConfig, env } from 'prisma/config'
 
 export default defineConfig({
-  schema: path.join('prisma', 'schema'), // Folder path
+  schema: path.join('prisma', 'schema'), // 폴더 경로
   datasource: {
     url: env('DATABASE_URL'),
   },
@@ -21,13 +21,13 @@ export default defineConfig({
 
 ---
 
-## File Location
+## 파일 위치
 
 ```
-project/
-├── prisma.config.ts      # Project root
+프로젝트/
+├── prisma.config.ts      # 프로젝트 루트
 ├── prisma/
-│   ├── schema/           # Multi-File schema
+│   ├── schema/           # Multi-File 스키마
 │   │   ├── +base.prisma
 │   │   ├── +enum.prisma
 │   │   └── user.prisma
@@ -37,7 +37,7 @@ project/
 
 ---
 
-## Full Configuration Example
+## 전체 설정 예시
 
 ```typescript
 // prisma.config.ts
@@ -69,14 +69,14 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client"  // v7 required
+  provider = "prisma-client"  // v7 필수
   output   = "../../generated/prisma"
 }
 ```
 
 ---
 
-## Seed Script
+## 시드 스크립트
 
 ```typescript
 // prisma/seed.ts
@@ -86,7 +86,7 @@ const prisma = new PrismaClient()
 
 async function main() {
   await prisma.user.create({
-    data: { email: 'admin@example.com', name: 'Administrator' },
+    data: { email: 'admin@example.com', name: '관리자' },
   })
 }
 
@@ -104,18 +104,18 @@ main()
 generator client {
   provider = "prisma-client"
   output   = "../../generated/prisma"
-  runtime  = "workerd"  // Workers runtime
+  runtime  = "workerd"  // Workers 런타임
 }
 
 datasource db {
-  provider = "sqlite"  // D1 is SQLite
+  provider = "sqlite"  // D1은 SQLite
   url      = env("DATABASE_URL")
 }
 ```
 
 ---
 
-## Related Documentation
+## 관련 문서
 
-- [Prisma Overview](./index.md)
+- [Prisma 개요](./index.md)
 - [Cloudflare D1](./cloudflare-d1.md)

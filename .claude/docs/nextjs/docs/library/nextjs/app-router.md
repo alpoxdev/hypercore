@@ -1,22 +1,22 @@
 # App Router
 
-> File-based routing system
+> 파일 기반 라우팅 시스템
 
 ---
 
-## File Structure and Routing
+## 파일 구조와 라우팅
 
-### Basic Rules
+### 기본 규칙
 
-| File | Route | Description |
-|------|-------|-------------|
-| `app/page.tsx` | `/` | Home page |
-| `app/about/page.tsx` | `/about` | About page |
-| `app/blog/[slug]/page.tsx` | `/blog/:slug` | Dynamic route |
+| 파일 | 라우트 | 설명 |
+|------|--------|------|
+| `app/page.tsx` | `/` | 홈 페이지 |
+| `app/about/page.tsx` | `/about` | About 페이지 |
+| `app/blog/[slug]/page.tsx` | `/blog/:slug` | 동적 라우트 |
 | `app/shop/[...slug]/page.tsx` | `/shop/*` | Catch-all |
 | `app/docs/[[...slug]]/page.tsx` | `/docs/*` | Optional catch-all |
 
-### Example
+### 예시
 
 ```typescript
 // app/blog/[slug]/page.tsx
@@ -38,20 +38,20 @@ export default async function BlogPost({ params, searchParams }: PageProps) {
 
 ## Layouts
 
-### Root Layout (required)
+### Root Layout (필수)
 
 ```typescript
 // app/layout.tsx
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <body>{children}</body>
     </html>
   )
 }
 ```
 
-### Nested Layout
+### 중첩 Layout
 
 ```typescript
 // app/dashboard/layout.tsx
@@ -65,10 +65,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 }
 ```
 
-**Features:**
-- Nestable (parent → child order)
-- Persists without re-rendering
-- Receives `children` as props
+**특징:**
+- 중첩 가능 (부모 → 자식 순서)
+- 리렌더링 없이 유지됨
+- props로 `children` 받음
 
 ---
 
@@ -87,15 +87,15 @@ app/
         └── page.tsx    # /products
 ```
 
-**Purpose:**
-- Group folders without affecting URLs
-- Apply different layouts
+**용도:**
+- URL에 영향 없이 폴더 그룹화
+- 다른 레이아웃 적용
 
 ---
 
-## Dynamic Routes
+## 동적 라우트
 
-### Single Parameter
+### 단일 파라미터
 
 ```typescript
 // app/posts/[id]/page.tsx
@@ -104,7 +104,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
   return <article>{post.title}</article>
 }
 
-// Static generation (at build time)
+// 정적 생성 (빌드 시)
 export async function generateStaticParams() {
   const posts = await prisma.post.findMany()
   return posts.map(post => ({ id: post.id }))
@@ -123,7 +123,7 @@ export default function DocsPage({ params }: { params: { slug: string[] } }) {
 
 ---
 
-## Parallel Routes
+## 병렬 라우트
 
 ```
 app/
@@ -157,7 +157,7 @@ export default function Layout({
 
 ---
 
-## Intercepting Routes
+## 인터셉팅 라우트
 
 ```
 app/
@@ -172,11 +172,11 @@ app/
             └── page.tsx
 ```
 
-**Conventions:**
-- `(.)` - same level
-- `(..)` - one level up
-- `(..)(..)` - two levels up
-- `(...)` - from root
+**컨벤션:**
+- `(.)` - 같은 레벨
+- `(..)` - 한 단계 위
+- `(..)(..)` - 두 단계 위
+- `(...)` - 루트부터
 
 ---
 
@@ -203,15 +203,15 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 ---
 
-## Special Files
+## 특수 파일
 
-| File | Purpose |
-|------|---------|
-| `loading.tsx` | Suspense fallback |
+| 파일 | 용도 |
+|------|------|
+| `loading.tsx` | Suspense 폴백 |
 | `error.tsx` | Error Boundary |
-| `not-found.tsx` | 404 page |
-| `template.tsx` | Re-rendering Layout |
-| `default.tsx` | Parallel route fallback |
+| `not-found.tsx` | 404 페이지 |
+| `template.tsx` | 리렌더링되는 Layout |
+| `default.tsx` | 병렬 라우트 폴백 |
 
 ### Loading UI
 
@@ -231,8 +231,8 @@ export default function Loading() {
 export default function Error({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div>
-      <h2>An error occurred</h2>
-      <button onClick={reset}>Try again</button>
+      <h2>오류 발생</h2>
+      <button onClick={reset}>다시 시도</button>
     </div>
   )
 }
@@ -240,7 +240,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
 
 ---
 
-## Navigation
+## 네비게이션
 
 ```typescript
 "use client"
@@ -250,8 +250,8 @@ import Link from "next/link"
 
 export function Navigation() {
   const router = useRouter()
-  const pathname = usePathname() // current path
-  const searchParams = useSearchParams() // query parameters
+  const pathname = usePathname() // 현재 경로
+  const searchParams = useSearchParams() // 쿼리 파라미터
 
   return (
     <>
@@ -264,6 +264,6 @@ export function Navigation() {
 
 ---
 
-## References
+## 참조
 
-- [Next.js App Router Official Docs](https://nextjs.org/docs/app)
+- [Next.js App Router 공식 문서](https://nextjs.org/docs/app)

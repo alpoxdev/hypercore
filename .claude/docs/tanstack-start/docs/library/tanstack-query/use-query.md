@@ -3,7 +3,7 @@
 <patterns>
 
 ```tsx
-// Basic
+// 기본
 const { data, isLoading, error } = useQuery({
   queryKey: ['todos'],
   queryFn: getTodos,
@@ -11,28 +11,28 @@ const { data, isLoading, error } = useQuery({
 if (isLoading) return <div>Loading...</div>
 if (error) return <div>Error: {error.message}</div>
 
-// Options
+// 옵션
 useQuery({
   queryKey: ['todos'],
   queryFn: fetchTodos,
-  staleTime: 1000 * 60 * 5,      // Time to stay fresh
-  gcTime: 1000 * 60 * 30,        // Garbage collection time
-  refetchOnWindowFocus: true,    // Refetch on focus
-  refetchInterval: 1000 * 60,    // Auto refetch interval
-  retry: 3,                      // Retry count
-  enabled: !!userId,             // Conditional execution
-  initialData: [],               // Initial data
-  select: (data) => data.filter(t => t.done),  // Data transformation
+  staleTime: 1000 * 60 * 5,      // fresh 유지 시간
+  gcTime: 1000 * 60 * 30,        // 가비지 컬렉션 시간
+  refetchOnWindowFocus: true,    // 포커스 시 리페치
+  refetchInterval: 1000 * 60,    // 자동 리페치 간격
+  retry: 3,                      // 재시도 횟수
+  enabled: !!userId,             // 조건부 실행
+  initialData: [],               // 초기 데이터
+  select: (data) => data.filter(t => t.done),  // 데이터 변환
 })
 
-// With parameters
+// 파라미터
 useQuery({
   queryKey: ['todo', todoId],
   queryFn: () => fetchTodoById(todoId),
   enabled: !!todoId,
 })
 
-// Dependent queries
+// 의존적 쿼리
 const { data: user } = useQuery({ queryKey: ['user', userId], queryFn: ... })
 const { data: posts } = useQuery({
   queryKey: ['posts', user?.id],
@@ -40,11 +40,11 @@ const { data: posts } = useQuery({
   enabled: !!user?.id,
 })
 
-// Parallel
+// 병렬
 const usersQuery = useQuery({ queryKey: ['users'], queryFn: fetchUsers })
 const postsQuery = useQuery({ queryKey: ['posts'], queryFn: fetchPosts })
 
-// Dynamic parallel
+// 동적 병렬
 const userQueries = useQueries({
   queries: userIds.map((id) => ({
     queryKey: ['user', id],
@@ -57,14 +57,14 @@ const userQueries = useQueries({
 
 <returns>
 
-| Property | Description |
+| 속성 | 설명 |
 |------|------|
-| data | Query result |
-| error | Error object |
-| isLoading | Initial loading |
-| isFetching | Background fetching |
-| isError/isSuccess | Status |
-| refetch | Manual refetch |
+| data | 쿼리 결과 |
+| error | 에러 객체 |
+| isLoading | 첫 로딩 중 |
+| isFetching | 백그라운드 페칭 중 |
+| isError/isSuccess | 상태 |
+| refetch | 수동 리페치 |
 | status | 'pending' \| 'error' \| 'success' |
 
 </returns>

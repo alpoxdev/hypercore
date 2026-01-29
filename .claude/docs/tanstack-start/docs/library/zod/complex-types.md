@@ -1,31 +1,31 @@
-# Zod - Complex Types
+# Zod - 복합 타입
 
 <patterns>
 
 ```typescript
-// Object
+// 객체
 const UserSchema = z.object({
   name: z.string(),
   email: z.email(),
   age: z.number().optional(),
 })
 
-UserSchema.partial()              // All fields optional
-UserSchema.required()             // All fields required
-UserSchema.pick({ name: true })   // Only specific fields
-UserSchema.omit({ email: true })  // Exclude specific fields
+UserSchema.partial()              // 모든 필드 optional
+UserSchema.required()             // 모든 필드 required
+UserSchema.pick({ name: true })   // 특정 필드만
+UserSchema.omit({ email: true })  // 특정 필드 제외
 UserSchema.extend({ role: z.enum(['admin', 'user']) })
 UserSchema.merge(AnotherSchema)
 
-z.strictObject({ name: z.string() })  // v4: error on extra keys
-z.looseObject({ name: z.string() })   // v4: allow extra keys
+z.strictObject({ name: z.string() })  // v4: 추가 키 에러
+z.looseObject({ name: z.string() })   // v4: 추가 키 통과
 
-// Array/Tuple
+// 배열/튜플
 z.array(z.string())
 z.array(z.number()).min(1).max(10).length(5).nonempty()
 z.tuple([z.string(), z.number()])  // [string, number]
 
-// Union
+// 유니온
 z.union([z.string(), z.number()])
 z.string().or(z.number())
 
@@ -46,7 +46,7 @@ z.record(z.string(), z.object({ name: z.string() }))  // { [key: string]: { name
 z.map(z.string(), z.number())  // Map<string, number>
 z.set(z.number())              // Set<number>
 
-// Recursive
+// 재귀
 type Json = string | number | boolean | null | { [key: string]: Json } | Json[]
 
 const jsonSchema: z.ZodType<Json> = z.lazy(() =>

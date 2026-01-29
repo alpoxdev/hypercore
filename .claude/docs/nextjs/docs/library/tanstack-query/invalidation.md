@@ -1,54 +1,54 @@
-# TanStack Query - Query Invalidation
+# TanStack Query - Query 무효화
 
 <patterns>
 
 ```typescript
 const queryClient = useQueryClient()
 
-// Single
+// 단일
 queryClient.invalidateQueries({ queryKey: ['todos'] })
 
-// Multiple
+// 다중
 await Promise.all([
   queryClient.invalidateQueries({ queryKey: ['todos'] }),
   queryClient.invalidateQueries({ queryKey: ['reminders'] }),
 ])
 
-// All
+// 전체
 queryClient.invalidateQueries()
 
-// Options
+// 옵션
 queryClient.invalidateQueries({
   queryKey: ['posts'],
-  exact: true,  // exact key match only
+  exact: true,  // 정확한 키 매칭만
   refetchType: 'active',  // 'active' | 'inactive' | 'all' | 'none'
 })
 
-// Query key matching
-queryClient.invalidateQueries({ queryKey: ['todos'] })  // prefix matching
-queryClient.invalidateQueries({ queryKey: ['todos', 'list'], exact: true })  // exact matching
+// Query Key 매칭
+queryClient.invalidateQueries({ queryKey: ['todos'] })  // prefix 매칭
+queryClient.invalidateQueries({ queryKey: ['todos', 'list'], exact: true })  // 정확한 매칭
 
-// With mutation
+// Mutation과 함께
 useMutation({
   mutationFn: addTodo,
   onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
-  onSettled: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),  // regardless of success/failure
+  onSettled: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),  // 성공/실패 무관
 })
 
-// Direct update vs invalidation
-queryClient.setQueryData(['todos'], (old) => [...old, newTodo])  // faster
-queryClient.invalidateQueries({ queryKey: ['todos'] })  // guarantees server data
+// 직접 업데이트 vs 무효화
+queryClient.setQueryData(['todos'], (old) => [...old, newTodo])  // 더 빠름
+queryClient.invalidateQueries({ queryKey: ['todos'] })  // 서버 데이터 보장
 ```
 
 </patterns>
 
 <options>
 
-| refetchType | Description |
-|-------------|-------------|
-| active | Refetch only queries currently being rendered (default) |
-| inactive | Refetch only inactive queries |
-| all | Refetch all matching queries |
-| none | Invalidate only, no refetch |
+| refetchType | 설명 |
+|-------------|------|
+| active | 렌더링 중인 쿼리만 재조회 (기본) |
+| inactive | 비활성 쿼리만 |
+| all | 모든 매칭 쿼리 |
+| none | 무효화만, 재조회 안함 |
 
 </options>

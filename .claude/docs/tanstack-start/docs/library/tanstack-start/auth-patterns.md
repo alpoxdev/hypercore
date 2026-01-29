@@ -1,9 +1,9 @@
-# TanStack Start - Auth Patterns
+# TanStack Start - 인증 패턴
 
 <patterns>
 
 ```typescript
-// Login
+// 로그인
 export const loginFn = createServerFn({ method: 'POST' })
   .inputValidator((data: { email: string; password: string }) => data)
   .handler(async ({ data }) => {
@@ -14,7 +14,7 @@ export const loginFn = createServerFn({ method: 'POST' })
     throw redirect({ to: '/dashboard' })
   })
 
-// Logout
+// 로그아웃
 export const logoutFn = createServerFn({ method: 'POST' })
   .handler(async () => {
     const session = await useAppSession()
@@ -22,7 +22,7 @@ export const logoutFn = createServerFn({ method: 'POST' })
     throw redirect({ to: '/' })
   })
 
-// Get current user
+// 현재 사용자
 export const getCurrentUserFn = createServerFn({ method: 'GET' })
   .handler(async () => {
     const session = await useAppSession()
@@ -30,7 +30,7 @@ export const getCurrentUserFn = createServerFn({ method: 'GET' })
     return getUserById(session.data.userId)
   })
 
-// Auth middleware
+// 인증 미들웨어
 export const authMiddleware = createMiddleware({ type: 'function' })
   .server(async ({ next }) => {
     const session = await useAppSession()
@@ -39,12 +39,12 @@ export const authMiddleware = createMiddleware({ type: 'function' })
     return next({ context: { user } })
   })
 
-// Apply to Server Function
+// Server Function에 적용
 export const protectedFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => ({ user: context.user }))
 
-// Protected route
+// 보호된 라우트
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: async () => {
     const user = await getCurrentUserFn()
@@ -57,7 +57,7 @@ export const Route = createFileRoute('/dashboard')({
   },
 })
 
-// Better Auth integration
+// Better Auth 통합
 export const auth = betterAuth({
   database: prismaAdapter(prisma),
   emailAndPassword: { enabled: true },

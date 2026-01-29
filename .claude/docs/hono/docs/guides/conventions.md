@@ -1,18 +1,18 @@
-# Code Conventions
+# 코드 컨벤션
 
-> Code writing rules for Hono projects
+> Hono 프로젝트 코드 작성 규칙
 
 ---
 
 <naming>
 
-## File Naming
+## 파일 네이밍
 
-| Type | Rule | Example |
-|------|------|---------|
-| **General Files** | kebab-case | `user-service.ts`, `auth-middleware.ts` |
-| **Route Files** | kebab-case | `users.ts`, `posts.ts` |
-| **Type Files** | kebab-case | `user-types.ts`, `api-types.ts` |
+| 타입 | 규칙 | 예시 |
+|------|------|------|
+| **일반 파일** | kebab-case | `user-service.ts`, `auth-middleware.ts` |
+| **Route 파일** | kebab-case | `users.ts`, `posts.ts` |
+| **타입 파일** | kebab-case | `user-types.ts`, `api-types.ts` |
 
 </naming>
 
@@ -20,39 +20,39 @@
 
 <typescript>
 
-## TypeScript Rules
+## TypeScript 규칙
 
-| Rule | Description | Example |
-|------|-------------|---------|
-| **Function Declaration** | const functions, explicit return types | `const fn = (): ReturnType => {}` |
-| **Type Definition** | interface (objects), type (unions) | `interface User {}`, `type Status = 'a' \| 'b'` |
-| **No any** | Use unknown instead | `const data: unknown = JSON.parse(str)` |
-| **Import Types** | Separate type imports | `import type { User } from '@/types'` |
+| 규칙 | 설명 | 예시 |
+|------|------|------|
+| **함수 선언** | const 함수, 명시적 return type | `const fn = (): ReturnType => {}` |
+| **타입 정의** | interface (객체), type (유니온) | `interface User {}`, `type Status = 'a' \| 'b'` |
+| **any 금지** | unknown 사용 | `const data: unknown = JSON.parse(str)` |
+| **Import 타입** | type import 분리 | `import type { User } from '@/types'` |
 
-## Patterns
+## 패턴
 
 ```typescript
-// ✅ const function with explicit type
+// ✅ const 함수, 명시적 타입
 const getUserById = async (id: string): Promise<User | null> => {
   return prisma.user.findUnique({ where: { id } })
 }
 
-// ✅ Even simple functions should have explicit types
+// ✅ 간단한 함수도 명시적 타입
 const formatDate = (date: Date): string => {
   return date.toISOString()
 }
 
-// ✅ No any → use unknown
+// ✅ any 금지 → unknown 사용
 const parseJSON = (data: string): unknown => {
   return JSON.parse(data)
 }
 
-// ❌ Don't use any
+// ❌ any 사용 금지
 const badParse = (data: string): any => {  // ❌
   return JSON.parse(data)
 }
 
-// ❌ Don't use function keyword
+// ❌ function 키워드 금지
 function badFunction() {  // ❌
   return 'use const arrow function'
 }
@@ -64,7 +64,7 @@ function badFunction() {  // ❌
 
 <imports>
 
-## Import Order
+## Import 순서
 
 ```typescript
 // 1. External libraries
@@ -88,12 +88,12 @@ import type { Context } from 'hono'
 
 <comments>
 
-## Korean Comments (Per Code Block)
+## 한글 주석 (묶음 단위)
 
 ```typescript
-// ✅ Comments per code block
+// ✅ 코드 묶음 단위 주석
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Retrieve users
+// 사용자 조회
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 users.get('/', async (c) => {
   const users = await prisma.user.findMany()
@@ -108,7 +108,7 @@ users.get('/:id', async (c) => {
 })
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Create/Update users
+// 사용자 생성/수정
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 users.post('/', zValidator('json', createUserSchema), async (c) => {
   const data = c.req.valid('json')
@@ -118,10 +118,10 @@ users.post('/', zValidator('json', createUserSchema), async (c) => {
 ```
 
 ```typescript
-// ❌ Granular comments (prohibited)
-users.get('/', async (c) => {  // Retrieve user list
-  const users = await prisma.user.findMany()  // Query from DB
-  return c.json({ users })  // Return JSON
+// ❌ 세세한 주석 (금지)
+users.get('/', async (c) => {  // 사용자 목록 조회
+  const users = await prisma.user.findMany()  // DB에서 조회
+  return c.json({ users })  // JSON 반환
 })
 ```
 
@@ -131,14 +131,14 @@ users.get('/', async (c) => {  // Retrieve user list
 
 <error_handling>
 
-## Error Handling Patterns
+## 에러 처리 패턴
 
-### Using HTTPException
+### HTTPException 사용
 
 ```typescript
 import { HTTPException } from 'hono/http-exception'
 
-// ✅ Use HTTPException
+// ✅ HTTPException 사용
 users.get('/:id', async (c) => {
   const id = c.req.param('id')
   const user = await prisma.user.findUnique({ where: { id } })
@@ -150,7 +150,7 @@ users.get('/:id', async (c) => {
   return c.json({ user })
 })
 
-// ❌ Don't use generic Error
+// ❌ 일반 Error 사용 금지
 users.get('/:id', async (c) => {
   const id = c.req.param('id')
   const user = await prisma.user.findUnique({ where: { id } })
@@ -163,7 +163,7 @@ users.get('/:id', async (c) => {
 })
 ```
 
-### Global Error Handler
+### 전역 에러 핸들러
 
 ```typescript
 // src/index.ts
@@ -204,7 +204,7 @@ app.notFound((c) => {
 })
 ```
 
-### Custom Error Classes
+### 커스텀 에러 클래스
 
 ```typescript
 // lib/errors.ts
@@ -228,7 +228,7 @@ export class UnauthorizedError extends HTTPException {
   }
 }
 
-// Usage
+// 사용
 import { NotFoundError } from '@/lib/errors'
 
 users.get('/:id', async (c) => {
@@ -244,15 +244,15 @@ users.get('/:id', async (c) => {
 
 <validation>
 
-## Validation Patterns
+## Validation 패턴
 
-### Using zValidator
+### zValidator 사용
 
 ```typescript
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 
-// ✅ Use zValidator
+// ✅ zValidator 사용
 const createUserSchema = z.object({
   name: z.string().min(1).trim(),
   email: z.email(),
@@ -260,12 +260,12 @@ const createUserSchema = z.object({
 })
 
 users.post('/', zValidator('json', createUserSchema), async (c) => {
-  const data = c.req.valid('json')  // Type-safe
+  const data = c.req.valid('json')  // 타입 안전
   const user = await prisma.user.create({ data })
   return c.json({ user }, 201)
 })
 
-// ❌ Don't manually validate
+// ❌ 수동 검증 금지
 users.post('/', async (c) => {
   const body = await c.req.json()
 
@@ -278,7 +278,7 @@ users.post('/', async (c) => {
 })
 ```
 
-### Multiple Validators
+### 여러 Validator
 
 ```typescript
 // Query Params
@@ -306,17 +306,17 @@ users.post('/', zValidator('json', createUserSchema), (c) => {
 
 <examples>
 
-## File Naming Examples
+## 파일명 예시
 
-| Type | ❌ Incorrect | ✅ Correct |
-|------|-------------|-----------|
+| 타입 | ❌ 잘못된 예시 | ✅ 올바른 예시 |
+|------|---------------|---------------|
 | Route | `Users.ts` | `users.ts` |
 | Service | `userService.ts` | `user-service.ts` |
 | Middleware | `authMiddleware.ts` | `auth-middleware.ts` |
 | Utility | `formatUtils.ts` | `format-utils.ts` |
 | Type | `UserTypes.ts` | `user-types.ts` |
 
-## Directory Structure
+## 디렉토리 구조
 
 ```
 src/
@@ -325,19 +325,19 @@ src/
 │   ├── posts.ts           # /posts/*
 │   └── auth.ts            # /auth/*
 ├── middleware/
-│   ├── auth.ts            # Authentication middleware
-│   ├── logger.ts          # Logging middleware
-│   └── cors.ts            # CORS middleware
+│   ├── auth.ts            # 인증 미들웨어
+│   ├── logger.ts          # 로깅 미들웨어
+│   └── cors.ts            # CORS 미들웨어
 ├── services/
-│   ├── user-service.ts    # User business logic
-│   └── post-service.ts    # Post business logic
+│   ├── user-service.ts    # 사용자 비즈니스 로직
+│   └── post-service.ts    # 게시글 비즈니스 로직
 ├── lib/
-│   ├── prisma.ts          # Prisma client
-│   ├── env.ts             # Environment variables
-│   └── errors.ts          # Custom errors
+│   ├── prisma.ts          # Prisma 클라이언트
+│   ├── env.ts             # 환경 변수
+│   └── errors.ts          # 커스텀 에러
 └── types/
-    ├── user-types.ts      # User types
-    └── api-types.ts       # API types
+    ├── user-types.ts      # 사용자 타입
+    └── api-types.ts       # API 타입
 ```
 
 </examples>

@@ -1,26 +1,26 @@
-# Code Conventions
+# 코드 컨벤션
 
-> TanStack Start project coding rules
+> TanStack Start 프로젝트 코드 작성 규칙
 
 ---
 
 <naming>
 
-## File Naming
+## 파일 네이밍
 
-> ⚠️ **No camelCase filenames** - All filenames must use **kebab-case**
+> ⚠️ **camelCase 파일명 금지** - 모든 파일명은 **kebab-case** 사용
 
-| Type | Rule | Example |
+| 타입 | 규칙 | 예시 |
 |------|------|------|
-| **General Files** | kebab-case | `user-profile.tsx`, `auth-service.ts` |
-| **Route Files** | TanStack Router rules | `__root.tsx`, `index.tsx`, `$id.tsx` |
-| **Hook Files** | `use-` prefix + kebab-case | `use-user-filter.ts`, `use-auth.ts` |
-| **Component** | PascalCase component, kebab-case file | `UserCard` in `user-card.tsx` |
+| **일반 파일** | kebab-case | `user-profile.tsx`, `auth-service.ts` |
+| **Route 파일** | TanStack Router 규칙 | `__root.tsx`, `index.tsx`, `$id.tsx` |
+| **Hook 파일** | `use-` 접두사 + kebab-case | `use-user-filter.ts`, `use-auth.ts` |
+| **Component** | PascalCase 컴포넌트, kebab-case 파일 | `UserCard` in `user-card.tsx` |
 | **Server Function** | kebab-case | `get-users.ts`, `create-post.ts` |
 
 ```
-❌ No camelCase: getUserById.ts, authService.ts, useUserFilter.ts
-✅ kebab-case required: get-user-by-id.ts, auth-service.ts, use-user-filter.ts
+❌ camelCase 금지: getUserById.ts, authService.ts, useUserFilter.ts
+✅ kebab-case 필수: get-user-by-id.ts, auth-service.ts, use-user-filter.ts
 ```
 
 </naming>
@@ -29,39 +29,39 @@
 
 <typescript>
 
-## TypeScript Rules
+## TypeScript 규칙
 
-| Rule | Description | Example |
+| 규칙 | 설명 | 예시 |
 |------|------|------|
-| **Function Declaration** | const function, explicit return type | `const fn = (): ReturnType => {}` |
-| **Type Definition** | interface (objects), type (unions) | `interface User {}`, `type Status = 'a' \| 'b'` |
-| **No any** | Use unknown | `const data: unknown = JSON.parse(str)` |
-| **Import Types** | Separate type imports | `import type { User } from '@/types'` |
+| **함수 선언** | const 함수, 명시적 return type | `const fn = (): ReturnType => {}` |
+| **타입 정의** | interface (객체), type (유니온) | `interface User {}`, `type Status = 'a' \| 'b'` |
+| **any 금지** | unknown 사용 | `const data: unknown = JSON.parse(str)` |
+| **Import 타입** | type import 분리 | `import type { User } from '@/types'` |
 
-## Patterns
+## 패턴
 
 ```typescript
-// ✅ const function, explicit type
+// ✅ const 함수, 명시적 타입
 const getUserById = async (id: string): Promise<User> => {
   return prisma.user.findUnique({ where: { id } })
 }
 
-// ✅ Simple functions also need explicit types
+// ✅ 간단한 함수도 명시적 타입
 const formatDate = (date: Date): string => {
   return date.toISOString()
 }
 
-// ✅ No any → use unknown
+// ✅ any 금지 → unknown 사용
 const parseJSON = (data: string): unknown => {
   return JSON.parse(data)
 }
 
-// ❌ No any
+// ❌ any 사용 금지
 const badParse = (data: string): any => {  // ❌
   return JSON.parse(data)
 }
 
-// ❌ No function keyword
+// ❌ function 키워드 금지
 function badFunction() {  // ❌
   return 'use const arrow function'
 }
@@ -73,7 +73,7 @@ function badFunction() {  // ❌
 
 <imports>
 
-## Import Order
+## Import 순서
 
 ```typescript
 // 1. External libraries
@@ -101,19 +101,19 @@ import type { UseUsersReturn } from './-hooks/use-users'
 
 <comments>
 
-## Korean Comments (Code Blocks)
+## 한글 주석 (묶음 단위)
 
 ```typescript
-// ✅ Comments per code block
+// ✅ 코드 묶음 단위 주석
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// User-related state
+// 사용자 관련 상태
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const [user, setUser] = useState<User | null>(null)
 const [isLoading, setIsLoading] = useState(false)
 const [error, setError] = useState<Error | null>(null)
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Data fetching
+// 데이터 조회
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const { data: users } = useQuery({
   queryKey: ['users'],
@@ -122,10 +122,10 @@ const { data: users } = useQuery({
 ```
 
 ```typescript
-// ❌ Line-by-line comments (forbidden)
-const [user, setUser] = useState(null)  // User state
-const [isLoading, setIsLoading] = useState(false)  // Loading state
-const [error, setError] = useState(null)  // Error state
+// ❌ 세세한 주석 (금지)
+const [user, setUser] = useState(null)  // 사용자 상태
+const [isLoading, setIsLoading] = useState(false)  // 로딩 상태
+const [error, setError] = useState(null)  // 에러 상태
 ```
 
 </comments>
@@ -134,7 +134,7 @@ const [error, setError] = useState(null)  // Error state
 
 <error_handling>
 
-## Error Handling Pattern
+## 에러 처리 패턴
 
 ```typescript
 // lib/errors.ts
@@ -168,7 +168,7 @@ export class UnauthorizedError extends AppError {
 }
 ```
 
-## Usage Example
+## 사용 예시
 
 ```typescript
 // services/user/queries.ts
@@ -188,9 +188,9 @@ export const getUserById = createServerFn({ method: 'GET' })
 
 <examples>
 
-## Filename Examples
+## 파일명 예시
 
-| Type | ❌ Wrong | ✅ Correct |
+| 타입 | ❌ 잘못된 예시 | ✅ 올바른 예시 |
 |------|---------------|---------------|
 | Component | `UserProfile.tsx` | `user-profile.tsx` |
 | Service | `authService.ts` | `auth-service.ts` |
@@ -198,14 +198,14 @@ export const getUserById = createServerFn({ method: 'GET' })
 | Utility | `formatUtils.ts` | `format-utils.ts` |
 | Type | `UserTypes.ts` | `user-types.ts` |
 
-## Route Filenames
+## Route 파일명
 
-| Path | Filename | Description |
+| 경로 | 파일명 | 설명 |
 |------|--------|------|
-| `/` | `index.tsx` | Index route |
-| `/users` | `users/index.tsx` | User list |
-| `/users/:id` | `users/$id.tsx` | Dynamic route |
-| `/posts/:slug` | `posts/$slug.tsx` | URL parameter |
-| Layout | `__root.tsx` | Root layout |
+| `/` | `index.tsx` | 인덱스 라우트 |
+| `/users` | `users/index.tsx` | 사용자 목록 |
+| `/users/:id` | `users/$id.tsx` | 동적 라우트 |
+| `/posts/:slug` | `posts/$slug.tsx` | URL 파라미터 |
+| Layout | `__root.tsx` | Root 레이아웃 |
 
 </examples>

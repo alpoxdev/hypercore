@@ -1,10 +1,10 @@
-# Hono Server Architecture
+# Hono 서버 아키텍처
 
-> Layer-based architecture
+> 레이어 기반 아키텍처
 
 ---
 
-## System Overview
+## 시스템 개요
 
 ```
 Client → Middleware → Routes → Validation → Services → Database
@@ -12,21 +12,21 @@ Client → Middleware → Routes → Validation → Services → Database
 
 ---
 
-## Project Structure
+## 프로젝트 구조
 
 ```
 src/
 ├── index.ts            # Entry point
-├── routes/             # Route modules
-├── middleware/         # Custom middleware
-├── validators/         # Zod schemas
-├── services/           # Business logic
+├── routes/             # 라우트 모듈
+├── middleware/         # 커스텀 미들웨어
+├── validators/         # Zod 스키마
+├── services/           # 비즈니스 로직
 │   └── user/
-│       ├── queries.ts  # Read operations
-│       └── mutations.ts # Create/Update/Delete
+│       ├── queries.ts  # 조회
+│       └── mutations.ts # 생성/수정/삭제
 ├── database/           # Prisma Client
-├── types/              # Type definitions
-└── lib/                # Utilities
+├── types/              # 타입 정의
+└── lib/                # 유틸리티
 ```
 
 ---
@@ -227,8 +227,8 @@ const data = await res.json()
 
 ## Tech Stack
 
-| Category | Technology | Version |
-|----------|------------|---------|
+| 분류 | 기술 | 버전 |
+|------|------|------|
 | Framework | Hono | latest |
 | Validation | Zod | **4.x** |
 | ORM | Prisma | **7.x** |
@@ -236,20 +236,20 @@ const data = await res.json()
 
 ---
 
-## Pattern Summary
+## 패턴 요약
 
-| Layer | Responsibility | Files |
-|-------|----------------|-------|
-| Routes | HTTP routing | `routes/*.ts` |
-| Middleware | Request/Response handling | `middleware/*.ts` |
-| Validators | Input validation | `validators/*.ts` |
-| Services | Business logic | `services/*/*.ts` |
-| Database | Data access | `database/prisma.ts` |
+| 레이어 | 역할 | 파일 |
+|--------|------|------|
+| Routes | HTTP 라우팅 | `routes/*.ts` |
+| Middleware | 요청/응답 처리 | `middleware/*.ts` |
+| Validators | 입력 검증 | `validators/*.ts` |
+| Services | 비즈니스 로직 | `services/*/*.ts` |
+| Database | 데이터 액세스 | `database/prisma.ts` |
 
 ---
 
-## Related Documentation
+## 관련 문서
 
 - [Hono](../library/hono/index.md)
 - [Prisma](../library/prisma/index.md)
-- [Cloudflare Deployment](../deployment/cloudflare.md)
+- [Cloudflare 배포](../deployment/cloudflare.md)

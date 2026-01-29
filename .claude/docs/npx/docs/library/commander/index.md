@@ -1,10 +1,10 @@
 # Commander.js
 
-> Node.js CLI framework
+> Node.js CLI 프레임워크
 
 <patterns>
 
-## Basic Setup
+## 기본 설정
 
 ```typescript
 import { Command } from 'commander';
@@ -22,7 +22,7 @@ program.parse();
 ## Options
 
 ```typescript
-// Basic
+// 기본
 program
   .option('-t, --template <name>', 'template name')
   .option('-f, --force', 'force overwrite')
@@ -31,19 +31,19 @@ program
     console.log(options.force);    // boolean | undefined
   });
 
-// Required
+// 필수
 program
   .requiredOption('-c, --config <path>', 'config file path')
   .action((options) => {
-    // options.config is always present
+    // options.config는 항상 존재
   });
 
-// Default values
+// 기본값
 program
   .option('-p, --port <number>', 'port number', '3000')
   .option('-e, --env <name>', 'environment', 'development')
 
-// Multiple values
+// 여러 값
 program
   .option('-i, --include <path...>', 'include paths')
   .action((options) => {
@@ -58,8 +58,8 @@ program
   .argument('<source>', 'source file')
   .argument('[destination]', 'destination file')
   .action((source, destination, options) => {
-    console.log(source);      // required
-    console.log(destination); // optional
+    console.log(source);      // 필수
+    console.log(destination); // 선택
   });
 ```
 
@@ -71,14 +71,14 @@ program
   .description('Initialize project')
   .option('-t, --template <name>', 'template')
   .action((options) => {
-    // Handle init
+    // init 처리
   });
 
 program
   .command('build')
   .description('Build project')
   .action(() => {
-    // Handle build
+    // build 처리
   });
 ```
 
@@ -95,7 +95,7 @@ program
     }
   });
 
-await program.parseAsync(); // await required
+await program.parseAsync(); // await 필수
 ```
 
 </patterns>

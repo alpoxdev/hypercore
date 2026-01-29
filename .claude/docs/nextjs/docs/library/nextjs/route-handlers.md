@@ -1,10 +1,10 @@
 # Route Handlers
 
-> REST API endpoints (`app/api/`)
+> REST API 엔드포인트 (`app/api/`)
 
 ---
 
-## Basic Usage
+## 기본 사용법
 
 ```typescript
 // app/api/posts/route.ts
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
 ---
 
-## HTTP Methods
+## HTTP 메서드
 
 ```typescript
 // app/api/posts/route.ts
@@ -39,7 +39,7 @@ export async function OPTIONS(request: NextRequest) {}
 
 ---
 
-## Dynamic Routes
+## 동적 라우트
 
 ```typescript
 // app/api/posts/[id]/route.ts
@@ -67,7 +67,7 @@ export async function DELETE(
 
 ---
 
-## Request Processing
+## Request 처리
 
 ### Query Parameters
 
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
   const title = formData.get("title") as string
   const file = formData.get("file") as File
 
-  // File processing...
+  // 파일 처리...
 
   return NextResponse.json({ success: true })
 }
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
   const token = request.headers.get("authorization")
   const userAgent = request.headers.get("user-agent")
 
-  // Use headers...
+  // 헤더 사용...
 
   return NextResponse.json({ data: "..." })
 }
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
 
 ---
 
-## Response Processing
+## Response 처리
 
 ### JSON Response
 
@@ -178,14 +178,14 @@ import { cookies } from "next/headers"
 export async function GET() {
   const cookieStore = cookies()
 
-  // Read cookie
+  // 쿠키 읽기
   const token = cookieStore.get("token")
 
-  // Set cookie
+  // 쿠키 설정
   cookieStore.set("token", "value", {
     httpOnly: true,
     secure: true,
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    maxAge: 60 * 60 * 24 * 7, // 7일
   })
 
   return NextResponse.json({ success: true })
@@ -194,7 +194,7 @@ export async function GET() {
 
 ---
 
-## Zod Validation
+## Zod 검증
 
 ```typescript
 import { z } from "zod"
@@ -229,7 +229,7 @@ export async function POST(request: NextRequest) {
 
 ---
 
-## Authentication
+## 인증
 
 ```typescript
 import { auth } from "@/lib/auth"
@@ -286,7 +286,7 @@ export async function OPTIONS() {
 
 ---
 
-## Streaming
+## 스트리밍
 
 ```typescript
 export async function GET() {
@@ -314,7 +314,7 @@ export async function GET() {
 
 ---
 
-## Error Handling
+## 에러 처리
 
 ```typescript
 export async function GET(
@@ -341,17 +341,17 @@ export async function GET(
 
 ---
 
-## Caching
+## 캐싱
 
 ```typescript
-// Static response (generated at build time)
+// 정적 응답 (빌드 시 생성)
 export const dynamic = "force-static"
 
-// Dynamic response (every request)
+// 동적 응답 (매 요청마다)
 export const dynamic = "force-dynamic"
 
-// Revalidate (regenerate every n seconds)
-export const revalidate = 60 // 60 seconds
+// Revalidate (n초마다 재생성)
+export const revalidate = 60 // 60초
 
 export async function GET() {
   const posts = await prisma.post.findMany()
@@ -363,20 +363,20 @@ export async function GET() {
 
 ## Server Actions vs Route Handlers
 
-| Criteria | Server Actions | Route Handlers |
-|----------|----------------|----------------|
-| **Purpose** | Form submissions, mutations | REST API, external integration |
-| **Types** | ✅ Automatic type inference | ❌ Manual type definition |
-| **Caching** | revalidatePath | export const revalidate |
-| **Auth** | await auth() | await auth() |
-| **Recommended** | Internal API | External API, webhooks |
+| 기준 | Server Actions | Route Handlers |
+|------|----------------|----------------|
+| **용도** | 폼 제출, 뮤테이션 | REST API, 외부 연동 |
+| **타입** | ✅ 자동 타입 추론 | ❌ 수동 타입 정의 |
+| **캐싱** | revalidatePath | export const revalidate |
+| **인증** | await auth() | await auth() |
+| **권장** | 내부 API | 외부 API, 웹훅 |
 
-**Recommendation:**
-- Internal API → Server Actions
-- External API, webhooks, third-party integration → Route Handlers
+**권장 사항:**
+- 내부 API → Server Actions
+- 외부 API, 웹훅, 써드파티 연동 → Route Handlers
 
 ---
 
-## References
+## 참조
 
 - [Next.js Route Handlers](https://nextjs.org/docs/app/building-your-application/routing/route-handlers)
