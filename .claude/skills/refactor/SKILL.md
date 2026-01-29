@@ -123,7 +123,7 @@ $ARGUMENTS 있음 → 다음 단계 진행
    → 사용자에게 2-3개 옵션 제시
 
 3. 선택 후 계획 문서 작성
-   → .claude/plans/refactor-[이름].md
+   → .claude/plan/refactor-[이름].md
 ```
 
 ### Agent 미사용 케이스

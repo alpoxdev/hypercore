@@ -431,7 +431,7 @@ PRD 작성 시작 전 확인:
 | 1 | 복잡도 판단 및 PRD 구조 계획 | Sequential Thinking (3-5단계) |
 | 2 | 코드베이스/문서 조사 (필요시) | Task (Explore) |
 | 3 | 병렬 Agent 실행 (복잡한 경우) | Task (analyst, architect, document-writer) |
-| 4 | 15개 섹션 구조로 PRD 작성 | Write → `.claude/plans/` 또는 `docs/prd/` |
+| 4 | 15개 섹션 구조로 PRD 작성 | Write → `.claude/plan/` 또는 `docs/prd/` |
 
 **핵심 원칙**:
 - 짧고 명확한 문장, 구체적 예시
@@ -734,7 +734,7 @@ PRD 작성 시작 전 확인:
    Task (Explore): "User 모델 및 인증 구조 분석"
 
 3. PRD 작성:
-   → .claude/plans/profile-edit-prd.md
+   → .claude/plan/profile-edit-prd.md
 
 4. 주요 섹션:
    - 문제: 사용자가 정보를 수정할 방법이 없음

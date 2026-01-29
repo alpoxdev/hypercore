@@ -7,6 +7,7 @@ const CLAUDE_GENERATED_FOLDERS = [
   '.claude/plan/',
   '.claude/ralph/',
   '.claude/refactor/',
+  '.claude/prd/',
 ];
 
 /**
@@ -29,12 +30,6 @@ export async function updateGitignore(targetDir: string): Promise<void> {
     content = '';
   }
 
-  // 이미 Claude Code 섹션이 있는지 확인
-  if (content.includes(sectionComment)) {
-    logger.info('.gitignore already contains Claude Code section');
-    return;
-  }
-
   // 추가할 패턴 목록 (중복 체크)
   const linesToAdd: string[] = [];
   const existingLines = content.split('\n').map((line) => line.trim());
@@ -50,16 +45,42 @@ export async function updateGitignore(targetDir: string): Promise<void> {
     return;
   }
 
+  // 섹션 주석이 없으면 추가
+  const needsSection = !content.includes(sectionComment);
+
   // 내용 추가
   let newContent = content;
   if (newContent && !newContent.endsWith('\n')) {
     newContent += '\n';
   }
-  if (newContent) {
-    newContent += '\n';
+
+  if (needsSection) {
+    // 섹션 주석이 없으면 새로 추가
+    if (newContent) {
+      newContent += '\n';
+    }
+    newContent += sectionComment + '\n';
+    newContent += linesToAdd.join('\n') + '\n';
+  } else {
+    // 섹션 주석이 이미 있으면 해당 섹션 끝에 패턴만 추가
+    const lines = newContent.split('\n');
+    const sectionIndex = lines.findIndex((line) =>
+      line.includes(sectionComment),
+    );
+
+    if (sectionIndex !== -1) {
+      // 섹션 다음 줄에 패턴 추가
+      lines.splice(sectionIndex + 1, 0, ...linesToAdd);
+      newContent = lines.join('\n');
+    } else {
+      // 섹션을 찾지 못한 경우 (이론적으로 발생하지 않음)
+      if (newContent) {
+        newContent += '\n';
+      }
+      newContent += sectionComment + '\n';
+      newContent += linesToAdd.join('\n') + '\n';
+    }
   }
-  newContent += sectionComment + '\n';
-  newContent += linesToAdd.join('\n') + '\n';
 
   // 파일 쓰기
   await fs.writeFile(gitignorePath, newContent, 'utf-8');
