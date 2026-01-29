@@ -22,14 +22,14 @@
 
 <instructions>
 @../../commands/git.md
-@docs/library/tanstack-start/index.md
-@docs/library/tanstack-router/index.md
-@docs/library/tanstack-query/index.md
-@docs/library/prisma/index.md
-@docs/library/better-auth/index.md
-@docs/library/t3-env/index.md
-@docs/library/zod/index.md
-@docs/design.md
+@.claude/docs/library/tanstack-start/index.md
+@.claude/docs/library/tanstack-router/index.md
+@.claude/docs/library/tanstack-query/index.md
+@.claude/docs/library/prisma/index.md
+@.claude/docs/library/better-auth/index.md
+@.claude/docs/library/t3-env/index.md
+@.claude/docs/library/zod/index.md
+@.claude/docs/design.md
 </instructions>
 
 ---

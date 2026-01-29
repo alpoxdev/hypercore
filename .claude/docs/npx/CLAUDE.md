@@ -21,10 +21,10 @@
 
 <instructions>
 @../../commands/git.md
-@docs/library/commander/index.md
-@docs/library/fs-extra/index.md
-@docs/library/prompts/index.md
-@docs/references/patterns.md
+@.claude/docs/library/commander/index.md
+@.claude/docs/library/fs-extra/index.md
+@.claude/docs/library/prompts/index.md
+@.claude/docs/references/patterns.md
 </instructions>
 
 ---

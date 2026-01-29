@@ -4,11 +4,11 @@
 
 <instructions>
 @../../commands/git.md
-@docs/guides/getting-started.md
-@docs/library/hono/index.md
-@docs/library/prisma/index.md
-@docs/library/t3-env/index.md
-@docs/library/zod/index.md
+@.claude/docs/guides/getting-started.md
+@.claude/docs/library/hono/index.md
+@.claude/docs/library/prisma/index.md
+@.claude/docs/library/t3-env/index.md
+@.claude/docs/library/zod/index.md
 </instructions>
 
 ---

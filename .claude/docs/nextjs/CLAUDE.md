@@ -23,12 +23,12 @@
 
 <instructions>
 @../../commands/git.md
-@docs/library/nextjs/index.md
-@docs/library/tanstack-query/index.md
-@docs/library/prisma/index.md
-@docs/library/next-auth/index.md
-@docs/library/zod/index.md
-@docs/design.md
+@.claude/docs/library/nextjs/index.md
+@.claude/docs/library/tanstack-query/index.md
+@.claude/docs/library/prisma/index.md
+@.claude/docs/library/next-auth/index.md
+@.claude/docs/library/zod/index.md
+@.claude/docs/design.md
 </instructions>
 
 ---
