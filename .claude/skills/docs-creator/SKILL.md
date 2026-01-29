@@ -151,7 +151,7 @@ Edit("docs/library/react-query/index.md", ...)
 
 <instructions>
 @path/to/common.md
-@docs/library/[lib]/index.md
+@.claude/docs/library/[lib]/index.md
 </instructions>
 
 ---
@@ -276,7 +276,7 @@ argument-hint: <인자>
 
 <instructions>
 @.claude/instructions/git-rules.md
-@docs/library/tanstack-start/index.md
+@.claude/docs/library/tanstack-start/index.md
 </instructions>
 
 ---

@@ -52,7 +52,7 @@ model: haiku
 
 <instructions>
 @path/to/common-rules.md
-@docs/library/[library]/index.md
+@.claude/docs/library/[library]/index.md
 </instructions>
 
 <forbidden>
@@ -155,7 +155,7 @@ description: 한 줄 설명
 
 <instructions>
 @.claude/instructions/git-rules.md
-@docs/library/tanstack-start/index.md
+@.claude/docs/library/tanstack-start/index.md
 </instructions>
 
 <forbidden>

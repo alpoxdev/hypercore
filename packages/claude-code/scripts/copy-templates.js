@@ -7,22 +7,22 @@ const __dirname = path.dirname(__filename);
 
 const packageRoot = path.resolve(__dirname, '..');
 const projectRoot = path.resolve(packageRoot, '../..');
-const docsDir = path.join(projectRoot, 'docs');
 const claudeDir = path.join(projectRoot, '.claude');
+const claudeDocsDir = path.join(claudeDir, 'docs');
 const templatesDir = path.join(packageRoot, 'templates');
 
 async function copyTemplates() {
-  console.log('📦 Copying docs/ → templates/...');
+  console.log('📦 Copying .claude/docs/ → templates/...');
 
   // Clean templates directory
   await fs.remove(templatesDir);
   await fs.ensureDir(templatesDir);
 
-  // Get all template directories from docs/
-  const items = await fs.readdir(docsDir);
+  // Get all template directories from .claude/docs/
+  const items = await fs.readdir(claudeDocsDir);
 
   for (const item of items) {
-    const srcPath = path.join(docsDir, item);
+    const srcPath = path.join(claudeDocsDir, item);
     const destPath = path.join(templatesDir, item);
     const stat = await fs.stat(srcPath);
 

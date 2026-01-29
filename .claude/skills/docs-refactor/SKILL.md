@@ -156,7 +156,7 @@ Git 커밋 시에는 반드시 다음 규칙을 따라야 합니다:
 
 <instructions>
 @.claude/instructions/git-rules.md
-@docs/library/tanstack-start/index.md
+@.claude/docs/library/tanstack-start/index.md
 </instructions>
 
 ---
