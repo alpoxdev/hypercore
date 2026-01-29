@@ -47,7 +47,7 @@ Task({
 
 - 2-3개 옵션 제시 (장단점, 영향 범위)
 - 추천안 및 근거
-- 선택 후 `.claude/plans/00.[기능명]/` 폴더에 여러 문서 자동 생성
+- 선택 후 `.claude/plan/00.[기능명]/` 폴더에 여러 문서 자동 생성
   - OVERVIEW.md, OPTIONS.md, IMPLEMENTATION.md, RISKS.md, REFERENCES.md
 
 </when_to_use>
@@ -634,7 +634,7 @@ Task({
   `
 })
 
-// → 각 모듈별 .claude/plans/00.User_모듈/, 01.Payment_모듈/ 문서 생성
+// → 각 모듈별 .claude/plan/00.User_모듈/, 01.Payment_모듈/ 문서 생성
 ```
 
 **예시 3: 실시간 기능 기술 조사 (조사 병렬)**
@@ -1047,10 +1047,10 @@ Task({
 
 ### 폴더 구조
 
-옵션 선택 후 `.claude/plans/00.[기능명]/` 폴더 생성:
+옵션 선택 후 `.claude/plan/00.[기능명]/` 폴더 생성:
 
 ```
-.claude/plans/00.실시간_알림/
+.claude/plan/00.실시간_알림/
 ├── OVERVIEW.md        # 개요, 현재 상태, 선택된 옵션
 ├── OPTIONS.md         # 모든 옵션 비교 분석 (장단점, 영향 범위)
 ├── IMPLEMENTATION.md  # 구현 단계 상세 계획
@@ -1373,13 +1373,13 @@ Write({ file_path: "OPTIONS.md", ... })   // 대기...
 
 ## 계획 문서 병렬 생성
 
-사용자가 옵션을 선택하면 `.claude/plans/[기능명]-{timestamp}/` 폴더에 여러 문서를 **병렬로** 생성합니다.
+사용자가 옵션을 선택하면 `.claude/plan/[기능명]-{timestamp}/` 폴더에 여러 문서를 **병렬로** 생성합니다.
 
 ### 병렬 생성 워크플로우
 
 ```text
-1. 넘버링 결정: ls .claude/plans/ → 다음 번호 자동 부여
-2. 폴더 생성: .claude/plans/00.[기능명]/
+1. 넘버링 결정: ls .claude/plan/ → 다음 번호 자동 부여
+2. 폴더 생성: .claude/plan/00.[기능명]/
 3. document-writer 에이전트 5개 병렬 호출
    - OVERVIEW.md (haiku)
    - OPTIONS.md (haiku)
@@ -1397,10 +1397,10 @@ Write({ file_path: "OPTIONS.md", ... })   // 대기...
 ```typescript
 // 옵션 선택 후 실행
 // 1. 넘버링 결정
-Bash("ls .claude/plans/ | grep -E '^[0-9]+' | wc -l")
+Bash("ls .claude/plan/ | grep -E '^[0-9]+' | wc -l")
 const nextNumber = "00" // 결과 기반 계산
 const projectName = "실시간_알림"
-const basePath = `.claude/plans/${nextNumber}.${projectName}`
+const basePath = `.claude/plan/${nextNumber}.${projectName}`
 
 // 2. 폴더 생성
 Bash(`mkdir -p ${basePath}`)
@@ -1498,7 +1498,7 @@ Task({
 // 문서 생성 완료 후 즉시 실행
 Skill({
   skill: 'execute',
-  args: `@.claude/plans/${nextNumber}.${projectName}/IMPLEMENTATION.md 1단계부터 구현`
+  args: `@.claude/plan/${nextNumber}.${projectName}/IMPLEMENTATION.md 1단계부터 구현`
 })
 ```
 
@@ -1546,7 +1546,7 @@ Skill({
 3. planner agent 프로세스:
    - 인터뷰: 요구사항, 제약사항, 리스크 허용도 파악
    - 코드베이스 조사: Explore agent로 현재 구조 분석
-   - 계획 생성: .claude/plans/00.세션_인증/
+   - 계획 생성: .claude/plan/00.세션_인증/
    - 5개 문서 병렬 생성 (OVERVIEW, OPTIONS, IMPLEMENTATION, RISKS, REFERENCES)
    - 사용자 확인 후 핸드오프
 
@@ -1584,7 +1584,7 @@ Skill({
 4. 사용자 선택: 1
 
 5. document-writer 에이전트 5개 병렬 호출로 문서 생성
-   - .claude/plans/00.실시간_알림/
+   - .claude/plan/00.실시간_알림/
      ├── OVERVIEW.md
      ├── OPTIONS.md
      ├── IMPLEMENTATION.md
@@ -1621,7 +1621,7 @@ Skill({
    - 단점: 테스트 필요
 
 4. 사용자 선택 → document-writer 에이전트 병렬 호출로 계획 문서 생성
-   - .claude/plans/00.타입스크립트_전환/
+   - .claude/plan/00.타입스크립트_전환/
 
 5. 구현 자동 시작:
    Skill({ skill: 'execute' })
@@ -1644,9 +1644,9 @@ Skill({
 ✅ 옵션 최소 2개, 권장 3개
 ✅ 각 옵션에 장단점 명시
 ✅ 영향 범위 및 예상 작업량 제시
-✅ 넘버링 자동 결정 (ls .claude/plans/)
+✅ 넘버링 자동 결정 (ls .claude/plan/)
 ✅ document-writer 에이전트 병렬 호출로 문서 생성
-✅ .claude/plans/00.[기능명]/ 폴더 구조 사용 (한글 설명)
+✅ .claude/plan/00.[기능명]/ 폴더 구조 사용 (한글 설명)
 ```
 
 절대 금지:
