@@ -1,12 +1,9 @@
 import fs from 'fs-extra';
 import path from 'path';
-import {
-  UI_SKILLS,
-  NON_UI_TEMPLATES,
-  FRAMEWORK_SPECIFIC_SKILLS,
-} from '../../shared/constants.js';
+import { NON_UI_TEMPLATES } from '../../shared/constants.js';
 import { copyRecursive } from '../../shared/filesystem/index.js';
 import { getTemplatesDir } from '../templates/index.js';
+import { loadAllSkillMetadata } from './skill-metadata.js';
 import type { CopyResult, SkillsCopyResult, ExtrasType } from './types.js';
 
 /**
@@ -50,44 +47,35 @@ export const copyAgents = createExtrasCopier('agents');
 export const copyInstructions = createExtrasCopier('instructions');
 
 /**
- * templates/.claude/skills/ 폴더에서 모든 스킬 목록 동적 탐색
- */
-const getAllSkills = async (skillsSrc: string): Promise<string[]> => {
-  const entries = await fs.readdir(skillsSrc, { withFileTypes: true });
-  return entries
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name);
-};
-
-/**
- * 템플릿 기반으로 설치할 스킬 목록 결정
+ * 템플릿 기반으로 설치할 스킬 목록 결정 (메타데이터 기반)
  * - 기본: 모든 스킬 설치
- * - 비-UI 템플릿: UI 스킬 제외
- * - 프레임워크 전용 스킬: 해당 템플릿에서만 설치
+ * - 비-UI 템플릿: ui-only 스킬 제외
+ * - 프레임워크 전용 스킬: framework 필드가 있으면 해당 템플릿에서만 설치
  */
-const getSkillsToInstall = (
-  allSkills: string[],
+const getSkillsToInstall = async (
+  skillsSrc: string,
   templates: string[],
-): string[] => {
+): Promise<string[]> => {
+  const metadataMap = await loadAllSkillMetadata(skillsSrc);
   const isNonUITemplate = templates.some((t) => NON_UI_TEMPLATES.includes(t));
 
-  return allSkills.filter((skill) => {
-    // 1. 비-UI 템플릿이면 UI 스킬 제외
-    if (isNonUITemplate && UI_SKILLS.includes(skill)) {
-      return false;
+  const skillsToInstall: string[] = [];
+
+  for (const [skillName, metadata] of metadataMap) {
+    // 1. 비-UI 템플릿이면 ui-only 스킬 제외
+    if (isNonUITemplate && metadata.uiOnly) {
+      continue;
     }
 
     // 2. 프레임워크 전용 스킬 체크
-    for (const [framework, skills] of Object.entries(
-      FRAMEWORK_SPECIFIC_SKILLS,
-    )) {
-      if (skills.includes(skill) && !templates.includes(framework)) {
-        return false;
-      }
+    if (metadata.framework && !templates.includes(metadata.framework)) {
+      continue;
     }
 
-    return true;
-  });
+    skillsToInstall.push(skillName);
+  }
+
+  return skillsToInstall;
 };
 
 /**
@@ -108,13 +96,10 @@ export const copySkills = async (
 
   await fs.ensureDir(targetSkillsDir);
 
-  // 1. 모든 스킬 동적 탐색
-  const allSkills = await getAllSkills(skillsSrc);
+  // 1. 메타데이터 기반 스킬 필터링
+  const skillsToInstall = await getSkillsToInstall(skillsSrc, templates);
 
-  // 2. 템플릿 기반 필터링
-  const skillsToInstall = getSkillsToInstall(allSkills, templates);
-
-  // 3. 스킬 복사
+  // 2. 스킬 복사
   for (const skill of skillsToInstall) {
     const skillSrc = path.join(skillsSrc, skill);
     const skillDest = path.join(targetSkillsDir, skill);
