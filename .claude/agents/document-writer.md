@@ -2,7 +2,6 @@
 name: document-writer
 description: Anthropic Context Engineering 원칙 기반 고밀도 문서 작성/업데이트
 tools: Read, Write, Edit, Glob, Grep
-model: haiku
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md
