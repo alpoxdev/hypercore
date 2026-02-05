@@ -51,6 +51,10 @@ user-invocable: true
 | **@architect** | sonnet/opus | 아키텍처 분석, 설계 검토 (READ-ONLY) | MEDIUM-HIGH |
 | **@analyst** | sonnet | 요구사항 분석, 기술 조사, 가정 검증 | MEDIUM |
 | **@document-writer** | haiku | 문서 작성 (README, API 문서) | LOW-MEDIUM |
+| **@deep-executor** | opus | 자율적 딥 워커, 복잡한 작업 스스로 완료 | HIGH |
+| **@researcher** | sonnet | 외부 문서/API 조사 | LOW-MEDIUM |
+| **@scientist** | sonnet | Python 데이터 분석, 통계 연구 | MEDIUM |
+| **@vision** | sonnet | 미디어 파일 분석 (이미지, PDF, 다이어그램) | LOW-MEDIUM |
 
 ---
 
@@ -449,6 +453,7 @@ Task({
 
 | 복잡도 | 조건 | 사용 Agent |
 |--------|------|-----------|
+| **극도로 복잡** | 전체 시스템 재설계, 완전 자율 | Task (deep-executor) 단일 위임 |
 | **매우 복잡** | 다중 시스템, 아키텍처 변경, 불확실성 높음 | Task (implementation-executor) 병렬 위임 |
 | **복잡/보통** | 명확한 범위, 3-10 파일 | 직접 처리 (Task Explore 활용) + 병렬 구현 |
 | **간단** | 1-2 파일, 명확한 변경 | 직접 처리 |

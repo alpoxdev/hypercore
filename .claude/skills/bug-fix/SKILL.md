@@ -359,6 +359,10 @@ Task(subagent_type="architect", model="opus", ...)
 | 검증 | code-reviewer | opus | 수정 후 코드 리뷰, 회귀 검증 |
 | 린트 | lint-fixer | sonnet | tsc/eslint 오류 수정 |
 | 문서 | document-writer | haiku/sonnet | 버그 리포트, 수정 내역 문서화 |
+| 보안 | security-reviewer | opus | 보안 취약점 버그, SQL Injection, XSS |
+| 테스트 | qa-tester | sonnet | 수정 후 CLI/서비스 테스트 검증 |
+| 조사 | researcher | sonnet | 외부 라이브러리 버그, API 문서 조사 |
+| 시각 | vision | sonnet | UI 버그 스크린샷 분석, 레이아웃 검증 |
 
 ### Bug Severity별 병렬 처리
 
@@ -801,6 +805,71 @@ Task({
 })
 
 // → 총 소요 시간: 15-18분
+```
+
+#### 예시 5: 보안 버그 수정 + 전체 스캔
+
+**상황:** SQL Injection 취약점 발견 및 유사 취약점 스캔 필요
+
+```typescript
+// ✅ 보안 버그 수정 + 검증 병렬
+Task({
+  subagent_type: 'implementation-executor',
+  model: 'sonnet',
+  prompt: 'SQL Injection 취약점 수정'
+})
+Task({
+  subagent_type: 'security-reviewer',
+  model: 'opus',
+  prompt: '유사 보안 취약점 전체 스캔'
+})
+
+// → 수정과 동시에 다른 보안 취약점 발견
+```
+
+#### 예시 6: 버그 수정 후 테스트 검증
+
+**상황:** 인증 로직 수정 후 실제 서비스 테스트 필요
+
+```typescript
+// ✅ 버그 수정 후 테스트 검증
+Task({
+  subagent_type: 'implementation-executor',
+  model: 'sonnet',
+  prompt: '인증 버그 수정: 토큰 재발급 로직 개선'
+})
+
+// 수정 완료 후 테스트
+Task({
+  subagent_type: 'qa-tester',
+  model: 'sonnet',
+  prompt: 'tmux 세션으로 수정된 기능 테스트: 로그인 → 토큰 만료 → 재발급 시나리오'
+})
+```
+
+#### 예시 7: 라이브러리 버그 조사
+
+**상황:** 외부 라이브러리 버전 업그레이드 후 오류 발생
+
+```typescript
+// ✅ 라이브러리 버그 조사 + 수정 병렬
+Task({
+  subagent_type: 'researcher',
+  model: 'sonnet',
+  prompt: 'TanStack Query v5.60.0 breaking changes 조사 및 마이그레이션 가이드 탐색'
+})
+Task({
+  subagent_type: 'explore',
+  model: 'haiku',
+  prompt: '현재 코드베이스에서 TanStack Query 사용 위치 전체 탐색'
+})
+
+// → 조사 결과 기반으로 수정
+Task({
+  subagent_type: 'implementation-executor',
+  model: 'sonnet',
+  prompt: '[조사 결과 기반] Breaking changes 대응 코드 수정'
+})
 ```
 
 ### Bug Fix Workflow with Agents

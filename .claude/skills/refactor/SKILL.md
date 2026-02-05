@@ -161,6 +161,8 @@ $ARGUMENTS 있음 → 다음 단계 진행
 | **@analyst** | sonnet | 코드 메트릭 분석, 엣지 케이스 검증 |
 | **@explore** | haiku | 코드베이스 탐색, 의존성 파악 |
 | **@document-writer** | haiku/sonnet | 리팩토링 계획 및 결과 문서화 |
+| **@security-reviewer** | opus | 리팩토링 후 보안 취약점 검증 |
+| **@build-fixer** | sonnet | 리팩토링 후 빌드/타입 오류 수정 |
 
 ### 병렬 실행 패턴
 
@@ -311,6 +313,23 @@ Task({
   subagent_type: "code-reviewer",
   model: "opus",
   prompt: "유지보수성 검토: 테스트 커버리지, 의존성 관리, 확장성"
+})
+```
+
+#### 5-1. 리팩토링 후 보안 + 빌드 검증 병렬
+
+```typescript
+// ✅ 리팩토링 후 보안 + 빌드 검증 병렬
+Task({
+  subagent_type: "security-reviewer",
+  model: "opus",
+  prompt: "리팩토링 후 보안 취약점 검토"
+})
+
+Task({
+  subagent_type: "build-fixer",
+  model: "sonnet",
+  prompt: "리팩토링으로 발생한 빌드/타입 오류 수정"
 })
 ```
 

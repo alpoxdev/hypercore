@@ -66,6 +66,9 @@ Task({
 | **@explore** | haiku/sonnet | 코드베이스 탐색, 구조 파악 | LOW-MEDIUM |
 | **@architect** | sonnet/opus | 아키텍처 분석, 설계 검토 (READ-ONLY) | MEDIUM-HIGH |
 | **@analyst** | sonnet | 요구사항 분석, 기술 조사, 가정 검증 | MEDIUM |
+| **@critic** | opus | 계획 리뷰, OKAY/REJECT 판정 | HIGH |
+| **@researcher** | sonnet | 외부 문서/API/라이브러리 조사 | MEDIUM |
+| **@scientist** | sonnet | 데이터 분석 프로젝트 계획, 통계 연구 | MEDIUM |
 
 ---
 
@@ -499,6 +502,45 @@ Task({
 
 ---
 
+**패턴 10: 계획 수립 후 검증 (critic)**
+
+계획 완료 후 별도 에이전트로 검증:
+
+```typescript
+// ✅ 계획 수립 후 검증
+Task({
+  subagent_type: 'planner',
+  model: 'opus',
+  prompt: '인증 시스템 재설계 계획 수립'
+})
+// 계획 완료 후
+Task({
+  subagent_type: 'critic',
+  model: 'opus',
+  prompt: '.claude/plan/00.인증_시스템/IMPLEMENTATION.md 계획 검증 - OKAY/REJECT 판정'
+})
+```
+
+**패턴 11: 기술 조사 병렬 (researcher)**
+
+외부 문서 조사와 내부 분석을 병렬 실행:
+
+```typescript
+// ✅ 기술 조사 + 내부 분석 병렬
+Task({
+  subagent_type: 'researcher',
+  model: 'sonnet',
+  prompt: 'WebSocket vs SSE 공식 문서 및 성능 비교 조사'
+})
+Task({
+  subagent_type: 'analyst',
+  model: 'sonnet',
+  prompt: '현재 프로젝트에서 실시간 통신 요구사항 분석'
+})
+```
+
+---
+
 ### Model Routing
 
 | 복잡도 | 조건 | 권장 Model | Agent | 예시 |
@@ -536,6 +578,8 @@ Task({
 | **analyst** | sonnet | opus | 일반 조사는 sonnet, 전략적 결정은 opus |
 | **planner** | opus | opus | 계획은 항상 고품질 |
 | **architect** | sonnet | opus | 일반 분석은 sonnet, 설계는 opus |
+| **critic** | opus | opus | 계획 검증은 높은 품질 필요 |
+| **researcher** | sonnet | sonnet | 외부 조사는 sonnet으로 충분 |
 
 ---
 
