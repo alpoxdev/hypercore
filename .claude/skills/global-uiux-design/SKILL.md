@@ -2,6 +2,7 @@
 name: global-uiux-design
 description: Implement modern, accessible UI/UX design for global audiences. Apply industry-standard patterns from Material Design, Apple HIG, Fluent, and other leading design systems.
 user-invocable: true
+ui-only: true
 ---
 
 @../../instructions/agent-patterns/read-parallelization.md

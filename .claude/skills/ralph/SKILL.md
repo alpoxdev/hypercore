@@ -66,7 +66,7 @@ while (true) {
 
 **하나라도 실패 → ITERATION++ → Phase 1로 복귀**
 
-### 상태 문서 (`.claude/ralph/{{SESSION}}/`)
+### 상태 문서 (`.claude/ralph/00.[작업명]/`)
 
 | 파일 | 역할 | 업데이트 시점 |
 |------|------|--------------|
@@ -114,7 +114,7 @@ while (true) {
 | 2 | 코드 검증 | **새로 실행한** `/pre-deploy` 결과 | typecheck/lint/build 모두 통과 |
 | 3 | TODO 확인 | **새로 실행한** TaskList 조회 | pending/in_progress = 0 |
 | 4 | 플래너 검증 | **새로 생성한** Planner 에이전트 호출 | "승인" 응답 |
-| 5 | 상태 정리 | `.claude/ralph/` 상태 문서 최종 업데이트 | 완료 시각 기록 |
+| 5 | 상태 정리 | `.claude/ralph/00.[작업명]/` 상태 문서 최종 업데이트 | 완료 시각 기록 |
 
 **모든 5단계 통과 후에만 `<promise>` 출력. 하나라도 실패 시 루프 재개.**
 
@@ -157,7 +157,7 @@ Task(subagent_type="planner", model="opus", ...)  // 새로 검증
 
 ### 상태 문서 정리
 
-완료 직전 `.claude/ralph/{{SESSION}}/` 최종 업데이트:
+완료 직전 `.claude/ralph/00.[작업명]/` 최종 업데이트:
 - TASKS.md: 모든 체크박스 완료
 - PROCESS.md: 완료 시각, 총 소요 시간
 - VERIFICATION.md: 최종 검증 결과
@@ -725,10 +725,10 @@ Task(subagent_type="ko-to-en-translator", model="haiku",
 
 ### 문서화 폴더 구조
 
-**필수:** 세션 시작 시 `.claude/ralph/{{YYMMDD}}-{{N}}-{{작업명}}/` 폴더 생성
+**필수:** 세션 시작 시 `.claude/ralph/00.[작업명]/` 폴더 생성
 
 ```
-.claude/ralph/260129-01-사용자_인증_구현/
+.claude/ralph/00.사용자_인증_구현/
 ├── TASKS.md          # 작업 체크리스트
 ├── PROCESS.md        # 진행 단계 및 의사결정
 ├── VERIFICATION.md   # 검증 결과 기록 (매 반복마다 업데이트)
@@ -736,10 +736,8 @@ Task(subagent_type="ko-to-en-translator", model="haiku",
 └── NOTES.md          # 추가 메모
 ```
 
-**폴더명 형식:** `YYMMDD-N-작업명` (날짜 + 시퀀스 + 한글 설명)
-- 날짜: 오늘 날짜 (YYMMDD)
-- 시퀀스: 같은 날 여러 세션 시 증가 (01, 02, 03...)
-- 작업명: 한글 설명 (언더스코어로 구분)
+**폴더명 형식:** `00.[작업명]` (넘버링 + 한글 설명, 언더스코어로 구분)
+**넘버링:** 기존 ralph 폴더 목록 조회 → 다음 번호 자동 부여 (00, 01, 02...)
 
 **생성 시점:** Ralph 루프 진입 즉시 (첫 반복 시작 전)
 
@@ -908,7 +906,7 @@ Context compaction 후 세션 재개 시:
 
 ```text
 1. pwd 실행 → 작업 디렉토리 확인
-2. ls .claude/ralph/ → 최신 세션 폴더 식별 (가장 큰 번호)
+2. ls .claude/ralph/ → 최신 세션 폴더 식별 (가장 큰 넘버링)
 3. TASKS.md 읽기 → 요구사항 및 진행 상태 파악
 4. PROCESS.md 읽기 → 현재 Phase 및 다음 단계 확인
 5. VERIFICATION.md 읽기 → 검증 결과 확인
@@ -928,7 +926,7 @@ Context compaction 후 세션 재개 시:
 
 ```text
 1. 원본 작업 요구사항 분석
-2. 넘버링 결정 (ls .claude/ralph/)
+2. 넘버링 결정 (ls .claude/ralph/ → 다음 번호 자동 부여)
 3. .claude/ralph/00.[작업명]/ 폴더 생성 (한글 설명)
 4. TASKS.md 작성 (체크리스트)
 5. PROCESS.md 작성 (Phase 1 시작 기록)
@@ -1275,8 +1273,8 @@ Task(subagent_type="code-reviewer", model="opus", ...)
 
 **즉시 실행 (순차):**
 1. 원본 작업(`{{PROMPT}}`) 읽기
-2. 세션 폴더 생성: `.claude/ralph/{{YYMMDD}}-{{N}}-{{작업명}}/`
-   - `ls .claude/ralph/` → 오늘 날짜 폴더 찾기 → 다음 시퀀스 결정
+2. 세션 폴더 생성: `.claude/ralph/00.[작업명]/`
+   - `ls .claude/ralph/` → 기존 폴더 조회 → 다음 넘버링 결정
 3. 상태 문서 초기화 (병렬):
    ```typescript
    Task(subagent_type="document-writer", model="haiku",
@@ -1312,10 +1310,10 @@ Task(subagent_type="code-reviewer", model="opus", ...)
 
 **복구 프로토콜 (순차):**
 1. `pwd` → 작업 디렉토리 확인
-2. `ls -lt .claude/ralph/` → 최신 세션 폴더 찾기 (날짜순 정렬)
-3. `cat .claude/ralph/{{SESSION}}/ITERATION.md` → 반복 히스토리 확인
-4. `cat .claude/ralph/{{SESSION}}/VERIFICATION.md` → 마지막 검증 결과
-5. `cat .claude/ralph/{{SESSION}}/TASKS.md` → 미완료 항목
+2. `ls .claude/ralph/` → 최신 세션 폴더 찾기 (가장 큰 넘버링)
+3. `cat .claude/ralph/00.[작업명]/ITERATION.md` → 반복 히스토리 확인
+4. `cat .claude/ralph/00.[작업명]/VERIFICATION.md` → 마지막 검증 결과
+5. `cat .claude/ralph/00.[작업명]/TASKS.md` → 미완료 항목
 6. `git log --oneline -10` → 최근 커밋
 7. 현재 Iteration 번호 식별 후 루프 재개
 
@@ -1440,7 +1438,7 @@ Task(subagent_type="planner", ...) // Iteration N에서 새로 생성
 
 ### 6. 문서 = 루프 지속성
 
-`.claude/ralph/{{SESSION}}/` 상태 문서:
+`.claude/ralph/00.[작업명]/` 상태 문서:
 - TASKS.md: 요구사항 체크리스트
 - PROCESS.md: Phase 진행 상황
 - VERIFICATION.md: 매 반복 검증 결과

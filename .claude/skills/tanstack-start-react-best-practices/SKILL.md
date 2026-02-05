@@ -2,6 +2,7 @@
 name: tanstack-start-react-best-practices
 description: TanStack Start와 React 성능 최적화 가이드. React 컴포넌트, TanStack Start 페이지 작성/리뷰/리팩토링 시 최적 성능 패턴 보장. React 컴포넌트, TanStack Router 라우트, 데이터 페칭, 번들 최적화, 성능 개선 작업에 트리거.
 license: MIT
+framework: tanstack-start
 metadata:
   author: vercel
   version: "1.0.0"
