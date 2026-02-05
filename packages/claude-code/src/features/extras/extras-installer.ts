@@ -1,5 +1,5 @@
 import { logger } from '../../shared/logger.js';
-import { promptConfirm, promptSelect } from '../../shared/prompts/index.js';
+import { promptConfirm } from '../../shared/prompts/index.js';
 import {
   copySkills,
   copyCommands,
@@ -33,42 +33,6 @@ async function handleDuplicateFiles(
 }
 
 /**
- * Skills 중복 처리: 여러 템플릿에 동일 스킬이 있을 때 사용자 선택
- */
-async function handleDuplicateSkills(
-  duplicateSkills: { skill: string; templates: string[] }[],
-  templates: string[],
-  targetDir: string,
-): Promise<InstallResult> {
-  logger.blank();
-  logger.warn('The following skills are included in multiple templates:');
-  duplicateSkills.forEach(({ skill, templates: skillTemplates }) => {
-    logger.step(`${skill} (${skillTemplates.join(', ')})`);
-  });
-  logger.blank();
-
-  const response = await promptSelect(
-    "Which template's version should be used?",
-    templates.map((t) => ({
-      title: t,
-      value: t,
-    })),
-  );
-
-  if (response.value) {
-    logger.info(`Reinstalling skills with ${response.value} template...`);
-    const reinstallResult = await copySkills([response.value], targetDir);
-    logger.success(
-      `Skills: ${reinstallResult.files} files, ${reinstallResult.directories} directories`,
-    );
-    return reinstallResult;
-  } else {
-    logger.warn('No template selected. Using all templates.');
-    return { files: 0, directories: 0 };
-  }
-}
-
-/**
  * Skills 설치
  */
 async function installSkillsIfNeeded(
@@ -89,15 +53,6 @@ async function installSkillsIfNeeded(
   logger.blank();
   logger.info('Installing skills...');
   const skillsResult = await copySkills(templates, targetDir);
-
-  // 중복 스킬이 있으면 사용자에게 선택 프롬프트 표시
-  if (skillsResult.duplicateSkills && skillsResult.duplicateSkills.length > 0) {
-    return await handleDuplicateSkills(
-      skillsResult.duplicateSkills,
-      templates,
-      targetDir,
-    );
-  }
 
   logger.success(
     `Skills: ${skillsResult.files} files, ${skillsResult.directories} directories`,
