@@ -44,7 +44,7 @@ user-invocable: true
 
 ## 결과물
 
-- 다각도 자료 수집 (웹, 코드베이스, 트렌드)
+- 다각도 자료 수집 (웹, 코드베이스, 트렌드, Firecrawl/SearXNG)
 - 체계적 아이디어 목록 (카테고리별)
 - 실행 가능성 평가 (노력/영향도 매트릭스)
 - 추천 방향 및 다음 단계
@@ -75,19 +75,61 @@ $ARGUMENTS 있음 → 다음 단계 진행
 
 ---
 
+<sourcing_strategy>
+
+## Smart Tier Fallback
+
+```
+Tier 1 (MCP, Phase 0에서 ToolSearch로 감지):
+  Firecrawl MCP → 페이지→MD, 사이트맵 | SearXNG MCP → 메타검색 (246+ 엔진) | GitHub MCP → 코드/리포
+
+Tier 2 (내장, 항상 가용):
+  WebSearch → 웹 검색 | WebFetch → 페이지 읽기 | gh CLI → GitHub API (Bash)
+```
+
+**MCP는 main agent가 직접 실행** (subagent는 MCP 도구 사용 불가)
+
+| MCP 도구 | 브레인스토밍 활용 | 미설치 시 폴백 |
+|----------|-----------------|--------------|
+| `firecrawl_search` | 주제별 심층 검색 (경쟁사, 트렌드) | WebSearch (내장) |
+| `firecrawl_scrape` | 참고 사이트 컨텐츠 추출 | WebFetch (페이지별) |
+| `firecrawl_map` | 경쟁사/참고 사이트 구조 파악 | WebFetch (수동) |
+| `search_repositories/code` | GitHub 관련 프로젝트 검색 | `gh search` (Bash via explore) |
+
+</sourcing_strategy>
+
+---
+
 <workflow>
 
 ## 실행 흐름
 
 | 단계 | 작업 | 도구 |
 |------|------|------|
+| 0. MCP 감지 | Firecrawl/SearXNG/GitHub MCP 가용 여부 확인 | ToolSearch × 3 |
 | 1. 입력 확인 | ARGUMENT 검증 | - |
-| 2. 주제 분석 | 브레인스토밍 범위 결정 | sequentialthinking (1-2단계) |
-| 3. 자료 수집 | 병렬 정보 수집 (웹 + 코드베이스 + 트렌드) | Task 병렬 (researcher, explore) + WebSearch |
+| 2. 주제 분석 | 브레인스토밍 범위 결정 + 채널 배분 | sequentialthinking (1-2단계) |
+| 3. 자료 수집 | 병렬 정보 수집 (웹 + MCP + 코드베이스) | Task 병렬 + MCP 직접 실행 |
 | 4. 아이디어 도출 | 수집 자료 기반 아이디어 생성 | sequentialthinking (3-5단계) |
 | 5. 구조화 | 카테고리별 정리 + 실행 가능성 평가 | - |
 | 6. 문서 저장 | `.claude/brainstorms/` 폴더에 결과 저장 | Write |
 | 7. 결과 제시 | 아이디어 목록 + 추천 방향 + 파일 경로 안내 | - |
+
+### Phase 0: MCP 환경 감지
+
+```
+1. MCP 감지 (병렬): ToolSearch("firecrawl"), ToolSearch("searxng"), ToolSearch("github")
+2. 가용 채널 결정: MCP 있으면 Tier 1, 없으면 Tier 2 폴백
+3. 기존 브레인스토밍: .claude/brainstorms/ 동일 주제 확인
+```
+
+### Phase 2: 주제 분석 시 채널 배분
+
+```
+Sequential Thinking (2단계):
+  thought 1: 주제 유형 확정, 범위 결정, MCP 가용 여부 반영
+  thought 2: 에이전트 역할 배분 + main agent MCP 직접 실행 계획
+```
 
 ### 복잡도별 사고 패턴
 
@@ -177,10 +219,18 @@ Write({
 
 ### 병렬 수집 패턴
 
-**패턴 1: 다각도 자료 수집 (기본)**
+**에이전트 도구 제약 (@.claude/agents/ 정의 준수):**
+
+| Agent | Model | 도구 | 역할 |
+|-------|-------|------|------|
+| researcher | sonnet | WebSearch, WebFetch, Read | 웹 조사 + 출처 수집 |
+| explore | haiku | Read, Glob, Grep, **Bash** | 코드베이스 + `gh` CLI |
+| main agent | - | MCP 도구들 | Firecrawl/SearXNG/GitHub MCP 직접 실행 |
+
+**패턴 1: 다각도 자료 수집 (기본 + MCP)**
 
 ```typescript
-// 웹 + 코드베이스 + 트렌드 동시 수집
+// 에이전트 병렬 수집 (subagent는 MCP 사용 불가)
 Task({
   subagent_type: 'researcher',
   model: 'sonnet',
@@ -213,9 +263,15 @@ Task({
     - 기술적 제약
   `
 })
+
+// ⬆ 위 에이전트들과 동시에, main agent가 MCP 직접 실행:
+// firecrawl_search: 주제 관련 심층 검색
+firecrawl_search({ query: "[주제] 트렌드 사례", limit: 5 })
+// firecrawl_scrape: 핵심 참고 페이지 컨텐츠 추출
+firecrawl_scrape({ url: "경쟁사/참고_URL", formats: ["markdown"], onlyMainContent: true })
 ```
 
-**효과:** 3방향 동시 조사 → 포괄적 정보 수집
+**효과:** 3방향 에이전트 + MCP 동시 조사 → 포괄적 정보 수집
 
 ---
 
@@ -246,9 +302,13 @@ Task({
   model: 'haiku',
   prompt: '현재 프로젝트 통신 구조 및 요구사항 분석'
 })
+
+// main agent MCP 동시 실행 (가용 시):
+firecrawl_search({ query: "WebSocket vs SSE benchmark 2025", limit: 5 })
+// GitHub MCP: search_repositories({ query: "websocket sse comparison", sort: "stars" })
 ```
 
-**효과:** 기술 옵션 병렬 조사 → 공정한 비교
+**효과:** 기술 옵션 병렬 조사 + MCP 심층 검색 → 공정한 비교
 
 ---
 
@@ -853,9 +913,11 @@ Why 5: 왜? → 사용자 리서치가 없었다
 실행 전 확인:
 
 ```text
+✅ Phase 0: MCP 감지 (ToolSearch × 3: firecrawl, searxng, github)
 ✅ ARGUMENT 확인 (없으면 질문)
 ✅ Sequential Thinking 최소 3단계
-✅ 병렬 자료 수집 (researcher + explore + analyst)
+✅ 병렬 자료 수집 (researcher + explore + analyst + MCP 직접 실행)
+✅ MCP 가용 시 main agent가 firecrawl_search/scrape 병렬 실행
 ✅ 아이디어 최소 5개 이상
 ✅ 노력/영향도 평가
 ✅ 우선순위 매트릭스
@@ -878,10 +940,11 @@ Why 5: 왜? → 사용자 리서치가 없었다
 ## 병렬 실행 체크리스트
 
 ```text
-✅ 다각도 수집: 외부 + 내부 + 분석
+✅ 다각도 수집: 외부 + 내부 + 분석 + MCP
 ✅ researcher: 트렌드, 사례, 베스트 프랙티스
 ✅ explore: 코드베이스, 현재 구조
 ✅ analyst/designer: 요구사항, UX
+✅ main agent: MCP 가용 시 firecrawl_search/scrape 직접 실행
 ✅ 모델 선택: 조사(sonnet), 탐색(haiku), 아키텍처(opus)
 ✅ 병렬 실행 3-5개 권장
 ```
