@@ -25,7 +25,7 @@ export async function updateGitignore(targetDir: string): Promise<void> {
   try {
     content = await fs.readFile(gitignorePath, 'utf-8');
     hasGitignore = true;
-  } catch (error) {
+  } catch {
     // .gitignore 없음 → 새로 생성
     content = '';
   }

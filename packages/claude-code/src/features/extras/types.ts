@@ -23,7 +23,7 @@ export interface ExtrasFlags {
 }
 
 /** Skills 복사 결과 */
-export interface SkillsCopyResult extends CopyResult {}
+export type SkillsCopyResult = CopyResult;
 
 /** Extras 존재 여부 체크 결과 */
 export interface ExtrasExistenceCheck {

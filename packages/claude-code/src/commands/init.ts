@@ -1,5 +1,4 @@
 import fs from 'fs-extra';
-import path from 'path';
 import { logger } from '../shared/logger.js';
 import {
   copySingleTemplate,

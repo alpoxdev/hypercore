@@ -114,8 +114,8 @@ export async function promptExtrasSelection(
 
   let installSkills = skills ?? false;
   let installCommands = commands ?? false;
-  let installAgents = agents ?? hasAgents;
-  let installInstructions = instructions ?? hasInstructions;
+  const installAgents = agents ?? hasAgents;
+  const installInstructions = instructions ?? hasInstructions;
 
   // CLI 옵션이 하나도 제공되지 않은 경우 프롬프트 표시
   const noOptionsProvided =
