@@ -323,21 +323,25 @@ planner는 작업을 분석하고 여러 에이전트로 분산하는 역할도 
 ### 에이전트 위임 패턴
 
 ```typescript
-// 독립적인 조사 작업 병렬 실행
+// 독립적인 조사 작업 병렬 실행 (단순 탐색)
 Task(subagent_type="explore", model="haiku",
      prompt="프로젝트 구조 분석")
 Task(subagent_type="explore", model="haiku",
      prompt="기존 패턴 분석")
+
+// 복잡한 분석이 필요한 경우
+Task(subagent_type="explore", model="sonnet",
+     prompt="다중 의존성 추적 및 아키텍처 분석")
 ```
 
 ### 계획 단계별 에이전트
 
-| Phase | 에이전트 | 모델 | 병렬 가능 |
-|-------|---------|------|----------|
-| 조사 | explore | haiku | ✅ |
-| 분석 | analyst | sonnet | ✅ |
-| 구현 | implementation-executor | sonnet | ✅ |
-| 검증 | deployment-validator | sonnet | ❌ |
+| Phase | 에이전트 | 기본 모델 | 복잡할 때 | 병렬 가능 |
+|-------|---------|----------|----------|----------|
+| 조사 | explore | haiku | sonnet | ✅ |
+| 분석 | analyst | sonnet | opus | ✅ |
+| 구현 | implementation-executor | sonnet | opus | ✅ |
+| 검증 | deployment-validator | sonnet | sonnet | ❌ |
 
 </multi_agent_coordination>
 

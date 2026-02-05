@@ -142,13 +142,13 @@ Task(subagent_type="architect", model="opus",
 
 | Agent | 기본 모델 | 복잡할 때 |
 |-------|----------|----------|
-| explore | haiku | haiku (항상) |
+| explore | haiku | sonnet |
 | implementation-executor | sonnet | opus |
 | planner | opus | opus (항상) |
 | code-reviewer | opus | opus (항상) |
 | designer | sonnet | opus |
 | document-writer | haiku | sonnet |
-| git-operator | haiku | haiku (항상) |
+| git-operator | haiku | sonnet |
 | lint-fixer | sonnet | sonnet |
 | deployment-validator | sonnet | sonnet |
 | architect | sonnet | opus |
