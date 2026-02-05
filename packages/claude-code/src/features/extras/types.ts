@@ -22,16 +22,8 @@ export interface ExtrasFlags {
   installInstructions: boolean;
 }
 
-/** Skills 복사 결과 (중복 스킬 정보 포함) */
-export interface SkillsCopyResult extends CopyResult {
-  duplicateSkills?: DuplicateSkill[];
-}
-
-/** 중복 스킬 정보 */
-export interface DuplicateSkill {
-  skill: string;
-  templates: string[];
-}
+/** Skills 복사 결과 */
+export interface SkillsCopyResult extends CopyResult {}
 
 /** Extras 존재 여부 체크 결과 */
 export interface ExtrasExistenceCheck {
