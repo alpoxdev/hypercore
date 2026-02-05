@@ -1,9 +1,5 @@
 import fs from 'fs-extra';
 import path from 'path';
-import {
-  FRAMEWORK_SPECIFIC_SKILLS_MAP,
-  COMMON_SKILLS,
-} from '../../shared/constants.js';
 import { hasFiles } from '../../shared/filesystem/index.js';
 import { getTemplatesDir } from '../templates/index.js';
 import type { ExtrasExistenceCheck } from './types.js';
@@ -58,22 +54,19 @@ export const checkSkillsAndCommandsExist = async (
 
 /**
  * Skills, Commands, Agents, Instructions가 존재하는지 확인
+ * 스킬은 동적으로 탐색하므로 폴더 존재 여부로 판단
  */
 export const checkAllExtrasExist = async (
-  templates: string[],
+  _templates: string[],
 ): Promise<ExtrasExistenceCheck> => {
   const claudeDir = path.join(getTemplatesDir(), '.claude');
+  const skillsSrc = path.join(claudeDir, 'skills');
   const commandsSrc = path.join(claudeDir, 'commands');
   const agentsSrc = path.join(claudeDir, 'agents');
   const instructionsSrc = path.join(claudeDir, 'instructions');
 
-  // 스킬: 공통 스킬이 있거나 선택된 템플릿에 프레임워크별 스킬이 있으면 true
-  const hasFrameworkSkills = templates.some((template) => {
-    const skills = FRAMEWORK_SPECIFIC_SKILLS_MAP[template];
-    return skills && skills.length > 0;
-  });
-  const hasSkills = COMMON_SKILLS.length > 0 || hasFrameworkSkills;
-
+  // 스킬: skills 폴더에 파일이 있으면 true (동적 탐색)
+  const hasSkills = await hasFiles(skillsSrc);
   const hasCommands = await hasFiles(commandsSrc);
   const hasAgents = await hasFiles(agentsSrc);
   const hasInstructions = await hasFiles(instructionsSrc);
