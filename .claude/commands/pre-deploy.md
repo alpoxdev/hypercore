@@ -58,6 +58,71 @@ argument-hint: [파일/디렉토리 경로...]
 | CI/CD 전 로컬 확인 | @deployment-validator |
 | 자동화된 검증 | @deployment-validator |
 
+---
+
+## @security-reviewer Agent 활용
+
+**언제 사용:**
+- 배포 전 보안 취약점 검토
+- 코드 변경 후 보안 검증
+- 인증/권한/데이터 처리 로직 추가 시
+
+**호출 방법:**
+```bash
+@security-reviewer
+# 또는 자연어
+"배포 전 보안 검토해줘"
+"보안 취약점 체크해줘"
+```
+
+**장점:**
+- OWASP Top 10 자동 검토
+- 시크릿 노출 탐지 (API 키, 비밀번호 하드코딩)
+- 입력 검증 체크 (SQL Injection, XSS, CSRF)
+- 인증/권한 로직 검증
+- 독립적 context에서 실행 (메인 작업 병렬 가능)
+
+**검토 범위:**
+- SQL Injection: Prisma raw query 사용 시
+- XSS: HTML/dangerouslySetInnerHTML 사용 시
+- CSRF: POST/PUT/DELETE 엔드포인트
+- 인증: middleware 누락 여부
+- 시크릿: .env 변수 하드코딩 여부
+- 입력 검증: Zod validator 누락 여부
+
+---
+
+## @build-fixer Agent 활용
+
+**언제 사용:**
+- 빌드/타입 오류 다수 발생
+- 빠른 자동 수정 필요
+- 반복적인 타입 오류 일괄 수정
+
+**호출 방법:**
+```bash
+@build-fixer
+# 또는 자연어
+"빌드 오류 수정해줘"
+"타입 오류 자동 수정해줘"
+```
+
+**장점:**
+- 최소 diff로 오류 수정
+- 언어 자동 감지 (TypeScript, Python, Go 등)
+- 여러 오류 효율적 처리
+- Sequential Thinking 자동 적용
+- 독립적 context에서 실행
+
+**직접 수정 vs Agent:**
+
+| 상황 | 권장 방법 |
+|------|----------|
+| 1-2개 단순 오류 | 직접 수정 (command) |
+| 5개+ 반복적 오류 | @build-fixer |
+| 리팩토링 후 다수 오류 | @build-fixer |
+| 라이브러리 업그레이드 후 | @build-fixer |
+
 </agent_usage>
 
 ---
@@ -159,6 +224,12 @@ Bash({ command: "npx eslint .", description: "..." })
 **검증과 문서화는 독립적이므로 병렬 가능:**
 
 ```typescript
+// ✅ 검증 + 보안 검토 병렬
+Task({ subagent_type: 'deployment-validator', model: 'sonnet',
+       prompt: 'typecheck + lint + build 전체 검증' })
+Task({ subagent_type: 'security-reviewer', model: 'sonnet',
+       prompt: '배포 전 보안 취약점 검토' })
+
 // ✅ 검증 + 문서 업데이트 병렬
 Task({ subagent_type: 'deployment-validator', model: 'sonnet',
        prompt: 'typecheck + lint + build 전체 검증' })
@@ -221,15 +292,21 @@ Bash({
 npm run build  # 또는 yarn build, pnpm build
 ```
 
-**Step 5: 검증 + 문서화 (병렬)**
+**Step 5: 검증 + 보안 검토 + 문서화 (병렬)**
 
 ```typescript
 // build 성공 후 병렬 작업
 Task({
+  subagent_type: 'security-reviewer',
+  model: 'sonnet',
+  description: '배포 전 보안 검토',
+  prompt: 'OWASP Top 10, 시크릿 노출, 입력 검증 체크'
+})
+Task({
   subagent_type: 'code-reviewer',
   model: 'opus',
   description: '배포 전 최종 코드 리뷰',
-  prompt: '보안, 성능, 접근성 종합 검토'
+  prompt: '성능, 접근성 종합 검토'
 })
 Task({
   subagent_type: 'document-writer',
