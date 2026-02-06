@@ -260,6 +260,51 @@ const handleSubmit = () => {
 ✅ 기존 문서 수정 우선
 ```
 
+## 탐색 및 범위
+
+### 금지 17: 탐색 루프
+
+**같은 파일을 3회 이상 읽기 금지 (변경 후 확인 제외)**
+
+```typescript
+// ❌ 금지: 동일 파일 반복 읽기
+Read("src/auth.ts")  // 1회
+// ... 다른 작업 ...
+Read("src/auth.ts")  // 2회
+// ... 다른 작업 ...
+Read("src/auth.ts")  // 3회 → 금지!
+
+// ✅ 올바름: 1회 읽기 → 결과 활용
+Read("src/auth.ts")  // 1회: 내용 파악 후 기억
+Edit(...)            // 수정
+Read("src/auth.ts")  // 2회: 변경 확인 (허용)
+```
+
+**탐색 루프 감지 시:**
+1. 즉시 중단
+2. 이미 읽은 내용 기반으로 다음 단계 진행
+3. 추가 정보 필요 시 explore 에이전트에 위임
+
+### 금지 18: 범위 축소
+
+**"모든 X" / "전체 X" 지시에서 전체 대상 열거 없이 작업 시작 금지**
+
+```typescript
+// ❌ 금지: 열거 없이 일부만 처리
+// 사용자: "모든 SKILL.md에서 TodoWrite를 TaskCreate로 변경"
+Edit("skills/plan/SKILL.md", ...)     // plan만 수정
+Edit("skills/ralph/SKILL.md", ...)    // ralph만 수정
+// → 나머지 스킬 누락!
+
+// ✅ 올바름: 전체 열거 → 전체 처리
+Glob({ pattern: "**/SKILL.md" })      // 전체 대상 확인
+// → 결과: 19개 파일
+TaskCreate({ subject: "19개 SKILL.md TodoWrite→TaskCreate 교체", ... })
+// → 19개 모두 처리
+Glob({ pattern: "**/SKILL.md" })      // 재스캔 확인
+Grep({ pattern: "TodoWrite", glob: "**/SKILL.md" })  // 누락 0개 확인
+```
+
 ## 종합 체크리스트
 
 작업 시작 전:
@@ -269,6 +314,7 @@ const handleSubmit = () => {
 - [ ] 검증 단계 스킵하지 않기
 - [ ] 병렬 실행 가능 여부 확인
 - [ ] 에이전트 활용 계획
+- [ ] "모든 X" 작업: 전체 열거 확인 (금지 18)
 
 작업 중:
 
@@ -277,5 +323,6 @@ const handleSubmit = () => {
 - [ ] Prisma 자동 실행 금지
 - [ ] 수동 검증/인증 금지
 - [ ] 문서 업데이트 누락 방지
+- [ ] 탐색 루프 방지: 같은 파일 3회+ 읽기 금지 (금지 17)
 
 **금지 패턴 회피 → 품질 향상 + 안정성 확보**

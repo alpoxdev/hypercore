@@ -295,6 +295,124 @@ Task(subagent_type="planner", model="opus", ...)
 Task(subagent_type="explore", ...)
 ```
 
+## 탐색 효율
+
+### 필수 19: 파일 인벤토리 생성
+
+**복잡한 작업(5개+ 파일 수정) 시작 전 TaskCreate로 대상 파일 목록 등록**
+
+```typescript
+// ✅ 필수: 작업 대상 파일 인벤토리
+TaskCreate({
+  subject: "auth 리팩토링 대상 파일",
+  description: "src/middleware/auth.ts, src/functions/auth.ts, src/routes/login/..."
+})
+
+// ❌ 금지: 인벤토리 없이 즉시 구현 시작
+Edit({ file_path: "src/middleware/auth.ts", ... })
+```
+
+### 필수 20: 동일 파일 중복 읽기 금지
+
+**같은 파일을 2회 이상 Read 금지 (변경 후 재확인은 허용)**
+
+```typescript
+// ✅ 허용: 수정 후 재확인
+Read("src/auth.ts")  // 1회: 내용 파악
+Edit(...)            // 수정
+Read("src/auth.ts")  // 2회: 변경 확인 (허용)
+
+// ❌ 금지: 같은 내용 반복 읽기
+Read("src/auth.ts")  // 1회
+// ... 다른 작업 ...
+Read("src/auth.ts")  // 2회: 변경 없이 재읽기
+```
+
+### 필수 21: Explore 에이전트 thoroughness 명시
+
+**Explore 에이전트 호출 시 탐색 깊이 반드시 지정**
+
+```typescript
+// ✅ 필수: thoroughness 명시
+Task(subagent_type="explore", model="haiku",
+     prompt="[quick] src/routes/ 디렉토리 파일 목록 확인")
+Task(subagent_type="explore", model="haiku",
+     prompt="[very thorough] 인증 관련 모든 파일 및 의존성 완전 분석")
+
+// ❌ 금지: thoroughness 누락
+Task(subagent_type="explore", model="haiku",
+     prompt="인증 관련 파일 분석")
+```
+
+### 필수 22: 탐색 결과 즉시 요약
+
+**탐색/분석 결과는 즉시 요약 후 다음 단계 진행. 요약 없이 추가 탐색 금지.**
+
+```typescript
+// ✅ 올바른 흐름
+Task(subagent_type="explore", ...)  // 탐색
+// → 결과 요약: "인증은 3개 파일, 미들웨어 1개, 라우트 2개"
+// → 다음 단계: 구현 시작
+
+// ❌ 금지: 요약 없이 추가 탐색
+Task(subagent_type="explore", ...)  // 탐색 1
+Task(subagent_type="explore", ...)  // 요약 없이 탐색 2
+Task(subagent_type="explore", ...)  // 요약 없이 탐색 3
+```
+
+## 범위 완전성
+
+### 필수 23: 전체 대상 열거
+
+**"모든 X" / "전체 X" 지시 시 Glob/Grep으로 전체 대상 목록 먼저 생성**
+
+```typescript
+// ✅ 필수: 전체 대상 열거 후 작업
+Glob({ pattern: "**/*.prisma" })  // 전체 대상 확인
+// → 결과: 5개 파일 발견
+TaskCreate({ subject: "prisma 파일 5개 수정", ... })
+
+// ❌ 금지: 열거 없이 작업 시작
+Edit({ file_path: "prisma/schema/user.prisma", ... })  // 일부만 수정
+```
+
+### 필수 24: 열거 목록 TaskCreate 등록
+
+**전체 대상 열거 후 TaskCreate에 등록하고 하나씩 완료 체크**
+
+```typescript
+// ✅ 필수: 목록화 후 순차 처리
+TaskCreate({ subject: "user.prisma 수정", ... })
+TaskCreate({ subject: "post.prisma 수정", ... })
+TaskCreate({ subject: "comment.prisma 수정", ... })
+// → 각각 완료 시 TaskUpdate로 체크
+
+// ❌ 금지: 목록화 없이 기억에 의존
+```
+
+### 필수 25: 완료 후 재스캔
+
+**"모든 X" 작업 완료 후 Glob/Grep 재스캔 1회 실행 (놓친 항목 확인)**
+
+```typescript
+// ✅ 필수: 작업 완료 후 재스캔
+// ... 모든 파일 수정 완료 ...
+Glob({ pattern: "**/*.prisma" })  // 재스캔
+Grep({ pattern: "TodoWrite", ... })  // 누락 확인
+// → "놓친 항목 0개" 확인 후 완료 선언
+
+// ❌ 금지: 재스캔 없이 완료 선언
+```
+
+### 필수 26: 부분 완료 시 명시적 보고
+
+**전체 작업 중 일부만 완료된 경우 남은 작업을 명시적으로 보고**
+
+```markdown
+✅ "5개 중 3개 완료. 남은 항목: comment.prisma, like.prisma"
+❌ (암묵적 종료 — 남은 작업 언급 없이 작업 끝냄)
+```
+
 ## 종합 체크리스트
 
 작업 시작 전:
@@ -302,6 +420,8 @@ Task(subagent_type="explore", ...)
 - [ ] Sequential Thinking 실행 (MEDIUM 이상)
 - [ ] 파일 읽기 계획 (병렬 여부)
 - [ ] 에이전트 활용 계획
+- [ ] 복잡한 작업: 파일 인벤토리 생성 (필수 19)
+- [ ] "모든 X" 작업: 전체 대상 열거 (필수 23)
 
 코드 작성 시:
 
