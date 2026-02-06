@@ -8,6 +8,7 @@ user-invocable: true
 @../../instructions/agent-patterns/parallel-execution.md
 @../../instructions/agent-patterns/model-routing.md
 @../../instructions/sourcing/reliable-search.md
+@../../instructions/context-optimization/redundant-exploration-prevention.md
 @../../instructions/validation/forbidden-patterns.md
 @../../instructions/validation/required-behaviors.md
 

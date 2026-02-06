@@ -8,6 +8,8 @@ user-invocable: true
 @../../instructions/agent-patterns/parallel-execution.md
 @../../instructions/agent-patterns/model-routing.md
 @../../instructions/sourcing/reliable-search.md
+@../../instructions/context-optimization/redundant-exploration-prevention.md
+@../../instructions/validation/scope-completeness.md
 @../../instructions/validation/forbidden-patterns.md
 @../../instructions/validation/required-behaviors.md
 
@@ -334,36 +336,9 @@ npm run build
 
 ## Parallel Agent Execution
 
-### Smart Model Routing
-
-| 복잡도 | 버그 유형 | 모델 | 작업 예시 |
-|--------|----------|------|----------|
-| **LOW** | 단순 버그 | haiku | 오타, 명백한 로직 오류, 누락된 import |
-| **MEDIUM** | 일반 버그 | sonnet | 기능 오작동, 상태 관리 이슈, API 에러 |
-| **HIGH** | 복잡한 버그 | opus | 아키텍처 설계 결함, 성능 이슈, 보안 취약점 |
-
-**에이전트 호출 시 항상 `model` 파라미터 명시:**
-
-```typescript
-Task(subagent_type="implementation-executor", model="sonnet", ...)
-Task(subagent_type="explore", model="haiku", ...)
-Task(subagent_type="architect", model="opus", ...)
-```
-
-### Recommended Agents
-
-| 도메인 | 에이전트 | 권장 모델 | 용도 |
-|--------|---------|----------|------|
-| 탐색 | explore | haiku | 버그 재현 경로, 관련 파일 탐색 |
-| 아키텍처 | architect | sonnet/opus | 근본 원인 분석, 설계 논의 (READ-ONLY) |
-| 구현 | implementation-executor | sonnet | 버그 수정 구현 |
-| 검증 | code-reviewer | opus | 수정 후 코드 리뷰, 회귀 검증 |
-| 린트 | lint-fixer | sonnet | tsc/eslint 오류 수정 |
-| 문서 | document-writer | haiku/sonnet | 버그 리포트, 수정 내역 문서화 |
-| 보안 | security-reviewer | opus | 보안 취약점 버그, SQL Injection, XSS |
-| 테스트 | qa-tester | sonnet | 수정 후 CLI/서비스 테스트 검증 |
-| 조사 | researcher | sonnet | 외부 라이브러리 버그, API 문서 조사 |
-| 시각 | vision | sonnet | UI 버그 스크린샷 분석, 레이아웃 검증 |
+@../../instructions/agent-patterns/delegation-patterns.md
+@../../instructions/agent-patterns/parallel-execution.md
+@../../instructions/agent-patterns/model-routing.md
 
 ### Bug Severity별 병렬 처리
 
@@ -498,111 +473,7 @@ Task({
 // → 3가지 테스트 레벨을 동시에 검증
 ```
 
-### Parallel Execution Patterns
-
-### Read 도구 병렬화
-
-**프로젝트 분석 시 파일 병렬 읽기:**
-
-```typescript
-// ❌ 순차 읽기 (느림)
-Read({ file_path: "src/file1.ts" })
-// 대기...
-Read({ file_path: "src/file2.ts" })
-
-// ✅ 병렬 읽기 (빠름)
-Read({ file_path: "src/file1.ts" })
-Read({ file_path: "src/file2.ts" })
-Read({ file_path: "src/file3.ts" })
-Read({ file_path: "docs/api.md" })
-```
-
-**복잡한 탐색은 explore 에이전트 활용:**
-
-```typescript
-// 여러 영역 동시 탐색
-Task(subagent_type="explore", model="haiku",
-     prompt="영역 1 파일 구조 및 패턴 분석")
-Task(subagent_type="explore", model="haiku",
-     prompt="영역 2 의존성 및 관계 분석")
-```
-
----
-
-#### 패턴 1: 탐색 + 분석 병렬
-
-```typescript
-// ❌ 순차 실행 (느림)
-Task({
-  subagent_type: 'explore',
-  model: 'haiku',
-  prompt: '간헐적 500 에러 재현 경로 탐색'
-})
-// 대기...
-Task({
-  subagent_type: 'architect',
-  model: 'sonnet',
-  prompt: '500 에러 근본 원인 분석'
-})
-
-// ✅ 병렬 실행 (빠름)
-Task({
-  subagent_type: 'explore',
-  model: 'haiku',
-  prompt: '간헐적 500 에러 재현 경로 탐색 및 재현 조건 파악'
-})
-Task({
-  subagent_type: 'architect',
-  model: 'sonnet',
-  prompt: '500 에러 패턴 분석 및 근본 원인 파악 (로그, 스택 트레이스 기반)'
-})
-
-// → 탐색 결과와 분석 결과를 종합하여 수정 방향 결정
-```
-
-#### 패턴 2: 수정 + 문서화 병렬
-
-```typescript
-// ✅ 코드 수정과 동시에 문서화
-Task({
-  subagent_type: 'implementation-executor',
-  model: 'sonnet',
-  prompt: '인증 버그 수정: 토큰 재발급 로직 개선'
-})
-Task({
-  subagent_type: 'document-writer',
-  model: 'haiku',
-  prompt: '버그 리포트 작성: 원인, 수정 내용, 영향 범위'
-})
-Task({
-  subagent_type: 'document-writer',
-  model: 'haiku',
-  prompt: 'CHANGELOG.md 업데이트: 버그 수정 항목 추가'
-})
-```
-
-#### 패턴 3: 다중 검증 병렬
-
-```typescript
-// ✅ 수정 후 여러 관점에서 동시 검토
-Task({
-  subagent_type: 'code-reviewer',
-  model: 'opus',
-  prompt: '보안 검토: 수정으로 인한 새로운 취약점 확인'
-})
-Task({
-  subagent_type: 'code-reviewer',
-  model: 'opus',
-  prompt: '성능 검토: 수정이 성능에 미치는 영향 분석'
-})
-Task({
-  subagent_type: 'code-reviewer',
-  model: 'opus',
-  prompt: '회귀 검토: 다른 기능에 부작용 없는지 확인'
-})
-```
-
-### Practical Examples (시간 비교 포함)
+### Bug-Fix-Specific Parallel Patterns
 
 #### 예시 1: 여러 독립 버그 동시 수정
 

@@ -8,6 +8,7 @@ user-invocable: true
 @../../instructions/agent-patterns/parallel-execution.md
 @../../instructions/agent-patterns/model-routing.md
 @../../instructions/sourcing/reliable-search.md
+@../../instructions/context-optimization/redundant-exploration-prevention.md
 @../../instructions/validation/forbidden-patterns.md
 @../../instructions/validation/required-behaviors.md
 
@@ -179,88 +180,17 @@ Sequential Thinking (2단계):
 
 <parallel_agent_execution>
 
-## 병렬 Agent 실행
+## 병렬 에이전트 실행
 
-### Recommended Agents
+@../../instructions/agent-patterns/delegation-patterns.md
+@../../instructions/agent-patterns/parallel-execution.md
+@../../instructions/agent-patterns/model-routing.md
 
-| Agent | Model | 용도 | 복잡도 |
-|-------|-------|------|--------|
-| **@researcher** | sonnet | 웹 조사, 외부 문서/API/트렌드, **검색 쿼리에 현재 연도 포함, 출처별 발행일+소스유형 기재** | MEDIUM |
-| **@explore** | haiku | 코드베이스 탐색, 현재 구조 분석 | LOW |
-| **@analyst** | sonnet | 요구사항 분석, 가정 검증 | MEDIUM |
-| **@architect** | opus | 아키텍처 평가, 설계 방향 (READ-ONLY) | HIGH |
-| **@designer** | sonnet | UI/UX 아이디어, 디자인 패턴 | MEDIUM |
+### Brainstorm 스킬 고유 패턴
 
-### 병렬 수집 패턴
-
-**에이전트 도구 제약:**
-
-| Agent | Model | 도구 | 역할 |
-|-------|-------|------|------|
-| researcher | sonnet | WebSearch, WebFetch, Read | 웹 조사 + 출처 수집 |
-| explore | haiku | Read, Glob, Grep, Bash | 코드베이스 + `gh` CLI |
-| main agent | - | MCP 도구들 | Firecrawl/SearXNG/GitHub MCP 직접 실행 |
-
-**패턴 1: 다각도 자료 수집**
-
-```typescript
-// 에이전트 병렬 수집
-Task({
-  subagent_type: 'researcher',
-  model: 'sonnet',
-  prompt: `
-    [주제]에 대한 외부 자료 조사:
-    - 최신 트렌드 및 베스트 프랙티스
-    - 경쟁사/유사 서비스 사례
-    - 기술 블로그, 문서, 아티클
-  `
-})
-
-Task({
-  subagent_type: 'explore',
-  model: 'haiku',
-  prompt: `
-    현재 코드베이스에서 [주제] 관련 분석:
-    - 기존 구현 패턴
-    - 확장 가능한 포인트
-    - 제약사항
-  `
-})
-
-Task({
-  subagent_type: 'analyst',
-  model: 'sonnet',
-  prompt: `
-    [주제] 요구사항 분석:
-    - 사용자 니즈
-    - 비즈니스 목표
-    - 기술적 제약
-  `
-})
-
-// main agent MCP 직접 실행 (가용 시):
-firecrawl_search({ query: "[주제] 트렌드 사례 2026", limit: 5 })
-firecrawl_scrape({ url: "경쟁사_URL", formats: ["markdown"], onlyMainContent: true })
-```
-
-**패턴 2-5:**
-
-| 패턴 | Agent 조합 | 용도 |
-|------|----------|------|
-| **기술 비교** | researcher (각 기술) + explore (현재 구조) + MCP | 공정한 기술 평가 |
-| **UX 수집** | researcher (사례) + designer (아이디어) + explore (현재 UI) | 다각도 UX 개선 |
-| **아키텍처** | architect (설계) + researcher (업계 사례) + explore (의존성) | 심층 아키텍처 분석 |
-| **문제 해결** | analyst (원인) + researcher (사례) + explore (코드) | 근본 원인 → 해결책 |
-
-### Model Routing
-
-| 조사 유형 | 모델 | Agent | 이유 |
-|----------|------|-------|------|
-| **트렌드/사례** | sonnet | researcher | 외부 정보 종합 |
-| **코드 탐색** | haiku | explore | 빠른 구조 파악 |
-| **요구사항** | sonnet | analyst | 분석 품질 |
-| **아키텍처** | opus | architect | 설계 깊이 |
-| **UI/UX** | sonnet | designer | 창의성 + 실용성 |
+- **다채널 수집**: WebSearch + SearXNG + Firecrawl을 병렬로 실행하여 아이디어 소스 수집
+- **멀티 페르소나**: 여러 관점(사용자, 개발자, 비즈니스)에서 동시에 아이디어 평가
+- **검색 신뢰성**: 검색 쿼리에 현재 연도(2026) 포함 필수, 수집 자료별 발행일+소스유형 기재
 
 </parallel_agent_execution>
 
