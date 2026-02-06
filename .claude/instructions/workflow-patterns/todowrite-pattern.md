@@ -1,5 +1,7 @@
 # TodoWrite Pattern
 
+> **레거시 안내**: 현재 API는 `TaskCreate`/`TaskUpdate`입니다. TodoWrite는 레거시 명칭이며 하위 호환성을 위해 문서가 유지됩니다. 새 작업은 `TaskCreate`를 사용하세요.
+
 **목적**: 복잡한 작업을 단계별로 추적하고 진행 상황 관리
 
 ## 핵심 개념
