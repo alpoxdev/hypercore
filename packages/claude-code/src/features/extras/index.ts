@@ -27,7 +27,6 @@ export type {
   InstallResult,
   ExtrasFlags,
   SkillsCopyResult,
-  DuplicateSkill,
   ExtrasExistenceCheck,
   ExtrasType,
   ExtrasCopyOptions,
