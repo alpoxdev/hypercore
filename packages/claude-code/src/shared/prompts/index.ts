@@ -14,6 +14,10 @@ export type {
   OverwritePromptOptions,
   ExtrasSelectionOptions,
   ExtrasSelectionResult,
+  AgentSelectionOptions,
+  AgentSelectionResult,
+  ScopeSelectionOptions,
+  ScopeSelectionResult,
 } from './types.js';
 
 // 저수준 헬퍼 내보내기
@@ -28,4 +32,6 @@ export {
   promptTemplateSelection,
   promptOverwrite,
   promptExtrasSelection,
+  promptAgentSelection,
+  promptScopeSelection,
 } from './prompt-functions.js';

@@ -4,23 +4,26 @@
  */
 
 import { logger } from '../logger.js';
-import { promptConfirm, promptMultiselect } from './prompt-helpers.js';
+import {
+  promptConfirm,
+  promptMultiselect,
+  promptSelect,
+} from './prompt-helpers.js';
 import type {
   TemplateSelectionOptions,
   TemplateSelectionResult,
   OverwritePromptOptions,
   ExtrasSelectionOptions,
   ExtrasSelectionResult,
+  AgentSelectionOptions,
+  AgentSelectionResult,
+  ScopeSelectionOptions,
+  ScopeSelectionResult,
 } from './types.js';
 
 /**
  * 템플릿 선택 프롬프트
  * CLI 인자로 제공되지 않았을 때 사용자에게 선택 요청
- *
- * @param options 템플릿 선택 옵션
- * @returns 선택된 템플릿 목록
- * @throws process.exit(0) - 사용자가 선택을 취소한 경우
- * @throws process.exit(1) - 유효하지 않은 템플릿이 포함된 경우
  */
 export async function promptTemplateSelection(
   options: TemplateSelectionOptions,
@@ -67,10 +70,6 @@ export async function promptTemplateSelection(
 
 /**
  * 기존 파일 덮어쓰기 확인 프롬프트
- * force 옵션이 활성화되지 않았고 기존 파일이 있을 때 사용자에게 확인 요청
- *
- * @param options 덮어쓰기 확인 옵션
- * @throws process.exit(0) - 사용자가 덮어쓰기를 거부한 경우
  */
 export async function promptOverwrite(
   options: OverwritePromptOptions,
@@ -93,10 +92,6 @@ export async function promptOverwrite(
 
 /**
  * Extras (skills, commands, agents, instructions) 설치 여부 프롬프트
- * CLI 옵션으로 제공되지 않았을 때 사용자에게 선택 요청
- *
- * @param options Extras 선택 옵션
- * @returns 각 extras의 설치 여부 플래그
  */
 export async function promptExtrasSelection(
   options: ExtrasSelectionOptions,
@@ -132,19 +127,13 @@ export async function promptExtrasSelection(
 
     // Skills 설치 여부 확인
     if (hasSkills) {
-      const result = await promptConfirm(
-        'Install skills to .claude/skills/?',
-        false,
-      );
+      const result = await promptConfirm('Install skills?', false);
       installSkills = result.confirmed;
     }
 
     // Commands 설치 여부 확인
     if (hasCommands) {
-      const result = await promptConfirm(
-        'Install commands to .claude/commands/?',
-        false,
-      );
+      const result = await promptConfirm('Install commands?', false);
       installCommands = result.confirmed;
     }
   }
@@ -155,4 +144,69 @@ export async function promptExtrasSelection(
     installAgents,
     installInstructions,
   };
+}
+
+/**
+ * 에이전트 선택 프롬프트
+ * 자동 감지된 에이전트 목록에서 멀티셀렉트
+ */
+export async function promptAgentSelection(
+  options: AgentSelectionOptions,
+): Promise<AgentSelectionResult> {
+  const { installedAgents } = options;
+
+  // 설치된 에이전트가 없으면 기본값으로 claude-code 선택
+  if (installedAgents.length === 0) {
+    logger.warn('No agents detected. Defaulting to claude-code.');
+    return { agents: ['claude-code'] };
+  }
+
+  // 설치된 에이전트가 1개면 자동 선택
+  if (installedAgents.length === 1) {
+    logger.info(`Auto-selected agent: ${installedAgents[0]}`);
+    return { agents: installedAgents };
+  }
+
+  // 멀티셀렉트 프롬프트
+  const response = await promptMultiselect(
+    'Select target agents (space to select, enter to confirm):',
+    installedAgents.map((agent) => ({
+      title: agent,
+      value: agent,
+    })),
+    {
+      min: 1,
+      hint: '- Space to select. Return to submit',
+    },
+  );
+
+  if (response.values.length === 0) {
+    logger.warn('No agents selected. Defaulting to claude-code.');
+    return { agents: ['claude-code'] };
+  }
+
+  return { agents: response.values };
+}
+
+/**
+ * Scope 선택 프롬프트
+ * Project 또는 Global 선택
+ */
+export async function promptScopeSelection(
+  _options?: ScopeSelectionOptions,
+): Promise<ScopeSelectionResult> {
+  const response = await promptSelect('Select installation scope:', [
+    {
+      title: 'Project (current directory)',
+      description: 'Install to current project directory',
+      value: 'project' as const,
+    },
+    {
+      title: 'Global (home directory)',
+      description: 'Install to user home directory',
+      value: 'global' as const,
+    },
+  ]);
+
+  return { scope: response.value || 'project' };
 }

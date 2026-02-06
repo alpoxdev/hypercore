@@ -2,6 +2,8 @@
  * Prompts 모듈 타입 정의
  */
 
+import type { AgentType, ScopeType } from '../../features/agents/types.js';
+
 // 프롬프트 선택지 인터페이스
 export interface PromptChoice<T = string> {
   title: string;
@@ -56,4 +58,23 @@ export interface ExtrasSelectionResult {
   installCommands: boolean;
   installAgents: boolean;
   installInstructions: boolean;
+}
+
+// 에이전트 선택 관련 타입
+export interface AgentSelectionOptions {
+  installedAgents: AgentType[];
+}
+
+export interface AgentSelectionResult {
+  agents: AgentType[];
+}
+
+// Scope 선택 관련 타입
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface ScopeSelectionOptions {
+  // 향후 확장 가능
+}
+
+export interface ScopeSelectionResult {
+  scope: ScopeType;
 }
