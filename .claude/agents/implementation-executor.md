@@ -5,10 +5,10 @@ tools: Read, Write, Edit, Grep, Glob, Task, TodoWrite, mcp__sequential-thinking_
 permissionMode: default
 ---
 
-@../../instructions/agent-patterns/parallel-execution.md
-@../../instructions/agent-patterns/read-parallelization.md
-@../../instructions/validation/forbidden-patterns.md
-@../../instructions/validation/required-behaviors.md
+@../instructions/agent-patterns/parallel-execution.md
+@../instructions/agent-patterns/read-parallelization.md
+@../instructions/validation/forbidden-patterns.md
+@../instructions/validation/required-behaviors.md
 
 # Implementation Executor
 

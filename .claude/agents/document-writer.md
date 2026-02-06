@@ -4,10 +4,10 @@ description: Anthropic Context Engineering 원칙 기반 고밀도 문서 작성
 tools: Read, Write, Edit, Glob, Grep
 ---
 
-@../../instructions/agent-patterns/parallel-execution.md
-@../../instructions/agent-patterns/read-parallelization.md
-@../../instructions/validation/forbidden-patterns.md
-@../../instructions/validation/required-behaviors.md
+@../instructions/agent-patterns/parallel-execution.md
+@../instructions/agent-patterns/read-parallelization.md
+@../instructions/validation/forbidden-patterns.md
+@../instructions/validation/required-behaviors.md
 
 # Document Writer
 
@@ -110,7 +110,7 @@ description: 한 줄 설명
 
 ## Ralph 문서
 
-@../../instructions/document-templates/ralph-templates.md
+@../instructions/document-templates/ralph-templates.md
 
 </templates>
 

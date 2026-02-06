@@ -6,11 +6,11 @@ model: sonnet
 permissionMode: default
 ---
 
-@../../instructions/agent-patterns/parallel-execution.md
-@../../instructions/agent-patterns/read-parallelization.md
-@../../instructions/agent-patterns/model-routing.md
-@../../instructions/validation/forbidden-patterns.md
-@../../instructions/validation/required-behaviors.md
+@../instructions/agent-patterns/parallel-execution.md
+@../instructions/agent-patterns/read-parallelization.md
+@../instructions/agent-patterns/model-routing.md
+@../instructions/validation/forbidden-patterns.md
+@../instructions/validation/required-behaviors.md
 
 # Code Reviewer
 

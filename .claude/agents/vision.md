@@ -6,8 +6,8 @@ model: sonnet
 permissionMode: default
 ---
 
-@../../instructions/validation/forbidden-patterns.md
-@../../instructions/validation/required-behaviors.md
+@../instructions/validation/forbidden-patterns.md
+@../instructions/validation/required-behaviors.md
 
 ---
 

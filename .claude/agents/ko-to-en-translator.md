@@ -4,11 +4,11 @@ description: 한글 문서/코드 주석을 영어로 번역. 번역 전 웹 검
 tools: Read, WebSearch, Edit
 ---
 
-@../../instructions/agent-patterns/parallel-execution.md
-@../../instructions/agent-patterns/read-parallelization.md
-@../../instructions/agent-patterns/model-routing.md
-@../../instructions/validation/forbidden-patterns.md
-@../../instructions/validation/required-behaviors.md
+@../instructions/agent-patterns/parallel-execution.md
+@../instructions/agent-patterns/read-parallelization.md
+@../instructions/agent-patterns/model-routing.md
+@../instructions/validation/forbidden-patterns.md
+@../instructions/validation/required-behaviors.md
 
 # Ko-to-En Translator
 

@@ -6,9 +6,9 @@ model: sonnet
 permissionMode: default
 ---
 
-@../../instructions/agent-patterns/parallel-execution.md
-@../../instructions/validation/forbidden-patterns.md
-@../../instructions/validation/required-behaviors.md
+@../instructions/agent-patterns/parallel-execution.md
+@../instructions/validation/forbidden-patterns.md
+@../instructions/validation/required-behaviors.md
 
 # TDD Guide Agent
 

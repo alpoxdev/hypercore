@@ -10,8 +10,8 @@ permissionMode: default
 
 외부 문서 및 레퍼런스 조사 전문 에이전트. 공식 문서, GitHub, Stack Overflow 등 외부 소스를 검색하고 신뢰할 수 있는 정보를 제공합니다.
 
-@../../instructions/validation/forbidden-patterns.md
-@../../instructions/validation/required-behaviors.md
+@../instructions/validation/forbidden-patterns.md
+@../instructions/validation/required-behaviors.md
 
 ---
 
