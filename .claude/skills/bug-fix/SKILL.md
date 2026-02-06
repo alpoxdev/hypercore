@@ -7,6 +7,7 @@ user-invocable: true
 @../../instructions/workflow-patterns/sequential-thinking.md
 @../../instructions/agent-patterns/parallel-execution.md
 @../../instructions/agent-patterns/model-routing.md
+@../../instructions/sourcing/reliable-search.md
 @../../instructions/validation/forbidden-patterns.md
 @../../instructions/validation/required-behaviors.md
 
@@ -852,11 +853,11 @@ Task({
 **상황:** 외부 라이브러리 버전 업그레이드 후 오류 발생
 
 ```typescript
-// ✅ 라이브러리 버그 조사 + 수정 병렬
+// ✅ 라이브러리 버그 조사 + 수정 병렬 (@reliable-search.md 적용)
 Task({
   subagent_type: 'researcher',
   model: 'sonnet',
-  prompt: 'TanStack Query v5.60.0 breaking changes 조사 및 마이그레이션 가이드 탐색'
+  prompt: 'TanStack Query v5.60.0 breaking changes 2026 조사 및 마이그레이션 가이드 탐색. 검색 시 현재 연도 포함. 출처: URL + 발행일 + 소스유형(공식/블로그/커뮤니티). 공식 changelog 우선.'
 })
 Task({
   subagent_type: 'explore',

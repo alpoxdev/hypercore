@@ -7,6 +7,7 @@ user-invocable: true
 @../../instructions/workflow-patterns/sequential-thinking.md
 @../../instructions/agent-patterns/parallel-execution.md
 @../../instructions/agent-patterns/model-routing.md
+@../../instructions/sourcing/reliable-search.md
 @../../instructions/validation/forbidden-patterns.md
 @../../instructions/validation/required-behaviors.md
 
@@ -521,16 +522,16 @@ Task({
 })
 ```
 
-**패턴 11: 기술 조사 병렬 (researcher)**
+**패턴 11: 기술 조사 병렬 (researcher, @reliable-search.md 적용)**
 
 외부 문서 조사와 내부 분석을 병렬 실행:
 
 ```typescript
-// ✅ 기술 조사 + 내부 분석 병렬
+// ✅ 기술 조사 + 내부 분석 병렬 (현재 연도 포함, 출처 등급 분류)
 Task({
   subagent_type: 'researcher',
   model: 'sonnet',
-  prompt: 'WebSocket vs SSE 공식 문서 및 성능 비교 조사'
+  prompt: 'WebSocket vs SSE 공식 문서 및 성능 비교 2026. 검색 시 현재 연도 포함. 출처: URL + 발행일 + 소스유형(공식/블로그/커뮤니티). 핵심 주장 2개+ 소스 교차 검증.'
 })
 Task({
   subagent_type: 'analyst',

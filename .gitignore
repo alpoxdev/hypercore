@@ -53,3 +53,8 @@ tmp/
 .claude/brainstorms/
 .claude/research/
 .claude/first-principles/
+
+.claude/agents/**/CLAUDE.md
+.claude/instructions/**/CLAUDE.md
+.claude/skills/**/CLAUDE.md
+packages/**/CLAUDE.md
