@@ -16,8 +16,17 @@ import {
   promptTemplateSelection,
   promptOverwrite,
   promptExtrasSelection,
+  promptAgentSelection,
+  promptScopeSelection,
 } from '../shared/prompts/index.js';
 import { updateGitignore } from '../shared/gitignore-manager.js';
+import {
+  detectInstalledAgents,
+  validateAgentNames,
+  getValidAgentNames,
+  type AgentType,
+  type ScopeType,
+} from '../features/agents/index.js';
 
 interface InitOptions {
   templates?: string[];
@@ -25,8 +34,10 @@ interface InitOptions {
   cwd?: string;
   skills?: boolean;
   commands?: boolean;
-  agents?: boolean;
+  installAgents?: boolean;
   instructions?: boolean;
+  targetAgents?: string[];
+  global?: boolean;
 }
 
 const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
@@ -154,13 +165,50 @@ async function promptForExtrasInstallation(
   return await promptExtrasSelection({
     skills: options.skills,
     commands: options.commands,
-    agents: options.agents,
+    agents: options.installAgents,
     instructions: options.instructions,
     hasSkills,
     hasCommands,
     hasAgents,
     hasInstructions,
   });
+}
+
+/**
+ * 에이전트 선택 (CLI 인자 또는 프롬프트)
+ */
+async function selectAgents(options: InitOptions): Promise<AgentType[]> {
+  // CLI 인자로 제공된 경우 (유효성 검증 포함)
+  if (options.targetAgents && options.targetAgents.length > 0) {
+    const { valid, invalid } = validateAgentNames(options.targetAgents);
+    if (invalid.length > 0) {
+      logger.error(`Unknown agents: ${invalid.join(', ')}`);
+      logger.info(`Available agents: ${getValidAgentNames().join(', ')}`);
+      process.exit(1);
+    }
+    return valid;
+  }
+
+  // 자동 감지
+  const installedAgents = await detectInstalledAgents();
+
+  // 프롬프트로 선택
+  const result = await promptAgentSelection({ installedAgents });
+  return result.agents;
+}
+
+/**
+ * Scope 선택
+ */
+async function selectScope(options: InitOptions): Promise<ScopeType> {
+  // CLI 플래그로 제공된 경우
+  if (options.global) {
+    return 'global';
+  }
+
+  // 프롬프트로 선택
+  const result = await promptScopeSelection();
+  return result.scope;
 }
 
 /**
@@ -173,12 +221,18 @@ function showInstallationSummary(
   hasCommands: boolean,
   hasAgents: boolean,
   hasInstructions: boolean,
+  agents: AgentType[],
+  scope: ScopeType,
 ): void {
   logger.blank();
   logger.success('Claude Code documentation installed!');
   logger.blank();
   logger.info('Installed templates:');
   templates.forEach((t) => logger.step(t));
+
+  logger.blank();
+  logger.info(`Agents: ${agents.join(', ')}`);
+  logger.info(`Scope: ${scope}`);
 
   const { installSkills, installCommands, installAgents, installInstructions } =
     flags;
@@ -192,16 +246,16 @@ function showInstallationSummary(
     logger.blank();
     logger.info('Installed extras:');
     if (installSkills && hasSkills) {
-      logger.step('Skills → .claude/skills/');
+      logger.step('Skills');
     }
     if (installCommands && hasCommands) {
-      logger.step('Commands → .claude/commands/');
+      logger.step('Commands');
     }
     if (installAgents && hasAgents) {
-      logger.step('Agents → .claude/agents/');
+      logger.step('Agents');
     }
     if (installInstructions && hasInstructions) {
-      logger.step('Instructions → .claude/instructions/');
+      logger.step('Instructions');
     }
   }
 
@@ -234,11 +288,17 @@ export const init = async (options: InitOptions): Promise<void> => {
   // 5. 템플릿 설치
   await installTemplates(templates, targetDir);
 
-  // 6. 스킬/커맨드/에이전트/인스트럭션 존재 여부 확인
+  // 6. 에이전트 선택
+  const agents = await selectAgents(options);
+
+  // 7. Scope 선택
+  const scope = await selectScope(options);
+
+  // 8. 스킬/커맨드/에이전트/인스트럭션 존재 여부 확인
   const { hasSkills, hasCommands, hasAgents, hasInstructions } =
     await checkAllExtrasExist(templates);
 
-  // 7. 스킬/커맨드 설치 여부 프롬프트
+  // 9. 스킬/커맨드 설치 여부 프롬프트
   const flags = await promptForExtrasInstallation(
     options,
     hasSkills,
@@ -247,16 +307,18 @@ export const init = async (options: InitOptions): Promise<void> => {
     hasInstructions,
   );
 
-  // 8. 스킬/커맨드/에이전트/인스트럭션 설치
+  // 10. 스킬/커맨드/에이전트/인스트럭션 설치 (에이전트 + 스코프 전달)
   await installExtras(
     templates,
     targetDir,
     flags,
     { hasSkills, hasCommands, hasAgents, hasInstructions },
+    agents,
+    scope,
     options.force ?? false,
   );
 
-  // 9. 설치 요약 출력
+  // 11. 설치 요약 출력
   showInstallationSummary(
     templates,
     flags,
@@ -264,9 +326,11 @@ export const init = async (options: InitOptions): Promise<void> => {
     hasCommands,
     hasAgents,
     hasInstructions,
+    agents,
+    scope,
   );
 
-  // 10. .gitignore에 Claude Code 생성 폴더 추가
+  // 12. .gitignore에 Claude Code 생성 폴더 추가
   try {
     await updateGitignore(targetDir);
   } catch (error) {
