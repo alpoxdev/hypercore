@@ -47,6 +47,7 @@ tmp/
 
 # Generated files
 .claude/plan/
+.claude/plans/
 .claude/ralph/
 .claude/refactor/
 .claude/prd/
@@ -58,3 +59,5 @@ tmp/
 .claude/instructions/**/CLAUDE.md
 .claude/skills/**/CLAUDE.md
 packages/**/CLAUDE.md
+
+/test/

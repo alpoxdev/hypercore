@@ -8,6 +8,7 @@ const CLAUDE_GENERATED_FOLDERS = [
   '.claude/ralph/',
   '.claude/refactor/',
   '.claude/prd/',
+  '.agents/',
 ];
 
 /**

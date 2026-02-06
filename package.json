@@ -8,6 +8,9 @@
   ],
   "scripts": {
     "build": "yarn workspaces foreach -A run build",
+    "test:cli": "yarn build && mkdir -p test && node packages/claude-code/dist/index.js init --cwd test",
+    "test:cli:list": "node packages/claude-code/dist/index.js list --cwd test",
+    "test:cli:clean": "rm -rf test",
     "dev": "yarn workspaces foreach -A run dev",
     "test": "yarn workspaces foreach -A run test",
     "lint": "yarn workspaces foreach -A run lint",
