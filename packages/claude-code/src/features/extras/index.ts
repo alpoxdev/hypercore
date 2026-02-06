@@ -13,7 +13,7 @@ export {
 
 // Checker
 export {
-  checkExistingClaudeFiles,
+  checkExistingExtrasFiles,
   checkSkillsAndCommandsExist,
   checkAllExtrasExist,
 } from './extras-checker.js';
@@ -27,7 +27,6 @@ export type {
   InstallResult,
   ExtrasFlags,
   SkillsCopyResult,
-  DuplicateSkill,
   ExtrasExistenceCheck,
   ExtrasType,
   ExtrasCopyOptions,

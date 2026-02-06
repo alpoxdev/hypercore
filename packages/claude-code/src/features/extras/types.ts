@@ -2,6 +2,10 @@
  * Extras 기능 관련 타입 정의
  */
 
+// ExtrasType은 agents/types.ts에서 정의 (단일 정의 원칙)
+import type { ExtrasType } from '../agents/types.js';
+export type { ExtrasType } from '../agents/types.js';
+
 /** 복사 결과 */
 export interface CopyResult {
   files: number;
@@ -32,9 +36,6 @@ export interface ExtrasExistenceCheck {
   hasAgents: boolean;
   hasInstructions: boolean;
 }
-
-/** Extras 타입 */
-export type ExtrasType = 'skills' | 'commands' | 'agents' | 'instructions';
 
 /** Extras 복사 옵션 */
 export interface ExtrasCopyOptions {

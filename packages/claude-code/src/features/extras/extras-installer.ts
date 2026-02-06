@@ -6,7 +6,8 @@ import {
   copyAgents,
   copyInstructions,
 } from './extras-copier.js';
-import { checkExistingClaudeFiles } from './extras-checker.js';
+import { checkExistingExtrasFiles } from './extras-checker.js';
+import type { AgentType, ScopeType } from '../agents/types.js';
 import type { InstallResult, ExtrasFlags } from './types.js';
 
 /**
@@ -20,12 +21,12 @@ async function handleDuplicateFiles(
     return true;
   }
 
-  logger.warn('The following .claude files/folders already exist:');
+  logger.warn('The following extras files/folders already exist:');
   existingClaudeFiles.forEach((f) => logger.step(f));
   logger.blank();
 
   const response = await promptConfirm(
-    'Overwrite existing .claude files?',
+    'Overwrite existing extras files?',
     false,
   );
 
@@ -40,6 +41,8 @@ async function installSkillsIfNeeded(
   targetDir: string,
   shouldInstall: boolean,
   hasSkills: boolean,
+  agents: AgentType[],
+  scope: ScopeType,
 ): Promise<InstallResult> {
   if (!shouldInstall) {
     return { files: 0, directories: 0 };
@@ -52,7 +55,7 @@ async function installSkillsIfNeeded(
 
   logger.blank();
   logger.info('Installing skills...');
-  const skillsResult = await copySkills(templates, targetDir);
+  const skillsResult = await copySkills(templates, targetDir, agents, scope);
 
   logger.success(
     `Skills: ${skillsResult.files} files, ${skillsResult.directories} directories`,
@@ -68,6 +71,8 @@ async function installCommandsIfNeeded(
   targetDir: string,
   shouldInstall: boolean,
   hasCommands: boolean,
+  agents: AgentType[],
+  scope: ScopeType,
 ): Promise<InstallResult> {
   if (!shouldInstall) {
     return { files: 0, directories: 0 };
@@ -80,7 +85,12 @@ async function installCommandsIfNeeded(
 
   logger.blank();
   logger.info('Installing commands...');
-  const commandsResult = await copyCommands(templates, targetDir);
+  const commandsResult = await copyCommands(
+    templates,
+    targetDir,
+    agents,
+    scope,
+  );
   logger.success(
     `Commands: ${commandsResult.files} files, ${commandsResult.directories} directories`,
   );
@@ -95,6 +105,8 @@ async function installAgentsIfNeeded(
   targetDir: string,
   shouldInstall: boolean,
   hasAgents: boolean,
+  agents: AgentType[],
+  scope: ScopeType,
 ): Promise<InstallResult> {
   if (!shouldInstall) {
     return { files: 0, directories: 0 };
@@ -107,7 +119,7 @@ async function installAgentsIfNeeded(
 
   logger.blank();
   logger.info('Installing agents...');
-  const agentsResult = await copyAgents(templates, targetDir);
+  const agentsResult = await copyAgents(templates, targetDir, agents, scope);
   logger.success(
     `Agents: ${agentsResult.files} files, ${agentsResult.directories} directories`,
   );
@@ -122,6 +134,8 @@ async function installInstructionsIfNeeded(
   targetDir: string,
   shouldInstall: boolean,
   hasInstructions: boolean,
+  agents: AgentType[],
+  scope: ScopeType,
 ): Promise<InstallResult> {
   if (!shouldInstall) {
     return { files: 0, directories: 0 };
@@ -134,7 +148,12 @@ async function installInstructionsIfNeeded(
 
   logger.blank();
   logger.info('Installing instructions...');
-  const instructionsResult = await copyInstructions(templates, targetDir);
+  const instructionsResult = await copyInstructions(
+    templates,
+    targetDir,
+    agents,
+    scope,
+  );
   logger.success(
     `Instructions: ${instructionsResult.files} files, ${instructionsResult.directories} directories`,
   );
@@ -144,6 +163,7 @@ async function installInstructionsIfNeeded(
 /**
  * Extras 설치 (Skills, Commands, Agents, Instructions)
  * 중복 파일 처리 및 사용자 프롬프트 포함
+ * agents, scope 매개변수로 에이전트별 경로 해석
  */
 export async function installExtras(
   templates: string[],
@@ -155,6 +175,8 @@ export async function installExtras(
     hasAgents: boolean;
     hasInstructions: boolean;
   },
+  agents: AgentType[],
+  scope: ScopeType,
   force: boolean,
 ): Promise<InstallResult> {
   const { installSkills, installCommands, installAgents, installInstructions } =
@@ -171,7 +193,7 @@ export async function installExtras(
   }
 
   // 기존 파일 중복 처리
-  const existingClaudeFiles = await checkExistingClaudeFiles(targetDir);
+  const existingClaudeFiles = await checkExistingExtrasFiles(targetDir);
   const shouldProceed = await handleDuplicateFiles(existingClaudeFiles, force);
 
   if (!shouldProceed) {
@@ -179,12 +201,14 @@ export async function installExtras(
     return { files: 0, directories: 0 };
   }
 
-  // 각 extras 설치
+  // 각 extras 설치 (agents, scope 전달)
   const skillsResult = await installSkillsIfNeeded(
     templates,
     targetDir,
     installSkills,
     availability.hasSkills,
+    agents,
+    scope,
   );
 
   const commandsResult = await installCommandsIfNeeded(
@@ -192,6 +216,8 @@ export async function installExtras(
     targetDir,
     installCommands,
     availability.hasCommands,
+    agents,
+    scope,
   );
 
   const agentsResult = await installAgentsIfNeeded(
@@ -199,6 +225,8 @@ export async function installExtras(
     targetDir,
     installAgents,
     availability.hasAgents,
+    agents,
+    scope,
   );
 
   const instructionsResult = await installInstructionsIfNeeded(
@@ -206,6 +234,8 @@ export async function installExtras(
     targetDir,
     installInstructions,
     availability.hasInstructions,
+    agents,
+    scope,
   );
 
   // 전체 결과 집계

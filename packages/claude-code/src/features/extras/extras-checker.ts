@@ -2,35 +2,47 @@ import fs from 'fs-extra';
 import path from 'path';
 import { hasFiles } from '../../shared/filesystem/index.js';
 import { getTemplatesDir } from '../templates/index.js';
-import type { ExtrasExistenceCheck } from './types.js';
+import { getAllAgents, resolveExtrasDir } from '../agents/index.js';
+import { CANONICAL_DIR } from '../../shared/constants.js';
+import type { ExtrasExistenceCheck, ExtrasType } from './types.js';
+
+// 체크 대상 extras 타입 목록
+const EXTRAS_TYPES: ExtrasType[] = [
+  'skills',
+  'commands',
+  'agents',
+  'instructions',
+];
 
 /**
- * 기존 .claude/skills, .claude/commands, .claude/agents, .claude/instructions 파일 확인
+ * 기존 extras 파일 확인 (모든 에이전트 경로 + canonical 경로)
  */
-export const checkExistingClaudeFiles = async (
+export const checkExistingExtrasFiles = async (
   targetDir: string,
 ): Promise<string[]> => {
   const existingFiles: string[] = [];
+  const agents = getAllAgents();
 
-  const skillsDir = path.join(targetDir, '.claude', 'skills');
-  const commandsDir = path.join(targetDir, '.claude', 'commands');
-  const agentsDir = path.join(targetDir, '.claude', 'agents');
-  const instructionsDir = path.join(targetDir, '.claude', 'instructions');
-
-  if (await fs.pathExists(skillsDir)) {
-    existingFiles.push('.claude/skills/');
+  // canonical 경로 (.agents/) 체크
+  const canonicalDir = path.join(targetDir, CANONICAL_DIR);
+  if (await fs.pathExists(canonicalDir)) {
+    existingFiles.push(`${CANONICAL_DIR}/`);
   }
 
-  if (await fs.pathExists(commandsDir)) {
-    existingFiles.push('.claude/commands/');
-  }
+  // 모든 에이전트 × 모든 extras 타입 체크
+  for (const agent of agents) {
+    for (const extrasType of EXTRAS_TYPES) {
+      const dir = resolveExtrasDir(agent, 'project', extrasType, targetDir);
+      if (!dir) continue;
 
-  if (await fs.pathExists(agentsDir)) {
-    existingFiles.push('.claude/agents/');
-  }
-
-  if (await fs.pathExists(instructionsDir)) {
-    existingFiles.push('.claude/instructions/');
+      if (await fs.pathExists(dir)) {
+        const relativePath = path.relative(targetDir, dir);
+        const entry = `${relativePath}/`;
+        if (!existingFiles.includes(entry)) {
+          existingFiles.push(entry);
+        }
+      }
+    }
   }
 
   return existingFiles;
