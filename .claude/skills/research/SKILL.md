@@ -7,6 +7,7 @@ user-invocable: true
 @../../instructions/workflow-patterns/sequential-thinking.md
 @../../instructions/agent-patterns/parallel-execution.md
 @../../instructions/agent-patterns/model-routing.md
+@../../instructions/sourcing/reliable-search.md
 @../../instructions/validation/forbidden-patterns.md
 @../../instructions/validation/required-behaviors.md
 
@@ -77,25 +78,15 @@ Phase 0에서 자동 분류 → 채널 조합 결정:
 
 <sourcing_strategy>
 
-## Smart Tier Fallback
+@../../instructions/sourcing/reliable-search.md
 
-```
-Tier 1 (MCP, Phase 0에서 ToolSearch로 감지):
-  SearXNG MCP  → 메타검색 | Firecrawl MCP → 페이지→MD | GitHub MCP → 코드/리포
+**Research 고유 설정:**
 
-Tier 2 (내장, 항상 가용):
-  WebSearch → 웹 검색 | WebFetch → 페이지 읽기 | gh CLI → GitHub API (Bash)
-
-Tier 3: Playwright → SPA/JS 필요 시 (crawler skill)
-```
-
-**MCP는 main agent가 직접 실행** (subagent는 MCP 도구 사용 불가)
-
-| MCP 도구 | 용도 | 미설치 시 폴백 |
-|----------|------|--------------|
-| `firecrawl_map/scrape/crawl` | 사이트 구조/페이지 수집 | WebFetch (페이지별) |
-| SearXNG `search` | 246+ 엔진 메타검색 | WebSearch (내장) |
-| `search_repositories/code/issues` | GitHub 리포/코드/이슈 | `gh search` (Bash via explore) |
+| 깊이 | 최소 소스 | 출처 등급 S/A 비율 |
+|------|-----------|-------------------|
+| quick | 5개 | 40%+ |
+| standard | 10개 | 50%+ |
+| deep | 20개+ | 60%+ |
 
 </sourcing_strategy>
 
@@ -130,7 +121,9 @@ Tier 3: Playwright → SPA/JS 필요 시 (crawler skill)
 ```
 Sequential Thinking (2단계):
   thought 1: 핵심 질문 3-5개, 주제 유형 확정, 범위 결정 (시간/지역/언어)
-  thought 2: 다각도 쿼리 생성 (영어+한국어, 연도 포함), 채널별 배분, 에이전트 역할 분배
+  thought 2: 다각도 쿼리 생성 (영어+한국어), 채널별 배분, 에이전트 역할 분배
+
+**필수**: 모든 검색 쿼리에 현재 연도(2026) 포함. @reliable-search.md 날짜 인식 규칙 적용.
 ```
 
 ### Phase 2: 병렬 수집
@@ -145,9 +138,12 @@ Sequential Thinking (2단계):
 
 ```typescript
 // 기술 비교 (standard: researcher 3 + explore 1 병렬)
-Task({ subagent_type: 'researcher', prompt: '기술 A 장단점, 성능. 출처 URL 필수.' })
-Task({ subagent_type: 'researcher', prompt: '기술 B 장단점, 성능. 출처 URL 필수.' })
-Task({ subagent_type: 'researcher', prompt: 'A vs B 벤치마크, 비교, 후기. 출처 URL 필수.' })
+Task({ subagent_type: 'researcher',
+       prompt: '기술 A 장단점, 성능 2026. 검색 쿼리에 현재 연도 포함. 출처: URL + 발행일 + 소스유형(공식/블로그/커뮤니티).' })
+Task({ subagent_type: 'researcher',
+       prompt: '기술 B 장단점, 성능 2026. 검색 쿼리에 현재 연도 포함. 출처: URL + 발행일 + 소스유형.' })
+Task({ subagent_type: 'researcher',
+       prompt: 'A vs B 벤치마크, 비교, 후기 2026. 검색 쿼리에 현재 연도 포함. 출처: URL + 발행일 + 소스유형.' })
 Task({ subagent_type: 'explore', model: 'haiku',
        prompt: 'gh search repos "기술 A/B" --sort stars. 스타, 커밋, 이슈 비교.' })
 // MCP 가용 시 main agent가 동시에 search_repositories, firecrawl_scrape 등 실행
@@ -251,10 +247,10 @@ gRPC가 처리량/레이턴시 우위(HTTP/2)이나 브라우저 미지원.
 | 단계 | 체크 |
 |------|------|
 | **실행 전** | ARGUMENT, 주제 분류, MCP 감지, 깊이 확인 |
-| **수집 후** | 최소 소스 충족 (5/10/20), 출처 URL, 다각도 수집 |
+| **수집 후** | 최소 소스 충족 (5/10/20), 출처 URL, 다각도 수집, **출처 등급 S/A/B/C 분류**, **교차 검증 확인** (핵심 주장 2개+ 소스) |
 | **리포트** | Exec Summary 250-400자, 출처, 비교 테이블, 권장사항, 참고자료, 메타데이터 |
 | **저장** | .claude/research/ 저장, 터미널 출력, 경로 안내 |
 
-**절대 금지:** 출처 없는 주장 / 단일 소스 리포트 / Exec Summary 누락 / 권장사항 누락 / 저장 안 함 / 라이브러리 주제 (→ docs-fetch)
+**절대 금지:** 출처 없는 주장 / 단일 소스 리포트 / Exec Summary 누락 / 권장사항 누락 / 저장 안 함 / 라이브러리 주제 (→ docs-fetch) / **연도 없는 검색** / **출처 등급 미표기**
 
 </validation>

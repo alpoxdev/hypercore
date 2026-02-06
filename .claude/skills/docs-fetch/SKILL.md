@@ -12,6 +12,7 @@ user-invocable: true
 @../../instructions/agent-patterns/model-routing.md
 @../../instructions/validation/forbidden-patterns.md
 @../../instructions/validation/required-behaviors.md
+@../../instructions/sourcing/reliable-search.md
 
 # Docs Fetch Skill
 
@@ -65,24 +66,7 @@ ARGUMENT 있음 → 다음 단계 진행
 
 <sourcing_strategy>
 
-## 3-Tier Fallback
-
-```
-Tier 1 (MCP 도구 우선):
-  Firecrawl MCP + SearXNG MCP → /map 구조 파악 → /crawl 수집 + 보충 검색 병렬
-  Context7 MCP               → 라이브러리 문서 직접 조회
-
-Tier 2 (내장 도구):
-  llms.txt     → WebFetch("{도메인}/llms.txt") 우선 확인
-  GitHub       → gh API + GitHub MCP (README, docs/, CHANGELOG)
-  WebFetch     → 공식 문서 핵심 페이지 직접 읽기
-  WebSearch    → 보충 검색
-
-Tier 3 (최후 수단):
-  Playwright   → SPA 사이트, JS 렌더링 필요 시 crawler skill 연계
-```
-
-### 소싱 우선순위 (항상 이 순서)
+## 소싱 우선순위 (docs-fetch 특화)
 
 | 순서 | 소스 | 이유 |
 |------|------|------|
@@ -92,6 +76,8 @@ Tier 3 (최후 수단):
 | **4** | Context7 MCP | 라이브러리 문서 즉시 조회, 업데이트 지연 가능성 있음 |
 | **5** | WebFetch | 개별 페이지 직접 읽기 |
 | **6** | WebSearch | 최후 보충 검색 |
+
+**Smart Tier Fallback 및 MCP 통합 전략**: @../../instructions/sourcing/reliable-search.md 참조
 
 </sourcing_strategy>
 
@@ -106,15 +92,16 @@ Tier 3 (최후 수단):
    - "prisma@7" → name: prisma, version: 7
    - "https://..." → URL에서 라이브러리명 추론
 
-2. MCP 도구 감지
-   - Firecrawl MCP 사용 가능? → Tier 1 활성화
-   - SearXNG MCP 사용 가능?  → Tier 1 검색 활성화 (Firecrawl과 병렬)
-   - Context7 MCP 사용 가능? → Tier 1 문서 조회 활성화
-   - GitHub MCP 사용 가능?   → GitHub MCP 우선 사용
-   - 모두 없으면             → Tier 2 (내장 도구만)
+2. MCP 도구 감지 (ToolSearch로 감지)
+   - Firecrawl, SearXNG, Context7, GitHub MCP 활성화 여부 확인
 
-3. 기존 문서 확인
-   - docs/library/[name]/ 이미 존재? → 업데이트 모드
+3. 버전 최신성 확인
+   - npm registry에서 latest 버전 확인 (WebFetch 'https://registry.npmjs.org/{name}/latest')
+   - 사용자 지정 버전과 비교, 최신 아니면 경고 표시
+
+4. 기존 문서 확인
+   - docs/library/[name]/ 이미 존재? → 생성일 확인
+   - 6개월 이상 경과 → "기존 문서 업데이트 권장" 표시
 ```
 
 ---
@@ -166,53 +153,28 @@ Task(subagent_type="researcher", model="haiku",
      Context7 MCP 없으면 스킵.")
 ```
 
-### Step 1-4: 보충 검색 (병렬)
+### Step 1-4: 보충 검색 (병렬, 현재 연도 포함 필수)
 
 ```typescript
-// SearXNG MCP 있으면 사용, 없으면 WebSearch
+// 현재 연도 포함 필수 (2026년 기준)
 Task(subagent_type="researcher", model="haiku",
-     prompt="{name} v{version} breaking changes, migration guide 검색.
-     SearXNG MCP 있으면 사용, 없으면 WebSearch.")
+     prompt="{name} v{version} breaking changes 2026 migration guide 검색.
+     검색 쿼리에 현재 연도 포함, 12개월 이내 자료 우선.
+     'v{version} [2026] migration', '{name} breaking changes 2026' 패턴 사용.")
 
 Task(subagent_type="researcher", model="haiku",
-     prompt="{name} v{version} best practices, common mistakes 검색.
-     SearXNG MCP 있으면 사용, 없으면 WebSearch.")
+     prompt="{name} v{version} best practices 2026, common mistakes 검색.
+     현재 연도 포함, 최신 트렌드 반영.")
 ```
 
 ---
 
 ## Phase 2: 핵심 페이지 읽기
 
-### Tier 1 경로 (Firecrawl + SearXNG MCP 있을 때)
-
-```typescript
-// Firecrawl + SearXNG 병렬 실행
-// 1. 문서 사이트 URL 구조 파악 + 보충 검색 동시
-firecrawl_map({ url: "{docs_url}" })
-searxng_search("{name} v{version} breaking changes migration")
-
-// 2. 핵심 페이지 일괄 크롤링 (최대 50페이지)
-firecrawl_crawl({
-  url: "{docs_url}",
-  limit: 50,
-  scrapeOptions: { formats: ["markdown"] }
-})
-```
-
-### Tier 2 경로 (내장 도구만)
-
-```typescript
-// llms.txt 링크가 있으면 → 링크된 페이지만 WebFetch
-// 없으면 → GitHub docs/ + 공식 문서 상위 10-15페이지
-
-// 병렬 WebFetch (최대 5개씩)
-Task(subagent_type="researcher", model="haiku",
-     prompt="다음 URL들을 WebFetch로 읽기: {url_list_1}")
-Task(subagent_type="researcher", model="haiku",
-     prompt="다음 URL들을 WebFetch로 읽기: {url_list_2}")
-Task(subagent_type="researcher", model="haiku",
-     prompt="다음 URL들을 WebFetch로 읽기: {url_list_3}")
-```
+| Tier | 경로 | 실행 |
+|------|------|------|
+| **1 (MCP)** | Firecrawl + SearXNG | `firecrawl_map` → `firecrawl_crawl` (최대 50p) + `searxng_search` 병렬 |
+| **2 (내장)** | WebFetch | llms.txt 링크 우선, 없으면 GitHub docs/ + 공식 문서 10-15p (5개씩 병렬) |
 
 ### 공통: Breaking Changes 추출
 
@@ -229,23 +191,17 @@ CHANGELOG.md에서 추출할 정보:
 ## Phase 2.5: 수집 정보 분석 (analyst + architect 병렬)
 
 ```typescript
-// 수집된 정보 기반 분석 (Phase 3 전에 실행)
 Task(subagent_type="analyst", model="sonnet",
-     prompt=`수집된 {name} v{version} 정보를 분석:
-     - 문서에 반드시 포함해야 할 핵심 주제 식별
-     - 누락된 정보 영역 (추가 수집 필요?)
-     - forbidden/required 후보 패턴 추출
-     - 버전별 breaking changes 정리`)
+     prompt=`수집된 {name} v{version} 정보 분석:
+     - 수집 자료 발행일 검증 (12개월 초과 시 최신 자료 보충 검색)
+     - 핵심 주제 식별, 누락 영역 확인
+     - forbidden/required 패턴 추출, breaking changes 정리`)
 
 Task(subagent_type="architect", model="sonnet",
-     prompt=`{name} v{version} 라이브러리 아키텍처 분석:
-     - 핵심 API surface (public API 구조)
-     - 주요 사용 패턴 및 안티패턴
-     - 의존성 관계 및 설정 요구사항
-     - quick_reference에 포함할 코드 패턴 선별`)
+     prompt=`{name} v{version} 아키텍처 분석:
+     - 핵심 API surface, 사용 패턴/안티패턴
+     - quick_reference 코드 패턴 선별`)
 ```
-
-**분석 결과** → Phase 3 document-writer에 전달하여 문서 품질 향상
 
 ---
 
@@ -286,27 +242,16 @@ Task(subagent_type="document-writer", model="haiku",
 ## Phase 5: 품질 검증 (critic)
 
 ```typescript
-// 생성된 문서 품질 검증
 Task(subagent_type="critic", model="sonnet",
-     prompt=`생성된 docs/library/{name}/index.md 문서 검증:
-     - <context>, <forbidden>, <required>, <quick_reference>, <version_info> 섹션 존재 여부
-     - 버전 정보 정확성
+     prompt=`생성된 docs/library/{name}/index.md 검증:
+     - 필수 섹션 (<context>, <forbidden>, <required>, <quick_reference>, <version_info>)
+     - 버전 최신성 (npm latest 버전과 비교)
      - 코드 예시 복사 가능 여부
-     - 기존 docs/ 포맷과 일관성
-     - 한글 주석, ✅/❌ 마커 사용 여부
+     - 기존 docs/ 포맷 일관성
      OKAY/REJECT 판정.`)
 ```
 
-**REJECT 시** → 피드백 기반으로 document-writer 재실행
-**OKAY 시** → 결과 리포트 출력
-
-```
-결과 리포트:
-   - 생성된 파일 목록
-   - 소싱 경로 (어떤 Tier 사용했는지)
-   - 토큰 수 추정
-   - critic 검증 결과
-```
+**REJECT** → document-writer 재실행 | **OKAY** → 결과 리포트 (파일 목록, 소싱 경로, 검증 결과)
 
 </workflow>
 
@@ -432,60 +377,16 @@ researcher(검색) ──┘                                                    
 
 <mcp_integration>
 
-## MCP 도구 활용
+## MCP 도구별 용도
 
-### Firecrawl MCP (자체 호스팅)
+| MCP | 도구 | 용도 |
+|-----|------|------|
+| **Firecrawl** | `firecrawl_map/crawl/scrape` | 문서 사이트 구조 파악 → 일괄 수집 (MD 변환) |
+| **SearXNG** | `web_search` | Breaking changes 검색 (연도 포함 필수) |
+| **Context7** | `resolve-library-id`, `get-library-docs` | 라이브러리 문서 즉시 조회 (업데이트 지연 가능) |
+| **GitHub** | `get_file_contents`, `get_latest_release` | README, docs/, CHANGELOG |
 
-```bash
-# 셋업
-claude mcp add firecrawl \
-  -e FIRECRAWL_API_URL=http://localhost:3002 \
-  -- npx -y firecrawl-mcp
-```
-
-| 도구 | 용도 |
-|------|------|
-| `firecrawl_map` | 문서 사이트 URL 구조 파악 |
-| `firecrawl_crawl` | 핵심 페이지 일괄 수집 (MD 변환) |
-| `firecrawl_scrape` | 단일 페이지 스크랩 |
-
-### SearXNG MCP (자체 호스팅)
-
-```bash
-# 셋업
-claude mcp add searxng \
-  -e SEARXNG_BASE_URL=http://localhost:8080 \
-  -- npx -y @sacode/searxng-simple-mcp
-```
-
-| 용도 | 검색 쿼리 예시 |
-|------|---------------|
-| Breaking Changes | `"{name} v{ver} breaking changes migration"` |
-| Best Practices | `"{name} v{ver} best practices common mistakes"` |
-| 비교 | `"{name} vs {alt} comparison 2026"` |
-
-### Context7 MCP
-
-| 도구 | 용도 |
-|------|------|
-| `resolve-library-id` | 라이브러리 식별자 확인 |
-| `get-library-docs` | 라이브러리 문서 조회 (업데이트 지연 가능성 있음) |
-
-### GitHub MCP
-
-| 도구 | 용도 |
-|------|------|
-| `get_file_contents` | README.md, docs/ 폴더 내용 |
-| `list_commits` | 최근 변경사항 확인 |
-| `get_latest_release` | 최신 릴리스 + CHANGELOG |
-
-### MCP 미설치 시 폴백
-
-| MCP 없음 | 대체 도구 |
-|----------|----------|
-| Firecrawl + SearXNG | WebFetch (페이지별) + WebSearch (내장) |
-| Context7 | WebFetch (개별 페이지 직접 읽기) |
-| GitHub MCP | `gh api` (CLI) |
+**MCP 미설치** → WebFetch (페이지별) + WebSearch (내장) + `gh api` (CLI) 폴백
 
 </mcp_integration>
 
@@ -516,71 +417,21 @@ claude mcp add searxng \
 
 <examples>
 
-## 예시 1: llms.txt 있는 라이브러리
+## 핵심 예시: llms.txt 있는 라이브러리
 
 ```bash
-사용자: /docs-fetch zod@4
+/docs-fetch zod@4
 
-Phase 0: 환경 감지
-  → Firecrawl MCP: 없음, SearXNG MCP: 없음 → Tier 2
-
-Phase 1: 정보 수집 (병렬)
-  researcher 1: WebFetch("https://zod.dev/llms.txt") → ✅ 있음!
-  researcher 2: npm registry → version 4.x, repo: colinhacks/zod
-  researcher 3: gh api repos/colinhacks/zod/readme
-  researcher 4: WebSearch "zod v4 breaking changes"
-
-Phase 2: llms.txt 링크된 페이지만 WebFetch
-  → 10페이지 병렬 읽기 (효율적)
-
-Phase 3: 문서 생성
-  document-writer (sonnet): docs/library/zod/index.md
-  document-writer (haiku): docs/library/zod/validation.md
-
-Phase 4: 저장
-  → docs/library/zod/ 에 2개 파일 생성
-  → "CLAUDE.md에 @docs/library/zod/index.md 추가 권장"
+Phase 0: npm latest 확인 → 4.x 최신 ✅
+Phase 1: llms.txt ✅ + GitHub + 검색 (병렬, 연도 포함)
+Phase 2: llms.txt 링크 10페이지 WebFetch
+Phase 2.5: analyst (발행일 검증 + 주제 식별) + architect (패턴 선별)
+Phase 3: index.md + validation.md 생성
+Phase 5: critic 검증 ✅ → docs/library/zod/ 저장
 ```
 
-## 예시 2: Firecrawl + SearXNG MCP 있는 경우
-
-```bash
-사용자: /docs-fetch tanstack-query@5
-
-Phase 0: 환경 감지
-  → Firecrawl MCP: ✅ + SearXNG MCP: ✅ → Tier 1 활성화
-
-Phase 1: 정보 수집 (병렬)
-  firecrawl_map: https://tanstack.com/query/latest/docs → URL 200개 발견
-  searxng: "tanstack query v5 breaking changes migration" → 보충 정보
-  researcher 1: npm registry → version 5.x
-  researcher 2: GitHub README + CHANGELOG
-  researcher 3: Context7 → 문서 조회
-
-Phase 2: Firecrawl 일괄 수집
-  firecrawl_crawl: 핵심 50페이지 → 깨끗한 MD
-
-Phase 3: 문서 생성 (병렬)
-  document-writer (sonnet): index.md
-  document-writer (haiku): use-query.md
-  document-writer (haiku): use-mutation.md
-  document-writer (haiku): invalidation.md
-
-Phase 4: 저장
-  → docs/library/tanstack-query/ 에 4개 파일 생성
-```
-
-## 예시 3: URL 직접 지정
-
-```bash
-사용자: /docs-fetch https://www.prisma.io/docs/orm
-
-Phase 0: URL 파싱 → name: prisma, docs_url: prisma.io/docs/orm
-
-Phase 1-2: WebFetch로 주요 페이지 수집
-Phase 3: 문서 생성
-Phase 4: docs/library/prisma/ 에 저장
-```
+**Firecrawl MCP 있으면**: `/map` → `/crawl` 50페이지 일괄 수집
+**URL 지정**: `/docs-fetch https://www.prisma.io/docs/orm` → 직접 WebFetch
 
 </examples>
 
@@ -590,37 +441,18 @@ Phase 4: docs/library/prisma/ 에 저장
 
 ## 검증 체크리스트
 
-**실행 전:**
-- [ ] ARGUMENT 확인 (라이브러리명 또는 URL)
-- [ ] MCP 도구 감지 완료
-- [ ] llms.txt 확인 완료
-
-**수집 후:**
-- [ ] 최소 README + 1개 이상 문서 페이지 수집
-- [ ] 버전 정보 확인
-- [ ] Breaking Changes 확인 시도
-
-**생성 후:**
-- [ ] `<context>` 섹션 포함
-- [ ] `<forbidden>` 섹션 포함 (Breaking Changes 있으면)
-- [ ] `<required>` 섹션 포함
-- [ ] `<quick_reference>` 코드 예시 포함
-- [ ] `<version_info>` 버전 명시
-- [ ] 한글 주석 포함
-- [ ] ✅/❌ 마커 사용
-
-**저장 후:**
-- [ ] docs/library/[name]/ 에 파일 저장됨
-- [ ] 결과 리포트 출력 (파일 목록 + 소싱 경로)
-- [ ] CLAUDE.md @참조 추가 제안
+| 단계 | 체크 |
+|------|------|
+| **실행 전** | ARGUMENT, MCP 감지, llms.txt 확인, npm latest 버전 확인 |
+| **수집 후** | 최소 README + 1p 문서, 수집 자료 발행일 12개월 이내, Breaking Changes 확인 |
+| **생성 후** | 필수 섹션 (`<context>`, `<forbidden>`, `<required>`, `<quick_reference>`, `<version_info>`) |
+| **저장 후** | docs/library/[name]/ 저장, 결과 리포트, CLAUDE.md @참조 제안 |
 
 ## 절대 금지
 
-- ❌ llms.txt 확인 없이 바로 크롤링
-- ❌ 단일 소스만으로 문서 생성 (최소 2개 소스 교차)
-- ❌ 버전 정보 누락
-- ❌ `<forbidden>` 섹션 없이 생성 (Breaking Changes 확인 필수)
-- ❌ 기존 docs 포맷과 다른 형식 사용
-- ❌ 결과 저장 없이 종료
+- ❌ llms.txt 확인 없이 크롤링
+- ❌ 단일 소스만으로 문서 생성 (최소 2개 교차)
+- ❌ 버전 정보 누락, 연도 없는 검색 쿼리
+- ❌ 기존 docs 포맷과 다른 형식
 
 </validation>
