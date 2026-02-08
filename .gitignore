@@ -46,14 +46,14 @@ coverage/
 tmp/
 
 # Generated files
-.claude/plan/
-.claude/plans/
+.claude/plan*/
 .claude/ralph/
 .claude/refactor/
 .claude/prd/
 .claude/brainstorms/
 .claude/research/
 .claude/first-principles/
+.claude/crawler/
 
 .claude/agents/**/CLAUDE.md
 .claude/instructions/**/CLAUDE.md
