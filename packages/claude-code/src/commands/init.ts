@@ -174,21 +174,34 @@ function showInstallationSummary(
   hasAgents: boolean,
   hasInstructions: boolean,
 ): void {
-  logger.blank();
-  logger.success('Claude Code documentation installed!');
-  logger.blank();
-  logger.info('Installed templates:');
-  templates.forEach((t) => logger.step(t));
-
   const { installSkills, installCommands, installAgents, installInstructions } =
     flags;
 
-  if (
+  const hasExtrasInstalled =
     (installSkills && hasSkills) ||
     (installCommands && hasCommands) ||
     (installAgents && hasAgents) ||
-    (installInstructions && hasInstructions)
-  ) {
+    (installInstructions && hasInstructions);
+
+  // 템플릿도 없고 extras도 설치하지 않은 경우
+  if (templates.length === 0 && !hasExtrasInstalled) {
+    logger.blank();
+    logger.info('No templates or extras installed.');
+    logger.blank();
+    return;
+  }
+
+  logger.blank();
+  logger.success('Claude Code documentation installed!');
+
+  // 템플릿이 있는 경우에만 표시
+  if (templates.length > 0) {
+    logger.blank();
+    logger.info('Installed templates:');
+    templates.forEach((t) => logger.step(t));
+  }
+
+  if (hasExtrasInstalled) {
     logger.blank();
     logger.info('Installed extras:');
     if (installSkills && hasSkills) {
@@ -207,8 +220,13 @@ function showInstallationSummary(
 
   logger.blank();
   logger.info('Next steps:');
-  logger.step('Read CLAUDE.md for project guidelines');
-  logger.step('Explore docs/ for detailed documentation');
+  if (templates.length > 0) {
+    logger.step('Read CLAUDE.md for project guidelines');
+    logger.step('Explore docs/ for detailed documentation');
+  } else {
+    logger.step('Explore .claude/ for installed extras');
+    logger.step('Run "npx @kood/claude-code init" again to install templates');
+  }
   logger.blank();
 }
 
@@ -228,17 +246,23 @@ export const init = async (options: InitOptions): Promise<void> => {
   // 3. 템플릿 선택
   const templates = await selectTemplates(options, availableTemplates);
 
-  // 4. 기존 파일 덮어쓰기 확인
-  await confirmOverwriteIfNeeded(targetDir, options.force ?? false);
+  // 4. 템플릿이 선택된 경우에만 덮어쓰기 확인 및 설치
+  if (templates.length > 0) {
+    // 기존 파일 덮어쓰기 확인
+    await confirmOverwriteIfNeeded(targetDir, options.force ?? false);
 
-  // 5. 템플릿 설치
-  await installTemplates(templates, targetDir);
+    // 템플릿 설치
+    await installTemplates(templates, targetDir);
+  }
 
-  // 6. 스킬/커맨드/에이전트/인스트럭션 존재 여부 확인
+  // 5. 스킬/커맨드/에이전트/인스트럭션 존재 여부 확인
+  // 템플릿이 없으면 모든 템플릿의 extras를 확인
+  const templatesToCheck =
+    templates.length > 0 ? templates : availableTemplates;
   const { hasSkills, hasCommands, hasAgents, hasInstructions } =
-    await checkAllExtrasExist(templates);
+    await checkAllExtrasExist(templatesToCheck);
 
-  // 7. 스킬/커맨드 설치 여부 프롬프트
+  // 6. 스킬/커맨드 설치 여부 프롬프트
   const flags = await promptForExtrasInstallation(
     options,
     hasSkills,
@@ -247,16 +271,16 @@ export const init = async (options: InitOptions): Promise<void> => {
     hasInstructions,
   );
 
-  // 8. 스킬/커맨드/에이전트/인스트럭션 설치
+  // 7. 스킬/커맨드/에이전트/인스트럭션 설치
   await installExtras(
-    templates,
+    templatesToCheck,
     targetDir,
     flags,
     { hasSkills, hasCommands, hasAgents, hasInstructions },
     options.force ?? false,
   );
 
-  // 9. 설치 요약 출력
+  // 8. 설치 요약 출력
   showInstallationSummary(
     templates,
     flags,
@@ -266,7 +290,7 @@ export const init = async (options: InitOptions): Promise<void> => {
     hasInstructions,
   );
 
-  // 10. .gitignore에 Claude Code 생성 폴더 추가
+  // 9. .gitignore에 Claude Code 생성 폴더 추가
   try {
     await updateGitignore(targetDir);
   } catch (error) {
