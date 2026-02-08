@@ -4,14 +4,28 @@ allowed-tools: Bash, Read, Edit
 argument-hint: <new-version | +1 | +minor | +major>
 ---
 
-@../instructions/multi-agent/coordination-guide.md
-@../instructions/multi-agent/execution-patterns.md
-
 # Version Update Command
 
 프로젝트 전체 버전을 업데이트하고 커밋.
 
 **인수**: $ARGUMENTS
+
+---
+
+<scripts>
+
+## 사용 가능한 스크립트
+
+| 스크립트 | 용도 |
+|----------|------|
+| `.claude/scripts/version/version-find.sh` | 버전 파일 탐색 (package.json + .version()) |
+| `.claude/scripts/version/version-bump.sh <current> <type>` | 새 버전 계산 |
+| `.claude/scripts/git/git-commit.sh "msg" [files]` | 커밋 |
+| `.claude/scripts/git/git-push.sh` | 푸시 |
+
+</scripts>
+
+---
 
 <version_rules>
 
@@ -24,39 +38,27 @@ argument-hint: <new-version | +1 | +minor | +major>
 
 </version_rules>
 
+---
+
 <workflow>
 
-1. **버전 파일 탐색**
-   ```bash
-   # package.json 찾기 (root 또는 monorepo packages/)
-   fd -t f 'package.json' -E node_modules
+## 워크플로우
 
-   # 버전 코드 찾기 (.version() 패턴)
-   rg "\.version\(['\"]" --type ts --type js -l
-   ```
+```bash
+# 1. 버전 파일 탐색
+.claude/scripts/version/version-find.sh
 
-2. **현재 버전 확인** (병렬 읽기)
-   - 발견된 package.json 파일들
-   - 버전 코드 포함 파일들
+# 2. 현재 버전 확인 (package.json 읽기)
 
-3. **새 버전 계산**
+# 3. 새 버전 계산
+.claude/scripts/version/version-bump.sh 1.2.3 +1
+# → 1.2.4
 
-4. **모든 파일 Edit로 업데이트**
+# 4. 모든 파일 Edit로 업데이트
 
-5. **스테이징**
-   ```bash
-   git add <발견된-버전-파일들>
-   ```
-
-6. **커밋**
-   ```bash
-   git commit -m "chore: 버전 X.X.X로 업데이트"
-   ```
-
-7. **완료 확인**
-   ```bash
-   git status
-   ```
+# 5. 커밋
+.claude/scripts/git/git-commit.sh "chore: 버전 1.2.4로 업데이트" package.json packages/*/package.json
+```
 
 </workflow>
 

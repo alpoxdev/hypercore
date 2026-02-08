@@ -1,129 +1,52 @@
 ---
-description: 배포 전 typecheck/lint/build 검증 및 수정. ultrathink + sequential thinking 필수 사용.
-allowed-tools: Bash(tsc:*, npx:*, yarn:*, npm:*, pnpm:*), Read, Edit, mcp__sequential-thinking__sequentialthinking
+description: 배포 전 typecheck/lint/build 검증 및 수정.
+allowed-tools: Bash, Read, Edit, mcp__sequential-thinking__sequentialthinking
 argument-hint: [파일/디렉토리 경로...]
 ---
 
-@../instructions/multi-agent/coordination-guide.md
-@../instructions/multi-agent/execution-patterns.md
-
 # Pre-Deploy Command
 
-> 배포 전 typecheck/lint/build를 Sequential Thinking으로 검증하고 수정
+> 배포 전 typecheck/lint/build 검증
 
 ---
 
-<forbidden>
+<scripts>
 
-| 분류 | 금지 |
-|------|------|
-| **회피** | 오류 무시하고 배포, `any` 타입, `@ts-ignore`, `eslint-disable` 남발 |
-| **전략** | 여러 오류 동시 수정, build 생략, 오류 메시지만 보고 급하게 수정 |
-| **분석** | Sequential Thinking 없이 수정 |
+## 사용 가능한 스크립트
 
-</forbidden>
+| 스크립트 | 용도 |
+|----------|------|
+| `.claude/scripts/deploy/deploy-check.sh` | 전체 검증 (tsc + eslint + build) |
+| `.claude/scripts/deploy/build-run.sh` | build만 실행 |
+| `.claude/scripts/lint/lint-check.sh` | tsc + eslint 병렬 검사 |
+| `.claude/scripts/pm/pm-detect.sh` | package manager 감지 |
+
+</scripts>
 
 ---
 
-<agent_usage>
+<workflow>
 
-## @deployment-validator Agent 활용
+## 워크플로우
 
-**언제 사용:**
-- PR 생성 전 전체 검증
-- 배포 전 품질 보증
-- CI/CD 전 로컬 검증
+### 전체 검증 (권장)
 
-**호출 방법:**
 ```bash
-@deployment-validator
-# 또는 자연어
-"배포 준비 완료 체크해줘"
-"pre-deploy 검증해줘"
+# 한 번에 tsc + eslint + build 검증
+.claude/scripts/deploy/deploy-check.sh
 ```
 
-**장점:**
-- typecheck + lint + build 전체 자동화
-- Build 실패 시 Sequential Thinking으로 원인 자동 분석
-- 배포 가능 여부 최종 판단
-- 독립적 context에서 실행 (메인 작업 병렬 가능)
+### 단계별 검증
 
-**직접 검증 vs Agent:**
-
-| 상황 | 권장 방법 |
-|------|----------|
-| 빠른 개발 중 | 직접 검증 (command) |
-| PR 생성 전 | @deployment-validator |
-| 배포 전 최종 확인 | @deployment-validator |
-| CI/CD 전 로컬 확인 | @deployment-validator |
-| 자동화된 검증 | @deployment-validator |
-
----
-
-## @security-reviewer Agent 활용
-
-**언제 사용:**
-- 배포 전 보안 취약점 검토
-- 코드 변경 후 보안 검증
-- 인증/권한/데이터 처리 로직 추가 시
-
-**호출 방법:**
 ```bash
-@security-reviewer
-# 또는 자연어
-"배포 전 보안 검토해줘"
-"보안 취약점 체크해줘"
+# 1. lint 검사
+.claude/scripts/lint/lint-check.sh
+
+# 2. 오류 수정 후 build
+.claude/scripts/deploy/build-run.sh
 ```
 
-**장점:**
-- OWASP Top 10 자동 검토
-- 시크릿 노출 탐지 (API 키, 비밀번호 하드코딩)
-- 입력 검증 체크 (SQL Injection, XSS, CSRF)
-- 인증/권한 로직 검증
-- 독립적 context에서 실행 (메인 작업 병렬 가능)
-
-**검토 범위:**
-- SQL Injection: Prisma raw query 사용 시
-- XSS: HTML/dangerouslySetInnerHTML 사용 시
-- CSRF: POST/PUT/DELETE 엔드포인트
-- 인증: middleware 누락 여부
-- 시크릿: .env 변수 하드코딩 여부
-- 입력 검증: Zod validator 누락 여부
-
----
-
-## @build-fixer Agent 활용
-
-**언제 사용:**
-- 빌드/타입 오류 다수 발생
-- 빠른 자동 수정 필요
-- 반복적인 타입 오류 일괄 수정
-
-**호출 방법:**
-```bash
-@build-fixer
-# 또는 자연어
-"빌드 오류 수정해줘"
-"타입 오류 자동 수정해줘"
-```
-
-**장점:**
-- 최소 diff로 오류 수정
-- 언어 자동 감지 (TypeScript, Python, Go 등)
-- 여러 오류 효율적 처리
-- Sequential Thinking 자동 적용
-- 독립적 context에서 실행
-
-**직접 수정 vs Agent:**
-
-| 상황 | 권장 방법 |
-|------|----------|
-| 1-2개 단순 오류 | 직접 수정 (command) |
-| 5개+ 반복적 오류 | @build-fixer |
-| 리팩토링 후 다수 오류 | @build-fixer |
-| 라이브러리 업그레이드 후 | @build-fixer |
-
-</agent_usage>
+</workflow>
 
 ---
 
