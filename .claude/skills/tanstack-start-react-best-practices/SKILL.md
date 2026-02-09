@@ -5,7 +5,7 @@ license: MIT
 framework: tanstack-start
 metadata:
   author: vercel
-  version: "1.0.0"
+  version: "3.0.0"
   adapted_for: tanstack-start
 ---
 
@@ -17,7 +17,7 @@ metadata:
 
 # TanStack Start React 베스트 프랙티스
 
-React와 TanStack Start 애플리케이션 성능 최적화 가이드. 7개 카테고리, 38개 규칙 포함. 영향도별 우선순위로 자동 리팩토링과 코드 생성 가이드 제공.
+React 19와 TanStack Start v1 애플리케이션 성능 최적화 가이드. 8개 카테고리, 55개 규칙 포함. 영향도별 우선순위로 자동 리팩토링과 코드 생성 가이드 제공. TanStack Router 라우팅 패턴(Link, useNavigate, useSearch, useParams, beforeLoad, Outlet, pendingComponent, 프리로딩), React Compiler, use() hook, useOptimistic, Middleware, Streaming 등 최신 패턴 반영.
 
 ---
 
@@ -188,11 +188,12 @@ Task(subagent_type="implementation-executor", model="sonnet",
 |---------|---------|--------|--------|
 | 1 | Waterfall 제거 | **CRITICAL** | `async-` |
 | 2 | 번들 크기 최적화 | **CRITICAL** | `bundle-` |
-| 3 | 서버 사이드 성능 | HIGH | `server-` |
-| 4 | 클라이언트 데이터 페칭 | MEDIUM-HIGH | `client-` |
-| 5 | Re-render 최적화 | MEDIUM | `rerender-` |
-| 6 | 렌더링 성능 | MEDIUM | `rendering-` |
-| 7 | JavaScript 성능 | LOW-MEDIUM | `js-` |
+| 3 | TanStack Router 라우팅 | **HIGH** | `routing-` |
+| 4 | 서버 사이드 성능 | HIGH | `server-` |
+| 5 | 클라이언트 데이터 페칭 | MEDIUM-HIGH | `client-` |
+| 6 | Re-render 최적화 | MEDIUM | `rerender-` |
+| 7 | 렌더링 성능 | MEDIUM | `rendering-` |
+| 8 | JavaScript 성능 | LOW-MEDIUM | `js-` |
 
 </categories>
 
@@ -221,35 +222,57 @@ Task(subagent_type="implementation-executor", model="sonnet",
 | `bundle-conditional` | 기능 활성화 시에만 모듈 로드 |
 | `bundle-preload` | hover/focus 시 preload로 체감 속도 향상 |
 
-### 3. 서버 사이드 성능 (HIGH)
+### 3. TanStack Router 라우팅 (HIGH)
+
+| 규칙 | 설명 |
+|------|------|
+| `routing-file-conventions` | 파일 기반 라우팅 컨벤션 (__root, $param, _layout, lazy) |
+| `routing-link-navigation` | Link 컴포넌트와 useNavigate로 타입 안전 네비게이션 |
+| `routing-search-params` | useSearch + Zod 스키마로 search params 검증 |
+| `routing-path-params` | useParams와 getRouteApi로 타입 안전 path params |
+| `routing-beforeload-auth` | beforeLoad로 인증 가드, pathless layout 조합 |
+| `routing-nested-layouts` | Outlet과 pathless layout으로 중첩 UI |
+| `routing-router-context` | createRootRouteWithContext로 의존성 주입 |
+| `routing-preload-strategy` | Link preload="intent"로 즉각적 네비게이션 |
+| `routing-pending-component` | pendingComponent로 로딩 상태 (pendingMs/pendingMinMs) |
+
+### 4. 서버 사이드 성능 (HIGH)
 
 | 규칙 | 설명 |
 |------|------|
 | `server-cache-lru` | LRU 캐시로 요청 간 캐싱 |
-| `server-serialization` | 클라이언트로 전달 데이터 최소화 |
+| `server-serialization` | loader 데이터 직렬화 최소화 |
 | `server-parallel-fetching` | loader에서 병렬 데이터 페칭 |
-| `server-deferred-data` | defer()로 비차단 데이터 로딩 |
+| `server-deferred-data` | Promise 반환으로 비차단 데이터 로딩 |
+| `server-middleware` | createMiddleware()로 인증/로깅 중앙화 |
+| `server-validator` | inputValidator()로 타입 안전한 Server Functions |
+| `server-streaming` | async generator/ReadableStream으로 데이터 스트리밍 |
+| `server-error-boundaries` | 라우트 레벨 errorComponent/notFoundComponent |
 
-### 4. 클라이언트 데이터 페칭 (MEDIUM-HIGH)
+### 5. 클라이언트 데이터 페칭 (MEDIUM-HIGH)
 
 | 규칙 | 설명 |
 |------|------|
 | `client-tanstack-query` | TanStack Query로 자동 캐싱/중복 제거 |
+| `client-suspense-query` | useSuspenseQuery로 선언적 데이터 로딩 (v5) |
+| `client-optimistic-updates` | useOptimistic으로 즉각적 UI 피드백 (React 19) |
+| `client-use-hook` | use() hook으로 Promise 처리 (React 19) |
 | `client-event-listeners` | 전역 이벤트 리스너 중복 제거 |
 
-### 5. Re-render 최적화 (MEDIUM)
+### 6. Re-render 최적화 (MEDIUM)
 
 | 규칙 | 설명 |
 |------|------|
 | `rerender-defer-reads` | 콜백 전용 상태는 구독 안 함 |
 | `rerender-memo` | 비싼 작업은 memoized 컴포넌트로 추출 |
+| `rerender-react-compiler` | React Compiler로 자동 메모이제이션 (React 19) |
 | `rerender-dependencies` | effect에 원시값 의존성 사용 |
 | `rerender-derived-state` | 파생 boolean 구독, raw 값 구독 회피 |
 | `rerender-functional-setstate` | 안정적 콜백용 함수형 setState |
 | `rerender-lazy-state-init` | 비싼 초기값은 함수로 useState에 전달 |
 | `rerender-transitions` | 비긴급 업데이트는 startTransition |
 
-### 6. 렌더링 성능 (MEDIUM)
+### 7. 렌더링 성능 (MEDIUM)
 
 | 규칙 | 설명 |
 |------|------|
@@ -259,7 +282,7 @@ Task(subagent_type="implementation-executor", model="sonnet",
 | `rendering-svg-precision` | SVG 좌표 정밀도 감소 |
 | `rendering-conditional-render` | 조건부 렌더링은 &&가 아닌 삼항 연산자 |
 
-### 7. JavaScript 성능 (LOW-MEDIUM)
+### 8. JavaScript 성능 (LOW-MEDIUM)
 
 | 규칙 | 설명 |
 |------|------|
@@ -400,23 +423,43 @@ const addItems = useCallback((newItems: Item[]) => {
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 
-// ✅ 기본 Server Function
+// ✅ 기본 Server Function (GET)
 const getUser = createServerFn().handler(async () => {
   // 서버에서만 실행
   return await db.user.findMany()
 })
 
-// ✅ POST + Validation
-const createUserSchema = z.object({
+// ✅ POST + Validation (inputValidator는 함수 형태 필수)
+const UserSchema = z.object({
   name: z.string().min(1),
   email: z.string().email()
 })
 
 const createUser = createServerFn({ method: 'POST' })
-  .inputValidator(createUserSchema)
+  .inputValidator((d: unknown) => UserSchema.parse(d))
   .handler(async ({ data }) => {
-    // data는 완전히 타입 검증됨
+    // data는 자동으로 { name: string; email: string } 타입
     return await db.user.create({ data })
+  })
+```
+
+### Middleware로 인증 중앙화
+
+```typescript
+import { createMiddleware } from '@tanstack/react-start'
+
+const authMiddleware = createMiddleware()
+  .server(async ({ next }) => {
+    const session = await getSession()
+    if (!session?.user) throw redirect({ to: '/login' })
+    return next({ context: { user: session.user } })
+  })
+
+// 보호된 Server Function
+const getMyTodos = createServerFn()
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    return await db.todo.findMany({ where: { userId: context.user.id } })
   })
 ```
 
@@ -546,18 +589,41 @@ rules/server-deferred-data.md
 
 ## 참고 자료
 
-### TanStack 공식 문서
+### TanStack Start 공식 문서
 1. [React 공식 문서](https://react.dev)
 2. [TanStack Start Overview](https://tanstack.com/start/latest/docs/framework/react/overview)
 3. [TanStack Start Quick Start](https://tanstack.com/start/latest/docs/framework/react/quick-start)
-4. [TanStack Router](https://tanstack.com/router)
-5. [TanStack Router Deferred Data Loading](https://tanstack.com/router/v1/docs/framework/react/guide/deferred-data-loading)
-6. [TanStack Query](https://tanstack.com/query)
-7. [Server Functions Guide](https://tanstack.com/start/latest/docs/framework/react/guide/server-functions)
+4. [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview)
+5. [Server Functions Guide](https://tanstack.com/start/latest/docs/framework/react/guide/server-functions)
+6. [Middleware Guide](https://tanstack.com/start/latest/docs/framework/react/guide/middleware)
+7. [Streaming Data Guide](https://tanstack.com/start/latest/docs/framework/react/guide/streaming-data-from-server-functions)
+8. [Authentication Guide](https://tanstack.com/start/latest/docs/framework/react/guide/authentication)
+
+### TanStack Router
+9. [TanStack Router](https://tanstack.com/router)
+10. [Navigation Guide](https://tanstack.com/router/latest/docs/framework/react/guide/navigation)
+11. [Link Options](https://tanstack.com/router/latest/docs/framework/react/guide/link-options)
+12. [Search Params](https://tanstack.com/router/latest/docs/framework/react/guide/search-params)
+13. [Path Params](https://tanstack.com/router/latest/docs/framework/react/guide/path-params)
+14. [Authenticated Routes](https://tanstack.com/router/latest/docs/framework/react/guide/authenticated-routes)
+15. [Outlets](https://tanstack.com/router/latest/docs/framework/react/guide/outlets)
+16. [Route Trees](https://tanstack.com/router/latest/docs/framework/react/guide/route-trees)
+17. [File-Based Routing](https://tanstack.com/router/latest/docs/framework/react/routing/file-based-routing)
+18. [Router Context](https://tanstack.com/router/latest/docs/framework/react/guide/router-context)
+19. [Preloading](https://tanstack.com/router/latest/docs/framework/react/guide/preloading)
+20. [Data Loading](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading)
+21. [Deferred Data Loading](https://tanstack.com/router/latest/docs/framework/react/guide/deferred-data-loading)
+
+### React 19
+22. [React 19 Blog](https://react.dev/blog/2024/12/05/react-19)
+23. [React use() API](https://react.dev/reference/react/use)
+24. [React useOptimistic](https://react.dev/reference/react/useOptimistic)
+25. [React useActionState](https://react.dev/reference/react/useActionState)
+26. [React Compiler](https://react.dev/learn/react-compiler)
 
 ### 외부 자료
-8. [better-all](https://github.com/shuding/better-all)
-9. [node-lru-cache](https://github.com/isaacs/node-lru-cache)
-10. [Using Server Functions and TanStack Query](https://www.brenelz.com/posts/using-server-functions-and-tanstack-query/)
+27. [better-all](https://github.com/shuding/better-all)
+28. [node-lru-cache](https://github.com/isaacs/node-lru-cache)
+29. [Using Server Functions and TanStack Query](https://www.brenelz.com/posts/using-server-functions-and-tanstack-query/)
 
 </references>

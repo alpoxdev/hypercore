@@ -64,4 +64,4 @@ function PostPage() {
 
 페이지가 3초 대신 50ms에 렌더링됩니다. 댓글은 준비되면 스트리밍. 다음에 사용: 분석, 추천, 사용자 활동, 소셜 기능.
 
-참고: [TanStack Router Deferred Data Loading](https://tanstack.com/router/v1/docs/framework/react/guide/deferred-data-loading)
+참고: [TanStack Router Deferred Data Loading](https://tanstack.com/router/latest/docs/framework/react/guide/deferred-data-loading)
