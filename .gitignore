@@ -55,6 +55,7 @@ tmp/
 .claude/first-principles/
 .claude/crawler/
 .claude/genius-ideas/
+.claude/validation-results/
 
 .claude/agents/**/CLAUDE.md
 .claude/instructions/**/CLAUDE.md
