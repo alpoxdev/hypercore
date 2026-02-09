@@ -38,6 +38,7 @@ const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
   'tanstack-start': 'TanStack Start + React 풀스택 프로젝트',
   hono: 'Hono 서버 프레임워크 프로젝트',
   npx: 'NPX CLI 도구 프로젝트',
+  tauri: 'Tauri 데스크톱/모바일 크로스플랫폼 앱',
 };
 
 /**

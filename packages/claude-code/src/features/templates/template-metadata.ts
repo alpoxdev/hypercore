@@ -20,6 +20,11 @@ export const templateMetadata: Record<
     description: 'NPX로 실행 가능한 CLI 도구 프로젝트',
     stack: 'Node.js, TypeScript, Commander.js',
   },
+  tauri: {
+    name: 'Tauri',
+    description: 'Cross-platform Desktop & Mobile 앱 프로젝트',
+    stack: 'Rust, React, TypeScript, Vite',
+  },
 };
 
 /**
