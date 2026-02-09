@@ -298,6 +298,7 @@ WebSearch({ query: "AI agent frameworks comparison" })
 | **WebSearch** | 연도 포함, 영어+한국어 병렬 |
 | **SearXNG** | `time_range=year` + 연도 키워드 |
 | **Firecrawl** | 공식 문서 URL 직접 지정 |
+| **Jina Reader** | `WebFetch('https://r.jina.ai/{URL}')` — JS 렌더링 클린 MD 변환 |
 | **GitHub** | `created:>YYYY-01-01` 필터, stars 정렬 |
 
 ---
@@ -314,6 +315,7 @@ Tier 1 (MCP, ToolSearch로 감지):
 Tier 2 (내장, 항상 가용):
   WebSearch → 웹 검색 (연도 키워드 필수)
   WebFetch  → 페이지 직접 읽기
+  Jina Reader → WebFetch('https://r.jina.ai/{URL}') 클린 마크다운 변환
   gh CLI    → GitHub API (Bash via explore)
 
 Tier 3: Playwright → SPA/JS 렌더링 필요 시 (crawler skill)
@@ -323,10 +325,10 @@ Tier 3: Playwright → SPA/JS 렌더링 필요 시 (crawler skill)
 
 | MCP 도구 | 용도 | 미설치 시 폴백 |
 |----------|------|--------------|
-| `firecrawl_map/scrape/crawl` | 사이트 구조/페이지 수집 | WebFetch (페이지별) |
+| `firecrawl_map/scrape/crawl` | 사이트 구조/페이지 수집 | Jina Reader → WebFetch (페이지별) |
 | SearXNG `web_search` | 246+ 엔진 메타검색 | WebSearch (내장) |
 | `search_repositories/code/issues` | GitHub 리포/코드/이슈 | `gh search` (Bash) |
-| `resolve-library-id` + `query-docs` | 라이브러리 문서 조회 | WebFetch (직접) |
+| `resolve-library-id` + `query-docs` | 라이브러리 문서 조회 | Jina Reader → WebFetch (직접) |
 
 ### MCP 감지 (Phase 0 공통)
 
@@ -335,6 +337,51 @@ ToolSearch("firecrawl") → Firecrawl 활성화
 ToolSearch("searxng")   → SearXNG 활성화
 ToolSearch("github")    → GitHub MCP 활성화
 ToolSearch("context7")  → Context7 활성화
+```
+
+---
+
+## Jina Reader (`r.jina.ai`)
+
+**용도:** URL → 클린 마크다운 변환 (JS 렌더링 지원, 광고/네비 제거)
+
+| 특성 | 설명 |
+|------|------|
+| **엔드포인트** | `https://r.jina.ai/{URL}` |
+| **호출 방법** | `WebFetch('https://r.jina.ai/{URL}', '{프롬프트}')` |
+| **장점** | JS 렌더링, 클린 MD, 광고/네비 자동 제거, 무료 |
+| **한계** | 검색 기능 없음 (URL 필수), 대량 크롤링 비적합 |
+
+### 활용 시나리오
+
+| 시나리오 | 사용 |
+|----------|------|
+| **WebFetch 실패** | JS 렌더링 필요 페이지 → Jina Reader 폴백 |
+| **Firecrawl 미설치** | 개별 페이지 클린 MD 변환 |
+| **공식 문서 읽기** | SPA 기반 문서 사이트 (React, Vue 등) |
+| **블로그/미디어** | 광고 제거된 본문만 추출 |
+
+### 사용 패턴
+
+```typescript
+// ✅ 기본: URL을 클린 마크다운으로 변환
+WebFetch('https://r.jina.ai/https://react.dev/reference/react/use', '핵심 API 사용법 추출')
+
+// ✅ WebFetch 실패 시 Jina 폴백
+WebFetch('https://docs.example.com/guide')  // → 빈 결과 (JS 렌더링 필요)
+WebFetch('https://r.jina.ai/https://docs.example.com/guide', '가이드 내용 추출')  // → 클린 MD
+
+// ✅ Firecrawl 미설치 시 개별 페이지 대안
+WebFetch('https://r.jina.ai/https://prisma.io/docs/orm/prisma-schema', 'Prisma 스키마 문법 추출')
+
+// ❌ 검색 용도로 사용 (검색은 WebSearch/SearXNG 사용)
+WebFetch('https://r.jina.ai/react hooks tutorial')  // 잘못된 사용
+```
+
+### 폴백 체인 (페이지 읽기)
+
+```
+Firecrawl scrape → Jina Reader → WebFetch (직접) → Playwright (최후 수단)
 ```
 
 ---

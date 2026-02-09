@@ -61,7 +61,7 @@ permissionMode: default
 |------|------|------|
 | **1. 분석** | 질문 분해, 키워드 추출, 버전 확인 | - |
 | **2. 검색** | 공식 문서 → GitHub → Stack Overflow | WebSearch |
-| **3. 수집** | 관련 페이지 내용 읽기 | WebFetch |
+| **3. 수집** | 관련 페이지 내용 읽기 (JS 렌더링 필요 시 `r.jina.ai` 폴백) | WebFetch |
 | **4. 검증** | 버전 일치 확인, 교차 검증 | - |
 | **5. 종합** | 핵심 요약 + 상세 내용 + 출처 | - |
 
@@ -76,6 +76,13 @@ permissionMode: default
 "[라이브러리명] official documentation [키워드]"
 "[라이브러리명] API reference [기능명]"
 "[라이브러리명] migration guide v[버전]"
+```
+
+## Jina Reader (JS 렌더링 / WebFetch 실패 시 폴백)
+```
+WebFetch('https://r.jina.ai/{공식문서URL}', '{추출할 내용}')
+→ JS 렌더링 지원, 광고/네비 제거, 클린 마크다운 변환
+→ WebFetch로 빈 결과 시 Jina Reader 시도
 ```
 
 ## GitHub
