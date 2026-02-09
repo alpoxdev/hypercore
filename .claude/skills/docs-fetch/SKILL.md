@@ -74,8 +74,9 @@ ARGUMENT 있음 → 다음 단계 진행
 | **2** | GitHub MCP + gh CLI | README, docs/, CHANGELOG 직접 접근 |
 | **3** | Firecrawl `/map`→`/crawl` + SearXNG 검색 | 문서 일괄 수집 + breaking changes 보충 (동시 실행) |
 | **4** | Context7 MCP | 라이브러리 문서 즉시 조회, 업데이트 지연 가능성 있음 |
-| **5** | WebFetch | 개별 페이지 직접 읽기 |
-| **6** | WebSearch | 최후 보충 검색 |
+| **5** | Jina Reader | `WebFetch('https://r.jina.ai/{URL}')` JS 렌더링 클린 MD (WebFetch 실패 시) |
+| **6** | WebFetch | 개별 페이지 직접 읽기 |
+| **7** | WebSearch | 최후 보충 검색 |
 
 **Smart Tier Fallback 및 MCP 통합 전략**: @../../instructions/sourcing/reliable-search.md 참조
 
@@ -174,7 +175,7 @@ Task(subagent_type="researcher", model="haiku",
 | Tier | 경로 | 실행 |
 |------|------|------|
 | **1 (MCP)** | Firecrawl + SearXNG | `firecrawl_map` → `firecrawl_crawl` (최대 50p) + `searxng_search` 병렬 |
-| **2 (내장)** | WebFetch | llms.txt 링크 우선, 없으면 GitHub docs/ + 공식 문서 10-15p (5개씩 병렬) |
+| **2 (내장)** | Jina Reader + WebFetch | llms.txt 링크 우선, SPA 문서는 `r.jina.ai` 경유, 없으면 GitHub docs/ + 공식 문서 10-15p (5개씩 병렬) |
 
 ### 공통: Breaking Changes 추출
 
@@ -386,7 +387,7 @@ researcher(검색) ──┘                                                    
 | **Context7** | `resolve-library-id`, `get-library-docs` | 라이브러리 문서 즉시 조회 (업데이트 지연 가능) |
 | **GitHub** | `get_file_contents`, `get_latest_release` | README, docs/, CHANGELOG |
 
-**MCP 미설치** → WebFetch (페이지별) + WebSearch (내장) + `gh api` (CLI) 폴백
+**MCP 미설치** → Jina Reader (`r.jina.ai`) → WebFetch (페이지별) → WebSearch (내장) → `gh api` (CLI) 폴백
 
 </mcp_integration>
 

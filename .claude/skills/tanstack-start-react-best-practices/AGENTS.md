@@ -1,8 +1,8 @@
 # TanStack Start React 베스트 프랙티스
 
-**Version 1.0.0**
-TanStack Start 최적화 가이드
-January 2026
+**Version 3.0.0**
+TanStack Start v1 + TanStack Router + React 19 최적화 가이드
+February 2026
 
 > **참고:**
 > 이 문서는 주로 에이전트와 LLM이 React 및 TanStack Start 코드베이스를 유지보수, 생성, 리팩토링할 때 따르기 위한 것입니다. 사람도 유용하게 사용할 수 있지만, AI 지원 워크플로의 자동화 및 일관성을 위해 최적화되어 있습니다.
@@ -11,7 +11,7 @@ January 2026
 
 ## 요약
 
-AI 에이전트와 LLM을 위한 React 및 TanStack Start 애플리케이션 종합 성능 최적화 가이드. 7개 카테고리에 걸쳐 38개 규칙을 포함하며, 영향도별로 우선순위를 매겼습니다 (critical: waterfall 제거, 번들 크기 감소 → incremental: JavaScript 성능). 각 규칙은 자동 리팩토링 및 코드 생성을 위한 상세한 설명, 올바른 구현 대 잘못된 구현을 비교하는 실제 예시, 구체적인 영향 지표를 포함합니다.
+AI 에이전트와 LLM을 위한 React 19 및 TanStack Start v1 애플리케이션 종합 성능 최적화 가이드. 8개 카테고리에 걸쳐 55개 규칙을 포함하며, 영향도별로 우선순위를 매겼습니다 (critical: waterfall 제거, 번들 크기 감소 → incremental: JavaScript 성능). TanStack Router 라우팅 패턴(Link, useNavigate, useSearch, useParams, beforeLoad, Outlet, pendingComponent, 프리로딩, 파일 컨벤션), React Compiler 자동 메모이제이션, use() hook, useOptimistic, createMiddleware, inputValidator, 데이터 스트리밍 등 최신 패턴 반영. 각 규칙은 자동 리팩토링 및 코드 생성을 위한 상세한 설명, 올바른 구현 대 잘못된 구현을 비교하는 실제 예시, 구체적인 영향 지표를 포함합니다.
 
 ---
 
@@ -32,10 +32,27 @@ AI 에이전트와 LLM을 위한 React 및 TanStack Start 애플리케이션 종
 @rules/server-serialization.md
 @rules/server-parallel-fetching.md
 @rules/server-deferred-data.md
+@rules/server-middleware.md
+@rules/server-validator.md
+@rules/server-streaming.md
+@rules/server-error-boundaries.md
 @rules/client-tanstack-query.md
+@rules/client-suspense-query.md
+@rules/client-optimistic-updates.md
+@rules/client-use-hook.md
 @rules/client-event-listeners.md
+@rules/routing-file-conventions.md
+@rules/routing-link-navigation.md
+@rules/routing-search-params.md
+@rules/routing-path-params.md
+@rules/routing-beforeload-auth.md
+@rules/routing-nested-layouts.md
+@rules/routing-router-context.md
+@rules/routing-preload-strategy.md
+@rules/routing-pending-component.md
 @rules/rerender-defer-reads.md
 @rules/rerender-memo.md
+@rules/rerender-react-compiler.md
 @rules/rerender-dependencies.md
 @rules/rerender-derived-state.md
 @rules/rerender-functional-setstate.md
@@ -71,11 +88,12 @@ AI 에이전트와 LLM을 위한 React 및 TanStack Start 애플리케이션 종
 |---------|---------|--------|------|
 | 1 | Waterfall 제거 | **CRITICAL** | 순차 await를 병렬로 전환. 가장 큰 성능 향상 제공 |
 | 2 | 번들 크기 최적화 | **CRITICAL** | TTI와 LCP 개선. 초기 로딩 속도 향상 |
-| 3 | 서버 사이드 성능 | HIGH | 서버 사이드 waterfall 제거, 응답 시간 단축 |
-| 4 | 클라이언트 데이터 페칭 | MEDIUM-HIGH | 자동 중복 제거, 효율적 데이터 페칭 |
-| 5 | Re-render 최적화 | MEDIUM | 불필요한 re-render 최소화, UI 반응성 향상 |
-| 6 | 렌더링 성능 | MEDIUM | 브라우저 렌더링 작업 최적화 |
-| 7 | JavaScript 성능 | LOW-MEDIUM | Hot path 마이크로 최적화 |
+| 3 | TanStack Router 라우팅 | **HIGH** | 타입 안전 네비게이션, 인증 가드, 레이아웃, 프리로딩 |
+| 4 | 서버 사이드 성능 | HIGH | 서버 사이드 waterfall 제거, 응답 시간 단축 |
+| 5 | 클라이언트 데이터 페칭 | MEDIUM-HIGH | 자동 중복 제거, 효율적 데이터 페칭 |
+| 6 | Re-render 최적화 | MEDIUM | 불필요한 re-render 최소화, UI 반응성 향상 |
+| 7 | 렌더링 성능 | MEDIUM | 브라우저 렌더링 작업 최적화 |
+| 8 | JavaScript 성능 | LOW-MEDIUM | Hot path 마이크로 최적화 |
 
 </categories>
 
@@ -718,13 +736,34 @@ function UserList({ users }: { users: User[] }) {
 2. [TanStack Start Overview](https://tanstack.com/start/latest/docs/framework/react/overview)
 3. [TanStack Start Quick Start](https://tanstack.com/start/latest/docs/framework/react/quick-start)
 4. [TanStack Router](https://tanstack.com/router)
-5. [TanStack Router Deferred Data Loading](https://tanstack.com/router/v1/docs/framework/react/guide/deferred-data-loading)
-6. [TanStack Query](https://tanstack.com/query)
+5. [TanStack Router Deferred Data Loading](https://tanstack.com/router/latest/docs/framework/react/guide/deferred-data-loading)
+6. [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview)
 7. [Server Functions Guide](https://tanstack.com/start/latest/docs/framework/react/guide/server-functions)
+8. [Middleware Guide](https://tanstack.com/start/latest/docs/framework/react/guide/middleware)
+9. [Streaming Data Guide](https://tanstack.com/start/latest/docs/framework/react/guide/streaming-data-from-server-functions)
+
+### TanStack Router
+10. [Navigation Guide](https://tanstack.com/router/latest/docs/framework/react/guide/navigation)
+11. [Link Options](https://tanstack.com/router/latest/docs/framework/react/guide/link-options)
+12. [Search Params](https://tanstack.com/router/latest/docs/framework/react/guide/search-params)
+13. [Path Params](https://tanstack.com/router/latest/docs/framework/react/guide/path-params)
+14. [Authenticated Routes](https://tanstack.com/router/latest/docs/framework/react/guide/authenticated-routes)
+15. [Outlets](https://tanstack.com/router/latest/docs/framework/react/guide/outlets)
+16. [Route Trees](https://tanstack.com/router/latest/docs/framework/react/guide/route-trees)
+17. [File-Based Routing](https://tanstack.com/router/latest/docs/framework/react/routing/file-based-routing)
+18. [Router Context](https://tanstack.com/router/latest/docs/framework/react/guide/router-context)
+19. [Preloading](https://tanstack.com/router/latest/docs/framework/react/guide/preloading)
+20. [Data Loading](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading)
+
+### React 19
+21. [React 19 Blog](https://react.dev/blog/2024/12/05/react-19)
+22. [React use() API](https://react.dev/reference/react/use)
+23. [React useOptimistic](https://react.dev/reference/react/useOptimistic)
+24. [React Compiler](https://react.dev/learn/react-compiler)
 
 ### 외부 자료
-8. [better-all](https://github.com/shuding/better-all)
-9. [node-lru-cache](https://github.com/isaacs/node-lru-cache)
-10. [Using Server Functions and TanStack Query](https://www.brenelz.com/posts/using-server-functions-and-tanstack-query/)
+25. [better-all](https://github.com/shuding/better-all)
+26. [node-lru-cache](https://github.com/isaacs/node-lru-cache)
+27. [Using Server Functions and TanStack Query](https://www.brenelz.com/posts/using-server-functions-and-tanstack-query/)
 
 </references>

@@ -13,37 +13,60 @@ tags: bundle, third-party, analytics, defer
 
 ```tsx
 import { Analytics } from '@vercel/analytics/react'
+import { ErrorTracker } from './error-tracker'
 
-export default function RootLayout({ children }) {
+function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html>
-      <body>
-        {children}
-        <Analytics />
-      </body>
-    </html>
+    <div>
+      {children}
+      <Analytics />
+      <ErrorTracker />
+    </div>
   )
 }
 ```
 
-**✅ 올바른 예시 (하이드레이션 후 로드):**
+**✅ 올바른 예시 (하이드레이션 후 lazy load):**
 
 ```tsx
-import dynamic from 'next/dynamic'
+import { lazy, Suspense, useEffect, useState } from 'react'
 
-const Analytics = dynamic(
-  () => import('@vercel/analytics/react').then(m => m.Analytics),
-  { ssr: false }
+const Analytics = lazy(() =>
+  import('@vercel/analytics/react').then(m => ({ default: m.Analytics }))
 )
 
-export default function RootLayout({ children }) {
+function RootLayout({ children }: { children: React.ReactNode }) {
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
+
   return (
-    <html>
-      <body>
-        {children}
-        <Analytics />
-      </body>
-    </html>
+    <div>
+      {children}
+      {hydrated && (
+        <Suspense fallback={null}>
+          <Analytics />
+        </Suspense>
+      )}
+    </div>
   )
 }
 ```
+
+**✅ 더 간단한 대안 (useEffect로 직접 초기화):**
+
+```tsx
+function RootLayout({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    // 하이드레이션 후 비동기 로드
+    import('./analytics').then(mod => mod.init())
+    import('./error-tracker').then(mod => mod.init())
+  }, [])
+
+  return <div>{children}</div>
+}
+```
+
+TanStack Start에서는 `next/dynamic`을 사용할 수 없으므로, React의 `lazy()` + `Suspense` 또는 `useEffect` 내 동적 `import()`를 사용합니다.
