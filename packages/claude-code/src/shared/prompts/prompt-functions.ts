@@ -107,27 +107,31 @@ export async function promptExtrasSelection(
     commands,
     agents,
     instructions,
+    scripts,
     hasSkills,
     hasCommands,
     hasAgents,
     hasInstructions,
+    hasScripts,
   } = options;
 
   let installSkills = skills ?? false;
   let installCommands = commands ?? false;
   const installAgents = agents ?? hasAgents;
   const installInstructions = instructions ?? hasInstructions;
+  const installScripts = scripts ?? hasScripts;
 
   // CLI 옵션이 하나도 제공되지 않은 경우 프롬프트 표시
   const noOptionsProvided =
     skills === undefined &&
     commands === undefined &&
     agents === undefined &&
-    instructions === undefined;
+    instructions === undefined &&
+    scripts === undefined;
 
   if (
     noOptionsProvided &&
-    (hasSkills || hasCommands || hasAgents || hasInstructions)
+    (hasSkills || hasCommands || hasAgents || hasInstructions || hasScripts)
   ) {
     logger.blank();
 
@@ -155,6 +159,7 @@ export async function promptExtrasSelection(
     installCommands,
     installAgents,
     installInstructions,
+    installScripts,
   };
 }
 

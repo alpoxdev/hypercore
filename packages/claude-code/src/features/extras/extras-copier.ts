@@ -47,6 +47,12 @@ export const copyAgents = createExtrasCopier('agents');
 export const copyInstructions = createExtrasCopier('instructions');
 
 /**
+ * Scripts 복사 (templates/.claude/scripts/ → 타겟/.claude/scripts/)
+ * Scripts는 셸 스크립트 기반 구조
+ */
+export const copyScripts = createExtrasCopier('scripts');
+
+/**
  * 템플릿 기반으로 설치할 스킬 목록 결정 (메타데이터 기반)
  * - 기본: 모든 스킬 설치
  * - 비-UI 템플릿: ui-only 스킬 제외

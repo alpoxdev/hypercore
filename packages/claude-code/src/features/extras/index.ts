@@ -9,6 +9,7 @@ export {
   copyCommands,
   copyAgents,
   copyInstructions,
+  copyScripts,
 } from './extras-copier.js';
 
 // Checker
