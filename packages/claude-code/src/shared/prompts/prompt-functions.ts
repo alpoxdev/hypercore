@@ -4,7 +4,11 @@
  */
 
 import { logger } from '../logger.js';
-import { promptConfirm, promptMultiselect } from './prompt-helpers.js';
+import {
+  promptConfirm,
+  promptMultiselect,
+  promptSelect,
+} from './prompt-helpers.js';
 import type {
   TemplateSelectionOptions,
   TemplateSelectionResult,
