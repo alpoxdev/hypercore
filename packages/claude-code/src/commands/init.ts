@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import os from 'os';
 import { logger } from '../shared/logger.js';
 import {
   copySingleTemplate,
@@ -11,11 +12,13 @@ import {
   installExtras,
   type InstallResult,
   type ExtrasFlags,
+  type InstallScope,
 } from '../features/extras/index.js';
 import {
   promptTemplateSelection,
   promptOverwrite,
   promptExtrasSelection,
+  promptScopeSelection,
 } from '../shared/prompts/index.js';
 import { updateGitignore } from '../shared/gitignore-manager.js';
 
@@ -23,6 +26,7 @@ interface InitOptions {
   templates?: string[];
   force?: boolean;
   cwd?: string;
+  scope?: string;
   skills?: boolean;
   commands?: boolean;
   agents?: boolean;
@@ -173,6 +177,7 @@ function showInstallationSummary(
   hasCommands: boolean,
   hasAgents: boolean,
   hasInstructions: boolean,
+  scope: InstallScope,
 ): void {
   const { installSkills, installCommands, installAgents, installInstructions } =
     flags;
@@ -191,8 +196,11 @@ function showInstallationSummary(
     return;
   }
 
+  const scopeLabel =
+    scope === 'user' ? '(user scope → ~/.claude/)' : '(project scope)';
+
   logger.blank();
-  logger.success('Claude Code documentation installed!');
+  logger.success(`Claude Code documentation installed! ${scopeLabel}`);
 
   // 템플릿이 있는 경우에만 표시
   if (templates.length > 0) {
@@ -231,32 +239,47 @@ function showInstallationSummary(
 }
 
 export const init = async (options: InitOptions): Promise<void> => {
-  const targetDir = options.cwd || process.cwd();
+  const projectDir = options.cwd || process.cwd();
 
-  // 1. 대상 디렉토리 검증
-  await validateTargetDirectory(targetDir);
+  // 1. 대상 디렉토리 검증 (프로젝트 디렉토리는 항상 검증)
+  await validateTargetDirectory(projectDir);
 
-  // 2. 사용 가능한 템플릿 목록 확인
+  // 2. Scope 선택
+  const { scope } = await promptScopeSelection({
+    providedScope: options.scope,
+  });
+
+  // User scope: targetDir = 홈 디렉토리, Project scope: targetDir = CWD
+  const targetDir = scope === 'user' ? os.homedir() : projectDir;
+  const isUserScope = scope === 'user';
+
+  if (isUserScope) {
+    logger.blank();
+    logger.info(`Installing to ~/.claude/ (user scope)`);
+  }
+
+  // 3. 사용 가능한 템플릿 목록 확인
   const availableTemplates = await listAvailableTemplates();
   if (availableTemplates.length === 0) {
     logger.error('No templates found. Package may be corrupted.');
     process.exit(1);
   }
 
-  // 3. 템플릿 선택
-  const templates = await selectTemplates(options, availableTemplates);
+  // 4. 템플릿 선택 및 설치 (Project scope에서만)
+  let templates: string[] = [];
+  if (!isUserScope) {
+    templates = await selectTemplates(options, availableTemplates);
 
-  // 4. 템플릿이 선택된 경우에만 덮어쓰기 확인 및 설치
-  if (templates.length > 0) {
-    // 기존 파일 덮어쓰기 확인
-    await confirmOverwriteIfNeeded(targetDir, options.force ?? false);
+    if (templates.length > 0) {
+      // 기존 파일 덮어쓰기 확인
+      await confirmOverwriteIfNeeded(targetDir, options.force ?? false);
 
-    // 템플릿 설치
-    await installTemplates(templates, targetDir);
+      // 템플릿 설치
+      await installTemplates(templates, targetDir);
+    }
   }
 
   // 5. 스킬/커맨드/에이전트/인스트럭션 존재 여부 확인
-  // 템플릿이 없으면 모든 템플릿의 extras를 확인
   const templatesToCheck =
     templates.length > 0 ? templates : availableTemplates;
   const { hasSkills, hasCommands, hasAgents, hasInstructions } =
@@ -271,14 +294,13 @@ export const init = async (options: InitOptions): Promise<void> => {
     hasInstructions,
   );
 
-  // 7. 스킬/커맨드/에이전트/인스트럭션 설치
-  await installExtras(
-    templatesToCheck,
-    targetDir,
-    flags,
-    { hasSkills, hasCommands, hasAgents, hasInstructions },
-    options.force ?? false,
-  );
+  // 7. 스킬/커맨드/에이전트/인스트럭션 설치 (자동 업데이트)
+  await installExtras(templatesToCheck, targetDir, flags, {
+    hasSkills,
+    hasCommands,
+    hasAgents,
+    hasInstructions,
+  });
 
   // 8. 설치 요약 출력
   showInstallationSummary(
@@ -288,14 +310,17 @@ export const init = async (options: InitOptions): Promise<void> => {
     hasCommands,
     hasAgents,
     hasInstructions,
+    scope,
   );
 
-  // 9. .gitignore에 Claude Code 생성 폴더 추가
-  try {
-    await updateGitignore(targetDir);
-  } catch (error) {
-    logger.warn(
-      `Failed to update .gitignore: ${error instanceof Error ? error.message : 'Unknown error'}`,
-    );
+  // 9. .gitignore에 Claude Code 생성 폴더 추가 (Project scope에서만)
+  if (!isUserScope) {
+    try {
+      await updateGitignore(targetDir);
+    } catch (error) {
+      logger.warn(
+        `Failed to update .gitignore: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
   }
 };

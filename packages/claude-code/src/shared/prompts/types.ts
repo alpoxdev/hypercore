@@ -39,6 +39,15 @@ export interface OverwritePromptOptions {
   force: boolean;
 }
 
+// Scope 선택 관련 타입
+export interface ScopeSelectionOptions {
+  providedScope?: string;
+}
+
+export interface ScopeSelectionResult {
+  scope: 'project' | 'user';
+}
+
 // Extras 선택 관련 타입
 export interface ExtrasSelectionOptions {
   skills?: boolean;

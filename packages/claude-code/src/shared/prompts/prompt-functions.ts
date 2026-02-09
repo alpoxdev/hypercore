@@ -4,13 +4,19 @@
  */
 
 import { logger } from '../logger.js';
-import { promptConfirm, promptMultiselect } from './prompt-helpers.js';
+import {
+  promptConfirm,
+  promptMultiselect,
+  promptSelect,
+} from './prompt-helpers.js';
 import type {
   TemplateSelectionOptions,
   TemplateSelectionResult,
   OverwritePromptOptions,
   ExtrasSelectionOptions,
   ExtrasSelectionResult,
+  ScopeSelectionOptions,
+  ScopeSelectionResult,
 } from './types.js';
 
 /**
@@ -150,4 +156,49 @@ export async function promptExtrasSelection(
     installAgents,
     installInstructions,
   };
+}
+
+/**
+ * Scope 선택 프롬프트
+ * CLI 인자로 제공되지 않았을 때 사용자에게 Project/User 선택 요청
+ */
+export async function promptScopeSelection(
+  options: ScopeSelectionOptions,
+): Promise<ScopeSelectionResult> {
+  const { providedScope } = options;
+
+  // CLI로 scope이 제공된 경우 검증 후 반환
+  if (providedScope) {
+    if (providedScope !== 'project' && providedScope !== 'user') {
+      logger.error(
+        `Invalid scope: "${providedScope}". Use "project" or "user".`,
+      );
+      process.exit(1);
+    }
+    return { scope: providedScope };
+  }
+
+  // 인터랙티브 프롬프트
+  const response = await promptSelect<'project' | 'user'>(
+    'Select installation scope:',
+    [
+      {
+        title: 'Project',
+        description: 'Install to current project (.claude/)',
+        value: 'project',
+      },
+      {
+        title: 'User',
+        description: 'Install to user home (~/.claude/)',
+        value: 'user',
+      },
+    ],
+  );
+
+  if (!response.value) {
+    logger.info('Operation cancelled.');
+    process.exit(0);
+  }
+
+  return { scope: response.value };
 }

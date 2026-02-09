@@ -21,6 +21,7 @@ program
   .option('-s, --skills', 'install skills to .claude/skills/')
   .option('-c, --commands', 'install commands to .claude/commands/')
   .option('-a, --agents', 'install agents to .claude/agents/')
+  .option('--scope <scope>', 'installation scope (project|user)')
   .action(async (options) => {
     banner();
 
@@ -38,6 +39,7 @@ program
       templates: options.template?.split(',').map((t: string) => t.trim()),
       force: options.force,
       cwd: options.cwd,
+      scope: options.scope,
       skills: options.skills,
       commands: options.commands,
       agents: options.agents,
