@@ -2,6 +2,9 @@
  * Extras 기능 관련 타입 정의
  */
 
+/** 설치 범위 (Project: CWD/.claude/, User: ~/.claude/) */
+export type InstallScope = 'project' | 'user';
+
 /** 복사 결과 */
 export interface CopyResult {
   files: number;

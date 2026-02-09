@@ -25,6 +25,7 @@ export { installExtras } from './extras-installer.js';
 export type {
   CopyResult,
   InstallResult,
+  InstallScope,
   ExtrasFlags,
   SkillsCopyResult,
   ExtrasExistenceCheck,
