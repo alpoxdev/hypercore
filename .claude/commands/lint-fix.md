@@ -4,70 +4,47 @@ allowed-tools: Task
 argument-hint: [파일/디렉토리 경로...]
 ---
 
-@../instructions/multi-agent/coordination-guide.md
-@../instructions/multi-agent/execution-patterns.md
-
 # Lint Fix Command
 
-> @lint-fixer 에이전트를 사용하여 tsc/eslint 오류를 자동으로 수정.
+> tsc/eslint 오류를 자동으로 수정.
 
 ---
 
-<critical_requirements>
+<scripts>
 
-## ⚠️ CRITICAL: 작업 시작 전 필수 확인
+## 사용 가능한 스크립트
 
-**이 커맨드는 반드시 @lint-fixer 에이전트를 사용해야 합니다.**
+| 스크립트 | 용도 |
+|----------|------|
+| `.claude/scripts/lint/lint-check.sh` | tsc + eslint 병렬 검사 |
+| `.claude/scripts/lint/lint-file.sh [files]` | 특정 파일만 검사 |
 
-### MANDATORY: Task 도구로 @lint-fixer 호출
-
-```typescript
-Task({
-  subagent_type: 'lint-fixer',
-  description: 'tsc/eslint 오류 수정',
-  prompt: `
-    $ARGUMENTS 처리:
-    ${$ARGUMENTS ? `특정 경로: ${$ARGUMENTS}` : '전체 프로젝트 검사'}
-
-    수행할 작업:
-    1. tsc + eslint 병렬 검사
-    2. 오류 분류 (간단/복잡)
-    3. TodoWrite로 오류 목록 생성
-    4. 간단한 오류: 즉시 수정
-    5. 복잡한 오류: Sequential Thinking으로 분석 후 수정
-    6. 전체 재검사로 완료 확인
-  `
-})
-```
-
-**❌ 절대 금지:**
-- Bash 도구로 tsc/eslint 직접 실행 후 수동 수정
-- @lint-fixer 없이 오류 수정
-- 커맨드 내에서 직접 오류 분석/수정
-
-**✅ 필수:**
-- Task 도구로 @lint-fixer 에이전트 호출
-- 모든 lint 작업을 에이전트에 위임
-- 에이전트가 자동으로 간단/복잡 판단 후 처리
-
-**@lint-fixer 에이전트 장점:**
-- 간단한 오류는 즉시 수정 (Sequential Thinking 불필요)
-- 복잡한 오류만 Sequential Thinking 사용 (효율적)
-- TodoWrite로 진행 상황 자동 추적
-- 우선순위 자동 정렬 (타입 오류 → 린트 오류)
+</scripts>
 
 ---
 
-**진행 전 자가 점검:**
-```text
-□ Task 도구 사용 준비?
-□ @lint-fixer 에이전트로 작업 위임?
-□ Bash로 tsc/eslint 직접 실행 안 함?
+<workflow>
+
+## 워크플로우
+
+### 전체 검사
+
+```bash
+# 1. 병렬 검사 (tsc + eslint 동시)
+.claude/scripts/lint/lint-check.sh
+
+# 2. 오류 수정 후 재검사
+.claude/scripts/lint/lint-check.sh
 ```
 
-**⚠️ 위 체크리스트를 통과하지 않으면 작업을 시작하지 마세요.**
+### 특정 파일 검사
 
-</critical_requirements>
+```bash
+# 특정 파일만
+.claude/scripts/lint/lint-file.sh src/utils/api.ts src/components/Button.tsx
+```
+
+</workflow>
 
 ---
 

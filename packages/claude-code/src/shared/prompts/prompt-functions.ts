@@ -39,15 +39,10 @@ export async function promptTemplateSelection(
         value: t,
       })),
       {
-        min: 1,
-        hint: '- Space to select. Return to submit',
+        min: 0,
+        hint: '- Space to select, Enter to confirm (or skip to install extras only)',
       },
     );
-
-    if (response.values.length === 0) {
-      logger.warn('Operation cancelled.');
-      process.exit(0);
-    }
 
     templates = response.values;
   }
