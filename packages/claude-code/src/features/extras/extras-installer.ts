@@ -4,6 +4,7 @@ import {
   copyCommands,
   copyAgents,
   copyInstructions,
+  copyScripts,
 } from './extras-copier.js';
 import { checkExistingClaudeFiles } from './extras-checker.js';
 import type { InstallResult, ExtrasFlags } from './types.js';
@@ -101,6 +102,33 @@ async function installAgentsIfNeeded(
 }
 
 /**
+ * Scripts 설치
+ */
+async function installScriptsIfNeeded(
+  templates: string[],
+  targetDir: string,
+  shouldInstall: boolean,
+  hasScripts: boolean,
+): Promise<InstallResult> {
+  if (!shouldInstall) {
+    return { files: 0, directories: 0 };
+  }
+
+  if (!hasScripts) {
+    logger.warn('No scripts found in selected templates.');
+    return { files: 0, directories: 0 };
+  }
+
+  logger.blank();
+  logger.info('Installing scripts...');
+  const scriptsResult = await copyScripts(templates, targetDir);
+  logger.success(
+    `Scripts: ${scriptsResult.files} files, ${scriptsResult.directories} directories`,
+  );
+  return scriptsResult;
+}
+
+/**
  * Instructions 설치
  */
 async function installInstructionsIfNeeded(
@@ -140,17 +168,24 @@ export async function installExtras(
     hasCommands: boolean;
     hasAgents: boolean;
     hasInstructions: boolean;
+    hasScripts: boolean;
   },
 ): Promise<InstallResult> {
-  const { installSkills, installCommands, installAgents, installInstructions } =
-    flags;
+  const {
+    installSkills,
+    installCommands,
+    installAgents,
+    installInstructions,
+    installScripts,
+  } = flags;
 
   // 설치할 항목이 없으면 조기 종료
   if (
     !installSkills &&
     !installCommands &&
     !installAgents &&
-    !installInstructions
+    !installInstructions &&
+    !installScripts
   ) {
     return { files: 0, directories: 0 };
   }
@@ -188,18 +223,27 @@ export async function installExtras(
     availability.hasInstructions,
   );
 
+  const scriptsResult = await installScriptsIfNeeded(
+    templates,
+    targetDir,
+    installScripts,
+    availability.hasScripts,
+  );
+
   // 전체 결과 집계
   const totalFiles =
     skillsResult.files +
     commandsResult.files +
     agentsResult.files +
-    instructionsResult.files;
+    instructionsResult.files +
+    scriptsResult.files;
 
   const totalDirectories =
     skillsResult.directories +
     commandsResult.directories +
     agentsResult.directories +
-    instructionsResult.directories;
+    instructionsResult.directories +
+    scriptsResult.directories;
 
   return { files: totalFiles, directories: totalDirectories };
 }

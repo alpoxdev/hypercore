@@ -23,6 +23,7 @@ export interface ExtrasFlags {
   installCommands: boolean;
   installAgents: boolean;
   installInstructions: boolean;
+  installScripts: boolean;
 }
 
 /** Skills 복사 결과 */
@@ -34,10 +35,16 @@ export interface ExtrasExistenceCheck {
   hasCommands: boolean;
   hasAgents: boolean;
   hasInstructions: boolean;
+  hasScripts: boolean;
 }
 
 /** Extras 타입 */
-export type ExtrasType = 'skills' | 'commands' | 'agents' | 'instructions';
+export type ExtrasType =
+  | 'skills'
+  | 'commands'
+  | 'agents'
+  | 'instructions'
+  | 'scripts';
 
 /** Extras 복사 옵션 */
 export interface ExtrasCopyOptions {

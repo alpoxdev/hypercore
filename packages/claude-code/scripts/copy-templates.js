@@ -62,6 +62,12 @@ async function copyTemplates() {
     console.log('  ✓ .claude/instructions/');
   }
 
+  const scriptsSrc = path.join(claudeDir, 'scripts');
+  if (await fs.pathExists(scriptsSrc)) {
+    await fs.copy(scriptsSrc, path.join(claudeDestDir, 'scripts'));
+    console.log('  ✓ .claude/scripts/');
+  }
+
   console.log('✅ Templates copied successfully!');
 }
 
