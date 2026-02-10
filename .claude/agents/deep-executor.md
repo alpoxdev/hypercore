@@ -4,6 +4,7 @@ description: 자율적 딥 워커. 탐색-계획-실행 스스로. 위임 없이
 tools: Read, Write, Edit, Bash, Glob, Grep, Task
 model: opus
 permissionMode: default
+maxTurns: 100
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

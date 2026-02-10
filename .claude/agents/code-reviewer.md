@@ -4,6 +4,7 @@ description: 코드 작성/수정 후 품질, 보안, 유지보수성 검토. gi
 tools: Read, Grep, Glob, Bash
 model: sonnet
 permissionMode: default
+maxTurns: 30
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

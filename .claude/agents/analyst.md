@@ -2,7 +2,12 @@
 name: analyst
 description: 계획 전 요구사항 분석. 놓친 질문, 가정, 엣지 케이스 발견. Metis (지혜의 여신) 컨셉.
 tools: Read, Grep, Glob
+disallowedTools:
+  - Write
+  - Edit
 model: opus
+permissionMode: default
+maxTurns: 30
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

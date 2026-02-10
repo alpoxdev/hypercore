@@ -2,7 +2,9 @@
 name: designer
 description: 2026 트렌드 기반 UI/UX 디자인. AI/공간/키네틱 타이포/적응형 테마 통합. 미적 우수성 + 기능적 코드 품질.
 tools: Read, Write, Edit, Grep, Glob, Bash, WebSearch
+model: sonnet
 permissionMode: default
+maxTurns: 50
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

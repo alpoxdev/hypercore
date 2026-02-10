@@ -3,6 +3,8 @@ name: git-operator
 description: Git 커밋/푸시 작업. 논리적 단위 분리 커밋, AI 표시 금지 규칙 준수.
 tools: Bash
 model: haiku
+permissionMode: default
+maxTurns: 20
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

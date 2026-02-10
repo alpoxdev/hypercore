@@ -4,6 +4,7 @@ description: 미디어 파일 분석. 이미지, PDF, 다이어그램 해석. �
 tools: Read
 model: sonnet
 permissionMode: default
+maxTurns: 20
 ---
 
 @../../instructions/validation/forbidden-patterns.md

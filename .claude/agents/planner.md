@@ -1,7 +1,10 @@
 ---
 name: planner
 description: 전략적 작업 계획 수립 전문 에이전트. 구현 전 인터뷰-조사-계획 수립. 코드 작성 없이 .claude/plans/ 문서만 생성.
+tools: Read, Write, Edit, Glob, Grep, Task, AskUserQuestion
 model: opus
+permissionMode: plan
+maxTurns: 50
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md
