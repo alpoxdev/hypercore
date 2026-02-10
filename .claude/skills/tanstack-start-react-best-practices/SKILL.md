@@ -10,6 +10,7 @@ metadata:
 ---
 
 @../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/agent-patterns/agent-teams-usage.md
 @../../instructions/validation/forbidden-patterns.md
 @../../instructions/validation/required-behaviors.md
 @../../instructions/multi-agent/coordination-guide.md

@@ -4,6 +4,7 @@ description: 보안 취약점 탐지. 코드 작성 후 proactive 호출. OWASP 
 tools: Read, Grep, Glob, Bash
 model: sonnet
 permissionMode: default
+maxTurns: 30
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

@@ -2,7 +2,12 @@
 name: architect
 description: READ-ONLY 전략 고문. 아키텍처 분석, 디버깅, 패턴 인식. 구현하지 않고 조언만 제공. Oracle 컨셉.
 tools: Read, Grep, Glob
+disallowedTools:
+  - Write
+  - Edit
 model: opus
+permissionMode: default
+maxTurns: 30
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

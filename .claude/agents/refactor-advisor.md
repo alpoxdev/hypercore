@@ -2,8 +2,12 @@
 name: refactor-advisor
 description: 코드 구조 개선 조언. 중복 제거, 복잡도 감소, 패턴 개선. 기능 유지하며 점진적 리팩토링 계획 수립.
 tools: Read, Grep, Glob, mcp__sequential-thinking__sequentialthinking
+disallowedTools:
+  - Write
+  - Edit
 model: sonnet
 permissionMode: default
+maxTurns: 30
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

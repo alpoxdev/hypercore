@@ -4,6 +4,7 @@ description: 외부 문서/레퍼런스 조사. 공식 문서, GitHub, Stack Ove
 tools: WebSearch, WebFetch, Read
 model: sonnet
 permissionMode: default
+maxTurns: 30
 ---
 
 # Researcher Agent

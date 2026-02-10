@@ -4,6 +4,7 @@ description: Python 기반 데이터 분석/연구 실행. 통계 분석, 시각
 tools: Read, Glob, Grep, Bash
 model: sonnet
 permissionMode: default
+maxTurns: 30
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

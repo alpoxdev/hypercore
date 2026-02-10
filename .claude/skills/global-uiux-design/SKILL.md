@@ -6,6 +6,7 @@ ui-only: true
 ---
 
 @../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/agent-patterns/agent-teams-usage.md
 @../../instructions/validation/forbidden-patterns.md
 @../../instructions/validation/required-behaviors.md
 

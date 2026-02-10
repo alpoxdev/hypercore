@@ -2,6 +2,9 @@
 name: ko-to-en-translator
 description: 한글 문서/코드 주석을 영어로 번역. 번역 전 웹 검색으로 주의점 파악 및 적용
 tools: Read, WebSearch, Edit
+model: haiku
+permissionMode: default
+maxTurns: 30
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

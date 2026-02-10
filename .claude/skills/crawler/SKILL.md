@@ -4,6 +4,8 @@ description: Playwriter로 웹사이트 직접 탐방하여 크롤링 설계. AP
 user-invocable: true
 ---
 
+@../../instructions/agent-patterns/agent-teams-usage.md
+
 # Crawler Skill
 
 > Playwriter 탐방 → API/Network 분석 → 문서화 → 코드 생성

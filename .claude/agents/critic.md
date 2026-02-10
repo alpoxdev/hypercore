@@ -2,8 +2,12 @@
 name: critic
 description: 작업 계획 리뷰 전문가. 명확성, 완전성, 검증 가능성 평가. OKAY/REJECT 판정.
 tools: Read, Glob, Grep
+disallowedTools:
+  - Write
+  - Edit
 model: opus
 permissionMode: default
+maxTurns: 20
 ---
 
 @../../instructions/validation/forbidden-patterns.md

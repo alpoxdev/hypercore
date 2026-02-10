@@ -2,7 +2,9 @@
 name: implementation-executor
 description: 계획 또는 작업을 Sequential Thinking으로 분석하여 즉시 구현. 옵션 제시 없이 바로 실행.
 tools: Read, Write, Edit, Grep, Glob, Task, TodoWrite, mcp__sequential-thinking__sequentialthinking
+model: sonnet
 permissionMode: default
+maxTurns: 100
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

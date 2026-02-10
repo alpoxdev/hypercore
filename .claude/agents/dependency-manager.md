@@ -2,7 +2,9 @@
 name: dependency-manager
 description: package.json 의존성 분석, 업데이트, 보안 취약점 스캔. npm audit/outdated 기반 안전한 업데이트 제안.
 tools: Read, Edit, Bash, Grep
+model: sonnet
 permissionMode: default
+maxTurns: 30
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

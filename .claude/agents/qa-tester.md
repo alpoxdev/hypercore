@@ -4,6 +4,7 @@ description: tmux 기반 CLI/서비스 테스팅. 세션 생성, 명령 전송, 
 tools: Bash
 model: sonnet
 permissionMode: default
+maxTurns: 30
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md

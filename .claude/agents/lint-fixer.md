@@ -2,7 +2,9 @@
 name: lint-fixer
 description: 코드 작성/수정 후 tsc/eslint 오류 수정. 간단한 오류는 즉시 수정, 복잡한 오류만 Sequential Thinking 사용.
 tools: Read, Edit, Bash, mcp__sequential-thinking__sequentialthinking
+model: sonnet
 permissionMode: default
+maxTurns: 50
 ---
 
 @../../instructions/agent-patterns/parallel-execution.md
