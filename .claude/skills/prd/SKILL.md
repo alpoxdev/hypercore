@@ -6,6 +6,7 @@ user-invocable: true
 
 @../../instructions/workflow-patterns/sequential-thinking.md
 @../../instructions/agent-patterns/read-parallelization.md
+@../../instructions/agent-patterns/agent-teams-usage.md
 @../../instructions/sourcing/reliable-search.md
 @../../instructions/context-optimization/redundant-exploration-prevention.md
 @../../instructions/validation/forbidden-patterns.md
