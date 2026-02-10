@@ -43,6 +43,25 @@ Tauri v2 + React 19 데스크톱/모바일 애플리케이션 성능 및 보안 
 
 <parallel_agent_execution>
 
+### ⚠️ Agent Teams 우선 원칙
+
+> **복잡한 병렬 작업 시 Agent Teams를 기본으로 사용**
+> - Agent Teams 가용 → TeamCreate → 팀원 spawn → 병렬 협업
+> - Agent Teams 미가용 → Task 병렬 호출 (폴백)
+
+**Agent Teams 모드 (기본)**:
+```typescript
+TeamCreate({ team_name: "tauri-team", description: "Tauri + React 최적화" })
+Task(subagent_type="general-purpose", team_name="tauri-team", name="optimizer", ...)
+```
+
+**수명주기 관리:**
+- 팀원 태스크 완료 → 즉시 `shutdown_request` 전송
+- 종료 후 `TaskList`로 다음 태스크 확인
+- 모든 작업 완료 → `TeamDelete`로 팀 해산
+
+---
+
 ## 병렬 에이전트 실행
 
 **ULTRAWORK MODE:** Tauri + React 최적화 작업 시 여러 규칙을 동시에 적용.

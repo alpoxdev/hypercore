@@ -161,6 +161,25 @@ MCP 미가용 시 → researcher가 WebSearch + WebFetch로 수행
 
 <parallel_agent_execution>
 
+### ⚠️ Agent Teams 우선 원칙
+
+> **복잡한 병렬 작업 시 Agent Teams를 기본으로 사용**
+> - Agent Teams 가용 → TeamCreate → 팀원 spawn → 병렬 협업
+> - Agent Teams 미가용 → Task 병렬 호출 (폴백)
+
+**Agent Teams 모드 (기본)**:
+```typescript
+TeamCreate({ team_name: "first-principles-team", description: "제1원칙 분석" })
+Task(subagent_type="researcher", team_name="first-principles-team", name="researcher", ...)
+```
+
+**수명주기 관리:**
+- 팀원 태스크 완료 → 즉시 `shutdown_request` 전송
+- 종료 후 `TaskList`로 다음 태스크 확인
+- 모든 작업 완료 → `TeamDelete`로 팀 해산
+
+---
+
 ## 병렬 Agent 실행
 
 ### Phase 1: 도메인 조사 (3방향 동시)
