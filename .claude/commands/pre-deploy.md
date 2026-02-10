@@ -99,6 +99,26 @@ argument-hint: [파일/디렉토리 경로...]
 
 <parallel_execution_critical>
 
+### ⚠️ Agent Teams 우선 원칙
+
+> **복잡한 병렬 작업 시 Agent Teams를 기본으로 사용**
+> - Agent Teams 가용 → TeamCreate → 팀원 spawn → 병렬 협업
+> - Agent Teams 미가용 → Task 병렬 호출 (폴백)
+
+**Agent Teams 모드 (기본)**:
+```typescript
+TeamCreate({ team_name: "pre-deploy-team", description: "배포 전 검증" })
+Task(subagent_type="deployment-validator", team_name="pre-deploy-team", name="validator", ...)
+Task(subagent_type="security-reviewer", team_name="pre-deploy-team", name="security", ...)
+```
+
+**수명주기 관리:**
+- 팀원 태스크 완료 → 즉시 `shutdown_request` 전송
+- 종료 후 `TaskList`로 다음 태스크 확인
+- 모든 작업 완료 → `TeamDelete`로 팀 해산
+
+---
+
 ## ⚠️ CRITICAL: 병렬 검사 필수
 
 **typecheck와 lint는 반드시 단일 메시지에서 병렬로 실행해야 합니다.**
