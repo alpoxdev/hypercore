@@ -358,6 +358,8 @@ Task({ subagent_type: 'analyst', prompt: '비평가 관점: 약점과 리스크'
 ❌ 다음 단계 없이 종료
 ❌ 결과 저장 없이 종료
 ❌ 발행일 미확인 정보 기반 추천
+❌ 3개+ 에이전트 시 Agent Teams 미사용 (가용 환경)
+❌ 팀 정리(shutdown → TeamDelete) 없이 종료
 ```
 
 ## 병렬 실행 체크리스트

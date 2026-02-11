@@ -78,6 +78,38 @@ Phase 0에서 자동 분류 → 채널 조합 결정:
 
 ---
 
+<parallel_agent_execution>
+
+### ⚠️ Agent Teams 필수 원칙
+
+> **3개+ 병렬 에이전트 사용 시 Agent Teams 필수** (가용 환경에서)
+> - Agent Teams 가용 → `TeamCreate` → 팀원 spawn → 병렬 협업
+> - Agent Teams 미가용 → Task 병렬 호출 (폴백)
+
+**기본 실행 패턴 (standard/deep):**
+```typescript
+// Phase 0: 팀 생성 (standard: 3-4명, deep: 4-6명)
+TeamCreate({ team_name: "research-team", description: "자료 조사" })
+
+// Phase 2: 팀원 스폰 (병렬)
+Task({ subagent_type: "researcher", team_name: "research-team", name: "r1", prompt: "기술 A 조사..." })
+Task({ subagent_type: "researcher", team_name: "research-team", name: "r2", prompt: "기술 B 조사..." })
+Task({ subagent_type: "researcher", team_name: "research-team", name: "r3", prompt: "비교 분석..." })
+Task({ subagent_type: "explore", team_name: "research-team", name: "explorer", model: "haiku", prompt: "gh search..." })
+```
+
+**수명주기 관리 (필수):**
+| 단계 | 행동 |
+|------|------|
+| 완료 | 팀원별 `shutdown_request` 전송 |
+| 해산 | `TeamDelete`로 팀 정리 |
+
+**quick 모드 예외:** 2명 이하 → Task 직접 호출 허용
+
+</parallel_agent_execution>
+
+---
+
 <sourcing_strategy>
 
 @../../instructions/sourcing/reliable-search.md
@@ -253,6 +285,6 @@ gRPC가 처리량/레이턴시 우위(HTTP/2)이나 브라우저 미지원.
 | **리포트** | Exec Summary 250-400자, 출처, 비교 테이블, 권장사항, 참고자료, 메타데이터 |
 | **저장** | .claude/research/ 저장, 터미널 출력, 경로 안내 |
 
-**절대 금지:** 출처 없는 주장 / 단일 소스 리포트 / Exec Summary 누락 / 권장사항 누락 / 저장 안 함 / 라이브러리 주제 (→ docs-fetch) / **연도 없는 검색** / **출처 등급 미표기**
+**절대 금지:** 출처 없는 주장 / 단일 소스 리포트 / Exec Summary 누락 / 권장사항 누락 / 저장 안 함 / 라이브러리 주제 (→ docs-fetch) / **연도 없는 검색** / **출처 등급 미표기** / **3개+ 에이전트 시 Agent Teams 미사용** (가용 환경) / **팀 정리 없이 종료**
 
 </validation>

@@ -4,6 +4,48 @@
 
 ---
 
+<mandatory_rules>
+
+## ⚠️ 필수 사용 규칙
+
+> **이 규칙은 선택이 아닌 필수입니다. 위반 시 workflow 실패로 간주합니다.**
+
+| 조건 | 행동 | 위반 시 |
+|------|------|--------|
+| **3개+ 병렬 에이전트 필요** | Agent Teams **필수** 사용 | ❌ 스킬 실행 중단 |
+| **팀원 간 소통/조율 필요** | Agent Teams **필수** 사용 | ❌ 스킬 실행 중단 |
+| **Agent Teams 미가용** | Task 병렬 호출 (폴백) | ✅ 허용 |
+| **단순 작업 (1-2 에이전트)** | Task 직접 호출 | ✅ 허용 |
+
+### 필수 패턴
+
+```typescript
+// ✅ 3개+ 에이전트 → Agent Teams 필수
+TeamCreate({ team_name: "skill-team", description: "..." })
+Task({ subagent_type: "...", team_name: "skill-team", name: "worker-1", ... })
+Task({ subagent_type: "...", team_name: "skill-team", name: "worker-2", ... })
+Task({ subagent_type: "...", team_name: "skill-team", name: "worker-3", ... })
+
+// ❌ 금지: 3개+ 에이전트를 Agent Teams 없이 호출
+Task({ subagent_type: "...", ... })
+Task({ subagent_type: "...", ... })
+Task({ subagent_type: "...", ... })  // Agent Teams 미사용 → 위반
+```
+
+### 수명주기 필수 관리
+
+| 단계 | 필수 행동 |
+|------|----------|
+| **시작** | `TeamCreate` → 팀원 spawn |
+| **완료** | 팀원별 `shutdown_request` 전송 |
+| **해산** | 모든 팀원 종료 확인 → `TeamDelete` |
+
+**팀 정리 없이 스킬 종료 금지.**
+
+</mandatory_rules>
+
+---
+
 <availability_check>
 
 ## 환경 확인
