@@ -21,6 +21,7 @@
 ---
 
 <instructions>
+@docs/architecture.md
 @docs/library/tauri/index.md
 @docs/guides/getting-started.md
 @docs/guides/mobile.md
