@@ -48,6 +48,15 @@ export interface ScopeSelectionResult {
   scope: 'project' | 'user';
 }
 
+// Codex sync 확인 관련 타입
+export interface CodexSyncPromptOptions {
+  providedSyncCodex?: boolean;
+}
+
+export interface CodexSyncPromptResult {
+  syncCodex: boolean;
+}
+
 // Extras 선택 관련 타입
 export interface ExtrasSelectionOptions {
   skills?: boolean;

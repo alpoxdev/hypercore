@@ -4,10 +4,17 @@ import { logger } from './logger.js';
 
 // Claude Code가 생성하는 폴더 목록
 const CLAUDE_GENERATED_FOLDERS = [
+  '.claude/brainstorms/',
+  '.claude/crawler/',
+  '.claude/first-principles/',
+  '.claude/genius-ideas/',
   '.claude/plan/',
+  '.claude/plans/',
   '.claude/ralph/',
   '.claude/refactor/',
   '.claude/prd/',
+  '.claude/research/',
+  '.claude/validation-results/',
 ];
 
 function normalizeIgnorePattern(pattern: string): string {

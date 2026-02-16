@@ -17,6 +17,8 @@ import type {
   ExtrasSelectionResult,
   ScopeSelectionOptions,
   ScopeSelectionResult,
+  CodexSyncPromptOptions,
+  CodexSyncPromptResult,
 } from './types.js';
 
 /**
@@ -206,4 +208,31 @@ export async function promptScopeSelection(
   }
 
   return { scope: response.value };
+}
+
+/**
+ * Codex 동기화 여부 확인 프롬프트
+ * - CLI 옵션이 제공되면 해당 값을 그대로 사용
+ * - 인터랙티브 환경이 아니면 기본값(false)
+ */
+export async function promptCodexSync(
+  options: CodexSyncPromptOptions,
+): Promise<CodexSyncPromptResult> {
+  const { providedSyncCodex } = options;
+
+  if (providedSyncCodex !== undefined) {
+    return { syncCodex: providedSyncCodex };
+  }
+
+  if (!process.stdin.isTTY || !process.stdout.isTTY) {
+    return { syncCodex: false };
+  }
+
+  logger.blank();
+  const result = await promptConfirm(
+    'Also sync with Codex now? (~/.codex/skills/)',
+    false,
+  );
+
+  return { syncCodex: result.confirmed };
 }
