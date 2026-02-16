@@ -8,7 +8,7 @@ const program = new Command();
 program
   .name('claude-code')
   .description('Claude Code documentation installer for projects')
-  .version('0.7.8');
+  .version('0.7.9');
 
 program
   .option(
@@ -23,7 +23,7 @@ program
   .option('-a, --agents', 'install agents to .claude/agents/')
   .option(
     '--sync-codex',
-    'sync installed .claude skills/commands to Codex (~/.codex/skills/)',
+    'sync installed .claude skills/commands to selected-scope .codex/skills/',
   )
   .option('--scope <scope>', 'installation scope (project|user)')
   .action(async (options) => {

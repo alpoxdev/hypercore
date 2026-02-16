@@ -218,7 +218,7 @@ export async function promptScopeSelection(
 export async function promptCodexSync(
   options: CodexSyncPromptOptions,
 ): Promise<CodexSyncPromptResult> {
-  const { providedSyncCodex } = options;
+  const { providedSyncCodex, codexSkillsPath } = options;
 
   if (providedSyncCodex !== undefined) {
     return { syncCodex: providedSyncCodex };
@@ -229,8 +229,9 @@ export async function promptCodexSync(
   }
 
   logger.blank();
+  const pathHint = codexSkillsPath ? ` (${codexSkillsPath})` : '';
   const result = await promptConfirm(
-    'Also sync with Codex now? (~/.codex/skills/)',
+    `Also sync with Codex now?${pathHint}`,
     false,
   );
 
