@@ -10,6 +10,26 @@ const CLAUDE_GENERATED_FOLDERS = [
   '.claude/prd/',
 ];
 
+function normalizeIgnorePattern(pattern: string): string {
+  return pattern
+    .replace(/\\/g, '/')
+    .replace(/^\.?\//, '')
+    .replace(/\/+$/, '')
+    .trim();
+}
+
+function parseIgnoreLine(line: string): string | null {
+  const trimmed = line.trim();
+
+  if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('!')) {
+    return null;
+  }
+
+  const [rawPattern] = trimmed.split(/\s+#/u, 1);
+  const normalized = normalizeIgnorePattern(rawPattern);
+  return normalized || null;
+}
+
 /**
  * .gitignore 파일에 Claude Code 생성 폴더를 추가
  * .gitignore가 없으면 생성, 있으면 기존 내용에 추가 (중복 방지)
@@ -30,15 +50,16 @@ export async function updateGitignore(targetDir: string): Promise<void> {
     content = '';
   }
 
-  // 추가할 패턴 목록 (중복 체크)
-  const linesToAdd: string[] = [];
-  const existingLines = content.split('\n').map((line) => line.trim());
-
-  for (const folder of CLAUDE_GENERATED_FOLDERS) {
-    if (!existingLines.includes(folder)) {
-      linesToAdd.push(folder);
-    }
-  }
+  const eol = content.includes('\r\n') ? '\r\n' : '\n';
+  const lines = content ? content.split(/\r?\n/u) : [];
+  const existingPatterns = new Set(
+    lines
+      .map((line) => parseIgnoreLine(line))
+      .filter((pattern): pattern is string => Boolean(pattern)),
+  );
+  const linesToAdd = CLAUDE_GENERATED_FOLDERS.filter(
+    (folder) => !existingPatterns.has(normalizeIgnorePattern(folder)),
+  );
 
   if (linesToAdd.length === 0) {
     logger.info('.gitignore already contains all Claude Code patterns');
@@ -46,40 +67,26 @@ export async function updateGitignore(targetDir: string): Promise<void> {
   }
 
   // 섹션 주석이 없으면 추가
-  const needsSection = !content.includes(sectionComment);
-
-  // 내용 추가
-  let newContent = content;
-  if (newContent && !newContent.endsWith('\n')) {
-    newContent += '\n';
-  }
+  const sectionIndex = lines.findIndex(
+    (line) => line.trim() === sectionComment,
+  );
+  const needsSection = sectionIndex === -1;
 
   if (needsSection) {
-    // 섹션 주석이 없으면 새로 추가
-    if (newContent) {
-      newContent += '\n';
+    // 섹션 주석이 없으면 파일 끝에 새로 추가
+    if (lines.length > 0 && lines[lines.length - 1] !== '') {
+      lines.push('');
     }
-    newContent += sectionComment + '\n';
-    newContent += linesToAdd.join('\n') + '\n';
+    lines.push(sectionComment, ...linesToAdd);
   } else {
     // 섹션 주석이 이미 있으면 해당 섹션 끝에 패턴만 추가
-    const lines = newContent.split('\n');
-    const sectionIndex = lines.findIndex((line) =>
-      line.includes(sectionComment),
-    );
+    // 섹션 다음 줄에 패턴 추가
+    lines.splice(sectionIndex + 1, 0, ...linesToAdd);
+  }
 
-    if (sectionIndex !== -1) {
-      // 섹션 다음 줄에 패턴 추가
-      lines.splice(sectionIndex + 1, 0, ...linesToAdd);
-      newContent = lines.join('\n');
-    } else {
-      // 섹션을 찾지 못한 경우 (이론적으로 발생하지 않음)
-      if (newContent) {
-        newContent += '\n';
-      }
-      newContent += sectionComment + '\n';
-      newContent += linesToAdd.join('\n') + '\n';
-    }
+  let newContent = lines.join(eol);
+  if (!newContent.endsWith(eol)) {
+    newContent += eol;
   }
 
   // 파일 쓰기

@@ -166,8 +166,29 @@ services:
         max-size: '1m'
         max-file: '1'
 
+  jina-reader:
+    image: ghcr.io/intergalacticalvariable/reader:latest
+    container_name: jina-reader
+    ports:
+      - '${JINA_READER_PORT:-40997}:3000'
+    volumes:
+      - jina_reader_data:/app/local-storage
+    networks:
+      - backend
+    cpus: 2.0
+    mem_limit: 4G
+    memswap_limit: 4G
+    restart: unless-stopped
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+        compress: 'true'
+
 volumes:
   postgres_data:
+  jina_reader_data:
 
 networks:
   backend:
