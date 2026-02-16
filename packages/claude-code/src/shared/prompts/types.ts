@@ -51,7 +51,7 @@ export interface ScopeSelectionResult {
 // Codex sync 확인 관련 타입
 export interface CodexSyncPromptOptions {
   providedSyncCodex?: boolean;
-  codexSkillsPath?: string;
+  codexPath?: string;
 }
 
 export interface CodexSyncPromptResult {

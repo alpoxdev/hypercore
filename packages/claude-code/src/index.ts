@@ -23,7 +23,7 @@ program
   .option('-a, --agents', 'install agents to .claude/agents/')
   .option(
     '--sync-codex',
-    'sync installed .claude skills/commands to selected-scope .codex/skills/',
+    'sync installed .claude skills/commands/instructions and Claude MCP settings to selected-scope .codex/',
   )
   .option('--scope <scope>', 'installation scope (project|user)')
   .action(async (options) => {

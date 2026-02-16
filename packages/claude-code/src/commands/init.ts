@@ -336,15 +336,15 @@ export const init = async (options: InitOptions): Promise<void> => {
   );
 
   // 9. Codex 동기화 여부 확인 및 실행 (마지막 단계)
-  const codexSkillsPath = path.join(targetDir, '.codex', 'skills');
+  const codexSyncPath = path.join(targetDir, '.codex');
   const { syncCodex } = await promptCodexSync({
     providedSyncCodex: options.syncCodex,
-    codexSkillsPath,
+    codexPath: codexSyncPath,
   });
 
   if (syncCodex) {
     logger.blank();
-    logger.info('Syncing .claude skills/commands to Codex...');
+    logger.info('Syncing .claude skills/commands/instructions/MCP to Codex...');
 
     try {
       const result = await syncWithCodex(targetDir);
@@ -354,12 +354,38 @@ export const init = async (options: InitOptions): Promise<void> => {
       if (result.syncedCommands > 0) {
         logger.step(`Commands synced: ${result.syncedCommands}`);
       }
-      if (result.syncedSkills === 0 && result.syncedCommands === 0) {
+      if (result.syncedInstructions > 0) {
+        logger.step(`Instructions synced: ${result.syncedInstructions}`);
+      }
+      if (result.syncedMcpServers > 0) {
+        logger.step(
+          `MCP servers synced (${result.mcpScope}): ${result.syncedMcpServers}`,
+        );
+      }
+      if (
+        result.syncedSkills === 0 &&
+        result.syncedCommands === 0 &&
+        result.syncedInstructions === 0 &&
+        result.syncedMcpServers === 0
+      ) {
         logger.warn(
-          'Nothing was synced. .claude/skills and .claude/commands were not found.',
+          'Nothing was synced. .claude/skills, .claude/commands, .claude/instructions, and Claude MCP settings were not found.',
         );
       } else {
         logger.success(`Codex sync complete: ${result.codexSkillsDir}`);
+        logger.step(`Codex MCP config: ${result.codexMcpConfigPath}`);
+        if (result.referenceIssueCount > 0) {
+          logger.warn(
+            `Codex skill reference issues found: ${result.referenceIssueCount} (showing up to ${result.referenceIssueSamples.length})`,
+          );
+          for (const issue of result.referenceIssueSamples) {
+            const skillPath = path.relative(targetDir, issue.skillPath);
+            const resolvedPath = path.relative(targetDir, issue.resolvedPath);
+            logger.step(
+              `${skillPath} -> @${issue.reference} (missing: ${resolvedPath})`,
+            );
+          }
+        }
       }
     } catch (error) {
       logger.warn(
