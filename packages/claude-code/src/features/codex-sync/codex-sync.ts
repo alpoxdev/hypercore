@@ -1,5 +1,4 @@
 import fs from 'fs-extra';
-import os from 'os';
 import path from 'path';
 import { copyRecursive } from '../../shared/filesystem/index.js';
 
@@ -11,13 +10,7 @@ export interface CodexSyncResult {
   syncedCommands: number;
 }
 
-function resolveCodexHome(): string {
-  const envCodexHome = process.env.CODEX_HOME?.trim();
-  if (envCodexHome) {
-    return path.resolve(envCodexHome);
-  }
-  return path.join(os.homedir(), '.codex');
-}
+const RESERVED_CODEX_SKILL_DIRS = new Set(['.system', 'claude-commands']);
 
 function normalizeLineEndings(content: string): string {
   return content.replace(/\r\n/g, '\n');
@@ -79,33 +72,44 @@ async function syncSkills(
   claudeSkillsDir: string,
   codexSkillsDir: string,
 ): Promise<number> {
-  if (!(await fs.pathExists(claudeSkillsDir))) {
-    return 0;
+  await fs.ensureDir(codexSkillsDir);
+
+  let sourceSkillNames: string[] = [];
+  if (await fs.pathExists(claudeSkillsDir)) {
+    const sourceEntries = await fs.readdir(claudeSkillsDir, { withFileTypes: true });
+    sourceSkillNames = sourceEntries
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .filter((name) => name !== '.system');
   }
 
-  const entries = await fs.readdir(claudeSkillsDir, { withFileTypes: true });
-  let syncedSkills = 0;
+  const sourceSkillSet = new Set(sourceSkillNames);
+  const codexEntries = await fs.readdir(codexSkillsDir, { withFileTypes: true });
 
-  for (const entry of entries) {
+  // Remove stale mirrored skills that are no longer present in source.
+  for (const entry of codexEntries) {
     if (!entry.isDirectory()) {
       continue;
     }
-    if (entry.name === '.system') {
+    if (RESERVED_CODEX_SKILL_DIRS.has(entry.name)) {
       continue;
     }
+    if (!sourceSkillSet.has(entry.name)) {
+      await fs.remove(path.join(codexSkillsDir, entry.name));
+    }
+  }
 
-    const src = path.join(claudeSkillsDir, entry.name);
-    const dest = path.join(codexSkillsDir, entry.name);
+  for (const skillName of sourceSkillNames) {
+    const src = path.join(claudeSkillsDir, skillName);
+    const dest = path.join(codexSkillsDir, skillName);
 
     if (await fs.pathExists(dest)) {
       await fs.remove(dest);
     }
-
     await copyRecursive(src, dest, { files: 0, directories: 0 });
-    syncedSkills++;
   }
 
-  return syncedSkills;
+  return sourceSkillNames.length;
 }
 
 async function syncCommands(
@@ -113,6 +117,7 @@ async function syncCommands(
   codexCommandsDir: string,
 ): Promise<number> {
   if (!(await fs.pathExists(claudeCommandsDir))) {
+    await fs.remove(codexCommandsDir);
     return 0;
   }
 
@@ -123,6 +128,7 @@ async function syncCommands(
     .sort((a, b) => a.localeCompare(b));
 
   if (commandFiles.length === 0) {
+    await fs.remove(codexCommandsDir);
     return 0;
   }
 
@@ -144,7 +150,7 @@ async function syncCommands(
 }
 
 export async function syncWithCodex(targetDir: string): Promise<CodexSyncResult> {
-  const codexHome = resolveCodexHome();
+  const codexHome = path.resolve(targetDir, '.codex');
   const codexSkillsDir = path.join(codexHome, 'skills');
   const codexCommandsDir = path.join(codexSkillsDir, 'claude-commands');
 

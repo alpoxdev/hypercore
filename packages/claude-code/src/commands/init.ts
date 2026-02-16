@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import os from 'os';
+import path from 'path';
 import { logger } from '../shared/logger.js';
 import {
   copySingleTemplate,
@@ -334,47 +335,47 @@ export const init = async (options: InitOptions): Promise<void> => {
     scope,
   );
 
-  // 9. .gitignore에 Claude Code 생성 폴더 추가 (Project scope에서만)
+  // 9. Codex 동기화 여부 확인 및 실행 (마지막 단계)
+  const codexSkillsPath = path.join(targetDir, '.codex', 'skills');
+  const { syncCodex } = await promptCodexSync({
+    providedSyncCodex: options.syncCodex,
+    codexSkillsPath,
+  });
+
+  if (syncCodex) {
+    logger.blank();
+    logger.info('Syncing .claude skills/commands to Codex...');
+
+    try {
+      const result = await syncWithCodex(targetDir);
+      if (result.syncedSkills > 0) {
+        logger.step(`Skills synced: ${result.syncedSkills}`);
+      }
+      if (result.syncedCommands > 0) {
+        logger.step(`Commands synced: ${result.syncedCommands}`);
+      }
+      if (result.syncedSkills === 0 && result.syncedCommands === 0) {
+        logger.warn(
+          'Nothing was synced. .claude/skills and .claude/commands were not found.',
+        );
+      } else {
+        logger.success(`Codex sync complete: ${result.codexSkillsDir}`);
+      }
+    } catch (error) {
+      logger.warn(
+        `Codex sync failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  // 10. .gitignore 업데이트 (Project scope에서만)
   if (!isUserScope) {
     try {
-      await updateGitignore(targetDir);
+      await updateGitignore(targetDir, { includeCodex: syncCodex });
     } catch (error) {
       logger.warn(
         `Failed to update .gitignore: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
-  }
-
-  // 10. Codex 동기화 여부 확인 및 실행 (마지막 단계)
-  const { syncCodex } = await promptCodexSync({
-    providedSyncCodex: options.syncCodex,
-  });
-
-  if (!syncCodex) {
-    return;
-  }
-
-  logger.blank();
-  logger.info('Syncing .claude skills/commands to Codex...');
-
-  try {
-    const result = await syncWithCodex(targetDir);
-    if (result.syncedSkills > 0) {
-      logger.step(`Skills synced: ${result.syncedSkills}`);
-    }
-    if (result.syncedCommands > 0) {
-      logger.step(`Commands synced: ${result.syncedCommands}`);
-    }
-    if (result.syncedSkills === 0 && result.syncedCommands === 0) {
-      logger.warn(
-        'Nothing was synced. .claude/skills and .claude/commands were not found.',
-      );
-    } else {
-      logger.success(`Codex sync complete: ${result.codexSkillsDir}`);
-    }
-  } catch (error) {
-    logger.warn(
-      `Codex sync failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-    );
   }
 };

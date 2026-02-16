@@ -17,6 +17,12 @@ const CLAUDE_GENERATED_FOLDERS = [
   '.claude/validation-results/',
 ];
 
+const CODEX_GENERATED_FOLDERS = ['.codex/'];
+
+interface GitignoreOptions {
+  includeCodex?: boolean;
+}
+
 function normalizeIgnorePattern(pattern: string): string {
   return pattern
     .replace(/\\/g, '/')
@@ -41,9 +47,16 @@ function parseIgnoreLine(line: string): string | null {
  * .gitignore 파일에 Claude Code 생성 폴더를 추가
  * .gitignore가 없으면 생성, 있으면 기존 내용에 추가 (중복 방지)
  */
-export async function updateGitignore(targetDir: string): Promise<void> {
+export async function updateGitignore(
+  targetDir: string,
+  options: GitignoreOptions = {},
+): Promise<void> {
+  const { includeCodex = false } = options;
   const gitignorePath = path.join(targetDir, '.gitignore');
   const sectionComment = '# Claude Code generated files';
+  const targetFolders = includeCodex
+    ? [...CLAUDE_GENERATED_FOLDERS, ...CODEX_GENERATED_FOLDERS]
+    : CLAUDE_GENERATED_FOLDERS;
 
   let content = '';
   let hasGitignore = false;
@@ -64,7 +77,7 @@ export async function updateGitignore(targetDir: string): Promise<void> {
       .map((line) => parseIgnoreLine(line))
       .filter((pattern): pattern is string => Boolean(pattern)),
   );
-  const linesToAdd = CLAUDE_GENERATED_FOLDERS.filter(
+  const linesToAdd = targetFolders.filter(
     (folder) => !existingPatterns.has(normalizeIgnorePattern(folder)),
   );
 
