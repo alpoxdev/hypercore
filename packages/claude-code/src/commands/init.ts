@@ -19,8 +19,10 @@ import {
   promptOverwrite,
   promptExtrasSelection,
   promptScopeSelection,
+  promptCodexSync,
 } from '../shared/prompts/index.js';
 import { updateGitignore } from '../shared/gitignore-manager.js';
+import { syncWithCodex } from '../features/codex-sync/index.js';
 
 interface InitOptions {
   templates?: string[];
@@ -32,6 +34,7 @@ interface InitOptions {
   agents?: boolean;
   instructions?: boolean;
   scripts?: boolean;
+  syncCodex?: boolean;
 }
 
 const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
@@ -340,5 +343,38 @@ export const init = async (options: InitOptions): Promise<void> => {
         `Failed to update .gitignore: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
+  }
+
+  // 10. Codex 동기화 여부 확인 및 실행 (마지막 단계)
+  const { syncCodex } = await promptCodexSync({
+    providedSyncCodex: options.syncCodex,
+  });
+
+  if (!syncCodex) {
+    return;
+  }
+
+  logger.blank();
+  logger.info('Syncing .claude skills/commands to Codex...');
+
+  try {
+    const result = await syncWithCodex(targetDir);
+    if (result.syncedSkills > 0) {
+      logger.step(`Skills synced: ${result.syncedSkills}`);
+    }
+    if (result.syncedCommands > 0) {
+      logger.step(`Commands synced: ${result.syncedCommands}`);
+    }
+    if (result.syncedSkills === 0 && result.syncedCommands === 0) {
+      logger.warn(
+        'Nothing was synced. .claude/skills and .claude/commands were not found.',
+      );
+    } else {
+      logger.success(`Codex sync complete: ${result.codexSkillsDir}`);
+    }
+  } catch (error) {
+    logger.warn(
+      `Codex sync failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    );
   }
 };

@@ -16,6 +16,8 @@ export type {
   ExtrasSelectionResult,
   ScopeSelectionOptions,
   ScopeSelectionResult,
+  CodexSyncPromptOptions,
+  CodexSyncPromptResult,
 } from './types.js';
 
 // 저수준 헬퍼 내보내기
@@ -31,4 +33,5 @@ export {
   promptOverwrite,
   promptExtrasSelection,
   promptScopeSelection,
+  promptCodexSync,
 } from './prompt-functions.js';
