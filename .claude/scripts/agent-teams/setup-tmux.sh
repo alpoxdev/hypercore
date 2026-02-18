@@ -1,6 +1,6 @@
 #!/bin/bash
 # Agent Teams용 tmux 환경 세팅
-# Usage: .claude/scripts/agent-teams/setup-tmux.sh
+# Usage: ${CLAUDE_SCRIPTS_ROOT}/agent-teams/setup-tmux.sh
 
 set -e
 

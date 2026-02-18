@@ -1,6 +1,6 @@
 #!/bin/bash
 # Agent Teams 사용 가능 여부 확인
-# Usage: .claude/scripts/agent-teams/check-availability.sh
+# Usage: ${CLAUDE_SCRIPTS_ROOT}/agent-teams/check-availability.sh
 
 set -e
 

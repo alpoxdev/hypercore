@@ -15,7 +15,7 @@ argument-hint: <target-branch> <source-branch>
 
 | 스크립트 | 용도 |
 |----------|------|
-| `.claude/scripts/git/git-merge.sh <target> <source>` | checkout → merge → push → 원래 브랜치 복귀 |
+| `${CLAUDE_SCRIPTS_ROOT}/git/git-merge.sh <target> <source>` | checkout → merge → push → 원래 브랜치 복귀 |
 
 </scripts>
 
@@ -27,7 +27,7 @@ argument-hint: <target-branch> <source-branch>
 
 ```bash
 # 인자에서 타겟/소스 브랜치 추출 후 실행
-.claude/scripts/git/git-merge.sh <target-branch> <source-branch>
+${CLAUDE_SCRIPTS_ROOT}/git/git-merge.sh <target-branch> <source-branch>
 ```
 
 **스크립트 동작:**
@@ -46,10 +46,10 @@ argument-hint: <target-branch> <source-branch>
 
 ```bash
 # deploy/prod에 dev 머지
-.claude/scripts/git/git-merge.sh deploy/prod dev
+${CLAUDE_SCRIPTS_ROOT}/git/git-merge.sh deploy/prod dev
 
 # main에 feature/auth 머지
-.claude/scripts/git/git-merge.sh main feature/auth
+${CLAUDE_SCRIPTS_ROOT}/git/git-merge.sh main feature/auth
 ```
 
 </examples>

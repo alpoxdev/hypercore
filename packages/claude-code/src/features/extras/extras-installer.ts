@@ -1,3 +1,5 @@
+import fs from 'fs-extra';
+import path from 'path';
 import { logger } from '../../shared/logger.js';
 import {
   copySkills,
@@ -9,6 +11,65 @@ import {
 } from './extras-copier.js';
 import { checkExistingClaudeFiles } from './extras-checker.js';
 import type { InstallResult, ExtrasFlags } from './types.js';
+
+/**
+ * SessionStart 훅 정의
+ * CLAUDE_SCRIPTS_ROOT 환경변수를 설정하는 훅
+ */
+interface HookConfig {
+  hooks?: {
+    SessionStart?: Array<{
+      type: 'command';
+      command: string;
+    }>;
+  };
+}
+
+/**
+ * settings.local.json에 SessionStart 훅 등록
+ * hooks 설치 후 자동으로 훅을 settings.local.json에 등록
+ */
+async function registerSessionStartHook(targetDir: string): Promise<void> {
+  const settingsPath = path.join(targetDir, '.claude', 'settings.local.json');
+  const hookCommand = '.claude/hooks/session-env-setup.sh';
+
+  let config: HookConfig = {};
+
+  // 기존 설정 읽기
+  if (await fs.pathExists(settingsPath)) {
+    try {
+      config = await fs.readJson(settingsPath);
+    } catch {
+      // 파일이 손상된 경우 빈 객체로 시작
+      config = {};
+    }
+  }
+
+  // hooks.SessionStart 배열 확보
+  if (!config.hooks) {
+    config.hooks = {};
+  }
+  if (!config.hooks.SessionStart) {
+    config.hooks.SessionStart = [];
+  }
+
+  // 이미 등록되어 있는지 확인
+  const alreadyRegistered = config.hooks.SessionStart.some(
+    (hook) => hook.type === 'command' && hook.command === hookCommand,
+  );
+
+  if (!alreadyRegistered) {
+    config.hooks.SessionStart.push({
+      type: 'command',
+      command: hookCommand,
+    });
+
+    // 설정 저장
+    await fs.ensureDir(path.dirname(settingsPath));
+    await fs.writeJson(settingsPath, config, { spaces: 2 });
+    logger.step('Registered SessionStart hook for CLAUDE_SCRIPTS_ROOT');
+  }
+}
 
 /**
  * 기존 파일 존재 시 업데이트 안내 로그 출력
@@ -267,6 +328,11 @@ export async function installExtras(
     installHooks,
     availability.hasHooks,
   );
+
+  // hooks 설치 시 SessionStart 훅 자동 등록
+  if (installHooks && hooksResult.files > 0) {
+    await registerSessionStartHook(targetDir);
+  }
 
   // 전체 결과 집계
   const totalFiles =

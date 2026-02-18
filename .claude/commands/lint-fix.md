@@ -16,8 +16,8 @@ argument-hint: [파일/디렉토리 경로...]
 
 | 스크립트 | 용도 |
 |----------|------|
-| `.claude/scripts/lint/lint-check.sh` | tsc + eslint 병렬 검사 |
-| `.claude/scripts/lint/lint-file.sh [files]` | 특정 파일만 검사 |
+| `${CLAUDE_SCRIPTS_ROOT}/lint/lint-check.sh` | tsc + eslint 병렬 검사 |
+| `${CLAUDE_SCRIPTS_ROOT}/lint/lint-file.sh [files]` | 특정 파일만 검사 |
 
 </scripts>
 
@@ -31,17 +31,17 @@ argument-hint: [파일/디렉토리 경로...]
 
 ```bash
 # 1. 병렬 검사 (tsc + eslint 동시)
-.claude/scripts/lint/lint-check.sh
+${CLAUDE_SCRIPTS_ROOT}/lint/lint-check.sh
 
 # 2. 오류 수정 후 재검사
-.claude/scripts/lint/lint-check.sh
+${CLAUDE_SCRIPTS_ROOT}/lint/lint-check.sh
 ```
 
 ### 특정 파일 검사
 
 ```bash
 # 특정 파일만
-.claude/scripts/lint/lint-file.sh src/utils/api.ts src/components/Button.tsx
+${CLAUDE_SCRIPTS_ROOT}/lint/lint-file.sh src/utils/api.ts src/components/Button.tsx
 ```
 
 </workflow>

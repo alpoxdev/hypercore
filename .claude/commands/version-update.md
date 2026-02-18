@@ -18,10 +18,10 @@ argument-hint: <new-version | +1 | +minor | +major>
 
 | 스크립트 | 용도 |
 |----------|------|
-| `.claude/scripts/version/version-find.sh` | 버전 파일 탐색 (package.json + .version()) |
-| `.claude/scripts/version/version-bump.sh <current> <type>` | 새 버전 계산 |
-| `.claude/scripts/git/git-commit.sh "msg" [files]` | 커밋 |
-| `.claude/scripts/git/git-push.sh` | 푸시 |
+| `${CLAUDE_SCRIPTS_ROOT}/version/version-find.sh` | 버전 파일 탐색 (package.json + .version()) |
+| `${CLAUDE_SCRIPTS_ROOT}/version/version-bump.sh <current> <type>` | 새 버전 계산 |
+| `${CLAUDE_SCRIPTS_ROOT}/git/git-commit.sh "msg" [files]` | 커밋 |
+| `${CLAUDE_SCRIPTS_ROOT}/git/git-push.sh` | 푸시 |
 
 </scripts>
 
@@ -46,18 +46,18 @@ argument-hint: <new-version | +1 | +minor | +major>
 
 ```bash
 # 1. 버전 파일 탐색
-.claude/scripts/version/version-find.sh
+${CLAUDE_SCRIPTS_ROOT}/version/version-find.sh
 
 # 2. 현재 버전 확인 (package.json 읽기)
 
 # 3. 새 버전 계산
-.claude/scripts/version/version-bump.sh 1.2.3 +1
+${CLAUDE_SCRIPTS_ROOT}/version/version-bump.sh 1.2.3 +1
 # → 1.2.4
 
 # 4. 모든 파일 Edit로 업데이트
 
 # 5. 커밋
-.claude/scripts/git/git-commit.sh "chore: 버전 1.2.4로 업데이트" package.json packages/*/package.json
+${CLAUDE_SCRIPTS_ROOT}/git/git-commit.sh "chore: 버전 1.2.4로 업데이트" package.json packages/*/package.json
 ```
 
 </workflow>

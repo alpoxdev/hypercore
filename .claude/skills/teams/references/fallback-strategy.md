@@ -32,7 +32,7 @@ fi
 ### 스크립트 사용
 
 ```bash
-.claude/scripts/agent-teams/check-availability.sh
+${CLAUDE_SCRIPTS_ROOT}/agent-teams/check-availability.sh
 ```
 
 </availability_check>

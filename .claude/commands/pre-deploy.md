@@ -16,10 +16,10 @@ argument-hint: [파일/디렉토리 경로...]
 
 | 스크립트 | 용도 |
 |----------|------|
-| `.claude/scripts/deploy/deploy-check.sh` | 전체 검증 (tsc + eslint + build) |
-| `.claude/scripts/deploy/build-run.sh` | build만 실행 |
-| `.claude/scripts/lint/lint-check.sh` | tsc + eslint 병렬 검사 |
-| `.claude/scripts/pm/pm-detect.sh` | package manager 감지 |
+| `${CLAUDE_SCRIPTS_ROOT}/deploy/deploy-check.sh` | 전체 검증 (tsc + eslint + build) |
+| `${CLAUDE_SCRIPTS_ROOT}/deploy/build-run.sh` | build만 실행 |
+| `${CLAUDE_SCRIPTS_ROOT}/lint/lint-check.sh` | tsc + eslint 병렬 검사 |
+| `${CLAUDE_SCRIPTS_ROOT}/pm/pm-detect.sh` | package manager 감지 |
 
 </scripts>
 
@@ -33,17 +33,17 @@ argument-hint: [파일/디렉토리 경로...]
 
 ```bash
 # 한 번에 tsc + eslint + build 검증
-.claude/scripts/deploy/deploy-check.sh
+${CLAUDE_SCRIPTS_ROOT}/deploy/deploy-check.sh
 ```
 
 ### 단계별 검증
 
 ```bash
 # 1. lint 검사
-.claude/scripts/lint/lint-check.sh
+${CLAUDE_SCRIPTS_ROOT}/lint/lint-check.sh
 
 # 2. 오류 수정 후 build
-.claude/scripts/deploy/build-run.sh
+${CLAUDE_SCRIPTS_ROOT}/deploy/build-run.sh
 ```
 
 </workflow>

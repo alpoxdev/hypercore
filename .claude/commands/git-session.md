@@ -14,10 +14,10 @@ description: 현재 세션에서 수정한 파일만 커밋 후 푸시
 
 | 스크립트 | 용도 |
 |----------|------|
-| `.claude/scripts/git/git-info.sh` | 상태 + diff 요약 출력 |
-| `.claude/scripts/git/git-commit.sh "msg" [files]` | Co-Authored-By 포함 커밋 |
-| `.claude/scripts/git/git-push.sh` | 안전한 푸시 |
-| `.claude/scripts/git/git-clean-check.sh` | clean 여부 확인 |
+| `${CLAUDE_SCRIPTS_ROOT}/git/git-info.sh` | 상태 + diff 요약 출력 |
+| `${CLAUDE_SCRIPTS_ROOT}/git/git-commit.sh "msg" [files]` | Co-Authored-By 포함 커밋 |
+| `${CLAUDE_SCRIPTS_ROOT}/git/git-push.sh` | 안전한 푸시 |
+| `${CLAUDE_SCRIPTS_ROOT}/git/git-clean-check.sh` | clean 여부 확인 |
 
 </scripts>
 
@@ -29,13 +29,13 @@ description: 현재 세션에서 수정한 파일만 커밋 후 푸시
 
 ```bash
 # 1. 상태 확인
-.claude/scripts/git/git-info.sh
+${CLAUDE_SCRIPTS_ROOT}/git/git-info.sh
 
 # 2. 현재 세션 파일만 선택하여 커밋
-.claude/scripts/git/git-commit.sh "feat: 로그인 기능" src/auth/login.ts src/auth/logout.ts
+${CLAUDE_SCRIPTS_ROOT}/git/git-commit.sh "feat: 로그인 기능" src/auth/login.ts src/auth/logout.ts
 
 # 3. 푸시
-.claude/scripts/git/git-push.sh
+${CLAUDE_SCRIPTS_ROOT}/git/git-push.sh
 ```
 
 </workflow>
@@ -70,14 +70,14 @@ description: 현재 세션에서 수정한 파일만 커밋 후 푸시
 ```bash
 # 상황: 로그인 기능 작업 중, 이전 프로필 기능은 미완성
 
-.claude/scripts/git/git-info.sh
+${CLAUDE_SCRIPTS_ROOT}/git/git-info.sh
 # modified: src/auth/login.ts (현재 세션)
 # modified: src/auth/logout.ts (현재 세션)
 # modified: src/profile/edit.ts (이전 세션)
 
 # ✅ 로그인 관련만 커밋
-.claude/scripts/git/git-commit.sh "feat: 로그인/로그아웃 기능 추가" src/auth/login.ts src/auth/logout.ts
-.claude/scripts/git/git-push.sh
+${CLAUDE_SCRIPTS_ROOT}/git/git-commit.sh "feat: 로그인/로그아웃 기능 추가" src/auth/login.ts src/auth/logout.ts
+${CLAUDE_SCRIPTS_ROOT}/git/git-push.sh
 ```
 
 </example>

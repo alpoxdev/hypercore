@@ -14,11 +14,11 @@ description: 모든 변경사항 커밋 후 푸시
 
 | 스크립트 | 용도 |
 |----------|------|
-| `.claude/scripts/git/git-info.sh` | 상태 + diff 요약 출력 |
-| `.claude/scripts/git/git-commit.sh "msg" [files]` | Co-Authored-By 포함 커밋 |
-| `.claude/scripts/git/git-push.sh` | 안전한 푸시 |
-| `.claude/scripts/git/git-all.sh "msg"` | add all + commit + push (단순 케이스) |
-| `.claude/scripts/git/git-clean-check.sh` | clean 여부 확인 |
+| `${CLAUDE_SCRIPTS_ROOT}/git/git-info.sh` | 상태 + diff 요약 출력 |
+| `${CLAUDE_SCRIPTS_ROOT}/git/git-commit.sh "msg" [files]` | Co-Authored-By 포함 커밋 |
+| `${CLAUDE_SCRIPTS_ROOT}/git/git-push.sh` | 안전한 푸시 |
+| `${CLAUDE_SCRIPTS_ROOT}/git/git-all.sh "msg"` | add all + commit + push (단순 케이스) |
+| `${CLAUDE_SCRIPTS_ROOT}/git/git-clean-check.sh` | clean 여부 확인 |
 
 </scripts>
 
@@ -32,25 +32,25 @@ description: 모든 변경사항 커밋 후 푸시
 
 ```bash
 # 1. 상태 확인
-.claude/scripts/git/git-info.sh
+${CLAUDE_SCRIPTS_ROOT}/git/git-info.sh
 
 # 2. 모든 변경사항 커밋 + 푸시
-.claude/scripts/git/git-all.sh "feat: 기능 추가"
+${CLAUDE_SCRIPTS_ROOT}/git/git-all.sh "feat: 기능 추가"
 ```
 
 ### 복잡한 케이스 (논리적 분리 필요)
 
 ```bash
 # 1. 상태 확인
-.claude/scripts/git/git-info.sh
+${CLAUDE_SCRIPTS_ROOT}/git/git-info.sh
 
 # 2. 그룹별 커밋
-.claude/scripts/git/git-commit.sh "feat: A 기능" src/a.ts src/a.test.ts
-.claude/scripts/git/git-commit.sh "fix: B 버그 수정" src/b.ts
+${CLAUDE_SCRIPTS_ROOT}/git/git-commit.sh "feat: A 기능" src/a.ts src/a.test.ts
+${CLAUDE_SCRIPTS_ROOT}/git/git-commit.sh "fix: B 버그 수정" src/b.ts
 
 # 3. clean 확인 후 푸시
-.claude/scripts/git/git-clean-check.sh
-.claude/scripts/git/git-push.sh
+${CLAUDE_SCRIPTS_ROOT}/git/git-clean-check.sh
+${CLAUDE_SCRIPTS_ROOT}/git/git-push.sh
 ```
 
 </workflow>

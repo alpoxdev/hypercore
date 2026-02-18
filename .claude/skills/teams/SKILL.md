@@ -534,7 +534,7 @@ const args = parseArguments(ARGUMENTS)
 
 ```bash
 # Agent Teams 가용성 체크
-.claude/scripts/agent-teams/check-availability.sh
+${CLAUDE_SCRIPTS_ROOT}/agent-teams/check-availability.sh
 ```
 
 ### 3. 작업 분석
