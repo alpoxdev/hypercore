@@ -68,6 +68,12 @@ async function copyTemplates() {
     console.log('  ✓ .claude/scripts/');
   }
 
+  const hooksSrc = path.join(claudeDir, 'hooks');
+  if (await fs.pathExists(hooksSrc)) {
+    await fs.copy(hooksSrc, path.join(claudeDestDir, 'hooks'));
+    console.log('  ✓ .claude/hooks/');
+  }
+
   console.log('✅ Templates copied successfully!');
 }
 

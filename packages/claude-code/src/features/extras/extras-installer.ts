@@ -5,6 +5,7 @@ import {
   copyAgents,
   copyInstructions,
   copyScripts,
+  copyHooks,
 } from './extras-copier.js';
 import { checkExistingClaudeFiles } from './extras-checker.js';
 import type { InstallResult, ExtrasFlags } from './types.js';
@@ -129,6 +130,33 @@ async function installScriptsIfNeeded(
 }
 
 /**
+ * Hooks 설치
+ */
+async function installHooksIfNeeded(
+  templates: string[],
+  targetDir: string,
+  shouldInstall: boolean,
+  hasHooks: boolean,
+): Promise<InstallResult> {
+  if (!shouldInstall) {
+    return { files: 0, directories: 0 };
+  }
+
+  if (!hasHooks) {
+    logger.warn('No hooks found in selected templates.');
+    return { files: 0, directories: 0 };
+  }
+
+  logger.blank();
+  logger.info('Installing hooks...');
+  const hooksResult = await copyHooks(templates, targetDir);
+  logger.success(
+    `Hooks: ${hooksResult.files} files, ${hooksResult.directories} directories`,
+  );
+  return hooksResult;
+}
+
+/**
  * Instructions 설치
  */
 async function installInstructionsIfNeeded(
@@ -156,7 +184,7 @@ async function installInstructionsIfNeeded(
 }
 
 /**
- * Extras 설치 (Skills, Commands, Agents, Instructions)
+ * Extras 설치 (Skills, Commands, Agents, Instructions, Scripts, Hooks)
  * 기존 파일이 있으면 자동으로 업데이트 (덮어쓰기)
  */
 export async function installExtras(
@@ -169,6 +197,7 @@ export async function installExtras(
     hasAgents: boolean;
     hasInstructions: boolean;
     hasScripts: boolean;
+    hasHooks: boolean;
   },
 ): Promise<InstallResult> {
   const {
@@ -177,6 +206,7 @@ export async function installExtras(
     installAgents,
     installInstructions,
     installScripts,
+    installHooks,
   } = flags;
 
   // 설치할 항목이 없으면 조기 종료
@@ -185,7 +215,8 @@ export async function installExtras(
     !installCommands &&
     !installAgents &&
     !installInstructions &&
-    !installScripts
+    !installScripts &&
+    !installHooks
   ) {
     return { files: 0, directories: 0 };
   }
@@ -230,20 +261,29 @@ export async function installExtras(
     availability.hasScripts,
   );
 
+  const hooksResult = await installHooksIfNeeded(
+    templates,
+    targetDir,
+    installHooks,
+    availability.hasHooks,
+  );
+
   // 전체 결과 집계
   const totalFiles =
     skillsResult.files +
     commandsResult.files +
     agentsResult.files +
     instructionsResult.files +
-    scriptsResult.files;
+    scriptsResult.files +
+    hooksResult.files;
 
   const totalDirectories =
     skillsResult.directories +
     commandsResult.directories +
     agentsResult.directories +
     instructionsResult.directories +
-    scriptsResult.directories;
+    scriptsResult.directories +
+    hooksResult.directories;
 
   return { files: totalFiles, directories: totalDirectories };
 }

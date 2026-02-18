@@ -65,11 +65,13 @@ export interface ExtrasSelectionOptions {
   agents?: boolean;
   instructions?: boolean;
   scripts?: boolean;
+  hooks?: boolean;
   hasSkills: boolean;
   hasCommands: boolean;
   hasAgents: boolean;
   hasInstructions: boolean;
   hasScripts: boolean;
+  hasHooks: boolean;
 }
 
 export interface ExtrasSelectionResult {
@@ -78,4 +80,5 @@ export interface ExtrasSelectionResult {
   installAgents: boolean;
   installInstructions: boolean;
   installScripts: boolean;
+  installHooks: boolean;
 }

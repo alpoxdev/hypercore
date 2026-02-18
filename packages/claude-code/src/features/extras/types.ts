@@ -24,6 +24,7 @@ export interface ExtrasFlags {
   installAgents: boolean;
   installInstructions: boolean;
   installScripts: boolean;
+  installHooks: boolean;
 }
 
 /** Skills 복사 결과 */
@@ -36,6 +37,7 @@ export interface ExtrasExistenceCheck {
   hasAgents: boolean;
   hasInstructions: boolean;
   hasScripts: boolean;
+  hasHooks: boolean;
 }
 
 /** Extras 타입 */
@@ -44,7 +46,8 @@ export type ExtrasType =
   | 'commands'
   | 'agents'
   | 'instructions'
-  | 'scripts';
+  | 'scripts'
+  | 'hooks';
 
 /** Extras 복사 옵션 */
 export interface ExtrasCopyOptions {

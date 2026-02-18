@@ -35,6 +35,7 @@ interface InitOptions {
   agents?: boolean;
   instructions?: boolean;
   scripts?: boolean;
+  hooks?: boolean;
   syncCodex?: boolean;
 }
 
@@ -161,6 +162,7 @@ async function promptForExtrasInstallation(
   hasAgents: boolean,
   hasInstructions: boolean,
   hasScripts: boolean,
+  hasHooks: boolean,
 ): Promise<ExtrasFlags> {
   return await promptExtrasSelection({
     skills: options.skills,
@@ -168,11 +170,13 @@ async function promptForExtrasInstallation(
     agents: options.agents,
     instructions: options.instructions,
     scripts: options.scripts,
+    hooks: options.hooks,
     hasSkills,
     hasCommands,
     hasAgents,
     hasInstructions,
     hasScripts,
+    hasHooks,
   });
 }
 
@@ -187,6 +191,7 @@ function showInstallationSummary(
   hasAgents: boolean,
   hasInstructions: boolean,
   hasScripts: boolean,
+  hasHooks: boolean,
   scope: InstallScope,
 ): void {
   const {
@@ -195,6 +200,7 @@ function showInstallationSummary(
     installAgents,
     installInstructions,
     installScripts,
+    installHooks,
   } = flags;
 
   const hasExtrasInstalled =
@@ -202,7 +208,8 @@ function showInstallationSummary(
     (installCommands && hasCommands) ||
     (installAgents && hasAgents) ||
     (installInstructions && hasInstructions) ||
-    (installScripts && hasScripts);
+    (installScripts && hasScripts) ||
+    (installHooks && hasHooks);
 
   // 템플릿도 없고 extras도 설치하지 않은 경우
   if (templates.length === 0 && !hasExtrasInstalled) {
@@ -242,6 +249,9 @@ function showInstallationSummary(
     }
     if (installScripts && hasScripts) {
       logger.step('Scripts → .claude/scripts/');
+    }
+    if (installHooks && hasHooks) {
+      logger.step('Hooks → .claude/hooks/');
     }
   }
 
@@ -301,8 +311,14 @@ export const init = async (options: InitOptions): Promise<void> => {
   // 5. 스킬/커맨드/에이전트/인스트럭션 존재 여부 확인
   const templatesToCheck =
     templates.length > 0 ? templates : availableTemplates;
-  const { hasSkills, hasCommands, hasAgents, hasInstructions, hasScripts } =
-    await checkAllExtrasExist(templatesToCheck);
+  const {
+    hasSkills,
+    hasCommands,
+    hasAgents,
+    hasInstructions,
+    hasScripts,
+    hasHooks,
+  } = await checkAllExtrasExist(templatesToCheck);
 
   // 6. 스킬/커맨드 설치 여부 프롬프트
   const flags = await promptForExtrasInstallation(
@@ -312,6 +328,7 @@ export const init = async (options: InitOptions): Promise<void> => {
     hasAgents,
     hasInstructions,
     hasScripts,
+    hasHooks,
   );
 
   // 7. 스킬/커맨드/에이전트/인스트럭션/스크립트 설치 (자동 업데이트)
@@ -321,6 +338,7 @@ export const init = async (options: InitOptions): Promise<void> => {
     hasAgents,
     hasInstructions,
     hasScripts,
+    hasHooks,
   });
 
   // 8. 설치 요약 출력
@@ -332,6 +350,7 @@ export const init = async (options: InitOptions): Promise<void> => {
     hasAgents,
     hasInstructions,
     hasScripts,
+    hasHooks,
     scope,
   );
 

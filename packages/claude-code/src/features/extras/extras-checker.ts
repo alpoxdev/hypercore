@@ -5,7 +5,7 @@ import { getTemplatesDir } from '../templates/index.js';
 import type { ExtrasExistenceCheck } from './types.js';
 
 /**
- * 기존 .claude/skills, .claude/commands, .claude/agents, .claude/instructions 파일 확인
+ * 기존 .claude/skills, .claude/commands, .claude/agents, .claude/instructions, .claude/scripts, .claude/hooks 파일 확인
  */
 export const checkExistingClaudeFiles = async (
   targetDir: string,
@@ -17,6 +17,7 @@ export const checkExistingClaudeFiles = async (
   const agentsDir = path.join(targetDir, '.claude', 'agents');
   const instructionsDir = path.join(targetDir, '.claude', 'instructions');
   const scriptsDir = path.join(targetDir, '.claude', 'scripts');
+  const hooksDir = path.join(targetDir, '.claude', 'hooks');
 
   if (await fs.pathExists(skillsDir)) {
     existingFiles.push('.claude/skills/');
@@ -36,6 +37,10 @@ export const checkExistingClaudeFiles = async (
 
   if (await fs.pathExists(scriptsDir)) {
     existingFiles.push('.claude/scripts/');
+  }
+
+  if (await fs.pathExists(hooksDir)) {
+    existingFiles.push('.claude/hooks/');
   }
 
   return existingFiles;
@@ -70,6 +75,7 @@ export const checkAllExtrasExist = async (
   const agentsSrc = path.join(claudeDir, 'agents');
   const instructionsSrc = path.join(claudeDir, 'instructions');
   const scriptsSrc = path.join(claudeDir, 'scripts');
+  const hooksSrc = path.join(claudeDir, 'hooks');
 
   // 스킬: skills 폴더에 파일이 있으면 true (동적 탐색)
   const hasSkills = await hasFiles(skillsSrc);
@@ -77,6 +83,14 @@ export const checkAllExtrasExist = async (
   const hasAgents = await hasFiles(agentsSrc);
   const hasInstructions = await hasFiles(instructionsSrc);
   const hasScripts = await hasFiles(scriptsSrc);
+  const hasHooks = await hasFiles(hooksSrc);
 
-  return { hasSkills, hasCommands, hasAgents, hasInstructions, hasScripts };
+  return {
+    hasSkills,
+    hasCommands,
+    hasAgents,
+    hasInstructions,
+    hasScripts,
+    hasHooks,
+  };
 };

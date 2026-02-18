@@ -53,6 +53,12 @@ export const copyInstructions = createExtrasCopier('instructions');
 export const copyScripts = createExtrasCopier('scripts');
 
 /**
+ * Hooks 복사 (templates/.claude/hooks/ → 타겟/.claude/hooks/)
+ * Hooks는 Claude Code Stop/PreToolUse 등의 이벤트 핸들러
+ */
+export const copyHooks = createExtrasCopier('hooks');
+
+/**
  * 템플릿 기반으로 설치할 스킬 목록 결정 (메타데이터 기반)
  * - 기본: 모든 스킬 설치
  * - 비-UI 템플릿: ui-only 스킬 제외

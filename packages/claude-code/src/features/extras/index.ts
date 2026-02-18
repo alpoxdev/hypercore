@@ -10,6 +10,7 @@ export {
   copyAgents,
   copyInstructions,
   copyScripts,
+  copyHooks,
 } from './extras-copier.js';
 
 // Checker
