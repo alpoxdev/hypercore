@@ -1,64 +1,33 @@
-# Dependencies
-node_modules/
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
-# Build outputs
-dist/
-*.tsbuildinfo
-packages/claude-code/templates/
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# IDE
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-.idea/
-*.swp
-*.swo
-
 # OS
 .DS_Store
 Thumbs.db
 
+# Editor/IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.*
+!.env.example
+
 # Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-*.log
+pnpm-debug.log*
 
-# Testing
-coverage/
-.nyc_output/
-
-# Misc
-*.local
+# Temp/cache
+tmp/
+temp/
 .cache/
 
-tmp/
-
-# Generated files
-.claude/plan*/
-.claude/ralph/
-.claude/refactor/
-.claude/prd/
-.claude/brainstorms/
-.claude/research/
-.claude/first-principles/
-.claude/crawler/
-.claude/genius-ideas/
-.claude/validation-results/
-
-.claude/agents/**/CLAUDE.md
-.claude/instructions/**/CLAUDE.md
-.claude/skills/**/CLAUDE.md
-packages/**/CLAUDE.md
-
+# oh-my-codex runtime state
+.claude/
+.codex/
+.omx/
+.omc/
+.sisyphus/
