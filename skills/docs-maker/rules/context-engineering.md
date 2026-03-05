@@ -25,9 +25,9 @@ Treat tokens as a constrained resource:
 - Move deep detail into `rules/` or `references/`.
 - Load details just in time, not all at once.
 
-### 1.3 Explicit > Implicit (Claude 4.x)
+### 1.3 Explicit > Implicit
 
-Claude 4.x tends to execute literally and minimally unless guided.
+AI models tend to execute literally and minimally unless guided.
 
 - Bad: "Improve this."
 - Good: "Improve this by applying A, B, C. Validate with X and Y."
@@ -103,7 +103,7 @@ If output quality is insufficient, add context in this order:
 2. one explicit constraint
 3. one validation gate
 
-## 5. Claude 4.x-Specific Authoring Rules
+## 5. AI Authoring Rules
 
 - Assume literal interpretation.
 - Specify completeness criteria explicitly.
