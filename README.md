@@ -5,7 +5,7 @@ Claude Code용 스킬 모음입니다.
 ## 설치
 
 ```bash
-npx skills add alpoxdev/hypercore
+npx skills add alpoxdev/hypercore -g
 ```
 
 ## 스킬 목록
