@@ -286,7 +286,7 @@ IW = (K + U + W + C + A) * H * E
 | **2** | Deep analysis | Sequential Thinking (5-7 steps) | Include HMW transform + SCAMPER sweep |
 | **3** | Idea generation | Parallel tasks x3 | ToT structure, 12+ draft ideas |
 | **4** | Integration/refinement | Sequential Thinking (3 steps) | Final 10+ ideas + ERRC validation |
-| **5** | Save output | Write | `.claude/genius-ideas/` |
+| **5** | Save output | Write | `.hypercore/genius-ideas/` |
 
 ### Phase 2: Deep Analysis (1500+ chars)
 
@@ -375,7 +375,7 @@ Phase 3: ToT parallel (12 draft ideas)
 
 Phase 4: Refine to final 10 ideas + ERRC validation
 
-Save: .claude/genius-ideas/00.ai_education_service.md
+Save: .hypercore/genius-ideas/00.ai_education_service.md
 ```
 
 </examples>
@@ -393,7 +393,7 @@ Save: .claude/genius-ideas/00.ai_education_service.md
 | Phase 4 | 10+ final ideas, ERRC validation, 3000+ chars |
 | Reasoning trace | `sequential-thinking` used across analysis phases |
 | Prioritization | Impact/feasibility + JTBD linkage |
-| Save | `.claude/genius-ideas/` |
+| Save | `.hypercore/genius-ideas/` |
 
 | Forbidden |
 |------|

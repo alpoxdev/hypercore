@@ -215,7 +215,7 @@ $ARGUMENTS 없음 → 즉시 질문:
 | **3** | PMF/JTBD 검증 | ST 5단계 | Forces 분석, PMF 체크리스트 |
 | **4** | 종합 평가 | ST 3단계 | 점수화 + 등급 + 약점 |
 | **5** | 개선 로드맵 | ST 3단계 | 우선순위별 액션 |
-| **6** | 저장 | Write | .claude/validation-results/ |
+| **6** | 저장 | Write | .hypercore/validation-results/ |
 
 ### Phase 1: 핵심 가설 추출
 
@@ -345,7 +345,7 @@ Phase 4: 종합 평가
   치명적 약점: 플랫폼 정책 의존성
   중대 약점: 10배 기술 부재
 
-저장: .claude/validation-results/00.구매대행_자동화.md
+저장: .hypercore/validation-results/00.구매대행_자동화.md
 ```
 
 </examples>
@@ -362,7 +362,7 @@ Phase 4: 종합 평가
 | Phase 3 | **Forces 4가지** 분석 + PMF 체크 |
 | Phase 4 | 총점 + 등급 + **약점 심각도 분류** |
 | Phase 5 | 즉시/30일/90일 로드맵 |
-| 저장 | .claude/validation-results/ |
+| 저장 | .hypercore/validation-results/ |
 
 | 금지 |
 |------|

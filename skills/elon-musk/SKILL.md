@@ -109,7 +109,7 @@ If $ARGUMENTS exists, continue.
 | **2** | Assumption deconstruction (Socratic questions + A/B/C) | Sequential Thinking (5-7) | separate constraints from habits |
 | **3** | Fundamental redesign | parallel analyst x3 | explore 3-5 alternative paths |
 | **4** | Execution + risk | Sequential Thinking (3-5) | inversion and pre-mortem |
-| **5** | Save + present | Write | `.claude/first-principles/` |
+| **5** | Save + present | Write | `.hypercore/first-principles/` |
 
 ### Complexity profile
 
@@ -253,8 +253,8 @@ thought 5: finalize classification and deconstruction matrix
 
 | Item | Rule |
 |------|------|
-| Path | `.claude/first-principles/[number].[problem_summary].md` |
-| Numbering | `ls .claude/first-principles/ | wc -l` |
+| Path | `.hypercore/first-principles/[number].[problem_summary].md` |
+| Numbering | `ls .hypercore/first-principles/ | wc -l` |
 | Flow | ensure folder -> Write -> return saved path |
 
 </document_storage>
@@ -305,7 +305,7 @@ Phase 4: inversion + pre-mortem
   risk: migration downtime -> blue/green rollout
   risk: ops complexity -> automation-first controls
 
-Save: .claude/first-principles/00.saas_infra_cost_innovation.md
+Save: .hypercore/first-principles/00.saas_infra_cost_innovation.md
 ```
 
 </examples>
@@ -324,7 +324,7 @@ Save: .claude/first-principles/00.saas_infra_cost_innovation.md
 | Phase 2 | Sequential Thinking 3+ steps, 5+ A/B/C items, 2+ fact cross-checks |
 | Phase 3 | analyst x3, comparison table included |
 | Phase 4 | inversion 3+ risks, pre-mortem included |
-| Save | `.claude/first-principles/` |
+| Save | `.hypercore/first-principles/` |
 | Sources | URL + date + source type for factual claims |
 
 | Forbidden |

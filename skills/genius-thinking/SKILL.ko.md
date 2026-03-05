@@ -275,7 +275,7 @@ IW = (K + U + W + C + A) × H × E
 | **2** | 심층 분석 | ST 5-7단계 | HMW 변환, SCAMPER 순회 |
 | **3** | 아이디어 도출 | Task 병렬 x3 | ToT 구조, 12개+ 초기 |
 | **4** | 통합 정제 | ST 3단계 | 10개+ 최종, ERRC 검증 |
-| **5** | 저장 | Write | .claude/genius-ideas/ |
+| **5** | 저장 | Write | .hypercore/genius-ideas/ |
 
 ### Phase 2: 심층 분석 (1500자+)
 
@@ -366,7 +366,7 @@ Phase 3: ToT 병렬 (12개 아이디어)
 
 Phase 4: 정제 후 10개 선정 + ERRC 검증
 
-저장: .claude/genius-ideas/00.AI_교육_서비스.md
+저장: .hypercore/genius-ideas/00.AI_교육_서비스.md
 ```
 
 </examples>
@@ -383,7 +383,7 @@ Phase 4: 정제 후 10개 선정 + ERRC 검증
 | Phase 3 | **ToT 구조** 병렬, 12개+ 초기 |
 | Phase 4 | 10개+ 최종, **ERRC 검증**, 3000자+ |
 | 우선순위 | 영향도/실현 가능성 + **JTBD 연결** |
-| 저장 | .claude/genius-ideas/ |
+| 저장 | .hypercore/genius-ideas/ |
 
 | 금지 |
 |------|

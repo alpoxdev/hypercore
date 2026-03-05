@@ -204,7 +204,7 @@ Source: [Lean Canvas](https://leanstack.com/about)
 | **3** | Validate PMF/JTBD | Sequential Thinking (5) | Forces analysis + PMF checklist |
 | **4** | Final assessment | Sequential Thinking (3) | Total score + grade + weakness map |
 | **5** | Improvement roadmap | Sequential Thinking (3) | Prioritized actions |
-| **6** | Save output | Write | `.claude/validation-results/` |
+| **6** | Save output | Write | `.hypercore/validation-results/` |
 
 ### Phase 1: Extract core hypotheses
 
@@ -332,7 +332,7 @@ Phase 4:
   critical weakness: platform policy dependency
   major weakness: weak 10x technical moat
 
-Saved: .claude/validation-results/00.purchasing-automation.md
+Saved: .hypercore/validation-results/00.purchasing-automation.md
 ```
 
 </examples>
@@ -349,7 +349,7 @@ Saved: .claude/validation-results/00.purchasing-automation.md
 | Phase 3 | **All four forces** + PMF checklist |
 | Phase 4 | Total score + grade + severity map |
 | Phase 5 | Immediate/30-day/90-day roadmap |
-| Save | `.claude/validation-results/` |
+| Save | `.hypercore/validation-results/` |
 
 | Forbidden |
 |------|

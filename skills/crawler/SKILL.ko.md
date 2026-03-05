@@ -34,7 +34,7 @@ description: Playwriter로 웹사이트 직접 탐방하여 크롤링 설계. AP
 | **1. 세션** | 생성 + 페이지 열기 | `playwriter session new` |
 | **2. 탐색** | 구조 파악 | `accessibilitySnapshot`, `screenshotWithAccessibilityLabels` |
 | **3. 분석** | API 인터셉트, Selector 추출 | `page.on('response')`, `getLocatorStringForElement` |
-| **4. 문서화** | `.claude/crawler/[사이트]/` 저장 | Write |
+| **4. 문서화** | `.hypercore/crawler/[사이트]/` 저장 | Write |
 | **5. 코드** | 크롤러 생성 | [code-templates.md](rules/code-templates.md) |
 
 </workflow>
@@ -89,7 +89,7 @@ playwriter -s 1 -e "console.log(await getLocatorStringForElement(state.page.loca
 <output_structure>
 
 ```
-.claude/crawler/[사이트명]/
+.hypercore/crawler/[사이트명]/
 ├── ANALYSIS.md      # 사이트 구조
 ├── SELECTORS.md     # DOM selector
 ├── API.md           # API endpoint
@@ -110,7 +110,7 @@ playwriter -s 1 -e "console.log(await getLocatorStringForElement(state.page.loca
 ✅ accessibilitySnapshot 구조 파악
 ✅ API 인터셉트 시도
 ✅ selector 추출 검증
-✅ .claude/crawler/ 문서화
+✅ .hypercore/crawler/ 문서화
 ✅ 크롤러 코드 생성
 ```
 
@@ -149,7 +149,7 @@ playwriter -s 1 -e "await state.page.evaluate(() => window.scrollTo(0, 9999))"
 playwriter -s 1 -e "console.log(state.responses.map(r => r.url))"
 # => ["/api/products?page=2"]
 
-# 4. 문서화 → .claude/crawler/shop-example-com/
+# 4. 문서화 → .hypercore/crawler/shop-example-com/
 # 5. API 기반 크롤러 생성
 ```
 

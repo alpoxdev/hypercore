@@ -180,7 +180,7 @@ ${PROMPT}
 **Ralph 스킬 사용 시 반드시 문서화**
 
 ```
-.claude/ralph/{YYYY-MM-DD_HH-MM}/
+.hypercore/ralph/{YYYY-MM-DD_HH-MM}/
 ├── TASKS.md          # 필수
 ├── PROCESS.md        # 필수
 ├── VERIFICATION.md   # 필수

@@ -11,7 +11,7 @@ compatibility: Requires external search-capable tooling (WebSearch/WebFetch/MCP 
 <purpose>
 
 Input: topic (natural language) + optional depth (`--quick` / default / `--deep`)
-Output: `.claude/research/[NN].topic_summary.md`
+Output: `.hypercore/research/[NN].topic_summary.md`
 
 </purpose>
 
@@ -141,7 +141,7 @@ Source: [Title](URL)
 | Sources | quick 5+, standard 10+, deep 20+ |
 | Recency | Include year/date awareness in source checks |
 | Output | Executive summary + sources + recommendations |
-| Save | `.claude/research/[NN].*.md` |
+| Save | `.hypercore/research/[NN].*.md` |
 
 Forbidden:
 - Claims without sources

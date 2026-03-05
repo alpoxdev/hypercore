@@ -1,13 +1,13 @@
 # 분석 결과 문서 템플릿
 
-> `.claude/crawler/[사이트명]/` 폴더 구조
+> `.hypercore/crawler/[사이트명]/` 폴더 구조
 
 ---
 
 ## 폴더 구조
 
 ```
-.claude/crawler/example-com/
+.hypercore/crawler/example-com/
 ├── ANALYSIS.md      # 사이트 구조
 ├── SELECTORS.md     # DOM selector
 ├── API.md           # API endpoint

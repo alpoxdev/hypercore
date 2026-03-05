@@ -1,13 +1,13 @@
 # Analysis Document Templates
 
-> Standard output structure for `.claude/crawler/[site-name]/`.
+> Standard output structure for `.hypercore/crawler/[site-name]/`.
 
 ---
 
 ## Folder Structure
 
 ```text
-.claude/crawler/example-com/
+.hypercore/crawler/example-com/
 ├── ANALYSIS.md      # Site structure and crawl strategy
 ├── SELECTORS.md     # DOM selector inventory
 ├── API.md           # API endpoint map

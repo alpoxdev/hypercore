@@ -46,7 +46,7 @@ description: Explore websites directly with Playwriter to design robust crawling
 | **1. Session** | Create session + open page | `playwriter session new` |
 | **2. Explore** | Understand structure | `accessibilitySnapshot`, `screenshotWithAccessibilityLabels` |
 | **3. Analyze** | Intercept API, extract selectors | `page.on('response')`, `getLocatorStringForElement` |
-| **4. Document** | Save findings under `.claude/crawler/[site]/` | Write |
+| **4. Document** | Save findings under `.hypercore/crawler/[site]/` | Write |
 | **5. Code** | Generate crawler implementation | [code-templates.md](rules/code-templates.md) |
 
 </workflow>
@@ -101,7 +101,7 @@ playwriter -s 1 -e "console.log(await getLocatorStringForElement(state.page.loca
 <output_structure>
 
 ```
-.claude/crawler/[site-name]/
+.hypercore/crawler/[site-name]/
 ├── ANALYSIS.md      # Site structure
 ├── SELECTORS.md     # DOM selectors
 ├── API.md           # API endpoints
@@ -122,7 +122,7 @@ playwriter -s 1 -e "console.log(await getLocatorStringForElement(state.page.loca
 ✅ Structure analyzed with accessibilitySnapshot
 ✅ API interception attempted
 ✅ Selector extraction validated
-✅ Findings documented under .claude/crawler/
+✅ Findings documented under .hypercore/crawler/
 ✅ Crawler code generated
 ✅ sequential-thinking trace recorded for major phases
 ```
@@ -162,7 +162,7 @@ playwriter -s 1 -e "await state.page.evaluate(() => window.scrollTo(0, 9999))"
 playwriter -s 1 -e "console.log(state.responses.map(r => r.url))"
 # => ["/api/products?page=2"]
 
-# 4. Documentation -> .claude/crawler/shop-example-com/
+# 4. Documentation -> .hypercore/crawler/shop-example-com/
 # 5. Generate API-based crawler
 ```
 
