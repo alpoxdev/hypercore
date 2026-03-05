@@ -24,4 +24,5 @@ npx skills add alpoxdev/hypercore
 | `research` | 구조화된 리서치 및 보고서 생성 |
 | `startup-validator` | 스타트업 아이디어 검증 |
 | `tanstack-start-architecture` | TanStack Start 아키텍처 규칙 적용 |
+| `vite-architecture` | Vite + TanStack Router 아키텍처 규칙 적용 |
 | `version-update` | 시맨틱 버전 업데이트 및 릴리스 |

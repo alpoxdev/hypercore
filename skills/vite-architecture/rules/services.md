@@ -1,0 +1,214 @@
+# API Services
+
+> Vite project data layer (client-side API wrappers)
+
+---
+
+## Overview
+
+In Vite projects there are no server functions. All data access goes through **service functions** that wrap `fetch`/`axios` calls and return typed data.
+
+| Layer | Tool | Purpose |
+|-------|------|---------|
+| Validation | Zod schemas | Input/output validation |
+| Query | service function + `useQuery` | GET requests |
+| Mutation | service function + `useMutation` | POST/PUT/DELETE |
+| Prefetch | `queryClient.ensureQueryData` | Loader prefetch |
+
+---
+
+## Service Folder Structure
+
+```
+services/
+├── user/
+│   ├── index.ts         # Re-export all
+│   ├── schemas.ts       # Zod schemas + inferred types
+│   ├── queries.ts       # GET requests + queryOptions
+│   └── mutations.ts     # POST/PUT/DELETE
+```
+
+| File | Purpose |
+|------|---------|
+| `index.ts` | Re-export all functions |
+| `schemas.ts` | Zod validation schemas |
+| `queries.ts` | GET requests (read) + queryOptions |
+| `mutations.ts` | POST/PUT/DELETE (write) |
+
+---
+
+## Schema Pattern
+
+```typescript
+// services/user/schemas.ts
+import { z } from 'zod'
+
+export const createUserSchema = z.object({
+  email: z.email(),
+  name: z.string().min(1).max(100).trim(),
+})
+
+export type CreateUserInput = z.infer<typeof createUserSchema>
+
+export const userSchema = z.object({
+  id: z.string(),
+  email: z.email(),
+  name: z.string(),
+  createdAt: z.string(),
+})
+
+export type User = z.infer<typeof userSchema>
+```
+
+---
+
+## Query Pattern (GET)
+
+```typescript
+// services/user/queries.ts
+import { queryOptions } from '@tanstack/react-query'
+import { apiClient } from '@/config/api-client'
+import type { User } from './schemas'
+
+export const getUsers = async (): Promise<User[]> => {
+  const response = await apiClient.get('/users')
+  return response.data
+}
+
+export const getUserById = async (id: string): Promise<User> => {
+  const response = await apiClient.get(`/users/${id}`)
+  return response.data
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TanStack Query options
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+export const usersQueryOptions = () =>
+  queryOptions({
+    queryKey: ['users'],
+    queryFn: getUsers,
+  })
+
+export const userQueryOptions = (id: string) =>
+  queryOptions({
+    queryKey: ['users', id],
+    queryFn: () => getUserById(id),
+  })
+```
+
+---
+
+## Mutation Pattern (POST/PUT/DELETE)
+
+```typescript
+// services/user/mutations.ts
+import { apiClient } from '@/config/api-client'
+import { createUserSchema } from './schemas'
+import type { CreateUserInput, User } from './schemas'
+
+export const createUser = async (input: CreateUserInput): Promise<User> => {
+  createUserSchema.parse(input)
+  const response = await apiClient.post('/users', input)
+  return response.data
+}
+
+export const updateUser = async (
+  id: string,
+  input: Partial<CreateUserInput>
+): Promise<User> => {
+  const response = await apiClient.put(`/users/${id}`, input)
+  return response.data
+}
+
+export const deleteUser = async (id: string): Promise<void> => {
+  await apiClient.delete(`/users/${id}`)
+}
+```
+
+---
+
+## Loader Prefetch Pattern
+
+> Use `ensureQueryData` in route loaders for client-side prefetching
+
+```typescript
+// routes/users/index.tsx
+export const Route = createFileRoute('/users/')({
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(usersQueryOptions()),
+  component: UsersPage,
+})
+
+// routes/users/$id.tsx
+export const Route = createFileRoute('/users/$id')({
+  loader: ({ params: { id }, context: { queryClient } }) =>
+    queryClient.ensureQueryData(userQueryOptions(id)),
+  component: UserDetailPage,
+})
+```
+
+---
+
+## API Client Setup
+
+```typescript
+// config/api-client.ts
+import axios from 'axios'
+
+export const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: { 'Content-Type': 'application/json' },
+})
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 인증 토큰 인터셉터
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apiClient.interceptors.request.use((config) => {
+  const token = getAuthToken()
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      redirectToLogin()
+    }
+    return Promise.reject(error)
+  }
+)
+```
+
+---
+
+## External SDK Services
+
+> Third-party integrations follow the same pattern
+
+```
+services/<provider>/
+├── client.ts       # SDK client initialization
+├── types.ts        # Type definitions
+└── utils.ts        # Helper functions
+```
+
+```typescript
+// services/stripe/client.ts
+import Stripe from 'stripe'
+
+export const stripe = new Stripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+```
+
+---
+
+## Best Practices
+
+| Principle | Description |
+|-----------|-------------|
+| **File separation** | Separate schemas, queries, mutations required |
+| **Return types** | All service functions must have explicit return types |
+| **Validation** | Validate input with Zod before POST/PUT/PATCH |
+| **queryOptions** | Export `queryOptions` factories for reuse in loaders and hooks |
+| **No direct fetch** | Never call `fetch`/`axios` in routes or hooks - use service functions |
+| **Error handling** | Let errors propagate to `errorComponent`; handle 401/403 in interceptors |
