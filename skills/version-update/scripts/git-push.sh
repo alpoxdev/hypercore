@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# git-push.sh - 안전한 푸시 (상태 확인 후)
+# git-push.sh - fallback push helper for version-update
 # Usage: ./git-push.sh [--force]
 
 set -euo pipefail
