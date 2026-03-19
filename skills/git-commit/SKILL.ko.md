@@ -3,9 +3,23 @@ name: git-commit
 description: '현재 저장소 상태를 기준으로 Conventional Commit 하나를 생성합니다. staged/unstaged 변경을 확인하고, 하나의 논리적 변경 집합을 선택한 뒤, 규격에 맞는 메시지를 만들고, 모호하거나 위험한 조건에서는 멈춥니다.'
 license: MIT
 allowed-tools: Bash
+compatibility: `skills/git-commit/scripts` 아래 Bash 스크립트를 필요로 합니다.
 ---
 
 # Git Commit 스킬
+
+<scripts>
+
+## 사용 가능한 스크립트
+
+| Script | Purpose |
+|------|------|
+| `scripts/repo-discover.sh [start_dir]` | 현재 저장소인지, 하위 저장소들인지 구조를 판별 |
+| `scripts/repo-status.sh [repo]` | 브랜치, 상태, staged 요약, unstaged 요약 출력 |
+| `scripts/git-commit.sh [--repo path] "msg" [files...]` | 하나의 저장소에서 staged 또는 선택 파일 커밋 |
+| `scripts/git-push.sh [--repo path] [--force]` | 하나의 저장소에서 현재 브랜치를 안전하게 push |
+
+</scripts>
 
 <objective>
 
@@ -158,8 +172,7 @@ ARGUMENT가 있으면:
 - ARGUMENT 있음: ARGUMENT에서 초기 후보를 만들고, 이후 git 상태로 검증한다.
 
 ```bash
-git rev-parse --show-toplevel 2>/dev/null
-find . -mindepth 2 \( -name .git -type d -o -name .git -type f \)
+scripts/repo-discover.sh
 ```
 
 그 다음 저장소 구조에 따라 분기한다.
@@ -167,17 +180,13 @@ find . -mindepth 2 \( -name .git -type d -o -name .git -type f \)
 1. `git rev-parse --show-toplevel` 이 성공하면 현재 저장소를 확인한다.
 
 ```bash
-git status --short --branch
-git diff --staged
-git diff
+scripts/repo-status.sh
 ```
 
 2. 현재 디렉터리가 저장소가 아니지만 하위 저장소가 있으면, 각 저장소를 독립적으로 확인한다.
 
 ```bash
-cd path/to/repo && git status --short --branch
-cd path/to/repo && git diff --staged
-cd path/to/repo && git diff
+scripts/repo-status.sh path/to/repo
 ```
 
 저장소가 아닌 루트에서 한 번의 `git add`나 `git commit`으로 여러 하위 저장소를 같이 처리하지 않는다.
@@ -190,7 +199,6 @@ cd path/to/repo && git diff
 git add path/to/file1 path/to/file2
 git add -p
 git restore --staged path/to/file
-cd path/to/repo && git add path/to/file
 ```
 
 다음 경우에는 멈춘다.
@@ -224,14 +232,14 @@ cd path/to/repo && git add path/to/file
 subject만 있는 경우:
 
 ```bash
-git commit -m "<type>[scope]: <subject>"
-cd path/to/repo && git commit -m "<type>[scope]: <subject>"
+scripts/git-commit.sh "<type>[scope]: <subject>"
+scripts/git-commit.sh --repo path/to/repo "<type>[scope]: <subject>"
 ```
 
 body 또는 footer가 있으면:
 
 ```bash
-git commit -m "$(cat <<'EOF'
+scripts/git-commit.sh "$(cat <<'EOF'
 <type>[scope]: <subject>
 
 <optional body>
@@ -239,7 +247,7 @@ git commit -m "$(cat <<'EOF'
 <optional footer>
 EOF
 )"
-cd path/to/repo && git commit -m "$(cat <<'EOF'
+scripts/git-commit.sh --repo path/to/repo "$(cat <<'EOF'
 <type>[scope]: <subject>
 
 <optional body>
@@ -268,7 +276,7 @@ EOF
 | 스테이징 정리 후 빈 커밋이 됨 | 멈추고 남은 커밋 대상이 없다고 보고한다 |
 | merge conflict 또는 index lock 상태 | 멈추고 저장소 상태를 보고한다 |
 | 사용자가 push를 거절함 | 성공한 커밋만 보고하고 종료한다 |
-| 사용자가 push를 승인함 | 해당 저장소에서 `git push` 를 실행하고 결과를 보고한다 |
+| 사용자가 push를 승인함 | 해당 저장소에서 `scripts/git-push.sh` 를 실행하고 결과를 보고한다 |
 
 </workflow>
 
@@ -348,8 +356,8 @@ Commit created. Run git push?
 ## 좋은 다중 저장소 처리 예시
 
 ```bash
-cd packages/web && git add src/auth.ts && git commit -m "fix(web): handle empty session"
-cd packages/api && git add src/routes/session.ts && git commit -m "fix(api): validate session payload"
+scripts/git-commit.sh --repo packages/web "fix(web): handle empty session" src/auth.ts
+scripts/git-commit.sh --repo packages/api "fix(api): validate session payload" src/routes/session.ts
 ```
 
 ## 나쁜 다중 저장소 처리 예시

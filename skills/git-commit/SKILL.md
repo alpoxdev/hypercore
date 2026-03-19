@@ -3,9 +3,23 @@ name: git-commit
 description: 'Create a Conventional Commit from the current repository state. Inspect staged and unstaged changes, choose one logical change set, generate a compliant message, and stop on ambiguous or risky conditions.'
 license: MIT
 allowed-tools: Bash
+compatibility: Requires Bash and scripts under skills/git-commit/scripts.
 ---
 
 # Git Commit Skill
+
+<scripts>
+
+## Available scripts
+
+| Script | Purpose |
+|------|------|
+| `scripts/repo-discover.sh [start_dir]` | Detect current-repo vs descendant-repo layout |
+| `scripts/repo-status.sh [repo]` | Show branch, status, staged summary, and unstaged summary |
+| `scripts/git-commit.sh [--repo path] "msg" [files...]` | Commit staged or selected files in one repository |
+| `scripts/git-push.sh [--repo path] [--force]` | Push the current branch safely in one repository |
+
+</scripts>
 
 <objective>
 
@@ -158,8 +172,7 @@ Decide argument mode first:
 - ARGUMENT present: derive the initial candidate set from ARGUMENT, then verify it with git state.
 
 ```bash
-git rev-parse --show-toplevel 2>/dev/null
-find . -mindepth 2 \( -name .git -type d -o -name .git -type f \)
+scripts/repo-discover.sh
 ```
 
 Then branch by repository layout:
@@ -167,17 +180,13 @@ Then branch by repository layout:
 1. If `git rev-parse --show-toplevel` succeeds, inspect the current repository:
 
 ```bash
-git status --short --branch
-git diff --staged
-git diff
+scripts/repo-status.sh
 ```
 
 2. If the current directory is not a repository but descendant repositories exist, inspect each repository independently:
 
 ```bash
-cd path/to/repo && git status --short --branch
-cd path/to/repo && git diff --staged
-cd path/to/repo && git diff
+scripts/repo-status.sh path/to/repo
 ```
 
 Do not run one `git add` or one `git commit` from the non-repository root for multiple descendant repositories.
@@ -190,7 +199,6 @@ Use targeted staging commands only when needed. The candidate set must match the
 git add path/to/file1 path/to/file2
 git add -p
 git restore --staged path/to/file
-cd path/to/repo && git add path/to/file
 ```
 
 Stop if:
@@ -224,14 +232,14 @@ Message format:
 Subject only:
 
 ```bash
-git commit -m "<type>[scope]: <subject>"
-cd path/to/repo && git commit -m "<type>[scope]: <subject>"
+scripts/git-commit.sh "<type>[scope]: <subject>"
+scripts/git-commit.sh --repo path/to/repo "<type>[scope]: <subject>"
 ```
 
 Body or footer included:
 
 ```bash
-git commit -m "$(cat <<'EOF'
+scripts/git-commit.sh "$(cat <<'EOF'
 <type>[scope]: <subject>
 
 <optional body>
@@ -239,7 +247,7 @@ git commit -m "$(cat <<'EOF'
 <optional footer>
 EOF
 )"
-cd path/to/repo && git commit -m "$(cat <<'EOF'
+scripts/git-commit.sh --repo path/to/repo "$(cat <<'EOF'
 <type>[scope]: <subject>
 
 <optional body>
@@ -268,7 +276,7 @@ After a successful commit, ask for explicit push confirmation.
 | Empty commit after staging decision | Stop and report that nothing remains to commit |
 | Merge conflict or index lock | Stop and report the repository state |
 | User declines push | Stop after reporting the successful commit |
-| User approves push | Run `git push` in the relevant repository, then report the result |
+| User approves push | Run `scripts/git-push.sh` in the relevant repository, then report the result |
 
 </workflow>
 
@@ -348,8 +356,8 @@ Commit created. Run git push?
 ## Good multi-repository handling
 
 ```bash
-cd packages/web && git add src/auth.ts && git commit -m "fix(web): handle empty session"
-cd packages/api && git add src/routes/session.ts && git commit -m "fix(api): validate session payload"
+scripts/git-commit.sh --repo packages/web "fix(web): handle empty session" src/auth.ts
+scripts/git-commit.sh --repo packages/api "fix(api): validate session payload" src/routes/session.ts
 ```
 
 ## Bad multi-repository handling
