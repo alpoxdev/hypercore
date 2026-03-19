@@ -1,257 +1,118 @@
 # Forbidden Patterns (Anti-Patterns)
 
-**Purpose**: Prevent repeated mistakes and keep quality stable.
+**Purpose**: Prevent repeated documentation and harness-design mistakes.
 
-## Language and Expression
+## 1. Language and Evidence
 
-### Avoid speculative wording
+### Forbidden 1: speculative wording without validation
 
-| Forbidden expression | Why | Better expression |
-|----------|------|-------------|
-| "should" without evidence | uncertain | "verified result: ~" |
-| "probably" | speculation | "verification shows ~" |
-| "seems to" | ambiguous | "analysis shows ~" |
-| "maybe" | speculation | "needs verification" / direct fact |
-| "looks like" | uncertain | direct fact |
-| "should work" | speculative | "confirmed by tests" |
-| "mostly" | vague | quantified statement (e.g., "in 90% of cases") |
+Avoid claims like:
 
-**Rule**: Assert only validated facts. If uncertain, verify first.
+- "probably"
+- "should work"
+- "seems to"
+- "maybe"
+- "mostly"
 
-## Code Authoring
+If uncertain, mark the claim as needing verification or cite the validating source.
 
-### Forbidden 1: `any` type
+## 2. Document Structure
 
-```typescript
-// ❌ forbidden
-function process(data: any) {
-  return data.value
-}
+### Forbidden 2: unstructured long prose with mixed concerns
 
-// ✅ preferred
-function process(data: unknown) {
-  if (typeof data === 'object' && data !== null && 'value' in data) {
-    return (data as { value: string }).value
-  }
-  throw new Error('Invalid data')
-}
-```
+Do not mix rules, rationale, examples, exceptions, and provider notes in one dense block.
 
-### Forbidden 2: `@ts-ignore`
+### Forbidden 3: duplicated rules across multiple sections
 
-```typescript
-// ❌ forbidden
-// @ts-ignore
-const result = getData()
+Keep one canonical definition for each rule. Cross-reference it instead of repeating it.
 
-// ✅ preferred
-const result = getData() as ExpectedType
-// or fix the type definitions
-```
+### Forbidden 4: vague instructions without decision criteria
 
-### Forbidden 3: deleting or muting failing tests
+Avoid terms like:
 
-```typescript
-// ❌ forbidden: disable failing test
-// describe('login', () => { ... })
+- "appropriately"
+- "as needed"
+- "when useful"
 
-// ✅ preferred: fix implementation so tests pass
-function login(email: string, password: string) {
-  // bug fix
-}
-```
+unless the document defines what those mean in context.
 
-### Forbidden 4: swallowing errors
+## 3. Provider Coupling
 
-```typescript
-// ❌ forbidden
-try {
-  await dangerousOperation()
-} catch (e) {
-  // ignore
-}
+### Forbidden 5: fixed model literals in canonical core docs
 
-// ✅ preferred
-try {
-  await dangerousOperation()
-} catch (error) {
-  logger.error('Operation failed', error)
-  throw new Error('Failed to perform operation')
-}
-```
+In canonical `SKILL.md` and default rule files, do not hard-code concrete vendor model literals or versioned model IDs.
 
-## Workflow
+Use capability or deployment profiles instead. Keep concrete model strings only in dated provider references or deployment examples.
 
-### Forbidden 5: skipping verification stages
+### Forbidden 6: provider-sensitive claims without dated references
 
-```markdown
-❌ Phase 1 -> Phase 4 (jump)
-❌ Phase 1 -> Phase 3 (skip /pre-deploy)
-❌ Partial validation only (lint only)
+Do not encode vendor behavior as a timeless rule unless it is backed by an official source and a verification date.
 
-✅ Phase 1 -> 2 -> 3 -> 4 (sequential)
-✅ Run full /pre-deploy (typecheck, lint, build)
-```
+### Forbidden 7: putting volatile provider details in the canonical core
 
-### Forbidden 6: early "done" declaration
+Do not store migration-sensitive, release-sensitive, or provider-version-sensitive details in canonical core docs when they belong in a dated reference file.
 
-```typescript
-// ❌ forbidden
-// "Implementation is complete" (without verification)
-<promise>DONE</promise>
+## 4. Harness Gaps
 
-// ✅ preferred
-Skill("pre-deploy")
-TaskList()
-Task(subagent_type="planner", ...)
-<promise>DONE</promise>
-```
+### Forbidden 8: prompt-only guidance for harness work
 
-### Forbidden 7: sequential execution when parallel is possible
+If the document claims to guide a harness, do not omit the surrounding system concerns:
 
-```typescript
-// ❌ forbidden (sequential)
-Read({ file_path: "file1.ts" })
-// wait...
-Read({ file_path: "file2.ts" })
+- tool contracts
+- evals
+- safety and approvals
+- context ordering
+- state and compaction
 
-// ✅ preferred (parallel)
-Read({ file_path: "file1.ts" })
-Read({ file_path: "file2.ts" })
-Read({ file_path: "file3.ts" })
-```
+### Forbidden 9: tool guidance without execution boundaries
 
-### Forbidden 8: not delegating to agents
+Do not document tools only as capabilities. State at least one of:
 
-```typescript
-// ❌ forbidden: do everything alone
-Glob(...)
-Read(...)
-Read(...)
-Edit(...)
-Edit(...)
+- when to use the tool
+- when not to use it
+- what approval or guardrail applies
 
-// ✅ preferred: delegate specialized tasks
-Task(subagent_type="explore", model="haiku", ...)
-Task(subagent_type="implementation-executor", model="sonnet", ...)
-```
+### Forbidden 10: eval guidance without success criteria
 
-## Git Operations
+Do not recommend iteration or optimization without defining what counts as success and how outputs are evaluated.
 
-### Forbidden 9: AI signatures and noisy commit formatting
+### Forbidden 11: context guidance without placement strategy
+
+Do not mention long context, caching, or compaction without explaining what content is static, what is variable, and where each belongs.
+
+## 5. Refactor Safety
+
+### Forbidden 12: deleting critical constraints during cleanup
+
+Refactoring for brevity is not allowed to remove safety, scope, or validation requirements.
+
+### Forbidden 13: leaving mixed project-specific implementation rules in docs-maker core
+
+Do not keep framework- or stack-specific coding mandates in the default docs-maker rule load path unless they are directly about documentation or harness design.
+
+## 6. Example Quality
+
+### Forbidden 14: examples that fight the rules
+
+Do not include examples that:
+
+- hard-code model names in canonical guidance
+- show unsourced provider claims as facts
+- demonstrate ambiguous validation
+- reintroduce removed mixed concerns
+
+### Forbidden 15: references without maintenance metadata
+
+Do not add provider references that omit verification date or refresh criteria.
+
+### Forbidden 16: branded AI signature examples with stale versions
+
+Avoid examples like:
 
 ```bash
-# ❌ forbidden
-git commit -m "feat: implement login
+git commit -m "feat: change
 
-Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
-
-# ❌ forbidden
-git commit -m "🤖 feat: implement login"
-
-# ✅ preferred
-git commit -m "feat: implement login"
+Co-Authored-By: Assistant Model vX <noreply@example.com>"
 ```
 
-### Forbidden 10: direct Git execution via generic Bash pipeline
-
-```typescript
-// ❌ forbidden
-Bash({ command: "git add . && git commit -m 'fix' && git push" })
-
-// ✅ preferred
-Task(subagent_type="git-operator", model="haiku",
-     prompt="commit and push the current changes")
-```
-
-## Database
-
-### Forbidden 11: automatic Prisma execution without user intent
-
-```bash
-# ❌ forbidden (auto-execution)
-prisma db push
-prisma migrate dev
-prisma generate
-
-# ✅ preferred (request/confirm before execution)
-echo "schema.prisma updated. Run 'prisma db push' when ready"
-```
-
-### Forbidden 12: unrequested schema changes
-
-```prisma
-// ❌ forbidden: modify schema without explicit request
-model User {
-  id Int @id @default(autoincrement())
-  email String @unique
-}
-
-// ✅ preferred: implement only requested changes
-```
-
-## API Implementation
-
-### Forbidden 13: manual validation/auth inside handler when platform pattern exists
-
-```typescript
-// ❌ forbidden
-export const createUser = createServerFn({ method: 'POST' })
-  .handler(async ({ data }) => {
-    if (!data.email) throw new Error('Email required')
-    if (!request.session) throw new Error('Unauthorized')
-    return prisma.user.create({ data })
-  })
-
-// ✅ preferred
-export const createUser = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .inputValidator(createUserSchema)
-  .handler(async ({ data }) => {
-    return prisma.user.create({ data })
-  })
-```
-
-### Forbidden 14: calling server functions directly from client without query layer
-
-```typescript
-// ❌ forbidden
-const handleSubmit = async () => {
-  const result = await createUser({ data })
-}
-
-// ✅ preferred
-const mutation = useMutation({
-  mutationFn: createUser,
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] })
-})
-
-const handleSubmit = () => {
-  mutation.mutate({ data })
-}
-```
-
-## Documentation
-
-### Forbidden 15: missing required updates in process docs
-
-```markdown
-❌ Move to next phase but do not update PROCESS.md
-❌ Complete requirements but do not check TASKS.md
-❌ Complete validation but do not record VERIFICATION.md
-
-✅ Update docs immediately at each phase transition
-✅ Record major decisions in PROCESS.md
-✅ Record validation results in VERIFICATION.md
-```
-
-### Forbidden 16: creating unnecessary docs
-
-```markdown
-❌ Create README.md without explicit request
-❌ Auto-generate CONTRIBUTING.md
-❌ Add random .md files proactively
-
-✅ Create new docs only when explicitly requested
-✅ Prefer updating existing docs first
-```
+If the point is "avoid noisy AI signature footers," use a neutral placeholder rather than a stale model-branded string.

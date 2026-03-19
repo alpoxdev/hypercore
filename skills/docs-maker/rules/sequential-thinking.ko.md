@@ -1,217 +1,100 @@
-# Sequential Thinking Pattern
+# Sequential Thinking 패턴
 
-**목적**: 복잡한 문제를 구조화된 단계로 분해하여 해결
+**목적**: 문서 작성과 하네스 설계 문제를 구조화된 단계로 분해해 해결합니다.
 
 ## 핵심 원칙
 
-**작업 시작 전 Sequential Thinking으로 사고 과정을 거칠 것**
+중요한 생성 또는 리팩토링 작업 전에는 `sequential-thinking`을 실행합니다.
 
 ## 복잡도별 사고 단계
 
-| 복잡도 | 단계 수 | 예시 |
-|--------|---------|------|
-| **LOW** | 1-2 | 단순 질문, 파일 읽기, 간단한 검색 |
-| **MEDIUM** | 3-5 | 기능 구현, 버그 수정, 문서 작성 |
-| **HIGH** | 7-10+ | 아키텍처 설계, 대규모 리팩토링, 복잡한 디버깅 |
+| 복잡도 | 단계 수 | 대표 작업 |
+|------|------|------|
+| LOW | 1-2 | 짧은 문구 수정, 한 파일 정리 |
+| MEDIUM | 3-5 | 문서 리팩토링, 규칙 통합 |
+| HIGH | 5-8+ | 다중 파일 스킬 재설계, 하네스 구조 개편 |
 
 ## 사용 시점
 
 | 상황 | 필수 여부 |
-|------|----------|
-| 새 기능 구현 | ✅ 필수 (3-5단계) |
-| 버그 수정 | ✅ 필수 (3-5단계) |
-| 리팩토링 | ✅ 필수 (5-7단계) |
-| 아키텍처 설계 | ✅ 필수 (7-10단계) |
-| 파일 읽기 | ❌ 선택 (1단계) |
-| 간단한 검색 | ❌ 선택 (1단계) |
+|------|------|
+| 새 문서 스켈레톤 작성 | 필수 |
+| 길고 반복적인 스킬 리팩토링 | 필수 |
+| 공급자 민감 가이드 재구성 | 필수 |
+| 이미 안정적인 문서에 짧은 메모 추가 | 선택 |
 
 ## 파라미터
 
 | 필수 | 설명 |
 |------|------|
 | `thought` | 현재 사고 내용 |
-| `nextThoughtNeeded` | 추가 사고 필요 여부 (true/false) |
-| `thoughtNumber` | 현재 번호 (1부터 시작) |
-| `totalThoughts` | 예상 총 단계 (동적 조정 가능) |
+| `nextThoughtNeeded` | 추가 사고 필요 여부 |
+| `thoughtNumber` | 현재 사고 번호 |
+| `totalThoughts` | 예상 총 단계 |
 
 | 선택 | 설명 |
 |------|------|
 | `isRevision` | 이전 사고 수정 여부 |
-| `revisesThought` | 수정 대상 번호 |
+| `revisesThought` | 수정 대상 사고 |
 | `branchFromThought` | 분기 시작점 |
 | `branchId` | 분기 식별자 |
 
-## 코드 예시
-
-### 예시 1: 간단한 작업 (2단계)
+## 예시: 오래된 스킬 리팩토링
 
 ```typescript
-// Thought 1: 파일 탐색 계획
-mcp__sequential-thinking__sequentialthinking({
-  thought: "User 관련 파일을 찾기 위해 src/functions/ 디렉토리를 탐색해야 함",
+mcp__sequential_thinking__sequentialthinking({
+  thought: "docs-maker를 공급자 중립 코어로 정리하고 혼합 구현 관심사를 제거해야 한다.",
   thoughtNumber: 1,
-  totalThoughts: 2,
+  totalThoughts: 4,
   nextThoughtNeeded: true
 })
 
-// Thought 2: 실행 결정
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Glob 도구로 **/*user*.ts 패턴 검색 실행",
+mcp__sequential_thinking__sequentialthinking({
+  thought: "스킬 본문과 규칙 파일을 읽고 코어, 하네스, 공급자 전용, 프로젝트 전용으로 분류한다.",
   thoughtNumber: 2,
-  totalThoughts: 2,
-  nextThoughtNeeded: false
-})
-```
-
-### 예시 2: 중간 복잡도 (5단계)
-
-```typescript
-// Thought 1: 문제 정의
-mcp__sequential-thinking__sequentialthinking({
-  thought: "로그인 API에서 타입 에러 발생. src/functions/auth.ts 확인 필요",
-  thoughtNumber: 1,
-  totalThoughts: 5,
+  totalThoughts: 4,
   nextThoughtNeeded: true
 })
 
-// Thought 2: 탐색 계획
-mcp__sequential-thinking__sequentialthinking({
-  thought: "auth.ts와 관련 타입 파일 (src/types/auth.ts) 병렬로 읽기",
-  thoughtNumber: 2,
-  totalThoughts: 5,
-  nextThoughtNeeded: true
-})
-
-// Thought 3: 원인 분석
-mcp__sequential-thinking__sequentialthinking({
-  thought: "LoginInput 타입에 email 필드가 없음. Zod 스키마와 TypeScript 타입 불일치",
+mcp__sequential_thinking__sequentialthinking({
+  thought: "표준 파일은 문서와 하네스 규칙만 남기고, 공급자 민감한 내용은 참조 파일로 이동한다.",
   thoughtNumber: 3,
-  totalThoughts: 5,
+  totalThoughts: 4,
   nextThoughtNeeded: true
 })
 
-// Thought 4: 해결 방안
-mcp__sequential-thinking__sequentialthinking({
-  thought: "LoginInput 인터페이스에 email: string 추가. Zod 스키마는 이미 올바름",
+mcp__sequential_thinking__sequentialthinking({
+  thought: "오래된 모델명 grep과 재독으로 최종 일관성과 검증 범위를 확인한다.",
   thoughtNumber: 4,
-  totalThoughts: 5,
-  nextThoughtNeeded: true
-})
-
-// Thought 5: 실행 결정
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Edit 도구로 src/types/auth.ts 수정 후 tsc 재실행",
-  thoughtNumber: 5,
-  totalThoughts: 5,
+  totalThoughts: 4,
   nextThoughtNeeded: false
 })
-```
-
-### 예시 3: 동적 조정 (3→5단계)
-
-```typescript
-// Thought 1
-mcp__sequential-thinking__sequentialthinking({
-  thought: "API 엔드포인트 구현 시작. 3단계 예상",
-  thoughtNumber: 1,
-  totalThoughts: 3,
-  nextThoughtNeeded: true
-})
-
-// Thought 2
-mcp__sequential-thinking__sequentialthinking({
-  thought: "기존 패턴 확인 중 인증 미들웨어가 필요함을 발견. 단계 조정",
-  thoughtNumber: 2,
-  totalThoughts: 5,  // 3→5로 증가
-  nextThoughtNeeded: true
-})
-
-// Thought 3-5 계속...
 ```
 
 ## 주요 기능
 
 ### 1. 동적 조정
 
-**totalThoughts는 고정이 아님:**
-- 작업 중 복잡도 재평가 가능
-- 필요 시 단계 추가/감소
+`totalThoughts`는 고정이 아닙니다. 문서 범위가 바뀌면 단계 수를 늘리거나 줄입니다.
 
-### 2. 수정 (Revision)
+### 2. 수정
 
-**이전 사고를 재검토:**
+출처 확인 결과 기존 가정이 틀렸다면 이전 사고를 수정합니다.
 
-```typescript
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Thought 3의 원인 분석이 잘못됨. 실제 문제는 DB 스키마 불일치",
-  thoughtNumber: 6,
-  totalThoughts: 7,
-  isRevision: true,
-  revisesThought: 3,
-  nextThoughtNeeded: true
-})
-```
+### 3. 분기
 
-### 3. 분기 (Branching)
+문서 구조안이나 규칙 팩 분할안을 비교할 때 분기를 사용합니다.
 
-**여러 접근 방식 탐색:**
+## 사고 문장 작성 규칙
 
-```typescript
-mcp__sequential-thinking__sequentialthinking({
-  thought: "방법 A: REST API 사용",
-  thoughtNumber: 4,
-  totalThoughts: 8,
-  branchFromThought: 3,
-  branchId: "approach-a",
-  nextThoughtNeeded: true
-})
-
-mcp__sequential-thinking__sequentialthinking({
-  thought: "방법 B: GraphQL 사용",
-  thoughtNumber: 4,
-  totalThoughts: 8,
-  branchFromThought: 3,
-  branchId: "approach-b",
-  nextThoughtNeeded: true
-})
-```
-
-## 금지 패턴
-
-**다음 표현 사용 금지:**
-
-| 금지 표현 | 이유 | 대체 표현 |
-|----------|------|----------|
-| "~해야 한다" | 추측성 | "~한다" (단정) |
-| "probably" | 불확실 | "확인 후 결정" |
-| "seems to" | 모호함 | "분석 결과 ~임" |
-| "아마도" | 추측 | "검증 필요" |
-| "~것 같다" | 불확실 | "~이다" |
-
-**올바른 표현:**
-
-```typescript
-// ❌ 잘못된 표현
-thought: "이 파일을 수정하면 아마도 해결될 것 같다"
-
-// ✅ 올바른 표현
-thought: "타입 정의 누락 확인. src/types/user.ts 수정으로 해결"
-```
+- 각 사고 단계는 구체적 결론이나 다음 행동으로 끝냅니다.
+- 다음 단계가 검증을 요구할 때는 추측성 표현을 피합니다.
+- 파일 읽기나 출처 근거에 기대는 문장을 우선합니다.
 
 ## 체크리스트
 
-작업 시작 전:
-
-- [ ] 복잡도 판단 (LOW/MEDIUM/HIGH)
-- [ ] 최소 단계 수 결정
-- [ ] 첫 번째 thought 작성 (문제 정의)
-- [ ] 마지막 thought에서만 nextThoughtNeeded=false
-
-작업 중:
-
-- [ ] 각 단계마다 명확한 결론
-- [ ] 추측성 표현 금지
-- [ ] 필요 시 totalThoughts 조정
-- [ ] 불확실하면 분기 또는 수정
-
-**모든 복잡한 작업은 Sequential Thinking으로 시작**
+- [ ] 복잡도 판단
+- [ ] 초기 단계 수 결정
+- [ ] 첫 사고 단계를 문제 정의로 작성
+- [ ] 범위가 바뀌면 수정 또는 분기 사용
+- [ ] 마지막 thought에서만 `nextThoughtNeeded=false`

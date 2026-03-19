@@ -1,217 +1,100 @@
 # Sequential Thinking Pattern
 
-**Purpose**: Solve complex problems by decomposing them into structured steps.
+**Purpose**: Solve documentation and harness-design problems by decomposing them into structured steps.
 
 ## Core Principle
 
-**Run Sequential Thinking before starting non-trivial work.**
+Run `sequential-thinking` before starting non-trivial create or refactor work.
 
 ## Thinking Depth by Complexity
 
-| Complexity | Steps | Typical Work |
-|--------|---------|------|
-| **LOW** | 1-2 | Simple question, file read, quick search |
-| **MEDIUM** | 3-5 | Feature implementation, bug fix, documentation work |
-| **HIGH** | 7-10+ | Architecture design, large refactor, complex debugging |
+| Complexity | Steps | Typical work |
+|------|------|------|
+| LOW | 1-2 | Small wording fix, one-file cleanup |
+| MEDIUM | 3-5 | Document refactor, rule consolidation |
+| HIGH | 5-8+ | Multi-file skill redesign, harness restructuring |
 
 ## When to Use
 
 | Situation | Required |
-|------|----------|
-| New feature implementation | ✅ Required (3-5 steps) |
-| Bug fixing | ✅ Required (3-5 steps) |
-| Refactoring | ✅ Required (5-7 steps) |
-| Architecture design | ✅ Required (7-10 steps) |
-| File reading | ❌ Optional (1 step) |
-| Simple search | ❌ Optional (1 step) |
+|------|------|
+| New documentation skeleton | Yes |
+| Refactoring a long or repetitive skill | Yes |
+| Reworking provider-sensitive guidance | Yes |
+| Adding a small note to an already-stable doc | Optional |
 
 ## Parameters
 
 | Required | Description |
 |------|------|
 | `thought` | Current reasoning statement |
-| `nextThoughtNeeded` | Whether another thought is needed (`true`/`false`) |
-| `thoughtNumber` | Current thought index (starts at 1) |
-| `totalThoughts` | Estimated total steps (can be adjusted dynamically) |
+| `nextThoughtNeeded` | Whether another thought is needed |
+| `thoughtNumber` | Current thought index |
+| `totalThoughts` | Estimated total steps |
 
 | Optional | Description |
 |------|------|
-| `isRevision` | Whether this revises prior reasoning |
-| `revisesThought` | Which thought number is being revised |
-| `branchFromThought` | Branch starting point |
+| `isRevision` | Whether this revises earlier reasoning |
+| `revisesThought` | Which thought is being revised |
+| `branchFromThought` | Branch origin |
 | `branchId` | Branch identifier |
 
-## Code Examples
-
-### Example 1: Simple task (2 steps)
+## Example: Refactoring a stale skill
 
 ```typescript
-// Thought 1: file exploration plan
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Need to inspect src/functions/ to locate user-related files",
+mcp__sequential_thinking__sequentialthinking({
+  thought: "Need to refactor docs-maker so its core rules stay provider-neutral and remove mixed implementation concerns.",
   thoughtNumber: 1,
-  totalThoughts: 2,
+  totalThoughts: 4,
   nextThoughtNeeded: true
 })
 
-// Thought 2: execution decision
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Run Glob search with pattern **/*user*.ts",
+mcp__sequential_thinking__sequentialthinking({
+  thought: "Read the skill body and rule files, then classify content into core, provider-reference, and local-overlay groups.",
   thoughtNumber: 2,
-  totalThoughts: 2,
-  nextThoughtNeeded: false
-})
-```
-
-### Example 2: Medium complexity (5 steps)
-
-```typescript
-// Thought 1: problem definition
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Type error in login API. Need to inspect src/functions/auth.ts",
-  thoughtNumber: 1,
-  totalThoughts: 5,
+  totalThoughts: 4,
   nextThoughtNeeded: true
 })
 
-// Thought 2: exploration plan
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Read auth.ts and related type file src/types/auth.ts in parallel",
-  thoughtNumber: 2,
-  totalThoughts: 5,
-  nextThoughtNeeded: true
-})
-
-// Thought 3: root-cause analysis
-mcp__sequential-thinking__sequentialthinking({
-  thought: "LoginInput type is missing email. Zod schema and TypeScript type are inconsistent",
+mcp__sequential_thinking__sequentialthinking({
+  thought: "Rewrite canonical files to keep only documentation and harness rules. Move provider-sensitive details to reference files and confirm the layer placement is correct.",
   thoughtNumber: 3,
-  totalThoughts: 5,
+  totalThoughts: 4,
   nextThoughtNeeded: true
 })
 
-// Thought 4: solution
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Add email: string to LoginInput. Existing Zod schema is already correct",
+mcp__sequential_thinking__sequentialthinking({
+  thought: "Run grep checks for stale model literals and review the final wording for consistency and validation coverage.",
   thoughtNumber: 4,
-  totalThoughts: 5,
-  nextThoughtNeeded: true
-})
-
-// Thought 5: execution decision
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Edit src/types/auth.ts, then run tsc again",
-  thoughtNumber: 5,
-  totalThoughts: 5,
+  totalThoughts: 4,
   nextThoughtNeeded: false
 })
-```
-
-### Example 3: Dynamic adjustment (3 -> 5 steps)
-
-```typescript
-// Thought 1
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Start implementing API endpoint. Estimated in 3 steps",
-  thoughtNumber: 1,
-  totalThoughts: 3,
-  nextThoughtNeeded: true
-})
-
-// Thought 2
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Found that auth middleware is required while checking existing patterns; increase step count",
-  thoughtNumber: 2,
-  totalThoughts: 5, // increased from 3 to 5
-  nextThoughtNeeded: true
-})
-
-// Continue thought 3-5...
 ```
 
 ## Key Capabilities
 
 ### 1. Dynamic adjustment
 
-**`totalThoughts` is not fixed:**
-- Re-evaluate complexity during execution.
-- Increase or decrease steps when needed.
+`totalThoughts` is not fixed. Increase or reduce the step count when the document scope changes.
 
 ### 2. Revision
 
-**Revisit prior reasoning:**
-
-```typescript
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Thought 3 root-cause was incorrect. Actual issue is DB schema mismatch",
-  thoughtNumber: 6,
-  totalThoughts: 7,
-  isRevision: true,
-  revisesThought: 3,
-  nextThoughtNeeded: true
-})
-```
+Revisit prior reasoning when a source check invalidates an assumption.
 
 ### 3. Branching
 
-**Explore multiple approaches:**
+Use branching when comparing alternative document structures or rule-pack splits.
 
-```typescript
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Approach A: use REST API",
-  thoughtNumber: 4,
-  totalThoughts: 8,
-  branchFromThought: 3,
-  branchId: "approach-a",
-  nextThoughtNeeded: true
-})
+## Wording Rules for Thoughts
 
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Approach B: use GraphQL",
-  thoughtNumber: 4,
-  totalThoughts: 8,
-  branchFromThought: 3,
-  branchId: "approach-b",
-  nextThoughtNeeded: true
-})
-```
-
-## Forbidden Language Patterns
-
-**Avoid the following expression styles:**
-
-| Forbidden style | Why | Replacement |
-|----------|------|----------|
-| "should" without evidence | speculative | state validated fact |
-| "probably" | uncertain | "decide after verification" |
-| "seems to" | ambiguous | "analysis shows ~" |
-| "maybe" | speculative | "verification needed" |
-| "looks like" | uncertain | direct factual statement |
-
-**Correct style:**
-
-```typescript
-// ❌ weak statement
-thought: "Changing this file will probably fix it"
-
-// ✅ precise statement
-thought: "Missing type definition confirmed. Fix in src/types/user.ts resolves the issue"
-```
+- End each thought with a concrete conclusion or next action.
+- Avoid speculative language when the next step requires verification.
+- Prefer statements grounded in file reads or source evidence.
 
 ## Checklist
 
-Before starting:
-
-- [ ] Determine complexity (LOW/MEDIUM/HIGH)
-- [ ] Set minimum step count
-- [ ] Write first thought as problem definition
+- [ ] Determine complexity
+- [ ] Set an initial step count
+- [ ] Write the first thought as a problem definition
+- [ ] Revise or branch if the scope changes
 - [ ] Set `nextThoughtNeeded=false` only on the final thought
-
-During execution:
-
-- [ ] End each thought with a concrete conclusion
-- [ ] Avoid speculative language
-- [ ] Adjust `totalThoughts` when needed
-- [ ] Use revision/branching if uncertain
-
-**Start all non-trivial tasks with Sequential Thinking.**

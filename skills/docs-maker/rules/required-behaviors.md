@@ -1,237 +1,155 @@
 # Required Behaviors
 
-**Purpose**: Rules that must be followed in all work.
+**Purpose**: Rules that must be followed in docs-maker create and refactor work.
 
-## Work Start
+## 1. Work Start
 
-### Required 1: Sequential Thinking first
+### Required 1: Plan before major edits
 
-**For MEDIUM+ complexity, Sequential Thinking is mandatory.**
+Use `sequential-thinking` before non-trivial create or refactor work.
 
 | Complexity | Minimum steps | Typical work |
-|--------|----------|------|
-| LOW | 1-2 | File read, quick search |
-| MEDIUM | 3-5 | Feature implementation, bug fix |
-| HIGH | 7-10+ | Architecture design, large refactor |
+|------|------|------|
+| LOW | 1-2 | Quick read, small wording fix |
+| MEDIUM | 3-5 | Document refactor, rule cleanup |
+| HIGH | 5-8+ | Multi-file skill redesign, harness restructuring |
 
-```typescript
-// ✅ required: run before implementation
-mcp__sequential-thinking__sequentialthinking({
-  thought: "Plan for User API: requirements -> schema -> implementation -> validation",
-  thoughtNumber: 1,
-  totalThoughts: 5,
-  nextThoughtNeeded: true
-})
-```
+### Required 2: Read before edit
 
-### Required 2: Read before Edit
+Read the target files before modifying them. For refactors, identify:
 
-**Always read files before modifying code.**
+- critical intent to preserve
+- repeated rules to collapse
+- stale guidance to remove
+- provider-sensitive guidance to isolate
 
-```typescript
-// ✅ required order
-Read({ file_path: "src/functions/auth.ts" }) // 1) read
-Edit({ ... }) // 2) edit
+### Required 3: Read independent files in parallel
 
-// ❌ forbidden
-Edit({ ... }) // edit without reading
-```
+When 3+ independent files are needed to understand the current rule set, read them in parallel.
 
-### Required 3: parallel reads for independent files
+### Required 4: Choose the target layer before editing
 
-**When 3+ independent files are needed, read in parallel.**
+Before writing, decide whether the content belongs in:
 
-```typescript
-// ✅ required: parallel reads
-Read({ file_path: "file1.ts" })
-Read({ file_path: "file2.ts" })
-Read({ file_path: "file3.ts" })
-```
+- canonical core
+- provider reference
+- local overlay
 
-## Code Authoring
+## 2. Documentation Authoring
 
-### Required 4: UTF-8 encoding
+### Required 5: Preserve intent, improve shape
 
-**Use UTF-8 encoding for all files.**
+In refactor mode:
 
-### Required 5: block-level explanatory comments when complexity justifies it
+- preserve the original operational intent unless it is stale or contradicted by stronger guidance
+- improve clarity, density, and validation shape
+- remove mixed concerns and duplicate content
 
-```typescript
-// ✅ preferred: add concise comment above non-obvious logic
-// Validate authenticated session before data access
-const isAuthenticated = await checkAuth(session)
-if (!isAuthenticated) throw new Error('Unauthorized')
+### Required 6: Keep rules explicit and testable
 
-// Fetch current user profile
-const user = await prisma.user.findUnique({ where: { id: session.userId } })
-```
+Every important rule should answer:
 
-### Required 6: strict TypeScript typing
+- what to do
+- when it applies
+- how to validate it
 
-```typescript
-// ✅ required: explicit types
-function createUser(data: CreateUserInput): Promise<User> {
-  return prisma.user.create({ data })
-}
+### Required 7: Use stable structure
 
-// ❌ forbidden: any
-function createUser(data: any): any {
-  return prisma.user.create({ data })
-}
-```
+Prefer explicit sections, tables, and compact checklists when they make retrieval more reliable.
 
-## API Implementation
+### Required 8: Keep examples attached to rules
 
-### Required 7: Server Function pattern
+For non-obvious rules, include a copy-paste-ready example or pattern.
 
-**POST/PUT/PATCH requires `inputValidator`.**
+### Required 9: Use one term per concept
 
-```typescript
-// ✅ required
-export const createUser = createServerFn({ method: 'POST' })
-  .inputValidator(createUserSchema)
-  .handler(async ({ data }) => {
-    return prisma.user.create({ data })
-  })
-```
+Do not alternate between multiple names for the same concept unless the document explains the distinction.
 
-**If authentication is required, middleware is mandatory.**
+## 3. Harness Documentation
 
-```typescript
-// ✅ required
-export const getProfile = createServerFn({ method: 'GET' })
-  .middleware([authMiddleware])
-  .handler(async ({ context }) => {
-    return prisma.user.findUnique({ where: { id: context.userId } })
-  })
-```
+### Required 10: Separate core rules from provider-sensitive rules
 
-### Required 8: use TanStack Query for client-side server function calls
+Use this split:
 
-**Use `useQuery` / `useMutation` for client integration.**
+- canonical core: durable, provider-neutral guidance
+- provider references or adapters: dated vendor-specific details
+- local preferences: project-specific conventions
 
-```typescript
-// ✅ required
-const { data } = useQuery({
-  queryKey: ['users'],
-  queryFn: getUsers
-})
+### Required 11: Keep canonical docs free of fixed model literals
 
-const mutation = useMutation({
-  mutationFn: createUser,
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] })
-})
+In canonical skill and rule files:
 
-// ❌ forbidden: direct call from UI flow
-const users = await getUsers()
-```
+- prefer capability profiles such as `frontier reasoning model` or `snapshot-pinned production model`
+- move concrete model strings to provider reference files, migration notes, or deployment examples
 
-## Validation
+### Required 12: Source provider-sensitive claims
 
-### Required 9: sequential 4-phase completion
+If a rule depends on Anthropic or OpenAI behavior, attach or update a reference entry with:
 
-**Follow Phase 1 -> 2 -> 3 -> 4 in order.**
+- `source_url`
+- `last_verified_at`
+- `applies_to`
+- `summary`
+- `implication_for_docs_maker`
 
-```markdown
-✅ Phase 1: implementation complete
-✅ Phase 2: automated validation (/pre-deploy + TODO)
-✅ Phase 3: planner validation (approval required)
-✅ Phase 4: completion output (<promise>)
-```
+### Required 13: Resolve source conflicts explicitly
 
-### Required 10: full `/pre-deploy`
+When official sources differ:
 
-**`typecheck`, `lint`, and `build` must all pass.**
+- prefer the more direct developer or API documentation
+- keep the canonical rule stable
+- put volatile provider-specific details in the reference layer
 
-```typescript
-// ✅ required
-Skill("pre-deploy")
+### Required 14: Document the full harness, not only the prompt
 
-// ❌ forbidden: partial check only
-Bash({ command: "tsc --noEmit" })
-```
+When the scope involves harness engineering, cover the relevant parts explicitly:
 
-### Required 11: planner approval in phase 3
+- prompt assets and templates
+- tool contracts and descriptions
+- eval datasets and graders
+- safety and approval gates
+- context ordering, state, and compaction
+- model and version profile strategy
 
-```typescript
-// ✅ required
-Task(
-  subagent_type="planner",
-  model="opus",
-  prompt=`Request final verification
+## 4. Validation
 
-[Original task]
-${PROMPT}
+### Required 15: Validate mixed-concern cleanup
 
-[Validation summary]
-- /pre-deploy: ✅
-- TODO: ✅ 0 items
+After refactoring, confirm the docs-maker default surface no longer contains rules that belong to unrelated implementation stacks or project-specific workflows.
 
-Please determine completion status.`
-)
-```
+### Required 16: Validate source freshness
 
-## Documentation
+For provider-sensitive guidance, confirm the cited official sources are current enough for the claim being made.
 
-### Required 12: maintain session documentation when workflow requires it
+### Required 17: Validate wording and grep hygiene
 
-When operating under a sessionized workflow, keep required logs updated (tasks, process, verification, notes as applicable).
+Run repository searches when useful to confirm:
 
-### Required 13: update timing discipline
+- stale fixed model literals are removed from canonical docs
+- duplicate phrases are collapsed
+- moved rules are not still duplicated in old files
 
-| Timing | File | Required content |
-|------|--------------|------|
-| On phase transition | PROCESS log | "Phase N done -> Phase N+1 started" |
-| On requirement completion | TASK list | checkbox updates |
-| On validation run | VERIFICATION log | /pre-deploy result, TODO count |
-| On major decision | PROCESS log | decision and rationale |
+### Required 18: Apply reviewer-fail criteria
 
-### Required 14: schema comments when project policy requires annotated schemas
+Before declaring the skill update complete, confirm none of these reviewer-fail conditions are true:
 
-```prisma
-/// User
-model User {
-  /// Primary identifier
-  id        Int      @id @default(autoincrement())
-  /// Unique email
-  email     String   @unique
-  /// Display name
-  name      String
-  /// Creation timestamp
-  createdAt DateTime @default(now())
-}
-```
+- canonical docs mix core rules with vendor details without boundaries
+- references exist but do not materially support the rules that cite them
+- a harness document claims completeness while omitting tool, eval, safety, or context boundaries that are clearly in scope
+- examples are more specific than the rules and silently smuggle in local preferences
 
-## Git Operations
+### Required 19: Report what changed
 
-### Required 15: use delegated git operator workflow
+Completion reporting should include:
 
-**Use a dedicated git operator path for commit/push tasks.**
+- changed files
+- simplifications made
+- remaining risks or follow-up work
 
-```typescript
-// ✅ required
-Task(subagent_type="git-operator", model="haiku",
-     prompt="commit and push current changes")
+### Required 20: Do a readback pass
 
-// ❌ forbidden
-Bash({ command: "git add . && git commit -m 'feat: ...' && git push" })
-```
+Before completion, read the updated canonical files as if you were a new maintainer and confirm:
 
-### Required 16: commit message format
-
-**Use one-line format: `<prefix>: <description>`**
-
-```bash
-# ✅ required
-feat: implement login API
-fix: resolve type error
-refactor: refactor auth module
-
-# ❌ forbidden
-implement login feature  # no prefix
-feat: implement login API\n\nCo-Authored-By: ...  # multiline with co-author footer
-🤖 feat: login  # emoji prefix
-```
-
-**Valid prefixes:**
-- feat, fix, refactor, style, docs, test, chore, perf, ci
+- the skill purpose is obvious within the first screen
+- the boundary between core rules and provider references is explicit
+- the validation path is discoverable without searching across unrelated files

@@ -1,6 +1,6 @@
 # Context Engineering Guide for Docs Maker
 
-**Purpose**: Turn documentation into high-signal, low-noise context that AI can parse, retrieve, and execute reliably.
+**Purpose**: Turn documentation into high-signal, low-noise context that AI systems can parse, retrieve, and execute reliably.
 
 ## 1. Core Principles
 
@@ -8,7 +8,7 @@
 
 Use principle + pattern + example. Avoid both extremes:
 
-- Too low: exhaustive branching and edge-case trees.
+- Too low: exhaustive branching and edge-case trees in the main doc.
 - Too high: vague statements with no operational criteria.
 
 Preferred shape:
@@ -16,107 +16,127 @@ Preferred shape:
 1. One clear rule
 2. One short rationale
 3. One copy-paste pattern
+4. One observable validation check
 
 ### 1.2 Context Is Finite
 
 Treat tokens as a constrained resource:
 
-- Keep core file compact and action-focused.
+- Keep the core file compact and action-focused.
 - Move deep detail into `rules/` or `references/`.
 - Load details just in time, not all at once.
+- Separate persistent guidance from per-run context and temporary notes.
 
 ### 1.3 Explicit > Implicit
 
-AI models tend to execute literally and minimally unless guided.
+AI systems tend to execute literally and minimally unless guided.
 
 - Bad: "Improve this."
 - Good: "Improve this by applying A, B, C. Validate with X and Y."
 
-## 2. Prompt/Doc Structure Patterns
+### 1.4 Stable Core, Volatile Edge
 
-## 2.1 XML-Segmented Layout
+Keep core rules stable and abstract enough to survive vendor updates:
+
+- Put provider-neutral principles in canonical docs.
+- Put provider-sensitive behavior in dated reference files.
+- Keep deployment-specific knobs out of core guidance unless they are essential to the workflow.
+
+Decision rule:
+
+- If the guidance changes when a provider ships a new model, tool behavior, or migration path, it does not belong in the canonical core.
+
+### 1.5 Source Precedence
+
+When guidance sources conflict, prefer:
+
+1. Official provider developer or API docs
+2. Official provider migration or safety guides
+3. Official provider examples or business guides
+4. Local project preferences
+
+## 2. Prompt and Document Structure Patterns
+
+### 2.1 Structured Sectioning
 
 Use consistent sections so retrieval remains stable:
 
 - `<purpose>`
 - `<trigger_conditions>`
 - `<workflow>`
-- `<forbidden>`
 - `<required>`
+- `<forbidden>`
 - `<validation>`
 
-## 2.2 Behavior Control Blocks
+Markdown headers and tables are also valid when they improve readability. Prefer the structure that best preserves clear boundaries.
 
-Use only when needed:
+### 2.2 Behavior Control Blocks
+
+Use behavior blocks only when they materially change execution:
 
 ```xml
-<default_to_action>Implement directly.</default_to_action>
-<do_not_act_before_instructions>Suggest only until approved.</do_not_act_before_instructions>
+<default_to_action>Implement directly when the next step is clear and reversible.</default_to_action>
+<do_not_act_before_instructions>Research and recommend first when the user's intent is ambiguous.</do_not_act_before_instructions>
 <use_parallel_tool_calls>true</use_parallel_tool_calls>
-<avoid_minimal_implementation>Deliver complete implementation.</avoid_minimal_implementation>
-<verify_implementation>Check requirements, tests, types, and quality gates.</verify_implementation>
+<verify_outputs>Check rules, examples, references, and validation gates before completion.</verify_outputs>
 ```
 
-## 2.3 Positive Directives
+### 2.3 Positive Directives
 
 Prefer "Do X" style instructions over stacked prohibitions.
 
 - Bad: "Don't do A, don't do B, don't do C..."
-- Good: "Do X using pattern Y; verify with Z."
+- Better: "Do X using pattern Y; verify with Z."
 
-## 3. Reasoning Strategy Selection
+### 2.4 Capability Profiles, Not Fixed Model Names
 
-| Complexity | Reasoning mode | Guidance |
-|------|------|------|
-| Low | direct execution | no extra reasoning block |
-| Medium | structured CoT | short step-based reasoning |
-| High | extended reasoning | broader search, compare options, then decide |
+In canonical docs:
 
-For docs-maker:
+- Prefer `frontier reasoning model`, `fast general model`, or `snapshot-pinned production model`.
+- Avoid fixed model literals unless they are confined to dated provider references or deployment examples.
 
-- Always run `sequential-thinking` before major create/refactor work.
-- Use revision/branching when assumptions change.
+## 3. Compression and Retrieval Tactics
 
-## 4. Compression and Retrieval Tactics
+### 3.1 Compression Rules
 
-## 4.1 Compression Rules
-
-- Replace long prose with tables.
+- Replace long prose with tables when the shape is repetitive.
 - Replace abstract explanations with runnable patterns.
 - Collapse repeated rules into one canonical section.
 - Keep one term per concept; avoid synonyms that fragment retrieval.
 
-## 4.2 Progressive Disclosure
+### 3.2 Progressive Disclosure
 
 Three-layer loading model:
 
 1. Metadata: trigger-level summary
-2. SKILL body: workflow and constraints
-3. Rules/references: deep details loaded only when needed
+2. Skill body: workflow and constraints
+3. Rules and references: deep details loaded only when needed
 
-## 4.3 Minimal-Start Iteration
+### 3.3 Minimal-Start Iteration
 
-Start with minimal valid instruction set.
+Start with the minimal valid instruction set.
 If output quality is insufficient, add context in this order:
 
 1. one concrete example
 2. one explicit constraint
 3. one validation gate
+4. one reference-backed exception
 
-## 5. AI Authoring Rules
+## 4. State and Context Boundaries
 
-- Assume literal interpretation.
-- Specify completeness criteria explicitly.
-- Specify action posture explicitly (act now vs suggest first).
-- Specify parallelization intent for independent operations.
+- Distinguish canonical rules from task state, progress notes, and temporary scratch context.
+- When documenting long-running harnesses, state what is persisted, what is compacted, and what can be safely dropped.
+- For long-context systems, document the preferred ordering of static instructions, reference material, and variable inputs.
 
-Completeness checklist phrase pattern:
+## 5. Anti-Drift Maintenance
 
-"Include required states, error handling, edge cases, and validation outputs."
+- Add verification dates to provider-sensitive reference entries.
+- Refresh reference entries when a migration guide, tool-behavior note, or model-profile policy materially changes.
+- Prefer updating one reference entry over silently patching multiple core files.
 
 ## 6. Practical Templates
 
-## 6.1 Rule Statement Template
+### 6.1 Rule Statement Template
 
 ```markdown
 Rule: [single actionable instruction]
@@ -127,7 +147,7 @@ Validation:
 - [observable check]
 ```
 
-## 6.2 Workflow Step Template
+### 6.2 Workflow Step Template
 
 ```markdown
 Phase N
@@ -138,13 +158,25 @@ Phase N
 - Exit criteria:
 ```
 
+### 6.3 Reference Entry Template
+
+```markdown
+## [Source or topic]
+- source_url:
+- last_verified_at:
+- applies_to:
+- summary:
+- implication_for_docs_maker:
+```
+
 ## 7. Anti-Patterns to Eliminate
 
-- Ambiguous terms without criteria ("appropriately", "as needed")
-- Excessive conditional branching in main docs
+- Ambiguous terms without criteria
+- Excessive conditional branching in the main doc
 - Duplicate guidance across multiple sections
 - Verification omitted or deferred
-- Declaring completion without objective checks
+- Fixed model names in canonical core rules
+- Provider-sensitive claims without dated references
 
 ## 8. Quality Gates for Documentation
 
@@ -152,7 +184,8 @@ Ship only when all pass:
 
 - Structure is scannable and sectioned
 - Instructions are explicit and testable
-- Examples are runnable/reusable
+- Examples are runnable or reusable
 - Validation criteria are observable
 - Redundancy and ambiguity are removed
-
+- Provider-sensitive guidance is isolated and source-backed
+- Reference entries are dated and maintained in the correct layer

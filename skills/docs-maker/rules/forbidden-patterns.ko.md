@@ -1,328 +1,108 @@
-# Forbidden Patterns (Anti-Patterns)
+# 금지 패턴
 
-**목적**: 반복되는 실수 방지 및 품질 유지
+**목적**: 문서 작성과 하네스 설계에서 반복되는 실수를 막습니다.
 
-## 언어 및 표현
+## 1. 언어와 근거
 
-### 추측성 표현 금지
+### 금지 1: 검증 없는 추측성 표현
 
-| 금지 표현 | 이유 | 올바른 표현 |
-|----------|------|-------------|
-| "~해야 한다" | 불확실 | "~한다" (단정) |
-| "probably" | 추측 | "검증 결과 ~" |
-| "seems to" | 모호 | "분석 결과 ~" |
-| "아마도" | 추측 | "확인 필요" / "~이다" |
-| "~것 같다" | 불확실 | "~이다" |
-| "should work" | 추측 | "테스트 통과 확인" |
-| "대부분" | 모호 | "90% 케이스에서" |
+다음 표현은 피합니다.
 
-**원칙**: 확실한 것만 단정. 불확실하면 검증 후 확인.
+- "아마"
+- "작동할 것 같다"
+- "인 듯하다"
+- "대체로"
+- "probably"
 
-## 코드 작성
+확실하지 않다면 검증 필요로 표시하거나, 검증 근거를 붙입니다.
 
-### 금지 1: any 타입 사용
+## 2. 문서 구조
 
-```typescript
-// ❌ 금지
-function process(data: any) {
-  return data.value
-}
+### 금지 2: 관심사가 섞인 장문 단락
 
-// ✅ 올바름
-function process(data: unknown) {
-  if (typeof data === 'object' && data !== null && 'value' in data) {
-    return (data as { value: string }).value
-  }
-  throw new Error('Invalid data')
-}
-```
+규칙, 이유, 예시, 예외, 공급자 노트를 하나의 큰 블록에 섞지 않습니다.
 
-### 금지 2: @ts-ignore 사용
+### 금지 3: 여러 섹션에 같은 규칙 반복
 
-```typescript
-// ❌ 금지
-// @ts-ignore
-const result = getData()
+규칙은 하나의 표준 정의만 두고, 나머지는 참조합니다.
 
-// ✅ 올바름
-const result = getData() as ExpectedType
-// 또는 타입 정의 수정
-```
+### 금지 4: 판단 기준 없는 모호한 지시
 
-### 금지 3: 테스트 삭제/수정
+다음 표현은 기준 없이 쓰지 않습니다.
 
-```typescript
-// ❌ 금지: 실패 테스트 삭제
-// describe('login', () => { ... })  // 주석 처리
+- "적절히"
+- "필요시"
+- "유용하면"
 
-// ✅ 올바름: 코드 수정으로 테스트 통과
-function login(email: string, password: string) {
-  // 버그 수정
-}
-```
+## 3. 공급자 결합
 
-### 금지 4: 에러 무시
+### 금지 5: 표준 코어 문서 안의 고정 모델명
 
-```typescript
-// ❌ 금지
-try {
-  await dangerousOperation()
-} catch (e) {
-  // 무시
-}
+표준 `SKILL.md`와 기본 규칙 파일에는 공급자의 구체적 모델명이나 버전형 model ID를 직접 넣지 않습니다.
 
-// ✅ 올바름
-try {
-  await dangerousOperation()
-} catch (error) {
-  logger.error('Operation failed', error)
-  throw new Error('Failed to perform operation')
-}
-```
+대신 성능 프로필이나 배포 프로필을 사용합니다. 실제 모델 문자열은 날짜가 붙은 공급자 참조나 배포 예시에만 둡니다.
 
-## 작업 흐름
+### 금지 6: 날짜 없는 공급자 민감 주장
 
-### 금지 5: 검증 단계 스킵
+공식 출처와 검증 날짜 없이 공급자 동작을 영구 규칙처럼 적지 않습니다.
 
-```markdown
-❌ Phase 1 → Phase 4 (직행)
-❌ Phase 1 → Phase 3 (/pre-deploy 스킵)
-❌ Phase 2 부분 검증 (lint만 실행)
+## 4. 하네스 누락
 
-✅ Phase 1 → 2 → 3 → 4 (순차)
-✅ /pre-deploy 전체 실행 (typecheck, lint, build)
-```
+### 금지 7: 하네스 작업인데 프롬프트만 문서화
 
-### 금지 6: 조기 완료 선언
+문서가 하네스를 다룬다면 다음 주변 시스템을 빼먹지 않습니다.
 
-```typescript
-// ❌ 금지
-// "구현 완료했습니다" (검증 없이)
-<promise>DONE</promise>
+- 도구 계약
+- 평가
+- 안전과 승인
+- 컨텍스트 배치
+- 상태와 압축
 
-// ✅ 올바름
-Skill("pre-deploy")  // 검증
-TaskList()           // TODO 확인
-Task(subagent_type="planner", ...)  // Planner 승인
-<promise>DONE</promise>
-```
+### 금지 8: 실행 경계 없는 도구 가이드
 
-### 금지 7: 순차 실행 (병렬 가능한 경우)
+도구를 단순 기능 목록처럼만 적지 않습니다. 최소한 아래 중 하나는 있어야 합니다.
 
-```typescript
-// ❌ 금지 (순차)
-Read({ file_path: "file1.ts" })
-// 대기...
-Read({ file_path: "file2.ts" })
+- 언제 써야 하는가
+- 언제 쓰지 말아야 하는가
+- 어떤 승인 또는 가드레일이 적용되는가
 
-// ✅ 올바름 (병렬)
-Read({ file_path: "file1.ts" })
-Read({ file_path: "file2.ts" })
-Read({ file_path: "file3.ts" })
-```
+### 금지 9: 성공 기준 없는 평가 가이드
 
-### 금지 8: 에이전트 미활용
+무엇이 성공인지, 무엇으로 평가하는지 정의하지 않은 채 반복이나 최적화만 권하지 않습니다.
 
-```typescript
-// ❌ 금지: 모든 작업 혼자 수행
-Glob(...)
-Read(...)
-Read(...)
-Edit(...)
-Edit(...)
+### 금지 10: 배치 전략 없는 컨텍스트 가이드
 
-// ✅ 올바름: 에이전트 위임
-Task(subagent_type="explore", model="haiku", ...)
-Task(subagent_type="implementation-executor", model="sonnet", ...)
-```
+긴 컨텍스트, 캐싱, 압축을 언급하면서 정적 내용과 변수 내용, 배치 순서를 설명하지 않는 문서는 금지합니다.
 
-## Git 작업
+## 5. 리팩토링 안전성
 
-### 금지 9: AI 표시
+### 금지 11: 정리 작업 중 핵심 제약 삭제
+
+짧게 만들기 위해 safety, 범위, validation 요구사항을 삭제하면 안 됩니다.
+
+### 금지 12: docs-maker 코어에 프로젝트 구현 규칙 남기기
+
+문서 또는 하네스 설계와 직접 관련 없는 프레임워크/스택 전용 규칙을 docs-maker 기본 로드 경로에 남기지 않습니다.
+
+## 6. 예시 품질
+
+### 금지 13: 규칙을 거스르는 예시
+
+다음 예시는 넣지 않습니다.
+
+- 표준 가이드 안에 고정 모델명을 박는 예시
+- 근거 없는 공급자 주장을 사실처럼 쓰는 예시
+- 모호한 검증을 보여주는 예시
+- 제거한 혼합 관심사를 다시 끌어오는 예시
+
+### 금지 14: 오래된 AI 서명 예시
+
+다음과 같이 오래된 모델 브랜딩을 예시에 넣지 않습니다.
 
 ```bash
-# ❌ 금지
-git commit -m "feat: 로그인 구현
+git commit -m "feat: change
 
-Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
-
-# ❌ 금지
-git commit -m "🤖 feat: 로그인 구현"
-
-# ✅ 올바름
-git commit -m "feat: 로그인 구현"
+Co-Authored-By: Assistant Model vX <noreply@example.com>"
 ```
 
-### 금지 10: Bash로 직접 Git 실행
-
-```typescript
-// ❌ 금지
-Bash({ command: "git add . && git commit -m 'fix' && git push" })
-
-// ✅ 올바름
-Task(subagent_type="git-operator", model="haiku",
-     prompt="변경사항 커밋 및 푸시")
-```
-
-## 데이터베이스
-
-### 금지 11: Prisma 자동 실행
-
-```bash
-# ❌ 금지 (자동 실행)
-prisma db push
-prisma migrate dev
-prisma generate
-
-# ✅ 올바름 (사용자 확인 후 실행)
-echo "schema.prisma 수정 완료. 'prisma db push' 실행 필요"
-```
-
-### 금지 12: schema.prisma 임의 변경
-
-```prisma
-// ❌ 금지: 명시 요청 없이 스키마 변경
-model User {
-  id Int @id @default(autoincrement())
-  email String @unique  // 임의 추가
-}
-
-// ✅ 올바름: 요청된 변경만 수행
-```
-
-## API 구현
-
-### 금지 13: 수동 검증/인증
-
-```typescript
-// ❌ 금지: handler 내부에서 직접 검증
-export const createUser = createServerFn({ method: 'POST' })
-  .handler(async ({ data }) => {
-    // 수동 검증
-    if (!data.email) throw new Error('Email required')
-
-    // 수동 인증 체크
-    if (!request.session) throw new Error('Unauthorized')
-
-    return prisma.user.create({ data })
-  })
-
-// ✅ 올바름: inputValidator + middleware 사용
-export const createUser = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .inputValidator(createUserSchema)
-  .handler(async ({ data }) => {
-    return prisma.user.create({ data })
-  })
-```
-
-### 금지 14: 클라이언트에서 Server Function 직접 호출
-
-```typescript
-// ❌ 금지
-const handleSubmit = async () => {
-  const result = await createUser({ data })  // 직접 호출
-}
-
-// ✅ 올바름: TanStack Query 사용
-const mutation = useMutation({
-  mutationFn: createUser,
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] })
-})
-
-const handleSubmit = () => {
-  mutation.mutate({ data })
-}
-```
-
-## 문서화
-
-### 금지 15: 문서 업데이트 누락
-
-```markdown
-❌ Phase 전환했는데 PROCESS.md 업데이트 안 함
-❌ 요구사항 완료했는데 TASKS.md 체크 안 함
-❌ 검증 완료했는데 VERIFICATION.md 기록 안 함
-
-✅ 모든 Phase 전환 시 즉시 문서 업데이트
-✅ 주요 의사결정 시 PROCESS.md 기록
-✅ 검증 결과는 반드시 VERIFICATION.md에 기록
-```
-
-### 금지 16: 불필요한 문서 생성
-
-```markdown
-❌ 명시 요청 없이 README.md 생성
-❌ 자동으로 CONTRIBUTING.md 생성
-❌ 프로액티브하게 .md 파일 추가
-
-✅ 명시적 요청 시에만 문서 생성
-✅ 기존 문서 수정 우선
-```
-
-## 탐색 및 범위
-
-### 금지 17: 탐색 루프
-
-**같은 파일을 3회 이상 읽기 금지 (변경 후 확인 제외)**
-
-```typescript
-// ❌ 금지: 동일 파일 반복 읽기
-Read("src/auth.ts")  // 1회
-// ... 다른 작업 ...
-Read("src/auth.ts")  // 2회
-// ... 다른 작업 ...
-Read("src/auth.ts")  // 3회 → 금지!
-
-// ✅ 올바름: 1회 읽기 → 결과 활용
-Read("src/auth.ts")  // 1회: 내용 파악 후 기억
-Edit(...)            // 수정
-Read("src/auth.ts")  // 2회: 변경 확인 (허용)
-```
-
-**탐색 루프 감지 시:**
-1. 즉시 중단
-2. 이미 읽은 내용 기반으로 다음 단계 진행
-3. 추가 정보 필요 시 explore 에이전트에 위임
-
-### 금지 18: 범위 축소
-
-**"모든 X" / "전체 X" 지시에서 전체 대상 열거 없이 작업 시작 금지**
-
-```typescript
-// ❌ 금지: 열거 없이 일부만 처리
-// 사용자: "모든 SKILL.md에서 TodoWrite를 TaskCreate로 변경"
-Edit("skills/plan/SKILL.md", ...)     // plan만 수정
-Edit("skills/ralph/SKILL.md", ...)    // ralph만 수정
-// → 나머지 스킬 누락!
-
-// ✅ 올바름: 전체 열거 → 전체 처리
-Glob({ pattern: "**/SKILL.md" })      // 전체 대상 확인
-// → 결과: 19개 파일
-TaskCreate({ subject: "19개 SKILL.md TodoWrite→TaskCreate 교체", ... })
-// → 19개 모두 처리
-Glob({ pattern: "**/SKILL.md" })      // 재스캔 확인
-Grep({ pattern: "TodoWrite", glob: "**/SKILL.md" })  // 누락 0개 확인
-```
-
-## 종합 체크리스트
-
-작업 시작 전:
-
-- [ ] 추측성 표현 사용하지 않기
-- [ ] any, @ts-ignore 금지 확인
-- [ ] 검증 단계 스킵하지 않기
-- [ ] 병렬 실행 가능 여부 확인
-- [ ] 에이전트 활용 계획
-- [ ] "모든 X" 작업: 전체 열거 확인 (금지 18)
-
-작업 중:
-
-- [ ] 테스트 삭제/수정 금지
-- [ ] AI 표시 커밋 메시지 금지
-- [ ] Prisma 자동 실행 금지
-- [ ] 수동 검증/인증 금지
-- [ ] 문서 업데이트 누락 방지
-- [ ] 탐색 루프 방지: 같은 파일 3회+ 읽기 금지 (금지 17)
-
-**금지 패턴 회피 → 품질 향상 + 안정성 확보**
+핵심이 "지저분한 AI 서명 꼬리말 금지"라면 중립적인 자리표시자를 사용합니다.
