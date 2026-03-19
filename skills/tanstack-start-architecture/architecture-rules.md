@@ -2,6 +2,10 @@
 
 > Complete rule set for TanStack Start hypercore projects
 
+Note: some rules below are stricter than TanStack Start defaults. They are hypercore team conventions, not universal framework requirements.
+
+Brownfield adoption rule: untouched legacy code may be tracked as migration work instead of an immediate failure if the issue is stylistic or hypercore-specific. Safety-boundary issues still block immediately, especially in touched code.
+
 ---
 
 ## Forbidden
@@ -10,7 +14,7 @@
 |----------|-----------|
 | Routes | Flat file routes (`routes/users.tsx`) |
 | Route Export | `export const IndexRoute`, `const Route` (without export) |
-| API | `/api` router creation (use Server Functions) |
+| API | `/api` route creation except justified HTTP endpoints such as required `better-auth`, webhooks, health, or machine-readable public endpoints |
 | Layers | Skip Features layer, access DB directly from Routes |
 | Validation | Manual validation inside handler, scattered auth logic |
 | Barrel Export | `functions/index.ts` (Tree Shaking failure) |
@@ -19,6 +23,7 @@
 | TypeScript | `any` type, `function` keyword declaration |
 | Server Fn API | `.validator()` (does NOT exist, use `.inputValidator()`) |
 | Client | Direct Server Function calls (must use TanStack Query) |
+| Import Boundaries | Client-reachable `*.server.*`, server-side `*.client.*`, disabled `importProtection` |
 | Git | AI markers, multi-line commit messages, emojis |
 | Prisma | Auto-run `db push/migrate/generate`, unauthorized `schema.prisma` edits |
 
@@ -73,6 +78,12 @@ export const Route = createFileRoute('/path')({
 - List pages -> `(main)/` route group
 - Create/Edit pages -> outside group
 - `route.tsx` for shared layout (beforeLoad, loader)
+
+### `/api` policy:
+- Do NOT create `/api` routes for normal app features
+- Use TanStack Start Server Functions instead
+- Exceptions: required `better-auth` endpoints, webhooks, health/readiness, and explicitly required machine-readable public endpoints
+- Any non-justified internal app RPC under `/api` must be treated as an architecture violation unless the user explicitly requests it
 
 ### beforeLoad vs loader:
 | | beforeLoad | loader |
@@ -137,6 +148,95 @@ export const authMiddleware = createMiddleware({ type: 'function' })
 | createClientOnlyFn | Client | localStorage, window |
 | createIsomorphicFn | Both | Environment-specific |
 | zodValidator | Adapter | Zod schema adapter from `@tanstack/zod-adapter` |
+
+---
+
+## Import Protection Rules
+
+### Core rule:
+- Client-reachable code MUST NOT import `*.server.*`
+- Server execution paths MUST NOT import `*.client.*`
+- Environment-specific modules MUST use filename suffixes or marker imports
+- `vite.config.ts` MUST preserve or extend TanStack Start `importProtection`
+- `importProtection: { enabled: false }` is forbidden unless the user explicitly requests it
+
+### Marker imports:
+```typescript
+import '@tanstack/react-start/server-only'
+import '@tanstack/react-start/client-only'
+```
+
+- Use markers when the filename cannot clearly express the boundary
+- Never use both markers in the same file
+
+### `vite.config.ts` baseline:
+```typescript
+tanstackStart({
+  importProtection: {
+    behavior: {
+      dev: 'mock',
+      build: 'error',
+    },
+    client: {
+      files: ['**/*.server.*', '**/server/**', '**/database/**', '**/db/**'],
+    },
+    server: {
+      files: ['**/*.client.*', '**/client/**'],
+    },
+  },
+})
+```
+
+### Review rule:
+- If dev warns about a leak, confirm with a production build
+- If a server-only import survives outside `createServerFn`/`createServerOnlyFn`, refactor immediately
+
+---
+
+## Execution Model Rules
+
+- `loader` is isomorphic by default, not server-only
+- Secrets, DB access, filesystem access, and privileged SDK calls belong behind `createServerFn` or `createServerOnlyFn`
+- Browser APIs belong behind `createClientOnlyFn`, `ClientOnly`, or client-only hooks/components
+- Prefer explicit environment primitives over ad-hoc `typeof window` branching
+
+---
+
+## Server Route Policy
+
+- Default: use Server Functions for internal app RPC
+- Allowed server routes: required `better-auth` endpoints, webhooks, health checks, sitemap/robots/feed endpoints, and explicitly required machine-readable public endpoints
+- Server routes should stay HTTP-native and protocol-oriented
+- Use middleware and explicit `Response` headers/status when HTTP semantics matter
+
+---
+
+## SSR / Hydration Rules
+
+- Avoid hydration-unsafe first render output (`Date.now()`, random IDs, locale-variant text, viewport-only branching)
+- Prefer deterministic server output or loader-hydrated values
+- Use `ClientOnly` for truly browser-only widgets
+- Use route `ssr: false` / `ssr: 'data-only'` deliberately, with fallback strategy
+- Understand `shellComponent` behavior before reducing root SSR
+
+---
+
+## Platform Setup Rules
+
+- `src/router.tsx` should export `getRouter()` and return a fresh router instance each call
+- Configure path aliases intentionally for the Vite version in use
+- Type and validate environment variables
+- Keep health/sitemap/robots/LLMO endpoints separate from internal app RPC
+
+---
+
+## Auto-Remediation Policy
+
+- Auto-fix directly when the issue is local, reversible, and low-risk
+- Examples: add missing `importProtection`, add `getRouter()` pattern, add env typing/validation stubs, add marker imports, add middleware validation, add missing explicit config
+- Do not auto-apply broad or potentially breaking migrations without clear justification
+- Examples: mass route/file renames, sweeping `/api` to Server Function refactors, SSR mode changes across many routes, alias-wide import rewrites
+- In brownfield projects, strict hypercore conventions should always apply to touched files; untouched legacy files can be logged as migration backlog when the issue is non-safety-related
 
 ---
 
