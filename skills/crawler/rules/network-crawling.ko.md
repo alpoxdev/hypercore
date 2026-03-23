@@ -9,9 +9,10 @@
 ```text
 1. Playwriter로 필요한 페이지 플로우를 재현
 2. CDP로 endpoint/auth/rate-limit 근거를 정규화 수집
-3. `.hypercore/crawler/[site]/raw/` 아래 raw JSON 저장
-4. `API.md`, `NETWORK.md`에 요약
-5. 크롤러 코드 작성 시 활용
+3. `.hypercore/crawler/<ACTION>.json`의 `status`, `capture_mode`, raw 근거 포인터, blocker를 갱신
+4. `.hypercore/crawler/[site]/raw/` 아래 raw JSON 저장
+5. `API.md`, `NETWORK.md`에 요약
+6. 크롤러 코드 작성 시 활용
 ```
 
 </workflow>
@@ -114,6 +115,8 @@ client.on('Network.responseReceived', (event) => {
 - `.hypercore/crawler/[site]/raw/endpoint-candidates.json`
 
 이 파일들은 정규화되고 중복 제거된 근거 파일이며, 최종 문서를 대체하지 않습니다.
+
+기록한 raw 파일 목록은 `.hypercore/crawler/<ACTION>.json.evidence.raw_files`에도 함께 반영합니다.
 
 ---
 

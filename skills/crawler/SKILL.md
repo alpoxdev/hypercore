@@ -10,13 +10,15 @@ description: Investigate websites with Playwriter plus CDP to choose a crawl str
 
 Use `crawler` when the user wants a reusable crawling flow, site extraction plan, API reverse engineering for crawling, or analysis-backed crawler code.
 
+For resumable or multi-step crawl work, treat `.hypercore/crawler/<ACTION>.json` as the durable context file that preserves intent, current state, evidence pointers, and the next step.
+
 Do not use `crawler` for generic browser automation, one-off page clicking, or document rewriting with no crawl deliverable.
 
 For quick one-off extraction with no reusable crawler, keep the work lightweight and avoid forcing the full artifact set unless the request expands into crawl design.
 
 **Templates:** [document-templates.md](rules/document-templates.md) · [code-templates.md](rules/code-templates.md)
 **Checklists:** [pre-crawl-checklist.md](rules/pre-crawl-checklist.md) · [anti-bot-checklist.md](rules/anti-bot-checklist.md)
-**References:** [playwriter-commands.md](rules/playwriter-commands.md) · [cdp-capture.md](rules/cdp-capture.md) · [crawling-patterns.md](rules/crawling-patterns.md) · [selector-strategies.md](rules/selector-strategies.md) · [network-crawling.md](rules/network-crawling.md)
+**References:** [playwriter-commands.md](rules/playwriter-commands.md) · [cdp-capture.md](rules/cdp-capture.md) · [crawling-patterns.md](rules/crawling-patterns.md) · [selector-strategies.md](rules/selector-strategies.md) · [network-crawling.md](rules/network-crawling.md) · [action-manifest.md](rules/action-manifest.md)
 
 ---
 
@@ -65,8 +67,9 @@ Read support files in this order:
 5. Use [selector-strategies.md](rules/selector-strategies.md) when DOM extraction is still on the table.
 6. Use [crawling-patterns.md](rules/crawling-patterns.md) when pagination, authentication, lazy loading, or retries shape the approach.
 7. Use [anti-bot-checklist.md](rules/anti-bot-checklist.md) when the target shows blocks, CAPTCHA, Cloudflare, or explicit anti-detect requirements.
-8. Use [document-templates.md](rules/document-templates.md) when writing `.hypercore/crawler/[site]/` artifacts.
-9. Use [code-templates.md](rules/code-templates.md) only after the method is chosen and the discovery evidence is documented.
+8. Use [action-manifest.md](rules/action-manifest.md) when the run needs a durable state file under `.hypercore/crawler/<ACTION>.json`.
+9. Use [document-templates.md](rules/document-templates.md) when writing `.hypercore/crawler/[site]/` artifacts.
+10. Use [code-templates.md](rules/code-templates.md) only after the method is chosen and the discovery evidence is documented.
 
 </support_file_routing>
 
@@ -128,6 +131,28 @@ Read support files in this order:
 
 <output_structure>
 
+`.hypercore/crawler/<ACTION>.json`
+
+- `ACTION.json` preserves intent, current status, capture mode, blockers, output pointers, and the next step.
+- `.hypercore/crawler/[site-name]/` preserves detailed evidence, analysis, and generated code for that site.
+
+```text
+.hypercore/crawler/
+├── <ACTION>.json              # durable action context
+└── [site-name]/
+    ├── ANALYSIS.md
+    ├── SELECTORS.md
+    ├── API.md
+    ├── NETWORK.md
+    ├── raw/
+    │   ├── network-summary.json
+    │   ├── auth-signals.json
+    │   └── endpoint-candidates.json
+    └── CRAWLER.ts
+```
+
+Site artifact contract:
+
 ```
 .hypercore/crawler/[site-name]/
 ├── ANALYSIS.md      # Site structure
@@ -143,6 +168,7 @@ Read support files in this order:
 
 Minimum artifact contract:
 
+- `.hypercore/crawler/<ACTION>.json` is required for reusable, blocked, or resumable crawl work.
 - `ANALYSIS.md` is always required for reusable crawl work.
 - `SELECTORS.md` is required when DOM extraction is used or kept as a fallback path.
 - `API.md` is required when API discovery was attempted; document discovered endpoints or the absence of a usable API.
@@ -150,7 +176,7 @@ Minimum artifact contract:
 - `raw/network-summary.json`, `raw/auth-signals.json`, and `raw/endpoint-candidates.json` are recommended when CDP capture is available, and should back the human-readable docs instead of replacing them.
 - `CRAWLER.ts` is required only after discovery evidence is written and the chosen method is justified.
 
-Starter interaction commands live in [playwriter-commands.md](rules/playwriter-commands.md). CDP evidence capture lives in [cdp-capture.md](rules/cdp-capture.md). Keep the core focused on method choice, output gates, and stop conditions.
+Starter interaction commands live in [playwriter-commands.md](rules/playwriter-commands.md). CDP evidence capture lives in [cdp-capture.md](rules/cdp-capture.md). Durable action-state rules live in [action-manifest.md](rules/action-manifest.md). Keep the core focused on method choice, output gates, and stop conditions.
 
 **Templates:** [document-templates.md](rules/document-templates.md)
 
@@ -165,6 +191,7 @@ For blocked or unsafe runs:
 - write `ANALYSIS.md` with the blocker, the evidence that triggered the stop, and the safest next step
 - write `NETWORK.md` when auth signals, block responses, or anti-bot findings affected the decision
 - write any available raw evidence files even when the run is blocked, so the stop is auditable
+- update `ACTION.json` so `status`, `capture_mode`, blockers, and output pointers match the blocked state
 - omit `CRAWLER.ts` until the blocker is resolved or the method becomes safe to automate
 
 </blocked_outcomes>
@@ -175,6 +202,7 @@ For blocked or unsafe runs:
 
 ```text
 ✅ Playwriter session created
+✅ `ACTION.json` created when the run is reusable, blocked, or resumable
 ✅ Structure analyzed with limited Playwriter snapshots
 ✅ CDP capture attempted for network/auth evidence
 ✅ raw evidence files recorded when CDP capture is available, or the fallback limitation documented when it is not
@@ -184,6 +212,8 @@ For blocked or unsafe runs:
 ✅ sequential-thinking trace recorded for major phases
 ✅ legal, rate-limit, and bot-detection blockers documented before scaling
 ✅ blocked runs reported explicitly when crawler code is unsafe or premature
+✅ `ACTION.json` status and `site_dir` match the actual run outputs
+✅ completed runs leave `ACTION.json.next_step` empty or terminal and point outputs at final files
 ```
 
 </validation>
@@ -208,15 +238,18 @@ For blocked or unsafe runs:
 ```bash
 # User: /crawler crawl products from https://shop.example.com
 
-# 1. Session
+# 1. Create durable action context
+# .hypercore/crawler/extract-products.json
+
+# 2. Session
 playwriter session new  # => 1
 playwriter -s 1 -e "state.page = await context.newPage(); await state.page.goto('https://shop.example.com/products')"
 
-# 2. Structure analysis
+# 3. Structure analysis
 playwriter -s 1 -e "console.log(await accessibilitySnapshot({ page: state.page }))"
 # => list "Products" [ref=e5]: listitem [ref=e6]: link "Product A" [ref=e7]
 
-# 3. CDP capture
+# 4. CDP capture
 playwriter -s 1 -e $'
 const client = await state.page.context().newCDPSession(state.page);
 await client.send("Network.enable");
@@ -229,8 +262,9 @@ playwriter -s 1 -e "await state.page.evaluate(() => window.scrollTo(0, 9999))"
 playwriter -s 1 -e "console.log(state.cdpHits)"
 # => ["/api/products?page=2"]
 
-# 4. Documentation -> .hypercore/crawler/shop-example-com/ + raw/network-summary.json
-# 5. Generate API-based crawler
+# 5. Update extract-products.json -> status=running, capture_mode=cdp
+# 6. Documentation -> .hypercore/crawler/shop-example-com/ + raw/network-summary.json
+# 7. Generate API-based crawler
 ```
 
 </example>

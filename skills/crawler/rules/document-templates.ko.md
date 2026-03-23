@@ -7,16 +7,49 @@
 ## 폴더 구조
 
 ```
-.hypercore/crawler/example-com/
-├── ANALYSIS.md      # 사이트 구조
-├── SELECTORS.md     # DOM selector
-├── API.md           # API endpoint
-├── NETWORK.md       # 인증 정보
-├── raw/
-│   ├── network-summary.json
-│   ├── auth-signals.json
-│   └── endpoint-candidates.json
-└── CRAWLER.ts       # 생성 코드
+.hypercore/crawler/
+├── extract-products.json
+└── example-com/
+    ├── ANALYSIS.md
+    ├── SELECTORS.md
+    ├── API.md
+    ├── NETWORK.md
+    ├── raw/
+    │   ├── network-summary.json
+    │   ├── auth-signals.json
+    │   └── endpoint-candidates.json
+    └── CRAWLER.ts
+```
+
+---
+
+## ACTION.json
+
+```json
+{
+  "action": "extract-products",
+  "site_name": "example-com",
+  "base_url": "https://example.com/items",
+  "site_dir": ".hypercore/crawler/example-com",
+  "status": "running",
+  "capture_mode": "cdp",
+  "evidence": {
+    "cdp_attached": true,
+    "raw_files": [
+      "raw/network-summary.json",
+      "raw/auth-signals.json",
+      "raw/endpoint-candidates.json"
+    ]
+  },
+  "outputs": {
+    "analysis": "ANALYSIS.md",
+    "api": null,
+    "network": null,
+    "crawler": null
+  },
+  "blockers": [],
+  "next_step": "write API.md from endpoint-candidates.json"
+}
 ```
 
 ---

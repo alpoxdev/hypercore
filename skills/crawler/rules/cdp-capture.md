@@ -138,6 +138,8 @@ Write these files when CDP evidence is available:
 
 These are evidence files, not the final deliverable. Use them to back `API.md` and `NETWORK.md`.
 
+When these files are written, mirror them into `.hypercore/crawler/<ACTION>.json.evidence.raw_files`.
+
 </raw_artifacts>
 
 ---
@@ -149,5 +151,7 @@ These are evidence files, not the final deliverable. Use them to back `API.md` a
 - Prefer CDP over repeated large Playwriter snapshots for network/auth discovery.
 - Keep Playwriter as the source of truth for page flow and selector validation.
 - If CDP is unavailable, fall back to Playwriter interception and record that limitation in `ANALYSIS.md`.
+- When CDP attach succeeds, record `capture_mode: "cdp"` in `ACTION.json`.
+- When CDP attach fails but fallback evidence is still sufficient, record `capture_mode: "fallback"` and keep the limitation visible in the manifest.
 
 </decision_notes>

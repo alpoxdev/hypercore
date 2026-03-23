@@ -138,6 +138,8 @@ CDP 근거가 있으면 다음 파일을 기록합니다.
 
 이 파일들은 최종 산출물이 아니라 근거 파일입니다. `API.md`, `NETWORK.md`의 근거로 사용합니다.
 
+이 파일들이 기록되면 `.hypercore/crawler/<ACTION>.json.evidence.raw_files`에도 함께 반영합니다.
+
 </raw_artifacts>
 
 ---
@@ -149,5 +151,7 @@ CDP 근거가 있으면 다음 파일을 기록합니다.
 - 네트워크/인증 discovery에서는 큰 Playwriter snapshot 반복보다 CDP를 우선합니다.
 - 페이지 플로우와 selector 검증은 계속 Playwriter가 기준입니다.
 - CDP를 쓸 수 없으면 Playwriter 인터셉트로 fallback하고, 그 제한을 `ANALYSIS.md`에 기록합니다.
+- CDP 연결에 성공하면 `ACTION.json`에 `capture_mode: "cdp"`를 기록합니다.
+- CDP 연결에 실패했지만 fallback 근거가 충분하면 `capture_mode: "fallback"`을 기록하고 그 제한을 manifest에 남깁니다.
 
 </decision_notes>

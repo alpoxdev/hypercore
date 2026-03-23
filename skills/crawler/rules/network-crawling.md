@@ -9,9 +9,10 @@
 ```text
 1. Reproduce the relevant page flow with Playwriter
 2. Capture normalized endpoint/auth/rate-limit evidence with CDP
-3. Persist raw JSON under `.hypercore/crawler/[site]/raw/`
-4. Summarize findings in `API.md` and `NETWORK.md`
-5. Reuse network/auth details in generated crawler code
+3. Update `.hypercore/crawler/<ACTION>.json` with `status`, `capture_mode`, raw evidence pointers, and blockers
+4. Persist raw JSON under `.hypercore/crawler/[site]/raw/`
+5. Summarize findings in `API.md` and `NETWORK.md`
+6. Reuse network/auth details in generated crawler code
 ```
 
 </workflow>
@@ -114,6 +115,8 @@ Write these files when evidence is available:
 - `.hypercore/crawler/[site]/raw/endpoint-candidates.json`
 
 Keep them normalized and deduplicated. They support the final docs; they do not replace them.
+
+Also mirror the recorded raw files into `.hypercore/crawler/<ACTION>.json.evidence.raw_files`.
 
 ---
 
