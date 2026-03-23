@@ -3,6 +3,8 @@ name: codex
 description: Use when the user asks to run Codex CLI (codex exec, codex resume) or references OpenAI Codex for code analysis, refactoring, or automated editing
 ---
 
+@rules/routing.md
+
 # Codex Skill
 
 ## Defaults
@@ -15,7 +17,16 @@ description: Use when the user asks to run Codex CLI (codex exec, codex resume) 
 
 Do NOT ask the user for model or reasoning effort unless explicitly requested.
 
+## Routing
+
+Use this skill when the request actually needs Codex CLI or a Codex session.
+
+- Read [rules/routing.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/codex/rules/routing.md) before building a command when the request might be out of scope.
+- Route away to another skill or direct editing when the user wants generic writing, runbook cleanup, or skill creation without needing Codex CLI itself.
+
 ## Running a Task
+
+Read [references/recipes.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/codex/references/recipes.md) for concrete command recipes before switching sandboxes or resuming a session.
 
 ### Sandbox Mode Selection
 
@@ -47,6 +58,7 @@ echo "your prompt here" | codex exec --skip-git-repo-check resume --last 2>/dev/
 ```
 
 All flags go between `exec` and `resume`. Omit configuration flags when resuming unless the user requests them.
+A resumed session inherits the original model, reasoning effort, and sandbox unless you intentionally change them.
 
 ### After Completion
 
