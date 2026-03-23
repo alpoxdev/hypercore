@@ -11,11 +11,32 @@ Enforces hypercore TanStack Start architecture rules with 100% compliance. Valid
 
 **This skill is RIGID. Follow exactly. No exceptions.**
 
-**REQUIRED:** When working on TanStack Start projects, ALWAYS use this skill together with `/oh-my-claudecode:ralph` to guarantee 100% architecture compliance. Ralph's persistence loop ensures every rule is verified and no violation slips through.
+**OPERATING MODE:** This skill is self-contained. Do not block on global skills or external orchestration surfaces. If a repo-local persistence loop is already active or the user explicitly asks for exhaustive verification, keep using it. Otherwise proceed directly with this skill's validation and verification flow.
 
 **CRITICAL:** TanStack Start import protection is mandatory. You MUST enforce client/server import boundaries, verify `vite.config.ts`, and add or extend `importProtection` when it is missing or incomplete. Do not silently rely on defaults when the project needs explicit deny rules.
 
 **NOTE:** Some rules in this skill are stricter than TanStack Start defaults. Treat them as hypercore team conventions unless the user explicitly asks to follow official TanStack defaults instead.
+
+## Trigger Examples
+
+### Positive
+
+- `Fix architecture violations in a TanStack Start route refactor before editing more files.`
+- `Audit a TanStack Start app for importProtection, getRouter, loader boundaries, and route structure.`
+- `Add a TanStack Start server function and make sure hooks, routes, and validation stay compliant.`
+
+### Negative
+
+- `Create a new browser QA skill for Codex.`
+- `Review a generic React or Vite app that does not use TanStack Start.`
+
+### Boundary
+
+- `Make a tiny copy-only change in a TanStack Start page.`
+Direct editing can be enough if no architecture boundary or structural rule is affected.
+
+- `User explicitly wants official TanStack defaults instead of hypercore conventions.`
+This skill still applies, but relax hypercore-only rules that exceed official defaults.
 
 ## Step 1: Project Validation
 
@@ -29,7 +50,7 @@ grep -r "@tanstack/react-router" package.json 2>/dev/null
 ls src/routes/__root.tsx 2>/dev/null
 ```
 
-If NONE found: **STOP. This skill does not apply.** Inform user.
+If NONE found: **STOP. This skill does not apply.** Inform user and route away to the normal implementation or review path instead of forcing TanStack Start rules.
 
 If found: proceed with architecture enforcement.
 
