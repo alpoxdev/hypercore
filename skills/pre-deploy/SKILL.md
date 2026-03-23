@@ -1,13 +1,17 @@
 ---
 name: pre-deploy
 description: Validate and fix quality/build blockers before deployment for Node.js, Rust, and Python projects.
-allowed-tools: Bash Read Edit mcp__sequential-thinking__sequentialthinking
+allowed-tools: Bash Read Edit TodoWrite mcp__sequential-thinking__sequentialthinking
 compatibility: Requires local toolchains for at least one supported stack (node/rust/python) and scripts under skills/pre-deploy/scripts.
 ---
 
 # Pre-Deploy Skill
 
 > Cross-stack pre-deploy validation and remediation for node/rust/python.
+
+Use this skill only when the current repository root contains a supported stack marker such as `package.json`, `Cargo.toml`, `pyproject.toml`, `requirements.txt`, `setup.py`, `Pipfile`, or `poetry.lock`.
+
+If no supported stack is detected from the repository root, stop immediately and report that `pre-deploy` does not apply instead of pretending the checks ran.
 
 <scripts>
 
@@ -33,6 +37,8 @@ compatibility: Requires local toolchains for at least one supported stack (node/
 scripts/deploy-check.sh
 ```
 
+Run the scripts from the repository root. The helper scripts detect stacks and package managers relative to the current working directory.
+
 ### Step-by-step validation
 
 ```bash
@@ -48,6 +54,7 @@ scripts/build-run.sh
 - **Node.js**: typecheck/lint (if configured) + build script (if configured)
 - **Rust**: `cargo fmt --check` + `cargo clippy` + `cargo check` + `cargo build --release`
 - **Python**: lint (`ruff`/`flake8` if available) + type/syntax check (`mypy` or `compileall`) + build (`poetry build` or `python -m build`, fallback `compileall`)
+- **Unsupported repository**: stop immediately with the detected unsupported-stack error and do not continue into a fake fix loop
 
 </workflow>
 
@@ -73,5 +80,7 @@ scripts/build-run.sh
    - Re-run relevant check
 4. Re-run full deploy check
 5. Report final status and remaining risks
+
+Do not skip step 1. `deploy-check.sh` is the entrypoint because it proves both the quality phase and the build phase from the same repository root.
 
 </execution_plan>

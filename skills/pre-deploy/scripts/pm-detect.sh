@@ -7,7 +7,7 @@
 set -euo pipefail
 
 # Lock 파일 기반 감지
-if [ -f "bun.lockb" ]; then
+if [ -f "bun.lock" ] || [ -f "bun.lockb" ]; then
   echo "bun"
 elif [ -f "pnpm-lock.yaml" ]; then
   echo "pnpm"
