@@ -106,6 +106,7 @@ Load support files intentionally:
 - Use [references/skill-refactor-guide.md](references/skill-refactor-guide.md) when failures point to bad skill anatomy, weak support files, or poor trigger wording.
 - Use [references/artifact-spec.md](references/artifact-spec.md) for dashboard, results, changelog, and workspace schemas.
 - Use [references/self-test-pack.md](references/self-test-pack.md) when the target is another skill and you need a default self-eval harness.
+- Use `scripts/render-dashboard.sh` to materialize `dashboard.html` and `results.js` from the canonical dashboard template.
 
 Artifact lifecycle requirements:
 
@@ -155,6 +156,7 @@ When the target skill itself is weakly structured:
 - Create `.hypercore/autoresearch-[skill-name]/` at the repository root.
 - Back up the original file as `SKILL.md.baseline`.
 - Initialize `results.tsv`, `results.json`, `changelog.md`, and `dashboard.html` using [references/artifact-spec.md](references/artifact-spec.md).
+- Render `dashboard.html` from the canonical template with `scripts/render-dashboard.sh`.
 
 #### Phase 3: Establish the baseline
 

@@ -16,6 +16,11 @@ Use this reference when creating or reviewing the experiment workspace for an au
 
 Create this directory at the repository root, not inside the skill folder.
 
+Canonical generation assets:
+
+- template: `skills/autoresearch-skill/assets/dashboard-template.html`
+- renderer: `skills/autoresearch-skill/scripts/render-dashboard.sh`
+
 ## `results.tsv`
 
 Tab-separated with this header:
@@ -74,6 +79,8 @@ Status values:
 
 Generate a single self-contained HTML file with inline CSS and JavaScript.
 
+Do not hand-roll a different dashboard on each run. Materialize `dashboard.html` from the canonical template and keep layout and loading behavior stable across runs.
+
 Required behavior:
 
 - auto-refresh every 10 seconds
@@ -88,6 +95,8 @@ Required behavior:
 
 Lifecycle rules:
 
+- render `dashboard.html` from `skills/autoresearch-skill/assets/dashboard-template.html`
+- use `skills/autoresearch-skill/scripts/render-dashboard.sh <artifact-dir>` as the default renderer
 - create `dashboard.html`, then open it immediately when the runtime can safely open local HTML
 - update `results.tsv` and `results.json` after every experiment
 - set `results.json.status` to `running` while experiments are executing
@@ -101,6 +110,13 @@ Recommended browser-safe pattern:
 - prefer `fetch("./results.json")` when served over HTTP
 - fall back to loading `results.js` when the page is opened directly from disk
 - treat both sources as views over the same result data, not separate state
+
+Recommended render sequence:
+
+```bash
+skills/autoresearch-skill/scripts/render-dashboard.sh .hypercore/autoresearch-my-skill
+open .hypercore/autoresearch-my-skill/dashboard.html
+```
 
 Preferred styling:
 
