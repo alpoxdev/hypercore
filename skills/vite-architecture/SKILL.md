@@ -11,7 +11,7 @@ Enforces hypercore Vite architecture rules with 100% compliance. Validates proje
 
 **This skill is RIGID. Follow exactly. No exceptions.**
 
-**REQUIRED:** When working on Vite + TanStack Router projects, ALWAYS use this skill together with `/oh-my-claudecode:ralph` to guarantee 100% architecture compliance.
+This skill must remain usable on its own. If a planning or execution workflow is already active, carry these architecture gates into that workflow instead of requiring an external prompt surface.
 
 ## Step 1: Project Validation
 
@@ -105,9 +105,9 @@ Routes -> Services -> External API
 | Missing Korean block comments? | BLOCKED for code groups |
 | Using `z.string().email()` pattern? | BLOCKED. Use Zod 4.x `z.email()` directly |
 
-## Step 4: Implementation (with Ralph)
+## Step 4: Implementation
 
-When used with ralph, every PRD story MUST include these acceptance criteria:
+For planned execution, carry these acceptance criteria into the active task:
 
 ```
 - [ ] Layer architecture respected (Routes -> Services -> External API)

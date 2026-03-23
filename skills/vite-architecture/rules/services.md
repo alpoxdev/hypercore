@@ -22,7 +22,6 @@ In Vite projects there are no server functions. All data access goes through **s
 ```
 services/
 ├── user/
-│   ├── index.ts         # Re-export all
 │   ├── schemas.ts       # Zod schemas + inferred types
 │   ├── queries.ts       # GET requests + queryOptions
 │   └── mutations.ts     # POST/PUT/DELETE
@@ -30,10 +29,11 @@ services/
 
 | File | Purpose |
 |------|---------|
-| `index.ts` | Re-export all functions |
 | `schemas.ts` | Zod validation schemas |
 | `queries.ts` | GET requests (read) + queryOptions |
 | `mutations.ts` | POST/PUT/DELETE (write) |
+
+Import service functions directly from `queries.ts` or `mutations.ts`. Do not add `services/index.ts` barrel exports.
 
 ---
 

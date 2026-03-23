@@ -102,9 +102,10 @@ loader: ({ context: { queryClient } }) =>
 services/<domain>/
 ├── schemas.ts      # Zod schemas + inferred types
 ├── queries.ts      # GET requests (read)
-├── mutations.ts    # POST/PUT/DELETE (write)
-└── index.ts        # Re-export all (allowed here)
+└── mutations.ts    # POST/PUT/DELETE (write)
 ```
+
+Import service functions directly from `queries.ts` or `mutations.ts`. Do not add `services/index.ts` barrel exports.
 
 ### Query function pattern:
 ```typescript
