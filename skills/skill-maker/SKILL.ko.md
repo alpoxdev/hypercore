@@ -1,6 +1,6 @@
 ---
 name: skill-maker
-description: Codex 스킬을 올바르게 생성하고 리팩토링합니다. SKILL.md, rules, references, scripts, assets, 검증 가이드를 포함해 잘 트리거되고 잘 유지되는 스킬을 만드는 데 사용합니다.
+description: 재사용 가능한 Codex 스킬을 새로 만들거나 기존 스킬 폴더를 리팩토링할 때 사용합니다. `SKILL.md`, `rules/`, `references/`, `scripts/`, `assets/` 전반에서 트리거 문구, 자원 배치, 검증 구조를 바로잡아야 하는 요청에 맞춥니다.
 compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/write 및 셸 검색 도구가 있는 환경에서 가장 잘 동작합니다.
 ---
 
@@ -36,6 +36,26 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 - 일반 구조 문서 작업이므로 `docs-maker`면 충분한 경우
 
 </routing_rule>
+
+<activation_examples>
+
+긍정 요청:
+
+- "SQL 마이그레이션 리뷰용 Codex 스킬을 만들어줘."
+- "이 브라우저 QA 스킬이 잘못 걸리니까 트리거와 검증을 다시 잡아줘."
+- "이 스킬 폴더를 표준화해서 `SKILL.md`, rules, references 역할을 제대로 나눠줘."
+
+부정 요청:
+
+- "이 런북을 읽기 쉽게 다시 써줘."
+- "이 OpenAI 문서를 요약해줘."
+
+경계 요청:
+
+- "스킬 작성 가이드를 만들어줘."
+  결과물이 재사용 가능한 스킬 폴더여야 할 때만 `skill-maker`를 쓰고, 그렇지 않으면 `docs-maker`를 사용합니다.
+
+</activation_examples>
 
 <trigger_conditions>
 
@@ -89,6 +109,18 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 
 </reference_routing>
 
+<support_file_read_order>
+
+다음 순서로 읽습니다.
+
+1. 코어 `SKILL.md`에서 현재 작업이 `create`인지 `refactor`인지와 스킬이 책임질 출력물을 확정합니다.
+2. 트리거 문구, 구조, 파일 분리를 바꿀 때는 `rules/trigger-design.ko.md`, `rules/skill-anatomy.ko.md`, `rules/progressive-disclosure.ko.md`, `rules/resource-placement.ko.md`를 읽습니다.
+3. 완료 선언 전에는 `rules/validation-and-iteration.ko.md`와 `rules/anti-patterns.ko.md`로 검증과 안티패턴을 다시 확인합니다.
+4. 코어에 얼마만큼 남길지, scripts/assets가 정당한지 판단할 때는 `references/local/skill-creator.ko.md`를 읽습니다.
+5. 공급자 민감한 가이드가 실제 규칙을 바꿀 때만 공식 references를 읽습니다.
+
+</support_file_read_order>
+
 <mandatory_reasoning>
 
 ## 필수 Sequential Thinking
@@ -132,8 +164,8 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 
 기본 출력 형태:
 
-- 생성 모드: 새 스킬 폴더 + 코어 `SKILL.md` + 필요한 규칙/참조/스크립트/자산 + 검증 체크리스트
-- 리팩토링 모드: 갱신된 스킬 + 더 나은 자원 분리 + 명시적 단순화 요약 + 검증 메모
+- 생성 모드: 새 스킬 폴더 + 얇은 코어 `SKILL.md` + 꼭 필요한 규칙/참조/스크립트/자산 + 트리거 예시 + 검증 체크리스트
+- 리팩토링 모드: 갱신된 스킬 + 더 단순한 자원 분리 + 명시적 단순화 요약 + 검증 메모 + 유지보수자용 handoff 단서
 
 </default_outputs>
 
@@ -142,7 +174,7 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 | Phase | 작업 | 결과물 |
 |------|------|------|
 | 0 | 이 작업이 일반 문서가 아니라 스킬인지 범위를 확인 | 범위 결정 |
-| 1 | 대상 스킬 또는 유사 스킬들을 읽음 | 기준선 |
+| 1 | 대상 스킬과 선택한 모드에 직접 필요한 연결 support file을 읽음 | 기준선 |
 | 2 | `sequential-thinking`으로 구조 계획 수립 | 섹션/자원 계획 |
 | 3 | 코어 `SKILL.md` 작성 또는 리팩토링 | 갱신된 코어 스킬 |
 | 4 | 상세 내용을 rules, references, scripts, assets로 배치 | 보조 파일 |
@@ -218,12 +250,6 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 - 긴 상세 내용은 references나 scripts로 옮깁니다.
 - 새로운 유지보수자와 트리거 모델의 시선으로 다시 읽어봅니다.
 
-### 예시: skill-maker가 걸리면 안 되는 요청
-
-- "이 PRD 문서를 다시 써줘"
-- "최고의 React 상태 관리 라이브러리를 조사해줘"
-- "이 런북을 더 읽기 쉽게 리팩토링해줘"
-
 </usage_examples>
 
 <validation>
@@ -235,6 +261,7 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 | 자원 배치 | 코어 본문, rules, references, scripts, assets가 올바른 내용을 가짐 |
 | 밀도 | 반복이 제거되고 코어 본문이 얇게 유지됨 |
 | 예시 | 트리거 예시가 실제 사용자 요청과 맞음 |
+| 작업 단서 | 다음에 읽을 파일과 다음 상세를 둘 위치가 명확함 |
 | 안전성 | 시간 민감 또는 공급자 민감 가이드는 references로 격리됨 |
 | 검증 | 단순 prose review가 아니라 실제 사용 검증이 포함됨 |
 
@@ -248,6 +275,7 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 - [ ] 검증 및 반복 점검(`rules/validation-and-iteration.ko.md`)
 - [ ] 안티패턴 점검(`rules/anti-patterns.ko.md`)
 - [ ] 코어 스킬이 얇고 일관되게 유지됨
+- [ ] support-file 읽기 순서가 충분히 명시됨
 - [ ] 검증 항목 점검 완료
 
 반드시 통과해야 하는 기준:

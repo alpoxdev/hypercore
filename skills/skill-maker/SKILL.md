@@ -1,6 +1,6 @@
 ---
 name: skill-maker
-description: Create and refactor Codex skills that are easy to trigger, easy to understand, and easy to maintain, including SKILL.md, rules, references, scripts, assets, and validation guidance.
+description: Create new Codex skills or refactor existing skill folders when the user asks for a reusable skill, better trigger wording, cleaner resource placement, or stronger validation across `SKILL.md`, `rules/`, `references/`, `scripts/`, and `assets/`.
 compatibility: Works best with read/edit/write and shell search tools for skill analysis, example gathering, and validation checks.
 ---
 
@@ -36,6 +36,26 @@ Do not use `skill-maker` when:
 - `docs-maker` is sufficient because the task is about generic structured documentation
 
 </routing_rule>
+
+<activation_examples>
+
+Positive requests:
+
+- "Create a Codex skill for reviewing SQL migrations."
+- "Refactor this browser QA skill so the trigger and validation stop misfiring."
+- "Standardize this skill folder so `SKILL.md`, rules, and references are split correctly."
+
+Negative requests:
+
+- "Rewrite this runbook for readability."
+- "Summarize these OpenAI docs."
+
+Boundary request:
+
+- "Create a guide for writing skills."
+  Use `skill-maker` only if the output should become a reusable skill folder; otherwise use `docs-maker`.
+
+</activation_examples>
 
 <trigger_conditions>
 
@@ -89,6 +109,18 @@ Read the local `skill-creator` summary when:
 
 </reference_routing>
 
+<support_file_read_order>
+
+Read in this order:
+
+1. The core `SKILL.md` to decide whether this is `create` or `refactor` mode and what output the skill owns.
+2. `rules/trigger-design.md`, `rules/skill-anatomy.md`, `rules/progressive-disclosure.md`, and `rules/resource-placement.md` when changing trigger wording, anatomy, or file split.
+3. `rules/validation-and-iteration.md` and `rules/anti-patterns.md` before declaring the skill done.
+4. `references/local/skill-creator.md` when deciding how much detail belongs in the core or whether scripts/assets are justified.
+5. Official references only when provider-sensitive guidance materially changes the rule.
+
+</support_file_read_order>
+
 <mandatory_reasoning>
 
 ## Mandatory Sequential Thinking
@@ -132,8 +164,8 @@ Apply these defaults to every major skill edit:
 
 Default output shapes:
 
-- create mode: new skill folder + core `SKILL.md` + needed rules/references/scripts/assets + validation checklist
-- refactor mode: updated skill + better resource split + explicit simplification summary + validation notes
+- create mode: new skill folder + lean core `SKILL.md` + only the needed rules/references/scripts/assets + trigger examples + validation checklist
+- refactor mode: updated skill + simpler resource split + explicit simplification summary + validation notes + maintainer handoff cues
 
 </default_outputs>
 
@@ -142,7 +174,7 @@ Default output shapes:
 | Phase | Task | Output |
 |------|------|------|
 | 0 | Confirm the target scope and whether this is a skill, not just a document | Scope decision |
-| 1 | Read the target skill or representative comparable skills | Baseline |
+| 1 | Read the target skill and the directly linked support files needed for the chosen mode | Baseline |
 | 2 | Build the structure plan with `sequential-thinking` | Section/resource plan |
 | 3 | Write or refactor the core `SKILL.md` | Updated core skill |
 | 4 | Place supporting detail into rules, references, scripts, or assets | Supporting files |
@@ -218,12 +250,6 @@ Use this layout unless a better skill-specific structure is required:
 - Split long detail into references or scripts.
 - Re-read the skill as if you were a new maintainer and a trigger model.
 
-### Example: requests that should not trigger skill-maker
-
-- "Rewrite this product requirements document"
-- "Research the best React state libraries"
-- "Refactor this runbook for readability"
-
 </usage_examples>
 
 <validation>
@@ -235,6 +261,7 @@ Use this layout unless a better skill-specific structure is required:
 | Resource placement | Core body, rules, references, scripts, and assets each hold the right content |
 | Density | Repetition is removed and the core body stays lean |
 | Examples | Trigger examples match likely user requests |
+| Operator cues | The next file to read and the next place to put detail are obvious |
 | Safety | Time-sensitive or provider-sensitive guidance is isolated into references |
 | Validation | The skill includes realistic checks, not only prose review |
 
@@ -248,6 +275,7 @@ Completion checklist:
 - [ ] Validation and forward-test checks reviewed (`rules/validation-and-iteration.md`)
 - [ ] Anti-pattern checks reviewed (`rules/anti-patterns.md`)
 - [ ] Core skill remains lean and coherent
+- [ ] Support-file read order is explicit enough
 - [ ] Validation checks completed
 
 Must-pass thresholds:
