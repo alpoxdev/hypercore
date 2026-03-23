@@ -64,6 +64,19 @@ Why: Scales compound variability. If you have 4 evals scored 1-7, your total sco
 - "Is the document under [X] pages/words?" (binary, measurable)
 - "Does the executive summary fit in one paragraph of 3 sentences or fewer?" (binary, countable)
 
+### Skill and meta-skills (skill refactors, prompt workflows, agent skills)
+
+**Bad evals:**
+- "Is the skill better?" (too vague)
+- "Does the prompt feel clearer?" (subjective)
+- "Would this trigger correctly?" (unbounded guess)
+
+**Good evals:**
+- "Does the `description` clearly state what the skill does and when to use it?" (binary, trigger-focused)
+- "Does the core `SKILL.md` stay lean enough that the first screen explains the job and boundary?" (binary, structural)
+- "Are reusable policy and detailed knowledge split into `rules/` and `references/` instead of duplicated in the core?" (binary, anatomy-focused)
+- "Does the skill include at least one realistic positive trigger example and one clear out-of-scope example?" (binary, validation-focused)
+
 ---
 
 ## common mistakes
@@ -87,6 +100,11 @@ If eval 1 is "Is the text grammatically correct?" and eval 4 is "Are there any s
 "Would a human find this engaging?" - an agent can't reliably answer this. It'll say "yes" almost every time.
 
 **Fix:** Translate subjective qualities into observable signals. "Engaging" might mean: "Does the first sentence contain a specific claim, story, or question (not a generic statement)?"
+
+### 5. Ignoring the real failure surface
+If you're optimizing a skill, but every eval checks only tone, brevity, or formatting, you'll miss the real problem. Many weak skills fail because of trigger wording, bloated structure, or missing support files.
+
+**Fix:** Include at least one eval that checks the target's real operating surface. For a skill, that often means triggerability, structure, or validation quality.
 
 ---
 
@@ -118,4 +136,13 @@ EVAL 1: Text legibility
 Question: Is all text in the output fully legible with no truncated, overlapping, or cut-off words?
 Pass: Every word is complete and readable without squinting or guessing
 Fail: Any word is partially hidden, overlapping another element, or cut off at the edge
+```
+
+Meta-skill example:
+
+```
+EVAL 2: Clear trigger boundary
+Question: Does the skill include concrete examples of requests that should trigger it and requests that should not?
+Pass: The skill includes at least one positive example and one out-of-scope example that distinguish its boundary
+Fail: The skill gives only abstract claims about when to use it or omits boundary examples
 ```

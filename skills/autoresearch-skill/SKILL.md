@@ -1,329 +1,215 @@
 ---
 name: autoresearch-skill
-description: "Autonomously optimize any Claude Code skill by running it repeatedly, scoring outputs against binary evals, mutating the prompt, and keeping improvements. Based on Karpathy's autoresearch methodology. Use when: optimize this skill, improve this skill, run autoresearch on, run autoresearch-skill on, make this skill better, self-improve skill, benchmark skill, eval my skill, run evals on. Outputs: an improved SKILL.md, a results log, and a changelog of every mutation tried."
+description: "Refactor and optimize an existing Codex skill with baseline-first experiments, binary evals, targeted prompt mutations, and keep/discard scoring. Use when: improve this skill, run autoresearch on a skill, benchmark a skill, self-optimize a skill, or add eval-driven rigor to a skill refactor."
+compatibility: Works best with read/edit/write and shell search tools for skill inspection, repeated evaluation, and artifact logging.
 ---
+
+@rules/experiment-loop.md
+@rules/validation-and-exit.md
 
 # Autoresearch for Skills
 
-Most skills work about 70% of the time. The other 30% you get garbage. The fix isn't to rewrite the skill from scratch. It's to let an agent run it dozens of times, score every output, and tighten the prompt until that 30% disappears.
+> Improve an existing skill with measured iterations instead of one-shot rewrites.
 
-This skill adapts Andrej Karpathy's autoresearch methodology (autonomous experimentation loops) to Claude Code skills. Instead of optimizing ML training code, we optimize skill prompts.
+<purpose>
 
----
+- Optimize an existing skill by establishing a baseline, scoring outputs with binary evals, and keeping only changes that improve the score.
+- Strengthen weak skill structure when failures come from vague triggers, bloated core instructions, missing support files, or poor validation.
+- Produce an improved skill plus durable experiment artifacts under `.hypercore/autoresearch-[skill-name]/`: `results.tsv`, `results.json`, `changelog.md`, `dashboard.html`, and `SKILL.md.baseline`.
 
-## the core job
+</purpose>
 
-Take any existing skill, define what "good output" looks like as binary yes/no checks, then run an autonomous loop that:
+<routing_rule>
 
-1. Generates outputs from the skill using test inputs
-2. Scores every output against the eval criteria
-3. Mutates the skill prompt to fix failures
-4. Keeps mutations that improve the score, discards the rest
-5. Repeats until the score ceiling is hit or the user stops it
+Use `autoresearch-skill` when the user wants repeated, eval-driven optimization of an existing skill.
 
-**Output:** An improved SKILL.md + `results.tsv` log + `changelog.md` of every mutation attempted + a live HTML dashboard you can watch in your browser.
+Use `skill-maker` instead when the main job is creating a new skill or doing a one-pass structural refactor without an experiment loop.
 
----
+Do not use `autoresearch-skill` when:
 
-## before starting: gather context
+- there is no existing target skill to optimize
+- the user wants generic documentation rather than a skill improvement workflow
+- the user only wants a single manual edit with no baseline, no evals, and no repeated scoring
 
-**STOP. Do not run any experiments until all fields below are confirmed with the user. Ask for any missing fields before proceeding.**
+</routing_rule>
 
-1. **Target skill** - Which skill do you want to optimize? (need the exact path to SKILL.md)
-2. **Test inputs** - What 3-5 different prompts/scenarios should we test the skill with? (variety matters - pick inputs that cover different use cases so we don't overfit to one scenario)
-3. **Eval criteria** - What 3-6 binary yes/no checks define a good output? (these are your "test questions" - see [references/eval-guide.md](references/eval-guide.md) for how to write good evals)
-4. **Runs per experiment** - How many times should we run the skill per mutation? Default: 5. (more runs = more reliable scores, but slower and more expensive. 5 is the sweet spot for most skills.)
-5. **Run interval** - How often should experiments cycle? Default: every 2 minutes. (shorter = faster iteration, but costs more)
-6. **Budget cap** - Optional. Max number of experiment cycles before stopping. Default: no cap (runs until you stop it).
+<trigger_conditions>
 
----
+Positive examples:
 
-## step 1: read the skill
+- "Run autoresearch on `skills/web-clone/SKILL.md`."
+- "Benchmark this skill with binary evals and keep only improvements."
+- "Improve this skill's prompt and references using repeated experiments."
 
-Before changing anything, read and understand the target skill completely.
+Negative examples:
 
-1. Read the full SKILL.md file
-2. Read any files in `references/` that the skill links to
-3. Identify the skill's core job, process steps, and output format
-4. Note any existing quality checks or anti-patterns already in the skill
+- "Create a new Codex skill for browser QA."
+- "Rewrite this runbook for readability."
 
-Do NOT skip this. You need to understand what the skill does before you can improve it.
+Boundary example:
 
----
+- "Tighten this skill once and review it." Prefer direct editing unless the user explicitly wants repeated eval-driven optimization.
 
-## step 2: build the eval suite
+</trigger_conditions>
 
-Convert the user's eval criteria into a structured test. Every check must be binary - pass or fail, no scales.
+<supported_targets>
 
-**Format each eval as:**
+- Existing skill folders, especially `SKILL.md` plus related `rules/` and `references/`
+- Trigger wording, workflow clarity, output discipline, and validation guidance
+- Skill-structure refactors that materially improve measured results
+- Experiment artifacts that let future agents continue the optimization
 
-```
-EVAL [number]: [Short name]
-Question: [Yes/no question about the output]
-Pass condition: [What "yes" looks like - be specific]
-Fail condition: [What triggers a "no"]
-```
+</supported_targets>
 
-**Rules for good evals:**
-- Binary only. Yes or no. No "rate 1-7" scales. Scales compound variability and give unreliable results.
-- Specific enough to be consistent. "Is the text readable?" is too vague. "Are all words spelled correctly with no truncated sentences?" is testable.
-- Not so narrow that the skill games the eval. "Contains fewer than 200 words" will make the skill optimize for brevity at the expense of everything else.
-- 3-6 evals is the sweet spot. More than that and the skill starts parroting eval criteria back instead of actually improving.
+<required_inputs>
 
-See [references/eval-guide.md](references/eval-guide.md) for detailed examples of good vs bad evals.
+Collect these before the first mutation:
 
-**Max score calculation:**
-```
-max_score = [number of evals] x [runs per experiment]
-```
+1. Target skill path
+2. Three to five test prompts or scenarios
+3. Three to six binary evals
+4. Runs per experiment. Default: `5`
+5. Run interval if the loop is time-based. Default: `2 minutes`
+6. Optional budget cap
 
-Example: 4 evals x 5 runs = max score of 20.
+Input policy:
 
----
+- If the user already gave the core intent and the work is low-risk, infer conservative defaults and record them before the baseline.
+- Ask for clarification only when missing information would make the eval meaningless or push the skill toward the wrong behavior.
+- Do not start mutating the target skill before the baseline plan is explicit.
 
-## step 3: generate the live dashboard
+</required_inputs>
 
-Before running any experiments, create a live HTML dashboard at `autoresearch-[skill-name]/dashboard.html` and open it in the browser.
+<skill_architecture>
 
-The dashboard must:
-- Auto-refresh every 10 seconds (reads from results.tsv)
-- Show a score progression line chart (experiment number on X axis, pass rate % on Y axis)
-- Show a colored bar for each experiment: green = keep, red = discard, blue = baseline
-- Show a table of all experiments with: experiment #, score, pass rate, status, description
-- Show per-eval breakdown: which evals pass most/least across all runs
-- Show current status: "Running experiment [N]..." or "Idle"
-- Use clean styling with soft colors (white background, pastel accents, clean sans-serif font)
+Keep the core skill focused on trigger, owned job, workflow, and mutation discipline.
 
-Generate the dashboard as a single self-contained HTML file with inline CSS and JavaScript. Use Chart.js loaded from CDN for the line chart. The JS should fetch `results.json` (which you update after each experiment alongside results.tsv) and re-render.
+Load support files intentionally:
 
-**Open it immediately** after creating it: `open dashboard.html` (macOS) so the user can see it in their browser.
+- Use [references/eval-guide.md](references/eval-guide.md) to design binary evals.
+- Use [references/skill-refactor-guide.md](references/skill-refactor-guide.md) when failures point to bad skill anatomy, weak support files, or poor trigger wording.
+- Use [references/artifact-spec.md](references/artifact-spec.md) for dashboard, results, changelog, and workspace schemas.
 
-**Update `results.json`** after every experiment so the dashboard stays current. The JSON format:
+When the target skill itself is weakly structured:
 
-```json
-{
-  "skill_name": "[name]",
-  "status": "running",
-  "current_experiment": 3,
-  "baseline_score": 70.0,
-  "best_score": 90.0,
-  "experiments": [
-    {
-      "id": 0,
-      "score": 14,
-      "max_score": 20,
-      "pass_rate": 70.0,
-      "status": "baseline",
-      "description": "original skill - no changes"
-    }
-  ],
-  "eval_breakdown": [
-    {"name": "Text legibility", "pass_count": 8, "total": 10},
-    {"name": "Pastel colors", "pass_count": 9, "total": 10}
-  ]
-}
-```
+- keep the core `SKILL.md` lean
+- move repeated policy into `rules/`
+- move detailed knowledge and examples into `references/`
+- add `scripts/` only when deterministic execution is clearly better than prose
 
-When the run finishes (user stops it or ceiling hit), update `status` to `"complete"` so the dashboard shows a "Done" state with final summary.
+</skill_architecture>
 
----
+<workflow>
 
-## step 4: establish baseline
+| Phase | Task | Output |
+|------|------|------|
+| 0 | Read the target skill and linked support files | Baseline understanding |
+| 1 | Convert success criteria into binary evals | Eval suite |
+| 2 | Initialize the experiment workspace and artifacts | `.hypercore/autoresearch-[skill-name]/` |
+| 3 | Run experiment `0` on the unmodified skill | Baseline score |
+| 4 | Run one-mutation-at-a-time experiments | Keep/discard decisions |
+| 5 | Validate the final result and summarize the run | Final report |
 
-Run the skill AS-IS before changing anything. This is experiment #0.
+### Phase details
 
-1. Create a working directory: `autoresearch-[skill-name]/` inside the skill's folder
-2. Create `results.tsv` with the header row
-3. Create `results.json` and `dashboard.html`, then open the dashboard in the browser
-4. Back up the original SKILL.md as `SKILL.md.baseline`
-5. Run the skill [N] times using the test inputs
-6. Score every output against every eval
-7. Record the baseline score and update both results.tsv and results.json
+#### Phase 0: Understand the target
 
-**results.tsv format (tab-separated):**
+- Read the full target `SKILL.md`.
+- Read any directly linked `rules/` and `references/`.
+- Identify whether failures are behavioral, structural, or both.
 
-```
-experiment	score	max_score	pass_rate	status	description
-0	14	20	70.0%	baseline	original skill - no changes
-```
+#### Phase 1: Build the eval suite
 
-**IMPORTANT:** After establishing baseline, confirm the score with the user before proceeding. If baseline is already 90%+, the skill may not need optimization - ask the user if they want to continue.
+- Translate success criteria into binary pass/fail checks.
+- Keep evals distinct, observable, and hard to game.
+- If the target is a skill, include at least one eval that checks trigger or structure quality, not just prose style.
 
----
+#### Phase 2: Prepare the workspace
 
-## step 5: run the experiment loop
+- Create `.hypercore/autoresearch-[skill-name]/` at the repository root.
+- Back up the original file as `SKILL.md.baseline`.
+- Initialize `results.tsv`, `results.json`, `changelog.md`, and `dashboard.html` using [references/artifact-spec.md](references/artifact-spec.md).
 
-This is the core autoresearch loop. Once started, run autonomously until stopped.
+#### Phase 3: Establish the baseline
 
-**LOOP:**
+- Run the current skill before editing anything.
+- Score every run against every eval.
+- Record experiment `0` as `baseline`.
 
-1. **Analyze failures.** Look at which evals are failing most. Read the actual outputs that failed. Identify the pattern - is it a formatting issue? A missing instruction? An ambiguous directive?
+#### Phase 4: Run the experiment loop
 
-2. **Form a hypothesis.** Pick ONE thing to change. Don't change 5 things at once - you won't know what helped.
+- Inspect failing outputs and identify the highest-value failure pattern.
+- Form one hypothesis.
+- Make one targeted mutation.
+- Re-run the same eval suite.
+- Keep score-improving mutations. Revert flat or worse mutations.
+- Log every experiment, including discarded ones.
 
-   Good mutations:
-   - Add a specific instruction that addresses the most common failure
-   - Reword an ambiguous instruction to be more explicit
-   - Add an anti-pattern ("Do NOT do X") for a recurring mistake
-   - Move a buried instruction higher in the skill (priority = position)
-   - Add or improve an example that shows the correct behavior
-   - Remove an instruction that's causing the skill to over-optimize for one thing at the expense of others
+#### Phase 5: Finish and deliver
 
-   Bad mutations:
-   - Rewriting the entire skill from scratch
-   - Adding 10 new rules at once
-   - Making the skill longer without a specific reason
-   - Adding vague instructions like "make it better" or "be more creative"
+- Stop on user instruction, budget cap, or stable high performance per [rules/validation-and-exit.md](rules/validation-and-exit.md).
+- Report score delta, total experiments, keep rate, strongest changes, and remaining failure patterns.
 
-3. **Make the change.** Edit SKILL.md with ONE targeted mutation.
+</workflow>
 
-4. **Run the experiment.** Execute the skill [N] times with the same test inputs.
+<mutation_defaults>
 
-5. **Score it.** Run every output through every eval. Calculate total score.
+Prefer these mutation types:
 
-6. **Decide: keep or discard.**
-   - Score improved -> **KEEP.** Log it. This is the new baseline.
-   - Score stayed the same -> **DISCARD.** Revert SKILL.md to previous version. The change added complexity without improvement.
-   - Score got worse -> **DISCARD.** Revert SKILL.md to previous version.
+- clarify an ambiguous instruction
+- add a narrow anti-pattern for a recurring failure
+- move an important instruction earlier in the skill
+- add or improve one worked example
+- remove prompt weight that adds complexity without score gain
+- refactor support-file placement when the core is carrying too much detail
 
-7. **Log the result** in results.tsv.
+Avoid these mutation types:
 
-8. **Repeat.** Go back to step 1 of the loop.
+- rewriting the entire skill from scratch
+- making many unrelated changes in one experiment
+- adding large blocks of prose without a measured reason
+- optimizing for a brittle format rule that does not reflect real quality
 
-**NEVER STOP.** Once the loop starts, do not pause to ask the user if you should continue. They may be away from the computer. Run autonomously until:
-- The user manually stops you
-- You hit the budget cap (if one was set)
-- You hit 95%+ pass rate for 3 consecutive experiments (diminishing returns)
+</mutation_defaults>
 
-**If you run out of ideas:** Re-read the failing outputs. Try combining two previous near-miss mutations. Try a completely different approach to the same problem. Try removing things instead of adding them. Simplification that maintains the score is a win.
+<deliverables>
 
----
+The completed run should leave:
 
-## step 6: write the changelog
+- the improved target skill in place
+- `.hypercore/autoresearch-[skill-name]/dashboard.html`
+- `.hypercore/autoresearch-[skill-name]/results.json`
+- `.hypercore/autoresearch-[skill-name]/results.tsv`
+- `.hypercore/autoresearch-[skill-name]/changelog.md`
+- `.hypercore/autoresearch-[skill-name]/SKILL.md.baseline`
 
-After each experiment (whether kept or discarded), append to `changelog.md`:
+See [references/artifact-spec.md](references/artifact-spec.md) for file schemas and examples.
 
-```markdown
-## Experiment [N] - [keep/discard]
+</deliverables>
 
-**Score:** [X]/[max] ([percent]%)
-**Change:** [One sentence describing what was changed]
-**Reasoning:** [Why this change was expected to help]
-**Result:** [What actually happened - which evals improved/declined]
-**Failing outputs:** [Brief description of what still fails, if anything]
-```
+<validation>
 
-This changelog is the most valuable artifact. It's a research log that any future agent (or smarter future model) can pick up and continue from.
+Minimum checks before declaring success:
 
----
+- a baseline exists before mutations
+- evals are binary and non-overlapping
+- every mutation is logged as keep or discard
+- the final score improved, or the skill was explicitly simplified with no regression
+- support files remain easy to discover and no deeper than one level from `SKILL.md`
 
-## step 7: deliver results
+Use [rules/validation-and-exit.md](rules/validation-and-exit.md) for the exit checklist.
 
-When the user returns or the loop stops, present:
+</validation>
 
-1. **Score summary:** Baseline score -> Final score (percent improvement)
-2. **Total experiments run:** How many mutations were tried
-3. **Keep rate:** How many mutations were kept vs discarded
-4. **Top 3 changes that helped most** (from the changelog)
-5. **Remaining failure patterns** (what the skill still gets wrong, if anything)
-6. **The improved SKILL.md** (already saved in place)
-7. **Location of results.tsv and changelog.md** for reference
+<final_report>
 
----
+Always deliver:
 
-## output format
+1. Baseline score to final score
+2. Total experiments run
+3. Keep rate
+4. Top changes that helped most
+5. Remaining failure patterns
+6. Location of the artifacts
 
-The skill produces four files in `autoresearch-[skill-name]/`:
-
-```text
-autoresearch-[skill-name]/
-|-- dashboard.html       # live browser dashboard (auto-refreshes)
-|-- results.json         # data file powering the dashboard
-|-- results.tsv          # score log for every experiment
-|-- changelog.md         # detailed mutation log
-`-- SKILL.md.baseline    # original skill before optimization
-```
-
-Plus the improved SKILL.md saved back to its original location.
-
-**results.tsv example:**
-
-```
-experiment	score	max_score	pass_rate	status	description
-0	14	20	70.0%	baseline	original skill - no changes
-1	16	20	80.0%	keep	added explicit instruction to avoid numbering in diagrams
-2	16	20	80.0%	discard	tried enforcing left-to-right layout - no improvement
-3	18	20	90.0%	keep	added color palette hex codes instead of vague "pastel" description
-4	18	20	90.0%	discard	added anti-pattern for neon colors - no improvement
-5	19	20	95.0%	keep	added worked example showing correct label formatting
-```
-
----
-
-## example: optimizing a diagram-generator skill
-
-**Context gathered:**
-- Target skill: `~/.claude/skills/diagram-generator/SKILL.md`
-- Test inputs: "OAuth flow diagram", "CI/CD pipeline", "microservices architecture", "user onboarding funnel", "database schema relationships"
-- Evals: (1) All text legible and spelled correctly? (2) Uses only pastel/soft colors? (3) Linear layout - left-to-right or top-to-bottom? (4) Free of numbers, ordinals, and ordering?
-- Runs per experiment: 10
-- Max score: 40
-
-**Baseline run (experiment 0):**
-Generated 10 diagrams. Scored each against 4 evals. Result: 32/40 (80%).
-Common failures: 3 diagrams had numbered steps, 2 had bright red elements, 3 had illegible small text.
-
-**Experiment 1 - KEEP (35/40, 87.5%):**
-Change: Added "NEVER include step numbers, ordinal numbers (1st, 2nd), or any numerical ordering in diagrams" to the anti-patterns section.
-Result: Numbering failures dropped from 3 to 1. Other evals held steady.
-
-**Experiment 2 - DISCARD (34/40, 85%):**
-Change: Added "All text must be minimum 14px font size."
-Result: Legibility improved by 1, but color compliance dropped by 2. Reverted.
-
-**Experiment 3 - KEEP (37/40, 92.5%):**
-Change: Replaced vague "pastel colors" instruction with specific hex codes: `#A8D8EA, #AA96DA, #FCBAD3, #FFFFD2, #B5EAD7`.
-Result: Color eval went from 8/10 to 10/10. Other evals held.
-
-**Experiment 4 - DISCARD (37/40, 92.5%):**
-Change: Added anti-pattern "Do NOT use red (#FF0000), orange (#FF8C00), or neon green (#39FF14)."
-Result: No change. The hex codes from experiment 3 already solved the color problem. Reverted to keep skill simpler.
-
-**Experiment 5 - KEEP (39/40, 97.5%):**
-Change: Added a worked example showing a correct diagram with properly formatted labels (no numbers, pastel fills, left-to-right flow, legible text).
-Result: Hit 39/40. One remaining failure: a complex diagram with overlapping labels. Diminishing returns - stopped.
-
-**Final delivery:**
-- Baseline: 32/40 (80%) -> Final: 39/40 (97.5%)
-- 5 experiments, 3 kept, 2 discarded
-- Top changes: specific hex codes for colors, explicit anti-numbering rule, worked example
-- Remaining issue: very complex diagrams occasionally get overlapping labels (1/40 failure rate)
-
----
-
-## how this connects to other skills
-
-**What feeds into autoresearch:**
-- Any existing skill that needs optimization
-- User-defined eval criteria (or help them define evals using the eval guide)
-
-**What autoresearch feeds into:**
-- The improved skill replaces the original
-- The changelog can be passed to future models for continued optimization
-- The eval suite can be reused whenever the skill is updated
-
----
-
-## the test
-
-A good autoresearch run:
-
-1. **Started with a baseline** - never changed anything before measuring the starting point
-2. **Used binary evals only** - no scales, no vibes, no "rate this 1-10"
-3. **Changed one thing at a time** - so you know exactly what helped
-4. **Kept a complete log** - every experiment recorded, kept or discarded
-5. **Improved the score** - measurable improvement from baseline to final
-6. **Didn't overfit** - the skill got better at the actual job, not just at passing the specific test inputs
-7. **Ran autonomously** - didn't stop to ask permission between experiments
-
-If the skill "passes" all evals but the actual output quality hasn't improved - the evals are bad, not the skill. Go back to step 2 and write better evals.
+</final_report>
