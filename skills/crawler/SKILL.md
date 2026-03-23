@@ -1,6 +1,6 @@
 ---
 name: crawler
-description: Explore websites directly with Playwriter to design robust crawling flows. Analyze APIs, cookies, tokens, and headers, then document findings and generate crawler code.
+description: Investigate websites with Playwriter to choose a crawl strategy, capture API/auth evidence, document findings under `.hypercore/crawler/[site]/`, and generate crawler code only after discovery is grounded.
 ---
 
 
@@ -8,9 +8,36 @@ description: Explore websites directly with Playwriter to design robust crawling
 
 > Playwriter exploration -> API/Network analysis -> Documentation -> Code generation
 
+Use `crawler` when the user wants a reusable crawling flow, site extraction plan, API reverse engineering for crawling, or analysis-backed crawler code.
+
+Do not use `crawler` for generic browser automation, one-off page clicking, or document rewriting with no crawl deliverable.
+
+For quick one-off extraction with no reusable crawler, keep the work lightweight and avoid forcing the full artifact set unless the request expands into crawl design.
+
 **Templates:** [document-templates.md](rules/document-templates.md) · [code-templates.md](rules/code-templates.md)
 **Checklists:** [pre-crawl-checklist.md](rules/pre-crawl-checklist.md) · [anti-bot-checklist.md](rules/anti-bot-checklist.md)
 **References:** [playwriter-commands.md](rules/playwriter-commands.md) · [crawling-patterns.md](rules/crawling-patterns.md) · [selector-strategies.md](rules/selector-strategies.md) · [network-crawling.md](rules/network-crawling.md)
+
+---
+
+<trigger_examples>
+
+Positive examples:
+
+- "Scrape product cards from this shop, inspect the API first, then generate a crawler."
+- "Figure out how this logged-in dashboard loads data and document the cookies and headers."
+- "Analyze this Cloudflare-protected site and recommend the safest crawl approach."
+
+Negative examples:
+
+- "Open this site and click through the signup flow."
+- "Rewrite this crawl runbook for readability."
+
+Boundary example:
+
+- "Grab three prices from this public page right now." Prefer lightweight extraction unless the user asks for a reusable crawler or site-wide strategy.
+
+</trigger_examples>
 
 ---
 
@@ -18,12 +45,29 @@ description: Explore websites directly with Playwriter to design robust crawling
 
 | Trigger | Action |
 |--------|------|
-| Crawling, scraping, crawl, scrape | Run immediately |
-| Website data extraction | Run immediately |
-| API reverse engineering | Start API interception |
-| Anti-bot bypass request | Check Anti-Detect guidance |
+| Reusable crawling, scraping, or site-wide extraction | Run immediately |
+| Site investigation or API reverse engineering for crawling | Start discovery and API interception |
+| One-off extraction from a single page | Treat as a boundary case and keep the workflow lightweight unless reusable crawl work is requested |
+| Anti-bot bypass or Cloudflare-heavy target | Start with risk checks and Anti-Detect guidance |
 
 </trigger_conditions>
+
+---
+
+<support_file_routing>
+
+Read support files in this order:
+
+1. Start with [pre-crawl-checklist.md](rules/pre-crawl-checklist.md) before making crawl or code decisions.
+2. Use [playwriter-commands.md](rules/playwriter-commands.md) when you need session control, inspection, or interception commands.
+3. Use [network-crawling.md](rules/network-crawling.md) when cookies, tokens, headers, or bot-detection signals matter.
+4. Use [selector-strategies.md](rules/selector-strategies.md) when DOM extraction is still on the table.
+5. Use [crawling-patterns.md](rules/crawling-patterns.md) when pagination, authentication, lazy loading, or retries shape the approach.
+6. Use [anti-bot-checklist.md](rules/anti-bot-checklist.md) when the target shows blocks, CAPTCHA, Cloudflare, or explicit anti-detect requirements.
+7. Use [document-templates.md](rules/document-templates.md) when writing `.hypercore/crawler/[site]/` artifacts.
+8. Use [code-templates.md](rules/code-templates.md) only after the method is chosen and the discovery evidence is documented.
+
+</support_file_routing>
 
 ---
 
@@ -39,6 +83,17 @@ description: Explore websites directly with Playwriter to design robust crawling
 
 ---
 
+<execution_defaults>
+
+- Do discovery before code generation, selector lock-in, or auth assumptions.
+- Prefer an API-backed crawler when discovery shows a stable endpoint and manageable auth.
+- Stop and report blockers when legal constraints, repeated `403/429/503`, CAPTCHA, or strong anti-bot signals make automation unsafe.
+- Do not promise `CRAWLER.ts` until the method, auth material, and rate-limit posture are documented.
+
+</execution_defaults>
+
+---
+
 <workflow>
 
 | Phase | Task | Command/Method |
@@ -50,38 +105,6 @@ description: Explore websites directly with Playwriter to design robust crawling
 | **5. Code** | Generate crawler implementation | [code-templates.md](rules/code-templates.md) |
 
 </workflow>
-
----
-
-<quick_commands>
-
-```bash
-# Create session + open page
-playwriter session new
-playwriter -s 1 -e "state.page = await context.newPage(); await state.page.goto('https://target.com')"
-
-# Understand structure
-playwriter -s 1 -e "console.log(await accessibilitySnapshot({ page: state.page }))"
-
-# Intercept API responses
-playwriter -s 1 -e $'
-state.responses = [];
-state.page.on("response", async res => {
-  if (res.url().includes("/api/")) {
-    try { state.responses.push({ url: res.url(), body: await res.json() }); } catch {}
-  }
-});
-'
-
-# Extract auth material
-playwriter -s 1 -e "console.log(JSON.stringify(await context.cookies(), null, 2))"
-playwriter -s 1 -e "console.log(await state.page.evaluate(() => localStorage.getItem('token')))"
-
-# Convert selector
-playwriter -s 1 -e "console.log(await getLocatorStringForElement(state.page.locator('aria-ref=e14')))"
-```
-
-</quick_commands>
 
 ---
 
@@ -109,9 +132,31 @@ playwriter -s 1 -e "console.log(await getLocatorStringForElement(state.page.loca
 └── CRAWLER.ts       # Generated crawler code
 ```
 
+Minimum artifact contract:
+
+- `ANALYSIS.md` is always required for reusable crawl work.
+- `SELECTORS.md` is required when DOM extraction is used or kept as a fallback path.
+- `API.md` is required when API discovery was attempted; document discovered endpoints or the absence of a usable API.
+- `NETWORK.md` is required when cookies, tokens, headers, rate limits, or bot-detection signals affect the method.
+- `CRAWLER.ts` is required only after discovery evidence is written and the chosen method is justified.
+
+Starter commands and inspection snippets live in [playwriter-commands.md](rules/playwriter-commands.md). Keep the core focused on method choice, output gates, and stop conditions.
+
 **Templates:** [document-templates.md](rules/document-templates.md)
 
 </output_structure>
+
+---
+
+<blocked_outcomes>
+
+For blocked or unsafe runs:
+
+- write `ANALYSIS.md` with the blocker, the evidence that triggered the stop, and the safest next step
+- write `NETWORK.md` when auth signals, block responses, or anti-bot findings affected the decision
+- omit `CRAWLER.ts` until the blocker is resolved or the method becomes safe to automate
+
+</blocked_outcomes>
 
 ---
 
@@ -125,6 +170,8 @@ playwriter -s 1 -e "console.log(await getLocatorStringForElement(state.page.loca
 ✅ Findings documented under .hypercore/crawler/
 ✅ Crawler code generated
 ✅ sequential-thinking trace recorded for major phases
+✅ legal, rate-limit, and bot-detection blockers documented before scaling
+✅ blocked runs reported explicitly when crawler code is unsafe or premature
 ```
 
 </validation>

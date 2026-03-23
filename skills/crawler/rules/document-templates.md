@@ -49,6 +49,8 @@ URL: {{BASE_URL}}
 ## Findings
 
 [Key constraints, edge cases, warnings]
+
+If the run is blocked, use this section to record the blocker, the evidence that triggered the stop, and the safest next step.
 ```
 
 ---
@@ -129,4 +131,6 @@ URL: {{BASE_URL}}
 ## Bot Detection
 
 [Cloudflare, CAPTCHA, behavioral constraints]
+
+If the run is blocked or unsafe, record the block signal or auth constraint that prevented `CRAWLER.ts`.
 ```

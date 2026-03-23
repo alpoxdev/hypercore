@@ -2,6 +2,8 @@
 
 > 크롤링 분석용 핵심 명령어
 
+워크플로가 Playwriter 기반 discovery로 정해진 뒤, 실제 세션 제어, 구조 파악, 인터셉트 명령이 필요할 때 `pre-crawl-checklist.md` 다음으로 이 파일을 사용합니다.
+
 ---
 
 <session>

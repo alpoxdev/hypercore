@@ -2,6 +2,8 @@
 
 > Core command reference for crawling analysis.
 
+Use this file after `pre-crawl-checklist.md` when the workflow already chose Playwriter-based discovery and you need concrete session, inspection, or interception commands.
+
 ---
 
 <session>
