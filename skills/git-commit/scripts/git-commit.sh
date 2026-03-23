@@ -6,6 +6,20 @@ set -euo pipefail
 
 REPO="."
 
+matches_requested_target() {
+  local staged_file=$1
+  shift
+
+  local target
+  for target in "$@"; do
+    if [ "$staged_file" = "$target" ] || [[ "$staged_file" == "$target/"* ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 if [ "${1:-}" = "--repo" ]; then
   if [ "$#" -lt 2 ] || [ -z "${2:-}" ]; then
     echo "Usage: $0 [--repo path] \"commit message\" [files...]" >&2
@@ -23,7 +37,7 @@ fi
 COMMIT_MSG="$1"
 shift
 
-if [ -z "$(echo "$COMMIT_MSG" | xargs)" ]; then
+if ! printf '%s' "$COMMIT_MSG" | grep -q '[^[:space:]]'; then
   echo "Error: Commit message cannot be empty" >&2
   exit 1
 fi
@@ -41,21 +55,30 @@ if ! git rev-parse --git-dir >/dev/null 2>&1; then
 fi
 
 if [ "$#" -gt 0 ]; then
+  REQUESTED_FILES=("$@")
+
+  EXTRA_STAGED=()
+  while IFS= read -r staged_file; do
+    [ -z "$staged_file" ] && continue
+    if ! matches_requested_target "$staged_file" "${REQUESTED_FILES[@]}"; then
+      EXTRA_STAGED+=("$staged_file")
+    fi
+  done < <(git diff --cached --name-only)
+
+  if [ "${#EXTRA_STAGED[@]}" -gt 0 ]; then
+    echo "Error: Additional staged changes exist outside the requested files:" >&2
+    printf '  %s\n' "${EXTRA_STAGED[@]}" >&2
+    echo "Tip: Unstage unrelated files or commit them separately before retrying." >&2
+    exit 1
+  fi
+
   git add "$@"
 
   EXTRA_STAGED=()
 
   while IFS= read -r staged_file; do
     [ -z "$staged_file" ] && continue
-    MATCHED=false
-    for target in "$@"; do
-      if [ "$staged_file" = "$target" ] || [[ "$staged_file" == "$target/"* ]]; then
-        MATCHED=true
-        break
-      fi
-    done
-
-    if [ "$MATCHED" = false ]; then
+    if ! matches_requested_target "$staged_file" "${REQUESTED_FILES[@]}"; then
       EXTRA_STAGED+=("$staged_file")
     fi
   done < <(git diff --cached --name-only)
