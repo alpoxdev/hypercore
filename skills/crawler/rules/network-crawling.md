@@ -1,16 +1,17 @@
 # Network Analysis
 
-> Extract cookies/tokens/headers with Playwriter and document them into `NETWORK.md`.
+> Turn Playwriter + CDP evidence into `API.md`, `NETWORK.md`, and raw network artifacts.
 
 ---
 
 <workflow>
 
 ```text
-1. Explore pages with Playwriter
-2. Intercept API requests/responses and collect endpoint/header/cookie/token info
-3. Document findings in NETWORK.md
-4. Reuse network/auth details in generated crawler code
+1. Reproduce the relevant page flow with Playwriter
+2. Capture normalized endpoint/auth/rate-limit evidence with CDP
+3. Persist raw JSON under `.hypercore/crawler/[site]/raw/`
+4. Summarize findings in `API.md` and `NETWORK.md`
+5. Reuse network/auth details in generated crawler code
 ```
 
 </workflow>
@@ -22,16 +23,12 @@
 ## Cookie Extraction
 
 ```bash
-# all cookies
-playwriter -s 1 -e "console.log(JSON.stringify(await context.cookies(), null, 2))"
-
-# auth-like cookies only
-playwriter -s 1 -e $'
-const cookies = await context.cookies();
-console.log(cookies.filter(c =>
-  ["session","token","auth","sid"].some(n => c.name.toLowerCase().includes(n))
+const cookies = await client.send('Storage.getCookies');
+console.log(JSON.stringify(
+  cookies.cookies.map(({ name, domain, expires }) => ({ name, domain, expires })),
+  null,
+  2
 ));
-'
 ```
 
 </cookie>
@@ -43,19 +40,20 @@ console.log(cookies.filter(c =>
 ## Token Extraction
 
 ```bash
-# localStorage token
-playwriter -s 1 -e "console.log(await state.page.evaluate(() => localStorage.getItem('token')))"
-
-# sessionStorage token
-playwriter -s 1 -e "console.log(await state.page.evaluate(() => sessionStorage.getItem('accessToken')))"
-
-# Authorization header capture
-playwriter -s 1 -e $'
-state.page.on("request", req => {
-  const auth = req.headers()["authorization"];
-  if (auth) console.log("Auth:", auth);
+await client.send('Runtime.evaluate', {
+  expression: 'localStorage.getItem("token")',
+  returnByValue: true,
 });
-'
+
+await client.send('Runtime.evaluate', {
+  expression: 'sessionStorage.getItem("accessToken")',
+  returnByValue: true,
+});
+
+client.on('Network.requestWillBeSent', (event) => {
+  const auth = event.request.headers['Authorization'] || event.request.headers['authorization'];
+  if (auth) console.log(JSON.stringify({ url: event.request.url, authPresent: true }));
+});
 ```
 
 </token>
@@ -67,12 +65,17 @@ state.page.on("request", req => {
 ## Header Capture
 
 ```bash
-playwriter -s 1 -e $'
-state.page.on("request", req => {
-  if (req.url().includes("/api/"))
-    console.log(JSON.stringify(req.headers(), null, 2));
+client.on('Network.requestWillBeSent', (event) => {
+  if (!event.request.url.includes('/api/')) return;
+  console.log(JSON.stringify({
+    url: event.request.url,
+    headers: {
+      'accept-language': event.request.headers['Accept-Language'],
+      'referer': event.request.headers['Referer'],
+      'user-agent': event.request.headers['User-Agent'],
+    },
+  }, null, 2));
 });
-'
 ```
 
 </headers>
@@ -84,13 +87,16 @@ state.page.on("request", req => {
 ## Bot-Detection Signals
 
 ```bash
-playwriter -s 1 -e $'
-state.page.on("response", res => {
-  if ([403, 429, 503].includes(res.status())) {
-    console.log("Blocked:", res.status(), res.url());
+client.on('Network.responseReceived', (event) => {
+  if ([403, 429, 503].includes(event.response.status)) {
+    console.log(JSON.stringify({
+      blocked: true,
+      status: event.response.status,
+      url: event.response.url,
+      retryAfter: event.response.headers['retry-after'] || null,
+    }, null, 2));
   }
 });
-'
 ```
 
 </bot_detection>
@@ -98,6 +104,18 @@ state.page.on("response", res => {
 ---
 
 <network_template>
+
+## Raw JSON Targets
+
+Write these files when evidence is available:
+
+- `.hypercore/crawler/[site]/raw/network-summary.json`
+- `.hypercore/crawler/[site]/raw/auth-signals.json`
+- `.hypercore/crawler/[site]/raw/endpoint-candidates.json`
+
+Keep them normalized and deduplicated. They support the final docs; they do not replace them.
+
+---
 
 ## NETWORK.md Template
 
@@ -126,6 +144,13 @@ state.page.on("response", res => {
 
 - Cloudflare: yes/no
 - CAPTCHA: yes/no
+
+## Evidence Source
+
+- Playwriter flow reproduced: yes/no
+- CDP capture attached: yes/no
+- Fallback browser-network capture used: yes/no
+- Raw artifacts written: yes/no
 
 ## Notes
 

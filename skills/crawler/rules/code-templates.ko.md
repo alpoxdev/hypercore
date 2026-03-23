@@ -8,10 +8,12 @@
 
 | 조건 | 방식 | 템플릿 |
 |------|------|--------|
-| API 발견 + 인증 단순 | fetch | API 크롤러 |
+| CDP나 fallback 브라우저 네트워크 근거로 API 발견 + 인증 단순 | fetch | API 크롤러 |
 | API + 쿠키/토큰 | fetch + Cookie | API 크롤러 (인증) |
 | 봇 탐지 강함 | Nstbrowser | (별도 구현) |
 | API 없음 (SSR) | Playwright | DOM 크롤러 |
+
+API 템플릿은 CDP나 fallback 브라우저 네트워크 근거로 안정적인 endpoint, 인증 재료, rate-limit 대응이 확인된 뒤에만 사용합니다.
 
 ---
 

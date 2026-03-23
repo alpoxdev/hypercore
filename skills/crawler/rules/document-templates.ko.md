@@ -12,6 +12,10 @@
 ├── SELECTORS.md     # DOM selector
 ├── API.md           # API endpoint
 ├── NETWORK.md       # 인증 정보
+├── raw/
+│   ├── network-summary.json
+│   ├── auth-signals.json
+│   └── endpoint-candidates.json
 └── CRAWLER.ts       # 생성 코드
 ```
 
@@ -51,6 +55,11 @@ URL: {{BASE_URL}}
 [특이사항, 제약, 주의점]
 
 실행이 차단되었으면 이 섹션에 중단 원인, 그 판단의 근거, 가장 안전한 다음 단계를 기록합니다.
+
+## 수집 경로
+
+- CDP 사용 가능: yes/no
+- fallback 브라우저 네트워크 수집 사용: yes/no
 ```
 
 ---
@@ -111,6 +120,13 @@ interface Response {
 ## Rate Limiting
 
 [제한사항]
+
+## 근거 출처
+
+- Playwriter 플로우 재현: yes/no
+- CDP 수집 연결: yes/no
+- fallback 브라우저 네트워크 수집 사용: yes/no
+- Raw 아티팩트 사용: yes/no
 ```
 
 ---
@@ -146,6 +162,12 @@ interface Response {
 
 - [ ] Cloudflare
 - [ ] reCAPTCHA
+
+## Raw 근거
+
+- `raw/network-summary.json`
+- `raw/auth-signals.json`
+- `raw/endpoint-candidates.json`
 
 실행이 차단되었거나 안전하지 않다면 `CRAWLER.ts`를 만들지 못하게 한 차단 신호나 인증 제약을 기록합니다.
 ```

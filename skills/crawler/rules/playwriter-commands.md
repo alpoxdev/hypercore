@@ -2,7 +2,7 @@
 
 > Core command reference for crawling analysis.
 
-Use this file after `pre-crawl-checklist.md` when the workflow already chose Playwriter-based discovery and you need concrete session, inspection, or interception commands.
+Use this file after `pre-crawl-checklist.md` when the workflow already chose Playwriter-based discovery and you need concrete session, interaction, structure, or selector-validation commands. Use `cdp-capture.md` for lower-token network/auth evidence capture.
 
 ---
 
@@ -105,7 +105,7 @@ console.log(selector);
 
 <network_intercept>
 
-## Network Interception
+## Network Interception Fallback
 
 ```javascript
 state.responses = [];
@@ -122,6 +122,8 @@ state.page.on('response', async (res) => {
   }
 });
 ```
+
+Use this only when CDP is unavailable or when a quick browser-side fallback is enough.
 
 </network_intercept>
 

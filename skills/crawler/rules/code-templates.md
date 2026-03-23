@@ -8,10 +8,12 @@
 
 | Condition | Method | Template |
 |------|------|------|
-| API discovered + simple auth | `fetch` | API crawler |
+| API discovered via CDP or fallback browser-network evidence + simple auth | `fetch` | API crawler |
 | API + cookie/token auth | `fetch + Cookie` | API crawler (authenticated) |
 | Strong anti-bot protection | Nstbrowser | Custom implementation |
 | No API (SSR pages) | Playwright | DOM crawler |
+
+Use API templates only after CDP or fallback browser-network evidence identifies stable endpoints, auth material, and rate-limit posture.
 
 ---
 

@@ -1,16 +1,17 @@
 # Network 분석
 
-> Playwriter로 인증 정보 추출 → NETWORK.md 문서화
+> Playwriter + CDP 근거를 `API.md`, `NETWORK.md`, raw 네트워크 아티팩트로 정리합니다.
 
 ---
 
 <workflow>
 
 ```text
-1. Playwriter로 페이지 탐방
-2. API 인터셉트 → 엔드포인트/헤더/쿠키/토큰 추출
-3. NETWORK.md에 문서화
-4. 크롤러 코드 작성 시 활용
+1. Playwriter로 필요한 페이지 플로우를 재현
+2. CDP로 endpoint/auth/rate-limit 근거를 정규화 수집
+3. `.hypercore/crawler/[site]/raw/` 아래 raw JSON 저장
+4. `API.md`, `NETWORK.md`에 요약
+5. 크롤러 코드 작성 시 활용
 ```
 
 </workflow>
@@ -22,16 +23,12 @@
 ## 쿠키 추출
 
 ```bash
-# 모든 쿠키
-playwriter -s 1 -e "console.log(JSON.stringify(await context.cookies(), null, 2))"
-
-# 인증 쿠키만
-playwriter -s 1 -e $'
-const cookies = await context.cookies();
-console.log(cookies.filter(c =>
-  ["session","token","auth","sid"].some(n => c.name.toLowerCase().includes(n))
+const cookies = await client.send('Storage.getCookies');
+console.log(JSON.stringify(
+  cookies.cookies.map(({ name, domain, expires }) => ({ name, domain, expires })),
+  null,
+  2
 ));
-'
 ```
 
 </cookie>
@@ -43,19 +40,20 @@ console.log(cookies.filter(c =>
 ## 토큰 추출
 
 ```bash
-# localStorage
-playwriter -s 1 -e "console.log(await state.page.evaluate(() => localStorage.getItem('token')))"
-
-# sessionStorage
-playwriter -s 1 -e "console.log(await state.page.evaluate(() => sessionStorage.getItem('accessToken')))"
-
-# Authorization 헤더
-playwriter -s 1 -e $'
-state.page.on("request", req => {
-  const auth = req.headers()["authorization"];
-  if (auth) console.log("Auth:", auth);
+await client.send('Runtime.evaluate', {
+  expression: 'localStorage.getItem("token")',
+  returnByValue: true,
 });
-'
+
+await client.send('Runtime.evaluate', {
+  expression: 'sessionStorage.getItem("accessToken")',
+  returnByValue: true,
+});
+
+client.on('Network.requestWillBeSent', (event) => {
+  const auth = event.request.headers['Authorization'] || event.request.headers['authorization'];
+  if (auth) console.log(JSON.stringify({ url: event.request.url, authPresent: true }));
+});
 ```
 
 </token>
@@ -67,12 +65,17 @@ state.page.on("request", req => {
 ## 헤더 캡처
 
 ```bash
-playwriter -s 1 -e $'
-state.page.on("request", req => {
-  if (req.url().includes("/api/"))
-    console.log(JSON.stringify(req.headers(), null, 2));
+client.on('Network.requestWillBeSent', (event) => {
+  if (!event.request.url.includes('/api/')) return;
+  console.log(JSON.stringify({
+    url: event.request.url,
+    headers: {
+      'accept-language': event.request.headers['Accept-Language'],
+      'referer': event.request.headers['Referer'],
+      'user-agent': event.request.headers['User-Agent'],
+    },
+  }, null, 2));
 });
-'
 ```
 
 </headers>
@@ -84,14 +87,16 @@ state.page.on("request", req => {
 ## 봇 탐지 확인
 
 ```bash
-playwriter -s 1 -e "console.log(await state.page.content().then(c => c.includes('cf-')))"
-
-playwriter -s 1 -e $'
-state.page.on("response", res => {
-  if ([403, 429].includes(res.status()))
-    console.log("차단:", res.status(), res.url());
+client.on('Network.responseReceived', (event) => {
+  if ([403, 429, 503].includes(event.response.status)) {
+    console.log(JSON.stringify({
+      blocked: true,
+      status: event.response.status,
+      url: event.response.url,
+      retryAfter: event.response.headers['retry-after'] || null,
+    }, null, 2));
+  }
 });
-'
 ```
 
 </bot_check>
@@ -99,6 +104,18 @@ state.page.on("response", res => {
 ---
 
 <template>
+
+## Raw JSON 대상
+
+근거가 있으면 다음 파일을 기록합니다.
+
+- `.hypercore/crawler/[site]/raw/network-summary.json`
+- `.hypercore/crawler/[site]/raw/auth-signals.json`
+- `.hypercore/crawler/[site]/raw/endpoint-candidates.json`
+
+이 파일들은 정규화되고 중복 제거된 근거 파일이며, 최종 문서를 대체하지 않습니다.
+
+---
 
 ## NETWORK.md 템플릿
 
@@ -131,6 +148,13 @@ state.page.on("response", res => {
 
 - [ ] Cloudflare
 - [ ] reCAPTCHA
+
+## 근거 출처
+
+- Playwriter 플로우 재현: yes/no
+- CDP 수집 연결: yes/no
+- fallback 브라우저 네트워크 수집 사용: yes/no
+- Raw 아티팩트 기록: yes/no
 
 ## 참고
 

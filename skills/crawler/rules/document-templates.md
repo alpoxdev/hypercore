@@ -12,6 +12,10 @@
 ├── SELECTORS.md     # DOM selector inventory
 ├── API.md           # API endpoint map
 ├── NETWORK.md       # Auth/network details
+├── raw/
+│   ├── network-summary.json
+│   ├── auth-signals.json
+│   └── endpoint-candidates.json
 └── CRAWLER.ts       # Generated implementation
 ```
 
@@ -51,6 +55,11 @@ URL: {{BASE_URL}}
 [Key constraints, edge cases, warnings]
 
 If the run is blocked, use this section to record the blocker, the evidence that triggered the stop, and the safest next step.
+
+## Capture Path
+
+- CDP available: yes/no
+- Fallback browser-network capture used: yes/no
 ```
 
 ---
@@ -101,6 +110,13 @@ If the run is blocked, use this section to record the blocker, the evidence that
 ## Rate Limit / Constraints
 
 [Rate limit, anti-bot checks, auth constraints]
+
+## Evidence Source
+
+- Playwriter flow reproduced: yes/no
+- CDP capture attached: yes/no
+- Fallback browser-network capture used: yes/no
+- Raw artifacts used: yes/no
 ```
 
 ---
@@ -131,6 +147,12 @@ If the run is blocked, use this section to record the blocker, the evidence that
 ## Bot Detection
 
 [Cloudflare, CAPTCHA, behavioral constraints]
+
+## Raw Evidence
+
+- `raw/network-summary.json`
+- `raw/auth-signals.json`
+- `raw/endpoint-candidates.json`
 
 If the run is blocked or unsafe, record the block signal or auth constraint that prevented `CRAWLER.ts`.
 ```
