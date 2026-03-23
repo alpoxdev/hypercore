@@ -2,7 +2,7 @@
 name: version-update
 description: Update semantic versions across node/rust/python projects, keep discovered version files synchronized, and prefer the installed `git-commit` skill for the final git step with a direct fallback when it is unavailable.
 allowed-tools: Bash Read Edit
-compatibility: Requires a git repository and scripts under skills/version-update/scripts. Detects `git-commit` only from `~/.agents/skills/git-commit` or `~/.claude/skills/git-commit` before choosing the final git path.
+compatibility: Requires a git repository and scripts under skills/version-update/scripts. Detects `git-commit` only from repository-local skill paths such as `skills/git-commit`, `.agents/skills/git-commit`, `.claude/skills/git-commit`, or `.codex/skills/git-commit` before choosing the final git path.
 ---
 
 # Version Update Skill
@@ -52,7 +52,7 @@ compatibility: Requires a git repository and scripts under skills/version-update
 | `scripts/version-current.sh [file]` | Extract current semver (`file|version`) |
 | `scripts/version-bump.sh <current> <type>` | Calculate next semver |
 | `scripts/version-apply.sh <new> [files...]` | Apply version to discovered/selected files |
-| `scripts/git-commit-detect.sh` | Detect whether a usable `git-commit` skill exists in `~/.agents/skills` or `~/.claude/skills` |
+| `scripts/git-commit-detect.sh` | Detect whether a usable project-local `git-commit` skill exists in repository skill directories |
 | `scripts/git-commit.sh "msg" [files]` | Fallback direct commit helper when `git-commit` is not installed |
 | `scripts/git-push.sh` | Fallback direct push helper when `git-commit` is not installed |
 
@@ -61,7 +61,7 @@ compatibility: Requires a git repository and scripts under skills/version-update
 <git_integration>
 
 - Run `scripts/git-commit-detect.sh` before the final git step.
-- The detector checks, in order: `~/.agents/skills/git-commit` and `~/.claude/skills/git-commit`.
+- The detector checks, in order: `skills/git-commit`, `.agents/skills/git-commit`, `.claude/skills/git-commit`, and `.codex/skills/git-commit` inside the current repository.
 - Use `git-commit` only when the detector returns `installed|...`.
 - When handing off to `git-commit`, pass only the files changed by `version-update` and use `chore: bump version to x.y.z` unless the user requested a different message.
 - If the detector returns `missing|...`, use the local fallback scripts in `skills/version-update/scripts/`.
@@ -109,8 +109,8 @@ git diff
 
 # 7) detect whether a git-commit skill is actually usable
 scripts/git-commit-detect.sh
-# -> installed|/abs/path/to/git-commit
-# or missing|comma,separated,searched,paths|reason
+# -> installed|/abs/path/to/current-repo/skills/git-commit
+# or missing|comma,separated,current-repo,paths|reason
 
 # 8a) if git-commit is installed and usable, hand off the git step to that skill
 # target message: chore: bump version to 1.3.0
@@ -152,7 +152,7 @@ scripts/git-push.sh
 <scope_boundaries>
 
 - `version-update` owns version discovery, target calculation, file updates, and diff review.
-- `git-commit` owns repository inspection, staging discipline, commit creation, and push confirmation when the detector confirms that skill is usable.
+- `git-commit` owns repository inspection, staging discipline, commit creation, and push confirmation when the detector confirms that a repository-local skill is usable.
 - The local git scripts are fallback helpers, not the preferred path when `git-commit` is available.
 
 </scope_boundaries>
@@ -191,7 +191,7 @@ Execution checklist:
 - [ ] `version-apply.sh` updated all intended files
 - [ ] `git diff` reviewed
 - [ ] `scripts/git-commit-detect.sh` run before choosing the git path
-- [ ] The detector searched only `~/.agents/skills/git-commit` and `~/.claude/skills/git-commit`
+- [ ] The detector searched only `skills/git-commit`, `.agents/skills/git-commit`, `.claude/skills/git-commit`, and `.codex/skills/git-commit` inside the current repository
 - [ ] If the detector returns `installed|...`, the final git step is handed off with the narrowed version-update scope
 - [ ] If the detector returns `missing|...`, the fallback `scripts/git-commit.sh` is used with only the version-update files
 - [ ] Optional push executed only when requested

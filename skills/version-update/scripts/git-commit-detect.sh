@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# git-commit-detect.sh - detect whether a usable git-commit skill is installed
-# Search order:
-#   1) ~/.agents/skills/git-commit
-#   2) ~/.claude/skills/git-commit
+# git-commit-detect.sh - detect whether a usable project-local git-commit skill is installed
+# Search order inside the current repository:
+#   1) skills/git-commit
+#   2) .agents/skills/git-commit
+#   3) .claude/skills/git-commit
+#   4) .codex/skills/git-commit
 # Output:
 #   installed|<absolute_skill_dir>
 #   missing|<searched_paths>|<reason>
@@ -10,6 +12,23 @@
 set -euo pipefail
 
 SEARCHED=()
+CANDIDATES=()
+
+resolve_repo_root() {
+  if [ -n "${VERSION_UPDATE_REPO_ROOT:-}" ] && [ -d "${VERSION_UPDATE_REPO_ROOT}" ]; then
+    printf '%s\n' "${VERSION_UPDATE_REPO_ROOT}"
+    return 0
+  fi
+
+  if git_root="$(git rev-parse --show-toplevel 2>/dev/null)"; then
+    printf '%s\n' "$git_root"
+    return 0
+  fi
+
+  local script_dir
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  printf '%s\n' "$(cd "${script_dir}/../../.." && pwd)"
+}
 
 add_candidate() {
   local path="$1"
@@ -67,9 +86,11 @@ validate_skill_dir() {
   return 0
 }
 
-declare -a CANDIDATES=()
-add_candidate "$HOME/.agents/skills/git-commit"
-add_candidate "$HOME/.claude/skills/git-commit"
+REPO_ROOT="$(resolve_repo_root)"
+add_candidate "$REPO_ROOT/skills/git-commit"
+add_candidate "$REPO_ROOT/.agents/skills/git-commit"
+add_candidate "$REPO_ROOT/.claude/skills/git-commit"
+add_candidate "$REPO_ROOT/.codex/skills/git-commit"
 
 LAST_REASON="no-candidates"
 for skill_dir in "${CANDIDATES[@]}"; do

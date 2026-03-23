@@ -2,7 +2,7 @@
 name: version-update
 description: node/rust/python 프로젝트의 semantic version을 일관되게 갱신하고, 마지막 git 단계에서는 설치된 `git-commit` 스킬을 우선 사용하며 없을 때만 직접 fallback 하는 스킬입니다.
 allowed-tools: Bash Read Edit
-compatibility: Git 저장소와 `skills/version-update/scripts` 하위 스크립트가 필요합니다. 마지막 git 경로를 고르기 전에 `~/.agents/skills/git-commit` 또는 `~/.claude/skills/git-commit` 만 탐지합니다.
+compatibility: Git 저장소와 `skills/version-update/scripts` 하위 스크립트가 필요합니다. 마지막 git 경로를 고르기 전에 현재 저장소 안의 `skills/git-commit`, `.agents/skills/git-commit`, `.claude/skills/git-commit`, `.codex/skills/git-commit` 만 탐지합니다.
 ---
 
 # Version Update Skill
@@ -52,7 +52,7 @@ compatibility: Git 저장소와 `skills/version-update/scripts` 하위 스크립
 | `scripts/version-current.sh [file]` | 현재 버전 추출 (`file|version`) |
 | `scripts/version-bump.sh <current> <type>` | 다음 버전 계산 |
 | `scripts/version-apply.sh <new> [files...]` | 탐색/지정 파일에 버전 일괄 반영 |
-| `scripts/git-commit-detect.sh` | `~/.agents/skills` 또는 `~/.claude/skills` 에 usable 한 `git-commit` 스킬이 있는지 판정 |
+| `scripts/git-commit-detect.sh` | 현재 저장소의 스킬 디렉터리에 usable 한 `git-commit` 스킬이 있는지 판정 |
 | `scripts/git-commit.sh "msg" [files]` | `git-commit` 스킬이 없을 때만 사용하는 fallback 직접 커밋 helper |
 | `scripts/git-push.sh` | `git-commit` 스킬이 없을 때만 사용하는 fallback 직접 푸시 helper |
 
@@ -61,7 +61,7 @@ compatibility: Git 저장소와 `skills/version-update/scripts` 하위 스크립
 <git_integration>
 
 - 마지막 git 단계 전에 `scripts/git-commit-detect.sh` 를 먼저 실행한다.
-- detector는 순서대로 `~/.agents/skills/git-commit`, `~/.claude/skills/git-commit` 만 검사한다.
+- detector는 현재 저장소 안에서 순서대로 `skills/git-commit`, `.agents/skills/git-commit`, `.claude/skills/git-commit`, `.codex/skills/git-commit` 만 검사한다.
 - detector가 `installed|...` 를 반환할 때만 마지막 git 단계를 `git-commit` 스킬에 넘긴다.
 - `git-commit` 에 넘길 때는 `version-update` 로 실제 변경된 파일만 범위로 넘기고, 기본 메시지는 `chore: bump version to x.y.z` 를 사용한다.
 - detector가 `missing|...` 를 반환하면 `skills/version-update/scripts/` 아래 fallback 스크립트로 직접 처리한다.
@@ -109,8 +109,8 @@ git diff
 
 # 7) git-commit 스킬이 실제로 usable 한지 확인
 scripts/git-commit-detect.sh
-# -> installed|/abs/path/to/git-commit
-# 또는 missing|comma,separated,searched,paths|reason
+# -> installed|/abs/path/to/current-repo/skills/git-commit
+# 또는 missing|comma,separated,current-repo,paths|reason
 
 # 8a) git-commit 이 설치되어 있고 usable 하면 그 스킬로 마지막 git 단계 handoff
 # 기본 메시지: chore: bump version to 1.3.0
@@ -152,7 +152,7 @@ scripts/git-push.sh
 <scope_boundaries>
 
 - `version-update` 는 버전 탐색, 목표 버전 계산, 파일 갱신, diff 검토를 담당한다.
-- detector가 그 스킬이 usable 하다고 확인했을 때만 저장소 상태 확인, 스테이징 규율, 커밋 생성, push 확인은 `git-commit` 이 담당한다.
+- detector가 현재 저장소의 그 스킬이 usable 하다고 확인했을 때만 저장소 상태 확인, 스테이징 규율, 커밋 생성, push 확인은 `git-commit` 이 담당한다.
 - `skills/version-update/scripts/git-commit.sh`, `git-push.sh` 는 fallback helper일 뿐이고, `git-commit` 이 있을 때 기본 경로가 아니다.
 
 </scope_boundaries>
@@ -191,7 +191,7 @@ Trigger 체크:
 - [ ] `version-apply.sh`로 대상 파일 업데이트
 - [ ] `git diff`로 변경 검토
 - [ ] git 경로 선택 전에 `scripts/git-commit-detect.sh` 실행
-- [ ] detector가 `~/.agents/skills/git-commit`, `~/.claude/skills/git-commit` 만 검사함
+- [ ] detector가 현재 저장소 안의 `skills/git-commit`, `.agents/skills/git-commit`, `.claude/skills/git-commit`, `.codex/skills/git-commit` 만 검사함
 - [ ] detector가 `installed|...` 를 반환하면 좁혀진 version-update 범위로 마지막 git 단계 handoff
 - [ ] detector가 `missing|...` 를 반환하면 fallback `scripts/git-commit.sh` 로 해당 파일만 직접 커밋
 - [ ] 푸시는 요청된 경우에만 실행
