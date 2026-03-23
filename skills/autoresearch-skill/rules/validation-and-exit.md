@@ -51,6 +51,8 @@ Expected location:
 
 Also confirm `results.json` and `results.tsv` tell the same story about score, pass rate, and keep/discard status.
 
+If the workflow opens `dashboard.html` directly in a local browser, also confirm the dashboard renders data under `file://` rather than showing an empty state because local JSON fetch is blocked.
+
 ## 5. Validate the Final Claim
 
 Do not claim success unless one of these is true:

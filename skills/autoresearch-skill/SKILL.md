@@ -78,7 +78,23 @@ Input policy:
 - Ask for clarification only when missing information would make the eval meaningless or push the skill toward the wrong behavior.
 - Do not start mutating the target skill before the baseline plan is explicit.
 
+For self-autoresearch or when the user does not supply a prompt pack:
+
+- use [references/self-test-pack.md](references/self-test-pack.md) as the default prompt and eval harness
+- record any deviations from that harness in the experiment log before scoring
+
 </required_inputs>
+
+<autonomy_contract>
+
+Once the baseline plan is explicit:
+
+- reuse the same prompt pack and eval suite across experiments
+- do not pause between experiments unless a blocker, safety issue, or invalid eval suite forces a stop
+- keep the loop to one mutation at a time
+- log any suite reset or scoring-method change as an explicit event before continuing
+
+</autonomy_contract>
 
 <skill_architecture>
 
@@ -89,6 +105,16 @@ Load support files intentionally:
 - Use [references/eval-guide.md](references/eval-guide.md) to design binary evals.
 - Use [references/skill-refactor-guide.md](references/skill-refactor-guide.md) when failures point to bad skill anatomy, weak support files, or poor trigger wording.
 - Use [references/artifact-spec.md](references/artifact-spec.md) for dashboard, results, changelog, and workspace schemas.
+- Use [references/self-test-pack.md](references/self-test-pack.md) when the target is another skill and you need a default self-eval harness.
+
+Artifact lifecycle requirements:
+
+- create the workspace under `.hypercore/autoresearch-[skill-name]/`
+- keep `results.tsv` and `results.json` synchronized after every experiment
+- treat `dashboard.html` as a live view backed by `results.json`
+- set `results.json.status` to `running` during the loop and `complete` when the run ends
+- make the dashboard render correctly when opened directly via `file://` in a local browser
+- open the dashboard immediately when the runtime can open local HTML safely
 
 When the target skill itself is weakly structured:
 
@@ -179,6 +205,7 @@ The completed run should leave:
 - the improved target skill in place
 - `.hypercore/autoresearch-[skill-name]/dashboard.html`
 - `.hypercore/autoresearch-[skill-name]/results.json`
+- `.hypercore/autoresearch-[skill-name]/results.js` or an equivalent file-backed bridge when direct local browser opening requires it
 - `.hypercore/autoresearch-[skill-name]/results.tsv`
 - `.hypercore/autoresearch-[skill-name]/changelog.md`
 - `.hypercore/autoresearch-[skill-name]/SKILL.md.baseline`

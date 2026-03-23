@@ -8,6 +8,7 @@ Use this reference when creating or reviewing the experiment workspace for an au
 .hypercore/autoresearch-[skill-name]/
 |-- dashboard.html
 |-- results.json
+|-- results.js        # optional but recommended for file:// browser fallback
 |-- results.tsv
 |-- changelog.md
 `-- SKILL.md.baseline
@@ -82,6 +83,24 @@ Required behavior:
 - show a table of experiments
 - show per-eval pass counts
 - show the current run status
+- reflect `running`, `idle`, and `complete` states from `results.json`
+- render correctly when opened directly from the local filesystem in Chrome or another browser using `file://`
+
+Lifecycle rules:
+
+- create `dashboard.html`, then open it immediately when the runtime can safely open local HTML
+- update `results.tsv` and `results.json` after every experiment
+- set `results.json.status` to `running` while experiments are executing
+- set `results.json.status` to `complete` when the loop finishes
+- if the dashboard is opened via `file://`, do not rely only on `fetch("./results.json")`
+- provide a file-backed fallback such as `results.js` that assigns the same data to a browser global
+- keep `results.js` synchronized with `results.json` whenever the fallback file exists
+
+Recommended browser-safe pattern:
+
+- prefer `fetch("./results.json")` when served over HTTP
+- fall back to loading `results.js` when the page is opened directly from disk
+- treat both sources as views over the same result data, not separate state
 
 Preferred styling:
 
