@@ -14,6 +14,7 @@ npx skills add alpoxdev/hypercore
 
 | 스킬 | 설명 |
 |------|------|
+| `autoresearch-skill` | 반복 실행과 이진 eval 기반으로 기존 스킬을 자동 최적화 |
 | `bug-fix` | 버그 분석 및 수정 |
 | `codex` | OpenAI Codex CLI 실행 및 세션 관리 |
 | `crawler` | 웹 크롤링 플로우 설계 및 코드 생성 |
