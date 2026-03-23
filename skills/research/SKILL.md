@@ -1,151 +1,116 @@
 ---
 name: research
-description: Run structured general-purpose research and produce human-readable reports. Use when users ask for fact-finding, comparisons, market/trend analysis, or evidence-based summaries with quick/standard/deep depth.
-compatibility: Requires external search-capable tooling (WebSearch/WebFetch/MCP where available) and source-verification capability.
+description: Research a topic and deliver a source-backed markdown report when the user needs fact-finding, comparisons, market or trend analysis, or evidence-backed recommendations across live web, official docs, GitHub, and local repository sources.
+compatibility: Works best with live search or fetch tools, official-doc access such as Context7 when available, GitHub or repo search for code evidence, and local file search for project-only topics.
 ---
+
+@rules/research-workflow.md
+@rules/validation.md
 
 # Research Skill
 
-> General research -> human-readable structured report.
+> Investigate a topic, verify the evidence, and save a reusable report.
 
 <purpose>
 
-Input: topic (natural language) + optional depth (`--quick` / default / `--deep`)
-Output: `.hypercore/research/[NN].topic_summary.md`
+- Turn a research question into a saved markdown brief under `.hypercore/research/`.
+- Prefer evidence gathering and synthesis over freeform writing.
+- Keep the core skill lean and load support files only when they change the search or reporting plan.
 
 </purpose>
 
-<trigger_conditions>
+<routing_rule>
 
-| Trigger | Action |
-|------|------|
-| `/research AI agent framework comparison` | Technical comparison research |
-| `/research --deep Korea SaaS market trends` | Deep market research |
-| `/research --quick WebSocket vs SSE` | Fast technical comparison |
-| "Research X for me" | Clarify topic, then execute |
+Use `research` when the main job is fact-finding, comparison, trend analysis, or an evidence-backed recommendation.
 
-If ARGUMENT is missing, ask immediately: "What topic should I research?"
+Do not use `research` when:
 
-</trigger_conditions>
+- the user only wants writing, rewriting, or presentation polish without new evidence gathering
+- the user only needs a narrow library or API lookup with no synthesis; use direct official-doc lookup instead
+- the main job is code modification, debugging, or implementation rather than gathering evidence
 
-<depth_levels>
+</routing_rule>
 
-| Mode | quick | standard (default) | deep |
-|------|------|------|------|
-| Query count | 3-5 | 5-10 | 10-15 |
-| Agents | researcher 2 + explore 0-1 | researcher 3-4 + explore 0-1 | researcher 4-5 + explore 1 + MCP |
-| Iterative pass | No | No | Yes |
-| Minimum sources | 5 | 10 | 20+ |
-| Report size | 500-1000 chars | 1500-3000 chars | 3000-6000 chars |
+<activation_examples>
 
-</depth_levels>
+Positive requests:
 
-<topic_classification>
+- "Research AI agent framework tradeoffs for me."
+- "Compare WebSocket and SSE for realtime notifications."
+- "Look up the latest Korea SaaS market trends and summarize them."
 
-| Type | Keywords | Channels |
-|------|------|------|
-| Technical comparison | vs, compare | WebSearch + explore(gh) |
-| Market/trend | market, trend | WebSearch + Firecrawl |
-| Competitor analysis | competitor, alternatives | WebSearch + GitHub MCP |
-| Academic/concept | principle, paper | WebSearch(arXiv) + WebFetch |
-| Internal project | our code | explore + Grep |
-| Library/package | `package@version` | Delegate to docs-fetch |
+Negative requests:
 
-</topic_classification>
+- "Rewrite this report so it sounds more executive."
+- "Implement the migration after you read the docs."
 
-<mandatory_reasoning>
+Boundary requests:
 
-## Mandatory Sequential Thinking
+- "`/research react useEffectEvent`"
+  Use `research` only if the user wants synthesis across multiple sources; otherwise do a direct official-doc lookup.
+- "`/research`"
+  Ask immediately for the missing topic before doing any collection work.
 
-- Always use `sequential-thinking` for Phase 1 (query strategy design).
-- For deep mode, also use `sequential-thinking` in Phase 3 (gap analysis and second-pass query planning).
-- Include current year (`2026`) in recency-sensitive query sets.
-- Do not produce conclusions without explicit structured reasoning.
+</activation_examples>
 
-</mandatory_reasoning>
+<depth_modes>
 
-<parallel_agent_execution>
+| Mode | Query budget | Source floor | Second pass | Deliverable shape |
+|------|------|------|------|------|
+| `--quick` | 1-3 distinct searches | 3+ reviewed, 2+ cited | No | short answer or brief memo |
+| default | 4-6 distinct searches | 6+ reviewed, 4+ cited | Only if gaps remain | standard report |
+| `--deep` | 7-10 distinct searches | 10+ reviewed, 6+ cited | Yes | decision memo with caveats |
 
-- Use Agent Teams first when 3+ workers are needed.
-- Fallback to parallel Task calls when Agent Teams is unavailable.
-- quick mode (<=2 workers) may run direct parallel tasks.
+</depth_modes>
 
-</parallel_agent_execution>
+<support_file_read_order>
+
+Read in this order:
+
+1. This core `SKILL.md` to confirm that the job is research and to pick the depth.
+2. [instructions/sourcing/reliable-search.md](/Users/alpox/Desktop/dev/kood/hypercore/instructions/sourcing/reliable-search.md) before running multiple live searches so query dedupe, recency handling, and stop conditions stay explicit.
+3. [references/channel-selection.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/research/references/channel-selection.md) when choosing between local repo search, official docs, GitHub evidence, and live web sources.
+4. [references/report-template.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/research/references/report-template.md) when drafting or saving the report.
+5. [rules/validation.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/research/rules/validation.md) before declaring the research complete.
+
+</support_file_read_order>
 
 <workflow>
 
-| Phase | Task | Tool |
+| Phase | Task | Output |
 |------|------|------|
-| 0 | Parse input + detect MCP + classify topic | ToolSearch |
-| 1 | Build search strategy | Sequential Thinking (2 steps) |
-| 2 | Parallel collection | researcher + explore + MCP |
-| 3 | Gap analysis + second-pass collection (deep only) | analyst -> researcher |
-| 4 | Build report | general-purpose |
-| 5 | Save + return concise summary | Write |
+| 0 | Confirm topic, depth, scope, and whether the request is date-sensitive | Research plan |
+| 1 | Choose channels and search questions | Query plan |
+| 2 | Collect evidence in priority order | Source set |
+| 3 | Synthesize a conclusion-first report with citations | Draft report |
+| 4 | Save under `.hypercore/research/` and run validation | Final report + concise user summary |
 
-### Phase 1 requirements
-- Define 3-5 core research questions
-- Define scope (time/region/language)
-- Generate bilingual query set when useful
-- Assign channels/agents intentionally
+### Phase rules
 
-### Phase 4 writing principles
-- Conclusion first (pyramid principle)
-- Every key claim must include source URL
-- Progressive disclosure (summary -> detail)
-- Use comparison tables where relevant
+- If the topic is missing, ask for it before any search.
+- If the request is broad, high-stakes, or `--deep`, use sequential thinking to define 3-5 research questions, scope, date constraints, and stop conditions before searching.
+- If the request is narrow and low-risk, state a short plan and start collecting without turning the skill into a planning exercise.
+- Prefer repo-local search for internal project questions, official docs for package or API questions, GitHub evidence for release or implementation history, and live web sources for market, news, or trend work.
+- When the user asks for "latest", "current", "today", or similar wording, verify with live sources and write exact dates in the report instead of relative dates.
+- Save before closing. Do not stop at a chat answer if the skill was invoked to produce a report.
 
 </workflow>
 
-<report_template>
+<required>
 
-```markdown
-# [Topic] Research Report
+- Keep search queries distinct and stop when the evidence is sufficient; do not repeat the same query across channels.
+- Prefer primary or official sources first for technical and product claims.
+- Attach a link to every non-obvious claim in the final report.
+- Use comparison tables when judging alternatives.
+- Record unresolved conflicts or missing evidence explicitly instead of smoothing them over.
 
-> Date: YYYY-MM-DD | Depth: quick/standard/deep | Sources: N reviewed, M cited
+</required>
 
-## Executive Summary
-[250-400 chars, conclusion first]
+<forbidden>
 
-## 1. Research Scope
-### 1.1 Background
-### 1.2 Scope
-### 1.3 Method
+- Hardcoding a specific year into evergreen search or reasoning rules
+- Claims without citations
+- Comparison conclusions without a visible evidence basis
+- Placeholder tool or role names when the local runtime already offers a clearer direct path
 
-## 2. Key Findings
-### 2.1 [Finding 1]
-Core: [one-line summary]
-Details: ...
-Source: [Title](URL)
-
-## 3. Comparative Analysis (if needed)
-| Criteria | A | B | C |
-|------|---|---|---|
-
-## 4. Trends and Implications
-
-## 5. Conclusion and Recommendations
-
-## References
-- [Title](URL)
-```
-
-</report_template>
-
-<validation>
-
-| Item | Required |
-|------|------|
-| ARGUMENT | Ask immediately if missing |
-| Strategy | Sequential-thinking trace for query strategy |
-| Sources | quick 5+, standard 10+, deep 20+ |
-| Recency | Include year/date awareness in source checks |
-| Output | Executive summary + sources + recommendations |
-| Save | `.hypercore/research/[NN].*.md` |
-
-Forbidden:
-- Claims without sources
-- Comparison conclusions without comparison evidence
-- Exiting without saving output
-
-</validation>
+</forbidden>
