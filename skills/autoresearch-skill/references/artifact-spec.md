@@ -5,7 +5,7 @@ Use this reference when creating or reviewing the experiment workspace for an au
 ## Workspace Shape
 
 ```text
-.hypercore/autoresearch-[skill-name]/
+.hypercore/autoresearch/[skill-name]/
 |-- dashboard.html
 |-- results.json
 |-- results.js        # optional but recommended for file:// browser fallback
@@ -114,8 +114,8 @@ Recommended browser-safe pattern:
 Recommended render sequence:
 
 ```bash
-skills/autoresearch-skill/scripts/render-dashboard.sh .hypercore/autoresearch-my-skill
-open .hypercore/autoresearch-my-skill/dashboard.html
+skills/autoresearch-skill/scripts/render-dashboard.sh .hypercore/autoresearch/my-skill
+open .hypercore/autoresearch/my-skill/dashboard.html
 ```
 
 Preferred styling:

@@ -257,7 +257,7 @@
       }
 
       document.getElementById("subtitle").textContent =
-        `${data.skill_name} workspace in .hypercore/autoresearch-${data.skill_name}/`;
+        `${data.skill_name} workspace in .hypercore/autoresearch/${data.skill_name}/`;
       document.getElementById("status-pill").textContent =
         data.status === "running" ? `Running experiment ${data.current_experiment}` :
         data.status === "complete" ? "Complete" :

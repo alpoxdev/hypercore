@@ -15,7 +15,7 @@ compatibility: Works best with read/edit/write and shell search tools for skill 
 
 - Optimize an existing skill by establishing a baseline, scoring outputs with binary evals, and keeping only changes that improve the score.
 - Strengthen weak skill structure when failures come from vague triggers, bloated core instructions, missing support files, or poor validation.
-- Produce an improved skill plus durable experiment artifacts under `.hypercore/autoresearch-[skill-name]/`: `results.tsv`, `results.json`, `changelog.md`, `dashboard.html`, and `SKILL.md.baseline`.
+- Produce an improved skill plus durable experiment artifacts under `.hypercore/autoresearch/[skill-name]/`: `results.tsv`, `results.json`, `changelog.md`, `dashboard.html`, and `SKILL.md.baseline`.
 
 </purpose>
 
@@ -110,7 +110,7 @@ Load support files intentionally:
 
 Artifact lifecycle requirements:
 
-- create the workspace under `.hypercore/autoresearch-[skill-name]/`
+- create the workspace under `.hypercore/autoresearch/[skill-name]/`
 - keep `results.tsv` and `results.json` synchronized after every experiment
 - treat `dashboard.html` as a live view backed by `results.json`
 - set `results.json.status` to `running` during the loop and `complete` when the run ends
@@ -132,7 +132,7 @@ When the target skill itself is weakly structured:
 |------|------|------|
 | 0 | Read the target skill and linked support files | Baseline understanding |
 | 1 | Convert success criteria into binary evals | Eval suite |
-| 2 | Initialize the experiment workspace and artifacts | `.hypercore/autoresearch-[skill-name]/` |
+| 2 | Initialize the experiment workspace and artifacts | `.hypercore/autoresearch/[skill-name]/` |
 | 3 | Run experiment `0` on the unmodified skill | Baseline score |
 | 4 | Run one-mutation-at-a-time experiments | Keep/discard decisions |
 | 5 | Validate the final result and summarize the run | Final report |
@@ -153,7 +153,7 @@ When the target skill itself is weakly structured:
 
 #### Phase 2: Prepare the workspace
 
-- Create `.hypercore/autoresearch-[skill-name]/` at the repository root.
+- Create `.hypercore/autoresearch/[skill-name]/` at the repository root.
 - Back up the original file as `SKILL.md.baseline`.
 - Initialize `results.tsv`, `results.json`, `changelog.md`, and `dashboard.html` using [references/artifact-spec.md](references/artifact-spec.md).
 - Render `dashboard.html` from the canonical template with `scripts/render-dashboard.sh`.
@@ -205,12 +205,12 @@ Avoid these mutation types:
 The completed run should leave:
 
 - the improved target skill in place
-- `.hypercore/autoresearch-[skill-name]/dashboard.html`
-- `.hypercore/autoresearch-[skill-name]/results.json`
-- `.hypercore/autoresearch-[skill-name]/results.js` or an equivalent file-backed bridge when direct local browser opening requires it
-- `.hypercore/autoresearch-[skill-name]/results.tsv`
-- `.hypercore/autoresearch-[skill-name]/changelog.md`
-- `.hypercore/autoresearch-[skill-name]/SKILL.md.baseline`
+- `.hypercore/autoresearch/[skill-name]/dashboard.html`
+- `.hypercore/autoresearch/[skill-name]/results.json`
+- `.hypercore/autoresearch/[skill-name]/results.js` or an equivalent file-backed bridge when direct local browser opening requires it
+- `.hypercore/autoresearch/[skill-name]/results.tsv`
+- `.hypercore/autoresearch/[skill-name]/changelog.md`
+- `.hypercore/autoresearch/[skill-name]/SKILL.md.baseline`
 
 See [references/artifact-spec.md](references/artifact-spec.md) for file schemas and examples.
 

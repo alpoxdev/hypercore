@@ -47,7 +47,7 @@ Confirm the workspace contains:
 
 Expected location:
 
-- `.hypercore/autoresearch-[skill-name]/`
+- `.hypercore/autoresearch/[skill-name]/`
 
 Also confirm `results.json` and `results.tsv` tell the same story about score, pass rate, and keep/discard status.
 Also confirm the dashboard was rendered from the canonical template rather than hand-edited drift.
