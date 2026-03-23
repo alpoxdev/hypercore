@@ -22,6 +22,40 @@ compatibility: Works best with read/edit/write and shell search tools for docume
 
 </purpose>
 
+<routing_rule>
+
+Use `docs-maker` when the output is a structured document, runbook, spec, prompt artifact, or harness rule pack.
+
+Use `skill-maker` instead when the output should become a reusable skill folder or a refactor of an existing skill.
+
+Do not use `docs-maker` when:
+
+- the main job is code changes, feature implementation, or bug fixing
+- the user needs a reusable skill rather than a document
+- the task is a product or architecture change and documentation is only a side effect
+
+</routing_rule>
+
+<activation_examples>
+
+Positive requests:
+
+- "Refactor this stale agent-operation guide so provider-specific rules move to references."
+- "Create a harness rule pack for prompts, tools, evals, safety gates, and context management."
+- "Refresh the OpenAI and Anthropic reference entries, then update the dependent canonical docs."
+
+Negative requests:
+
+- "Create a new Codex skill for browser QA."
+- "Fix architecture violations in a TanStack Start route refactor."
+
+Boundary request:
+
+- "Create a guide for writing skills."
+  Use `docs-maker` only if the output is a document or runbook. Use `skill-maker` if the output should become a reusable skill folder.
+
+</activation_examples>
+
 <trigger_conditions>
 
 | Situation | Mode |
@@ -67,6 +101,17 @@ Move guidance into official reference files when any of the following is true:
 Keep guidance in canonical core files when it remains true across providers and model generations.
 
 </reference_routing>
+
+<support_file_read_order>
+
+Read in this order:
+
+1. The core `SKILL.md` to decide whether the task is `create`, `refactor`, or a route-away case.
+2. `rules/sequential-thinking.md`, `rules/context-engineering.md`, and `rules/harness-engineering.md` when planning the structure, context shape, or harness coverage.
+3. `rules/required-behaviors.md` and `rules/forbidden-patterns.md` before declaring the document done.
+4. `references/official/openai.md` and `references/official/anthropic.md` only when provider-sensitive guidance materially changes the rule.
+
+</support_file_read_order>
 
 <mandatory_reasoning>
 
@@ -225,6 +270,14 @@ Completion checklist:
 - [ ] Document updated with compact structure
 - [ ] Readback pass confirms the updated docs still match the intended workflow
 - [ ] Validation checks completed
+
+Must-pass thresholds:
+- [ ] At least 3 positive trigger examples
+- [ ] At least 2 negative trigger examples
+- [ ] At least 1 boundary trigger example
+- [ ] Support-file read order is explicit enough to start without searching
+- [ ] Route-away requests name the neighboring skill or direct surface
+- [ ] English and Korean core workflows expose the same phase order and readback path
 
 Reviewer quick gate:
 - Fail if canonical docs contain fixed model literals.

@@ -22,6 +22,40 @@ compatibility: 문서 분석, 출처 검증, 품질 점검을 위해 read/edit/w
 
 </purpose>
 
+<routing_rule>
+
+출력이 구조화 문서, 런북, 명세, 프롬프트 산출물, 하네스 규칙 팩이라면 `docs-maker`를 사용합니다.
+
+출력이 재사용 가능한 스킬 폴더이거나 기존 스킬 리팩토링이어야 한다면 대신 `skill-maker`를 사용합니다.
+
+다음 경우에는 `docs-maker`를 사용하지 않습니다.
+
+- 주된 작업이 코드 변경, 기능 구현, 버그 수정인 경우
+- 사용자가 문서가 아니라 재사용 가능한 스킬을 원하는 경우
+- 과제가 제품 또는 아키텍처 변경이고 문서는 부수 산출물에 불과한 경우
+
+</routing_rule>
+
+<activation_examples>
+
+긍정 요청:
+
+- "오래된 에이전트 운영 가이드를 리팩토링해서 provider-specific 규칙을 references로 옮겨줘."
+- "프롬프트, 도구, eval, safety gate, context management용 하네스 규칙 팩을 만들어줘."
+- "OpenAI와 Anthropic reference 항목을 갱신하고, 의존하는 canonical 문서도 업데이트해줘."
+
+부정 요청:
+
+- "브라우저 QA용 새 Codex 스킬을 만들어줘."
+- "TanStack Start 라우트 리팩토링의 아키텍처 위반을 고쳐줘."
+
+경계 요청:
+
+- "스킬 작성 가이드를 만들어줘."
+  결과물이 문서나 런북이면 `docs-maker`를 사용하고, 재사용 가능한 스킬 폴더가 되어야 하면 `skill-maker`를 사용합니다.
+
+</activation_examples>
+
 <trigger_conditions>
 
 | 상황 | 모드 |
@@ -67,6 +101,17 @@ compatibility: 문서 분석, 출처 검증, 품질 점검을 위해 read/edit/w
 여러 provider와 여러 model 세대에 걸쳐 유지되는 규칙만 표준 코어에 둡니다.
 
 </reference_routing>
+
+<support_file_read_order>
+
+다음 순서로 읽습니다.
+
+1. 코어 `SKILL.ko.md`를 읽어 이 작업이 `create`, `refactor`, 혹은 route-away 사례인지 먼저 결정합니다.
+2. 구조 계획, 컨텍스트 형태, 하네스 범위를 잡아야 할 때 `rules/sequential-thinking.ko.md`, `rules/context-engineering.ko.md`, `rules/harness-engineering.ko.md`를 읽습니다.
+3. 문서 완료 선언 전 `rules/required-behaviors.ko.md`와 `rules/forbidden-patterns.ko.md`를 읽고 검증합니다.
+4. provider 민감한 가이드가 실제 규칙을 바꿀 때만 `references/official/openai.ko.md`와 `references/official/anthropic.ko.md`를 읽습니다.
+
+</support_file_read_order>
 
 <mandatory_reasoning>
 
@@ -120,11 +165,13 @@ compatibility: 문서 분석, 출처 검증, 품질 점검을 위해 read/edit/w
 
 | Phase | 작업 | 결과물 |
 |------|------|------|
+| 0 | 쓰기 전에 대상 계층(`core` / `reference` / `local overlay`)을 확인 | 배치 결정 |
 | 1 | 대상 문서를 읽고 모드(`create`/`refactor`)를 분류 | 범위 + 모드 |
 | 2 | `sequential-thinking`으로 구조 계획 수립 | 섹션 계획 |
 | 3 | canonical 본문 작성/리팩토링 | 갱신된 문서 |
 | 4 | provider 민감한 내용이 있으면 공식 reference 추가/갱신 | reference 계층 |
-| 5 | 품질, 일관성, 출처 최신성 검증 | 최종 문서 |
+| 5 | drift, mixed concern, 계층 배치를 readback pass로 점검 | 리뷰 노트 |
+| 6 | 품질, 일관성, 출처 최신성 검증 | 최종 문서 |
 
 ### Phase 3 작성 규칙
 
@@ -213,6 +260,7 @@ compatibility: 문서 분석, 출처 검증, 품질 점검을 위해 read/edit/w
 | 모델 중립성 | canonical core 문서에 고정 모델명이 없음 |
 
 완료 체크리스트:
+- [ ] 쓰기 전에 대상 계층 결정
 - [ ] 모드 결정(`create` 또는 `refactor`)
 - [ ] `sequential-thinking` 계획 선행
 - [ ] Context engineering 점검(`rules/context-engineering.ko.md`) 적용
@@ -221,6 +269,14 @@ compatibility: 문서 분석, 출처 검증, 품질 점검을 위해 read/edit/w
 - [ ] 문서를 압축된 구조로 갱신
 - [ ] readback pass로 워크플로우 일치 여부 확인
 - [ ] 검증 항목 점검 완료
+
+반드시 통과해야 하는 기준:
+- [ ] 긍정 트리거 예시 3개 이상
+- [ ] 부정 트리거 예시 2개 이상
+- [ ] 경계 트리거 예시 1개 이상
+- [ ] 지원 파일 읽기 순서가 검색 없이 시작할 만큼 명확함
+- [ ] route-away 요청에 인접 스킬 또는 직접 표면이 명시됨
+- [ ] 영어/한국어 코어 워크플로우가 같은 phase 순서와 readback 경로를 드러냄
 
 리뷰어 빠른 게이트:
 - canonical 문서에 고정 모델명이 있으면 실패
