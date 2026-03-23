@@ -4,248 +4,93 @@ version: 1.6.0
 description: 사용자가 복잡한 추론, 리서치, AI 지원을 위해 Google Gemini CLI를 호출하려 할 때 사용. 트리거 문구: "gemini 써줘", "gemini한테 물어봐", "gemini 실행해", "gemini 불러줘", "gemini cli", "Google AI", "Gemini 추론", 또는 Google AI 모델 요청, 고급 추론, 웹 검색 리서치, 이전 Gemini 대화 이어가기 등.
 ---
 
+@rules/routing.ko.md
+
 # Gemini: Claude Code용 Google AI 어시스턴트
 
----
+## 라우팅
 
-## 기본 모델: Gemini 3.1 Pro
+이 요청이 실제로 Gemini CLI 또는 Gemini 세션을 필요로 할 때만 이 스킬을 사용한다.
 
-**모든 Gemini 호출의 기본 모델은 `gemini-3.1-pro-preview`다.**
+- 범위가 애매하면 먼저 [rules/routing.ko.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/gemini/rules/routing.ko.md)를 읽고 명령을 만들지 결정한다.
+- 일반 문서 작성, 런북 정리, Gemini 없이 가능한 직접 편집은 다른 스킬이나 직접 작업으로 전환한다.
 
-- 사용자가 명시적으로 다른 모델을 요청하지 않으면 항상 `gemini-3.1-pro-preview` 사용
-- 현재 사용 가능한 최고 추론 모델 (2026년 2월 19일 출시)
-- CLI 기본값(플래그 없음)은 `gemini-3-flash-preview` (빠르지만 성능 낮음)
-- 폴백 체인: `gemini-3.1-pro-preview` → `gemini-3-pro-preview` → `gemini-2.5-flash`
+## 기본값
 
-```bash
-# 기본 호출 - 항상 gemini-3.1-pro-preview 사용
-gemini -m gemini-3.1-pro-preview "프롬프트"
-```
+| 항목 | 기본값 |
+|------|--------|
+| 모델 선택 | 사용자가 `-m` 을 명시적으로 원하지 않으면 Gemini CLI 기본 모델 사용 |
+| 승인 모드 | `--approval-mode default` |
+| 헤드리스 모드 | `-p` / `--prompt` |
+| 재개 대상 | `gemini --resume latest` |
 
----
+모델은 사용자가 명시적으로 요청할 때만 묻거나 고정한다.
 
-## 핵심: 헤드리스 모드의 `-p` 플래그
+## 핵심: 헤드리스 모드의 `-p`
 
-**필수**: Claude Code의 비대화형(헤드리스) 실행에는 `-p`/`--prompt` 플래그를 사용한다.
-
-Gemini CLI v0.29.0+부터 위치 인수 프롬프트는 기본적으로 **대화형 모드**로 동작한다. `-p` 플래그가 **비대화형(헤드리스) 모드**의 올바른 방법이다.
-
-**예시:**
-- `gemini -m gemini-3.1-pro-preview -p "프롬프트"` (올바름 - 헤드리스 모드)
-- `gemini -m gemini-3.1-pro-preview "프롬프트"` (파이프 연결 시 동작하지만 `-p`가 더 명확)
-- `gemini -r latest` (세션 재개)
-
----
-
-## 중요: Preview Features & OAuth 무료 티어
-
-**헤드리스 모드의 OAuth 무료 티어 사용자:**
-
-`~/.gemini/settings.json`에서 `previewFeatures: true`이면 CLI가 모든 요청을 Gemini 3.1 Pro로 라우팅한다 (`-m gemini-2.5-pro`여도). 무료 티어는 Gemini 3 접근 권한이 없어 404 오류가 발생한다.
-
-**해결책**: 안정적인 헤드리스 동작을 위해 preview features 비활성화:
-```json
-// ~/.gemini/settings.json
-{
-  "general": {
-    "previewFeatures": false
-  }
-}
-```
-
-**플러그인 동작**: 이 스킬은 404 오류 발생 시 자동으로 `gemini-2.5-flash`로 폴백한다. Flash는 OAuth 무료 티어에서 항상 동작한다.
-
----
-
-## 트리거 예시
-
-다음과 같은 문구에서 이 스킬이 활성화된다:
-- "이 주제를 gemini로 리서치해줘"
-- "이 디자인 패턴에 대해 gemini한테 물어봐"
-- "이 분석에 gemini 실행해줘"
-- "이 문제를 gemini로 도움받아줘"
-- "이 작업에 Google AI가 필요해"
-- "이것에 대한 Gemini의 추론을 가져와"
-- "gemini 계속해줘" 또는 "gemini 세션 재개해줘"
-- "Gemini, 이것 도와줘" 또는 그냥 "Gemini"
-- "Gemini 3 써줘" 또는 "Gemini 2.5 써줘"
-
-## 사용 시기
-
-다음 상황에서 이 스킬을 호출한다:
-- 사용자가 명시적으로 "Gemini"를 언급하거나 Gemini 지원을 요청할 때
-- Google AI 모델로 추론, 리서치, 분석이 필요할 때
-- 복잡한 문제 해결이나 아키텍처 설계가 필요할 때
-- 웹 검색 통합 리서치 기능이 필요할 때
-- 이전 Gemini 대화를 이어가고 싶을 때
-- 특정 작업에서 Codex나 Claude 대신 다른 선택지가 필요할 때
-
-## 동작 방식
-
-### 새 Gemini 요청 감지
-
-사용자 요청 시 **기본적으로 읽기 전용 모드(기본 승인)**를 사용하고, 파일 편집을 명시적으로 요청할 때만 변경한다:
-
-**모든 작업에 `gemini-3.1-pro-preview` + `default` 승인 모드 사용:**
-- 아키텍처, 설계, 검토, 리서치
-- 설명, 분석, 문제 해결
-- 코드 분석 및 이해
-- 사용자가 파일 편집을 명시적으로 요청하지 않는 모든 작업
-
-**승인 모드 선택:**
-- **`default`** (기본): 모든 작업 — 편집 시 승인 요청 (안전)
-- **`auto_edit`**: 사용자가 파일 편집을 명시적으로 요청할 때만
-- **`plan`**: 읽기 전용 모드 — 파일 수정 불가
-- **`yolo`**: 사용자가 전체 자동 승인을 원할 때 (주의해서 사용)
-
-**⚠️ 명시적 편집 요청**: 사용자가 "파일 편집", "코드 수정", "변경 사항 작성", "편집 해줘"를 명시적으로 요청할 때만 `--approval-mode auto_edit`를 사용한다.
-
-**폴백 체인** (기본 모델 사용 불가 시):
-1. `gemini-3.1-pro-preview` (기본 — 최고 성능)
-2. `gemini-2.5-pro` (안정적인 범용 추론)
-3. `gemini-2.5-flash` (빠름, 항상 사용 가능)
-
-### Bash CLI 명령어 구조
-
-**중요**: Gemini CLI는 Codex와 다르다 — `exec` 서브커맨드 불필요. 위치 프롬프트를 직접 사용한다.
-
-#### 기본 명령어 (읽기 전용) — 모든 작업에 사용
+비대화형 실행에는 항상 `-p` / `--prompt` 를 사용한다. 위치 인수 프롬프트는 대화형 모드로 들어간다.
 
 ```bash
-gemini -m gemini-3.1-pro-preview \
-  "마이크로서비스 e-커머스 아키텍처 설계해줘"
+# 비대화형
+gemini --approval-mode default -p "프롬프트"
+
+# 대화형
+gemini "프롬프트"
 ```
 
-#### 명시적 편집 요청 시만 — 사용자가 파일 편집을 요청할 때
+## 실행 절차
+
+[references/recipes.ko.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/gemini/references/recipes.ko.md)를 먼저 읽고 승인 모드를 바꾸거나, 샌드박스를 추가하거나, 세션을 재개한다.
+
+### 승인 모드 선택
+
+| 플래그 | 사용 시점 |
+|--------|-----------|
+| `--approval-mode default` | 일반 리서치, 추론, 표준 Gemini 사용 |
+| `--approval-mode auto_edit` | 사용자가 Gemini가 파일을 수정하길 명시적으로 요청했을 때만 |
+| `--approval-mode plan` | 파일 수정 없는 읽기 전용 계획/분석 |
+| `--yolo` | 사용자가 전체 자동 실행을 명시적으로 승인했을 때만 |
+
+### 명령 작성 규칙
+
+- 시작점은 `gemini --approval-mode default -p "프롬프트"` 다.
+- 특정 모델 제어가 필요할 때만 `-m <model>` 을 추가한다.
+- 일반 편집은 `--yolo` 대신 `--approval-mode auto_edit` 를 사용한다.
+- `--yolo` 는 사용 전에 반드시 확인한다.
+- 위험도가 높거나 로컬 제약이 더 필요하면 곧바로 `--yolo` 로 가지 말고 `--sandbox` 를 먼저 고려한다.
+
+### 세션 재개
 
 ```bash
-gemini -m gemini-3.1-pro-preview \
-  --approval-mode auto_edit \
-  "이 파일을 편집해서 함수를 리팩토링해줘"
-```
-
-#### 세션 이어가기
-
-```bash
-# 가장 최근 세션 재개
-gemini -r latest
-
-# 특정 인덱스 세션 재개
-gemini -r 3
-
-# 재개하면서 새 프롬프트 추가
-gemini -r latest "캐싱 전략 논의 계속해줘"
-```
-
-### 모델 선택 로직
-
-**모든 작업에 `gemini-3.1-pro-preview` (기본):**
-- 코드 편집, 리팩토링, 구현
-- 아키텍처 또는 시스템 설계
-- 리서치 또는 분석
-- 복잡한 개념 설명
-- 구현 전략 계획
-- 범용 문제 해결 및 고급 추론
-
-**`gemini-2.5-pro`로 폴백 시:**
-- Gemini 3.1 Pro 사용 불가 또는 할당량 소진 시
-- 사용자가 명시적으로 "Gemini 2.5" 또는 "2.5 써줘" 요청 시
-- 안정적인 프로덕션 작업 시
-
-**`gemini-2.5-flash`로 폴백 시:**
-- Gemini 3.1 Pro와 2.5 Pro 모두 사용 불가 시
-- 빠른 반복이 필요할 때 (사용자 명시 요청)
-- 간단하고 빠른 응답 (사용자 명시 요청)
-
-### 버전별 모델 매핑
-
-| 사용자 요청 | 매핑 대상 | 실제 모델 ID |
-|-------------|----------|-------------|
-| "3 써줘" / "Gemini 3" | 최신 3.x Pro | `gemini-3.1-pro-preview` |
-| "2.5 써줘" | 2.5 Pro | `gemini-2.5-pro` |
-| "flash 써줘" | 2.5 Flash | `gemini-2.5-flash` |
-| 버전 미지정 | 최신 Pro (전체) | `gemini-3.1-pro-preview` |
-
-### 기본 설정
-
-| 파라미터 | 기본값 | CLI 플래그 | 비고 |
-|---------|--------|-----------|------|
-| 모델 | `gemini-3.1-pro-preview` | `-m gemini-3.1-pro-preview` | 모든 작업 (최고 성능) |
-| 모델 (폴백 1) | `gemini-2.5-pro` | `-m gemini-2.5-pro` | 3.1 Pro 불가 시 |
-| 모델 (폴백 2) | `gemini-2.5-flash` | `-m gemini-2.5-flash` | 무료 티어에서 항상 동작 |
-| 승인 모드 (기본) | `default` | 플래그 없음 | 안전한 기본값 — 편집 시 승인 요청 |
-| 승인 모드 (편집) | `auto_edit` | `--approval-mode auto_edit` | 사용자가 명시적으로 편집 요청 시만 |
-| 샌드박스 | `false` (비활성) | 플래그 없음 | 기본적으로 샌드박스 비활성 |
-| 출력 형식 | `text` | 플래그 없음 | 사람이 읽는 텍스트 출력 |
-| 웹 검색 | 적절 시 활성 | `-e web_search` (필요 시) | 상황에 따라 다름 |
-
-### 오류 처리
-
-#### CLI 미설치
-
-**오류**: `command not found: gemini`
-
-**메시지**: "Gemini CLI가 설치되지 않았습니다. 설치: https://github.com/google-gemini/gemini-cli"
-
-#### 인증 필요
-
-**오류**: 출력에 "auth" 또는 "authentication" 포함
-
-**메시지**: "인증이 필요합니다. `gemini login`으로 Google 계정 인증을 진행하세요"
-
-#### 속도 제한 초과
-
-**오류**: 출력에 "quota", "rate limit" 또는 상태 429 포함
-
-**메시지**: "속도 제한 초과 (분당 60회, 무료 티어 일 1000회). X초 후 재시도하거나 계정을 업그레이드하세요."
-
-#### 모델 사용 불가
-
-**오류**: 출력에 "model not found", "404" 또는 상태 403 포함
-
-**메시지**: "모델 사용 불가. 폴백 모델 시도 중..."
-
-**동작**: 자동으로 폴백 시도:
-- `gemini-3.1-pro-preview` 불가 → `gemini-2.5-pro` 시도
-- `gemini-2.5-pro` 불가 → `gemini-2.5-flash` 시도
-
-#### 세션 없음
-
-**오류**: `-r` 플래그 사용 시 세션 없음
-
-**메시지**: "세션을 찾을 수 없습니다. `gemini --list-sessions`로 사용 가능한 세션을 확인하세요."
-
-#### Gemini 3.1 Pro 접근 거부
-
-**오류**: 상태 403 또는 "preview access required"
-
-**메시지**: "Gemini 3.1 Pro는 preview 접근이 필요합니다. 설정에서 Preview Features를 활성화하거나 `gemini-2.5-pro`를 사용하세요."
-
----
-
-## 예시
-
-### 기본 호출 (범용 추론)
-
-```bash
-# 시스템 아키텍처 설계
-gemini -m gemini-3.1-pro-preview "확장 가능한 결제 처리 시스템 설계해줘"
-
-# 웹 검색으로 리서치
-gemini -m gemini-3.1-pro-preview -e web_search "React 19 최신 기능 리서치해줘"
-
-# 복잡한 개념 설명
-gemini -m gemini-3.1-pro-preview "CAP 정리를 실제 예시로 설명해줘"
-```
-
-### 세션 관리
-
-```bash
-# 세션 시작 (자동)
-gemini -m gemini-3.1-pro-preview "인증 시스템 설계해줘"
-
-# 사용 가능한 세션 목록
+gemini --resume latest -p "후속 프롬프트"
 gemini --list-sessions
+```
+
+재개할 때는 기존 세션 동작을 유지하고, 사용자가 요청하지 않으면 모델이나 승인 모드를 바꾸지 않는다.
+
+### 완료 후
+
+- 결과와 함께 경고나 부분 출력이 있으면 같이 요약한다.
+- 사용자가 `gemini --resume latest` 로 다시 이어갈 수 있다고 알려준다.
+- 계속할지, 프롬프트를 조정할지, 직접 작업으로 돌아갈지 묻는다.
+
+## 비판적으로 사용하기
+
+Gemini를 **권위자**가 아니라 **동료**로 다룬다.
+
+- 자신 있는 내용은 그대로 유지하고, 틀렸다고 판단되면 바로 반박한다.
+- 의견이 갈리면 최신 문서나 현재 소스로 다시 확인한다.
+- 최신성이 중요하면 Gemini가 제시한 내용을 1차 자료나 공식 문서로 검증한다.
+- 실제로 애매할 때만 사용자에게 판단을 맡긴다.
+
+## 오류 처리
+
+- `command not found: gemini`: Gemini CLI 설치를 안내한다.
+- 인증 오류: `gemini` 를 실행해 로그인 플로우를 완료하거나 `GEMINI_API_KEY` / `GOOGLE_API_KEY` 설정을 확인한다.
+- 429 / rate limit: 잠시 기다리거나 계정 한도를 확인한다.
+- 404 / model not found: `-m` 없이 다시 시도하거나 `gemini --help` 와 공식 문서에 나온 지원 모델로 바꾼다.
+- 403 / access denied: 현재 인증 방식과 계정 권한을 확인하고 지원되는 모델/설정으로 재시도한다.
+- 세션 없음: `gemini --list-sessions` 로 사용 가능한 세션을 확인한다.
 
 # 가장 최근 세션 재개
 gemini -r latest
