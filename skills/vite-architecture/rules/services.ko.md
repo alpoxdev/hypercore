@@ -1,12 +1,12 @@
 # API 서비스
 
-> Vite 프로젝트 데이터 레이어 (클라이언트 사이드 API 래퍼)
+> Vite 프로젝트 데이터 레이어 (공개 가능한 클라이언트 API 래퍼)
 
 ---
 
 ## 개요
 
-Vite 프로젝트에는 서버 함수가 없습니다. 모든 데이터 접근은 `fetch`/`axios` 호출을 래핑하고 타입된 데이터를 반환하는 **서비스 함수**를 통해 이루어집니다.
+Vite 프로젝트에는 서버 함수가 없습니다. 모든 데이터 접근은 `fetch`/`axios` 호출을 래핑하고 타입된 데이터를 반환하는 **서비스 함수**를 통해 이루어집니다. route, hook, loader는 얇게 유지하고 직접 네트워킹 대신 service/query-option 헬퍼를 호출합니다.
 
 | 레이어 | 도구 | 용도 |
 |-------|------|---------|
@@ -129,7 +129,7 @@ export const deleteUser = async (id: string): Promise<void> => {
 
 ## 로더 프리페치 패턴
 
-> 라우트 로더에서 클라이언트 사이드 프리페치를 위해 `ensureQueryData` 사용
+> route loader에서 공개 가능한 프리페치를 위해 `ensureQueryData`를 사용합니다. 프로젝트가 나중에 SSR/manual rendering을 추가하면 같은 loader가 서버 렌더에도 참여할 수 있으므로, secret이나 private env는 loader에서 직접 읽지 않습니다.
 
 ```typescript
 // routes/users/index.tsx
@@ -184,4 +184,5 @@ apiClient.interceptors.response.use(
 | **검증** | POST/PUT/PATCH 전 Zod로 입력 검증 |
 | **queryOptions** | 로더와 훅에서 재사용을 위한 `queryOptions` 팩토리 익스포트 |
 | **직접 fetch 금지** | 라우트나 훅에서 `fetch`/`axios` 직접 호출 금지 |
+| **공개 가능한 loader** | loader는 services/query options만 호출하고 secret/private env를 직접 읽지 않음 |
 | **에러 처리** | 에러는 `errorComponent`로 전파; 401/403은 인터셉터에서 처리 |

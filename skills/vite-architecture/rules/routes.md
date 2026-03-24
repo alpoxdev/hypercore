@@ -2,6 +2,8 @@
 
 > Vite + TanStack Router file-based routing
 
+Note: TanStack Router officially supports both flat file routes and folder routes. Hypercore intentionally prefers folder routes for pages that own `-components/` or `-hooks/`, because that keeps UI, logic, and nested page assets together.
+
 ---
 
 ## Route Folder Structure
@@ -11,16 +13,23 @@ routes/
 ├── __root.tsx           # Root Layout
 ├── index.tsx            # / (Home)
 ├── users/
+│   ├── route.tsx        # Shared layout / beforeLoad / loader
 │   ├── index.tsx        # /users (List)
-│   ├── $id.tsx          # /users/:id (Detail)
 │   ├── -components/     # Page-specific components (REQUIRED)
 │   ├── -hooks/          # Page-specific hooks (REQUIRED)
+│   ├── $id/
+│   │   ├── index.tsx    # /users/:id (Detail)
+│   │   ├── -components/ # REQUIRED
+│   │   └── -hooks/      # REQUIRED
 │   └── -sections/       # Section separation (optional, complex pages only)
 └── posts/
     ├── index.tsx
-    ├── $slug.tsx
     ├── -components/     # REQUIRED
-    └── -hooks/          # REQUIRED
+    ├── -hooks/          # REQUIRED
+    └── $slug/
+        ├── index.tsx
+        ├── -components/
+        └── -hooks/
 ```
 
 | Prefix | Purpose | Route Generated |
@@ -34,6 +43,8 @@ routes/
 - NO `-functions/` folder (no server functions in Vite)
 - Custom Hooks MUST be separated into `-hooks/` folder **regardless of page size**
 - `-sections/` is optional, only for complex pages (200+ lines)
+- Use `route.tsx` for shared layout, `beforeLoad`, or shared loader behavior
+- If the repo customizes `routeToken`, keep the convention explicit in `tsr.config.json`
 
 ---
 
@@ -43,9 +54,10 @@ routes/
 |------|----------|-------------|
 | `/` | `index.tsx` | Index route |
 | `/users` | `users/index.tsx` | List page |
-| `/users/:id` | `users/$id.tsx` | Dynamic parameter |
+| `/users/:id` | `users/$id/index.tsx` | Dynamic parameter |
 | `/dashboard/*` | `dashboard/$.tsx` | Catch-all route |
 | Layout | `__root.tsx` | Root layout |
+| Folder layout | `users/route.tsx` | Layout for child pages under `/users` |
 | Pathless | `_layout.tsx` | Pathless layout |
 
 ---
@@ -71,13 +83,14 @@ const UsersPage = (): JSX.Element => {
 }
 ```
 
-## Loader Pattern (Client-side Prefetch)
+## Loader Pattern (Client-Reachable Prefetch)
 
-> Loaders in Vite run client-side. Use `ensureQueryData` to prefetch TanStack Query data.
+> Treat route loaders as client-reachable code. In a typical SPA-only Vite app they run on navigation in the browser. If the repo later adds SSR or manual server rendering, the same loader may also participate in server render. Keep loaders public-safe either way.
 
 ```tsx
-// routes/users/$id.tsx
+// routes/users/$id/index.tsx
 import { createFileRoute } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
 import { userQueryOptions } from '@/services/user/queries'
 
 export const Route = createFileRoute('/users/$id')({
@@ -217,7 +230,7 @@ export const Route = createFileRoute('/posts/')({
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/dashboard')({
-  beforeLoad: ({ context }) => {
+  beforeLoad: ({ context, location }) => {
     if (!context.auth.isAuthenticated) {
       throw redirect({ to: '/login', search: { redirect: location.href } })
     }
@@ -241,6 +254,6 @@ export const Route = createFileRoute('/dashboard')({
 
 | Page Size | Required | Optional |
 |-----------|----------|----------|
-| ~100 lines | `-components/`, `-hooks/` | - |
+| ~100 lines | `route.tsx` when shared layout/loader exists, plus `-components/`, `-hooks/` | - |
 | 100-200 lines | `-components/`, `-hooks/` | - |
 | 200+ lines | `-components/`, `-hooks/` | `-sections/` |

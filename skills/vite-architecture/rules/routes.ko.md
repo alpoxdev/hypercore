@@ -2,6 +2,8 @@
 
 > Vite + TanStack Router 파일 기반 라우팅
 
+참고: TanStack Router는 flat file route와 folder route를 모두 지원합니다. 하지만 hypercore는 `-components/`나 `-hooks/`를 가진 페이지에서는 폴더형 route를 기본으로 사용합니다. 그래야 UI, 로직, 하위 페이지 자산을 한곳에 묶어 둘 수 있습니다.
+
 ---
 
 ## 라우트 폴더 구조
@@ -11,16 +13,23 @@ routes/
 ├── __root.tsx           # 루트 레이아웃
 ├── index.tsx            # / (홈)
 ├── users/
+│   ├── route.tsx        # shared layout / beforeLoad / loader
 │   ├── index.tsx        # /users (목록)
-│   ├── $id.tsx          # /users/:id (상세)
 │   ├── -components/     # 페이지 전용 컴포넌트 (필수)
 │   ├── -hooks/          # 페이지 전용 훅 (필수)
+│   ├── $id/
+│   │   ├── index.tsx    # /users/:id (상세)
+│   │   ├── -components/ # 필수
+│   │   └── -hooks/      # 필수
 │   └── -sections/       # 섹션 분리 (선택, 복잡한 페이지만)
 └── posts/
     ├── index.tsx
-    ├── $slug.tsx
     ├── -components/     # 필수
-    └── -hooks/          # 필수
+    ├── -hooks/          # 필수
+    └── $slug/
+        ├── index.tsx
+        ├── -components/
+        └── -hooks/
 ```
 
 | 접두사 | 용도 | 라우트 생성 |
@@ -34,6 +43,8 @@ routes/
 - `-functions/` 폴더 없음 (Vite에는 서버 함수 없음)
 - 커스텀 훅은 **페이지 크기와 무관하게** 반드시 `-hooks/` 폴더로 분리
 - `-sections/`는 선택사항, 복잡한 페이지(200줄 이상)만
+- shared layout, `beforeLoad`, shared loader가 있으면 `route.tsx` 사용
+- 저장소가 `routeToken`을 커스텀했다면 `tsr.config.json`에 그 규칙을 명시해 둠
 
 ---
 
@@ -43,9 +54,10 @@ routes/
 |------|----------|-------------|
 | `/` | `index.tsx` | 인덱스 라우트 |
 | `/users` | `users/index.tsx` | 목록 페이지 |
-| `/users/:id` | `users/$id.tsx` | 동적 파라미터 |
+| `/users/:id` | `users/$id/index.tsx` | 동적 파라미터 |
 | `/dashboard/*` | `dashboard/$.tsx` | 캐치올 라우트 |
 | 레이아웃 | `__root.tsx` | 루트 레이아웃 |
+| 폴더 레이아웃 | `users/route.tsx` | `/users` 하위 공용 레이아웃 |
 | Pathless | `_layout.tsx` | Pathless 레이아웃 |
 
 ---
@@ -71,13 +83,14 @@ const UsersPage = (): JSX.Element => {
 }
 ```
 
-## 로더 패턴 (클라이언트 사이드 프리페치)
+## 로더 패턴 (클라이언트에서 도달 가능한 프리페치)
 
-> Vite의 로더는 클라이언트에서 실행됩니다. `ensureQueryData`로 TanStack Query 데이터를 프리페치하세요.
+> route loader는 클라이언트에서 도달 가능한 코드로 취급합니다. SPA-only Vite 앱에서는 보통 브라우저 탐색 중 실행되지만, 저장소가 나중에 SSR/manual rendering을 추가하면 같은 loader가 서버 렌더에도 참여할 수 있습니다. 어떤 경우든 공개 가능한 로직만 loader에 둡니다.
 
 ```tsx
-// routes/users/$id.tsx
+// routes/users/$id/index.tsx
 import { createFileRoute } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
 import { userQueryOptions } from '@/services/user/queries'
 
 export const Route = createFileRoute('/users/$id')({
@@ -163,7 +176,7 @@ export const Route = createFileRoute('/posts/')({
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/dashboard')({
-  beforeLoad: ({ context }) => {
+  beforeLoad: ({ context, location }) => {
     if (!context.auth.isAuthenticated) {
       throw redirect({ to: '/login', search: { redirect: location.href } })
     }
@@ -187,6 +200,6 @@ export const Route = createFileRoute('/dashboard')({
 
 | 페이지 크기 | 필수 | 선택 |
 |-----------|----------|----------|
-| ~100줄 | `-components/`, `-hooks/` | - |
+| ~100줄 | shared layout/loader가 있으면 `route.tsx`, 그리고 `-components/`, `-hooks/` | - |
 | 100-200줄 | `-components/`, `-hooks/` | - |
 | 200줄+ | `-components/`, `-hooks/` | `-sections/` |

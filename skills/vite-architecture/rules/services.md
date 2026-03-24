@@ -1,12 +1,12 @@
 # API Services
 
-> Vite project data layer (client-side API wrappers)
+> Vite project data layer (public client-side API wrappers)
 
 ---
 
 ## Overview
 
-In Vite projects there are no server functions. All data access goes through **service functions** that wrap `fetch`/`axios` calls and return typed data.
+In Vite projects there are no server functions. All data access goes through **service functions** that wrap `fetch`/`axios` calls and return typed data. Routes, hooks, and loaders stay thin and call service/query-option helpers instead of networking directly.
 
 | Layer | Tool | Purpose |
 |-------|------|---------|
@@ -129,7 +129,7 @@ export const deleteUser = async (id: string): Promise<void> => {
 
 ## Loader Prefetch Pattern
 
-> Use `ensureQueryData` in route loaders for client-side prefetching
+> Use `ensureQueryData` in route loaders for public-safe prefetching. The loader may run during client navigation and can also participate in SSR/manual rendering if the project adds it later.
 
 ```typescript
 // routes/users/index.tsx
@@ -211,4 +211,5 @@ export const stripe = new Stripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 | **Validation** | Validate input with Zod before POST/PUT/PATCH |
 | **queryOptions** | Export `queryOptions` factories for reuse in loaders and hooks |
 | **No direct fetch** | Never call `fetch`/`axios` in routes or hooks - use service functions |
+| **Public-safe loaders** | Loaders only call services/query options and do not read secrets or private env values |
 | **Error handling** | Let errors propagate to `errorComponent`; handle 401/403 in interceptors |
