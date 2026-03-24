@@ -27,11 +27,16 @@ Record the unmodified state before experiment `0`.
 
 Suggested sections:
 
+- scope and owned package or module
+- selected pack name, pack type, and pack version
 - target scope
 - optimization goals
 - commands used for baseline measurement
+- proof command hash or exact command list
 - measured numbers or qualitative observations
+- environment or runner details
 - constraints that must not regress
+- rollback conditions
 - chosen prompt pack and eval suite
 
 ## `results.tsv`
@@ -62,6 +67,23 @@ Recommended shape:
   "current_experiment": 3,
   "baseline_score": 60.0,
   "best_score": 85.0,
+  "scope": {
+    "kind": "package",
+    "label": "apps/web"
+  },
+  "eval_pack": {
+    "name": "web",
+    "type": "trace-backed",
+    "version": "2026-03-24"
+  },
+  "proof_commands": {
+    "hash": "sha256:...",
+    "commands": ["pnpm --filter web build", "pnpm --filter web test"]
+  },
+  "environment": {
+    "os": "macos",
+    "runtime": "node 22"
+  },
   "experiments": [
     {
       "id": 0,
@@ -69,7 +91,14 @@ Recommended shape:
       "max_score": 20,
       "pass_rate": 60.0,
       "status": "baseline",
-      "description": "original codebase - no changes"
+      "promotion_state": "hold",
+      "description": "original codebase - no changes",
+      "dimensions": {
+        "quality": 3,
+        "regression": 4,
+        "resource": 2,
+        "safety": 3
+      }
     }
   ],
   "eval_breakdown": [
@@ -88,6 +117,12 @@ Status values:
 - `idle`
 - `complete`
 
+Promotion state values:
+
+- `hold`
+- `promote`
+- `rollback`
+
 ## `dashboard.html`
 
 Generate a single self-contained HTML file with inline CSS and JavaScript.
@@ -100,7 +135,9 @@ Required behavior:
 - fetch `results.json`
 - render a score progression line chart
 - render a colored bar per experiment
+- show scope, eval pack, environment, and current promotion state
 - show a table of experiments
+- show per-experiment dimension scores when present
 - show per-eval pass counts
 - show the current run status
 - reflect `running`, `idle`, and `complete` states from `results.json`
@@ -112,6 +149,7 @@ Lifecycle rules:
 - use `skills/autoresearch-code/scripts/render-dashboard.sh <artifact-dir>` as the default renderer
 - create `dashboard.html`, then open it immediately when the runtime can safely open local HTML
 - update `results.tsv` and `results.json` after every experiment
+- keep `scope`, `eval_pack`, `proof_commands`, `environment`, and experiment `dimensions` in sync with the current run
 - set `results.json.status` to `running` while experiments are executing
 - set `results.json.status` to `complete` when the loop finishes
 - if the dashboard is opened via `file://`, do not rely only on `fetch("./results.json")`

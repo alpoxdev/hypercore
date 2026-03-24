@@ -150,6 +150,17 @@
       <div id="experiments-wrap" class="empty">No experiments recorded yet.</div>
     </section>
 
+    <section class="grid">
+      <div class="panel">
+        <h2>Run Metadata</h2>
+        <div id="meta-wrap" class="empty">No run metadata recorded yet.</div>
+      </div>
+      <div class="panel">
+        <h2>Latest Dimensions</h2>
+        <div id="dimensions-wrap" class="empty">No dimension data recorded yet.</div>
+      </div>
+    </section>
+
     <section class="panel">
       <h2>Eval Breakdown</h2>
       <div id="eval-wrap" class="empty">No eval data recorded yet.</div>
@@ -221,6 +232,69 @@
         `<li>${item.name}: ${item.pass_count}/${item.total}</li>`).join("")}</ul>`;
     }
 
+    function renderMetadata(data) {
+      const wrap = document.getElementById("meta-wrap");
+      const scope = data.scope || {};
+      const pack = data.eval_pack || {};
+      const env = data.environment || {};
+      const latest = (data.experiments || []).length
+        ? data.experiments[data.experiments.length - 1]
+        : null;
+
+      const rows = [
+        ["Scope", [scope.kind, scope.label].filter(Boolean).join(": ") || "-"],
+        ["Eval Pack", [pack.name, pack.type, pack.version].filter(Boolean).join(" | ") || "-"],
+        ["Environment", [env.os, env.runtime].filter(Boolean).join(" | ") || "-"],
+        ["Promotion", latest?.promotion_state || "-"]
+      ];
+
+      wrap.className = "";
+      wrap.innerHTML = `
+        <table>
+          <tbody>
+            ${rows.map(([label, value]) => `
+              <tr>
+                <th>${label}</th>
+                <td>${value}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderDimensions(experiments) {
+      const wrap = document.getElementById("dimensions-wrap");
+      const latest = experiments.length ? experiments[experiments.length - 1] : null;
+      const dimensions = latest?.dimensions || null;
+
+      if (!dimensions || !Object.keys(dimensions).length) {
+        wrap.className = "empty";
+        wrap.textContent = "No dimension data recorded yet.";
+        return;
+      }
+
+      wrap.className = "";
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${Object.entries(dimensions).map(([name, value]) => `
+              <tr>
+                <td>${name}</td>
+                <td>${value}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
     function renderChart(experiments) {
       const ctx = document.getElementById("score-chart");
       const labels = experiments.map((exp) => exp.id);
@@ -273,6 +347,8 @@
       document.getElementById("current-exp").textContent = data.current_experiment ?? 0;
 
       renderExperiments(data.experiments || []);
+      renderMetadata(data);
+      renderDimensions(data.experiments || []);
       renderBreakdown(data.eval_breakdown || []);
       renderChart(data.experiments || []);
     }

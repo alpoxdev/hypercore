@@ -74,11 +74,12 @@ Collect these before the first mutation:
 
 1. Target scope. Default: current repository root.
 2. Optimization goals. Example: build time, bundle size, latency, flaky tests, query count, duplication, memory usage.
-3. Proof commands for the current behavior. Prefer existing build, test, typecheck, benchmark, or smoke commands.
-4. Three to five test prompts or scenarios.
-5. Three to six binary evals.
-6. Runs per experiment. Default: `5`.
-7. Optional budget cap.
+3. Evaluation pack. Choose one of: `generic`, `web`, `node`, `api`, or `monorepo`.
+4. Proof commands for the current behavior. Prefer existing build, test, typecheck, benchmark, or smoke commands.
+5. Three to five test prompts or scenarios.
+6. Three to six binary evals.
+7. Runs per experiment. Default: `5`.
+8. Optional budget cap.
 
 Input policy:
 
@@ -88,10 +89,22 @@ Input policy:
 
 For broad code optimization when the user does not supply a prompt pack:
 
-- use [references/self-test-pack.md](references/self-test-pack.md) as the default prompt and eval harness
-- record any deviations from that harness in the experiment log before scoring
+- use [references/self-test-pack.md](references/self-test-pack.md) to choose a domain pack first
+- fall back to the generic pack only when no domain pack fits
+- record the selected pack, pack version, and any deviations in the experiment log before scoring
 
 </required_inputs>
+
+<scope_contract>
+
+Before experiment `0`:
+
+- resolve whether the run owns the repository root, a subdirectory, or one package inside a larger codebase
+- do not mix multiple repositories in one experiment loop
+- record the owned scope and package or module boundaries in `baseline.md`
+- if the owned scope changes later, reset the baseline before scoring again
+
+</scope_contract>
 
 <baseline_contract>
 
@@ -126,13 +139,19 @@ Load support files intentionally:
 - Use [references/code-baseline-guide.md](references/code-baseline-guide.md) to capture the initial metrics and constraints before editing.
 - Use [references/eval-guide.md](references/eval-guide.md) to design binary evals for code optimization.
 - Use [references/artifact-spec.md](references/artifact-spec.md) for dashboard, results, changelog, and workspace schemas.
-- Use [references/self-test-pack.md](references/self-test-pack.md) when the user gives only a broad optimization request.
+- Use [references/self-test-pack.md](references/self-test-pack.md) when the user gives only a broad optimization request and you need to pick a domain pack.
+- Use one of the domain packs when the bottleneck shape is already clear:
+  - [references/self-test-pack.web.md](references/self-test-pack.web.md)
+  - [references/self-test-pack.node.md](references/self-test-pack.node.md)
+  - [references/self-test-pack.api.md](references/self-test-pack.api.md)
+  - [references/self-test-pack.monorepo.md](references/self-test-pack.monorepo.md)
 - Use `scripts/render-dashboard.sh` to materialize `dashboard.html` and `results.js` from the canonical dashboard template.
 
 Artifact lifecycle requirements:
 
 - create the workspace under `.hypercore/autoresearch-code/[codebase-name]/`
 - keep `results.tsv` and `results.json` synchronized after every experiment
+- record the owned scope, selected pack, environment, and rollback conditions in the artifacts
 - treat `dashboard.html` as a live view backed by `results.json`
 - set `results.json.status` to `running` during the loop and `complete` when the run ends
 - make the dashboard render correctly when opened directly via `file://` in a local browser
@@ -162,7 +181,9 @@ When the codebase itself is weakly structured:
 #### Phase 0: Understand the target
 
 - Read the relevant code area, build/test commands, and existing docs that define the system.
+- Resolve the owned repository or subdirectory scope before choosing commands.
 - Identify whether the dominant failure is performance, reliability, DX, architecture, or output size.
+- Choose the domain pack that matches the bottleneck before writing evals.
 - Record the non-regression constraints and the commands that prove them before writing evals.
 - Capture the initial metrics before editing anything.
 
@@ -197,7 +218,7 @@ When the codebase itself is weakly structured:
 #### Phase 5: Finish and deliver
 
 - Stop on user instruction, budget cap, or stable high performance per [rules/validation-and-exit.md](rules/validation-and-exit.md).
-- Report score delta, total experiments, keep rate, strongest changes, and remaining failure patterns.
+- Report score delta, total experiments, keep rate, strongest changes, remaining failure patterns, and whether the best mutation is only `keep` or ready to `promote`.
 
 </workflow>
 

@@ -2,11 +2,25 @@
 
 Use this reference when running autoresearch on a codebase and the user did not provide a custom prompt pack or eval set.
 
-This pack is intentionally conservative. It is designed to validate the skill's operating surface before you invent custom scenarios.
+This file is now a pack selector, not the only pack. Pick the narrowest domain pack that matches the target:
 
-## Default Test Prompts
+| Target shape | Pack |
+|------|------|
+| Frontend performance, rendering, bundle work | [self-test-pack.web.md](self-test-pack.web.md) |
+| Node runtime, CLI, background jobs | [self-test-pack.node.md](self-test-pack.node.md) |
+| API latency, query count, request handling | [self-test-pack.api.md](self-test-pack.api.md) |
+| Monorepo or workspace-level cleanup | [self-test-pack.monorepo.md](self-test-pack.monorepo.md) |
+| No clear fit yet | generic pack in this file |
 
-Use these five prompts as the default run set for code autoresearch:
+Pack selection order:
+
+1. Use a trace-backed or incident-backed pack when available.
+2. Use a domain pack when the bottleneck type is already clear.
+3. Fall back to the generic pack only when the run is still exploratory.
+
+## Generic Default Test Prompts
+
+Use these prompts only when no domain pack clearly fits:
 
 1. `Run autoresearch on this repo and keep only score-improving optimizations.`
 2. `Benchmark this codebase with binary evals and store artifacts in .hypercore.`
@@ -20,9 +34,9 @@ Expected routing:
 - prompt 4 is a boundary case and should usually prefer direct editing unless the user asks for repeated eval-driven optimization
 - prompt 5 should route away from `autoresearch-code`
 
-## Default Binary Evals
+## Generic Default Binary Evals
 
-Use these five evals when the target is a codebase:
+Use these evals only for the generic pack:
 
 ```text
 EVAL 1: Trigger boundary

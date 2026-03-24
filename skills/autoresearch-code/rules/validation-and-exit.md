@@ -34,6 +34,7 @@ Confirm:
 - evals do not substantially overlap
 - evals test things the user actually cares about
 - at least one eval checks the user's real code bottleneck rather than superficial formatting
+- the chosen eval pack actually matches the target domain or is explicitly documented as a generic fallback
 
 ## 4. Validate the Run Artifacts
 
@@ -51,6 +52,7 @@ Expected location:
 
 Also confirm `results.json` and `results.tsv` tell the same story about score, pass rate, and keep/discard status.
 Also confirm the dashboard was rendered from the canonical template rather than hand-edited drift.
+Also confirm the artifacts record `scope`, `eval_pack`, `proof_commands`, `environment`, and any rollback conditions needed to reproduce the run.
 
 If the workflow opens `dashboard.html` directly in a local browser, also confirm the dashboard renders data under `file://` rather than showing an empty state because local JSON fetch is blocked.
 
@@ -62,7 +64,15 @@ Do not claim success unless one of these is true:
 - the codebase is materially simpler with no regression and the simplification is called out explicitly
 - the run proved the current codebase is already near the score ceiling and further mutation is unjustified
 
-## 6. Final Report Checklist
+## 6. Validate Promotion Stability
+
+Before calling a winning experiment ready to promote, confirm:
+
+- repeated checks on the noisy metrics still pass
+- rollback conditions were written down before or during the kept experiment
+- the experiment is marked as `hold`, `promote`, or `rollback` explicitly instead of being implied
+
+## 7. Final Report Checklist
 
 The final report must include:
 
@@ -73,7 +83,7 @@ The final report must include:
 - remaining failure patterns
 - paths to the experiment artifacts
 
-## 7. Suggested Checks
+## 8. Suggested Checks
 
 ```bash
 find skills/autoresearch-code -maxdepth 3 -type f | sort
