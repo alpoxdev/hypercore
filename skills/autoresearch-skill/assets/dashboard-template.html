@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Autoresearch Dashboard</title>
+  <title>오토리서치 대시보드</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -24,7 +24,7 @@
     body {
       margin: 0;
       padding: 24px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
       background: linear-gradient(180deg, #fdfdfd 0%, #f7f8fc 100%);
       color: var(--text);
     }
@@ -113,46 +113,46 @@
 <body>
   <div class="shell">
     <section class="panel">
-      <h1>Autoresearch Dashboard</h1>
-      <p id="subtitle">Loading results.json...</p>
+      <h1>오토리서치 대시보드</h1>
+      <p id="subtitle">results.json을 불러오는 중...</p>
     </section>
 
     <section class="panel">
-      <div class="status" id="status-pill">Idle</div>
+      <div class="status" id="status-pill">대기 중</div>
     </section>
 
     <section class="grid">
       <div class="panel metric">
-        <p>Baseline Score</p>
+        <p>Baseline 점수</p>
         <strong id="baseline-score">-</strong>
       </div>
       <div class="panel metric">
-        <p>Latest Pass Rate</p>
+        <p>최신 통과율</p>
         <strong id="latest-pass-rate">-</strong>
       </div>
       <div class="panel metric">
-        <p>Best Score</p>
+        <p>최고 점수</p>
         <strong id="best-score">-</strong>
       </div>
       <div class="panel metric">
-        <p>Current Experiment</p>
+        <p>현재 실험</p>
         <strong id="current-exp">0</strong>
       </div>
     </section>
 
     <section class="panel">
-      <h2>Score Progression</h2>
+      <h2>점수 추이</h2>
       <canvas id="score-chart" height="120"></canvas>
     </section>
 
     <section class="panel">
-      <h2>Experiments</h2>
-      <div id="experiments-wrap" class="empty">No experiments recorded yet.</div>
+      <h2>실험 기록</h2>
+      <div id="experiments-wrap" class="empty">아직 기록된 실험이 없습니다.</div>
     </section>
 
     <section class="panel">
-      <h2>Eval Breakdown</h2>
-      <div id="eval-wrap" class="empty">No eval data recorded yet.</div>
+      <h2>평가 분해</h2>
+      <div id="eval-wrap" class="empty">아직 기록된 평가 데이터가 없습니다.</div>
     </section>
   </div>
 
@@ -173,11 +173,20 @@
       return value == null ? "-" : `${value}%`;
     }
 
+    function translateExperimentStatus(status) {
+      const labels = {
+        baseline: "baseline",
+        keep: "유지",
+        discard: "폐기"
+      };
+      return labels[status] || status || "-";
+    }
+
     function renderExperiments(experiments) {
       const wrap = document.getElementById("experiments-wrap");
       if (!experiments.length) {
         wrap.className = "empty";
-        wrap.textContent = "No experiments recorded yet.";
+        wrap.textContent = "아직 기록된 실험이 없습니다.";
         return;
       }
 
@@ -186,7 +195,7 @@
           <td>${exp.id}</td>
           <td>${exp.score}/${exp.max_score}</td>
           <td>${toPercent(exp.pass_rate)}</td>
-          <td>${exp.status}</td>
+          <td>${translateExperimentStatus(exp.status)}</td>
           <td>${exp.description}</td>
         </tr>
       `).join("");
@@ -197,10 +206,10 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>Score</th>
-              <th>Pass Rate</th>
-              <th>Status</th>
-              <th>Description</th>
+              <th>점수</th>
+              <th>통과율</th>
+              <th>상태</th>
+              <th>설명</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -212,7 +221,7 @@
       const wrap = document.getElementById("eval-wrap");
       if (!items.length) {
         wrap.className = "empty";
-        wrap.textContent = "No eval data recorded yet.";
+        wrap.textContent = "아직 기록된 평가 데이터가 없습니다.";
         return;
       }
 
@@ -233,7 +242,7 @@
         data: {
           labels,
           datasets: [{
-            label: "Pass Rate %",
+            label: "통과율 %",
             data,
             borderColor: "#7aa2f7",
             backgroundColor: "rgba(122, 162, 247, 0.2)",
@@ -253,15 +262,16 @@
 
     function applyData(data) {
       if (!data) {
-        throw new Error("No results data available");
+        throw new Error("results 데이터가 없습니다");
       }
 
       document.getElementById("subtitle").textContent =
-        `${data.skill_name} workspace in .hypercore/autoresearch-skill/${data.skill_name}/`;
+        `${data.skill_name} 워크스페이스: .hypercore/autoresearch-skill/${data.skill_name}/`;
+
       document.getElementById("status-pill").textContent =
-        data.status === "running" ? `Running experiment ${data.current_experiment}` :
-        data.status === "complete" ? "Complete" :
-        "Idle";
+        data.status === "running" ? `실험 ${data.current_experiment} 실행 중` :
+        data.status === "complete" ? "완료" :
+        "대기 중";
       document.getElementById("baseline-score").textContent = toPercent(data.baseline_score);
       const latest = (data.experiments || []).length
         ? data.experiments[data.experiments.length - 1].pass_rate
@@ -289,7 +299,7 @@
     }
 
     refresh().catch((error) => {
-      document.getElementById("subtitle").textContent = `Failed to load results: ${error.message}`;
+      document.getElementById("subtitle").textContent = `결과를 불러오지 못했습니다: ${error.message}`;
     });
     setInterval(() => refresh().catch(() => {}), 10000);
   </script>

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ $# -ne 1 ]]; then
-  echo "usage: scripts/render-dashboard.sh <artifact-dir>" >&2
+  echo "사용법: scripts/render-dashboard.sh <artifact-dir>" >&2
   exit 1
 fi
 
@@ -15,12 +15,12 @@ dashboard_html="${artifact_dir}/dashboard.html"
 results_js="${artifact_dir}/results.js"
 
 if [[ ! -f "${template_path}" ]]; then
-  echo "missing dashboard template: ${template_path}" >&2
+  echo "대시보드 템플릿이 없습니다: ${template_path}" >&2
   exit 1
 fi
 
 if [[ ! -f "${results_json}" ]]; then
-  echo "missing results.json: ${results_json}" >&2
+  echo "results.json이 없습니다: ${results_json}" >&2
   exit 1
 fi
 
@@ -30,5 +30,5 @@ cp "${template_path}" "${dashboard_html}"
 json_payload="$(jq -c '.' "${results_json}")"
 printf 'window.__AUTORESEARCH_CODE_RESULTS__ = %s;\n' "${json_payload}" > "${results_js}"
 
-echo "rendered ${dashboard_html}"
-echo "rendered ${results_js}"
+echo "렌더 완료: ${dashboard_html}"
+echo "렌더 완료: ${results_js}"

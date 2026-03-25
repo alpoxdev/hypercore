@@ -1,148 +1,154 @@
 # Eval Guide
 
-How to write eval criteria that actually improve your skills instead of giving you false confidence.
+거짓 자신감이 아니라 실제 스킬 개선으로 이어지는 eval 기준을 쓰는 방법.
 
 ---
 
-## the golden rule
+## 핵심 원칙
 
-Every eval must be a yes/no question. Not a scale. Not a vibe check. Binary.
+모든 eval은 반드시 예/아니오 질문이어야 한다. 점수 척도도 아니고, 분위기 체크도 아니다. 이진이다.
 
-Why: Scales compound variability. If you have 4 evals scored 1-7, your total score has massive variance across runs. Binary evals give you a reliable signal.
-
----
-
-## good evals vs bad evals
-
-### Text/copy skills (newsletters, tweets, emails, landing pages)
-
-**Bad evals:**
-- "Is the writing good?" (too vague - what's "good"?)
-- "Rate the engagement potential 1-10" (scale = unreliable)
-- "Does it sound like a human?" (subjective, inconsistent scoring)
-
-**Good evals:**
-- "Does the output contain zero phrases from this banned list: [game-changer, here's the kicker, the best part, level up]?" (binary, specific)
-- "Does the opening sentence reference a specific time, place, or sensory detail?" (binary, checkable)
-- "Is the output between 150-400 words?" (binary, measurable)
-- "Does it end with a specific CTA that tells the reader exactly what to do next?" (binary, structural)
-
-### Visual/design skills (diagrams, images, slides)
-
-**Bad evals:**
-- "Does it look professional?" (subjective)
-- "Rate the visual quality 1-5" (scale)
-- "Is the layout good?" (vague)
-
-**Good evals:**
-- "Is all text in the image legible with no truncated or overlapping words?" (binary, specific)
-- "Does the color palette use only soft/pastel tones with no neon, bright red, or high-saturation colors?" (binary, checkable)
-- "Is the layout linear - flowing either left-to-right or top-to-bottom with no scattered elements?" (binary, structural)
-- "Is the image free of numbered steps, ordinals, or sequential numbering?" (binary, specific)
-
-### Code/technical skills (code generation, configs, scripts)
-
-**Bad evals:**
-- "Is the code clean?" (subjective)
-- "Does it follow best practices?" (vague, which best practices?)
-
-**Good evals:**
-- "Does the code run without errors?" (binary, testable - actually execute it)
-- "Does the output contain zero TODO or placeholder comments?" (binary, greppable)
-- "Are all function and variable names descriptive (no single-letter names except loop counters)?" (binary, checkable)
-- "Does the code include error handling for all external calls (API, file I/O, network)?" (binary, structural)
-
-### Document skills (proposals, reports, decks)
-
-**Bad evals:**
-- "Is it comprehensive?" (compared to what?)
-- "Does it address the client's needs?" (too open-ended)
-
-**Good evals:**
-- "Does the document contain all required sections: [list them]?" (binary, structural)
-- "Is every claim backed by a specific number, date, or source?" (binary, checkable)
-- "Is the document under [X] pages/words?" (binary, measurable)
-- "Does the executive summary fit in one paragraph of 3 sentences or fewer?" (binary, countable)
-
-### Skill and meta-skills (skill refactors, prompt workflows, agent skills)
-
-**Bad evals:**
-- "Is the skill better?" (too vague)
-- "Does the prompt feel clearer?" (subjective)
-- "Would this trigger correctly?" (unbounded guess)
-
-**Good evals:**
-- "Does the `description` clearly state what the skill does and when to use it?" (binary, trigger-focused)
-- "Does the core `SKILL.md` stay lean enough that the first screen explains the job and boundary?" (binary, structural)
-- "Are reusable policy and detailed knowledge split into `rules/` and `references/` instead of duplicated in the core?" (binary, anatomy-focused)
-- "Does the skill include at least one realistic positive trigger example and one clear out-of-scope example?" (binary, validation-focused)
+이유: 척도형 평가는 실행마다 흔들림이 크게 누적된다. 이진 평가는 keep/discard 판단에 더 안정적인 신호를 준다.
 
 ---
 
-## common mistakes
+## 좋은 eval과 나쁜 eval
 
-### 1. Too many evals
-More than 6 evals and the skill starts gaming them - it optimizes for passing the test instead of producing good output. Like a student who memorizes answers without understanding the material.
+### 텍스트/카피 스킬
 
-**Fix:** Pick the 3-6 checks that matter most. If everything passes those, the output is probably good.
+**나쁜 eval**
+- "문장이 좋은가?"
+- "참여 유도를 1~10으로 평가해라"
+- "사람이 쓴 것처럼 들리는가?"
 
-### 2. Too narrow/rigid
-"Must contain exactly 3 bullet points" or "Must use the word 'because' at least twice" - these create skills that technically pass but produce weird, stilted output.
+**좋은 eval**
+- "금지 표현 목록 `[game-changer, here's the kicker, level up]` 중 어떤 문구도 포함하지 않는가?"
+- "첫 문장이 구체적인 시간, 장소, 감각 디테일을 포함하는가?"
+- "출력이 150~400단어 사이인가?"
+- "마지막에 다음 행동을 분명히 지시하는 CTA가 있는가?"
 
-**Fix:** Evals should check for qualities you care about, not arbitrary structural constraints.
+### 시각/디자인 스킬
 
-### 3. Overlapping evals
-If eval 1 is "Is the text grammatically correct?" and eval 4 is "Are there any spelling errors?" - these overlap. A grammar fail often includes spelling. You're double-counting.
+**나쁜 eval**
+- "전문적으로 보이는가?"
+- "시각 품질을 1~5로 평가해라"
+- "레이아웃이 좋은가?"
 
-**Fix:** Each eval should test something distinct.
+**좋은 eval**
+- "이미지의 모든 텍스트가 잘리고 겹치지 않고 읽히는가?"
+- "색상이 네온, 고채도 빨강 없이 부드러운 계열만 쓰는가?"
+- "레이아웃이 좌우 또는 상하 한 방향으로 읽히는 선형 구조인가?"
+- "번호 매기기, 순서 표기, ordinal이 없는가?"
 
-### 4. Unmeasurable by an agent
-"Would a human find this engaging?" - an agent can't reliably answer this. It'll say "yes" almost every time.
+### 코드/기술 스킬
 
-**Fix:** Translate subjective qualities into observable signals. "Engaging" might mean: "Does the first sentence contain a specific claim, story, or question (not a generic statement)?"
+**나쁜 eval**
+- "코드가 깔끔한가?"
+- "best practice를 따르는가?"
 
-### 5. Ignoring the real failure surface
-If you're optimizing a skill, but every eval checks only tone, brevity, or formatting, you'll miss the real problem. Many weak skills fail because of trigger wording, bloated structure, or missing support files.
+**좋은 eval**
+- "코드가 오류 없이 실행되는가?"
+- "출력에 TODO나 placeholder 주석이 전혀 없는가?"
+- "함수/변수 이름이 설명적이며 단문자 이름이 루프 카운터 외에는 없는가?"
+- "외부 호출(API, 파일 I/O, 네트워크)에 모두 오류 처리가 있는가?"
 
-**Fix:** Include at least one eval that checks the target's real operating surface. For a skill, that often means triggerability, structure, or validation quality.
+### 문서 스킬
+
+**나쁜 eval**
+- "충분히 포괄적인가?"
+- "고객 요구를 잘 반영하는가?"
+
+**좋은 eval**
+- "문서에 필수 섹션 `[목록]`이 모두 있는가?"
+- "모든 주장에 구체적 숫자, 날짜, 또는 출처가 있는가?"
+- "문서가 [X] 페이지/단어 이내인가?"
+- "요약문이 세 문장 이하 한 단락 안에 들어가는가?"
+
+### 스킬/메타 스킬
+
+**나쁜 eval**
+- "스킬이 더 좋아졌는가?"
+- "프롬프트가 더 명확해졌는가?"
+- "이게 잘 트리거될까?"
+
+**좋은 eval**
+- "`description`이 스킬이 무엇을 하고 언제 써야 하는지 분명히 말하는가?"
+- "핵심 `SKILL.md` 첫 화면만 봐도 맡은 일과 경계가 설명되는가?"
+- "재사용 정책과 상세 지식이 core에 중복되지 않고 `rules/`, `references/`로 나뉘어 있는가?"
+- "현실적인 긍정 예시 최소 1개와 명확한 범위 밖 예시 최소 1개가 있는가?"
+- "한국어 요청 예시를 읽었을 때도 트리거 경계와 다음 행동이 유지되는가?"
 
 ---
 
-## writing your evals: the 3-question test
+## 흔한 실수
 
-Before finalizing an eval, ask:
+### 1. eval이 너무 많다
 
-1. **Could two different agents score the same output and agree?** If not, the eval is too subjective. Rewrite it.
-2. **Could a skill game this eval without actually improving?** If yes, the eval is too narrow. Broaden it.
-3. **Does this eval test something the user actually cares about?** If not, drop it. Every eval that doesn't matter dilutes the signal from evals that do.
+6개를 넘기면 스킬이 실제 품질보다 테스트 통과 요령을 학습하기 쉽다.
+
+**해결:** 가장 중요한 3~6개만 남긴다.
+
+### 2. 너무 좁고 경직된 규칙
+
+"반드시 불릿 3개" 같은 규칙은 기술적으로는 통과하지만 산출물을 부자연스럽게 만들기 쉽다.
+
+**해결:** 임의 형식이 아니라 실제로 중요한 품질을 검사한다.
+
+### 3. eval끼리 겹친다
+
+문법과 맞춤법처럼 한 실패가 다른 실패를 자연스럽게 포함하는 경우, 같은 문제를 두 번 세게 된다.
+
+**해결:** 각 eval은 서로 다른 실패 표면을 검사하게 만든다.
+
+### 4. 에이전트가 측정할 수 없다
+
+"사람이 재미있게 느낄까?" 같은 질문은 루프에서 안정적으로 채점하기 어렵다.
+
+**해결:** 주관적 품질을 관찰 가능한 신호로 번역한다.
+
+### 5. 실제 실패 표면을 무시한다
+
+스킬을 최적화하는데 tone, brevity, formatting만 보면 진짜 문제를 놓친다.
+
+**해결:** 적어도 하나의 eval은 트리거, 구조, 검증 품질 같은 실제 운영 표면을 검사한다.
 
 ---
 
-## template
+## eval을 쓰기 전 3가지 질문
 
-Copy this for each eval:
+1. 다른 두 에이전트가 같은 출력을 보고 같은 점수를 줄 수 있는가?
+2. 실제 개선 없이 이 eval만 속여서 통과할 수 있는가?
+3. 사용자가 실제로 중요하게 보는 항목인가?
 
+하나라도 아니면 eval을 다시 쓴다.
+
+---
+
+## 템플릿
+
+각 eval마다 다음 형식을 복사한다:
+
+```text
+EVAL [N]: [짧은 이름]
+Question: [예/아니오 질문]
+Pass: [예가 되는 조건 - 구체적 한 문장]
+Fail: [아니오가 되는 조건 - 구체적 한 문장]
 ```
-EVAL [N]: [Short name]
-Question: [Yes/no question]
-Pass: [What "yes" looks like - one sentence, specific]
-Fail: [What triggers "no" - one sentence, specific]
+
+예시:
+
+```text
+EVAL 1: 텍스트 가독성
+Question: 출력의 모든 텍스트가 잘리거나 겹치지 않고 완전히 읽히는가?
+Pass: 모든 단어가 추측 없이 읽히고 가려진 부분이 없다
+Fail: 일부 단어가 잘리거나 다른 요소와 겹치거나 가장자리에서 끊긴다
 ```
 
-Example:
+메타 스킬 예시:
 
-```
-EVAL 1: Text legibility
-Question: Is all text in the output fully legible with no truncated, overlapping, or cut-off words?
-Pass: Every word is complete and readable without squinting or guessing
-Fail: Any word is partially hidden, overlapping another element, or cut off at the edge
-```
-
-Meta-skill example:
-
-```
-EVAL 2: Clear trigger boundary
-Question: Does the skill include concrete examples of requests that should trigger it and requests that should not?
-Pass: The skill includes at least one positive example and one out-of-scope example that distinguish its boundary
-Fail: The skill gives only abstract claims about when to use it or omits boundary examples
+```text
+EVAL 2: 명확한 트리거 경계
+Question: 이 스킬이 자신을 트리거해야 하는 요청과 그렇지 않은 요청의 예시를 구체적으로 포함하는가?
+Pass: 긍정 예시와 범위 밖 예시가 최소 하나씩 있어 경계가 분명하다
+Fail: 언제 써야 하는지 추상적으로만 설명하거나 경계 예시를 생략한다
 ```

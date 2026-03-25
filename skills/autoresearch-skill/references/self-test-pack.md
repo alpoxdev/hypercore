@@ -1,66 +1,66 @@
 # Self-Test Pack
 
-Use this reference when running autoresearch on a skill and the user did not provide a custom prompt pack or eval set.
+스킬 오토리서치를 돌리는데 사용자가 별도의 프롬프트 팩이나 eval 세트를 주지 않았을 때 이 레퍼런스를 사용한다.
 
-This pack is intentionally conservative. It is designed to validate the skill's operating surface before you invent custom scenarios.
+이 팩은 보수적으로 설계되어 있다. 임의 시나리오를 새로 만들기 전에 스킬의 실제 운영 표면을 먼저 검증하는 목적이다.
 
-## Default Test Prompts
+## 기본 테스트 프롬프트
 
-Use these five prompts as the default run set for skill-on-skill autoresearch:
+스킬 대상 오토리서치의 기본 실행 세트로 다음 다섯 프롬프트를 사용한다:
 
-1. `Run autoresearch on skills/web-clone/SKILL.md and keep only score-improving mutations.`
-2. `Benchmark this skill with binary evals and store artifacts in .hypercore.`
-3. `Tighten this skill once and review it.`
-4. `Create a new Codex skill for browser QA.`
-5. `Rewrite this runbook for readability.`
+1. ``skills/web-clone/SKILL.md`에 autoresearch 돌려서 점수 오르는 수정만 남겨줘.``
+2. `이 스킬을 binary eval로 벤치마크하고 아티팩트를 .hypercore에 저장해줘.`
+3. `이 스킬 한 번만 다듬고 리뷰해줘.`
+4. `브라우저 QA용 Codex 스킬 새로 만들어줘.`
+5. `Run autoresearch on this skill and keep only score-improving mutations.`
 
-Expected routing:
+예상 라우팅:
 
-- prompts 1 and 2 should trigger `autoresearch-skill`
-- prompt 3 is a boundary case and should usually prefer direct editing unless the user asks for repeated eval-driven optimization
-- prompts 4 and 5 should route away from `autoresearch-skill`
+- 프롬프트 1, 2, 5는 `autoresearch-skill`을 트리거해야 한다
+- 프롬프트 3은 경계 사례이며, 반복 실험을 명시하지 않았다면 보통 직접 수정이 더 적절하다
+- 프롬프트 4는 `autoresearch-skill` 바깥으로 라우팅해야 한다
 
-## Default Binary Evals
+## 기본 이진 Eval
 
-Use these five evals when the target is a skill:
+대상이 스킬일 때는 다음 다섯 eval을 기본으로 사용한다:
 
 ```text
-EVAL 1: Trigger boundary
-Question: Does the skill make the correct trigger or route-away decision for this prompt obvious?
-Pass: The prompt is clearly in-scope, out-of-scope, or boundary-routed from the core skill
-Fail: The route decision depends on guesswork or support files not signposted by the core
+EVAL 1: 트리거 경계
+Question: 이 프롬프트가 스킬 범위 안인지, 밖인지, 경계 사례인지 core만 보고 분명하게 알 수 있는가?
+Pass: core 스킬만 읽어도 범위 판정이 명확하다
+Fail: 범위 판정이 추측에 의존하거나 core가 가리키지 않은 support file까지 뒤져야 한다
 
-EVAL 2: Workflow readiness
-Question: Could an agent start the correct next step from this skill without guessing?
-Pass: The skill gives enough workflow guidance to start a baseline-first run or a route-away decision
-Fail: The next action is unclear, missing, or contradictory
+EVAL 2: 워크플로 준비도
+Question: 에이전트가 이 스킬만 보고도 다음 행동을 추측 없이 시작할 수 있는가?
+Pass: baseline-first 실행 또는 route-away 결정을 시작하기에 충분한 가이드가 있다
+Fail: 다음 행동이 모호하거나, 빠져 있거나, 서로 충돌한다
 
-EVAL 3: Artifact lifecycle
-Question: For in-scope prompts, does the skill define the artifact location and update lifecycle clearly?
-Pass: The `.hypercore` workspace, required files, and status/update expectations are explicit
-Fail: The artifact contract is incomplete, inconsistent, or missing
+EVAL 3: 아티팩트 생명주기
+Question: 범위 안 프롬프트에 대해 아티팩트 위치와 업데이트 주기가 분명하게 정의되어 있는가?
+Pass: `.hypercore` 위치, 필수 파일, 상태/업데이트 기대치가 명시되어 있다
+Fail: 아티팩트 계약이 불완전하거나, 서로 안 맞거나, 빠져 있다
 
-EVAL 4: Support-file navigation
-Question: Does the core point to the right support file for deeper eval, structure, or artifact guidance?
-Pass: The next file to read is obvious from the core
-Fail: The agent would need to hunt for the next support file
+EVAL 4: 지원 파일 탐색성
+Question: 더 깊은 eval, 구조, 아티팩트 가이드를 보기 위해 다음에 읽어야 할 파일이 core에서 바로 보이는가?
+Pass: core만 읽어도 다음 support file이 분명하다
+Fail: 에이전트가 다음 파일을 찾으려고 헤매야 한다
 
-EVAL 5: Autonomy discipline
-Question: Does the skill preserve a stable eval loop with one mutation at a time?
-Pass: The skill preserves baseline-first scoring, one-change experiments, and explicit stop conditions
-Fail: The loop allows silent suite drift, bundled mutations, or undefined stopping behavior
+EVAL 5: 자율 실행 규율
+Question: 이 스킬이 baseline-first, one-mutation-at-a-time 루프를 안정적으로 유지하는가?
+Pass: baseline 점수화, 단일 변경 실험, 명시적 종료 조건이 유지된다
+Fail: eval drift, 묶음 변이, 불명확한 종료 동작을 허용한다
 ```
 
-## Scoring Notes
+## 점수화 노트
 
-- Default total score: `5 prompts x 5 evals = 25`
-- Use the same prompt pack and eval set across baseline and follow-up experiments
-- If you replace this pack, log the replacement before scoring the next experiment
+- 기본 총점: `5 prompts x 5 evals = 25`
+- baseline과 후속 실험에서 같은 프롬프트 팩과 eval 세트를 유지한다
+- 이 팩을 교체하면 다음 실험을 점수화하기 전에 교체 사실을 로그에 남긴다
 
-## When to Override
+## Override가 필요한 경우
 
-Override this pack when:
+다음 경우 이 팩을 교체한다:
 
-- the user supplied better domain-specific prompts
-- the target skill owns a narrow domain and these prompts would under-test it
-- the current failures are obviously domain-specific rather than structural
+- 사용자가 더 나은 도메인 맞춤 프롬프트를 제공했다
+- 대상 스킬의 도메인이 매우 좁아 이 프롬프트들로는 충분히 검증되지 않는다
+- 현재 실패가 구조 문제가 아니라 명백히 도메인 특화 문제다

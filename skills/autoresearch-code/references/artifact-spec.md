@@ -1,64 +1,64 @@
 # Artifact Spec
 
-Use this reference when creating or reviewing the experiment workspace for an autoresearch run.
+오토리서치 실행의 실험 워크스페이스를 만들거나 검토할 때 이 레퍼런스를 사용한다.
 
-## Workspace Shape
+## 워크스페이스 형태
 
 ```text
 .hypercore/autoresearch-code/[codebase-name]/
 |-- dashboard.html
 |-- results.json
-|-- results.js        # optional but recommended for file:// browser fallback
+|-- results.js        # file:// 브라우저 폴백용, 선택이지만 권장
 |-- results.tsv
 |-- changelog.md
 `-- baseline.md
 ```
 
-Create this directory at the repository root, not inside the skill folder.
+이 디렉터리는 스킬 폴더 안이 아니라 저장소 루트에 만든다.
 
-Canonical generation assets:
+정식 생성 자산:
 
 - template: `skills/autoresearch-code/assets/dashboard-template.html`
 - renderer: `skills/autoresearch-code/scripts/render-dashboard.sh`
 
 ## `baseline.md`
 
-Record the unmodified state before experiment `0`.
+실험 `0` 전에 수정되지 않은 상태를 기록한다.
 
-Suggested sections:
+권장 섹션:
 
-- scope and owned package or module
-- selected pack name, pack type, and pack version
-- target scope
-- optimization goals
-- commands used for baseline measurement
-- proof command hash or exact command list
-- measured numbers or qualitative observations
-- environment or runner details
-- constraints that must not regress
-- rollback conditions
-- chosen prompt pack and eval suite
+- 범위와 소유 패키지 또는 모듈
+- 선택한 팩 이름, 팩 유형, 팩 버전
+- 대상 범위
+- 최적화 목표
+- baseline 측정에 사용한 명령
+- proof command hash 또는 정확한 명령 목록
+- 측정 수치 또는 정성 관찰
+- 환경 또는 runner 정보
+- 회귀하면 안 되는 제약
+- 롤백 조건
+- 선택한 프롬프트 팩과 eval 세트
 
 ## `results.tsv`
 
-Tab-separated with this header:
+다음 헤더를 가진 탭 구분 파일:
 
 ```text
 experiment	score	max_score	pass_rate	status	description
 ```
 
-Example:
+예시:
 
 ```text
 experiment	score	max_score	pass_rate	status	description
-0	12	20	60.0%	baseline	original codebase - no changes
-1	15	20	75.0%	keep	batched repeated file reads in build step
-2	15	20	75.0%	discard	added memoization with no measurable gain
+0	12	20	60.0%	baseline	원본 코드베이스 - 수정 없음
+1	15	20	75.0%	keep	빌드 단계의 반복 파일 읽기를 배치 처리
+2	15	20	75.0%	discard	측정 가능한 이득 없는 메모이제이션 추가
 ```
 
 ## `results.json`
 
-Recommended shape:
+권장 형태:
 
 ```json
 {
@@ -92,7 +92,7 @@ Recommended shape:
       "pass_rate": 60.0,
       "status": "baseline",
       "promotion_state": "hold",
-      "description": "original codebase - no changes",
+      "description": "원본 코드베이스 - 수정 없음",
       "dimensions": {
         "quality": 3,
         "regression": 4,
@@ -103,7 +103,7 @@ Recommended shape:
   ],
   "eval_breakdown": [
     {
-      "name": "Build under threshold",
+      "name": "임계값 이하 빌드",
       "pass_count": 3,
       "total": 5
     }
@@ -111,13 +111,13 @@ Recommended shape:
 }
 ```
 
-Status values:
+상태 값:
 
 - `running`
 - `idle`
 - `complete`
 
-Promotion state values:
+승격 상태 값:
 
 - `hold`
 - `promote`
@@ -125,59 +125,59 @@ Promotion state values:
 
 ## `dashboard.html`
 
-Generate a single self-contained HTML file with inline CSS and JavaScript.
+인라인 CSS와 JavaScript를 포함한 self-contained HTML 파일 하나를 생성한다.
 
-Do not hand-roll a different dashboard on each run. Materialize `dashboard.html` from the canonical template and keep layout and loading behavior stable across runs.
+매 실행마다 임의의 다른 대시보드를 손으로 만들지 않는다. 정식 템플릿에서 `dashboard.html`을 물질화하고, 레이아웃과 로딩 동작을 안정적으로 유지한다.
 
-Required behavior:
+필수 동작:
 
-- auto-refresh every 10 seconds
-- fetch `results.json`
-- render a score progression line chart
-- render a colored bar per experiment
-- show scope, eval pack, environment, and current promotion state
-- show a table of experiments
-- show per-experiment dimension scores when present
-- show per-eval pass counts
-- show the current run status
-- reflect `running`, `idle`, and `complete` states from `results.json`
-- render correctly when opened directly from the local filesystem in Chrome or another browser using `file://`
+- 10초마다 자동 새로고침
+- `results.json` 읽기
+- 점수 추이를 선형 차트로 렌더
+- 실험별 컬러 바 렌더
+- 범위, eval pack, 환경, 현재 promotion 상태 표시
+- 실험 테이블 표시
+- 있으면 실험별 dimension 점수 표시
+- eval별 통과 수 표시
+- 현재 실행 상태 표시
+- `results.json`의 `running`, `idle`, `complete` 상태를 반영
+- Chrome 등 브라우저에서 `file://`로 직접 열어도 정상 렌더
 
-Lifecycle rules:
+생명주기 규칙:
 
-- render `dashboard.html` from `skills/autoresearch-code/assets/dashboard-template.html`
-- use `skills/autoresearch-code/scripts/render-dashboard.sh <artifact-dir>` as the default renderer
-- create `dashboard.html`, then open it immediately when the runtime can safely open local HTML
-- update `results.tsv` and `results.json` after every experiment
-- keep `scope`, `eval_pack`, `proof_commands`, `environment`, and experiment `dimensions` in sync with the current run
-- set `results.json.status` to `running` while experiments are executing
-- set `results.json.status` to `complete` when the loop finishes
-- if the dashboard is opened via `file://`, do not rely only on `fetch("./results.json")`
-- provide a file-backed fallback such as `results.js` that assigns the same data to a browser global
-- keep `results.js` synchronized with `results.json` whenever the fallback file exists
+- `skills/autoresearch-code/assets/dashboard-template.html`에서 `dashboard.html`을 렌더한다
+- 기본 렌더러는 `skills/autoresearch-code/scripts/render-dashboard.sh <artifact-dir>`를 사용한다
+- `dashboard.html`을 만든 뒤, 런타임이 안전하면 즉시 연다
+- 매 실험 뒤 `results.tsv`와 `results.json`을 업데이트한다
+- `scope`, `eval_pack`, `proof_commands`, `environment`, 실험 `dimensions`를 현재 실행과 동기화한다
+- 실험이 실행 중일 때는 `results.json.status`를 `running`으로 둔다
+- 루프가 끝나면 `results.json.status`를 `complete`로 둔다
+- 대시보드를 `file://`로 여는 경우 `fetch("./results.json")`만 믿지 않는다
+- 같은 데이터를 브라우저 글로벌에 할당하는 `results.js` 같은 파일 기반 폴백을 제공한다
+- 폴백 파일이 있으면 `results.js`는 항상 `results.json`과 동기화한다
 
 ## `changelog.md`
 
-Append one entry per experiment:
+실험마다 항목 하나를 추가한다:
 
 ```markdown
 ## Experiment [N] - [keep/discard]
 
 **Score:** [X]/[max] ([percent]%)
-**Change:** [One-sentence mutation summary]
-**Reasoning:** [Why this change was expected to help]
-**Result:** [Which evals improved, held, or declined]
-**Failing outputs:** [What still failed, if anything]
+**Change:** [변이 한 줄 요약]
+**Reasoning:** [왜 이 변경이 도움 될 것이라 봤는지]
+**Result:** [어떤 eval이 개선, 유지, 악화되었는지]
+**Failing outputs:** [남은 실패가 있으면 기록]
 ```
 
 ## Worked Example
 
-Example outcome summary for a build-speed run:
+빌드 속도 최적화 예시 요약:
 
 - Baseline: `10/20 (50%)`
-- Experiment 1 keep: batch repeated file-system work and improve build threshold pass rate
-- Experiment 2 discard: extra caching adds complexity with no measurable gain
-- Experiment 3 keep: remove dead plugin and reduce bundle size
-- Experiment 4 keep: simplify a flaky test helper and improve reliability
+- Experiment 1 keep: 반복 파일 시스템 작업을 배치 처리해 빌드 임계값 통과율 개선
+- Experiment 2 discard: 추가 캐시가 복잡성만 늘리고 측정 가능한 이득은 없음
+- Experiment 3 keep: 죽은 플러그인 제거로 번들 크기 감소
+- Experiment 4 keep: flaky test helper 단순화로 신뢰성 개선
 
-Use the changelog to preserve this reasoning so later agents can continue without redoing the same dead ends.
+후속 에이전트가 같은 막다른 길을 반복하지 않도록 reasoning은 changelog에 남긴다.

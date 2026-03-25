@@ -1,126 +1,124 @@
 # Eval Guide
 
-How to write eval criteria that actually improve a codebase instead of giving you false confidence.
+거짓 자신감이 아니라 실제 코드베이스 개선으로 이어지는 eval 기준을 쓰는 방법.
 
-## The Golden Rule
+## 핵심 원칙
 
-Every eval must be a yes/no question. Not a scale. Not a vibe check. Binary.
+모든 eval은 반드시 예/아니오 질문이어야 한다. 점수 척도도 아니고, 분위기 체크도 아니다. 이진이다.
 
-Why: scaled scoring drifts too easily across runs. Binary evals give you a cleaner signal for keep/discard decisions.
+이유: 척도형 평가는 실행마다 쉽게 흔들린다. 이진 평가는 keep/discard 판단에 더 깨끗한 신호를 준다.
 
-## Good Evals vs Bad Evals
+## 좋은 eval과 나쁜 eval
 
-### Build and Tooling
+### 빌드와 도구 체인
 
-Bad evals:
+나쁜 eval:
 
-- "Is the build faster?"
-- "Does the dev experience feel better?"
+- "빌드가 더 빨라졌는가?"
+- "개발 경험이 좋아졌는가?"
 
-Good evals:
+좋은 eval:
 
-- "Does `npm run build` finish under 30 seconds on the same machine?" 
-- "Does the main bundle stay under 250 KB gzip?"
-- "Does the linter complete without timeouts or retry steps?"
+- "`npm run build`가 같은 머신에서 30초 이내에 끝나는가?"
+- "메인 번들이 gzip 기준 250 KB 이하를 유지하는가?"
+- "린터가 timeout이나 수동 재시도 없이 끝나는가?"
 
-### Backend and APIs
+### 백엔드와 API
 
-Bad evals:
+나쁜 eval:
 
-- "Is the server more efficient?"
-- "Does the endpoint scale better?"
+- "서버가 더 효율적인가?"
+- "엔드포인트가 더 잘 확장되는가?"
 
-Good evals:
+좋은 eval:
 
-- "Does the hot endpoint stay under 200 ms p95 in the defined test scenario?"
-- "Does the query count for this request stay at or below 3?"
-- "Do all external calls on the optimized path keep explicit error handling?"
+- "정의된 시나리오에서 hot endpoint가 p95 200 ms 이하를 유지하는가?"
+- "이 요청의 query 수가 3 이하인가?"
+- "최적화된 경로의 모든 외부 호출에 명시적 오류 처리가 남아 있는가?"
 
-### Frontend and Rendering
+### 프론트엔드와 렌더링
 
-Bad evals:
+나쁜 eval:
 
-- "Does the UI feel smoother?"
-- "Is the component architecture cleaner?"
+- "UI가 더 부드럽게 느껴지는가?"
+- "컴포넌트 구조가 더 깔끔한가?"
 
-Good evals:
+좋은 eval:
 
-- "Does the target screen render without React warnings or hydration mismatches?"
-- "Does the interaction avoid more than one unnecessary network request?"
-- "Does the optimized route keep the same visible behavior in the regression scenario?"
+- "대상 화면이 React 경고나 hydration mismatch 없이 렌더되는가?"
+- "상호작용 중 불필요한 네트워크 요청이 1개를 넘지 않는가?"
+- "최적화된 라우트가 회귀 시나리오에서 같은 눈에 보이는 동작을 유지하는가?"
 
-### Maintainability and Cleanup
+### 유지보수성과 정리
 
-Bad evals:
+나쁜 eval:
 
-- "Is the code nicer?"
-- "Did we refactor enough?"
+- "코드가 더 좋아졌는가?"
+- "충분히 리팩터했는가?"
 
-Good evals:
+좋은 eval:
 
-- "Does the changed module remove duplicated logic without increasing public API surface?"
-- "Do targeted tests pass before and after the cleanup?"
-- "Were no new dependencies added during this experiment?"
+- "변경된 모듈이 public API를 늘리지 않고 중복 로직을 제거했는가?"
+- "타겟 테스트가 cleanup 전후 모두 통과하는가?"
+- "이번 실험에서 새 의존성이 추가되지 않았는가?"
 
-## Common Mistakes
+## 흔한 실수
 
-### 1. Too many evals
+### 1. eval이 너무 많다
 
-More than 6 evals and the codebase starts gaming the test instead of improving the real bottleneck.
+6개를 넘기면 코드베이스가 실제 병목보다 테스트 통과 요령을 학습하기 쉽다.
 
-Fix: Pick the 3 to 6 checks that matter most.
+해결: 가장 중요한 3~6개만 남긴다.
 
-### 2. Surrogate metrics
+### 2. surrogate metric만 본다
 
-If the user cares about latency, scoring only line count or file count is noise.
+사용자가 지연 시간을 신경 쓰는데 줄 수나 파일 수만 점수화하면 잡음이다.
 
-Fix: include at least one eval tied directly to the user's bottleneck.
+해결: 적어도 하나의 eval은 사용자의 실제 병목에 직접 연결한다.
 
-### 3. Overlapping evals
+### 3. eval끼리 겹친다
 
-If one eval checks build success and another checks typecheck success, make sure they are truly distinct in this repo.
+빌드 성공과 타입체크 성공은 저장소에 따라 충분히 다른 실패 표면이 아닐 수 있다.
 
-Fix: each eval should test a different failure surface.
+해결: 각 eval이 다른 실패 표면을 검사하도록 만든다.
 
-### 4. Unmeasurable by an agent
+### 4. 에이전트가 측정할 수 없다
 
-"Would a user like this more?" is too subjective for a loop.
+"사용자가 더 좋아할까?"는 루프에서 안정적으로 점수화하기 어렵다.
 
-Fix: translate it into measurable signs such as threshold, warning count, test outcome, or request count.
+해결: threshold, warning 수, 테스트 결과, request 수처럼 측정 가능한 신호로 번역한다.
 
-## Writing Your Evals: The 3-Question Test
+## eval을 쓰기 전 3가지 질문
 
-Before finalizing an eval, ask:
+1. 다른 두 에이전트가 같은 출력을 보고 같은 점수를 줄 수 있는가?
+2. 실제 개선 없이 이 eval만 속여서 통과할 수 있는가?
+3. 사용자가 실제로 중요하게 보는 항목인가?
 
-1. Could two different agents score the same output and agree?
-2. Could the codebase game this eval without actually improving?
-3. Does this eval test something the user actually cares about?
+## 템플릿
 
-## Template
-
-Copy this for each eval:
+각 eval마다 다음 형식을 복사한다:
 
 ```text
-EVAL [N]: [Short name]
-Question: [Yes/no question]
-Pass: [What "yes" looks like - one sentence, specific]
-Fail: [What triggers "no" - one sentence, specific]
+EVAL [N]: [짧은 이름]
+Question: [예/아니오 질문]
+Pass: [예가 되는 조건 - 구체적 한 문장]
+Fail: [아니오가 되는 조건 - 구체적 한 문장]
 ```
 
-Example:
+예시:
 
 ```text
-EVAL 1: Build threshold
-Question: Does the target build finish under 30 seconds with the agreed command and environment?
-Pass: The same build command completes within the threshold with exit code 0
-Fail: The build exceeds the threshold, fails, or requires manual retries
+EVAL 1: 빌드 임계값
+Question: 합의된 명령과 환경에서 대상 빌드가 30초 이내에 끝나는가?
+Pass: 같은 build 명령이 종료 코드 0으로 임계값 안에 완료된다
+Fail: 빌드가 임계값을 넘기거나, 실패하거나, 수동 재시도가 필요하다
 ```
 
-Codebase structure example:
+코드베이스 구조 예시:
 
 ```text
-EVAL 2: No regression on hot path
-Question: Does the optimized path preserve the same visible or API behavior in the agreed regression check?
-Pass: The regression scenario produces the expected output with no new warnings or failing assertions
-Fail: The scenario changes behavior, introduces warnings, or breaks assertions
+EVAL 2: hot path 무회귀
+Question: 최적화된 경로가 합의된 회귀 시나리오에서 같은 화면 또는 API 동작을 유지하는가?
+Pass: 회귀 시나리오가 기대 출력과 함께 새 경고나 실패 assertion 없이 통과한다
+Fail: 시나리오가 동작을 바꾸거나, 경고를 추가하거나, assertion을 깨뜨린다
 ```

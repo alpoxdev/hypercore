@@ -1,46 +1,46 @@
 # Artifact Spec
 
-Use this reference when creating or reviewing the experiment workspace for an autoresearch run.
+오토리서치 실행의 실험 워크스페이스를 만들거나 검토할 때 이 레퍼런스를 사용한다.
 
-## Workspace Shape
+## 워크스페이스 형태
 
 ```text
 .hypercore/autoresearch-skill/[skill-name]/
 |-- dashboard.html
 |-- results.json
-|-- results.js        # optional but recommended for file:// browser fallback
+|-- results.js        # file:// 브라우저 폴백용, 선택이지만 권장
 |-- results.tsv
 |-- changelog.md
 `-- SKILL.md.baseline
 ```
 
-Create this directory at the repository root, not inside the skill folder.
+이 디렉터리는 스킬 폴더 안이 아니라 저장소 루트에 만든다.
 
-Canonical generation assets:
+정식 생성 자산:
 
 - template: `skills/autoresearch-skill/assets/dashboard-template.html`
 - renderer: `skills/autoresearch-skill/scripts/render-dashboard.sh`
 
 ## `results.tsv`
 
-Tab-separated with this header:
+다음 헤더를 가진 탭 구분 파일:
 
 ```text
 experiment	score	max_score	pass_rate	status	description
 ```
 
-Example:
+예시:
 
 ```text
 experiment	score	max_score	pass_rate	status	description
-0	14	20	70.0%	baseline	original skill - no changes
-1	16	20	80.0%	keep	added explicit anti-pattern for numbered steps
-2	16	20	80.0%	discard	moved layout guidance earlier with no measurable gain
+0	14	20	70.0%	baseline	원본 스킬 - 수정 없음
+1	16	20	80.0%	keep	번호 매기기 관련 anti-pattern 추가
+2	16	20	80.0%	discard	레이아웃 지침을 앞으로 옮겼지만 측정 가능한 이득 없음
 ```
 
 ## `results.json`
 
-Recommended shape:
+권장 형태:
 
 ```json
 {
@@ -56,12 +56,12 @@ Recommended shape:
       "max_score": 20,
       "pass_rate": 70.0,
       "status": "baseline",
-      "description": "original skill - no changes"
+      "description": "원본 스킬 - 수정 없음"
     }
   ],
   "eval_breakdown": [
     {
-      "name": "Text legibility",
+      "name": "텍스트 가독성",
       "pass_count": 8,
       "total": 10
     }
@@ -69,7 +69,7 @@ Recommended shape:
 }
 ```
 
-Status values:
+상태 값:
 
 - `running`
 - `idle`
@@ -77,83 +77,83 @@ Status values:
 
 ## `dashboard.html`
 
-Generate a single self-contained HTML file with inline CSS and JavaScript.
+인라인 CSS와 JavaScript를 포함한 self-contained HTML 파일 하나를 생성한다.
 
-Do not hand-roll a different dashboard on each run. Materialize `dashboard.html` from the canonical template and keep layout and loading behavior stable across runs.
+매 실행마다 임의의 다른 대시보드를 손으로 만들지 않는다. 정식 템플릿에서 `dashboard.html`을 물질화하고, 레이아웃과 로딩 동작을 안정적으로 유지한다.
 
-Required behavior:
+필수 동작:
 
-- auto-refresh every 10 seconds
-- fetch `results.json`
-- render a score progression line chart
-- render a colored bar per experiment
-- show a table of experiments
-- show per-eval pass counts
-- show the current run status
-- reflect `running`, `idle`, and `complete` states from `results.json`
-- render correctly when opened directly from the local filesystem in Chrome or another browser using `file://`
+- 10초마다 자동 새로고침
+- `results.json` 읽기
+- 점수 추이를 선형 차트로 렌더
+- 실험별 컬러 바 렌더
+- 실험 테이블 표시
+- eval별 통과 수 표시
+- 현재 실행 상태 표시
+- `results.json`의 `running`, `idle`, `complete` 상태를 반영
+- Chrome 등 브라우저에서 `file://`로 직접 열어도 정상 렌더
 
-Lifecycle rules:
+생명주기 규칙:
 
-- render `dashboard.html` from `skills/autoresearch-skill/assets/dashboard-template.html`
-- use `skills/autoresearch-skill/scripts/render-dashboard.sh <artifact-dir>` as the default renderer
-- create `dashboard.html`, then open it immediately when the runtime can safely open local HTML
-- update `results.tsv` and `results.json` after every experiment
-- set `results.json.status` to `running` while experiments are executing
-- set `results.json.status` to `complete` when the loop finishes
-- if the dashboard is opened via `file://`, do not rely only on `fetch("./results.json")`
-- provide a file-backed fallback such as `results.js` that assigns the same data to a browser global
-- keep `results.js` synchronized with `results.json` whenever the fallback file exists
+- `skills/autoresearch-skill/assets/dashboard-template.html`에서 `dashboard.html`을 렌더한다
+- 기본 렌더러는 `skills/autoresearch-skill/scripts/render-dashboard.sh <artifact-dir>`를 사용한다
+- `dashboard.html`을 만든 뒤, 런타임이 안전하면 즉시 연다
+- 매 실험 뒤 `results.tsv`와 `results.json`을 업데이트한다
+- 실험이 실행 중일 때는 `results.json.status`를 `running`으로 둔다
+- 루프가 끝나면 `results.json.status`를 `complete`로 둔다
+- 대시보드를 `file://`로 여는 경우 `fetch("./results.json")`만 믿지 않는다
+- 같은 데이터를 브라우저 글로벌에 할당하는 `results.js` 같은 파일 기반 폴백을 제공한다
+- 폴백 파일이 있으면 `results.js`는 항상 `results.json`과 동기화한다
 
-Recommended browser-safe pattern:
+권장 브라우저 안전 패턴:
 
-- prefer `fetch("./results.json")` when served over HTTP
-- fall back to loading `results.js` when the page is opened directly from disk
-- treat both sources as views over the same result data, not separate state
+- HTTP로 제공될 때는 `fetch("./results.json")`을 우선 사용
+- 디스크에서 직접 열리면 `results.js`를 로드
+- 두 경로는 별도 상태가 아니라 같은 결과 데이터를 보여 주는 뷰여야 한다
 
-Recommended render sequence:
+권장 렌더 순서:
 
 ```bash
 skills/autoresearch-skill/scripts/render-dashboard.sh .hypercore/autoresearch-skill/my-skill
 open .hypercore/autoresearch-skill/my-skill/dashboard.html
 ```
 
-Preferred styling:
+권장 스타일:
 
-- white or near-white background
-- soft accent colors
-- clean sans-serif typography
-- clear status colors for baseline, keep, and discard
+- 흰색 또는 거의 흰색 배경
+- 부드러운 포인트 색
+- 깔끔한 산세리프 타이포그래피
+- baseline, keep, discard를 쉽게 구분하는 상태 색상
 
-Chart guidance:
+차트 가이드:
 
-- use Chart.js from CDN
-- X axis: experiment number
-- Y axis: pass rate percent
+- Chart.js CDN 사용
+- X축: 실험 번호
+- Y축: 통과율 %
 
 ## `changelog.md`
 
-Append one entry per experiment:
+실험마다 항목 하나를 추가한다:
 
 ```markdown
 ## Experiment [N] - [keep/discard]
 
 **Score:** [X]/[max] ([percent]%)
-**Change:** [One-sentence mutation summary]
-**Reasoning:** [Why this change was expected to help]
-**Result:** [Which evals improved, held, or declined]
-**Failing outputs:** [What still failed, if anything]
+**Change:** [변이 한 줄 요약]
+**Reasoning:** [왜 이 변경이 도움 될 것이라 봤는지]
+**Result:** [어떤 eval이 개선, 유지, 악화되었는지]
+**Failing outputs:** [남은 실패가 있으면 기록]
 ```
 
 ## Worked Example
 
-Example outcome summary for a diagram skill:
+다이어그램 스킬 예시 요약:
 
 - Baseline: `32/40 (80%)`
-- Experiment 1 keep: explicit anti-numbering rule improves numbering failures
-- Experiment 2 discard: font-size requirement adds complexity with weak gain
-- Experiment 3 keep: concrete pastel palette improves color compliance
-- Experiment 4 discard: redundant anti-color rule has no effect
-- Experiment 5 keep: worked example improves consistency and reaches `97.5%`
+- Experiment 1 keep: 번호 매기기 방지 규칙이 번호 실패를 개선
+- Experiment 2 discard: 글자 크기 요구가 복잡성만 늘리고 이득은 약함
+- Experiment 3 keep: 구체적 파스텔 팔레트 예시가 색상 준수를 개선
+- Experiment 4 discard: 중복 anti-color 규칙은 효과 없음
+- Experiment 5 keep: worked example이 일관성을 높여 `97.5%` 도달
 
-Use the changelog to preserve this reasoning so later agents can continue without redoing the same dead ends.
+후속 에이전트가 같은 막다른 길을 반복하지 않도록 reasoning은 changelog에 남긴다.
