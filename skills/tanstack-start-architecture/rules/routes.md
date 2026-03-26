@@ -32,9 +32,13 @@ routes/
 | `_` | Pathless Layout | Generated (no path) |
 
 **Required rules:**
-- Every page MUST have `-components/`, `-hooks/`, `-functions/` folders
+- Every page **with logic** MUST have `-components/`, `-hooks/`, `-functions/` folders
+- **Publishing-only exception:** Pages that only display static content with no interactive logic AND no server integration do NOT need these folders. Examples: about, terms, privacy policy, simple marketing pages.
+- **Server integration = folders required:** If a page has ANY server integration (loader with server functions, `useQuery`, `useMutation`, `useServerFn`) → `-functions/` and `-hooks/` are MANDATORY
+- If a page has **any** interactive UI logic (`useState`, `useCallback`, custom hooks), all three folders are required — no exceptions regardless of page size
 - Custom Hooks MUST be separated into `-hooks/` folder **regardless of page size**
 - `-sections/` is optional, only for complex pages (200+ lines)
+- **Auto-setup:** If a TanStack Start project has routes but missing required folders, create them before writing code
 
 ---
 
@@ -222,8 +226,11 @@ export const Route = createFileRoute('/posts/')({
 
 ## Folder Structure Rules
 
-| Page Size | Required | Optional |
+| Page Type | Required | Optional |
 |-----------|----------|----------|
-| ~100 lines | `-components/`, `-hooks/`, `-functions/` | - |
-| 100-200 lines | `-components/`, `-hooks/`, `-functions/` | - |
-| 200+ lines | `-components/`, `-hooks/`, `-functions/` | `-sections/` |
+| Publishing-only (static content, no logic) | None | - |
+| Any page with logic (~100 lines) | `-components/`, `-hooks/`, `-functions/` | - |
+| Any page with logic (100-200 lines) | `-components/`, `-hooks/`, `-functions/` | - |
+| Any page with logic (200+ lines) | `-components/`, `-hooks/`, `-functions/` | `-sections/` |
+
+> **Publishing-only** = no `useState`, `useCallback`, custom hooks, server function calls. Only static/server-fetched content display. If ANY logic exists, all three folders are required.

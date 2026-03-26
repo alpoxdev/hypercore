@@ -14,7 +14,41 @@
 | `zodValidator()` | - | Zod adapter from `@tanstack/zod-adapter` |
 | `useServerFn()` | - | Client-side hook for server function calls |
 
-**WARNING:** `validator` is a non-existent API. You MUST use `inputValidator`.
+**CRITICAL: `.validator()` does NOT exist in TanStack Start.** Using `.validator()` will cause a runtime error. The ONLY correct API is `.inputValidator()`. There is no alternative, no fallback, no alias.
+
+---
+
+## inputValidator accepts Zod objects directly
+
+`inputValidator` takes a Zod schema — including inline `z.object()` — directly. No adapter wrapper is required:
+
+```typescript
+// ✅ Inline z.object() — simplest pattern, works out of the box
+createServerFn({ method: 'POST' })
+  .inputValidator(z.object({
+    email: z.email(),
+    name: z.string().min(1),
+  }))
+  .handler(async ({ data }) => {
+    // data is typed as { email: string; name: string }
+  })
+
+// ✅ Named Zod schema — also direct, no adapter needed
+createServerFn({ method: 'POST' })
+  .inputValidator(createUserSchema)
+  .handler(async ({ data }) => {})
+
+// ✅ With zodValidator adapter — optional, for explicit type narrowing
+createServerFn({ method: 'POST' })
+  .inputValidator(zodValidator(createUserSchema))
+  .handler(async ({ data }) => {})
+
+// ❌ WRONG — .validator() does NOT exist
+createServerFn({ method: 'POST' })
+  .validator(z.object({ name: z.string() }))  // Runtime error!
+```
+
+> **You do NOT need `zodValidator()` to use Zod schemas with `inputValidator`.** Passing `z.object()` directly works. The `zodValidator()` adapter is optional and only needed when you want explicit type narrowing from `@tanstack/zod-adapter`.
 
 ---
 

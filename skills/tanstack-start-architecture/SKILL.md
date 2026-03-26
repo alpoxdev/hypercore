@@ -92,18 +92,23 @@ Routes -> Server Functions -> Features -> Database
 | Check | Rule |
 |-------|------|
 | Route accessing DB directly? | BLOCKED. Must go through Server Functions -> Features |
-| Route calling Prisma? | BLOCKED. Use Server Functions |
+| Route calling ORM (Prisma/Drizzle) directly? | BLOCKED. Use Server Functions |
 | Server Function skipping Features? | ALLOWED only for simple CRUD |
 | Client calling Server Function directly? | BLOCKED. Use TanStack Query (exception: `loader`/`beforeLoad` run server-side, can call directly) |
 
 ### Gate 2: Route Structure
 
+> **Publishing-only exception:** Pages that only display static content with no interactive logic AND no server integration do NOT require `-components/`, `-hooks/`, `-functions/` folders. Examples: about, terms, privacy policy, simple marketing pages.
+>
+> **Server integration = folders required:** If a page has ANY server integration (loader calling server functions, `useQuery`, `useMutation`, `useServerFn`, or any data fetching), `-functions/` and `-hooks/` are MANDATORY. If a page has ANY interactive UI logic (`useState`, `useCallback`, custom hooks), all three folders are required.
+
 | Check | Rule |
 |-------|------|
 | Flat file route? (`routes/users.tsx`) | BLOCKED. Use folder (`routes/users/index.tsx`) |
-| Missing `-components/` folder? | BLOCKED. Every page needs it |
-| Missing `-hooks/` folder? | BLOCKED. Every page needs it |
-| Missing `-functions/` folder? | BLOCKED. Every page needs it |
+| Missing `-components/` folder? | BLOCKED — unless publishing-only page (static content, no logic) |
+| Missing `-hooks/` folder? | BLOCKED — unless publishing-only page (static content, no logic) |
+| Missing `-functions/` folder? | BLOCKED — unless publishing-only page (static content, no server functions) |
+| TanStack Start project with wrong folder structure? | BLOCKED. Auto-setup required folders before writing code |
 | `const Route` without `export`? | BLOCKED. Must be `export const Route` |
 | Logic in page component? | BLOCKED. Extract to `-hooks/` |
 | Layout route missing `route.tsx`? | BLOCKED. Routes needing beforeLoad/loader must have `route.tsx` |
@@ -114,13 +119,16 @@ Routes -> Server Functions -> Features -> Database
 
 ### Gate 3: Server Functions
 
+> **CRITICAL:** `.validator()` does NOT exist in TanStack Start. The ONLY correct API is `.inputValidator()`. `inputValidator` accepts Zod objects directly — you can pass `z.object({...})` without any adapter wrapper. See `rules/services.md` for full examples.
+
 | Check | Rule |
 |-------|------|
-| POST/PUT/PATCH without `inputValidator`? | BLOCKED |
+| POST/PUT/PATCH without `inputValidator`? | BLOCKED. Must use `.inputValidator()` with a Zod schema (e.g. `z.object({...})`) |
 | Auth-required without `middleware`? | BLOCKED |
-| Using `.validator()` instead of `.inputValidator()`? | BLOCKED. `.validator()` does not exist |
+| Using `.validator()` instead of `.inputValidator()`? | BLOCKED. `.validator()` does NOT exist — runtime error. Use `.inputValidator()` |
+| Wrapping Zod schema in adapter unnecessarily? | INFO. `inputValidator(z.object({...}))` works directly — `zodValidator()` adapter is optional |
 | handler not last in chain? | BLOCKED. handler must ALWAYS be last (middleware/inputValidator order is flexible) |
-| Missing `zodValidator` adapter for search params? | BLOCKED. Use `zodValidator` from `@tanstack/zod-adapter` |
+| Missing `zodValidator` adapter for search params? | BLOCKED. Use `zodValidator` from `@tanstack/zod-adapter` for `validateSearch` only |
 | Direct server function call in component? | BLOCKED. Use `useServerFn` hook from `@tanstack/react-start` |
 | `functions/index.ts` barrel export? | BLOCKED. Tree shaking failure |
 
@@ -190,6 +198,7 @@ Routes -> Server Functions -> Features -> Database
 
 Auto-fix directly when the issue is local, reversible, and low-risk.
 
+- **Create missing route folder structure** — if a TanStack Start project has routes but missing `-components/`, `-hooks/`, `-functions/` folders, create them automatically for pages that have logic. Do NOT create them for publishing-only pages.
 - Add or extend `importProtection` in `vite.config.ts`
 - Add `getRouter()` fresh-instance pattern in `src/router.tsx`
 - Add env typing/runtime validation scaffolding
@@ -231,7 +240,7 @@ After writing code, verify:
 
 1. **Structure check**: `ls` the route folder - confirm `-components/`, `-hooks/`, `-functions/` exist
 2. **Export check**: grep for `export const Route` in route files
-3. **Layer check**: no Prisma imports in route files
+3. **Layer check**: no ORM (Prisma/Drizzle) imports in route files
 4. **Convention check**: no camelCase filenames, no `function` keyword declarations
 5. **Hook order check**: read hook files, verify State -> Global -> Server Fns -> Query -> Handlers -> Memo -> Effect
 6. **Execution model check**: no secret/DB access in unbounded loaders, browser-only APIs stay client-only
@@ -252,14 +261,14 @@ src/
 │       ├── -hooks/            # REQUIRED: page hooks (ALL logic here)
 │       ├── -functions/        # REQUIRED: page server functions
 │       └── -sections/         # Optional: 200+ line pages
-├── features/<domain>/         # Internal domain (Prisma queries)
+├── features/<domain>/         # Internal domain (ORM queries — Prisma or Drizzle)
 │   ├── schemas.ts
 │   ├── queries.ts
 │   └── mutations.ts
 ├── services/<provider>/       # External SDK wrappers
 ├── functions/                 # Global server functions (NO index.ts!)
 │   └── middlewares/
-├── database/                  # Prisma client singleton
+├── database/                  # ORM client singleton (Prisma or Drizzle)
 ├── stores/                    # Zustand stores
 ├── hooks/                     # Global hooks
 ├── components/                # Shared UI
@@ -281,7 +290,7 @@ src/
 |---------|-----|
 | `routes/users.tsx` | `routes/users/index.tsx` |
 | `const Route = createFileRoute(...)` | `export const Route = createFileRoute(...)` |
-| `.validator(schema)` | `.inputValidator(schema)` |
+| `.validator(schema)` | `.inputValidator(schema)` — accepts `z.object()` directly, no adapter needed |
 | Logic in page component | Extract to `-hooks/use-*.ts` |
 | `lib/db` or `lib/store` folders | Use `database/` and `stores/` |
 | `functions/index.ts` barrel | Import directly from individual files |
@@ -303,10 +312,10 @@ src/
 
 ## Red Flags - STOP and Fix
 
-- Route file importing from `@/database/prisma` directly
+- Route file importing from `@/database` (Prisma/Drizzle) directly
 - Missing `export` on `const Route`
 - Page component with `useState`, `useQuery` etc. inline (not in hook)
-- Server function using `.validator()` instead of `.inputValidator()`
+- Server function using `.validator()` instead of `.inputValidator()` (`.validator()` does NOT exist — runtime error)
 - `any` type anywhere
 - camelCase filenames
 - Non-justified `/api` route handlers for internal app RPC (use Server Functions instead)

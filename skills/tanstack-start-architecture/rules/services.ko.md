@@ -14,7 +14,41 @@
 | `zodValidator()` | - | `@tanstack/zod-adapter`의 Zod 어댑터 |
 | `useServerFn()` | - | 클라이언트 서버 함수 호출 훅 |
 
-**주의:** `validator`는 존재하지 않는 API입니다. 반드시 `inputValidator`를 사용하세요.
+**매우 중요: `.validator()`는 TanStack Start에 존재하지 않는 API입니다.** `.validator()`를 사용하면 런타임 에러가 발생합니다. 유일하게 올바른 API는 `.inputValidator()`입니다. 대안도, 폴백도, 별칭도 없습니다.
+
+---
+
+## inputValidator는 Zod 객체를 직접 받습니다
+
+`inputValidator`는 인라인 `z.object()`를 포함한 Zod 스키마를 직접 받습니다. 어댑터 래퍼가 필요 없습니다:
+
+```typescript
+// ✅ 인라인 z.object() — 가장 간단한 패턴, 바로 작동
+createServerFn({ method: 'POST' })
+  .inputValidator(z.object({
+    email: z.email(),
+    name: z.string().min(1),
+  }))
+  .handler(async ({ data }) => {
+    // data는 { email: string; name: string }으로 타입됨
+  })
+
+// ✅ 이름 있는 Zod 스키마 — 역시 직접, 어댑터 불필요
+createServerFn({ method: 'POST' })
+  .inputValidator(createUserSchema)
+  .handler(async ({ data }) => {})
+
+// ✅ zodValidator 어댑터와 함께 — 선택사항, 명시적 타입 좁힘용
+createServerFn({ method: 'POST' })
+  .inputValidator(zodValidator(createUserSchema))
+  .handler(async ({ data }) => {})
+
+// ❌ 잘못됨 — .validator()는 존재하지 않음
+createServerFn({ method: 'POST' })
+  .validator(z.object({ name: z.string() }))  // 런타임 에러!
+```
+
+> **`inputValidator`에 Zod 스키마를 쓸 때 `zodValidator()`가 필요하지 않습니다.** `z.object()`를 직접 넘기면 됩니다. `zodValidator()` 어댑터는 `@tanstack/zod-adapter`의 명시적 타입 좁힘이 필요할 때만 선택적으로 사용합니다.
 
 ---
 

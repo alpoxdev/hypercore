@@ -32,9 +32,13 @@ routes/
 | `_` | Pathless Layout | 생성 (경로 없음) |
 
 **필수 규칙:**
-- 모든 페이지에 `-components/`, `-hooks/`, `-functions/` 폴더 **필수**
-- 페이지 크기(줄 수)와 **무관**하게 Custom Hook은 반드시 `-hooks/` 폴더에 분리
+- **로직이 있는** 모든 페이지에 `-components/`, `-hooks/`, `-functions/` 폴더 **필수**
+- **단순 퍼블리싱 예외:** 인터랙티브 로직도 없고 서버 연동도 없이 정적 콘텐츠만 표시하는 페이지는 이 폴더들이 **필요 없습니다**. 예시: about, terms, privacy policy, 단순 마케팅 페이지.
+- **서버 연동 = 폴더 필수:** 페이지에 서버 연동이 하나라도 있으면(loader에서 서버 함수 호출, `useQuery`, `useMutation`, `useServerFn`) → `-functions/`와 `-hooks/`는 **반드시** 생성
+- 인터랙티브 UI 로직(`useState`, `useCallback`, 커스텀 훅)이 있으면 페이지 크기와 무관하게 세 폴더 모두 필수
+- Custom Hook은 반드시 `-hooks/` 폴더에 분리
 - `-sections/`는 200줄 이상 복잡한 페이지에서만 선택적 사용
+- **자동 셋업:** TanStack Start 프로젝트에 라우트가 있지만 필수 폴더가 없으면, 코드 작성 전에 생성
 
 ---
 
@@ -222,8 +226,11 @@ export const Route = createFileRoute('/posts/')({
 
 ## 폴더 구조 규칙
 
-| 페이지 크기 | 필수 | 선택 |
+| 페이지 유형 | 필수 | 선택 |
 |------------|------|------|
-| ~100줄 | `-components/`, `-hooks/`, `-functions/` | - |
-| 100-200줄 | `-components/`, `-hooks/`, `-functions/` | - |
-| 200줄+ | `-components/`, `-hooks/`, `-functions/` | `-sections/` |
+| 단순 퍼블리싱 (정적 콘텐츠, 로직 없음) | 없음 | - |
+| 로직 있는 페이지 (~100줄) | `-components/`, `-hooks/`, `-functions/` | - |
+| 로직 있는 페이지 (100-200줄) | `-components/`, `-hooks/`, `-functions/` | - |
+| 로직 있는 페이지 (200줄+) | `-components/`, `-hooks/`, `-functions/` | `-sections/` |
+
+> **단순 퍼블리싱** = `useState`, `useCallback`, 커스텀 훅, 서버 함수 호출 없음. 정적/서버 페치 콘텐츠만 표시. 로직이 **하나라도** 있으면 세 폴더 모두 필수.

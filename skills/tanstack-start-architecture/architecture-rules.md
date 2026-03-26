@@ -21,11 +21,11 @@ Brownfield adoption rule: untouched legacy code may be tracked as migration work
 | Folder Names | `lib/db`, `lib/store` (use `database/`, `stores/`) |
 | Filenames | camelCase (`getUserById.ts`) |
 | TypeScript | `any` type, `function` keyword declaration |
-| Server Fn API | `.validator()` (does NOT exist, use `.inputValidator()`) |
+| Server Fn API | `.validator()` (does NOT exist — runtime error. Use `.inputValidator()` which accepts `z.object()` directly) |
 | Client | Direct Server Function calls (must use TanStack Query) |
 | Import Boundaries | Client-reachable `*.server.*`, server-side `*.client.*`, disabled `importProtection` |
 | Git | AI markers, multi-line commit messages, emojis |
-| Prisma | Auto-run `db push/migrate/generate`, unauthorized `schema.prisma` edits |
+| ORM | Auto-run `db push/migrate/generate` (Prisma) or unauthorized schema edits. Applies to both Prisma and Drizzle |
 
 ---
 
@@ -42,29 +42,42 @@ TanStack Start Server
        |
        v
   Features (internal domain) | Services (external SDK)
-  Prisma queries, schemas    | Stripe, S3, SendGrid
+  ORM queries, schemas       | Stripe, S3, SendGrid
+  (Prisma or Drizzle)        |
        |
        v
-  Database Layer (Prisma -> PostgreSQL + Redis)
+  Database Layer (Prisma/Drizzle -> PostgreSQL + Redis)
 ```
 
 **Data flow rules:**
-- Query: Page -> useQuery -> Server Function -> Features -> Prisma -> DB
+- Query: Page -> useQuery -> Server Function -> Features -> ORM (Prisma/Drizzle) -> DB
 - Mutation: Form -> useMutation -> Server Function -> inputValidator -> Features -> DB -> invalidateQueries
 
 ---
 
 ## Route Structure Rules
 
-### Every page MUST have:
+### Every page with logic MUST have:
 ```
 routes/<page>/
 ├── index.tsx          # UI only (no logic)
-├── -components/       # REQUIRED always
-├── -hooks/            # REQUIRED always (even 10-line pages)
-├── -functions/        # REQUIRED always
+├── -components/       # REQUIRED for pages with logic
+├── -hooks/            # REQUIRED for pages with logic
+├── -functions/        # REQUIRED for pages with logic
 └── -sections/         # Optional (200+ lines only)
 ```
+
+### Publishing-only exception:
+Pages that only display static content with **no interactive logic AND no server integration** do NOT require `-components/`, `-hooks/`, `-functions/`.
+
+Examples of publishing-only pages: about, terms, privacy policy, simple marketing pages.
+
+**Server integration = folders required:**
+- If a page has **any** server integration (loader calling server functions, `useQuery`, `useMutation`, `useServerFn`, data fetching) → `-functions/` and `-hooks/` are MANDATORY
+- If a page has **any** interactive UI logic (`useState`, `useCallback`, custom hooks) → all three folders are required
+
+### Auto-setup rule:
+If a TanStack Start project has routes but is missing the required folder structure, create the missing folders automatically before writing any code. Do not create folders for publishing-only pages.
 
 ### Route Export (strict):
 ```typescript
@@ -109,19 +122,45 @@ export const Route = createFileRoute('/path')({
 
 ## Server Function Rules
 
+### CRITICAL: `.inputValidator()` is the ONLY validation API
+
+`.validator()` does NOT exist in TanStack Start — it will cause a runtime error. Always use `.inputValidator()`.
+
+`inputValidator` accepts Zod objects directly — no adapter wrapper needed:
+
+```typescript
+// ✅ Inline z.object() — simplest pattern
+createServerFn({ method: 'POST' })
+  .inputValidator(z.object({
+    email: z.email(),
+    name: z.string().min(1),
+  }))
+  .handler(async ({ data }) => {})
+
+// ✅ Named Zod schema — also direct
+createServerFn({ method: 'POST' })
+  .inputValidator(createUserSchema)
+  .handler(async ({ data }) => {})
+
+// ✅ With zodValidator adapter — optional, for explicit type narrowing
+createServerFn({ method: 'POST' })
+  .inputValidator(zodValidator(createUserSchema))
+  .handler(async ({ data }) => {})
+```
+
 ### Method chaining order:
 ```typescript
 // Pattern A: middleware first
 createServerFn({ method: 'POST' })
   .middleware([authMiddleware])      // 1. middleware
-  .inputValidator(createUserSchema)  // 2. inputValidator
+  .inputValidator(createUserSchema)  // 2. inputValidator (accepts z.object() directly)
   .handler(async ({ data }) => {})   // 3. handler (always last)
 
 // Pattern B: inputValidator first (also valid)
 createServerFn({ method: 'POST' })
-  .inputValidator(zodValidator(createUserSchema))  // 1. inputValidator
-  .middleware([authMiddleware])                     // 2. middleware
-  .handler(async ({ data, context }) => {})        // 3. handler (always last)
+  .inputValidator(createUserSchema)            // 1. inputValidator
+  .middleware([authMiddleware])                 // 2. middleware
+  .handler(async ({ data, context }) => {})    // 3. handler (always last)
 ```
 
 > Both orders are valid. `handler` must ALWAYS be last.
@@ -233,7 +272,7 @@ tanstackStart({
 ## Auto-Remediation Policy
 
 - Auto-fix directly when the issue is local, reversible, and low-risk
-- Examples: add missing `importProtection`, add `getRouter()` pattern, add env typing/validation stubs, add marker imports, add middleware validation, add missing explicit config
+- Examples: **create missing route folder structure** (`-components/`, `-hooks/`, `-functions/` for pages with logic), add missing `importProtection`, add `getRouter()` pattern, add env typing/validation stubs, add marker imports, add middleware validation, add missing explicit config
 - Do not auto-apply broad or potentially breaking migrations without clear justification
 - Examples: mass route/file renames, sweeping `/api` to Server Function refactors, SSR mode changes across many routes, alias-wide import rewrites
 - In brownfield projects, strict hypercore conventions should always apply to touched files; untouched legacy files can be logged as migration backlog when the issue is non-safety-related
@@ -350,7 +389,7 @@ services/<provider>/
 | Router | TanStack Router (latest) |
 | Data | TanStack Query 5.x |
 | State | Zustand (latest) |
-| ORM | Prisma 7.x |
+| ORM | Prisma 7.x **or** Drizzle ORM (project choice) |
 | Validation | Zod 4.x (`z.email()`, `z.url()`) |
 | Zod Adapter | @tanstack/zod-adapter |
 | Database | PostgreSQL |
@@ -391,7 +430,11 @@ export const Route = createFileRoute('/dashboard/')({
 
 ---
 
-## Prisma Rules
+## ORM Rules
+
+The project may use **Prisma** or **Drizzle ORM**. Check `package.json` for which is installed. All layer architecture and server function rules apply equally to both.
+
+### Prisma
 
 - Multi-file structure: `prisma/schema/`
   - `+base.prisma` (datasource, generator)
@@ -400,3 +443,10 @@ export const Route = createFileRoute('/dashboard/')({
 - Korean comments on ALL elements
 - Singleton client in `database/prisma.ts`
 - NEVER auto-run `db push`, `migrate`, `generate`
+
+### Drizzle
+
+- Schema in `database/schema/` (TypeScript files)
+- Singleton client in `database/drizzle.ts` (or `database/client.ts`)
+- NEVER auto-run `drizzle-kit push`, `migrate`, `generate` without explicit permission
+- Same layer rules apply: routes must NOT import ORM directly

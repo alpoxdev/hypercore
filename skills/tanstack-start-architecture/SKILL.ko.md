@@ -87,18 +87,23 @@ Routes -> Server Functions -> Features -> Database
 | 확인 항목 | 규칙 |
 |-----------|------|
 | 라우트에서 DB 직접 접근? | 차단. Server Functions -> Features를 거쳐야 함 |
-| 라우트에서 Prisma 호출? | 차단. Server Functions 사용 |
+| 라우트에서 ORM (Prisma/Drizzle) 직접 호출? | 차단. Server Functions 사용 |
 | Server Function이 Features 건너뜀? | 단순 CRUD만 허용 |
 | 클라이언트에서 Server Function 직접 호출? | 차단. TanStack Query 사용 (예외: `loader`/`beforeLoad`는 서버사이드 실행이므로 직접 호출 가능) |
 
 ### 게이트 2: 라우트 구조
 
+> **단순 퍼블리싱 예외:** 인터랙티브 로직도 없고 서버 연동도 없이 정적 콘텐츠만 표시하는 페이지는 `-components/`, `-hooks/`, `-functions/` 폴더가 **필요 없습니다**. 예시: about, terms, privacy policy, 단순 마케팅 페이지.
+>
+> **서버 연동 = 폴더 필수:** 페이지에 서버 연동이 **하나라도** 있으면(loader에서 서버 함수 호출, `useQuery`, `useMutation`, `useServerFn`, 기타 데이터 페칭) `-functions/`와 `-hooks/`는 **반드시** 생성해야 합니다. 인터랙티브 UI 로직(`useState`, `useCallback`, 커스텀 훅)이 있으면 세 폴더 모두 필수입니다.
+
 | 확인 항목 | 규칙 |
 |-----------|------|
 | 플랫 파일 라우트? (`routes/users.tsx`) | 차단. 폴더 사용 (`routes/users/index.tsx`) |
-| `-components/` 폴더 없음? | 차단. 모든 페이지 필수 |
-| `-hooks/` 폴더 없음? | 차단. 모든 페이지 필수 |
-| `-functions/` 폴더 없음? | 차단. 모든 페이지 필수 |
+| `-components/` 폴더 없음? | 차단 — 단순 퍼블리싱 페이지(정적 콘텐츠, 로직 없음)는 예외 |
+| `-hooks/` 폴더 없음? | 차단 — 단순 퍼블리싱 페이지(정적 콘텐츠, 로직 없음)는 예외 |
+| `-functions/` 폴더 없음? | 차단 — 단순 퍼블리싱 페이지(정적 콘텐츠, 서버 함수 없음)는 예외 |
+| TanStack Start 프로젝트인데 폴더 구조가 잘못됨? | 차단. 코드 작성 전에 필요한 폴더를 자동 셋업 |
 | `export` 없는 `const Route`? | 차단. `export const Route` 필수 |
 | 페이지 컴포넌트에 로직? | 차단. `-hooks/`로 분리 |
 | 레이아웃 라우트에 `route.tsx` 없음? | 차단. beforeLoad/loader가 필요한 라우트는 `route.tsx` 필수 |
@@ -109,13 +114,16 @@ Routes -> Server Functions -> Features -> Database
 
 ### 게이트 3: Server Functions
 
+> **매우 중요:** `.validator()`는 TanStack Start에 존재하지 않는 API입니다. 유일하게 올바른 API는 `.inputValidator()`입니다. `inputValidator`는 Zod 객체를 직접 받습니다 — `z.object({...})`를 어댑터 래퍼 없이 바로 넘길 수 있습니다. 전체 예시는 `rules/services.md`를 참조하세요.
+
 | 확인 항목 | 규칙 |
 |-----------|------|
-| POST/PUT/PATCH에 `inputValidator` 없음? | 차단 |
+| POST/PUT/PATCH에 `inputValidator` 없음? | 차단. `.inputValidator()`에 Zod 스키마(예: `z.object({...})`) 필수 |
 | 인증 필요한데 `middleware` 없음? | 차단 |
-| `.inputValidator()` 대신 `.validator()` 사용? | 차단. `.validator()`는 존재하지 않음 |
+| `.inputValidator()` 대신 `.validator()` 사용? | 차단. `.validator()`는 존재하지 않음 — 런타임 에러. `.inputValidator()` 사용 |
+| Zod 스키마를 불필요하게 어댑터로 감쌈? | 참고. `inputValidator(z.object({...}))`가 직접 작동 — `zodValidator()` 어댑터는 선택사항 |
 | handler가 체인의 마지막이 아님? | 차단. handler는 반드시 마지막 (middleware/inputValidator 순서는 유연) |
-| 검색 파라미터에 `zodValidator` 어댑터 미사용? | 차단. `@tanstack/zod-adapter`의 `zodValidator` 사용 |
+| 검색 파라미터에 `zodValidator` 어댑터 미사용? | 차단. `validateSearch` 전용으로 `@tanstack/zod-adapter`의 `zodValidator` 사용 |
 | 컴포넌트에서 서버 함수 직접 호출? | 차단. `@tanstack/react-start`의 `useServerFn` 훅 사용 |
 | `functions/index.ts` 배럴 익스포트? | 차단. 트리 쉐이킹 실패 |
 
@@ -185,6 +193,7 @@ Routes -> Server Functions -> Features -> Database
 
 이슈가 국소적이고, 되돌리기 쉽고, 저위험이면 직접 자동 수정합니다.
 
+- **누락된 라우트 폴더 구조 생성** — TanStack Start 프로젝트에 라우트는 있지만 `-components/`, `-hooks/`, `-functions/` 폴더가 없으면, 로직이 있는 페이지에 자동으로 생성합니다. 단순 퍼블리싱 페이지에는 생성하지 않습니다.
 - `vite.config.ts`의 `importProtection` 추가/확장
 - `src/router.tsx`의 `getRouter()` fresh-instance 패턴 추가
 - env typing/runtime validation 스캐폴딩 추가
@@ -226,7 +235,7 @@ Ralph와 함께 사용 시, 모든 PRD 스토리에 다음 수락 기준 포함 
 
 1. **구조 확인**: 라우트 폴더 `ls` - `-components/`, `-hooks/`, `-functions/` 존재 확인
 2. **Export 확인**: 라우트 파일에서 `export const Route` grep
-3. **레이어 확인**: 라우트 파일에 Prisma import 없음
+3. **레이어 확인**: 라우트 파일에 ORM (Prisma/Drizzle) import 없음
 4. **컨벤션 확인**: camelCase 파일명 없음, `function` 키워드 선언 없음
 5. **Hook 순서 확인**: Hook 파일 읽기, State -> Global -> Server Fns -> Query -> Handlers -> Memo -> Effect 확인
 6. **Execution model 확인**: `loader`에 secret/DB 접근이 직접 없고, 브라우저 API가 client-only 경계 안에 있는지 확인
@@ -247,14 +256,14 @@ src/
 │       ├── -hooks/            # 필수: 페이지 훅 (모든 로직 여기에)
 │       ├── -functions/        # 필수: 페이지 서버 함수
 │       └── -sections/         # 선택: 200줄 이상 페이지
-├── features/<domain>/         # 내부 도메인 (Prisma 쿼리)
+├── features/<domain>/         # 내부 도메인 (ORM 쿼리 — Prisma 또는 Drizzle)
 │   ├── schemas.ts
 │   ├── queries.ts
 │   └── mutations.ts
 ├── services/<provider>/       # 외부 SDK 래퍼
 ├── functions/                 # 글로벌 서버 함수 (index.ts 금지!)
 │   └── middlewares/
-├── database/                  # Prisma 클라이언트 싱글톤
+├── database/                  # ORM 클라이언트 싱글톤 (Prisma 또는 Drizzle)
 ├── stores/                    # Zustand 스토어
 ├── hooks/                     # 글로벌 훅
 ├── components/                # 공유 UI
@@ -276,7 +285,7 @@ src/
 |------|------|
 | `routes/users.tsx` | `routes/users/index.tsx` |
 | `const Route = createFileRoute(...)` | `export const Route = createFileRoute(...)` |
-| `.validator(schema)` | `.inputValidator(schema)` |
+| `.validator(schema)` | `.inputValidator(schema)` — `z.object()`를 직접 받음, 어댑터 불필요 |
 | 페이지 컴포넌트에 로직 | `-hooks/use-*.ts`로 분리 |
 | `lib/db` 또는 `lib/store` 폴더 | `database/`와 `stores/` 사용 |
 | `functions/index.ts` 배럴 | 개별 파일에서 직접 import |
@@ -299,10 +308,10 @@ src/
 
 ## 위험 신호 - 즉시 수정
 
-- 라우트 파일에서 `@/database/prisma` 직접 import
+- 라우트 파일에서 `@/database` (Prisma/Drizzle) 직접 import
 - `const Route`에 `export` 누락
 - 페이지 컴포넌트에 `useState`, `useQuery` 등 인라인 (Hook 아님)
-- Server Function에서 `.inputValidator()` 대신 `.validator()` 사용
+- Server Function에서 `.inputValidator()` 대신 `.validator()` 사용 (`.validator()`는 존재하지 않음 — 런타임 에러)
 - 어디든 `any` 타입
 - camelCase 파일명
 - 정당화되지 않은 내부 RPC용 `/api` 라우트 핸들러 (Server Functions 사용)
