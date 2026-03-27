@@ -1,6 +1,6 @@
 ---
 name: elon-musk
-description: 제1원칙 사고법(First Principles Thinking)으로 문제의 본질을 파악하고 혁신적 해결책 도출. 도메인 자동 검색 + 가정 해체 + 재설계 + Inversion 기반 실행 계획.
+description: 제1원칙 사고법(First Principles Thinking)으로 문제의 본질을 파악하고 혁신적 해결책 도출. .hypercore/elon-musk/[topic-slug]/ 아래에 다중 파일로 분석 결과를 저장하고 flow.json으로 진행 상황을 추적.
 ---
 
 
@@ -116,7 +116,8 @@ $ARGUMENTS 있음 → 다음 단계 진행
 | **2** | 가정 해체 (소크라테스 질문 → A/B/C 분류) | Sequential Thinking (5-7단계) | 물리적 제약 vs 관행 분리 |
 | **3** | 본질 재설계 (기본 진리에서 새 구조) | Task 병렬 (analyst x3) | 3-5개 대안 경로 탐색 |
 | **4** | 실행 + 리스크 (Inversion + Pre-mortem) | Sequential Thinking (3-5단계) | 실패 시나리오 대비 |
-| **5** | 저장 + 제시 | Write | .hypercore/first-principles/ |
+| **0** | 폴더 생성 + flow.json 초기화 | Write | `.hypercore/elon-musk/[topic-slug]/flow.json` |
+| **5** | 각 Phase 결과 파일 저장 + flow.json 업데이트 | Write | `research.md`, `assumptions.md`, `redesign.md`, `execution.md` |
 
 ### 복잡도별 사고 패턴
 
@@ -285,11 +286,21 @@ Phase 2에서 확정된:
 
 ## 결과 저장
 
+```text
+.hypercore/elon-musk/[topic-slug]/
+├── flow.json           # 단계 추적
+├── research.md         # 도메인 조사 (통념 + 팩트 + 혁신 사례)
+├── assumptions.md      # A/B/C 매트릭스 + 소크라테스 질문
+├── redesign.md         # 본질 재설계 + 비교 테이블
+└── execution.md        # Inversion + Pre-mortem + 실행 계획
+```
+
 | 항목 | 규칙 |
 |------|------|
-| **경로** | `.hypercore/first-principles/[넘버링].[문제_요약].md` |
-| **넘버링** | `ls .hypercore/first-principles/ \| wc -l` 결과 |
-| **워크플로우** | 폴더 생성 → Write → 사용자 경로 안내 |
+| **경로** | `.hypercore/elon-musk/[topic-slug]/` |
+| **slug** | ASCII kebab-case (예: `saas-infra-cost`) |
+| **flow.json** | 시작 시 생성, 각 Phase 완료 시 업데이트. 스키마는 `references/flow-schema.md` 참조 |
+| **재개** | flow.json이 이미 있으면 읽고 마지막 미완료 단계부터 이어감 |
 
 </document_storage>
 
@@ -339,7 +350,12 @@ Phase 4: Inversion + Pre-mortem
   실패: "마이그레이션 중 다운타임" → 블루-그린 배포
   실패: "운영 복잡도 증가" → 자동화 파이프라인 선행
 
-저장: .hypercore/first-principles/00.SaaS_인프라_비용_혁신.md
+저장: .hypercore/elon-musk/saas-infra-cost/
+  ├── flow.json
+  ├── research.md
+  ├── assumptions.md
+  ├── redesign.md
+  └── execution.md
 ```
 
 ## 기타 사례
@@ -363,7 +379,7 @@ Phase 4: Inversion + Pre-mortem
 | **Phase 2** | Sequential Thinking 3단계+, A/B/C 분류 5개+, 핵심 팩트 교차검증 2개+ |
 | **Phase 3** | analyst x3, "기존 vs 제1원칙" 비교 테이블 |
 | **Phase 4** | Inversion 3개+, Pre-mortem, "실수 가능 순간" |
-| **저장** | .hypercore/first-principles/ |
+| **저장** | `.hypercore/elon-musk/[topic-slug]/` (다중 파일 + flow.json) |
 | **출처** | 모든 팩트 URL + 발행일 + 소스유형 |
 
 | 금지 | |
