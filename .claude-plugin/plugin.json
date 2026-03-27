@@ -1,0 +1,13 @@
+{
+  "name": "hypercore",
+  "version": "1.0.0",
+  "description": "AI agent skills and agents collection for Claude Code, Codex, and Cursor",
+  "author": {
+    "name": "alpoxdev"
+  },
+  "repository": "https://github.com/alpoxdev/hypercore",
+  "license": "MIT",
+  "keywords": ["claude-code", "skills", "agents", "architecture", "git", "research"],
+  "skills": "./skills/",
+  "agents": "./agents/"
+}

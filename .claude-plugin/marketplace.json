@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "hypercore",
+  "description": "Claude Code, Codex, Cursor에서 사용할 수 있는 AI 에이전트 스킬 및 에이전트 모음. Vercel Skills 기반.",
+  "owner": {
+    "name": "alpoxdev"
+  },
+  "plugins": [
+    {
+      "name": "hypercore",
+      "source": "./",
+      "category": "productivity",
+      "version": "1.0.0",
+      "tags": ["skills", "agents", "architecture", "git", "research", "debugging"]
+    }
+  ],
+  "version": "1.0.0"
+}
