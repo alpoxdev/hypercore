@@ -1,14 +1,14 @@
 # Hypercore Agent Skills
 
-Claude Code용 스킬 모음입니다.
+Claude Code, Codex, Cursor에서 사용할 수 있는 AI 에이전트 스킬 모음입니다.
+
+[Vercel Skills](https://github.com/vercel-labs/skills) 기반으로 제작되었습니다.
 
 ## 설치
 
 ```bash
-npx skills add alpoxdev/hypercore
+npx skills add alpoxdev/hypercore --skill '*' -g -a claude-code -y
 ```
-
-전역 설치가 필요할 때만 `-g` 또는 `--global`을 사용하세요.
 
 ## 스킬 목록
 
