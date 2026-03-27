@@ -1,6 +1,6 @@
 ---
 name: startup-validator
-description: Evaluate a startup idea with explicit evidence, uncertainty, and scoring discipline. Use when the job is validation, not brainstorming or implementation planning.
+description: Evaluate a startup idea with explicit evidence, uncertainty, and scoring discipline. Saves structured multi-file analysis under .hypercore/startup-validator/[topic-slug]/ with phase tracking. Use when the job is validation, not brainstorming or implementation planning.
 ---
 
 @rules/evidence-and-scoring.md
@@ -8,7 +8,7 @@ description: Evaluate a startup idea with explicit evidence, uncertainty, and sc
 
 # Startup Validator
 
-> Score startup ideas with explicit evidence and uncertainty instead of optimism.
+> Score startup ideas with explicit evidence and uncertainty instead of optimism. Organize results as a multi-file folder for future reference.
 
 <when_to_use>
 
@@ -60,17 +60,57 @@ For each run:
 
 </owned_job>
 
+<document_shape>
+
+## Output Structure
+
+```text
+.hypercore/startup-validator/[topic-slug]/
+├── flow.json           # phase tracking
+├── thesis.md           # idea framing + key hypotheses
+├── thiel-scores.md     # per-question rationale and scores
+├── pmf-forces.md       # PMF checklist + Forces of Progress
+└── verdict.md          # final score + grade + weaknesses + roadmap
+```
+
+- Use ASCII kebab-case for `[topic-slug]` (e.g., `ai-education-service`).
+- Each phase produces its own file for organized reference.
+- `flow.json` tracks progress through phases. See `references/flow-schema.md` for the schema.
+- If the folder exists from a prior run, read existing files before updating.
+
+</document_shape>
+
+<flow_tracking>
+
+## Flow Tracking
+
+Write `flow.json` at the start and update as each phase completes.
+
+### Phase progression
+
+| Phase | Output file | Next |
+|-------|-------------|------|
+| `frame` | `thesis.md` — idea thesis + 3 key hypotheses | `score` |
+| `score` | `thiel-scores.md` — 7 questions with per-question rationale | `pmf` |
+| `pmf` | `pmf-forces.md` — PMF checklist + Forces of Progress analysis | `verdict` |
+| `verdict` | `verdict.md` — total score, grade, weaknesses, roadmap | done |
+
+### Resume support
+
+If `flow.json` already exists, read it and continue from the last incomplete phase. Do not restart completed phases.
+
+</flow_tracking>
+
 <workflow>
 
 ## Workflow
 
-| Phase | Task | Output |
-|------|------|------|
-| 1 | Frame the idea and missing context | One-line thesis plus assumptions |
-| 2 | Score the Thiel questions | Per-question rationale and provisional score |
-| 3 | Check PMF and switching forces | Demand and behavior read |
-| 4 | Apply penalties or caution flags | Adjusted score and risk map |
-| 5 | Recommend next validation actions | Prioritized roadmap |
+| Phase | Task | Output file |
+|------|------|-------------|
+| 1 | Frame the idea and missing context | `thesis.md` |
+| 2 | Score the Thiel questions | `thiel-scores.md` |
+| 3 | Check PMF and switching forces | `pmf-forces.md` |
+| 4 | Apply penalties, summarize, recommend next actions | `verdict.md` |
 
 Scoring rule:
 
@@ -81,13 +121,12 @@ Scoring rule:
 
 <output_contract>
 
-The final answer should include:
+Each output file should follow the formats defined in the KO version's result_structure section:
 
-- `Total score / grade`
-- `Per-question rationale`
-- `Critical weaknesses`
-- `Evidence and uncertainty notes`
-- `Next validation steps`
+- `thesis.md`: one-line thesis, value hypothesis, growth hypothesis, key unknowns
+- `thiel-scores.md`: per-question score + rationale + improvement direction
+- `pmf-forces.md`: PMF checklist, Forces of Progress (Push/Pull/Habit/Anxiety), switching probability
+- `verdict.md`: total score/grade, critical weaknesses with severity, improvement roadmap (immediate/30d/90d)
 
 </output_contract>
 
@@ -99,5 +138,7 @@ Before finishing, check:
 - evidence quality is distinguished from opinion
 - the score ties back to named frameworks
 - the output includes concrete next validation actions
+- all output files are saved under `.hypercore/startup-validator/[topic-slug]/`
+- `flow.json` status is set to `completed`
 
 </validation>

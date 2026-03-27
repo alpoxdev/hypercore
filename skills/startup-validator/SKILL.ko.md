@@ -1,6 +1,6 @@
 ---
 name: startup-validator
-description: Peter Thiel 7질문 + Y Combinator PMF 지표 + Mom Test 원칙으로 사업 아이디어를 냉정하게 검증. 점수화 + 약점 분석 + 개선 방향 제시.
+description: Peter Thiel 7질문 + Y Combinator PMF 지표 + Mom Test 원칙으로 사업 아이디어를 냉정하게 검증. .hypercore/startup-validator/[topic-slug]/ 아래에 다중 파일로 분석 결과를 저장하고 flow.json으로 진행 상황을 추적.
 ---
 
 
@@ -215,7 +215,8 @@ $ARGUMENTS 없음 → 즉시 질문:
 | **3** | PMF/JTBD 검증 | ST 5단계 | Forces 분석, PMF 체크리스트 |
 | **4** | 종합 평가 | ST 3단계 | 점수화 + 등급 + 약점 |
 | **5** | 개선 로드맵 | ST 3단계 | 우선순위별 액션 |
-| **6** | 저장 | Write | .hypercore/validation-results/ |
+| **0** | 폴더 생성 + flow.json 초기화 | Write | `.hypercore/startup-validator/[topic-slug]/flow.json` |
+| **6** | 각 Phase 결과 파일 저장 + flow.json 업데이트 | Write | `thesis.md`, `thiel-scores.md`, `pmf-forces.md`, `verdict.md` |
 
 ### Phase 1: 핵심 가설 추출
 
@@ -345,7 +346,12 @@ Phase 4: 종합 평가
   치명적 약점: 플랫폼 정책 의존성
   중대 약점: 10배 기술 부재
 
-저장: .hypercore/validation-results/00.구매대행_자동화.md
+저장: .hypercore/startup-validator/crawling-purchasing-automation/
+  ├── flow.json
+  ├── thesis.md
+  ├── thiel-scores.md
+  ├── pmf-forces.md
+  └── verdict.md
 ```
 
 </examples>
@@ -362,7 +368,7 @@ Phase 4: 종합 평가
 | Phase 3 | **Forces 4가지** 분석 + PMF 체크 |
 | Phase 4 | 총점 + 등급 + **약점 심각도 분류** |
 | Phase 5 | 즉시/30일/90일 로드맵 |
-| 저장 | .hypercore/validation-results/ |
+| 저장 | `.hypercore/startup-validator/[topic-slug]/` (다중 파일 + flow.json) |
 
 | 금지 |
 |------|
