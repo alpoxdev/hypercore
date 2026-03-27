@@ -1,12 +1,12 @@
 ---
 name: qa
-description: Analyze non-developer stakeholder requests (clients, executives, PMs) by searching the codebase, presenting technical interpretation candidates with risks, then implementing after user feedback. Use when relaying a vague or non-technical change request that needs interpretation before execution.
+description: Analyze non-developer stakeholder requests (clients, executives, PMs) by searching the codebase, presenting technical interpretation candidates with risks, then implementing after user feedback. Routes simple requests directly; tracks complex multi-phase requests via .hypercore/qa/ JSON flow. Use when relaying a vague or non-technical change request that needs interpretation before execution.
 compatibility: Use in environments with code exploration (Read/Grep/Glob), editing (Edit/Write), and validation commands (Bash).
 ---
 
 # QA — Stakeholder Request Analyzer
 
-> Translate non-developer change requests into precise technical work — analyze first, confirm with the developer, then execute.
+> Translate non-developer change requests into precise technical work — classify complexity, then either fix directly or track progress through structured phases.
 
 <request_routing>
 
@@ -51,7 +51,12 @@ One round of clarification maximum. The point is to work with imperfect informat
 
 ## Mandatory Sequential Thinking
 
-Always run `sequential-thinking` before presenting candidates. Minimum 5 thoughts:
+Always run `sequential-thinking` before presenting candidates. Depth scales with complexity:
+
+- **Simple (3-5 thoughts)**: Parse request → map to code → identify single interpretation → assess risk → recommend
+- **Complex (7+ thoughts)**: Parse request → identify ambiguities → map to code across systems → assess cross-cutting risks → formulate multiple candidates → compare tradeoffs → recommend
+
+Recommended sequence:
 
 1. Parse the non-technical language — what is the stakeholder actually asking for?
 2. Identify ambiguities — what could this mean in multiple ways?
@@ -59,32 +64,86 @@ Always run `sequential-thinking` before presenting candidates. Minimum 5 thought
 4. Assess risks — what could break, what are the side effects?
 5. Formulate interpretation candidates — distinct technical readings of the request.
 
-For complex or multi-part requests, use 7+ thoughts.
-
 </mandatory_reasoning>
+
+<complexity_classification>
+
+## Complexity Classification
+
+Classify immediately after sequential-thinking:
+
+| Complexity | Signals | Path |
+|------------|---------|------|
+| **Simple** | Single file/component affected, clear mapping from request to code, ≤1 valid interpretation, low risk | **Direct** — proceed without flow tracking |
+| **Complex** | Multi-system impact, 2+ valid interpretations, phased implementation needed, stakeholder clarification expected, scope estimate is medium/large | **Tracked** — create `.hypercore/qa/flow.json` |
+
+Announce the classification:
+
+```
+Complexity: [simple/complex] — [one-line reason]
+```
+
+When uncertain, classify as complex. It is cheaper to track than to lose progress.
+
+</complexity_classification>
+
+<flow_tracking>
+
+## Flow Tracking (Complex Path Only)
+
+When classified as complex, initialize the flow:
+
+```bash
+mkdir -p .hypercore/qa
+```
+
+Write `.hypercore/qa/flow.json` and update it as each phase progresses. See `references/flow-schema.md` for the full schema.
+
+### Phase progression
+
+| Phase | Description | Next |
+|-------|-------------|------|
+| `analyze` | Parse request, search codebase for affected areas | `present` |
+| `present` | Present interpretation candidates with risks | `confirm` |
+| `confirm` | Wait for and record user feedback | `implement` |
+| `implement` | Execute confirmed interpretation | `verify` |
+| `verify` | Run validation, report outcome | done |
+
+### Resume support
+
+If `.hypercore/qa/flow.json` already exists, read it first and continue from the last incomplete phase (`in_progress` or `pending`). Do not restart completed phases.
+
+</flow_tracking>
 
 <workflow>
 
-## Phase 1 — Analyze & Present
+## Simple Path
 
 | Step | Task | Tool |
 |------|------|------|
-| 1 | Validate input — identify the stakeholder request | - |
-| 2 | Parse and analyze with sequential-thinking | sequential-thinking |
-| 3 | Search codebase for affected areas | Read/Grep/Glob |
-| 4 | Present interpretation candidates + issues | - |
-| 5 | Wait for user feedback | - |
+| 1 | Validate input, sequential-thinking (3-5 thoughts) | sequential-thinking |
+| 2 | Classify as simple | - |
+| 3 | Quick codebase scan | Read/Grep/Glob |
+| 4 | Present brief analysis + recommended interpretation | - |
+| 5 | Wait for user confirmation | - |
+| 6 | Implement confirmed interpretation | Edit/Write |
+| 7 | Validate (typecheck/test/build) | Bash |
+| 8 | Report outcome | - |
 
-## Phase 2 — Execute
+## Complex Path
 
 | Step | Task | Tool |
 |------|------|------|
-| 6 | Confirm scope based on user feedback | - |
-| 7 | Implement the confirmed interpretation | Edit/Write |
-| 8 | Run validation (typecheck/test/build) | Bash |
-| 9 | Report outcome and changed files | - |
+| 1 | Validate input, sequential-thinking (7+ thoughts) | sequential-thinking |
+| 2 | Classify as complex, create `.hypercore/qa/flow.json` | Write |
+| 3 | Deep codebase exploration → update flow `analyze: completed` | Read/Grep/Glob + Edit |
+| 4 | Present interpretation candidates (2+) → update flow `present: completed` | Edit |
+| 5 | Wait for user feedback → update flow `confirm: completed` | Edit |
+| 6 | Implement confirmed interpretation → update flow `implement: completed` | Edit/Write |
+| 7 | Run validation → update flow `verify: completed` | Bash + Edit |
+| 8 | Report outcome, set flow status to `completed` | Edit |
 
-Do not skip Phase 1. Do not implement before user feedback.
+Do not skip phases. Do not implement before user feedback.
 
 </workflow>
 
@@ -97,6 +156,7 @@ Present findings in this format:
 
 **Original request**: [paste or summarize the raw request]
 **Requested by**: [client/executive/PM/etc.]
+**Complexity**: [simple/complex]
 
 ### Codebase Impact
 - **Affected areas**: [list files, components, or systems]
@@ -114,13 +174,9 @@ Present findings in this format:
 - **Changes needed**: [specific files and modifications]
 - **Risks/Side effects**: [what could break or be affected]
 
-#### Candidate 3: [technical summary] (if applicable)
-- ...
-
 ### Potential Issues
 - [Issue 1: something the stakeholder may not have considered]
 - [Issue 2: technical constraint or limitation]
-- [Issue 3: ambiguity that needs stakeholder clarification]
 
 ### Questions for Stakeholder (if any)
 - [Question that would resolve ambiguity before implementation]
@@ -161,6 +217,8 @@ After execution, report:
 **Notes for stakeholder**: [anything they should know about what was done]
 ```
 
+For complex path: also update `.hypercore/qa/flow.json` status to `completed`.
+
 </execution_rules>
 
 <validation>
@@ -168,7 +226,9 @@ After execution, report:
 Execution checklist:
 
 - [ ] ARGUMENT validated — stakeholder request identified
-- [ ] sequential-thinking completed (5+ thoughts)
+- [ ] sequential-thinking completed (depth matches complexity)
+- [ ] Complexity classified (simple/complex)
+- [ ] Flow JSON created and maintained (complex path only)
 - [ ] Codebase searched for affected areas
 - [ ] Interpretation candidates presented (2+ unless unambiguous)
 - [ ] Potential issues and risks listed
@@ -176,6 +236,7 @@ Execution checklist:
 - [ ] Implementation matches confirmed interpretation
 - [ ] Validation executed (typecheck/test/build)
 - [ ] Outcome reported with changed files
+- [ ] Flow JSON finalized with `completed` status (complex path only)
 
 Forbidden:
 
@@ -184,5 +245,6 @@ Forbidden:
 - [ ] Ignoring potential issues or risks
 - [ ] Expanding scope beyond confirmed interpretation
 - [ ] Claiming completion without running validation
+- [ ] Skipping flow JSON updates in complex path
 
 </validation>
