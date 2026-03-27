@@ -1,6 +1,6 @@
 ---
 name: prd-maker
-description: Create or update a living product requirements document under `.hypercore/prd/[slug]/`, including evidence-backed PRD content, scoped requirements, open questions, and source tracking.
+description: Create or update a living product requirements document under `.hypercore/prd/[slug]/`, including evidence-backed PRD content, scoped requirements, open questions, and source tracking. Routes simple PRDs directly; tracks complex multi-phase PRDs via flow.json in the PRD folder.
 compatibility: Works best with local file search/edit tools and live web search when the PRD needs fresh market, user, product, or technical evidence.
 ---
 
@@ -10,7 +10,7 @@ compatibility: Works best with local file search/edit tools and live web search 
 
 # PRD Maker
 
-> Create and maintain living PRDs inside this repository.
+> Create and maintain living PRDs inside this repository — classify complexity first, then either write directly or track progress through structured phases.
 
 <purpose>
 
@@ -75,9 +75,31 @@ Boundary request:
 - Existing PRD updates under `.hypercore/prd/[slug]/`
 - `prd.md` living requirements documents
 - `sources.md` evidence logs and query logs
+- `flow.json` phase tracking for complex PRDs
 - Scope changes, assumptions, risks, metrics, dependencies, and open questions
 
 </supported_targets>
+
+<complexity_classification>
+
+## Complexity Classification
+
+Classify before starting work:
+
+| Complexity | Signals | Path |
+|------------|---------|------|
+| **Simple** | Single feature, clear scope, minimal research needed, few stakeholders, small PRD (≤3 requirements sections) | **Direct** — write `prd.md` + `sources.md` without flow tracking |
+| **Complex** | Multi-feature initiative, extensive research needed, multiple stakeholders, large scope, cross-team dependencies, phased rollout | **Tracked** — add `flow.json` to the PRD folder |
+
+Announce the classification:
+
+```
+Complexity: [simple/complex] — [one-line reason]
+```
+
+When uncertain, classify as complex. It is cheaper to track than to lose progress on a large PRD.
+
+</complexity_classification>
 
 <document_shape>
 
@@ -86,15 +108,39 @@ Default output shape:
 ```text
 .hypercore/prd/[slug]/
 ├── prd.md
-└── sources.md
+├── sources.md
+└── flow.json       (complex path only)
 ```
 
 - `prd.md` is the living product requirements document.
 - `sources.md` captures the evidence used to create or update the PRD.
+- `flow.json` tracks phase progress for complex PRDs. See `references/flow-schema.md` for the full schema.
 - Keep version history inside `prd.md` rather than creating extra changelog files.
 - Create the files from [assets/prd.template.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/prd-maker/assets/prd.template.md) and [assets/sources.template.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/prd-maker/assets/sources.template.md) when the folder does not exist yet.
 
 </document_shape>
+
+<flow_tracking>
+
+## Flow Tracking (Complex Path Only)
+
+When classified as complex, write `flow.json` inside the PRD folder and update it as each phase progresses. See `references/flow-schema.md` for the full schema.
+
+### Phase progression
+
+| Phase | Description | Next |
+|-------|-------------|------|
+| `brief` | Gather minimum working brief (problem, users, goals, constraints) | `research` |
+| `research` | Run live research if needed, or mark as skipped | `draft` |
+| `draft` | Write or update `prd.md` using section reference and template | `sources` |
+| `sources` | Write or update `sources.md` with evidence log | `validate` |
+| `validate` | Run validation checks, finalize | done |
+
+### Resume support
+
+If `flow.json` already exists in the PRD folder, read it first and continue from the last incomplete phase. Do not restart completed phases. This enables multi-session PRD writing for large initiatives.
+
+</flow_tracking>
 
 <support_file_read_order>
 
@@ -112,14 +158,27 @@ Read in this order:
 
 <workflow>
 
+## Simple Path
+
 | Phase | Task | Output |
-|------|------|------|
-| 0 | Confirm that the requested deliverable is a PRD and choose `create` or `update` | Mode decision |
-| 1 | Gather the minimum product context and decide whether external research is required | Working brief |
-| 2 | Create or locate `.hypercore/prd/[slug]/` and determine what files must change | Storage target |
-| 3 | Write or update `prd.md` using the section reference and template assets | Living PRD |
-| 4 | Write or update `sources.md` with queries, links, retrieval dates, and short findings | Evidence log |
-| 5 | Validate scope clarity, citations, open questions, and change tracking | Finalized PRD folder |
+|-------|------|--------|
+| 0 | Confirm PRD deliverable, choose `create`/`update`, classify as simple | Mode + complexity |
+| 1 | Gather minimum product context | Working brief |
+| 2 | Create or locate `.hypercore/prd/[slug]/` | Storage target |
+| 3 | Write or update `prd.md` + `sources.md` | Living PRD |
+| 4 | Validate scope, citations, open questions | Finalized PRD folder |
+
+## Complex Path
+
+| Phase | Task | Output |
+|-------|------|--------|
+| 0 | Confirm PRD deliverable, choose `create`/`update`, classify as complex | Mode + complexity |
+| 1 | Create or locate `.hypercore/prd/[slug]/`, write `flow.json` with `brief: in_progress` | Storage target + flow |
+| 2 | Gather product context → update flow `brief: completed` | Working brief |
+| 3 | Run live research if needed → update flow `research: completed` (or `skipped`) | Evidence |
+| 4 | Write or update `prd.md` → update flow `draft: completed` | Living PRD |
+| 5 | Write or update `sources.md` → update flow `sources: completed` | Evidence log |
+| 6 | Validate and finalize → update flow `validate: completed`, status: `completed` | Finalized PRD folder |
 
 ### Phase rules
 
@@ -133,11 +192,13 @@ Read in this order:
 
 <required>
 
+- Complexity classified (simple/complex) before starting work.
 - Store every PRD under `.hypercore/prd/[slug]/`.
 - Prefer ASCII kebab-case slugs.
 - Keep explicit sections for goals, scope, non-goals, requirements, metrics, risks or dependencies, open questions, and change history.
 - Add links for non-obvious claims when research informed the document.
 - When updating, append a dated change-log row instead of silently overwriting significant decisions.
+- For complex path: maintain `flow.json` and update after each phase.
 
 </required>
 
@@ -148,5 +209,6 @@ Read in this order:
 - Hiding unresolved questions or assumptions
 - Mixing raw research notes into the main PRD body when they belong in `sources.md`
 - Creating extra README or changelog files for the PRD folder
+- Skipping `flow.json` updates in complex path
 
 </forbidden>

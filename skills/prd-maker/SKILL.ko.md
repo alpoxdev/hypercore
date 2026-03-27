@@ -1,6 +1,6 @@
 ---
 name: prd-maker
-description: `.hypercore/prd/[slug]/` 아래에 살아있는 PRD를 생성하거나 갱신합니다. 근거 기반 요구사항, 범위, 비범위, 오픈 질문, 출처 추적까지 함께 정리하는 요청에 맞춥니다.
+description: `.hypercore/prd/[slug]/` 아래에 살아있는 PRD를 생성하거나 갱신합니다. 근거 기반 요구사항, 범위, 비범위, 오픈 질문, 출처 추적까지 함께 정리합니다. 간단한 PRD는 바로 작성하고, 복잡한 PRD는 flow.json으로 진행 상황을 추적합니다.
 compatibility: 로컬 파일 검색/편집 도구와, 최신 시장·사용자·제품·기술 근거가 필요할 때 라이브 웹 검색이 가능한 환경에서 가장 잘 동작합니다.
 ---
 
@@ -10,7 +10,7 @@ compatibility: 로컬 파일 검색/편집 도구와, 최신 시장·사용자·
 
 # PRD Maker
 
-> 이 저장소 안에서 살아있는 PRD를 만들고 유지합니다.
+> 이 저장소 안에서 살아있는 PRD를 만들고 유지합니다 — 복잡도를 먼저 판단한 뒤, 간단하면 바로 작성하고 복잡하면 단계별로 추적하며 진행합니다.
 
 <purpose>
 
@@ -75,9 +75,31 @@ compatibility: 로컬 파일 검색/편집 도구와, 최신 시장·사용자·
 - `.hypercore/prd/[slug]/` 아래의 기존 PRD 업데이트
 - 살아있는 요구사항 문서 `prd.md`
 - 근거 로그와 쿼리 로그 `sources.md`
+- 복잡한 PRD의 단계 추적 `flow.json`
 - 범위 변경, 가정, 리스크, 메트릭, 의존성, 오픈 질문
 
 </supported_targets>
+
+<complexity_classification>
+
+## 복잡도 분류
+
+작업 시작 전에 분류:
+
+| 복잡도 | 신호 | 경로 |
+|--------|------|------|
+| **간단** | 단일 기능, 범위 명확, 조사 최소, 이해관계자 소수, 작은 PRD (요구사항 섹션 3개 이하) | **직접 작성** — `prd.md` + `sources.md`만 생성 |
+| **복잡** | 다중 기능 이니셔티브, 광범위한 조사 필요, 이해관계자 다수, 큰 범위, 팀 간 의존성, 단계적 출시 | **추적 모드** — PRD 폴더에 `flow.json` 추가 |
+
+분류 결과 발표:
+
+```
+복잡도: [간단/복잡] — [한 줄 근거]
+```
+
+판단이 애매하면 복잡으로 분류한다. 큰 PRD에서 진행 상황을 잃는 것보다 추적하는 비용이 낮다.
+
+</complexity_classification>
 
 <document_shape>
 
@@ -86,15 +108,39 @@ compatibility: 로컬 파일 검색/편집 도구와, 최신 시장·사용자·
 ```text
 .hypercore/prd/[slug]/
 ├── prd.md
-└── sources.md
+├── sources.md
+└── flow.json       (복잡 경로만)
 ```
 
 - `prd.md`는 살아있는 제품 요구사항 문서입니다.
 - `sources.md`는 PRD 생성/갱신에 사용한 근거를 기록합니다.
+- `flow.json`은 복잡한 PRD의 단계 진행을 추적합니다. 전체 스키마는 `references/flow-schema.md` 참조.
 - 버전 이력은 별도 파일이 아니라 `prd.md` 안의 변경 이력 섹션에 둡니다.
 - 폴더가 아직 없으면 [assets/prd.template.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/prd-maker/assets/prd.template.md) 와 [assets/sources.template.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/prd-maker/assets/sources.template.md) 를 기준으로 파일을 만듭니다.
 
 </document_shape>
+
+<flow_tracking>
+
+## 플로우 추적 (복잡 경로만)
+
+복잡으로 분류되면 PRD 폴더 안에 `flow.json`을 작성하고 각 단계 완료 시 업데이트한다. 전체 스키마는 `references/flow-schema.md` 참조.
+
+### 단계 진행
+
+| 단계 | 설명 | 다음 |
+|------|------|------|
+| `brief` | 최소 작업 브리프 수집 (문제, 사용자, 목표, 제약) | `research` |
+| `research` | 필요 시 라이브 조사 수행, 또는 건너뛰기로 표시 | `draft` |
+| `draft` | 섹션 reference와 템플릿으로 `prd.md` 작성/갱신 | `sources` |
+| `sources` | 근거 로그로 `sources.md` 작성/갱신 | `validate` |
+| `validate` | 검증 체크리스트 실행, 마무리 | 완료 |
+
+### 재개 지원
+
+PRD 폴더에 `flow.json`이 이미 존재하면 먼저 읽고 마지막 미완료 단계부터 이어간다. 완료된 단계를 재시작하지 않는다. 대규모 이니셔티브의 다중 세션 PRD 작성을 지원한다.
+
+</flow_tracking>
 
 <support_file_read_order>
 
@@ -112,14 +158,27 @@ compatibility: 로컬 파일 검색/편집 도구와, 최신 시장·사용자·
 
 <workflow>
 
+## 간단 경로
+
 | Phase | 작업 | 결과물 |
-|------|------|------|
-| 0 | 요청 결과물이 PRD인지 확인하고 `create` 또는 `update`를 고름 | 모드 결정 |
-| 1 | 최소 제품 맥락을 모으고 외부 조사 필요 여부를 결정 | 작업 브리프 |
-| 2 | `.hypercore/prd/[slug]/`를 만들거나 찾고 어떤 파일을 바꿀지 정함 | 저장 대상 |
-| 3 | 섹션 reference와 템플릿 자산을 사용해 `prd.md`를 작성 또는 갱신 | 살아있는 PRD |
-| 4 | 쿼리, 링크, 조회일, 핵심 발견을 담아 `sources.md`를 작성 또는 갱신 | 근거 로그 |
-| 5 | 범위 명확성, 인용, 오픈 질문, 변경 이력을 검증 | 최종 PRD 폴더 |
+|-------|------|--------|
+| 0 | PRD 결과물 확인, `create`/`update` 선택, 간단으로 분류 | 모드 + 복잡도 |
+| 1 | 최소 제품 맥락 수집 | 작업 브리프 |
+| 2 | `.hypercore/prd/[slug]/` 생성 또는 찾기 | 저장 대상 |
+| 3 | `prd.md` + `sources.md` 작성 또는 갱신 | 살아있는 PRD |
+| 4 | 범위, 인용, 오픈 질문 검증 | 최종 PRD 폴더 |
+
+## 복잡 경로
+
+| Phase | 작업 | 결과물 |
+|-------|------|--------|
+| 0 | PRD 결과물 확인, `create`/`update` 선택, 복잡으로 분류 | 모드 + 복잡도 |
+| 1 | `.hypercore/prd/[slug]/` 생성/찾기, `flow.json` 작성 (`brief: in_progress`) | 저장 대상 + 플로우 |
+| 2 | 제품 맥락 수집 → 플로우 `brief: completed` 업데이트 | 작업 브리프 |
+| 3 | 필요 시 라이브 조사 → 플로우 `research: completed` (또는 `skipped`) | 근거 |
+| 4 | `prd.md` 작성/갱신 → 플로우 `draft: completed` | 살아있는 PRD |
+| 5 | `sources.md` 작성/갱신 → 플로우 `sources: completed` | 근거 로그 |
+| 6 | 검증 및 마무리 → 플로우 `validate: completed`, status: `completed` | 최종 PRD 폴더 |
 
 ### Phase 규칙
 
@@ -133,11 +192,13 @@ compatibility: 로컬 파일 검색/편집 도구와, 최신 시장·사용자·
 
 <required>
 
+- 복잡도 분류 완료 (간단/복잡) 후 작업을 시작합니다.
 - 모든 PRD는 `.hypercore/prd/[slug]/` 아래에 저장합니다.
 - slug는 ASCII kebab-case를 우선합니다.
 - 목표, 범위, 비범위, 요구사항, 메트릭, 리스크/의존성, 오픈 질문, 변경 이력 섹션을 명시합니다.
 - 조사 근거가 들어간 비자명한 주장에는 링크를 붙입니다.
 - 갱신 시에는 중요한 결정을 조용히 덮어쓰지 말고 날짜가 있는 변경 이력 행을 추가합니다.
+- 복잡 경로: `flow.json`을 유지하고 각 단계 완료 후 업데이트합니다.
 
 </required>
 
@@ -148,5 +209,6 @@ compatibility: 로컬 파일 검색/편집 도구와, 최신 시장·사용자·
 - 해결되지 않은 질문이나 가정을 숨기는 것
 - 원시 조사 메모를 메인 PRD 본문에 섞는 것
 - PRD 폴더 안에 불필요한 README나 changelog 파일을 만드는 것
+- 복잡 경로에서 `flow.json` 업데이트를 누락하는 것
 
 </forbidden>
