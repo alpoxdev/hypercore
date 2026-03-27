@@ -1,6 +1,6 @@
 ---
 name: genius-thinking
-description: 10가지 천재적 사고 공식 + 검증된 혁신 프레임워크(TRIZ, SCAMPER, JTBD, HMW) 혼합. 인지과학 기반 아이디어 10개+ 도출.
+description: 10가지 천재적 사고 공식 + 검증된 혁신 프레임워크(TRIZ, SCAMPER, JTBD, HMW) 혼합. .hypercore/genius-thinking/[topic-slug]/ 아래에 다중 파일로 분석 결과를 저장하고 flow.json으로 진행 상황을 추적.
 ---
 
 
@@ -275,7 +275,8 @@ IW = (K + U + W + C + A) × H × E
 | **2** | 심층 분석 | ST 5-7단계 | HMW 변환, SCAMPER 순회 |
 | **3** | 아이디어 도출 | Task 병렬 x3 | ToT 구조, 12개+ 초기 |
 | **4** | 통합 정제 | ST 3단계 | 10개+ 최종, ERRC 검증 |
-| **5** | 저장 | Write | .hypercore/genius-ideas/ |
+| **0** | 폴더 생성 + flow.json 초기화 | Write | `.hypercore/genius-thinking/[topic-slug]/flow.json` |
+| **5** | 각 Phase 결과 파일 저장 + flow.json 업데이트 | Write | `frameworks.md`, `analysis.md`, `ideas.md`, `priorities.md` |
 
 ### Phase 2: 심층 분석 (1500자+)
 
@@ -366,7 +367,12 @@ Phase 3: ToT 병렬 (12개 아이디어)
 
 Phase 4: 정제 후 10개 선정 + ERRC 검증
 
-저장: .hypercore/genius-ideas/00.AI_교육_서비스.md
+저장: .hypercore/genius-thinking/ai-education-service/
+  ├── flow.json
+  ├── frameworks.md
+  ├── analysis.md
+  ├── ideas.md
+  └── priorities.md
 ```
 
 </examples>
@@ -383,7 +389,7 @@ Phase 4: 정제 후 10개 선정 + ERRC 검증
 | Phase 3 | **ToT 구조** 병렬, 12개+ 초기 |
 | Phase 4 | 10개+ 최종, **ERRC 검증**, 3000자+ |
 | 우선순위 | 영향도/실현 가능성 + **JTBD 연결** |
-| 저장 | .hypercore/genius-ideas/ |
+| 저장 | `.hypercore/genius-thinking/[topic-slug]/` (다중 파일 + flow.json) |
 
 | 금지 |
 |------|

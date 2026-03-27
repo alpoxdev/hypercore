@@ -1,6 +1,6 @@
 ---
 name: genius-thinking
-description: Generate and prioritize differentiated ideas for stuck product, strategy, or innovation problems when ordinary brainstorming is too shallow.
+description: Generate and prioritize differentiated ideas for stuck product, strategy, or innovation problems when ordinary brainstorming is too shallow. Saves structured multi-file analysis under .hypercore/genius-thinking/[topic-slug]/ with phase tracking.
 ---
 
 @rules/execution-rules.md
@@ -10,7 +10,7 @@ description: Generate and prioritize differentiated ideas for stuck product, str
 
 # Genius Thinking Skill
 
-> Combine a small number of validated innovation frameworks to generate diverse options and rank them with explicit reasoning.
+> Combine a small number of validated innovation frameworks to generate diverse options and rank them with explicit reasoning. Organize results as a multi-file folder for future reference.
 
 ## When to use
 
@@ -50,15 +50,56 @@ Collect or infer:
 
 Use only the frameworks that fit the task. Common pairings and diversity checks live in [references/formula-guide.md](references/formula-guide.md).
 
+<document_shape>
+
+## Output Structure
+
+```text
+.hypercore/genius-thinking/[topic-slug]/
+├── flow.json           # phase tracking
+├── frameworks.md       # selected formulas + rationale + HMW reframing
+├── analysis.md         # deep analysis (SCAMPER, TRIZ, JTBD application)
+├── ideas.md            # 10+ ideas with evaluations (title, description, score)
+└── priorities.md       # ERRC validation + ranking + next steps
+```
+
+- Use ASCII kebab-case for `[topic-slug]` (e.g., `ai-education-service`).
+- Each phase produces its own file for organized reference.
+- `flow.json` tracks progress through phases. See `references/flow-schema.md` for the schema.
+- If the folder exists from a prior run, read existing files before updating.
+
+</document_shape>
+
+<flow_tracking>
+
+## Flow Tracking
+
+Write `flow.json` at the start and update as each phase completes.
+
+### Phase progression
+
+| Phase | Output file | Next |
+|-------|-------------|------|
+| `select` | `frameworks.md` — selected formulas + rationale + HMW reframing | `analyze` |
+| `analyze` | `analysis.md` — deep framework application (1500+ chars) | `ideate` |
+| `ideate` | `ideas.md` — 10+ ideas with evaluations | `prioritize` |
+| `prioritize` | `priorities.md` — ERRC validation + ranking + next steps | done |
+
+### Resume support
+
+If `flow.json` already exists, read it and continue from the last incomplete phase. Do not restart completed phases.
+
+</flow_tracking>
+
 ## Workflow
 
-| Phase | Goal | What good looks like |
-|------|------|------|
-| 1 | Clarify the challenge | one-sentence problem statement and constraints |
-| 2 | Choose frameworks | short selection rationale tied to the problem |
-| 3 | Reframe the opportunity | HMW or equivalent reframing that changes the search space |
-| 4 | Generate ideas | 10+ options across distinct directions |
-| 5 | Prioritize | ranked shortlist with evidence, assumptions, and next tests |
+| Phase | Goal | Output file |
+|------|------|-------------|
+| 1 | Clarify the challenge | (inline) |
+| 2 | Choose frameworks | `frameworks.md` |
+| 3 | Deep analysis + reframe the opportunity | `analysis.md` |
+| 4 | Generate 10+ ideas across distinct directions | `ideas.md` |
+| 5 | Prioritize with ERRC validation | `priorities.md` |
 
 Parallel ideation is optional. Use it only when it materially improves coverage.
 
@@ -77,3 +118,5 @@ Use the full report and idea format in [references/output-template.md](reference
 - Do not dump framework trivia that does not change the answer.
 - Do not present near-duplicate ideas as separate wins.
 - Do not prioritize ideas without naming the assumption and next cheap test.
+- All output files must be saved under `.hypercore/genius-thinking/[topic-slug]/`.
+- `flow.json` status must be set to `completed`.
