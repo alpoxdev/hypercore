@@ -6,9 +6,22 @@ Claude Code, Codex, Cursor에서 사용할 수 있는 AI 에이전트 스킬 모
 
 ## 설치
 
+### Claude Code Marketplace
+
+```bash
+/plugin marketplace add https://github.com/alpoxdev/hypercore
+/plugin install hypercore
+```
+
+### npx skills add
+
 ```bash
 npx skills add alpoxdev/hypercore --skill '*' -g -a claude-code -y
 ```
+
+## 에이전트
+
+`agents/` 디렉터리에 에이전트를 정의할 수 있습니다. YAML frontmatter + 프롬프트 본문 형태의 `.md` 파일을 추가하면 플러그인 설치 시 자동으로 등록됩니다.
 
 ## 스킬 목록
 
