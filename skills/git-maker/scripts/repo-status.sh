@@ -1,0 +1,1 @@
+../../git-commit/scripts/repo-status.sh
