@@ -33,18 +33,22 @@ npx skills add alpoxdev/hypercore --skill '*' -g -a claude-code -y
 | `claude-code` | Anthropic Claude Code CLI 실행 및 세션 관리 |
 | `codex` | OpenAI Codex CLI 실행 및 세션 관리 |
 | `crawler` | 웹 크롤링 플로우 설계 및 코드 생성 |
+| `deploy-fix` | 빌드/CI/배포 장애 진단 및 수정 |
 | `docs-maker` | AI가 읽기 좋은 구조화된 문서 생성 |
 | `elon-musk` | 제1원칙 사고로 문제 분해 및 재설계 |
 | `execute` | 난이도 적응형 사고 깊이로 즉시 작업 수행 |
 | `gemini` | Google Gemini CLI 실행 및 세션 관리 |
 | `genius-thinking` | 창의적 아이디어 발산 프레임워크 |
 | `git-commit` | Conventional Commits 기반 커밋 생성 |
+| `git-maker` | 커밋과 푸시를 한 번에 수행 |
+| `git-push` | 미푸시 커밋을 리모트에 푸시 |
 | `hono-architecture` | Hono 아키텍처 규칙 적용 |
 | `nextjs-architecture` | Next.js App Router 아키텍처 규칙 적용 |
 | `prd-maker` | 증거 기반 Living PRD 작성 및 관리 |
 | `pre-deploy` | 배포 전 품질/빌드 검증 |
 | `qa` | 비개발자 이해관계자 요청 분석 및 기술 해석 후 구현 |
 | `research` | 구조화된 리서치 및 보고서 생성 |
+| `seo-maker` | SEO/AEO/GEO 통합 분석 및 최적화 리포트 생성 |
 | `skill-maker` | 유지보수하기 쉬운 Codex 스킬 생성 및 리팩터링 |
 | `startup-validator` | 스타트업 아이디어 검증 |
 | `tanstack-start-architecture` | TanStack Start 아키텍처 규칙 적용 |
