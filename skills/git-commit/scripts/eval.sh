@@ -12,13 +12,14 @@ git_commit_script="${script_dir}/git-commit.sh"
 git_push_script="${script_dir}/git-push.sh"
 
 score=0
-max_score=25
+max_score=31
 
 trigger_boundary_pass=0
 repo_discovery_pass=0
 staging_discipline_pass=0
 message_integrity_pass=0
 push_handoff_pass=0
+all_mode_pass=0
 
 declare -a check_rows=()
 declare -a temp_dirs=()
@@ -101,6 +102,13 @@ multiline_helper_is_documented() {
     file_has "${core_ko}" 'body 또는 footer가 있으면' &&
     file_has "${core_ko}" 'scripts/git-commit\.sh' &&
     file_has "${core_ko}" "cat <<'EOF'"
+}
+
+korean_language_rule_is_documented() {
+  file_has "${core_en}" 'Write commit subject and body in Korean' &&
+    file_has "${core_en}" 'type.*and.*scope.*stay in English' &&
+    file_has "${core_ko}" '커밋 subject와 body를 한국어로 작성' &&
+    file_has "${core_ko}" 'type.*과.*scope.*는 영어로 유지'
 }
 
 push_confirmation_is_documented() {
@@ -350,6 +358,9 @@ check() {
       "Push safety and handoff")
         push_handoff_pass=$((push_handoff_pass + 1))
         ;;
+      "ALL mode and multi-group")
+        all_mode_pass=$((all_mode_pass + 1))
+        ;;
     esac
   fi
 
@@ -373,7 +384,7 @@ check "P1E1" "Trigger and mode boundary" \
 
 check "P1E2" "Trigger and mode boundary" \
   "/git-commit" \
-  "No-argument mode and the remaining-uncommitted fallback are explicit in both language variants." \
+  "No-argument mode iterates through all logical groups and the remaining-uncommitted fallback are explicit in both language variants." \
   file_pairs_have \
   "${core_en}" 'current session|current-session' \
   "${core_en}" 'remaining uncommitted' \
@@ -389,10 +400,10 @@ check "P1E3" "Trigger and mode boundary" \
 
 check "P1E4" "Trigger and mode boundary" \
   "/git-commit packages/api session validation fix" \
-  "The skill stops on mismatches, ambiguity, or unrelated change groups instead of guessing." \
+  "The skill iterates through multiple groups instead of stopping, and stops only on argument mismatches." \
   file_pairs_have \
-  "${core_en}" 'Stop if ARGUMENT does not match|Stop if the current session contains multiple unrelated change groups|Do not guess' \
-  "${core_ko}" 'ARGUMENT가 .*맞지 않|관련 없는 변경 묶음이 여러 개면|추측하지 않는다'
+  "${core_en}" 'Stop if ARGUMENT does not match|commit each group separately' \
+  "${core_ko}" 'ARGUMENT가 .*맞지 않으면 멈춘다|각 그룹을 따로 커밋'
 
 check "P1E5" "Trigger and mode boundary" \
   "make a git commit" \
@@ -431,11 +442,11 @@ check "P3E1" "Staging discipline" \
 
 check "P3E2" "Staging discipline" \
   "/git-commit" \
-  "Both language variants insist on one logical change and staging only the required files." \
+  "Both language variants insist each commit covers one logical change, with multi-group iteration, and staging only the required files." \
   file_pairs_have \
-  "${core_en}" 'Commit one logical change only' \
+  "${core_en}" 'Each commit covers exactly one logical change' \
   "${core_en}" 'Stage only the files required' \
-  "${core_ko}" '하나의 논리적 변경만 커밋' \
+  "${core_ko}" '각 커밋은 정확히 하나의 논리적 변경만 포함' \
   "${core_ko}" '관련 파일만 스테이징|필요한 파일만 스테이징'
 
 check "P3E3" "Staging discipline" \
@@ -475,12 +486,17 @@ check "P4E4" "Message integrity" \
 
 check "P4E5" "Message integrity" \
   "make a git commit" \
-  "Both language variants include good and bad subject examples for operator calibration." \
+  "Both language variants include good and bad subject examples with Korean descriptions for operator calibration." \
   file_pairs_have \
   "${core_en}" 'Good subjects' \
   "${core_en}" 'Bad subjects' \
   "${core_ko}" '좋은 subject 예시' \
   "${core_ko}" '나쁜 subject 예시'
+
+check "P4E6" "Message integrity" \
+  "make a git commit" \
+  "Both language variants require Korean language for commit subject and body while keeping type/scope in English." \
+  korean_language_rule_is_documented
 
 check "P5E1" "Push safety and handoff" \
   "make a git commit" \
@@ -513,6 +529,51 @@ check "P5E5" "Push safety and handoff" \
   "${core_ko}" '사용자가 push를 거절함' \
   "${core_ko}" '사용자가 push를 승인함'
 
+check "P6E1" "ALL mode and multi-group" \
+  "/git-commit ALL" \
+  "Both language variants document ALL mode as taking all uncommitted changes regardless of session." \
+  file_pairs_have \
+  "${core_en}" 'ARGUMENT is "ALL" or "all"' \
+  "${core_en}" 'regardless of whether they were touched in the current session' \
+  "${core_ko}" 'ARGUMENT가 "ALL" 또는 "all"' \
+  "${core_ko}" '현재 세션에서 작업했는지 여부와 관계없이'
+
+check "P6E2" "ALL mode and multi-group" \
+  "/git-commit ALL" \
+  "Both language variants require every file to be committed in ALL mode with no files left behind." \
+  file_pairs_have \
+  "${core_en}" 'Every uncommitted file must be included in exactly one commit group' \
+  "${core_en}" 'No file may be left behind' \
+  "${core_ko}" '모든 미커밋 파일이 정확히 하나의 커밋 그룹에 포함' \
+  "${core_ko}" '어떤 파일도 남겨두지 않는다'
+
+check "P6E3" "ALL mode and multi-group" \
+  "/git-commit" \
+  "Both language variants describe multi-group iteration instead of stopping on multiple unrelated changes." \
+  file_pairs_have \
+  "${core_en}" 'commit them separately in sequence' \
+  "${core_en}" 'Do not stop or ask for clarification' \
+  "${core_ko}" '순서대로 따로 커밋' \
+  "${core_ko}" '멈추거나 확인을 요청하지 않는다'
+
+check "P6E4" "ALL mode and multi-group" \
+  "/git-commit" \
+  "Both language variants include grouping heuristics for partitioning changes into logical groups." \
+  file_pairs_have \
+  "${core_en}" 'Grouping heuristics' \
+  "${core_en}" 'Test files belong with their corresponding implementation' \
+  "${core_ko}" '그룹핑 휴리스틱' \
+  "${core_ko}" '테스트 파일은 해당 구현 파일과 함께'
+
+check "P6E5" "ALL mode and multi-group" \
+  "/git-commit ALL" \
+  "Both language variants show ALL mode examples with multiple sequential commits." \
+  file_pairs_have \
+  "${core_en}" '/git-commit ALL' \
+  "${core_en}" 'no files left behind' \
+  "${core_ko}" '/git-commit ALL' \
+  "${core_ko}" '남겨지는 파일 없음'
+
 pass_rate="$(jq -nc --argjson score "${score}" --argjson max_score "${max_score}" '$score * 100 / $max_score')"
 
 jq -nc \
@@ -525,8 +586,9 @@ jq -nc \
     "$(jq -nc --arg name 'Trigger and mode boundary' --argjson pass_count "${trigger_boundary_pass}" '{name:$name, pass_count:$pass_count, total:5}')" \
     "$(jq -nc --arg name 'Repository discovery' --argjson pass_count "${repo_discovery_pass}" '{name:$name, pass_count:$pass_count, total:5}')" \
     "$(jq -nc --arg name 'Staging discipline' --argjson pass_count "${staging_discipline_pass}" '{name:$name, pass_count:$pass_count, total:5}')" \
-    "$(jq -nc --arg name 'Message integrity' --argjson pass_count "${message_integrity_pass}" '{name:$name, pass_count:$pass_count, total:5}')" \
+    "$(jq -nc --arg name 'Message integrity' --argjson pass_count "${message_integrity_pass}" '{name:$name, pass_count:$pass_count, total:6}')" \
     "$(jq -nc --arg name 'Push safety and handoff' --argjson pass_count "${push_handoff_pass}" '{name:$name, pass_count:$pass_count, total:5}')" \
+    "$(jq -nc --arg name 'ALL mode and multi-group' --argjson pass_count "${all_mode_pass}" '{name:$name, pass_count:$pass_count, total:5}')" \
     | jq -sc '.')" \
   --argjson checks "$(printf '%s\n' "${check_rows[@]}" | jq -sc '.')" \
   '

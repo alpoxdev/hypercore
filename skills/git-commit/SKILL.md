@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: 'Create a Conventional Commit from the current repository state. Inspect staged and unstaged changes, choose one logical change set, generate a compliant message, and stop on ambiguous or risky conditions.'
+description: 'Create one or more Conventional Commits from the current repository state. Inspect staged and unstaged changes, group them into logical change sets, generate a compliant message per group, and commit each group separately in sequence.'
 license: MIT
 allowed-tools: Bash
 compatibility: Requires Bash and scripts under skills/git-commit/scripts.
@@ -23,9 +23,9 @@ compatibility: Requires Bash and scripts under skills/git-commit/scripts.
 
 <objective>
 
-- Create one Conventional Commit from the current repository state.
+- Create one or more Conventional Commits from the current repository state, one per logical change group.
 - Base every decision on actual git status and diff output.
-- Stop instead of guessing when the change set is ambiguous, mixed, or risky.
+- When multiple logical groups of changes exist, identify each group and commit them separately in sequence.
 
 </objective>
 
@@ -46,14 +46,22 @@ If ARGUMENT is missing:
 
 - Default to the files, repositories, and logical change units touched in the current session.
 - Verify the session-derived candidate set against actual `git status` and `git diff` output before staging or committing.
-- If the current session's work is already fully committed, allow the remaining uncommitted changes to become the next candidate set.
-- Stop if the current session contains multiple unrelated change groups and the intended commit split is not clear.
+- If the candidate set contains multiple logical change groups, identify each group and commit them separately in sequence. Do not stop or ask for clarification — iterate through all groups.
+- If the current session's work is already fully committed, allow the remaining uncommitted changes to become the next candidate set and apply the same grouping logic.
 
-If ARGUMENT is present:
+If ARGUMENT is "ALL" or "all":
+
+- Take ALL uncommitted changes in the repository, regardless of whether they were touched in the current session.
+- Group all changes into logical change sets based on related functionality, feature area, or purpose.
+- Commit each group separately in sequence. Do not stop, do not ask for confirmation, do not skip any files.
+- Every uncommitted file must be included in exactly one commit group. No file may be left behind.
+
+If ARGUMENT is present (other than ALL):
 
 - Treat ARGUMENT as the primary commit target or filter.
 - Use it to narrow repository discovery, file selection, staging, and commit message generation.
-- Stop if ARGUMENT does not match the actual repository state or still spans multiple unrelated logical changes.
+- If the filtered set contains multiple logical groups, commit each group separately.
+- Stop if ARGUMENT does not match the actual repository state.
 
 </argument_validation>
 
@@ -75,10 +83,11 @@ If ARGUMENT is present:
 | Repository discovery | Determine whether the current working directory is a git repository. If not, inspect descendant directories and build a repository list before any `git add` or `git commit` action. |
 | Diff source | If staged changes exist, treat the staged set as the default commit candidate and inspect with `git diff --staged`. If nothing is staged, inspect `git diff`. |
 | Repository boundary | When multiple git repositories are discovered under the current directory, run `git status`, `git add`, and `git commit` inside each repository separately. Never treat multiple repositories as one commit unit. |
-| Logical scope | Commit one logical change only. If the repo contains unrelated changes, split them or stop for clarification. |
+| Logical scope | Each commit covers exactly one logical change. When multiple logical groups exist, identify each group and commit them separately in sequence. Do not stop to ask — iterate through all groups. |
 | Staging discipline | Stage only the files required for the selected logical change. Do not stage everything by default. |
 | Type selection | Choose the Conventional Commit type from the actual dominant change, not from filenames alone. |
 | Scope selection | Use a scope only when one module, package, feature area, or subsystem clearly owns the change. Omit scope when the change spans multiple unrelated areas or the scope would be vague. |
+| Language | Write commit subject and body in Korean. The Conventional Commit `type` and `scope` stay in English (e.g. `feat(auth):`), but the description after the colon and the body text must be in Korean. |
 | Subject line | Use imperative mood, present tense, lowercase after the colon, and keep the subject under 72 characters. |
 | Body/footer | Add a body only when the subject cannot capture important context. Add footers only for verified issue references, breaking changes, or explicitly requested metadata. |
 | Push confirmation | After `git add` and `git commit` complete successfully, ask whether to run `git push`. In Codex, ask in plain text. In OpenCode, prefer its native ask-style approval prompt when available; otherwise fall back to plain text. |
@@ -91,8 +100,9 @@ If ARGUMENT is present:
 
 | Category | Avoid |
 |------|------|
-| Staging | `git add .` or blanket staging when unrelated changes exist |
+| Staging | `git add .` or blanket staging when unrelated changes exist (exception: ALL mode stages all files but still commits per logical group) |
 | Argument handling | ignoring an explicit ARGUMENT and committing a broader change set than requested |
+| Cherry-picking in ALL mode | skipping files or leaving uncommitted changes behind when ARGUMENT is ALL |
 | Repository boundary | running `git add` or `git commit` from a non-repository root and assuming nested repositories will be included |
 | Push | auto-running `git push` after commit without explicit confirmation |
 | Hooks | `--no-verify` unless the user explicitly requests it |
@@ -108,11 +118,12 @@ If ARGUMENT is present:
 
 | Input state | Action |
 |------|------|
-| No ARGUMENT provided | Start from the current session's modified files and repositories, then confirm them with git state before selecting the commit candidate |
-| No ARGUMENT provided, and current-session work is already committed | If uncommitted changes still remain, allow the remaining uncommitted change set to become the next candidate |
-| ARGUMENT provided and matches one logical change | Use ARGUMENT as the primary filter for repository discovery, staging, and message generation |
-| ARGUMENT provided but conflicts with git state | Stop and report the mismatch |
-| ARGUMENT provided but still covers multiple unrelated changes | Stop and ask for a narrower target |
+| No ARGUMENT provided | Start from the current session's modified files and repositories, confirm them with git state, group into logical changes, and commit each group separately |
+| No ARGUMENT provided, and current-session work is already committed | If uncommitted changes still remain, allow the remaining uncommitted change set to become the next candidate and apply the same grouping logic |
+| ARGUMENT is "ALL" or "all" | Take ALL uncommitted changes regardless of session, group into logical changes, and commit each group separately — no stopping, no skipping, every file must be committed |
+| ARGUMENT provided (other than ALL) and matches one logical change | Use ARGUMENT as the primary filter for repository discovery, staging, and message generation |
+| ARGUMENT provided (other than ALL) and covers multiple logical groups | Use ARGUMENT as the filter, then group and commit each group separately |
+| ARGUMENT provided (other than ALL) but conflicts with git state | Stop and report the mismatch |
 
 ## Repository discovery
 
@@ -130,7 +141,7 @@ If ARGUMENT is present:
 | Staged + unstaged changes, same logical change | Stage the missing files deliberately, then commit the full set. |
 | Staged + unstaged changes, unrelated changes mixed together | Default to the staged set only, or stop if the intended commit target is unclear. |
 | No staged changes, one clear logical change | Stage only the relevant files, then commit. |
-| No staged changes, multiple unrelated changes | Do not guess. Ask how to split or stage one group explicitly. |
+| No staged changes, multiple unrelated changes | Group changes into logical sets. Stage and commit each group separately in sequence. |
 | No diff to commit | Stop and report that there is nothing to commit. |
 
 ## Type selection
@@ -169,7 +180,8 @@ Decide argument mode first:
 
 - No ARGUMENT: derive the initial candidate set from the current session's work, then verify it with git state.
 - No ARGUMENT fallback: if that session-derived set is already fully committed, inspect the remaining uncommitted changes and allow them to become the next candidate set.
-- ARGUMENT present: derive the initial candidate set from ARGUMENT, then verify it with git state.
+- ARGUMENT is "ALL" or "all": take ALL uncommitted changes regardless of session scope.
+- ARGUMENT present (other than ALL): derive the initial candidate set from ARGUMENT, then verify it with git state.
 
 ```bash
 scripts/repo-discover.sh
@@ -191,9 +203,25 @@ scripts/repo-status.sh path/to/repo
 
 Do not run one `git add` or one `git commit` from the non-repository root for multiple descendant repositories.
 
-## Phase 2. Select and prepare one logical change
+## Phase 2. Identify logical change groups
 
-Use targeted staging commands only when needed. The candidate set must match the current session when no ARGUMENT is provided, or match ARGUMENT when it is provided.
+Analyze the full candidate set and partition it into logical change groups. Each group should contain files that belong to the same feature, fix, module, or purpose.
+
+Grouping heuristics (apply in order):
+1. Files that implement the same feature or fix belong together.
+2. Test files belong with their corresponding implementation files.
+3. Config/build changes related to the same feature belong with that feature.
+4. Unrelated standalone changes each form their own group.
+
+In ALL mode: every uncommitted file must appear in exactly one group. No file may be left behind.
+
+## Phase 3. Stage and commit each group (loop)
+
+For each logical group identified in Phase 2, repeat the following:
+
+### 3a. Stage the group
+
+Use targeted staging commands. Stage only the files in the current group.
 
 ```bash
 git add path/to/file1 path/to/file2
@@ -201,14 +229,7 @@ git add -p
 git restore --staged path/to/file
 ```
 
-Stop if:
-- secrets or credential files appear in the candidate set
-- unrelated changes cannot be separated confidently
-- the user intent conflicts with the staged state
-- ARGUMENT conflicts with the actual modified files or repositories
-- multiple descendant repositories contain changes but the intended commit split is unclear
-
-## Phase 3. Generate the commit message
+### 3b. Generate the commit message for this group
 
 Build:
 1. `type`
@@ -227,7 +248,7 @@ Message format:
 [optional footer]
 ```
 
-## Phase 4. Execute the commit
+### 3c. Execute the commit
 
 Subject only:
 
@@ -257,9 +278,17 @@ EOF
 )"
 ```
 
-If multiple descendant repositories are in scope, repeat Phase 2 through Phase 4 inside each repository separately.
+### 3d. Continue to next group
 
-## Phase 5. Ask whether to push
+Move to the next logical group. Repeat 3a–3c until all groups are committed.
+
+Stop within a group only if:
+- secrets or credential files appear in the candidate set
+- ARGUMENT (other than ALL) conflicts with the actual modified files or repositories
+
+If multiple descendant repositories are in scope, repeat Phase 2 and Phase 3 inside each repository separately.
+
+## Phase 4. Ask whether to push
 
 After a successful commit, ask for explicit push confirmation.
 
@@ -267,7 +296,7 @@ After a successful commit, ask for explicit push confirmation.
 - In OpenCode: prefer the runtime-native approval prompt rather than assuming a generic Y/N flow
 - In other runtimes with interactive confirmation UI: use the native confirmation surface when available, but explicit confirmation is still required before push
 
-## Phase 6. Handle commit failures or push follow-up
+## Phase 5. Handle commit failures or push follow-up
 
 | Failure case | Response |
 |------|------|
@@ -284,32 +313,32 @@ After a successful commit, ask for explicit push confirmation.
 
 ## Good subjects
 
-- `feat(auth): add passkey login flow`
-- `fix(cache): avoid stale project reads`
-- `docs(cli): document release prerequisites`
-- `refactor(worker): split mailbox parsing logic`
+- `feat(auth): passkey 로그인 플로우 추가`
+- `fix(cache): 프로젝트 읽기 시 stale 데이터 방지`
+- `docs(cli): 릴리스 사전 조건 문서화`
+- `refactor(worker): 메일박스 파싱 로직 분리`
 
 ## Bad subjects
 
-- `updated stuff`
+- `업데이트 함`
 - `Fix bug in the API module`
-- `feat: Added New Feature`
-- `chore(repo): miscellaneous changes`
+- `feat: 새 기능 추가함`
+- `chore(repo): 여러 가지 변경`
 
 ## Good multiline commit
 
 ```bash
 git commit -m "$(cat <<'EOF'
-feat(api): add team membership filter
+feat(api): 팀 멤버십 필터 추가
 
-Limit list responses to memberships visible to the active user.
+활성 사용자에게 보이는 멤버십만 목록 응답에 포함한다.
 
 Refs: #482
 EOF
 )"
 ```
 
-## Good no-argument handling
+## Good no-argument handling (single group)
 
 ```text
 /git-commit
@@ -318,7 +347,20 @@ EOF
 Result:
 - inspect work done in the current session
 - confirm the matching repositories and files with git state
-- commit one logical change from that session
+- all changes belong to one logical group → commit once
+
+## Good no-argument handling (multiple groups)
+
+```text
+/git-commit
+```
+
+Result:
+- inspect work done in the current session
+- session touched auth module files AND unrelated docs files
+- group 1: auth module changes → `feat(auth): passkey 로그인 플로우 추가`
+- group 2: docs changes → `docs(cli): 릴리스 사전 조건 문서화`
+- commit group 1, then commit group 2
 
 ## Good no-argument fallback handling
 
@@ -329,7 +371,26 @@ Result:
 Result:
 - detect that the current session's work is already committed
 - inspect the remaining uncommitted changes
-- allow one logical remainder change to become the next commit candidate
+- group and commit each remaining logical change
+
+## Good ALL mode handling
+
+```text
+/git-commit ALL
+```
+
+Result:
+- take ALL uncommitted changes, regardless of current session
+- group into logical change sets
+- commit each group separately — no files left behind
+
+Example output sequence:
+```bash
+scripts/git-commit.sh "feat(auth): passkey 로그인 플로우 추가" src/auth/passkey.ts src/auth/passkey.test.ts
+scripts/git-commit.sh "fix(cache): 프로젝트 읽기 시 stale 데이터 방지" src/cache/reader.ts
+scripts/git-commit.sh "docs(cli): 릴리스 사전 조건 문서화" docs/release.md
+scripts/git-commit.sh "chore: 의존성 업데이트" package.json pnpm-lock.yaml
+```
 
 ## Good explicit-argument handling
 
@@ -374,11 +435,13 @@ git commit -m "fix: update web and api"
 - Confirm the repository layout was checked before staging or commit.
 - Confirm the argument mode was resolved before repository discovery.
 - Confirm descendant repositories, if any, were handled one repository at a time.
-- Confirm the final candidate set matches the current session when no ARGUMENT was provided, or matches ARGUMENT when it was provided.
+- Confirm the final candidate set matches the current session when no ARGUMENT was provided, matches ALL uncommitted changes when ARGUMENT is ALL, or matches ARGUMENT when another ARGUMENT was provided.
 - Confirm that no-argument mode may fall back to remaining uncommitted changes only after current-session work is already committed.
+- Confirm that when multiple logical groups exist, each group was committed separately in sequence.
+- Confirm that in ALL mode, every uncommitted file was included in exactly one commit group with no files left behind.
 - Confirm each descendant repository received its own `git add` and `git commit` sequence.
 - Confirm `git push` was not run until explicit confirmation was received.
-- Confirm the committed files match one logical change.
+- Confirm each individual commit covers exactly one logical change.
 - Confirm the final message matches Conventional Commits format.
 - Confirm the subject is imperative, present tense, and under 72 characters.
 - Confirm no secret or credential files were included.

@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: '현재 저장소 상태를 기준으로 Conventional Commit 하나를 생성합니다. staged/unstaged 변경을 확인하고, 하나의 논리적 변경 집합을 선택한 뒤, 규격에 맞는 메시지를 만들고, 모호하거나 위험한 조건에서는 멈춥니다.'
+description: '현재 저장소 상태를 기준으로 하나 이상의 Conventional Commit을 생성합니다. staged/unstaged 변경을 확인하고, 논리적 변경 그룹별로 분류한 뒤, 각 그룹마다 규격에 맞는 메시지를 만들어 순서대로 커밋합니다.'
 license: MIT
 allowed-tools: Bash
 compatibility: `skills/git-commit/scripts` 아래 Bash 스크립트를 필요로 합니다.
@@ -23,9 +23,9 @@ compatibility: `skills/git-commit/scripts` 아래 Bash 스크립트를 필요로
 
 <objective>
 
-- 현재 저장소 상태를 기준으로 Conventional Commit 1개를 생성한다.
+- 현재 저장소 상태를 기준으로 하나 이상의 Conventional Commit을 생성한다. 논리적 변경 그룹당 하나씩.
 - 모든 판단은 실제 git 상태와 diff 출력에 근거해 수행한다.
-- 변경 집합이 모호하거나 섞여 있거나 위험하면 추측하지 말고 멈춘다.
+- 논리적 변경 그룹이 여러 개 있으면 각 그룹을 식별하고 순서대로 따로 커밋한다.
 
 </objective>
 
@@ -46,14 +46,22 @@ ARGUMENT가 없으면:
 
 - 현재 세션에서 작업한 파일, 저장소, 논리적 변경 단위를 기본 후보로 잡는다.
 - 스테이징이나 커밋 전에 그 후보를 실제 `git status` 와 `git diff` 출력으로 검증한다.
-- 현재 세션 작업이 이미 모두 커밋되어 있으면, 아직 커밋되지 않은 나머지 변경을 다음 후보로 사용할 수 있다.
-- 현재 세션 안에 관련 없는 변경 묶음이 여러 개면, 어떤 커밋을 만들지 명확하지 않을 때 멈춘다.
+- 후보 집합에 논리적 변경 그룹이 여러 개 있으면, 각 그룹을 식별하고 순서대로 따로 커밋한다. 멈추거나 확인을 요청하지 않는다 — 모든 그룹을 순회한다.
+- 현재 세션 작업이 이미 모두 커밋되어 있으면, 아직 커밋되지 않은 나머지 변경을 다음 후보로 사용하고 동일한 그룹핑 로직을 적용한다.
 
-ARGUMENT가 있으면:
+ARGUMENT가 "ALL" 또는 "all"이면:
+
+- 현재 세션에서 작업했는지 여부와 관계없이, 저장소의 모든 미커밋 변경을 대상으로 잡는다.
+- 관련 기능, 기능 영역, 목적을 기준으로 모든 변경을 논리적 변경 집합으로 분류한다.
+- 각 그룹을 순서대로 따로 커밋한다. 멈추지 않고, 확인을 요청하지 않고, 어떤 파일도 건너뛰지 않는다.
+- 모든 미커밋 파일이 정확히 하나의 커밋 그룹에 포함되어야 한다. 어떤 파일도 남겨두지 않는다.
+
+ARGUMENT가 있으면 (ALL 이외):
 
 - ARGUMENT를 기본 커밋 대상 또는 필터로 취급한다.
 - 저장소 탐색, 파일 선택, 스테이징, 커밋 메시지 생성을 모두 ARGUMENT 기준으로 좁힌다.
-- ARGUMENT가 실제 저장소 상태와 맞지 않거나 여전히 관련 없는 여러 변경을 포함하면 멈춘다.
+- 필터링된 집합에 논리적 그룹이 여러 개 있으면 각 그룹을 따로 커밋한다.
+- ARGUMENT가 실제 저장소 상태와 맞지 않으면 멈춘다.
 
 </argument_validation>
 
@@ -75,10 +83,11 @@ ARGUMENT가 있으면:
 | Repository discovery | 현재 작업 디렉터리가 git 저장소인지 먼저 판별한다. 아니라면 `git add`나 `git commit` 전에 하위 디렉터리의 저장소 목록을 먼저 만든다. |
 | Diff source | staged 변경이 있으면 staged 집합을 기본 커밋 후보로 보고 `git diff --staged`를 확인한다. staged 변경이 없으면 `git diff`를 확인한다. |
 | Repository boundary | 현재 디렉터리 아래에 여러 git 저장소가 발견되면, 각 저장소 안에서 `git status`, `git add`, `git commit`을 각각 따로 실행한다. 여러 저장소를 하나의 커밋 단위로 다루지 않는다. |
-| Logical scope | 하나의 논리적 변경만 커밋한다. 저장소 안에 관련 없는 변경이 섞여 있으면 분리하거나 멈춰서 확인한다. |
+| Logical scope | 각 커밋은 정확히 하나의 논리적 변경만 포함한다. 논리적 그룹이 여러 개 있으면 각 그룹을 식별하고 순서대로 따로 커밋한다. 멈추지 않는다 — 모든 그룹을 순회한다. |
 | Staging discipline | 선택한 논리적 변경에 필요한 파일만 스테이징한다. 기본값으로 전체 스테이징하지 않는다. |
 | Type selection | Conventional Commit type은 실제 변경의 중심 성격으로 고른다. 파일명만 보고 결정하지 않는다. |
 | Scope selection | 하나의 모듈, 패키지, 기능 영역, 서브시스템이 명확할 때만 scope를 붙인다. 여러 영역에 걸치거나 애매한 이름이면 scope를 생략한다. |
+| Language | 커밋 subject와 body를 한국어로 작성한다. Conventional Commit의 `type`과 `scope`는 영어로 유지하되 (예: `feat(auth):`), 콜론 뒤 설명과 body 본문은 반드시 한국어로 쓴다. |
 | Subject line | 명령형, 현재형을 사용하고, 콜론 뒤는 소문자로 시작하며, subject는 72자 이내로 유지한다. |
 | Body/footer | subject만으로 중요한 맥락이 부족할 때만 body를 추가한다. footer는 검증된 이슈 참조, breaking change, 사용자가 명시적으로 요청한 메타데이터에만 사용한다. |
 | Push confirmation | `git add` 와 `git commit` 이 성공하면 `git push` 를 실행할지 반드시 확인한다. Codex에서는 평문으로 묻고, OpenCode에서는 가능하면 ask 스타일의 기본 승인 프롬프트를 우선 사용한다. 해당 프롬프트를 쓸 수 없으면 평문으로 fallback 한다. |
@@ -91,8 +100,9 @@ ARGUMENT가 있으면:
 
 | Category | Avoid |
 |------|------|
-| Staging | 관련 없는 변경이 섞여 있는데 `git add .` 같은 전체 스테이징 사용 |
+| Staging | 관련 없는 변경이 섞여 있는데 `git add .` 같은 전체 스테이징 사용 (예외: ALL 모드에서는 모든 파일을 대상으로 하되 논리적 그룹별로 커밋) |
 | Argument handling | 명시적 ARGUMENT를 무시하고 더 넓은 변경 집합을 커밋하는 것 |
+| ALL 모드에서 체리피킹 | ARGUMENT가 ALL일 때 파일을 건너뛰거나 미커밋 변경을 남겨두는 것 |
 | Repository boundary | 저장소가 아닌 루트에서 `git add`나 `git commit`을 실행하면서 하위 저장소까지 같이 처리된다고 가정하는 것 |
 | Push | 명시적 확인 없이 커밋 직후 `git push` 를 자동 실행하는 것 |
 | Hooks | 사용자가 명시적으로 요청하지 않았는데 `--no-verify` 사용 |
@@ -108,11 +118,12 @@ ARGUMENT가 있으면:
 
 | Input state | Action |
 |------|------|
-| ARGUMENT 없음 | 현재 세션에서 수정한 파일과 저장소를 시작점으로 잡고, git 상태로 확인한 뒤 커밋 후보를 선택한다 |
-| ARGUMENT 없음, 그리고 현재 세션 작업이 이미 커밋됨 | 아직 커밋되지 않은 변경이 남아 있으면, 그 나머지 변경을 다음 후보로 사용할 수 있다 |
-| ARGUMENT 있음, 그리고 하나의 논리적 변경과 일치함 | ARGUMENT를 저장소 탐색, 스테이징, 메시지 생성의 기본 필터로 사용한다 |
-| ARGUMENT가 있지만 git 상태와 충돌함 | 멈추고 불일치를 보고한다 |
-| ARGUMENT가 있지만 관련 없는 여러 변경을 함께 가리킴 | 더 좁은 대상으로 다시 지정하도록 멈춘다 |
+| ARGUMENT 없음 | 현재 세션에서 수정한 파일과 저장소를 시작점으로 잡고, git 상태로 확인한 뒤 논리적 변경으로 분류하고, 각 그룹을 따로 커밋한다 |
+| ARGUMENT 없음, 그리고 현재 세션 작업이 이미 커밋됨 | 아직 커밋되지 않은 변경이 남아 있으면, 그 나머지 변경을 다음 후보로 사용하고 동일한 그룹핑 로직을 적용한다 |
+| ARGUMENT가 "ALL" 또는 "all" | 세션과 무관하게 모든 미커밋 변경을 대상으로 잡고, 논리적 변경으로 분류하고, 각 그룹을 따로 커밋한다 — 멈추지 않고, 건너뛰지 않고, 모든 파일이 반드시 커밋되어야 한다 |
+| ARGUMENT 있음 (ALL 이외), 하나의 논리적 변경과 일치함 | ARGUMENT를 저장소 탐색, 스테이징, 메시지 생성의 기본 필터로 사용한다 |
+| ARGUMENT 있음 (ALL 이외), 여러 논리적 그룹에 걸침 | ARGUMENT를 필터로 사용한 뒤, 각 그룹을 따로 커밋한다 |
+| ARGUMENT 있음 (ALL 이외), git 상태와 충돌함 | 멈추고 불일치를 보고한다 |
 
 ## 저장소 탐색
 
@@ -130,7 +141,7 @@ ARGUMENT가 있으면:
 | staged + unstaged 변경이 있고, 같은 논리적 변경임 | 빠진 파일만 의도적으로 추가 스테이징한 뒤 전체 집합을 커밋한다. |
 | staged + unstaged 변경이 있지만 관련 없는 변경이 섞여 있음 | 기본값은 staged 집합만 커밋한다. 의도한 커밋 대상을 판단할 수 없으면 멈춘다. |
 | staged 변경 없음, 논리적 변경이 하나로 명확함 | 관련 파일만 스테이징한 뒤 커밋한다. |
-| staged 변경 없음, 관련 없는 변경이 여러 개임 | 추측하지 않는다. 어떻게 나눌지 확인하거나 한 그룹만 명시적으로 스테이징한다. |
+| staged 변경 없음, 관련 없는 변경이 여러 개임 | 변경을 논리적 집합으로 분류한다. 각 그룹을 순서대로 따로 스테이징하고 커밋한다. |
 | 커밋할 diff 자체가 없음 | 멈추고 커밋할 내용이 없다고 보고한다. |
 
 ## 타입 선택
@@ -169,7 +180,8 @@ ARGUMENT가 있으면:
 
 - ARGUMENT 없음: 현재 세션의 작업 내역에서 초기 후보를 만들고, 이후 git 상태로 검증한다.
 - ARGUMENT 없음 fallback: 그 세션 후보가 이미 모두 커밋되어 있으면, 아직 커밋되지 않은 나머지 변경을 다시 확인해서 다음 후보로 사용할 수 있다.
-- ARGUMENT 있음: ARGUMENT에서 초기 후보를 만들고, 이후 git 상태로 검증한다.
+- ARGUMENT가 "ALL" 또는 "all": 세션 범위와 관계없이 모든 미커밋 변경을 대상으로 잡는다.
+- ARGUMENT 있음 (ALL 이외): ARGUMENT에서 초기 후보를 만들고, 이후 git 상태로 검증한다.
 
 ```bash
 scripts/repo-discover.sh
@@ -191,9 +203,25 @@ scripts/repo-status.sh path/to/repo
 
 저장소가 아닌 루트에서 한 번의 `git add`나 `git commit`으로 여러 하위 저장소를 같이 처리하지 않는다.
 
-## Phase 2. 하나의 논리적 변경 선택 및 준비
+## Phase 2. 논리적 변경 그룹 식별
 
-필요할 때만 타겟팅된 스테이징 명령을 사용한다. ARGUMENT가 없으면 현재 세션과 일치해야 하고, ARGUMENT가 있으면 그 인자와 일치해야 한다.
+전체 후보 집합을 분석하고 논리적 변경 그룹으로 분류한다. 각 그룹에는 같은 기능, 수정, 모듈, 목적에 속하는 파일을 포함한다.
+
+그룹핑 휴리스틱 (순서대로 적용):
+1. 같은 기능이나 수정을 구현하는 파일은 함께 묶는다.
+2. 테스트 파일은 해당 구현 파일과 함께 묶는다.
+3. 같은 기능에 관련된 설정/빌드 변경은 그 기능과 함께 묶는다.
+4. 관련 없는 독립 변경은 각각 별도 그룹으로 만든다.
+
+ALL 모드에서: 모든 미커밋 파일이 정확히 하나의 그룹에 포함되어야 한다. 어떤 파일도 남겨두지 않는다.
+
+## Phase 3. 각 그룹을 스테이징하고 커밋 (반복)
+
+Phase 2에서 식별한 각 논리적 그룹에 대해 다음을 반복한다:
+
+### 3a. 그룹 스테이징
+
+타겟팅된 스테이징 명령을 사용한다. 현재 그룹의 파일만 스테이징한다.
 
 ```bash
 git add path/to/file1 path/to/file2
@@ -201,16 +229,9 @@ git add -p
 git restore --staged path/to/file
 ```
 
-다음 경우에는 멈춘다.
-- 커밋 후보에 secret 또는 credential 파일이 포함됨
-- 관련 없는 변경을 자신 있게 분리할 수 없음
-- 사용자의 의도와 현재 staged 상태가 충돌함
-- ARGUMENT가 실제 수정 파일 또는 저장소와 충돌함
-- 여러 하위 저장소에 변경이 있는데 커밋 분리 기준이 명확하지 않음
+### 3b. 이 그룹의 커밋 메시지 생성
 
-## Phase 3. 커밋 메시지 생성
-
-다음 순서로 구성한다.
+다음 순서로 구성한다:
 1. `type`
 2. optional `scope`
 3. subject
@@ -227,7 +248,7 @@ git restore --staged path/to/file
 [optional footer]
 ```
 
-## Phase 4. 커밋 실행
+### 3c. 커밋 실행
 
 subject만 있는 경우:
 
@@ -257,9 +278,17 @@ EOF
 )"
 ```
 
-여러 하위 저장소가 범위에 들어가면, Phase 2부터 Phase 4까지를 각 저장소 안에서 각각 반복한다.
+### 3d. 다음 그룹으로 이동
 
-## Phase 5. push 여부 확인
+다음 논리적 그룹으로 넘어간다. 모든 그룹이 커밋될 때까지 3a–3c를 반복한다.
+
+그룹 내에서 멈추는 경우:
+- 커밋 후보에 secret 또는 credential 파일이 포함됨
+- ARGUMENT (ALL 이외)가 실제 수정 파일 또는 저장소와 충돌함
+
+여러 하위 저장소가 범위에 들어가면, Phase 2와 Phase 3을 각 저장소 안에서 각각 반복한다.
+
+## Phase 4. push 여부 확인
 
 커밋이 성공하면 `git push` 실행 여부를 명시적으로 확인한다.
 
@@ -267,7 +296,7 @@ EOF
 - OpenCode: 일반적인 Y/N를 가정하지 말고, 가능하면 런타임의 기본 승인 프롬프트를 사용한다
 - 다른 상호작용형 런타임: 기본 확인 UI가 있으면 그걸 써도 되지만, push 전 명시적 확인은 여전히 필요하다
 
-## Phase 6. 커밋 실패 또는 push 후속 처리
+## Phase 5. 커밋 실패 또는 push 후속 처리
 
 | Failure case | Response |
 |------|------|
@@ -284,32 +313,32 @@ EOF
 
 ## 좋은 subject 예시
 
-- `feat(auth): add passkey login flow`
-- `fix(cache): avoid stale project reads`
-- `docs(cli): document release prerequisites`
-- `refactor(worker): split mailbox parsing logic`
+- `feat(auth): passkey 로그인 플로우 추가`
+- `fix(cache): 프로젝트 읽기 시 stale 데이터 방지`
+- `docs(cli): 릴리스 사전 조건 문서화`
+- `refactor(worker): 메일박스 파싱 로직 분리`
 
 ## 나쁜 subject 예시
 
-- `updated stuff`
+- `업데이트 함`
 - `Fix bug in the API module`
-- `feat: Added New Feature`
-- `chore(repo): miscellaneous changes`
+- `feat: 새 기능 추가함`
+- `chore(repo): 여러 가지 변경`
 
 ## 좋은 멀티라인 커밋 예시
 
 ```bash
 git commit -m "$(cat <<'EOF'
-feat(api): add team membership filter
+feat(api): 팀 멤버십 필터 추가
 
-Limit list responses to memberships visible to the active user.
+활성 사용자에게 보이는 멤버십만 목록 응답에 포함한다.
 
 Refs: #482
 EOF
 )"
 ```
 
-## 좋은 무인자 처리 예시
+## 좋은 무인자 처리 예시 (단일 그룹)
 
 ```text
 /git-commit
@@ -318,7 +347,20 @@ EOF
 결과:
 - 현재 세션에서 작업한 내용을 먼저 확인한다
 - git 상태로 일치하는 저장소와 파일을 검증한다
-- 그 세션의 논리적 변경 하나만 커밋한다
+- 모든 변경이 하나의 논리적 그룹에 속함 → 한 번 커밋
+
+## 좋은 무인자 처리 예시 (여러 그룹)
+
+```text
+/git-commit
+```
+
+결과:
+- 현재 세션에서 작업한 내용을 먼저 확인한다
+- 세션에서 auth 모듈 파일과 관련 없는 docs 파일을 함께 수정함
+- 그룹 1: auth 모듈 변경 → `feat(auth): passkey 로그인 플로우 추가`
+- 그룹 2: docs 변경 → `docs(cli): 릴리스 사전 조건 문서화`
+- 그룹 1을 커밋하고, 그룹 2를 커밋한다
 
 ## 좋은 무인자 fallback 처리 예시
 
@@ -329,7 +371,26 @@ EOF
 결과:
 - 현재 세션 작업이 이미 커밋되었는지 확인한다
 - 아직 커밋되지 않은 나머지 변경을 다시 확인한다
-- 그 나머지 중 논리적 변경 하나를 다음 커밋 후보로 사용할 수 있다
+- 나머지 논리적 변경을 그룹핑하고 각각 커밋한다
+
+## 좋은 ALL 모드 처리 예시
+
+```text
+/git-commit ALL
+```
+
+결과:
+- 현재 세션과 무관하게 모든 미커밋 변경을 대상으로 잡는다
+- 논리적 변경 집합으로 분류한다
+- 각 그룹을 따로 커밋한다 — 남겨지는 파일 없음
+
+출력 시퀀스 예시:
+```bash
+scripts/git-commit.sh "feat(auth): passkey 로그인 플로우 추가" src/auth/passkey.ts src/auth/passkey.test.ts
+scripts/git-commit.sh "fix(cache): 프로젝트 읽기 시 stale 데이터 방지" src/cache/reader.ts
+scripts/git-commit.sh "docs(cli): 릴리스 사전 조건 문서화" docs/release.md
+scripts/git-commit.sh "chore: 의존성 업데이트" package.json pnpm-lock.yaml
+```
 
 ## 좋은 명시적 ARGUMENT 처리 예시
 
@@ -374,11 +435,13 @@ git commit -m "fix: update web and api"
 - 스테이징이나 커밋 전에 저장소 구조를 먼저 확인했는지 점검한다.
 - 저장소 탐색 전에 ARGUMENT 모드를 먼저 결정했는지 점검한다.
 - 하위 저장소가 있으면 저장소별로 각각 처리했는지 점검한다.
-- ARGUMENT가 없을 때는 현재 세션과, ARGUMENT가 있을 때는 그 ARGUMENT와 최종 후보가 일치하는지 점검한다.
+- ARGUMENT가 없을 때는 현재 세션과, ARGUMENT가 ALL일 때는 모든 미커밋 변경과, 다른 ARGUMENT가 있을 때는 그 ARGUMENT와 최종 후보가 일치하는지 점검한다.
 - ARGUMENT가 없을 때 현재 세션 작업이 이미 커밋되었다면, 남은 미커밋 변경으로 fallback 했는지 점검한다.
+- 논리적 그룹이 여러 개 있을 때 각 그룹이 순서대로 따로 커밋되었는지 점검한다.
+- ALL 모드에서 모든 미커밋 파일이 정확히 하나의 커밋 그룹에 포함되었고, 남겨진 파일이 없는지 점검한다.
 - 하위 저장소마다 독립된 `git add` 와 `git commit` 순서를 사용했는지 점검한다.
 - 명시적 확인 전에는 `git push` 를 실행하지 않았는지 점검한다.
-- 커밋된 파일이 하나의 논리적 변경인지 확인한다.
+- 각 개별 커밋이 정확히 하나의 논리적 변경만 포함하는지 확인한다.
 - 최종 메시지가 Conventional Commits 형식을 따르는지 확인한다.
 - subject가 명령형/현재형이며 72자 이내인지 확인한다.
 - secret 또는 credential 파일이 포함되지 않았는지 확인한다.
