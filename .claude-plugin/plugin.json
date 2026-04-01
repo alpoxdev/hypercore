@@ -9,6 +9,5 @@
   "homepage": "https://github.com/alpoxdev/hypercore",
   "license": "MIT",
   "keywords": ["claude-code", "skills", "agents", "architecture", "git", "research"],
-  "skills": "./skills/",
-  "agents": "./agents/"
+  "skills": "./skills/"
 }
