@@ -158,9 +158,9 @@ WebSearch({ query: "React security best practices 2026" })
 
 | 단계 | 결정 사항 | 예시 |
 |------|----------|------|
-| **1. 정보 유형** | 공식 문서 vs 블로그 vs 벤치마크 | 공식 문서: Context7, 벤치마크: WebSearch |
+| **1. 정보 유형** | 공식 문서 vs 블로그 vs 벤치마크 | 공식 문서: Context7 (Claude Code) / WebFetch (Codex/기타), 벤치마크: WebSearch |
 | **2. 검색 깊이** | Quick(3쿼리) / Medium(5쿼리) / Deep(10쿼리) | 개요: Quick, 완전 분석: Deep |
-| **3. 우선순위 채널** | Context7 → GitHub → WebSearch | 라이브러리 문서 우선 |
+| **3. 우선순위 채널** | 환경별: Context7/WebFetch → GitHub → WebSearch | 라이브러리 문서 우선 |
 | **4. 종료 조건** | 목표 달성 / 교차 검증 완료 / 깊이 도달 | 2+ 소스 교차 검증 완료 시 종료 |
 
 ### 검색 깊이 기준
@@ -175,7 +175,7 @@ WebSearch({ query: "React security best practices 2026" })
 
 ```text
 ✓ 필요한 정보 유형은?
-  - 공식 문서: Context7 MCP → 라이브러리 문서 직접 조회
+  - 공식 문서: Context7 MCP (Claude Code) 또는 WebFetch (Codex/기타) → 라이브러리 문서 직접 조회
   - 코드 예시: GitHub MCP → 리포지토리/코드 검색
   - 최신 동향: WebSearch/SearXNG → 블로그/미디어
   - 벤치마크: WebSearch → 성능 비교 자료
@@ -185,10 +185,9 @@ WebSearch({ query: "React security best practices 2026" })
   - Medium: 비교 분석 필요
   - Deep: 완전한 이해 필요
 
-✓ 우선순위 채널은?
-  1순위: Context7 (라이브러리 공식 문서)
-  2순위: GitHub (코드, 이슈, 릴리스)
-  3순위: WebSearch/SearXNG (웹 검색)
+✓ 우선순위 채널은? (환경에 따라 다름)
+  Claude Code: Context7 → GitHub → WebSearch/SearXNG
+  Codex/기타: WebSearch/WebFetch → GitHub → SearXNG
 
 ✓ 검색 종료 조건은?
   - 목표 정보 획득
@@ -199,9 +198,10 @@ WebSearch({ query: "React security best practices 2026" })
 ### 채널별 우선순위 전략
 
 ```typescript
-// ✅ 올바른 흐름: 우선순위대로 검색
+// ✅ 올바른 흐름: 우선순위대로 검색 (Claude Code 환경 예시)
+// Codex/기타 환경에서는 Phase 1을 WebFetch로 대체
 
-// Phase 1: Context7 (라이브러리 문서)
+// Phase 1: Context7 (라이브러리 문서, Claude Code 전용)
 Context7_resolve_library_id({ libraryName: "react" })
 Context7_query_docs({
   libraryId: "react",
@@ -305,20 +305,30 @@ WebSearch({ query: "AI agent frameworks comparison" })
 
 ## Smart Tier Fallback
 
+환경에 따라 사용 가능한 도구가 다릅니다:
+
 ```
-Tier 1 (MCP, ToolSearch로 감지):
-  SearXNG MCP  → 메타검색 (246+ 엔진, 시간 필터 지원)
-  Firecrawl MCP → 페이지→MD 변환, 사이트 구조 파악
-  GitHub MCP   → 코드/리포/이슈/릴리스 검색
-  Context7 MCP → 라이브러리 문서 즉시 조회
+Claude Code 환경:
+  Tier 1 (MCP, ToolSearch로 감지):
+    SearXNG MCP  → 메타검색 (246+ 엔진, 시간 필터 지원)
+    Firecrawl MCP → 페이지→MD 변환, 사이트 구조 파악
+    GitHub MCP   → 코드/리포/이슈/릴리스 검색
+    Context7 MCP → 라이브러리 문서 즉시 조회
 
-Tier 2 (내장, 항상 가용):
-  WebSearch → 웹 검색 (연도 키워드 필수)
-  WebFetch  → 페이지 직접 읽기
-  Jina Reader → WebFetch('https://r.jina.ai/{URL}') 클린 마크다운 변환
-  gh CLI    → GitHub API (Bash via explore)
+Codex / Cursor / 기타 환경:
+  Tier 1 (내장, 항상 가용):
+    WebSearch → 웹 검색 (연도 키워드 필수)
+    WebFetch  → 페이지 직접 읽기 + 공식 문서 조회
+    gh CLI    → GitHub API (Bash via explore)
 
-Tier 3: Playwright → SPA/JS 렌더링 필요 시 (crawler skill)
+공통:
+  Tier 2 (내장, 항상 가용):
+    WebSearch → 웹 검색 (연도 키워드 필수)
+    WebFetch  → 페이지 직접 읽기
+    Jina Reader → WebFetch('https://r.jina.ai/{URL}') 클린 마크다운 변환
+    gh CLI    → GitHub API (Bash via explore)
+
+  Tier 3: Playwright → SPA/JS 렌더링 필요 시 (crawler skill)
 ```
 
 **MCP는 main agent가 직접 실행** (subagent는 MCP 도구 사용 불가)

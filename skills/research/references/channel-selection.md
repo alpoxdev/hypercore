@@ -7,7 +7,7 @@ Use this reference when the core skill tells you to pick the right evidence chan
 | Topic shape | Start here | Add this if needed | Avoid |
 |------|------|------|------|
 | Internal project behavior or history | local repository search | git history or GitHub evidence if repo metadata matters | live web search first |
-| Library or package usage | official docs or Context7 | GitHub issues, releases, or examples | generic blogs before docs |
+| Library or package usage | official docs or Context7 (Claude Code) / WebFetch (Codex/other) | GitHub issues, releases, or examples | generic blogs before docs |
 | Product, repository, or release comparison | GitHub releases, issues, changelog, code search | live web coverage for independent commentary | relying only on marketing pages |
 | Market, trend, or current-events research | live web search with date awareness | official reports or company filings | stale evergreen articles |
 | Academic or concept research | primary papers or official references | secondary explainers for synthesis | opinion pieces as primary evidence |

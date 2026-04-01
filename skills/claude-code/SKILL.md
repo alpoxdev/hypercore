@@ -4,6 +4,7 @@ description: >-
   Use when the user explicitly wants Anthropic Claude Code CLI (`claude`) for an isolated session,
   non-interactive run, or session resume. Trigger phrases: "use claude code", "ask claude",
   "run claude", "continue the last claude session", or "use Anthropic's CLI to inspect or fix this repo".
+platforms: Claude Code
 ---
 
 @rules/routing.md

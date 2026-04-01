@@ -1,7 +1,7 @@
 ---
 name: research
 description: 라이브 웹, 공식 문서, GitHub, 로컬 저장소 근거를 조합해 사실 조사, 비교, 시장·트렌드 분석, 근거 기반 권고안을 마크다운 리포트로 남길 때 사용하는 조사 스킬입니다.
-compatibility: 라이브 검색 또는 페이지 열람 도구, 가능하면 Context7 같은 공식 문서 접근 수단, GitHub 또는 저장소 검색, 로컬 파일 검색이 있을 때 가장 잘 동작합니다.
+compatibility: 라이브 검색 또는 페이지 열람 도구, 가능하면 Context7 (Claude Code) 또는 WebSearch/WebFetch (Codex, Cursor, 기타 환경) 같은 공식 문서 접근 수단, GitHub 또는 저장소 검색, 로컬 파일 검색이 있을 때 가장 잘 동작합니다.
 ---
 
 @rules/research-workflow.ko.md

@@ -5,6 +5,7 @@ description: >-
   Trigger phrases: "use gemini", "ask gemini", "run gemini", "call gemini", "gemini cli", "Google AI",
   "Gemini reasoning", or when users request Google's AI models, research with web search, or want to
   continue a previous Gemini session.
+platforms: Gemini
 ---
 
 @rules/routing.md
