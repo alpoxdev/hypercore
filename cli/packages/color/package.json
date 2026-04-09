@@ -1,0 +1,43 @@
+{
+  "name": "@kood/color-cli",
+  "version": "0.1.0",
+  "description": "CSS color converter CLI — accurate hex, rgb, oklch conversion with CSS Color Level 4 gamut mapping",
+  "type": "module",
+  "bin": {
+    "color": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "color",
+    "css",
+    "oklch",
+    "hex",
+    "rgb",
+    "converter",
+    "cli",
+    "gamut-mapping",
+    "culori"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alpoxdev/hypercore.git",
+    "directory": "cli/packages/color"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts",
+    "test": "vitest run",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "culori": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}
