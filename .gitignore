@@ -24,6 +24,8 @@ pnpm-debug.log*
 tmp/
 temp/
 .cache/
+node_modules/
+dist/
 
 # oh-my-codex runtime state
 .claude/
