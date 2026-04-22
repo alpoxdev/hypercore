@@ -1,0 +1,249 @@
+---
+name: deep-interview
+description: 모호한 요청을 한 번에 한 질문씩 좁혀 가며, ambiguity scoring과 spec crystallization을 통해 구현 전에 요구사항을 명확히 한다.
+compatibility: 저장소 탐색, 파일 쓰기, 선택적 구조화 질문 도구가 있는 환경에서 가장 잘 동작하지만, 일반 텍스트 인터뷰 워크플로로도 사용할 수 있어야 한다.
+---
+
+# Deep Interview Skill
+
+> 구현 전에 ambiguity를 줄이기 위해 한 번에 하나의 고레버리지 질문만 하고, 매 답변 뒤 clarity를 점수화하며, 최종 스펙을 `.hypercore/deep-interview/` 아래에 저장한다.
+
+<purpose>
+
+- 모호한 아이디어를 구현 가능한 구체적 스펙으로 바꾼다.
+- 기능 목록을 늘어놓기 전에 숨어 있는 가정을 드러낸다.
+- ambiguity threshold를 명시해, 언제 질문이 충분한지와 언제 더 인터뷰가 필요한지를 분명히 한다.
+- 이후 planning 또는 execution 단계에서 재사용할 수 있는 스펙 아티팩트를 남긴다.
+
+</purpose>
+
+<request_routing>
+
+## Positive triggers
+
+- 사용자가 제품, 기능, 워크플로 아이디어를 대충만 알고 있고 먼저 깊게 이해해주길 원한다.
+- 사용자가 `deep interview`, `don't assume`, `interview me first`, `ask one question at a time`, `만들기 전에 먼저 질문해줘` 같은 표현을 쓴다.
+- 바로 구현하면 요구사항 오해나 재작업 가능성이 높은 넓은 요청이다.
+- planning 또는 execution 전에 스펙 아티팩트를 먼저 만들고 싶다.
+
+## Out-of-scope
+
+- 명확한 acceptance criteria가 이미 있는 구체적인 버그 수정이나 단일 구현 요청.
+- 아이디어 수를 늘리는 브레인스토밍이 주업무인 경우.
+- `just do it`, `skip the questions`, `바로 구현해` 같은 직접 실행 요청.
+- 인터뷰가 아니라 기존 PRD/spec 문서를 다듬는 일이 주업무인 경우.
+
+기본 route-away 기준:
+
+- 구체적인 구현이나 버그 수정 → execution / bug-fix lane
+- 열린 브레인스토밍이나 아이디어 확장 → planning / ideation lane
+- 기존 PRD나 저장된 spec 편집 → PRD / 문서 갱신 lane
+
+## Boundary cases
+
+- 요청이 처음엔 모호해 보여도 이미 파일, 정확한 동작, 테스트 가능한 acceptance criteria가 충분하면 인터뷰를 빨리 멈추고 planning 또는 execution으로 넘긴다.
+- 사용자가 먼저 옵션을 보고 나중에 결정하고 싶다면, scope가 확정된 척하지 말고 decision boundary를 드러내는 방향으로 인터뷰한다.
+- ambiguity가 높은데도 사용자가 계속 진행하길 원하면, 남은 공백과 리스크를 먼저 경고한 뒤 handoff한다.
+
+## Trigger examples
+
+Positive:
+- `I have a rough idea for an internal ops dashboard, but don't assume anything. Deep interview me first.`
+- `이거 바로 만들지 말고 질문으로 요구사항부터 좁혀줘.`
+- `Ask one question at a time until you can write a spec.`
+
+Negative:
+- `Fix the null error in src/auth/session.ts.`
+- `브라우저 QA용 새 스킬 만들어줘.`
+
+Boundary:
+- `I want a habit tracker, but I already know it needs offline sync, reminders, and a weekly summary. Do we still need a deep interview?`
+
+</request_routing>
+
+<interview_contract>
+
+## Mandatory behavior
+
+- 라운드마다 **정확히 하나의 질문만** 한다.
+- 일반적인 추가 질문 대신 매 라운드 **가장 약한 clarity dimension**을 겨냥한다.
+- 왜 그 dimension이 현재 병목인지 질문 전에 먼저 설명한다.
+- brownfield 작업이면 코드베이스를 먼저 확인하고, 그 근거를 질문에 인용한다.
+- 저장소에서 알 수 있는 사실을 사용자에게 다시 묻지 않는다.
+- 매 답변 뒤 clarity를 점수화하고 현재 ambiguity 상태를 투명하게 보여준다.
+- ambiguity가 threshold 아래로 내려가거나 사용자가 잔여 리스크를 명시적으로 수용하기 전까지 구현으로 넘기지 않는다.
+
+## Forbidden behavior
+
+- 서로 다른 질문 여러 개를 한 턴에 묶기.
+- 코드 확인 전에 `auth는 어디에 있나요?` 같은 repo-fact 질문을 하기.
+- 핵심 엔티티, 제약, acceptance criteria가 흔들리는데도 scope가 명확한 척하기.
+- deep-interview 흐름 안에서 바로 구현을 시작하기.
+
+</interview_contract>
+
+<clarity_model>
+
+## Clarity dimensions
+
+매 라운드 뒤 각 항목을 `0.0`~`1.0`로 점수화한다:
+
+1. **Goal clarity** — 무엇을 이루려는지 명확한가?
+2. **Constraint clarity** — 제약, 제한, non-goal이 분명한가?
+3. **Success criteria clarity** — 성공 여부를 구체적으로 검증할 수 있는가?
+4. **Context clarity** — brownfield일 때 원하는 변경이 기존 코드베이스 구조와 맞물리는 방식이 분명한가?
+
+## Ambiguity formula
+
+기본 가중치 공식:
+
+- **Greenfield**: `ambiguity = 1 - (goal × 0.40 + constraints × 0.30 + criteria × 0.30)`
+- **Brownfield**: `ambiguity = 1 - (goal × 0.35 + constraints × 0.25 + criteria × 0.25 + context × 0.15)`
+
+기본 threshold: ambiguity `0.20` 이하이면 스펙 작성 가능 상태로 본다.
+
+## Ontology tracking
+
+문제 도메인을 규정하는 핵심 명사와 관계를 추적한다.
+
+매 라운드마다:
+- 현재 대화가 암시하는 주요 엔티티를 적고
+- 엔티티가 안정적인지, 이름만 바뀌었는지, 새로 생겼는지, 사라졌는지 기록하고
+- 핵심 엔티티가 계속 흔들리면 기능 질문보다 ontology-style 질문을 먼저 한다
+
+Ontology convergence는 추가 신호로 사용한다:
+- stability가 올라가면 사용자와 에이전트가 같은 도메인 모델에 수렴 중이라는 뜻이다
+- 엔티티 churn이 계속되면 ambiguity는 단순 누락이 아니라 구조적 문제일 가능성이 크다
+
+</clarity_model>
+
+<workflow>
+
+## Phase 0: 분류와 초기화
+
+- 사용자의 초기 아이디어를 파싱한다.
+- 작업이 **greenfield**인지 **brownfield**인지 판단한다.
+- brownfield면 코드 관련 질문 전에 저장소를 먼저 본다.
+- round 0에서는 ambiguity를 `100%` 미해결 상태로 둔다.
+
+## Phase 1: 다음 최적 질문 선택
+
+매 라운드마다:
+
+1. 현재 clarity dimension을 점수화한다.
+2. 가장 약한 dimension을 찾는다.
+3. 왜 그 항목이 현재 병목인지 설명한다.
+4. 그 항목을 개선하는 질문 하나만 한다.
+
+타깃별 질문 스타일:
+
+- **Goal clarity** → 이게 본질적으로 무엇인지, 사용자가 무엇을 이루려는지 묻는다.
+- **Constraint clarity** → 경계, 제외 범위, 필요한 환경, 숨은 가정을 묻는다.
+- **Success criteria** → 무엇이 관찰 가능하게 성공으로 보일지를 묻는다.
+- **Context clarity** → 찾아낸 기존 코드 경로와 새 요구사항이 어떻게 연결되어야 하는지 묻는다.
+
+## Phase 2: 점수화와 진행 보고
+
+매 답변 뒤 다음을 보고한다:
+
+- round 번호
+- 각 dimension 점수
+- 가중 ambiguity 점수
+- 남은 핵심 gap
+- 다음 타깃 dimension
+- 엔티티가 흔들릴 경우 ontology stability 요약
+
+간단한 출력 형식 예시:
+
+```text
+Round 3 complete
+Goal: 0.8
+Constraints: 0.6
+Success criteria: 0.5
+Context: 0.7
+Ambiguity: 0.34
+Next target: Success criteria
+Why now: we still cannot test success without guessing
+```
+
+## Phase 3: 가정 압박 질문
+
+ambiguity가 높게 남아 있으면 관점을 일부러 바꾼다:
+
+- **Round 4+ Contrarian mode**: 핵심 가정을 뒤집어 본다.
+- **Round 6+ Simplifier mode**: 가장 작은 가치 단위를 묻는다.
+- **Round 8+ Ontologist mode**: 핵심 명사가 계속 흔들리면 이것이 본질적으로 무엇인지 묻는다.
+
+각 challenge mode는 기본적으로 한 번씩만 쓴다. 다만 대화상 꼭 필요하면 반복 가능하다.
+
+## Phase 4: 스펙 결정화
+
+ambiguity가 threshold 이하이거나, 사용자가 잔여 ambiguity를 받아들이겠다고 명시하면:
+
+- 재사용 가능한 spec을 작성한다
+- goal, constraints, non-goals, acceptance criteria, 해결된 assumptions, brownfield context를 요약한다
+- 인터뷰 transcript 또는 라운드별 요약을 함께 남긴다
+- threshold 통과인지, unresolved risk를 안고 early exit했는지 명확히 표시한다
+
+## Phase 5: 구현 없이 handoff
+
+마지막에는 다음 lane을 추천한다:
+
+- 아키텍처/트레이드오프 정리가 더 필요하면 planning
+- 스펙이 충분히 구체적이면 execution
+- ambiguity를 더 줄이고 싶으면 interview 계속
+
+Deep-interview는 clarification과 crystallization을 담당하고, coding은 담당하지 않는다.
+
+</workflow>
+
+<support_files>
+
+이 첫 버전은 의도적으로 self-contained 상태를 유지한다.
+
+- core 워크플로를 실행하는 데 추가 `rules/`, `references/`, `assets/` 파일이 필요 없다.
+- 나중에 확장하더라도 support file 탐색은 `SKILL.md`에서 한 단계 안에 끝나야 한다.
+- core trigger boundary, ambiguity model, one-question rule을 숨은 support file로 빼지 않는다.
+
+</support_files>
+
+<artifact_contract>
+
+인터뷰 결과는 아래에 저장한다:
+
+```text
+.hypercore/deep-interview/[topic-slug]/
+├── spec.md
+├── transcript.md
+└── flow.json
+```
+
+최소 계약:
+
+- `spec.md` — 최종 crystallized spec
+- `transcript.md` — Q/A 라운드 또는 축약 인터뷰 로그
+- `flow.json` — resumable run을 위한 현재 round, ambiguity, threshold, status
+
+권장 `flow.json` 필드:
+- `status`: `interviewing` | `ready` | `early_exit` | `handoff`
+- `type`: `greenfield` | `brownfield`
+- `current_round`
+- `current_ambiguity`
+- `threshold`
+- `weakest_dimension`
+- `challenge_modes_used`
+
+</artifact_contract>
+
+<validation>
+
+종료 전에 다음을 모두 확인한다:
+
+- core 파일만 읽어도 언제 쓰고 언제 쓰지 말아야 하는지 분명하다.
+- workflow가 라운드당 질문 하나를 명시한다.
+- brownfield 질문은 evidence-first다.
+- ambiguity threshold가 암시가 아니라 명시돼 있다.
+- `.hypercore/deep-interview/[topic-slug]/` 출력 형태가 분명하다.
+- 마지막 handoff가 조용히 구현으로 바뀌지 않는다.
+
+</validation>
