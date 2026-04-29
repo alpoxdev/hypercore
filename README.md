@@ -15,9 +15,13 @@ Claude Code, Codex, Cursor에서 사용할 수 있는 AI 에이전트 스킬 모
 
 ### npx skills add
 
+기본 설치 대상(Codex, Cursor, Antigravity 등 지원되는 기본 에이전트)을 함께 설치하려면 `-a` 옵션을 생략합니다.
+
 ```bash
-npx skills add alpoxdev/hypercore --skill '*' -g -a claude-code -y
+npx skills add alpoxdev/hypercore --skill '*' -g -y
 ```
+
+특정 에이전트만 대상으로 설치해야 할 때만 `-a <agent>`를 추가합니다.
 
 ## 에이전트
 
