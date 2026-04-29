@@ -155,6 +155,26 @@
     </section>
 
     <section class="panel">
+      <h2>Measurement Methods</h2>
+      <div id="measurement-wrap" class="empty">측정 방법이 아직 기록되지 않았습니다.</div>
+    </section>
+
+    <section class="panel">
+      <h2>Platform Policy</h2>
+      <div id="platform-wrap" class="empty">플랫폼 정책이 아직 기록되지 않았습니다.</div>
+    </section>
+
+    <section class="panel">
+      <h2>AI Search Experiments</h2>
+      <div id="ai-experiments-wrap" class="empty">Query fan-out 또는 citation probe가 아직 기록되지 않았습니다.</div>
+    </section>
+
+    <section class="panel">
+      <h2>Optimization History</h2>
+      <div id="history-wrap" class="empty">최적화 이력이 아직 기록되지 않았습니다.</div>
+    </section>
+
+    <section class="panel">
       <h2>Findings</h2>
       <div id="findings-wrap" class="empty">아직 기록된 발견사항이 없습니다.</div>
     </section>
@@ -236,12 +256,53 @@
       });
     }
 
+
+    function renderMeasurement(methods) {
+      const wrap = document.getElementById("measurement-wrap");
+      if (!methods || !Object.keys(methods).length) { wrap.className = "empty"; wrap.textContent = "측정 방법이 아직 기록되지 않았습니다."; return; }
+      wrap.className = "";
+      wrap.innerHTML = `<table><thead><tr><th>Method</th><th>Status/Method</th><th>Evidence</th><th>Confidence</th><th>Notes</th></tr></thead><tbody>${
+        Object.entries(methods).map(([name, m]) => `<tr><td>${name}</td><td>${m.status || m.method || ""}</td><td>${m.evidence_grade || ""}</td><td>${m.confidence || m.confidence_impact || ""}</td><td>${m.reason || m.tool || m.notes || ""}</td></tr>`).join("")
+      }</tbody></table>`;
+    }
+
+
+    function renderPlatform(policy) {
+      const wrap = document.getElementById("platform-wrap");
+      if (!policy || !Object.keys(policy).length) { wrap.className = "empty"; wrap.textContent = "플랫폼 정책이 아직 기록되지 않았습니다."; return; }
+      wrap.className = "";
+      wrap.innerHTML = `<table><thead><tr><th>Platform/Bot</th><th>Status</th><th>Purpose</th><th>Evidence</th><th>Confidence</th></tr></thead><tbody>${
+        Object.entries(policy).map(([name, p]) => `<tr><td>${name}</td><td>${p.status || ""}</td><td>${p.purpose || ""}</td><td>${p.evidence_grade || ""}</td><td>${p.confidence || ""}</td></tr>`).join("")
+      }</tbody></table>`;
+    }
+
+    function renderAiExperiments(queryFanout, citationProbe) {
+      const wrap = document.getElementById("ai-experiments-wrap");
+      if (!queryFanout && !citationProbe) { wrap.className = "empty"; wrap.textContent = "Query fan-out 또는 citation probe가 아직 기록되지 않았습니다."; return; }
+      wrap.className = "";
+      const q = queryFanout || {};
+      const c = citationProbe || {};
+      wrap.innerHTML = `<table><thead><tr><th>Surface</th><th>Status</th><th>Sample/Count</th><th>Confidence</th><th>Notes</th></tr></thead><tbody>
+        <tr><td>Query Fan-out</td><td>${q.status || ""}</td><td>${(q.queries || []).length} queries</td><td>${q.confidence || ""}</td><td>${(q.missing_topics || []).join(", ")}</td></tr>
+        <tr><td>Citation Probe</td><td>${c.status || ""}</td><td>${c.sample_size || 0} samples</td><td>${c.confidence || ""}</td><td>${(c.engines || []).join(", ")}</td></tr>
+      </tbody></table>`;
+    }
+
+    function renderHistory(scoreHistory, bestRun) {
+      const wrap = document.getElementById("history-wrap");
+      if ((!scoreHistory || !scoreHistory.length) && !bestRun) { wrap.className = "empty"; wrap.textContent = "최적화 이력이 아직 기록되지 않았습니다."; return; }
+      wrap.className = "";
+      const best = bestRun ? `<p><strong>Best run:</strong> iteration ${bestRun.iteration ?? ""}, score ${bestRun.score ?? ""}, ${bestRun.reason || ""}</p>` : "";
+      const rows = (scoreHistory || []).map(h => `<tr><td>${h.iteration}</td><td>${h.score}</td><td>${h.grade || ""}</td><td>${h.decision || ""}</td><td>${h.evidence || ""}</td></tr>`).join("");
+      wrap.innerHTML = `${best}<table><thead><tr><th>Iteration</th><th>Score</th><th>Grade</th><th>Decision</th><th>Evidence</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+
     function renderFindings(findings) {
       const wrap = document.getElementById("findings-wrap");
       if (!findings || !findings.length) { wrap.className = "empty"; wrap.textContent = "아직 기록된 발견사항이 없습니다."; return; }
       wrap.className = "";
-      wrap.innerHTML = `<table><thead><tr><th>#</th><th>Severity</th><th>Category</th><th>Finding</th><th>Location</th><th>Recommendation</th></tr></thead><tbody>${
-        findings.map((f, i) => `<tr><td>${f.id || i+1}</td><td><span class="sev ${f.severity}">${f.severity}</span></td><td>${f.category}</td><td>${f.finding}</td><td>${f.location}</td><td>${f.recommendation}</td></tr>`).join("")
+      wrap.innerHTML = `<table><thead><tr><th>#</th><th>Severity</th><th>Category</th><th>Finding</th><th>Location</th><th>Evidence</th><th>Confidence</th><th>Method</th><th>Source Tier</th><th>Recommendation</th></tr></thead><tbody>${
+        findings.map((f, i) => `<tr><td>${f.id || i+1}</td><td><span class="sev ${f.severity}">${f.severity}</span></td><td>${f.category || ""}</td><td>${f.finding || ""}</td><td>${f.location || ""}</td><td>${f.evidence_grade || "unlabeled"}</td><td>${f.confidence || "unknown"}</td><td>${f.measurement_method || ""}</td><td>${f.source_tier || ""}</td><td>${f.recommendation || ""}</td></tr>`).join("")
       }</tbody></table>`;
     }
 
@@ -288,6 +349,10 @@
       renderCategories(data.categories);
       renderRadar(data.categories);
       renderSeverity(findings);
+      renderMeasurement(data.measurement_methods);
+      renderPlatform(data.platform_policy);
+      renderAiExperiments(data.query_fanout, data.citation_probe);
+      renderHistory(data.score_history, data.best_run);
       renderFindings(findings);
       renderQuickWins(data.quick_wins);
       renderActions(data.actions);

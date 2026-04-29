@@ -13,7 +13,18 @@ Define what to audit before scanning:
 
 Output: scope summary with target list and focus areas.
 
-## 2. Technical SEO Phase
+## 2. Measurement Phase
+
+Establish what can actually be measured before scoring:
+
+- Access level: live URL, local-only files, Search Console, analytics, field Core Web Vitals, AI citation probe access
+- Evidence grade for each method: `official`, `field`, `tool`, `lab`, `synthetic`, or `heuristic`
+- Confidence impact: lower confidence when relying on local static scans instead of live crawl, Search Console, or field data
+- Measurement methods to record in `results.json.measurement_methods`
+
+Do not compare a field-data audit with a lab-only or local-only audit without recording the confidence difference.
+
+## 3. Technical SEO Phase
 
 Scan for:
 
@@ -29,7 +40,20 @@ Scan for:
 
 Tools: `Glob`, `Grep`, `Read` for file scanning. `WebFetch` for live URL analysis if available.
 
-## 3. On-Page SEO Phase
+## 4. Platform Policy Phase
+
+Inspect crawler and AI/search visibility controls separately by platform:
+
+- Googlebot and standard robots directives for indexing and snippets
+- Google-Extended for Google AI training/product controls where relevant
+- OAI-SearchBot for ChatGPT Search inclusion; GPTBot for OpenAI training; ChatGPT-User for user-triggered fetches
+- PerplexityBot, ClaudeBot, and other AI crawlers when robots.txt or server rules mention them
+- `nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`, canonical, and X-Robots-Tag effects
+- `llms.txt` as an optional machine-readable map, not a guaranteed ranking or citation mechanism
+
+Record policy findings with high confidence only when backed by official docs or directly observed files/headers.
+
+## 5. On-Page SEO Phase
 
 Scan for:
 
@@ -44,13 +68,13 @@ Scan for:
 
 Tools: `Grep` for pattern matching (`<title>`, `<meta`, `<h1>`, `alt=`), `Read` for page content.
 
-## 4. Content SEO Phase
+## 6. Content SEO Phase
 
 Evaluate for:
 
 - E-E-A-T signals — experience, expertise, authoritativeness, trustworthiness
 - Keyword placement — title, first paragraph, headings, naturally distributed
-- Keyword density — 1–2% natural density, no stuffing
+- Keyword and entity usage — natural placement in title, intro, headings, body, and alt text without stuffing or fixed-density targets
 - Content depth — sufficient coverage of the topic, minimum 300+ words for indexable pages
 - Readability — short paragraphs, clear structure, scannable with headings
 - Freshness — dates present, content not stale
@@ -59,20 +83,20 @@ Evaluate for:
 
 Tools: `Read` for content analysis, `WebSearch` for competitor/SERP context if needed.
 
-## 5. AEO Phase (Answer Engine Optimization)
+## 7. AEO Phase (Answer Engine Optimization)
 
 Evaluate readiness for AI direct answers and Featured Snippets:
 
-- **Q&A 포맷** — 주요 질문에 40-60 단어의 직접 답변이 콘텐츠 상단에 있는가
+- **Q&A 포맷** — 주요 질문에 대한 concise visible answer block이 콘텐츠 상단 근처에 있는가 (고정 길이는 heuristic)
 - **Featured Snippet 최적화** — 정의형, 리스트형, 테이블형 Snippet에 적합한 구조인가
 - **음성 검색 대비** — 자연어 질문 형식의 제목/소제목이 있는가
 - **답변 추출 용이성** — 짧은 단락(2-3문장), 명확한 H2/H3 구조로 AI가 답변을 추출하기 쉬운가
-- **FAQPage 스키마** — FAQ 섹션에 JSON-LD FAQPage 마크업이 있는가
+- **FAQ/Q&A 구조** — visible FAQ/Q&A가 있고, Google FAQ rich result eligibility와 answer-friendly content를 구분했는가
 - **플랫폼별 콘텐츠 선호도** — ChatGPT(백과사전적), Perplexity(커뮤니티), Google AI Overviews(멀티모달) 각각에 대한 콘텐츠 적합성
 
 Tools: `Grep` for Q&A patterns, heading structures. `Read` for content analysis. See `references/aeo-geo-guide.md` for strategy details.
 
-## 6. GEO Phase (Generative Engine Optimization)
+## 8. GEO Phase (Generative Engine Optimization)
 
 Evaluate readiness for AI citation in generative responses:
 
@@ -83,23 +107,49 @@ Evaluate readiness for AI citation in generative responses:
   - **Exclusivity** — 독점 데이터, 원본 연구, 고유 관점이 있는가
 - **엔터티 권위** — 토픽 클러스터 구성, 여러 콘텐츠에 걸친 지식 일관성
 - **인용 가능한 문장** — 짧고 독립적으로 인용 가능한 문장 (통계 포함)
-- **콘텐츠 신선도** — 3개월 이내 업데이트 여부 (AI 인용 임계값)
-- **llms.txt** — AI 크롤러 정책 파일 존재 여부
-- **스키마 마크업 AI 신뢰 신호** — JSON-LD가 엔터티 검증 역할을 하는가
+- **콘텐츠 신선도** — 주제의 시간 민감도에 맞는 갱신 일자와 source date가 있는가
+- **llms.txt** — optional LLM-facing content map 존재 여부와 canonical/sitemap 정합성
+- **스키마 마크업 AI 신뢰 신호** — JSON-LD가 visible entity information과 일치하는가 (AI citation 보장은 아님)
 
 Tools: `Grep` for citation patterns, statistics. `Read` for content freshness. `Glob` for llms.txt. See `references/aeo-geo-guide.md` for GEO CORE framework and platform benchmarks.
 
-## 7. Report Phase
+Optional high-confidence extensions when access allows:
+
+- **Query fan-out simulator** — generate 10-30 subqueries from the target topic and map missing coverage before recommending content expansion.
+- **AI citation probe** — run or prepare a stable prompt set for ChatGPT, Perplexity, Gemini, or other engines; record engine, date, sample size, cited URLs, brand mentions, and unresolved volatility.
+
+## 9. Score Optimization Phase (Optimize Mode Only)
+
+Run this phase when the user asks for the highest score, max score, perfect score, or repeated improvement.
+
+1. **Baseline first** — before changing files or recommendations, write the current category average, `overall_grade`, critical-finding count, and target score to `results.json.score_history[0]`.
+2. **Stable evaluator** — keep the same scoring categories and pass/fail checks for all iterations. If the evaluator changes, record a reset event and do not compare the new score with old runs.
+3. **One change per iteration** — choose one high-impact change or one tightly related recommendation set. Avoid bundling unrelated technical, content, and AEO/GEO changes in the same iteration.
+4. **Re-audit after every change** — update category scores, findings, quick wins, and evidence. Append an iteration record with `iteration`, `changed`, `score`, `critical_count`, `decision`, and `evidence`.
+5. **Keep best run** — if the score improves or critical findings decrease without score regression, mark the iteration `kept` and update `best_run`. If not, rollback/revert code changes where possible or mark the iteration `discarded`.
+6. **Continue/stop gates** — continue while score improves. Stop only when target score passes, a validator/architect review approves, user stops, budget is exhausted, or the score plateaus for 3 consecutive iterations.
+7. **Completion artifact** — finish with `results.json.status: "complete"`, populated `score_history`, populated `best_run`, and validator evidence explaining why the final score is the best available run.
+
+Do not interpret “infinite loop” literally. The correct behavior is persistent measured continuation with rollback, plateau detection, and artifact-gated completion.
+
+## 10. Report Phase
 
 Compile findings into `report.md`:
 
 1. Executive summary with overall SEO health score (A/B/C/D/F)
-2. Findings grouped by category (Technical, On-Page, Content, AEO, GEO)
+2. Findings grouped by category (Technical SEO, On-Page SEO, Content SEO, Core Web Vitals, Structured Data, AEO Readiness, GEO Readiness)
 3. Each finding has: severity (critical/warning/info), description, location, fix recommendation
 4. Prioritized action items sorted by impact
 5. Quick wins section for low-effort/high-impact fixes
 
 Write evidence and raw data to `sources.md`.
+
+## Optimize Mode Rules
+
+- Use `optimize` when the user explicitly requests highest score / max score / perfect score / 계속 반복 / 무한반복.
+- Start from `create` or `update` audit output, then enter the Score Optimization Phase.
+- Preserve the best-scoring report and dashboard even when later experiments are discarded.
+- If implementation edits are allowed, verify each kept code-changing iteration with relevant project checks before treating it as `best_run`.
 
 ## Mode Rules
 

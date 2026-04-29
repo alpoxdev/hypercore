@@ -2,6 +2,13 @@
 
 **Purpose**: Actionable item-by-item checklist for scanning. Use during each audit phase.
 
+## Measurement & Confidence Checklist
+
+- [ ] Access level recorded: live URL, local files, Search Console, analytics, field Core Web Vitals, AI citation probe.
+- [ ] Each evidence channel labeled as `official`, `field`, `tool`, `lab`, `synthetic`, or `heuristic`.
+- [ ] Missing live/field/probe data lowers confidence instead of being hidden.
+- [ ] Findings include `evidence_grade`, `confidence`, `measurement_method`, and `source_tier`.
+
 ## Technical SEO Checklist
 
 ### Crawling & Indexing
@@ -22,9 +29,9 @@
 
 ### Performance & Core Web Vitals
 
-- [ ] LCP target: < 2.5s — check hero image optimization, preloading
-- [ ] INP target: < 200ms — check JavaScript execution, event handlers
-- [ ] CLS target: < 0.1 — check image dimensions, dynamic content insertion
+- [ ] LCP target: ≤ 2.5s at p75 when field data is available — check hero image optimization, preloading
+- [ ] INP target: ≤ 200ms at p75 when field data is available — check JavaScript execution, event handlers
+- [ ] CLS target: ≤ 0.1 at p75 when field data is available — check image dimensions, dynamic content insertion
 - [ ] Images optimized (WebP/AVIF, proper sizing, lazy loading for below-fold)
 - [ ] Critical CSS inlined or preloaded
 - [ ] JavaScript bundle size reasonable, code-split where possible
@@ -33,7 +40,7 @@
 
 - [ ] JSON-LD schema markup present on key pages
 - [ ] Schema validates without errors (Schema Markup Validator)
-- [ ] Appropriate schema types for content (Article, Product, FAQ, etc.)
+- [ ] Appropriate schema types for visible content (Article, Product, FAQPage/QAPage where eligible, etc.)
 
 ### Mobile
 
@@ -48,6 +55,14 @@
 - [ ] No unnecessary query parameters in indexable URLs
 - [ ] Proper 301 redirects for moved/renamed pages
 - [ ] No redirect chains (A→B→C, should be A→C)
+
+## Platform Policy Checklist
+
+- [ ] Googlebot indexing/snippet access checked separately from AI training controls.
+- [ ] Google-Extended policy checked only where relevant.
+- [ ] OAI-SearchBot and GPTBot are evaluated separately for ChatGPT Search vs OpenAI training.
+- [ ] `nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`, canonical, and X-Robots-Tag effects checked.
+- [ ] Recommendations cite official docs or observed files/headers when marked high confidence.
 
 ## On-Page SEO Checklist
 
@@ -99,7 +114,7 @@
 ### Keyword Usage
 
 - [ ] Primary keyword in title, H1, first 100 words
-- [ ] Keyword density 1–2% (natural, not stuffed)
+- [ ] Keywords and related entities appear naturally; no fixed-density target or stuffing
 - [ ] Semantic variations and related terms used throughout
 - [ ] No keyword cannibalization (multiple pages targeting same keyword)
 
@@ -122,15 +137,15 @@
 
 ### Direct Answer Structure
 
-- [ ] 주요 질문에 40-60 단어 직접 답변이 섹션 상단에 배치
+- [ ] 주요 질문에 concise visible answer block이 섹션 상단 근처에 배치됨 (길이 규칙은 heuristic)
 - [ ] 질문 형식 H2/H3 제목 사용 (예: "## X란 무엇인가?")
 - [ ] 정의형 문장: "[용어]는 [정의]이다" 패턴 포함
 - [ ] 리스트형/테이블형 콘텐츠로 Featured Snippet 대응
 
 ### FAQ & Schema
 
-- [ ] FAQ 섹션에 JSON-LD FAQPage 스키마 적용
-- [ ] FAQ 답변 길이 40-60 단어
+- [ ] FAQPage와 QAPage 사용 조건을 구분하고 Google rich result eligibility를 과장하지 않음
+- [ ] FAQ/Q&A 답변은 visible content와 structured data가 일치함
 - [ ] HowTo 콘텐츠에 HowTo 스키마 적용
 
 ### Voice Search
@@ -176,12 +191,12 @@
 
 ### Content Freshness
 
-- [ ] 주요 콘텐츠가 3개월 이내 업데이트됨
+- [ ] 콘텐츠 신선도가 주제의 시간 민감도에 맞고 `dateModified`/출처 날짜가 정확함
 - [ ] `dateModified` 스키마 마크업 포함
 - [ ] 시간에 민감한 데이터에 정확한 날짜 명시
 
 ### AI Crawler Access
 
-- [ ] `llms.txt` 존재 여부 확인
-- [ ] `robots.txt`에서 AI 크롤러 (GPTBot, ClaudeBot, Bytespider 등) 차단 여부 확인
+- [ ] `llms.txt`는 optional content map으로 확인하고, 누락을 기본 critical로 처리하지 않음
+- [ ] `robots.txt`에서 OAI-SearchBot(검색), GPTBot(학습), ChatGPT-User(사용자 fetch), ClaudeBot/PerplexityBot 등 목적별 차단 여부 확인
 - [ ] 주요 콘텐츠가 JavaScript 렌더링 없이 접근 가능

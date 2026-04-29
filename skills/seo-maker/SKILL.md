@@ -206,7 +206,7 @@ If evidence is incomplete, mark affected categories as `unknown` instead of inve
 
 Each finding should include:
 
-- Severity: critical, high, medium, low, or informational.
+- Severity: `critical`, `warning`, or `info` (use impact/effort fields for prioritization beyond severity).
 - Confidence: high, medium, or low.
 - `evidence_grade`: `official`, `field`, `tool`, `lab`, `synthetic`, or `heuristic`.
 - `measurement_method`: scan, tool, probe, source, or command used.
@@ -246,7 +246,7 @@ At completion, `.hypercore/seo-maker/[slug]/` should contain:
 
 Validate:
 
-- Every high or critical finding has evidence.
+- Every critical or warning finding has evidence.
 - Recommendations are specific enough for an engineer, marketer, or content owner to act on.
 - Scores are derived from observed evidence, not assumptions.
 - Google AI features are not described as requiring special schema, AI text files, or magic markup.
