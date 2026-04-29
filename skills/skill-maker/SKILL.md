@@ -44,11 +44,13 @@ Positive requests:
 - "Create a Codex skill for reviewing SQL migrations."
 - "Refactor this browser QA skill so the trigger and validation stop misfiring."
 - "Standardize this skill folder so `SKILL.md`, rules, and references are split correctly."
+- "브라우저 QA용 Codex 스킬을 새로 만들어줘." (Korean)
 
 Negative requests:
 
 - "Rewrite this runbook for readability."
 - "Summarize these OpenAI docs."
+- "이 일반 온보딩 문서를 읽기 쉽게만 정리해줘." (Korean)
 
 Boundary request:
 

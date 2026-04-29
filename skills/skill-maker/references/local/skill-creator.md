@@ -1,11 +1,11 @@
 # Local Skill-Creator Summary
 
 Source provenance:
-- `/Users/alpox/.codex/skills/.system/skill-creator/SKILL.md`
+- Local summary captured from the installed system `skill-creator` skill.
 
 Use this reference when creating or refactoring `skill-maker`.
 
-This summary is intended to stand on its own. The external path above is provenance, not a required runtime dependency.
+This summary is intended to stand on its own. The provenance note above is historical context, not a required runtime dependency or a path to read during project-scoped work.
 
 Key takeaways:
 
