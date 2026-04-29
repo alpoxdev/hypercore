@@ -1,6 +1,6 @@
 ---
 name: hono-architecture
-description: Use when working on Hono projects or adding Hono into a codebase. Enforces Hono architecture rules for app composition, route modules, middleware, validation, error handling, testing, and typed RPC boundaries before any code change.
+description: "[Hyper] Use when working on Hono projects or adding Hono into a codebase. Enforces Hono architecture rules for app composition, route modules, middleware, validation, error handling, testing, and typed RPC boundaries before any code change."
 compatibility: Works best with repo inspection, official Hono docs verification, and direct code edits in Hono applications.
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: prd-maker
-description: Create or update a living product requirements document under `.hypercore/prd/[slug]/`, including evidence-backed PRD content, scoped requirements, open questions, and source tracking. Routes simple PRDs directly; tracks complex multi-phase PRDs via flow.json in the PRD folder.
+description: "[Hyper] Create or update a living product requirements document under `.hypercore/prd/[slug]/`, including evidence-backed PRD content, scoped requirements, open questions, and source tracking. Routes simple PRDs directly; tracks complex multi-phase PRDs via flow.json in the PRD folder."
 compatibility: Works best with local file search/edit tools and live web search when the PRD needs fresh market, user, product, or technical evidence.
 ---
 

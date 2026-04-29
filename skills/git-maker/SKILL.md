@@ -1,6 +1,6 @@
 ---
 name: git-maker
-description: 'Commit and push in one action. Runs the full git-commit workflow (inspect, group, stage, commit) then automatically pushes all committed changes to the remote — no confirmation step between commit and push. Use when the user wants to commit and push together.'
+description: "[Hyper] Commit and push in one action. Runs the full git-commit workflow (inspect, group, stage, commit) then automatically pushes all committed changes to the remote — no confirmation step between commit and push. Use when the user wants to commit and push together."
 license: MIT
 allowed-tools: Bash
 compatibility: Requires Bash and scripts under skills/git-maker/scripts (symlinks to git-commit and git-push scripts).
@@ -34,7 +34,7 @@ compatibility: Requires Bash and scripts under skills/git-maker/scripts (symlink
 | User intent | Activate |
 |------|------|
 | "commit and push" | yes |
-| "커밋하고 푸시해" | yes |
+| "commit and push these changes" | yes |
 | "/git-maker" | yes |
 | "make a commit and push it" | yes |
 | "commit then push" | yes |
@@ -334,8 +334,8 @@ Result:
 
 Result:
 - session touched auth module + unrelated docs
-- group 1: `feat(auth): passkey 로그인 플로우 추가` → commit
-- group 2: `docs(cli): 릴리스 사전 조건 문서화` → commit
+- group 1: `feat(auth): add passkey login flow` → commit
+- group 2: `docs(cli): document release prerequisites` → commit
 - auto-push both commits
 
 ## Multi-repo commit and push
@@ -348,8 +348,8 @@ Result (current directory is not a repo, but has descendant repos):
 - discovers `packages/web` and `packages/api` as separate repositories
 - commits in each repo independently:
   ```bash
-  scripts/git-commit.sh --repo packages/web "fix(web): 빈 세션 처리" src/auth.ts
-  scripts/git-commit.sh --repo packages/api "fix(api): 세션 페이로드 검증" src/routes/session.ts
+  scripts/git-commit.sh --repo packages/web "fix(web): handle empty sessions" src/auth.ts
+  scripts/git-commit.sh --repo packages/api "fix(api): validate session payload" src/routes/session.ts
   ```
 - pushes each repo:
   ```bash

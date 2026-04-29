@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: 'Create one or more Conventional Commits from the current repository state. Inspect staged and unstaged changes, group them into logical change sets, generate a compliant message per group, and commit each group separately in sequence.'
+description: "[Hyper] Create one or more Conventional Commits from the current repository state. Inspect staged and unstaged changes, group them into logical change sets, generate a compliant message per group, and commit each group separately in sequence."
 license: MIT
 allowed-tools: Bash
 compatibility: Requires Bash and scripts under skills/git-commit/scripts.
@@ -313,25 +313,25 @@ After a successful commit, ask for explicit push confirmation.
 
 ## Good subjects
 
-- `feat(auth): passkey 로그인 플로우 추가`
-- `fix(cache): 프로젝트 읽기 시 stale 데이터 방지`
-- `docs(cli): 릴리스 사전 조건 문서화`
-- `refactor(worker): 메일박스 파싱 로직 분리`
+- `feat(auth): add passkey login flow`
+- `fix(cache): prevent stale data when reading projects`
+- `docs(cli): document release prerequisites`
+- `refactor(worker): split mailbox parsing logic`
 
 ## Bad subjects
 
-- `업데이트 함`
+- `updated stuff`
 - `Fix bug in the API module`
-- `feat: 새 기능 추가함`
-- `chore(repo): 여러 가지 변경`
+- `feat: add new feature`
+- `chore(repo): change many things`
 
 ## Good multiline commit
 
 ```bash
 git commit -m "$(cat <<'EOF'
-feat(api): 팀 멤버십 필터 추가
+feat(api): filter team memberships
 
-활성 사용자에게 보이는 멤버십만 목록 응답에 포함한다.
+Include only memberships visible to active users in the list response.
 
 Refs: #482
 EOF
@@ -358,8 +358,8 @@ Result:
 Result:
 - inspect work done in the current session
 - session touched auth module files AND unrelated docs files
-- group 1: auth module changes → `feat(auth): passkey 로그인 플로우 추가`
-- group 2: docs changes → `docs(cli): 릴리스 사전 조건 문서화`
+- group 1: auth module changes → `feat(auth): add passkey login flow`
+- group 2: docs changes → `docs(cli): document release prerequisites`
 - commit group 1, then commit group 2
 
 ## Good no-argument fallback handling
@@ -386,10 +386,10 @@ Result:
 
 Example output sequence:
 ```bash
-scripts/git-commit.sh "feat(auth): passkey 로그인 플로우 추가" src/auth/passkey.ts src/auth/passkey.test.ts
-scripts/git-commit.sh "fix(cache): 프로젝트 읽기 시 stale 데이터 방지" src/cache/reader.ts
-scripts/git-commit.sh "docs(cli): 릴리스 사전 조건 문서화" docs/release.md
-scripts/git-commit.sh "chore: 의존성 업데이트" package.json pnpm-lock.yaml
+scripts/git-commit.sh "feat(auth): add passkey login flow" src/auth/passkey.ts src/auth/passkey.test.ts
+scripts/git-commit.sh "fix(cache): prevent stale data when reading projects" src/cache/reader.ts
+scripts/git-commit.sh "docs(cli): document release prerequisites" docs/release.md
+scripts/git-commit.sh "chore: update dependencies" package.json pnpm-lock.yaml
 ```
 
 ## Good explicit-argument handling

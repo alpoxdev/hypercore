@@ -1,6 +1,6 @@
 ---
 name: git-push
-description: 'Push unpushed commits to the remote. Discovers the current or descendant git repositories, checks for commits ahead of upstream, and pushes them. Use when the user wants to push, sync to remote, or send commits upstream.'
+description: "[Hyper] Push unpushed commits to the remote. Discovers the current or descendant git repositories, checks for commits ahead of upstream, and pushes them. Use when the user wants to push, sync to remote, or send commits upstream."
 license: MIT
 allowed-tools: Bash
 compatibility: Requires Bash and scripts under skills/git-push/scripts.

@@ -1,6 +1,6 @@
 ---
 name: genius-thinking
-description: Generate and prioritize differentiated ideas for stuck product, strategy, or innovation problems when ordinary brainstorming is too shallow. Saves structured multi-file analysis under .hypercore/genius-thinking/[topic-slug]/ with phase tracking.
+description: "[Hyper] Generate and prioritize differentiated ideas for stuck product, strategy, or innovation problems when ordinary brainstorming is too shallow. Saves structured multi-file analysis under .hypercore/genius-thinking/[topic-slug]/ with phase tracking."
 ---
 
 @rules/execution-rules.md

@@ -1,6 +1,6 @@
 ---
 name: version-update
-description: Update semantic versions across node/rust/python projects, keep discovered version files synchronized, and prefer the installed `git-commit` skill for the final git step with a direct fallback when it is unavailable.
+description: "[Hyper] Update semantic versions across node/rust/python projects, keep discovered version files synchronized, and prefer the installed `git-commit` skill for the final git step with a direct fallback when it is unavailable."
 allowed-tools: Bash Read Edit
 compatibility: Requires a git repository and scripts under skills/version-update/scripts. Detects `git-commit` only from repository-local skill paths such as `skills/git-commit`, `.agents/skills/git-commit`, `.claude/skills/git-commit`, or `.codex/skills/git-commit` before choosing the final git path.
 ---

@@ -1,6 +1,6 @@
 ---
 name: tanstack-start-security
-description: Use when working on TanStack Start projects and the task involves auth, sessions, cookies, CSRF, secrets, env exposure, server functions/routes, headers/CSP, webhooks, or security review/fixes. Triggers on protecting routes, hardening auth flows, preventing secret leaks, securing server boundaries, or reviewing HTTP/security behavior in a TanStack Start app.
+description: "[Hyper] Use when working on TanStack Start projects and the task involves auth, sessions, cookies, CSRF, secrets, env exposure, server functions/routes, headers/CSP, webhooks, or security review/fixes. Triggers on protecting routes, hardening auth flows, preventing secret leaks, securing server boundaries, or reviewing HTTP/security behavior in a TanStack Start app."
 ---
 
 @rules/auth-and-session.md
@@ -35,19 +35,19 @@ If the request is a generic non-TanStack security review, route away to the norm
 
 ### Positive
 
-- `TanStack Start 로그인/세션 처리 보안 점검해줘.`
-- `TanStack Start server function에서 secret이 새지 않게 막아줘.`
-- `TanStack Start 앱의 auth, cookie, CSRF, webhook 보안까지 같이 봐줘.`
+- `Review TanStack Start login and session handling security.`
+- `Prevent secrets from leaking through a TanStack Start server function.`
+- `Review auth, cookies, CSRF, and webhook security in this TanStack Start app.`
 
 ### Negative
 
-- `일반 React 페이지 스타일만 조금 수정해줘.`
-- `TanStack Start가 아닌 Express API 서버를 보안 리뷰해줘.`
+- `Make a small style-only change to a plain React page.`
+- `Security review an Express API server that is not a TanStack Start app.`
 
 ### Boundary
 
-- `TanStack Start 페이지 문구만 바꿔줘.`
-보안 경계, auth, env, server route, headers 변경이 전혀 없으면 이 스킬은 과할 수 있습니다.
+- `Change only the copy on a TanStack Start page.`
+If there is no change to security boundaries, auth, env handling, server routes, or headers, this skill may be too heavy.
 
 ## Step 1: Project Validation
 

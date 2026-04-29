@@ -1,6 +1,6 @@
 ---
 name: deploy-fix
-description: Diagnose and fix build failures, CI pipeline errors, and deployment errors across the entire repository or a specific folder. Routes simple build breaks directly; tracks complex multi-system failures via .hypercore/deploy-fix/ JSON flow.
+description: "[Hyper] Diagnose and fix build failures, CI pipeline errors, and deployment errors across the entire repository or a specific folder. Routes simple build breaks directly; tracks complex multi-system failures via .hypercore/deploy-fix/ JSON flow."
 compatibility: Use in environments with code exploration (Read/Grep/Glob), editing (Edit), and shell execution (Bash).
 ---
 

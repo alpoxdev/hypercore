@@ -1,6 +1,6 @@
 ---
 name: execute
-description: Immediately start working on a given task with adaptive thinking depth — light thinking for easy tasks, deep thinking for hard ones. Use when the user wants immediate execution, not diagnosis, planning, or review.
+description: "[Hyper] Immediately start working on a given task with adaptive thinking depth — light thinking for easy tasks, deep thinking for hard ones. Use when the user wants immediate execution, not diagnosis, planning, or review."
 compatibility: Use in environments with code exploration (Read/Grep/Glob), editing (Edit/Write), and validation commands (Bash).
 ---
 
@@ -12,9 +12,9 @@ compatibility: Use in environments with code exploration (Read/Grep/Glob), editi
 
 ## Positive triggers
 
-- A direct task instruction with a clear deliverable: "add pagination to the user list", "implement dark mode toggle", "유저 리스트에 페이지네이션 추가해줘", "다크모드 토글 구현해".
-- An explicit execution request: "do this", "build this", "make this work", "이거 해줘", "이거 만들어줘", "이거 되게 해줘".
-- A scoped feature or change request that does not require extended planning: "리팩터링해줘", "테스트 추가해줘", "이 컴포넌트 정리해줘".
+- A direct task instruction with a clear deliverable: "add pagination to the user list", "implement dark mode toggle".
+- An explicit execution request: "do this", "build this", "make this work".
+- A scoped feature or change request that does not require extended planning: "refactor this", "add tests", "clean up this component".
 
 ## Out-of-scope
 

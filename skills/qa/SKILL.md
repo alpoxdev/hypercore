@@ -1,6 +1,6 @@
 ---
 name: qa
-description: Analyze non-developer stakeholder requests (clients, executives, PMs) by searching the codebase, presenting technical interpretation candidates with risks, then implementing after user feedback. Routes simple requests directly; tracks complex multi-phase requests via .hypercore/qa/ JSON flow. Use when relaying a vague or non-technical change request that needs interpretation before execution.
+description: "[Hyper] Analyze non-developer stakeholder requests (clients, executives, PMs) by searching the codebase, presenting technical interpretation candidates with risks, then implementing after user feedback. Routes simple requests directly; tracks complex multi-phase requests via .hypercore/qa/ JSON flow. Use when relaying a vague or non-technical change request that needs interpretation before execution."
 compatibility: Use in environments with code exploration (Read/Grep/Glob), editing (Edit/Write), and validation commands (Bash).
 ---
 
@@ -12,9 +12,9 @@ compatibility: Use in environments with code exploration (Read/Grep/Glob), editi
 
 ## Positive triggers
 
-- A relayed stakeholder request in non-technical language: "고객사에서 이렇게 해달래", "경영진이 이거 바꿔달라고 했어", "The client wants this changed".
-- A pasted message from a non-developer (email, Slack, Jira ticket): "PM이 이거 보냈는데 분석해줘", "Here's what the client sent".
-- A vague change request that needs technical interpretation before implementation: "이 요청 분석 좀 해줘", "What would this request actually mean for our codebase?".
+- A relayed stakeholder request in non-technical language: "The client asked for this", "Leadership wants this changed", "The client wants this changed".
+- A pasted message from a non-developer (email, Slack, Jira ticket): "The PM sent this; please analyze it", "Here's what the client sent".
+- A vague change request that needs technical interpretation before implementation: "Analyze this request", "What would this request actually mean for our codebase?".
 - An ambiguous feature or UI change request from a business stakeholder.
 
 ## Out-of-scope

@@ -1,6 +1,6 @@
 ---
 name: bug-fix
-description: Analyze bugs, present repair options, then implement and verify the user-selected fix path. Routes simple bugs directly; tracks complex multi-phase investigations via .hypercore/bug-fix/ JSON flow.
+description: "[Hyper] Analyze bugs, present repair options, then implement and verify the user-selected fix path. Routes simple bugs directly; tracks complex multi-phase investigations via .hypercore/bug-fix/ JSON flow."
 compatibility: Use in environments with code exploration (Read/Grep/Glob), editing (Edit), and validation commands (Bash).
 ---
 

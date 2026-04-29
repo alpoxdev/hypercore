@@ -1,6 +1,6 @@
 ---
 name: tanstack-start-architecture
-description: Use when working on TanStack Start projects - enforces architecture rules (layers, routes, hooks, server functions, conventions) with mandatory validation before any code change. Triggers on file creation, route work, server function writing, hook patterns, or any structural change in a TanStack Start codebase.
+description: "[Hyper] Use when working on TanStack Start projects - enforces architecture rules (layers, routes, hooks, server functions, conventions) with mandatory validation before any code change. Triggers on file creation, route work, server function writing, hook patterns, or any structural change in a TanStack Start codebase."
 ---
 
 # TanStack Start Architecture Enforcement

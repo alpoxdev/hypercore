@@ -1,7 +1,7 @@
 ---
 name: research
-description: Research a topic and deliver a source-backed markdown report when the user needs fact-finding, comparisons, market or trend analysis, or evidence-backed recommendations across live web, official docs, GitHub, and local repository sources.
-compatibility: Works best with live search or fetch tools, official-doc access such as Context7 (Claude Code) or WebSearch/WebFetch (Codex, Cursor, 기타 환경) when available, GitHub or repo search for code evidence, and local file search for project-only topics.
+description: "[Hyper] Research a topic and deliver a source-backed markdown report when the user needs fact-finding, comparisons, market or trend analysis, or evidence-backed recommendations across live web, official docs, GitHub, and local repository sources."
+compatibility: Works best with live search or fetch tools, official-doc access such as Context7 (Claude Code) or WebSearch/WebFetch (Codex, Cursor, other environments) when available, GitHub or repo search for code evidence, and local file search for project-only topics.
 ---
 
 @rules/research-workflow.md

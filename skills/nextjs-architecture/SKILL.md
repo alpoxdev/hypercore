@@ -1,6 +1,6 @@
 ---
 name: nextjs-architecture
-description: Use when working on Next.js projects or introducing App Router into a codebase. Enforces official Next.js architecture rules for app structure, Server and Client Component boundaries, server-first data fetching, and a default decision order of Server Components for reads, Server Actions for internal writes, Route Handlers for HTTP-native endpoints, and Proxy only as a last resort.
+description: "[Hyper] Use when working on Next.js projects or introducing App Router into a codebase. Enforces official Next.js architecture rules for app structure, Server and Client Component boundaries, server-first data fetching, and a default decision order of Server Components for reads, Server Actions for internal writes, Route Handlers for HTTP-native endpoints, and Proxy only as a last resort."
 compatibility: Works best with repo inspection, official Next.js docs verification, and direct code edits in Next.js applications.
 ---
 

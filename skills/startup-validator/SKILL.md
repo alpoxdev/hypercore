@@ -1,6 +1,6 @@
 ---
 name: startup-validator
-description: Evaluate a startup idea with explicit evidence, uncertainty, and scoring discipline. Saves structured multi-file analysis under .hypercore/startup-validator/[topic-slug]/ with phase tracking. Use when the job is validation, not brainstorming or implementation planning.
+description: "[Hyper] Evaluate a startup idea with explicit evidence, uncertainty, and scoring discipline. Saves structured multi-file analysis under .hypercore/startup-validator/[topic-slug]/ with phase tracking. Use when the job is validation, not brainstorming or implementation planning."
 ---
 
 @rules/evidence-and-scoring.md

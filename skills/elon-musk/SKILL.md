@@ -1,6 +1,6 @@
 ---
 name: elon-musk
-description: Break a problem into hard constraints, conventions, and unknowns, then redesign options from fundamentals. Saves structured multi-file analysis under .hypercore/elon-musk/[topic-slug]/ with phase tracking. Use when current answers feel copied from industry defaults.
+description: "[Hyper] Break a problem into hard constraints, conventions, and unknowns, then redesign options from fundamentals. Saves structured multi-file analysis under .hypercore/elon-musk/[topic-slug]/ with phase tracking. Use when current answers feel copied from industry defaults."
 ---
 
 @rules/execution.md

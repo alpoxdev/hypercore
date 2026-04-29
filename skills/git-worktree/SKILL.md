@@ -1,6 +1,6 @@
 ---
 name: git-worktree
-description: Create, enter, list, remove, clean up, or repair Git worktrees for isolated branches and parallel agent sessions, including deleting the current linked worktree when the user is already inside it. Use when the user asks for git worktree setup/removal, branch-per-folder workflows, parallel Codex/Claude/Cursor workspaces, or the repository-local `.hypercore/git-worktree/<folder_name>` convention; when creating and the task is unclear, ask what work will happen there, derive the folder name, then move subsequent work into the new worktree.
+description: "[Hyper] Create, enter, list, remove, clean up, or repair Git worktrees for isolated branches and parallel agent sessions, including deleting the current linked worktree when the user is already inside it. Use when the user asks for git worktree setup/removal, branch-per-folder workflows, parallel Codex/Claude/Cursor workspaces, or the repository-local `.hypercore/git-worktree/<folder_name>` convention; when creating and the task is unclear, ask what work will happen there, derive the folder name, then move subsequent work into the new worktree."
 compatibility: Requires Git with `git worktree`; optional editor, tmux, and agent CLIs may be used only when already available in the repository environment.
 ---
 
@@ -26,7 +26,7 @@ Use `git-worktree` when the user wants to:
 - create a worktree, workspace, branch folder, or isolated checkout
 - run multiple coding agents or tasks in parallel without file conflicts
 - list, open, switch to, remove, prune, repair, lock, or unlock worktrees
-- delete the current linked worktree when the user is already inside it and says things like "remove/delete this worktree" or "워크트리 삭제"
+- delete the current linked worktree when the user is already inside it and says things like "remove/delete this worktree" or "delete worktree"
 - standardize worktree folders under `.hypercore/git-worktree/<folder_name>`
 - review or test a branch/PR/issue in a separate local directory
 
@@ -43,13 +43,13 @@ Do not use `git-worktree` when:
 Positive requests:
 
 - "Create a worktree for `feature/auth` and open Codex there."
-- "이 브랜치를 `.hypercore/git-worktree` 아래 워크트리로 만들어줘."
+- "Create this branch as a worktree under `.hypercore/git-worktree`."
 - "Spin up three isolated worktrees for parallel agents."
-- "새 worktree 하나 만들고 거기로 이동해줘."
+- "Create a new worktree and move me into it."
 - "List my active git worktrees and remove the stale ones safely."
 - "I'm already in this worktree; delete this worktree safely."
-- "이미 이 워크트리 안에 있는데, 워크트리 삭제해줘."
-- "PR #42를 별도 worktree에서 리뷰하게 세팅해줘."
+- "I am already inside this worktree; delete the worktree safely."
+- "Set up PR #42 for review in a separate worktree."
 
 Negative requests:
 
@@ -115,7 +115,7 @@ Boundary request:
 4. Identify the requested operation: create, open, list, remove, prune, repair, lock, or unlock.
 5. For removal with no explicit path, if the current directory is inside a linked worktree, select the current worktree root as the target; if it is the main worktree, stop and ask for a specific target instead of deleting the repository root.
 6. Derive branch name, folder name, and base reference from user wording or current branch.
-7. If creating and the task/folder intent is missing or too vague, ask one concise question before creation: "이 worktree에서 어떤 작업을 할 예정인가요?" / "What work will happen in this worktree?"
+7. If creating and the task/folder intent is missing or too vague, ask one concise question before creation: "What work will happen in this worktree?"
 
 ## Phase 2. Apply the project path convention
 
@@ -175,7 +175,7 @@ For removal/cleanup, report what was removed and what remains in `git worktree l
 If the user only says "create a worktree" and no task is clear, ask first:
 
 ```text
-이 worktree에서 어떤 작업을 할 예정인가요?
+What work will happen in this worktree?
 ```
 
 Then derive the folder name from the answer:
@@ -212,7 +212,7 @@ git worktree prune
 
 ## Delete the current linked worktree from inside it
 
-When the user is already inside a linked worktree and says "delete this worktree" / "워크트리 삭제", resolve the target before moving out:
+When the user is already inside a linked worktree and says "delete this worktree" / "delete worktree", resolve the target before moving out:
 
 ```bash
 target_path="$(git rev-parse --show-toplevel)"

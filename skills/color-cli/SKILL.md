@@ -1,6 +1,6 @@
 ---
 name: color-cli
-description: Convert colors between hex, rgb, and oklch using @kood/color-cli. Use when the user asks to convert colors, transform CSS file colors, or needs accurate oklch values. Trigger phrases — "color convert", "hex to oklch", "oklch to hex", "rgb to oklch", "CSS 색상 변환", "색상 변환", "oklch 값 알려줘".
+description: "[Hyper] Convert colors between hex, rgb, and oklch using @kood/color-cli. Use when the user asks to convert colors, transform CSS file colors, or needs accurate oklch values. Trigger phrases — \"color convert\", \"hex to oklch\", \"oklch to hex\", \"rgb to oklch\", \"CSS color conversion\", \"color conversion\", \"tell me the oklch value\"."
 compatibility: Requires Bash tool. @kood/color-cli must be installed globally (`npm i -g @kood/color-cli`).
 ---
 
@@ -14,11 +14,11 @@ AI models often produce incorrect oklch conversions due to matrix precision erro
 
 ## Positive triggers
 
-- "Convert #ff0000 to oklch" / "#ff0000을 oklch로 변환해줘"
-- "What's the oklch value of rgb(0, 128, 255)?" / "rgb(0, 128, 255)의 oklch 값 알려줘"
-- "Convert all colors in styles.css to oklch" / "styles.css 색상 전부 oklch로 바꿔줘"
-- "hex to rgb", "oklch to hex", "색상 변환해줘"
-- "이 CSS 파일 색상을 hex로 통일해줘"
+- "Convert #ff0000 to oklch"
+- "What's the oklch value of rgb(0, 128, 255)?"
+- "Convert all colors in styles.css to oklch"
+- "hex to rgb", "oklch to hex", "convert this color"
+- "Normalize the colors in this CSS file to hex"
 
 ## Out-of-scope
 

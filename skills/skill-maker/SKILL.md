@@ -1,6 +1,6 @@
 ---
 name: skill-maker
-description: Create new Codex skills or refactor existing skill folders when the user asks for a reusable skill, better trigger wording, cleaner resource placement, or stronger validation across `SKILL.md`, `rules/`, `references/`, `scripts/`, and `assets/`.
+description: "[Hyper] Create new Codex skills or refactor existing skill folders when the user asks for a reusable skill, better trigger wording, cleaner resource placement, or stronger validation across `SKILL.md`, `rules/`, `references/`, `scripts/`, and `assets/`."
 compatibility: Works best with read/edit/write and shell search tools for skill analysis, example gathering, and validation checks.
 ---
 

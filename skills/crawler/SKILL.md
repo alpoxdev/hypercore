@@ -1,6 +1,6 @@
 ---
 name: crawler
-description: Investigate websites with Playwriter plus CDP to choose a crawl strategy, capture API/auth evidence, document findings under `.hypercore/crawler/[site]/`, and generate crawler code only after discovery is grounded.
+description: "[Hyper] Investigate websites with Playwriter plus CDP to choose a crawl strategy, capture API/auth evidence, document findings under `.hypercore/crawler/[site]/`, and generate crawler code only after discovery is grounded."
 ---
 
 

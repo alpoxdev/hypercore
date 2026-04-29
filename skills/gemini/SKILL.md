@@ -1,11 +1,7 @@
 ---
 name: gemini
-description: >-
-  Use when the user wants to invoke Google Gemini CLI for reasoning tasks, research, and AI assistance.
-  Trigger phrases: "use gemini", "ask gemini", "run gemini", "call gemini", "gemini cli", "Google AI",
-  "Gemini reasoning", or when users request Google's AI models, research with web search, or want to
-  continue a previous Gemini session.
-platforms: Gemini
+description: "[Hyper] Use when the user wants to invoke Google Gemini CLI for reasoning tasks, research, and AI assistance. Trigger phrases: \"use gemini\", \"ask gemini\", \"run gemini\", \"call gemini\", \"gemini cli\", \"Google AI\", \"Gemini reasoning\", or when users request Google's AI models, research with web search, or want to continue a previous Gemini session."
+compatibility: Requires Google Gemini CLI (`gemini`) and works only in environments where that CLI is installed.
 ---
 
 @rules/routing.md

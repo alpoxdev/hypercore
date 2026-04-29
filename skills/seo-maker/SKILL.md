@@ -1,7 +1,7 @@
 ---
 name: seo-maker
-description: SEO/AEO/GEO 통합 분석 및 최적화 리포트를 생성한다. 전통 SEO(온페이지, 기술, 콘텐츠, Core Web Vitals)에 더해 AEO(Answer Engine Optimization), GEO(Generative Engine Optimization), LLMO(LLM Optimization)까지 점검하고 개선안을 `.hypercore/seo-maker/[slug]/`에 저장한다. "SEO 분석", "AEO 최적화", "GEO 점검", "AI 검색 최적화", "검색엔진 최적화", "메타태그 점검", "SEO 감사", "AI 인용 최적화" 요청 시 사용.
-compatibility: Works best with local file search/edit tools and live web search for competitor/SERP/AI citation analysis.
+description: "[Hyper] Create integrated SEO, AEO, GEO, and LLMO audits and optimization reports. Use for on-page, technical, content, Core Web Vitals, answer-engine, generative-engine, AI search visibility, metadata, citation readiness, or score-improvement loops saved under `.hypercore/seo-maker/[slug]/`."
+compatibility: Works best with live web access, browser inspection, local source search, Lighthouse or Core Web Vitals data when available, and read/write access for report artifacts.
 ---
 
 @rules/seo-workflow.md
@@ -9,252 +9,249 @@ compatibility: Works best with local file search/edit tools and live web search 
 
 # SEO Maker
 
-> 프로젝트의 SEO/AEO/GEO 상태를 분석하고, 전통 검색엔진과 AI 검색엔진 모두에 대한 최적화 리포트를 산출한다.
+> Audit and improve a project's search visibility across traditional search engines and AI answer engines.
 
 <purpose>
 
-- 웹사이트나 프로젝트의 SEO 현황을 체계적으로 감사(audit)한다.
-- 온페이지 SEO, 기술 SEO, 콘텐츠 SEO, Core Web Vitals를 종합 점검한다.
-- AEO(Answer Engine Optimization) — Featured Snippet, 음성 검색, AI 직접 답변 선택 최적화를 점검한다.
-- GEO(Generative Engine Optimization) — AI 생성 응답에서의 인용 가능성을 점검한다.
-- 우선순위가 매겨진 개선안 리포트를 `.hypercore/seo-maker/[slug]/`에 저장한다.
-- 기존 리포트를 업데이트하여 SEO 개선 이력을 추적한다.
+- Audit website or project SEO in a systematic way.
+- Cover on-page SEO, technical SEO, content SEO, and Core Web Vitals.
+- Evaluate AEO readiness for featured snippets, voice search, and direct-answer surfaces.
+- Evaluate GEO readiness for citation likelihood in generative AI responses.
+- Evaluate LLMO readiness for AI crawler access, freshness, and model-readable context.
+- Save prioritized recommendations and evidence under `.hypercore/seo-maker/[slug]/`.
+- Update existing reports so SEO improvement history remains traceable.
+- If the user asks for highest score, max score, maximum score, perfect score, or continuous improvement, run an audit to fix/recommendation to re-audit loop and keep the best result.
 
 </purpose>
 
 <routing_rule>
 
-Use `seo-maker` when the main output is an SEO analysis, audit, or optimization report.
+Use `seo-maker` when the main outcome is an SEO/AEO/GEO/LLMO audit, optimization report, or evidence-backed search visibility improvement plan.
 
-Use `research` instead when the job is general market/competitor research without an SEO deliverable.
+Route neighboring work elsewhere:
 
-Use `prd-maker` instead when the output is a product requirements document, not an SEO report.
-
-Use `pre-deploy` instead when the job is deployment validation, not SEO-specific analysis.
-
-Do not use `seo-maker` when:
-
-- the user only wants general web performance optimization without SEO focus
-- the user wants content writing without SEO analysis
-- the user wants implementation of code changes without prior SEO analysis
+- Page or product UI design: use `designer` or the relevant frontend design skill.
+- Competitor or market research without site audit: use `research`.
+- Pre-release build and deployment checks: use `pre-deploy`.
+- Pure performance engineering without search context: use the relevant performance or optimization workflow.
+- Broad AI search trend research without a target site or content set: use `research`.
 
 </routing_rule>
 
-<activation_examples>
-
-Positive requests:
-
-- "이 사이트의 SEO를 분석해줘."
-- "메타태그랑 구조화 데이터 점검해줘."
-- "SEO 감사 리포트 만들어줘."
-- "검색엔진 최적화 상태를 확인하고 개선안을 알려줘."
-- "Core Web Vitals 점수 개선 방안을 정리해줘."
-- "AI 검색에서 우리 콘텐츠가 인용되도록 최적화해줘."
-- "ChatGPT나 Perplexity에서 우리 브랜드가 노출되는지 점검해줘."
-- "AEO/GEO 관점에서 사이트 분석해줘."
-
-Negative requests:
-
-- "랜딩 페이지 디자인해줘." → use `designer`
-- "경쟁사 시장조사 해줘." → use `research`
-- "배포 전 체크리스트 확인해줘." → use `pre-deploy`
-
-Boundary request:
-
-- "이 페이지 성능 최적화해줘."
-  Use `seo-maker` only if the optimization focus is search engine visibility. If it's pure loading performance, route to other tools.
-- "AI 검색 트렌드 조사해줘."
-  Use `seo-maker` only if the output should be an actionable optimization report. If it's pure research, route to `research`.
-
-</activation_examples>
-
 <trigger_conditions>
 
-| Situation | Mode |
-|------|------|
-| 새 프로젝트/사이트의 SEO 전체 감사 | create |
-| 특정 페이지의 온페이지 SEO 점검 | create |
-| 기존 SEO 리포트에 새 분석 결과 추가 | update |
-| Core Web Vitals 또는 기술 SEO 집중 분석 | create |
-| SEO 개선 후 재점검 | update |
-| AI 검색 인용 최적화 (AEO/GEO) 분석 | create |
-| 기존 리포트에 AEO/GEO 분석 추가 | update |
+Positive examples:
+
+- "Audit this site's SEO."
+- "Check metadata and structured data."
+- "Create an SEO audit report."
+- "Review search-engine optimization status and give improvement recommendations."
+- "Summarize how to improve Core Web Vitals scores."
+- "Optimize our content so AI search engines can cite it."
+- "Check whether ChatGPT or Perplexity can surface our brand."
+- "Analyze this site from AEO and GEO perspectives."
+- "Keep iterating fixes until the SEO score is as high as possible."
+- "Audit, fix, and re-verify until the search optimization score is close to perfect."
+
+Negative examples:
+
+- "Design this landing page." -> use `designer`.
+- "Research competitor market positioning." -> use `research`.
+- "Check the pre-deploy checklist." -> use `pre-deploy`.
+
+Boundary examples:
+
+- "Optimize this page's performance."
+  Use `seo-maker` only when performance is evaluated through SEO/Core Web Vitals impact.
+- "Research AI search trends."
+  Use `seo-maker` only when the output is tied to a target site, page, or content inventory.
 
 </trigger_conditions>
 
+<modes>
+
+| Situation | Mode |
+|------|------|
+| Full SEO audit for a new project or site | create |
+| On-page SEO review for a specific page | create |
+| Add a new analysis to an existing SEO report | update |
+| Focused Core Web Vitals or technical SEO analysis | create |
+| Re-check after SEO improvements | update |
+| Iterative improvement toward best or perfect score | optimize |
+| AEO/GEO citation readiness analysis | create |
+| Add AEO/GEO analysis to an existing report | update |
+
+</modes>
+
 <supported_targets>
 
-- HTML 페이지, Next.js/React 컴포넌트의 메타태그 및 SEO 요소
-- `robots.txt`, `sitemap.xml`, `llms.txt`, canonical 태그, 구조화 데이터
-- Core Web Vitals (LCP, INP, CLS) 관련 코드
-- `<head>` 영역의 title, meta description, Open Graph, Twitter Card
-- heading 계층 구조 (h1-h6)
-- 이미지 alt 텍스트, 내부 링크 구조
-- Schema.org JSON-LD 마크업 (AI 신뢰 신호 역할 포함)
-- AEO 요소 — Q&A 포맷, 직접 답변 구조, Featured Snippet 최적화
-- GEO 요소 — 인용 가능한 문장 구조, 통계/출처 포함, 엔터티 권위
-- LLMO 요소 — llms.txt, AI 크롤러 접근성, 콘텐츠 신선도
+- Metadata and SEO elements in HTML pages and Next.js/React components.
+- `robots.txt`, `sitemap.xml`, `llms.txt`, canonical tags, and structured data.
+- Core Web Vitals signals such as LCP, INP, and CLS.
+- `<head>` elements including title, meta description, Open Graph, and Twitter Card.
+- Heading hierarchy from `h1` through `h6`.
+- Image alt text and internal link structure.
+- Schema.org JSON-LD markup, including AI trust signals.
+- AEO elements such as Q&A formats, direct-answer structure, and featured-snippet optimization.
+- GEO elements such as citable sentence structure, statistics with sources, and entity authority.
+- LLMO elements such as `llms.txt`, AI crawler accessibility, and content freshness.
 
 </supported_targets>
 
-<complexity_classification>
+<complexity_routing>
 
-## Complexity Classification
+| Complexity | Signals | Handling |
+|------|------|------|
+| **Simple** | Single-page review, one SEO element, quick metadata audit | **Direct**: write `report.md` immediately |
+| **Complex** | Full-site audit, many pages, technical SEO plus content SEO plus Core Web Vitals, competitor comparison | **Tracked**: use `flow.json` for phase tracking |
 
-Classify before starting work:
+Before starting, record:
 
-| Complexity | Signals | Path |
-|------------|---------|------|
-| **Simple** | 단일 페이지 점검, 특정 SEO 요소만 확인, 빠른 메타태그 감사 | **Direct** — `report.md` 바로 작성 |
-| **Complex** | 전체 사이트 감사, 다수 페이지 분석, 기술 SEO + 콘텐츠 SEO + Core Web Vitals 종합, 경쟁사 비교 포함 | **Tracked** — `flow.json`으로 단계 추적 |
-
-Announce the classification:
-
+```text
+Complexity: [simple/complex] — [one-line reason]
+Mode: [create/update/optimize]
+Target: [site/page/project path]
+Proof surface: [commands, browser checks, web sources, or local files]
 ```
-Complexity: [simple/complex] — [한 줄 이유]
-```
 
-When uncertain, classify as complex.
+</complexity_routing>
 
-</complexity_classification>
+<universal_intake>
 
-<document_shape>
+Before scoring any project, classify the audit context so this skill works across stacks:
 
-Default output shape:
+- `target_type`: `live-url`, `local-static`, `nextjs`, `react-spa`, `docs-site`, `ecommerce`, `blog`, or `app-with-marketing-pages`
+- `access_level`: live URL, local files only, Search Console available, analytics available, field Core Web Vitals available, or AI citation probe available
+- `allowed_action`: `audit-only`, `recommend`, `edit-code`, or `optimize-loop`
+- `measurement_confidence`: lower confidence when live URL, Search Console, field Core Web Vitals, or AI citation probes are unavailable
+
+Do not hide missing evidence. If a recommendation is based on static files, lab data, synthetic probes, or heuristics, label it that way in `results.json`.
+
+</universal_intake>
+
+<artifact_contract>
+
+Create or update `.hypercore/seo-maker/[slug]/`.
+
+Expected files:
 
 ```text
 .hypercore/seo-maker/[slug]/
-├── dashboard.html      # 브라우저에서 열 수 있는 대시보드
-├── results.json        # 구조화된 감사 결과 (JSON)
-├── results.js          # file:// 브라우저 폴백용
-├── report.md           # 마크다운 리포트
-├── sources.md          # 출처 기록
-└── flow.json           # complex path only
+├── dashboard.html      # Browser-readable dashboard
+├── results.json        # Structured audit results
+├── results.js          # File URL fallback for browser rendering
+├── report.md           # Markdown report
+├── sources.md          # Source and evidence log
+└── flow.json           # Required for complex or optimize mode
 ```
 
-- `results.json` is the structured audit data. See [references/artifact-spec.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/seo-maker/references/artifact-spec.md) for the full schema.
-- `dashboard.html` is a self-contained browser dashboard rendered from [assets/dashboard-template.html](/Users/alpox/Desktop/dev/kood/hypercore/skills/seo-maker/assets/dashboard-template.html).
-- `results.js` is the `file://` fallback for `results.json`.
-- `report.md` is the SEO audit report with findings and recommendations.
-- `sources.md` captures evidence, tool outputs, and reference links used.
-- `flow.json` tracks phase progress for complex audits.
-- Create report from [assets/report.template.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/seo-maker/assets/report.template.md) when the folder does not exist yet.
-- Render dashboard with `scripts/render-dashboard.sh <artifact-dir>` after `results.json` is finalized.
+For simple mode, `report.md` and `sources.md` are the minimum. For complex or optimize mode, all files are expected.
 
-</document_shape>
+Follow [references/artifact-spec.md](references/artifact-spec.md) for the file schema.
 
-<flow_tracking>
+Render order:
 
-## Flow Tracking (Complex Path Only)
+1. Gather evidence and write/update `results.json`.
+2. Generate `results.js` for direct local browser viewing.
+3. Render `dashboard.html` from the current results.
+4. Write `report.md` and `sources.md` with links or file references.
 
-When classified as complex, write `flow.json` and update as each phase progresses.
-
-### Phase progression
-
-| Phase | Description | Next |
-|-------|-------------|------|
-| `scope` | Define audit scope — target URLs, focus areas, constraints | `technical` |
-| `technical` | Analyze technical SEO — robots.txt, sitemap, llms.txt, canonicals, structured data, Core Web Vitals | `onpage` |
-| `onpage` | Analyze on-page SEO — titles, meta descriptions, headings, images, internal links | `content` |
-| `content` | Analyze content quality — E-E-A-T, keyword usage, readability, freshness | `aeo` |
-| `aeo` | Analyze AEO readiness — Q&A 포맷, 직접 답변, Featured Snippet, 음성 검색 최적화 | `geo` |
-| `geo` | Analyze GEO readiness — AI 인용 가능성, GEO CORE, 엔터티 권위, 플랫폼별 최적화 | `report` |
-| `report` | Compile findings into prioritized report with actionable recommendations | done |
-
-### Resume support
-
-If `flow.json` already exists, read it first and continue from the last incomplete phase.
-
-</flow_tracking>
-
-<support_file_read_order>
-
-Read in this order:
-
-1. This core `SKILL.md` to confirm the job is SEO/AEO/GEO analysis or audit.
-2. [rules/seo-workflow.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/seo-maker/rules/seo-workflow.md) for phase-by-phase execution details.
-3. [references/seo-fundamentals.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/seo-maker/references/seo-fundamentals.md) for E-E-A-T, Core Web Vitals, ranking factors, entity SEO, schema markup guidance.
-4. [references/aeo-geo-guide.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/seo-maker/references/aeo-geo-guide.md) for AEO/GEO/LLMO strategy, GEO CORE framework, platform benchmarks, llms.txt guidance.
-5. [references/seo-checklist.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/seo-maker/references/seo-checklist.md) for actionable audit checklist items (SEO + AEO + GEO).
-6. [references/artifact-spec.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/seo-maker/references/artifact-spec.md) for `results.json` schema, dashboard lifecycle, and workspace structure.
-7. [assets/report.template.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/seo-maker/assets/report.template.md) when creating a new report.
-8. [assets/dashboard-template.html](/Users/alpox/Desktop/dev/kood/hypercore/skills/seo-maker/assets/dashboard-template.html) when rendering the dashboard.
-9. [rules/validation.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/seo-maker/rules/validation.md) before declaring the audit complete.
-
-</support_file_read_order>
+</artifact_contract>
 
 <workflow>
 
-## Simple Path
-
 | Phase | Task | Output |
-|-------|------|--------|
-| 0 | Confirm SEO deliverable, choose `create`/`update`, classify as simple | Mode + complexity |
-| 1 | Scan target files for SEO elements | Raw findings |
-| 2 | Create or locate `.hypercore/seo-maker/[slug]/` | Storage target |
-| 3 | Write `report.md` with findings and recommendations | SEO report |
-| 4 | Validate completeness | Finalized report |
-
-## Complex Path
-
-| Phase | Task | Output |
-|-------|------|--------|
-| 0 | Confirm SEO deliverable, choose `create`/`update`, classify as complex | Mode + complexity |
-| 1 | Create or locate `.hypercore/seo-maker/[slug]/`, write `flow.json` with `scope: in_progress` | Storage + flow |
-| 2 | Define audit scope → update flow `scope: completed` | Scope definition |
-| 3 | Technical SEO analysis → update flow `technical: completed` | Technical findings |
-| 4 | On-page SEO analysis → update flow `onpage: completed` | On-page findings |
-| 5 | Content SEO analysis → update flow `content: completed` | Content findings |
-| 6 | AEO readiness analysis → update flow `aeo: completed` | AEO findings |
-| 7 | GEO readiness analysis → update flow `geo: completed` | GEO findings |
-| 8 | Compile prioritized report → update flow `report: completed` | Final report |
-| 9 | Validate and finalize | Finalized audit |
+|------|------|------|
+| 0 | Determine target, mode, complexity, proof surface, and universal intake fields | Execution brief |
+| 1 | Establish measurement methods and confidence limits | `measurement_methods` |
+| 2 | Collect evidence from local code, pages, browser checks, and web sources | Evidence log |
+| 3 | Audit technical SEO, platform policy, AEO, GEO, LLMO, Core Web Vitals, and structured data | Structured findings |
+| 4 | Separate official requirements from field/tool/lab/synthetic/heuristic findings | Evidence-graded findings |
+| 5 | Prioritize issues by impact, confidence, effort, and source tier | Recommendation set |
+| 6 | Write artifacts and dashboard | `.hypercore/seo-maker/[slug]/` |
+| 7 | If optimize mode, apply or recommend fixes and re-audit | Best verified result |
+| 8 | Summarize score, wins, confidence limits, risks, and next actions | Final report |
 
 </workflow>
 
-<required>
+<audit_dimensions>
 
-- Complexity classified (simple/complex) before starting work.
-- Store every report under `.hypercore/seo-maker/[slug]/`.
-- Prefer ASCII kebab-case slugs.
-- Every finding must have a severity (critical/warning/info) and a concrete fix recommendation.
-- Prioritize recommendations by SEO impact (high → low).
-- Reference E-E-A-T and Core Web Vitals standards from `references/seo-fundamentals.md`.
-- Reference AEO/GEO strategy from `references/aeo-geo-guide.md` when analyzing AI search readiness.
-- For complex path: maintain `flow.json` and update after each phase.
-- Complex path must include AEO and GEO phases unless the user explicitly requests traditional SEO only.
+Check these dimensions when relevant to the target:
 
-</required>
+- Technical SEO: crawlability, indexability, canonicalization, sitemap, robots directives, response status, redirects, and duplicate pages.
+- Platform policy: Googlebot, Google-Extended, OAI-SearchBot, GPTBot, ChatGPT-User, PerplexityBot/ClaudeBot when present, snippet controls, X-Robots-Tag, and optional `llms.txt`.
+- On-page SEO: title, description, heading hierarchy, keyword alignment, URL readability, and internal links.
+- Content SEO: intent match, depth, freshness, topical coverage, uniqueness, and readability.
+- Core Web Vitals: LCP, INP, CLS, render-blocking resources, image sizing, and interaction latency.
+- Structured data: JSON-LD validity, Schema.org fit, visible-content parity, entity identifiers, breadcrumbs, FAQs, products, articles, or organization markup. Do not imply structured data guarantees rich results or AI citations.
+- AEO: concise visible answer blocks, Q&A structure, snippet-ready summaries, voice-search phrasing, and direct-answer clarity. Treat fixed answer lengths as heuristic.
+- GEO: citable claims, statistics with sources, entity authority, author or brand trust signals, and content that AI systems can quote safely.
+- LLMO: optional `llms.txt`, AI crawler access, clean markdown or semantic HTML, clear entity relationships, and updated canonical content. Missing `llms.txt` is not critical by default.
 
-<deliverables>
+</audit_dimensions>
 
-실행이 끝나면 다음이 `.hypercore/seo-maker/[slug]/`에 남아 있어야 한다:
+<scoring>
 
-- `results.json` — 구조화된 감사 결과 (status: `complete`)
-- `dashboard.html` — 브라우저 대시보드 (render-dashboard.sh로 생성)
-- `results.js` — file:// 폴백
-- `report.md` — 마크다운 리포트
-- `sources.md` — 출처 기록
-- `flow.json` — complex path only
+Use a transparent 100-point score when enough evidence exists:
 
-파일 스키마는 [references/artifact-spec.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/seo-maker/references/artifact-spec.md)를 따른다.
+- Technical SEO: 20
+- On-page SEO: 20
+- Content SEO: 15
+- Core Web Vitals: 15
+- Structured data: 10
+- AEO readiness: 10
+- GEO/LLMO readiness: 10
 
-렌더 순서:
+If evidence is incomplete, mark affected categories as `unknown` instead of inventing certainty.
 
-```bash
-skills/seo-maker/scripts/render-dashboard.sh .hypercore/seo-maker/[slug]
-open .hypercore/seo-maker/[slug]/dashboard.html
-```
+Each finding should include:
 
-</deliverables>
+- Severity: critical, high, medium, low, or informational.
+- Confidence: high, medium, or low.
+- `evidence_grade`: `official`, `field`, `tool`, `lab`, `synthetic`, or `heuristic`.
+- `measurement_method`: scan, tool, probe, source, or command used.
+- `source_tier`: `official-doc`, `observed-file`, `field-data`, `tool-output`, `synthetic-probe`, or `research-backed-heuristic`.
+- Evidence: command output, URL, local file path, browser observation, or saved probe result.
+- Recommendation: specific action and expected impact.
+- Owner surface: code, content, infrastructure, analytics, or external platform.
 
-<forbidden>
+</scoring>
 
-- Writing an SEO report only in chat without saving the folder output
-- Listing problems without actionable fix recommendations
-- Skipping technical SEO when doing a full site audit
-- Mixing raw analysis notes into the final report when they belong in `sources.md`
-- Creating extra README or changelog files in the report folder
-- Skipping `flow.json` updates in complex path
+<optimize_loop>
 
-</forbidden>
+Use optimize mode when the user requests a maximum score, perfect score, continuous iteration, or "keep fixing until it passes" behavior.
+
+Loop rules:
+
+1. Run a baseline audit and write the score.
+2. Pick the highest-impact fix or recommendation with the best confidence/effort ratio.
+3. Apply safe local code/content fixes when they are in scope; otherwise record an actionable recommendation.
+4. Re-run the relevant audit checks.
+5. Keep the change only if the score or verified evidence improves without regression.
+6. Stop when the score target is met, no safe local fixes remain, or further work requires external credentials or business decisions.
+
+Do not fake a perfect score. If external evidence is unavailable, report the unknowns and the best verified score.
+
+</optimize_loop>
+
+<validation>
+
+At completion, `.hypercore/seo-maker/[slug]/` should contain:
+
+- `results.json` with structured audit results and status `complete` for complex or optimize mode.
+- `dashboard.html` rendered from the latest results when dashboard output is expected.
+- `results.js` for local browser fallback when dashboard output is expected.
+- `report.md` with prioritized findings, score, and recommendations.
+- `sources.md` with the evidence log.
+
+Validate:
+
+- Every high or critical finding has evidence.
+- Recommendations are specific enough for an engineer, marketer, or content owner to act on.
+- Scores are derived from observed evidence, not assumptions.
+- Google AI features are not described as requiring special schema, AI text files, or magic markup.
+- FAQPage recommendations distinguish Google rich-result eligibility from answer-friendly visible FAQ content.
+- Unknowns are explicitly marked.
+- Optimize mode records baseline score, changes/recommendations, re-audit evidence, and the best verified result.
+
+</validation>

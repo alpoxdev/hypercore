@@ -1,6 +1,6 @@
 ---
 name: pre-deploy
-description: Validate and fix quality/build blockers before deployment for Node.js, Rust, and Python projects.
+description: "[Hyper] Validate and fix quality/build blockers before deployment for Node.js, Rust, and Python projects."
 allowed-tools: Bash Read Edit TodoWrite mcp__sequential-thinking__sequentialthinking
 compatibility: Requires local toolchains for at least one supported stack (node/rust/python) and scripts under skills/pre-deploy/scripts.
 ---

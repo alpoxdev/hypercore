@@ -1,6 +1,6 @@
 ---
 name: docs-maker
-description: Create and refactor AI-readable documentation and harness-ready rule packs for prompt, tool, eval, safety, and context workflows.
+description: "[Hyper] Create and refactor AI-readable documentation and harness-ready rule packs for prompt, tool, eval, safety, and context workflows."
 compatibility: Works best with read/edit/write and shell search tools for document analysis, source verification, and quality checks.
 ---
 
