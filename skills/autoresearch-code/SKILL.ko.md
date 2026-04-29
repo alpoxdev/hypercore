@@ -128,6 +128,41 @@ baseline 형태가 불명확하면 [references/code-baseline-guide.md](reference
 
 </baseline_contract>
 
+<autoresearch_integration>
+
+이 스킬은 독립 `.hypercore` 실험 로그만으로 완료되지 않는다. `$autoresearch` 기반 실행으로 쓰일 때는 다음 bridge 계약을 반드시 함께 만족한다.
+
+기본 validation mode:
+
+- `mission-validator-script`
+
+상태 저장:
+
+- `.omx/state/.../autoresearch-state.json`에 다음 값을 기록한다:
+  - `validation_mode`: `mission-validator-script`
+  - `completion_artifact_path`: `.omx/specs/autoresearch-{codebase-name}/result.json`
+  - `mission_validator_command`: 최종 proof/eval을 실행하고 result JSON을 갱신하는 명령
+  - `output_artifact_path`: `.hypercore/autoresearch-code/{codebase-name}/results.json`
+
+Completion artifact 예시:
+
+```json
+{
+  "status": "passed",
+  "passed": true,
+  "summary": "best score improved without regression",
+  "output_artifact_path": ".hypercore/autoresearch-code/my-repo/results.json"
+}
+```
+
+종료 규칙:
+
+- `.hypercore`의 점수 상승은 필요한 증거지만 충분조건은 아니다.
+- 루프는 `completion_artifact_path`가 존재하고 `passed: true` 또는 `status: "passed"`를 기록할 때만 완료된다.
+- proof command, eval pack, rollback 조건이 바뀌면 `.hypercore` 결과와 `.omx/specs/.../result.json` 모두에 reset 이벤트를 남긴다.
+
+</autoresearch_integration>
+
 <autonomy_contract>
 
 baseline 계획이 명시된 뒤에는:
@@ -262,6 +297,8 @@ baseline 계획이 명시된 뒤에는:
 - `.hypercore/autoresearch-code/[codebase-name]/results.tsv`
 - `.hypercore/autoresearch-code/[codebase-name]/changelog.md`
 - `.hypercore/autoresearch-code/[codebase-name]/baseline.md`
+- `.omx/specs/autoresearch-[codebase-name]/result.json` completion artifact
+- `.omx/state/.../autoresearch-state.json`의 `validation_mode`/`completion_artifact_path` bridge 상태
 
 파일 스키마와 예시는 [references/artifact-spec.md](references/artifact-spec.md)를 따른다.
 

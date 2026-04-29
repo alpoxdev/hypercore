@@ -47,6 +47,7 @@
 - `results.tsv`
 - `changelog.md`
 - `SKILL.md.baseline`
+- 지원 파일 수정 시 `baseline-files.json` 또는 `baseline/` 원본 스냅샷
 
 예상 위치:
 
@@ -57,7 +58,19 @@
 
 워크플로가 `dashboard.html`을 로컬 브라우저에서 직접 연다면, `file://` 환경에서도 빈 화면이 아니라 실제 데이터를 렌더하는지 확인한다.
 
-## 5. 최종 주장 검증
+## 5. `$autoresearch` completion artifact 검증
+
+`$autoresearch` 기반 실행으로 보고할 때는 다음을 확인한다:
+
+- `.omx/state/.../autoresearch-state.json`에 `validation_mode: "prompt-architect-artifact"`가 있다
+- 같은 state에 `completion_artifact_path`, `validator_prompt`, `output_artifact_path`가 있다
+- `completion_artifact_path`의 JSON이 존재하고 `architect_review.verdict: "approved"`를 기록한다
+- `output_artifact_path`가 `.hypercore/autoresearch-skill/[skill-name]/results.json`을 가리킨다
+- `rules/`, `references/`, `scripts/`, `assets/`를 수정했다면 baseline이 `SKILL.md.baseline` 하나에 그치지 않는다
+
+이 artifact가 없으면 점수가 올랐더라도 `$autoresearch` 완료로 주장하지 않는다.
+
+## 6. 최종 주장 검증
 
 다음 중 하나가 참이 아니면 성공을 주장하지 않는다:
 
@@ -65,7 +78,7 @@
 - 무회귀 상태에서 스킬이 실질적으로 단순해졌고 그 단순화가 명시되어 있다
 - 현재 스킬이 이미 점수 상한에 가깝고 추가 변이가 정당하지 않다는 점을 이번 실행으로 입증했다
 
-## 6. 최종 보고 체크리스트
+## 7. 최종 보고 체크리스트
 
 최종 보고에는 반드시 다음이 포함되어야 한다:
 
@@ -76,7 +89,7 @@
 - 남은 실패 패턴
 - 실험 아티팩트 경로
 
-## 7. 권장 점검 명령
+## 8. 권장 점검 명령
 
 ```bash
 find skills/autoresearch-skill -maxdepth 3 -type f | sort

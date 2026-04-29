@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>오토리서치 대시보드</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       color-scheme: light;
@@ -157,8 +156,6 @@
   </div>
 
   <script>
-    let chart;
-
     function injectScript(src) {
       return new Promise((resolve, reject) => {
         const script = document.createElement("script");
@@ -231,34 +228,76 @@
     }
 
     function renderChart(experiments) {
-      const ctx = document.getElementById("score-chart");
-      const labels = experiments.map((exp) => exp.id);
-      const data = experiments.map((exp) => exp.pass_rate);
+      const canvas = document.getElementById("score-chart");
+      const ctx = canvas.getContext("2d");
+      const width = canvas.clientWidth || canvas.parentElement.clientWidth || 640;
+      const height = Number(canvas.getAttribute("height")) || 120;
+      const ratio = window.devicePixelRatio || 1;
 
-      if (chart) chart.destroy();
+      canvas.width = Math.max(1, Math.floor(width * ratio));
+      canvas.height = Math.max(1, Math.floor(height * ratio));
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.clearRect(0, 0, width, height);
 
-      chart = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels,
-          datasets: [{
-            label: "통과율 %",
-            data,
-            borderColor: "#7aa2f7",
-            backgroundColor: "rgba(122, 162, 247, 0.2)",
-            fill: true,
-            tension: 0.25,
-            pointRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: { min: 0, max: 100 }
-          }
-        }
+      const values = experiments
+        .map((exp) => Number(exp.pass_rate))
+        .filter((value) => Number.isFinite(value));
+
+      const pad = 24;
+      const plotWidth = Math.max(1, width - pad * 2);
+      const plotHeight = Math.max(1, height - pad * 2);
+
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.lineWidth = 1;
+      for (const tick of [0, 25, 50, 75, 100]) {
+        const y = pad + ((100 - tick) / 100) * plotHeight;
+        ctx.beginPath();
+        ctx.moveTo(pad, y);
+        ctx.lineTo(width - pad, y);
+        ctx.stroke();
+      }
+
+      if (!values.length) {
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "13px sans-serif";
+        ctx.fillText("아직 점수 데이터가 없습니다.", pad, height / 2);
+        return;
+      }
+
+      const pointFor = (value, index) => {
+        const x = values.length === 1
+          ? pad + plotWidth / 2
+          : pad + (index / (values.length - 1)) * plotWidth;
+        const y = pad + ((100 - Math.max(0, Math.min(100, value))) / 100) * plotHeight;
+        return [x, y];
+      };
+
+      ctx.beginPath();
+      values.forEach((value, index) => {
+        const [x, y] = pointFor(value, index);
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
       });
+      ctx.strokeStyle = "#7aa2f7";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = "#7aa2f7";
+      values.forEach((value, index) => {
+        const [x, y] = pointFor(value, index);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "11px sans-serif";
+      ctx.fillText("0%", 2, height - pad + 4);
+      ctx.fillText("100%", 2, pad + 4);
     }
+
 
     function applyData(data) {
       if (!data) {

@@ -57,7 +57,18 @@
 
 워크플로가 `dashboard.html`을 로컬 브라우저에서 직접 연다면, `file://` 환경에서도 빈 화면이 아니라 실제 데이터를 렌더하는지 확인한다.
 
-## 5. 최종 주장 검증
+## 5. `$autoresearch` completion artifact 검증
+
+`$autoresearch` 기반 실행으로 보고할 때는 다음을 확인한다:
+
+- `.omx/state/.../autoresearch-state.json`에 `validation_mode: "mission-validator-script"`가 있다
+- 같은 state에 `completion_artifact_path`와 `mission_validator_command`가 있다
+- `completion_artifact_path`의 JSON이 존재하고 `passed: true` 또는 `status: "passed"`를 기록한다
+- `output_artifact_path`가 `.hypercore/autoresearch-code/[codebase-name]/results.json`을 가리킨다
+
+이 artifact가 없으면 점수가 올랐더라도 `$autoresearch` 완료로 주장하지 않는다.
+
+## 6. 최종 주장 검증
 
 다음 중 하나가 참이 아니면 성공을 주장하지 않는다:
 
@@ -65,7 +76,7 @@
 - 무회귀 상태에서 코드베이스가 실질적으로 단순해졌고 그 단순화가 명시되어 있다
 - 현재 코드베이스가 이미 점수 상한에 가깝고 추가 변이가 정당하지 않다는 점을 이번 실행으로 입증했다
 
-## 6. 승격 안정성 검증
+## 7. 승격 안정성 검증
 
 우승 실험을 promote 가능하다고 부르기 전에 다음을 확인한다:
 
@@ -73,7 +84,7 @@
 - 롤백 조건이 keep 실험 전이나 중에 기록되었다
 - 실험이 암묵적으로가 아니라 `hold`, `promote`, `rollback` 중 하나로 명시되어 있다
 
-## 7. 최종 보고 체크리스트
+## 8. 최종 보고 체크리스트
 
 최종 보고에는 반드시 다음이 포함되어야 한다:
 
@@ -84,7 +95,7 @@
 - 남은 실패 패턴
 - 실험 아티팩트 경로
 
-## 8. 권장 점검 명령
+## 9. 권장 점검 명령
 
 ```bash
 find skills/autoresearch-code -maxdepth 3 -type f | sort

@@ -27,7 +27,7 @@ fi
 mkdir -p "${artifact_dir}"
 cp "${template_path}" "${dashboard_html}"
 
-json_payload="$(jq -c '.' "${results_json}")"
+json_payload="$(python3 -c 'import json,sys; print(json.dumps(json.load(open(sys.argv[1])), ensure_ascii=False, separators=(",",":")))' "${results_json}")"
 printf 'window.__AUTORESEARCH_CODE_RESULTS__ = %s;\n' "${json_payload}" > "${results_js}"
 
 echo "렌더 완료: ${dashboard_html}"

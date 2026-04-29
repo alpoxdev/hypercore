@@ -16,10 +16,22 @@
 
 이 디렉터리는 스킬 폴더 안이 아니라 저장소 루트에 만든다.
 
+`$autoresearch` 실행에서는 이 `.hypercore` 디렉터리가 도메인별 결과 로그이고, 최종 완료 gate는 별도 `.omx/specs/autoresearch-[skill-name]/result.json` completion artifact가 담당한다. `completion_artifact_path`에는 이 `.omx/specs/.../result.json` 경로를 기록하고, `output_artifact_path`에는 이 파일의 `results.json`을 기록한다.
+
 정식 생성 자산:
 
 - template: `skills/autoresearch-skill/assets/dashboard-template.html`
 - renderer: `skills/autoresearch-skill/scripts/render-dashboard.sh`
+- renderer runtime: `python3` 표준 JSON 라이브러리
+
+## Baseline snapshot
+
+대상 스킬의 `SKILL.md`만 수정할 때는 `SKILL.md.baseline`으로 충분하다. `rules/`, `references/`, `scripts/`, `assets/`까지 바꿀 수 있는 실행에서는 다음 중 하나를 추가한다:
+
+- `baseline/` 디렉터리에 수정 대상 원본 파일 복사
+- `baseline-files.json`에 파일별 path, sha256, size 기록
+
+지원 파일을 바꾸면서 `SKILL.md.baseline`만 남기는 것은 불완전한 baseline으로 취급한다.
 
 ## `results.tsv`
 
@@ -77,7 +89,7 @@ experiment	score	max_score	pass_rate	status	description
 
 ## `dashboard.html`
 
-인라인 CSS와 JavaScript를 포함한 self-contained HTML 파일 하나를 생성한다.
+외부 CDN 없이 인라인 CSS와 JavaScript를 포함한 self-contained HTML 파일 하나를 생성한다.
 
 매 실행마다 임의의 다른 대시보드를 손으로 만들지 않는다. 정식 템플릿에서 `dashboard.html`을 물질화하고, 레이아웃과 로딩 동작을 안정적으로 유지한다.
 
@@ -85,7 +97,7 @@ experiment	score	max_score	pass_rate	status	description
 
 - 10초마다 자동 새로고침
 - `results.json` 읽기
-- 점수 추이를 선형 차트로 렌더
+- 내장 Canvas API로 점수 추이를 선형 차트로 렌더
 - 실험별 컬러 바 렌더
 - 실험 테이블 표시
 - eval별 통과 수 표시
@@ -127,7 +139,7 @@ open .hypercore/autoresearch-skill/my-skill/dashboard.html
 
 차트 가이드:
 
-- Chart.js CDN 사용
+- 내장 Canvas API 사용
 - X축: 실험 번호
 - Y축: 통과율 %
 
