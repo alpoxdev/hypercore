@@ -152,13 +152,37 @@ git -C <path> status --short --branch
 git -C <path> log --oneline --decorate -5
 ```
 
+If the user asks to delete/remove the worktree while already inside it and no path is supplied, infer the current linked worktree as the target. Save the target path before moving out, refuse the main worktree, then remove from another safe worktree:
+
+```bash
+target_path="$(git rev-parse --show-toplevel)"
+git_dir="$(git rev-parse --git-dir)"
+common_dir="$(git rev-parse --git-common-dir)"
+main_path="$(git worktree list --porcelain | awk 'NR==1 && /^worktree / {print substr($0, 10)}')"
+
+# If git-dir and common-dir resolve to the same directory, this is the main worktree; do not remove it.
+# Also stop when Git cannot provide a distinct safe worktree to run removal from.
+if [ "$(cd "$git_dir" && pwd -P)" = "$(cd "$common_dir" && pwd -P)" ] || [ -z "$main_path" ] || [ "$main_path" = "$target_path" ]; then
+  echo "Refusing to remove this path as a linked worktree: $target_path" >&2
+  git worktree list --porcelain >&2
+  exit 1
+fi
+
+git -C "$target_path" status --short --branch
+git -C "$target_path" log --oneline --decorate -5
+cd "$main_path"
+git worktree remove "$target_path"
+```
+
+Do not run `git worktree remove .` or `rm -rf .` from inside the target worktree. If `main_path` cannot be resolved, stop and report the target path plus `git worktree list --porcelain` output instead of guessing.
+
 Safe removal path:
 
 ```bash
 git worktree remove <path>
 ```
 
-Only use force when explicitly requested or when the user has already confirmed the changes are disposable:
+Only use force when explicitly requested or when the user has already confirmed the changes are disposable. A dirty current-worktree deletion needs the same explicit force/discard intent before `--force`:
 
 ```bash
 git worktree remove --force <path>
@@ -171,7 +195,7 @@ git branch -d <branch>
 # use -D only when explicitly requested and disposable
 ```
 
-Never delete the main worktree.
+Never delete the main worktree. For pathless requests such as "워크트리 삭제" from inside the main worktree, stop and ask for the linked worktree path/name instead of treating the repository root as disposable.
 
 ## 7. Prune, lock, unlock, repair
 
