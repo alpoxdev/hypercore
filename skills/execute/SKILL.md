@@ -19,15 +19,18 @@ compatibility: Use in environments with code exploration (Read/Grep/Glob), editi
 ## Out-of-scope
 
 - Bug reports with error messages or failing symptoms. Route to `bug-fix`.
-- Repository-wide build or CI failures. Route to `build-fix`.
-- Strategic planning or architecture decisions. Route to `plan`.
-- Code review or quality audit. Route to `code-review`.
-- Security analysis. Route to `security-review`.
+- Repository-wide build, CI, or deployment failures. Route to `deploy-fix`.
+- Pre-release validation or build readiness checks. Route to `pre-deploy`.
+- Strategic planning or architecture decisions. Route to a dedicated planning or architecture skill when available; in this repo prefer `prd-maker` for requirements and framework-specific architecture skills for implementation architecture.
+- Code review or quality audit. Route to a dedicated review or QA skill when available; in this repo prefer `qa` for systematic QA work.
+- Security analysis. Route to a dedicated security skill when available; in this repo use framework-specific security skills such as `tanstack-start-security` when applicable.
+- Explicit workflow invocations such as `$autoresearch-skill`, `$ralph`, or another `$skill` request. Preserve the explicitly requested workflow instead of treating the prompt as a generic execute task.
 
 ## Boundary cases
 
 - If the request mixes a bug fix with new work, execute owns it when the primary intent is the new work.
 - If the task scope is genuinely unclear (no deliverable identifiable), ask one clarifying question — then execute.
+- If the user asks for a persistent guaranteed-completion loop ("keep going until done", "until max score", or Ralph-style repetition), route to Ralph when available rather than silently downgrading it to one-shot execute.
 - If the task turns out to require architectural decisions mid-flight, pause and consult the user rather than guessing.
 
 </request_routing>
