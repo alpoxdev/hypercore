@@ -1,162 +1,73 @@
-# Techniques - Chain of Thought & Extended Thinking
+# Techniques
 
-## Chain of Thought (CoT)
+## 1. Decomposition
 
-단계별 사고 유도 → 정확성 향상.
+복잡한 작업은 “한 번에 잘하기”보다 분해가 안정적이다.
 
-### 3단계 수준
+| 작업 | 분해 방식 |
+|---|---|
+| 코드 수정 | explore → plan → edit → test → review |
+| 리서치 | questions → source plan → collect → synthesize → validate |
+| UX/문서 | audience → task → examples → output contract → QA |
+| 에이전트 하네스 | scenario → expected behavior → metrics → regression run |
 
-| Level | Method | When | Example |
-|-------|--------|------|---------|
-| **Basic** | "단계별로 생각하세요" | 간단한 작업 | 단순 계산 |
-| **Guided** | 구체적 단계 제공 | 중간 복잡도 | 데이터 분석 |
-| **Structured** | `<thinking>` 태그 | 복잡한 작업 | 아키텍처 설계 |
+## 2. Few-shot Examples
 
-### Structured Pattern (권장)
+예시는 규칙보다 강하다. 단, 너무 많은 예시는 context를 오염시킨다.
 
-```xml
-<thinking>
-1. 문제 분석
-   - 현재 상태 파악
-   - 요구사항 정리
-
-2. 접근 방법
-   - 가능한 옵션들
-   - 장단점 비교
-
-3. 단계별 추론
-   - 선택한 방법
-   - 구현 단계
-
-4. 검증
-   - 예상 결과
-   - 잠재적 문제
-</thinking>
-
-<answer>
-최종 답변
-</answer>
+```markdown
+<examples>
+  <good>원하는 형태 1개</good>
+  <bad>피해야 할 형태 1개</bad>
+</examples>
 ```
 
-### 언제 사용?
+- 형식·톤·API shape를 고정할 때 사용한다.
+- 도메인 사실을 예시에 숨기지 않는다. 사실은 evidence section에 둔다.
+- 예시가 오래되면 instruction도 같이 stale해진다.
 
-```text
-✅ 사용하면 좋음
-- 복잡한 수학 문제
-- 다단계 분석
-- 의사결정 (여러 옵션 비교)
-- 디버깅 (원인 추적)
-- 아키텍처 설계
+## 3. Structured Output
 
-❌ 사용 안 함
-- 단순 검색
-- 단순 변환 (JSON → CSV)
-- 지연 시간 중요 (실시간)
-- 사실 확인
+후속 도구/검증이 읽어야 하는 출력은 Markdown보다 schema를 우선한다.
+
+```json
+{
+  "status": "pass|fail|blocked",
+  "evidence": [{ "claim": "...", "source": "..." }],
+  "next_actions": ["..."]
+}
 ```
 
-### 예시: 디버깅
+## 4. Reasoning Control
 
-```xml
-<thinking>
-1. 문제 증상
-   - 로그인 후 리다이렉트 안 됨
-   - 콘솔 에러 없음
+- 복잡한 문제에는 “계획/검토/대안 비교”를 요구한다.
+- 최종 답변에는 필요한 만큼의 rationale과 검증 결과를 내보낸다.
+- 숨겨진 chain-of-thought 원문을 요구하지 말고, 결정 근거·근거 링크·테스트 결과를 요구한다.
 
-2. 가능한 원인
-   A. 라우터 설정 문제
-   B. 인증 상태 미반영
-   C. 비동기 타이밍 이슈
+| 필요 | 지시 |
+|---|---|
+| 빠른 사실 답 | 직접 답하고 출처/날짜만 표시 |
+| 다단계 분석 | 계획, 대안, 검증 기준 작성 |
+| 고위험 판단 | 자료 확인, 반대 근거 검색, caveat 명시 |
+| 코드 변경 | 파일 읽기, 최소 diff, 테스트 결과 보고 |
 
-3. 검증
-   - A: 라우터 설정 정상 (routes.ts 확인)
-   - B: useAuth() 훅 체크 → 상태 업데이트 안 됨!
-   - C: 패스
+## 5. Tool Use
 
-4. 결론
-   - 로그인 성공 후 auth store 업데이트 누락
-</thinking>
+도구 지시는 제품명이 아니라 capability로 쓴다.
 
-<answer>
-`login.ts`의 `handleLogin` 함수에서
-`authStore.setUser(user)` 호출 추가 필요.
-</answer>
-```
+| Capability | 좋은 지시 |
+|---|---|
+| repo search | “수정 전 관련 파일/심볼을 검색하고 읽는다” |
+| web/source lookup | “변동 가능 정보는 live source로 검증한다” |
+| browser/visual QA | “UI 변경은 screenshot/interaction으로 확인한다” |
+| shell/test | “주장에 필요한 최소 검증 명령을 실행하고 출력 읽는다” |
+| subagents | “독립적이고 bounded한 조사/검증만 병렬 위임한다”; 세부는 [`parallel-workflows.md`](parallel-workflows.md) |
 
----
+## 6. Prompt Diffing
 
-## Extended Thinking
+Instruction 변경은 코드처럼 diff와 regression risk를 본다.
 
-긴 추론 시간으로 복잡한 문제 해결.
-
-### 특징
-
-- 최소 1024 토큰 사고 예산
-- 모델이 스스로 탐색
-- 고도로 복잡한 문제에 적합
-
-### Best Practices
-
-```text
-❌ 단계별 지시 (제한적)
-"1. 변수 식별
- 2. 방정식 세우기
- 3. 풀이
- 4. 검증"
-
-✅ 일반적 지시 (자유로움)
-"철저히 생각하세요.
- 여러 접근법을 고려하고,
- 각각의 장단점을 평가하세요."
-
-⚠️ 최소 토큰: 1024
-⚠️ 32K+ 예산: Batch Processing 권장
-```
-
-### 사용 시점
-
-| Use Case | Example | 왜 Extended? |
-|----------|---------|-------------|
-| **복잡한 STEM** | 4D 시각화, 고급 물리 문제 | 다단계 추상화 |
-| **제약 최적화** | 다중 제약 여행 계획 | 조합 탐색 |
-| **사고 프레임워크** | Porter's 5 Forces + 시나리오 분석 | 구조적 사고 |
-| **창의적 문제해결** | 새로운 알고리즘 설계 | 탐색적 사고 |
-
-### 예시: 최적화 문제
-
-```text
-Prompt:
-"3일 일정으로 유럽 5개 도시 방문 계획.
- 제약:
- - 예산: $2000
- - 비행 시간 최소화
- - 주요 관광지 3곳씩
- - 비자 불필요 국가
-
- 철저히 생각하세요. 여러 경로를 고려하고,
- 비용/시간/경험 측면에서 최적 조합을 찾으세요."
-
-→ Extended Thinking이 여러 조합 탐색 후 최적안 제시
-```
-
----
-
-## CoT vs Extended
-
-| 측면 | CoT | Extended |
-|------|-----|----------|
-| **복잡도** | 중간 (3-5 단계) | 매우 높음 (10+ 단계) |
-| **토큰** | 100-500 | 1024+ |
-| **제어** | 구조화된 단계 | 자유로운 탐색 |
-| **속도** | 빠름 | 느림 |
-| **사용** | 일반적 문제 | 극도로 복잡한 문제 |
-
----
-
-## 요약
-
-```text
-간단 → 직접 답변
-중간 → CoT (<thinking>)
-복잡 → Extended Thinking (1024+)
-```
+- 무엇을 더 명시했는가?
+- 어떤 런타임에서만 맞는 말인가?
+- 기존 workflow를 깨는 금지/필수 변경인가?
+- eval case에서 좋아졌는가?
