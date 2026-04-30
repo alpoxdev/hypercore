@@ -1,5 +1,11 @@
 # Sources For [Initiative Name]
 
+## Package Context
+
+- Source idea/request:
+- Assumptions made:
+- External research needed: yes/no
+
 ## Retrieval Notes
 
 - Retrieved on: YYYY-MM-DD
@@ -11,6 +17,13 @@
 - Query 1:
 - Query 2:
 - Query 3:
+
+## Package Artifact Coverage
+
+- PRD claims covered:
+- Feature-spec claims covered:
+- Flow/wireframe decisions covered:
+- Diagram decisions covered:
 
 ## Sources
 

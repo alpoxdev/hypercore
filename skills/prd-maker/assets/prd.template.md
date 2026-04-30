@@ -7,6 +7,7 @@
 - Initiative:
 - One-line objective:
 - Why now:
+- Package links: [`diagram.md`](./diagram.md), [`feature-spec.md`](./feature-spec.md), [`user-flow.md`](./user-flow.md), [`wireframe.md`](./wireframe.md), [`sources.md`](./sources.md)
 
 ## 2. Problem
 
@@ -70,6 +71,10 @@
 
 ## 11. Related Links
 
+- Diagram: `./diagram.md`
+- Feature spec: `./feature-spec.md`
+- User flow: `./user-flow.md`
+- Wireframe: `./wireframe.md`
 - Source log: `./sources.md`
 - Design:
 - Tickets:
@@ -79,4 +84,4 @@
 
 | Date | Change | Reason |
 |------|------|------|
-| YYYY-MM-DD | Initial draft created | Baseline PRD |
+| YYYY-MM-DD | Initial draft created | Baseline planning package |

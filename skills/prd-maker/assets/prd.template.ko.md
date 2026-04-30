@@ -7,6 +7,7 @@
 - 이니셔티브:
 - 한 줄 목표:
 - 왜 지금 하는가:
+- 패키지 링크: [`diagram.md`](./diagram.md), [`feature-spec.md`](./feature-spec.md), [`user-flow.md`](./user-flow.md), [`wireframe.md`](./wireframe.md), [`sources.md`](./sources.md)
 
 ## 2. 문제
 
@@ -70,7 +71,11 @@
 
 ## 11. 관련 링크
 
-- Source log: `./sources.md`
+- 다이어그램: `./diagram.md`
+- 기능 명세: `./feature-spec.md`
+- 유저 플로우: `./user-flow.md`
+- 와이어프레임: `./wireframe.md`
+- 출처 로그: `./sources.md`
 - 디자인:
 - 티켓:
 - 조사:
@@ -79,4 +84,4 @@
 
 | Date | Change | Reason |
 |------|------|------|
-| YYYY-MM-DD | Initial draft created | Baseline PRD |
+| YYYY-MM-DD | Initial draft created | Baseline planning package |
