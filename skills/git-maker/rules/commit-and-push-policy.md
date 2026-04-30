@@ -23,10 +23,28 @@ Use this rule when `git-maker` is active and you need the durable commit/push co
 | Type selection | Choose the Conventional Commit type from the actual dominant change. |
 | Scope selection | Use scope only when one module/package/feature clearly owns the change. |
 | Language | Commit subject and body are Korean; Conventional Commit type/scope remain English. |
-| Subject line | Imperative/present wording, lowercase after colon, under 72 characters. |
+| Subject line | Use neutral Conventional Commit result/summary wording, not Korean command/imperative endings; lowercase after colon, under 72 characters. |
 | Body/footer | Add only when needed for why/risk/follow-up, breaking change, verified issue references, or explicitly requested metadata. |
 | Safety | Never commit secrets, generated credentials, or unrelated user changes. Never use `--no-verify`, rebase, reset, amend, or destructive history operations unless explicitly requested. |
 | Hook failures | Inspect the error. Fix and retry only if the current change caused it and the fix is safe; otherwise stop and report the blocker. |
+
+## Commit Message Tone
+
+Write the Korean subject as a commit-message summary, not as an instruction to the reader.
+
+| Use | Avoid | Why |
+|------|------|------|
+| `build(deps): 안정 버전 도구 체인으로 빌드 경로 정렬` | `build(deps): 안정 버전 도구 체인으로 빌드 경로를 맞춰라` | `맞춰라` sounds like a command. |
+| `build(cloudflare): Workers 배포 경로 안정화` | `build(cloudflare): Workers 배포 경로를 안정화하라` | `~하라` is an imperative order. |
+| `refactor(nextjs): 아키텍처 경계 강화로 배포 안정성 확보` | `refactor(nextjs): 아키텍처 경계를 강제해 배포 안정성을 확보하라` | Commit subjects should describe the change/result. |
+
+Preferred Korean subject shapes:
+
+- noun/result phrase: `빌드 경로 정렬`, `배포 경로 안정화`, `검증 흐름 개선`
+- concise past-effect/result summary: `의존성 해석 고정`, `라우팅 경계 분리`
+- no sentence-final command endings such as `~하라`, `~해라`, `~라`, `~하자`, or direct orders to future maintainers
+
+If the natural draft reads like a command, rewrite it to the result now present in the commit.
 
 ## Grouping Heuristics
 

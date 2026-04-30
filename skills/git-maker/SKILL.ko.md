@@ -132,6 +132,7 @@ scripts/git-commit.sh --repo path/to/repo "<type>[scope]: <한국어 subject>" p
 - 커밋 하나는 논리 변경 하나만 포함
 - 필요한 파일만 targeted staging
 - Conventional Commit type/scope 뒤 subject/body는 한국어
+- subject는 `~하라`, `~해라`, `~라` 같은 명령형 어미가 아니라 커밋 요약에 맞는 중립적 변경/결과 표현
 - secret, 무관한 사용자 변경, destructive git operation, `--no-verify` 금지
 - 커밋 하나라도 실패하면 멈추고 push하지 않음
 

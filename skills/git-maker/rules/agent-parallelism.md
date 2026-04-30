@@ -77,7 +77,7 @@ Return: proposed logical commit groups, files included in each group, exclusions
 ```text
 Read-only git-maker commit message drafting. Do not edit, stage, commit, push, or restore files.
 Input: [paste final or candidate group plan and diff summary].
-Return: Korean Conventional Commit subject/body candidates for each group, with rationale and no fabricated issue footers.
+Return: Korean Conventional Commit subject/body candidates for each group, with rationale, no fabricated issue footers, and no command-style endings such as `~하라`, `~해라`, or `~라`.
 ```
 
 ### Safety Verifier

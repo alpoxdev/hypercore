@@ -132,6 +132,7 @@ Rules:
 - one logical change per commit
 - targeted staging only
 - Korean subject/body after the Conventional Commit type/scope
+- subject uses neutral commit-summary wording, not command-style endings like `~하라`, `~해라`, or `~라`
 - no secrets, unrelated user changes, destructive git operations, or `--no-verify`
 - if any commit fails, stop and do not push
 
