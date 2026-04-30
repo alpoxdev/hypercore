@@ -4,6 +4,16 @@
 
 ---
 
+## Rule Classifications
+
+| Rule | Classification | Enforcement |
+|---|---|---|
+| route SSR option과 `ClientOnly`는 official Start concept | Official | deliberate usage |
+| deterministic first render | Safety policy | hydration-unsafe output 차단 |
+| SSR disable 전 stabilization 선호 | Hypercore convention | touched route에 적용 |
+
+---
+
 ## 핵심 규칙
 
 서버 HTML과 클라이언트 첫 렌더가 달라질 수 있으면, 단순 경고가 아니라 설계 문제로 취급해야 합니다.

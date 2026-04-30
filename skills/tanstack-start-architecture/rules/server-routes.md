@@ -1,51 +1,36 @@
 # Server Routes
 
-> Rules for when HTTP endpoints are allowed instead of Server Functions
+> TanStack Start server routes are official HTTP endpoints; hypercore reserves them for actual HTTP semantics.
 
----
+## Rule Classifications
 
-## Default Policy
-
-For normal app features, prefer TanStack Start `createServerFn`.
-
-Use server routes only when an actual HTTP endpoint is required.
-
----
+| Rule | Classification | Enforcement |
+|---|---|---|
+| Server routes defined with `createFileRoute(... )({ server })` | Official | Allowed |
+| Server routes for webhooks/files/health/auth/public machine endpoints | Official + Hypercore convention | Allowed with justification |
+| Internal app RPC implemented as server route | Hypercore convention | Prefer server function |
+| Unvalidated request body in server route | Safety policy | Validate before trust |
 
 ## Allowed Uses
 
-| Case | Allowed |
-|------|---------|
-| `better-auth` required endpoints | YES |
-| Webhooks from third-party providers | YES |
-| Health/readiness endpoints | YES |
-| `sitemap.xml`, `robots.txt`, feeds, verification files | YES |
-| Machine-readable public endpoints explicitly needed for integrations/SEO/LLMO | YES |
-| Internal app RPC/data mutations that only your app consumes | NO. Use Server Functions |
+Use server routes when the endpoint has HTTP semantics that are not just app-internal RPC:
 
----
+- Third-party webhooks.
+- Auth provider callbacks or required auth endpoints.
+- Health/readiness endpoints.
+- File upload/download or wildcard HTTP handlers.
+- `robots.txt`, `sitemap.xml`, LLMO/metadata endpoints.
+- Public machine-readable resources.
 
-## Route Design Rules
+## Prefer Server Functions For
 
-- Keep app-internal business RPC in Server Functions
-- Keep server routes narrow, protocol-oriented, and HTTP-native
-- Prefer route-level middleware for shared auth/logging and handler-level middleware for method-specific validation
-- Return real `Response` objects with explicit headers/status when behavior matters
-- Use dynamic route params and splats only when the endpoint shape requires them
+- App reads/mutations consumed by React components or route loaders.
+- Internal RPC that benefits from end-to-end typing and Start server function middleware.
+- Operations that should share TanStack Query invalidation patterns.
 
----
+## Validation Checklist
 
-## Middleware And Context
-
-- Server routes may use route-level and handler-level middleware
-- Middleware may enrich `context`
-- Treat request body, headers, query params, and any client-provided context as untrusted input
-
----
-
-## Review Checklist
-
-- The endpoint truly needs HTTP semantics
-- The endpoint is not just internal app RPC in disguise
-- Auth/validation/logging middleware is attached where needed
-- Response headers and status codes are explicit when caching, auth, or content type matter
+- [ ] Every new server route states its HTTP justification.
+- [ ] Request bodies, params, headers, and client-sent context are validated before trust.
+- [ ] Internal app RPC uses server functions unless the user explicitly requested HTTP endpoints.
+- [ ] Server route middleware is applied at route or handler level where needed.

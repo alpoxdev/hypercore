@@ -1,236 +1,112 @@
 # Route Structure
 
-> TanStack Start file-based routing
+> Route organization, file-route lifecycle, search validation, and hypercore page folder conventions.
 
----
+## Rule Classifications
 
-## Route Folder Structure
+| Rule | Classification | Enforcement |
+|---|---|---|
+| File route instance exported as `Route` | Official | Block if missing |
+| Search params validated when consumed | Official + Safety policy | Block if unvalidated user input affects behavior |
+| `beforeLoad` before `loader` lifecycle | Official | Use for auth/context/redirect decisions |
+| Mixed flat/directory routes supported by Router | Official | Do not claim flat routes are invalid TanStack usage |
+| Route-directory preference for app pages | Hypercore convention | Apply to touched app pages unless official defaults requested |
+| `-hooks/`, `-components/`, `-functions/` for pages with logic/server integration | Hypercore convention | Apply when logic/integration exists |
 
+## Publishing-Only Exception
+
+Publishing-only pages are static display pages with no interactive logic and no server integration.
+Examples: terms, privacy, about, simple marketing content.
+
+- They do **not** require `-components/`, `-hooks/`, or `-functions/`.
+- If interactive logic is added, create `-hooks/` and route-local components as needed.
+- If server integration is added, create `-functions/` and route-local hooks for query/mutation orchestration.
+
+## Hypercore Route Folder Shape
+
+```text
+routes/<page>/
+├── index.tsx          # page UI only
+├── route.tsx          # layout/beforeLoad/loader when needed
+├── -components/       # page-local components when UI grows or repeats
+├── -hooks/            # page-local interactive/query orchestration
+├── -functions/        # page-local server functions
+└── -sections/         # optional for large page sections
 ```
-routes/
-├── __root.tsx           # Root Layout
-├── index.tsx            # / (Home)
-├── users/
-│   ├── index.tsx        # /users (List)
-│   ├── $id.tsx          # /users/:id (Detail)
-│   ├── -components/     # Page-specific components (REQUIRED)
-│   ├── -hooks/          # Page-specific hooks (REQUIRED)
-│   ├── -functions/      # Page-specific Server Functions (REQUIRED)
-│   └── -sections/       # Section separation (optional, complex pages only)
-└── posts/
-    ├── index.tsx
-    ├── $slug.tsx
-    ├── -components/     # REQUIRED
-    ├── -hooks/          # REQUIRED
-    └── -functions/      # REQUIRED
-```
 
-| Prefix | Purpose | Route Generated |
-|--------|---------|-----------------|
-| `-` | Route-excluded folder | Excluded |
-| `$` | Dynamic parameter | Generated |
-| `_` | Pathless Layout | Generated (no path) |
+Official TanStack Router supports flat route files. The shape above is a hypercore maintainability convention.
 
-**Required rules:**
-- Every page **with logic** MUST have `-components/`, `-hooks/`, `-functions/` folders
-- **Publishing-only exception:** Pages that only display static content with no interactive logic AND no server integration do NOT need these folders. Examples: about, terms, privacy policy, simple marketing pages.
-- **Server integration = folders required:** If a page has ANY server integration (loader with server functions, `useQuery`, `useMutation`, `useServerFn`) → `-functions/` and `-hooks/` are MANDATORY
-- If a page has **any** interactive UI logic (`useState`, `useCallback`, custom hooks), all three folders are required — no exceptions regardless of page size
-- Custom Hooks MUST be separated into `-hooks/` folder **regardless of page size**
-- `-sections/` is optional, only for complex pages (200+ lines)
-- **Auto-setup:** If a TanStack Start project has routes but missing required folders, create them before writing code
+## File Route Export
 
----
-
-## Route Filename Rules
-
-| Path | Filename | Description |
-|------|----------|-------------|
-| `/` | `index.tsx` | Index route |
-| `/users` | `users/index.tsx` | List page |
-| `/users/:id` | `users/$id.tsx` | Dynamic parameter |
-| `/dashboard/*` | `dashboard/$.tsx` | Catch-all route |
-| Layout | `__root.tsx` | Root layout |
-| Pathless | `_layout.tsx` | Pathless layout |
-
----
-
-## Basic Route Pattern
-
-```tsx
-// routes/users/index.tsx
+```typescript
 import { createFileRoute } from '@tanstack/react-router'
-import { UserListSection } from './-sections/user-list-section'
 
 export const Route = createFileRoute('/users/')({
   component: UsersPage,
 })
-
-const UsersPage = (): JSX.Element => {
-  return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Users</h1>
-      <UserListSection />
-    </div>
-  )
-}
 ```
 
-## Dynamic Route + Loader
+- The route instance must be exported as `Route`.
+- `createFileRoute` path strings are generated/updated by the router plugin or CLI.
 
-```tsx
-// routes/users/$id.tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { getUserById } from '@/services/user'
+## Route Lifecycle
 
-export const Route = createFileRoute('/users/$id')({
-  loader: ({ params: { id } }) => getUserById({ data: id }),
-  component: UserDetailPage,
+| Step | Official behavior | Use for |
+|---|---|---|
+| `validateSearch` | Runs during matching/search validation | Parse and validate URL search state |
+| `beforeLoad` | Runs serially before route loading | Auth, redirects, context extension |
+| `loader` | Runs in route loading phase and can be cached/preloaded | Data loading; do not treat as server-only |
+| `pendingComponent` | Optional threshold-based pending UI | Slow critical loader UX |
+| `errorComponent` | Handles route lifecycle/render errors | Recoverable route errors |
+
+## Search Validation
+
+When a route consumes search params, validate them.
+
+Zod v4 official path:
+
+```typescript
+import { z } from 'zod'
+
+const searchSchema = z.object({
+  page: z.number().default(1),
 })
 
-const UserDetailPage = (): JSX.Element => {
-  const user = Route.useLoaderData()
-  return (
-    <div>
-      <h1>{user.name}</h1>
-      <p>{user.email}</p>
-    </div>
-  )
-}
-```
-
-## Deferred Data Loading
-
-```tsx
-import { createFileRoute, Await } from '@tanstack/react-router'
-import { Suspense } from 'react'
-
-export const Route = createFileRoute('/dashboard/')({
-  loader: async () => {
-    const slowDataPromise = getSlowData()
-    const fastData = await getFastData()
-    return { fastData, deferredSlowData: slowDataPromise }
-  },
-  component: DashboardPage,
+export const Route = createFileRoute('/products/')({
+  validateSearch: searchSchema,
+  component: ProductsPage,
 })
-
-const DashboardPage = (): JSX.Element => {
-  const { fastData, deferredSlowData } = Route.useLoaderData()
-  return (
-    <div>
-      <div>{JSON.stringify(fastData)}</div>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Await promise={deferredSlowData}>
-          {(data) => <div>{JSON.stringify(data)}</div>}
-        </Await>
-      </Suspense>
-    </div>
-  )
-}
 ```
 
----
+Zod v3 official path:
 
-## Search Params Validation
-
-> Type-safe search parameters with `@tanstack/zod-adapter`
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
+```typescript
 import { zodValidator, fallback } from '@tanstack/zod-adapter'
 import { z } from 'zod'
 
 const searchSchema = z.object({
-  page: fallback(z.number().int().positive(), 1),
-  filter: z.string().optional(),
-  sortBy: z.enum(['newest', 'oldest', 'price']).default('newest'),
+  page: fallback(z.number(), 1).default(1),
 })
 
 export const Route = createFileRoute('/products/')({
   validateSearch: zodValidator(searchSchema),
   component: ProductsPage,
 })
-
-const ProductsPage = (): JSX.Element => {
-  const { page, filter, sortBy } = Route.useSearch()
-  const navigate = Route.useNavigate()
-
-  return (
-    <div>
-      <select
-        value={sortBy}
-        onChange={(e) =>
-          navigate({
-            search: (prev) => ({ ...prev, sortBy: e.target.value as 'newest' | 'oldest' | 'price' }),
-          })
-        }
-      >
-        <option value="newest">Newest</option>
-        <option value="oldest">Oldest</option>
-        <option value="price">Price</option>
-      </select>
-    </div>
-  )
-}
 ```
 
-| API | Source | Purpose |
-|-----|--------|---------|
-| `zodValidator` | `@tanstack/zod-adapter` | Schema validation for search params |
-| `fallback` | `@tanstack/zod-adapter` | Default values for invalid params |
-| `Route.useSearch()` | `@tanstack/react-router` | Access validated search params |
-| `Route.useNavigate()` | `@tanstack/react-router` | Navigate with search param updates |
+If a project standardizes on `zodValidator` for all versions, label that as a hypercore convention in the project notes.
 
----
+## Loader Boundary Rule
 
-## Route Options: Loading & Error States
+- Loaders are isomorphic in TanStack Start.
+- Do not access secrets, database clients, filesystem, or privileged SDKs directly in loader code.
+- Move privileged work to `createServerFn` or `createServerOnlyFn` and call that boundary from the loader.
 
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
+## Validation Checklist
 
-export const Route = createFileRoute('/posts/')({
-  loader: async () => {
-    const response = await fetch('https://api.example.com/posts')
-    if (!response.ok) throw new Error('Failed to fetch')
-    return response.json()
-  },
-  pendingComponent: () => <div>Loading posts...</div>,
-  errorComponent: ({ error }) => (
-    <div>
-      <h2>Error</h2>
-      <p>{error.message}</p>
-    </div>
-  ),
-  component: PostsPage,
-})
-```
-
-| Route Option | Purpose | Required |
-|--------------|---------|----------|
-| `pendingComponent` | Loading UI while loader runs | Recommended |
-| `errorComponent` | Error UI when loader/component fails | Required |
-| `notFoundComponent` | 404 UI (root route) | Required in `__root.tsx` |
-| `validateSearch` | Search param validation | When using search params |
-
----
-
-## Loader Execution Order
-
-| Step | Execution | Description |
-|------|-----------|-------------|
-| 0. `validateSearch` | Before navigation | Search params validation |
-| 1. `beforeLoad` | Sequential (outermost -> innermost) | Auth check, context setup |
-| 2. `loader` | Parallel (all loaders simultaneously) | Data fetching |
-
----
-
-## Folder Structure Rules
-
-| Page Type | Required | Optional |
-|-----------|----------|----------|
-| Publishing-only (static content, no logic) | None | - |
-| Any page with logic (~100 lines) | `-components/`, `-hooks/`, `-functions/` | - |
-| Any page with logic (100-200 lines) | `-components/`, `-hooks/`, `-functions/` | - |
-| Any page with logic (200+ lines) | `-components/`, `-hooks/`, `-functions/` | `-sections/` |
-
-> **Publishing-only** = no `useState`, `useCallback`, custom hooks, server function calls. Only static/server-fetched content display. If ANY logic exists, all three folders are required.
+- [ ] Touched file routes export `Route`.
+- [ ] Search params are validated with a pattern appropriate to the installed Zod version.
+- [ ] `beforeLoad` holds auth/context/redirect logic that must run serially.
+- [ ] Loader code contains no direct secret/DB/filesystem access.
+- [ ] Publishing-only pages were not forced into empty route-local folders.
+- [ ] Pages with logic/server integration have route-local organization or a documented reason not to.

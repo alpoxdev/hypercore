@@ -4,6 +4,17 @@
 
 ---
 
+## Rule Classifications
+
+| Rule | Classification | Enforcement |
+|---|---|---|
+| Route file names follow TanStack Router conventions | Official | Keep official route names |
+| Kebab-case non-route filenames | Hypercore convention | Apply to touched files |
+| No `any`, explicit return types, const arrow functions | Hypercore convention | Apply to touched code |
+| Korean block comments for meaningful code groups | Hypercore convention | Apply to touched implementation files |
+
+---
+
 ## File Naming
 
 > camelCase filenames are FORBIDDEN - all filenames must use kebab-case

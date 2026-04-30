@@ -4,6 +4,17 @@
 
 ---
 
+## Rule Classifications
+
+| Rule | Classification | Enforcement |
+|---|---|---|
+| `src/router.tsx`가 fresh-instance `getRouter()` export | Official | missing setup 차단 |
+| server/client env boundary | Safety policy | secret leak 차단 |
+| non-trivial app runtime env validation | Hypercore convention + Safety policy | warn 또는 scaffold 추가 |
+| Vite version-aware path alias | Hypercore convention | touched code에서 수정 |
+
+---
+
 ## Router 설정
 
 - `src/router.tsx`는 반드시 `getRouter()`를 export해야 합니다

@@ -4,6 +4,16 @@
 
 ---
 
+## Rule Classifications
+
+| Rule | Classification | Enforcement |
+|---|---|---|
+| Loaders are isomorphic, not server-only | Official | Block privileged direct access |
+| Secrets stay behind server-only boundaries | Safety policy | Block leaks |
+| Prefer environment functions over ad-hoc branching | Hypercore convention | Warn/fix in touched code |
+
+---
+
 ## Core Rule
 
 Do not guess where code runs. In TanStack Start:

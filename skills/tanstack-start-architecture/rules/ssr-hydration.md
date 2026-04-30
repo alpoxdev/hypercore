@@ -4,6 +4,16 @@
 
 ---
 
+## Rule Classifications
+
+| Rule | Classification | Enforcement |
+|---|---|---|
+| Route SSR options and `ClientOnly` are official Start concepts | Official | Use deliberately |
+| Deterministic first render | Safety policy | Block hydration-unsafe output |
+| Prefer stabilization before disabling SSR | Hypercore convention | Apply to touched routes |
+
+---
+
 ## Core Rule
 
 If server HTML and client render can differ, treat it as a design problem, not a harmless warning.

@@ -4,6 +4,17 @@
 
 ---
 
+## Rule Classifications
+
+| Rule | Classification | Enforcement |
+|---|---|---|
+| route filename은 TanStack Router convention 준수 | Official | official route name 유지 |
+| route 외 filename은 kebab-case | Hypercore convention | touched file에 적용 |
+| no `any`, explicit return type, const arrow function | Hypercore convention | touched code에 적용 |
+| 의미 있는 code group의 Korean block comment | Hypercore convention | touched implementation file에 적용 |
+
+---
+
 ## 파일 네이밍
 
 > camelCase 파일명 금지 - 모든 파일명은 kebab-case 사용

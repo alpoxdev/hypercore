@@ -1,333 +1,156 @@
 ---
 name: tanstack-start-architecture
-description: "[Hyper] Use when working on TanStack Start projects - enforces architecture rules (layers, routes, hooks, server functions, conventions) with mandatory validation before any code change. Triggers on file creation, route work, server function writing, hook patterns, or any structural change in a TanStack Start codebase."
+description: "[Hyper] Enforce TanStack Start architecture in existing Start projects, especially route structure, server functions, loader/client-server boundaries, importProtection, hooks, SSR/hydration, and hypercore conventions. Use before structural code changes, route work, server function work, or architecture audits in TanStack Start codebases."
 ---
+
+@architecture-rules.md
+@rules/routes.md
+@rules/services.md
+@rules/hooks.md
+@rules/import-protection.md
+@rules/middleware.md
+@rules/execution-model.md
+@rules/server-routes.md
+@rules/ssr-hydration.md
+@rules/platform.md
+@rules/validation.md
+@references/official/tanstack-start-2026-04-30.md
+@references/official/tanstack-router-2026-04-30.md
+@references/official/api-drift-notes.md
 
 # TanStack Start Architecture Enforcement
 
-## Overview
+> Apply hypercore's TanStack Start architecture rules without confusing team conventions with official TanStack requirements.
 
-Enforces hypercore TanStack Start architecture rules with 100% compliance. Validates project structure, then applies strict layer/route/hook/convention rules to every code change.
+<purpose>
 
-**This skill is RIGID. Follow exactly. No exceptions.**
+- Validate that the project is a TanStack Start / TanStack Router project before applying this skill.
+- Enforce safety boundaries for loaders, server functions, import protection, middleware, server routes, and SSR/hydration.
+- Apply hypercore conventions for route folders, hooks, file naming, comments, and layering when they are in scope.
+- Keep official TanStack API facts in `references/official/` so rapidly changing framework details can be refreshed without bloating the core skill.
 
-**OPERATING MODE:** This skill is self-contained. Do not block on global skills or external orchestration surfaces. If a repo-local persistence loop is already active or the user explicitly asks for exhaustive verification, keep using it. Otherwise proceed directly with this skill's validation and verification flow.
+</purpose>
 
-**CRITICAL:** TanStack Start import protection is mandatory. You MUST enforce client/server import boundaries, verify `vite.config.ts`, and add or extend `importProtection` when it is missing or incomplete. Do not silently rely on defaults when the project needs explicit deny rules.
+<operating_mode>
 
-**NOTE:** Some rules in this skill are stricter than TanStack Start defaults. Treat them as hypercore team conventions unless the user explicitly asks to follow official TanStack defaults instead.
+This skill is self-contained. Do not depend on global skills or external orchestration before applying it.
 
-## Trigger Examples
+Rules are classified as:
 
-### Positive
+- **Official** — documented TanStack behavior or API requirement.
+- **Safety policy** — local blocking rule for security/runtime correctness.
+- **Hypercore convention** — local/team standard that may be stricter than official TanStack defaults.
 
-- `Fix architecture violations in a TanStack Start route refactor before editing more files.`
-- `Audit a TanStack Start app for importProtection, getRouter, loader boundaries, and route structure.`
-- `Add a TanStack Start server function and make sure hooks, routes, and validation stay compliant.`
+If a user explicitly asks for official TanStack defaults, relax hypercore-only conventions but keep official and safety rules.
 
-### Negative
+</operating_mode>
 
-- `Create a new browser QA skill for Codex.`
-- `Review a generic React or Vite app that does not use TanStack Start.`
+<trigger_examples>
 
-### Boundary
+Positive:
 
-- `Make a tiny copy-only change in a TanStack Start page.`
-Direct editing can be enough if no architecture boundary or structural rule is affected.
+- "Audit this TanStack Start app for server-function, loader, and importProtection violations."
+- "Add a TanStack Start route with search params and keep the architecture compliant."
+- "Refactor Start route folders, hooks, and server functions to follow hypercore rules."
+- "TanStack Start 프로젝트에서 loader 경계랑 server function 구조 점검해줘."
 
-- `User explicitly wants official TanStack defaults instead of hypercore conventions.`
-This skill still applies, but relax hypercore-only rules that exceed official defaults.
+Negative:
 
-## Step 1: Project Validation
+- "Review this generic React/Vite app that does not use TanStack Start."
+- "Create a browser QA skill for Codex."
+- "Summarize TanStack Router docs without changing or auditing a project."
 
-Before any work, confirm TanStack Start project:
+Boundary:
+
+- "Make a copy-only edit in a static TanStack Start privacy page."
+  Use this skill only for a quick boundary check; publishing-only pages do not need generated `-hooks/`, `-components/`, or `-functions/` folders unless logic/server integration is introduced.
+
+</trigger_examples>
+
+<project_validation>
+
+Before enforcing rules, confirm at least one Start/Router indicator exists:
 
 ```bash
-# Check for TanStack Start indicators (ANY of these)
-ls app.config.ts 2>/dev/null        # TanStack Start config
+ls app.config.ts 2>/dev/null
 grep -r "@tanstack/react-start" package.json 2>/dev/null
 grep -r "@tanstack/react-router" package.json 2>/dev/null
 ls src/routes/__root.tsx 2>/dev/null
 ```
 
-If NONE found: **STOP. This skill does not apply.** Inform user and route away to the normal implementation or review path instead of forcing TanStack Start rules.
+If none are present, stop using this skill and route to the normal implementation/review path.
 
-If found: proceed with architecture enforcement.
+</project_validation>
 
-## Step 2: Read Architecture Rules
+<support_file_read_order>
 
-Load the detailed rules reference:
+Read only what the task needs:
 
-**REQUIRED:** Read `architecture-rules.md` in this skill directory before writing any code.
+1. `architecture-rules.md` for the rule taxonomy and blocking gate summary.
+2. Topic rules by changed surface:
+   - `rules/routes.md` — route organization, search validation, loaders, route lifecycle.
+   - `rules/services.md` — server functions, validation, query/mutation layering.
+   - `rules/hooks.md` — hook extraction, internal hook order, `useServerFn` wrapper policy.
+   - `rules/import-protection.md` — client/server import boundaries and `vite.config.ts` deny rules.
+   - `rules/middleware.md` — function/request middleware and `sendContext` validation.
+   - `rules/execution-model.md` — isomorphic loaders and environment-only functions.
+   - `rules/server-routes.md` — justified HTTP endpoints vs internal app RPC.
+   - `rules/ssr-hydration.md` — deterministic first render, `ClientOnly`, route SSR modes.
+   - `rules/platform.md` — `getRouter()`, env validation, path aliases, operational endpoints.
+3. `references/official/tanstack-start-2026-04-30.md` when Start API behavior matters.
+4. `references/official/tanstack-router-2026-04-30.md` when Router/file-route/search/loading behavior matters.
+5. `references/official/api-drift-notes.md` when docs conflict or current package behavior is uncertain.
+6. `rules/validation.md` before claiming completion.
 
-For detailed patterns and examples, also read the relevant reference files:
-- `rules/conventions.md` - Code conventions (naming, TypeScript, imports, comments)
-- `rules/routes.md` - Route structure (folder rules, patterns, loaders)
-- `rules/services.md` - Server Functions (schemas, queries, mutations, middleware)
-- `rules/hooks.md` - Custom Hook patterns (separation rules, internal order)
-- `rules/import-protection.md` - Client/server import boundary enforcement, markers, `vite.config.ts` configuration
-- `rules/middleware.md` - Middleware validation, context propagation, and `sendContext` security
-- `rules/execution-model.md` - Server/client/isomorphic execution boundaries
-- `rules/server-routes.md` - When HTTP endpoints are allowed instead of Server Functions
-- `rules/ssr-hydration.md` - SSR mode, `ClientOnly`, and hydration-safety rules
-- `rules/platform.md` - `getRouter()`, env typing/validation, path aliases, operational endpoints
+</support_file_read_order>
 
-## Step 3: Pre-Change Validation Checklist
+<workflow>
 
-Before writing ANY code, verify your planned change against these gates:
+| Phase | Task | Output |
+|---|---|---|
+| 0 | Validate this is a TanStack Start/Router project | Scope decision |
+| 1 | Identify touched surfaces and load only relevant rule/reference files | Minimal evidence set |
+| 2 | Classify each applicable rule as Official, Safety policy, or Hypercore convention | Enforcement plan |
+| 3 | Apply safe, local, reversible fixes automatically | Code or skill changes |
+| 4 | Defer broad migrations unless explicitly requested | Backlog or handoff note |
+| 5 | Run validation checks from `rules/validation.md` | Evidence-backed completion |
 
-### Brownfield Adoption Rule
+</workflow>
 
-- Do not treat every legacy deviation as an immediate project-wide failure
-- Safety issues still block immediately, especially in touched files
-- Hypercore-specific style/structure drift in untouched legacy code can be recorded as migration backlog
-- Any file you touch should be brought into compliance unless that would require a materially risky migration
+<blocking_safety_summary>
 
-### Gate 1: Layer Violations
+Always block or fix before proceeding when touched code would:
 
-```
-Routes -> Server Functions -> Features -> Database
-```
+- Read secrets, DB clients, filesystem, or privileged SDKs from isomorphic loader/client-reachable code.
+- Keep server-only imports alive outside compiler-recognized boundaries such as `createServerFn` or `createServerOnlyFn`.
+- Disable import protection or overwrite an existing `tanstackStart()` config instead of extending it.
+- Use server functions for mutations without runtime input validation.
+- Treat untrusted `sendContext` values as validated server data.
+- Introduce hydration-unstable first render output such as `Date.now()`, random IDs, or locale/time-zone divergence without a stabilization strategy.
 
-| Check | Rule |
-|-------|------|
-| Route accessing DB directly? | BLOCKED. Must go through Server Functions -> Features |
-| Route calling ORM (Prisma/Drizzle) directly? | BLOCKED. Use Server Functions |
-| Server Function skipping Features? | ALLOWED only for simple CRUD |
-| Client calling Server Function directly? | BLOCKED. Use TanStack Query (exception: `loader`/`beforeLoad` run server-side, can call directly) |
+</blocking_safety_summary>
 
-### Gate 2: Route Structure
+<hypercore_conventions_summary>
 
-> **Publishing-only exception:** Pages that only display static content with no interactive logic AND no server integration do NOT require `-components/`, `-hooks/`, `-functions/` folders. Examples: about, terms, privacy policy, simple marketing pages.
->
-> **Server integration = folders required:** If a page has ANY server integration (loader calling server functions, `useQuery`, `useMutation`, `useServerFn`, or any data fetching), `-functions/` and `-hooks/` are MANDATORY. If a page has ANY interactive UI logic (`useState`, `useCallback`, custom hooks), all three folders are required.
+Apply these to touched files unless the user asks for official defaults only:
 
-| Check | Rule |
-|-------|------|
-| Flat file route? (`routes/users.tsx`) | BLOCKED. Use folder (`routes/users/index.tsx`) |
-| Missing `-components/` folder? | BLOCKED — unless publishing-only page (static content, no logic) |
-| Missing `-hooks/` folder? | BLOCKED — unless publishing-only page (static content, no logic) |
-| Missing `-functions/` folder? | BLOCKED — unless publishing-only page (static content, no server functions) |
-| TanStack Start project with wrong folder structure? | BLOCKED. Auto-setup required folders before writing code |
-| `const Route` without `export`? | BLOCKED. Must be `export const Route` |
-| Logic in page component? | BLOCKED. Extract to `-hooks/` |
-| Layout route missing `route.tsx`? | BLOCKED. Routes needing beforeLoad/loader must have `route.tsx` |
-| Route with search params but no `validateSearch`? | BLOCKED. Must use `zodValidator` with `validateSearch` |
-| Route without `pendingComponent`? | WARNING. Recommended for all routes with loaders |
-| New `/api` route for normal app logic? | BLOCKED. Use Server Functions instead |
-| `/api` route required by `better-auth` or webhook/health/integration HTTP semantics? | ALLOWED with explicit justification |
+- Prefer route directories over flat route files for app pages.
+- Pages/components with interactive logic extract logic into `-hooks/`; publishing-only static pages are exempt.
+- Server-integrated pages use `-functions/` and route-local hooks/components where appropriate.
+- Use `export const Route = createFileRoute(...)` for file routes.
+- Keep routes thin: route/page UI -> hooks/query -> server functions -> feature/database layer.
+- Use kebab-case filenames, explicit return types, no `any`, const arrow functions, and Korean block comments for meaningful code groups.
 
-### Gate 3: Server Functions
+</hypercore_conventions_summary>
 
-> **CRITICAL:** `.validator()` does NOT exist in TanStack Start. The ONLY correct API is `.inputValidator()`. `inputValidator` accepts Zod objects directly — you can pass `z.object({...})` without any adapter wrapper. See `rules/services.md` for full examples.
+<validation>
 
-| Check | Rule |
-|-------|------|
-| POST/PUT/PATCH without `inputValidator`? | BLOCKED. Must use `.inputValidator()` with a Zod schema (e.g. `z.object({...})`) |
-| Auth-required without `middleware`? | BLOCKED |
-| Using `.validator()` instead of `.inputValidator()`? | BLOCKED. `.validator()` does NOT exist — runtime error. Use `.inputValidator()` |
-| Wrapping Zod schema in adapter unnecessarily? | INFO. `inputValidator(z.object({...}))` works directly — `zodValidator()` adapter is optional |
-| handler not last in chain? | BLOCKED. handler must ALWAYS be last (middleware/inputValidator order is flexible) |
-| Missing `zodValidator` adapter for search params? | BLOCKED. Use `zodValidator` from `@tanstack/zod-adapter` for `validateSearch` only |
-| Direct server function call in component? | BLOCKED. Use `useServerFn` hook from `@tanstack/react-start` |
-| `functions/index.ts` barrel export? | BLOCKED. Tree shaking failure |
+Before declaring the work done:
 
-### Gate 4: Hooks
+- Run the task-specific checks in `rules/validation.md`.
+- Confirm official-vs-hypercore labels are preserved in any edited rule.
+- Confirm support files are directly linked from `SKILL.md` and do not require following an indirect reference chain.
+- Confirm English and Korean entrypoints still describe the same trigger, boundary, workflow, and read order.
+- Record any unresolved TanStack API ambiguity with a source link and exact date.
 
-| Check | Rule |
-|-------|------|
-| Hook inside page component? | BLOCKED. Must be in `-hooks/` folder |
-| Wrong hook order? | BLOCKED. State -> Global -> Server Fns -> Query -> Handlers -> Memo -> Effect |
-| Missing return type interface? | BLOCKED |
-| camelCase hook filename? | BLOCKED. Use `use-kebab-case.ts` |
-
-### Gate 5: Conventions
-
-| Check | Rule |
-|-------|------|
-| camelCase filename? | BLOCKED. Use kebab-case |
-| `function` keyword? | BLOCKED. Use const arrow function |
-| `any` type? | BLOCKED. Use `unknown` |
-| Missing explicit return type? | BLOCKED |
-| Wrong import order? | BLOCKED. External -> @/ -> Relative -> Type |
-| Missing Korean block comments? | BLOCKED for code groups |
-| Using `z.string().email()` pattern? | BLOCKED. Use Zod 4.x `z.email()` directly |
-
-### Gate 6: Execution Model
-
-| Check | Rule |
-|-------|------|
-| Treating `loader` as server-only? | BLOCKED. `loader` is isomorphic by default |
-| Secret/DB/filesystem access directly inside `loader` or other client-reachable code? | BLOCKED. Move behind `createServerFn` / `createServerOnlyFn` |
-| Browser-only APIs used in server-capable code without `ClientOnly` / client-only boundary? | BLOCKED |
-| Manual `typeof window` branching where environment functions are clearer? | WARNING. Prefer `createClientOnlyFn` / `createServerOnlyFn` / `createIsomorphicFn` |
-
-### Gate 7: Import Protection
-
-| Check | Rule |
-|-------|------|
-| Client-reachable code imports `*.server.*`? | BLOCKED |
-| Server execution path imports `*.client.*`? | BLOCKED |
-| Environment-specific file missing `.server.*` / `.client.*` suffix or marker import? | BLOCKED. Rename or add `server-only` / `client-only` marker |
-| `vite.config.ts` missing `tanstackStart({ importProtection: ... })` when custom directory denies are needed? | BLOCKED. Add or extend config first |
-| Existing `importProtection` config overwritten instead of extended? | BLOCKED |
-| `importProtection` disabled? | BLOCKED unless user explicitly requested it |
-| Server-only import survives outside `createServerFn` / `createServerOnlyFn` boundary? | BLOCKED. Split file or wrap with `createServerOnlyFn` |
-
-**Import protection is not optional.** If `vite.config.ts` already contains `tanstackStart()`, update the existing plugin config instead of duplicating plugins or removing other options.
-
-### Gate 8: SSR / Hydration
-
-| Check | Rule |
-|-------|------|
-| First render outputs unstable values (`Date.now()`, random IDs, locale-only differences)? | BLOCKED unless stabilized |
-| Browser-only widget SSR'd without `ClientOnly` or SSR restriction? | BLOCKED |
-| Route uses `ssr: false` / `ssr: 'data-only'` without fallback strategy? | BLOCKED |
-| Root SSR reduced without understanding `shellComponent`? | BLOCKED |
-
-### Gate 9: Platform Setup
-
-| Check | Rule |
-|-------|------|
-| `src/router.tsx` missing `getRouter()` fresh-instance pattern? | BLOCKED |
-| Env values used without clear client/server boundary? | BLOCKED |
-| Env typing/runtime validation missing in non-trivial app setup? | WARNING. Add `src/env.d.ts` and validation |
-| Path alias setup assumes Vite behavior without explicit config? | BLOCKED. Configure for Vite version in use |
-
-## Step 3.5: Auto-Remediation Policy
-
-Auto-fix directly when the issue is local, reversible, and low-risk.
-
-- **Create missing route folder structure** — if a TanStack Start project has routes but missing `-components/`, `-hooks/`, `-functions/` folders, create them automatically for pages that have logic. Do NOT create them for publishing-only pages.
-- Add or extend `importProtection` in `vite.config.ts`
-- Add `getRouter()` fresh-instance pattern in `src/router.tsx`
-- Add env typing/runtime validation scaffolding
-- Add missing marker imports or explicit boundary wrappers
-- Add middleware validation for untrusted `sendContext`
-
-Do not auto-apply broad or potentially breaking migrations without explicit justification.
-
-- Mass route/file renames
-- Sweeping `/api` to Server Function refactors
-- SSR mode changes across many routes
-- Alias-wide import rewrites
-
-## Step 4: Implementation (with Ralph)
-
-When used with ralph, every PRD story MUST include these acceptance criteria:
-
-```
-- [ ] Layer architecture respected (no layer skipping)
-- [ ] Route uses folder structure with -components/, -hooks/, -functions/
-- [ ] export const Route = createFileRoute(...) used
-- [ ] Server Functions use correct chaining (handler always last, middleware/inputValidator flexible)
-- [ ] Search params use zodValidator from @tanstack/zod-adapter
-- [ ] Custom Hooks in -hooks/ with correct internal order
-- [ ] All filenames kebab-case
-- [ ] Execution model rules verified (`loader` isomorphic, env boundaries explicit)
-- [ ] Import protection rules verified (`*.server.*` / `*.client.*`, markers, no leaky imports)
-- [ ] Server routes, if present, are justified by actual HTTP semantics
-- [ ] SSR/hydration rules verified (`ClientOnly`, `ssr`, deterministic first render)
-- [ ] `src/router.tsx` uses `getRouter()` and platform setup is explicit
-- [ ] `vite.config.ts` preserves or extends `tanstackStart({ importProtection: ... })`
-- [ ] Korean block comments present
-- [ ] const arrow functions with explicit return types
-```
-
-## Step 5: Post-Change Verification
-
-After writing code, verify:
-
-1. **Structure check**: `ls` the route folder - confirm `-components/`, `-hooks/`, `-functions/` exist
-2. **Export check**: grep for `export const Route` in route files
-3. **Layer check**: no ORM (Prisma/Drizzle) imports in route files
-4. **Convention check**: no camelCase filenames, no `function` keyword declarations
-5. **Hook order check**: read hook files, verify State -> Global -> Server Fns -> Query -> Handlers -> Memo -> Effect
-6. **Execution model check**: no secret/DB access in unbounded loaders, browser-only APIs stay client-only
-7. **Import boundary check**: no client-reachable `*.server.*`, no server-side `*.client.*`, markers used where suffixes are absent
-8. **SSR/hydration check**: unstable UI stabilized, `ClientOnly`/`ssr` used deliberately
-9. **Platform check**: `src/router.tsx` uses `getRouter()`, env typing/validation and path aliases are explicit
-10. **Vite config check**: confirm `vite.config.ts` keeps or extends `importProtection` and does not disable it
-
-## Quick Reference: Folder Structure
-
-```
-src/
-├── routes/                    # File-based routing
-│   └── <page>/
-│       ├── index.tsx          # Page (UI only)
-│       ├── route.tsx          # Layout (beforeLoad, loader)
-│       ├── -components/       # REQUIRED: page components
-│       ├── -hooks/            # REQUIRED: page hooks (ALL logic here)
-│       ├── -functions/        # REQUIRED: page server functions
-│       └── -sections/         # Optional: 200+ line pages
-├── features/<domain>/         # Internal domain (ORM queries — Prisma or Drizzle)
-│   ├── schemas.ts
-│   ├── queries.ts
-│   └── mutations.ts
-├── services/<provider>/       # External SDK wrappers
-├── functions/                 # Global server functions (NO index.ts!)
-│   └── middlewares/
-├── database/                  # ORM client singleton (Prisma or Drizzle)
-├── stores/                    # Zustand stores
-├── hooks/                     # Global hooks
-├── components/                # Shared UI
-│   ├── ui/                    # shadcn/ui
-│   ├── layout/                # Header, Sidebar, Footer
-│   └── shared/                # Common components
-├── types/                     # Global types
-├── env/                       # t3-env validation
-├── config/                    # auth, query-client, sentry
-└── lib/                       # Utilities
-    ├── utils/
-    ├── constants/
-    └── validators/
-```
-
-## Common Mistakes
-
-| Mistake | Fix |
-|---------|-----|
-| `routes/users.tsx` | `routes/users/index.tsx` |
-| `const Route = createFileRoute(...)` | `export const Route = createFileRoute(...)` |
-| `.validator(schema)` | `.inputValidator(schema)` — accepts `z.object()` directly, no adapter needed |
-| Logic in page component | Extract to `-hooks/use-*.ts` |
-| `lib/db` or `lib/store` folders | Use `database/` and `stores/` |
-| `functions/index.ts` barrel | Import directly from individual files |
-| Hook with mixed order | Follow: State -> Global -> Server Fns -> Query -> Handlers -> Memo -> Effect |
-| `getUserById.ts` filename | `get-user-by-id.ts` |
-| `function doThing() {}` | `const doThing = (): ReturnType => {}` |
-| Direct Zod schema in `validateSearch` | Use `zodValidator(schema)` from `@tanstack/zod-adapter` |
-| Server function call without `useServerFn` | Use `useServerFn(serverFn)` in components |
-| `createMiddleware()` without options | Use `createMiddleware({ type: 'function' })` |
-| Missing `pendingComponent` on route | Add `pendingComponent` for loading state |
-| Secret/DB access directly inside `loader` | Move behind `createServerFn` / `createServerOnlyFn` |
-| Browser-only widget SSR'd directly | Wrap with `ClientOnly` or limit route SSR |
-| Non-justified `/api` route handler for internal app RPC | Replace with Server Function |
-| Server-only helper used outside compiler boundary | Split to `*.server.*` or wrap in `createServerOnlyFn` |
-| Missing `importProtection` extension in `vite.config.ts` | Add or extend `tanstackStart({ importProtection: ... })` |
-| Missing `getRouter()` fresh instance pattern | Fix `src/router.tsx` |
-| Missing env typing/runtime validation in non-trivial setup | Add `src/env.d.ts` and validation |
-| Path alias assumed without Vite config | Configure `tsconfigPaths` for the Vite version |
-
-## Red Flags - STOP and Fix
-
-- Route file importing from `@/database` (Prisma/Drizzle) directly
-- Missing `export` on `const Route`
-- Page component with `useState`, `useQuery` etc. inline (not in hook)
-- Server function using `.validator()` instead of `.inputValidator()` (`.validator()` does NOT exist — runtime error)
-- `any` type anywhere
-- camelCase filenames
-- Non-justified `/api` route handlers for internal app RPC (use Server Functions instead)
-- Non-justified server route for internal app RPC
-- Missing `-hooks/` folder in any route
-- Route using search params without `validateSearch`
-- Component calling server function directly (not through `useServerFn`)
-- `createMiddleware()` without `{ type: 'function' }` option
-- Secret or DB access directly inside `loader`
-- Browser-only API in server-capable code path
-- Client-reachable file importing `*.server.*`
-- Server execution path importing `*.client.*`
-- Hydration-unsafe first render output
-- Missing `getRouter()` fresh instance pattern in `src/router.tsx`
-- `vite.config.ts` disabling `importProtection` or missing required deny rules
+</validation>

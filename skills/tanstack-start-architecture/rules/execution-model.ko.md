@@ -4,6 +4,16 @@
 
 ---
 
+## Rule Classifications
+
+| Rule | Classification | Enforcement |
+|---|---|---|
+| loader는 server-only가 아니라 isomorphic | Official | privileged direct access 차단 |
+| secret은 server-only boundary 뒤에 둠 | Safety policy | leak 차단 |
+| ad-hoc branching보다 environment function 선호 | Hypercore convention | touched code에서 warn/fix |
+
+---
+
 ## 핵심 규칙
 
 코드가 어디서 실행되는지 추측으로 판단하면 안 됩니다. TanStack Start에서는:

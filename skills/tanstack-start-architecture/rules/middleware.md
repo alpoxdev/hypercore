@@ -4,6 +4,17 @@
 
 ---
 
+## Rule Classifications
+
+| Rule | Classification | Enforcement |
+|---|---|---|
+| Function middleware uses `createMiddleware({ type: 'function' })` | Official | Block wrong middleware type |
+| `sendContext` is explicit and not automatic | Official | Validate before trust |
+| Validate client-provided context server-side | Safety policy | Block unvalidated trust |
+| Centralize shared auth/logging/tenant logic | Hypercore convention | Warn/fix in touched code |
+
+---
+
 ## Core Rule
 
 Middleware is not just for auth. It is the boundary where request context, validation, logging, and server-safe data propagation must be made explicit.

@@ -4,6 +4,17 @@
 
 ---
 
+## Rule Classifications
+
+| Rule | Classification | Enforcement |
+|---|---|---|
+| `src/router.tsx` exports fresh-instance `getRouter()` | Official | Block missing setup |
+| Server/client env boundaries | Safety policy | Block secret leaks |
+| Runtime env validation for non-trivial apps | Hypercore convention + Safety policy | Warn or add scaffold |
+| Vite-version-aware path aliases | Hypercore convention | Fix when touched |
+
+---
+
 ## Router Setup
 
 - `src/router.tsx` must export `getRouter()`

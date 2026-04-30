@@ -4,6 +4,17 @@
 
 ---
 
+## Rule Classifications
+
+| Rule | Classification | Enforcement |
+|---|---|---|
+| function middleware는 `createMiddleware({ type: 'function' })` 사용 | Official | 잘못된 middleware type 차단 |
+| `sendContext`는 명시적이며 자동 전송 아님 | Official | trust 전 validation |
+| client-provided context를 server-side 검증 | Safety policy | unvalidated trust 차단 |
+| shared auth/logging/tenant logic 중앙화 | Hypercore convention | touched code에서 warn/fix |
+
+---
+
 ## 핵심 규칙
 
 Middleware는 단순 auth 용도가 아닙니다. request context, validation, logging, server-safe 데이터 전파를 명시적으로 처리하는 경계입니다.
