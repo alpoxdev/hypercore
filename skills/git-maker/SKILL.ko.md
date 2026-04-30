@@ -72,8 +72,9 @@ Boundary trigger:
 필요한 파일만 읽는다:
 
 1. 속도 개선 요청, 큰 repo set, multi-repo 가능성이 있으면 `rules/speed-and-automation.md`.
-2. staging/commit 전 또는 argument mode, grouping, safety, push behavior가 애매하면 `rules/commit-and-push-policy.md`.
-3. 실행/리팩터 완료 보고 전 `rules/validation.md`.
+2. Claude Code/Codex subagent로 read-only grouping, message drafting, safety review를 나눌 수 있으면 `rules/agent-parallelism.md`.
+3. staging/commit 전 또는 argument mode, grouping, safety, push behavior가 애매하면 `rules/commit-and-push-policy.md`.
+4. 실행/리팩터 완료 보고 전 `rules/validation.md`.
 
 </support_file_read_order>
 
@@ -168,6 +169,7 @@ scripts/git-push.sh --force
 <parallelization>
 
 - `scripts/git-maker-fast.sh inspect --jobs N`으로 read-only repo inspection을 병렬화한다.
+- 복잡한 dirty tree에서 Claude Code/Codex subagent를 쓰기 전에는 `rules/agent-parallelism.md`를 읽는다; subagent는 검토와 제안만 수행한다.
 - 같은 저장소 안의 commit은 git index를 공유하므로 병렬화하지 않는다.
 - multi-repo commit은 repo boundary와 file group이 명확할 때만 독립적으로 진행할 수 있다.
 - 모든 intended commit이 성공한 뒤에만 push한다.
@@ -183,6 +185,7 @@ scripts/git-push.sh --force
 | Safety | `main`/`master` force push 금지; detached HEAD push 금지. |
 | Upstream | upstream이 없으면 `-u origin <branch>`로 push한다. |
 | Reuse preflight | 중복 discovery를 피하기 위해 `git-maker-fast.sh push [repo...]`를 우선한다. |
+| Agent boundaries | subagent는 검토와 제안만 수행하고, main integrator가 staging, commit, push를 소유한다. |
 | Validation | 최종 보고 전 `rules/validation.md` checks를 실행한다. |
 
 </required>
@@ -234,14 +237,3 @@ commit these changes
 Result: 이 스킬을 사용하지 않고 `git-commit`으로 라우팅한다.
 
 </examples>
-
-<validation>
-
-완료 주장 전:
-
-- `bash -n scripts/git-maker-fast.sh`
-- `scripts/git-maker-fast.sh inspect . --jobs 2`
-- trigger examples가 commit+push와 commit-only / push-only를 구분하는지 확인
-- 최종 보고에 commits, push result, skipped/failure cases, blockers가 포함되는지 확인
-
-</validation>

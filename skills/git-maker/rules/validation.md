@@ -10,6 +10,7 @@ Run these checks before declaring `git-maker` changes complete or before reporti
 - At least 1 boundary example exists.
 - Core `SKILL.md` stays lean and points directly to rules/scripts without duplicating them.
 - Script additions are justified by deterministic speed or safety improvements.
+- Agent parallelism guidance is isolated in `rules/agent-parallelism.md` and not duplicated in the core.
 
 ## Runtime Checks
 
@@ -19,6 +20,7 @@ Run these checks before declaring `git-maker` changes complete or before reporti
 - Commit phase still uses targeted staging and one logical change per commit.
 - Push phase is automatic only after all commit groups succeed.
 - Force push remains blocked for `main` and `master`.
+- If subagents were used, their work was read-only and final git mutations stayed with the main integrator.
 
 ## Readback Checks
 
@@ -26,4 +28,4 @@ Read as:
 
 1. a trigger model: the skill activates on commit+push, not commit-only or push-only.
 2. a rushed operator: the fastest safe command is obvious.
-3. a maintainer: future speed rules belong in `rules/speed-and-automation.md`; durable commit policy belongs in `rules/commit-and-push-policy.md`.
+3. a maintainer: future speed rules belong in `rules/speed-and-automation.md`; durable commit policy belongs in `rules/commit-and-push-policy.md`; subagent lane rules belong in `rules/agent-parallelism.md`.

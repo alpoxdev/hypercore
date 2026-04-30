@@ -72,8 +72,9 @@ Boundary trigger:
 Read only what is needed:
 
 1. `rules/speed-and-automation.md` when the user asks for speed, the repo set may be large, or multiple repositories may be present.
-2. `rules/commit-and-push-policy.md` before staging/committing or when argument mode, grouping, safety, or push behavior is unclear.
-3. `rules/validation.md` before reporting the run or skill refactor complete.
+2. `rules/agent-parallelism.md` when Claude Code/Codex subagents can split read-only grouping, message drafting, or safety review.
+3. `rules/commit-and-push-policy.md` before staging/committing or when argument mode, grouping, safety, or push behavior is unclear.
+4. `rules/validation.md` before reporting the run or skill refactor complete.
 
 </support_file_read_order>
 
@@ -168,6 +169,7 @@ Report:
 <parallelization>
 
 - Parallelize read-only repository inspection with `scripts/git-maker-fast.sh inspect --jobs N`.
+- For complex dirty trees, read `rules/agent-parallelism.md` before using Claude Code/Codex subagents; subagents may only review and propose.
 - Do not parallelize commits in the same repository because the git index is shared.
 - Multi-repo commits may be worked independently only after repo boundaries and file groups are clear.
 - Push only after every intended commit succeeds.
@@ -183,6 +185,7 @@ Report:
 | Safety | Never force push to `main` or `master`; never push from detached HEAD. |
 | Upstream | If no upstream exists, push with `-u origin <branch>`. |
 | Reuse preflight | Prefer `git-maker-fast.sh push [repo...]` to avoid duplicate discovery. |
+| Agent boundaries | Subagents may review and propose, but the main integrator owns staging, commit, and push. |
 | Validation | Run `rules/validation.md` checks before final reporting. |
 
 </required>
@@ -234,14 +237,3 @@ commit these changes
 Result: do not use this skill; route to `git-commit`.
 
 </examples>
-
-<validation>
-
-Before claiming completion:
-
-- `bash -n scripts/git-maker-fast.sh`
-- `scripts/git-maker-fast.sh inspect . --jobs 2`
-- confirm trigger examples still distinguish commit+push from commit-only and push-only
-- confirm the final report includes commits, push result, skipped/failure cases, and blockers
-
-</validation>
