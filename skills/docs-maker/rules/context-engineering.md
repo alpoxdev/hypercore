@@ -2,6 +2,36 @@
 
 **Purpose**: Turn documentation into high-signal, low-noise context that AI systems can parse, retrieve, and execute reliably.
 
+## 0. Core Contract
+
+Every instruction-style document should make these boundaries explicit when they affect execution:
+
+| Section | Must state | Avoid |
+|---|---|---|
+| Intent | what success looks like to the user | persona-only framing |
+| Scope | readable/editable/creatable targets | unlimited "everything related" scope |
+| Authority | instruction priority and conflict handling | mixing user/project/tool rules silently |
+| Evidence | trusted evidence channels and source grades | treating snippets or tool output as primary sources |
+| Tools | when to use tools, stop, or delegate | inventing tools or hard-coding one runtime without a profile |
+| Output | artifact shape, path, and completion criteria | vague "clean it up" endings |
+| Verification | tests, evals, review, or source checks that prove completion | completion without evidence |
+
+Use XML tags, Markdown headings, or tables; the mandatory part is boundary separation, not a specific syntax.
+
+## 0.1 Instruction Layers
+
+Keep one source of truth per rule:
+
+| Layer | Examples | Role |
+|---|---|---|
+| Project root | `AGENTS.md`, `CLAUDE.md`, repo-wide instructions | short invariants and loading map |
+| Instructions base | `instructions/**` | shared methods, sourcing, validation |
+| Runtime rules | Cursor rules, Codex config, Claude memory | runtime quirks and path scopes |
+| Skill/command | `skills/**/SKILL.md`, slash command | narrow executable workflow |
+| Task prompt | current user request | latest concrete override |
+
+Root documents should stay short; deep material should be loaded just in time from references.
+
 ## 1. Core Principles
 
 ### 1.1 Right Altitude

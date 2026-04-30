@@ -2,6 +2,36 @@
 
 **목적**: 문서를 AI 시스템이 안정적으로 파싱, 검색, 실행할 수 있는 고밀도 저노이즈 컨텍스트로 바꿉니다.
 
+## 0. Core Contract
+
+Instruction 성격의 문서는 실행에 영향을 주는 경우 아래 경계를 명시합니다.
+
+| 섹션 | 반드시 적을 것 | 피할 것 |
+|---|---|---|
+| Intent | 사용자가 성공으로 보는 결과 | persona만 있는 역할놀이 |
+| Scope | 읽기/수정/생성 가능한 대상 | "관련된 것 전부" 같은 무제한 범위 |
+| Authority | 지시 우선순위와 충돌 처리 | user/project/tool 규칙을 조용히 섞기 |
+| Evidence | 신뢰할 evidence channel과 source grade | snippet이나 tool output을 1차 출처처럼 취급 |
+| Tools | 도구 사용, 중단, 위임 기준 | 존재하지 않는 도구 상상 또는 runtime profile 없는 하드코딩 |
+| Output | 산출물 형태, 경로, 완료 기준 | "정리" 같은 모호한 종료 |
+| Verification | 완료를 증명할 test, eval, review, source check | evidence 없는 완료 선언 |
+
+XML tag, Markdown heading, table 모두 가능하지만 필수는 특정 문법이 아니라 경계 분리입니다.
+
+## 0.1 Instruction Layers
+
+규칙마다 하나의 source of truth를 유지합니다.
+
+| Layer | 예시 | 역할 |
+|---|---|---|
+| Project root | `AGENTS.md`, `CLAUDE.md`, repo-wide instructions | 짧은 불변 규칙과 loading map |
+| Instructions base | `instructions/**` | 공통 방법론, sourcing, validation |
+| Runtime rules | Cursor rules, Codex config, Claude memory | runtime quirk와 path scope |
+| Skill/command | `skills/**/SKILL.md`, slash command | 좁고 실행 가능한 workflow |
+| Task prompt | 현재 사용자 요청 | 최신 구체 override |
+
+Root 문서는 짧게 유지하고 깊은 내용은 필요할 때 references에서 로드합니다.
+
 ## 1. 핵심 원칙
 
 ### 1.1 적절한 고도

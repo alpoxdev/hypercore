@@ -212,3 +212,47 @@ When a harness doc still feels weak after a refactor, inspect in this order:
 3. missing tool approval or safety rule
 4. missing state or compaction policy
 5. examples that are more specific than the governing rule
+## 14. Minimum Eval Case Format
+
+Use this shape for prompt/instruction regression cases:
+
+```yaml
+id: unique-case-id
+intent: user goal
+context:
+  files: []
+  sources: []
+input: |
+  user request
+expected:
+  must:
+    - required behavior
+  must_not:
+    - forbidden behavior
+metrics:
+  - instruction_following
+  - factuality
+  - tool_use
+  - safety
+  - completion
+```
+
+## 15. Parallel / Subagent Trace Rules
+
+When the document covers parallel agents, verify the trajectory as well as the final output:
+
+| Assertion | Pass condition |
+|---|---|
+| bounded_spawn | objective, scope, output, and stop condition are present |
+| independent_or_sequenced | parallel work has no hidden dependency or is explicitly sequenced |
+| ownership_declared | edit-capable work has a declared write set |
+| least_privilege_tools | read-only work does not require write or side-effect tools |
+| child_reports_evidence | child output includes files, links, test output, or changed paths |
+| parent_integrates | parent synthesizes conflicts, duplication, and gaps |
+| parent_verifies | parent reads final tests/evals/source checks before completion |
+
+## 16. Instruction Change Loop
+
+```text
+Define success → collect baseline cases → run current doc → diagnose failures → patch smallest surface → re-run → document risk
+```
