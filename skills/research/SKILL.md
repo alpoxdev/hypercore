@@ -1,11 +1,9 @@
 ---
 name: research
-description: "[Hyper] Research a topic and deliver a source-backed markdown report when the user needs fact-finding, comparisons, market or trend analysis, or evidence-backed recommendations across live web, official docs, GitHub, and local repository sources."
-compatibility: Works best with live search or fetch tools, official-doc access such as Context7 (Claude Code) or WebSearch/WebFetch (Codex, Cursor, other environments) when available, GitHub or repo search for code evidence, and local file search for project-only topics.
+description: "[Hyper] Produce a multi-source, source-backed markdown research report for fact-finding, comparisons, market/trend analysis, or evidence-backed recommendations across live web, official docs, GitHub, and local repo sources. Use when synthesis and citations are needed, not for one-source lookups."
+compatibility: Works best with live search or fetch tools, official-doc access, GitHub or repo search for code evidence, local file search for project-only topics, and optional bounded subagent/background-agent support for independent research lanes.
 ---
 
-@rules/research-workflow.md
-@rules/validation.md
 
 # Research Skill
 
@@ -46,9 +44,9 @@ Negative requests:
 
 Boundary requests:
 
-- "`/research react useEffectEvent`"
+- "Research react useEffectEvent" or a local slash invocation such as "`/research react useEffectEvent`"
   Use `research` only if the user wants synthesis across multiple sources; otherwise do a direct official-doc lookup.
-- "`/research`"
+- "Research" with no topic, or a local slash invocation such as "`/research`"
   Ask immediately for the missing topic before doing any collection work.
 
 </activation_examples>
@@ -60,6 +58,7 @@ Boundary requests:
 | `--quick` | 1-3 distinct searches | 3+ reviewed, 2+ cited | No | short answer or brief memo |
 | default | 4-6 distinct searches | 6+ reviewed, 4+ cited | Only if gaps remain | standard report |
 | `--deep` | 7-10 distinct searches | 10+ reviewed, 6+ cited | Yes | decision memo with caveats |
+| parallel | Same budget split by independent lanes | Same total floor, deduped across lanes | Yes | synthesized report with lane ledger |
 
 </depth_modes>
 
@@ -68,10 +67,11 @@ Boundary requests:
 Read in this order:
 
 1. This core `SKILL.md` to confirm that the job is research and to pick the depth.
-2. [instructions/sourcing/reliable-search.md](/Users/alpox/Desktop/dev/kood/hypercore/instructions/sourcing/reliable-search.md) before running multiple live searches so query dedupe, recency handling, and stop conditions stay explicit.
-3. [references/channel-selection.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/research/references/channel-selection.md) when choosing between local repo search, official docs, GitHub evidence, and live web sources.
-4. [references/report-template.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/research/references/report-template.md) when drafting or saving the report.
-5. [rules/validation.md](/Users/alpox/Desktop/dev/kood/hypercore/skills/research/rules/validation.md) before declaring the research complete.
+2. [instructions/sourcing/reliable-search.md](../../instructions/sourcing/reliable-search.md) before running multiple live searches so query dedupe, recency handling, and stop conditions stay explicit.
+3. [references/channel-selection.md](references/channel-selection.md) when choosing between local repo search, official docs, GitHub evidence, and live web sources.
+4. [rules/parallel-research.md](rules/parallel-research.md) before using subagents/background agents or splitting collection across parallel lanes.
+5. [references/report-template.md](references/report-template.md) when drafting or saving the report.
+6. [rules/validation.md](rules/validation.md) before declaring the research complete.
 
 </support_file_read_order>
 
@@ -89,6 +89,7 @@ Read in this order:
 
 - If the topic is missing, ask for it before any search.
 - If the request is broad, high-stakes, or `--deep`, use sequential thinking to define 3-5 research questions, scope, date constraints, and stop conditions before searching.
+- Use parallel research only when the questions or channels are independent enough to dedupe and synthesize later; load `rules/parallel-research.md` first.
 - If the request is narrow and low-risk, state a short plan and start collecting without turning the skill into a planning exercise.
 - Prefer repo-local search for internal project questions, official docs for package or API questions, GitHub evidence for release or implementation history, and live web sources for market, news, or trend work.
 - When the user asks for "latest", "current", "today", or similar wording, verify with live sources and write exact dates in the report instead of relative dates.
@@ -98,7 +99,7 @@ Read in this order:
 
 <required>
 
-- Keep search queries distinct and stop when the evidence is sufficient; do not repeat the same query across channels.
+- Keep search queries distinct across the whole run, including subagents; do not repeat the same query across channels or lanes.
 - Prefer primary or official sources first for technical and product claims.
 - Attach a link to every non-obvious claim in the final report.
 - Use comparison tables when judging alternatives.
@@ -112,5 +113,7 @@ Read in this order:
 - Claims without citations
 - Comparison conclusions without a visible evidence basis
 - Placeholder tool or role names when the local runtime already offers a clearer direct path
+- Product-specific subagent syntax as a universal requirement
+- Parallel lanes without objective, scope, source floor, output, and stop condition
 
 </forbidden>

@@ -38,8 +38,27 @@
 | 기준 | 옵션 A | 옵션 B | 메모 |
 |------|------|------|------|
 
+## Source Ledger
+| # | Source | URL/path | Publisher | Date/freshness | Channel | Grade | Relevant claim | Used? |
+|---:|---|---|---|---|---|---|---|---|
+
+## Query Log
+- [서로 다른 query 또는 lookup angle, channel, 사용 이유]
+
+## Claim-Source Matrix
+| Claim | Supporting source(s) | Confidence | Notes |
+|---|---|---|---|
+
 ## Risks And Caveats
-- [알려진 한계, 충돌, 불확실성]
+- [알려진 한계, 충돌, 불확실성, 약한 source caveat]
+
+## Known Gaps
+- [아직 모르는 것 또는 검증하지 못한 것]
+
+## Validation Notes
+- Source floor: [충족/미충족, reviewed vs cited]
+- Dedupe: [query와 duplicate source 처리]
+- Recency: [필요한 경우 exact date 확인]
 
 ## Recommendation
 - [판단 또는 다음 액션]
@@ -54,3 +73,5 @@
 - 비자명한 주장에는 모두 링크를 붙입니다.
 - 최신성이 중요하면 정확한 날짜를 적습니다.
 - 한계는 문장 속에 숨기지 말고 명시적으로 적습니다.
+- standard, deep, parallel research에서는 source ledger와 claim-source matrix를 포함합니다.
+- 여러 lane이 같은 source를 찾았더라도 duplicate source는 한 번만 셉니다.

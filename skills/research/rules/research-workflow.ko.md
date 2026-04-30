@@ -36,7 +36,16 @@
 
 어떤 채널이 없으면, 없는 역할이나 도구를 꾸며내지 말고 가능한 다음 경로로 짧게 폴백합니다.
 
-## 4. 근거 수집
+## 4. 계획 후에만 병렬화
+
+기본, deep, broad, comparative, 또는 명시적 parallel research에서는 query plan이 생긴 뒤 `rules/parallel-research.ko.md`를 읽습니다.
+
+- `--quick` 또는 좁은 one-channel research는 병렬화하지 않습니다.
+- 독립 question, option, source channel 기준으로 lane을 나눕니다.
+- 각 lane에 source floor, query angle, output schema, stop condition을 배정합니다.
+- synthesis, conflict resolution, final recommendation은 lead agent가 소유합니다.
+
+## 5. 근거 수집
 
 - 모든 검색 쿼리는 서로 다른 각도로 유지합니다.
 - 중복 방지와 종료 조건은 `instructions/sourcing/reliable-search.md`를 따릅니다.
@@ -44,7 +53,7 @@
 - 최신성 민감 주장은 정확한 발행일 또는 갱신일을 기록합니다.
 - 출처가 서로 충돌하면 그 충돌을 명시하고 가능하면 해소합니다.
 
-## 5. 리포트 저장
+## 6. 리포트 저장
 
 다음 위치에 저장합니다.
 
@@ -56,7 +65,7 @@
 - `slug`는 주제를 짧게 요약한 ASCII 문자열
 - 읽기 쉽고 안정적인 이름 유지
 
-## 6. 사용자 마감 응답
+## 7. 사용자 마감 응답
 
 최종 메시지에는 다음을 포함합니다.
 

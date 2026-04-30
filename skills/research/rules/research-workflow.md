@@ -36,7 +36,16 @@ Start with the channel most likely to contain primary evidence:
 
 When a channel is unavailable, say so briefly and use the next-best local option rather than inventing a role or tool.
 
-## 4. Collect Evidence
+## 4. Parallelize Only After Planning
+
+For default, deep, broad, comparative, or explicitly parallel research, read `rules/parallel-research.md` after the query plan exists.
+
+- Do not parallelize `--quick` or narrow one-channel research.
+- Split lanes by independent question, option, or source channel.
+- Assign each lane a source floor, query angle, output schema, and stop condition.
+- Keep synthesis, conflict resolution, and final recommendation with the lead agent.
+
+## 5. Collect Evidence
 
 - Keep every search query distinct.
 - Follow the dedupe and stop rules in `instructions/sourcing/reliable-search.md`.
@@ -44,7 +53,7 @@ When a channel is unavailable, say so briefly and use the next-best local option
 - For time-sensitive claims, record exact publication or update dates.
 - When sources disagree, note the disagreement and resolve it explicitly if possible.
 
-## 5. Save The Report
+## 6. Save The Report
 
 Save the report under:
 
@@ -56,7 +65,7 @@ Naming rules:
 - `slug` is a short ASCII summary of the topic
 - keep the filename stable and readable
 
-## 6. User-Facing Closeout
+## 7. User-Facing Closeout
 
 The final message should include:
 
