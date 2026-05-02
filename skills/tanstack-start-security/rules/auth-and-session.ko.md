@@ -19,12 +19,14 @@
 - `beforeLoad`는 라우팅 보호일 뿐, 서버 authorization 대체 수단이 아닙니다.
 - 인증만으로 끝내지 말고, 실제 action 가까이에서 authorization scope까지 확인합니다.
 - 클라이언트 리다이렉트나 숨겨진 UI만으로 보호가 된다고 가정하면 안 됩니다.
+- 인증 실패(`401 Unauthorized` — 호출자는 로그인/자격증명 갱신 필요)와 인가 실패(`403 Forbidden` — 로그인은 되어 있으나 scope/권한 부족)를 구분합니다. 잘못된 코드를 반환하면 scope 정보가 새거나 정상 재시도 흐름이 깨집니다.
 
 ## 세션 파생 규칙
 
 - 세션 상태는 서버에서 request headers/cookies 기준으로 읽습니다.
-- TanStack Start auth helper는 request header를 읽어 서버에서 세션을 결정하는 형태를 우선합니다.
+- TanStack Start auth helper는 request header를 읽어 서버에서 세션을 결정하는 형태를 우선합니다. Better Auth라면 보통 `createServerFn` / route `beforeLoad` 안에서 `auth.api.getSession({ headers: getRequestHeaders() })` 형태로 호출하고, 클라이언트에서는 호출하지 않습니다.
 - 브라우저가 보낸 user id, org id, role, feature flag는 서버에서 다시 검증되기 전까지 비신뢰 입력입니다.
+- 세션 토큰, API key, auth-bearing 값은 `localStorage`나 `sessionStorage`에 저장하지 않습니다. `HttpOnly` 서버 발급 쿠키에 보관합니다. `localStorage`는 페이지 내 모든 스크립트가 읽을 수 있으므로 보안 경계가 아닙니다.
 
 ## Better Auth 메모
 

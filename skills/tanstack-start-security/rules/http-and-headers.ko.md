@@ -23,12 +23,16 @@
 - auth/session 또는 민감 응답의 `Cache-Control`
 - machine-readable endpoint의 `Content-Type`
 - 보안 모델과 맞는 cookie attribute
+- HTTPS 배포에는 `Strict-Transport-Security`. `max-age`는 의도적으로 잡고, 모든 서브도메인이 HTTPS일 때만 `includeSubDomains` / `preload`를 켭니다
+- 프레임 의도가 없는 브라우저 렌더 페이지에는 `X-Frame-Options: DENY`(또는 `SAMEORIGIN`) + CSP `frame-ancestors`
 - 필요 시 `X-Content-Type-Options: nosniff`
 - 제품 요구에 맞는 `Referrer-Policy`, `Permissions-Policy`
 
 ## CSP 가이드
 
 - 인증된 민감 UI를 제공한다면, 가능한 한 무CSP보다 의도적인 CSP를 선호합니다.
+- `default-src 'self'`를 baseline으로 두고, 앱이 실제로 필요한 항목만 풀어줍니다(예: API origin은 `connect-src`, CDN은 `img-src`). `'self'`보다 넓은 허용은 명시적인 결정으로 다룹니다.
+- 클릭재킹 방어 의도는 CSP `frame-ancestors`로 표현하고, 구버전 브라우저 호환을 위해 `X-Frame-Options`도 함께 둡니다.
 - 검증된 제품 요구가 없으면 `unsafe-inline`, `unsafe-eval`은 피합니다.
 - inline script/style이 꼭 필요하면 broad wildcard보다 nonce 또는 hash 기반 허용을 선호합니다.
 - TanStack/Vite asset 동작 확인 없이 프로덕션 CSP를 그대로 복붙하지 않습니다.
@@ -36,7 +40,8 @@
 ## CORS / Trusted Origin
 
 - 실제 cross-origin 요구가 없으면 same-origin 기본값을 유지합니다.
-- cross-origin이 필요하면 origin과 method를 정확히 allowlist 합니다.
+- 브라우저에서 도달 가능한 state-changing endpoint는 mutate 전에 요청의 `Origin` header를 명시적 allowlist와 대조합니다. `Origin: null`이나 예상 외 값은 묵시적으로 허용하지 말고 거절합니다.
+- cross-origin이 필요하면 origin과 method를 정확히 allowlist 하고, CORS preflight(`OPTIONS`) 요청에 대해 `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`, `Access-Control-Allow-Headers`를 일치시켜 응답합니다. credentialed 요청이 opaque default로 빠지지 않게 합니다.
 - auth 라이브러리 설정과 route-level 동작의 trusted-origin 규칙을 맞춥니다.
 - credential/auth endpoint에 `*`를 쓰면 안 됩니다.
 

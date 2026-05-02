@@ -23,12 +23,16 @@ Use explicit response headers where security behavior matters:
 - `Cache-Control` for auth/session or sensitive responses
 - `Content-Type` for machine-readable endpoints
 - cookie attributes that match the security model
+- `Strict-Transport-Security` for HTTPS deployments (set `max-age` deliberately and only enable `includeSubDomains` / `preload` when every subdomain is HTTPS-ready)
+- `X-Frame-Options: DENY` (or `SAMEORIGIN`) and a CSP `frame-ancestors` directive on browser-rendered pages that are not meant to be framed
 - `X-Content-Type-Options: nosniff` where applicable
 - `Referrer-Policy` and `Permissions-Policy` where the product requires them
 
 ## CSP Guidance
 
 - Prefer a deliberate CSP over no CSP when the app ships sensitive authenticated UI.
+- Start from a strict `default-src 'self'` baseline and open up only what the app actually needs (e.g. `connect-src` for API origins, `img-src` for CDNs). Treat anything broader than `'self'` as an explicit decision.
+- Use `frame-ancestors` to express clickjacking intent in CSP; pair with `X-Frame-Options` while older browsers still need it.
 - Avoid `unsafe-inline` and `unsafe-eval` unless there is a verified product requirement.
 - If inline scripts or styles are unavoidable, prefer nonce- or hash-based allowance over broad wildcards.
 - Do not copy a production CSP blindly into local/dev assumptions without checking TanStack/Vite asset behavior.
@@ -36,7 +40,8 @@ Use explicit response headers where security behavior matters:
 ## CORS And Trusted Origins
 
 - Default to same-origin unless there is a real cross-origin requirement.
-- If cross-origin access is needed, allowlist exact origins and methods.
+- For browser-reachable state-changing endpoints, verify the request `Origin` header against an explicit allowlist before mutating state. Reject `Origin: null` and unexpected values instead of silently allowing them.
+- If cross-origin access is needed, allowlist exact origins and methods, and handle the CORS preflight (`OPTIONS`) request with matching `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`, and `Access-Control-Allow-Headers` so credentialed requests do not fall back to opaque defaults.
 - Keep auth/trusted-origin configuration aligned across auth library settings and route-level behavior.
 - Never use `*` on credentialed/authenticated endpoints.
 

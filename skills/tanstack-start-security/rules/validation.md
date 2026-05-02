@@ -22,12 +22,12 @@ If any answer is uncertain, keep verifying.
 
 ## Suggested Commands
 
-Use the smallest command set that proves the claim:
+Use the smallest command set that proves the claim. The first command verifies that no `process.env` (or `import.meta.env`) access leaks into client-reachable code, and that privileged work uses `createServerFn` / `createServerOnlyFn` instead of escaping through `createClientOnlyFn`. Patterns are escaped (`process\.env`) for ripgrep.
 
 ```bash
 rg -n "process\\.env|import\\.meta\\.env|createServerFn|createServerOnlyFn|createClientOnlyFn" src app
 rg -n "beforeLoad|validateSearch|params\\.parse|getSession|ensureSession|trustedOrigins|tanstackStartCookies|disableCSRFCheck|Set-Cookie" src app
-rg -n "createServerRoute|webhook|signature|Cache-Control|Content-Security-Policy|Access-Control-Allow|rateLimit|rate-limit" src app
+rg -n "createServerRoute|webhook|signature|Cache-Control|Content-Security-Policy|Strict-Transport-Security|X-Frame-Options|Access-Control-Allow|rateLimit|rate-limit" src app
 test -f src/start.ts && sed -n '1,220p' src/start.ts
 ```
 
@@ -49,6 +49,12 @@ Run only the commands that exist in the repository, but do not skip available ve
 - No rule duplicates the reference file verbatim
 - Trigger examples are specific enough to avoid generic security-review overlap
 - `src/start.ts` is reviewed when global request middleware or headers are relevant
+
+## Logging Hygiene
+
+- Do not log session tokens, API keys, raw cookies, password hashes, or other auth-bearing values. Redact before write.
+- Do not log full PII (personally identifiable information) such as full email, phone, address, or government IDs unless the log sink is access-controlled and required by a documented audit policy. Prefer hashed or partial identifiers (`user_id`, last four digits) for diagnostics.
+- Treat error messages echoed to the browser as another logging surface — do not include stack traces, SQL fragments, or internal IDs in production responses.
 
 ## Exit Criteria
 

@@ -22,12 +22,12 @@
 
 ## 추천 명령
 
-가장 작은 명령 집합으로 주장에 필요한 증거를 확보합니다.
+가장 작은 명령 집합으로 주장에 필요한 증거를 확보합니다. 첫 명령은 `process.env`(또는 `import.meta.env`)가 client-reachable 코드로 흘러가지 않는지, privileged 작업이 `createServerFn` / `createServerOnlyFn` 뒤에 있는지(클라이언트 전용 helper로 우회되지 않았는지)를 확인합니다. 정규식은 ripgrep용으로 `process\.env`처럼 이스케이프합니다.
 
 ```bash
 rg -n "process\\.env|import\\.meta\\.env|createServerFn|createServerOnlyFn|createClientOnlyFn" src app
 rg -n "beforeLoad|validateSearch|params\\.parse|getSession|ensureSession|trustedOrigins|tanstackStartCookies|disableCSRFCheck|Set-Cookie" src app
-rg -n "createServerRoute|webhook|signature|Cache-Control|Content-Security-Policy|Access-Control-Allow|rateLimit|rate-limit" src app
+rg -n "createServerRoute|webhook|signature|Cache-Control|Content-Security-Policy|Strict-Transport-Security|X-Frame-Options|Access-Control-Allow|rateLimit|rate-limit" src app
 test -f src/start.ts && sed -n '1,220p' src/start.ts
 ```
 
@@ -49,6 +49,12 @@ pnpm build
 - 규칙과 참조 파일이 서로를 그대로 복제하지 않음
 - 트리거 예시가 generic security review와 겹치지 않을 정도로 구체적임
 - 전역 request middleware 또는 header가 관련되면 `src/start.ts`가 검토됨
+
+## 로깅 위생
+
+- 세션 토큰, API key, raw 쿠키, password hash 등 auth-bearing 값을 로그에 기록하지 않습니다. 기록 전에 redact 합니다.
+- PII(개인 식별 정보) — 전체 이메일, 전화번호, 주소, 주민/사회보장번호 등 — 도 access control 된 sink와 명시된 감사 정책이 없으면 그대로 기록하지 않습니다. 진단 용도로는 해시 또는 부분 식별자(`user_id`, 마지막 4자리)를 우선합니다.
+- 브라우저로 echo 되는 에러 메시지도 또 하나의 로그 표면입니다. 운영 응답에 stack trace, SQL fragment, 내부 ID를 포함하지 않습니다.
 
 ## 종료 기준
 

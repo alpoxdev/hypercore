@@ -19,12 +19,14 @@
 - Treat `beforeLoad` as routing protection, not as a replacement for server-side authorization.
 - Authentication alone is insufficient. Check authorization scope as close to the protected action as possible.
 - Never assume a client-side redirect or hidden UI is real protection.
+- Distinguish authentication failure (`401 Unauthorized` — caller must sign in or refresh credentials) from authorization failure (`403 Forbidden` — caller is signed in but lacks scope/permission). Returning the wrong code leaks scope information or breaks legitimate retry flows.
 
 ## Session Derivation
 
 - Read session state on the server from request headers/cookies, not from client-submitted identity fields.
-- For TanStack Start auth helpers, prefer server-side helpers that obtain request headers and resolve the session there.
+- For TanStack Start auth helpers, prefer server-side helpers that obtain request headers and resolve the session there. With Better Auth this typically looks like `auth.api.getSession({ headers: getRequestHeaders() })` invoked inside `createServerFn` / route `beforeLoad`, never on the client.
 - Treat user id, org id, role, and feature flags from the browser as untrusted unless re-derived on the server.
+- Do not store session tokens, API keys, or other auth-bearing values in `localStorage` or `sessionStorage`. Keep them in `HttpOnly` server-issued cookies. `localStorage` is reachable from any in-page script and is not a security boundary.
 
 ## Better Auth Notes
 
