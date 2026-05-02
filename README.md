@@ -23,10 +23,6 @@ npx skills add alpoxdev/hypercore --skill '*' -g -y
 
 특정 에이전트만 대상으로 설치해야 할 때만 `-a <agent>`를 추가합니다.
 
-## 에이전트
-
-`agents/` 디렉터리에 에이전트를 정의할 수 있습니다. YAML frontmatter + 프롬프트 본문 형태의 `.md` 파일을 추가하면 플러그인 설치 시 자동으로 등록됩니다.
-
 ## 스킬 목록
 
 | 스킬 | 설명 | 호환 |
