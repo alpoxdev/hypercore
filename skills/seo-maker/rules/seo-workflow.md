@@ -87,12 +87,12 @@ Tools: `Read` for content analysis, `WebSearch` for competitor/SERP context if n
 
 Evaluate readiness for AI direct answers and Featured Snippets:
 
-- **Q&A 포맷** — 주요 질문에 대한 concise visible answer block이 콘텐츠 상단 근처에 있는가 (고정 길이는 heuristic)
-- **Featured Snippet 최적화** — 정의형, 리스트형, 테이블형 Snippet에 적합한 구조인가
-- **음성 검색 대비** — 자연어 질문 형식의 제목/소제목이 있는가
-- **답변 추출 용이성** — 짧은 단락(2-3문장), 명확한 H2/H3 구조로 AI가 답변을 추출하기 쉬운가
-- **FAQ/Q&A 구조** — visible FAQ/Q&A가 있고, Google FAQ rich result eligibility와 answer-friendly content를 구분했는가
-- **플랫폼별 콘텐츠 선호도** — ChatGPT(백과사전적), Perplexity(커뮤니티), Google AI Overviews(멀티모달) 각각에 대한 콘텐츠 적합성
+- **Q&A format** — Does the content place concise visible answer blocks for key questions near the top of the relevant content? Fixed length targets are heuristic.
+- **Featured Snippet optimization** — Is the structure suitable for definition, list, and table snippets?
+- **Voice search readiness** — Are headings and subheadings written as natural-language questions?
+- **Answer extraction ease** — Do short paragraphs (2-3 sentences) and clear H2/H3 structure make answers easy for AI systems to extract?
+- **FAQ/Q&A structure** — Is there visible FAQ/Q&A content, and does the audit distinguish Google FAQ rich result eligibility from answer-friendly content?
+- **Platform-specific content fit** — Is the content suitable for ChatGPT (encyclopedic), Perplexity (community/contextual), and Google AI Overviews (multimodal) preferences?
 
 Tools: `Grep` for Q&A patterns, heading structures. `Read` for content analysis. See `references/aeo-geo-guide.md` for strategy details.
 
@@ -100,16 +100,16 @@ Tools: `Grep` for Q&A patterns, heading structures. `Read` for content analysis.
 
 Evaluate readiness for AI citation in generative responses:
 
-- **GEO CORE 평가**:
-  - **Context** — 주제에 대한 충분한 맥락과 배경이 제공되는가
-  - **Organization** — 명확한 계층 구조, 추출 가능한 형식인가
-  - **Reliability** — 검증 가능한 통계, 인용, 전문가 의견이 포함되는가
-  - **Exclusivity** — 독점 데이터, 원본 연구, 고유 관점이 있는가
-- **엔터티 권위** — 토픽 클러스터 구성, 여러 콘텐츠에 걸친 지식 일관성
-- **인용 가능한 문장** — 짧고 독립적으로 인용 가능한 문장 (통계 포함)
-- **콘텐츠 신선도** — 주제의 시간 민감도에 맞는 갱신 일자와 source date가 있는가
-- **llms.txt** — optional LLM-facing content map 존재 여부와 canonical/sitemap 정합성
-- **스키마 마크업 AI 신뢰 신호** — JSON-LD가 visible entity information과 일치하는가 (AI citation 보장은 아님)
+- **GEO CORE assessment**:
+  - **Context** — Does the topic include sufficient context and background?
+  - **Organization** — Does the content have clear hierarchy and extractable formatting?
+  - **Reliability** — Does it include verifiable statistics, citations, and expert opinions?
+  - **Exclusivity** — Does it include proprietary data, original research, or a unique perspective?
+- **Entity authority** — Topic cluster structure and knowledge consistency across multiple content pieces.
+- **Citable statements** — Short, independently citable statements, including statistics where relevant.
+- **Content freshness** — Updated dates and source dates appropriate to the topic's time sensitivity.
+- **llms.txt** — Presence of an optional LLM-facing content map and its consistency with canonical URLs and sitemaps.
+- **Schema markup AI trust signal** — Whether JSON-LD matches visible entity information. This does not guarantee AI citation.
 
 Tools: `Grep` for citation patterns, statistics. `Read` for content freshness. `Glob` for llms.txt. See `references/aeo-geo-guide.md` for GEO CORE framework and platform benchmarks.
 
@@ -146,7 +146,7 @@ Write evidence and raw data to `sources.md`.
 
 ## Optimize Mode Rules
 
-- Use `optimize` when the user explicitly requests highest score / max score / perfect score / 계속 반복 / 무한반복.
+- Use `optimize` when the user explicitly requests the highest score, max score, perfect score, repeated iteration, or an infinite-loop-style improvement request.
 - Start from `create` or `update` audit output, then enter the Score Optimization Phase.
 - Preserve the best-scoring report and dashboard even when later experiments are discarded.
 - If implementation edits are allowed, verify each kept code-changing iteration with relevant project checks before treating it as `best_run`.

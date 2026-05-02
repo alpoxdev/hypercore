@@ -1,72 +1,72 @@
 # Self-Test Pack
 
-스킬 오토리서치를 돌리는데 사용자가 별도의 프롬프트 팩이나 eval 세트를 주지 않았을 때 이 레퍼런스를 사용한다.
+Use this reference when the user has not provided a separate prompt pack or eval set for running skill autoresearch.
 
-이 팩은 보수적으로 설계되어 있다. 임의 시나리오를 새로 만들기 전에 스킬의 실제 운영 표면을 먼저 검증하는 목적이다.
+This pack is intentionally conservative. Its purpose is to verify the skill's real operational surface before inventing arbitrary scenarios.
 
-## 기본 테스트 프롬프트
+## Default Test Prompts
 
-스킬 대상 오토리서치의 기본 실행 세트로 다음 다섯 프롬프트를 사용한다:
+Use the following five prompts as the default execution set for skill-targeted autoresearch:
 
-1. ``skills/web-clone/SKILL.md`에 autoresearch 돌려서 점수 오르는 수정만 남겨줘.``
-2. `이 스킬을 binary eval로 벤치마크하고 아티팩트를 .hypercore에 저장해줘.`
-3. `이 스킬 한 번만 다듬고 리뷰해줘.`
-4. `브라우저 QA용 Codex 스킬 새로 만들어줘.`
+1. ``Run autoresearch on `skills/web-clone/SKILL.md` and keep only changes that improve the score.``
+2. `Benchmark this skill with binary evals and save artifacts under .hypercore.`
+3. `Tidy up this skill once and review it.`
+4. `Create a new Codex skill for browser QA.`
 5. `Run autoresearch on this skill and keep only score-improving mutations.`
 
-예상 라우팅:
+Expected routing:
 
-- 프롬프트 1, 2, 5는 `autoresearch-skill`을 트리거해야 한다
-- 프롬프트 3은 경계 사례이며, 반복 실험을 명시하지 않았다면 보통 직접 수정이 더 적절하다
-- 프롬프트 4는 `autoresearch-skill` 바깥으로 라우팅해야 한다
+- Prompts 1, 2, and 5 should trigger `autoresearch-skill`
+- Prompt 3 is a boundary case, and direct editing is usually more appropriate unless repeated experimentation is requested
+- Prompt 4 should route outside `autoresearch-skill`
 
-## 기본 이진 Eval
+## Default Binary Evals
 
-대상이 스킬일 때는 다음 다섯 eval을 기본으로 사용한다:
+When the target is a skill, use the following five evals by default:
 
 ```text
-EVAL 1: 트리거 경계
-Question: 이 프롬프트가 스킬 범위 안인지, 밖인지, 경계 사례인지 core만 보고 분명하게 알 수 있는가?
-Pass: core 스킬만 읽어도 범위 판정이 명확하다
-Fail: 범위 판정이 추측에 의존하거나 core가 가리키지 않은 support file까지 뒤져야 한다
+EVAL 1: Trigger boundary
+Question: Can the agent clearly tell from core alone whether this prompt is in scope, out of scope, or a boundary case?
+Pass: Scope classification is clear from the core skill alone
+Fail: Scope classification relies on guessing or requires searching support files that core did not point to
 
-EVAL 2: 워크플로 준비도
-Question: 에이전트가 이 스킬만 보고도 다음 행동을 추측 없이 시작할 수 있는가?
-Pass: baseline-first 실행 또는 route-away 결정을 시작하기에 충분한 가이드가 있다
-Fail: 다음 행동이 모호하거나, 빠져 있거나, 서로 충돌한다
+EVAL 2: Workflow readiness
+Question: Can the agent start the next action from this skill alone without guessing?
+Pass: There is enough guidance to begin baseline-first execution or decide to route away
+Fail: The next action is ambiguous, missing, or contradictory
 
-EVAL 3: 아티팩트 생명주기
-Question: 범위 안 프롬프트에 대해 아티팩트 위치와 업데이트 주기가 분명하게 정의되어 있는가?
-Pass: `.hypercore` 위치, 필수 파일, 상태/업데이트 기대치가 명시되어 있다
-Fail: 아티팩트 계약이 불완전하거나, 서로 안 맞거나, 빠져 있다
+EVAL 3: Artifact lifecycle
+Question: For in-scope prompts, are artifact locations and update cadence clearly defined?
+Pass: The `.hypercore` location, required files, and status/update expectations are specified
+Fail: The artifact contract is incomplete, inconsistent, or missing
 
-EVAL 4: 지원 파일 탐색성
-Question: 더 깊은 eval, 구조, 아티팩트 가이드를 보기 위해 다음에 읽어야 할 파일이 core에서 바로 보이는가?
-Pass: core만 읽어도 다음 support file이 분명하다
-Fail: 에이전트가 다음 파일을 찾으려고 헤매야 한다
+EVAL 4: Support-file discoverability
+Question: Is the next file to read for deeper eval, structure, or artifact guidance immediately visible from core?
+Pass: The next support file is clear from core alone
+Fail: The agent has to hunt for the next file
 
-EVAL 5: 자율 실행 규율
-Question: 이 스킬이 baseline-first, one-mutation-at-a-time 루프를 안정적으로 유지하는가?
-Pass: baseline 점수화, 단일 변경 실험, 명시적 종료 조건이 유지된다
-Fail: eval drift, 묶음 변이, 불명확한 종료 동작을 허용한다
+EVAL 5: Autonomous execution discipline
+Question: Does this skill reliably preserve a baseline-first, one-mutation-at-a-time loop?
+Pass: Baseline scoring, single-change experiments, and explicit stop conditions are preserved
+Fail: It allows eval drift, bundled mutations, or unclear stopping behavior
 
-EVAL 6: 계약/근거/추적성
-Question: 외부 근거, 도구, delegation이 영향을 줄 때 run contract, source policy, trace assertion을 요구하는가?
-Pass: core 또는 직접 연결된 rules에서 contract/source/trace 기록과 reset 조건을 찾을 수 있다
-Fail: 점수 상승만 보고 근거, 권한, 도구 trajectory를 검증하지 않는다
+EVAL 6: Contract/evidence/traceability
+Question: When external evidence, tools, or delegation affect the run, does it require a run contract, source policy, and trace assertion?
+Pass: Contract/source/trace logging and reset conditions can be found in core or directly linked rules
+Fail: It verifies only score increases and does not check evidence, authority, or tool trajectory
 ```
 
-## 점수화 노트
+## Scoring Notes
 
-- 기본 총점: `5 prompts x 6 evals = 30`
-- baseline과 후속 실험에서 같은 프롬프트 팩과 eval 세트를 유지한다
-- source/tool/delegation 조건이 없으면 EVAL 6은 해당 없음이 아니라 “요구 조건이 명시되어 있는가”를 기준으로 채점한다
-- 이 팩을 교체하면 다음 실험을 점수화하기 전에 교체 사실을 로그에 남긴다
+- Default total score: `5 prompts x 6 evals = 30`
+- Keep the same prompt pack and eval set across baseline and later experiments
+- When there is no source/tool/delegation condition, score EVAL 6 by whether the requirement is specified, not as "not applicable"
+- If this pack is replaced, log that replacement before scoring the next experiment
 
-## Override가 필요한 경우
+## When an Override Is Needed
 
-다음 경우 이 팩을 교체한다:
+Replace this pack in the following cases:
 
-- 사용자가 더 나은 도메인 맞춤 프롬프트를 제공했다
-- 대상 스킬의 도메인이 매우 좁아 이 프롬프트들로는 충분히 검증되지 않는다
-- 현재 실패가 구조 문제가 아니라 명백히 도메인 특화 문제다
+- The user provided better domain-specific prompts
+- The target skill's domain is so narrow that these prompts cannot verify it enough
+- The current failure is clearly domain-specific rather than structural

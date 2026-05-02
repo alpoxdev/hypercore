@@ -137,66 +137,66 @@
 
 ### Direct Answer Structure
 
-- [ ] 주요 질문에 concise visible answer block이 섹션 상단 근처에 배치됨 (길이 규칙은 heuristic)
-- [ ] 질문 형식 H2/H3 제목 사용 (예: "## X란 무엇인가?")
-- [ ] 정의형 문장: "[용어]는 [정의]이다" 패턴 포함
-- [ ] 리스트형/테이블형 콘텐츠로 Featured Snippet 대응
+- [ ] Concise visible answer blocks appear near the top of sections for key questions (length rules are heuristic)
+- [ ] Question-style H2/H3 headings are used, for example "## What is X?"
+- [ ] Definition-style sentences follow the pattern "[Term] is [definition]"
+- [ ] List or table content supports Featured Snippet extraction
 
 ### FAQ & Schema
 
-- [ ] FAQPage와 QAPage 사용 조건을 구분하고 Google rich result eligibility를 과장하지 않음
-- [ ] FAQ/Q&A 답변은 visible content와 structured data가 일치함
-- [ ] HowTo 콘텐츠에 HowTo 스키마 적용
+- [ ] FAQPage and QAPage use cases are distinguished, and Google rich result eligibility is not overstated
+- [ ] FAQ/Q&A answers match visible content and structured data
+- [ ] HowTo schema is applied to HowTo content
 
 ### Voice Search
 
-- [ ] 자연어 질문 형식의 소제목 (Who, What, Where, When, Why, How)
-- [ ] 대화체 답변 구조
-- [ ] 간결하고 직접적인 답변 (음성 어시스턴트가 읽을 수 있는 길이)
+- [ ] Natural-language question-style subheadings are used (Who, What, Where, When, Why, How)
+- [ ] Conversational answer structure is present
+- [ ] Answers are concise and direct enough for voice assistants to read
 
 ## GEO (Generative Engine Optimization) Checklist
 
 ### GEO CORE — Context
 
-- [ ] 주제에 대한 충분한 맥락과 배경 제공
-- [ ] 관련 개념과 정의 포함
-- [ ] 주제의 범위가 명확히 정의됨
+- [ ] Sufficient context and background are provided for the topic
+- [ ] Related concepts and definitions are included
+- [ ] The topic scope is clearly defined
 
 ### GEO CORE — Organization
 
-- [ ] 명확한 H2/H3 계층 구조
-- [ ] 각 섹션 상단에 2-3문장 핵심 요약
-- [ ] 짧은 단락 (2-3문장), 글머리 기호, 표 활용
-- [ ] AI가 독립적으로 추출 가능한 단락 구성
+- [ ] Clear H2/H3 hierarchy is present
+- [ ] Each section starts with a 2-3 sentence key summary
+- [ ] Short paragraphs (2-3 sentences), bullets, and tables are used
+- [ ] Paragraphs can be extracted independently by AI systems
 
 ### GEO CORE — Reliability
 
-- [ ] 검증 가능한 통계와 수치 데이터 포함
-- [ ] 명시적 출처 인용 (저자명, 기관명, 날짜)
-- [ ] 전문가 의견 또는 사례 연구 포함
-- [ ] E-E-A-T 신호 강화 (저자 정보, 자격, 연락처)
+- [ ] Verifiable statistics and numeric data are included
+- [ ] Explicit source citations are included (author name, organization, date)
+- [ ] Expert opinions or case studies are included
+- [ ] E-E-A-T signals are strengthened (author information, credentials, contact details)
 
 ### GEO CORE — Exclusivity
 
-- [ ] 독점 데이터, 자체 연구, 벤치마크 포함
-- [ ] 고유한 관점이나 프레임워크 제공
-- [ ] 다른 곳에서 찾을 수 없는 인사이트 존재
+- [ ] Proprietary data, original research, or benchmarks are included
+- [ ] A unique perspective or framework is provided
+- [ ] Insights exist that cannot be found elsewhere
 
 ### Entity Authority
 
-- [ ] 토픽 클러스터 구성 (pillar + cluster)
-- [ ] 관련 콘텐츠 간 내부 링크 연결
-- [ ] Organization/Person 스키마로 엔터티 명시
-- [ ] 여러 콘텐츠에 걸친 일관된 전문성 표현
+- [ ] Topic clusters are organized (pillar + cluster)
+- [ ] Internal links connect related content
+- [ ] Organization/Person schema identifies entities
+- [ ] Consistent expertise is expressed across multiple content pieces
 
 ### Content Freshness
 
-- [ ] 콘텐츠 신선도가 주제의 시간 민감도에 맞고 `dateModified`/출처 날짜가 정확함
-- [ ] `dateModified` 스키마 마크업 포함
-- [ ] 시간에 민감한 데이터에 정확한 날짜 명시
+- [ ] Content freshness matches the topic's time sensitivity, and `dateModified`/source dates are accurate
+- [ ] `dateModified` schema markup is included
+- [ ] Time-sensitive data includes exact dates
 
 ### AI Crawler Access
 
-- [ ] `llms.txt`는 optional content map으로 확인하고, 누락을 기본 critical로 처리하지 않음
-- [ ] `robots.txt`에서 OAI-SearchBot(검색), GPTBot(학습), ChatGPT-User(사용자 fetch), ClaudeBot/PerplexityBot 등 목적별 차단 여부 확인
-- [ ] 주요 콘텐츠가 JavaScript 렌더링 없이 접근 가능
+- [ ] `llms.txt` is checked as an optional content map, and a missing file is not treated as critical by default
+- [ ] `robots.txt` is checked for purpose-specific blocks for OAI-SearchBot (search), GPTBot (training), ChatGPT-User (user fetch), ClaudeBot/PerplexityBot, and similar crawlers
+- [ ] Important content is accessible without JavaScript rendering

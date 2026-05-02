@@ -1,22 +1,22 @@
 # SEO Audit Artifact Spec
 
-SEO 감사 실행의 결과 워크스페이스를 만들거나 검토할 때 이 레퍼런스를 사용한다.
+Use this reference when creating or reviewing the result workspace for an SEO audit run.
 
-## 워크스페이스 형태
+## Workspace Shape
 
 ```text
 .hypercore/seo-maker/[slug]/
-├── dashboard.html       # 브라우저에서 열 수 있는 대시보드
-├── results.json         # 구조화된 감사 결과
-├── results.js           # file:// 브라우저 폴백용
-├── report.md            # 마크다운 리포트 (기존)
-├── sources.md           # 출처 기록 (기존)
-└── flow.json            # complex path only (기존)
+├── dashboard.html       # browser-openable dashboard
+├── results.json         # structured audit results
+├── results.js           # fallback for file:// browsers
+├── report.md            # Markdown report (existing)
+├── sources.md           # source log (existing)
+└── flow.json            # complex path only (existing)
 ```
 
-이 디렉터리는 스킬 폴더 안이 아니라 저장소 루트에 만든다.
+Create this directory at the repository root, not inside the skill folder.
 
-정식 생성 자산:
+Canonical generated assets:
 
 - template: `skills/seo-maker/assets/dashboard-template.html`
 - renderer: `skills/seo-maker/scripts/render-dashboard.sh`
@@ -178,15 +178,15 @@ Rules:
 3. `best_run` must not point to a discarded iteration.
 4. If code changes were made, validator evidence should include the relevant test/build/lint command output summary.
 
-### 상태 값
+### Status values
 
-- `running` — 감사 진행 중
-- `idle` — 대기 중
-- `complete` — 감사 완료
+- `running` — audit in progress
+- `idle` — waiting
+- `complete` — audit complete
 
-### 카테고리 기본 목록
+### Default category list
 
-7개 카테고리, 각각 0-100 점수. 점수와 별도로 `measurement_confidence`를 보고해야 한다:
+Seven categories, each scored from 0-100. Report `measurement_confidence` separately from the score:
 
 1. Technical SEO
 2. On-Page SEO
@@ -196,7 +196,7 @@ Rules:
 6. AEO Readiness
 7. GEO Readiness
 
-### Finding ID 규칙
+### Finding ID rules
 
 - `T1`, `T2`... — Technical SEO
 - `O1`, `O2`... — On-Page SEO
@@ -206,56 +206,56 @@ Rules:
 - `A1`, `A2`... — AEO Readiness
 - `G1`, `G2`... — GEO Readiness
 
-### Severity 값
+### Severity values
 
-- `critical` — 인덱싱 차단 또는 랭킹 심각 저하
-- `warning` — 랭킹 또는 UX 저하
-- `info` — 개선 기회
+- `critical` — blocks indexing or severely harms ranking
+- `warning` — degrades ranking or UX
+- `info` — improvement opportunity
 
 ## `results.js`
 
-`file://`로 열었을 때 `fetch`가 안 되는 브라우저를 위한 폴백:
+Fallback for browsers where `fetch` does not work when opened via `file://`:
 
 ```javascript
-window.__SEO_RESULTS__ = { /* results.json과 동일한 내용 */ };
+window.__SEO_RESULTS__ = { /* same content as results.json */ };
 ```
 
-항상 `results.json`과 동기화한다.
+Always keep it synchronized with `results.json`.
 
 ## `dashboard.html`
 
-`skills/seo-maker/assets/dashboard-template.html`에서 복사한다.
+Copy it from `skills/seo-maker/assets/dashboard-template.html`.
 
-필수 동작:
+Required behavior:
 
-- 10초마다 자동 새로고침
-- `results.json` 읽기 (`file://`일 때는 `results.js` 폴백)
-- 7개 카테고리 점수 레이더 차트
-- Severity 분포 도넛 차트
-- 카테고리별 점수 바
-- Finding 테이블 (severity 색상 코딩)
-- Quick Wins 테이블
-- Prioritized Actions 테이블
-- Overall Grade 표시 (A/B/C/D/F)
+- Auto-refresh every 10 seconds
+- Read `results.json` (fall back to `results.js` for `file://`)
+- Radar chart for seven category scores
+- Severity distribution donut chart
+- Category score bars
+- Findings table with severity color coding
+- Quick Wins table
+- Prioritized Actions table
+- Overall Grade display (A/B/C/D/F)
 
 ## `report.md`
 
-기존 `assets/report.template.md`에서 생성. `results.json`의 데이터를 마크다운으로 풀어쓴 형태.
+Generate it from the existing `assets/report.template.md`. It is a Markdown rendering of the data in `results.json`.
 
-## 생명주기 규칙
+## Lifecycle Rules
 
-1. 감사 시작 시 `.hypercore/seo-maker/[slug]/`를 만든다
-2. `results.json`의 `status`를 `running`으로 설정한다
-3. 각 phase 완료 시 `results.json`에 findings를 추가한다
-4. 모든 phase 완료 후 `status`를 `complete`로, `overall_grade`를 계산한다
-4-1. Optimize mode라면 `score_history`, `best_run`, `validator`를 채우고 최고 점수 또는 plateau 근거를 기록한다
-5. `render-dashboard.sh`를 실행해 `dashboard.html`과 `results.js`를 생성한다
-6. `report.md`와 `sources.md`도 함께 작성한다
-7. 런타임이 안전하면 `dashboard.html`을 브라우저에서 연다
+1. Create `.hypercore/seo-maker/[slug]/` when the audit starts.
+2. Set `status` in `results.json` to `running`.
+3. Add findings to `results.json` as each phase completes.
+4. After all phases finish, set `status` to `complete` and calculate `overall_grade`.
+4-1. In Optimize mode, populate `score_history`, `best_run`, and `validator`, then record the evidence for the highest score or plateau.
+5. Run `render-dashboard.sh` to generate `dashboard.html` and `results.js`.
+6. Write `report.md` and `sources.md` as well.
+7. Open `dashboard.html` in a browser if the runtime is safe.
 
-### Grade 계산
+### Grade Calculation
 
-카테고리 점수 평균:
+Average category score:
 
 | Average | Grade |
 |---------|-------|
@@ -265,7 +265,7 @@ window.__SEO_RESULTS__ = { /* results.json과 동일한 내용 */ };
 | >= 40 | D |
 | < 40 | F |
 
-### 렌더 순서
+### Render Order
 
 ```bash
 skills/seo-maker/scripts/render-dashboard.sh .hypercore/seo-maker/my-site
