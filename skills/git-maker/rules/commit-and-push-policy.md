@@ -17,7 +17,7 @@ Use this rule when `git-maker` is active and you need the durable commit/push co
 |------|------|
 | Inspect first | Run a status/preflight command before staging or committing. |
 | Diff source | If staged changes exist, treat staged files as the default candidate and inspect staged diff. If nothing is staged, inspect unstaged/untracked changes. |
-| Repository boundary | Multiple repositories must be committed independently. Never stage or commit from a non-repository parent as if nested repos were one repo. |
+| Repository boundary | Multiple repositories must be committed independently. Never stage or commit from a non-repository parent as if nested repos were one repo. In linked Git worktrees, use the checkout root from `git rev-parse --show-toplevel` as the boundary; do not collapse it to the shared `git-common-dir`. |
 | Logical scope | Each commit covers exactly one logical change. Commit multiple groups sequentially. |
 | Staging discipline | Stage only files required for the selected group. Do not use blanket staging unless `ALL` mode truly includes every uncommitted file and grouping still happens per logical unit. |
 | Type selection | Choose the Conventional Commit type from the actual dominant change. |
@@ -61,6 +61,7 @@ If the natural draft reads like a command, rewrite it to the result now present 
 | Commit first | All commit groups must succeed before any push. |
 | No confirmation | Do not ask whether to push after successful commits; push automatically. |
 | Explicit repos | Prefer passing the repo list from `scripts/git-maker-fast.sh inspect` into `scripts/git-maker-fast.sh push` to avoid duplicate discovery. |
+| Worktrees | Linked worktrees are valid push targets when on a named branch; pass their checkout root paths, not `.git/worktrees/...` or the common git dir. |
 | Upstream | If no upstream exists, push with `-u origin <branch>`. |
 | Safety | Never force push to `main` or `master`. Never push from detached HEAD. |
 | Failure | If push fails, report failed repos. Commits remain local; do not pretend the operation completed. |

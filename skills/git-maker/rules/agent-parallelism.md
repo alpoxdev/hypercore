@@ -17,7 +17,7 @@ Do not spawn agents for a single obvious one-file or one-group commit; coordinat
 
 | Lane | Responsibility | Inputs | Output | Edit/stage/commit? |
 |------|------|------|------|------|
-| Repo Mapper | Map repositories, staged/unstaged/untracked files, and ownership boundaries | `git-maker-fast.sh inspect` output, `git diff --name-only` | repo/file map and ambiguity list | no |
+| Repo Mapper | Map repositories/worktree roots, staged/unstaged/untracked files, and ownership boundaries | `git-maker-fast.sh inspect` output, `git diff --name-only` | repo/file map, linked-worktree context, and ambiguity list | no |
 | Grouping Critic | Propose logical commit groups and flag unrelated files or secrets | status, file list, diff summaries | group plan with confidence and exclusions | no |
 | Message Drafter | Draft Korean Conventional Commit subjects/bodies | group plan and diff summaries | message candidates with rationale | no |
 | Safety Verifier | Check secrets, destructive operations, protected branch, detached HEAD, upstream/push risk | status, branch/upstream output, script diff | pass/block report | no |
@@ -61,7 +61,7 @@ Use these templates as copy-ready prompts. Replace bracketed fields with the cur
 ```text
 Read-only git-maker repo mapping. Do not edit, stage, commit, push, or restore files.
 Input: [paste git-maker-fast inspect output and optional git diff --name-only].
-Return: repositories in scope, staged/unstaged/untracked files by repo, ownership boundaries, and ambiguity list.
+Return: repositories/worktree roots in scope, staged/unstaged/untracked files by repo, linked-worktree context if present, ownership boundaries, and ambiguity list.
 ```
 
 ### Grouping Critic

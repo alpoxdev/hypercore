@@ -1,6 +1,6 @@
 ---
 name: git-maker
-description: "[Hyper] Commit and push in one action. Use when the user asks to commit and push together, save and push changes, or run `/git-maker`; it performs safe commit grouping first, then automatically pushes without a second confirmation."
+description: "[Hyper] Commit and push in one action, including from linked Git worktrees. Use when the user asks to commit and push together, save and push changes, or run `/git-maker`; it performs safe commit grouping first, then automatically pushes without a second confirmation."
 license: MIT
 allowed-tools: Bash
 compatibility: Requires Bash and scripts under skills/git-maker/scripts.
@@ -13,6 +13,7 @@ compatibility: Requires Bash and scripts under skills/git-maker/scripts.
 <purpose>
 
 - Create one or more Conventional Commits from current repository changes.
+- Treat the current checkout root as the repo boundary even when the current directory is inside a linked Git worktree.
 - Push successfully created commits automatically, with no confirmation step between commit and push.
 - Use the fast helper first to reduce repeated repository discovery and parallelize read-only inspection.
 
@@ -67,6 +68,18 @@ Boundary trigger:
 
 </scripts>
 
+<worktree_support>
+
+Linked Git worktrees are valid execution contexts.
+
+- Do not require `.git` to be a directory; in linked worktrees it is usually a file pointing at the common git dir.
+- Resolve repository scope with `git rev-parse --show-toplevel`, not by walking to a physical `.git` directory.
+- Treat each linked worktree checkout root as its own commit/staging boundary because it has its own index, branch, and working tree.
+- Preserve the preflight repo path from `repo|...` for commit and push phases; do not collapse linked worktrees to `git-common-dir`.
+- If the helper reports `worktree|linked`, continue normally unless the branch is detached or another push safety rule blocks the run.
+
+</worktree_support>
+
 <support_file_read_order>
 
 Read only what is needed:
@@ -106,6 +119,7 @@ scripts/git-maker-fast.sh inspect . --jobs 4
 Use its repo list and file inventory to decide:
 
 - which repositories are in scope
+- whether any checkout is a linked worktree (`worktree|linked`) and should still be handled at its `repo|...` root
 - staged vs unstaged vs untracked files
 - logical change groups
 - whether a slower fallback is needed
@@ -186,6 +200,7 @@ Report:
 | Safety | Never force push to `main` or `master`; never push from detached HEAD. |
 | Upstream | If no upstream exists, push with `-u origin <branch>`. |
 | Reuse preflight | Prefer `git-maker-fast.sh push [repo...]` to avoid duplicate discovery. |
+| Worktrees | Linked worktrees are supported; use checkout root paths, not the common git dir. |
 | Agent boundaries | Subagents may review and propose, but the main integrator owns staging, commit, and push. |
 | Validation | Run `rules/validation.md` checks before final reporting. |
 
@@ -228,6 +243,14 @@ Result: all uncommitted files are grouped, committed, and pushed. No file is ski
 ```
 
 Result: commit normally, then push with `--force-with-lease`; blocked on `main`/`master`.
+
+## Commit and push inside a linked worktree
+
+```text
+/git-maker
+```
+
+Result: fast inspect from the worktree subdirectory → resolve the linked worktree checkout root → group/commit there → auto-push that worktree branch.
 
 ## Commit-only request
 

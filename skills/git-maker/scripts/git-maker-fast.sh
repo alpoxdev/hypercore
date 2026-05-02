@@ -5,6 +5,7 @@
 #   git-maker-fast.sh push [--force] [repo...]
 #
 # Inspect gathers repository state with pruned discovery and parallel per-repo status.
+# Linked git worktrees are treated as first-class checkout roots; never assume .git is a directory.
 # Push accepts explicit repo paths so git-maker can reuse inspect results instead of rediscovering.
 
 set -euo pipefail
@@ -26,8 +27,24 @@ abs_path() {
   (cd "$path" && pwd -P)
 }
 
+repo_root() {
+  git -C "$1" rev-parse --show-toplevel 2>/dev/null
+}
+
 is_git_repo() {
-  git -C "$1" rev-parse --git-dir >/dev/null 2>&1
+  [[ "$(git -C "$1" rev-parse --is-inside-work-tree 2>/dev/null || true)" == true ]]
+}
+
+worktree_kind() {
+  local repo=$1 git_dir common_dir
+  git_dir="$(git -C "$repo" rev-parse --git-dir 2>/dev/null || true)"
+  common_dir="$(git -C "$repo" rev-parse --git-common-dir 2>/dev/null || true)"
+
+  if [[ -n "$git_dir" && -n "$common_dir" && "$git_dir" != "$common_dir" ]]; then
+    printf 'linked'
+  else
+    printf 'primary'
+  fi
 }
 
 discover_repos() {
@@ -38,12 +55,13 @@ discover_repos() {
     return 1
   fi
 
-  if root="$(git -C "$start_dir" rev-parse --show-toplevel 2>/dev/null)"; then
+  if root="$(repo_root "$start_dir")"; then
     printf '%s\n' "$root"
     return 0
   fi
 
   # Prune heavy/generated directories before looking for descendant repositories.
+  # Linked worktrees use a .git file instead of a .git directory, so include both.
   find "$start_dir" \
     \( -name .git -type d -prune -print \) -o \
     \( -type d \( \
@@ -54,37 +72,46 @@ discover_repos() {
     sort |
     while IFS= read -r git_path; do
       [[ -z "$git_path" ]] && continue
-      abs_path "$(dirname "$git_path")"
-    done
+      if root="$(repo_root "$(dirname "$git_path")")"; then
+        printf '%s\n' "$root"
+      fi
+    done |
+    sort -u
 }
 
 status_one_repo() {
   local repo=$1
-  local root branch upstream ahead staged unstaged untracked
+  local root branch upstream ahead staged unstaged untracked git_dir common_dir worktree
 
   if ! is_git_repo "$repo"; then
-    printf 'repo|%s\nerror|not a git repository\n' "$repo"
+    printf 'repo|%s\nerror|not a git work tree\n' "$repo"
     return 0
   fi
 
-  root="$(git -C "$repo" rev-parse --show-toplevel)"
-  branch="$(git -C "$repo" branch --show-current 2>/dev/null || true)"
-  upstream="$(git -C "$repo" rev-parse --abbrev-ref '@{upstream}' 2>/dev/null || true)"
+  root="$(repo_root "$repo")"
+  git_dir="$(git -C "$root" rev-parse --git-dir 2>/dev/null || true)"
+  common_dir="$(git -C "$root" rev-parse --git-common-dir 2>/dev/null || true)"
+  worktree="$(worktree_kind "$root")"
+  branch="$(git -C "$root" branch --show-current 2>/dev/null || true)"
+  upstream="$(git -C "$root" rev-parse --abbrev-ref '@{upstream}' 2>/dev/null || true)"
   ahead=0
   if [[ -n "$upstream" ]]; then
-    ahead="$(git -C "$repo" rev-list --count '@{upstream}..HEAD' 2>/dev/null || echo 0)"
+    ahead="$(git -C "$root" rev-list --count '@{upstream}..HEAD' 2>/dev/null || echo 0)"
   fi
 
-  staged="$(git -C "$repo" diff --cached --name-only)"
-  unstaged="$(git -C "$repo" diff --name-only)"
-  untracked="$(git -C "$repo" ls-files --others --exclude-standard)"
+  staged="$(git -C "$root" diff --cached --name-only)"
+  unstaged="$(git -C "$root" diff --name-only)"
+  untracked="$(git -C "$root" ls-files --others --exclude-standard)"
 
   printf 'repo|%s\n' "$root"
+  printf 'worktree|%s\n' "$worktree"
+  printf 'git-dir|%s\n' "$git_dir"
+  printf 'git-common-dir|%s\n' "$common_dir"
   printf 'branch|%s\n' "${branch:-DETACHED}"
   printf 'upstream|%s\n' "${upstream:-none}"
   printf 'ahead|%s\n' "$ahead"
   printf 'status|begin\n'
-  git -C "$repo" status --short --branch
+  git -C "$root" status --short --branch
   printf 'status|end\n'
   printf 'files|begin\n'
   if [[ -n "$staged" ]]; then
@@ -157,10 +184,14 @@ inspect_cmd() {
 }
 
 push_one_repo() {
-  local repo=$1 force=$2 label branch upstream ahead
-  label="$(abs_path "$repo")"
+  local repo=$1 force=$2 root label branch upstream ahead
+  if ! root="$(repo_root "$repo")"; then
+    echo "[$repo] Failed: not a git work tree" >&2
+    return 1
+  fi
+  label="$root"
 
-  branch="$(git -C "$repo" branch --show-current 2>/dev/null || true)"
+  branch="$(git -C "$root" branch --show-current 2>/dev/null || true)"
   if [[ -z "$branch" ]]; then
     echo "[$label] Skipped: detached HEAD" >&2
     return 2
@@ -171,25 +202,25 @@ push_one_repo() {
     return 2
   fi
 
-  upstream="$(git -C "$repo" rev-parse --abbrev-ref '@{upstream}' 2>/dev/null || true)"
+  upstream="$(git -C "$root" rev-parse --abbrev-ref '@{upstream}' 2>/dev/null || true)"
   if [[ -n "$upstream" ]]; then
-    ahead="$(git -C "$repo" rev-list --count '@{upstream}..HEAD' 2>/dev/null || echo 0)"
+    ahead="$(git -C "$root" rev-list --count '@{upstream}..HEAD' 2>/dev/null || echo 0)"
     if [[ "$ahead" -eq 0 ]]; then
       echo "[$label] Already up to date on $branch"
       return 2
     fi
     echo "[$label] Pushing $ahead commit(s) on $branch..."
     if [[ "$force" == true ]]; then
-      GIT_TERMINAL_PROMPT=0 git -C "$repo" push --force-with-lease
+      GIT_TERMINAL_PROMPT=0 git -C "$root" push --force-with-lease
     else
-      GIT_TERMINAL_PROMPT=0 git -C "$repo" push
+      GIT_TERMINAL_PROMPT=0 git -C "$root" push
     fi
   else
     echo "[$label] No upstream. Pushing $branch to origin..."
     if [[ "$force" == true ]]; then
-      GIT_TERMINAL_PROMPT=0 git -C "$repo" push -u origin "$branch" --force-with-lease
+      GIT_TERMINAL_PROMPT=0 git -C "$root" push -u origin "$branch" --force-with-lease
     else
-      GIT_TERMINAL_PROMPT=0 git -C "$repo" push -u origin "$branch"
+      GIT_TERMINAL_PROMPT=0 git -C "$root" push -u origin "$branch"
     fi
   fi
 }
@@ -229,7 +260,7 @@ push_cmd() {
 
   for repo in "${repos[@]}"; do
     if ! is_git_repo "$repo"; then
-      echo "[$repo] Failed: not a git repository" >&2
+      echo "[$repo] Failed: not a git work tree" >&2
       errors=$((errors + 1))
       continue
     fi
