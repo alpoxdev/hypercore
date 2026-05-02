@@ -1,6 +1,6 @@
 # QA Flow Schema
 
-> JSON schema for `.hypercore/qa/flow.json` — used in complex path only.
+> 복잡 경로에서만 사용하는 `.hypercore/qa/flow.json`용 JSON schema.
 
 ## Schema
 
@@ -13,15 +13,15 @@
   "created_at": "ISO8601",
   "updated_at": "ISO8601",
   "request": {
-    "original": "raw stakeholder message",
+    "original": "stakeholder 원문 메시지",
     "requester": "client | executive | PM | etc",
-    "context": "additional context if any"
+    "context": "추가 context가 있으면 기록"
   },
   "current_phase": "analyze | present | confirm | implement | verify",
   "phases": {
     "analyze": {
       "status": "pending | in_progress | completed",
-      "affected_areas": ["file or component paths"],
+      "affected_areas": ["파일 또는 component 경로"],
       "scope_estimate": "small | medium | large"
     },
     "present": {
@@ -29,28 +29,28 @@
       "candidates": [
         {
           "id": 1,
-          "summary": "technical summary",
-          "changes": ["specific files and modifications"],
-          "risks": ["what could break"],
+          "summary": "기술 요약",
+          "changes": ["구체적인 파일과 수정 사항"],
+          "risks": ["깨질 수 있는 것"],
           "recommended": true
         }
       ],
-      "issues": ["potential issues stakeholder didn't consider"]
+      "issues": ["stakeholder가 고려하지 않았을 수 있는 문제"]
     },
     "confirm": {
       "status": "pending | completed",
       "selected_candidate": 1,
-      "adjustments": "user-provided adjustments if any"
+      "adjustments": "사용자가 제공한 조정 사항이 있으면 기록"
     },
     "implement": {
       "status": "pending | in_progress | completed",
-      "changed_files": ["list of modified files"]
+      "changed_files": ["수정된 파일 목록"]
     },
     "verify": {
       "status": "pending | in_progress | completed | failed",
-      "commands_run": ["validation commands executed"],
+      "commands_run": ["실행한 검증 명령"],
       "result": "pass | fail",
-      "notes": "verification details"
+      "notes": "검증 세부 사항"
     }
   }
 }
@@ -60,19 +60,19 @@
 
 | Status | Meaning |
 |--------|---------|
-| `pending` | Phase not yet started |
-| `in_progress` | Phase currently active |
-| `completed` | Phase finished successfully |
-| `failed` | Phase failed (verify only) |
-| `blocked` | Waiting on external input (overall status only) |
+| `pending` | 아직 시작하지 않은 phase |
+| `in_progress` | 현재 진행 중인 phase |
+| `completed` | 성공적으로 완료된 phase |
+| `failed` | 실패한 phase (`verify` 전용) |
+| `blocked` | 외부 입력을 기다리는 중 (전체 status 전용) |
 
 ## Rules
 
-- Set `current_phase` to the first phase with status `in_progress` or `pending`.
-- Update `updated_at` on every write.
-- When all phases are `completed`, set top-level `status` to `completed`.
-- If `verify` fails, set its status to `failed` and fix within scope before retrying.
-- The `id` uses the creation timestamp: `qa-20260327-100000`.
+- `current_phase`는 status가 `in_progress` 또는 `pending`인 첫 phase로 설정한다.
+- 쓸 때마다 `updated_at`을 갱신한다.
+- 모든 phase가 `completed`이면 최상위 `status`를 `completed`로 설정한다.
+- `verify`가 실패하면 status를 `failed`로 설정하고 범위 안에서 수정한 뒤 다시 시도한다.
+- `id`는 생성 timestamp를 사용한다: `qa-20260327-100000`.
 
 ## Example: initial state
 

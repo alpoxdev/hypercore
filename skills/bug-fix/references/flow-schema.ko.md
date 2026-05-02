@@ -1,6 +1,6 @@
-# Bug Fix Flow Schema
+# 버그 수정 Flow Schema
 
-> JSON schema for `.hypercore/bug-fix/flow.json` — used in complex path only.
+> 복잡 경로에서만 사용하는 `.hypercore/bug-fix/flow.json`용 JSON schema.
 
 ## Schema
 
@@ -13,20 +13,20 @@
   "created_at": "ISO8601",
   "updated_at": "ISO8601",
   "request": {
-    "symptom": "error message or failing behavior",
-    "expected": "expected behavior",
-    "reproduction": "steps to reproduce",
-    "related_files": ["file paths if known"]
+    "symptom": "오류 메시지 또는 실패 동작",
+    "expected": "기대 동작",
+    "reproduction": "재현 단계",
+    "related_files": ["알고 있다면 파일 경로"]
   },
   "current_phase": "diagnose | options | confirm | fix | verify",
   "phases": {
     "diagnose": {
       "status": "pending | in_progress | completed",
-      "root_cause": "identified root cause",
-      "evidence": ["supporting evidence"],
+      "root_cause": "확인된 근본 원인",
+      "evidence": ["근거 증거"],
       "hypotheses": [
         {
-          "description": "hypothesis text",
+          "description": "가설 텍스트",
           "confidence": "high | medium | low",
           "verified": false
         }
@@ -37,11 +37,11 @@
       "options": [
         {
           "id": 1,
-          "summary": "option description",
-          "pros": ["advantages"],
-          "cons": ["disadvantages"],
+          "summary": "옵션 설명",
+          "pros": ["장점"],
+          "cons": ["단점"],
           "risk": "low | medium | high",
-          "files": ["affected files"],
+          "files": ["영향받는 파일"],
           "recommended": true
         }
       ]
@@ -49,17 +49,17 @@
     "confirm": {
       "status": "pending | completed",
       "selected_option": 1,
-      "notes": "user-provided notes if any"
+      "notes": "사용자가 제공한 메모가 있으면 기록"
     },
     "fix": {
       "status": "pending | in_progress | completed",
-      "changed_files": ["list of modified files"]
+      "changed_files": ["수정된 파일 목록"]
     },
     "verify": {
       "status": "pending | in_progress | completed | failed",
-      "commands_run": ["validation commands executed"],
+      "commands_run": ["실행한 검증 명령"],
       "result": "pass | fail",
-      "notes": "verification details"
+      "notes": "검증 세부 사항"
     }
   }
 }
@@ -69,19 +69,19 @@
 
 | Status | Meaning |
 |--------|---------|
-| `pending` | Phase not yet started |
-| `in_progress` | Phase currently active |
-| `completed` | Phase finished successfully |
-| `failed` | Phase failed (verify only) |
-| `blocked` | Waiting on external input (overall status only) |
+| `pending` | 아직 시작하지 않은 phase |
+| `in_progress` | 현재 진행 중인 phase |
+| `completed` | 성공적으로 완료된 phase |
+| `failed` | 실패한 phase (`verify` 전용) |
+| `blocked` | 외부 입력을 기다리는 중 (전체 status 전용) |
 
 ## Rules
 
-- Set `current_phase` to the first phase with status `in_progress` or `pending`.
-- Update `updated_at` on every write.
-- When all phases are `completed`, set top-level `status` to `completed`.
-- If `verify` fails, set its status to `failed` and fix within scope before retrying.
-- The `id` uses the creation timestamp: `bug-fix-20260327-100000`.
+- `current_phase`는 status가 `in_progress` 또는 `pending`인 첫 phase로 설정한다.
+- 쓸 때마다 `updated_at`을 갱신한다.
+- 모든 phase가 `completed`이면 최상위 `status`를 `completed`로 설정한다.
+- `verify`가 실패하면 status를 `failed`로 설정하고 범위 안에서 수정한 뒤 다시 시도한다.
+- `id`는 생성 timestamp를 사용한다: `bug-fix-20260327-100000`.
 
 ## Example: initial state
 

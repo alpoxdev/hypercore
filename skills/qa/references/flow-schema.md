@@ -85,9 +85,9 @@
   "created_at": "2026-03-27T10:00:00Z",
   "updated_at": "2026-03-27T10:00:00Z",
   "request": {
-    "original": "고객사에서 결제 플로우에서 할인 적용이 안 된다고 합니다",
+    "original": "A client says discounts are not applying in the checkout flow",
     "requester": "client",
-    "context": "특정 쿠폰 코드 사용 시 발생"
+    "context": "Occurs when using a specific coupon code"
   },
   "current_phase": "analyze",
   "phases": {

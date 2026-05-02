@@ -1,6 +1,6 @@
-# Planning Package Flow Schema
+# 기획 패키지 Flow Schema
 
-> JSON schema for `.hypercore/prd/[slug]/flow.json` — used for complex planning packages only.
+> 복잡 기획 패키지에서만 사용하는 `.hypercore/prd/[slug]/flow.json`용 JSON schema.
 
 ## Schema
 
@@ -15,9 +15,9 @@
   "updated_at": "ISO8601",
   "slug": "kebab-case-slug",
   "request": {
-    "summary": "brief description of the initiative",
-    "requester": "who requested it if known",
-    "context": "additional context"
+    "summary": "initiative에 대한 짧은 설명",
+    "requester": "알고 있다면 요청자",
+    "context": "추가 context"
   },
   "current_phase": "brief | research | prd | diagram | feature_spec | user_flow | wireframe | sources | preview | validate",
   "outputs": {
@@ -34,18 +34,18 @@
   "phases": {
     "brief": {
       "status": "pending | in_progress | completed",
-      "product_name": "feature or product name",
-      "problem": "problem to solve",
-      "target_users": ["who benefits"],
+      "product_name": "feature 또는 product 이름",
+      "problem": "해결할 문제",
+      "target_users": ["혜택을 받는 사용자"],
       "desired_outcome": "business goal",
-      "constraints": ["known constraints"],
-      "unknowns": ["known unknowns"]
+      "constraints": ["알려진 제약"],
+      "unknowns": ["알려진 unknown"]
     },
     "research": {
       "status": "pending | in_progress | completed | skipped",
-      "queries": ["distinct search queries used"],
+      "queries": ["사용한 distinct search query"],
       "sources_found": 0,
-      "skip_reason": "reason if skipped"
+      "skip_reason": "건너뛰었다면 그 이유"
     },
     "prd": {
       "status": "pending | in_progress | completed",
@@ -69,7 +69,7 @@
     },
     "wireframe": {
       "status": "pending | in_progress | completed",
-      "screens_written": ["screen names"],
+      "screens_written": ["screen name"],
       "states_covered": ["empty", "loading", "error"]
     },
     "sources": {
@@ -85,7 +85,7 @@
       "status": "pending | in_progress | completed | failed",
       "checks_passed": ["scope_clarity", "cross_artifact_alignment", "sources", "open_questions", "change_history"],
       "checks_failed": [],
-      "notes": "validation details"
+      "notes": "검증 세부 사항"
     }
   }
 }
@@ -95,21 +95,21 @@
 
 | Status | Meaning |
 |--------|---------|
-| `pending` | Phase not yet started |
-| `in_progress` | Phase currently active |
-| `completed` | Phase finished successfully |
-| `skipped` | Phase intentionally skipped (research only) |
-| `failed` | Phase failed validation (validate only) |
-| `blocked` | Waiting on external input (overall status only) |
+| `pending` | 아직 시작하지 않은 phase |
+| `in_progress` | 현재 진행 중인 phase |
+| `completed` | 성공적으로 완료된 phase |
+| `skipped` | 의도적으로 건너뛴 phase (`research` 전용) |
+| `failed` | validation에 실패한 phase (`validate` 전용) |
+| `blocked` | 외부 입력을 기다리는 중 (전체 status 전용) |
 
 ## Rules
 
-- Set `current_phase` to the first phase with status `in_progress` or `pending`.
-- Update `updated_at` on every write.
-- When all phases are `completed` or intentionally `skipped`, set top-level `status` to `completed`.
-- If `validate` fails, set its status to `failed`, fix the issues, then re-run validation.
-- The `id` combines slug and creation timestamp: `package-billing-retry-20260430-100000`.
-- The `mode` reflects `create` or `update` from the package workflow.
+- `current_phase`는 status가 `in_progress` 또는 `pending`인 첫 phase로 설정한다.
+- 쓸 때마다 `updated_at`을 갱신한다.
+- 모든 phase가 `completed`이거나 의도적으로 `skipped`이면 최상위 `status`를 `completed`로 설정한다.
+- `validate`가 실패하면 status를 `failed`로 설정하고 문제를 수정한 뒤 validation을 다시 실행한다.
+- `id`는 slug와 생성 timestamp를 결합한다: `package-billing-retry-20260430-100000`.
+- `mode`는 package workflow의 `create` 또는 `update`를 반영한다.
 
 ## Example: initial state
 
