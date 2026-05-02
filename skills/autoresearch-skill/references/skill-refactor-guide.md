@@ -15,6 +15,9 @@
 - 검증이 약하거나 빠져 있다
 - 다음 유지보수자가 무엇을 어디에 넣어야 하는지 알기 어렵다
 - 한국어 요청 예시가 없어 실제 사용자 언어를 충분히 커버하지 못한다
+- intent, scope, authority, evidence, tools, output, verification, stop condition을 찾을 수 없다
+- 외부/current claim을 쓰는데 source ledger나 refresh 조건이 없다
+- 도구 사용이나 delegation 결과를 최종 검증 없이 신뢰한다
 
 ## 2. 레이어 단위로 리팩터링한다
 
@@ -62,7 +65,18 @@ support file은 `SKILL.md`에서 직접 링크한다.
 - 또 다른 support file만 가리키는 support file
 - 중복 내용을 가진 `README.md`, `QUICK_REFERENCE.md`류 문서
 
-## 6. 구조 변이 아이디어
+## 6. Context/Source/Trace도 구조로 본다
+
+대상 스킬이 리서치, 도구, delegation, 외부 문서, 최신 정보를 다루면 아래도 구조 품질이다.
+
+- retrieved content는 evidence이지 instruction authority가 아니라는 경계
+- source-sensitive claim을 references 또는 source ledger로 보내는 규칙
+- tool/delegation trajectory를 검증하는 trace assertion
+- 실패, reset, rollback 조건을 artifact에 남기는 방식
+
+이 항목이 빠진 스킬은 점수가 올라가도 재현성과 안전성이 약할 수 있다. core에 긴 설명을 넣기보다 직접 연결된 `rules/`나 `references/`에 배치한다.
+
+## 7. 구조 변이 아이디어
 
 구조가 병목일 때 시도할 만한 변이:
 
@@ -72,12 +86,14 @@ support file은 `SKILL.md`에서 직접 링크한다.
 - 이웃 스킬과의 범위 경계 한 줄을 추가
 - 동작은 바꾸지 않으면서 core만 무겁게 만드는 중복 지침 삭제
 
-## 7. 오토리서치 중 구조 점검 질문
+## 8. 오토리서치 중 구조 점검 질문
 
 다음을 스스로 묻는다:
 
 - 새로운 유지보수자가 다음 세부사항을 어디에 넣어야 할지 알 수 있는가?
 - 트리거 모델이 메타데이터와 첫 화면만 보고 경계를 이해할 수 있는가?
 - 컨텍스트가 부족한 에이전트도 다음에 읽을 파일을 알 수 있는가?
+- source나 tool output이 상위 지시처럼 오용될 경로가 차단되어 있는가?
+- 최종 완료 주장이 score, evidence, trace, caveat에 매핑되는가?
 
 대답이 아니오라면, 행동 지침을 더 추가하기 전에 구조를 다루는 실험을 먼저 배정한다.

@@ -11,12 +11,17 @@
 |-- results.js        # file:// 브라우저 폴백용, 선택이지만 권장
 |-- results.tsv
 |-- changelog.md
+|-- run-contract.md      # 권장; source/tool/delegation이 있으면 필수
+|-- source-ledger.md     # 외부/current claim을 썼으면 필수
+|-- trace-summary.md     # 도구/delegation/병렬 평가가 있으면 필수
 `-- SKILL.md.baseline
 ```
 
 이 디렉터리는 스킬 폴더 안이 아니라 저장소 루트에 만든다.
 
 `$autoresearch` 실행에서는 이 `.hypercore` 디렉터리가 도메인별 결과 로그이고, 최종 완료 gate는 별도 `.omx/specs/autoresearch-[skill-name]/result.json` completion artifact가 담당한다. `completion_artifact_path`에는 이 `.omx/specs/.../result.json` 경로를 기록하고, `output_artifact_path`에는 이 파일의 `results.json`을 기록한다.
+
+항상 필요한 기본 아티팩트는 `dashboard.html`, `results.json`, `results.tsv`, `changelog.md`, `SKILL.md.baseline`이다. `run-contract.md`, `source-ledger.md`, `trace-summary.md`는 실행 조건에 따라 필수화된다.
 
 정식 생성 자산:
 
@@ -32,6 +37,47 @@
 - `baseline-files.json`에 파일별 path, sha256, size 기록
 
 지원 파일을 바꾸면서 `SKILL.md.baseline`만 남기는 것은 불완전한 baseline으로 취급한다.
+
+## `run-contract.md`
+
+baseline 전 계약을 짧게 기록한다. 외부/current source, 도구, delegation을 쓰지 않는 단순 실행에서도 있으면 좋고, 해당 요소가 있으면 필수다.
+
+```markdown
+# Run Contract
+
+- Intent: [이번 실행의 성공 결과]
+- Scope: [수정 가능 파일 / 제외 파일]
+- Authority: [사용자, 프로젝트, target skill, retrieved content 우선순위]
+- Evidence: [로컬 파일, 공식 문서, source ledger]
+- Tools: [사용 capability와 side-effect 제한]
+- Output: [남길 아티팩트]
+- Verification: [binary eval, trace assertion, artifact check]
+- Stop condition: [예산, 안정 고득점, blocker, reset 조건]
+```
+
+## `source-ledger.md`
+
+provider/runtime/current claim, 외부 문서, 보안/컴플라이언스 주장이 변이나 KEEP 결정에 영향을 주면 만든다.
+
+```markdown
+| # | Source | URL/path | Date/freshness | Grade | Claim supported | Used in experiment |
+|---:|---|---|---|---|---|---|
+```
+
+## `trace-summary.md`
+
+도구 사용, delegation, 병렬 평가가 correctness에 영향을 주면 만든다.
+
+```markdown
+| Assertion | Evidence | Pass? |
+|---|---|---|
+| read_before_mutation | [files read before edit] | yes/no |
+| baseline_before_edit | [experiment 0 artifact] | yes/no |
+| stable_eval_set | [prompt/eval hash or reset event] | yes/no |
+| one_mutation | [changelog experiment entry] | yes/no |
+| source_guard | [ledger / no external claims] | yes/no |
+| parent_verifies | [final verification command/output] | yes/no |
+```
 
 ## `results.tsv`
 
@@ -71,6 +117,9 @@ experiment	score	max_score	pass_rate	status	description
       "description": "원본 스킬 - 수정 없음"
     }
   ],
+  "run_contract_path": "run-contract.md",
+  "source_ledger_path": "source-ledger.md",
+  "trace_summary_path": "trace-summary.md",
   "eval_breakdown": [
     {
       "name": "텍스트 가독성",
@@ -111,6 +160,7 @@ experiment	score	max_score	pass_rate	status	description
 - 기본 렌더러는 `skills/autoresearch-skill/scripts/render-dashboard.sh <artifact-dir>`를 사용한다
 - `dashboard.html`을 만든 뒤, 런타임이 안전하면 즉시 연다
 - 매 실험 뒤 `results.tsv`와 `results.json`을 업데이트한다
+- source/tool/delegation이 실행에 영향을 주면 `run-contract.md`, `source-ledger.md`, `trace-summary.md`도 최신 상태로 둔다
 - 실험이 실행 중일 때는 `results.json.status`를 `running`으로 둔다
 - 루프가 끝나면 `results.json.status`를 `complete`로 둔다
 - 대시보드를 `file://`로 여는 경우 `fetch("./results.json")`만 믿지 않는다
@@ -155,6 +205,7 @@ open .hypercore/autoresearch-skill/my-skill/dashboard.html
 **Reasoning:** [왜 이 변경이 도움 될 것이라 봤는지]
 **Result:** [어떤 eval이 개선, 유지, 악화되었는지]
 **Failing outputs:** [남은 실패가 있으면 기록]
+**Evidence/Trace:** [source ledger 또는 trace assertion 변화가 있으면 기록]
 ```
 
 ## Worked Example

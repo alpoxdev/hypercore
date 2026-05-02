@@ -49,12 +49,18 @@ EVAL 5: 자율 실행 규율
 Question: 이 스킬이 baseline-first, one-mutation-at-a-time 루프를 안정적으로 유지하는가?
 Pass: baseline 점수화, 단일 변경 실험, 명시적 종료 조건이 유지된다
 Fail: eval drift, 묶음 변이, 불명확한 종료 동작을 허용한다
+
+EVAL 6: 계약/근거/추적성
+Question: 외부 근거, 도구, delegation이 영향을 줄 때 run contract, source policy, trace assertion을 요구하는가?
+Pass: core 또는 직접 연결된 rules에서 contract/source/trace 기록과 reset 조건을 찾을 수 있다
+Fail: 점수 상승만 보고 근거, 권한, 도구 trajectory를 검증하지 않는다
 ```
 
 ## 점수화 노트
 
-- 기본 총점: `5 prompts x 5 evals = 25`
+- 기본 총점: `5 prompts x 6 evals = 30`
 - baseline과 후속 실험에서 같은 프롬프트 팩과 eval 세트를 유지한다
+- source/tool/delegation 조건이 없으면 EVAL 6은 해당 없음이 아니라 “요구 조건이 명시되어 있는가”를 기준으로 채점한다
 - 이 팩을 교체하면 다음 실험을 점수화하기 전에 교체 사실을 로그에 남긴다
 
 ## Override가 필요한 경우

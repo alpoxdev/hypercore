@@ -77,6 +77,7 @@
 - "재사용 정책과 상세 지식이 core에 중복되지 않고 `rules/`, `references/`로 나뉘어 있는가?"
 - "현실적인 긍정 예시 최소 1개와 명확한 범위 밖 예시 최소 1개가 있는가?"
 - "한국어 요청 예시를 읽었을 때도 트리거 경계와 다음 행동이 유지되는가?"
+- "외부/current source나 도구 사용이 correctness에 영향을 줄 때 source ledger 또는 trace assertion을 요구하는가?"
 
 ---
 
@@ -111,6 +112,12 @@
 스킬을 최적화하는데 tone, brevity, formatting만 보면 진짜 문제를 놓친다.
 
 **해결:** 적어도 하나의 eval은 트리거, 구조, 검증 품질 같은 실제 운영 표면을 검사한다.
+
+### 6. 근거와 trajectory를 평가하지 않는다
+
+source-sensitive 스킬인데 최종 문장만 보고 채점하면 검색 snippet, stale docs, tool output injection을 놓칠 수 있다.
+
+**해결:** source ledger, retrieved-content authority boundary, trace assertion 같은 관측 가능한 항목을 eval에 포함한다.
 
 ---
 
