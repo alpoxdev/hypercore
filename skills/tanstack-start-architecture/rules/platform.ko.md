@@ -10,7 +10,7 @@
 |---|---|---|
 | `src/router.tsx`가 fresh-instance `getRouter()` export | Official | missing setup 차단 |
 | server/client env boundary | Safety policy | secret leak 차단 |
-| non-trivial app runtime env validation | Hypercore convention + Safety policy | warn 또는 scaffold 추가 |
+| non-trivial app runtime env validation | Hypercore convention + Safety policy | warn 또는 `src/config/env.ts` scaffold 추가 |
 | Vite version-aware path alias | Hypercore convention | touched code에서 수정 |
 
 ---
@@ -25,10 +25,41 @@
 
 ## Environment 규칙
 
-- 클라이언트에서 안전한 env는 public prefix 규칙에 맞춰 `import.meta.env`로 접근합니다
-- 서버 전용 env는 `process.env`에 두고 서버 경계 뒤에 둡니다
-- typed env 접근이 필요하면 `src/env.d.ts`를 추가합니다
-- 필수 secret/URL은 runtime validation을 둡니다
+- 새 TanStack Start env scaffold에서는 `src/env/`, `src/env.ts`, `src/env.d.ts`를 만들지 않습니다.
+- env 코드는 `src/config/` 아래에 유지하고, canonical validation module은 `src/config/env.ts`입니다.
+- TanStack Start/Vite 프로젝트에서는 `@t3-oss/env-core`와 `zod`를 사용하고 `createEnv`로 scaffold합니다.
+- 프로젝트가 Vite `envPrefix`를 명시적으로 바꾸지 않았다면 client 변수는 `clientPrefix: "VITE_"`로 설정합니다.
+- `VITE_*` 변수는 client에 노출되므로 secret, token, private API key, password, database URL을 담으면 안 됩니다.
+- 서버 전용 env는 `process.env`에 두고 server boundary 뒤에서 접근하며 `server`에 나열합니다.
+- client-safe env는 `import.meta.env`에서 가져오고 `client`에 나열하며 public prefix를 사용합니다.
+- 명시적인 build-time coverage가 필요하면 `runtimeEnvStrict`를 우선 사용하고, framework/runtime이 전체 env object를 안정적으로 제공할 때만 `runtimeEnv`를 사용합니다.
+- shared config file이 server/client 양쪽에서 import될 수 있으면 `isServer: typeof window === "undefined"`를 포함합니다.
+- 프로젝트에 문서화된 예외가 없으면 새 validation module에는 `emptyStringAsUndefined: true`를 설정합니다.
+- 서버 변수 이름 자체가 client bundle에 노출되면 안 되는 경우에도 schema split은 `src/config/` 아래(예: `env.server.ts`, `env.client.ts`)에서 수행하고 `src/env/` 아래에는 만들지 않습니다.
+
+Canonical starter shape:
+
+```ts
+// src/config/env.ts
+import { createEnv } from "@t3-oss/env-core"
+import * as z from "zod"
+
+export const env = createEnv({
+  server: {
+    DATABASE_URL: z.url(),
+  },
+  clientPrefix: "VITE_",
+  client: {
+    VITE_PUBLIC_APP_URL: z.url(),
+  },
+  runtimeEnvStrict: {
+    DATABASE_URL: process.env.DATABASE_URL,
+    VITE_PUBLIC_APP_URL: import.meta.env.VITE_PUBLIC_APP_URL,
+  },
+  isServer: typeof window === "undefined",
+  emptyStringAsUndefined: true,
+})
+```
 
 ---
 

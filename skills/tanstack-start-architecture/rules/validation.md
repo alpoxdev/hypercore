@@ -19,6 +19,14 @@ rg -n "server-only|client-only|\.server\.|\.client\.|importProtection|tanstackSt
 
 # Loader and hydration risk checks
 rg -n "loader:|beforeLoad:|Date\.now\(|Math\.random\(|localStorage|window\." src/routes src/components 2>/dev/null
+
+# Env config checks when env validation is touched or scaffolded
+test ! -d src/env
+test ! -f src/env.ts
+test -f src/config/env.ts
+rg -n "@t3-oss/env-core|createEnv" src/config/env.ts
+rg -n "clientPrefix: ['\"]VITE_|runtimeEnvStrict|runtimeEnv|emptyStringAsUndefined|isServer" src/config/env.ts
+rg -n "VITE_.*(SECRET|TOKEN|PASSWORD|DATABASE_URL|PRIVATE)" src/config/env.ts .env* 2>/dev/null
 ```
 
 Interpret results with the topic rule files; grep output alone is not a verdict.
@@ -33,6 +41,8 @@ wc -l skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architec
 rg -n "architecture-rules|rules/|references/official" skills/tanstack-start-architecture/SKILL.md
 rg -n "last_verified_at|@tanstack/react-start|@tanstack/react-router|source_priority|validator" skills/tanstack-start-architecture/references/official
 rg -n "Official|Safety policy|Hypercore convention|publishing-only|Zod v4|enabled by default" skills/tanstack-start-architecture/rules skills/tanstack-start-architecture/architecture-rules.md
+rg -n "src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: \"VITE_\"|runtimeEnvStrict|emptyStringAsUndefined|Do not create `src/env/`" skills/tanstack-start-architecture/rules/platform.md
+rg -n "src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: \"VITE_\"|runtimeEnvStrict|emptyStringAsUndefined|`src/env/`" skills/tanstack-start-architecture/rules/platform.ko.md
 ```
 
 Must pass:
@@ -44,6 +54,7 @@ Must pass:
 - Publishing-only route exception and hook extraction rules do not contradict each other.
 - Search validation guidance handles both Zod v4 direct schemas and Zod v3 adapter usage.
 - Import protection guidance says defaults exist and custom config is required when custom deny rules are needed.
+- Env validation guidance uses `src/config/env.ts`, forbids new `src/env/` scaffolds, and describes `@t3-oss/env-core` / Vite public-prefix boundaries.
 - English and Korean entrypoints have aligned trigger, boundary, workflow, and read order.
 
 ## Trigger Tests
@@ -71,6 +82,7 @@ Boundary example:
 - [ ] Only relevant rule/reference files were loaded.
 - [ ] Applicable rules were classified as Official, Safety policy, or Hypercore convention.
 - [ ] Blocking safety gates were fixed before style conventions.
+- [ ] Env scaffolds, when touched, use `src/config/env.ts` and do not create `src/env/`.
 - [ ] Broad migrations were avoided unless requested.
 - [ ] Verification commands were run and read.
 - [ ] Remaining risks or TanStack API ambiguities cite exact sources and dates.
