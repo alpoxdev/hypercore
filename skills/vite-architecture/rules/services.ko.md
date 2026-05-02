@@ -131,12 +131,41 @@ export const deleteUser = async (id: string): Promise<void> => {
 
 > route loader에서 공개 가능한 프리페치를 위해 `ensureQueryData`를 사용합니다. 프로젝트가 나중에 SSR/manual rendering을 추가하면 같은 loader가 서버 렌더에도 참여할 수 있으므로, secret이나 private env는 loader에서 직접 읽지 않습니다.
 
+최신 TanStack Router 권장 조합은 loader의 `ensureQueryData` + 컴포넌트의 `useSuspenseQuery`입니다. loader가 채워둔 캐시를 컴포넌트가 그대로 읽으므로 로딩 깜빡임이 없습니다.
+
 ```typescript
 // routes/users/index.tsx
+import { useSuspenseQuery } from '@tanstack/react-query'
+
 export const Route = createFileRoute('/users/')({
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData(usersQueryOptions()),
   component: UsersPage,
+})
+
+const UsersPage = (): JSX.Element => {
+  const { data: users } = useSuspenseQuery(usersQueryOptions())
+  return <UserList users={users} />
+}
+```
+
+`useQuery`는 loader가 await하지 않은 보조 데이터(예: analytics 위젯)에 한해 사용하고, loader가 프리페치한 데이터는 기본적으로 `useSuspenseQuery`로 읽습니다.
+
+우선순위가 섞인 페이지에서는 비-크리티컬 fetch를 `queryClient.prefetchQuery(...)`로 await 없이 시작하면 SSR 도중 스트리밍되어 들어옵니다. 크리티컬 쿼리는 그대로 await:
+
+```typescript
+// routes/dashboard/index.tsx
+export const Route = createFileRoute('/dashboard/')({
+  loader: ({ context: { queryClient } }) => {
+    // 크리티컬 — 네비게이션을 막고 준비 완료될 때까지 대기
+    const user = queryClient.ensureQueryData(userQueryOptions())
+
+    // 비-크리티컬 — 요청만 시작하고 await하지 않음; SSR 도중 스트리밍
+    queryClient.prefetchQuery(analyticsQueryOptions())
+
+    return user
+  },
+  component: DashboardPage,
 })
 ```
 

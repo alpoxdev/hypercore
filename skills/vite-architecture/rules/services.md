@@ -131,19 +131,48 @@ export const deleteUser = async (id: string): Promise<void> => {
 
 > Use `ensureQueryData` in route loaders for public-safe prefetching. The loader may run during client navigation and can also participate in SSR/manual rendering if the project adds it later.
 
+The current TanStack Router doc-recommended pairing is `ensureQueryData` in the loader and `useSuspenseQuery` in the component — the loader fills the cache so the component reads it without a loading flash:
+
 ```typescript
 // routes/users/index.tsx
+import { useSuspenseQuery } from '@tanstack/react-query'
+
 export const Route = createFileRoute('/users/')({
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData(usersQueryOptions()),
   component: UsersPage,
 })
 
-// routes/users/$id.tsx
+const UsersPage = (): JSX.Element => {
+  const { data: users } = useSuspenseQuery(usersQueryOptions())
+  return <UserList users={users} />
+}
+
+// routes/users/$id/index.tsx
 export const Route = createFileRoute('/users/$id')({
   loader: ({ params: { id }, context: { queryClient } }) =>
     queryClient.ensureQueryData(userQueryOptions(id)),
   component: UserDetailPage,
+})
+```
+
+`useQuery` is fine for non-critical secondary data the loader did not await (e.g. analytics widgets); `useSuspenseQuery` stays the default for anything the loader prefetched.
+
+For mixed-priority pages, start a non-critical fetch with `queryClient.prefetchQuery(...)` (without awaiting) so it streams during SSR while the loader awaits the critical query:
+
+```typescript
+// routes/dashboard/index.tsx
+export const Route = createFileRoute('/dashboard/')({
+  loader: ({ context: { queryClient } }) => {
+    // Critical — block navigation until ready
+    const user = queryClient.ensureQueryData(userQueryOptions())
+
+    // Non-critical — start the request, do not await; streams during SSR
+    queryClient.prefetchQuery(analyticsQueryOptions())
+
+    return user
+  },
+  component: DashboardPage,
 })
 ```
 

@@ -13,15 +13,21 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite'
 
 export default defineConfig({
   plugins: [
-    tanstackRouter(),
+    // tanstackRouter()는 반드시 react() 보다 앞에 위치합니다
+    tanstackRouter({
+      target: 'react',
+      autoCodeSplitting: true,
+    }),
     react(),
   ],
 })
 ```
 
-- `tanstackRouter()`는 명시적으로 유지합니다
-- `tanstackRouter()`는 `react()`보다 먼저 등록합니다
+- `tanstackRouter()`는 명시적으로 유지하고 `target: 'react'`를 전달합니다
+- `autoCodeSplitting: true`를 켜야 plugin이 route component를 자동 코드 스플릿합니다
+- `tanstackRouter()`는 `react()`보다 먼저 등록합니다 (순서가 잘못되면 조용히 실패)
 - router plugin을 중복 추가하지 않습니다
+- file-convention 옵션 중 hypercore 폴더와 직결되는 것: `routeFileIgnorePrefix` 기본값이 `'-'`이라서 `-components/`, `-hooks/`가 route tree에서 제외됨; `routeToken`/`indexToken`을 커스텀하려면 `tsr.config.json`에 명시
 
 ---
 
@@ -31,13 +37,57 @@ export default defineConfig({
 - 수동 편집하지 않습니다
 - 라우팅 결과가 이상하면 source route 또는 router config를 수정한 뒤 재생성합니다
 
+`tsr.config.json`을 두는 저장소는 다음 키를 명시해서 plugin과 CLI가 같은 위치를 보도록 유지합니다:
+
+```json
+{
+  "routesDirectory": "./src/routes",
+  "generatedRouteTree": "./src/routeTree.gen.ts"
+}
+```
+
+`routeToken`, `indexToken`, `routeFilePrefix`, `routeFileIgnorePrefix`는 저장소가 실제로 커스텀할 때만 추가하고 그렇지 않으면 문서화된 기본값에 의존합니다.
+
 ---
 
 ## Router 설정
 
 - router wiring은 `src/router.tsx`에서 명시적으로 유지합니다
 - root context 설정은 router/root-route 파일에서 쉽게 찾을 수 있어야 합니다
-- 저장소가 SSR 또는 manual rendering을 추가하면 process-global singleton보다 fresh router factory를 선호합니다
+- 저장소가 SSR 또는 manual rendering을 추가하면 process-global singleton보다 per-request fresh router factory를 선호합니다 (module-level QueryClient는 SSR 요청 간 데이터 leak)
+- 표준 `createRouter` 옵션: `defaultPreload: 'intent'`, `defaultPreloadStaleTime: 0`, `scrollRestoration: true`를 명시하고, `Wrap`으로 `QueryClientProvider`를 마운트합니다
+
+```tsx
+// src/router.tsx
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { createRouter } from '@tanstack/react-router'
+import { routeTree } from './routeTree.gen'
+
+export const createAppRouter = () => {
+  // 요청마다 새 QueryClient — SSR 데이터 leak 방지
+  const queryClient = new QueryClient()
+
+  return createRouter({
+    routeTree,
+    context: { queryClient },
+    defaultPreload: 'intent',
+    defaultPreloadStaleTime: 0,
+    scrollRestoration: true,
+    Wrap: ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    ),
+  })
+}
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: ReturnType<typeof createAppRouter>
+  }
+}
+```
+
+- root route는 `createRootRouteWithContext<{ queryClient: QueryClient }>()` 팩토리 패턴을 써서 nested route까지 context 타입을 유지합니다
+- SSR 스트리밍 + TanStack Query를 쓸 때는 같은 factory 안에서 `@tanstack/react-router-ssr-query`의 `setupRouterSsrQueryIntegration({ router, queryClient })`를 연결합니다
 
 ---
 

@@ -37,6 +37,7 @@ routes/
 | `-` | Route-excluded folder | Excluded |
 | `$` | Dynamic parameter | Generated |
 | `_` | Pathless Layout | Generated (no path) |
+| `(group)/` | Route group (parentheses) | URL is unchanged; only used to organize files |
 
 **Required rules:**
 - Every page MUST have `-components/`, `-hooks/` folders
@@ -87,10 +88,12 @@ const UsersPage = (): JSX.Element => {
 
 > Treat route loaders as client-reachable code. In a typical SPA-only Vite app they run on navigation in the browser. If the repo later adds SSR or manual server rendering, the same loader may also participate in server render. Keep loaders public-safe either way.
 
+The recommended pairing in current TanStack Router docs is `ensureQueryData` in the loader plus `useSuspenseQuery` in the component. `useSuspenseQuery` reads the cache the loader already filled and subscribes to updates without a loading flash.
+
 ```tsx
 // routes/users/$id/index.tsx
 import { createFileRoute } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { userQueryOptions } from '@/services/user/queries'
 
 export const Route = createFileRoute('/users/$id')({
@@ -101,15 +104,17 @@ export const Route = createFileRoute('/users/$id')({
 
 const UserDetailPage = (): JSX.Element => {
   const { id } = Route.useParams()
-  const { data: user } = useQuery(userQueryOptions(id))
+  const { data: user } = useSuspenseQuery(userQueryOptions(id))
   return (
     <div>
-      <h1>{user?.name}</h1>
-      <p>{user?.email}</p>
+      <h1>{user.name}</h1>
+      <p>{user.email}</p>
     </div>
   )
 }
 ```
+
+Use `useQuery` only for non-critical data fetched alongside (e.g. analytics widgets) where a loading skeleton is acceptable.
 
 ## Deferred Data Loading
 
@@ -160,6 +165,10 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/products/')({
   validateSearch: zodValidator(searchSchema),
+  // Bridge validated search params into the loader cache key
+  loaderDeps: ({ search: { page, sortBy, filter } }) => ({ page, sortBy, filter }),
+  loader: ({ deps, context: { queryClient } }) =>
+    queryClient.ensureQueryData(productsQueryOptions(deps)),
   component: ProductsPage,
 })
 
@@ -188,10 +197,30 @@ const ProductsPage = (): JSX.Element => {
 
 | API | Source | Purpose |
 |-----|--------|---------|
-| `zodValidator` | `@tanstack/zod-adapter` | Schema validation for search params |
-| `fallback` | `@tanstack/zod-adapter` | Default values for invalid params |
+| `zodValidator` | `@tanstack/zod-adapter` | Schema validation for search params (Zod v3) |
+| `fallback` | `@tanstack/zod-adapter` | Default values for invalid params (preserves type, unlike raw `.catch()`) |
+| `loaderDeps` | route option | Bridge validated search params into loader cache keys |
 | `Route.useSearch()` | `@tanstack/react-router` | Access validated search params |
 | `Route.useNavigate()` | `@tanstack/react-router` | Navigate with search param updates |
+
+> Zod 4: you can pass the schema directly to `validateSearch` without `zodValidator` (the adapter is only needed for Zod v3). On Zod v3, prefer `fallback(...)` over `.catch(...)`; with `zodValidator` plain `.catch()` makes the inferred type `unknown`.
+
+### Route Group (parentheses)
+
+Wrap files inside `(groupName)/` to organize them without changing the URL. Hypercore commonly uses `(main)/` for list pages so create/edit pages can live outside the group while sharing nothing in the URL.
+
+```text
+routes/
+├── (main)/
+│   ├── users/
+│   │   ├── route.tsx          # /users layout
+│   │   └── index.tsx          # /users
+│   └── posts/
+│       └── index.tsx          # /posts
+└── users/
+    └── new/
+        └── index.tsx          # /users/new (outside the group)
+```
 
 ---
 
