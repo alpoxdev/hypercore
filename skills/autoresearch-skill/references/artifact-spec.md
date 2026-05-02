@@ -14,6 +14,7 @@ Use this reference when creating or reviewing the experiment workspace for an au
 |-- run-contract.md      # recommended; required when source/tool/delegation is used
 |-- source-ledger.md     # required when external/current claims are used
 |-- trace-summary.md     # required when tools/delegation/parallel evaluation is used
+|-- baseline-files.json  # required when support files beyond SKILL.md can change
 |-- details/             # optional; long analysis, prompt packs, raw eval results
 `-- SKILL.md.baseline
 ```
@@ -87,21 +88,21 @@ Create this when tool use, delegation, or parallel evaluation affects correctnes
 A tab-separated file with the following header:
 
 ```text
-experiment	score	max_score	pass_rate	status	description
+experiment	commit	score	max_score	pass_rate	metric	delta	guard	guard_metric	status	description
 ```
 
 Example:
 
 ```text
-experiment	score	max_score	pass_rate	status	description
-0	14	20	70.0%	baseline	Original skill - no changes
-1	16	20	80.0%	keep	Added an anti-pattern for numbering-related failures
-2	16	20	80.0%	discard	Moved layout guidance earlier, but with no measurable gain
+experiment	commit	score	max_score	pass_rate	metric	delta	guard	guard_metric	status	description
+0	a1b2c3d	14	20	70.0%	70.0	0.0	pass	-	baseline	Original skill - no changes
+1	b2c3d4e	16	20	80.0%	80.0	+10.0	pass	-	keep	Added an anti-pattern for numbering-related failures
+2	-	16	20	80.0%	80.0	0.0	pass	-	discard	Moved layout guidance earlier, but no measurable gain
 ```
 
 ## `results.json`
 
-Recommended shape:
+Required minimum shape:
 
 ```json
 {
@@ -110,12 +111,20 @@ Recommended shape:
   "current_experiment": 3,
   "baseline_score": 70.0,
   "best_score": 90.0,
+  "metric_direction": "higher_is_better",
+  "last_statuses": ["baseline", "keep", "discard"],
+  "best_experiment": 1,
   "experiments": [
     {
       "id": 0,
+      "commit": "a1b2c3d",
       "score": 14,
       "max_score": 20,
+      "metric": 70.0,
+      "delta": 0.0,
       "pass_rate": 70.0,
+      "guard": "pass",
+      "guard_metric": null,
       "status": "baseline",
       "description": "Original skill - no changes"
     }
@@ -138,6 +147,17 @@ Status values:
 - `running`
 - `idle`
 - `complete`
+
+Experiment status values:
+
+- `baseline`
+- `keep`
+- `keep-reworked`
+- `discard`
+- `crash`
+- `no-op`
+- `hook-blocked`
+- `metric-error`
 
 ## `dashboard.html`
 

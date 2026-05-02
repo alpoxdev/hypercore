@@ -15,6 +15,9 @@
       --baseline: #7aa2f7;
       --keep: #74c69d;
       --discard: #f28482;
+      --crash: #f59e0b;
+      --metric-error: #a78bfa;
+      --no-op: #cbd5e1;
       --idle: #fde68a;
     }
 
@@ -92,6 +95,26 @@
       border-bottom: 1px solid var(--border);
       text-align: left;
       vertical-align: top;
+    }
+
+    .status-cell {
+      min-width: 120px;
+    }
+
+    .status-bar {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 650;
+    }
+
+    .status-bar::before {
+      content: "";
+      display: inline-block;
+      width: 34px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--status-color, var(--no-op));
     }
 
     .empty {
@@ -228,9 +251,28 @@
       const labels = {
         baseline: "baseline",
         keep: "유지",
-        discard: "폐기"
+        "keep-reworked": "재작업 유지",
+        discard: "폐기",
+        crash: "crash",
+        "no-op": "no-op",
+        "hook-blocked": "hook 차단",
+        "metric-error": "metric 오류"
       };
       return labels[status] || status || "-";
+    }
+
+    function statusColor(status) {
+      const colors = {
+        baseline: "var(--baseline)",
+        keep: "var(--keep)",
+        "keep-reworked": "var(--keep)",
+        discard: "var(--discard)",
+        crash: "var(--crash)",
+        "hook-blocked": "var(--crash)",
+        "metric-error": "var(--metric-error)",
+        "no-op": "var(--no-op)"
+      };
+      return colors[status] || "var(--no-op)";
     }
 
     function renderExperiments(experiments) {
@@ -244,9 +286,16 @@
       const rows = experiments.map((exp) => `
         <tr>
           <td>${escapeHtml(exp.id)}</td>
+          <td>${escapeHtml(exp.commit || "-")}</td>
           <td>${escapeHtml(exp.score)}/${escapeHtml(exp.max_score)}</td>
+          <td>${escapeHtml(exp.delta ?? "-")}</td>
           <td>${toPercent(exp.pass_rate)}</td>
-          <td>${escapeHtml(translateExperimentStatus(exp.status))}</td>
+          <td>${escapeHtml(exp.guard || "-")}</td>
+          <td class="status-cell">
+            <span class="status-bar" style="--status-color: ${statusColor(exp.status)}">
+              ${escapeHtml(translateExperimentStatus(exp.status))}
+            </span>
+          </td>
           <td>${escapeHtml(exp.description)}</td>
         </tr>
       `).join("");
@@ -257,8 +306,11 @@
           <thead>
             <tr>
               <th>#</th>
+              <th>Commit</th>
               <th>점수</th>
+              <th>Delta</th>
               <th>통과율</th>
+              <th>Guard</th>
               <th>상태</th>
               <th>설명</th>
             </tr>

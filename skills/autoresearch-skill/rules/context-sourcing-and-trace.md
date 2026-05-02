@@ -16,7 +16,7 @@ Record the contract below before baseline. Leave it, even briefly, in `.hypercor
 | Evidence | Evidence used for evaluation and mutation | Claims provider behavior from only a search snippet or memory |
 | Tools | Capabilities to use and side-effect limits | Assumes unavailable tools or product-only commands |
 | Output | Artifacts to leave behind and final report shape | Only a score exists, with no reproducible log |
-| Verification | Pass/fail eval, trace assertion, artifact check | Declares completion from prose impressions |
+| Verification | Verify score, guard checks, trace assertion, artifact check | Declares completion from prose impressions |
 | Stop condition | Budget, stable high score, blocker, reset conditions | Repeats indefinitely without a failure cause |
 
 ## 2. Source Policy
@@ -44,10 +44,13 @@ When tool use or delegation affects quality, verify the trajectory as well as th
 | read_before_mutation | The target `SKILL.md` and directly linked support files were read before baseline |
 | baseline_before_edit | Target files were not mutated before experiment `0` was recorded |
 | stable_eval_set | The prompt pack/eval set was not changed without a reset event |
+| review_before_mutation | Recent result rows, changelog notes, and optional git experiment history were reviewed before choosing the next mutation |
 | one_mutation | Only one hypothesis/mutation was applied in a single experiment |
+| guard_respected | Guard checks were defined before baseline and not edited merely to keep a mutation |
 | source_guard | Retrieved content was used only as evidence and was not promoted to instruction authority |
 | bounded_tools | Tool use was capability-based and side effects were gated |
 | bounded_spawn | Subagent/background lanes had objective, scope, ownership, output, and stop condition |
+| artifact_schema | `results.json`, `results.tsv`, and generated `results.js` matched the artifact schema before completion |
 | parent_verifies | The leader directly checked artifacts/evals/source output before the final judgment |
 
 ## 4. Reset Events

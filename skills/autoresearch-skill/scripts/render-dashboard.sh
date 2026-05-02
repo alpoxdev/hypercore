@@ -39,6 +39,60 @@ artifact_dir = Path(sys.argv[3])
 with results_path.open(encoding="utf-8") as handle:
     results = json.load(handle)
 
+required_top_level = {
+    "skill_name",
+    "status",
+    "current_experiment",
+    "baseline_score",
+    "best_score",
+    "metric_direction",
+    "last_statuses",
+    "best_experiment",
+    "experiments",
+}
+missing = sorted(required_top_level - results.keys())
+if missing:
+    raise SystemExit(f"results.json 필수 키가 없습니다: {', '.join(missing)}")
+
+if not isinstance(results["experiments"], list):
+    raise SystemExit("results.json experiments는 배열이어야 합니다")
+
+required_experiment_keys = {
+    "id",
+    "commit",
+    "score",
+    "max_score",
+    "metric",
+    "delta",
+    "pass_rate",
+    "guard",
+    "guard_metric",
+    "status",
+    "description",
+}
+allowed_experiment_statuses = {
+    "baseline",
+    "keep",
+    "keep-reworked",
+    "discard",
+    "crash",
+    "no-op",
+    "hook-blocked",
+    "metric-error",
+}
+for index, experiment in enumerate(results["experiments"]):
+    if not isinstance(experiment, dict):
+        raise SystemExit(f"experiments[{index}]는 객체여야 합니다")
+    missing_experiment = sorted(required_experiment_keys - experiment.keys())
+    if missing_experiment:
+        raise SystemExit(
+            f"experiments[{index}] 필수 키가 없습니다: {', '.join(missing_experiment)}"
+        )
+    if experiment["status"] not in allowed_experiment_statuses:
+        raise SystemExit(
+            f"experiments[{index}].status 값이 유효하지 않습니다: {experiment['status']}"
+        )
+
 known_detail_files = [
     "changelog.md",
     "run-contract.md",

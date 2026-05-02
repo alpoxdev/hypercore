@@ -37,6 +37,8 @@ Check that:
 - Evals inspect what the user actually cares about
 - At least one eval checks the target skill's real role, not superficial formatting
 - When needed, boundaries and next actions are also clear for Korean-language requests
+- The scoring method has been dry-run and produces a parseable score or deterministic pass count
+- Guard checks are named separately from Verify and are not mutable scoring targets
 
 ## 4. Context, Source, Trace validation
 
@@ -65,6 +67,8 @@ Expected location:
 
 Also check that `results.json` and `results.tsv` describe score, pass rate, and keep/discard status consistently.
 Also check that the dashboard was rendered from the canonical template, not edited arbitrarily.
+Also check that `results.js` exists when `dashboard.html` is expected to work through `file://`.
+Also check that non-happy statuses such as `discard`, `crash`, `no-op`, `hook-blocked`, and `metric-error` are representable in artifacts.
 
 If the workflow opens `dashboard.html` directly in a local browser, check that it renders real data instead of a blank screen in a `file://` environment.
 
@@ -107,5 +111,7 @@ find skills/autoresearch-skill -maxdepth 3 -type f | sort
 wc -l skills/autoresearch-skill/SKILL.md
 rg -n "results.tsv|results.json|dashboard.html|changelog.md|SKILL.md.baseline|run-contract|source-ledger|trace-summary" skills/autoresearch-skill/SKILL.md skills/autoresearch-skill/references skills/autoresearch-skill/rules
 find skills/autoresearch-skill -maxdepth 2 \( -name README.md -o -name CHANGELOG.md -o -name QUICK_REFERENCE.md \) -print
-find .hypercore -maxdepth 2 -type f | sort | rg "autoresearch-"
+find .hypercore -maxdepth 4 -type f | sort | rg "autoresearch-skill"
+python3 -m json.tool .hypercore/autoresearch-skill/[skill-name]/results.json >/dev/null
+test -f .hypercore/autoresearch-skill/[skill-name]/results.js
 ```

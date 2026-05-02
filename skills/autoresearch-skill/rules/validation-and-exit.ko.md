@@ -37,6 +37,8 @@
 - eval이 사용자가 실제로 신경 쓰는 것을 검사한다
 - 최소 하나는 피상적 포맷이 아니라 대상 스킬의 실제 역할을 검사한다
 - 필요하다면 한국어 요청 기준에서도 경계와 다음 행동이 분명하다
+- scoring method가 dry-run되었고 parse 가능한 score 또는 deterministic pass count를 낸다
+- Guard check가 Verify와 분리되어 있고 mutable scoring target이 아니다
 
 ## 4. Context, Source, Trace 검증
 
@@ -65,6 +67,8 @@
 
 또한 `results.json`과 `results.tsv`가 점수, 통과율, keep/discard 상태를 동일하게 설명하는지 확인한다.
 또한 대시보드가 임의 편집본이 아니라 정식 템플릿에서 렌더되었는지 확인한다.
+또한 `file://` 대시보드 동작을 기대한다면 `results.js`가 존재하는지 확인한다.
+또한 `discard`, `crash`, `no-op`, `hook-blocked`, `metric-error` 같은 non-happy status를 artifact가 표현할 수 있는지 확인한다.
 
 워크플로가 `dashboard.html`을 로컬 브라우저에서 직접 연다면, `file://` 환경에서도 빈 화면이 아니라 실제 데이터를 렌더하는지 확인한다.
 
@@ -107,5 +111,7 @@ find skills/autoresearch-skill -maxdepth 3 -type f | sort
 wc -l skills/autoresearch-skill/SKILL.md
 rg -n "results.tsv|results.json|dashboard.html|changelog.md|SKILL.md.baseline|run-contract|source-ledger|trace-summary" skills/autoresearch-skill/SKILL.md skills/autoresearch-skill/references skills/autoresearch-skill/rules
 find skills/autoresearch-skill -maxdepth 2 \( -name README.md -o -name CHANGELOG.md -o -name QUICK_REFERENCE.md \) -print
-find .hypercore -maxdepth 2 -type f | sort | rg "autoresearch-"
+find .hypercore -maxdepth 4 -type f | sort | rg "autoresearch-skill"
+python3 -m json.tool .hypercore/autoresearch-skill/[skill-name]/results.json >/dev/null
+test -f .hypercore/autoresearch-skill/[skill-name]/results.js
 ```
