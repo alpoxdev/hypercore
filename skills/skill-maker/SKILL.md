@@ -8,6 +8,7 @@ compatibility: Works best with read/edit/write and shell search tools for skill 
 @rules/trigger-design.md
 @rules/progressive-disclosure.md
 @rules/resource-placement.md
+@rules/context-and-harness-alignment.md
 @rules/validation-and-iteration.md
 @rules/anti-patterns.md
 
@@ -19,6 +20,7 @@ compatibility: Works best with read/edit/write and shell search tools for skill 
 
 - Build new skills that trigger reliably from user intent and metadata.
 - Refactor existing skills to improve scope clarity, resource placement, and validation.
+- Apply the repo instruction contract: intent, scope, authority, evidence, tools, output, verification, and stop condition.
 - Teach the right split between `SKILL.md`, `references/`, `scripts/`, `assets/`, and optional UI metadata.
 
 </purpose>
@@ -103,6 +105,11 @@ Read official references when:
 - trigger behavior or evaluation guidance depends on vendor docs
 - maintenance or drift handling requires current vendor policy
 
+Read the repo instruction base (`instructions/README.md` plus directly linked docs) when:
+
+- a skill changes agent workflow, tool use, source handling, validation, or subagent behavior
+- project-local conventions conflict with generic provider examples
+
 Read the local `skill-creator` summary when:
 
 - deciding how much detail belongs in the core skill
@@ -117,9 +124,10 @@ Read in this order:
 
 1. The core `SKILL.md` to decide whether this is `create` or `refactor` mode and what output the skill owns.
 2. `rules/trigger-design.md`, `rules/skill-anatomy.md`, `rules/progressive-disclosure.md`, and `rules/resource-placement.md` when changing trigger wording, anatomy, or file split.
-3. `rules/validation-and-iteration.md` and `rules/anti-patterns.md` before declaring the skill done.
-4. `references/local/skill-creator.md` when deciding how much detail belongs in the core or whether scripts/assets are justified.
-5. Official references only when provider-sensitive guidance materially changes the rule.
+3. `rules/context-and-harness-alignment.md` when a skill affects instruction contracts, source policy, tool use, validation, or subagents.
+4. `rules/validation-and-iteration.md` and `rules/anti-patterns.md` before declaring the skill done.
+5. `references/local/skill-creator.md` when deciding how much detail belongs in the core or whether scripts/assets are justified.
+6. Official references only when provider-sensitive guidance materially changes the rule.
 
 </support_file_read_order>
 
@@ -141,7 +149,7 @@ Apply these defaults to every major skill edit:
 - Optimize first for triggerability, then readability.
 - Keep the core skill lean and push detail downward.
 - Prefer concrete examples of user utterances over abstract claims about when the skill is useful.
-- Treat validation as part of the skill, not an afterthought.
+- Treat validation, evidence, and stop conditions as part of the skill, not an afterthought.
 - Keep provider-sensitive guidance in references, not in the core skill.
 
 </design_defaults>
@@ -180,7 +188,7 @@ Default output shapes:
 | 2 | Build the structure plan with `sequential-thinking` | Section/resource plan |
 | 3 | Write or refactor the core `SKILL.md` | Updated core skill |
 | 4 | Place supporting detail into rules, references, scripts, or assets | Supporting files |
-| 5 | Run trigger, anatomy, and validation readback checks | Review notes |
+| 5 | Run trigger, anatomy, context-contract, and validation readback checks | Review notes |
 | 6 | Finalize with explicit validation and remaining risks | Finalized skill |
 
 ### Phase 3 authoring rules
@@ -212,10 +220,10 @@ Default output shapes:
 |------|------|
 | Triggerability | Specific `name` and `description` that reflect real user wording |
 | Anatomy | Clear split between `SKILL.md`, rules, references, scripts, and assets |
-| Actionability | Concrete workflow steps and validation checks |
+| Actionability | Concrete workflow steps, evidence rules, stop conditions, and validation checks |
 | Examples | Trigger examples and folder-shape examples |
 | Maintainability | Progressive disclosure and low-duplication design |
-| Validation | Trigger tests, resource-placement checks, and forward-test guidance |
+| Validation | Trigger tests, resource-placement checks, harness/eval gates, and forward-test guidance |
 
 </required>
 
@@ -264,6 +272,7 @@ Use this layout unless a better skill-specific structure is required:
 | Density | Repetition is removed and the core body stays lean |
 | Examples | Trigger examples match likely user requests |
 | Operator cues | The next file to read and the next place to put detail are obvious |
+| Context contract | Intent, scope, authority, evidence, tools, output, verification, and stop condition are discoverable |
 | Safety | Time-sensitive or provider-sensitive guidance is isolated into references |
 | Validation | The skill includes realistic checks, not only prose review |
 
@@ -274,6 +283,7 @@ Completion checklist:
 - [ ] Skill anatomy reviewed (`rules/skill-anatomy.md`)
 - [ ] Progressive disclosure reviewed (`rules/progressive-disclosure.md`)
 - [ ] Resource placement reviewed (`rules/resource-placement.md`)
+- [ ] Context and harness alignment reviewed (`rules/context-and-harness-alignment.md`)
 - [ ] Validation and forward-test checks reviewed (`rules/validation-and-iteration.md`)
 - [ ] Anti-pattern checks reviewed (`rules/anti-patterns.md`)
 - [ ] Core skill remains lean and coherent

@@ -8,6 +8,7 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 @rules/trigger-design.ko.md
 @rules/progressive-disclosure.ko.md
 @rules/resource-placement.ko.md
+@rules/context-and-harness-alignment.ko.md
 @rules/validation-and-iteration.ko.md
 @rules/anti-patterns.ko.md
 
@@ -19,6 +20,7 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 
 - 사용자 의도에서 안정적으로 발동되는 새 스킬을 만듭니다.
 - 기존 스킬의 범위, 트리거, 자원 배치, 검증 구조를 개선합니다.
+- repo instruction contract인 intent, scope, authority, evidence, tools, output, verification, stop condition을 스킬에 반영합니다.
 - `SKILL.md`, `references/`, `scripts/`, `assets/`, 선택적 UI 메타데이터를 어디에 어떻게 둘지 가르칩니다.
 
 </purpose>
@@ -101,6 +103,11 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 - 트리거 동작이나 평가 가이드가 vendor 문서에 의존할 때
 - 유지보수나 드리프트 대응에 최신 공급자 정책이 필요할 때
 
+다음 경우에는 repo instruction base(`instructions/README.md`와 직접 연결된 문서)를 읽습니다.
+
+- 스킬이 에이전트 워크플로, 도구 사용, 출처 처리, 검증, 서브에이전트 동작을 바꿀 때
+- 프로젝트 로컬 관례가 일반 provider 예시와 충돌할 때
+
 다음 경우에는 로컬 `skill-creator` 요약을 읽습니다.
 
 - 코어 스킬에 어느 정도 상세를 남길지 판단할 때
@@ -115,9 +122,10 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 
 1. 코어 `SKILL.md`에서 현재 작업이 `create`인지 `refactor`인지와 스킬이 책임질 출력물을 확정합니다.
 2. 트리거 문구, 구조, 파일 분리를 바꿀 때는 `rules/trigger-design.ko.md`, `rules/skill-anatomy.ko.md`, `rules/progressive-disclosure.ko.md`, `rules/resource-placement.ko.md`를 읽습니다.
-3. 완료 선언 전에는 `rules/validation-and-iteration.ko.md`와 `rules/anti-patterns.ko.md`로 검증과 안티패턴을 다시 확인합니다.
-4. 코어에 얼마만큼 남길지, scripts/assets가 정당한지 판단할 때는 `references/local/skill-creator.ko.md`를 읽습니다.
-5. 공급자 민감한 가이드가 실제 규칙을 바꿀 때만 공식 references를 읽습니다.
+3. 스킬이 instruction contract, 출처 정책, 도구 사용, 검증, 서브에이전트에 영향을 줄 때는 `rules/context-and-harness-alignment.ko.md`를 읽습니다.
+4. 완료 선언 전에는 `rules/validation-and-iteration.ko.md`와 `rules/anti-patterns.ko.md`로 검증과 안티패턴을 다시 확인합니다.
+5. 코어에 얼마만큼 남길지, scripts/assets가 정당한지 판단할 때는 `references/local/skill-creator.ko.md`를 읽습니다.
+6. 공급자 민감한 가이드가 실제 규칙을 바꿀 때만 공식 references를 읽습니다.
 
 </support_file_read_order>
 
@@ -139,7 +147,7 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 - 먼저 트리거 가능성을 최적화하고, 그 다음 가독성을 다듬습니다.
 - 코어 스킬은 얇게 유지하고, 상세 내용은 아래 계층으로 내립니다.
 - 추상적인 설명보다 실제로 스킬을 부를 사용자 요청 예시를 우선합니다.
-- 검증은 부속 작업이 아니라 스킬 본체의 일부로 봅니다.
+- 검증, 근거, stop condition은 부속 작업이 아니라 스킬 본체의 일부로 봅니다.
 - 공급자 민감 가이드는 코어가 아니라 참조 파일로 보냅니다.
 
 </design_defaults>
@@ -178,7 +186,7 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 | 2 | `sequential-thinking`으로 구조 계획 수립 | 섹션/자원 계획 |
 | 3 | 코어 `SKILL.md` 작성 또는 리팩토링 | 갱신된 코어 스킬 |
 | 4 | 상세 내용을 rules, references, scripts, assets로 배치 | 보조 파일 |
-| 5 | 트리거, 구조, 검증 관점에서 재독 | 검토 메모 |
+| 5 | 트리거, 구조, context contract, 검증 관점에서 재독 | 검토 메모 |
 | 6 | 명시적 검증과 남은 리스크를 정리하고 마무리 | 최종 스킬 |
 
 ### Phase 3 작성 규칙
@@ -210,10 +218,10 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 |------|------|
 | 트리거 가능성 | 실제 사용자 표현을 반영한 구체적 `name`과 `description` |
 | 구조 | `SKILL.md`, rules, references, scripts, assets의 역할 분리 |
-| 실행성 | 구체적 워크플로 단계와 검증 기준 |
+| 실행성 | 구체적 워크플로 단계, 근거 규칙, stop condition, 검증 기준 |
 | 예시 | 트리거 예시와 폴더 구조 예시 |
 | 유지보수성 | 점진적 공개와 낮은 중복 |
-| 검증 | 트리거 테스트, 자원 배치 점검, 전방 테스트 가이드 |
+| 검증 | 트리거 테스트, 자원 배치 점검, harness/eval 게이트, 전방 테스트 가이드 |
 
 </required>
 
@@ -262,6 +270,7 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 | 밀도 | 반복이 제거되고 코어 본문이 얇게 유지됨 |
 | 예시 | 트리거 예시가 실제 사용자 요청과 맞음 |
 | 작업 단서 | 다음에 읽을 파일과 다음 상세를 둘 위치가 명확함 |
+| Context contract | intent, scope, authority, evidence, tools, output, verification, stop condition을 찾을 수 있음 |
 | 안전성 | 시간 민감 또는 공급자 민감 가이드는 references로 격리됨 |
 | 검증 | 단순 prose review가 아니라 실제 사용 검증이 포함됨 |
 
@@ -272,6 +281,7 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 - [ ] 스킬 구조 점검(`rules/skill-anatomy.ko.md`)
 - [ ] 점진적 공개 점검(`rules/progressive-disclosure.ko.md`)
 - [ ] 자원 배치 점검(`rules/resource-placement.ko.md`)
+- [ ] 컨텍스트와 하네스 정렬 점검(`rules/context-and-harness-alignment.ko.md`)
 - [ ] 검증 및 반복 점검(`rules/validation-and-iteration.ko.md`)
 - [ ] 안티패턴 점검(`rules/anti-patterns.ko.md`)
 - [ ] 코어 스킬이 얇고 일관되게 유지됨
