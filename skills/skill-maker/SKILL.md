@@ -124,7 +124,7 @@ Read official references when:
 - trigger behavior or evaluation guidance depends on vendor docs
 - maintenance or drift handling requires current vendor policy
 
-Read the repo instruction base (`instructions/README.md` plus directly linked docs) when:
+Read repo-local guidance (project root docs plus directly linked local docs) when:
 
 - a skill changes agent workflow, tool use, source handling, validation, or subagent behavior
 - project-local conventions conflict with generic provider examples

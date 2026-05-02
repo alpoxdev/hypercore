@@ -25,7 +25,7 @@ Keep one source of truth per rule:
 | Layer | Examples | Role |
 |---|---|---|
 | Project root | `AGENTS.md`, `CLAUDE.md`, repo-wide instructions | short invariants and loading map |
-| Instructions base | `instructions/**` | shared methods, sourcing, validation |
+| Reference base | `docs/**`, `references/**`, or linked repo-local guidance | shared methods, sourcing, validation |
 | Runtime rules | Cursor rules, Codex config, Claude memory | runtime quirks and path scopes |
 | Skill/command | `skills/**/SKILL.md`, slash command | narrow executable workflow |
 | Task prompt | current user request | latest concrete override |

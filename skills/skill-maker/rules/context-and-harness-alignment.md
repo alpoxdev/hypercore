@@ -27,7 +27,7 @@ Keep the core concise: put the contract summary in `SKILL.md` and move repeatabl
 - Put provider-sensitive, runtime-sensitive, date-sensitive, or contested guidance in `references/` with provenance and refresh conditions.
 - Do not update `last_verified_at` unless the source was actually rechecked.
 - Use a source ledger or claim-source matrix when a skill embeds current facts, external comparisons, or security/compliance claims.
-- Prefer local instruction-base evidence before external search when the project already contains the needed guidance; in this repo, start at `instructions/README.md` and directly linked files.
+- Prefer local project-guidance evidence before external search when the project already contains the needed guidance; start at project root guidance such as `AGENTS.md`, `CLAUDE.md`, `README.md`, and directly linked local files.
 
 ## 3. Harness and Eval Gate
 

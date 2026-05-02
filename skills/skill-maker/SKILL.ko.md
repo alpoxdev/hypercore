@@ -124,7 +124,7 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 - 트리거 동작이나 평가 가이드가 vendor 문서에 의존할 때
 - 유지보수나 드리프트 대응에 최신 공급자 정책이 필요할 때
 
-다음 경우에는 repo instruction base(`instructions/README.md`와 직접 연결된 문서)를 읽습니다.
+다음 경우에는 repo-local guidance(프로젝트 루트 문서와 직접 연결된 로컬 문서)를 읽습니다.
 
 - 스킬이 에이전트 워크플로, 도구 사용, 출처 처리, 검증, 서브에이전트 동작을 바꿀 때
 - 프로젝트 로컬 관례가 일반 provider 예시와 충돌할 때

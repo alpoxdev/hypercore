@@ -116,7 +116,7 @@ Keep guidance in canonical core files when it is stable, provider-neutral, and r
 Read in this order:
 
 1. The core `SKILL.md` to decide whether the task is `create`, `refactor`, or a route-away case.
-2. For instruction-base updates, read the target repo `instructions/README.md` and directly linked `instructions/**` docs before changing derived guidance.
+2. For project-guidance updates, read the target repo root guidance (`AGENTS.md`, `CLAUDE.md`, `README.md`, or equivalent local docs) before changing derived guidance.
 3. `rules/sequential-thinking.md`, `rules/context-engineering.md`, and `rules/harness-engineering.md` when planning document structure, context shape, or harness coverage.
 4. `rules/sourcing.md` when claims need external/current evidence, source grading, query hygiene, or a source ledger.
 5. `rules/validation.md` when defining completion contracts, scope completeness, verification menus, trace assertions, or final reports.

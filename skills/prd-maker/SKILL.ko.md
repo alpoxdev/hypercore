@@ -151,7 +151,7 @@ compatibility: 로컬 파일 검색/편집 도구와, 최신 시장·사용자·
 6. 누락된 패키지 파일을 만들 때 `assets/`의 관련 템플릿을 봅니다. `diagram.data.template.ko.json`도 포함합니다.
 7. `diagram.data.json`에서 `diagram.svg`를 렌더링할 때 `scripts/render-planning-map.mjs`를 사용합니다.
 8. `preview.html` 생성 시 `assets/preview.template.html`과 `scripts/build-preview.mjs`를 사용합니다.
-9. 라이브 조사가 필요하면 `instructions/sourcing/reliable-search.md`를 봅니다.
+9. 라이브 조사가 필요하고 패키지에 출처 기록이 필요하면 `assets/sources.template.ko.md`를 봅니다.
 10. 복잡 패키지이거나 `flow.json`이 이미 있으면 `references/flow-schema.md`를 봅니다.
 11. 완료 선언 전에는 `rules/validation.ko.md`를 봅니다.
 

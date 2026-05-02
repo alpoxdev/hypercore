@@ -27,7 +27,7 @@
 - 공급자 민감, 런타임 민감, 날짜 민감, 논쟁적 가이드는 provenance와 refresh 조건이 있는 `references/`에 둡니다.
 - 실제로 출처를 다시 확인하지 않았다면 `last_verified_at`을 갱신하지 않습니다.
 - 스킬이 최신 사실, 외부 비교, 보안/컴플라이언스 주장을 담으면 source ledger 또는 claim-source matrix를 사용합니다.
-- 프로젝트 안에 필요한 guidance가 이미 있으면 외부 검색 전에 로컬 instruction-base 근거를 우선합니다. 이 repo에서는 `instructions/README.md`와 직접 연결된 파일에서 시작합니다.
+- 프로젝트 안에 필요한 guidance가 이미 있으면 외부 검색 전에 로컬 project-guidance 근거를 우선합니다. `AGENTS.md`, `CLAUDE.md`, `README.md` 같은 프로젝트 루트 가이드와 직접 연결된 로컬 파일에서 시작합니다.
 
 ## 3. 하네스와 Eval 게이트
 

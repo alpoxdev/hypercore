@@ -116,7 +116,7 @@ provider-neutral이고 안정적이며 문서 실행에 필수인 규칙만 cano
 다음 순서로 읽습니다.
 
 1. 코어 `SKILL.ko.md`를 읽어 작업이 `create`, `refactor`, 또는 route-away 사례인지 결정합니다.
-2. Instruction-base 업데이트에서는 파생 가이드를 바꾸기 전에 대상 repo의 `instructions/README.md`와 직접 연결된 `instructions/**` 문서를 읽습니다.
+2. 프로젝트 guidance 업데이트에서는 파생 가이드를 바꾸기 전에 대상 repo의 루트 가이드(`AGENTS.md`, `CLAUDE.md`, `README.md` 또는 동등한 로컬 문서)를 읽습니다.
 3. 문서 구조, context shape, harness 범위를 계획할 때 `rules/sequential-thinking.ko.md`, `rules/context-engineering.ko.md`, `rules/harness-engineering.ko.md`를 읽습니다.
 4. 외부/최신 근거, source grading, query hygiene, source ledger가 필요하면 `rules/sourcing.ko.md`를 읽습니다.
 5. completion contract, scope completeness, verification menu, trace assertion, final report를 정의할 때 `rules/validation.ko.md`를 읽습니다.

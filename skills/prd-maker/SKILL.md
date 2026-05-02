@@ -151,7 +151,7 @@ Read in this order:
 6. Relevant templates in `assets/` when creating missing package files, including `diagram.data.template.json`.
 7. `scripts/render-planning-map.mjs` when rendering `diagram.svg` from `diagram.data.json`.
 8. `assets/preview.template.html` and `scripts/build-preview.mjs` when generating `preview.html`.
-9. `instructions/sourcing/reliable-search.md` when live research is needed.
+9. `assets/sources.template.md` when live research is needed and the package needs a source ledger.
 10. `references/flow-schema.md` when the package is complex or a `flow.json` already exists.
 11. `rules/validation.md` before declaring the package complete.
 
