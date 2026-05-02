@@ -22,10 +22,17 @@ Default root:
 <repo-root>/.hypercore/git-worktree/<folder_name>
 ```
 
+Interaction language:
+
+- Ask clarification questions in the same language as the user's request.
+- For Korean users, ask in Korean only. Do not show English fallback text or generic English operation menus.
+- Infer the operation from the user's wording before asking. If inference fails, ask one localized question. For Korean users: "어떤 worktree 작업을 원하시나요? 생성, 목록, 열기/이동, 삭제, 정리, 복구, 잠금, 잠금 해제 중에서 알려주세요."
+- If only the work intent for a new worktree is missing, ask about the work intent, not the operation.
+
 Before creating a worktree, establish what will happen there:
 
 - If the user already named a branch, PR, issue, task, or concrete work item, use that context.
-- If the user only says to create a worktree and the task is unclear, ask exactly one concise question before creating it: "이 worktree에서 어떤 작업을 할 예정인가요?" / "What work will happen in this worktree?"
+- If the user only says to create a worktree and the task is unclear, ask exactly one concise localized question before creating it. For Korean users: "이 worktree에서 어떤 작업을 할 예정인가요?"
 - Derive `<folder_name>` from the answer. Do not use a random timestamp or generic `worktree-1` unless the user explicitly wants that.
 
 Naming rules:
@@ -90,15 +97,18 @@ git worktree add --detach <path> <commit-or-tag>
 
 Use detached worktrees only for read-only inspection, bisect-like diagnostics, or explicit throwaway review.
 
-After creation, verify the worktree exists and make it the active context for follow-up work:
+After creation, verify the worktree exists and make it the active context for follow-up work. A create request that says "enter", "open", "switch", "go into it", "들어가", "이동", or "전환" is not complete until follow-up commands run from the new path:
 
 ```bash
 git -C <path> status --short --branch
-cd <path>
-pwd
+# In a normal shell:
+cd <path> && pwd
+
+# In agent/tool environments:
+# run the next command with workdir=<path>, or use git -C <path> for Git commands.
 ```
 
-In agent environments where `cd` in a subprocess cannot persist, run every subsequent shell/tool command with the worktree path as the working directory, or use `git -C <path>` for Git commands.
+In agent environments where `cd` in a subprocess cannot persist, run every subsequent shell/tool command with the worktree path as the working directory, or use `git -C <path>` for Git commands. Report both facts: the active agent context path used for verification and the `cd <path>` command the user can run in their parent shell.
 
 ## 4. Move, open, or hand off
 
