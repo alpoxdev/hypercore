@@ -1,6 +1,6 @@
 ---
 name: git-worktree
-description: "[Hyper] Create, enter, list, remove, clean up, or repair Git worktrees for isolated branches and parallel agent sessions, including deleting the current linked worktree when the user is already inside it. Use when the user asks for git worktree setup/removal, branch-per-folder workflows, parallel Codex/Claude/Cursor workspaces, or the repository-local `.hypercore/git-worktree/<folder_name>` convention; when creating and the task is unclear, ask what work will happen there in the user's language, derive the folder name, then move subsequent work into the new worktree."
+description: "[Hyper] Create, enter, list, remove, clean up, or repair Git worktrees for isolated branches and parallel agent sessions, including direct `git-worktree <ARGUMENT>` creation without follow-up questions. Use when the user asks for git worktree setup/removal, branch-per-folder workflows, parallel Codex/Claude/Cursor workspaces, or the repository-local `.hypercore/git-worktree/<folder_name>` convention; when creating and no argument/task is clear, ask what work will happen there in the user's language, derive the folder name, then move subsequent work into the new worktree."
 compatibility: Requires Git with `git worktree`; optional editor, tmux, and agent CLIs may be used only when already available in the repository environment.
 ---
 
@@ -44,6 +44,7 @@ Do not use `git-worktree` when:
 Positive requests:
 
 - "Create a worktree for `feature/auth` and open Codex there."
+- "`git-worktree fix/api-timeout`"
 - "Create this branch as a worktree under `.hypercore/git-worktree`."
 - "Spin up three isolated worktrees for parallel agents."
 - "Create a new worktree and move me into it."
@@ -80,12 +81,21 @@ Boundary request:
 
 </trigger_conditions>
 
+<argument_handling>
+
+- If the user invokes `git-worktree <ARGUMENT>` or supplies one positional argument after the skill name, treat `<ARGUMENT>` as an explicit create target and do not ask what worktree to create.
+- Interpret `<ARGUMENT>` as the branch/task label unless it is clearly a PR/issue/ref/path; preserve the branch/ref text and sanitize only the folder label.
+- Use `.hypercore/git-worktree/<folder_name>`, then move the active agent context into the new worktree.
+- Ask only if the argument is unsafe, reserved, conflicts with an unrelated path, or cannot map to a Git ref/branch/task label.
+
+</argument_handling>
+
 <defaults>
 
 - Canonical root: `<repo-root>/.hypercore/git-worktree/`.
 - Canonical path: `<repo-root>/.hypercore/git-worktree/<folder_name>`.
 - Default `<folder_name>`: ask what work will happen in the worktree when the user has not already supplied a clear task, then derive a concise sanitized slug from that answer.
-- If the user already supplied a branch, PR, issue, or task name, derive `<folder_name>` from that context without asking again.
+- If the user already supplied a positional argument, branch, PR, issue, or task name, derive `<folder_name>` from that context without asking again.
 - Clarification language: infer the operation from the request whenever possible. If an operation is truly ambiguous, ask one short question in the user's language. For Korean users, ask for example: "어떤 worktree 작업을 원하시나요? 생성, 목록, 열기/이동, 삭제, 정리, 복구, 잠금, 잠금 해제 중에서 알려주세요." Never ask a generic English operation menu.
 - After creating a worktree, creation is not complete until the active execution context has moved into that folder: run follow-up shell commands with `workdir=<path>`, open the requested editor/session there, and report `cd <path>` for the user shell.
 - If removal is requested without a path and the active context is already inside a linked worktree, treat the current worktree root as the removal target, move out to a safe worktree before removal, and never remove the main worktree.
@@ -116,9 +126,10 @@ Boundary request:
 3. Read existing worktrees with `git worktree list --porcelain`.
 4. Identify the requested operation: create, open, list, remove, prune, repair, lock, or unlock.
 5. For removal with no explicit path, if the current directory is inside a linked worktree, select the current worktree root as the target; if it is the main worktree, stop and ask for a specific target instead of deleting the repository root.
-6. Derive branch name, folder name, and base reference from user wording or current branch.
-7. If creating and the task/folder intent is missing or too vague, ask one concise question before creation in the user's language. For Korean users: "이 worktree에서 어떤 작업을 할 예정인가요?"
-8. If the operation itself is unclear, avoid a generic English menu. Ask one localized question only after inference fails.
+6. If a `git-worktree <ARGUMENT>` argument is present, treat it as a create target and derive branch name, folder name, and base reference from it before any clarification.
+7. Otherwise derive branch name, folder name, and base reference from user wording or current branch.
+8. If creating and the task/folder intent is missing or too vague, ask one concise question before creation in the user's language. For Korean users: "이 worktree에서 어떤 작업을 할 예정인가요?"
+9. If the operation itself is unclear, avoid a generic English menu. Ask one localized question only after inference fails.
 
 ## Phase 2. Apply the project path convention
 
@@ -257,6 +268,7 @@ Operation checks:
 
 - [ ] `git rev-parse --show-toplevel` succeeds before path construction.
 - [ ] create operations have a clear work intent; if missing, one concise question is asked before choosing `<folder_name>`.
+- [ ] direct `git-worktree <ARGUMENT>` invocations create from the argument without asking what worktree to create.
 - [ ] clarification questions match the user's language; Korean users are not shown English operation menus.
 - [ ] `<folder_name>` is derived from the stated work intent and sanitized before path construction.
 - [ ] `.hypercore/git-worktree/` is ignored or locally excluded before nested worktree creation.

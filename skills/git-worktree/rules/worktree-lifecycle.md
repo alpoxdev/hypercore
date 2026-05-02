@@ -22,6 +22,13 @@ Default root:
 <repo-root>/.hypercore/git-worktree/<folder_name>
 ```
 
+Direct argument fast path:
+
+- If the invocation is `git-worktree <ARGUMENT>`, treat `<ARGUMENT>` as the create target and do not ask what worktree to create.
+- Interpret the argument as a branch/task label unless it clearly denotes a PR, issue, ref, or explicit path.
+- Preserve the branch/ref text for Git operations; sanitize only the folder label for `.hypercore/git-worktree/<folder_name>`.
+- Continue to ask only for unsafe, reserved, conflicting, or unmappable arguments.
+
 Interaction language:
 
 - Ask clarification questions in the same language as the user's request.
@@ -31,6 +38,7 @@ Interaction language:
 
 Before creating a worktree, establish what will happen there:
 
+- If a direct `git-worktree <ARGUMENT>` argument exists, it is the work intent; skip the work-intent question.
 - If the user already named a branch, PR, issue, task, or concrete work item, use that context.
 - If the user only says to create a worktree and the task is unclear, ask exactly one concise localized question before creating it. For Korean users: "이 worktree에서 어떤 작업을 할 예정인가요?"
 - Derive `<folder_name>` from the answer. Do not use a random timestamp or generic `worktree-1` unless the user explicitly wants that.

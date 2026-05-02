@@ -23,6 +23,7 @@ EXACT_ENGLISH_OPERATION_MENU = "What worktree " + "operation do you want"
 KOREAN_INTENT_QUESTION = "이 worktree에서 어떤 작업을 할 예정인가요?"
 KOREAN_OPERATION_QUESTION = "어떤 worktree 작업을 원하시나요?"
 KOREAN_OPERATION_OPTIONS = ["생성", "목록", "열기/이동", "삭제", "정리", "복구", "잠금"]
+DIRECT_ARGUMENT_INVOCATION = "git-worktree <ARGUMENT>"
 
 
 def read(path: Path) -> str:
@@ -102,6 +103,13 @@ def main() -> int:
             "infer_before_asking",
             contains_all(combined, ["infer the operation", "문맥에서 추론"]),
             "Agents should infer create/open/remove/etc. before asking another question.",
+        ),
+        check(
+            "direct_argument_create_fast_path",
+            contains_all(core, [DIRECT_ARGUMENT_INVOCATION, "do not ask what worktree to create", "positional argument"])
+            and contains_all(ko, [DIRECT_ARGUMENT_INVOCATION, "되묻지", "위치 인자"])
+            and contains_all(rules, [DIRECT_ARGUMENT_INVOCATION, "Direct argument fast path", "do not ask what worktree to create"]),
+            "Direct git-worktree <ARGUMENT> invocations should create from the argument without a work-intent question.",
         ),
         check(
             "create_not_done_until_context_moved",
