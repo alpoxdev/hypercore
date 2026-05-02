@@ -48,7 +48,7 @@ Phase 0에서 topic, depth, scope, date sensitivity, source floor, priority chan
 위임 후:
 
 - source floor를 세기 전에 duplicate source와 query를 병합합니다.
-- `instructions/sourcing/reliable-search.md` 기준으로 source를 grading합니다.
+- 이 스킬의 workflow, report template, validation check에 있는 로컬 source-quality 기준으로 source를 grading합니다.
 - authority, date, version, scope, methodology로 충돌을 해소합니다.
 - 남은 충돌은 report에 보이게 남깁니다.
 - leader가 final conclusion과 저장 report를 작성합니다. lane conclusion을 이어붙인 것을 final answer로 쓰지 않습니다.

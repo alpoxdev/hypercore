@@ -48,7 +48,7 @@
 ## 5. 근거 수집
 
 - 모든 검색 쿼리는 서로 다른 각도로 유지합니다.
-- 중복 방지와 종료 조건은 `instructions/sourcing/reliable-search.md`를 따릅니다.
+- 중복 방지, source-quality, 종료 조건은 이 스킬의 workflow, parallel-research, validation 파일에 있는 로컬 규칙을 따릅니다.
 - 해설성 글보다 1차/공식 출처를 먼저 봅니다.
 - 최신성 민감 주장은 정확한 발행일 또는 갱신일을 기록합니다.
 - 출처가 서로 충돌하면 그 충돌을 명시하고 가능하면 해소합니다.

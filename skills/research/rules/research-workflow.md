@@ -48,7 +48,7 @@ For default, deep, broad, comparative, or explicitly parallel research, read `ru
 ## 5. Collect Evidence
 
 - Keep every search query distinct.
-- Follow the dedupe and stop rules in `instructions/sourcing/reliable-search.md`.
+- Follow the local dedupe, source-quality, and stop-condition rules in this skill's workflow, parallel-research, and validation files.
 - Prefer primary or official sources before commentary.
 - For time-sensitive claims, record exact publication or update dates.
 - When sources disagree, note the disagreement and resolve it explicitly if possible.

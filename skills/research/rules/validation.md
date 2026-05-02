@@ -8,7 +8,7 @@ Use this checklist before claiming the research is done.
 - The chosen depth matches the user request or the default standard mode.
 - Source floor was met for the chosen depth, with reviewed and cited counts tracked separately.
 - Date-sensitive claims were verified with live sources and written with exact dates.
-- Search queries stayed distinct across tools, channels, and subagents, following the dedupe rules in `instructions/sourcing/reliable-search.md`.
+- Search queries stayed distinct across tools, channels, and subagents, following this skill's local dedupe rules.
 - The channel choice matches the topic type and available evidence.
 - Source grades were assigned for important sources, and S/A sources were preferred for core claims.
 - Every non-obvious claim in the report has a source link.

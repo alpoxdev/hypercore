@@ -48,7 +48,7 @@ During delegation:
 After delegation:
 
 - Merge duplicate sources and queries before counting source floors.
-- Grade sources using `instructions/sourcing/reliable-search.md`.
+- Grade sources using the local source-quality criteria already captured in this skill's workflow, report template, and validation checks.
 - Resolve conflicts by authority, date, version, scope, and methodology.
 - Keep unresolved conflicts visible in the report.
 - The leader writes the final conclusion and saved report; do not paste lane conclusions together as the final answer.

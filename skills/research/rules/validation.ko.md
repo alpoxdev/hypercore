@@ -8,7 +8,7 @@
 - 선택한 깊이가 사용자 요청과 맞거나 기본 standard 모드다.
 - 선택한 깊이의 source floor를 충족했고, reviewed count와 cited count를 분리해 추적했다.
 - 최신성 민감 주장은 라이브 소스로 검증했고 절대 날짜로 적었다.
-- 검색 쿼리는 tool, channel, subagent 전체에서 서로 달랐고 `instructions/sourcing/reliable-search.md`의 중복 방지 규칙을 지켰다.
+- 검색 쿼리는 tool, channel, subagent 전체에서 서로 달랐고 이 스킬의 로컬 중복 방지 규칙을 지켰다.
 - 채널 선택이 주제 유형과 증거 성격에 맞는다.
 - 중요한 source에는 source grade를 부여했고 핵심 주장은 S/A source를 우선했다.
 - 리포트의 비자명한 주장마다 출처 링크가 있다.
