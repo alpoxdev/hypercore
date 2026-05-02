@@ -109,18 +109,18 @@ After creation, verify the worktree exists and make it the active context for fo
 
 ```bash
 git -C <path> status --short --branch
-# In a normal shell:
+# In a normal interactive shell:
 cd <path> && pwd
 
-# In agent/tool environments:
-# run the next command with workdir=<path>, or use git -C <path> for Git commands.
+# In persistent agent shells/sessions, actually run cd <path> there.
+# In tool-only environments, run the next command with workdir=<path>, or use git -C <path>.
 ```
 
-In agent environments where `cd` in a subprocess cannot persist, run every subsequent shell/tool command with the worktree path as the working directory, or use `git -C <path>` for Git commands. Report both facts: the active agent context path used for verification and the `cd <path>` command the user can run in their parent shell.
+In persistent shells, tmux panes, or CLI sessions, "move into the worktree" means actually executing `cd <path>` in that active session and verifying `pwd`. In agent environments where `cd` in a subprocess cannot persist, fall back to setting the next and subsequent tool calls to `workdir=<path>` for this task, or using an equivalent tool working-directory field. Do not claim the active context moved if you only printed `cd <path>`. Report which move mechanism was used: persistent-session `cd <path>` or tool `workdir=<path>`.
 
 ## 4. Move, open, or hand off
 
-After creation, switch into the folder for subsequent work and provide one or more available handoff commands:
+After creation, switch the active agent context into the folder for subsequent work, then provide one or more available handoff commands:
 
 ```bash
 cd <path>

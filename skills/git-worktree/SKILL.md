@@ -97,7 +97,7 @@ Boundary request:
 - Default `<folder_name>`: ask what work will happen in the worktree when the user has not already supplied a clear task, then derive a concise sanitized slug from that answer.
 - If the user already supplied a positional argument, branch, PR, issue, or task name, derive `<folder_name>` from that context without asking again.
 - Clarification language: infer the operation from the request whenever possible. If an operation is truly ambiguous, ask one short question in the user's language. For Korean users, ask for example: "어떤 worktree 작업을 원하시나요? 생성, 목록, 열기/이동, 삭제, 정리, 복구, 잠금, 잠금 해제 중에서 알려주세요." Never ask a generic English operation menu.
-- After creating a worktree, creation is not complete until the active execution context has moved into that folder: run follow-up shell commands with `workdir=<path>`, open the requested editor/session there, and report `cd <path>` for the user shell.
+- After creating a worktree, creation is not complete until the active execution context has moved into that folder: in a persistent shell/session, actually execute `cd <path>` there; in tool-only environments, set the next command's `workdir=<path>` and keep subsequent commands there. Do not merely display `cd <path>` as the final answer.
 - If removal is requested without a path and the active context is already inside a linked worktree, treat the current worktree root as the removal target, move out to a safe worktree before removal, and never remove the main worktree.
 - Add or verify a local ignore/exclude for `.hypercore/git-worktree/` before creating nested worktrees.
 - Prefer native `git worktree` commands over installing extra managers.
@@ -167,10 +167,12 @@ After a create operation:
 
 - immediately switch subsequent agent commands to the new worktree path
 - treat "create and enter/open/switch" as a single operation; do not stop after `git worktree add`
-- if a shell command must demonstrate entry, run `pwd` from that path or execute commands with `git -C <path>` / tool `workdir=<path>`
+- if a persistent shell, tmux pane, or CLI session is available, run `cd <path>` in that active session and verify with `pwd`
+- if only tool calls are available, prove the move by running `pwd` or `git status` with the tool's `workdir=<path>` set to the new worktree path
+- keep every later shell/tool command for this task on `workdir=<path>` unless there is an explicit reason to operate from another worktree
 - if an editor, tmux session, or agent was requested, launch it with the new worktree path as its working directory
-- report the exact `cd <path>` command because a subprocess `cd` cannot persistently change the user's parent shell
-- if the current agent/tool supports a working-directory parameter, use the new path for the next command and explicitly report that the active agent context has moved there
+- report `cd <path>` as the command executed in the persistent session, or as the fallback command the user should run only when the interface cannot mutate the parent shell
+- do not claim the move happened unless the persistent session changed directories or at least one post-create command actually ran from the new path via `workdir=<path>` or an equivalent tool working-directory setting
 
 After any operation, report:
 
@@ -277,6 +279,7 @@ Operation checks:
 - [ ] current-worktree deletion resolves the current top-level path first, refuses the main worktree, moves to another safe worktree, and removes the saved target path rather than running removal from inside the target.
 - [ ] cleanup runs `git worktree prune --dry-run` before `git worktree prune`.
 - [ ] after creation, subsequent commands use the new worktree as their working directory; if the parent shell cannot be persistently changed, the final report includes `cd <path>` and says whether the active agent context moved there.
+- [ ] the operator did not merely print `cd <path>`; a persistent session actually changed directory, or at least one post-create command ran from the new worktree via `workdir=<path>` or an equivalent tool working-directory setting.
 
 Resource placement checks:
 

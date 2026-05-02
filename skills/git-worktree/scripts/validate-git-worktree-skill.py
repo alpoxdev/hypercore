@@ -120,7 +120,7 @@ def main() -> int:
         check(
             "create_enter_open_switch_single_operation",
             contains_all(core, ["create and enter/open/switch", "do not stop after `git worktree add`"])
-            and contains_all(ko, ["생성하고 들어가/이동/전환/열어줘", "`git worktree add`만 하고 멈추지"])
+            and contains_all(ko, ["생성하고 들어가/이동/전환/열어줘", "`git worktree add`나 `cd <path>` 안내만 하고 멈추지"])
             and contains_all(
                 rules,
                 [
@@ -143,8 +143,15 @@ def main() -> int:
             "Agent environments need workdir guidance and parent-shell cd reporting.",
         ),
         check(
+            "no_cd_only_after_create",
+            contains_all(core, ["actually execute `cd <path>`", "Do not merely display `cd <path>`"])
+            and contains_all(ko, ["실제로 `cd <path>`를 실행", "`cd <path>`를 최종 답변으로 표시만 하고 멈추지"])
+            and contains_all(rules, ["actually executing `cd <path>`", "Do not claim the active context moved if you only printed `cd <path>`"]),
+            "Creation should require a real persistent-session cd when available, or a tool workdir fallback.",
+        ),
+        check(
             "post_create_status_verification",
-            contains_all(core + rules, ["git -C <path> status --short --branch", "cd <path> && pwd"]),
+            contains_all(core + rules, ["git -C <path> status --short --branch", "workdir=<path>", "cd <path> && pwd"]),
             "Post-create examples should verify status and demonstrate entry.",
         ),
         check(
@@ -170,7 +177,7 @@ def main() -> int:
                 "clarification questions match the user's language",
                 "after creation, subsequent commands use the new worktree",
             ])
-            and contains_all(ko, ["validate-git-worktree-skill.py", "영어 작업 메뉴", "새 worktree 경로를 작업 디렉터리"]),
+            and contains_all(ko, ["validate-git-worktree-skill.py", "영어 작업 메뉴", "workdir=<path>"]),
             "Validation checklists should lock the language and post-create context edges.",
         ),
         check(

@@ -81,7 +81,7 @@ compatibility: '`git worktree`를 지원하는 Git이 필요합니다. 에디터
 - 기본 `<folder_name>`: 사용자가 명확한 인자나 작업명을 주지 않았으면 먼저 "이 worktree에서 어떤 작업을 할 예정인가요?"라고 물은 뒤 답변을 안전한 경로 문자열로 변환한 값입니다.
 - 사용자가 이미 위치 인자, 브랜치, PR, 이슈, 작업명을 제공했다면 다시 묻지 않고 그 맥락에서 `<folder_name>`을 정합니다.
 - 작업 종류는 가능한 한 요청 문맥에서 추론합니다. 정말 모호할 때만 "어떤 worktree 작업을 원하시나요? 생성, 목록, 열기/이동, 삭제, 정리, 복구, 잠금, 잠금 해제 중에서 알려주세요."처럼 한국어로 한 번 묻습니다. 영어 작업 메뉴는 사용하지 않습니다.
-- 생성 직후 후속 명령의 작업 디렉터리를 새 worktree 경로로 이동합니다. 생성은 새 worktree 컨텍스트로 전환된 뒤에 완료로 봅니다. 사용자 셸에 대해서는 `cd <path>` 명령을 함께 보고합니다.
+- 생성 직후 persistent shell/session이 있으면 그 세션에서 실제로 `cd <path>`를 실행해 컨텍스트를 이동합니다. tool-only 환경이면 다음 명령의 `workdir=<path>`를 새 worktree로 설정하고 이후 명령도 그 경로에서 계속 실행합니다. 생성은 새 worktree 컨텍스트로 전환된 뒤에 완료로 봅니다. `cd <path>`를 최종 답변으로 표시만 하고 멈추지 않습니다.
 - 경로 없는 삭제 요청이 들어왔고 현재 컨텍스트가 이미 linked worktree 안이라면 현재 worktree 루트를 삭제 대상으로 삼되, 삭제 전에 안전한 다른 worktree로 이동하고 main worktree는 절대 삭제하지 않습니다.
 - 중첩 worktree 생성 전에 `.hypercore/git-worktree/`가 ignore 또는 local exclude 되어 있는지 확인합니다.
 - 추가 매니저 설치보다 네이티브 `git worktree` 명령을 우선합니다.
@@ -99,8 +99,8 @@ compatibility: '`git worktree`를 지원하는 Git이 필요합니다. 에디터
 6. 생성 작업이고 작업 목적이 불명확하면 먼저 "이 worktree에서 어떤 작업을 할 예정인가요?"처럼 한국어 한 문장으로 물어봅니다.
 7. 답변, 인자, 또는 기존 요청 맥락에서 `.hypercore/git-worktree/<folder_name>`의 폴더명을 정합니다.
 8. 자세한 명령과 안전 규칙은 `@rules/worktree-lifecycle.md`를 따릅니다.
-9. "생성하고 들어가/이동/전환/열어줘" 요청은 하나의 작업으로 처리합니다. `git worktree add`만 하고 멈추지 말고 후속 작업 컨텍스트를 새 worktree 경로로 이동합니다.
-10. 생성 후에는 경로, 브랜치/커밋, clean/dirty 상태, 실제로 사용한 작업 디렉터리, 사용자 셸용 `cd <path>` 명령, 남은 setup을 보고합니다. 삭제 후에는 제거된 경로와 남은 worktree 목록을 보고합니다.
+9. "생성하고 들어가/이동/전환/열어줘" 요청은 하나의 작업으로 처리합니다. `git worktree add`나 `cd <path>` 안내만 하고 멈추지 말고, persistent session에서는 실제 `cd <path>`를 실행하고 tool-only 환경에서는 새 worktree 경로의 `workdir=<path>`에서 후속 명령을 실행합니다.
+10. 생성 후에는 경로, 브랜치/커밋, clean/dirty 상태, 실제로 이동한 세션/작업 디렉터리, 실행했거나 실행해야 할 `cd <path>` 명령, 남은 setup을 보고합니다. 삭제 후에는 제거된 경로와 남은 worktree 목록을 보고합니다.
 
 </workflow>
 
@@ -118,7 +118,8 @@ python3 skills/git-worktree/scripts/validate-git-worktree-skill.py
 - [ ] 생성 목적이 불명확하면 먼저 어떤 작업을 할지 물었고, 그 답변으로 폴더명을 정했습니다.
 - [ ] 한국어 사용자에게 확인 질문을 할 때 영어 작업 메뉴를 보여주지 않았습니다.
 - [ ] `.hypercore/git-worktree/`가 ignore/local exclude 처리되었습니다.
-- [ ] 생성 후 후속 명령은 새 worktree 경로를 작업 디렉터리로 사용했고, 부모 셸에 지속 적용할 수 없으면 `cd <path>`를 별도로 안내했습니다.
+- [ ] 생성 후 `cd <path>`만 출력하고 멈추지 않았고, persistent session에서는 실제로 `cd <path>`를 실행했으며, tool-only 환경에서는 적어도 하나의 후속 명령을 새 worktree 경로의 `workdir=<path>`에서 실행했습니다.
+- [ ] 부모 셸에 지속 적용할 수 없는 환경에서만 `cd <path>`를 사용자가 실행해야 할 fallback 명령으로 보고했습니다.
 - [ ] 삭제 전 `git -C <path> status --short`를 확인했습니다.
 - [ ] 현재 worktree 삭제는 먼저 현재 top-level 경로를 저장하고, main worktree 삭제를 거부하며, 안전한 다른 worktree로 이동한 뒤 저장된 대상 경로를 제거합니다.
 - [ ] prune 전 `git worktree prune --dry-run`을 실행했습니다.
