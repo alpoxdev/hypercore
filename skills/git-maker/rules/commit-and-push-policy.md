@@ -34,15 +34,15 @@ Write the Korean subject as a commit-message summary, not as an instruction to t
 
 | Use | Avoid | Why |
 |------|------|------|
-| `build(deps): 안정 버전 도구 체인으로 빌드 경로 정렬` | `build(deps): 안정 버전 도구 체인으로 빌드 경로를 맞춰라` | `맞춰라` sounds like a command. |
-| `build(cloudflare): Workers 배포 경로 안정화` | `build(cloudflare): Workers 배포 경로를 안정화하라` | `~하라` is an imperative order. |
-| `refactor(nextjs): 아키텍처 경계 강화로 배포 안정성 확보` | `refactor(nextjs): 아키텍처 경계를 강제해 배포 안정성을 확보하라` | Commit subjects should describe the change/result. |
+| `build(deps): align build paths with stable toolchain versions` | `build(deps): make the build paths use stable toolchain versions` | The avoided form reads like an instruction. |
+| `build(cloudflare): stabilize Workers deployment path` | `build(cloudflare): stabilize the Workers deployment path now` | The avoided form reads like an imperative order. |
+| `refactor(nextjs): secure deploy stability with stronger architecture boundaries` | `refactor(nextjs): force architecture boundaries to secure deploy stability` | Commit subjects should describe the change/result. |
 
 Preferred Korean subject shapes:
 
-- noun/result phrase: `빌드 경로 정렬`, `배포 경로 안정화`, `검증 흐름 개선`
-- concise past-effect/result summary: `의존성 해석 고정`, `라우팅 경계 분리`
-- no sentence-final command endings such as `~하라`, `~해라`, `~라`, `~하자`, or direct orders to future maintainers
+- noun/result phrase, such as "build path alignment", "deployment path stabilization", or "validation flow improvement"
+- concise past-effect/result summary, such as "dependency resolution pinned" or "routing boundary separated"
+- no sentence-final Korean command endings or direct orders to future maintainers
 
 If the natural draft reads like a command, rewrite it to the result now present in the commit.
 

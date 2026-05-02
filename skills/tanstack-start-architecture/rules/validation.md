@@ -53,7 +53,7 @@ Positive examples that should trigger this skill:
 - "Audit this TanStack Start app for server-function, loader, and importProtection violations."
 - "Add a TanStack Start route with search params and keep the architecture compliant."
 - "Refactor Start route folders, hooks, and server functions to follow hypercore rules."
-- "TanStack Start 프로젝트에서 loader 경계랑 server function 구조 점검해줘."
+- "Check the loader boundaries and server function structure in this TanStack Start project."
 
 Negative examples that should not trigger this skill:
 

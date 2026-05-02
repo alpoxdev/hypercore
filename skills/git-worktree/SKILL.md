@@ -96,7 +96,7 @@ Boundary request:
 - Canonical path: `<repo-root>/.hypercore/git-worktree/<folder_name>`.
 - Default `<folder_name>`: ask what work will happen in the worktree when the user has not already supplied a clear task, then derive a concise sanitized slug from that answer.
 - If the user already supplied a positional argument, branch, PR, issue, or task name, derive `<folder_name>` from that context without asking again.
-- Clarification language: infer the operation from the request whenever possible. If an operation is truly ambiguous, ask one short question in the user's language. For Korean users, ask for example: "어떤 worktree 작업을 원하시나요? 생성, 목록, 열기/이동, 삭제, 정리, 복구, 잠금, 잠금 해제 중에서 알려주세요." Never ask a generic English operation menu.
+- Clarification language: infer the operation from the request whenever possible. If an operation is truly ambiguous, ask one short question in the user's language. For Korean users, ask which worktree operation they want, such as create, list, open/move, delete, clean up, repair, lock, or unlock. Never ask a generic English operation menu.
 - After creating a worktree, creation is not complete until the active execution context has moved into that folder: in a persistent shell/session, actually execute `cd <path>` there; in tool-only environments, set the next command's `workdir=<path>` and keep subsequent commands there. Do not merely display `cd <path>` as the final answer.
 - If removal is requested without a path and the active context is already inside a linked worktree, treat the current worktree root as the removal target, move out to a safe worktree before removal, and never remove the main worktree.
 - Add or verify a local ignore/exclude for `.hypercore/git-worktree/` before creating nested worktrees.
@@ -128,7 +128,7 @@ Boundary request:
 5. For removal with no explicit path, if the current directory is inside a linked worktree, select the current worktree root as the target; if it is the main worktree, stop and ask for a specific target instead of deleting the repository root.
 6. If a `git-worktree <ARGUMENT>` argument is present, treat it as a create target and derive branch name, folder name, and base reference from it before any clarification.
 7. Otherwise derive branch name, folder name, and base reference from user wording or current branch.
-8. If creating and the task/folder intent is missing or too vague, ask one concise question before creation in the user's language. For Korean users: "이 worktree에서 어떤 작업을 할 예정인가요?"
+8. If creating and the task/folder intent is missing or too vague, ask one concise question before creation in the user's language. For Korean users, ask what work they plan to do in this worktree.
 9. If the operation itself is unclear, avoid a generic English menu. Ask one localized question only after inference fails.
 
 ## Phase 2. Apply the project path convention
@@ -193,7 +193,7 @@ For removal/cleanup, report what was removed and what remains in `git worktree l
 If the user only says "create a worktree" and no task is clear, ask first:
 
 ```text
-이 worktree에서 어떤 작업을 할 예정인가요?
+What work will happen in this worktree?
 ```
 
 Then derive the folder name from the answer:

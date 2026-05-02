@@ -43,7 +43,7 @@ Do not use `skill-tester` when:
 Positive examples:
 
 - "Test `skills/git-maker/` and tell me whether it triggers correctly."
-- "이 스킬이 의도한 대로 작동하는지 엣지 케이스까지 검증해줘."
+- "Verify whether this skill works as intended, including edge cases." (Korean-language requests with the same meaning should also trigger.)
 - "Create a regression test pack for this skill's trigger and workflow behavior."
 - "Validate the `SKILL.md`, rules, references, and scripts before I ship this skill."
 

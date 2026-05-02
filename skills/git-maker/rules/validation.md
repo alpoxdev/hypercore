@@ -20,7 +20,7 @@ Run these checks before declaring `git-maker` changes complete or before reporti
 - A local linked-worktree fixture, when practical, shows `worktree|linked` and a `repo|...` path at the linked checkout root.
 - Push helper is not tested against a real remote unless the user asked to push; use local fixtures when validating behavior.
 - Commit phase still uses targeted staging and one logical change per commit.
-- Commit subjects read like neutral Conventional Commit summaries, not Korean commands ending in `~하라`, `~해라`, or `~라`.
+- Commit subjects read like neutral Conventional Commit summaries, not Korean command-style imperatives.
 - Push phase is automatic only after all commit groups succeed.
 - Force push remains blocked for `main` and `master`.
 - If subagents were used, their work was read-only and final git mutations stayed with the main integrator.

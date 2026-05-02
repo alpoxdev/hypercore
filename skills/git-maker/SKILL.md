@@ -40,8 +40,8 @@ Positive triggers:
 - "/git-maker"
 - "make a commit and push it"
 - "save and push my changes"
-- "커밋하고 푸시해"
-- "변경사항 저장하고 올려"
+- Korean request meaning "commit and push"
+- Korean request meaning "save the changes and upload them"
 
 Negative triggers:
 
@@ -137,8 +137,8 @@ scripts/repo-status.sh path/to/repo
 Partition changes into logical groups. Commit each group sequentially per repository:
 
 ```bash
-scripts/git-commit.sh "<type>[scope]: <한국어 subject>" path/to/file1 path/to/file2
-scripts/git-commit.sh --repo path/to/repo "<type>[scope]: <한국어 subject>" path/to/file1
+scripts/git-commit.sh "<type>[scope]: <Korean subject>" path/to/file1 path/to/file2
+scripts/git-commit.sh --repo path/to/repo "<type>[scope]: <Korean subject>" path/to/file1
 ```
 
 Rules:
@@ -146,7 +146,7 @@ Rules:
 - one logical change per commit
 - targeted staging only
 - Korean subject/body after the Conventional Commit type/scope
-- subject uses neutral commit-summary wording, not command-style endings like `~하라`, `~해라`, or `~라`
+- subject uses neutral commit-summary wording, not Korean command-style imperative endings
 - no secrets, unrelated user changes, destructive git operations, or `--no-verify`
 - if any commit fails, stop and do not push
 

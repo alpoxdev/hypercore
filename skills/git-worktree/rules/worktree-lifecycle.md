@@ -33,14 +33,14 @@ Interaction language:
 
 - Ask clarification questions in the same language as the user's request.
 - For Korean users, ask in Korean only. Do not show English fallback text or generic English operation menus.
-- Infer the operation from the user's wording before asking. If inference fails, ask one localized question. For Korean users: "어떤 worktree 작업을 원하시나요? 생성, 목록, 열기/이동, 삭제, 정리, 복구, 잠금, 잠금 해제 중에서 알려주세요."
+- Infer the operation from the user's wording before asking. If inference fails, ask one localized question. For Korean users, ask which worktree operation they want, such as create, list, open/move, delete, clean up, repair, lock, or unlock.
 - If only the work intent for a new worktree is missing, ask about the work intent, not the operation.
 
 Before creating a worktree, establish what will happen there:
 
 - If a direct `git-worktree <ARGUMENT>` argument exists, it is the work intent; skip the work-intent question.
 - If the user already named a branch, PR, issue, task, or concrete work item, use that context.
-- If the user only says to create a worktree and the task is unclear, ask exactly one concise localized question before creating it. For Korean users: "이 worktree에서 어떤 작업을 할 예정인가요?"
+- If the user only says to create a worktree and the task is unclear, ask exactly one concise localized question before creating it. For Korean users, ask what work they plan to do in this worktree.
 - Derive `<folder_name>` from the answer. Do not use a random timestamp or generic `worktree-1` unless the user explicitly wants that.
 
 Naming rules:
@@ -105,7 +105,7 @@ git worktree add --detach <path> <commit-or-tag>
 
 Use detached worktrees only for read-only inspection, bisect-like diagnostics, or explicit throwaway review.
 
-After creation, verify the worktree exists and make it the active context for follow-up work. A create request that says "enter", "open", "switch", "go into it", "들어가", "이동", or "전환" is not complete until follow-up commands run from the new path:
+After creation, verify the worktree exists and make it the active context for follow-up work. A create request that says "enter", "open", "switch", "go into it", or equivalent Korean wording is not complete until follow-up commands run from the new path:
 
 ```bash
 git -C <path> status --short --branch
@@ -213,7 +213,7 @@ git branch -d <branch>
 # use -D only when explicitly requested and disposable
 ```
 
-Never delete the main worktree. For pathless requests such as "워크트리 삭제" from inside the main worktree, stop and ask for the linked worktree path/name instead of treating the repository root as disposable.
+Never delete the main worktree. For pathless requests such as a Korean "delete worktree" request from inside the main worktree, stop and ask for the linked worktree path/name instead of treating the repository root as disposable.
 
 ## 7. Prune, lock, unlock, repair
 

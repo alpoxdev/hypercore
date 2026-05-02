@@ -19,7 +19,7 @@ Do not spawn agents for a single obvious one-file or one-group commit; coordinat
 |------|------|------|------|------|
 | Repo Mapper | Map repositories/worktree roots, staged/unstaged/untracked files, and ownership boundaries | `git-maker-fast.sh inspect` output, `git diff --name-only` | repo/file map, linked-worktree context, and ambiguity list | no |
 | Grouping Critic | Propose logical commit groups and flag unrelated files or secrets | status, file list, diff summaries | group plan with confidence and exclusions | no |
-| Message Drafter | Draft Korean Conventional Commit subjects/bodies | group plan and diff summaries | message candidates with rationale | no |
+| Message Drafter | Draft Korean-language Conventional Commit subjects/bodies | group plan and diff summaries | message candidates with rationale | no |
 | Safety Verifier | Check secrets, destructive operations, protected branch, detached HEAD, upstream/push risk | status, branch/upstream output, script diff | pass/block report | no |
 | Main Integrator | Resolve conflicts between lanes, stage, commit, push, and report | all lane outputs | actual commits and push summary | yes |
 
@@ -77,7 +77,7 @@ Return: proposed logical commit groups, files included in each group, exclusions
 ```text
 Read-only git-maker commit message drafting. Do not edit, stage, commit, push, or restore files.
 Input: [paste final or candidate group plan and diff summary].
-Return: Korean Conventional Commit subject/body candidates for each group, with rationale, no fabricated issue footers, and no command-style endings such as `~하라`, `~해라`, or `~라`.
+Return: Korean-language Conventional Commit subject/body candidates for each group, with rationale, no fabricated issue footers, and no Korean command-style imperative endings.
 ```
 
 ### Safety Verifier

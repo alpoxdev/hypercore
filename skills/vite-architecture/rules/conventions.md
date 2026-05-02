@@ -76,15 +76,17 @@ import type { UseUsersReturn } from './-hooks/use-users'
 
 ## Korean Block Comments (per group)
 
+Use Korean descriptions in real project code. The example below uses English placeholder text so this canonical documentation remains English-only.
+
 ```typescript
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 유저 관련 상태
+// User-related state
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const [user, setUser] = useState<User | null>(null)
 const [isLoading, setIsLoading] = useState(false)
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 데이터 페칭
+// Data fetching
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const { data: users } = useQuery(usersQueryOptions())
 ```

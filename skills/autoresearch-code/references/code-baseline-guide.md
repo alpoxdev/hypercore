@@ -1,78 +1,78 @@
 # Code Baseline Guide
 
-실험 `0` 전에 이 레퍼런스를 사용해, 루프가 명시적이고 재현 가능한 코드 baseline에서 시작되도록 한다.
+Use this reference before experiment `0` so the loop starts from an explicit and reproducible code baseline.
 
-## 1. 최적화 범위를 정의한다
+## 1. Define the Optimization Scope
 
-다음을 캡처한다:
+Capture:
 
-- 범위에 포함되는 저장소 또는 하위 디렉터리
-- 병목 카테고리
-- 사용자에게 보이는 목표
-- 절대 회귀하면 안 되는 제약
+- repositories or subdirectories included in scope
+- bottleneck category
+- user-visible goal
+- constraints that must never regress
 
-예시:
+Examples:
 
-- "출력 동작은 유지하면서 웹 앱의 빌드 시간을 줄인다."
-- "인증 약화 없이 대시보드 엔드포인트의 query 수를 낮춘다."
-- "라우트 동작을 지키면서 데이터 로딩 경로를 단순화한다."
+- "Reduce web app build time while preserving output behavior."
+- "Lower the dashboard endpoint query count without weakening authentication."
+- "Simplify the data-loading path while preserving route behavior."
 
-## 2. Baseline 명령을 고른다
+## 2. Choose Baseline Commands
 
-가능하면 코드베이스에 이미 있는 명령을 우선 사용한다.
+Prefer commands that already exist in the codebase when possible.
 
-흔한 범주:
+Common categories:
 
-- build 명령
-- test 명령
-- typecheck 명령
-- benchmark 또는 profiling 명령
-- 앱 특화 smoke 시나리오
+- build command
+- test command
+- typecheck command
+- benchmark or profiling command
+- app-specific smoke scenario
 
-벤치마크가 없다면 보수적이고 반복 가능한 검사를 정의하고 그 한계를 기록한다.
+If no benchmark exists, define a conservative and repeatable check and record its limits.
 
-## 3. Eval 팩 출처를 고른다
+## 3. Choose the Eval Pack Source
 
-팩 출처 우선순위:
+Pack source priority:
 
-1. 프로덕션 trace, profiling 출력, incident 이력 같은 trace 기반 프롬프트
-2. 버그 리포트, 회귀, postmortem 같은 incident 기반 프롬프트
-3. `references/self-test-pack.*.md`의 도메인 팩
-4. `references/self-test-pack.md`의 generic 팩
+1. Trace-backed prompts from production traces, profiling output, or incident history
+2. Incident-backed prompts from bug reports, regressions, or postmortems
+3. Domain packs in `references/self-test-pack.*.md`
+4. Generic pack in `references/self-test-pack.md`
 
-기록할 것:
+Record:
 
-- 선택한 팩 이름
-- 팩 버전 또는 타임스탬프
-- 팩 유형이 `trace-backed`, `incident-backed`, `synthetic`, `mixed` 중 무엇인지
-- 더 낮은 우선순위 팩을 쓰지 않은 이유
+- selected pack name
+- pack version or timestamp
+- whether the pack type is `trace-backed`, `incident-backed`, `synthetic`, or `mixed`
+- why lower-priority packs were not used
 
-## 4. 현재 상태를 기록한다
+## 4. Record the Current State
 
-`baseline.md`에 다음을 쓴다:
+Write the following in `baseline.md`:
 
-- 선택한 팩 이름과 팩 유형
-- 선택한 명령
-- 원시 수치 또는 pass/fail 관찰
-- 테스트 프롬프트 또는 시나리오
-- 이진 eval 세트
-- 리스크와 non-goal
+- selected pack name and pack type
+- selected commands
+- raw numbers or pass/fail observations
+- test prompts or scenarios
+- binary eval set
+- risks and non-goals
 
-## 5. 첫 실패 패턴을 고른다
+## 5. Choose the First Failure Pattern
 
-수정 전에 가장 가치가 큰 문제를 분류한다:
+Before editing, classify the highest-value problem:
 
-- 느린 critical path
-- 반복되거나 중복된 작업
-- 큰 번들 또는 아티팩트 크기
-- 불안정한 검증
-- 구조 마찰
-- 설정 오버헤드
+- slow critical path
+- repeated or duplicated work
+- large bundle or artifact size
+- unstable validation
+- structural friction
+- configuration overhead
 
-사용자 가치 손실이 가장 크거나 반복을 가장 막는 실패를 고른다.
+Choose the failure that causes the greatest user-value loss or blocks iteration the most.
 
-## 6. Baseline을 안정적으로 유지한다
+## 6. Keep the Baseline Stable
 
-- 실험 전체에서 같은 명령과 환경을 사용한다
-- 명령이 바뀌면 suite reset 이벤트로 기록한다
-- 이유를 문서화하지 않고 중간에 지표를 바꾸지 않는다
+- Use the same commands and environment throughout the experiment
+- If a command changes, record it as a suite reset event
+- Do not change metrics midway without documenting why

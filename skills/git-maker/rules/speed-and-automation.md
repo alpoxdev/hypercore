@@ -13,8 +13,8 @@ scripts/git-maker-fast.sh inspect . --jobs 4
 Then commit each logical group with the existing commit helper:
 
 ```bash
-scripts/git-commit.sh "<type>[scope]: <한국어 subject>" path/to/file1 path/to/file2
-scripts/git-commit.sh --repo path/to/repo "<type>[scope]: <한국어 subject>" path/to/file1
+scripts/git-commit.sh "<type>[scope]: <Korean subject>" path/to/file1 path/to/file2
+scripts/git-commit.sh --repo path/to/repo "<type>[scope]: <Korean subject>" path/to/file1
 ```
 
 After all commits succeed, reuse the inspected repo list instead of rediscovering:

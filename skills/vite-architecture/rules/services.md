@@ -161,7 +161,7 @@ export const apiClient = axios.create({
 })
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 인증 토큰 인터셉터
+// Authentication token interceptor
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 apiClient.interceptors.request.use((config) => {
   const token = getAuthToken()
