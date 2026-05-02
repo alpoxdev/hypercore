@@ -76,6 +76,29 @@ await btn.click();
 
 ---
 
+<tls_fingerprint>
+
+## TLS / JA3 / JA4 Fingerprint
+
+The TLS handshake is fingerprinted **independently** from the browser. Even a perfectly stealthed Chromium leaks at the network layer when the request is made from `node fetch` / Python `requests` / `httpx` / Playwright's HTTP client — JA3/JA4 hashes diverge from real Chrome / Firefox, and Cloudflare / Akamai reject the mismatch.
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| Browser passes `bot.sannysoft.com` but real target still 403/503 | TLS/JA3 mismatch on direct API calls | Move API path to **`curl_cffi`** (Python) impersonating Chrome 120+ |
+| `403` only on background `fetch()` from inside the browser, page-level GET passes | `fetch` does not inherit the browser's TLS state in some sandboxes | Issue API requests from the browser context (not Node.js) or move to `curl_cffi` outside the browser |
+| Inconsistent JA3 across requests | Chrome 110+ rotates JA3 per request | Use `curl_cffi` `impersonate="chrome120"` (or newer) — it rotates the same way |
+
+Tooling reference:
+- `curl_cffi` (Python) — drop-in `requests` replacement; mirrors Chrome ClientHello, JA3/JA4, cipher suite order, ALPN, HTTP/2 settings; supports HTTP/2 and HTTP/3; proxy rotation per request.
+- `curl-impersonate` — underlying C/Rust fork that `curl_cffi` wraps.
+- See [code-templates.md](code-templates.md) for the `Stealth API Crawler Template` based on `curl_cffi`.
+
+Decision-test smoke endpoint: `https://tls.peet.ws/api/all` returns the JA3/JA4 your client actually sent — useful when the target's behavior is suspicious but the browser fingerprint passes.
+
+</tls_fingerprint>
+
+---
+
 <captcha>
 
 ## CAPTCHA Handling
@@ -128,13 +151,22 @@ await btn.click();
 
 <tool_selection>
 
-## Tool Selection
+## Tool Selection (2026 stack)
 
-| Condition | Recommended Tool |
-|------|------|
-| No bot detection | Playwright |
-| Basic bot checks | Playwright + Stealth |
-| Advanced anti-bot stack | Nstbrowser / Anti-Detect browser |
-| Cloudflare-heavy target | Anti-Detect is mandatory |
+`playwright-extra` + `puppeteer-extra-plugin-stealth` are effectively unmaintained (no meaningful update since Mar 2023) and consistently fail current Cloudflare Bot Fight Mode and DataDome 2024+ checks. Prefer the patches below.
+
+| Condition | Recommended Tool | Why |
+|------|------|------|
+| No bot detection | `playwright` (or `playwriter` MCP) | Cheapest path |
+| Basic bot checks | `playwright` + **`rebrowser-patches`** | One-shot patch; neutralises the `Runtime.Enable` CDP-detection vector that Cloudflare/DataDome use to flag automation |
+| Advanced anti-bot (Cloudflare Bot Fight, DataDome) | **`Patchright`** (drop-in Playwright replacement, build-time Chromium binary patches) | Removes headless-detection from the browser itself; passes the standard `nowsecure` headless test |
+| Chromium-specific fingerprinting | **`Camoufox`** (Firefox stealth fork) | Different attack surface — useful when targets fingerprint Chromium specifically |
+| Cloudflare Turnstile | `Patchright` or `Camoufox` + click-based solver | No external solver service needed for many sites |
+| API path with TLS/JA3 fingerprinting | **`curl_cffi`** (Python, Chrome JA3 impersonation) | See [`<tls_fingerprint>`](#tls_fingerprint) above |
+| reCAPTCHA v2 / hCaptcha | Solver service (2captcha, Capsolver) + retry | Document cost & legality |
+
+`Runtime.Enable` note: vanilla Puppeteer / Playwright call `Runtime.Enable` on attach, and Cloudflare / DataDome read the resulting binding leaks to confirm automation. `rebrowser-patches` and `Patchright` both close that vector — pick one based on whether you can afford a Chromium binary swap.
+
+Pure browser stealth is **not enough** when JA3 leaks at the network layer. Pair browser-layer fixes (Patchright/rebrowser/Camoufox) with network-layer fixes (`curl_cffi` for API calls or let the real browser do the round-trip).
 
 </tool_selection>

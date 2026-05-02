@@ -18,7 +18,7 @@ description: Playwriter와 CDP로 웹사이트를 조사해 크롤링 방식을 
 
 **Templates:** [document-templates.md](rules/document-templates.md) · [code-templates.md](rules/code-templates.md)
 **Checklists:** [pre-crawl-checklist.md](rules/pre-crawl-checklist.md) · [anti-bot-checklist.md](rules/anti-bot-checklist.md)
-**References:** [playwriter-commands.md](rules/playwriter-commands.md) · [cdp-capture.md](rules/cdp-capture.md) · [crawling-patterns.md](rules/crawling-patterns.md) · [selector-strategies.md](rules/selector-strategies.md) · [network-crawling.md](rules/network-crawling.md) · [action-manifest.md](rules/action-manifest.md)
+**References:** [playwriter-commands.md](rules/playwriter-commands.md) · [chrome-devtools-mcp.md](rules/chrome-devtools-mcp.md) · [cdp-capture.md](rules/cdp-capture.md) · [crawling-patterns.md](rules/crawling-patterns.md) · [selector-strategies.md](rules/selector-strategies.md) · [network-crawling.md](rules/network-crawling.md) · [action-manifest.md](rules/action-manifest.md)
 
 ---
 
@@ -61,15 +61,16 @@ description: Playwriter와 CDP로 웹사이트를 조사해 크롤링 방식을 
 보조 파일은 다음 순서로 읽습니다.
 
 1. 크롤링 방식이나 코드 결정을 내리기 전에 [pre-crawl-checklist.md](rules/pre-crawl-checklist.md)부터 읽습니다.
-2. 세션 제어, 페이지 상호작용, 시각 확인, selector 검증이 필요하면 [playwriter-commands.md](rules/playwriter-commands.md)를 읽습니다.
-3. 더 적은 토큰으로 구조화된 네트워크, 쿠키, 토큰, 저장소, rate-limit 근거가 필요하면 [cdp-capture.md](rules/cdp-capture.md)를 읽습니다.
-4. Playwriter/CDP 근거를 `API.md`, `NETWORK.md`, raw 근거 파일로 정리할 때 [network-crawling.md](rules/network-crawling.md)을 읽습니다.
-5. DOM 추출 가능성이 남아 있으면 [selector-strategies.md](rules/selector-strategies.md)를 읽습니다.
-6. 페이지네이션, 인증, lazy loading, 재시도 전략이 중요하면 [crawling-patterns.md](rules/crawling-patterns.md)를 읽습니다.
-7. 차단, CAPTCHA, Cloudflare, anti-detect 요구가 보이면 [anti-bot-checklist.md](rules/anti-bot-checklist.md)를 읽습니다.
-8. `.hypercore/crawler/<ACTION>.json` 아래 durable state 파일이 필요하면 [action-manifest.md](rules/action-manifest.md)를 읽습니다.
-9. `.hypercore/crawler/[site]/` 아티팩트를 작성할 때 [document-templates.md](rules/document-templates.md)를 읽습니다.
-10. 방식이 결정되고 발견 근거가 문서화된 뒤에만 [code-templates.md](rules/code-templates.md)를 읽습니다.
+2. 세션 제어, 페이지 상호작용, 시각 확인, selector 검증이 필요하면 [playwriter-commands.md](rules/playwriter-commands.md)를 읽습니다 (Playwright MCP = **조작(driving)**).
+3. 라이브 네트워크 요청, 콘솔 오류, 퍼포먼스 트레이스, Lighthouse 감사, 메모리 스냅샷이 필요하면 [chrome-devtools-mcp.md](rules/chrome-devtools-mcp.md)를 읽습니다 (Chrome DevTools MCP = **분석(debugging)**).
+4. Playwriter 풀 스냅샷보다 적은 토큰으로 구조화된 네트워크/쿠키/토큰/저장소/rate-limit 근거가 필요하면 [cdp-capture.md](rules/cdp-capture.md)를 읽습니다.
+5. Playwriter / chrome-devtools-mcp / CDP 근거를 `API.md`, `NETWORK.md`, raw 근거 파일로 정리할 때 [network-crawling.md](rules/network-crawling.md)을 읽습니다.
+6. DOM 추출 가능성이 남아 있으면 [selector-strategies.md](rules/selector-strategies.md)를 읽습니다.
+7. 페이지네이션, 인증, lazy loading, 재시도 전략이 중요하면 [crawling-patterns.md](rules/crawling-patterns.md)를 읽습니다.
+8. 차단, CAPTCHA, Cloudflare, anti-detect 요구가 보이면 [anti-bot-checklist.md](rules/anti-bot-checklist.md)를 읽습니다.
+9. `.hypercore/crawler/<ACTION>.json` 아래 durable state 파일이 필요하면 [action-manifest.md](rules/action-manifest.md)를 읽습니다.
+10. `.hypercore/crawler/[site]/` 아티팩트를 작성할 때 [document-templates.md](rules/document-templates.md)를 읽습니다.
+11. 방식이 결정되고 발견 근거가 문서화된 뒤에만 [code-templates.md](rules/code-templates.md)를 읽습니다.
 
 </support_file_routing>
 
@@ -107,7 +108,7 @@ description: Playwriter와 CDP로 웹사이트를 조사해 크롤링 방식을 
 |-------|------|--------|
 | **1. 세션** | 생성 + 페이지 열기 | `playwriter session new` |
 | **2. 탐색** | Playwriter로 사용자 플로우 재현 | `accessibilitySnapshot`, `screenshotWithAccessibilityLabels` |
-| **3. 수집** | CDP 연결 후 네트워크/인증 근거 수집 | `Network.*`, `Storage.*`, `Runtime.evaluate` |
+| **3. 수집** | `chrome-devtools-mcp` (우선) 또는 CDP fallback으로 네트워크/인증/퍼포먼스 근거 수집 | `list_network_requests`, `list_console_messages`, `performance_start_trace`; CDP `Network.*`, `Storage.*`, `Runtime.evaluate` — [chrome-devtools-mcp.md](rules/chrome-devtools-mcp.md), [cdp-capture.md](rules/cdp-capture.md) 참고 |
 | **4. 분석** | API 우선 vs DOM 우선 결정 | [network-crawling.md](rules/network-crawling.md), [selector-strategies.md](rules/selector-strategies.md) |
 | **5. 문서화** | `.hypercore/crawler/[사이트]/` 저장 | Write |
 | **6. 코드** | 크롤러 생성 | [code-templates.md](rules/code-templates.md) |
@@ -120,10 +121,14 @@ description: Playwriter와 CDP로 웹사이트를 조사해 크롤링 방식을 
 
 | 조건 | 방식 | 비고 |
 |------|------|------|
-| CDP나 fallback 브라우저 네트워크 근거로 API 발견 + 인증 단순 | **fetch** | 가장 빠름 |
-| API + 쿠키/토큰 필요 | **fetch + Cookie** | 만료 관리 필요 |
-| 봇 탐지 강함 | **Nstbrowser** | Anti-Detect |
-| API 없음 (SSR) | **Playwright DOM** | 직접 파싱 |
+| CDP나 fallback 브라우저 네트워크 근거로 API 발견 + 인증 단순 | **`fetch` / `httpx`** | 가장 빠름 |
+| API + 쿠키/토큰 필요 | **`fetch` + Cookie** | 만료 관리 필요 |
+| API + Cloudflare / DataDome / JA3 지문 검사 | **`curl_cffi` (Chrome 임퍼소네이트)** | TLS/JA3 복원, residential proxy와 함께 |
+| Discovery / 라이브 네트워크 + 퍼포먼스 근거 수집 | **`chrome-devtools-mcp`** | CDP 1st-party 충실도 (network, console, perf trace, Lighthouse) — [chrome-devtools-mcp.md](rules/chrome-devtools-mcp.md) 참고 |
+| 페이지 조작 / 로그인 / lazy-load 트리거 | **`playwriter`** | "페이지를 동작시키는" 도구 |
+| 강한 anti-bot (Cloudflare, DataDome) | **Patchright** 또는 **rebrowser-patches** | Chromium 패치 / `Runtime.Enable` 누수 패치 — [anti-bot-checklist.md](rules/anti-bot-checklist.md) 참고 |
+| Chromium 한정 지문 검사 | **Camoufox** | Firefox 기반 stealth 포크 |
+| API 없음 (SSR), anti-bot 없음 | **Playwright DOM** | 직접 파싱 |
 
 </method_selection>
 

@@ -18,7 +18,7 @@ For quick one-off extraction with no reusable crawler, keep the work lightweight
 
 **Templates:** [document-templates.md](rules/document-templates.md) · [code-templates.md](rules/code-templates.md)
 **Checklists:** [pre-crawl-checklist.md](rules/pre-crawl-checklist.md) · [anti-bot-checklist.md](rules/anti-bot-checklist.md)
-**References:** [playwriter-commands.md](rules/playwriter-commands.md) · [cdp-capture.md](rules/cdp-capture.md) · [crawling-patterns.md](rules/crawling-patterns.md) · [selector-strategies.md](rules/selector-strategies.md) · [network-crawling.md](rules/network-crawling.md) · [action-manifest.md](rules/action-manifest.md)
+**References:** [playwriter-commands.md](rules/playwriter-commands.md) · [chrome-devtools-mcp.md](rules/chrome-devtools-mcp.md) · [cdp-capture.md](rules/cdp-capture.md) · [crawling-patterns.md](rules/crawling-patterns.md) · [selector-strategies.md](rules/selector-strategies.md) · [network-crawling.md](rules/network-crawling.md) · [action-manifest.md](rules/action-manifest.md)
 
 ---
 
@@ -61,15 +61,16 @@ Boundary example:
 Read support files in this order:
 
 1. Start with [pre-crawl-checklist.md](rules/pre-crawl-checklist.md) before making crawl or code decisions.
-2. Use [playwriter-commands.md](rules/playwriter-commands.md) when you need session control, page interaction, visual inspection, or selector validation.
-3. Use [cdp-capture.md](rules/cdp-capture.md) when you need structured network, cookie, token, storage, or rate-limit evidence with lower token cost.
-4. Use [network-crawling.md](rules/network-crawling.md) when turning Playwriter/CDP evidence into `API.md`, `NETWORK.md`, and raw evidence files.
-5. Use [selector-strategies.md](rules/selector-strategies.md) when DOM extraction is still on the table.
-6. Use [crawling-patterns.md](rules/crawling-patterns.md) when pagination, authentication, lazy loading, or retries shape the approach.
-7. Use [anti-bot-checklist.md](rules/anti-bot-checklist.md) when the target shows blocks, CAPTCHA, Cloudflare, or explicit anti-detect requirements.
-8. Use [action-manifest.md](rules/action-manifest.md) when the run needs a durable state file under `.hypercore/crawler/<ACTION>.json`.
-9. Use [document-templates.md](rules/document-templates.md) when writing `.hypercore/crawler/[site]/` artifacts.
-10. Use [code-templates.md](rules/code-templates.md) only after the method is chosen and the discovery evidence is documented.
+2. Use [playwriter-commands.md](rules/playwriter-commands.md) when you need session control, page interaction, visual inspection, or selector validation (Playwright MCP = **driving**).
+3. Use [chrome-devtools-mcp.md](rules/chrome-devtools-mcp.md) when you need first-party Chrome DevTools fidelity for live network requests, console errors, performance traces, Lighthouse audits, or memory snapshots (Chrome DevTools MCP = **debugging**).
+4. Use [cdp-capture.md](rules/cdp-capture.md) when you need structured network, cookie, token, storage, or rate-limit evidence with lower token cost than full Playwriter snapshots.
+5. Use [network-crawling.md](rules/network-crawling.md) when turning Playwriter / chrome-devtools-mcp / CDP evidence into `API.md`, `NETWORK.md`, and raw evidence files.
+6. Use [selector-strategies.md](rules/selector-strategies.md) when DOM extraction is still on the table.
+7. Use [crawling-patterns.md](rules/crawling-patterns.md) when pagination, authentication, lazy loading, or retries shape the approach.
+8. Use [anti-bot-checklist.md](rules/anti-bot-checklist.md) when the target shows blocks, CAPTCHA, Cloudflare, or explicit anti-detect requirements.
+9. Use [action-manifest.md](rules/action-manifest.md) when the run needs a durable state file under `.hypercore/crawler/<ACTION>.json`.
+10. Use [document-templates.md](rules/document-templates.md) when writing `.hypercore/crawler/[site]/` artifacts.
+11. Use [code-templates.md](rules/code-templates.md) only after the method is chosen and the discovery evidence is documented.
 
 </support_file_routing>
 
@@ -107,7 +108,7 @@ Read support files in this order:
 |-------|------|--------|
 | **1. Session** | Create session + open page | `playwriter session new` |
 | **2. Explore** | Reproduce the page flow with Playwriter | `accessibilitySnapshot`, `screenshotWithAccessibilityLabels` |
-| **3. Capture** | Attach CDP and collect network/auth evidence | `Network.*`, `Storage.*`, `Runtime.evaluate` |
+| **3. Capture** | Collect network/auth/perf evidence via `chrome-devtools-mcp` (preferred) or CDP fallback | `list_network_requests`, `list_console_messages`, `performance_start_trace`; CDP `Network.*`, `Storage.*`, `Runtime.evaluate` — see [chrome-devtools-mcp.md](rules/chrome-devtools-mcp.md) and [cdp-capture.md](rules/cdp-capture.md) |
 | **4. Analyze** | Decide API-first vs DOM-first | [network-crawling.md](rules/network-crawling.md), [selector-strategies.md](rules/selector-strategies.md) |
 | **5. Document** | Save findings under `.hypercore/crawler/[site]/` | Write |
 | **6. Code** | Generate crawler implementation | [code-templates.md](rules/code-templates.md) |
@@ -120,10 +121,14 @@ Read support files in this order:
 
 | Condition | Method | Notes |
 |------|------|------|
-| API found via CDP or fallback browser-network evidence + simple auth | **fetch** | Fastest |
-| API + cookie/token required | **fetch + Cookie** | Requires expiry handling |
-| Strong bot detection | **Nstbrowser** | Anti-Detect |
-| No API (SSR) | **Playwright DOM** | Parse directly |
+| API found via CDP or fallback browser-network evidence + simple auth | **`fetch` / `httpx`** | Fastest |
+| API + cookie/token required | **`fetch` + Cookie** | Requires expiry handling |
+| API + Cloudflare / DataDome / JA3 fingerprinting | **`curl_cffi` (impersonate Chrome)** | Restores TLS/JA3; pair with residential proxy |
+| Discovery / live network + perf evidence | **`chrome-devtools-mcp`** | First-party CDP fidelity (network, console, perf trace, Lighthouse) — see [chrome-devtools-mcp.md](rules/chrome-devtools-mcp.md) |
+| Page driving / login / lazy-load triggering | **`playwriter`** | "Make the page do the thing" |
+| Strong anti-bot (Cloudflare, DataDome) | **Patchright** or **rebrowser-patches** | Patches Chromium / patches `Runtime.Enable` leakage — see [anti-bot-checklist.md](rules/anti-bot-checklist.md) |
+| Chromium-specific fingerprinting | **Camoufox** | Firefox-based stealth fork |
+| No API (SSR) and no anti-bot | **Playwright DOM** | Parse directly |
 
 </method_selection>
 
