@@ -17,10 +17,13 @@
 ```text
 skill-name/
 ├── SKILL.md
+├── SKILL.ko.md
 ├── rules/
-│   └── ...
+│   ├── ...
+│   └── example.ko.md
 ├── references/
-│   └── ...
+│   ├── ...
+│   └── example.ko.md
 ├── agents/
 │   └── openai.yaml
 ├── scripts/
@@ -41,7 +44,19 @@ skill-name/
 
 코어 스킬을 전체 지식베이스로 만들지 않습니다.
 
-## 3. Rules에 둘 것
+## 3. 마크다운 언어와 번역 페어링
+
+canonical 스킬 마크다운은 기본적으로 영어로 작성합니다.
+
+스킬 폴더 안에서 마크다운 파일을 만들거나 실질적으로 수정할 때는 한국어 형제 번역본을 유지합니다.
+
+- `SKILL.md`는 `SKILL.ko.md`와 짝을 이룹니다.
+- `rules/name.md`는 `rules/name.ko.md`와 짝을 이룹니다.
+- `references/path/name.md`는 `references/path/name.ko.md`와 짝을 이룹니다.
+
+영어 파일을 source of truth로 둡니다. 한국어 번역본에서는 현지화 때문에 작은 표현 조정이 필요한 경우를 제외하고 제목, 섹션 순서, 링크, 예시를 구조적으로 맞춥니다.
+
+## 4. Rules에 둘 것
 
 `rules/`에는 다음을 둡니다.
 
@@ -53,7 +68,7 @@ skill-name/
 
 rules는 코어 스킬을 보조해야지, 본문을 그대로 복제하면 안 됩니다.
 
-## 4. References에 둘 것
+## 5. References에 둘 것
 
 `references/`에는 다음을 둡니다.
 
@@ -65,7 +80,7 @@ rules는 코어 스킬을 보조해야지, 본문을 그대로 복제하면 안 
 
 references는 필요할 때만 불러올 상세 정보용입니다.
 
-## 5. Scripts와 Assets에 둘 것
+## 6. Scripts와 Assets에 둘 것
 
 다음 조건이면 `scripts/`를 씁니다.
 
@@ -78,7 +93,7 @@ references는 필요할 때만 불러올 상세 정보용입니다.
 - 출력 자원을 복사, 채우기, 재사용해야 한다
 - reasoning보다 결과물 제작을 지원하는 파일이다
 
-## 6. 선택적 UI 메타데이터
+## 7. 선택적 UI 메타데이터
 
 다음 조건이면 `agents/openai.yaml` 같은 UI 메타데이터를 둡니다.
 
@@ -93,9 +108,10 @@ references는 필요할 때만 불러올 상세 정보용입니다.
 
 UI 메타데이터는 스킬을 요약해야지, 코어 스킬 지시를 대체하면 안 됩니다.
 
-## 7. 품질 점검
+## 8. 품질 점검
 
 - [ ] 코어 `SKILL.md`만 읽어도 스킬의 역할이 보인다
+- [ ] canonical 마크다운은 영어이고, 새로 만들거나 실질적으로 수정한 각 `*.md` 파일에는 대응되는 한국어 `*.ko.md` 번역본이 있다
 - [ ] rules는 정책을 담고 reference 상세를 비대하게 복제하지 않는다
 - [ ] references는 상세 정보를 담고 코어 트리거 논리를 담지 않는다
 - [ ] scripts/assets는 필요한 경우에만 존재한다

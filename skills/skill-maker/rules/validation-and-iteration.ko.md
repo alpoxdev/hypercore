@@ -24,7 +24,18 @@
 - support file이 실제로 사용됨
 - scripts 또는 assets가 정당화됨
 - references가 코어를 복제하지 않음
+- canonical 마크다운 파일은 기본적으로 영어임
+- 새로 만들거나 실질적으로 수정한 마크다운 파일에는 대응되는 한국어 `*.ko.md` 번역본이 있음
 - 공급자 민감 또는 날짜 민감 가이드는 references에 격리됨
+
+## 2.1 언어 페어 검증
+
+각 스킬 마크다운 파일에 대해 확인합니다.
+
+- `.ko.md`로 끝나는 파일을 제외한 `*.md`는 영어 canonical source여야 함
+- 각 영어 `*.md` 파일에는 형제 한국어 번역본 `*.ko.md`가 있어야 함
+- 각 `*.ko.md` 파일에는 대응되는 영어 source file이 있어야 함
+- 제목, 섹션 순서, 링크, 예시는 두 파일 사이에서 구조적으로 정렬되어야 함
 
 ## 3. 스킬 계약 검증
 
@@ -135,5 +146,23 @@ for path in [Path('skills/skill-maker/SKILL.md'), Path('skills/skill-maker/SKILL
     fence = chr(96) * 3
     assert text.count(fence) % 2 == 0, f'unbalanced fences: {path}'
     print(path, len(text.splitlines()), 'lines')
+PY
+python3 - <<'PY'
+from pathlib import Path
+root = Path('skills/skill-maker')
+missing = []
+orphan = []
+for path in root.rglob('*.md'):
+    if path.name.endswith('.ko.md'):
+        source = path.with_name(path.name[:-6] + '.md')
+        if not source.exists():
+            orphan.append(str(path))
+    else:
+        ko = path.with_name(path.stem + '.ko.md')
+        if not ko.exists():
+            missing.append(str(ko))
+assert not missing, 'missing Korean translations: ' + ', '.join(missing)
+assert not orphan, 'orphan Korean translations: ' + ', '.join(orphan)
+print('markdown language pairs ok')
 PY
 ```

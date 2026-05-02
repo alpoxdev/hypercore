@@ -112,6 +112,10 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 
 </skill_architecture>
 
+<language_and_translation_default>
+스킬 마크다운은 기본적으로 영어로 작성합니다. 스킬 폴더 안에서 `*.md` 파일을 새로 만들거나 실질적으로 수정할 때는 한국어 형제 번역본도 함께 만들거나 갱신합니다(`SKILL.md` -> `SKILL.ko.md`, `rules/foo.md` -> `rules/foo.ko.md`, `references/path/foo.md` -> `references/path/foo.ko.md`). 영어 파일을 canonical source로 보고 한국어 파일은 구조적으로 정렬된 번역본으로 유지합니다.
+</language_and_translation_default>
+
 <reference_routing>
 
 다음 경우에는 공식 references를 읽습니다.
@@ -210,6 +214,7 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 - 한 개념에는 한 용어만 씁니다.
 - 실제로 스킬을 부를 사용자 요청 예시를 우선합니다.
 - 스킬 전용 구조 규칙은 비대해진 코어 본문이 아니라 `rules/`로 보냅니다.
+- canonical 마크다운은 영어로 작성하고, 대응되는 `*.ko.md` 번역본을 함께 갱신합니다.
 - 코어 스킬은 공급자와 모델 변화에도 버티도록 유지합니다.
 
 </workflow>
@@ -277,6 +282,7 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 | Examples | 트리거 예시가 실제 사용자 요청과 맞음 |
 | Operator cues | 다음에 읽을 파일과 다음 상세를 둘 위치가 명확함 |
 | Context contract | Intent, scope, authority, evidence, tools, output, verification, stop condition을 찾을 수 있음 |
+| Language pairing | 영어 `*.md` 파일과 한국어 `*.ko.md` 번역본이 존재하고 구조적으로 정렬됨 |
 | Safety | 시간 민감 또는 provider-sensitive 가이드는 references로 격리됨 |
 | Validation | 단순 prose review가 아니라 실제 사용 검증이 포함됨 |
 
@@ -289,5 +295,6 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 - [ ] No reference chain deeper than one level from `SKILL.md`
 - [ ] Core `SKILL.md` body stays under roughly 300 lines unless explicitly justified
 - [ ] No duplicated definitions across core and references
+- [ ] 새로 만들거나 실질적으로 수정한 마크다운 파일에는 대응되는 한국어 `*.ko.md` 번역본이 있음
 
 </validation>

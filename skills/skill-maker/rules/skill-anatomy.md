@@ -17,10 +17,13 @@ Recommended shape:
 ```text
 skill-name/
 ├── SKILL.md
+├── SKILL.ko.md
 ├── rules/
-│   └── ...
+│   ├── ...
+│   └── example.ko.md
 ├── references/
-│   └── ...
+│   ├── ...
+│   └── example.ko.md
 ├── agents/
 │   └── openai.yaml
 ├── scripts/
@@ -41,7 +44,19 @@ Keep these in the core skill:
 
 Do not turn the core skill into a full knowledge base.
 
-## 3. What Belongs in Rules
+## 3. Markdown Language and Translation Pairing
+
+Write canonical skill markdown in English by default.
+
+Whenever you create or materially update a markdown file inside a skill folder, maintain a Korean sibling translation:
+
+- `SKILL.md` pairs with `SKILL.ko.md`
+- `rules/name.md` pairs with `rules/name.ko.md`
+- `references/path/name.md` pairs with `references/path/name.ko.md`
+
+Keep the English file as the source of truth. Keep headings, section order, links, and examples structurally aligned in the Korean translation unless localization requires a small wording adjustment.
+
+## 4. What Belongs in Rules
 
 Put these in `rules/`:
 
@@ -53,7 +68,7 @@ Put these in `rules/`:
 
 Rules should support the core skill, not restate it verbatim.
 
-## 4. What Belongs in References
+## 5. What Belongs in References
 
 Put these in `references/`:
 
@@ -65,7 +80,7 @@ Put these in `references/`:
 
 References are for information that should be loaded only when needed.
 
-## 5. What Belongs in Scripts or Assets
+## 6. What Belongs in Scripts or Assets
 
 Use `scripts/` when:
 
@@ -78,7 +93,7 @@ Use `assets/` when:
 - output resources should be copied, filled, or reused
 - the files support output rather than reasoning
 
-## 6. Optional UI Metadata
+## 7. Optional UI Metadata
 
 Use UI metadata such as `agents/openai.yaml` when:
 
@@ -93,9 +108,10 @@ Omit it when:
 
 UI metadata should summarize the skill, not replace the core skill instructions.
 
-## 7. Quality Checks
+## 8. Quality Checks
 
 - [ ] The core `SKILL.md` explains the skill without reading every support file
+- [ ] Canonical markdown is in English and each new or materially changed `*.md` file has a matching Korean `*.ko.md` translation
 - [ ] Rules hold policy, not bloated reference detail
 - [ ] References hold detail, not core trigger logic
 - [ ] Scripts/assets exist only when justified

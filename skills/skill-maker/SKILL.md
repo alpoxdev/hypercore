@@ -112,6 +112,10 @@ Do not overload the core `SKILL.md` with information that belongs in rules or re
 
 </skill_architecture>
 
+<language_and_translation_default>
+Author skill markdown in English by default. For every `*.md` file created or materially updated inside a skill folder, also create or update the Korean sibling translation (`SKILL.md` -> `SKILL.ko.md`, `rules/foo.md` -> `rules/foo.ko.md`, `references/path/foo.md` -> `references/path/foo.ko.md`). Treat English files as canonical source and Korean files as structurally aligned translations.
+</language_and_translation_default>
+
 <reference_routing>
 
 Read official references when:
@@ -210,6 +214,7 @@ Read in this order:
 - Use one term per concept across the skill.
 - Prefer examples of real user requests that should trigger the skill.
 - Put skill-specific structure rules into `rules/`, not into a swollen core body.
+- Write canonical markdown in English and keep matching `*.ko.md` translations updated.
 - Keep the core skill durable across provider and model churn.
 
 </workflow>
@@ -277,6 +282,7 @@ Read the current skill and support files, mark duplication or misplaced detail, 
 | Examples | Trigger examples match likely user requests |
 | Operator cues | The next file to read and the next place to put detail are obvious |
 | Context contract | Intent, scope, authority, evidence, tools, output, verification, and stop condition are discoverable |
+| Language pairing | English `*.md` files and Korean `*.ko.md` translations exist and remain structurally aligned |
 | Safety | Time-sensitive or provider-sensitive guidance is isolated into references |
 | Validation | The skill includes realistic checks, not only prose review |
 
@@ -289,5 +295,6 @@ Must-pass thresholds:
 - [ ] No reference chain deeper than one level from `SKILL.md`
 - [ ] Core `SKILL.md` body stays under roughly 300 lines unless explicitly justified
 - [ ] No duplicated definitions across core and references
+- [ ] New or materially changed markdown files have matching Korean `*.ko.md` translations
 
 </validation>

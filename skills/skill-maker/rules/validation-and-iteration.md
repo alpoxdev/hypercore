@@ -24,7 +24,18 @@ Confirm:
 - support files are actually used
 - scripts or assets are justified
 - references are not duplicating the core
+- canonical markdown files are English by default
+- new or materially changed markdown files have matching Korean `*.ko.md` translations
 - provider-sensitive or date-sensitive guidance is isolated in references
+
+## 2.1 Validate Language Pairs
+
+For each skill markdown file:
+
+- `*.md` should be the English canonical source, except files already ending in `.ko.md`
+- each English `*.md` file should have a sibling Korean translation named `*.ko.md`
+- each `*.ko.md` file should correspond to an English source file
+- headings, section order, links, and examples should stay structurally aligned across the pair
 
 ## 3. Validate the Skill Contract
 
@@ -135,5 +146,23 @@ for path in [Path('skills/skill-maker/SKILL.md'), Path('skills/skill-maker/SKILL
     fence = chr(96) * 3
     assert text.count(fence) % 2 == 0, f'unbalanced fences: {path}'
     print(path, len(text.splitlines()), 'lines')
+PY
+python3 - <<'PY'
+from pathlib import Path
+root = Path('skills/skill-maker')
+missing = []
+orphan = []
+for path in root.rglob('*.md'):
+    if path.name.endswith('.ko.md'):
+        source = path.with_name(path.name[:-6] + '.md')
+        if not source.exists():
+            orphan.append(str(path))
+    else:
+        ko = path.with_name(path.stem + '.ko.md')
+        if not ko.exists():
+            missing.append(str(ko))
+assert not missing, 'missing Korean translations: ' + ', '.join(missing)
+assert not orphan, 'orphan Korean translations: ' + ', '.join(orphan)
+print('markdown language pairs ok')
 PY
 ```
