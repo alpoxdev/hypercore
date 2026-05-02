@@ -107,6 +107,45 @@
       padding-left: 18px;
       color: var(--muted);
     }
+
+    .detail-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fcfcff;
+      overflow: hidden;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 12px 14px;
+      font-weight: 650;
+    }
+
+    summary span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    pre {
+      margin: 0;
+      padding: 14px;
+      border-top: 1px solid var(--border);
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #334155;
+      background: #f8fafc;
+      font-size: 13px;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
@@ -153,12 +192,18 @@
       <h2>평가 분해</h2>
       <div id="eval-wrap" class="empty">아직 기록된 평가 데이터가 없습니다.</div>
     </section>
+
+    <section class="panel">
+      <h2>상세 로그</h2>
+      <div id="details-wrap" class="empty">상세 파일이 아직 없습니다.</div>
+    </section>
   </div>
 
   <script>
     function injectScript(src) {
       return new Promise((resolve, reject) => {
         const script = document.createElement("script");
+        script.id = "generated-results";
         script.src = src;
         script.onload = resolve;
         script.onerror = reject;
@@ -168,6 +213,15 @@
 
     function toPercent(value) {
       return value == null ? "-" : `${value}%`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
     }
 
     function translateExperimentStatus(status) {
@@ -189,11 +243,11 @@
 
       const rows = experiments.map((exp) => `
         <tr>
-          <td>${exp.id}</td>
-          <td>${exp.score}/${exp.max_score}</td>
+          <td>${escapeHtml(exp.id)}</td>
+          <td>${escapeHtml(exp.score)}/${escapeHtml(exp.max_score)}</td>
           <td>${toPercent(exp.pass_rate)}</td>
-          <td>${translateExperimentStatus(exp.status)}</td>
-          <td>${exp.description}</td>
+          <td>${escapeHtml(translateExperimentStatus(exp.status))}</td>
+          <td>${escapeHtml(exp.description)}</td>
         </tr>
       `).join("");
 
@@ -224,7 +278,27 @@
 
       wrap.className = "";
       wrap.innerHTML = `<ul>${items.map((item) =>
-        `<li>${item.name}: ${item.pass_count}/${item.total}</li>`).join("")}</ul>`;
+        `<li>${escapeHtml(item.name)}: ${escapeHtml(item.pass_count)}/${escapeHtml(item.total)}</li>`).join("")}</ul>`;
+    }
+
+    function renderDetails(items) {
+      const wrap = document.getElementById("details-wrap");
+      if (!items.length) {
+        wrap.className = "empty";
+        wrap.textContent = "상세 파일이 아직 없습니다.";
+        return;
+      }
+
+      wrap.className = "detail-list";
+      wrap.innerHTML = items.map((item, index) => `
+        <details ${index === 0 ? "open" : ""}>
+          <summary>
+            ${escapeHtml(item.title || item.path || `detail-${index + 1}`)}
+            <span>${escapeHtml(item.path || "")}</span>
+          </summary>
+          <pre>${escapeHtml(item.content || "")}</pre>
+        </details>
+      `).join("");
     }
 
     function renderChart(experiments) {
@@ -299,7 +373,7 @@
     }
 
 
-    function applyData(data) {
+    function applyData(data, details = []) {
       if (!data) {
         throw new Error("results 데이터가 없습니다");
       }
@@ -321,20 +395,35 @@
 
       renderExperiments(data.experiments || []);
       renderBreakdown(data.eval_breakdown || []);
+      renderDetails(details);
       renderChart(data.experiments || []);
+    }
+
+    async function loadGeneratedData() {
+      delete window.__AUTORESEARCH_RESULTS__;
+      delete window.__AUTORESEARCH_DETAILS__;
+      const previous = document.getElementById("generated-results");
+      if (previous) previous.remove();
+      await injectScript(`./results.js?ts=${Date.now()}`);
+      return {
+        results: window.__AUTORESEARCH_RESULTS__,
+        details: window.__AUTORESEARCH_DETAILS__ || []
+      };
     }
 
     async function refresh() {
       if (window.location.protocol === "file:") {
-        delete window.__AUTORESEARCH_RESULTS__;
-        await injectScript(`./results.js?ts=${Date.now()}`);
-        applyData(window.__AUTORESEARCH_RESULTS__);
+        const generated = await loadGeneratedData();
+        applyData(generated.results, generated.details);
         return;
       }
 
-      const response = await fetch("./results.json", { cache: "no-store" });
+      const [response, generated] = await Promise.all([
+        fetch("./results.json", { cache: "no-store" }),
+        loadGeneratedData().catch(() => ({ details: [] }))
+      ]);
       const data = await response.json();
-      applyData(data);
+      applyData(data, generated.details || []);
     }
 
     refresh().catch((error) => {

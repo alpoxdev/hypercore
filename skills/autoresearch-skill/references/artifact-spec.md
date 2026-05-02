@@ -14,6 +14,7 @@
 |-- run-contract.md      # 권장; source/tool/delegation이 있으면 필수
 |-- source-ledger.md     # 외부/current claim을 썼으면 필수
 |-- trace-summary.md     # 도구/delegation/병렬 평가가 있으면 필수
+|-- details/             # 선택; 긴 분석, 프롬프트 팩, eval 결과 원문
 `-- SKILL.md.baseline
 ```
 
@@ -22,6 +23,8 @@
 `$autoresearch` 실행에서는 이 `.hypercore` 디렉터리가 도메인별 결과 로그이고, 최종 완료 gate는 별도 `.omx/specs/autoresearch-[skill-name]/result.json` completion artifact가 담당한다. `completion_artifact_path`에는 이 `.omx/specs/.../result.json` 경로를 기록하고, `output_artifact_path`에는 이 파일의 `results.json`을 기록한다.
 
 항상 필요한 기본 아티팩트는 `dashboard.html`, `results.json`, `results.tsv`, `changelog.md`, `SKILL.md.baseline`이다. `run-contract.md`, `source-ledger.md`, `trace-summary.md`는 실행 조건에 따라 필수화된다.
+
+긴 내용은 `results.json`에 억지로 밀어 넣지 말고 `details/` 아래 Markdown/Text/JSON/TSV/Log 파일로 둔다. 렌더러는 `changelog.md`, `run-contract.md`, `source-ledger.md`, `trace-summary.md`, 그리고 `details/` 아래 지원 확장자 파일을 `results.js`에 안전하게 직렬화해 대시보드의 상세 로그 섹션에 표시한다.
 
 정식 생성 자산:
 
@@ -166,6 +169,27 @@ experiment	score	max_score	pass_rate	status	description
 - 대시보드를 `file://`로 여는 경우 `fetch("./results.json")`만 믿지 않는다
 - 같은 데이터를 브라우저 글로벌에 할당하는 `results.js` 같은 파일 기반 폴백을 제공한다
 - 폴백 파일이 있으면 `results.js`는 항상 `results.json`과 동기화한다
+- 긴 상세 내용은 HTML 템플릿을 직접 수정하지 말고 `details/*.md`, `details/*.txt`, `details/*.json`, `details/*.tsv`, `details/*.log` 또는 표준 로그 파일에 작성한 뒤 렌더러가 `results.js`로 싣게 한다
+- 상세 로그는 HTML로 변환하지 않고 escaped preformatted text로 보여 주어, 실험 출력에 포함된 태그나 프롬프트가 대시보드 스크립트 권한을 얻지 못하게 한다
+
+## Detailed content files
+
+상세한 판단 근거, 프롬프트 팩, 원문 eval 결과, 실패 출력, 수동 리뷰는 아래처럼 분리한다.
+
+```text
+details/
+|-- prompt-pack.md
+|-- eval-results.tsv
+|-- failure-excerpts.md
+`-- architect-review.json
+```
+
+권장 원칙:
+
+- 핵심 지표와 상태는 `results.json`에 둔다.
+- 사람이 읽을 긴 설명은 `details/` 또는 표준 로그 파일에 둔다.
+- `dashboard-template.html`은 presentation template으로만 유지하고 실행별 내용을 직접 하드코딩하지 않는다.
+- `scripts/render-dashboard.sh <artifact-dir>`를 다시 실행해 `dashboard.html`과 `results.js`를 동기화한다.
 
 권장 브라우저 안전 패턴:
 
