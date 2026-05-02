@@ -61,13 +61,13 @@ Positive requests:
 - "Create a Codex skill for reviewing SQL migrations."
 - "Refactor this browser QA skill so the trigger and validation stop misfiring."
 - "Standardize this skill folder so `SKILL.md`, rules, and references are split correctly."
-- "Create a Codex skill for browser QA." (Korean-language requests with the same meaning should also trigger.)
+- "브라우저 QA용 Codex 스킬을 새로 만들어줘." (Korean positive create request; should trigger.)
 
 Negative requests:
 
 - "Rewrite this runbook for readability."
 - "Summarize these OpenAI docs."
-- "Just clean up this general onboarding document for readability." (Korean-language requests with the same meaning should not trigger.)
+- "이 일반 온보딩 문서를 읽기 쉽게 정리해줘." (Korean non-skill documentation request; should not trigger.)
 
 Boundary requests:
 
