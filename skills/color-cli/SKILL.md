@@ -8,6 +8,16 @@ compatibility: Requires Bash tool. @kood/color-cli must be installed globally (`
 
 > Convert colors accurately between hex, rgb, and oklch using `@kood/color-cli`.
 
+<output_language>
+
+Default all user-facing deliverables, saved artifacts, reports, plans, generated docs, summaries, handoff notes, commit/message drafts, and validation notes to Korean, even when this canonical skill file is written in English.
+
+Preserve source code identifiers, CLI commands, file paths, schema keys, JSON/YAML field names, API names, package names, proper nouns, and quoted source excerpts in their required or original language.
+
+Use a different language only when the user explicitly requests it, an existing target artifact must stay in another language for consistency, or a machine-readable contract requires exact English tokens. If a localized template or reference exists (for example `*.ko.md` or `*.ko.json`), prefer it for user-facing artifacts.
+
+</output_language>
+
 AI models often produce incorrect oklch conversions due to matrix precision errors, missing gamut mapping, and degree/radian confusion. This skill delegates color conversion to `@kood/color-cli` (powered by culori) for CSS Color Level 4 compliant results.
 
 <request_routing>

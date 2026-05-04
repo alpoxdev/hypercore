@@ -25,6 +25,7 @@
 - scripts 또는 assets가 정당화됨
 - references가 코어를 복제하지 않음
 - canonical 마크다운 파일은 기본적으로 영어임
+- 생성되는 사용자-facing 산출물은 코어 `<output_language>` 계약을 통해 기본적으로 한국어임
 - 새로 만들거나 실질적으로 수정한 마크다운 파일에는 대응되는 한국어 `*.ko.md` 번역본이 있음
 - 공급자 민감 또는 날짜 민감 가이드는 references에 격리됨
 

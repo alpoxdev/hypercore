@@ -1,6 +1,6 @@
 ---
 name: readme-maker
-description: "[Hyper] Create or refactor a project README.md by carefully reading the codebase. Detects project shape (CLI, library, web app, monorepo, plugin, framework, docs site, service), entry points, scripts, configuration, license, and existing docs, then produces a structured README in the project's primary documentation language. Use when the user wants a new README, a refactor of a stale README, or a section update grounded in the actual code."
+description: "[Hyper] Create or refactor a project README.md by carefully reading the codebase. Detects project shape (CLI, library, web app, monorepo, plugin, framework, docs site, service), entry points, scripts, configuration, license, and existing docs, then produces a structured Korean README by default, unless the user requests another language or an existing README must preserve its current language. Use when the user wants a new README, a refactor of a stale README, or a section update grounded in the actual code."
 compatibility: Works best with read/edit/write and shell search tools for project structure scanning, manifest inspection, and source verification.
 ---
 
@@ -12,6 +12,16 @@ compatibility: Works best with read/edit/write and shell search tools for projec
 # README Maker
 
 > Read the project carefully, then write the README the project actually deserves.
+
+<output_language>
+
+Default all user-facing deliverables, saved artifacts, reports, plans, generated docs, summaries, handoff notes, commit/message drafts, and validation notes to Korean, even when this canonical skill file is written in English.
+
+Preserve source code identifiers, CLI commands, file paths, schema keys, JSON/YAML field names, API names, package names, proper nouns, and quoted source excerpts in their required or original language.
+
+Use a different language only when the user explicitly requests it, an existing target artifact must stay in another language for consistency, or a machine-readable contract requires exact English tokens. If a localized template or reference exists (for example `*.ko.md` or `*.ko.json`), prefer it for user-facing artifacts.
+
+</output_language>
 
 <purpose>
 
@@ -95,7 +105,7 @@ Boundary requests:
 | `README.md` exists but is stale, generic, or contradicts current code | refactor |
 | Specific sections need updating after a feature, rename, or move | update |
 | A sub-package or workspace inside a monorepo needs its own README | create |
-| README needs to align with the project's primary documentation language | refactor |
+| README needs Korean-by-default language alignment, or must preserve an explicitly requested/existing documentation language | refactor |
 
 </trigger_conditions>
 
@@ -105,7 +115,7 @@ Boundary requests:
 - Package-level `README.md` inside a monorepo workspace.
 - README refactors that re-derive sections from current code.
 - README updates that touch install, usage, configuration, scripts, examples, or project structure.
-- Language alignment when project docs are predominantly Korean, English, or another language.
+- Korean-by-default language alignment, while preserving another language only when the user requests it or an existing README must stay consistent.
 
 </supported_targets>
 
@@ -116,14 +126,14 @@ Boundary requests:
 | 0 | Confirm the deliverable is a `README.md`; pick `create`/`refactor`/`update` | Mode decision |
 | 1 | Scan project structure and detect shape (`rules/project-discovery.md`) | Project profile |
 | 2 | Read existing README, `AGENTS.md`, `CLAUDE.md`, license, manifests, and entry points | Evidence base |
-| 3 | Pick sections, order, depth, and language (`rules/section-design.md`) | Section plan |
-| 4 | Draft or refactor `README.md` using grounded examples and templates from `references/readme-templates.md` | Updated README |
+| 3 | Pick sections, order, depth, and Korean-by-default language handling (`rules/section-design.md`) | Section plan |
+| 4 | Draft or refactor `README.md` using grounded examples and Korean-default templates from `references/readme-templates.md` / `.ko.md` | Updated README |
 | 5 | Run validation checks (`rules/validation.md`) and write the completion summary | Final README + summary |
 
 ### Phase 4 authoring rules
 
 - Read first, write second. Never invent install commands, scripts, environment variables, or APIs.
-- Match the project's primary documentation language. If `AGENTS.md`, `CLAUDE.md`, or the existing README is Korean, write the README in Korean.
+- Write README prose in Korean by default. Use another language only when the user requests it or an existing target README must preserve its current documentation language.
 - Prefer one accurate example over three speculative ones.
 - Keep the README scannable: title, description, install, and quickstart belong above the fold.
 - Move long deep-dive content out of the README and link to it; the README should orient, not exhaust.
@@ -135,7 +145,7 @@ Boundary requests:
 
 ## create mode
 
-- Start from the project profile and pick the matching template in `references/readme-templates.md`.
+- Start from the project profile and pick the matching template; translate `references/readme-templates.md` into Korean by default or use `references/readme-templates.ko.md` when available.
 - Include only sections supported by real evidence in the repo.
 - Mark unknowns explicitly with `<!-- TODO: confirm with maintainer -->` instead of fabricating.
 
@@ -171,7 +181,7 @@ Boundary requests:
 |------|------|
 | Evidence | Every install/usage line maps to a manifest, script, source file, or existing doc in the repo |
 | Shape match | Section selection matches the detected project type |
-| Language match | README language matches the project's primary documentation language |
+| Language match | README prose is Korean by default, or matches the user-requested/existing target language when preservation is required |
 | Discoverability | Title, one-line description, install, and quickstart are above the fold |
 | Verification | Validation checklist completed before claiming done |
 
@@ -179,7 +189,7 @@ Boundary requests:
 
 <structure_blueprint>
 
-Default README outline (adapt by project type per `references/readme-templates.md`):
+Default Korean README outline (adapt by project type per `references/readme-templates.md` / `.ko.md`):
 
 1. Title + one-line description
 2. Optional badges (only when verifiable)
@@ -202,7 +212,7 @@ Default README outline (adapt by project type per `references/readme-templates.m
 |------|------|
 | Evidence | Each command and path in the README exists in the repo |
 | Shape | The selected template matches the actual project type |
-| Language | README language matches existing project docs |
+| Language | README is Korean by default, with non-Korean output only for explicit user request or existing target-language preservation |
 | Above the fold | Title, description, install, and quickstart appear within the first screen |
 | No fabrication | No invented APIs, scripts, env vars, or external badges |
 | Lean body | Long content is linked, not inlined |

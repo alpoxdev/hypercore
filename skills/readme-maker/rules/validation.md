@@ -21,7 +21,7 @@
 
 ## Language checks
 
-- [ ] README is written in the project's primary documentation language.
+- [ ] README prose is Korean by default, or uses another language only because the user requested it or an existing target README required preservation.
 - [ ] Terminology matches the codebase (folder, command, and config names are exact).
 - [ ] No marketing fluff; capability is stated, not exaggerated.
 - [ ] Sentence-case or Title-case headings are used consistently.

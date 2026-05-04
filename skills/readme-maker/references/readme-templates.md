@@ -2,7 +2,7 @@
 
 **Purpose**: Ready-to-use section skeletons by project type. Copy the matching block, then replace placeholders with verified evidence from the project.
 
-> All templates below are written in English. Translate the headings and prose into the project's primary documentation language; keep code blocks intact.
+> All templates below are written in English. Translate headings and prose into Korean by default; keep code blocks intact. Use another language only when the user explicitly requests it or an existing target README must preserve its current language.
 
 ## CLI
 

@@ -11,6 +11,16 @@ compatibility: Works best with live web access, browser inspection, local source
 
 > Audit and improve a project's search visibility across traditional search engines and AI answer engines.
 
+<output_language>
+
+Default all user-facing deliverables, saved artifacts, reports, plans, generated docs, summaries, handoff notes, commit/message drafts, and validation notes to Korean, even when this canonical skill file is written in English.
+
+Preserve source code identifiers, CLI commands, file paths, schema keys, JSON/YAML field names, API names, package names, proper nouns, and quoted source excerpts in their required or original language.
+
+Use a different language only when the user explicitly requests it, an existing target artifact must stay in another language for consistency, or a machine-readable contract requires exact English tokens. If a localized template or reference exists (for example `*.ko.md` or `*.ko.json`), prefer it for user-facing artifacts.
+
+</output_language>
+
 <purpose>
 
 - Audit website or project SEO in a systematic way.

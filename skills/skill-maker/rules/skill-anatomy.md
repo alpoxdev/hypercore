@@ -46,7 +46,7 @@ Do not turn the core skill into a full knowledge base.
 
 ## 3. Markdown Language and Translation Pairing
 
-Write canonical skill markdown in English by default.
+Write canonical skill markdown in English by default, but require generated user-facing artifacts to default to Korean.
 
 Whenever you create or materially update a markdown file inside a skill folder, maintain a Korean sibling translation:
 
@@ -54,7 +54,7 @@ Whenever you create or materially update a markdown file inside a skill folder, 
 - `rules/name.md` pairs with `rules/name.ko.md`
 - `references/path/name.md` pairs with `references/path/name.ko.md`
 
-Keep the English file as the source of truth. Keep headings, section order, links, and examples structurally aligned in the Korean translation unless localization requires a small wording adjustment.
+Keep the English file as the source of truth. Keep headings, section order, links, and examples structurally aligned in the Korean translation unless localization requires a small wording adjustment. Add an `<output_language>` section near the top of every core skill so agents loading either entrypoint know that deliverables, reports, generated docs, summaries, and validation notes should be Korean by default.
 
 ## 4. What Belongs in Rules
 
@@ -111,7 +111,7 @@ UI metadata should summarize the skill, not replace the core skill instructions.
 ## 8. Quality Checks
 
 - [ ] The core `SKILL.md` explains the skill without reading every support file
-- [ ] Canonical markdown is in English and each new or materially changed `*.md` file has a matching Korean `*.ko.md` translation
+- [ ] Canonical markdown is in English, each new or materially changed `*.md` file has a matching Korean `*.ko.md` translation, and the core skill has a Korean-by-default `<output_language>` contract
 - [ ] Rules hold policy, not bloated reference detail
 - [ ] References hold detail, not core trigger logic
 - [ ] Scripts/assets exist only when justified

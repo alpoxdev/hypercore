@@ -46,7 +46,7 @@ Do not bury install. New readers should reach the install command without scroll
 
 ## 4. Language and tone
 
-- Match the project's primary documentation language. If `AGENTS.md`/`CLAUDE.md`/existing README are Korean, write the README in Korean.
+- Write README prose in Korean by default. Use another language only when the user explicitly requests it or when an existing target README must preserve its current language for consistency.
 - Use the same terminology the codebase uses (folder names, command names, config keys are quoted exactly).
 - State capability over marketing: "Renders Mermaid diagrams to SVG without dependencies" beats "blazing-fast diagram engine".
 - Use one term per concept across the README.

@@ -6,6 +6,16 @@ compatibility: Works best with repo inspection, official Hono docs verification,
 
 # Hono Architecture Enforcement
 
+<output_language>
+
+Default all user-facing deliverables, saved artifacts, reports, plans, generated docs, summaries, handoff notes, commit/message drafts, and validation notes to Korean, even when this canonical skill file is written in English.
+
+Preserve source code identifiers, CLI commands, file paths, schema keys, JSON/YAML field names, API names, package names, proper nouns, and quoted source excerpts in their required or original language.
+
+Use a different language only when the user explicitly requests it, an existing target artifact must stay in another language for consistency, or a machine-readable contract requires exact English tokens. If a localized template or reference exists (for example `*.ko.md` or `*.ko.json`), prefer it for user-facing artifacts.
+
+</output_language>
+
 ## Overview
 
 Enforces hypercore Hono architecture rules before code changes. Validate that the target is actually a Hono project, then apply strict rules for route composition, handlers, middleware, validation, error handling, platform entrypoints, and typed testing/RPC.

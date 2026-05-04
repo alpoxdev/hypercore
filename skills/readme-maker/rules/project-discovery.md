@@ -70,11 +70,11 @@ Otherwise omit it. The README should orient, not mirror the file tree.
 
 ## 6. Language and convention hints
 
-Use these signals to decide the README's language:
+Use these signals to decide whether the README can use the Korean default or must preserve another target language:
 
-- `AGENTS.md`, `CLAUDE.md`, or existing `README.md` written predominantly in one language -> match it.
-- Source comments and commit messages predominantly in one language -> use it as a tiebreaker.
-- If signals conflict, ask the user; do not silently pick the wrong language.
+- Default to Korean for new README prose.
+- If an existing target `README.md` is predominantly non-Korean and the task is a surgical refactor/update, preserve that language for consistency unless the user asked to translate.
+- If the user explicitly requests a language, use it. If preservation signals conflict and would materially change the artifact language, ask once; do not silently choose English.
 
 ## 7. Discovery output
 
@@ -85,7 +85,7 @@ Type: [cli | library | web-app | monorepo | plugin | framework | docs-site | ser
 Package manager: [npm | pnpm | yarn | bun | cargo | uv | poetry | go | deno | other]
 Entry: [path or command]
 Primary scripts: [dev/build/test/lint/release]
-Primary doc language: [en | ko | other]
+README language: [ko default | user-requested | preserve-existing]
 Existing README state: [missing | present-accurate | present-stale]
 License: [SPDX or "missing"]
 ```

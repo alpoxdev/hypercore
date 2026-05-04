@@ -13,6 +13,16 @@ compatibility: 스킬 실행 하네스, read/search 도구, shell 명령, 발견
 
 > 스킬을 신뢰하기 전에 의도대로 작동한다는 증거를 만든다.
 
+<output_language>
+
+사용자에게 보이는 모든 산출물, 저장 아티팩트, 리포트, 계획서, 생성 문서, 요약, 인수인계 메모, 커밋/메시지 초안, 검증 메모는 기본적으로 한국어로 작성합니다.
+
+소스 코드 식별자, CLI 명령, 파일 경로, 스키마 키, JSON/YAML 필드명, API 이름, 패키지명, 고유명사, 인용한 원문 발췌는 필요한 언어 또는 원문 그대로 유지합니다.
+
+사용자가 명시적으로 다른 언어를 요청했거나, 기존 대상 산출물의 언어 일관성을 맞춰야 하거나, 기계 판독 계약상 정확한 영어 토큰이 필요한 경우에만 다른 언어를 사용합니다. 사용자-facing 산출물에 쓸 로컬라이즈된 템플릿/참조(`*.ko.md`, `*.ko.json` 등)가 있으면 우선 사용합니다.
+
+</output_language>
+
 <purpose>
 
 - 스킬이 맞는 사용자 요청에는 켜지고 틀린 요청에는 꺼져 있는지 테스트한다.
@@ -107,7 +117,7 @@ Boundary example:
 - 알려진 또는 가능성 높은 실패를 막는 regression 시나리오 1개.
 - `SKILL.ko.md`가 있는 스킬은 한국어 positive 또는 boundary 요청 1개 이상.
 
-사용자가 재사용 가능한 회귀 테스트팩 또는 프롬프트 팩을 요청하면 [references/prompt-pack-template.md](references/prompt-pack-template.md)의 Prompt Pack Template을 사용한다.
+사용자가 재사용 가능한 회귀 테스트팩 또는 프롬프트 팩을 요청하면 기본적으로 [references/prompt-pack-template.ko.md](references/prompt-pack-template.ko.md)의 한국어 템플릿을 사용한다. 사용자가 영어를 요청했거나 정확한 영어 템플릿 문구가 필요할 때만 [references/prompt-pack-template.md](references/prompt-pack-template.md)를 사용한다.
 
 </test_requirements>
 

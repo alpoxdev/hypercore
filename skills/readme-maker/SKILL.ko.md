@@ -1,6 +1,6 @@
 ---
 name: readme-maker
-description: "[Hyper] 프로젝트를 꼼꼼히 읽고 README.md를 생성하거나 리팩터한다. 프로젝트 형태(CLI, 라이브러리, 웹 앱, 모노레포, 플러그인, 프레임워크, 문서 사이트, 서비스), 진입점, 스크립트, 설정, 라이선스, 기존 문서를 감지한 뒤 프로젝트의 주 문서 언어로 구조화된 README를 만든다. 새 README가 필요하거나, 오래된 README를 리팩터해야 하거나, 실제 코드를 근거로 일부 섹션을 업데이트해야 할 때 사용한다."
+description: "[Hyper] 프로젝트를 꼼꼼히 읽고 README.md를 생성하거나 리팩터한다. 프로젝트 형태(CLI, 라이브러리, 웹 앱, 모노레포, 플러그인, 프레임워크, 문서 사이트, 서비스), 진입점, 스크립트, 설정, 라이선스, 기존 문서를 감지한 뒤 기본적으로 한국어 구조화 README를 만든다. 사용자가 다른 언어를 요청했거나 기존 README 언어를 보존해야 할 때만 그 언어를 따른다. 새 README가 필요하거나, 오래된 README를 리팩터해야 하거나, 실제 코드를 근거로 일부 섹션을 업데이트해야 할 때 사용한다."
 compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증을 위해 read/edit/write와 셸 검색 도구가 가장 잘 동작한다.
 ---
 
@@ -12,6 +12,16 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 # README Maker
 
 > 프로젝트를 꼼꼼히 읽고, 그 프로젝트가 진짜 받아야 할 README를 쓴다.
+
+<output_language>
+
+사용자에게 보이는 모든 산출물, 저장 아티팩트, 리포트, 계획서, 생성 문서, 요약, 인수인계 메모, 커밋/메시지 초안, 검증 메모는 기본적으로 한국어로 작성합니다.
+
+소스 코드 식별자, CLI 명령, 파일 경로, 스키마 키, JSON/YAML 필드명, API 이름, 패키지명, 고유명사, 인용한 원문 발췌는 필요한 언어 또는 원문 그대로 유지합니다.
+
+사용자가 명시적으로 다른 언어를 요청했거나, 기존 대상 산출물의 언어 일관성을 맞춰야 하거나, 기계 판독 계약상 정확한 영어 토큰이 필요한 경우에만 다른 언어를 사용합니다. 사용자-facing 산출물에 쓸 로컬라이즈된 템플릿/참조(`*.ko.md`, `*.ko.json` 등)가 있으면 우선 사용합니다.
+
+</output_language>
 
 <purpose>
 
@@ -95,7 +105,7 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 | `README.md`가 있지만 오래되거나 일반적이거나 현재 코드와 모순됨 | refactor |
 | 기능, 이름 변경, 이동 후 특정 섹션을 갱신해야 함 | update |
 | 모노레포 안의 하위 패키지/워크스페이스가 자체 README를 필요로 함 | create |
-| README가 프로젝트 주 문서 언어와 어긋남 | refactor |
+| README가 한국어 기본 언어 정책과 어긋나거나, 명시 요청/기존 문서 언어 보존이 필요함 | refactor |
 
 </trigger_conditions>
 
@@ -105,7 +115,7 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 - 모노레포 워크스페이스 내부의 패키지 단위 `README.md`.
 - 현재 코드에서 섹션을 다시 도출하는 README 리팩터.
 - install, usage, configuration, scripts, examples, project structure를 만지는 README 업데이트.
-- 프로젝트 문서가 주로 한국어, 영어, 또는 다른 언어일 때의 언어 정렬.
+- 기본 한국어 README 언어 정렬. 사용자가 요청했거나 기존 README 언어를 보존해야 할 때만 다른 언어를 사용합니다.
 
 </supported_targets>
 
@@ -116,14 +126,14 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 | 0 | 산출물이 `README.md`인지 확인하고 `create`/`refactor`/`update`를 선택 | 모드 결정 |
 | 1 | 프로젝트 구조를 스캔하고 형태를 감지(`rules/project-discovery.md`) | 프로젝트 프로필 |
 | 2 | 기존 README, `AGENTS.md`, `CLAUDE.md`, 라이선스, 매니페스트, 진입점 읽기 | 증거 베이스 |
-| 3 | 섹션, 순서, 깊이, 언어 결정(`rules/section-design.md`) | 섹션 플랜 |
-| 4 | 근거 있는 예시와 `references/readme-templates.md`의 템플릿으로 `README.md` 작성/리팩터 | 갱신된 README |
+| 3 | 섹션, 순서, 깊이, 한국어 기본 언어 처리 결정(`rules/section-design.md`) | 섹션 플랜 |
+| 4 | 근거 있는 예시와 `references/readme-templates.md` / `.ko.md`의 한국어 기본 템플릿으로 `README.md` 작성/리팩터 | 갱신된 README |
 | 5 | 검증 검사(`rules/validation.md`) 실행 후 완료 요약 작성 | 최종 README + 요약 |
 
 ### 4단계 작성 규칙
 
 - 먼저 읽고, 그다음 쓴다. 설치 명령, 스크립트, 환경 변수, API를 지어내지 않는다.
-- 프로젝트의 주 문서 언어를 따른다. `AGENTS.md`, `CLAUDE.md`, 또는 기존 README가 한국어이면 README도 한국어로 쓴다.
+- README 산문은 기본적으로 한국어로 씁니다. 사용자가 다른 언어를 요청했거나 기존 대상 README의 현재 문서 언어를 보존해야 할 때만 다른 언어를 사용합니다.
 - 추측 예시 세 개보다 정확한 예시 한 개를 선호한다.
 - README는 스캔 가능해야 한다: 제목, 설명, 설치, 퀵스타트는 첫 화면 안에 둔다.
 - 깊이 들어가는 내용은 README 밖으로 빼고 링크한다. README는 안내하는 곳이지 모든 것을 담는 곳이 아니다.
@@ -135,7 +145,7 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 
 ## create 모드
 
-- 프로젝트 프로필에서 시작해 `references/readme-templates.md`의 일치하는 템플릿을 고른다.
+- 프로젝트 프로필에서 시작해 일치하는 템플릿을 고르고, 기본적으로 `references/readme-templates.ko.md`를 사용하거나 `references/readme-templates.md`를 한국어로 번역한다.
 - 저장소에 실제 증거가 있는 섹션만 포함한다.
 - 모르는 부분은 지어내지 말고 `<!-- TODO: confirm with maintainer -->`로 명시한다.
 
@@ -171,7 +181,7 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 |------|------|
 | Evidence | README의 모든 install/usage 라인이 매니페스트, 스크립트, 소스 파일 또는 기존 문서에 매핑된다 |
 | Shape match | 섹션 선택이 감지된 프로젝트 형태와 일치한다 |
-| Language match | README 언어가 프로젝트 주 문서 언어와 일치한다 |
+| Language match | README 산문이 기본적으로 한국어이거나, 보존이 필요한 경우 사용자 요청/기존 대상 언어와 일치한다 |
 | Discoverability | 제목, 한 줄 설명, install, quickstart가 첫 화면 안에 있다 |
 | Verification | 완료 선언 전에 검증 체크리스트가 끝난다 |
 
@@ -179,7 +189,7 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 
 <structure_blueprint>
 
-기본 README 아웃라인 (`references/readme-templates.md`의 프로젝트 형태별 템플릿에 맞춰 조정):
+기본 한국어 README 아웃라인 (`references/readme-templates.md` / `.ko.md`의 프로젝트 형태별 템플릿에 맞춰 조정):
 
 1. 제목 + 한 줄 설명
 2. 선택적 배지 (검증 가능한 경우에만)
@@ -202,7 +212,7 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 |------|------|
 | Evidence | README의 모든 명령과 경로가 저장소에 존재 |
 | Shape | 선택한 템플릿이 실제 프로젝트 형태와 일치 |
-| Language | README 언어가 기존 프로젝트 문서와 일치 |
+| Language | README는 기본적으로 한국어이며, 비한국어 출력은 명시 요청 또는 기존 대상 언어 보존 시에만 사용 |
 | Above the fold | 제목, 설명, install, quickstart가 첫 화면 안에 위치 |
 | No fabrication | 지어낸 API, 스크립트, env var, 외부 배지 없음 |
 | Lean body | 긴 내용은 인라인이 아니라 링크로 처리 |

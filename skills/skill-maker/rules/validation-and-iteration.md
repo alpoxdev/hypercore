@@ -25,6 +25,7 @@ Confirm:
 - scripts or assets are justified
 - references are not duplicating the core
 - canonical markdown files are English by default
+- generated user-facing artifacts default to Korean through a core `<output_language>` contract
 - new or materially changed markdown files have matching Korean `*.ko.md` translations
 - provider-sensitive or date-sensitive guidance is isolated in references
 

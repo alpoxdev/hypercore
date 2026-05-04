@@ -13,6 +13,16 @@ compatibility: Works best with read/search tools, shell commands, optional skill
 
 > Prove a skill works as intended before trusting it.
 
+<output_language>
+
+Default all user-facing deliverables, saved artifacts, reports, plans, generated docs, summaries, handoff notes, commit/message drafts, and validation notes to Korean, even when this canonical skill file is written in English.
+
+Preserve source code identifiers, CLI commands, file paths, schema keys, JSON/YAML field names, API names, package names, proper nouns, and quoted source excerpts in their required or original language.
+
+Use a different language only when the user explicitly requests it, an existing target artifact must stay in another language for consistency, or a machine-readable contract requires exact English tokens. If a localized template or reference exists (for example `*.ko.md` or `*.ko.json`), prefer it for user-facing artifacts.
+
+</output_language>
+
 <purpose>
 
 - Test whether a skill triggers on the right user requests and stays inactive on the wrong ones.
@@ -96,7 +106,7 @@ Load support files deliberately:
 - Use [rules/scenario-design.md](rules/scenario-design.md) to write positive, negative, boundary, adversarial, and localization scenarios.
 - Use [rules/evidence-reporting.md](rules/evidence-reporting.md) to report pass/fail evidence and next fixes.
 - Use `scripts/validate-skill.mjs` for deterministic static checks when a filesystem skill folder is available.
-- Use [references/prompt-pack-template.md](references/prompt-pack-template.md) when the user asks for reusable regression tests or a prompt pack artifact.
+- Use the localized sibling [references/prompt-pack-template.ko.md](references/prompt-pack-template.ko.md) by default for Korean prompt-pack artifacts; fall back to [references/prompt-pack-template.md](references/prompt-pack-template.md) only when the user requests English or exact English template text.
 
 Keep test evidence close to the target skill when the user asks for reusable artifacts; otherwise report findings inline.
 

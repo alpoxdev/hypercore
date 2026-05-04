@@ -14,6 +14,16 @@ compatibility: Works best with local file search/edit tools and live web search 
 
 > Turn a rough product idea into a reviewable AI planning package: PRD, planning diagram, feature spec, user flow, wireframe, preview viewer, and source log.
 
+<output_language>
+
+Default all user-facing deliverables, saved artifacts, reports, plans, generated docs, summaries, handoff notes, commit/message drafts, and validation notes to Korean, even when this canonical skill file is written in English.
+
+Preserve source code identifiers, CLI commands, file paths, schema keys, JSON/YAML field names, API names, package names, proper nouns, and quoted source excerpts in their required or original language.
+
+Use a different language only when the user explicitly requests it, an existing target artifact must stay in another language for consistency, or a machine-readable contract requires exact English tokens. If a localized template or reference exists (for example `*.ko.md` or `*.ko.json`), prefer it for user-facing artifacts.
+
+</output_language>
+
 <purpose>
 
 - Create or update planning folders under `.hypercore/prd/[slug]/` from short product ideas, feature requests, or initiative notes.
@@ -148,10 +158,10 @@ Read in this order:
 3. `rules/storage-and-updates.md` to apply folder, slug, file, and merge rules.
 4. `references/planning-package.md` when drafting `diagram.md`, `feature-spec.md`, `user-flow.md`, or `wireframe.md`.
 5. `references/prd-sections.md` when drafting or updating `prd.md`.
-6. Relevant templates in `assets/` when creating missing package files, including `diagram.data.template.json`.
+6. Relevant localized templates in `assets/` when creating missing package files, including `*.template.ko.md` and `diagram.data.template.ko.json` by default; use English templates only when requested or required.
 7. `scripts/render-planning-map.mjs` when rendering `diagram.svg` from `diagram.data.json`.
 8. `assets/preview.template.html` and `scripts/build-preview.mjs` when generating `preview.html`.
-9. `assets/sources.template.md` when live research is needed and the package needs a source ledger.
+9. `assets/sources.template.ko.md` by default when live research is needed and the package needs a source ledger; use `assets/sources.template.md` only when requested or required.
 10. `references/flow-schema.md` when the package is complex or a `flow.json` already exists.
 11. `rules/validation.md` before declaring the package complete.
 

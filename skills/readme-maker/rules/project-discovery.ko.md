@@ -70,11 +70,11 @@
 
 ## 6. 언어와 관습 힌트
 
-README 언어 결정에는 다음 신호를 사용한다:
+README가 한국어 기본값을 쓸 수 있는지, 아니면 다른 대상 언어를 보존해야 하는지 다음 신호로 결정한다:
 
-- `AGENTS.md`, `CLAUDE.md`, 또는 기존 `README.md`가 주로 한 언어로 쓰여 있다 → 그 언어를 따른다.
-- 소스 코멘트와 커밋 메시지가 주로 한 언어 → 타이브레이커로 사용.
-- 신호가 충돌하면 사용자에게 묻는다. 잘못된 언어를 조용히 선택하지 않는다.
+- 새 README 산문은 기본적으로 한국어로 쓴다.
+- 기존 대상 `README.md`가 주로 비한국어이고 작업이 외과적 리팩터/업데이트라면, 사용자가 번역을 요청하지 않은 한 일관성을 위해 그 언어를 보존한다.
+- 사용자가 언어를 명시했으면 그 언어를 사용한다. 보존 신호가 충돌하고 산출물 언어가 크게 달라질 수 있으면 한 번만 묻고, 영어를 조용히 선택하지 않는다.
 
 ## 7. Discovery 산출물
 
@@ -85,7 +85,7 @@ Type: [cli | library | web-app | monorepo | plugin | framework | docs-site | ser
 Package manager: [npm | pnpm | yarn | bun | cargo | uv | poetry | go | deno | other]
 Entry: [경로 또는 명령]
 Primary scripts: [dev/build/test/lint/release]
-Primary doc language: [en | ko | other]
+README language: [ko default | user-requested | preserve-existing]
 Existing README state: [missing | present-accurate | present-stale]
 License: [SPDX 또는 "missing"]
 ```
