@@ -2,17 +2,30 @@
 
 > Consolidated official-first rule set for Next.js projects, with App Router as the default mode.
 
-Brownfield adoption rule: untouched legacy `pages/` code is not an automatic failure. Safety, boundary, and data-leak issues still block immediately, especially in touched code.
+Brownfield adoption rule: untouched legacy `pages/` code is not an automatic failure. Safety, boundary, auth, and data-leak issues still block immediately, especially in touched code.
 
 ---
 
 ## Project Modes
 
 | Mode | Indicators | Enforcement |
-|------|------------|-------------|
+|---|---|---|
 | App Router | `app/` or `src/app/` | Full skill applies |
 | Shared Next.js | `pages/` only | Apply shared platform, env, boundary, and safety rules only |
-| Mixed | both `app/` and `pages/` | Apply App Router rules to touched `app/` code, avoid broad migration unless requested |
+| Mixed | both `app/` and `pages/` | Apply App Router rules to touched `app/` code; avoid broad migration unless requested |
+
+---
+
+## Current Official Baselines
+
+- Server Components are the default in App Router; add `'use client'` only at client entry points that need interactivity, browser APIs, or client hooks.
+- In modern App Router docs, `fetch` requests are not cached by default, while routes may still be prerendered and HTML cached. Cache intent must be explicit.
+- In Next.js 16, Cache Components are enabled with `cacheComponents: true`; `use cache`, `cacheTag`, and `cacheLife` are the preferred cache primitives for that mode.
+- Route Segment Config still exists, but its options are disabled when `cacheComponents` is on and are marked for future deprecation.
+- Server Actions are Server Functions invoked from UI/forms/events; treat each one as a reachable POST surface and re-check auth/authz inside it.
+- `updateTag` is Server Action-only for read-your-own-writes; `revalidateTag` works in Server Actions and Route Handlers and should use a cache profile such as `'max'` where stale-while-revalidate is desired.
+- Route Handlers are for HTTP-native endpoints and support standard Web `Request`/`Response` APIs plus method exports.
+- The old `middleware` convention is deprecated in favor of `proxy.ts`; Proxy is a last-resort network-boundary tool.
 
 ---
 
@@ -24,7 +37,7 @@ Brownfield adoption rule: untouched legacy `pages/` code is not an automatic fai
 - Keep privileged data access in server-only modules or a DAL.
 - Make cache behavior intentional, not accidental.
 - Treat every Server Action as externally reachable and re-authorize inside it.
-- Use Route Handlers for HTTP-native concerns, not as the default internal mutation surface.
+- Use Route Handlers for HTTP-native concerns, not default internal mutations.
 - Use Proxy only when redirects, rewrites, headers, or render-time logic are insufficient.
 
 ---
@@ -32,15 +45,16 @@ Brownfield adoption rule: untouched legacy `pages/` code is not an automatic fai
 ## Forbidden
 
 | Category | Forbidden |
-|----------|-----------|
+|---|---|
 | Routing | `page.tsx` and `route.ts` at the same route segment |
 | Client Boundary | Broad top-level `'use client'` without real interaction need |
 | Secrets | Private env, DB clients, or server-only modules imported into Client Components |
 | Data Safety | Passing broad raw records from Server Components into Client Components |
 | Cache Intent | Relying on implicit caching or dynamic rendering without understanding why |
+| Cache Components | Reading runtime request APIs inside a `use cache` scope instead of passing serializable inputs |
 | Server Actions | Trusting client input, skipping auth/authz, or returning raw internal objects |
-| Side Effects | Mutating during render instead of through a Server Action or explicit event path |
-| Route Handlers | Using `route.ts` as default internal RPC when a Server Action or Server Component is the right surface |
+| Freshness | Redirecting before necessary revalidation/tag update or omitting freshness entirely |
+| Route Handlers | Using `route.ts` as default internal RPC when a Server Action or Server Component is right |
 | Route Handlers | Using `NextResponse.next()` inside a Route Handler |
 | Proxy | Adding `proxy.ts` when `next.config.*` or render-time logic is enough |
 | Env Setup | Expecting `.env*` files to load from `src/` |
@@ -50,32 +64,32 @@ Brownfield adoption rule: untouched legacy `pages/` code is not an automatic fai
 ## Required
 
 | Category | Required |
-|----------|----------|
+|---|---|
 | Validation | Confirm Next.js mode before editing |
 | Routing | Place special files in valid route segments |
-| Boundaries | Keep Client Components narrow and their props serializable |
+| Boundaries | Keep Client Components narrow and props serializable |
 | Safety | Use `server-only` or an equally clear server boundary for privileged modules |
-| Freshness | Revalidate or otherwise refresh data after mutations |
-| Auth | Re-check authentication and authorization inside each Server Action |
-| Platform | Keep env handling and config explicit |
+| Cache | State whether data/UI is uncached, cached with `use cache`, tag-revalidated, path-revalidated, or refreshed |
+| Auth | Re-check authentication and authorization inside each Server Action or delegated server-only layer |
+| Platform | Keep env handling, route segment config, Proxy, and Next config explicit |
 | Reporting | Label repo-local conventions as conventions, not framework law |
 
 ---
 
 ## Decision Order
 
-1. Is this an App Router surface or legacy Pages Router surface?
-2. Is this code server-only, client-interactive, or shared?
+1. Is this an App Router surface, legacy Pages Router surface, or mixed repo?
+2. Is this code server-only, client-interactive, shared, cached, or request-time dynamic?
 3. Does this need HTML/UI rendering, an internal UI mutation, or an HTTP-native endpoint?
-4. Should the read be cached, dynamic, or explicitly revalidated?
-5. Does the change affect deployment-sensitive config such as env, Proxy, or Server Action origins?
+4. Should the read be uncached, cached with `use cache`, revalidated by tag/path, or refreshed after mutation?
+5. Does the change affect deployment-sensitive config such as env, Proxy, runtime, route segment config, or Server Action origins?
 
 Default surface order:
 
 1. Server Components for initial reads and server-rendered UI
 2. Server Actions for internal UI writes and forms
 3. Route Handlers for HTTP-native endpoints
-4. Proxy only when pre-render interception is truly required
+4. Proxy only when pre-render network-boundary interception is truly required
 
 ---
 

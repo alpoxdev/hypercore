@@ -1,59 +1,79 @@
-# 데이터 페칭과 캐싱
+# Data Fetching and Caching
 
-> 서버 우선 읽기, 스트리밍, 캐시 의도, freshness 규칙.
+> 서버 우선 읽기, 스트리밍, Cache Components, cache intent, freshness 규칙.
 
 ---
 
-## 권장 읽기 경로
+## Preferred Read Path
 
-- 가능하면 초기 페이지 데이터는 Server Component에서 가져옵니다
-- 데이터를 쓰는 컴포넌트 가까이에서 읽습니다
-- 서로 독립적인 읽기는 병렬화합니다
-- 전체 라우트를 불필요하게 막지 말고 `loading.tsx` 또는 `<Suspense>`로 스트리밍합니다
+- 가능하면 초기 페이지 데이터는 Server Components에서 가져옵니다.
+- 데이터를 쓰는 컴포넌트 가까이에서 읽습니다.
+- 독립적인 reads는 병렬화합니다.
+- 전체 route를 불필요하게 막지 말고 `loading.tsx` 또는 `<Suspense>`로 스트리밍합니다.
+- 반복되는 privileged reads는 server-only helper 또는 DAL에 둡니다.
 
-## 중요한 런타임 사실
+## Current Runtime Facts
 
-- 동일한 `fetch` 요청은 요청 트리 안에서 Next.js가 memoization 할 수 있습니다
-- `cookies()`, `headers()`, request-time API, 명시적 uncached 데이터는 라우트를 dynamic 쪽으로 밀 수 있습니다
-- layout이 uncached runtime data를 읽으면 같은 세그먼트 `loading.tsx`가 가려질 수 있으므로, 더 아래로 내리거나 더 가까운 `<Suspense>`로 감싸야 합니다
+- 현재 App Router docs 기준 `fetch` requests는 기본 cached가 아닙니다.
+- `fetch`가 있는 route도 여전히 prerender되고 HTML이 cached될 수 있으므로 dynamic/static intent를 명시해야 합니다.
+- `cookies()`, `headers()`, `connection()` 및 request-time APIs는 해당 work를 runtime-dependent하게 만듭니다.
+- `cacheComponents: true`에서는 uncached runtime data를 `connection()` + `<Suspense>` 같은 dynamic boundary 뒤에 두거나, 안전할 때 `use cache`로 명시적으로 cache해야 합니다.
+- 동일 read는 request tree 안에서 memoized될 수 있지만 request memoization은 persistent cache policy가 아닙니다.
 
-## 캐시 규칙
+## Cache Components and `use cache`
 
-| 확인 항목 | 규칙 |
-|-----------|------|
-| 캐시 동작을 이해하지 못했거나 변경에 설명이 없음 | 차단 |
-| request-time API 때문에 dynamic rendering이 우발적으로 발생함 | 차단 |
-| uncached/request-time 데이터를 트리 상단에서 경계 없이 읽음 | 차단 |
-| 반복되는 privileged read를 page 코드에 직접 둠 | 경고. DAL 또는 server-only helper 권장 |
+Next.js 16+ 프로젝트에서 Cache Components를 opt in할 때 이 경로를 사용합니다:
 
-## mutation 이후 freshness
+1. 명확한 migration 이유가 있을 때만 `next.config.*`에서 `cacheComponents: true`를 활성화합니다.
+2. cache 가능한 pages, components, async functions에 `use cache`를 표시합니다.
+3. `use cache` input과 return value는 관련 React/Next.js serialization 규칙에 맞게 serializable해야 합니다.
+4. cached scope 안에서 `cookies()` 또는 `headers()`를 읽지 않습니다. 밖에서 읽어 serializable value로 넘기거나, 정당화된 경우에만 private/remote cache variant를 사용합니다.
+5. lifetime에는 `cacheLife`, invalidation groups에는 `cacheTag`를 사용합니다.
 
-mutation 뒤에는 UI가 어떻게 새 데이터를 보게 되는지 명시해야 합니다:
+## Cache and Freshness Rules
 
-- `revalidatePath`
-- `revalidateTag`
-- fresh data를 다시 그리게 되는 redirect
-- 또는 명확히 설명된 다른 전략
+| 확인 | 규칙 |
+|---|---|
+| 캐시 동작을 이해하지 못했거나 변경에 문서화되지 않음 | 차단 |
+| request-time APIs 때문에 dynamic rendering이 우발적으로 발생 | 차단 |
+| `fetch` caching이 pre-Next.js-16 기본값을 가정 | 차단 |
+| `cacheComponents`가 켜졌는데 uncached data에 `use cache`, `connection()`, `loading.tsx`, `<Suspense>` 의도가 없음 | 차단 |
+| 반복 privileged logic에 속한 server read가 page code에 직접 존재 | 경고. DAL 또는 server-only helper 권장 |
 
-## 스트리밍 가이드
+## Freshness After Mutations
+
+mutation 후 UI에는 명시적 freshness path가 있어야 합니다:
+
+- Server Action read-your-own-writes 시나리오는 `updateTag`
+- Server Actions 또는 Route Handlers에서 stale-while-revalidate tag refresh는 `revalidateTag(tag, 'max')`
+- path-based invalidation은 `revalidatePath`
+- tag invalidation 없이 current client router를 refresh해야 할 때는 Server Action 안에서 `next/cache`의 `refresh`
+- freshness 작업 뒤 redirect, 또는 명확히 설명된 다른 전략
+
+`redirect()`를 사용하면 이후 code가 실행되지 않으므로 필요한 cache invalidation을 먼저 수행합니다.
+
+## Streaming Guidance
 
 사용 기준:
 
-- 세그먼트 단위 로딩은 `loading.tsx`
-- 느리거나 dynamic한 하위 트리는 `<Suspense>`
-- promise 전달 + React `use()`는 구조가 더 명확해질 때만 사용
+- segment-level loading state는 `loading.tsx`
+- 느리거나 dynamic한 subtree 가까이는 `<Suspense>`
+- incoming request를 의도적으로 기다리는 subtree는 `connection()`
+- promise passing + React `use()`는 구조가 더 명확하고 boundary가 유지될 때만
 
-## official-first 판단 순서
+## Official-First Decision Rule
 
 권장 우선순위:
 
-1. 초기 데이터는 Server Component에서 읽기
-2. privileged read는 server-only helper 또는 DAL
-3. client-side fetching은 client-driven refresh, polling, browser-only state일 때만
+1. 초기 데이터는 Server Component reads
+2. 안전하게 재사용 가능한 data/UI는 `use cache` / `cacheTag` / `cacheLife`
+3. privileged reads는 server-only helper 또는 DAL
+4. Client-side fetching은 client-driven refresh, polling, browser-only state일 때만
 
-## 리뷰 체크리스트
+## Review Checklist
 
-- 초기 읽기가 진짜 client-only 이유 없이 클라이언트로 내려가지 않았는지
-- dynamic rendering 트리거가 의도적인지
-- Suspense 또는 `loading.tsx`가 실제 블로킹 작업 가까이에 있는지
-- mutation 뒤 freshness 경로가 명시적인지
+- 초기 reads가 진짜 client-only 이유 없이 client로 내려가지 않음
+- Cache Components, `fetch`, route prerendering 가정이 current docs와 호환됨
+- dynamic rendering triggers가 의도적임
+- Suspense 또는 `loading.tsx`가 blocking work 가까이에 있음
+- mutation freshness가 명시적임

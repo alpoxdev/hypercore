@@ -1,52 +1,63 @@
-# 플랫폼과 환경 변수
+# Platform and Environment
 
-> `next.config.*`, env 처리, Proxy, 배포 민감 설정 규칙.
+> `next.config.*`, env handling, route segment config, Proxy, deployment-sensitive setup.
 
 ---
 
-## 환경 변수
+## Environment Variables
 
-- `.env*` 파일은 `src/`가 아니라 프로젝트 루트에 있어야 합니다
-- `NEXT_PUBLIC_`이 아닌 env는 서버 전용입니다
-- `NEXT_PUBLIC_` 값은 브라우저 번들에 build time에 inline 됩니다
-- 클라이언트가 runtime 값을 필요로 하면, public env처럼 가장하지 말고 서버 경로/API로 노출하세요
-- Next 런타임 밖에서 env를 로드해야 하면 `@next/env`를 사용합니다
+- `.env*` files는 `src/` 내부가 아니라 project root에 둡니다.
+- Non-`NEXT_PUBLIC_` env vars는 server-only입니다.
+- `NEXT_PUBLIC_` values는 build time에 browser bundles로 inline됩니다.
+- client에 runtime values가 필요하면 runtime-public env var처럼 가장하지 말고 server path를 통해 노출합니다.
+- Next runtime 밖 code가 env loading이 필요하면 `@next/env`를 사용합니다.
 
-## runtime env 규칙
+## Runtime Env Rule
 
-서버 코드는 dynamic rendering 중 runtime env를 읽을 수 있습니다. 서버의 runtime env와 클라이언트 번들에 build time inline 되는 env를 혼동하면 안 됩니다.
+Server code는 dynamic rendering 중 runtime env values를 읽을 수 있습니다. runtime server env와 build-time inlined client env를 혼동하지 않습니다.
+
+## Cache Components and Route Segment Config
+
+- `cacheComponents: true`는 Next.js 16+ Cache Components용 unified switch입니다.
+- `cacheComponents`가 활성화되면 route segment config options는 비활성화되고 future deprecation 대상으로 표시됩니다.
+- Route segment options는 Server Component pages, layouts, Route Handlers에만 영향을 줍니다.
+- `runtime: 'edge'`는 Cache Components에서 지원되지 않습니다. 문서화된 예외가 없으면 Node.js runtime을 사용합니다.
+- Deployment platforms는 `maxDuration`을 사용할 수 있으므로 execution limits를 바꾸는 변경은 문서화합니다.
 
 ## Proxy
 
-- `proxy.ts`는 프로젝트 루트나 `src/` 루트에 있어야 하며 `app` 또는 `pages`와 같은 레벨이어야 합니다
-- Proxy는 라우트 렌더링 전에 실행됩니다
-- 가능하면 Proxy보다 `redirects`, `rewrites`, headers, cookies, render-time 로직을 먼저 검토합니다
-- Proxy는 명시적인 matcher와 좁은 범위를 가져야 합니다
-- Proxy 내부에서 shared module/global에 의존하지 마세요
+- `proxy.ts`는 `app` 또는 `pages`와 같은 level인 project root 또는 `src/` root에 둡니다.
+- Proxy는 routes render 전에 실행되며 app render code 앞의 network boundary입니다.
+- Proxy보다 먼저 `redirects`, `rewrites`, headers, cookies, render-time logic을 검토합니다.
+- Proxy에는 explicit matcher와 narrow scope가 있어야 합니다.
+- Proxy 안에서 shared modules 또는 globals에 의존하지 않습니다.
+- broad matcher에서는 metadata와 static surfaces가 Proxy를 우회해야 하는지 확인합니다.
 
-## 중요한 Proxy 메모
+## Important Proxy Note
 
-기존 `middleware` 파일 규칙은 deprecated 되었고 이름이 `proxy`로 바뀌었습니다. 새 작업에 `middleware.ts`를 새로 추가하지 마세요.
+기존 `middleware` file convention은 deprecated이며 `proxy`로 renamed되었습니다. 새 작업에서 `middleware.ts`를 추가하지 않습니다. migration이 필요하면 official codemod를 사용합니다.
 
 ## `next.config.*`
 
-다음 항목을 바꿀 때는 항상 명시적 의도와 함께 검토하세요:
+Config changes는 명시적이고 의도적이어야 합니다. 다음 변경은 특히 검토합니다:
 
 - `typedRoutes`
-- `experimental.serverActions.allowedOrigins`
-- 캐싱 관련 설정
-- redirect / rewrite 규칙
-- output / 배포 설정
+- `serverActions.allowedOrigins`
+- `cacheComponents`, `cacheLife`, `cacheHandlers`
+- route segment config strategy
+- redirect and rewrite rules
+- output and deployment settings
 
-## 권장 플랫폼 체크
+## Recommended Platform Checks
 
-- TypeScript App Router 프로젝트에서 라우트 안정성이 중요하면 `typedRoutes: true`를 검토합니다
-- reverse proxy / multi-proxy 배포에서는 Server Action origin 설정이 필요한지 확인합니다
-- 배포 민감 설정을 바꿨다면 PR이나 최종 보고에 남깁니다
+- route-safety가 중요한 TypeScript App Router projects에서는 `typedRoutes: true`를 고려합니다.
+- multi-proxy 또는 reverse-proxy deployments에서는 Server Action origin configuration 필요성을 확인합니다.
+- deployment-sensitive settings는 PR 또는 final report에 문서화합니다.
 
-## 리뷰 체크리스트
+## Review Checklist
 
-- `.env*` 처리가 Next.js 동작과 일치하는지
-- client 코드가 `NEXT_PUBLIC_` env만 보는지
-- Proxy가 정말 필요한지, matcher 범위가 좁은지
-- `next.config.*` 변경 의도와 영향이 설명되는지
+- `.env*` handling이 Next.js behavior와 일치
+- Client code가 `NEXT_PUBLIC_` env vars만 봄
+- Cache Components와 route segment config가 우발적으로 섞이지 않음
+- Proxy가 진짜 필요하고 matcher가 좁음
+- `next.config.*` changes가 의도적이고 설명됨

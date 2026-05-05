@@ -1,10 +1,10 @@
-# 라우트와 파일 규칙
+# Routes and File Conventions
 
-> 공식 App Router 구조, 특수 파일, 세그먼트 규칙.
+> 공식 App Router 구조, special files, segments, route groups, private organization.
 
 ---
 
-## 기본 구조
+## Core Structure
 
 ```text
 app/
@@ -23,61 +23,67 @@ app/
         └── route.ts
 ```
 
-## 세그먼트 파일 의미
+## Segment File Meaning
 
-| 파일 | 목적 |
-|------|------|
-| `page.tsx` | 라우트 세그먼트의 UI 진입점 |
-| `layout.tsx` | 세그먼트와 자식들의 공통 UI 셸 |
-| `template.tsx` | navigation 때 다시 마운트되는 layout 유사 래퍼 |
-| `loading.tsx` | 세그먼트 Suspense fallback |
-| `error.tsx` | 세그먼트 에러 경계. Client Component여야 함 |
-| `not-found.tsx` | 세그먼트 404 UI |
-| `route.ts` | HTTP 전용 Route Handler |
+| File | Purpose |
+|---|---|
+| `page.tsx` | route segment의 UI entry; 해당 route를 public accessible하게 만들기 위해 필요 |
+| `layout.tsx` | segment와 children의 shared UI shell |
+| `template.tsx` | navigation 때 remount되는 layout-like wrapper |
+| `loading.tsx` | segment용 Suspense fallback |
+| `error.tsx` | segment-level error boundary; Client Component여야 함 |
+| `not-found.tsx` | segment-level 404 UI |
+| `forbidden.tsx` / `unauthorized.tsx` | 프로젝트가 해당 feature를 의도적으로 enable한 경우 auth interruption UI |
+| `route.ts` | HTTP-native Route Handler |
 
-## 라우트가 아닌 구조화 규칙
+## Non-Routable Organization
 
-| 패턴 | 의미 |
-|------|------|
-| `(marketing)` | URL에 영향 없는 route group |
-| `_components/` | route segment가 되지 않는 private folder |
-| `_lib/` | 세그먼트 로컬 헬퍼용 private folder |
+| Pattern | Meaning |
+|---|---|
+| `(marketing)` | Route group; URL에 영향 없이 files organization |
+| `_components/` | Private folder; colocated route internals에 안전 |
+| `_lib/` | segment-local helpers용 private folder |
+| `@slot` | parent layout으로 전달되는 parallel route slot |
+| `(.)`, `(..)`, `(...)` | modal/overlay style navigation용 intercepting route patterns |
 
-라우트가 되면 안 되는 구현 파일은 `_` private folder에 colocate 하세요.
+route segment가 되면 안 되는 colocated implementation files에는 private folders를 사용합니다.
 
-## 강한 규칙
+## Hard Rules
 
-| 확인 항목 | 규칙 |
-|-----------|------|
-| 같은 세그먼트에 `route.ts`와 `page.tsx`가 공존 | 차단 |
-| 이미 `app/`가 담당하는 기능을 `pages/` 아래로 추가 | 명시적 요청 없으면 차단 |
-| route group을 URL 변경 수단처럼 사용 | 차단 |
-| 사용자용 loading/error 상태가 필요한데 경계 파일이 전혀 없음 | 경고 |
-| 내부 헬퍼를 private folder 대신 공개 세그먼트로 노출 | 차단 |
+| 확인 | 규칙 |
+|---|---|
+| 같은 route segment에 `route.ts`와 `page.tsx` 존재 | 차단 |
+| `app/`가 이미 담당하는 surface의 App Router feature work를 `pages/` 아래에 추가 | 명시 요청 없으면 차단 |
+| route groups를 URL 변경 수단처럼 사용 | 차단 |
+| internal route helpers를 private folders 대신 route segments로 노출 | 차단 |
+| parent layout slot props와 default/fallback behavior 없이 parallel routes 추가 | 차단 |
+| hard-navigation fallback behavior 없이 intercepted routes 추가 | 위험도에 따라 경고/차단 |
 
-## 배치 가이드
+## Placement Guidance
 
-- 페이지 UI는 `page.tsx`
-- 세그먼트 공통 UI는 `layout.tsx`
-- route 전용 헬퍼는 `_` private folder
-- HTTP 응답이 필요한 경우에만 `route.ts`
-- URL은 유지하고 구조만 나누려면 route group 사용
+- page UI는 `page.tsx`에 둡니다.
+- segment-shared UI는 `layout.tsx`에 둡니다.
+- route-specific helper modules는 `_` private folders에 둡니다.
+- page UI가 아니라 HTTP semantics로 응답할 때만 `route.ts`를 사용합니다.
+- pathname은 유지하고 organization만 필요하면 route groups를 사용합니다.
+- 적합하면 custom handlers보다 metadata file conventions(`sitemap`, `robots`, icons, Open Graph images)를 먼저 사용합니다.
 
-## 에러/로딩 경계
+## Error and Loading Boundaries
 
-- `error.tsx`는 Client Component여야 합니다
-- `loading.tsx`는 세그먼트 단위 스트리밍 fallback에 적합합니다
-- 블로킹 작업이 트리 깊은 곳에 있으면, 세그먼트 루트 `loading.tsx`만 믿지 말고 더 가까운 `<Suspense>`를 두는 편이 낫습니다
-- 리소스가 없을 때는 `notFound()`와 `not-found.tsx` 조합을 사용합니다
+- `error.tsx`는 Client Component여야 합니다.
+- `loading.tsx`는 segment-level streaming fallback에 적합합니다.
+- blocking work가 tree 깊은 곳에 있으면 segment root `loading.tsx`에만 맡기지 말고 더 가까운 `<Suspense>` boundary를 선호합니다.
+- missing resource flow에는 `notFound()`와 `not-found.tsx`를 사용합니다.
 
-## Mixed Router 저장소
+## Mixed Router Repos
 
-- untouched `pages/` 라우트에 App Router 파일 규칙을 억지로 적용하지 않습니다
-- 레거시 호환성이 필요하지 않다면 새 `pages/api/*`보다 App Router `route.ts` 또는 Server Action이 자연스러운지 먼저 봅니다
+- untouched `pages/` routes에 `page.tsx` / `layout.tsx` conventions를 강요하지 않습니다.
+- legacy compatibility가 필요하지 않다면 새 `pages/api/*` endpoints보다 App Router `route.ts` 또는 Server Action이 자연스러운지 먼저 확인합니다.
 
-## 리뷰 체크리스트
+## Review Checklist
 
-- 특수 파일이 올바른 세그먼트에 있음
-- `route.ts` / `page.tsx` 충돌 없음
-- route group과 private folder 사용 의도가 명확함
-- 필요한 loading/error/not-found 경계가 존재함
+- Special files가 valid route segments에 있음.
+- `route.ts` / `page.tsx` conflict 없음.
+- Route groups와 private folders를 의도적으로 사용함.
+- Parallel/intercepted route patterns에 필요한 layout 및 navigation behavior가 있음.
+- UX에 필요한 loading, error, not-found, auth interruption boundaries가 있음.

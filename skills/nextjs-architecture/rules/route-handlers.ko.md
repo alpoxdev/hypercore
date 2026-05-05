@@ -1,53 +1,63 @@
 # Route Handlers
 
-> `route.ts`가 맞는 표면인지, 아닌지 판단하는 규칙.
+> `route.ts`가 맞는 surface인지, 아닌지 판단하는 규칙.
 
 ---
 
-## Route Handler를 써야 하는 경우
+## Use Route Handlers For
 
-- webhook
-- feed
-- CORS 민감 엔드포인트
-- machine-readable public endpoint
-- XML/JSON 같은 non-UI 응답
-- 메서드 단위 처리와 헤더 제어가 필요한 HTTP-native 통합
+- webhooks
+- feeds
+- CORS-sensitive endpoints
+- machine-readable public endpoints
+- XML, JSON, streams 같은 non-UI content
+- method-level handling, headers, status codes, raw body access가 필요한 HTTP-native integrations
 
-## Route Handler를 기본값으로 쓰면 안 되는 경우
+## Do Not Default To Route Handlers For
 
-- Server Action으로 충분한 일반 내부 form mutation
-- Server Component에서 해결 가능한 내부 UI 데이터 읽기
-- Proxy가 맡아야 할 forward/edge-style 처리
+- Server Actions로 충분한 일반 internal form mutations
+- Server Components에서 가능한 internal UI data reads
+- Proxy가 맡아야 하는 forwarding behavior
 
-mutation이 앱 UI에서 시작된다면 우선 Server Action을 가정하고, 실제 요구가 HTTP semantics일 때만 `route.ts`를 정당화하세요.
+mutation이 app UI에서 시작된다면 Server Action을 먼저 가정하고, 실제 요구가 HTTP semantics일 때만 `route.ts`를 정당화합니다.
 
-## 강한 규칙
+## Current Facts
 
-| 확인 항목 | 규칙 |
-|-----------|------|
-| 같은 세그먼트에 `route.ts`와 `page.tsx` 공존 | 차단 |
-| UI-only 흐름인데 internal RPC 기본값처럼 Route Handler를 사용 | 실제 HTTP semantics가 필요하지 않으면 차단 |
-| Route Handler 안에서 `NextResponse.next()` 사용 | 차단 |
-| 최신 기본 동작을 확인하지 않고 예전 GET handler 캐시 기본값을 가정 | 차단 |
+- Route Handlers는 App Router에서 사용할 수 있습니다.
+- `route.ts` file은 `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS` 표준 HTTP method exports를 지원합니다.
+- Route Handlers는 Web `Request` / `Response` APIs를 사용하며 Next.js helper가 필요할 때 `NextRequest` / `NextResponse`를 사용합니다.
+- 현재 App Router examples에서 dynamic segment `params`는 promise-shaped입니다. 사용 전에 await합니다.
+- Route Handlers는 route segment config를 공유하지만, `cacheComponents`가 켜진 경우 config behavior를 확인해야 합니다.
 
-## 중요한 메모
+## Hard Rules
 
-- Route Handler는 App Router에서만 사용할 수 있습니다
-- Route Handler도 다른 App Router 파일처럼 route segment config를 공유합니다
-- `GET` handler의 기본 캐싱은 최신 Next.js에서 바뀐 적이 있으므로, 중요한 경우 명시적으로 의도를 표현해야 합니다
-- `sitemap.xml`, `robots.txt`, icon, metadata는 빌트인 파일 규칙이 있으니 필요 없으면 커스텀 handler를 만들지 마세요
+| 확인 | 규칙 |
+|---|---|
+| 같은 segment에 `route.ts`와 `page.tsx` 배치 | 차단 |
+| UI-only flow에 Route Handler를 default internal RPC로 사용 | HTTP semantics가 필요하지 않으면 차단 |
+| Route Handler 안에서 `NextResponse.next()` 사용 | 차단. 해당 behavior는 Proxy 영역 |
+| 현재 behavior 확인 없이 오래된 기본값으로 Route Handler caching 가정 | 차단 |
+| sitemap, robots, icons, Open Graph images 같은 built-in metadata files를 필요 없이 custom Route Handler로 중복 | 위험도에 따라 경고/차단 |
 
-## 판단 순서
+## Cache and Freshness
 
-선택 우선순위:
+- cached Route Handler data는 `revalidate`, `cacheTag`, `revalidateTag`, `generateStaticParams` 또는 다른 명시 전략 중 무엇인지 밝힙니다.
+- Cache Components가 켜진 경우 Route Handler prerendering이 target version에서 pages와 같은 model을 따르는지 확인합니다.
+- correctness-critical endpoints에서는 문서화되지 않은 `GET` caching defaults에 의존하지 않습니다.
 
-1. 서버 렌더링 UI 읽기면 Server Component
-2. 내부 UI mutation과 form이면 Server Action
-3. 진짜 HTTP-native 표면일 때만 Route Handler
+## Decision Rule
 
-## 리뷰 체크리스트
+선택 순서:
 
-- 엔드포인트가 실제로 HTTP semantics를 필요로 하는지
-- `page.tsx`와 충돌이 없는지
-- 현재 캐시 동작을 이해하고 있는지
-- Proxy 전용 동작이 Route Handler로 새고 있지 않은지
+1. server-rendered UI reads는 Server Component
+2. internal UI mutations와 forms는 Server Action
+3. genuinely HTTP-native surface일 때만 Route Handler
+4. pre-route request boundary behavior는 Proxy
+
+## Review Checklist
+
+- endpoint가 실제로 HTTP semantics를 필요로 함
+- `page.tsx` conflict 없음
+- method exports와 request/response handling이 명시적임
+- 현재 caching behavior를 이해하고 문서화함
+- Proxy-specific behavior가 Route Handler로 새지 않음

@@ -1,69 +1,75 @@
-# 실행 모델
+# Execution Model
 
-> Next.js 서버/클라이언트 경계 규칙.
+> Next.js Server and Client Component boundary 규칙.
 
 ---
 
-## 핵심 규칙
+## Core Rule
 
-코드가 어디서 실행되는지 추측하지 마세요.
+코드가 어디서 실행되는지 추측하지 않습니다.
 
-- App Router에서 기본은 Server Component입니다
-- Client Component에는 `'use client'`가 필요합니다
-- Client Component도 prerender 단계에서 서버에서 렌더되므로, 브라우저 보안 가정을 그대로 따라야 합니다
-- 서버 전용 코드는 클라이언트 환경으로 새면 안 됩니다
+- App Router에서는 Server Components가 기본입니다.
+- Server Components에서 렌더링되는 client entry-point file에는 `'use client'`가 필요합니다.
+- 한 파일에 `'use client'`가 붙으면 그 imports와 child components는 client module graph의 일부가 됩니다.
+- Client Components도 prerender될 수 있으므로 server secrets와 server-only APIs를 피해야 합니다.
+- Server-only code는 client environment 밖에 있어야 합니다.
 
-## 기본 전략
+## Default Strategy
 
-1. 먼저 Server Component로 시작
-2. 인터랙션, 브라우저 API, client-side hook이 필요할 때만 `'use client'` 추가
-3. client boundary는 가능한 트리 아래로 내리기
-4. privileged read는 server-only 모듈이나 DAL에 두기
+1. Server Component에서 시작합니다.
+2. state, event handlers, effects, browser APIs, client-only hooks가 필요할 때만 `'use client'`를 추가합니다.
+3. client boundary를 tree에서 가능한 한 낮게 둡니다.
+4. server에서 client로는 serializable하고 최소한의 props만 전달합니다.
+5. privileged reads는 server-only modules 또는 DAL에 둡니다.
 
-## 강한 규칙
+## Hard Rules
 
-| 확인 항목 | 규칙 |
-|-----------|------|
-| 인터랙션 코드인데 `'use client'` 없음 | 차단 |
-| 실질적 이유 없이 상위 layout/root를 `'use client'`로 만듦 | 차단 |
-| Client Component가 DB client, secret env, `cookies()`, `headers()`, server-only helper를 import함 | 차단 |
-| Server Component에서 Client Component로 넓은 raw record를 전달함 | 차단 |
-| 서버 전용 헬퍼에 `import 'server-only'` 또는 동등한 경계 표시가 없음 | 경고 |
-| provider를 필요 이상 넓게 감쌈 | 경고. 가능한 깊게 렌더 |
+| 확인 | 규칙 |
+|---|---|
+| interactive code에 `'use client'` 없음 | 차단 |
+| 실제 필요 없이 high-level layout 또는 root에 `'use client'` 표시 | 차단 |
+| Client Component가 DB clients, secret env, `cookies()`, `headers()`, server-only helpers import | 차단 |
+| Server Components에서 Client Components로 non-serializable 또는 broad raw records 전달 | 차단 |
+| Server-only helper에 `import 'server-only'` 또는 동등한 boundary clarity 없음 | 경고 |
+| Provider가 필요한 범위보다 넓게 렌더링됨 | 경고. providers는 가능한 깊게 렌더링 |
 
-## Serializable Props 규칙
+## Serializable Props Rule
 
-Server Component에서 Client Component로 넘기는 props는 serializable 해야 하고, 의도적으로 좁아야 합니다.
+Server Components에서 Client Components로 전달되는 props는 serializable하고 의도적으로 작아야 합니다.
 
-권장:
+선호:
 
-- DTO
-- 작은 view model
+- DTOs
+- 작은 view models
 - 명시적 primitive props
+- client refresh가 진짜 필요할 때 승인된 action 또는 route를 호출할 수 있는 IDs
 
-지양:
+피하기:
 
-- ORM 레코드 전체
-- class instance
-- secret
-- UI에 필요 없는 내부 필드
+- 전체 ORM records
+- class instances, functions, symbols, non-serializable values
+- secrets
+- UI에 필요 없는 internal fields
 
-## Provider 배치
+## Provider Placement
 
-Context provider는 필요한 subtree만 감싸야 합니다. 그래야 더 많은 트리를 정적으로 최적화할 수 있고 client bundle도 줄어듭니다.
+Context providers는 필요한 subtree만 감싸야 합니다. 이렇게 하면 tree의 더 많은 부분을 static optimization 대상으로 유지하고 client bundle을 줄일 수 있습니다.
 
-## Server-Only 보호
+## Server-Only and Client-Only Protection
 
-클라이언트에서 절대 실행되면 안 되는 모듈에는 `import 'server-only'`를 사용하세요:
+client environment에서 절대 실행되면 안 되는 modules에는 `import 'server-only'`를 사용합니다:
 
-- DAL 모듈
-- DB 접근
-- secret을 다루는 SDK 래퍼
-- 서버 전용 권한 확인 헬퍼
+- DAL modules
+- DB access
+- secret-bearing SDK wrappers
+- server-side에 남아야 하는 authorization helpers
 
-## 리뷰 체크리스트
+browser-dependent third-party components가 compatible client entry point를 제공하지 않으면 client-only wrapper 뒤에 둡니다.
 
-- `'use client'`가 필요한 곳에만 있음
-- Client Component가 server-only 모듈에 닿지 않음
-- 서버/클라이언트 경계를 넘는 props가 좁고 serializable 함
-- provider가 가능한 깊게 배치됨
+## Review Checklist
+
+- `'use client'`가 필요한 곳에만 존재
+- Client Components가 server-only modules에 접근하지 않음
+- server/client boundary를 넘는 props가 좁고 serializable함
+- Providers가 가능한 깊게 배치됨
+- third-party browser-only UI가 명확한 Client Component boundary 뒤에 있음

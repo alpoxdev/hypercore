@@ -1,6 +1,6 @@
 # Execution Model
 
-> Next.js server and client boundary rules.
+> Next.js Server and Client Component boundary rules.
 
 ---
 
@@ -8,26 +8,28 @@
 
 Do not guess where code runs.
 
-- Server Components are the default in App Router
-- Client Components need `'use client'`
-- Client Components also render during prerendering, so they must still obey browser-security assumptions
-- Server-only code must stay out of the client environment
+- Server Components are the default in App Router.
+- Client Components need `'use client'` at entry-point files that are rendered from Server Components.
+- Once a file is marked `'use client'`, its imports and child components become part of the client module graph.
+- Client Components can be prerendered, so they must still avoid server secrets and server-only APIs.
+- Server-only code must stay out of the client environment.
 
 ## Default Strategy
 
-1. Start with a Server Component
-2. Add `'use client'` only for interactivity, browser APIs, or client-side hooks
-3. Keep the client boundary as low as possible in the tree
-4. Keep privileged reads in server-only modules or a DAL
+1. Start with a Server Component.
+2. Add `'use client'` only for state, event handlers, effects, browser APIs, or client-only hooks.
+3. Keep the client boundary as low as possible in the tree.
+4. Pass only serializable, minimal props from server to client.
+5. Keep privileged reads in server-only modules or a DAL.
 
 ## Hard Rules
 
 | Check | Rule |
-|------|------|
+|---|---|
 | Interactive code without `'use client'` | BLOCKED |
-| High-level layout or root marked `'use client'` without a real need | BLOCKED |
+| High-level layout or root marked `'use client'` without real need | BLOCKED |
 | Client Component imports DB clients, secret env, `cookies()`, `headers()`, or server-only helpers | BLOCKED |
-| Broad raw records passed from Server Components to Client Components | BLOCKED |
+| Non-serializable or broad raw records passed from Server Components to Client Components | BLOCKED |
 | Server-only helper lacks `import 'server-only'` or equivalent boundary clarity | WARNING |
 | Provider rendered broader than needed | WARNING. Render providers as deep as possible |
 
@@ -40,11 +42,12 @@ Prefer:
 - DTOs
 - small view models
 - explicit primitive props
+- IDs that let a Client Component call an approved action or route when client refresh is truly needed
 
 Avoid:
 
 - whole ORM records
-- class instances
+- class instances, functions, symbols, or non-serializable values
 - secrets
 - internal fields the UI does not need
 
@@ -52,7 +55,7 @@ Avoid:
 
 Context providers should wrap only the subtree that needs them. This preserves more of the tree for static optimization and keeps client bundles smaller.
 
-## Server-Only Protection
+## Server-Only and Client-Only Protection
 
 Use `import 'server-only'` for modules that must never run in the client environment:
 
@@ -61,9 +64,12 @@ Use `import 'server-only'` for modules that must never run in the client environ
 - secret-bearing SDK wrappers
 - authorization helpers that must stay server-side
 
+Use client-only wrappers for browser-dependent third-party components that do not expose a compatible client entry point.
+
 ## Review Checklist
 
 - `'use client'` appears only where needed
 - Client Components do not reach server-only modules
 - Props crossing the server/client boundary are narrow and serializable
 - Providers are placed as deep as practical
+- Third-party browser-only UI is wrapped behind a clear Client Component boundary

@@ -1,0 +1,89 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root = path.resolve('skills/nextjs-architecture');
+const required = [
+  'SKILL.md',
+  'SKILL.ko.md',
+  'architecture-rules.md',
+  'architecture-rules.ko.md',
+  'rules/routes.md',
+  'rules/routes.ko.md',
+  'rules/execution-model.md',
+  'rules/execution-model.ko.md',
+  'rules/data-fetching.md',
+  'rules/data-fetching.ko.md',
+  'rules/server-actions.md',
+  'rules/server-actions.ko.md',
+  'rules/route-handlers.md',
+  'rules/route-handlers.ko.md',
+  'rules/platform.md',
+  'rules/platform.ko.md',
+  'references/official/nextjs-docs.md',
+  'references/official/nextjs-docs.ko.md',
+];
+
+const mustContain = {
+  'SKILL.md': ['cacheComponents', 'updateTag', 'Route Handlers', 'Proxy', 'Server Action'],
+  'architecture-rules.md': ['Current Official Baselines', 'cacheComponents', 'updateTag', 'middleware'],
+  'rules/data-fetching.md': ['`fetch` requests are not cached by default', 'use cache', 'connection()', 'updateTag', "revalidateTag(tag, 'max')"],
+  'rules/server-actions.md': ['reachable POST entry point', 'useActionState', 'refresh', 'updateTag'],
+  'rules/route-handlers.md': ['HTTP method exports', 'params', 'cacheComponents', 'NextResponse.next()'],
+  'rules/platform.md': ['Route Segment Config', "runtime: 'edge'", 'proxy.ts', 'middleware'],
+  'references/official/nextjs-docs.md': ['Last verified: 2026-05-05', 'cacheComponents', 'Route Segment Config', 'Authentication'],
+};
+
+const errors = [];
+for (const rel of required) {
+  if (!fs.existsSync(path.join(root, rel))) errors.push(`missing required file: ${rel}`);
+}
+
+for (const [rel, needles] of Object.entries(mustContain)) {
+  const file = path.join(root, rel);
+  if (!fs.existsSync(file)) continue;
+  const text = fs.readFileSync(file, 'utf8');
+  for (const needle of needles) {
+    if (!text.includes(needle)) errors.push(`${rel} missing required phrase: ${needle}`);
+  }
+}
+
+const skillLines = fs.readFileSync(path.join(root, 'SKILL.md'), 'utf8').split('\n').length;
+if (skillLines > 300) errors.push(`SKILL.md too long: ${skillLines} lines > 300`);
+
+const mdFiles = [];
+function walk(dir) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) walk(full);
+    else if (entry.isFile() && entry.name.endsWith('.md')) mdFiles.push(full);
+  }
+}
+walk(root);
+for (const file of mdFiles) {
+  const rel = path.relative(root, file);
+  if (rel.endsWith('.ko.md')) continue;
+  const koRel = rel.replace(/\.md$/, '.ko.md');
+  if (!fs.existsSync(path.join(root, koRel))) errors.push(`${rel} missing Korean sibling ${koRel}`);
+}
+
+const skill = fs.readFileSync(path.join(root, 'SKILL.md'), 'utf8');
+const directLinks = [...skill.matchAll(/`([^`]+\.md)`/g)].map((m) => m[1]);
+for (const link of directLinks) {
+  if (link.includes('../')) errors.push(`upward reference not allowed in SKILL.md: ${link}`);
+  if (link.split('/').length > 3) errors.push(`reference chain too deep from SKILL.md: ${link}`);
+}
+
+if (errors.length) {
+  console.error('nextjs-architecture skill validation failed:');
+  for (const error of errors) console.error(`- ${error}`);
+  process.exit(1);
+}
+
+console.log(JSON.stringify({
+  ok: true,
+  skillLines,
+  checkedFiles: required.length,
+  checkedMarkdownFiles: mdFiles.length,
+  checks: ['required-files', 'official-baseline-phrases', 'core-size', 'korean-siblings', 'reference-depth'],
+}, null, 2));
