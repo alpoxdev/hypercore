@@ -30,6 +30,7 @@ Brownfield adoption: touched files must satisfy applicable safety rules and curr
 | Server routes | Official + Hypercore convention | Internal app RPC is implemented as server routes instead of server functions without explicit justification |
 | Route export | Official | File routes do not export the route instance as `Route` |
 | Route organization | Hypercore convention | Touched app pages use flat files or omit route-local folders when logic/server integration is present |
+| Project structure | Official + Hypercore convention + Safety policy | Review ignores custom route roots, hand-edits `routeTree.gen.ts`, treats shared folder conventions as official law, or exposes server-only shared code to clients |
 | Hooks | Hypercore convention | Touched interactive page/component logic remains inline instead of moving to `-hooks/` |
 | Code style | Hypercore convention | Touched files use camelCase filenames, `any`, function declarations, missing return types, or omit required Korean block comments |
 
@@ -52,6 +53,7 @@ Rules:
 ## Official-vs-Hypercore Clarifications
 
 - TanStack Router officially supports flat, directory, and mixed route structures. Hypercore prefers route directories for app pages.
+- TanStack Start docs show `src/routes`, `src/router.tsx`, generated `src/routeTree.gen.ts`, `public/`, and root `vite.config.ts` as the typical project shape; `src/features`, nested `src/lib`, and similar shared folders are Hypercore/repo-local conventions.
 - TanStack Start import protection is enabled by default. Hypercore requires explicit extension when project-specific deny rules are needed.
 - TanStack Router with Zod v4 can pass schemas directly to `validateSearch`; Zod v3 uses `@tanstack/zod-adapter`.
 - Server routes are an official Start feature; hypercore reserves them for HTTP semantics, not internal app RPC.
@@ -59,6 +61,7 @@ Rules:
 
 ## Topic Files
 
+- `rules/project-structure.md` — Start project shape, route-root discovery, generated route tree, shared folder grouping.
 - `rules/routes.md` — route organization, route lifecycle, search params, folder policy.
 - `rules/services.md` — server functions, validation, query/mutation layering.
 - `rules/hooks.md` — hook extraction and `useServerFn` wrapper policy.

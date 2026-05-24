@@ -24,6 +24,8 @@ Examples: terms, privacy, about, simple marketing content.
 
 ## Hypercore Route Folder Shape
 
+For global Start project structure, actual route-root discovery, generated `routeTree.gen.ts`, and shared nested folder policy, read `rules/project-structure.md`.
+
 ```text
 routes/<page>/
 ├── index.tsx          # page UI only

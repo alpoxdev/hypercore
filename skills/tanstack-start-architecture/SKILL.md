@@ -1,9 +1,10 @@
 ---
 name: tanstack-start-architecture
-description: "[Hyper] Enforce TanStack Start architecture in existing Start projects, especially route structure, server functions, loader/client-server boundaries, importProtection, hooks, SSR/hydration, and hypercore conventions. Use before structural code changes, route work, server function work, or architecture audits in TanStack Start codebases."
+description: "[Hyper] Enforce TanStack Start architecture in existing Start projects, especially project/folder structure, route structure, nested shared folder organization, server functions, loader/client-server boundaries, importProtection, hooks, SSR/hydration, and hypercore conventions. Use before structural code changes, folder-structure reviews, route work, server function work, or architecture audits in TanStack Start codebases."
 ---
 
 @architecture-rules.md
+@rules/project-structure.md
 @rules/routes.md
 @rules/services.md
 @rules/hooks.md
@@ -63,6 +64,7 @@ Positive:
 - "Add a TanStack Start route with search params and keep the architecture compliant."
 - "Refactor Start route folders, hooks, and server functions to follow hypercore rules."
 - "Check the loader boundaries and server function structure in this TanStack Start project."
+- "Review this TanStack Start folder structure and allow nested src/lib or src/features grouping."
 
 Negative:
 
@@ -98,6 +100,7 @@ Read only what the task needs:
 
 1. `architecture-rules.md` for the rule taxonomy and blocking gate summary.
 2. Topic rules by changed surface:
+   - `rules/project-structure.md` — official Start project shape, `src/routes`, route tree generation, custom route directory, shared nested folders.
    - `rules/routes.md` — route organization, search validation, loaders, route lifecycle.
    - `rules/services.md` — server functions, validation, query/mutation layering.
    - `rules/hooks.md` — hook extraction, internal hook order, `useServerFn` wrapper policy.
@@ -149,6 +152,7 @@ Apply these to touched files unless the user asks for official defaults only:
 - Server-integrated pages use `-functions/` and route-local hooks/components where appropriate.
 - Use `export const Route = createFileRoute(...)` for file routes.
 - Keep routes thin: route/page UI -> hooks/query -> server functions -> feature/database layer.
+- Allow nested shared folders such as `src/lib`, `src/features`, `src/services`, `src/db`, `src/server`, and `src/config` when they clarify ownership and runtime boundaries.
 - Use kebab-case filenames, explicit return types, no `any`, const arrow functions, and Korean block comments for meaningful code groups.
 
 </hypercore_conventions_summary>

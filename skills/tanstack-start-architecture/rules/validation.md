@@ -38,11 +38,13 @@ For edits to this skill itself:
 ```bash
 find skills/tanstack-start-architecture -maxdepth 3 -type f | sort
 wc -l skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architecture/SKILL.ko.md
-rg -n "architecture-rules|rules/|references/official" skills/tanstack-start-architecture/SKILL.md
-rg -n "last_verified_at|@tanstack/react-start|@tanstack/react-router|source_priority|validator" skills/tanstack-start-architecture/references/official
-rg -n "Official|Safety policy|Hypercore convention|publishing-only|Zod v4|enabled by default" skills/tanstack-start-architecture/rules skills/tanstack-start-architecture/architecture-rules.md
-rg -n "src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: \"VITE_\"|runtimeEnvStrict|emptyStringAsUndefined|Do not create `src/env/`" skills/tanstack-start-architecture/rules/platform.md
-rg -n "src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: \"VITE_\"|runtimeEnvStrict|emptyStringAsUndefined|`src/env/`" skills/tanstack-start-architecture/rules/platform.ko.md
+rg -n 'architecture-rules|rules/|references/official' skills/tanstack-start-architecture/SKILL.md
+rg -n 'last_verified_at|@tanstack/react-start|@tanstack/react-router|source_priority|validator' skills/tanstack-start-architecture/references/official
+rg -n 'Official|Safety policy|Hypercore convention|publishing-only|Zod v4|enabled by default' skills/tanstack-start-architecture/rules skills/tanstack-start-architecture/architecture-rules.md
+rg -n 'src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: "VITE_"|runtimeEnvStrict|emptyStringAsUndefined|Do not create `src/env/`' skills/tanstack-start-architecture/rules/platform.md
+rg -n 'src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: "VITE_"|runtimeEnvStrict|emptyStringAsUndefined|`src/env/`' skills/tanstack-start-architecture/rules/platform.ko.md
+rg -n 'project-structure|src/routes|routeTree.gen|routesDirectory|src/lib|src/features|repo-local convention' skills/tanstack-start-architecture
+rg -n '@rules/project-structure.md|@rules/project-structure.ko.md' skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architecture/SKILL.ko.md
 ```
 
 Must pass:
@@ -51,6 +53,9 @@ Must pass:
 - Support files referenced from the core are directly linked; there is no indirect reference chain.
 - Official TanStack facts live in `references/official/`, not in long core sections.
 - Hypercore-only conventions are labelled as such.
+- `rules/project-structure.md` and `rules/project-structure.ko.md` exist and are directly linked.
+- Project-structure guidance handles `src/routes`, custom `routesDirectory`, generated `routeTree.gen.ts`, and shared nested folders.
+- Shared nested folders such as `src/lib` and `src/features` are labelled as Hypercore/repo-local convention, not official TanStack law.
 - Publishing-only route exception and hook extraction rules do not contradict each other.
 - Search validation guidance handles both Zod v4 direct schemas and Zod v3 adapter usage.
 - Import protection guidance says defaults exist and custom config is required when custom deny rules are needed.
@@ -65,6 +70,8 @@ Positive examples that should trigger this skill:
 - "Add a TanStack Start route with search params and keep the architecture compliant."
 - "Refactor Start route folders, hooks, and server functions to follow hypercore rules."
 - "Check the loader boundaries and server function structure in this TanStack Start project."
+- "Review this TanStack Start folder structure and allow nested `src/lib` grouping."
+- "Check whether `src/features/billing` and `src/routes/billing` are organized correctly in TanStack Start."
 
 Negative examples that should not trigger this skill:
 

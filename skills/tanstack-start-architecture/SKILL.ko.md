@@ -1,9 +1,10 @@
 ---
 name: tanstack-start-architecture
-description: "[Hyper] TanStack Start 프로젝트의 route 구조, server functions, loader/client-server boundary, importProtection, hooks, SSR/hydration, hypercore convention을 구조 변경 전/중에 검증하고 강제합니다."
+description: "[Hyper] TanStack Start 프로젝트의 project/folder structure, route 구조, nested shared folder organization, server functions, loader/client-server boundary, importProtection, hooks, SSR/hydration, hypercore convention을 구조 변경 전/중에 검증하고 강제합니다."
 ---
 
 @architecture-rules.md
+@rules/project-structure.ko.md
 @rules/routes.ko.md
 @rules/services.ko.md
 @rules/hooks.ko.md
@@ -63,6 +64,7 @@ Positive:
 - "Add a TanStack Start route with search params and keep the architecture compliant."
 - "Refactor Start route folders, hooks, and server functions to follow hypercore rules."
 - "TanStack Start 프로젝트에서 loader 경계랑 server function 구조 점검해줘."
+- "TanStack Start folder structure를 검토하고 nested src/lib 또는 src/features grouping을 허용해줘."
 
 Negative:
 
@@ -98,6 +100,7 @@ ls src/routes/__root.tsx 2>/dev/null
 
 1. `architecture-rules.md` — rule taxonomy와 blocking gate 요약.
 2. 변경 표면별 topic rules:
+   - `rules/project-structure.ko.md` — official Start project shape, `src/routes`, route tree generation, custom route directory, shared nested folders.
    - `rules/routes.ko.md` — route 조직, search validation, loader, route lifecycle.
    - `rules/services.ko.md` — server function, validation, query/mutation layering.
    - `rules/hooks.ko.md` — hook 추출, 내부 순서, `useServerFn` wrapper policy.
@@ -149,6 +152,7 @@ ls src/routes/__root.tsx 2>/dev/null
 - server integration이 있는 페이지는 필요에 따라 `-functions/`, route-local hooks/components를 사용합니다.
 - file route는 `export const Route = createFileRoute(...)`를 사용합니다.
 - route/page UI -> hooks/query -> server functions -> feature/database layer 흐름을 유지합니다.
+- ownership과 runtime boundaries를 명확히 할 때 `src/lib`, `src/features`, `src/services`, `src/db`, `src/server`, `src/config` 같은 nested shared folders를 허용합니다.
 - kebab-case filename, explicit return type, no `any`, const arrow function, 의미 있는 코드 그룹의 Korean block comments를 유지합니다.
 
 </hypercore_conventions_summary>

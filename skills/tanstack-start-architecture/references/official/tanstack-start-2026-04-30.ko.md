@@ -11,6 +11,17 @@ Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일
 
 ## 이 Skill에서 사용하는 공식 사실
 
+### Project structure
+
+- Project structure는 current Start docs 기준으로 2026-05-24에 재확인했습니다. 위 package snapshot은 2026-04-30 version check로 유지합니다.
+- Current Start docs는 typical project shape로 `src/routes`, `src/router.tsx`, generated `src/routeTree.gen.ts`, `src/styles.css`, optional `src/types`, `public/`, root `vite.config.ts`, `package.json`, `tsconfig.json`를 보여줍니다.
+- Start Vite plugin은 `srcDirectory`와 `router.routesDirectory`를 customize할 수 있습니다. `src/routes`를 hard-code하지 말고 `tanstackStart()` config에서 실제 route root를 도출합니다.
+- `routeTree.gen.ts`는 Start/Router tooling이 생성하며 일반 architecture work에서 수동 편집하지 않습니다.
+- Sources:
+  - <https://tanstack.com/start/latest/docs/framework/react/tutorial/fetching-external-api>
+  - <https://tanstack.com/start/latest/docs/framework/react/guide/routing>
+  - <https://tanstack.com/start/latest/docs/framework/react/migrate-from-next-js>
+
 ### Router setup
 
 - Start의 React routing guide는 `src/router.tsx`가 호출할 때마다 fresh router instance를 반환하는 `getRouter()` function을 export하기를 기대합니다.
@@ -72,4 +83,5 @@ Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일
 - TanStack Start가 stable v1 guidance에 도달하거나 guidance가 변경됨.
 - `createServerFn`, `.inputValidator()`, middleware, import protection, `getRouter()`, SSR options가 변경됨.
 - 이 skill이 새로운 Start guide page에 의존하기 시작함.
+- Start project structure, `srcDirectory`, `routesDirectory`, route tree generation guidance가 변경됨.
 - Local package versions가 위 versions보다 materially 이동함.

@@ -30,6 +30,7 @@ Brownfield 적용: touched files는 해당 safety rules와 현재 hypercore conv
 | Server routes | Official + Hypercore convention | Explicit justification 없이 internal app RPC를 server functions 대신 server routes로 구현 |
 | Route export | Official | File routes가 route instance를 `Route`로 export하지 않음 |
 | Route organization | Hypercore convention | Touched app pages가 flat files를 쓰거나 logic/server integration이 있는데 route-local folders를 생략 |
+| Project structure | Official + Hypercore convention + Safety policy | Review가 custom route root를 무시하거나, `routeTree.gen.ts`를 수동 편집하거나, shared folder convention을 official law처럼 취급하거나, server-only shared code를 client에 노출 |
 | Hooks | Hypercore convention | Touched interactive page/component logic이 `-hooks/`로 이동하지 않고 inline으로 남음 |
 | Code style | Hypercore convention | Touched files가 camelCase filenames, `any`, function declarations, missing return types를 쓰거나 required Korean block comments를 생략 |
 
@@ -52,6 +53,7 @@ Rules:
 ## Official-vs-Hypercore Clarifications
 
 - TanStack Router는 flat, directory, mixed route structures를 공식 지원합니다. Hypercore는 app pages에 route directories를 선호합니다.
+- TanStack Start docs는 `src/routes`, `src/router.tsx`, generated `src/routeTree.gen.ts`, `public/`, root `vite.config.ts`를 typical project shape로 보여줍니다. `src/features`, nested `src/lib`와 비슷한 shared folders는 Hypercore/repo-local conventions입니다.
 - TanStack Start import protection은 기본 활성화됩니다. Hypercore는 project-specific deny rules가 필요할 때 explicit extension을 요구합니다.
 - Zod v4와 함께 쓰는 TanStack Router는 schema를 `validateSearch`에 직접 전달할 수 있습니다. Zod v3는 `@tanstack/zod-adapter`를 사용합니다.
 - Server routes는 공식 Start feature입니다. Hypercore는 internal app RPC가 아니라 HTTP semantics 용도로 제한합니다.
@@ -59,6 +61,7 @@ Rules:
 
 ## Topic Files
 
+- `rules/project-structure.md` — Start project shape, route-root discovery, generated route tree, shared folder grouping.
 - `rules/routes.md` — route organization, route lifecycle, search params, folder policy.
 - `rules/services.md` — server functions, validation, query/mutation layering.
 - `rules/hooks.md` — hook extraction and `useServerFn` wrapper policy.

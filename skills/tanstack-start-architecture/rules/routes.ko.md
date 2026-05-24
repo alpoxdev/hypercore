@@ -24,6 +24,8 @@ Publishing-only page는 interactive logic과 server integration이 없는 static
 
 ## Hypercore Route Folder Shape
 
+Global Start project structure, actual route-root discovery, generated `routeTree.gen.ts`, shared nested folder policy는 `rules/project-structure.ko.md`를 읽습니다.
+
 ```text
 routes/<page>/
 ├── index.tsx
