@@ -20,12 +20,15 @@ Brownfield adoption rule: untouched legacy `pages/` code는 자동 실패가 아
 
 - App Router에서 Server Components가 기본입니다. interactivity, browser APIs, client hooks가 필요한 client entry point에만 `'use client'`를 추가합니다.
 - 최신 App Router docs 기준 `fetch` requests는 기본 cached가 아니지만, routes는 여전히 prerender되고 HTML이 cached될 수 있습니다. cache intent는 명시해야 합니다.
-- Next.js 16에서는 `cacheComponents: true`로 Cache Components를 활성화하며, 해당 모드에서는 `use cache`, `cacheTag`, `cacheLife`가 권장 cache primitive입니다.
-- Route Segment Config는 남아 있지만 `cacheComponents`가 켜지면 options가 비활성화되고 future deprecation 대상으로 표시됩니다.
+- 최신 stable Next.js 16.2.6 docs 기준 Cache Components는 `cacheComponents: true`로 활성화하며, 해당 모드에서는 `use cache`, `cacheTag`, `cacheLife`가 권장 cache primitive입니다.
+- `cacheComponents`는 PPR, `useCache`, `dynamicIO`를 묶는 v16 unified switch입니다. experimental PPR flags와 `experimental_ppr` segment option은 제거되었습니다.
+- `cacheComponents`에서는 `dynamic`, `revalidate`, `fetchCache` route segment config options가 제거되었습니다. 현재 segment option은 `dynamicParams`, `runtime`, `preferredRegion`, `maxDuration` 등만 남습니다.
+- `use cache`는 request-time APIs를 직접 읽을 수 없습니다. serializable value를 인자로 넘기고, 정당화된 durable shared cache에는 `use cache: remote`, experimental `use cache: private`는 예외적으로 취급합니다.
+- 새 request-time dynamic work에는 `connection()`을 사용합니다. `unstable_noStore`는 `connection()`을 위해 deprecated되었습니다.
 - Server Actions는 UI/forms/events에서 호출되는 Server Functions입니다. 모든 action을 reachable POST surface로 보고 내부에서 auth/authz를 재확인합니다.
-- `updateTag`는 read-your-own-writes용 Server Action-only API입니다. `revalidateTag`는 Server Actions와 Route Handlers에서 사용할 수 있고 stale-while-revalidate가 필요하면 `'max'` 같은 cache profile을 사용합니다.
-- Route Handlers는 HTTP-native endpoints용이며 standard Web `Request`/`Response` APIs와 method exports를 지원합니다.
-- 기존 `middleware` convention은 `proxy.ts`로 대체되어 deprecated입니다. Proxy는 last-resort network-boundary 도구입니다.
+- `updateTag`는 read-your-own-writes용 Server Action-only API입니다. `revalidateTag`는 Server Actions와 Route Handlers에서 사용할 수 있고 stale-while-revalidate에는 `'max'` 같은 두 번째 인자를 사용해야 합니다. 단일 인자 form은 deprecated입니다.
+- Route Handlers는 HTTP-native endpoints용이며 standard Web `Request`/`Response` APIs와 method exports를 지원합니다. Cache Components에서는 `GET` handlers가 UI routes와 같은 prerendering model을 따르며 `use cache`는 handler body가 아니라 helper에 둬야 합니다.
+- 기존 `middleware` convention은 `proxy.ts`로 대체되어 deprecated입니다. Proxy는 last-resort network-boundary 도구이고 Node.js runtime이 기본이며 static하고 좁은 matcher가 필요합니다.
 
 ---
 
@@ -51,7 +54,8 @@ Brownfield adoption rule: untouched legacy `pages/` code는 자동 실패가 아
 | Secrets | Client Components에서 private env, DB clients, server-only modules import |
 | Data Safety | Server Components에서 Client Components로 broad raw records 전달 |
 | Cache Intent | 이유를 이해하지 못한 implicit caching 또는 dynamic rendering 의존 |
-| Cache Components | serializable inputs로 전달하지 않고 `use cache` scope 안에서 runtime request APIs 읽기 |
+| Cache Components | serializable inputs 전달 또는 정당화된 experimental `use cache: private` 예외 없이 `use cache` scope 안에서 runtime request APIs 읽기 |
+| Cache Components | 새 dynamic work에 `connection()` 대신 `unstable_noStore` 추가 |
 | Server Actions | client input 신뢰, auth/authz 생략, raw internal objects 반환 |
 | Freshness | 필요한 revalidation/tag update 전 redirect 또는 freshness 누락 |
 | Route Handlers | Server Action 또는 Server Component가 맞는데 `route.ts`를 default internal RPC로 사용 |
@@ -69,7 +73,7 @@ Brownfield adoption rule: untouched legacy `pages/` code는 자동 실패가 아
 | Routing | special files를 valid route segments에 배치 |
 | Boundaries | Client Components는 좁게, props는 serializable하게 유지 |
 | Safety | privileged modules에 `server-only` 또는 명확한 server boundary 사용 |
-| Cache | data/UI가 uncached인지, `use cache`인지, tag/path revalidation인지, mutation 후 refresh인지 명시 |
+| Cache | data/UI가 uncached, `use cache` cached, 예외적 remote/private cached, tag-revalidated, path-revalidated, refreshed 중 무엇인지 명시 |
 | Auth | 각 Server Action 또는 delegated server-only layer에서 authentication/authorization 재확인 |
 | Platform | env handling, route segment config, Proxy, Next config를 명시적으로 유지 |
 | Reporting | repo-local conventions를 framework law가 아닌 convention으로 표시 |
@@ -95,6 +99,7 @@ Default surface order:
 
 ## Rule Files
 
+- `rules/project-structure.md`
 - `rules/routes.md`
 - `rules/execution-model.md`
 - `rules/data-fetching.md`

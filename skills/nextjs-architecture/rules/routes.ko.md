@@ -33,7 +33,7 @@ app/
 | `loading.tsx` | segment용 Suspense fallback |
 | `error.tsx` | segment-level error boundary; Client Component여야 함 |
 | `not-found.tsx` | segment-level 404 UI |
-| `forbidden.tsx` / `unauthorized.tsx` | 프로젝트가 해당 feature를 의도적으로 enable한 경우 auth interruption UI |
+| `forbidden.tsx` / `unauthorized.tsx` | Experimental auth interruption UI; `experimental.authInterrupts`와 명시적 risk acceptance 필요 |
 | `route.ts` | HTTP-native Route Handler |
 
 ## Non-Routable Organization
@@ -46,7 +46,7 @@ app/
 | `@slot` | parent layout으로 전달되는 parallel route slot |
 | `(.)`, `(..)`, `(...)` | modal/overlay style navigation용 intercepting route patterns |
 
-route segment가 되면 안 되는 colocated implementation files에는 private folders를 사용합니다.
+route segment가 되면 안 되는 colocated implementation files에는 private folders를 사용합니다. shared/global folder structure, `src`, nested `lib` grouping은 `rules/project-structure.md`를 읽습니다.
 
 ## Hard Rules
 
@@ -74,6 +74,7 @@ route segment가 되면 안 되는 colocated implementation files에는 private 
 - `loading.tsx`는 segment-level streaming fallback에 적합합니다.
 - blocking work가 tree 깊은 곳에 있으면 segment root `loading.tsx`에만 맡기지 말고 더 가까운 `<Suspense>` boundary를 선호합니다.
 - missing resource flow에는 `notFound()`와 `not-found.tsx`를 사용합니다.
+- `forbidden()` / `unauthorized()` 및 해당 special files는 experimental `authInterrupts`가 활성화되어 있고 프로젝트가 instability를 수용할 때만 사용합니다.
 
 ## Mixed Router Repos
 

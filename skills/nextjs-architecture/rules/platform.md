@@ -18,10 +18,10 @@ Server code can read runtime env values during dynamic rendering. Do not confuse
 
 ## Cache Components and Route Segment Config
 
-- `cacheComponents: true` is the Next.js 16+ unified switch for Cache Components.
-- When `cacheComponents` is enabled, route segment config options are disabled and marked for future deprecation.
-- Route segment options only affect Server Component pages, layouts, and Route Handlers.
-- `runtime: 'edge'` is not supported for Cache Components; use the Node.js runtime unless a documented exception applies.
+- `cacheComponents: true` is the Next.js 16+ unified switch for Cache Components, PPR, `useCache`, and `dynamicIO` behavior.
+- When `cacheComponents` is enabled, v16 removes `dynamic`, `revalidate`, and `fetchCache` route segment options; use the Cache Components model instead.
+- Current route segment options include `dynamicParams`, `runtime`, `preferredRegion`, and `maxDuration`; they affect Server Component pages, layouts, and Route Handlers.
+- `runtime` defaults to `'nodejs'`; `runtime: 'edge'` is a deployment/platform decision that must be verified for the libraries and APIs used.
 - Deployment platforms may use `maxDuration`; document changes that alter execution limits.
 
 ## Proxy
@@ -29,13 +29,15 @@ Server code can read runtime env values during dynamic rendering. Do not confuse
 - `proxy.ts` belongs at the project root or `src/` root, next to `app` or `pages`.
 - Proxy runs before routes are rendered and represents a network boundary in front of app render code.
 - Prefer `redirects`, `rewrites`, headers, cookies, or render-time logic before reaching for Proxy.
-- Proxy should have an explicit matcher and narrow scope.
+- Proxy should have an explicit matcher and narrow scope; without a matcher it runs on every request, including `_next/static`, `_next/image`, and public assets.
+- Matcher values must be static constants so Next.js can analyze them at build time.
 - Do not rely on shared modules or globals inside Proxy.
-- Exclude metadata and static surfaces from broad matchers when they should bypass Proxy.
+- Exclude API routes, metadata, static surfaces, image optimization, and public assets from broad matchers when they should bypass Proxy.
+- Server Functions are POST requests to the route where they are used; matcher changes can silently remove Proxy coverage, so auth/authz must still live inside the Server Function or DAL.
 
 ## Important Proxy Note
 
-The old `middleware` file convention is deprecated and has been renamed to `proxy`. Do not add fresh `middleware.ts` files for new work. Use the official codemod for migrations when needed.
+The old `middleware` file convention is deprecated and has been renamed to `proxy`. Do not add fresh `middleware.ts` files for new work. Use the official `npx @next/codemod@canary middleware-to-proxy .` codemod for migrations when needed. Proxy defaults to the Node.js runtime and does not accept a `runtime` config option.
 
 ## `next.config.*`
 
@@ -43,8 +45,8 @@ Keep config changes explicit and intentional. Review carefully when changing:
 
 - `typedRoutes`
 - `serverActions.allowedOrigins`
-- `cacheComponents`, `cacheLife`, or `cacheHandlers`
-- route segment config strategy
+- `cacheComponents`, `cacheLife`, `cacheHandlers`, or experimental `authInterrupts`
+- route segment config strategy, especially removed v16 options under `cacheComponents`
 - redirect and rewrite rules
 - output and deployment settings
 
@@ -58,6 +60,6 @@ Keep config changes explicit and intentional. Review carefully when changing:
 
 - `.env*` handling matches Next.js behavior
 - Client code sees only `NEXT_PUBLIC_` env vars
-- Cache Components and route segment config are not mixed accidentally
-- Proxy is truly justified and narrowly matched
+- Cache Components and removed v16 route segment config options are not mixed accidentally
+- Proxy is truly justified, statically matched, and narrowly scoped
 - `next.config.*` changes are intentional and explained

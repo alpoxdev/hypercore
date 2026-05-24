@@ -8,6 +8,8 @@ const required = [
   'SKILL.ko.md',
   'architecture-rules.md',
   'architecture-rules.ko.md',
+  'rules/project-structure.md',
+  'rules/project-structure.ko.md',
   'rules/routes.md',
   'rules/routes.ko.md',
   'rules/execution-model.md',
@@ -25,13 +27,14 @@ const required = [
 ];
 
 const mustContain = {
-  'SKILL.md': ['cacheComponents', 'updateTag', 'Route Handlers', 'Proxy', 'Server Action'],
-  'architecture-rules.md': ['Current Official Baselines', 'cacheComponents', 'updateTag', 'middleware'],
-  'rules/data-fetching.md': ['`fetch` requests are not cached by default', 'use cache', 'connection()', 'updateTag', "revalidateTag(tag, 'max')"],
+  'SKILL.md': ['cacheComponents', 'updateTag', 'Route Handlers', 'Proxy', 'Server Action', 'rules/project-structure.md'],
+  'architecture-rules.md': ['Current Official Baselines', 'latest stable Next.js 16.2.6', 'cacheComponents', 'connection()', 'updateTag', 'middleware', 'rules/project-structure.md'],
+  'rules/project-structure.md': ['Project Structure', 'Nested lib Grouping', 'src/lib', 'private folders', 'local convention'],
+  'rules/data-fetching.md': ['`fetch` requests are not cached by default', 'use cache: remote', 'use cache: private', 'connection()', 'unstable_noStore', 'updateTag', "revalidateTag(tag, 'max')"],
   'rules/server-actions.md': ['reachable POST entry point', 'useActionState', 'refresh', 'updateTag'],
-  'rules/route-handlers.md': ['HTTP method exports', 'params', 'cacheComponents', 'NextResponse.next()'],
-  'rules/platform.md': ['Route Segment Config', "runtime: 'edge'", 'proxy.ts', 'middleware'],
-  'references/official/nextjs-docs.md': ['Last verified: 2026-05-05', 'cacheComponents', 'Route Segment Config', 'Authentication'],
+  'rules/route-handlers.md': ['HTTP method exports', 'RouteContext', 'params', 'cacheComponents', 'use cache', 'NextResponse.next()'],
+  'rules/platform.md': ['Route Segment Config', "runtime: 'edge'", 'proxy.ts', 'Node.js runtime', 'middleware'],
+  'references/official/nextjs-docs.md': ['Last verified: 2026-05-24', 'Next.js 16.2.6', 'https://r.jina.ai/https://nextjs.org/docs/', 'use cache: remote', 'Route Segment Config', 'Authentication', 'authInterrupts'],
 };
 
 const errors = [];
@@ -85,5 +88,5 @@ console.log(JSON.stringify({
   skillLines,
   checkedFiles: required.length,
   checkedMarkdownFiles: mdFiles.length,
-  checks: ['required-files', 'official-baseline-phrases', 'core-size', 'korean-siblings', 'reference-depth'],
+  checks: ['required-files', 'official-baseline-phrases', 'project-structure-rule', 'core-size', 'korean-siblings', 'reference-depth'],
 }, null, 2));

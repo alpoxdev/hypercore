@@ -2,7 +2,9 @@
 
 > Canonical official doc surfaces this skill depends on. Re-check these when behavior drifts or a rule becomes ambiguous.
 
-Last verified: 2026-05-05.
+Last verified: 2026-05-24 against latest stable Next.js 16.2.6 (`npm dist-tag latest`).
+
+Reader access rule: when re-checking official docs, prefer Jina Reader markdown URLs in the form `https://r.jina.ai/https://nextjs.org/docs/...` so agents can inspect the current page text without relying on browser rendering. Keep the canonical URL listed below as the original source URL.
 
 ## Core Sources
 
@@ -28,7 +30,7 @@ Last verified: 2026-05-05.
 
 - Caching
   URL: `https://nextjs.org/docs/app/getting-started/caching`
-  Use for: Cache Components, runtime data handling, `connection()`, `use cache`, rendering model, and Suspense requirements.
+  Use for: Cache Components, runtime data handling, `connection()`, `use cache`, `use cache: remote`, rendering model, Route Handler Cache Components note, and Suspense requirements.
 
 - Caching and Revalidating
   URL: `https://nextjs.org/docs/app/getting-started/caching-and-revalidating`
@@ -36,7 +38,15 @@ Last verified: 2026-05-05.
 
 - `use cache`
   URL: `https://nextjs.org/docs/app/api-reference/directives/use-cache`
-  Use for: `cacheComponents` requirement, cached scopes, cache keys, serialization constraints, `cacheLife`, `cacheTag`, and platform support.
+  Use for: `cacheComponents` requirement, cached scopes, cache keys, serialization constraints, request-time API restrictions, `cacheLife`, `cacheTag`, and platform support.
+
+- `use cache: private`
+  URL: `https://nextjs.org/docs/app/api-reference/directives/use-cache-private`
+  Use for: experimental private cache behavior, request API exceptions, browser-memory-only constraints, and production-risk review.
+
+- `use cache: remote`
+  URL: `https://nextjs.org/docs/app/api-reference/directives/use-cache-remote`
+  Use for: durable shared cache tradeoffs, `cacheHandlers`, runtime-data cache keys, nesting rules, and cost/latency review.
 
 - `cacheComponents`
   URL: `https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents`
@@ -54,17 +64,21 @@ Last verified: 2026-05-05.
   URL: `https://nextjs.org/docs/app/api-reference/directives/use-server`
   Use for: dedicated action files, inline Server Functions, and auth/authz expectations.
 
-- Route Handlers
+- Route Handlers guide
+  URL: `https://nextjs.org/docs/app/getting-started/route-handlers`
+  Use for: default caching behavior, Cache Components `GET` prerendering model, `use cache` helper placement, special metadata handlers, and route resolution.
+
+- Route Handlers API
   URL: `https://nextjs.org/docs/app/api-reference/file-conventions/route`
-  Use for: `route.ts`, HTTP method exports, Web Request/Response APIs, cookies/headers, dynamic params, CORS, webhooks, streaming, and non-UI responses.
+  Use for: `route.ts`, HTTP method exports, Web Request/Response APIs, cookies/headers, promise-shaped dynamic params, `RouteContext`, CORS, webhooks, streaming, and non-UI responses.
 
 - Route Segment Config
   URL: `https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config`
-  Use for: `dynamic`, `dynamicParams`, `revalidate`, `fetchCache`, `runtime`, `preferredRegion`, `maxDuration`, and the `cacheComponents` compatibility warning.
+  Use for: current `dynamicParams`, `runtime`, `preferredRegion`, `maxDuration`, and the v16 removal of `dynamic`, `revalidate`, and `fetchCache` when `cacheComponents` is enabled.
 
 - Proxy
   URL: `https://nextjs.org/docs/app/api-reference/file-conventions/proxy`
-  Use for: `proxy.ts`, matcher placement, pre-render request handling, Proxy as last resort, and Middleware-to-Proxy migration.
+  Use for: `proxy.ts`, static matcher placement, negative matching for `_next/static` / `_next/image` / public assets, pre-render request handling, Node.js runtime default, Proxy as last resort, and Middleware-to-Proxy migration.
 
 - Environment Variables
   URL: `https://nextjs.org/docs/app/guides/environment-variables`
@@ -80,16 +94,29 @@ Last verified: 2026-05-05.
 
 - Authentication
   URL: `https://nextjs.org/docs/app/guides/authentication`
-  Use for: multi-entry-point auth cautions, Server Action access, and route protection patterns.
+  Use for: multi-entry-point auth cautions, Server Action access, Proxy optimistic checks, and route protection patterns.
+
+- `connection`
+  URL: `https://nextjs.org/docs/app/api-reference/functions/connection`
+  Use for: request-time rendering opt-in and replacement guidance for deprecated `unstable_noStore`.
+
+- `unstable_noStore`
+  URL: `https://nextjs.org/docs/app/api-reference/functions/unstable_noStore`
+  Use for: legacy maintenance only; v15+ docs recommend `connection` instead.
+
+- `authInterrupts`
+  URL: `https://nextjs.org/docs/app/api-reference/config/next-config-js/authInterrupts`
+  Use for: experimental `forbidden` / `unauthorized` enablement and production-risk review.
 
 ## Drift Watchlist
 
 Re-check official docs before relying on these behaviors:
 
-- Cache Components defaults, `cacheComponents`, `use cache`, `cacheLife`, `cacheTag`, `updateTag`, and `revalidateTag` profile semantics.
-- Route Segment Config availability and compatibility with `cacheComponents`.
-- Route Handler `GET` caching/prerender behavior.
-- Proxy runtime/platform support and Middleware migration guidance.
+- Cache Components defaults, `cacheComponents`, `use cache`, `use cache: remote`, experimental `use cache: private`, `cacheLife`, `cacheTag`, `updateTag`, and `revalidateTag` profile semantics.
+- Route Segment Config availability, especially v16 removals under `cacheComponents`.
+- Route Handler `GET` caching/prerender behavior and `use cache` helper placement.
+- Proxy runtime/platform support, static matcher behavior, and Middleware migration guidance.
+- Experimental `authInterrupts`, `forbidden`, and `unauthorized` stability.
 - Server Action origin, encryption, and allowed origin settings.
 
 ## Interpretation Rules

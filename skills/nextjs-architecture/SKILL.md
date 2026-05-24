@@ -1,6 +1,6 @@
 ---
 name: nextjs-architecture
-description: "[Hyper] Use when working on Next.js projects, especially App Router or App Router migration work. Enforces current official Next.js architecture rules for route/file conventions, Server and Client Component boundaries, Cache Components and data freshness, Server Actions for internal UI writes, Route Handlers for HTTP-native endpoints, Proxy as a last resort, and platform/env safety."
+description: "[Hyper] Use when working on Next.js projects, especially App Router or App Router migration work. Enforces current official Next.js architecture rules for project/folder structure, nested shared `lib` organization, route/file conventions, Server and Client Component boundaries, Cache Components and data freshness, Server Actions for internal UI writes, Route Handlers for HTTP-native endpoints, Proxy as a last resort, and platform/env safety."
 compatibility: Works best with repo inspection, official Next.js docs verification, and direct code edits in Next.js applications.
 ---
 
@@ -49,6 +49,7 @@ Enforce official Next.js architecture rules before and after code changes. First
 - `Refactor this form to use Server Actions instead of an internal route handler.`
 - `Add a Route Handler for a webhook and verify it follows the current Next.js docs.`
 - `Next.js 16 cacheComponents 기준으로 data fetching 규칙을 점검해줘.`
+- `Next.js App Router에서 src/lib를 domain별 nested folders로 정리해줘.`
 
 ### Negative
 
@@ -88,13 +89,14 @@ Interpretation:
 Then load only the rule files needed for the touched surface:
 
 - `rules/routes.md` — file conventions, segment rules, route groups, private folders, parallel/intercepted route cautions
+- `rules/project-structure.md` — top-level project shape, `src/`, shared code placement, nested `src/lib`, repo-local organization conventions
 - `rules/execution-model.md` — Server/Client Components, `'use client'`, providers, serializable props, `server-only` / `client-only`
-- `rules/data-fetching.md` — server-first reads, streaming, Cache Components, `use cache`, cache tags, revalidation, dynamic rendering
+- `rules/data-fetching.md` — server-first reads, streaming, Cache Components, `use cache` / `use cache: remote` / `use cache: private`, cache tags, revalidation, dynamic rendering
 - `rules/server-actions.md` — `use server`, forms, validation, auth/authz, DAL delegation, `updateTag` / revalidation / redirect ordering
 - `rules/route-handlers.md` — `route.ts`, HTTP methods, caching intent, params, non-UI responses, CORS/webhooks
 - `rules/platform.md` — env, `next.config.*`, `typedRoutes`, Proxy, route segment config, deployment-sensitive settings
 
-For drift-sensitive behavior, also read `references/official/nextjs-docs.md`.
+For drift-sensitive behavior, also read `references/official/nextjs-docs.md` and fetch official pages through `https://r.jina.ai/https://nextjs.org/docs/...` when browser-readable markdown is needed.
 
 ## Step 3: Pre-Change Gates
 
@@ -104,7 +106,7 @@ For drift-sensitive behavior, also read `references/official/nextjs-docs.md`.
 - Safety, secret, auth, and boundary issues block immediately in touched files.
 - Bring touched files into compliance unless that requires a broad migration.
 
-### Gate 1: Routing and File Conventions
+### Gate 1: Routing, File Conventions, and Project Structure
 
 | Check | Rule |
 |---|---|
@@ -112,6 +114,8 @@ For drift-sensitive behavior, also read `references/official/nextjs-docs.md`.
 | `route.ts` and `page.tsx` created in the same route segment | BLOCKED |
 | Route group used as if it changes the URL | BLOCKED |
 | Private implementation files exposed as routable segments instead of `_folder` | BLOCKED |
+| Shared `lib` / `src/lib` organization forced flat when nested domain or layer grouping would clarify touched code | WARNING. Prefer nested grouping |
+| Repo-local folder preferences reported as official Next.js law | BLOCKED |
 | Parallel/intercepted routes added without matching layout slots or hard-navigation behavior | WARNING/BLOCKED by risk |
 
 ### Gate 2: Server and Client Boundaries
@@ -131,7 +135,8 @@ For drift-sensitive behavior, also read `references/official/nextjs-docs.md`.
 | Initial UI data fetched in a Client Component without client-only need | BLOCKED |
 | Cache behavior is accidental, undocumented, or based on stale defaults | BLOCKED |
 | `cacheComponents` enabled but uncached runtime data lacks `use cache`, `connection()`, `loading.tsx`, or `<Suspense>` intent | BLOCKED |
-| `use cache` reads `cookies()` / `headers()` inside the cached scope instead of receiving serializable arguments | BLOCKED |
+| `use cache` reads `cookies()` / `headers()` inside the cached scope instead of receiving serializable arguments | BLOCKED unless explicitly using justified experimental `use cache: private` |
+| `unstable_noStore` added for new App Router work instead of `connection()` | BLOCKED unless maintaining legacy code |
 | Mutation lacks `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect freshness, or documented alternative | BLOCKED |
 
 ### Gate 4: Server Actions
@@ -151,6 +156,7 @@ For drift-sensitive behavior, also read `references/official/nextjs-docs.md`.
 | Route Handler used as default internal RPC for UI-only flow | BLOCKED |
 | `NextResponse.next()` used inside a Route Handler | BLOCKED |
 | Route Handler caching is assumed rather than explicit where correctness matters | BLOCKED |
+| `use cache` placed directly in a Route Handler body instead of a helper function | BLOCKED |
 | Fresh `middleware.ts` added instead of `proxy.ts` | BLOCKED |
 | Proxy added when `next.config.*`, headers, redirects, rewrites, or render-time logic is enough | BLOCKED |
 | Proxy matcher is missing, too broad, or fails to exclude metadata/static surfaces where needed | BLOCKED |
@@ -162,8 +168,8 @@ For drift-sensitive behavior, also read `references/official/nextjs-docs.md`.
 | `.env*` files assumed to load from `src/` | BLOCKED |
 | Client code reads non-`NEXT_PUBLIC_` env vars | BLOCKED |
 | Runtime client env treated as build-time public env | BLOCKED |
-| Route segment config changed without checking `cacheComponents` compatibility | BLOCKED |
-| `runtime: 'edge'` used with Cache Components expectations | BLOCKED |
+| Removed v16 route segment config options (`dynamic`, `revalidate`, `fetchCache`) used while `cacheComponents` is enabled | BLOCKED |
+| `runtime: 'edge'` or Proxy runtime assumptions changed without platform compatibility checks | BLOCKED |
 | Deployment-sensitive Server Action origin/config changes are undocumented | WARNING/BLOCKED by risk |
 
 ## Step 4: Implementation Policy
@@ -178,12 +184,13 @@ Run the smallest project-specific checks that prove the claim, then report evide
 
 1. project mode still matches the edited surface
 2. special files are in valid segments and no `page`/`route` conflict exists
-3. `'use client'` boundaries are narrow and safe
-4. client code cannot import server-only modules or private env
-5. data/cache strategy is explicit and current-docs compatible
-6. mutation freshness uses `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect flow, or a documented alternative
-7. Route Handler and Proxy usage remains justified
-8. `next.config.*`, env loading, route segment config, and deployment settings are coherent
+3. shared and segment-local folders follow project-structure rules, with nested `lib` grouping allowed where it improves boundaries
+4. `'use client'` boundaries are narrow and safe
+5. client code cannot import server-only modules or private env
+6. data/cache strategy is explicit and current-docs compatible
+7. mutation freshness uses `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect flow, or a documented alternative
+8. Route Handler and Proxy usage remains justified
+9. `next.config.*`, env loading, route segment config, and deployment settings are coherent
 
 For this skill folder itself, run:
 

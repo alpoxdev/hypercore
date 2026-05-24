@@ -1,6 +1,6 @@
 ---
 name: nextjs-architecture
-description: "[Hyper] Next.js 프로젝트, 특히 App Router 또는 App Router 마이그레이션 작업에 사용합니다. 현재 공식 Next.js 아키텍처 규칙에 따라 라우트/파일 규칙, Server/Client Component 경계, Cache Components와 데이터 freshness, 내부 UI 쓰기용 Server Actions, HTTP-native 엔드포인트용 Route Handlers, 최후 수단으로서 Proxy, 플랫폼/env 안전성을 강제합니다."
+description: "[Hyper] Next.js 프로젝트, 특히 App Router 또는 App Router 마이그레이션 작업에 사용합니다. 현재 공식 Next.js 아키텍처 규칙에 따라 project/folder structure, nested shared `lib` organization, 라우트/파일 규칙, Server/Client Component 경계, Cache Components와 데이터 freshness, 내부 UI 쓰기용 Server Actions, HTTP-native 엔드포인트용 Route Handlers, 최후 수단으로서 Proxy, 플랫폼/env 안전성을 강제합니다."
 compatibility: Next.js 애플리케이션에서 저장소 검사, 공식 Next.js 문서 확인, 직접 코드 편집과 함께 사용할 때 가장 적합합니다.
 ---
 
@@ -49,6 +49,7 @@ compatibility: Next.js 애플리케이션에서 저장소 검사, 공식 Next.js
 - `Refactor this form to use Server Actions instead of an internal route handler.`
 - `Add a Route Handler for a webhook and verify it follows the current Next.js docs.`
 - `Next.js 16 cacheComponents 기준으로 data fetching 규칙을 점검해줘.`
+- `Next.js App Router에서 src/lib를 domain별 nested folders로 정리해줘.`
 
 ### Negative
 
@@ -88,13 +89,14 @@ test -f next.config.ts -o -f next.config.mjs -o -f next.config.js
 그다음 touched surface에 필요한 rule file만 읽습니다:
 
 - `rules/routes.md` — file conventions, segment rules, route groups, private folders, parallel/intercepted route 주의점
+- `rules/project-structure.md` — top-level project shape, `src/`, shared code placement, nested `src/lib`, repo-local organization conventions
 - `rules/execution-model.md` — Server/Client Components, `'use client'`, providers, serializable props, `server-only` / `client-only`
-- `rules/data-fetching.md` — server-first reads, streaming, Cache Components, `use cache`, cache tags, revalidation, dynamic rendering
+- `rules/data-fetching.md` — server-first reads, streaming, Cache Components, `use cache` / `use cache: remote` / `use cache: private`, cache tags, revalidation, dynamic rendering
 - `rules/server-actions.md` — `use server`, forms, validation, auth/authz, DAL delegation, `updateTag` / revalidation / redirect ordering
 - `rules/route-handlers.md` — `route.ts`, HTTP methods, caching intent, params, non-UI responses, CORS/webhooks
 - `rules/platform.md` — env, `next.config.*`, `typedRoutes`, Proxy, route segment config, deployment-sensitive settings
 
-drift-sensitive behavior는 `references/official/nextjs-docs.md`도 확인합니다.
+drift-sensitive behavior는 `references/official/nextjs-docs.md`도 확인합니다. browser-readable markdown이 필요하면 official pages를 `https://r.jina.ai/https://nextjs.org/docs/...`로 가져옵니다.
 
 ## Step 3: Pre-Change Gates
 
@@ -104,7 +106,7 @@ drift-sensitive behavior는 `references/official/nextjs-docs.md`도 확인합니
 - touched files의 safety, secret, auth, boundary issue는 즉시 차단합니다.
 - broad migration이 필요하지 않다면 touched files를 규칙에 맞춥니다.
 
-### Gate 1: Routing and File Conventions
+### Gate 1: Routing, File Conventions, and Project Structure
 
 | 확인 | 규칙 |
 |---|---|
@@ -112,6 +114,8 @@ drift-sensitive behavior는 `references/official/nextjs-docs.md`도 확인합니
 | 같은 route segment에 `route.ts`와 `page.tsx`를 생성 | 차단 |
 | route group을 URL 변경 수단처럼 사용 | 차단 |
 | private implementation file을 `_folder` 대신 routable segment로 노출 | 차단 |
+| nested domain 또는 layer grouping이 touched code를 더 명확하게 하는데 shared `lib` / `src/lib` organization을 flat하게 강제 | 경고. nested grouping 권장 |
+| repo-local folder preference를 official Next.js law처럼 보고 | 차단 |
 | parallel/intercepted routes를 layout slot 또는 hard-navigation 동작 검토 없이 추가 | 위험도에 따라 경고/차단 |
 
 ### Gate 2: Server and Client Boundaries
@@ -131,7 +135,8 @@ drift-sensitive behavior는 `references/official/nextjs-docs.md`도 확인합니
 | client-only 필요 없이 Client Component에서 초기 UI data fetch | 차단 |
 | 캐시 동작이 우발적이거나 문서화되지 않았거나 오래된 기본값 기반 | 차단 |
 | `cacheComponents` 활성 상태에서 uncached runtime data에 `use cache`, `connection()`, `loading.tsx`, `<Suspense>` 의도가 없음 | 차단 |
-| `use cache` scope 안에서 `cookies()` / `headers()`를 읽고 serializable argument로 전달하지 않음 | 차단 |
+| `use cache` scope 안에서 `cookies()` / `headers()`를 읽고 serializable argument로 전달하지 않음 | 정당화된 experimental `use cache: private`를 명시적으로 쓰는 경우가 아니면 차단 |
+| 새 App Router 작업에 `connection()` 대신 `unstable_noStore` 추가 | legacy code 유지보수가 아니면 차단 |
 | mutation에 `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect freshness 또는 문서화된 대안이 없음 | 차단 |
 
 ### Gate 4: Server Actions
@@ -151,6 +156,7 @@ drift-sensitive behavior는 `references/official/nextjs-docs.md`도 확인합니
 | UI-only flow에 Route Handler를 기본 internal RPC로 사용 | 차단 |
 | Route Handler 안에서 `NextResponse.next()` 사용 | 차단 |
 | correctness가 중요한데 Route Handler caching을 명시하지 않고 가정 | 차단 |
+| Route Handler body 안에 `use cache`를 직접 두고 helper function으로 분리하지 않음 | 차단 |
 | 새 `middleware.ts`를 추가하고 `proxy.ts`를 쓰지 않음 | 차단 |
 | `next.config.*`, headers, redirects, rewrites, render-time logic으로 충분한데 Proxy 추가 | 차단 |
 | Proxy matcher가 없거나 너무 넓거나 metadata/static surface 제외가 필요할 때 누락 | 차단 |
@@ -162,8 +168,8 @@ drift-sensitive behavior는 `references/official/nextjs-docs.md`도 확인합니
 | `.env*` files가 `src/`에서 load된다고 가정 | 차단 |
 | Client code가 non-`NEXT_PUBLIC_` env vars 읽음 | 차단 |
 | runtime client env를 build-time public env처럼 취급 | 차단 |
-| `cacheComponents` 호환성을 보지 않고 route segment config 변경 | 차단 |
-| Cache Components 기대와 함께 `runtime: 'edge'` 사용 | 차단 |
+| `cacheComponents` 활성 상태에서 v16에서 제거된 route segment config options(`dynamic`, `revalidate`, `fetchCache`) 사용 | 차단 |
+| `runtime: 'edge'` 또는 Proxy runtime 가정을 platform compatibility 확인 없이 변경 | 차단 |
 | deployment-sensitive Server Action origin/config 변경이 문서화되지 않음 | 위험도에 따라 경고/차단 |
 
 ## Step 4: Implementation Policy
@@ -178,12 +184,13 @@ claim을 증명하는 가장 작은 프로젝트별 검사를 실행하고 evide
 
 1. project mode가 edited surface와 일치
 2. special files가 유효한 segment에 있고 `page`/`route` 충돌 없음
-3. `'use client'` boundary가 좁고 안전함
-4. client code가 server-only modules 또는 private env를 import하지 않음
-5. data/cache strategy가 명시적이고 현재 docs와 호환
-6. mutation freshness가 `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect flow 또는 문서화된 대안을 사용
-7. Route Handler와 Proxy 사용이 여전히 정당함
-8. `next.config.*`, env loading, route segment config, deployment settings가 일관됨
+3. shared 및 segment-local folders가 project-structure rules를 따르고, boundaries 개선 시 nested `lib` grouping이 허용됨
+4. `'use client'` boundary가 좁고 안전함
+5. client code가 server-only modules 또는 private env를 import하지 않음
+6. data/cache strategy가 명시적이고 현재 docs와 호환
+7. mutation freshness가 `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect flow 또는 문서화된 대안을 사용
+8. Route Handler와 Proxy 사용이 여전히 정당함
+9. `next.config.*`, env loading, route segment config, deployment settings가 일관됨
 
 이 skill folder 자체는 다음을 실행합니다:
 

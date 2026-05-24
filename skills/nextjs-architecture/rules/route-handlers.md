@@ -26,8 +26,10 @@ If a mutation originates from app UI, assume Server Action first and justify `ro
 - Route Handlers are available in the App Router.
 - A `route.ts` file supports standard HTTP method exports: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, and `OPTIONS`.
 - Route Handlers use Web `Request` / `Response` APIs, with `NextRequest` / `NextResponse` when Next.js helpers are needed.
-- Dynamic segment `params` are promise-shaped in current App Router examples; await them before use.
-- Route Handlers share route segment config, but config behavior must be checked when `cacheComponents` is enabled.
+- Dynamic segment `params` are promise-shaped in current App Router examples; await them before use or use the global `RouteContext<'/route/[id]'>` helper for typed params.
+- Route Handlers share route segment config, but with `cacheComponents` enabled the v16 removed options (`dynamic`, `revalidate`, `fetchCache`) must not be used.
+- Route Handlers are not cached by default in the previous model; only `GET` can opt into caching. Other methods are not cached even when colocated with cached `GET`.
+- With Cache Components enabled, `GET` Route Handlers follow the same prerendering model as UI routes: request-time by default, prerenderable when no uncached/runtime data is accessed, and cacheable through helper functions marked `use cache`.
 
 ## Hard Rules
 
@@ -37,12 +39,15 @@ If a mutation originates from app UI, assume Server Action first and justify `ro
 | Route Handler used as default internal RPC for a UI-only flow | BLOCKED unless HTTP semantics are required |
 | `NextResponse.next()` used inside a Route Handler | BLOCKED. That behavior belongs in Proxy |
 | Route Handler caching assumed from old defaults without checking current behavior | BLOCKED |
+| `use cache` placed directly inside a Route Handler body instead of an extracted helper | BLOCKED |
+| `params` used synchronously instead of awaited in current App Router Route Handler examples | BLOCKED |
 | Custom Route Handler duplicates built-in metadata files such as sitemap, robots, icons, or Open Graph images without need | WARNING/BLOCKED by risk |
 
 ## Cache and Freshness
 
-- For cached Route Handler data, state whether you use `revalidate`, `cacheTag`, `revalidateTag`, `generateStaticParams`, or another explicit strategy.
-- When Cache Components are enabled, verify whether Route Handler prerendering follows the same model as pages for the target version.
+- In the previous caching model, cache `GET` handlers only with explicit route config such as `dynamic = 'force-static'` or another documented strategy.
+- With Cache Components enabled, `GET` handlers follow the UI-route prerendering model; put `use cache` in helper functions and use `cacheLife` / `cacheTag` where appropriate.
+- For freshness, state whether you use `cacheTag`, `revalidateTag(tag, 'max')`, `revalidateTag(tag, { expire: 0 })` for webhook-like immediate expiry, `revalidatePath`, or another explicit strategy.
 - Do not rely on undocumented `GET` caching defaults for correctness-critical endpoints.
 
 ## Decision Rule

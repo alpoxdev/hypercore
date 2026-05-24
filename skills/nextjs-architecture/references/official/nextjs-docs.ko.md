@@ -2,7 +2,9 @@
 
 > 이 skill이 의존하는 공식 문서 surface입니다. behavior가 drift되거나 rule이 모호하면 다시 확인합니다.
 
-Last verified: 2026-05-05.
+Last verified: 2026-05-24 against latest stable Next.js 16.2.6 (`npm dist-tag latest`).
+
+Reader access rule: official docs를 다시 확인할 때는 `https://r.jina.ai/https://nextjs.org/docs/...` 형식의 Jina Reader markdown URL을 우선 사용하여 browser rendering에 의존하지 않고 현재 page text를 검사합니다. 아래 canonical URL은 원본 source URL로 유지합니다.
 
 ## Core Sources
 
@@ -28,7 +30,7 @@ Last verified: 2026-05-05.
 
 - Caching
   URL: `https://nextjs.org/docs/app/getting-started/caching`
-  Use for: Cache Components, runtime data handling, `connection()`, `use cache`, rendering model, Suspense requirements.
+  Use for: Cache Components, runtime data handling, `connection()`, `use cache`, `use cache: remote`, rendering model, Route Handler Cache Components note, Suspense requirements.
 
 - Caching and Revalidating
   URL: `https://nextjs.org/docs/app/getting-started/caching-and-revalidating`
@@ -36,7 +38,15 @@ Last verified: 2026-05-05.
 
 - `use cache`
   URL: `https://nextjs.org/docs/app/api-reference/directives/use-cache`
-  Use for: `cacheComponents` requirement, cached scopes, cache keys, serialization constraints, `cacheLife`, `cacheTag`, platform support.
+  Use for: `cacheComponents` requirement, cached scopes, cache keys, serialization constraints, request-time API restrictions, `cacheLife`, `cacheTag`, platform support.
+
+- `use cache: private`
+  URL: `https://nextjs.org/docs/app/api-reference/directives/use-cache-private`
+  Use for: experimental private cache behavior, request API exceptions, browser-memory-only constraints, production-risk review.
+
+- `use cache: remote`
+  URL: `https://nextjs.org/docs/app/api-reference/directives/use-cache-remote`
+  Use for: durable shared cache tradeoffs, `cacheHandlers`, runtime-data cache keys, nesting rules, cost/latency review.
 
 - `cacheComponents`
   URL: `https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents`
@@ -54,17 +64,21 @@ Last verified: 2026-05-05.
   URL: `https://nextjs.org/docs/app/api-reference/directives/use-server`
   Use for: dedicated action files, inline Server Functions, auth/authz expectations.
 
-- Route Handlers
+- Route Handlers guide
+  URL: `https://nextjs.org/docs/app/getting-started/route-handlers`
+  Use for: default caching behavior, Cache Components `GET` prerendering model, `use cache` helper placement, special metadata handlers, route resolution.
+
+- Route Handlers API
   URL: `https://nextjs.org/docs/app/api-reference/file-conventions/route`
-  Use for: `route.ts`, HTTP method exports, Web Request/Response APIs, cookies/headers, dynamic params, CORS, webhooks, streaming, non-UI responses.
+  Use for: `route.ts`, HTTP method exports, Web Request/Response APIs, cookies/headers, promise-shaped dynamic params, `RouteContext`, CORS, webhooks, streaming, non-UI responses.
 
 - Route Segment Config
   URL: `https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config`
-  Use for: `dynamic`, `dynamicParams`, `revalidate`, `fetchCache`, `runtime`, `preferredRegion`, `maxDuration`, `cacheComponents` compatibility warning.
+  Use for: current `dynamicParams`, `runtime`, `preferredRegion`, `maxDuration`, 그리고 `cacheComponents` 활성 시 `dynamic`, `revalidate`, `fetchCache`의 v16 removal.
 
 - Proxy
   URL: `https://nextjs.org/docs/app/api-reference/file-conventions/proxy`
-  Use for: `proxy.ts`, matcher placement, pre-render request handling, last-resort Proxy, Middleware-to-Proxy migration.
+  Use for: `proxy.ts`, static matcher placement, `_next/static` / `_next/image` / public assets negative matching, pre-render request handling, Node.js runtime default, last-resort Proxy, Middleware-to-Proxy migration.
 
 - Environment Variables
   URL: `https://nextjs.org/docs/app/guides/environment-variables`
@@ -80,16 +94,29 @@ Last verified: 2026-05-05.
 
 - Authentication
   URL: `https://nextjs.org/docs/app/guides/authentication`
-  Use for: multi-entry-point auth cautions, Server Action access, route protection patterns.
+  Use for: multi-entry-point auth cautions, Server Action access, Proxy optimistic checks, route protection patterns.
+
+- `connection`
+  URL: `https://nextjs.org/docs/app/api-reference/functions/connection`
+  Use for: request-time rendering opt-in 및 deprecated `unstable_noStore` replacement guidance.
+
+- `unstable_noStore`
+  URL: `https://nextjs.org/docs/app/api-reference/functions/unstable_noStore`
+  Use for: legacy maintenance only; v15+ docs는 대신 `connection`을 권장합니다.
+
+- `authInterrupts`
+  URL: `https://nextjs.org/docs/app/api-reference/config/next-config-js/authInterrupts`
+  Use for: experimental `forbidden` / `unauthorized` enablement 및 production-risk review.
 
 ## Drift Watchlist
 
 다음 behavior에 의존하기 전 공식 문서를 다시 확인합니다:
 
-- Cache Components defaults, `cacheComponents`, `use cache`, `cacheLife`, `cacheTag`, `updateTag`, `revalidateTag` profile semantics.
-- `cacheComponents`와 Route Segment Config availability/compatibility.
-- Route Handler `GET` caching/prerender behavior.
-- Proxy runtime/platform support 및 Middleware migration guidance.
+- Cache Components defaults, `cacheComponents`, `use cache`, `use cache: remote`, experimental `use cache: private`, `cacheLife`, `cacheTag`, `updateTag`, `revalidateTag` profile semantics.
+- Route Segment Config availability, 특히 `cacheComponents` 하위 v16 removals.
+- Route Handler `GET` caching/prerender behavior 및 `use cache` helper placement.
+- Proxy runtime/platform support, static matcher behavior, Middleware migration guidance.
+- Experimental `authInterrupts`, `forbidden`, `unauthorized` stability.
 - Server Action origin, encryption, allowed origin settings.
 
 ## Interpretation Rules

@@ -33,7 +33,7 @@ app/
 | `loading.tsx` | Suspense fallback for the segment |
 | `error.tsx` | Segment-level error boundary; must be a Client Component |
 | `not-found.tsx` | Segment-level 404 UI |
-| `forbidden.tsx` / `unauthorized.tsx` | Auth interruption UI when the project intentionally enables that feature |
+| `forbidden.tsx` / `unauthorized.tsx` | Experimental auth interruption UI; requires `experimental.authInterrupts` and explicit risk acceptance |
 | `route.ts` | HTTP-native Route Handler |
 
 ## Non-Routable Organization
@@ -46,7 +46,7 @@ app/
 | `@slot` | Parallel route slot passed to the parent layout |
 | `(.)`, `(..)`, `(...)` | Intercepting route patterns for modal/overlay style navigation |
 
-Use private folders for colocated implementation files that must not become route segments.
+Use private folders for colocated implementation files that must not become route segments. For shared/global folder structure, `src`, and nested `lib` grouping, read `rules/project-structure.md`.
 
 ## Hard Rules
 
