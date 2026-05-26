@@ -88,11 +88,11 @@ Read support files in this order:
 
 <mandatory_reasoning>
 
-## Mandatory Sequential Thinking
+## Mandatory Structured Reasoning
 
-- Always use the `sequential-thinking` tool before starting crawl design, extraction strategy, or code generation decisions.
-- Run `sequential-thinking` for each major phase: discovery, method selection, and implementation planning.
-- If `sequential-thinking` is unavailable, stop and report the blocker instead of continuing without structured reasoning.
+- Always perform an internal structured reasoning pass before crawl design, extraction strategy, or code generation decisions.
+- Run a structured reasoning pass for each major phase: discovery, method selection, and implementation planning.
+- Do not require an external reasoning MCP. If the task is too unclear to reason through locally, stop and report the blocker instead of continuing without a structure plan.
 
 </mandatory_reasoning>
 
@@ -224,7 +224,7 @@ For blocked or unsafe runs:
 ✅ Selector extraction validated
 ✅ Findings documented under .hypercore/crawler/
 ✅ Crawler code generated
-✅ sequential-thinking trace recorded for major phases
+✅ Structured reasoning notes recorded for major phases
 ✅ legal, rate-limit, and bot-detection blockers documented before scaling
 ✅ blocked runs reported explicitly when crawler code is unsafe or premature
 ✅ `ACTION.json` status and `site_dir` match the actual run outputs

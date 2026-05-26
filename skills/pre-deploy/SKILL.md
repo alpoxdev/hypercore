@@ -1,7 +1,7 @@
 ---
 name: pre-deploy
 description: "[Hyper] Run deploy-readiness validation and fix reproduced lint/typecheck/build blockers for Node.js, Rust, and Python repos. Use for pre-deploy checks, deploy-ready requests, or final quality/build gates before deployment."
-allowed-tools: Bash Read Edit Write TodoWrite mcp__sequential-thinking__sequentialthinking
+allowed-tools: Bash Read Edit Write TodoWrite
 compatibility: Requires local toolchains for at least one supported stack (node/rust/python), scripts under skills/pre-deploy/scripts, and optionally a runtime with bounded subagent/background-agent support for independent remediation lanes.
 ---
 
@@ -81,15 +81,15 @@ Notes:
 
 <mandatory_reasoning>
 
-## Adaptive Sequential Thinking
+## Adaptive Structured Reasoning
 
-Use `sequential-thinking` before implementation and scale depth to the failure shape:
+Before implementation, perform an internal structured reasoning pass and scale depth to the failure shape:
 
-| Complexity | Thinking depth | Signals |
+| Complexity | Reasoning depth | Signals |
 |------|------|------|
-| Simple | 3 thoughts | One stack, one failing command, clear root cause, low-risk fix |
-| Medium | 5 thoughts | Multiple related failures in one stack, moderate config/dependency impact |
-| Complex | 7+ thoughts | Multiple stacks/workspaces, ambiguous fix strategy, shared config, dependency chain, or CI/deploy boundary |
+| Simple | 3 steps | One stack, one failing command, clear root cause, low-risk fix |
+| Medium | 5 steps | Multiple related failures in one stack, moderate config/dependency impact |
+| Complex | 7+ steps | Multiple stacks/workspaces, ambiguous fix strategy, shared config, dependency chain, or CI/deploy boundary |
 
 Recommended sequence: classify -> read exact failure output -> identify root cause -> choose targeted validation -> decide direct fix, parallel lanes, tracked remediation, or handoff.
 
@@ -197,7 +197,7 @@ Execution checklist:
 - [ ] Full `skills/pre-deploy/scripts/deploy-check.sh` run first for supported stacks
 - [ ] Failures tracked by stack/command/priority
 - [ ] Root-cause evidence collected before edits
-- [ ] Sequential thinking completed at the right depth
+- [ ] Structured reasoning pass completed at the right depth
 - [ ] Parallel lanes, if used, were independent and bounded
 - [ ] Targeted validation run after each fix
 - [ ] Full deploy check passed before readiness claim

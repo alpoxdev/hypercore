@@ -62,13 +62,13 @@ What build/CI/deploy failure should be fixed?
 
 <mandatory_reasoning>
 
-## Mandatory Sequential Thinking
+## Mandatory Structured Reasoning
 
-Always run `sequential-thinking` before implementation. Depth scales with complexity:
+Before implementation, perform an internal structured reasoning pass. Depth scales with complexity:
 
-- **Simple (3 thoughts)**: Identify failing step -> determine fix -> verify approach
-- **Medium (5 thoughts)**: Classify -> reproduce locally -> hypothesize -> compare options -> recommend
-- **Complex (7+ thoughts)**: Classify -> reproduce -> analyze dependency chain -> check CI config -> hypothesize multiple causes -> compare options -> assess cross-cutting impact -> recommend
+- **Simple (3 steps)**: Identify failing step -> determine fix -> verify approach
+- **Medium (5 steps)**: Classify -> reproduce locally -> hypothesize -> compare options -> recommend
+- **Complex (7+ steps)**: Classify -> reproduce -> analyze dependency chain -> check CI config -> hypothesize multiple causes -> compare options -> assess cross-cutting impact -> recommend
 
 Recommended sequence:
 
@@ -86,7 +86,7 @@ Before any edit, collect root-cause evidence from build logs, CI output, or depl
 
 ## Complexity Classification
 
-Classify immediately after sequential-thinking:
+Classify immediately after the structured reasoning pass:
 
 | Complexity | Signals | Examples | Path |
 |------------|---------|----------|------|
@@ -164,7 +164,7 @@ Check these areas in order of likelihood:
 
 | Step | Task | Tool |
 |------|------|------|
-| 1 | Validate input, sequential-thinking (3 thoughts) | sequential-thinking |
+| 1 | Validate input, structured reasoning pass (3 steps) | internal reasoning |
 | 2 | Classify as simple | - |
 | 3 | Reproduce failure locally, read error output | Bash + Read |
 | 4 | Identify root cause from logs/config | Read/Grep/Glob |
@@ -176,7 +176,7 @@ Check these areas in order of likelihood:
 
 | Step | Task | Tool |
 |------|------|------|
-| 1 | Validate input, sequential-thinking (7+ thoughts) | sequential-thinking |
+| 1 | Validate input, structured reasoning pass (7+ steps) | internal reasoning |
 | 2 | Classify as complex, create `.hypercore/deploy-fix/flow.json` | Write |
 | 3 | Deep investigation: reproduce, analyze logs, trace dependency chain -> update flow `investigate: completed` | Bash + Read/Grep/Glob + Edit |
 | 4 | Present 2-3 fix options -> update flow `options: completed` | Edit |
@@ -254,7 +254,7 @@ For complex path: also update `.hypercore/deploy-fix/flow.json` status to `compl
 Execution checklist:
 
 - [ ] ARGUMENT validated
-- [ ] sequential-thinking completed (depth matches complexity)
+- [ ] Structured reasoning pass completed (depth matches complexity)
 - [ ] Complexity classified (simple/complex)
 - [ ] Flow JSON created and maintained (complex path only)
 - [ ] Root-cause evidence collected from logs/config

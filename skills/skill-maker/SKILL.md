@@ -162,10 +162,10 @@ Read in this order:
 
 <mandatory_reasoning>
 
-## Mandatory Sequential Thinking
+## Mandatory Structured Reasoning
 
-- Use `sequential-thinking` before major skill creation or refactor work when that capability is available.
-- If `sequential-thinking` is unavailable, use an explicit local reasoning note as the fallback and record the skipped capability in validation notes.
+- Before major skill creation or refactor work, perform an internal structured reasoning pass. Do not require any external reasoning MCP or dedicated reasoning tool.
+- Record the structure plan in validation notes when the refactor is substantial enough to need a durable trace.
 - In create mode: design the trigger, anatomy, resource split, and validation strategy first.
 - In refactor mode: identify weak triggering, mixed concerns, poor resource placement, and missing validation before editing.
 - Do not write or refactor a skill until the structure plan is clear.
@@ -211,7 +211,7 @@ Read in this order:
 |------|------|------|
 | 0 | Confirm the target scope and whether this is a skill, not just a document | Scope decision |
 | 1 | Read the target skill and directly linked support files needed for the chosen mode | Baseline |
-| 2 | Build the structure plan with `sequential-thinking` or the recorded fallback | Section/resource plan |
+| 2 | Build the structure plan with an internal structured reasoning pass | Section/resource plan |
 | 3 | Write or refactor the core `SKILL.md` | Updated core skill |
 | 4 | Place supporting detail into rules, references, scripts, or assets | Supporting files |
 | 5 | Run trigger, anatomy, context-contract, and validation readback checks | Review notes |

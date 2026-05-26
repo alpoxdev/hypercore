@@ -6,7 +6,7 @@
 
 ### Required 1: Plan before major edits
 
-Use `sequential-thinking` before non-trivial create or refactor work.
+Use an internal structured reasoning pass before non-trivial create or refactor work.
 
 | Complexity | Minimum steps | Typical work |
 |------|------|------|

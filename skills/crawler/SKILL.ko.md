@@ -88,11 +88,11 @@ description: Playwriter와 CDP로 웹사이트를 조사해 크롤링 방식을 
 
 <mandatory_reasoning>
 
-## 필수 Sequential Thinking
+## 필수 구조화 사고
 
-- 크롤링 설계, 추출 전략, 코드 생성 결정을 시작하기 전에 항상 `sequential-thinking`을 사용합니다.
-- discovery, 방식 선택, 구현 계획의 각 주요 단계마다 `sequential-thinking`을 실행합니다.
-- `sequential-thinking`을 사용할 수 없으면 구조화된 추론 없이 진행하지 말고 blocker를 보고합니다.
+- 크롤링 설계, 추출 전략, 코드 생성 결정을 시작하기 전에 항상 내부 구조화 사고 패스를 수행합니다.
+- discovery, 방식 선택, 구현 계획의 각 주요 단계마다 구조화 사고 패스를 수행합니다.
+- 외부 reasoning MCP를 요구하지 않습니다. 로컬에서 구조화해 판단하기 어려울 만큼 불명확하면 구조 계획 없이 진행하지 말고 blocker를 보고합니다.
 
 </mandatory_reasoning>
 
@@ -224,7 +224,7 @@ description: Playwriter와 CDP로 웹사이트를 조사해 크롤링 방식을 
 ✅ selector 추출 검증
 ✅ .hypercore/crawler/ 문서화
 ✅ 크롤러 코드 생성
-✅ 주요 단계별 sequential-thinking 기록
+✅ 주요 단계별 구조화 사고 메모 기록
 ✅ 확장 전에 법적 제약, rate limit, 봇 탐지 blocker 문서화
 ✅ 크롤러 코드가 이르거나 위험할 때 blocked run을 명시적으로 보고
 ✅ `ACTION.json`의 status와 `site_dir`가 실제 산출물과 일치

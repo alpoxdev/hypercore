@@ -117,7 +117,7 @@ Read in this order:
 ### Phase rules
 
 - If the topic is missing, ask for it before any search.
-- If the request is broad, high-stakes, or `--deep`, use sequential thinking to define 3-5 research questions, scope, date constraints, and stop conditions before searching.
+- If the request is broad, high-stakes, or `--deep`, perform an internal structured reasoning pass to define 3-5 research questions, scope, date constraints, and stop conditions before searching.
 - Use parallel research only when the questions or channels are independent enough to dedupe and synthesize later; load `rules/parallel-research.md` first.
 - If the request is narrow and low-risk, state a short plan and start collecting without turning the skill into a planning exercise.
 - Prefer repo-local search for internal project questions, official docs for package or API questions, GitHub evidence for release or implementation history, and live web sources for market, news, or trend work.

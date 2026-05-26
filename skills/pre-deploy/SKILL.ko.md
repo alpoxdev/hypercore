@@ -1,7 +1,7 @@
 ---
 name: pre-deploy
 description: Node.js, Rust, Python 저장소의 deploy-readiness를 검증하고 재현된 lint/typecheck/build blocker를 수정합니다. "pre-deploy check", "deploy-ready", "배포 전 blocker 수정" 요청에 사용합니다.
-allowed-tools: Bash Read Edit Write TodoWrite mcp__sequential-thinking__sequentialthinking
+allowed-tools: Bash Read Edit Write TodoWrite
 compatibility: 지원 스택(node/rust/python) 중 하나 이상의 로컬 툴체인, skills/pre-deploy/scripts 하위 스크립트가 필요하며, 독립 remediation lane에는 bounded subagent/background-agent 기능이 있으면 활용할 수 있습니다.
 ---
 
@@ -81,15 +81,15 @@ Detection이 정확하도록 현재 작업 디렉터리를 target root로 설정
 
 <mandatory_reasoning>
 
-## Adaptive Sequential Thinking
+## 적응형 구조화 사고
 
-구현 전 `sequential-thinking`을 사용하고 실패 형태에 따라 깊이를 조절합니다.
+구현 전 내부 구조화 사고 패스를 수행하고 실패 형태에 따라 깊이를 조절합니다.
 
-| 복잡도 | 사고 깊이 | 신호 |
+| 복잡도 | 추론 깊이 | 신호 |
 |------|------|------|
-| Simple | 3 thoughts | 하나의 stack, 하나의 실패 command, 명확한 root cause, 낮은 위험 수정 |
-| Medium | 5 thoughts | 한 stack 안의 여러 관련 실패, 중간 수준 config/dependency 영향 |
-| Complex | 7+ thoughts | 여러 stack/workspace, 모호한 fix strategy, shared config, dependency chain, CI/deploy 경계 |
+| Simple | 3단계 | 하나의 stack, 하나의 실패 command, 명확한 root cause, 낮은 위험 수정 |
+| Medium | 5단계 | 한 stack 안의 여러 관련 실패, 중간 수준 config/dependency 영향 |
+| Complex | 7단계 이상 | 여러 stack/workspace, 모호한 fix strategy, shared config, dependency chain, CI/deploy 경계 |
 
 권장 순서: classify -> 정확한 실패 출력 읽기 -> root cause 식별 -> targeted validation 선택 -> direct fix, parallel lane, tracked remediation, handoff 중 결정.
 
@@ -197,7 +197,7 @@ Execution checklist:
 - [ ] 지원 stack에서는 full `skills/pre-deploy/scripts/deploy-check.sh`를 먼저 실행함
 - [ ] 실패가 stack/command/priority 기준으로 추적됨
 - [ ] 수정 전 root-cause evidence를 수집함
-- [ ] 적절한 깊이의 sequential thinking 완료
+- [ ] 적절한 깊이의 구조화 사고 패스 완료
 - [ ] parallel lane을 썼다면 독립적이고 bounded했음
 - [ ] 각 수정 후 targeted validation 실행
 - [ ] readiness claim 전 full deploy check 통과

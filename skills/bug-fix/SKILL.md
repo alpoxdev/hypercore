@@ -57,13 +57,13 @@ Which bug should be fixed?
 
 <mandatory_reasoning>
 
-## Mandatory Sequential Thinking
+## Mandatory Structured Reasoning
 
-Always run `sequential-thinking` before implementation. Depth scales with complexity:
+Before implementation, perform an internal structured reasoning pass. Depth scales with complexity:
 
-- **Simple (3 thoughts)**: Identify cause → determine fix → verify approach
-- **Medium (5 thoughts)**: Classify → reproduce → hypothesize → compare options → recommend
-- **Complex (7+ thoughts)**: Classify → reproduce → hypothesize multiple causes → explore dependencies → compare options → assess cross-cutting impact → recommend
+- **Simple (3 steps)**: Identify cause → determine fix → verify approach
+- **Medium (5 steps)**: Classify → reproduce → hypothesize → compare options → recommend
+- **Complex (7+ steps)**: Classify → reproduce → hypothesize multiple causes → explore dependencies → compare options → assess cross-cutting impact → recommend
 
 Recommended sequence:
 
@@ -81,7 +81,7 @@ Before any edit, collect root-cause evidence and reduce the problem to a minimal
 
 ## Complexity Classification
 
-Classify immediately after sequential-thinking:
+Classify immediately after the structured reasoning pass:
 
 | Complexity | Signals | Path |
 |------------|---------|------|
@@ -143,7 +143,7 @@ Use one of these branches explicitly:
 
 | Step | Task | Tool |
 |------|------|------|
-| 1 | Validate input, sequential-thinking (3 thoughts) | sequential-thinking |
+| 1 | Validate input, structured reasoning pass (3 steps) | internal reasoning |
 | 2 | Classify as simple | - |
 | 3 | Explore relevant code, identify root cause | Read/Grep/Glob |
 | 4 | Announce fix path and implement | Edit |
@@ -154,7 +154,7 @@ Use one of these branches explicitly:
 
 | Step | Task | Tool |
 |------|------|------|
-| 1 | Validate input, sequential-thinking (7+ thoughts) | sequential-thinking |
+| 1 | Validate input, structured reasoning pass (7+ steps) | internal reasoning |
 | 2 | Classify as complex, create `.hypercore/bug-fix/flow.json` | Write |
 | 3 | Deep investigation → update flow `diagnose: completed` | Read/Grep/Glob + Edit |
 | 4 | Present 2-3 fix options → update flow `options: completed` | Edit |
@@ -231,7 +231,7 @@ For complex path: also update `.hypercore/bug-fix/flow.json` status to `complete
 Execution checklist:
 
 - [ ] ARGUMENT validated
-- [ ] sequential-thinking completed (depth matches complexity)
+- [ ] Structured reasoning pass completed (depth matches complexity)
 - [ ] Complexity classified (simple/complex)
 - [ ] Flow JSON created and maintained (complex path only)
 - [ ] Root-cause evidence collected

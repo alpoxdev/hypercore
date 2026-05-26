@@ -4,7 +4,7 @@ description: "[Hyper] Create and refactor AI-readable docs, instruction bases, r
 compatibility: Works best with read/edit/write and shell search tools for document analysis, source verification, and quality checks.
 ---
 
-@rules/sequential-thinking.md
+@rules/structured-reasoning.md
 @rules/context-engineering.md
 @rules/harness-engineering.md
 @rules/sourcing.md
@@ -127,7 +127,7 @@ Read in this order:
 
 1. The core `SKILL.md` to decide whether the task is `create`, `refactor`, or a route-away case.
 2. For project-guidance updates, read the target repo root guidance (`AGENTS.md`, `CLAUDE.md`, `README.md`, or equivalent local docs) before changing derived guidance.
-3. `rules/sequential-thinking.md`, `rules/context-engineering.md`, and `rules/harness-engineering.md` when planning document structure, context shape, or harness coverage.
+3. `rules/structured-reasoning.md`, `rules/context-engineering.md`, and `rules/harness-engineering.md` when planning document structure, context shape, or harness coverage.
 4. `rules/sourcing.md` when claims need external/current evidence, source grading, query hygiene, or a source ledger.
 5. `rules/validation.md` when defining completion contracts, scope completeness, verification menus, trace assertions, or final reports.
 6. `rules/required-behaviors.md` and `rules/forbidden-patterns.md` before declaring the document done.
@@ -137,9 +137,9 @@ Read in this order:
 
 <mandatory_reasoning>
 
-## Mandatory Sequential Thinking
+## Mandatory Structured Reasoning
 
-- Always use `sequential-thinking` before major create/refactor work.
+- Always perform an internal structured reasoning pass before major create/refactor work.
 - In create mode: design section structure, layer placement, source policy, and verification gates first.
 - In refactor mode: identify redundancy, ambiguity, stale references, mixed concerns, missing source evidence, and missing validation before editing.
 - Do not edit documents before the structure plan is complete.
@@ -180,7 +180,7 @@ Apply context-engineering defaults to every major edit:
 |------|------|------|
 | 0 | Confirm the target layer (`core` / `reference` / `source ledger` / `local overlay` / `validation artifact`) before writing | Placement decision |
 | 1 | Read target docs and classify mode (`create`/`refactor`/route-away) | Scope + mode |
-| 2 | Build structure plan with `sequential-thinking` | Section/resource plan |
+| 2 | Build the structure plan with an internal structured reasoning pass | Section/resource plan |
 | 3 | Write/refactor canonical content | Updated document |
 | 4 | Add or refresh references, source ledgers, or eval artifacts only where the claims require them | Support layer |
 | 5 | Run a readback pass for drift, mixed concerns, authority conflicts, and layer placement | Review notes |

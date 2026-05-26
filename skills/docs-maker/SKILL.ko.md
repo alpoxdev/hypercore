@@ -4,7 +4,7 @@ description: 컨텍스트, 프롬프트, 도구, 평가, 출처 검증, 안전, 
 compatibility: 문서 분석, 출처 검증, 품질 점검을 위해 read/edit/write 및 셸 검색 도구가 있는 환경에서 가장 잘 동작합니다.
 ---
 
-@rules/sequential-thinking.ko.md
+@rules/structured-reasoning.ko.md
 @rules/context-engineering.ko.md
 @rules/harness-engineering.ko.md
 @rules/sourcing.ko.md
@@ -127,7 +127,7 @@ provider-neutral이고 안정적이며 문서 실행에 필수인 규칙만 cano
 
 1. 코어 `SKILL.ko.md`를 읽어 작업이 `create`, `refactor`, 또는 route-away 사례인지 결정합니다.
 2. 프로젝트 guidance 업데이트에서는 파생 가이드를 바꾸기 전에 대상 repo의 루트 가이드(`AGENTS.md`, `CLAUDE.md`, `README.md` 또는 동등한 로컬 문서)를 읽습니다.
-3. 문서 구조, context shape, harness 범위를 계획할 때 `rules/sequential-thinking.ko.md`, `rules/context-engineering.ko.md`, `rules/harness-engineering.ko.md`를 읽습니다.
+3. 문서 구조, context shape, harness 범위를 계획할 때 `rules/structured-reasoning.ko.md`, `rules/context-engineering.ko.md`, `rules/harness-engineering.ko.md`를 읽습니다.
 4. 외부/최신 근거, source grading, query hygiene, source ledger가 필요하면 `rules/sourcing.ko.md`를 읽습니다.
 5. completion contract, scope completeness, verification menu, trace assertion, final report를 정의할 때 `rules/validation.ko.md`를 읽습니다.
 6. 완료 선언 전 `rules/required-behaviors.ko.md`와 `rules/forbidden-patterns.ko.md`를 읽고 검증합니다.
@@ -137,9 +137,9 @@ provider-neutral이고 안정적이며 문서 실행에 필수인 규칙만 cano
 
 <mandatory_reasoning>
 
-## 필수 Sequential Thinking
+## 필수 구조화 사고
 
-- 주요 create/refactor 작업 전에는 항상 `sequential-thinking`을 사용합니다.
+- 주요 create/refactor 작업 전에는 항상 내부 구조화 사고 패스를 수행합니다.
 - create 모드에서는 섹션 구조, 계층 배치, 출처 정책, 검증 게이트를 먼저 설계합니다.
 - refactor 모드에서는 중복, 모호성, 오래된 참조, 혼합 관심사, 누락된 출처 근거, 누락된 검증을 먼저 식별합니다.
 - 구조 계획이 끝나기 전에는 문서를 수정하지 않습니다.
@@ -180,7 +180,7 @@ provider-neutral이고 안정적이며 문서 실행에 필수인 규칙만 cano
 |------|------|------|
 | 0 | 쓰기 전에 대상 계층(`core` / `reference` / `source ledger` / `local overlay` / `validation artifact`) 확인 | 배치 결정 |
 | 1 | 대상 문서를 읽고 모드(`create`/`refactor`/route-away) 분류 | 범위 + 모드 |
-| 2 | `sequential-thinking`으로 구조 계획 수립 | 섹션/리소스 계획 |
+| 2 | 내부 구조화 사고 패스로 구조 계획 수립 | 섹션/리소스 계획 |
 | 3 | canonical 본문 작성/리팩토링 | 갱신된 문서 |
 | 4 | 주장에 필요한 경우에만 references, source ledgers, eval artifacts 추가/갱신 | 지원 계층 |
 | 5 | drift, mixed concern, authority conflict, layer placement를 readback pass로 점검 | 리뷰 노트 |

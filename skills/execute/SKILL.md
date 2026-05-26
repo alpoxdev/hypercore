@@ -64,11 +64,11 @@ Do not over-interrogate. One round of clarification maximum, then start working.
 
 Classify before thinking. Use these signals:
 
-| Difficulty | Signals | Thinking depth |
+| Difficulty | Signals | Reasoning depth |
 |------------|---------|----------------|
-| **Easy** | Single file, clear scope, familiar pattern, mechanical change | 1-3 thoughts |
-| **Medium** | Multi-file, some ambiguity, moderate scope, requires context gathering | 4-6 thoughts |
-| **Hard** | Cross-cutting, architectural impact, unfamiliar domain, complex interactions | 7+ thoughts |
+| **Easy** | Single file, clear scope, familiar pattern, mechanical change | 1-3 steps |
+| **Medium** | Multi-file, some ambiguity, moderate scope, requires context gathering | 4-6 steps |
+| **Hard** | Cross-cutting, architectural impact, unfamiliar domain, complex interactions | 7+ steps |
 
 For compound tasks (e.g. "refactor + add tests"), classify by the hardest sub-task. Treat the compound as one deliverable, not separate jobs.
 
@@ -78,16 +78,16 @@ When uncertain, round up one level. It is cheaper to over-think slightly than to
 
 <mandatory_reasoning>
 
-## Adaptive Sequential Thinking
+## Adaptive Structured Reasoning
 
-Always run `sequential-thinking` before implementation. The number of thoughts scales with difficulty:
+Before implementation, perform an internal structured reasoning pass. The number of steps scales with difficulty:
 
-**Easy (1-3 thoughts)**:
+**Easy (1-3 steps)**:
 1. What exactly needs to change
 2. Where to change it
 3. How to verify
 
-**Medium (4-6 thoughts)**:
+**Medium (4-6 steps)**:
 1. Scope and deliverable clarity
 2. Relevant code exploration plan
 3. Implementation approach
@@ -95,7 +95,7 @@ Always run `sequential-thinking` before implementation. The number of thoughts s
 5. Verification strategy
 6. (Optional) Alternative approach comparison
 
-**Hard (7+ thoughts)**:
+**Hard (7+ steps)**:
 1. Scope and deliverable clarity
 2. Codebase context and dependencies
 3. Design approach
@@ -137,7 +137,7 @@ Difficulty: [easy/medium/hard] — [one-line reason]
 |------|------|------|
 | 1 | Validate input — identify the deliverable | - |
 | 2 | Classify difficulty (easy/medium/hard) | - |
-| 3 | Think proportionally | sequential-thinking |
+| 3 | Think proportionally with an internal structured reasoning pass | internal reasoning |
 | 4 | Explore relevant code | Read/Grep/Glob |
 | 5 | Implement | Edit/Write |
 | 6 | Validate (typecheck/test/build) | Bash |
@@ -170,7 +170,7 @@ Execution checklist:
 
 - [ ] ARGUMENT validated — deliverable is clear
 - [ ] Difficulty classified
-- [ ] sequential-thinking completed (proportional depth)
+- [ ] Structured reasoning pass completed (proportional depth)
 - [ ] Relevant code read before editing
 - [ ] Implementation complete
 - [ ] Validation executed (typecheck/test/build)
@@ -179,8 +179,8 @@ Execution checklist:
 Forbidden:
 
 - [ ] Presenting options and waiting for selection (this is execute, not diagnose)
-- [ ] Over-thinking easy tasks (1-3 thoughts max for easy)
-- [ ] Under-thinking hard tasks (7+ thoughts minimum for hard)
+- [ ] Over-thinking easy tasks (1-3 steps max for easy)
+- [ ] Under-thinking hard tasks (7+ steps minimum for hard)
 - [ ] Expanding scope beyond what was asked
 - [ ] Claiming completion without running validation
 

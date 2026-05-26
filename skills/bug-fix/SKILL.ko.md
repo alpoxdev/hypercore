@@ -57,9 +57,9 @@ ARGUMENT가 없으면 즉시 질문:
 
 <mandatory_reasoning>
 
-## 필수 순차적 사고
+## 필수 구조화 사고
 
-수정 전에 반드시 `sequential-thinking`을 실행한다. 깊이는 복잡도에 비례:
+수정 전에 내부 구조화 사고 패스를 수행한다. 깊이는 복잡도에 비례:
 
 - **간단 (3단계)**: 원인 파악 → 수정 결정 → 검증 방법 확인
 - **보통 (5단계)**: 분류 → 재현 → 가설 → 옵션 비교 → 추천
@@ -81,7 +81,7 @@ ARGUMENT가 없으면 즉시 질문:
 
 ## 복잡도 분류
 
-sequential-thinking 직후에 즉시 분류:
+구조화 사고 패스 직후에 즉시 분류:
 
 | 복잡도 | 신호 | 경로 |
 |--------|------|------|
@@ -143,7 +143,7 @@ mkdir -p .hypercore/bug-fix
 
 | 단계 | 작업 | 도구 |
 |------|------|------|
-| 1 | 입력 확인, sequential-thinking (3단계) | sequential-thinking |
+| 1 | 입력 확인, 구조화 사고 패스 (3단계) | internal reasoning |
 | 2 | 간단으로 분류 | - |
 | 3 | 관련 코드 탐색, 원인 파악 | Read/Grep/Glob |
 | 4 | 수정 경로 발표 후 구현 | Edit |
@@ -154,7 +154,7 @@ mkdir -p .hypercore/bug-fix
 
 | 단계 | 작업 | 도구 |
 |------|------|------|
-| 1 | 입력 확인, sequential-thinking (7단계 이상) | sequential-thinking |
+| 1 | 입력 확인, 구조화 사고 패스 (7단계 이상) | internal reasoning |
 | 2 | 복잡으로 분류, `.hypercore/bug-fix/flow.json` 생성 | Write |
 | 3 | 심층 조사 → 플로우 `diagnose: completed` 업데이트 | Read/Grep/Glob + Edit |
 | 4 | 수정 옵션 2-3개 제시 → 플로우 `options: completed` 업데이트 | Edit |
@@ -231,7 +231,7 @@ mkdir -p .hypercore/bug-fix
 실행 체크리스트:
 
 - [ ] ARGUMENT 확인 완료
-- [ ] sequential-thinking 실행 완료 (복잡도에 비례한 깊이)
+- [ ] 구조화 사고 패스 완료 (복잡도에 비례한 깊이)
 - [ ] 복잡도 분류 완료 (간단/복잡)
 - [ ] 플로우 JSON 생성 및 유지 (복잡 경로만)
 - [ ] 원인 분석 근거 확보

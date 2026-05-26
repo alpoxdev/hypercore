@@ -10,7 +10,7 @@ Use this rule file when you are actively running the research task.
 
 ## 2. Build A Proportionate Plan
 
-Use sequential thinking when any of these are true:
+Use an internal structured reasoning pass when any of these are true:
 
 - the request is broad or ambiguous
 - the request is high-stakes
