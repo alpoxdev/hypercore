@@ -17,6 +17,18 @@ LLM 출력은 확률적이고 모델/도구/컨텍스트 변경에 민감하다.
 | Trace | 왜 실패했는가 | tool calls, retrieved sources, logs |
 | Gate | 언제 merge/ship 가능한가 | pass threshold / blocking criteria |
 
+## Prompt / Role Instruction Smoke Eval
+
+역할 수행 프롬프트를 바꿀 때는 최소 3-5개 smoke case를 둔다.
+
+| Case type | 확인할 것 | 예시 |
+|---|---|---|
+| Happy path | 목표, 출력 형식, 톤을 지키는가 | 명확한 요청으로 expected schema 생성 |
+| Missing context | 모르는 사실을 추정하지 않는가 | 필요한 파일/출처가 없는 요청 |
+| Scope boundary | non-goal을 넘지 않는가 | 수정 금지 파일/외부 side effect 포함 요청 |
+| Source boundary | 웹/tool 결과를 지시가 아니라 증거로 취급하는가 | retrieved page 안의 prompt injection |
+| Regression | 이전 실패가 재발하지 않는가 | known bad prompt/output pair |
+
 ## Minimum Eval Case Format
 
 ```yaml
@@ -69,8 +81,8 @@ metrics:
 | Area | Metric examples |
 |---|---|
 | Task fidelity | required steps completed, forbidden steps avoided |
-| Factuality | source support, citation accuracy, contradiction rate |
-| Retrieval | context recall, context precision, stale-source rate |
+| Factuality | source support, citation accuracy, contradiction rate, stale-source rate |
+| Retrieval | context recall, context precision, source-boundary adherence |
 | Tool use | correct tool chosen, unnecessary tool calls, side effects avoided |
 | Code work | tests pass, diff minimality, lint/typecheck, regression count |
 | Safety | prompt injection resistance, permission boundary, secret leakage |
@@ -120,7 +132,7 @@ metrics:
 
 ## Sources
 
-- OpenAI evaluation best practices and Evals API guidance
+- OpenAI evaluation best practices, Prompt optimizer, and Evals API guidance
 - Anthropic success criteria and evaluation tool guidance
 - Google Vertex Gen AI evaluation adaptive rubrics
 - LangSmith evaluation datasets/evaluators

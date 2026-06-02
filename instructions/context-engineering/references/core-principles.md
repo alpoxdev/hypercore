@@ -40,7 +40,7 @@ Instruction은 너무 낮으면 edge-case 덤프가 되고, 너무 높으면 실
 
 ## 3. Explicit Contract
 
-좋은 prompt는 요청이 아니라 계약이다.
+좋은 prompt는 요청이 아니라 계약이다. 역할 프롬프트도 ‘전문가처럼 행동하라’가 아니라 목표, 범위, 권한, 근거, 출력, 검증을 가진 작업 계약이어야 한다.
 
 ```xml
 <contract>
@@ -63,7 +63,7 @@ Instruction은 너무 낮으면 edge-case 덤프가 되고, 너무 높으면 실
 
 ## 5. Eval Before Optimization
 
-Instruction을 “더 좋아 보이게” 바꾸기 전에 현재 실패 사례를 수집한다.
+Instruction을 “더 좋아 보이게” 바꾸기 전에 현재 실패 사례를 수집한다. 공식 문서 기반 prompt optimizer나 meta-prompt를 쓰더라도 production 반영 전에는 같은 eval set으로 회귀를 확인한다.
 
 ```text
 Define → Test → Diagnose → Patch → Re-run → Document
@@ -78,3 +78,8 @@ Define → Test → Diagnose → Patch → Re-run → Document
 | Explicit Contract | 목표/범위/권한/검증 명시 |
 | Evidence | 주장보다 근거 우선 |
 | Eval Loop | 개선은 테스트로 증명 |
+
+## Related
+
+- [`prompt-authoring.md`](prompt-authoring.md): 역할 수행 프롬프트 작성 템플릿
+- `.hypercore/research/2026-06-02-official-llm-prompt-instructions-update.md`: 2026-06-02 공식 문서 리서치 근거
