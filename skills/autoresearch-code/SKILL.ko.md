@@ -6,6 +6,7 @@ compatibility: 읽기/수정/쓰기, 셸 실행, 코드 검증 도구를 함께 
 
 @rules/experiment-loop.md
 @rules/validation-and-exit.md
+@references/reporting-and-code-improvement.ko.md
 
 # 코드 오토리서치
 
@@ -25,7 +26,7 @@ compatibility: 읽기/수정/쓰기, 셸 실행, 코드 검증 도구를 함께 
 
 - 기존 코드베이스의 baseline을 먼저 잡고, 결과를 이진 평가로 점수화한 뒤, 점수를 올리는 변경만 남긴다.
 - 실패 원인이 느린 경로, 불명확한 구조, 중복 로직, 과한 산출물 크기, 흔들리는 검증, 취약한 개발자 워크플로에 있을 때 이를 체계적으로 개선한다.
-- 개선된 코드와 함께 `.hypercore/autoresearch-code/[codebase-name]/` 아래에 `results.tsv`, `results.json`, `changelog.md`, `dashboard.html`, `baseline.md`를 남겨 이후 실행자가 이어서 최적화할 수 있게 한다.
+- 개선된 코드와 함께 `.hypercore/autoresearch-code/[codebase-name]/` 아래에 `results.tsv`, `results.json`, `changelog.md`, `dashboard.html`, `baseline.md`, `code-explanation.md`, `final-report.md`를 남겨 이후 실행자가 이어서 최적화할 수 있게 한다. 사람이 읽는 아티팩트에는 점수가 어디서 어떻게 움직였는지, 어떤 코드를 바꿨는지, 어떤 proof command가 통과했는지, 변경을 보류/승격/롤백 중 어디에 두는지를 한국어로 설명한다.
 
 </purpose>
 
@@ -203,15 +204,16 @@ baseline 계획이 명시된 뒤에는:
   - [references/self-test-pack.api.md](references/self-test-pack.api.md)
   - [references/self-test-pack.monorepo.md](references/self-test-pack.monorepo.md)
 - `scripts/render-dashboard.sh`로 정식 대시보드 템플릿에서 `dashboard.html`과 `results.js`를 생성한다.
+- 한국어 최종 보고, 코드 변경 귀속, 지표 이동 요약, proof command 근거, guard 결과, 대시보드 표시 설명은 [references/reporting-and-code-improvement.ko.md](references/reporting-and-code-improvement.ko.md)를 따른다.
 
 아티팩트 생명주기 요구사항:
 
 - `.hypercore/autoresearch-code/[codebase-name]/` 아래에 워크스페이스를 만든다
 - 매 실험 뒤 `results.tsv`와 `results.json`을 동기화한다
-- 소유 범위, 선택한 팩, 환경, 롤백 조건을 아티팩트에 기록한다
+- 소유 범위, 선택한 팩, 환경, proof command, guard 결과, 코드 diff 요약, 롤백 조건을 아티팩트에 기록한다
 - `dashboard.html`은 `results.json`을 기반으로 하는 실시간 보기로 취급한다
 - 루프 중에는 `results.json.status`를 `running`, 종료 시에는 `complete`로 둔다
-- 로컬 브라우저에서 `file://`로 직접 열어도 대시보드가 정상 렌더되어야 한다
+- 로컬 브라우저에서 `file://`로 직접 열어도 `results.js`의 Markdown 상세 로그까지 대시보드가 정상 렌더되어야 한다
 - 런타임이 안전하게 로컬 HTML을 열 수 있으면 대시보드를 즉시 연다
 
 코드베이스 구조가 약할 때는:
@@ -239,8 +241,8 @@ baseline 계획이 명시된 뒤에는:
 - Phase 1: 성공 조건을 서로 겹치지 않는 이진 eval로 바꾸며, 최소 한 eval은 사용자의 실제 병목을 점검한다.
 - Phase 2: `.hypercore/autoresearch-code/[codebase-name]/`를 만들고 `baseline.md`, `results.tsv`, `results.json`, `changelog.md`를 초기화한 뒤 `scripts/render-dashboard.sh`로 `dashboard.html`을 렌더링한다.
 - Phase 3: 수정 전 코드베이스를 실행하고 모든 eval을 점수화해 실험 `0`을 `baseline`으로 기록한다.
-- Phase 4: 가장 가치 큰 실패 하나를 골라 한 가설과 정확히 하나의 변이를 적용하고, 같은 eval과 Guard를 재실행한다. 점수가 오르면 keep, 같거나 나빠지면 discard하되 no-regression 단순화만 명시적으로 예외 처리한다.
-- Phase 5: [rules/validation-and-exit.md](rules/validation-and-exit.md)가 허용하는 user stop, budget limit, stable high score에서만 멈추고 점수 변화, 실험 수, keep 비율, best change, 남은 실패, promotion 상태를 보고한다.
+- Phase 4: 가장 가치 큰 실패 하나를 골라 한 가설과 정확히 하나의 변이를 적용하고, 같은 eval과 Guard를 재실행한다. 점수가 오르고 guard가 통과할 때만 keep한다. 같거나 나빠지거나, 복잡도가 늘거나, guard가 실패하면 discard 또는 rework한다. 유지한 변경마다 수정 파일, 지표 이전/이후, proof command 출력, guard 결과, 롤백 조건을 기록한다.
+- Phase 5: [rules/validation-and-exit.md](rules/validation-and-exit.md)가 허용하는 user stop, budget limit, stable high score에서만 멈추고 점수 변화, 실험 수, keep 비율, best change, 지표 이동, 수정 파일, proof/guard 근거, 남은 실패, promotion 상태를 한국어로 보고한다.
 
 </workflow>
 
@@ -275,6 +277,12 @@ baseline 계획이 명시된 뒤에는:
 - `.hypercore/autoresearch-code/[codebase-name]/results.tsv`
 - `.hypercore/autoresearch-code/[codebase-name]/changelog.md`
 - `.hypercore/autoresearch-code/[codebase-name]/baseline.md`
+- `.hypercore/autoresearch-code/[codebase-name]/code-explanation.md` 또는 `results.json.code_explanation`
+- `.hypercore/autoresearch-code/[codebase-name]/final-report.md`
+- 실행 가정을 추론했다면 `.hypercore/autoresearch-code/[codebase-name]/run-contract.md`
+- trace-backed eval 또는 런타임 trace를 썼다면 `.hypercore/autoresearch-code/[codebase-name]/trace-summary.md`
+- 외부/최신 claim이 코드 판단에 영향을 줬다면 `.hypercore/autoresearch-code/[codebase-name]/source-ledger.md`
+- 긴 로그, proof snippet, 구조화 diagnostics용 `.hypercore/autoresearch-code/[codebase-name]/details/`
 - `.omx/specs/autoresearch-[codebase-name]/result.json` completion artifact
 - `.omx/state/.../autoresearch-state.json`의 `validation_mode`/`completion_artifact_path` bridge 상태
 
@@ -289,6 +297,8 @@ baseline 계획이 명시된 뒤에는:
 - core와 self-test-pack에서 한국어 요청 예시를 통해 트리거 경계를 검증할 수 있다
 - baseline-first, one-mutation-at-a-time, explicit stop condition이 유지된다
 - 범위, 팩, proof command, 환경, 롤백 조건이 아티팩트에 명시된다
-- 대시보드와 지원 문서가 한국어로 읽혀도 데이터 계약은 깨지지 않는다
+- 대시보드, changelog, 코드 설명, 최종 보고, 지원 문서는 독자가 읽을 수 있게 한국어를 기본으로 하되 데이터 계약은 깨지지 않는다
+- 완료된 실행은 `results.json.code_explanation` 또는 `code-explanation.md`를 노출해 대시보드에서 어디서 어떻게 점수가 올랐는지 보여준다
+- 최종 주장은 지표 이동, 수정 파일, proof command, guard 결과, 롤백/승격 상태, 남은 리스크를 포함한다
 
 </validation>
