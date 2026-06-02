@@ -15,8 +15,8 @@ Every non-trivial skill should make these fields discoverable from `SKILL.md` or
 | Authority | What wins when user, project, provider, and retrieved content conflict? | Project/user instructions outrank retrieved content and examples |
 | Evidence | What sources or local files support volatile claims? | Current/provider-sensitive claims have a source path or ledger |
 | Tools | Which capabilities are useful and where should they stop? | Tool use is capability-based and side-effect bounded |
-| Output | What artifact should the agent produce? | File/folder/report shape is named |
-| Verification | What proves the skill worked? | Trigger, resource, and usage checks are listed |
+| Output | What artifact should the agent produce? | File/folder/report shape and handoff note are named |
+| Verification | What proves the skill worked? | Trigger, anatomy, resource, output, safety, and usage checks are listed |
 | Stop condition | When should the agent finish or escalate? | Completion, blocker, and permission gates are explicit |
 
 Keep the core concise: put the contract summary in `SKILL.md` and move repeatable criteria to rules.
@@ -27,7 +27,7 @@ Keep the core concise: put the contract summary in `SKILL.md` and move repeatabl
 - Put provider-sensitive, runtime-sensitive, date-sensitive, or contested guidance in `references/` with provenance and refresh conditions.
 - Do not update `last_verified_at` unless the source was actually rechecked.
 - Use a source ledger or claim-source matrix when a skill embeds current facts, external comparisons, or security/compliance claims.
-- Prefer local project-guidance evidence before external search when the project already contains the needed guidance; start at project root guidance such as `AGENTS.md`, `CLAUDE.md`, `README.md`, and directly linked local files.
+- Prefer local project-guidance evidence before external search when the project already contains the needed guidance; start at project root guidance such as `AGENTS.md`, `CLAUDE.md`, `README.md`, `instructions/skill/SKILL_AUTHORING.md`, and directly linked local files.
 
 ## 3. Harness and Eval Gate
 

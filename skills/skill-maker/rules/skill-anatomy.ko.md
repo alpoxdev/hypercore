@@ -1,16 +1,10 @@
 # 스킬 구조
 
-**목적**: 고품질 스킬이 가져야 할 최소 구조와 배치 규칙을 정의합니다.
+**목적**: 고품질 스킬이 가져야 할 최소 구조와 책임 분리를 정의합니다.
 
 ## 1. 최소 구조
 
-스킬은 기본적으로 다음에서 시작합니다.
-
-- `SKILL.md`
-- 필요 시 규칙 파일
-- 필요 시 references
-- 신뢰성이나 재사용성을 실질적으로 높일 때만 scripts 또는 assets
-- 런타임이나 UI가 필요로 할 때만 선택적 UI 메타데이터(`agents/openai.yaml` 등)
+스킬은 `SKILL.md`에서 시작하고, support file은 triggerability, reliability, reuse, validation을 높일 때만 추가합니다.
 
 권장 구조:
 
@@ -19,100 +13,91 @@ skill-name/
 ├── SKILL.md
 ├── SKILL.ko.md
 ├── rules/
-│   ├── ...
-│   └── example.ko.md
 ├── references/
-│   ├── ...
-│   └── example.ko.md
-├── agents/
-│   └── openai.yaml
 ├── scripts/
-│   └── ...
-└── assets/
-    └── ...
+├── assets/
+└── agents/
 ```
 
-## 2. `SKILL.md`에 둘 것
+| 요소 | 필요성 | 책임 |
+|---|---|---|
+| `SKILL.md` | 필수 | metadata, trigger, core execution contract, workflow, validation |
+| `SKILL.ko.md` | repo 관례 | local/user-facing 사용을 위한 한국어 mirror |
+| `rules/` | 조건부 | 재사용 정책, 판단 기준, validation checklist, anti-pattern |
+| `references/` | 조건부 | 공식 요약, 상세 지식, schema, edge case, long example |
+| `scripts/` | 조건부 | 결정적 helper, validator, formatter, data transform |
+| `assets/` | 조건부 | template, fixture, schema, static output resource |
+| `agents/` | 조건부 | runtime/UI가 소비할 때만 metadata |
+
+## 2. Frontmatter
+
+명확한 discovery metadata를 사용합니다.
+
+```yaml
+---
+name: skill-name
+description: Use this skill when the user asks to ... Do not use for ...
+compatibility: Optional runtime/dependency requirements.
+---
+```
+
+규칙:
+
+- `name`은 lowercase kebab-case이며 가능하면 폴더명과 일치합니다.
+- `description`은 마케팅 문구가 아니라 trigger guidance입니다.
+- `description`은 무엇을 하는지와 언제 쓰는지를 모두 말해야 합니다.
+- `compatibility`는 실제 runtime, network, package, tool, permission 제약이 있을 때만 씁니다.
+- tool allowlist 같은 implementation-specific field는 선택 사항이며 core instruction을 대체하면 안 됩니다.
+
+## 3. 최소 Core Contract
+
+중요한 `SKILL.md`는 다음을 드러내야 합니다.
+
+- output language contract
+- purpose
+- routing rule
+- instruction contract
+- activation examples
+- trigger conditions 또는 supported targets
+- skill architecture 또는 resource model
+- workflow
+- support-file read order 또는 navigation cue
+- required/forbidden behavior
+- validation checklist
+
+instruction contract에는 intent, trigger, scope, authority, evidence, tools, output, verification, stop condition이 드러나야 합니다.
+
+## 4. `SKILL.md`에 둘 것
 
 코어 스킬에는 다음을 둡니다.
 
 - 스킬이 하는 일
-- 언제 써야 하는지
-- 어떤 출력이나 변환을 만들어야 하는지
-- 상위 수준 워크플로
-- 더 깊은 rules 또는 references로 가는 포인터
+- 언제 쓰고 언제 쓰지 않는지
+- 어떤 output 또는 transformation을 만들어야 하는지
+- high-level workflow
+- 필수 authority, safety, stop-condition boundary
+- 더 깊은 rules 또는 references로 가는 pointer
 
-코어 스킬을 전체 지식베이스로 만들지 않습니다.
+코어 스킬을 전체 knowledge base로 만들지 않습니다.
 
-## 3. 마크다운 언어와 번역 페어링
+## 5. 언어와 Mirror Pairing
 
-canonical 스킬 마크다운은 기본적으로 영어로 작성하되, 생성되는 사용자-facing 산출물은 기본적으로 한국어가 되도록 요구합니다.
+canonical skill markdown은 기본적으로 영어로 쓰되, 생성되는 user-facing artifact는 기본 한국어가 되게 합니다.
 
-스킬 폴더 안에서 마크다운 파일을 만들거나 실질적으로 수정할 때는 한국어 형제 번역본을 유지합니다.
+스킬 폴더 안에서 markdown 파일을 만들거나 실질적으로 수정할 때는 한국어 sibling translation을 유지합니다.
 
 - `SKILL.md`는 `SKILL.ko.md`와 짝을 이룹니다.
 - `rules/name.md`는 `rules/name.ko.md`와 짝을 이룹니다.
 - `references/path/name.md`는 `references/path/name.ko.md`와 짝을 이룹니다.
 
-영어 파일을 source of truth로 둡니다. 한국어 번역본에서는 현지화 때문에 작은 표현 조정이 필요한 경우를 제외하고 제목, 섹션 순서, 링크, 예시를 구조적으로 맞춥니다. 어느 entrypoint를 읽어도 산출물, 리포트, 생성 문서, 요약, 검증 메모가 기본적으로 한국어여야 함을 알 수 있도록 모든 코어 스킬 상단에 `<output_language>` 섹션을 추가합니다.
+현지화에 따른 작은 표현 조정을 제외하고 heading, section order, link, example을 구조적으로 정렬합니다.
 
-## 4. Rules에 둘 것
+## 6. Quality Gate
 
-`rules/`에는 다음을 둡니다.
-
-- 재사용 가능한 정책
-- 의사결정 기준
-- 반복되는 패턴
-- 검증 체크리스트
-- 안티패턴
-
-rules는 코어 스킬을 보조해야지, 본문을 그대로 복제하면 안 됩니다.
-
-## 5. References에 둘 것
-
-`references/`에는 다음을 둡니다.
-
-- 도메인 상세 정보
-- 공식 문서 요약
-- 스키마
-- 프레임워크별 노트
-- 공급자 민감 정보
-
-references는 필요할 때만 불러올 상세 정보용입니다.
-
-## 6. Scripts와 Assets에 둘 것
-
-다음 조건이면 `scripts/`를 씁니다.
-
-- 설명보다 결정적 실행이 낫다
-- 같은 코드를 반복 작성하게 된다
-- 워크플로가 깨지기 쉬워 자동화가 이롭다
-
-다음 조건이면 `assets/`를 씁니다.
-
-- 출력 자원을 복사, 채우기, 재사용해야 한다
-- reasoning보다 결과물 제작을 지원하는 파일이다
-
-## 7. 선택적 UI 메타데이터
-
-다음 조건이면 `agents/openai.yaml` 같은 UI 메타데이터를 둡니다.
-
-- 환경이 스킬을 목록, 칩, 카드 형태로 표시한다
-- 런타임이 `SKILL.md`와 별도의 인터페이스 메타데이터를 기대한다
-
-다음 조건이면 생략합니다.
-
-- 환경이 이 메타데이터를 소비하지 않는다
-- 지원하지 않거나 오래된 메타데이터를 중복하게 된다
-- 스킬이 아직 너무 불안정해서 UI 기본값을 주기 이르다
-
-UI 메타데이터는 스킬을 요약해야지, 코어 스킬 지시를 대체하면 안 됩니다.
-
-## 8. 품질 점검
-
-- [ ] 코어 `SKILL.md`만 읽어도 스킬의 역할이 보인다
-- [ ] canonical 마크다운은 영어이고, 새로 만들거나 실질적으로 수정한 각 `*.md` 파일에는 대응되는 한국어 `*.ko.md` 번역본이 있으며, 코어 스킬에 한국어 기본 `<output_language>` 계약이 있다
-- [ ] rules는 정책을 담고 reference 상세를 비대하게 복제하지 않는다
-- [ ] references는 상세 정보를 담고 코어 트리거 논리를 담지 않는다
-- [ ] scripts/assets는 필요한 경우에만 존재한다
-- [ ] 선택적 UI 메타데이터는 의도적으로 있거나, 의도적으로 생략되었다
+- [ ] `SKILL.md`만 읽어도 모든 support file을 보지 않고 스킬을 이해할 수 있음.
+- [ ] Frontmatter가 discovery와 trigger selection을 지원함.
+- [ ] Contract fields가 드러남: intent, trigger, scope, authority, evidence, tools, output, verification, stop.
+- [ ] Rules는 policy를 담고 reference detail을 비대하게 복제하지 않음.
+- [ ] References는 detail을 담고 core trigger logic을 담지 않음.
+- [ ] Scripts/assets는 정당화되고 문서화된 경우에만 존재함.
+- [ ] Optional metadata는 의도적으로 있거나 의도적으로 생략됨.

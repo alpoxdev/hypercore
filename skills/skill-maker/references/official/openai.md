@@ -1,48 +1,64 @@
 # OpenAI Official References for Skill-Maker
 
 ## Refresh Policy
-- last_verified_at: 2026-03-19
+
+- last_verified_at: 2026-06-02
 - refresh_when:
-  - skills guide changes materially
-  - evaluation or state guidance changes in ways that affect skill validation
-  - prompt engineering guidance changes in ways that affect trigger wording
-  - a core skill-maker rule cites OpenAI behavior more directly
+  - Codex skills guidance changes materially
+  - AGENTS.md/custom instruction guidance changes materially
+  - skill evaluation guidance changes in ways that affect validation rules
+  - agent safety or tool-calling guidance changes in ways that affect skill safety gates
 - supports_rules:
   - `rules/trigger-design.md`
-  - `rules/validation-and-iteration.md`
   - `rules/progressive-disclosure.md`
+  - `rules/resource-placement.md`
+  - `rules/context-and-harness-alignment.md`
+  - `rules/validation-and-iteration.md`
 
-## Skills Guide
-- source_url: https://developers.openai.com/api/docs/guides/tools-skills
-- last_verified_at: 2026-03-19
-- applies_to: skills as agent behavior assets
-- summary: Skills guide agent behavior, and local shell usage depends on correct skill file handling.
-- implication_for_skill_maker: A skill must be designed as a triggerable asset, not just a text file.
+## Codex Agent Skills
+
+- source_url: https://developers.openai.com/codex/skills
+- last_verified_at: 2026-06-02
+- applies_to: skill package shape, `name`/`description`, resources, scripts, progressive disclosure
+- summary: Codex skills package instructions, resources, and optional scripts so Codex can reliably follow reusable workflows.
+- implication_for_skill_maker: Treat skills as triggerable execution packages, not standalone prompt text.
+
+## Evaluating Skills
+
+- source_url: https://developers.openai.com/blog/eval-skills
+- last_verified_at: 2026-06-02
+- applies_to: trigger tests, process checks, output style checks, deterministic graders
+- summary: Skill quality should be evaluated with small prompt sets and observable checks for trigger behavior, process adherence, output shape, and efficiency.
+- implication_for_skill_maker: Require trigger smoke tests and validation notes instead of prose-only review.
+
+## AGENTS.md Guide
+
+- source_url: https://developers.openai.com/codex/guides/agents-md
+- last_verified_at: 2026-06-02
+- applies_to: project instruction discovery, scope, precedence, local guidance layering
+- summary: Repository instructions define scoped guidance for agents and should be considered when operating inside a project.
+- implication_for_skill_maker: Local `instructions/` and project rules outrank generic provider examples.
 
 ## Prompt Engineering
+
 - source_url: https://developers.openai.com/api/docs/guides/prompt-engineering
-- last_verified_at: 2026-03-19
-- applies_to: instruction clarity and examples
+- last_verified_at: 2026-06-02
+- applies_to: clear instructions, examples, structured context, explicit output formats
 - summary: Clear instructions, examples, and explicit formatting improve followability.
-- implication_for_skill_maker: Keep core skill instructions explicit and example-backed.
+- implication_for_skill_maker: Core skill instructions should be explicit, example-backed, and contract-shaped.
 
-## Agent Builder
-- source_url: https://developers.openai.com/api/docs/guides/agent-builder
-- last_verified_at: 2026-03-19
-- applies_to: system design with tools and guardrails
-- summary: Agents are systems composed of instructions, tools, guardrails, and handoffs.
-- implication_for_skill_maker: Skills should document the full operational surface when needed, not only prose guidance.
+## Evaluation Best Practices
 
-## Working with Evals
-- source_url: https://developers.openai.com/api/docs/guides/evals
-- last_verified_at: 2026-03-19
-- applies_to: evaluation criteria
-- summary: Evaluations need data sources and testing criteria or graders.
-- implication_for_skill_maker: Skill validation should define observable trigger and usage checks.
+- source_url: https://developers.openai.com/api/docs/guides/evaluation-best-practices
+- last_verified_at: 2026-06-02
+- applies_to: AI system variability, eval-backed iteration
+- summary: Model behavior varies, so production-facing behavior needs evaluations rather than intuition.
+- implication_for_skill_maker: Important skill changes should include at least a small eval or smoke set.
 
-## Conversation State and Compaction
-- source_url: https://developers.openai.com/api/docs/guides/conversation-state
-- last_verified_at: 2026-03-19
-- applies_to: long-running skill-driven workflows
-- summary: State and compaction are explicit system design choices.
-- implication_for_skill_maker: Long or layered skills should make state and support-file placement legible.
+## Safety in Building Agents
+
+- source_url: https://developers.openai.com/api/docs/guides/agent-builder-safety
+- last_verified_at: 2026-06-02
+- applies_to: prompt injection, tool calling, MCP/tool safety, side-effect gates
+- summary: Agent systems need safeguards around untrusted input, tools, permissions, and side effects.
+- implication_for_skill_maker: Skills that mention network, credentials, destructive actions, or production side effects must gate those actions explicitly.

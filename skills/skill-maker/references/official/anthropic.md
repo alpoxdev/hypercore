@@ -1,41 +1,39 @@
 # Anthropic Official References for Skill-Maker
 
 ## Refresh Policy
-- last_verified_at: 2026-03-19
+
+- last_verified_at: 2026-06-02
 - refresh_when:
-  - skill authoring guidance changes materially
-  - prompt structuring guidance changes in ways that affect skill design
-  - evaluation guidance changes in ways that affect skill validation
-  - a core skill-maker rule cites Anthropic behavior more directly
+  - Claude Code or Agent Skills guidance changes materially
+  - skill anatomy, progressive disclosure, script, or validation guidance changes
+  - core skill-maker rules cite Anthropic behavior more directly
 - supports_rules:
+  - `rules/skill-anatomy.md`
   - `rules/trigger-design.md`
   - `rules/progressive-disclosure.md`
+  - `rules/resource-placement.md`
   - `rules/validation-and-iteration.md`
 
-## Skill Authoring Best Practices
-- source_url: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
-- last_verified_at: 2026-03-19
-- applies_to: skill descriptions, progressive disclosure, validation, anti-patterns
-- summary: Emphasizes concise descriptions, appropriate degrees of freedom, progressive disclosure, clear workflows, testing with realistic tasks, avoiding time-sensitive content, and keeping support files one level deep.
-- implication_for_skill_maker: Make trigger wording, resource placement, and realistic validation first-class concerns.
+## Claude Code Skills
 
-## Prompt Engineering Overview
-- source_url: https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview
-- last_verified_at: 2026-03-19
-- applies_to: structured instructions and examples
-- summary: Prompt quality improves with clear instructions, examples, structured context, and iteration.
-- implication_for_skill_maker: Keep skill bodies structured and example-driven, but lean.
+- source_url: https://code.claude.com/docs/en/skills
+- last_verified_at: 2026-06-02
+- applies_to: `SKILL.md`, frontmatter, supporting files, lifecycle, permissions
+- summary: Claude Code skills use a folder with `SKILL.md` and optional supporting files to extend task-specific behavior.
+- implication_for_skill_maker: Keep the core skill clear and route supporting detail to explicit files.
 
-## Long Context Tips
-- source_url: https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/long-context-tips
-- last_verified_at: 2026-03-19
-- applies_to: placement of detailed references
-- summary: Long inputs need intentional ordering and structure.
-- implication_for_skill_maker: Put large details in references and make their placement intentional.
+## Agent Skills Engineering Post
 
-## Define Success
-- source_url: https://docs.anthropic.com/en/docs/test-and-evaluate/define-success
-- last_verified_at: 2026-03-19
-- applies_to: evaluations and iteration
-- summary: Define success criteria and build an evaluation set before iterating.
-- implication_for_skill_maker: Require trigger and usage validation rather than prose-only review.
+- source_url: https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills
+- last_verified_at: 2026-06-02
+- applies_to: skill anatomy, progressive disclosure, scripts, eval-first iteration, trust boundary
+- summary: Agent Skills are folders of instructions, scripts, and resources, loaded progressively from metadata to full instructions to referenced files and executable helpers.
+- implication_for_skill_maker: Progressive disclosure, scripts with clear purpose, and source/resource trust checks are first-class rules.
+
+## Claude Skills Product Post
+
+- source_url: https://claude.com/blog/skills
+- last_verified_at: 2026-06-02
+- applies_to: portability, composability, scripts/resources as reusable capabilities
+- summary: Skills are folders with instructions, scripts, and resources that make specialized workflows portable and composable.
+- implication_for_skill_maker: Skills should be maintained as reusable packages rather than one-off prompts.
