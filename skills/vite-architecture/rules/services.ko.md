@@ -33,7 +33,7 @@ services/
 | `queries.ts` | GET 요청 (읽기) + queryOptions |
 | `mutations.ts` | POST/PUT/DELETE (쓰기) |
 
-서비스 함수는 `queries.ts` 또는 `mutations.ts`에서 직접 임포트하세요. `services/index.ts` 배럴 익스포트는 추가하지 않습니다.
+서비스 함수는 `queries.ts` 또는 `mutations.ts`에서 직접 임포트하세요. `services/index.ts` 배럴 익스포트는 추가하지 않습니다. Shared services는 domain 또는 provider별 nested folder를 사용하며 explicit project exception 없이 `src/services/foo.ts`, `services/foo.ts` 같은 direct leaf file을 추가하지 않습니다.
 
 ---
 
