@@ -11,6 +11,8 @@ Use this reference when creating or reviewing the experiment workspace for an au
 |-- results.js        # optional but recommended fallback for file:// browsers
 |-- results.tsv
 |-- changelog.md
+|-- score-explanation.md # required for completed runs unless fully represented in results.json.score_explanation
+|-- final-report.md      # required final Korean user-facing report
 |-- run-contract.md      # recommended; required when source/tool/delegation is used
 |-- source-ledger.md     # required when external/current claims are used
 |-- trace-summary.md     # required when tools/delegation/parallel evaluation is used
@@ -23,9 +25,9 @@ Create this directory at the repository root, not inside the skill folder.
 
 In `$autoresearch` runs, this `.hypercore` directory is the domain-specific result log, while the final completion gate is handled by a separate `.omx/specs/autoresearch-[skill-name]/result.json` completion artifact. Record the `.omx/specs/.../result.json` path in `completion_artifact_path`, and record this file's `results.json` in `output_artifact_path`.
 
-The always-required base artifacts are `dashboard.html`, `results.json`, `results.tsv`, `changelog.md`, and `SKILL.md.baseline`. `run-contract.md`, `source-ledger.md`, and `trace-summary.md` become required depending on run conditions.
+The always-required base artifacts are `dashboard.html`, `results.json`, `results.tsv`, `changelog.md`, and `SKILL.md.baseline`. Completed runs also require Korean score movement and handoff content in `results.json.score_explanation` plus `final-report.md`, or in `score-explanation.md` and `final-report.md` loaded through `results.js`. `run-contract.md`, `source-ledger.md`, and `trace-summary.md` become required depending on run conditions.
 
-Do not force long content into `results.json`; place it under `details/` as Markdown/Text/JSON/TSV/Log files. The renderer safely serializes `changelog.md`, `run-contract.md`, `source-ledger.md`, `trace-summary.md`, and supported files under `details/` into `results.js` so the dashboard can show them in the detailed log section.
+Do not force long content into `results.json`; place it under `details/` as Markdown/Text/JSON/TSV/Log files. The renderer safely serializes `changelog.md`, `score-explanation.md`, `final-report.md`, `run-contract.md`, `source-ledger.md`, `trace-summary.md`, and supported files under `details/` into `results.js` so the dashboard can show them in the detailed log section.
 
 Canonical generated assets:
 
@@ -95,9 +97,9 @@ Example:
 
 ```text
 experiment	commit	score	max_score	pass_rate	metric	delta	guard	guard_metric	status	description
-0	a1b2c3d	14	20	70.0%	70.0	0.0	pass	-	baseline	Original skill - no changes
-1	b2c3d4e	16	20	80.0%	80.0	+10.0	pass	-	keep	Added an anti-pattern for numbering-related failures
-2	-	16	20	80.0%	80.0	0.0	pass	-	discard	Moved layout guidance earlier, but no measurable gain
+0	a1b2c3d	14	20	70.0%	70.0	0.0	pass	-	baseline	원본 스킬 - 수정 없음
+1	b2c3d4e	16	20	80.0%	80.0	+10.0	pass	-	keep	번호 매기기 실패를 막는 anti-pattern 추가
+2	-	16	20	80.0%	80.0	0.0	pass	-	discard	레이아웃 지침을 앞으로 옮겼지만 측정 가능한 이득 없음
 ```
 
 ## `results.json`
@@ -126,21 +128,43 @@ Required minimum shape:
       "guard": "pass",
       "guard_metric": null,
       "status": "baseline",
-      "description": "Original skill - no changes"
+      "description": "원본 스킬 - 수정 없음"
     }
   ],
   "run_contract_path": "run-contract.md",
   "source_ledger_path": "source-ledger.md",
   "trace_summary_path": "trace-summary.md",
+  "score_explanation": {
+    "summary_ko": "기준 70.0%에서 최고 90.0%로 +20.0%p 상승했습니다.",
+    "baseline_score": 70.0,
+    "final_score": 90.0,
+    "delta": 20.0,
+    "best_experiment": 1,
+    "most_effective_change_ko": "트리거 경계 예시와 검증 기준을 보강했습니다.",
+    "changed_files": ["skills/diagram-generator/SKILL.md"],
+    "improvements": [
+      {
+        "area_ko": "트리거 경계",
+        "score_delta": 2,
+        "before_ko": "경계 요청이 모호했습니다.",
+        "after_ko": "긍정/부정/경계 예시가 분리되었습니다.",
+        "evidence_ko": "EVAL 1 통과 수가 증가했습니다.",
+        "files": ["skills/diagram-generator/SKILL.md"]
+      }
+    ],
+    "remaining_failures_ko": []
+  },
   "eval_breakdown": [
     {
-      "name": "Text readability",
+      "name": "텍스트 가독성",
       "pass_count": 8,
       "total": 10
     }
   ]
 }
 ```
+
+`score_explanation` is required when `status` is `complete` unless an equivalent `score-explanation.md` is present and loaded through `results.js`. Its human-readable values must be Korean.
 
 Status values:
 
@@ -158,6 +182,7 @@ Experiment status values:
 - `no-op`
 - `hook-blocked`
 - `metric-error`
+- `reset`
 
 ## `dashboard.html`
 
@@ -174,6 +199,7 @@ Required behavior:
 - Show the experiment table
 - Show pass counts by eval
 - Show current run status
+- Show score movement summary, exact delta, best experiment, changed files, and per-area improvement reasons when available
 - Reflect the `running`, `idle`, and `complete` states from `results.json`
 - Render correctly when opened directly as `file://` in Chrome or another browser
 
@@ -183,6 +209,7 @@ Lifecycle rules:
 - Use `skills/autoresearch-skill/scripts/render-dashboard.sh <artifact-dir>` as the default renderer
 - After creating `dashboard.html`, open it immediately if the runtime makes that safe
 - After each experiment, update `results.tsv` and `results.json`
+- Keep `score-explanation.md` and `final-report.md` current for completed runs, unless the same score explanation is fully represented in `results.json.score_explanation`
 - If source/tool/delegation affects the run, also keep `run-contract.md`, `source-ledger.md`, and `trace-summary.md` current
 - While an experiment is running, keep `results.json.status` set to `running`
 - When the loop ends, set `results.json.status` to `complete`
@@ -190,7 +217,7 @@ Lifecycle rules:
 - Provide a file-based fallback such as `results.js` that assigns the same data to a browser global
 - If a fallback file exists, always keep `results.js` synchronized with `results.json`
 - Do not edit the HTML template directly for long detailed content; write it to `details/*.md`, `details/*.txt`, `details/*.json`, `details/*.tsv`, `details/*.log`, or standard log files, then let the renderer load it into `results.js`
-- Show detailed logs as escaped preformatted text instead of converting them to HTML, so tags or prompts in experiment output cannot gain dashboard script authority
+- Render detailed logs with the dashboard's safe Markdown subset (`#` headings, bold, inline code, fenced code, lists, and simple tables) after escaping raw HTML, so tags or prompts in experiment output cannot gain script authority
 
 ## Detailed content files
 
@@ -236,6 +263,10 @@ Chart guide:
 - Use the built-in Canvas API
 - X-axis: experiment number
 - Y-axis: pass rate %
+
+## `score-explanation.md` and `final-report.md`
+
+Use [reporting-and-score-explanation.md](reporting-and-score-explanation.md) for the required Korean templates. The short version may live in `results.json.score_explanation`, but the dashboard and final answer must still expose where and how the score rose, what changed, and why the changes were kept.
 
 ## `changelog.md`
 

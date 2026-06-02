@@ -57,6 +57,10 @@ if missing:
 if not isinstance(results["experiments"], list):
     raise SystemExit("results.json experiments는 배열이어야 합니다")
 
+if results.get("status") == "complete" and not results.get("score_explanation"):
+    if not (artifact_dir / "score-explanation.md").is_file():
+        raise SystemExit("완료 상태에는 results.json.score_explanation 또는 score-explanation.md가 필요합니다")
+
 required_experiment_keys = {
     "id",
     "commit",
@@ -79,6 +83,7 @@ allowed_experiment_statuses = {
     "no-op",
     "hook-blocked",
     "metric-error",
+    "reset",
 }
 for index, experiment in enumerate(results["experiments"]):
     if not isinstance(experiment, dict):
@@ -95,11 +100,24 @@ for index, experiment in enumerate(results["experiments"]):
 
 known_detail_files = [
     "changelog.md",
+    "score-explanation.md",
+    "final-report.md",
     "run-contract.md",
     "source-ledger.md",
     "trace-summary.md",
 ]
 allowed_detail_suffixes = {".md", ".txt", ".json", ".tsv", ".log"}
+known_detail_titles = {
+    "changelog.md": "변경 로그",
+    "score-explanation.md": "점수 상승 설명",
+    "final-report.md": "최종 보고",
+    "run-contract.md": "실행 계약",
+    "source-ledger.md": "출처 기록",
+    "trace-summary.md": "추적 검증 요약",
+}
+
+def detail_title(relative_path):
+    return known_detail_titles.get(relative_path, relative_path.replace("-", " ").replace("_", " "))
 
 def read_detail(relative_path):
     path = artifact_dir / relative_path
@@ -107,7 +125,7 @@ def read_detail(relative_path):
         return None
     return {
         "path": relative_path,
-        "title": relative_path.replace("-", " ").replace("_", " "),
+        "title": detail_title(relative_path),
         "content": path.read_text(encoding="utf-8"),
     }
 
@@ -129,7 +147,7 @@ if details_dir.is_dir():
             continue
         details.append({
             "path": relative_path,
-            "title": path.stem.replace("-", " ").replace("_", " "),
+            "title": detail_title(relative_path),
             "content": path.read_text(encoding="utf-8"),
         })
         seen.add(relative_path)
