@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>오토리서치 대시보드</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fbfbfd;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --baseline: #7aa2f7;
+      --keep: #74c69d;
+      --discard: #f28482;
+      --crash: #f59e0b;
+      --metric-error: #a78bfa;
+      --no-op: #cbd5e1;
+      --idle: #fde68a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background: linear-gradient(180deg, #fdfdfd 0%, #f7f8fc 100%);
+      color: var(--text);
+    }
+
+    .shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+    }
+
+    h1, h2 {
+      margin: 0 0 12px;
+      font-weight: 650;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .metric {
+      display: grid;
+      gap: 6px;
+    }
+
+    .metric strong {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .status-cell {
+      min-width: 120px;
+    }
+
+    .status-bar {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 650;
+    }
+
+    .status-bar::before {
+      content: "";
+      display: inline-block;
+      width: 34px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--status-color, var(--no-op));
+    }
+
+    .empty {
+      padding: 16px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      color: var(--muted);
+      background: #fcfcff;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .detail-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fcfcff;
+      overflow: hidden;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 12px 14px;
+      font-weight: 650;
+    }
+
+    summary span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    pre {
+      margin: 0;
+      padding: 14px;
+      border-top: 1px solid var(--border);
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #334155;
+      background: #f8fafc;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="panel">
+      <h1>오토리서치 대시보드</h1>
+      <p id="subtitle">results.json을 불러오는 중...</p>
+    </section>
+
+    <section class="panel">
+      <div class="status" id="status-pill">대기 중</div>
+    </section>
+
+    <section class="grid">
+      <div class="panel metric">
+        <p>Baseline 점수</p>
+        <strong id="baseline-score">-</strong>
+      </div>
+      <div class="panel metric">
+        <p>최신 통과율</p>
+        <strong id="latest-pass-rate">-</strong>
+      </div>
+      <div class="panel metric">
+        <p>최고 점수</p>
+        <strong id="best-score">-</strong>
+      </div>
+      <div class="panel metric">
+        <p>현재 실험</p>
+        <strong id="current-exp">0</strong>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>점수 추이</h2>
+      <canvas id="score-chart" height="120"></canvas>
+    </section>
+
+    <section class="panel">
+      <h2>실험 기록</h2>
+      <div id="experiments-wrap" class="empty">아직 기록된 실험이 없습니다.</div>
+    </section>
+
+    <section class="panel">
+      <h2>평가 분해</h2>
+      <div id="eval-wrap" class="empty">아직 기록된 평가 데이터가 없습니다.</div>
+    </section>
+
+    <section class="panel">
+      <h2>상세 로그</h2>
+      <div id="details-wrap" class="empty">상세 파일이 아직 없습니다.</div>
+    </section>
+  </div>
+
+  <script>
+    function injectScript(src) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.id = "generated-results";
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    function toPercent(value) {
+      return value == null ? "-" : `${value}%`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function translateExperimentStatus(status) {
+      const labels = {
+        baseline: "baseline",
+        keep: "유지",
+        "keep-reworked": "재작업 유지",
+        discard: "폐기",
+        crash: "crash",
+        "no-op": "no-op",
+        "hook-blocked": "hook 차단",
+        "metric-error": "metric 오류"
+      };
+      return labels[status] || status || "-";
+    }
+
+    function statusColor(status) {
+      const colors = {
+        baseline: "var(--baseline)",
+        keep: "var(--keep)",
+        "keep-reworked": "var(--keep)",
+        discard: "var(--discard)",
+        crash: "var(--crash)",
+        "hook-blocked": "var(--crash)",
+        "metric-error": "var(--metric-error)",
+        "no-op": "var(--no-op)"
+      };
+      return colors[status] || "var(--no-op)";
+    }
+
+    function renderExperiments(experiments) {
+      const wrap = document.getElementById("experiments-wrap");
+      if (!experiments.length) {
+        wrap.className = "empty";
+        wrap.textContent = "아직 기록된 실험이 없습니다.";
+        return;
+      }
+
+      const rows = experiments.map((exp) => `
+        <tr>
+          <td>${escapeHtml(exp.id)}</td>
+          <td>${escapeHtml(exp.commit || "-")}</td>
+          <td>${escapeHtml(exp.score)}/${escapeHtml(exp.max_score)}</td>
+          <td>${escapeHtml(exp.delta ?? "-")}</td>
+          <td>${toPercent(exp.pass_rate)}</td>
+          <td>${escapeHtml(exp.guard || "-")}</td>
+          <td class="status-cell">
+            <span class="status-bar" style="--status-color: ${statusColor(exp.status)}">
+              ${escapeHtml(translateExperimentStatus(exp.status))}
+            </span>
+          </td>
+          <td>${escapeHtml(exp.description)}</td>
+        </tr>
+      `).join("");
+
+      wrap.className = "";
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Commit</th>
+              <th>점수</th>
+              <th>Delta</th>
+              <th>통과율</th>
+              <th>Guard</th>
+              <th>상태</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function renderBreakdown(items) {
+      const wrap = document.getElementById("eval-wrap");
+      if (!items.length) {
+        wrap.className = "empty";
+        wrap.textContent = "아직 기록된 평가 데이터가 없습니다.";
+        return;
+      }
+
+      wrap.className = "";
+      wrap.innerHTML = `<ul>${items.map((item) =>
+        `<li>${escapeHtml(item.name)}: ${escapeHtml(item.pass_count)}/${escapeHtml(item.total)}</li>`).join("")}</ul>`;
+    }
+
+    function renderDetails(items) {
+      const wrap = document.getElementById("details-wrap");
+      if (!items.length) {
+        wrap.className = "empty";
+        wrap.textContent = "상세 파일이 아직 없습니다.";
+        return;
+      }
+
+      wrap.className = "detail-list";
+      wrap.innerHTML = items.map((item, index) => `
+        <details ${index === 0 ? "open" : ""}>
+          <summary>
+            ${escapeHtml(item.title || item.path || `detail-${index + 1}`)}
+            <span>${escapeHtml(item.path || "")}</span>
+          </summary>
+          <pre>${escapeHtml(item.content || "")}</pre>
+        </details>
+      `).join("");
+    }
+
+    function renderChart(experiments) {
+      const canvas = document.getElementById("score-chart");
+      const ctx = canvas.getContext("2d");
+      const width = canvas.clientWidth || canvas.parentElement.clientWidth || 640;
+      const height = Number(canvas.getAttribute("height")) || 120;
+      const ratio = window.devicePixelRatio || 1;
+
+      canvas.width = Math.max(1, Math.floor(width * ratio));
+      canvas.height = Math.max(1, Math.floor(height * ratio));
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.clearRect(0, 0, width, height);
+
+      const values = experiments
+        .map((exp) => Number(exp.pass_rate))
+        .filter((value) => Number.isFinite(value));
+
+      const pad = 24;
+      const plotWidth = Math.max(1, width - pad * 2);
+      const plotHeight = Math.max(1, height - pad * 2);
+
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.lineWidth = 1;
+      for (const tick of [0, 25, 50, 75, 100]) {
+        const y = pad + ((100 - tick) / 100) * plotHeight;
+        ctx.beginPath();
+        ctx.moveTo(pad, y);
+        ctx.lineTo(width - pad, y);
+        ctx.stroke();
+      }
+
+      if (!values.length) {
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "13px sans-serif";
+        ctx.fillText("아직 점수 데이터가 없습니다.", pad, height / 2);
+        return;
+      }
+
+      const pointFor = (value, index) => {
+        const x = values.length === 1
+          ? pad + plotWidth / 2
+          : pad + (index / (values.length - 1)) * plotWidth;
+        const y = pad + ((100 - Math.max(0, Math.min(100, value))) / 100) * plotHeight;
+        return [x, y];
+      };
+
+      ctx.beginPath();
+      values.forEach((value, index) => {
+        const [x, y] = pointFor(value, index);
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = "#7aa2f7";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = "#7aa2f7";
+      values.forEach((value, index) => {
+        const [x, y] = pointFor(value, index);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "11px sans-serif";
+      ctx.fillText("0%", 2, height - pad + 4);
+      ctx.fillText("100%", 2, pad + 4);
+    }
+
+
+    function applyData(data, details = []) {
+      if (!data) {
+        throw new Error("results 데이터가 없습니다");
+      }
+
+      document.getElementById("subtitle").textContent =
+        `${data.skill_name} 워크스페이스: .hypercore/autoresearch-skill/${data.skill_name}/`;
+
+      document.getElementById("status-pill").textContent =
+        data.status === "running" ? `실험 ${data.current_experiment} 실행 중` :
+        data.status === "complete" ? "완료" :
+        "대기 중";
+      document.getElementById("baseline-score").textContent = toPercent(data.baseline_score);
+      const latest = (data.experiments || []).length
+        ? data.experiments[data.experiments.length - 1].pass_rate
+        : null;
+      document.getElementById("latest-pass-rate").textContent = toPercent(latest);
+      document.getElementById("best-score").textContent = toPercent(data.best_score);
+      document.getElementById("current-exp").textContent = data.current_experiment ?? 0;
+
+      renderExperiments(data.experiments || []);
+      renderBreakdown(data.eval_breakdown || []);
+      renderDetails(details);
+      renderChart(data.experiments || []);
+    }
+
+    async function loadGeneratedData() {
+      delete window.__AUTORESEARCH_RESULTS__;
+      delete window.__AUTORESEARCH_DETAILS__;
+      const previous = document.getElementById("generated-results");
+      if (previous) previous.remove();
+      await injectScript(`./results.js?ts=${Date.now()}`);
+      return {
+        results: window.__AUTORESEARCH_RESULTS__,
+        details: window.__AUTORESEARCH_DETAILS__ || []
+      };
+    }
+
+    async function refresh() {
+      if (window.location.protocol === "file:") {
+        const generated = await loadGeneratedData();
+        applyData(generated.results, generated.details);
+        return;
+      }
+
+      const [response, generated] = await Promise.all([
+        fetch("./results.json", { cache: "no-store" }),
+        loadGeneratedData().catch(() => ({ details: [] }))
+      ]);
+      const data = await response.json();
+      applyData(data, generated.details || []);
+    }
+
+    refresh().catch((error) => {
+      document.getElementById("subtitle").textContent = `결과를 불러오지 못했습니다: ${error.message}`;
+    });
+    setInterval(() => refresh().catch(() => {}), 10000);
+  </script>
+</body>
+</html>

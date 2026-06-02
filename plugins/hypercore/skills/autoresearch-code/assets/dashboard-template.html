@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>코드 오토리서치 대시보드</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fbfbfd;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --baseline: #7aa2f7;
+      --keep: #74c69d;
+      --discard: #f28482;
+      --idle: #fde68a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background: linear-gradient(180deg, #fdfdfd 0%, #f7f8fc 100%);
+      color: var(--text);
+    }
+
+    .shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+    }
+
+    h1, h2 {
+      margin: 0 0 12px;
+      font-weight: 650;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .metric {
+      display: grid;
+      gap: 6px;
+    }
+
+    .metric strong {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .empty {
+      padding: 16px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      color: var(--muted);
+      background: #fcfcff;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="panel">
+      <h1>코드 오토리서치 대시보드</h1>
+      <p id="subtitle">results.json을 불러오는 중...</p>
+    </section>
+
+    <section class="panel">
+      <div class="status" id="status-pill">대기 중</div>
+    </section>
+
+    <section class="grid">
+      <div class="panel metric">
+        <p>Baseline 점수</p>
+        <strong id="baseline-score">-</strong>
+      </div>
+      <div class="panel metric">
+        <p>최신 통과율</p>
+        <strong id="latest-pass-rate">-</strong>
+      </div>
+      <div class="panel metric">
+        <p>최고 점수</p>
+        <strong id="best-score">-</strong>
+      </div>
+      <div class="panel metric">
+        <p>현재 실험</p>
+        <strong id="current-exp">0</strong>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>점수 추이</h2>
+      <canvas id="score-chart" height="120"></canvas>
+    </section>
+
+    <section class="panel">
+      <h2>실험 기록</h2>
+      <div id="experiments-wrap" class="empty">아직 기록된 실험이 없습니다.</div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>실행 메타데이터</h2>
+        <div id="meta-wrap" class="empty">아직 기록된 메타데이터가 없습니다.</div>
+      </div>
+      <div class="panel">
+        <h2>최신 차원 점수</h2>
+        <div id="dimensions-wrap" class="empty">아직 기록된 차원 점수가 없습니다.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>평가 분해</h2>
+      <div id="eval-wrap" class="empty">아직 기록된 평가 데이터가 없습니다.</div>
+    </section>
+  </div>
+
+  <script>
+    function injectScript(src) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    function toPercent(value) {
+      return value == null ? "-" : `${value}%`;
+    }
+
+    function translateExperimentStatus(status) {
+      const labels = {
+        baseline: "baseline",
+        keep: "유지",
+        discard: "폐기"
+      };
+      return labels[status] || status || "-";
+    }
+
+    function translatePromotionState(state) {
+      const labels = {
+        hold: "보류",
+        promote: "승격",
+        rollback: "롤백"
+      };
+      return labels[state] || state || "-";
+    }
+
+    function renderExperiments(experiments) {
+      const wrap = document.getElementById("experiments-wrap");
+      if (!experiments.length) {
+        wrap.className = "empty";
+        wrap.textContent = "아직 기록된 실험이 없습니다.";
+        return;
+      }
+
+      const rows = experiments.map((exp) => `
+        <tr>
+          <td>${exp.id}</td>
+          <td>${exp.score}/${exp.max_score}</td>
+          <td>${toPercent(exp.pass_rate)}</td>
+          <td>${translateExperimentStatus(exp.status)}</td>
+          <td>${exp.description}</td>
+        </tr>
+      `).join("");
+
+      wrap.className = "";
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>점수</th>
+              <th>통과율</th>
+              <th>상태</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function renderBreakdown(items) {
+      const wrap = document.getElementById("eval-wrap");
+      if (!items.length) {
+        wrap.className = "empty";
+        wrap.textContent = "아직 기록된 평가 데이터가 없습니다.";
+        return;
+      }
+
+      wrap.className = "";
+      wrap.innerHTML = `<ul>${items.map((item) =>
+        `<li>${item.name}: ${item.pass_count}/${item.total}</li>`).join("")}</ul>`;
+    }
+
+    function renderMetadata(data) {
+      const wrap = document.getElementById("meta-wrap");
+      const scope = data.scope || {};
+      const pack = data.eval_pack || {};
+      const env = data.environment || {};
+      const latest = (data.experiments || []).length
+        ? data.experiments[data.experiments.length - 1]
+        : null;
+
+      const rows = [
+        ["범위", [scope.kind, scope.label].filter(Boolean).join(": ") || "-"],
+        ["Eval 팩", [pack.name, pack.type, pack.version].filter(Boolean).join(" | ") || "-"],
+        ["환경", [env.os, env.runtime].filter(Boolean).join(" | ") || "-"],
+        ["승격 상태", translatePromotionState(latest?.promotion_state)]
+      ];
+
+      wrap.className = "";
+      wrap.innerHTML = `
+        <table>
+          <tbody>
+            ${rows.map(([label, value]) => `
+              <tr>
+                <th>${label}</th>
+                <td>${value}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderDimensions(experiments) {
+      const wrap = document.getElementById("dimensions-wrap");
+      const latest = experiments.length ? experiments[experiments.length - 1] : null;
+      const dimensions = latest?.dimensions || null;
+
+      if (!dimensions || !Object.keys(dimensions).length) {
+        wrap.className = "empty";
+        wrap.textContent = "아직 기록된 차원 점수가 없습니다.";
+        return;
+      }
+
+      wrap.className = "";
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>차원</th>
+              <th>점수</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${Object.entries(dimensions).map(([name, value]) => `
+              <tr>
+                <td>${name}</td>
+                <td>${value}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderChart(experiments) {
+      const canvas = document.getElementById("score-chart");
+      const ctx = canvas.getContext("2d");
+      const width = canvas.clientWidth || canvas.parentElement.clientWidth || 640;
+      const height = Number(canvas.getAttribute("height")) || 120;
+      const ratio = window.devicePixelRatio || 1;
+
+      canvas.width = Math.max(1, Math.floor(width * ratio));
+      canvas.height = Math.max(1, Math.floor(height * ratio));
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.clearRect(0, 0, width, height);
+
+      const values = experiments
+        .map((exp) => Number(exp.pass_rate))
+        .filter((value) => Number.isFinite(value));
+
+      const pad = 24;
+      const plotWidth = Math.max(1, width - pad * 2);
+      const plotHeight = Math.max(1, height - pad * 2);
+
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.lineWidth = 1;
+      for (const tick of [0, 25, 50, 75, 100]) {
+        const y = pad + ((100 - tick) / 100) * plotHeight;
+        ctx.beginPath();
+        ctx.moveTo(pad, y);
+        ctx.lineTo(width - pad, y);
+        ctx.stroke();
+      }
+
+      if (!values.length) {
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "13px sans-serif";
+        ctx.fillText("아직 점수 데이터가 없습니다.", pad, height / 2);
+        return;
+      }
+
+      const pointFor = (value, index) => {
+        const x = values.length === 1
+          ? pad + plotWidth / 2
+          : pad + (index / (values.length - 1)) * plotWidth;
+        const y = pad + ((100 - Math.max(0, Math.min(100, value))) / 100) * plotHeight;
+        return [x, y];
+      };
+
+      ctx.beginPath();
+      values.forEach((value, index) => {
+        const [x, y] = pointFor(value, index);
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = "#7aa2f7";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = "#7aa2f7";
+      values.forEach((value, index) => {
+        const [x, y] = pointFor(value, index);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "11px sans-serif";
+      ctx.fillText("0%", 2, height - pad + 4);
+      ctx.fillText("100%", 2, pad + 4);
+    }
+
+
+    function applyData(data) {
+      if (!data) {
+        throw new Error("results 데이터가 없습니다");
+      }
+
+      const codebaseName = data.codebase_name || "unknown-codebase";
+      document.getElementById("subtitle").textContent =
+        `${codebaseName} 워크스페이스: .hypercore/autoresearch-code/${codebaseName}/`;
+
+      document.getElementById("status-pill").textContent =
+        data.status === "running" ? `실험 ${data.current_experiment} 실행 중` :
+        data.status === "complete" ? "완료" :
+        "대기 중";
+      document.getElementById("baseline-score").textContent = toPercent(data.baseline_score);
+      const latest = (data.experiments || []).length
+        ? data.experiments[data.experiments.length - 1].pass_rate
+        : null;
+      document.getElementById("latest-pass-rate").textContent = toPercent(latest);
+      document.getElementById("best-score").textContent = toPercent(data.best_score);
+      document.getElementById("current-exp").textContent = data.current_experiment ?? 0;
+
+      renderExperiments(data.experiments || []);
+      renderMetadata(data);
+      renderDimensions(data.experiments || []);
+      renderBreakdown(data.eval_breakdown || []);
+      renderChart(data.experiments || []);
+    }
+
+    async function refresh() {
+      if (window.location.protocol === "file:") {
+        delete window.__AUTORESEARCH_CODE_RESULTS__;
+        await injectScript(`./results.js?ts=${Date.now()}`);
+        applyData(window.__AUTORESEARCH_CODE_RESULTS__);
+        return;
+      }
+
+      const response = await fetch("./results.json", { cache: "no-store" });
+      const data = await response.json();
+      applyData(data);
+    }
+
+    refresh().catch((error) => {
+      document.getElementById("subtitle").textContent = `결과를 불러오지 못했습니다: ${error.message}`;
+    });
+    setInterval(() => refresh().catch(() => {}), 10000);
+  </script>
+</body>
+</html>

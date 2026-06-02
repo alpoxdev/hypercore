@@ -1,0 +1,300 @@
+---
+name: git-worktree
+description: "[Hyper] Create, enter, list, remove, clean up, or repair Git worktrees for isolated branches and parallel agent sessions, including direct `git-worktree <ARGUMENT>` creation without follow-up questions. Use when the user asks for git worktree setup/removal, branch-per-folder workflows, parallel Codex/Claude/Cursor workspaces, or the repository-local `.hypercore/git-worktree/<folder_name>` convention; when creating and no argument/task is clear, ask what work will happen there in the user's language, derive the folder name, then move subsequent work into the new worktree."
+compatibility: Requires Git with `git worktree`; optional editor, tmux, and agent CLIs may be used only when already available in the repository environment.
+---
+
+@rules/worktree-lifecycle.md
+@references/source-survey.md
+
+# Git Worktree Skill
+
+> Make isolated branch workspaces cheap, visible, and safe.
+
+<output_language>
+
+Default all user-facing deliverables, saved artifacts, reports, plans, generated docs, summaries, handoff notes, commit/message drafts, and validation notes to Korean, even when this canonical skill file is written in English.
+
+Preserve source code identifiers, CLI commands, file paths, schema keys, JSON/YAML field names, API names, package names, proper nouns, and quoted source excerpts in their required or original language.
+
+Use a different language only when the user explicitly requests it, an existing target artifact must stay in another language for consistency, or a machine-readable contract requires exact English tokens. If a localized template or reference exists (for example `*.ko.md` or `*.ko.json`), prefer it for user-facing artifacts.
+
+</output_language>
+
+<purpose>
+
+- Create and manage Git worktrees under the project convention: `.hypercore/git-worktree/<folder_name>`.
+- Support parallel feature work, agent sessions, reviews, hotfixes, and experiments without branch-switching churn.
+- Keep worktree operations safe by asking for missing task intent before creation, checking status before removal, resolving the current linked worktree when no path is given, using explicit paths, and validating Git’s worktree registry.
+- Match the user's language for any clarification question. For Korean prompts, ask in Korean; do not show an English operation menu.
+
+</purpose>
+
+<routing_rule>
+
+Use `git-worktree` when the user wants to:
+
+- create a worktree, workspace, branch folder, or isolated checkout
+- run multiple coding agents or tasks in parallel without file conflicts
+- list, open, switch to, remove, prune, repair, lock, or unlock worktrees
+- delete the current linked worktree when the user is already inside it and says things like "remove/delete this worktree" or "delete worktree"
+- standardize worktree folders under `.hypercore/git-worktree/<folder_name>`
+- review or test a branch/PR/issue in a separate local directory
+
+Do not use `git-worktree` when:
+
+- the user only asks for normal branch creation or checkout in the current folder
+- the user asks for history rewriting, rebase strategy, or commit grouping without a worktree operation
+- the requested isolation must be a container, VM, or separate clone rather than a Git worktree
+
+</routing_rule>
+
+<activation_examples>
+
+Positive requests:
+
+- "Create a worktree for `feature/auth` and open Codex there."
+- "`git-worktree fix/api-timeout`"
+- "Create this branch as a worktree under `.hypercore/git-worktree`."
+- "Spin up three isolated worktrees for parallel agents."
+- "Create a new worktree and move me into it."
+- "List my active git worktrees and remove the stale ones safely."
+- "I'm already in this worktree; delete this worktree safely."
+- "I am already inside this worktree; delete the worktree safely."
+- "Set up PR #42 for review in a separate worktree."
+
+Negative requests:
+
+- "Create a new branch here and checkout it." Use normal Git branch workflow.
+- "Explain what Git worktree means." Answer directly unless an actionable worktree operation is requested.
+- "Make a Docker dev environment for each branch." Use a container/dev-env workflow instead.
+
+Boundary request:
+
+- "Set up an isolated workspace for this risky refactor."
+  Use this skill if Git branch isolation is enough; escalate to a container/VM workflow only if runtime, database, port, or dependency isolation is required.
+
+</activation_examples>
+
+<trigger_conditions>
+
+| User intent | Activate |
+|------|------|
+| Create a branch-specific working directory | yes |
+| Parallel AI agent/coding sessions on one repo | yes |
+| List or open existing worktrees | yes |
+| Remove, prune, lock, unlock, repair, or move worktrees | yes |
+| Delete the current linked worktree from inside that worktree | yes |
+| Configure project default worktree root | yes |
+| Plain `git checkout` or branch-only operations | no |
+| General Git tutorial with no operation | no |
+
+</trigger_conditions>
+
+<argument_handling>
+
+- If the user invokes `git-worktree <ARGUMENT>` or supplies one positional argument after the skill name, treat `<ARGUMENT>` as an explicit create target and do not ask what worktree to create.
+- Interpret `<ARGUMENT>` as the branch/task label unless it is clearly a PR/issue/ref/path; preserve the branch/ref text and sanitize only the folder label.
+- Use `.hypercore/git-worktree/<folder_name>`, then move the active agent context into the new worktree.
+- Ask only if the argument is unsafe, reserved, conflicts with an unrelated path, or cannot map to a Git ref/branch/task label.
+
+</argument_handling>
+
+<defaults>
+
+- Canonical root: `<repo-root>/.hypercore/git-worktree/`.
+- Canonical path: `<repo-root>/.hypercore/git-worktree/<folder_name>`.
+- Default `<folder_name>`: ask what work will happen in the worktree when the user has not already supplied a clear task, then derive a concise sanitized slug from that answer.
+- If the user already supplied a positional argument, branch, PR, issue, or task name, derive `<folder_name>` from that context without asking again.
+- Clarification language: infer the operation from the request whenever possible. If an operation is truly ambiguous, ask one short question in the user's language. For Korean users, ask which worktree operation they want, such as create, list, open/move, delete, clean up, repair, lock, or unlock. Never ask a generic English operation menu.
+- After creating a worktree, creation is not complete until the active execution context has moved into that folder: in a persistent shell/session, actually execute `cd <path>` there; in tool-only environments, set the next command's `workdir=<path>` and keep subsequent commands there. Do not merely display `cd <path>` as the final answer.
+- If removal is requested without a path and the active context is already inside a linked worktree, treat the current worktree root as the removal target, move out to a safe worktree before removal, and never remove the main worktree.
+- Add or verify a local ignore/exclude for `.hypercore/git-worktree/` before creating nested worktrees.
+- Prefer native `git worktree` commands over installing extra managers.
+- Prefer one task, branch, terminal session, and editor window per worktree.
+
+</defaults>
+
+<supported_operations>
+
+- Create a worktree from a new branch, existing local branch, remote branch, PR ref, issue task, or commit.
+- Enter/open a worktree in the shell, editor, tmux session, or agent CLI when available.
+- List worktrees with branch, path, dirty/clean status, lock/prunable annotations, and next action.
+- Remove completed worktrees after verifying committed or intentionally discarded changes.
+- Remove the current linked worktree even when the request is made from inside it, by resolving the current top-level path first and executing `git worktree remove` from another safe worktree.
+- Prune stale metadata with a dry run first.
+- Repair moved worktrees and lock long-lived worktrees when accidental pruning would be harmful.
+
+</supported_operations>
+
+<workflow>
+
+## Phase 1. Inspect repository and intent
+
+1. Confirm the current directory is inside a Git repository.
+2. Resolve the repository root with `git rev-parse --show-toplevel`.
+3. Read existing worktrees with `git worktree list --porcelain`.
+4. Identify the requested operation: create, open, list, remove, prune, repair, lock, or unlock.
+5. For removal with no explicit path, if the current directory is inside a linked worktree, select the current worktree root as the target; if it is the main worktree, stop and ask for a specific target instead of deleting the repository root.
+6. If a `git-worktree <ARGUMENT>` argument is present, treat it as a create target and derive branch name, folder name, and base reference from it before any clarification.
+7. Otherwise derive branch name, folder name, and base reference from user wording or current branch.
+8. If creating and the task/folder intent is missing or too vague, ask one concise question before creation in the user's language. For Korean users, ask what work they plan to do in this worktree.
+9. If the operation itself is unclear, avoid a generic English menu. Ask one localized question only after inference fails.
+
+## Phase 2. Apply the project path convention
+
+Use `.hypercore/git-worktree/<folder_name>` as the default target path unless the user explicitly provides another path. Choose `<folder_name>` from the stated work intent, not from an arbitrary timestamp.
+
+Before creating the worktree:
+
+- create the parent directory if needed
+- derive and sanitize `<folder_name>` from the stated work intent before path construction
+- verify the target path does not already contain unrelated files
+- ensure `.hypercore/git-worktree/` is ignored or locally excluded so the main worktree does not treat nested worktrees as normal untracked content
+- avoid reusing a branch already checked out by another worktree unless the operation is only to open/list it
+
+## Phase 3. Execute the worktree operation
+
+Follow `@rules/worktree-lifecycle.md` for command patterns, safety checks, and cleanup rules.
+
+Creation preference:
+
+1. Existing local branch: `git worktree add <path> <branch>`.
+2. Existing remote branch: create a tracking/local branch if needed, then add the worktree.
+3. New task branch: `git worktree add -b <branch> <path> <base-ref>`.
+4. Detached inspection: use `--detach` only when the user is reviewing a commit and does not intend to commit changes.
+
+Current-worktree removal preference:
+
+1. When the user says to delete/remove the worktree while already inside a linked worktree, infer the target from `git rev-parse --show-toplevel`.
+2. Confirm it is not the main worktree by comparing `git rev-parse --git-dir` and `git rev-parse --git-common-dir` and by reading `git worktree list --porcelain`.
+3. Check status from the target path, save the target path, move execution to the main/safe worktree, then run `git worktree remove <target-path>`.
+4. Use `--force` only when the user explicitly requested force/discard semantics or has confirmed dirty changes are disposable.
+
+## Phase 4. Move into the new worktree and verify
+
+After a create operation:
+
+- immediately switch subsequent agent commands to the new worktree path
+- treat "create and enter/open/switch" as a single operation; do not stop after `git worktree add`
+- if a persistent shell, tmux pane, or CLI session is available, run `cd <path>` in that active session and verify with `pwd`
+- if only tool calls are available, prove the move by running `pwd` or `git status` with the tool's `workdir=<path>` set to the new worktree path
+- keep every later shell/tool command for this task on `workdir=<path>` unless there is an explicit reason to operate from another worktree
+- if an editor, tmux session, or agent was requested, launch it with the new worktree path as its working directory
+- report `cd <path>` as the command executed in the persistent session, or as the fallback command the user should run only when the interface cannot mutate the parent shell
+- do not claim the move happened unless the persistent session changed directories or at least one post-create command actually ran from the new path via `workdir=<path>` or an equivalent tool working-directory setting
+
+After any operation, report:
+
+- worktree path
+- branch or commit checked out
+- whether the worktree is clean or dirty
+- command to enter/open it, and whether the active agent context has been moved there
+- any setup still needed inside that folder, such as dependency install, environment copy, unique ports, or agent prompt handoff
+
+For removal/cleanup, report what was removed and what remains in `git worktree list`.
+
+</workflow>
+
+<examples>
+
+## Create a new feature worktree and move into it
+
+If the user only says "create a worktree" and no task is clear, ask first:
+
+```text
+What work will happen in this worktree?
+```
+
+Then derive the folder name from the answer:
+
+```bash
+repo_root="$(git rev-parse --show-toplevel)"
+branch="feature/auth-session"
+folder="auth-session"
+path="$repo_root/.hypercore/git-worktree/$folder"
+exclude_file="$(git rev-parse --git-path info/exclude)"
+mkdir -p "$(dirname "$path")" "$(dirname "$exclude_file")"
+grep -qxF ".hypercore/git-worktree/" "$exclude_file" 2>/dev/null || printf '\n.hypercore/git-worktree/\n' >> "$exclude_file"
+git fetch --all --prune
+git worktree add -b "$branch" "$path" HEAD
+git -C "$path" status --short --branch
+cd "$path" && pwd
+```
+
+## List worktrees for review
+
+```bash
+git worktree list --porcelain
+git worktree list --verbose
+```
+
+## Safe cleanup
+
+```bash
+git -C "$path" status --short
+git worktree remove "$path"
+git worktree prune --dry-run
+git worktree prune
+```
+
+## Delete the current linked worktree from inside it
+
+When the user is already inside a linked worktree and says "delete this worktree" / "delete worktree", resolve the target before moving out:
+
+```bash
+target_path="$(git rev-parse --show-toplevel)"
+git_dir="$(git rev-parse --git-dir)"
+common_dir="$(git rev-parse --git-common-dir)"
+main_path="$(git worktree list --porcelain | awk 'NR==1 && /^worktree / {print substr($0, 10)}')"
+
+# Refuse if this is the main worktree or no safe main worktree is available.
+if [ "$(cd "$git_dir" && pwd -P)" = "$(cd "$common_dir" && pwd -P)" ] || [ -z "$main_path" ] || [ "$main_path" = "$target_path" ]; then
+  echo "Refusing to remove this path as a linked worktree: $target_path" >&2
+  exit 1
+fi
+
+git -C "$target_path" status --short --branch
+cd "$main_path"
+git worktree remove "$target_path"
+git worktree list --porcelain
+```
+
+</examples>
+
+<validation>
+
+Deterministic regression command:
+
+```bash
+python3 skills/git-worktree/scripts/validate-git-worktree-skill.py
+```
+
+Trigger checks:
+
+- [ ] Positive examples above clearly activate this skill.
+- [ ] Negative examples route away from this skill.
+- [ ] Boundary examples choose Git worktrees only when branch-level isolation is sufficient.
+
+Operation checks:
+
+- [ ] `git rev-parse --show-toplevel` succeeds before path construction.
+- [ ] create operations have a clear work intent; if missing, one concise question is asked before choosing `<folder_name>`.
+- [ ] direct `git-worktree <ARGUMENT>` invocations create from the argument without asking what worktree to create.
+- [ ] clarification questions match the user's language; Korean users are not shown English operation menus.
+- [ ] `<folder_name>` is derived from the stated work intent and sanitized before path construction.
+- [ ] `.hypercore/git-worktree/` is ignored or locally excluded before nested worktree creation.
+- [ ] `git worktree list --porcelain` is read before mutating existing worktrees.
+- [ ] removal checks `git -C <path> status --short` first unless the user explicitly asks for force removal.
+- [ ] current-worktree deletion resolves the current top-level path first, refuses the main worktree, moves to another safe worktree, and removes the saved target path rather than running removal from inside the target.
+- [ ] cleanup runs `git worktree prune --dry-run` before `git worktree prune`.
+- [ ] after creation, subsequent commands use the new worktree as their working directory; if the parent shell cannot be persistently changed, the final report includes `cd <path>` and says whether the active agent context moved there.
+- [ ] the operator did not merely print `cd <path>`; a persistent session actually changed directory, or at least one post-create command ran from the new worktree via `workdir=<path>` or an equivalent tool working-directory setting.
+
+Resource placement checks:
+
+- [ ] Core workflow stays in `SKILL.md`.
+- [ ] Detailed command policy stays in `rules/worktree-lifecycle.md`.
+- [ ] External research and pattern rationale stay in `references/source-survey.md`.
+
+</validation>
