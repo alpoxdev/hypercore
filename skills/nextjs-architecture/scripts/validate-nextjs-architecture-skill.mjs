@@ -24,17 +24,23 @@ const required = [
   'rules/platform.ko.md',
   'references/official/nextjs-docs.md',
   'references/official/nextjs-docs.ko.md',
+  'references/official/current-docs-2026-06-02.md',
+  'references/official/current-docs-2026-06-02.ko.md',
+  'rules/validation.md',
+  'rules/validation.ko.md',
 ];
 
 const mustContain = {
-  'SKILL.md': ['cacheComponents', 'updateTag', 'Route Handlers', 'Proxy', 'Server Action', 'rules/project-structure.md'],
-  'architecture-rules.md': ['Current Official Baselines', 'latest stable Next.js 16.2.6', 'cacheComponents', 'connection()', 'updateTag', 'middleware', 'rules/project-structure.md'],
-  'rules/project-structure.md': ['Project Structure', 'Nested lib Grouping', 'src/lib', 'private folders', 'local convention'],
+  'SKILL.md': ['cacheComponents', 'updateTag', 'Route Handlers', 'Proxy', 'Server Action', 'rules/project-structure.md', 'instruction_contract', 'activation_examples', 'current-docs-2026-06-02'],
+  'architecture-rules.md': ['Current Official Baselines', 'latest checked Next.js 16', 'cacheComponents', 'connection()', 'updateTag', 'middleware', 'rules/project-structure.md', 'current-docs-2026-06-02'],
+  'rules/project-structure.md': ['Project Structure', 'Nested Shared Folder Grouping', 'src/lib', 'src/services', 'direct leaf', 'private folders', 'repo-local convention', 'not official Next.js requirement'],
   'rules/data-fetching.md': ['`fetch` requests are not cached by default', 'use cache: remote', 'use cache: private', 'connection()', 'unstable_noStore', 'updateTag', "revalidateTag(tag, 'max')"],
   'rules/server-actions.md': ['reachable POST entry point', 'useActionState', 'refresh', 'updateTag'],
   'rules/route-handlers.md': ['HTTP method exports', 'RouteContext', 'params', 'cacheComponents', 'use cache', 'NextResponse.next()'],
   'rules/platform.md': ['Route Segment Config', "runtime: 'edge'", 'proxy.ts', 'Node.js runtime', 'middleware'],
   'references/official/nextjs-docs.md': ['Last verified: 2026-05-24', 'Next.js 16.2.6', 'https://r.jina.ai/https://nextjs.org/docs/', 'use cache: remote', 'Route Segment Config', 'Authentication', 'authInterrupts'],
+  'references/official/current-docs-2026-06-02.md': ['checked_at: 2026-06-02', '/vercel/next.js', 'Next.js 16', 'cacheComponents', 'use cache: remote', 'Server Actions', 'Route Handlers', 'proxy.ts', 'NEXT_PUBLIC_', 'not official Next.js requirement'],
+  'rules/validation.md': ['Skill Anatomy Validation', 'current-docs-2026-06-02', 'src/services', 'direct leaf', 'Deprecated feature-folder guidance is absent'],
 };
 
 const errors = [];

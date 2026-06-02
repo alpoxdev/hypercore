@@ -18,9 +18,11 @@ Brownfield adoption rule: untouched legacy `pages/` code is not an automatic fai
 
 ## Current Official Baselines
 
+Source priority starts with `references/official/current-docs-2026-06-02.md`, then `references/official/nextjs-docs.md` for the broader doc map.
+
 - Server Components are the default in App Router; add `'use client'` only at client entry points that need interactivity, browser APIs, or client hooks.
 - In modern App Router docs, `fetch` requests are not cached by default, while routes may still be prerendered and HTML cached. Cache intent must be explicit.
-- In latest stable Next.js 16.2.6 docs, Cache Components are enabled with `cacheComponents: true`; `use cache`, `cacheTag`, and `cacheLife` are the preferred cache primitives for that mode.
+- In latest checked Next.js 16 docs, Cache Components are enabled with `cacheComponents: true`; `use cache`, `cacheTag`, and `cacheLife` are the preferred cache primitives for that mode.
 - `cacheComponents` is the unified v16 switch for PPR, `useCache`, and `dynamicIO`; experimental PPR flags and the `experimental_ppr` segment option are removed.
 - With `cacheComponents`, `dynamic`, `revalidate`, and `fetchCache` route segment config options are removed; only current segment options such as `dynamicParams`, `runtime`, `preferredRegion`, and `maxDuration` remain.
 - `use cache` cannot directly read request-time APIs; pass serializable values in, use `use cache: remote` for justified durable shared cache, and treat experimental `use cache: private` as exceptional.
@@ -77,6 +79,7 @@ Brownfield adoption rule: untouched legacy `pages/` code is not an automatic fai
 | Auth | Re-check authentication and authorization inside each Server Action or delegated server-only layer |
 | Platform | Keep env handling, route segment config, Proxy, and Next config explicit |
 | Reporting | Label repo-local conventions as conventions, not framework law |
+| Shared folders | New touched shared code under `src/lib`, `src/services`, `lib`, or `services` uses nested domain/provider grouping unless an explicit exception is recorded |
 
 ---
 
@@ -99,13 +102,14 @@ Default surface order:
 
 ## Rule Files
 
-- `rules/project-structure.md`
+- `rules/project-structure.md` — includes no direct leaf files under touched `src/lib` / `src/services` shared roots
 - `rules/routes.md`
 - `rules/execution-model.md`
 - `rules/data-fetching.md`
 - `rules/server-actions.md`
 - `rules/route-handlers.md`
 - `rules/platform.md`
+- `references/official/current-docs-2026-06-02.md`
 - `references/official/nextjs-docs.md`
 
 Read the smallest set that covers the active change, but always start here.

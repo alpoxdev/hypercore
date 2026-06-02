@@ -1,6 +1,6 @@
 # Project Structure and Shared Code Organization
 
-> 공식 Next.js project structure 규칙과 `src/lib` 같은 nested shared folders를 위한 repo-local organization guidance.
+> 공식 Next.js project structure 규칙과 `src/lib`, `src/services` 같은 nested shared folders를 위한 repo-local organization guidance.
 
 ---
 
@@ -12,7 +12,7 @@
 | `pages/` 또는 `src/pages/` | legacy 또는 Pages-only surface용 Pages Router route tree |
 | `public/` | site root에서 제공되는 static assets |
 | `src/` | source code와 project configuration을 분리하는 optional application source root |
-| `lib/` 또는 `src/lib/` | repo-local shared code convention이며 Next.js routing convention은 아님 |
+| `lib/`, `src/lib/`, `services/`, `src/services/` | repo-local shared code convention이며 Next.js routing convention은 아님 |
 
 `next.config.*`, `package.json`, `tsconfig.json`, lockfiles, `.env*` files는 해당 tool docs가 다르게 말하지 않는 한 project root에 둡니다. `.env*` files가 `src/`에서 load된다고 가정하지 않습니다.
 
@@ -29,64 +29,76 @@ Implementation-only folder를 URL segment로 노출하지 않습니다. helper f
 
 ## Shared Code Placement
 
-여러 routes 또는 features에서 공유하는 code는 repo의 기존 convention을 먼저 따릅니다. 흔한 valid shape는 다음과 같습니다:
+여러 routes에서 공유되는 code는 repo의 기존 convention을 먼저 따르되 runtime/domain boundary가 드러나게 배치합니다. 흔한 valid shape는 다음과 같습니다:
 
 ```text
 src/
 ├── app/
 ├── components/
-├── features/
 ├── lib/
+│   ├── auth/
+│   └── cache/
+├── services/
+│   ├── billing/
+│   └── stripe/
 ├── server/
 └── db/
 ```
 
-root 기반 project에서는 다음도 가능합니다:
+root-based project 예시:
 
 ```text
 app/
 components/
 lib/
+services/
 server/
 db/
 ```
 
-이 shared folders는 framework law가 아니라 local convention으로 취급합니다. `src/features` 또는 `src/lib/auth` 같은 선호를 보고하거나 review할 때 official Next.js docs가 그 behavior를 요구하지 않는 한 "repo-local convention"이라고 표시합니다.
+이 shared folders는 framework law가 아니라 repo-local convention으로 취급합니다. `src/lib/auth`, `src/services/billing` 같은 preference를 reporting/review할 때 official Next.js docs가 요구하지 않는 한 "repo-local convention"이라고 표시합니다. 이 nested shared-folder shape는 official Next.js requirement가 아닙니다.
 
-## Nested lib Grouping Policy
+## Nested Shared Folder Grouping Policy
 
-Nested grouping이 ownership, runtime boundaries, domain logic을 더 명확하게 만들 수 있다면 flat `lib/*.ts` 또는 `src/lib/*.ts` layout을 기본값으로 강요하지 않습니다.
+touched shared code를 추가하거나 재구성할 때 explicit project exception이 없으면 `src/lib/foo.ts`, `src/services/foo.ts`, `lib/foo.ts`, `services/foo.ts` 같은 new direct leaf file을 만들지 않습니다. Ownership, runtime boundaries, provider integrations, domain logic이 드러나는 nested grouping을 선호합니다.
 
-다음 중 하나라도 해당하면 nested grouping을 선호합니다:
+Project가 더 좁은 convention을 기록하지 않는 한 new touched shared code는 `src/lib/<domain>/...`, `src/services/<domain-or-provider>/...` 같은 ownership path를 사용합니다.
 
-- folder에 서로 다른 책임의 files가 세 개 이상 있음
-- files가 domain, feature, external integration별로 자연스럽게 나뉨
-- server-only modules, DAL code, schemas, DTOs, cache tags, permissions가 섞여 있음
-- routes 전반에 action/query/helper pattern이 반복되기 시작함
-- 관련 없는 helpers가 나란히 있어 imports가 모호해짐
+다음 경우 nested grouping을 선호합니다:
 
-예시 nested `src/lib` shape:
+- new touched shared code가 otherwise `src/lib`, `src/services`, `lib`, `services`, `src/server`, `src/db` 바로 아래 direct file로 놓일 때
+- folder에 서로 다른 responsibility의 file이 3개 이상 있을 때
+- domain, provider, layer, external integration별 자연스러운 분리가 있을 때
+- server-only modules, DAL code, schemas, DTOs, cache tags, permissions가 섞여 있을 때
+- routes를 가로질러 action/query/helper pattern이 반복될 때
+- unrelated helpers가 나란히 있어 imports가 모호할 때
+
+예시 nested shared shape:
 
 ```text
-src/lib/
-├── auth/
-│   ├── session.ts
-│   ├── permissions.ts
-│   └── dto.ts
-├── billing/
-│   ├── actions.ts
-│   ├── queries.ts
-│   └── schema.ts
-├── db/
-│   ├── client.ts
-│   └── repositories/
-│       └── user-repository.ts
-└── cache/
-    ├── tags.ts
-    └── revalidate.ts
+src/
+├── lib/
+│   ├── auth/
+│   │   ├── session.ts
+│   │   ├── permissions.ts
+│   │   └── dto.ts
+│   └── cache/
+│       ├── tags.ts
+│       └── revalidate.ts
+├── services/
+│   ├── billing/
+│   │   ├── actions.ts
+│   │   ├── queries.ts
+│   │   └── schema.ts
+│   └── stripe/
+│       └── client.server.ts
+└── db/
+    ├── client.server.ts
+    └── repositories/
+        └── user-repository.ts
 ```
 
-작은 folder는 그 편이 더 단순하면 flat하게 유지할 수 있습니다. 서로 관련 없는 한두 files를 위해 깊은 hierarchy를 만들지 않습니다.
+작은 existing folders는 더 단순하면 flat하게 유지할 수 있지만, new touched shared files는 explicit exception이 없으면 여전히 grouped 되어야 합니다. unrelated one-off files만을 위해 deep hierarchy를 만들지 않습니다.
 
 ## Boundary Naming Guidance
 

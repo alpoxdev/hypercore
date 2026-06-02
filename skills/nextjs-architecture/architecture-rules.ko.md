@@ -99,13 +99,14 @@ Default surface order:
 
 ## Rule Files
 
-- `rules/project-structure.md`
+- `rules/project-structure.ko.md` — touched `src/lib` / `src/services` shared root 아래 direct leaf files 금지 포함
 - `rules/routes.md`
 - `rules/execution-model.md`
 - `rules/data-fetching.md`
 - `rules/server-actions.md`
 - `rules/route-handlers.md`
 - `rules/platform.md`
-- `references/official/nextjs-docs.md`
+- `references/official/current-docs-2026-06-02.ko.md`
+- `references/official/nextjs-docs.ko.md`
 
 항상 이 파일부터 읽고, active change를 다루는 가장 작은 rule set만 추가로 읽습니다.

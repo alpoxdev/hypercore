@@ -1,8 +1,20 @@
 ---
 name: nextjs-architecture
-description: "[Hyper] Use when working on Next.js projects, especially App Router or App Router migration work. Enforces current official Next.js architecture rules for project/folder structure, nested shared `lib` organization, route/file conventions, Server and Client Component boundaries, Cache Components and data freshness, Server Actions for internal UI writes, Route Handlers for HTTP-native endpoints, Proxy as a last resort, and platform/env safety."
+description: "[Hyper] Use when working on Next.js projects, especially App Router or App Router migration work. Enforces current official Next.js architecture rules for project/folder structure, nested shared `src/lib` / `src/services` organization, route/file conventions, Server and Client Component boundaries, Cache Components and data freshness, Server Actions for internal UI writes, Route Handlers for HTTP-native endpoints, Proxy as a last resort, and platform/env safety."
 compatibility: Works best with repo inspection, official Next.js docs verification, and direct code edits in Next.js applications.
 ---
+
+@architecture-rules.md
+@rules/project-structure.md
+@rules/routes.md
+@rules/execution-model.md
+@rules/data-fetching.md
+@rules/server-actions.md
+@rules/route-handlers.md
+@rules/platform.md
+@rules/validation.md
+@references/official/nextjs-docs.md
+@references/official/current-docs-2026-06-02.md
 
 # Next.js Architecture Enforcement
 
@@ -15,6 +27,39 @@ Preserve source code identifiers, CLI commands, file paths, schema keys, JSON/YA
 Use a different language only when the user explicitly requests it, an existing target artifact must stay in another language for consistency, or a machine-readable contract requires exact English tokens. If a localized template or reference exists (for example `*.ko.md` or `*.ko.json`), prefer it for user-facing artifacts.
 
 </output_language>
+
+<purpose>
+
+- Confirm a repository is a Next.js project and identify App Router, Pages Router, or mixed mode before enforcing architecture rules.
+- Enforce official Next.js behavior for file conventions, Server/Client Component boundaries, data/cache behavior, Server Actions, Route Handlers, Proxy, and env/platform safety.
+- Apply Hypercore/repo-local conventions for nested shared folders such as `src/lib/<domain>/` and `src/services/<domain-or-provider>/` without presenting them as official Next.js law.
+- Keep version-sensitive official facts in `references/official/` so the core skill stays lean and current docs can be refreshed independently.
+
+</purpose>
+
+<routing_rule>
+
+Use this skill for architecture enforcement, implementation guidance, or review in existing Next.js projects, especially App Router work, App Router migration, Server/Client boundaries, cache/freshness, Server Actions, Route Handlers, Proxy, env/platform safety, and nested shared-folder organization.
+
+Do not use this skill for generic React architecture, Remix/TanStack Start projects, docs-only summaries, or copy-only edits that do not touch architectural boundaries beyond a quick safety check. In Pages Router-only projects, apply shared Next.js safety/platform checks but do not force App Router-only file conventions unless migration is requested.
+
+</routing_rule>
+
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Keep Next.js projects architecturally safe and aligned with official docs plus labelled Hypercore/repo-local conventions. |
+| Trigger | Next.js project work involving App Router, Pages Router, Server/Client boundaries, data/cache behavior, Server Actions, Route Handlers, Proxy, platform/env, or shared folder layout. |
+| Scope | Review and guide touched project architecture, topic rule files, official references, validation notes, and small reversible architecture fixes. |
+| Authority | User/project instructions outrank this skill. Current official Next.js docs outrank local conventions for framework behavior. Safety policy blocks risky runtime, auth, secret, and import-boundary changes. |
+| Evidence | Use local package/config/router indicators, touched source paths, topic rules, official references, validation scripts, and project check output. |
+| Tools | Use local search/read/edit/validation commands; use current official docs when API drift matters; gate destructive migrations, credentials, production side effects, and broad codemods. |
+| Output | Korean architecture decision or review with rule classifications, changed files if any, validation evidence, remaining risks, and dated official-doc ambiguity notes. |
+| Verification | Run `rules/validation.md` checks relevant to touched surfaces and `scripts/validate-nextjs-architecture-skill.mjs` when this skill folder changes. |
+| Stop condition | Stop after project mode is known, applicable safety gates pass, local conventions are applied or deferred, validation evidence is recorded, and unresolved API drift is dated and sourced. |
+
+</instruction_contract>
 
 ## Overview
 
@@ -41,29 +86,30 @@ Enforce official Next.js architecture rules before and after code changes. First
 | Redirect/rewrite before render across many requests | `next.config.*` first, then Proxy if needed | Proxy as generic middleware |
 | Pages Router only and no migration requested | shared Next.js checks | App Router-only file rules |
 
-## Trigger Examples
+<activation_examples>
 
-### Positive
+Positive:
 
-- `Audit this Next.js App Router feature for Server/Client boundaries and cache correctness.`
-- `Refactor this form to use Server Actions instead of an internal route handler.`
-- `Add a Route Handler for a webhook and verify it follows the current Next.js docs.`
-- `Next.js 16 cacheComponents 기준으로 data fetching 규칙을 점검해줘.`
-- `Next.js App Router에서 src/lib를 domain별 nested folders로 정리해줘.`
+- "Audit this Next.js App Router feature for Server/Client boundaries and cache correctness."
+- "Refactor this form to use Server Actions instead of an internal route handler."
+- "Add a Route Handler for a webhook and verify it follows the current Next.js docs."
+- "Next.js 16 cacheComponents 기준으로 data fetching 규칙을 점검해줘."
+- "Next.js App Router에서 src/lib/auth/session.ts와 src/services/billing/mutations.ts처럼 nested shared folders로 정리해줘."
 
-### Negative
+Negative:
 
-- `Create a generic React architecture guide.`
-- `Review a Remix or TanStack Start app.`
-- `Write marketing copy for a Next.js landing page without touching architecture.`
+- "Create a generic React architecture guide."
+- "Review a Remix or TanStack Start app."
+- "Write marketing copy for a Next.js landing page without touching architecture."
 
-### Boundary
+Boundary:
 
-- `Make a tiny copy-only text change in a Next.js page.`
+- "Make a tiny copy-only text change in a Next.js page."
   Direct editing can be enough if no architectural boundary is affected, but touched files still need a quick boundary check.
-
-- `This repo is Pages Router only and I am not migrating to App Router.`
+- "This repo is Pages Router only and I am not migrating to App Router."
   Apply shared Next.js platform, env, and server/client safety checks; relax App Router-only file conventions.
+
+</activation_examples>
 
 ## Step 1: Project Validation
 
@@ -96,7 +142,7 @@ Then load only the rule files needed for the touched surface:
 - `rules/route-handlers.md` — `route.ts`, HTTP methods, caching intent, params, non-UI responses, CORS/webhooks
 - `rules/platform.md` — env, `next.config.*`, `typedRoutes`, Proxy, route segment config, deployment-sensitive settings
 
-For drift-sensitive behavior, also read `references/official/nextjs-docs.md` and fetch official pages through `https://r.jina.ai/https://nextjs.org/docs/...` when browser-readable markdown is needed.
+For drift-sensitive behavior, also read `references/official/current-docs-2026-06-02.md` first, then `references/official/nextjs-docs.md` and fetch official pages through `https://r.jina.ai/https://nextjs.org/docs/...` when browser-readable markdown is needed.
 
 ## Step 3: Pre-Change Gates
 
@@ -114,7 +160,7 @@ For drift-sensitive behavior, also read `references/official/nextjs-docs.md` and
 | `route.ts` and `page.tsx` created in the same route segment | BLOCKED |
 | Route group used as if it changes the URL | BLOCKED |
 | Private implementation files exposed as routable segments instead of `_folder` | BLOCKED |
-| Shared `lib` / `src/lib` organization forced flat when nested domain or layer grouping would clarify touched code | WARNING. Prefer nested grouping |
+| Shared `src/lib` / `src/services` organization forced flat or direct-leaf when nested domain/provider grouping would clarify touched code | WARNING. Prefer nested grouping |
 | Repo-local folder preferences reported as official Next.js law | BLOCKED |
 | Parallel/intercepted routes added without matching layout slots or hard-navigation behavior | WARNING/BLOCKED by risk |
 
@@ -184,7 +230,7 @@ Run the smallest project-specific checks that prove the claim, then report evide
 
 1. project mode still matches the edited surface
 2. special files are in valid segments and no `page`/`route` conflict exists
-3. shared and segment-local folders follow project-structure rules, with nested `lib` grouping allowed where it improves boundaries
+3. shared and segment-local folders follow project-structure rules, with nested `src/lib` / `src/services` grouping required for new touched shared code unless an explicit exception is recorded
 4. `'use client'` boundaries are narrow and safe
 5. client code cannot import server-only modules or private env
 6. data/cache strategy is explicit and current-docs compatible
