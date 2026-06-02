@@ -89,3 +89,37 @@
 - refresh_when: snapshot or model behavior guidance changes
 - summary: Snapshots can lock a specific model version so behavior remains consistent.
 - implication_for_docs_maker: Canonical docs should describe capability profiles and mention version pinning strategy without hard-coding model names into core rules.
+
+## 2026-06-02 Prompt Authoring Refresh
+
+### Prompting
+- source_url: https://platform.openai.com/docs/guides/prompting
+- last_verified_at: 2026-06-02
+- applies_to: prompt assets, reusable prompts, variables, prompt versioning, linked evals
+- refresh_when: prompt asset/versioning or linked-eval workflow changes
+- summary: Treats prompts as versioned assets that can use variables and linked evals so changes can be rerun against test criteria.
+- implication_for_docs_maker: Docs should describe prompt artifacts as maintainable assets with explicit inputs, versions, and validation paths.
+
+### Prompt Engineering
+- source_url: https://platform.openai.com/docs/guides/prompt-engineering
+- last_verified_at: 2026-06-02
+- applies_to: roles, instruction structure, examples, delimiters, context blocks, output contracts
+- refresh_when: official guidance changes for roles, message structure, or model-specific prompting
+- summary: Emphasizes clear instructions, structured sections, examples, relevant context, and output-format guidance.
+- implication_for_docs_maker: Role prompts should be written as explicit contracts with intent, scope, authority, context, output, and verification.
+
+### Reasoning Best Practices
+- source_url: https://platform.openai.com/docs/guides/reasoning-best-practices
+- last_verified_at: 2026-06-02
+- applies_to: reasoning-model prompts and rationale reporting
+- refresh_when: reasoning-model prompting guidance changes
+- summary: Reasoning-oriented prompts should be direct and specific; do not rely on generic chain-of-thought incantations when clearer goals and constraints are available.
+- implication_for_docs_maker: Ask for decision evidence, test results, and concise rationale rather than hidden chain-of-thought text.
+
+### Prompt Optimizer
+- source_url: https://platform.openai.com/docs/guides/prompt-optimizer
+- last_verified_at: 2026-06-02
+- applies_to: prompt iteration, datasets, annotations, graders, optimization review
+- refresh_when: prompt optimizer or grader workflow changes
+- summary: Prompt optimization should be grounded in datasets, annotations, graders, and manual review before production use.
+- implication_for_docs_maker: Prompt improvement guidance must include smoke evals or regression cases, not only better-looking prose.

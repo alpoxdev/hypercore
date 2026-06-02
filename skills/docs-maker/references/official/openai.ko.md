@@ -79,3 +79,37 @@
 - applies_to: 모델 동작, tools 지원, snapshots
 - summary: snapshot으로 특정 모델 버전을 고정해 동작 일관성을 유지할 수 있습니다.
 - implication_for_docs_maker: canonical 문서는 capability profile을 설명하고, 버전 고정 전략만 언급하며 고정 모델명을 core 규칙에 박지 않습니다.
+
+## 2026-06-02 Prompt Authoring Refresh
+
+### Prompting
+- source_url: https://platform.openai.com/docs/guides/prompting
+- last_verified_at: 2026-06-02
+- applies_to: prompt asset, reusable prompt, variable, prompt versioning, linked eval
+- refresh_when: prompt asset/versioning 또는 linked-eval workflow가 바뀜
+- summary: Prompt를 변수와 linked eval을 가진 버전형 자산으로 다뤄 변경 시 test criteria에 대해 다시 실행할 수 있게 합니다.
+- implication_for_docs_maker: 문서는 prompt artifact를 명시적 입력, 버전, validation path가 있는 유지보수 자산으로 설명해야 합니다.
+
+### Prompt Engineering
+- source_url: https://platform.openai.com/docs/guides/prompt-engineering
+- last_verified_at: 2026-06-02
+- applies_to: role, instruction structure, example, delimiter, context block, output contract
+- refresh_when: role, message structure, model-specific prompting 공식 가이드가 바뀜
+- summary: 명확한 지시, 구조화된 섹션, 예시, 관련 context, 출력 형식 지시를 강조합니다.
+- implication_for_docs_maker: 역할 프롬프트는 intent, scope, authority, context, output, verification을 가진 명시적 계약으로 작성해야 합니다.
+
+### Reasoning Best Practices
+- source_url: https://platform.openai.com/docs/guides/reasoning-best-practices
+- last_verified_at: 2026-06-02
+- applies_to: reasoning-model prompt와 rationale reporting
+- refresh_when: reasoning-model prompting 가이드가 바뀜
+- summary: Reasoning 계열 prompt는 직접적이고 구체적이어야 하며, 더 명확한 목표와 제약을 줄 수 있을 때 generic chain-of-thought 주문에 의존하지 않습니다.
+- implication_for_docs_maker: 숨은 chain-of-thought 원문보다 결정 근거, 테스트 결과, 간결한 rationale을 요구합니다.
+
+### Prompt Optimizer
+- source_url: https://platform.openai.com/docs/guides/prompt-optimizer
+- last_verified_at: 2026-06-02
+- applies_to: prompt iteration, dataset, annotation, grader, optimization review
+- refresh_when: prompt optimizer 또는 grader workflow가 바뀜
+- summary: Prompt optimization은 dataset, annotation, grader, production 전 수동 review에 근거해야 합니다.
+- implication_for_docs_maker: Prompt 개선 지침에는 보기 좋은 문장 개선뿐 아니라 smoke eval 또는 regression case가 포함되어야 합니다.

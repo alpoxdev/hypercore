@@ -89,3 +89,37 @@
 - refresh_when: new model family releases or migration notices appear
 - summary: Model names and model behavior change over time and require migration-aware updates.
 - implication_for_docs_maker: Ban fixed model literals from canonical core guidance and keep concrete model strings in dated provider references only.
+
+## 2026-06-02 Prompt Authoring Refresh
+
+### Prompt Engineering Overview
+- source_url: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview
+- last_verified_at: 2026-06-02
+- applies_to: prompt engineering workflow, success criteria, empirical tests
+- refresh_when: prompt engineering overview or workflow guidance changes
+- summary: Starts prompt engineering with clear success criteria and empirical tests before optimizing wording.
+- implication_for_docs_maker: Role-prompt docs should define success and eval criteria before prescribing prompt tweaks.
+
+### Prompting Best Practices
+- source_url: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
+- last_verified_at: 2026-06-02
+- applies_to: clarity, examples, XML/structured tags, long-context layout, tool and agentic prompting
+- refresh_when: best-practice guidance changes for prompt structure or long-context handling
+- summary: Recommends clear/direct instructions, examples, XML-style structure, long-context placement, and explicit tool guidance.
+- implication_for_docs_maker: Keep docs sectioned and boundary-explicit; use XML-like blocks as one structure option, not as a universal requirement.
+
+### Define Success Criteria and Build Evaluations
+- source_url: https://platform.claude.com/docs/en/test-and-evaluate/develop-tests
+- last_verified_at: 2026-06-02
+- applies_to: success criteria, minimum viable evals, regression testing
+- refresh_when: evaluation setup or test-development guidance changes
+- summary: Success criteria should be specific and measurable, and prompt changes should be tested against task-specific evals.
+- implication_for_docs_maker: Prompt/instruction docs need smoke evals, known-failure cases, or explicit reviewer gates.
+
+### Reduce Prompt Leak
+- source_url: https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-prompt-leak
+- last_verified_at: 2026-06-02
+- applies_to: prompt leak, prompt injection, context separation, post-processing, audits
+- refresh_when: guardrail or prompt-leak guidance changes
+- summary: Prompt-leak reduction should be applied where needed and combined with context separation, post-processing, and audits rather than a single magic instruction.
+- implication_for_docs_maker: Safety guidance should combine authority boundaries, minimal context, output checks, and audit/eval paths.

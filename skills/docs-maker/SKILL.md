@@ -128,10 +128,11 @@ Read in this order:
 1. The core `SKILL.md` to decide whether the task is `create`, `refactor`, or a route-away case.
 2. For project-guidance updates, read the target repo root guidance (`AGENTS.md`, `CLAUDE.md`, `README.md`, or equivalent local docs) before changing derived guidance.
 3. `rules/structured-reasoning.md`, `rules/context-engineering.md`, and `rules/harness-engineering.md` when planning document structure, context shape, or harness coverage.
-4. `rules/sourcing.md` when claims need external/current evidence, source grading, query hygiene, or a source ledger.
-5. `rules/validation.md` when defining completion contracts, scope completeness, verification menus, trace assertions, or final reports.
-6. `rules/required-behaviors.md` and `rules/forbidden-patterns.md` before declaring the document done.
-7. `references/official/openai.md` and `references/official/anthropic.md` only when provider-sensitive guidance materially changes the rule; do not bump `last_verified_at` unless the source was actually rechecked.
+4. For role-prompt, prompt-authoring, or instruction-base work, read `instructions/context-engineering/references/prompt-authoring.md` when it exists in the target repo and treat it as the local Prompt Contract reference.
+5. `rules/sourcing.md` when claims need external/current evidence, source grading, query hygiene, or a source ledger.
+6. `rules/validation.md` when defining completion contracts, scope completeness, verification menus, trace assertions, or final reports.
+7. `rules/required-behaviors.md` and `rules/forbidden-patterns.md` before declaring the document done.
+8. `references/official/openai.md` and `references/official/anthropic.md` only when provider-sensitive guidance materially changes the rule; do not bump `last_verified_at` unless the source was actually rechecked.
 
 </support_file_read_order>
 
@@ -150,11 +151,12 @@ Read in this order:
 
 Apply context-engineering defaults to every major edit:
 
-- Write an explicit contract: intent, scope, authority, evidence, workflow, tools, output, and verification.
+- Write an explicit contract: intent, role-as-responsibility, scope/non-goals, authority, evidence, workflow, tools, output, and verification.
 - Choose the right instruction altitude: principle + representative example + observable check.
 - Treat tokens as finite; keep root/canonical docs compact and push deep detail into `rules/`, `references/`, ledgers, or eval artifacts.
 - Use capability-based tool wording instead of product-specific commands unless the target runtime requires a profile.
 - Keep canonical guidance provider-neutral where possible; isolate provider-sensitive guidance in references or adapter sections.
+- For role prompts, translate persona wording into responsibilities, decision criteria, context packets, output contracts, and smoke-evaluable acceptance checks.
 
 </context_engineering_application>
 

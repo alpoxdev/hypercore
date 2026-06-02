@@ -29,7 +29,7 @@ Claim → Evidence → Verification → Caveat
 | Markdown 구조 변경 | heading/readback check, fence balance, link/path grep |
 | 링크 또는 reference 변경 | link existence, target path check, stale-ref grep |
 | 출처 기반 주장 변경 | source ledger, claim-source matrix, official/current source check |
-| prompt/instruction 변경 | smoke eval case, known failure readback, trace assertion |
+| prompt/instruction 변경 | 공식 source ledger, stale-source check, smoke eval case, known failure readback, trace assertion |
 | harness workflow 변경 | eval plan, tool contract, safety boundary, context/state policy |
 | parallel/subagent workflow 변경 | bounded objective/scope/output/stop condition, ownership, parent integration/verification |
 
@@ -79,6 +79,17 @@ metrics:
 - stale, unsupported, mixed-concern claim을 찾는 reviewer
 
 validation path를 찾기 위해 무관한 파일을 검색해야 한다면 실패로 봅니다.
+
+
+## 6.1 Prompt / Instruction Validation
+
+Prompt 또는 instruction 문서는 완료 전 아래를 검증합니다.
+
+- [ ] 변경이 intent, scope, authority, evidence, output, verification 중 무엇을 개선하는지 설명됨
+- [ ] current/provider/API 주장이 공식 source ledger 또는 날짜 있는 provider reference에 연결됨
+- [ ] reasoning 지시는 숨은 chain-of-thought가 아니라 결정 근거와 검증 증거를 요구함
+- [ ] 역할 문구가 책임, 판단 기준, acceptance check로 표현됨
+- [ ] 새 문서가 skill 본문, read order, loading map에서 발견 가능함
 
 ## 7. Final Report Shape
 

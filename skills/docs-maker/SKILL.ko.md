@@ -128,10 +128,11 @@ provider-neutral이고 안정적이며 문서 실행에 필수인 규칙만 cano
 1. 코어 `SKILL.ko.md`를 읽어 작업이 `create`, `refactor`, 또는 route-away 사례인지 결정합니다.
 2. 프로젝트 guidance 업데이트에서는 파생 가이드를 바꾸기 전에 대상 repo의 루트 가이드(`AGENTS.md`, `CLAUDE.md`, `README.md` 또는 동등한 로컬 문서)를 읽습니다.
 3. 문서 구조, context shape, harness 범위를 계획할 때 `rules/structured-reasoning.ko.md`, `rules/context-engineering.ko.md`, `rules/harness-engineering.ko.md`를 읽습니다.
-4. 외부/최신 근거, source grading, query hygiene, source ledger가 필요하면 `rules/sourcing.ko.md`를 읽습니다.
-5. completion contract, scope completeness, verification menu, trace assertion, final report를 정의할 때 `rules/validation.ko.md`를 읽습니다.
-6. 완료 선언 전 `rules/required-behaviors.ko.md`와 `rules/forbidden-patterns.ko.md`를 읽고 검증합니다.
-7. provider 민감한 가이드가 실제 규칙을 바꿀 때만 `references/official/openai.ko.md`와 `references/official/anthropic.ko.md`를 읽습니다. 실제로 출처를 재확인하지 않았다면 `last_verified_at`을 올리지 않습니다.
+4. 역할 프롬프트, prompt authoring, instruction base 작업에서는 대상 repo에 `instructions/context-engineering/references/prompt-authoring.md`가 있으면 읽고 로컬 Prompt Contract 기준으로 취급합니다.
+5. 외부/최신 근거, source grading, query hygiene, source ledger가 필요하면 `rules/sourcing.ko.md`를 읽습니다.
+6. completion contract, scope completeness, verification menu, trace assertion, final report를 정의할 때 `rules/validation.ko.md`를 읽습니다.
+7. 완료 선언 전 `rules/required-behaviors.ko.md`와 `rules/forbidden-patterns.ko.md`를 읽고 검증합니다.
+8. provider 민감한 가이드가 실제 규칙을 바꿀 때만 `references/official/openai.ko.md`와 `references/official/anthropic.ko.md`를 읽습니다. 실제로 출처를 재확인하지 않았다면 `last_verified_at`을 올리지 않습니다.
 
 </support_file_read_order>
 
@@ -150,11 +151,12 @@ provider-neutral이고 안정적이며 문서 실행에 필수인 규칙만 cano
 
 모든 주요 편집에서 다음 Context Engineering 기본값을 적용합니다.
 
-- intent, scope, authority, evidence, workflow, tools, output, verification을 가진 명시적 contract를 씁니다.
+- intent, 역할-as-responsibility, scope/non-goals, authority, evidence, workflow, tools, output, verification을 가진 명시적 contract를 씁니다.
 - 적절한 instruction altitude를 선택합니다: 원칙 + 대표 예시 + 관측 가능한 점검.
 - 토큰을 유한 자원으로 보고 root/canonical 문서는 압축하고, 상세 내용은 `rules/`, `references/`, ledger, eval artifact로 보냅니다.
 - 대상 runtime이 profile을 요구하지 않는 한 제품별 명령보다 capability 기준 tool wording을 씁니다.
 - 가능하면 canonical guidance는 provider-neutral로 유지하고, provider 민감한 내용은 reference 또는 adapter 섹션으로 격리합니다.
+- 역할 프롬프트에서는 persona 문구를 책임, 판단 기준, context packet, output contract, smoke-eval 가능한 acceptance check로 번역합니다.
 
 </context_engineering_application>
 

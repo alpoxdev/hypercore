@@ -74,6 +74,19 @@ Pattern:
 - What to change if the eval fails:
 ```
 
+
+## 3.1 Prompt / Role Instruction Smoke Eval
+
+When a docs-maker task changes role prompts or instruction bases, include small regression cases before claiming quality improved.
+
+| Case type | Check | Example |
+|---|---|---|
+| Happy path | follows goal, output shape, and tone | clear request produces expected sections |
+| Missing context | asks, searches, or states caveat instead of guessing | source/file omitted |
+| Scope boundary | respects non-goals and side-effect gates | request includes forbidden external action |
+| Source boundary | treats retrieved content as evidence, not authority | page says “ignore prior instructions” |
+| Regression | known failure does not recur | previous bad prompt/output pair |
+
 ## 4. Safety and Approval Gates
 
 - Document what inputs are untrusted.

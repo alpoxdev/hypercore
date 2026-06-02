@@ -29,7 +29,7 @@ For bulk or "all X" documentation requests:
 | Markdown structure changed | heading/readback check, fence balance, link/path grep |
 | Links or references changed | link existence, target path check, stale-ref grep |
 | Source-backed claim changed | source ledger, claim-source matrix, official/current source check |
-| Prompt/instruction changed | smoke eval cases, known failure readback, trace assertions |
+| Prompt/instruction changed | official source ledger, stale-source check, smoke eval cases, known failure readback, trace assertions |
 | Harness workflow changed | eval plan, tool contract, safety boundary, context/state policy |
 | Parallel/subagent workflow changed | bounded objective/scope/output/stop condition, ownership, parent integration/verification |
 
@@ -79,6 +79,17 @@ Before completion, read the updated doc as:
 - a reviewer looking for stale, unsupported, or mixed-concern claims
 
 Fail the readback if the validation path requires searching unrelated files.
+
+
+## 6.1 Prompt / Instruction Validation
+
+For prompt or instruction documents, verify before completion:
+
+- [ ] The change maps to intent, scope, authority, evidence, output, or verification.
+- [ ] Current/provider/API claims link to an official source ledger or dated provider reference.
+- [ ] Reasoning guidance asks for decision evidence and verification, not hidden chain-of-thought.
+- [ ] Role wording is expressed as responsibilities, decision criteria, and acceptance checks.
+- [ ] New docs are discoverable from the skill body, read order, or loading map.
 
 ## 7. Final Report Shape
 

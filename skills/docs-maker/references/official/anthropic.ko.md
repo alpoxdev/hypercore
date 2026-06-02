@@ -89,3 +89,37 @@
 - refresh_when: 새 모델 계열 출시나 migration 공지가 나옴
 - summary: 모델 이름과 모델 동작은 시간이 지나며 바뀌므로 migration-aware 업데이트가 필요합니다.
 - implication_for_docs_maker: canonical core 가이드에서는 고정 모델명을 금지하고, 구체적 모델 문자열은 날짜가 붙은 provider reference에만 둡니다.
+
+## 2026-06-02 Prompt Authoring Refresh
+
+### Prompt Engineering Overview
+- source_url: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview
+- last_verified_at: 2026-06-02
+- applies_to: prompt engineering workflow, success criteria, empirical tests
+- refresh_when: prompt engineering overview 또는 workflow guidance가 바뀜
+- summary: Prompt 문구 최적화 전에 명확한 success criteria와 empirical test를 먼저 세우라고 안내합니다.
+- implication_for_docs_maker: 역할 프롬프트 문서는 prompt tweak를 처방하기 전에 성공 기준과 eval 기준을 정의해야 합니다.
+
+### Prompting Best Practices
+- source_url: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
+- last_verified_at: 2026-06-02
+- applies_to: clarity, examples, XML/structured tags, long-context layout, tool and agentic prompting
+- refresh_when: prompt structure 또는 long-context handling 모범 사례가 바뀜
+- summary: 명확하고 직접적인 지시, 예시, XML 스타일 구조, long-context 배치, 명시적 도구 가이드를 권장합니다.
+- implication_for_docs_maker: 문서는 섹션과 경계를 명시해야 하며 XML-like block은 구조화 선택지이지 보편 필수 문법은 아닙니다.
+
+### Define Success Criteria and Build Evaluations
+- source_url: https://platform.claude.com/docs/en/test-and-evaluate/develop-tests
+- last_verified_at: 2026-06-02
+- applies_to: success criteria, minimum viable evals, regression testing
+- refresh_when: evaluation setup 또는 test-development guidance가 바뀜
+- summary: Success criteria는 구체적이고 측정 가능해야 하며 prompt 변경은 task-specific eval로 테스트해야 합니다.
+- implication_for_docs_maker: Prompt/instruction 문서에는 smoke eval, known-failure case, 또는 명시적 reviewer gate가 필요합니다.
+
+### Reduce Prompt Leak
+- source_url: https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-prompt-leak
+- last_verified_at: 2026-06-02
+- applies_to: prompt leak, prompt injection, context separation, post-processing, audits
+- refresh_when: guardrail 또는 prompt-leak guidance가 바뀜
+- summary: Prompt leak 완화는 필요한 곳에 적용하고 단일 magic instruction이 아니라 context separation, post-processing, audit와 함께 설계해야 합니다.
+- implication_for_docs_maker: Safety guidance는 authority boundary, 최소 context, output check, audit/eval path를 함께 다뤄야 합니다.

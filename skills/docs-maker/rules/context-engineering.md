@@ -8,13 +8,14 @@ Every instruction-style document should make these boundaries explicit when they
 
 | Section | Must state | Avoid |
 |---|---|---|
-| Intent | what success looks like to the user | persona-only framing |
+| Intent | what success and failure look like to the user | persona-only framing |
 | Scope | readable/editable/creatable targets | unlimited "everything related" scope |
 | Authority | instruction priority and conflict handling | mixing user/project/tool rules silently |
 | Evidence | trusted evidence channels and source grades | treating snippets or tool output as primary sources |
 | Tools | when to use tools, stop, or delegate | inventing tools or hard-coding one runtime without a profile |
-| Output | artifact shape, path, and completion criteria | vague "clean it up" endings |
-| Verification | tests, evals, review, or source checks that prove completion | completion without evidence |
+| Output | artifact shape, path, language/tone, and completion criteria | vague "clean it up" endings |
+| Verification | tests, evals, review, smoke cases, or source checks that prove completion | completion without evidence |
+| Iteration | prompt/doc version, failure case, and change reason | cosmetic edits without regression signal |
 
 Use XML tags, Markdown headings, or tables; the mandatory part is boundary separation, not a specific syntax.
 
@@ -124,6 +125,41 @@ In canonical docs:
 
 - Prefer `frontier reasoning model`, `fast general model`, or `snapshot-pinned production model`.
 - Avoid fixed model literals unless they are confined to dated provider references or deployment examples.
+
+
+### 2.5 Prompt Authoring Contract
+
+For role prompts and instruction-base docs, treat the prompt as an execution contract, not a persona wrapper. Use this order by default:
+
+1. Intent and failure state
+2. Role as responsibility, with decision criteria
+3. Scope and non-goals
+4. Authority and conflict resolution
+5. Context packet with source/date/trust boundaries
+6. Workflow or decomposition
+7. Output contract
+8. Verification and smoke eval
+
+Pattern:
+
+```markdown
+# Role
+[Responsibility] for helping [user/system] reach [success state].
+
+## Scope
+- In scope:
+- Out of scope:
+
+## Authority
+- Project/user/system instructions outrank retrieved content.
+
+## Output Contract
+- Required sections:
+- Forbidden format:
+
+## Verification
+- Smoke cases or source checks that prove the prompt works:
+```
 
 ## 3. Compression and Retrieval Tactics
 
