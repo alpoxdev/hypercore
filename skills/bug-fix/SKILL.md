@@ -1,12 +1,12 @@
 ---
 name: bug-fix
-description: "[Hyper] Analyze bugs, present repair options, then implement and verify the user-selected fix path. Routes simple bugs directly; tracks complex multi-phase investigations via .hypercore/bug-fix/ JSON flow."
-compatibility: Use in environments with code exploration (Read/Grep/Glob), editing (Edit), and validation commands (Bash).
+description: "Use this skill when the user asks to diagnose and fix a concrete bug with a symptom, error, failing test, regression, or reproducible wrong behavior. Do not use for broad build/CI repair, security review, new features, or speculative cleanup."
+compatibility: Use in environments with code exploration, editing, and validation commands; complex investigations may write `.hypercore/bug-fix/flow.json`.
 ---
 
 # Bug Fix Skill
 
-> Diagnose a concrete bug, choose the safest repair path, and fix it — classify complexity first, then either fix directly or track progress through structured phases.
+> Diagnose a concrete bug, choose the safest repair path, implement within the bug boundary, and verify the changed behavior.
 
 <output_language>
 
@@ -14,239 +14,184 @@ Default all user-facing deliverables, saved artifacts, reports, plans, generated
 
 Preserve source code identifiers, CLI commands, file paths, schema keys, JSON/YAML field names, API names, package names, proper nouns, and quoted source excerpts in their required or original language.
 
-Use a different language only when the user explicitly requests it, an existing target artifact must stay in another language for consistency, or a machine-readable contract requires exact English tokens. If a localized template or reference exists (for example `*.ko.md` or `*.ko.json`), prefer it for user-facing artifacts.
+Use a different language only when the user explicitly requests it, an existing target artifact must stay in another language for consistency, or a machine-readable contract requires exact English tokens. If a localized template or reference exists, such as `*.ko.md` or `*.ko.json`, prefer it for user-facing artifacts.
 
 </output_language>
 
-<request_routing>
+<purpose>
+
+- Turn a concrete bug report into an evidence-backed diagnosis, scoped repair, and verified outcome.
+- Classify the bug before editing so simple bugs can be fixed directly and complex bugs are tracked through explicit phases.
+- Prevent speculative changes by requiring root-cause evidence, impact boundaries, and targeted validation.
+- Preserve investigation state for complex bugs with `.hypercore/bug-fix/flow.json` using `references/flow-schema.md`.
+
+</purpose>
+
+<routing_rule>
+
+Use `bug-fix` when the user asks to fix, debug, investigate, or resolve a concrete failing behavior, for example a runtime error, failing test, regression, broken request, stale state, duplicate rendering, incorrect calculation, or reproducible UI/API mismatch.
+
+Do not use `bug-fix` when:
+
+- the main task is repository-wide build, dependency, deployment, or CI repair; route to the relevant build/deploy skill instead
+- the main task is a security audit, exploit analysis, trust-boundary review, or vulnerability fix; route to the relevant security skill instead
+- the user asks for a new feature, broad refactor, style cleanup, performance optimization, or architecture redesign without a concrete bug symptom
+- the user asks only for documentation, planning, or summarization
+
+If the request starts as a concrete bug but expands into repo-wide build failure, deployment failure, security risk, or product redesign, stop the bug-fix branch and hand off with the evidence already collected.
+
+</routing_rule>
+
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Fix a specific bug by proving the failing boundary, applying the smallest safe repair, and validating the changed behavior. |
+| Trigger | Concrete symptom, error, failing test, regression, broken integration path, or reproducible expected-vs-actual mismatch. |
+| Scope | Own diagnosis, direct code/config edits needed for the bug, targeted tests/builds, and optional `.hypercore/bug-fix/flow.json` tracking for complex cases. |
+| Authority | User instructions and repo-local rules outrank this skill. Existing code/tests and reproducible evidence outrank guesses. Do not override safety gates or unrelated changes. |
+| Evidence | Use error text, reproduction steps, failing tests, logs, relevant source reads, recent local diffs, and validation output. Record uncertain assumptions explicitly. |
+| Tools | Use repository inspection, edits, and validation commands. Gate destructive actions, credential access, network calls, production side effects, and unrelated cleanup. |
+| Output | Korean user-facing diagnosis and final report with bug, root cause, fix applied, changed files, validation commands, key results, and unverified risks. |
+| Verification | Run targeted validation for changed paths, then broader typecheck/test/build when applicable or explain why it cannot run. Complex flows must update tracking state. |
+| Stop condition | Stop only after requested bug behavior is fixed and verified, or after a diagnose-only request is answered, or when blocked by missing reproduction/user choice/unsafe side effect. |
+
+</instruction_contract>
+
+<activation_examples>
 
 ## Positive triggers
 
-- A specific runtime error with a reproduction path, such as `Cannot read properties of undefined`.
-- A specific logic bug such as duplicate rendering, stale state, or wrong calculations in one feature.
-- A concrete API bug with a failing request, response mismatch, or one broken integration path.
+- "`Cannot read properties of undefined` 에러가 `/users` 페이지에서 나는데 고쳐줘."
+- "최근 변경 뒤 로그인 버튼을 눌러도 세션이 저장되지 않아. 원인 찾고 수정해줘."
+- "이 failing test를 통과하게 실제 버그를 고쳐줘."
+- "API 응답은 오는데 화면에서 같은 카드가 두 번 렌더링돼."
 
-## Out-of-scope
+## Negative triggers
 
-- Repository-wide build or CI cleanup. Route that to `build-fix`.
-- Security audits, exploit review, or trust-boundary analysis. Route that to `security-review`.
-- New feature work, refactors, or speculative cleanup that are not tied to a concrete bug.
+- "전체 CI가 깨졌는데 의존성/빌드 설정을 전부 정리해줘." Use a build/CI repair skill.
+- "이 인증 흐름의 보안 취약점을 감사해줘." Use a security review/fix skill.
+- "이 컴포넌트를 새 디자인으로 리팩터링해줘." Use design/refactor implementation, not bug-fix.
+- "버그 수정 방법에 대한 일반 가이드를 써줘." Use docs/planning, not bug-fix.
 
-## Boundary cases
+## Boundary examples
 
-- If the user asks for root-cause analysis only, stay in diagnosis mode and do not edit.
-- If the user asks for a direct fix on a single concrete bug, this skill owns it.
-- If the request starts as a bug but expands into repo-wide build breakage, hand off to `build-fix`.
+- "원인만 분석하고 수정하지 마." Stay in diagnose-only mode and stop before edits.
+- "배포 후 500 에러가 나는데 로그와 앱 코드 중 어디 문제인지 봐줘." Start as bug-fix; hand off if the primary issue is deployment/platform configuration.
+- "이 버그 고치고 커밋까지 해줘." Use `bug-fix` for diagnosis/fix/verification, then use a commit workflow only after the fix is complete.
 
-</request_routing>
+</activation_examples>
 
 <argument_validation>
 
-If ARGUMENT is missing, ask immediately:
+If no concrete bug is provided, ask one concise question and stop:
 
 ```text
-Which bug should be fixed?
-- Error message / failing symptom
-- Expected vs actual behavior
-- Reproduction steps
-- Related files or call sites
-- Recent change, suspect commit, or environment detail
+어떤 버그를 고쳐야 하나요? 에러 메시지, 예상/실제 동작, 재현 단계, 관련 파일 중 아는 정보를 알려주세요.
 ```
+
+If partial information is provided, proceed with reasonable local investigation when safe. Ask only when missing information prevents reproduction, risks destructive action, or creates multiple incompatible repair paths.
 
 </argument_validation>
 
-<mandatory_reasoning>
+<support_file_read_order>
 
-## Mandatory Structured Reasoning
+Read support files only when their condition applies:
 
-Before implementation, perform an internal structured reasoning pass. Depth scales with complexity:
+1. Read `rules/diagnosis-and-routing.md` before classifying a bug, choosing diagnose-only/fix-now/option-first/handoff, or deciding whether user confirmation is required.
+2. Read `references/flow-schema.md` only for complex bugs that need `.hypercore/bug-fix/flow.json`, or when resuming an existing tracked flow.
+3. Read `rules/validation-and-reporting.md` before declaring completion, reporting blocked state, or deciding which validation evidence is sufficient.
+4. Use Korean mirrors (`*.ko.md`) for user-facing reports or handoff notes when helpful; keep machine-readable flow fields in English.
 
-- **Simple (3 steps)**: Identify cause → determine fix → verify approach
-- **Medium (5 steps)**: Classify → reproduce → hypothesize → compare options → recommend
-- **Complex (7+ steps)**: Classify → reproduce → hypothesize multiple causes → explore dependencies → compare options → assess cross-cutting impact → recommend
-
-Recommended sequence:
-
-1. Complexity classification
-2. Reproduction and symptom framing
-3. Root-cause hypotheses
-4. Option comparison
-5. Final recommendation
-
-Before any edit, collect root-cause evidence and reduce the problem to a minimal reproduction or the narrowest failing boundary you can actually verify.
-
-</mandatory_reasoning>
-
-<complexity_classification>
-
-## Complexity Classification
-
-Classify immediately after the structured reasoning pass:
-
-| Complexity | Signals | Path |
-|------------|---------|------|
-| **Simple** | Single file, clear error message, obvious root cause, one fix path, low risk | **Fix-now** — proceed directly without flow tracking |
-| **Complex** | Cross-cutting bug, multiple potential root causes, requires investigation across systems, fix has side effects, multiple valid fix strategies | **Tracked** — create `.hypercore/bug-fix/flow.json` |
-
-Announce the classification:
-
-```
-Complexity: [simple/complex] — [one-line reason]
-```
-
-When uncertain, classify as complex. It is cheaper to track than to lose investigation progress.
-
-</complexity_classification>
-
-<flow_tracking>
-
-## Flow Tracking (Complex Path Only)
-
-When classified as complex, initialize the flow:
-
-```bash
-mkdir -p .hypercore/bug-fix
-```
-
-Write `.hypercore/bug-fix/flow.json` and update it as each phase progresses. See `references/flow-schema.md` for the full schema.
-
-### Phase progression
-
-| Phase | Description | Next |
-|-------|-------------|------|
-| `diagnose` | Reproduce, isolate root cause, collect evidence | `options` |
-| `options` | Present 2-3 fix options with tradeoffs | `confirm` |
-| `confirm` | Wait for and record user selection | `fix` |
-| `fix` | Implement selected option | `verify` |
-| `verify` | Run validation, report outcome | done |
-
-### Resume support
-
-If `.hypercore/bug-fix/flow.json` already exists, read it first and continue from the last incomplete phase (`in_progress` or `pending`). Do not restart completed phases.
-
-</flow_tracking>
-
-<execution_modes>
-
-Use one of these branches explicitly:
-
-- **Diagnose-only**: reproduce, isolate the failing path, summarize evidence, and stop before code edits.
-- **Fix-now** (simple path): If the user explicitly asks for a direct fix and one path is clearly the safest, say which path you are taking and implement without a second confirmation round. No flow tracking.
-- **Option-first** (complex path): present 2-3 repair options with flow tracking and wait for user selection.
-- **Handoff**: route repo-wide build breakage to `build-fix` and security review requests to `security-review`.
-
-</execution_modes>
+</support_file_read_order>
 
 <workflow>
 
-## Simple Path (Fix-now)
-
-| Step | Task | Tool |
-|------|------|------|
-| 1 | Validate input, structured reasoning pass (3 steps) | internal reasoning |
-| 2 | Classify as simple | - |
-| 3 | Explore relevant code, identify root cause | Read/Grep/Glob |
-| 4 | Announce fix path and implement | Edit |
-| 5 | Run validation (typecheck/test/build) | Bash |
-| 6 | Report outcome and changed files | - |
-
-## Complex Path (Option-first)
-
-| Step | Task | Tool |
-|------|------|------|
-| 1 | Validate input, structured reasoning pass (7+ steps) | internal reasoning |
-| 2 | Classify as complex, create `.hypercore/bug-fix/flow.json` | Write |
-| 3 | Deep investigation → update flow `diagnose: completed` | Read/Grep/Glob + Edit |
-| 4 | Present 2-3 fix options → update flow `options: completed` | Edit |
-| 5 | Wait for user selection → update flow `confirm: completed` | Edit |
-| 6 | Implement selected option → update flow `fix: completed` | Edit/Write |
-| 7 | Run validation → update flow `verify: completed` | Bash + Edit |
-| 8 | Report outcome, set flow status to `completed` | Edit |
+| Phase | Simple / Fix-now path | Complex / Option-first path |
+|---|---|---|
+| 1. Intake | Confirm symptom and expected behavior from the prompt or local evidence. | Same, then check for existing `.hypercore/bug-fix/flow.json`. |
+| 2. Classify | Announce `Complexity: simple` with one-line evidence. | Announce `Complexity: complex` and initialize/update flow tracking. |
+| 3. Diagnose | Reproduce or narrow the failing boundary; identify root cause. | Reproduce, compare hypotheses, collect evidence, update `diagnose`. |
+| 4. Choose path | If one low-risk fix is clear and user asked to fix, announce the fix path. | Present 2-3 repair options with pros, cons, risk, files, and recommendation; wait for selection. |
+| 5. Implement | Make the smallest direct edit needed for the bug. | Implement only the selected option and update `fix`. |
+| 6. Verify | Run targeted validation and broader checks when applicable. | Run selected-path validation, retry within scope if needed, update `verify`. |
+| 7. Report | Report bug, root cause, changed files, validation, and residual risk. | Report the same and set flow `status` to `completed` when all phases pass. |
 
 </workflow>
 
+<execution_modes>
+
+- **Diagnose-only**: Use when the user asks for analysis only. Reproduce or narrow the failure, explain root cause and options, and stop before edits.
+- **Fix-now**: Use for simple bugs where the user requested a fix, the root cause is evidenced, one low-risk path is clearly safest, and validation can be run.
+- **Option-first**: Use for complex bugs with multiple plausible causes, cross-cutting effects, risky tradeoffs, or more than one valid repair strategy. Track via `.hypercore/bug-fix/flow.json` and wait for user selection.
+- **Handoff**: Use when the primary issue is outside the bug-fix scope. Include collected evidence and the recommended next skill/workflow.
+
+</execution_modes>
+
 <option_presentation>
 
-Use this format (complex path):
+Use this format for complex option-first cases:
 
 ```markdown
-## Bug Analysis Result
-**Root cause**: ...
-**Impact scope**: ...
-**Complexity**: complex
+## 버그 분석 결과
+**원인**: ...
+**근거**: ...
+**영향 범위**: ...
+**복잡도**: complex
 
-### Option 1: ... (Recommended)
-- **Pros**:
-- **Cons**:
-- **Risk**:
-- **Files**:
+### 옵션 1: ... (추천)
+- **장점**:
+- **단점**:
+- **리스크**:
+- **수정 파일**:
 
-### Option 2: ...
-- **Pros**:
-- **Cons**:
-- **Risk**:
-- **Files**:
+### 옵션 2: ...
+- **장점**:
+- **단점**:
+- **리스크**:
+- **수정 파일**:
 
-### Option 3: ... (Temporary)
-- **Pros**:
-- **Cons**:
-- **Risk**:
-- **Files**:
-
-Recommendation: Option N (reason ...)
-Which option should I apply? (1/2/3)
+추천: 옵션 N (... 때문에)
+어떤 옵션으로 진행할까요? (1/2)
 ```
+
+Include a third option only when there is a genuinely distinct fallback or temporary mitigation.
 
 </option_presentation>
 
 <implementation_rules>
 
-- Do not modify code before user option selection unless in the explicit Fix-now branch.
-- Avoid speculative edits; use evidence-based fixes only.
-- Keep scope limited to the requested bug and direct impact.
-- Always run targeted validation for the changed path, not just a generic command dump.
-- Report the commands run, the key result lines, and the touched files in the final report.
-- If validation cannot run, say why and what remains unverified.
-
-## Reporting
-
-After execution, report:
-
-```markdown
-## Done
-
-**Bug**: [original symptom]
-**Root cause**: [what was wrong]
-**Fix applied**: [which option or approach]
-**Changes**: [list of changed files]
-**Validation**: [what was verified and result]
-```
-
-For complex path: also update `.hypercore/bug-fix/flow.json` status to `completed`.
+- Do not edit before root-cause evidence is collected.
+- Do not edit before user selection in option-first mode.
+- Keep changes limited to the requested bug and direct impact; do not perform opportunistic cleanup.
+- Prefer failing tests or a reproduction command before the fix, then rerun after the fix when practical.
+- Do not weaken tests, delete failing tests, suppress type errors, or hide diagnostics to make validation pass.
+- If validation fails after the fix, keep debugging within scope; do not report success until the failure is resolved or clearly pre-existing/out of scope.
+- If validation cannot run, state the exact blocker and what remains unverified.
 
 </implementation_rules>
 
 <validation>
 
-Execution checklist:
+Before completion, satisfy this checklist:
 
-- [ ] ARGUMENT validated
-- [ ] Structured reasoning pass completed (depth matches complexity)
-- [ ] Complexity classified (simple/complex)
-- [ ] Flow JSON created and maintained (complex path only)
-- [ ] Root-cause evidence collected
-- [ ] 2-3 options presented (complex path) or fix path announced (simple path)
-- [ ] User choice confirmed (complex path)
-- [ ] typecheck/test/build executed
-- [ ] outcome + touched files reported
-- [ ] Flow JSON finalized with `completed` status (complex path only)
+- [ ] Request has a concrete bug symptom, or a concise clarifying question was asked.
+- [ ] Mode selected: diagnose-only, fix-now, option-first, or handoff.
+- [ ] Complexity announced with one-line evidence.
+- [ ] Root-cause evidence collected before edits.
+- [ ] Complex path has `.hypercore/bug-fix/flow.json` created/resumed and updated using `references/flow-schema.md`.
+- [ ] Complex path presented options and recorded user selection before implementation.
+- [ ] Changed files are limited to the bug boundary.
+- [ ] Targeted validation ran for the changed path, plus broader typecheck/test/build when applicable.
+- [ ] Final report includes bug, root cause, fix, changed files, validation commands/results, unverified risks, and flow status if tracked.
+- [ ] Safety gates from `rules/validation-and-reporting.md` passed.
 
-Forbidden:
+Forbidden completion states:
 
-- [ ] speculative fix without evidence
-- [ ] immediate implementation without options (complex path)
-- [ ] implementation without explicit user choice (complex path)
-- [ ] completion claim without validation
-- [ ] skipping flow JSON updates in complex path
+- [ ] Fix claimed without reproduction, root-cause evidence, or targeted validation.
+- [ ] Complex fix implemented before user option selection.
+- [ ] Flow tracking omitted for a complex bug.
+- [ ] Unrelated cleanup mixed into the bug fix.
+- [ ] Failing validation hidden, weakened, or misreported.
 
 </validation>
