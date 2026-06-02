@@ -1,6 +1,6 @@
 ---
 name: tanstack-start-architecture
-description: "[Hyper] TanStack Start 프로젝트의 project/folder structure, route 구조, nested shared folder organization, server functions, loader/client-server boundary, importProtection, hooks, SSR/hydration, hypercore convention을 구조 변경 전/중에 검증하고 강제합니다."
+description: 기존 TanStack Start/Router 프로젝트의 routes, loaders, server functions, importProtection, SSR/hydration, `src/lib` 또는 `src/services` 같은 nested shared folders 아키텍처를 리뷰하거나 변경할 때 사용합니다. 일반 React/Vite 프로젝트나 문서 요약 전용 요청에는 사용하지 않습니다.
 ---
 
 @architecture-rules.md
@@ -18,6 +18,7 @@ description: "[Hyper] TanStack Start 프로젝트의 project/folder structure, r
 @references/official/tanstack-start-2026-04-30.md
 @references/official/tanstack-router-2026-04-30.md
 @references/official/api-drift-notes.md
+@references/official/current-docs-2026-06-02.ko.md
 
 # TanStack Start Architecture Enforcement
 
@@ -56,7 +57,38 @@ description: "[Hyper] TanStack Start 프로젝트의 project/folder structure, r
 
 </operating_mode>
 
-<trigger_examples>
+<routing_rule>
+
+요청 결과가 기존 TanStack Start / TanStack Router 프로젝트의 architecture enforcement, implementation guidance, review일 때 이 스킬을 사용합니다. 범위에는 route structure, route-local folders, loaders, server functions, server routes, middleware, import protection, SSR/hydration, platform setup, shared nested folder organization이 포함됩니다.
+
+다음 경우에는 사용하지 않습니다.
+
+- 프로젝트가 TanStack Start 또는 TanStack Router가 아님
+- 사용자가 일반 React/Vite architecture review만 요청함
+- project audit 또는 implementation guidance 없이 문서 요약만 요청함
+- 주요 작업이 Start architecture와 무관한 security, deployment, test repair임
+
+공식 TanStack guidance와 Hypercore convention이 다르면 official/safety rules를 먼저 강제하고, Hypercore convention은 touched architecture surface에만 적용합니다.
+
+</routing_rule>
+
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | TanStack Start 프로젝트를 official Start/Router behavior와 label된 Hypercore convention에 맞게 안전하고 유지보수 가능하게 유지합니다. |
+| Trigger | routes, loaders, server functions, import boundaries, SSR/hydration, middleware, server routes, platform setup, shared folder layout을 포함한 기존 Start/Router 프로젝트 작업. |
+| Scope | touched project architecture, topic rule files, official references, validation notes, 작고 되돌릴 수 있는 architecture fix를 리뷰하고 안내합니다. |
+| Authority | 사용자/프로젝트 지시가 이 스킬보다 우선합니다. API 사실은 공식 TanStack 문서가 Hypercore convention보다 우선합니다. Safety policy는 위험한 runtime/import-boundary 변경을 차단합니다. |
+| Evidence | project indicators, local config/package files, touched source paths, topic rules, official references, package typecheck, validation command output을 사용합니다. |
+| Tools | local search/read/edit/validation commands를 사용합니다. API drift가 중요하면 최신 공식 문서를 확인합니다. destructive migration, credential access, network side effect, production change는 gate합니다. |
+| Output | rule classification, 변경 파일, 검증 근거, 남은 risk, official-doc ambiguity note가 포함된 한국어 architecture decision/review. |
+| Verification | touched surface에 맞는 `rules/validation.ko.md` checks와, 이 스킬 폴더 변경 시 skill-anatomy checks를 실행합니다. |
+| Stop condition | applicable safety gate가 통과하고, Hypercore convention을 적용 또는 명시적으로 보류했으며, 검증 근거와 unresolved API drift의 날짜/출처를 기록하면 멈춥니다. |
+
+</instruction_contract>
+
+<activation_examples>
 
 Positive:
 
@@ -64,7 +96,7 @@ Positive:
 - "Add a TanStack Start route with search params and keep the architecture compliant."
 - "Refactor Start route folders, hooks, and server functions to follow hypercore rules."
 - "TanStack Start 프로젝트에서 loader 경계랑 server function 구조 점검해줘."
-- "TanStack Start folder structure를 검토하고 nested src/lib 또는 src/features grouping을 허용해줘."
+- "TanStack Start folder structure를 검토하고 nested src/lib 또는 src/services grouping을 강제해줘."
 
 Negative:
 
@@ -77,7 +109,7 @@ Boundary:
 - "정적인 TanStack Start privacy page의 카피만 바꿔줘."
   이 경우 빠른 boundary check만 수행합니다. publishing-only 페이지는 logic/server integration을 추가하지 않는 한 `-hooks/`, `-components/`, `-functions/` 폴더가 필요 없습니다.
 
-</trigger_examples>
+</activation_examples>
 
 <project_validation>
 
@@ -112,8 +144,9 @@ ls src/routes/__root.tsx 2>/dev/null
    - `rules/platform.ko.md` — `getRouter()`, env validation, path aliases, operational endpoints.
 3. Start API behavior가 중요하면 `references/official/tanstack-start-2026-04-30.md`.
 4. Router/file-route/search/loading behavior가 중요하면 `references/official/tanstack-router-2026-04-30.md`.
-5. 공식 문서 충돌이나 package behavior가 불확실하면 `references/official/api-drift-notes.md`.
-6. 완료 전 `rules/validation.ko.md`.
+5. current Start docs, plugin config, import protection, server functions, execution-control API가 판단에 영향을 주면 `references/official/current-docs-2026-06-02.ko.md`.
+6. 공식 문서 충돌이나 package behavior가 불확실하면 `references/official/api-drift-notes.md`.
+7. 완료 전 `rules/validation.ko.md`.
 
 </support_file_read_order>
 
@@ -151,8 +184,8 @@ ls src/routes/__root.tsx 2>/dev/null
 - interactive logic이 있는 page/component는 logic을 `-hooks/`로 추출합니다. publishing-only static page는 예외입니다.
 - server integration이 있는 페이지는 필요에 따라 `-functions/`, route-local hooks/components를 사용합니다.
 - file route는 `export const Route = createFileRoute(...)`를 사용합니다.
-- route/page UI -> hooks/query -> server functions -> feature/database layer 흐름을 유지합니다.
-- ownership과 runtime boundaries를 명확히 할 때 `src/lib`, `src/features`, `src/services`, `src/db`, `src/server`, `src/config` 같은 nested shared folders를 허용합니다.
+- route/page UI -> hooks/query -> server functions -> services/lib/db layer 흐름을 유지합니다.
+- touched shared code를 추가하거나 재구성할 때 `src/lib/<domain>/`, `src/services/<domain-or-provider>/`, `src/db/<area>/`, `src/server/<area>/`, `src/config/<area>/` 같은 nested shared folders를 강제합니다. 명시적 project exception을 기록하지 않는 한 `src/lib/foo.ts` 또는 `src/services/foo.ts` 같은 새 direct leaf file을 만들지 않습니다.
 - kebab-case filename, explicit return type, no `any`, const arrow function, 의미 있는 코드 그룹의 Korean block comments를 유지합니다.
 
 </hypercore_conventions_summary>
@@ -164,7 +197,8 @@ ls src/routes/__root.tsx 2>/dev/null
 - `rules/validation.ko.md`의 작업별 검증을 실행합니다.
 - 수정한 rule에 official-vs-hypercore label이 유지되는지 확인합니다.
 - `SKILL.md`에서 support file이 직접 링크되고 indirect reference chain이 없는지 확인합니다.
-- English/Korean entrypoint가 같은 trigger, boundary, workflow, read order를 설명하는지 확인합니다.
+- English/Korean entrypoint가 같은 trigger, boundary, workflow, contract, read order를 설명하는지 확인합니다.
+- touched `src/lib`, `src/services` 및 유사 shared folders가 logical nested grouping을 쓰는지 또는 explicit exception이 기록됐는지 확인합니다.
 - 남은 TanStack API ambiguity는 source link와 정확한 날짜로 기록합니다.
 
 </validation>

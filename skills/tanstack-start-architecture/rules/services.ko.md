@@ -1,6 +1,6 @@
 # Server Functions and Service Layer
 
-> Server function API 사용, runtime validation, route/features/services/database layering 규칙.
+> Server function API 사용, runtime validation, route/services/lib/database layering 규칙.
 
 ## Rule Classifications
 
@@ -10,7 +10,7 @@
 | canonical validation API는 `.inputValidator(...)` | Official + Drift note | installed types가 다르지 않으면 `.validator(...)` 차단 |
 | mutation input runtime validation | Safety policy | POST/PUT/PATCH validation 없으면 차단 |
 | chain에서 handler는 마지막 | Official/API shape | malformed chain 차단 |
-| non-trivial logic은 feature/service layer | Hypercore convention | touched non-trivial logic에 적용 |
+| non-trivial logic은 service/lib layer | Hypercore convention | touched non-trivial logic에 적용 |
 | `functions/index.ts` barrel 금지 | Hypercore convention + Safety policy | import-protection/tree-shaking ambiguity 방지 |
 
 `.inputValidator()`와 stale `.validator()` 예시는 `references/official/api-drift-notes.md`를 봅니다.
@@ -45,12 +45,12 @@ Notes:
 ```text
 Route / hook / query
   -> routes/<page>/-functions/ 또는 functions/ server function
-  -> features/<domain>/queries.ts 또는 mutations.ts
-  -> database/ ORM client 또는 services/<provider>/ SDK wrapper
+  -> services/<domain-or-provider>/queries.ts 또는 mutations.ts
+  -> lib/<domain>/shared helpers 또는 database/ ORM client
 ```
 
 - **Safety policy:** route는 database/ORM client를 직접 import하지 않습니다.
-- **Hypercore convention:** non-trivial business logic은 route file이 아니라 `features/` 또는 `services/`에 둡니다.
+- **Hypercore convention:** non-trivial business logic은 route file이 아니라 `services/` 또는 domain-specific `lib/` folders에 둡니다.
 - **Hypercore convention:** extraction이 noise라면 simple CRUD는 server function에 남길 수 있습니다.
 
 ## Query and Mutation Pattern
@@ -67,5 +67,5 @@ Route / hook / query
 - [ ] `handler`가 chain 마지막임.
 - [ ] auth-required server function이 middleware 또는 equivalent checked boundary를 사용함.
 - [ ] route가 ORM/database client에 직접 접근하지 않음.
-- [ ] non-trivial logic이 `features/` 또는 `services/`로 분리됨.
+- [ ] non-trivial logic이 `services/` 또는 domain-specific `lib/` folders로 분리됨.
 - [ ] `functions/index.ts` barrel export를 만들지 않음.

@@ -1,6 +1,6 @@
 # Server Functions and Service Layer
 
-> Server function API usage, runtime validation, and hypercore layering between routes, features, services, and database access.
+> Server function API usage, runtime validation, and hypercore layering between routes, services, lib modules, and database access.
 
 ## Rule Classifications
 
@@ -10,7 +10,7 @@
 | Use `.inputValidator(...)` as canonical validation API | Official + Drift note | Block new `.validator(...)` unless installed types prove otherwise |
 | Validate mutation input at runtime | Safety policy | Block POST/PUT/PATCH without validation |
 | Handler last in chain | Official/API shape | Block malformed chain |
-| Feature/service layer for non-trivial logic | Hypercore convention | Apply to touched non-trivial logic |
+| Service/lib layer for non-trivial logic | Hypercore convention | Apply to touched non-trivial logic |
 | No `functions/index.ts` barrel | Hypercore convention + Safety policy | Avoid import-protection/tree-shaking ambiguity |
 
 See `references/official/api-drift-notes.md` for `.inputValidator()` vs stale `.validator()` examples.
@@ -45,12 +45,12 @@ Notes:
 ```text
 Route / hook / query
   -> server function in routes/<page>/-functions/ or functions/
-  -> features/<domain>/queries.ts or mutations.ts
-  -> database/ ORM client or services/<provider>/ SDK wrapper
+  -> services/<domain-or-provider>/queries.ts or mutations.ts
+  -> lib/<domain>/shared helpers or database/ ORM client
 ```
 
 - **Safety policy:** routes do not import database/ORM clients directly.
-- **Hypercore convention:** non-trivial business logic belongs in `features/` or `services/`, not route files.
+- **Hypercore convention:** non-trivial business logic belongs in `services/` or domain-specific `lib/` folders, not route files.
 - **Hypercore convention:** simple CRUD can stay in a server function if extraction would add noise.
 
 ## Query and Mutation Pattern
@@ -67,5 +67,5 @@ Route / hook / query
 - [ ] `handler` is last in the chain.
 - [ ] Auth-required server functions use middleware or an equivalent checked boundary.
 - [ ] Routes do not access ORM/database clients directly.
-- [ ] Non-trivial logic is delegated to `features/` or `services/`.
+- [ ] Non-trivial logic is delegated to `services/` or domain-specific `lib/` folders.
 - [ ] No `functions/index.ts` barrel export was introduced.
