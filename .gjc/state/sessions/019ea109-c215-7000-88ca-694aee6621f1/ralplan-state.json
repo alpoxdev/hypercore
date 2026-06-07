@@ -1,0 +1,27 @@
+{
+  "active": true,
+  "version": 2,
+  "current_phase": "planner",
+  "skill": "ralplan",
+  "cwd": "/Users/alpox/Desktop/dev/kood/hypercore",
+  "updated_at": "2026-06-07T07:44:06.730Z",
+  "session_id": "019ea109-c215-7000-88ca-694aee6621f1",
+  "receipt": {
+    "version": 1,
+    "skill": "ralplan",
+    "owner": "gjc-hook",
+    "command": "gjc-skill-invocation",
+    "state_path": "/Users/alpox/Desktop/dev/kood/hypercore/.gjc/state/sessions/019ea109-c215-7000-88ca-694aee6621f1/skill-active-state.json",
+    "storage_path": "/Users/alpox/Desktop/dev/kood/hypercore/.gjc/state/sessions/019ea109-c215-7000-88ca-694aee6621f1/ralplan-state.json",
+    "mutated_at": "2026-06-07T07:44:06.731Z",
+    "fresh_until": "2026-06-07T08:14:06.731Z",
+    "status": "fresh",
+    "mutation_id": "ralplan:2026-06-07T07:44:06.731Z",
+    "content_sha256": {
+      "algorithm": "sha256",
+      "value": "b5aca87d3ef0ea906b3c35f89dc334c98fd4c57e234eebfde117aab7f77ff4eb",
+      "covered_path": "/Users/alpox/Desktop/dev/kood/hypercore/.gjc/state/sessions/019ea109-c215-7000-88ca-694aee6621f1/ralplan-state.json",
+      "computed_at": "2026-06-07T07:44:06.731Z"
+    }
+  }
+}

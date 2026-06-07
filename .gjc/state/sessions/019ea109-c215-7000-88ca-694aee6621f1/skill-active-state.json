@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "active": true,
+  "skill": "ralplan",
+  "keyword": "/skill:ralplan",
+  "phase": "planner",
+  "activated_at": "2026-06-07T07:44:06.730Z",
+  "updated_at": "2026-06-07T07:44:06.730Z",
+  "source": "gjc-skill-invocation",
+  "session_id": "019ea109-c215-7000-88ca-694aee6621f1",
+  "initialized_mode": "ralplan",
+  "initialized_state_path": "/Users/alpox/Desktop/dev/kood/hypercore/.gjc/state/sessions/019ea109-c215-7000-88ca-694aee6621f1/ralplan-state.json",
+  "active_skills": [
+    {
+      "skill": "ralplan",
+      "phase": "planner",
+      "active": true,
+      "activated_at": "2026-06-07T07:44:06.730Z",
+      "updated_at": "2026-06-07T07:44:06.730Z",
+      "session_id": "019ea109-c215-7000-88ca-694aee6621f1"
+    }
+  ]
+}
