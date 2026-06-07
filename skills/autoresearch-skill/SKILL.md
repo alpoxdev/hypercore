@@ -1,6 +1,6 @@
 ---
 name: autoresearch-skill
-description: "[Hyper] Optimize an existing Codex skill through baseline-first experiments, binary evals, optional guards, and one-mutation-at-a-time iteration. Use for skill autoresearch, measured trigger/workflow improvement, self-optimizing a skill, benchmarking skill changes, or resuming skill experiment artifacts."
+description: "[Hyper] Use this skill when optimizing an existing Codex skill through baseline-first experiments, binary evals, Guard checks, and one-mutation-at-a-time iteration. Use for skill autoresearch, measured trigger/workflow improvement, self-optimizing a skill, benchmarking skill changes, or resuming skill experiment artifacts. If invoked without a target, ask for the target skill and eval intent before creating artifacts or mutating files. Do not use for one-off skill creation/refactor, generic docs polish, app QA, commit-only, or push-only requests."
 compatibility: Works best with read/edit/write tools, shell search, repeated evaluations, and artifact logging for skill experiments.
 ---
 
@@ -38,6 +38,8 @@ Use a different language only when the user explicitly requests it, an existing 
 Use `autoresearch-skill` when the user wants to optimize an existing skill through repeated experiments and evaluation.
 
 Use `skill-maker` when the main job is creating a new skill or doing one structural refactor without an experiment loop.
+Use `skill-tester` when the main job is validating a skill once without a mutation loop.
+Use `docs-maker` when the main job is rewriting a general document, runbook, or prose artifact rather than improving a reusable skill.
 
 Do not use `autoresearch-skill` when:
 
@@ -47,21 +49,33 @@ Do not use `autoresearch-skill` when:
 
 </routing_rule>
 
+<missing_target_behavior>
+
+If the user invokes `autoresearch-skill`, `$autoresearch-skill`, or a local slash equivalent without a target skill path, existing experiment workspace, or clear skill name:
+
+1. Ask one concise question in the user's language for the target skill and intended improvement/eval intent; in short, ask one concise question before any write.
+2. Do not create or mutate `.hypercore`, `.omx`, `skills/`, rules, references, scripts, or assets before that answer.
+3. If a target exists but eval intent is vague, infer the default self-test pack only after the target path is known and record that assumption before baseline.
+
+</missing_target_behavior>
+
 <trigger_conditions>
 
 Positive examples:
 
 - "Run autoresearch on `skills/web-clone/SKILL.md` and keep only changes that raise the score."
+- "Run autoresearch on `skills/foo/SKILL.md` and keep only score-improving mutations."
 - "Benchmark this skill with binary evals and save the results under `.hypercore`."
 - "Improve this skill prompt and references through repeated experiments."
-- "Korean request meaning: run autoresearch on `skills/foo` and keep only score-improving mutations."
+- "이 스킬을 반복 실험으로 개선해서 점수 올려줘."
 - "$autoresearch-skill resume `.hypercore/autoresearch-skill/foo`."
 
 Negative examples:
 
 - "Create a new Codex skill for browser QA."
+- "새 브라우저 QA 스킬을 만들어줘."
 - "Rewrite this runbook for readability."
-- "Korean request meaning: create a new Codex skill for browser QA."
+- "문서 문장을 자연스럽게 다듬어줘."
 
 Boundary example:
 
@@ -86,7 +100,7 @@ Collect these before the first mutation:
 1. Mode: `plan`, `run`, `resume`, or `review`. Default: `run` when a target and eval intent are clear.
 2. Target skill path or existing `.hypercore/autoresearch-skill/[skill-name]/` workspace.
 3. Three to five test prompts or scenarios.
-4. Three to six binary evaluations and a score direction.
+4. 3 to 6 binary evals and a score direction.
 5. Optional `Guard` checks that must not regress. Default: trigger boundary, core size, support links, artifact schema, and renderer smoke checks when applicable.
 6. Runs per experiment. Default: `5`; interval for timed loops defaults to `2 minutes`.
 7. Selection budget or stopping limit.
@@ -94,6 +108,7 @@ Collect these before the first mutation:
 
 Input policy:
 
+- If the target is missing, follow `<missing_target_behavior>` before any write.
 - If the user gave a clear intent and scope and the work is low-risk, infer conservative defaults and record them before the baseline.
 - Ask only when missing information would make evals meaningless or push the skill in the wrong direction.
 - Do not mutate the target skill until the baseline plan, verify score, and guard policy are explicit.
@@ -114,6 +129,21 @@ When autoresearching this or another skill without a supplied prompt pack:
 
 </language_support>
 
+<support_file_read_order>
+
+Read only the files needed for the active phase, in this order:
+
+1. `rules/experiment-loop.md` before recording experiment `0` or choosing a mutation.
+2. `rules/context-sourcing-and-trace.md` before baseline when tools, delegation, current/external sources, or guard checks affect correctness.
+3. `references/self-test-pack.md` when the user did not supply a prompt pack.
+4. `references/eval-guide.md` before designing or revising the 3 to 6 binary evals.
+5. `references/artifact-spec.md` before creating `.hypercore` artifacts, rendering `dashboard.html`, or validating `results.json` and `results.js`.
+6. `references/skill-refactor-guide.md` only when a failed eval points to structure, trigger wording, support-file placement, or duplication.
+7. `references/reporting-and-score-explanation.md` before writing Korean score explanations, changelog notes, dashboard-visible labels, and final reports.
+8. `rules/validation-and-exit.md` before declaring the run complete.
+
+</support_file_read_order>
+
 <autoresearch_integration>
 
 This skill is not complete from standalone `.hypercore` experiment logs alone. When used through `$autoresearch`, also satisfy this bridge contract.
@@ -125,6 +155,7 @@ Default validation mode:
 State storage:
 
 - Record these values in `.omx/state/.../autoresearch-state.json`:
+- For repo-local deterministic runs, use `.omx/state/[session-or-skill]/autoresearch-state.json`; for this skill's self-run, `.omx/state/autoresearch-skill/autoresearch-state.json` is the concrete path.
   - `validation_mode`: `prompt-architect-artifact`
   - `completion_artifact_path`: `.omx/specs/autoresearch-{skill-name}/result.json`
   - `validator_prompt`: architect-review prompt that approves or rejects target skill output and experiment logs against the mission
@@ -137,6 +168,17 @@ Exit rules:
 - If the eval set, prompt pack, or target file scope changes, record a reset event in both `.hypercore` results and `.omx/specs/.../result.json`.
 
 </autoresearch_integration>
+
+<manual_qa_gate>
+
+Tests alone do not prove completion. For every user-visible criterion in an autoresearch run, capture at least one Manual QA artifact through the real available surface before final reporting.
+
+- Use `tmux` when the skill behavior is CLI, artifact, or terminal-session shaped.
+- Use HTTP, browser, or computer-use only when the target skill's output is actually exposed through that surface.
+- Name the exact invocation, expected binary observable, transcript or screenshot path, cleanup command, and cleanup receipt in the run artifacts.
+- Do not mark `results.json.status` as `complete` until Manual QA artifacts and cleanup receipts exist for the declared criteria.
+
+</manual_qa_gate>
 
 <autonomy_contract>
 
@@ -214,6 +256,8 @@ When skill structure is weak:
 - Add source-sensitive or trace-based checks when external evidence, tools, or delegation affect correctness.
 - Include positive, negative, and boundary trigger prompts.
 - Ensure at least one eval checks the user's actual target improvement rather than generic writing quality.
+- Verify score and Guard checks are separate: Verify measures score movement, while Guard blocks regressions in trigger boundaries, artifact schema, support links, and safety.
+- Do not change the eval set to make a mutation pass. If the eval set is wrong, record a reset event before any new score is compared.
 
 #### Phase 2: Prepare the workspace
 
