@@ -12,11 +12,12 @@ Brownfield adoption: touched files must satisfy applicable safety rules and curr
 
 ## Source Priority
 
-1. `references/official/tanstack-start-2026-04-30.md`
-2. `references/official/tanstack-router-2026-04-30.md`
-3. `references/official/api-drift-notes.md`
-4. Topic rules under `rules/`
-5. Project-local package types and tests when installed versions differ
+1. `references/official/current-docs-2026-06-02.md`
+2. `references/official/tanstack-start-2026-04-30.md`
+3. `references/official/tanstack-router-2026-04-30.md`
+4. `references/official/api-drift-notes.md`
+5. Topic rules under `rules/`
+6. Project-local package types and tests when installed versions differ
 
 ## Blocking Safety Gates
 
@@ -40,20 +41,20 @@ Brownfield adoption: touched files must satisfy applicable safety rules and curr
 Route/Page UI
   -> route-local hooks / TanStack Query
   -> TanStack Start server functions
-  -> features/<domain> or services/<provider>
+  -> services/<domain-or-provider> or lib/<domain>
   -> database/ or external SDK
 ```
 
 Rules:
 
 - **Safety policy:** Routes must not import ORM/database clients directly.
-- **Hypercore convention:** Server functions should call feature/service layer code for non-trivial business logic.
-- **Hypercore convention:** Simple CRUD may remain in a server function only when extracting a feature layer would add noise.
+- **Hypercore convention:** Server functions should call service/lib layer code for non-trivial business logic.
+- **Hypercore convention:** Simple CRUD may remain in a server function only when extracting a service/lib layer would add noise.
 
 ## Official-vs-Hypercore Clarifications
 
 - TanStack Router officially supports flat, directory, and mixed route structures. Hypercore prefers route directories for app pages.
-- TanStack Start docs show `src/routes`, `src/router.tsx`, generated `src/routeTree.gen.ts`, `public/`, and root `vite.config.ts` as the typical project shape; `src/features`, nested `src/lib`, and similar shared folders are Hypercore/repo-local conventions.
+- TanStack Start docs show `src/routes`, `src/router.tsx`, generated `src/routeTree.gen.ts`, `public/`, and root `vite.config.ts` as the typical project shape; nested `src/lib`, `src/services`, and similar shared folders are Hypercore/repo-local conventions.
 - TanStack Start import protection is enabled by default. Hypercore requires explicit extension when project-specific deny rules are needed.
 - TanStack Router with Zod v4 can pass schemas directly to `validateSearch`; Zod v3 uses `@tanstack/zod-adapter`.
 - Server routes are an official Start feature; hypercore reserves them for HTTP semantics, not internal app RPC.
@@ -61,7 +62,7 @@ Rules:
 
 ## Topic Files
 
-- `rules/project-structure.md` — Start project shape, route-root discovery, generated route tree, shared folder grouping.
+- `rules/project-structure.md` — Start project shape, route-root discovery, generated route tree, shared folder grouping, and no direct leaf files under touched shared roots.
 - `rules/routes.md` — route organization, route lifecycle, search params, folder policy.
 - `rules/services.md` — server functions, validation, query/mutation layering.
 - `rules/hooks.md` — hook extraction and `useServerFn` wrapper policy.

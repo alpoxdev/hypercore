@@ -4,6 +4,8 @@
 
 Note: some rules below are stricter than TanStack Router defaults. They are hypercore team conventions, not universal framework requirements.
 
+Source priority starts with `references/official/current-docs-2026-06-02.md` for drift-sensitive Vite/TanStack Router behavior.
+
 Brownfield adoption rule: untouched legacy code may be tracked as migration work instead of an immediate failure if the issue is stylistic or hypercore-specific. Safety-boundary issues still block immediately, especially in touched code.
 
 ---
@@ -18,7 +20,7 @@ Brownfield adoption rule: untouched legacy code may be tracked as migration work
 | Route Folders | `-functions/` folder inside any route |
 | Layers | Direct `fetch`/`axios` in routes or hooks |
 | Barrel Export | `services/index.ts` (Tree Shaking failure) |
-| Folder Names | `lib/store` (use `stores/`) |
+| Folder Names | `lib/store` (use `stores/`); direct shared leaves such as `src/lib/foo.ts` or `src/services/foo.ts` without an explicit exception |
 | Filenames | camelCase (`getUserById.ts`) |
 | TypeScript | `any` type, `function` keyword declaration |
 | Runtime Boundaries | Secrets, DB clients, or non-`VITE_` env reads in client-reachable route code |
@@ -110,6 +112,19 @@ loader: ({ context: { queryClient } }) =>
 ```
 
 ---
+
+## Shared Nested Folder Grouping
+
+Shared code outside routes should use logical nested grouping when touched shared code is added or reorganized. This is a Hypercore/repo-local convention, not official Vite or TanStack Router law. Do not add new direct leaf files such as `src/lib/foo.ts`, `src/services/foo.ts`, `lib/foo.ts`, or `services/foo.ts` unless an explicit project exception is recorded. Prefer `src/lib/<domain>/...` and `src/services/<domain-or-provider>/...` to show ownership, runtime boundaries, provider integrations, or dependency direction.
+
+Recommended shared shapes:
+
+```text
+src/lib/<domain>/
+src/services/<domain-or-provider>/
+src/config/<area>/
+src/server/<area>/
+```
 
 ## Services Rules
 
@@ -256,6 +271,7 @@ import type { User } from '@/types'
 
 - `vite.config.ts` should keep `tanstackRouter()` explicit and before `react()`
 - `routeTree.gen.ts` is generated output and must not be hand-edited
+- `src/lib`, `src/services`, and similar shared roots use nested domain/provider grouping for new touched code unless an explicit exception is recorded
 - Keep router wiring explicit in `src/router.tsx`
 - If SSR/manual rendering exists, prefer a fresh router factory instead of a process-global singleton
 - Keep path aliases explicit in both Vite and TypeScript config

@@ -58,6 +58,8 @@
 - `results.json`
 - `results.tsv`
 - `changelog.md`
+- 완료 실행의 `score-explanation.md` 또는 `results.json.score_explanation`
+- 완료 실행의 `final-report.md`
 - `SKILL.md.baseline`
 - 지원 파일 수정 시 `baseline-files.json` 또는 `baseline/` 원본 스냅샷
 
@@ -66,6 +68,7 @@
 - `.hypercore/autoresearch-skill/[skill-name]/`
 
 또한 `results.json`과 `results.tsv`가 점수, 통과율, keep/discard 상태를 동일하게 설명하는지 확인한다.
+또한 완료 실행은 기준 점수, 최종/최고 점수, 정확한 delta, 점수가 오른 영역, 변경 파일, 각 변경을 유지한 이유를 한국어로 드러내는지 확인한다.
 또한 대시보드가 임의 편집본이 아니라 정식 템플릿에서 렌더되었는지 확인한다.
 또한 `file://` 대시보드 동작을 기대한다면 `results.js`가 존재하는지 확인한다.
 또한 `discard`, `crash`, `no-op`, `hook-blocked`, `metric-error` 같은 non-happy status를 artifact가 표현할 수 있는지 확인한다.
@@ -100,6 +103,8 @@
 - 총 실험 수
 - keep 비율
 - 가장 효과가 컸던 변경
+- eval/category별로 점수가 어디서 어떻게 올랐는지
+- 변경 파일과 각 유지 변경이 점수를 올린 이유
 - 남은 실패 패턴
 - 실험 아티팩트 경로
 - source ledger 또는 trace summary가 생략되었다면 생략 사유
@@ -109,7 +114,7 @@
 ```bash
 find skills/autoresearch-skill -maxdepth 3 -type f | sort
 wc -l skills/autoresearch-skill/SKILL.md
-rg -n "results.tsv|results.json|dashboard.html|changelog.md|SKILL.md.baseline|run-contract|source-ledger|trace-summary" skills/autoresearch-skill/SKILL.md skills/autoresearch-skill/references skills/autoresearch-skill/rules
+rg -n "results.tsv|results.json|dashboard.html|changelog.md|score-explanation|final-report|SKILL.md.baseline|run-contract|source-ledger|trace-summary" skills/autoresearch-skill/SKILL.md skills/autoresearch-skill/references skills/autoresearch-skill/rules
 find skills/autoresearch-skill -maxdepth 2 \( -name README.md -o -name CHANGELOG.md -o -name QUICK_REFERENCE.md \) -print
 find .hypercore -maxdepth 4 -type f | sort | rg "autoresearch-skill"
 python3 -m json.tool .hypercore/autoresearch-skill/[skill-name]/results.json >/dev/null

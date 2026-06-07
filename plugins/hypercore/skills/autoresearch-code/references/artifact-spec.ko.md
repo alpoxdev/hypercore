@@ -1,6 +1,6 @@
 # Artifact Spec
 
-오토리서치 실행의 실험 워크스페이스를 만들거나 검토할 때 이 레퍼런스를 사용한다.
+`autoresearch-code` 실행의 실험 워크스페이스를 만들거나 검토할 때 이 레퍼런스를 사용한다.
 
 ## 워크스페이스 형태
 
@@ -8,10 +8,16 @@
 .hypercore/autoresearch-code/[codebase-name]/
 |-- dashboard.html
 |-- results.json
-|-- results.js        # file:// 브라우저 폴백용, 선택이지만 권장
+|-- results.js        # 렌더 후 file:// 브라우저 폴백으로 필수
 |-- results.tsv
 |-- changelog.md
-`-- baseline.md
+|-- baseline.md
+|-- code-explanation.md   # 완료 실행에서 results.json.code_explanation이 없으면 필수
+|-- final-report.md       # 완료 실행에서 필수
+|-- run-contract.md       # 가정/기본값을 추론했으면 필수
+|-- trace-summary.md      # trace-backed eval 또는 런타임 trace를 썼으면 필수
+|-- source-ledger.md      # 외부/최신 claim이 코드 판단에 영향을 줬으면 필수
+`-- details/             # 긴 로그, proof snippet, JSON/TSV/log diagnostics
 ```
 
 이 디렉터리는 스킬 폴더 안이 아니라 저장소 루트에 만든다.
@@ -47,16 +53,16 @@
 다음 헤더를 가진 탭 구분 파일:
 
 ```text
-experiment	score	max_score	pass_rate	status	description
+experiment\tscore\tmax_score\tpass_rate\tstatus\tdescription
 ```
 
 예시:
 
 ```text
-experiment	score	max_score	pass_rate	status	description
-0	12	20	60.0%	baseline	원본 코드베이스 - 수정 없음
-1	15	20	75.0%	keep	빌드 단계의 반복 파일 읽기를 배치 처리
-2	15	20	75.0%	discard	측정 가능한 이득 없는 메모이제이션 추가
+experiment\tscore\tmax_score\tpass_rate\tstatus\tdescription
+0\t12\t20\t60.0%\tbaseline\t원본 코드베이스 - 수정 없음
+1\t15\t20\t75.0%\tkeep\t빌드 단계의 반복 파일 읽기를 배치 처리
+2\t15\t20\t75.0%\tdiscard\t측정 가능한 이득 없는 메모이제이션 추가
 ```
 
 ## `results.json`
@@ -96,6 +102,11 @@ experiment	score	max_score	pass_rate	status	description
       "status": "baseline",
       "promotion_state": "hold",
       "description": "원본 코드베이스 - 수정 없음",
+      "delta": 0,
+      "guard": "not-run",
+      "guard_metric": "baseline",
+      "changed_files": [],
+      "proof_command": "pnpm --filter web build",
       "dimensions": {
         "quality": 3,
         "regression": 4,
@@ -110,21 +121,84 @@ experiment	score	max_score	pass_rate	status	description
       "pass_count": 3,
       "total": 5
     }
-  ]
+  ],
+  "code_explanation": {
+    "summary_ko": "기준 60.0%에서 최고 85.0%로 +25.0%p 상승했습니다.",
+    "baseline_score": 60.0,
+    "final_score": 85.0,
+    "delta": 25.0,
+    "best_experiment": 3,
+    "most_effective_change_ko": "반복 파일 읽기를 배치 처리했습니다.",
+    "changed_files": ["src/build/collect-files.ts"],
+    "metric_movements": [
+      {
+        "metric_ko": "빌드 시간",
+        "direction": "lower_is_better",
+        "before": "42.0s",
+        "after": "31.5s",
+        "delta_ko": "-10.5s",
+        "evidence_ko": "`pnpm build` 5회 평균"
+      }
+    ],
+    "code_changes": [
+      {
+        "file": "src/build/collect-files.ts",
+        "change_ko": "동기 파일 읽기를 배치 처리로 바꿨습니다.",
+        "why_kept_ko": "빌드 임계값 eval과 guard가 모두 통과했습니다.",
+        "guard_ko": "`pnpm test` 통과"
+      }
+    ],
+    "proof_commands_ko": ["`pnpm build` 통과"],
+    "guard_results_ko": ["`pnpm test` 통과"],
+    "remaining_failures_ko": ["없음"]
+  }
 }
 ```
 
-상태 값:
+상위 상태 값:
 
 - `running`
 - `idle`
 - `complete`
+
+실험 상태 값:
+
+- `baseline`
+- `keep`
+- `keep-reworked`
+- `discard`
+- `crash`
+- `no-op`
+- `hook-blocked`
+- `metric-error`
+- `reset`
 
 승격 상태 값:
 
 - `hold`
 - `promote`
 - `rollback`
+
+완료된 실행에는 대시보드가 점수 이동을 설명할 수 있도록 `results.json.code_explanation` 또는 `code-explanation.md`가 필요하다.
+
+## 상세 파일과 `results.js`
+
+렌더러는 `results.js`에 두 브라우저 글로벌을 쓴다:
+
+- `window.__AUTORESEARCH_CODE_RESULTS__`: 직렬화된 `results.json`
+- `window.__AUTORESEARCH_CODE_DETAILS__`: 직렬화된 상세 파일
+
+렌더러는 있으면 다음 알려진 상세 파일을 포함해야 한다:
+
+- `changelog.md`
+- `code-explanation.md`
+- `final-report.md`
+- `baseline.md`
+- `run-contract.md`
+- `source-ledger.md`
+- `trace-summary.md`
+
+또한 `details/` 아래 `.md`, `.txt`, `.json`, `.tsv`, `.log` 파일도 포함한다.
 
 ## `dashboard.html`
 
@@ -135,15 +209,17 @@ experiment	score	max_score	pass_rate	status	description
 필수 동작:
 
 - 10초마다 자동 새로고침
-- `results.json` 읽기
+- HTTP로 서빙될 때는 `results.json`을 읽고, `file://`에서는 `results.js`를 사용
 - 내장 Canvas API로 점수 추이를 선형 차트로 렌더
-- 실험별 컬러 바 렌더
+- 기준 점수, 최신 통과율, 최고 점수, 현재 실험 표시
+- 점수 변화량, 최고 실험, 지표 이동, 수정 파일, proof command, guard 결과, 남은 실패, promotion 상태 표시
 - 범위, eval pack, 환경, 현재 promotion 상태 표시
-- 실험 테이블 표시
+- 동적 값을 escape한 실험 테이블 표시
 - 있으면 실험별 dimension 점수 표시
 - eval별 통과 수 표시
 - 현재 실행 상태 표시
-- `results.json`의 `running`, `idle`, `complete` 상태를 반영
+- `results.json`의 `running`, `idle`, `complete` 상태 반영
+- 원시 HTML을 먼저 escape한 뒤 안전한 Markdown 부분집합으로 상세 로그 렌더
 - Chrome 등 브라우저에서 `file://`로 직접 열어도 정상 렌더
 
 생명주기 규칙:
@@ -156,22 +232,30 @@ experiment	score	max_score	pass_rate	status	description
 - 실험이 실행 중일 때는 `results.json.status`를 `running`으로 둔다
 - 루프가 끝나면 `results.json.status`를 `complete`로 둔다
 - 대시보드를 `file://`로 여는 경우 `fetch("./results.json")`만 믿지 않는다
-- 같은 데이터를 브라우저 글로벌에 할당하는 `results.js` 같은 파일 기반 폴백을 제공한다
-- 폴백 파일이 있으면 `results.js`는 항상 `results.json`과 동기화한다
+- `results.js`는 `results.json`과 상세 파일에 동기화한다
 
 ## `changelog.md`
 
-실험마다 항목 하나를 추가한다:
+실험마다 한국어 항목 하나를 추가한다:
 
 ```markdown
-## Experiment [N] - [keep/discard]
+## Experiment [N] - [keep/discard/reset]
 
-**Score:** [X]/[max] ([percent]%)
-**Change:** [변이 한 줄 요약]
-**Reasoning:** [왜 이 변경이 도움 될 것이라 봤는지]
-**Result:** [어떤 eval이 개선, 유지, 악화되었는지]
-**Failing outputs:** [남은 실패가 있으면 기록]
+**점수:** [X]/[max] ([percent]%)  
+**변화량:** [+/-delta]  
+**수정:** [변이 한 줄 요약]  
+**어디서 올랐나:** [metric/eval before -> after]  
+**왜 유지/폐기했나:** [score, complexity, guard evidence]  
+**수정 파일:** `[path]`, `[path]`  
+**Proof command:** `[command]` -> [result]  
+**Guard:** [result]  
+**롤백 조건:** [condition]  
+**남은 실패:** [record remaining failures if any]
 ```
+
+## `code-explanation.md`와 `final-report.md`
+
+템플릿은 [reporting-and-code-improvement.ko.md](reporting-and-code-improvement.ko.md)를 사용한다. 사용자가 명시적으로 다른 언어를 요청하지 않았다면 두 파일은 한국어로 작성한다.
 
 ## Worked Example
 

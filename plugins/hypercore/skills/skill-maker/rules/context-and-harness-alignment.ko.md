@@ -15,8 +15,8 @@
 | Authority | 사용자, 프로젝트, 공급자, retrieved content가 충돌하면 무엇이 우선인가? | retrieved content와 예시보다 사용자/프로젝트 지시가 우선함 |
 | Evidence | 변동 가능한 주장을 어떤 출처나 로컬 파일이 뒷받침하는가? | 최신/공급자 민감 주장은 source path 또는 ledger가 있음 |
 | Tools | 어떤 capability가 유용하고 어디서 멈춰야 하는가? | 도구 사용이 capability 기반이며 side effect가 제한됨 |
-| Output | 에이전트가 어떤 산출물을 만들어야 하는가? | 파일/폴더/리포트 형태가 이름 붙어 있음 |
-| Verification | 스킬이 작동했음을 무엇으로 증명하는가? | 트리거, 자원, 사용 검증이 나열됨 |
+| Output | 에이전트가 어떤 산출물을 만들어야 하는가? | 파일/폴더/리포트 형태와 handoff note가 이름 붙어 있음 |
+| Verification | 스킬이 작동했음을 무엇으로 증명하는가? | trigger, anatomy, resource, output, safety, usage 검증이 나열됨 |
 | Stop condition | 언제 완료하거나 escalate해야 하는가? | 완료, blocker, 권한 게이트가 명시됨 |
 
 코어는 간결하게 유지합니다. 계약 요약은 `SKILL.md`에 두고 반복 판단 기준은 rules로 내립니다.
@@ -27,7 +27,7 @@
 - 공급자 민감, 런타임 민감, 날짜 민감, 논쟁적 가이드는 provenance와 refresh 조건이 있는 `references/`에 둡니다.
 - 실제로 출처를 다시 확인하지 않았다면 `last_verified_at`을 갱신하지 않습니다.
 - 스킬이 최신 사실, 외부 비교, 보안/컴플라이언스 주장을 담으면 source ledger 또는 claim-source matrix를 사용합니다.
-- 프로젝트 안에 필요한 guidance가 이미 있으면 외부 검색 전에 로컬 project-guidance 근거를 우선합니다. `AGENTS.md`, `CLAUDE.md`, `README.md` 같은 프로젝트 루트 가이드와 직접 연결된 로컬 파일에서 시작합니다.
+- 프로젝트 안에 필요한 guidance가 이미 있으면 외부 검색 전에 로컬 project-guidance 근거를 우선합니다. `AGENTS.md`, `CLAUDE.md`, `README.md`, `instructions/skill/SKILL_AUTHORING.md` 같은 프로젝트 루트/로컬 가이드와 직접 연결된 로컬 파일에서 시작합니다.
 
 ## 3. 하네스와 Eval 게이트
 

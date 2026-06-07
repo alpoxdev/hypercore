@@ -40,20 +40,20 @@ Brownfield 적용: touched files는 해당 safety rules와 현재 hypercore conv
 Route/Page UI
   -> route-local hooks / TanStack Query
   -> TanStack Start server functions
-  -> features/<domain> or services/<provider>
+  -> services/<domain-or-provider> or lib/<domain>
   -> database/ or external SDK
 ```
 
 Rules:
 
 - **Safety policy:** Routes는 ORM/database clients를 직접 import하면 안 됩니다.
-- **Hypercore convention:** Server functions는 사소하지 않은 business logic에 대해 feature/service layer code를 호출해야 합니다.
+- **Hypercore convention:** Server functions는 사소하지 않은 business logic에 대해 service/lib layer code를 호출해야 합니다.
 - **Hypercore convention:** 추출이 오히려 noise를 늘리는 단순 CRUD는 server function 안에 남아도 됩니다.
 
 ## Official-vs-Hypercore Clarifications
 
 - TanStack Router는 flat, directory, mixed route structures를 공식 지원합니다. Hypercore는 app pages에 route directories를 선호합니다.
-- TanStack Start docs는 `src/routes`, `src/router.tsx`, generated `src/routeTree.gen.ts`, `public/`, root `vite.config.ts`를 typical project shape로 보여줍니다. `src/features`, nested `src/lib`와 비슷한 shared folders는 Hypercore/repo-local conventions입니다.
+- TanStack Start docs는 `src/routes`, `src/router.tsx`, generated `src/routeTree.gen.ts`, `public/`, root `vite.config.ts`를 typical project shape로 보여줍니다. nested `src/lib`, `src/services`와 비슷한 shared folders는 Hypercore/repo-local conventions입니다.
 - TanStack Start import protection은 기본 활성화됩니다. Hypercore는 project-specific deny rules가 필요할 때 explicit extension을 요구합니다.
 - Zod v4와 함께 쓰는 TanStack Router는 schema를 `validateSearch`에 직접 전달할 수 있습니다. Zod v3는 `@tanstack/zod-adapter`를 사용합니다.
 - Server routes는 공식 Start feature입니다. Hypercore는 internal app RPC가 아니라 HTTP semantics 용도로 제한합니다.
@@ -61,7 +61,7 @@ Rules:
 
 ## Topic Files
 
-- `rules/project-structure.md` — Start project shape, route-root discovery, generated route tree, shared folder grouping.
+- `rules/project-structure.md` — Start project shape, route-root discovery, generated route tree, shared folder grouping, touched shared root direct leaf file 금지.
 - `rules/routes.md` — route organization, route lifecycle, search params, folder policy.
 - `rules/services.md` — server functions, validation, query/mutation layering.
 - `rules/hooks.md` — hook extraction and `useServerFn` wrapper policy.

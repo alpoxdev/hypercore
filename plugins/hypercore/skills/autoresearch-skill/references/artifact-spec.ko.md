@@ -11,6 +11,8 @@
 |-- results.js        # file:// 브라우저 폴백용, 선택이지만 권장
 |-- results.tsv
 |-- changelog.md
+|-- score-explanation.md # 완료 실행에는 필수. results.json.score_explanation에 충분히 담기면 대체 가능
+|-- final-report.md      # 한국어 최종 사용자 보고
 |-- run-contract.md      # 권장; source/tool/delegation이 있으면 필수
 |-- source-ledger.md     # 외부/current claim을 썼으면 필수
 |-- trace-summary.md     # 도구/delegation/병렬 평가가 있으면 필수
@@ -23,9 +25,9 @@
 
 `$autoresearch` 실행에서는 이 `.hypercore` 디렉터리가 도메인별 결과 로그이고, 최종 완료 gate는 별도 `.omx/specs/autoresearch-[skill-name]/result.json` completion artifact가 담당한다. `completion_artifact_path`에는 이 `.omx/specs/.../result.json` 경로를 기록하고, `output_artifact_path`에는 이 파일의 `results.json`을 기록한다.
 
-항상 필요한 기본 아티팩트는 `dashboard.html`, `results.json`, `results.tsv`, `changelog.md`, `SKILL.md.baseline`이다. `run-contract.md`, `source-ledger.md`, `trace-summary.md`는 실행 조건에 따라 필수화된다.
+항상 필요한 기본 아티팩트는 `dashboard.html`, `results.json`, `results.tsv`, `changelog.md`, `SKILL.md.baseline`이다. 완료 실행에는 `results.json.score_explanation`과 `final-report.md`, 또는 `results.js`로 로드되는 `score-explanation.md`와 `final-report.md`에 한국어 점수 변화와 인수인계 내용도 필요하다. `run-contract.md`, `source-ledger.md`, `trace-summary.md`는 실행 조건에 따라 필수화된다.
 
-긴 내용은 `results.json`에 억지로 밀어 넣지 말고 `details/` 아래 Markdown/Text/JSON/TSV/Log 파일로 둔다. 렌더러는 `changelog.md`, `run-contract.md`, `source-ledger.md`, `trace-summary.md`, 그리고 `details/` 아래 지원 확장자 파일을 `results.js`에 안전하게 직렬화해 대시보드의 상세 로그 섹션에 표시한다.
+긴 내용은 `results.json`에 억지로 밀어 넣지 말고 `details/` 아래 Markdown/Text/JSON/TSV/Log 파일로 둔다. 렌더러는 `changelog.md`, `score-explanation.md`, `final-report.md`, `run-contract.md`, `source-ledger.md`, `trace-summary.md`, 그리고 `details/` 아래 지원 확장자 파일을 `results.js`에 안전하게 직렬화해 대시보드의 상세 로그 섹션에 표시한다.
 
 정식 생성 자산:
 
@@ -132,6 +134,26 @@ experiment	commit	score	max_score	pass_rate	metric	delta	guard	guard_metric	stat
   "run_contract_path": "run-contract.md",
   "source_ledger_path": "source-ledger.md",
   "trace_summary_path": "trace-summary.md",
+  "score_explanation": {
+    "summary_ko": "기준 70.0%에서 최고 90.0%로 +20.0%p 상승했습니다.",
+    "baseline_score": 70.0,
+    "final_score": 90.0,
+    "delta": 20.0,
+    "best_experiment": 1,
+    "most_effective_change_ko": "트리거 경계 예시와 검증 기준을 보강했습니다.",
+    "changed_files": ["skills/diagram-generator/SKILL.md"],
+    "improvements": [
+      {
+        "area_ko": "트리거 경계",
+        "score_delta": 2,
+        "before_ko": "경계 요청이 모호했습니다.",
+        "after_ko": "긍정/부정/경계 예시가 분리되었습니다.",
+        "evidence_ko": "EVAL 1 통과 수가 증가했습니다.",
+        "files": ["skills/diagram-generator/SKILL.md"]
+      }
+    ],
+    "remaining_failures_ko": []
+  },
   "eval_breakdown": [
     {
       "name": "텍스트 가독성",
@@ -141,6 +163,8 @@ experiment	commit	score	max_score	pass_rate	metric	delta	guard	guard_metric	stat
   ]
 }
 ```
+
+`status`가 `complete`이면 동등한 `score-explanation.md`가 있고 `results.js`로 로드되는 경우를 제외하고 `score_explanation`이 필요하다. 사람이 읽는 값은 한국어여야 한다.
 
 상태 값:
 
@@ -158,6 +182,7 @@ experiment	commit	score	max_score	pass_rate	metric	delta	guard	guard_metric	stat
 - `no-op`
 - `hook-blocked`
 - `metric-error`
+- `reset`
 
 ## `dashboard.html`
 
@@ -174,6 +199,7 @@ experiment	commit	score	max_score	pass_rate	metric	delta	guard	guard_metric	stat
 - 실험 테이블 표시
 - eval별 통과 수 표시
 - 현재 실행 상태 표시
+- 사용 가능할 때 점수 변화 요약, 정확한 delta, 최고 실험, 변경 파일, 영역별 개선 이유 표시
 - `results.json`의 `running`, `idle`, `complete` 상태를 반영
 - Chrome 등 브라우저에서 `file://`로 직접 열어도 정상 렌더
 
@@ -183,6 +209,7 @@ experiment	commit	score	max_score	pass_rate	metric	delta	guard	guard_metric	stat
 - 기본 렌더러는 `skills/autoresearch-skill/scripts/render-dashboard.sh <artifact-dir>`를 사용한다
 - `dashboard.html`을 만든 뒤, 런타임이 안전하면 즉시 연다
 - 매 실험 뒤 `results.tsv`와 `results.json`을 업데이트한다
+- 완료 실행에는 `score-explanation.md`와 `final-report.md`를 최신 상태로 둔다. 단, 동일한 점수 설명이 `results.json.score_explanation`에 충분히 담겼으면 대체 가능하다
 - source/tool/delegation이 실행에 영향을 주면 `run-contract.md`, `source-ledger.md`, `trace-summary.md`도 최신 상태로 둔다
 - 실험이 실행 중일 때는 `results.json.status`를 `running`으로 둔다
 - 루프가 끝나면 `results.json.status`를 `complete`로 둔다
@@ -190,7 +217,7 @@ experiment	commit	score	max_score	pass_rate	metric	delta	guard	guard_metric	stat
 - 같은 데이터를 브라우저 글로벌에 할당하는 `results.js` 같은 파일 기반 폴백을 제공한다
 - 폴백 파일이 있으면 `results.js`는 항상 `results.json`과 동기화한다
 - 긴 상세 내용은 HTML 템플릿을 직접 수정하지 말고 `details/*.md`, `details/*.txt`, `details/*.json`, `details/*.tsv`, `details/*.log` 또는 표준 로그 파일에 작성한 뒤 렌더러가 `results.js`로 싣게 한다
-- 상세 로그는 HTML로 변환하지 않고 escaped preformatted text로 보여 주어, 실험 출력에 포함된 태그나 프롬프트가 대시보드 스크립트 권한을 얻지 못하게 한다
+- 상세 로그는 원시 HTML을 먼저 escape한 뒤 대시보드의 안전한 Markdown subset(`#` 제목, 굵게, inline code, fenced code, 목록, 단순 표)으로 렌더해, 실험 출력에 포함된 태그나 프롬프트가 대시보드 스크립트 권한을 얻지 못하게 한다
 
 ## Detailed content files
 
@@ -237,6 +264,10 @@ open .hypercore/autoresearch-skill/my-skill/dashboard.html
 - X축: 실험 번호
 - Y축: 통과율 %
 
+## `score-explanation.md`와 `final-report.md`
+
+필수 한국어 템플릿은 [reporting-and-score-explanation.ko.md](reporting-and-score-explanation.ko.md)를 사용한다. 짧은 버전은 `results.json.score_explanation`에 둘 수 있지만, 대시보드와 최종 답변에는 점수가 어디서 어떻게 올랐는지, 무엇을 바꿨는지, 왜 유지했는지가 보여야 한다.
+
 ## `changelog.md`
 
 실험마다 항목 하나를 추가한다:
@@ -244,12 +275,14 @@ open .hypercore/autoresearch-skill/my-skill/dashboard.html
 ```markdown
 ## Experiment [N] - [keep/discard]
 
-**Score:** [X]/[max] ([percent]%)
-**Change:** [변이 한 줄 요약]
-**Reasoning:** [왜 이 변경이 도움 될 것이라 봤는지]
-**Result:** [어떤 eval이 개선, 유지, 악화되었는지]
-**Failing outputs:** [남은 실패가 있으면 기록]
-**Evidence/Trace:** [source ledger 또는 trace assertion 변화가 있으면 기록]
+**점수:** [X]/[max] ([percent]%)
+**수정:** [변이 한 줄 요약]
+**예상 근거:** [왜 이 변경이 도움 될 것이라 봤는지]
+**점수 변화:** [어느 eval/category에서 몇 점 또는 몇 %p 올랐는지]
+**수정 파일:** [수정 파일]
+**결과:** [어떤 eval이 개선, 유지, 악화되었는지]
+**남은 실패:** [남은 실패가 있으면 기록]
+**근거/추적:** [source ledger 또는 trace assertion 변화가 있으면 기록]
 ```
 
 ## Worked Example

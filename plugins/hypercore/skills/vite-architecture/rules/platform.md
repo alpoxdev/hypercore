@@ -6,6 +6,9 @@
 
 ## Vite Plugin Rules
 
+For API drift, check `references/official/current-docs-2026-06-02.md` before changing plugin order, env handling, generated route tree paths, or router setup.
+
+
 ```ts
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -60,7 +63,7 @@ Only add `routeToken`, `indexToken`, `routeFilePrefix`, or `routeFileIgnorePrefi
 ```tsx
 // src/router.tsx
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { createRouter } from '@tanstack/react-router'
+import { createRouter, RouterProvider } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 
 export const createAppRouter = () => {
@@ -87,6 +90,7 @@ declare module '@tanstack/react-router' {
 ```
 
 - Root route uses the factory pattern with `createRootRouteWithContext<{ queryClient: QueryClient }>()` so the context type is preserved through nested routes
+- App entrypoints pass the created router to `RouterProvider`; keep that wiring discoverable instead of hiding router setup behind ad-hoc globals.
 - For SSR streaming with TanStack Query, wire `setupRouterSsrQueryIntegration({ router, queryClient })` from `@tanstack/react-router-ssr-query` inside the same factory
 
 ---

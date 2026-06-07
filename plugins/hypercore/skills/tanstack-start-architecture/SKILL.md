@@ -1,6 +1,6 @@
 ---
 name: tanstack-start-architecture
-description: "[Hyper] Enforce TanStack Start architecture in existing Start projects, especially project/folder structure, route structure, nested shared folder organization, server functions, loader/client-server boundaries, importProtection, hooks, SSR/hydration, and hypercore conventions. Use before structural code changes, folder-structure reviews, route work, server function work, or architecture audits in TanStack Start codebases."
+description: "Use this skill when reviewing or changing an existing TanStack Start/Router project architecture, especially routes, loaders, server functions, importProtection, SSR/hydration, and nested shared folders such as src/lib or src/services. Do not use for generic React/Vite projects or docs-only summaries."
 ---
 
 @architecture-rules.md
@@ -18,6 +18,7 @@ description: "[Hyper] Enforce TanStack Start architecture in existing Start proj
 @references/official/tanstack-start-2026-04-30.md
 @references/official/tanstack-router-2026-04-30.md
 @references/official/api-drift-notes.md
+@references/official/current-docs-2026-06-02.md
 
 # TanStack Start Architecture Enforcement
 
@@ -56,7 +57,38 @@ If a user explicitly asks for official TanStack defaults, relax hypercore-only c
 
 </operating_mode>
 
-<trigger_examples>
+<routing_rule>
+
+Use this skill when the requested output is architecture enforcement, implementation guidance, or review for an existing TanStack Start / TanStack Router project. This includes route structure, route-local folders, loaders, server functions, server routes, middleware, import protection, SSR/hydration, platform setup, and shared nested folder organization.
+
+Do not use this skill when:
+
+- the project is not TanStack Start or TanStack Router
+- the user only wants a generic React/Vite architecture review
+- the task is a docs-only summary with no project audit or implementation guidance
+- the main task is security, deployment, or test repair unrelated to Start architecture
+
+When official TanStack guidance and Hypercore conventions differ, enforce official and safety rules first, then apply Hypercore conventions only to touched architecture surfaces.
+
+</routing_rule>
+
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Keep TanStack Start projects architecturally safe, maintainable, and aligned with official Start/Router behavior plus labelled Hypercore conventions. |
+| Trigger | Existing Start/Router project work involving routes, loaders, server functions, import boundaries, SSR/hydration, middleware, server routes, platform setup, or shared folder layout. |
+| Scope | Review and guide touched project architecture, topic rule files, official references, validation notes, and small reversible architecture fixes. |
+| Authority | User/project instructions outrank this skill. Official TanStack docs outrank Hypercore conventions for API facts. Safety policy blocks risky runtime or import-boundary changes. |
+| Evidence | Use project indicators, local config/package files, touched source paths, topic rules, official references, package typechecks, and validation command output. |
+| Tools | Use local search/read/edit/validation commands; use current official docs when API drift matters; gate destructive migrations, credential access, network side effects, and production changes. |
+| Output | Korean architecture decision or review with rule classifications, changed files if any, validation evidence, remaining risks, and official-doc ambiguity notes. |
+| Verification | Run `rules/validation.md` checks relevant to touched surfaces and skill-anatomy checks when this skill folder changes. |
+| Stop condition | Stop after applicable safety gates pass, Hypercore conventions are applied or explicitly deferred, validation evidence is recorded, and unresolved API drift is dated and sourced. |
+
+</instruction_contract>
+
+<activation_examples>
 
 Positive:
 
@@ -64,7 +96,7 @@ Positive:
 - "Add a TanStack Start route with search params and keep the architecture compliant."
 - "Refactor Start route folders, hooks, and server functions to follow hypercore rules."
 - "Check the loader boundaries and server function structure in this TanStack Start project."
-- "Review this TanStack Start folder structure and allow nested src/lib or src/features grouping."
+- "Review this TanStack Start folder structure and enforce nested src/lib or src/services grouping."
 
 Negative:
 
@@ -77,7 +109,7 @@ Boundary:
 - "Make a copy-only edit in a static TanStack Start privacy page."
   Use this skill only for a quick boundary check; publishing-only pages do not need generated `-hooks/`, `-components/`, or `-functions/` folders unless logic/server integration is introduced.
 
-</trigger_examples>
+</activation_examples>
 
 <project_validation>
 
@@ -112,8 +144,9 @@ Read only what the task needs:
    - `rules/platform.md` — `getRouter()`, env validation, path aliases, operational endpoints.
 3. `references/official/tanstack-start-2026-04-30.md` when Start API behavior matters.
 4. `references/official/tanstack-router-2026-04-30.md` when Router/file-route/search/loading behavior matters.
-5. `references/official/api-drift-notes.md` when docs conflict or current package behavior is uncertain.
-6. `rules/validation.md` before claiming completion.
+5. `references/official/current-docs-2026-06-02.md` when current Start docs, plugin config, import protection, server functions, or execution-control APIs affect the decision.
+6. `references/official/api-drift-notes.md` when docs conflict or current package behavior is uncertain.
+7. `rules/validation.md` before claiming completion.
 
 </support_file_read_order>
 
@@ -151,8 +184,8 @@ Apply these to touched files unless the user asks for official defaults only:
 - Pages/components with interactive logic extract logic into `-hooks/`; publishing-only static pages are exempt.
 - Server-integrated pages use `-functions/` and route-local hooks/components where appropriate.
 - Use `export const Route = createFileRoute(...)` for file routes.
-- Keep routes thin: route/page UI -> hooks/query -> server functions -> feature/database layer.
-- Allow nested shared folders such as `src/lib`, `src/features`, `src/services`, `src/db`, `src/server`, and `src/config` when they clarify ownership and runtime boundaries.
+- Keep routes thin: route/page UI -> hooks/query -> server functions -> services/lib/db layer.
+- Enforce nested shared folders such as `src/lib/<domain>/`, `src/services/<domain-or-provider>/`, `src/db/<area>/`, `src/server/<area>/`, and `src/config/<area>/` when touched shared code is added or reorganized; do not add new direct leaf files like `src/lib/foo.ts` or `src/services/foo.ts` unless an explicit project exception is recorded.
 - Use kebab-case filenames, explicit return types, no `any`, const arrow functions, and Korean block comments for meaningful code groups.
 
 </hypercore_conventions_summary>
@@ -164,7 +197,8 @@ Before declaring the work done:
 - Run the task-specific checks in `rules/validation.md`.
 - Confirm official-vs-hypercore labels are preserved in any edited rule.
 - Confirm support files are directly linked from `SKILL.md` and do not require following an indirect reference chain.
-- Confirm English and Korean entrypoints still describe the same trigger, boundary, workflow, and read order.
+- Confirm English and Korean entrypoints still describe the same trigger, boundary, workflow, contract, and read order.
+- Confirm touched `src/lib`, `src/services`, and similar shared folders use logical nested grouping or record an explicit exception.
 - Record any unresolved TanStack API ambiguity with a source link and exact date.
 
 </validation>

@@ -6,6 +6,7 @@ compatibility: Works best with read/edit/write tools, shell execution, code vali
 
 @rules/experiment-loop.md
 @rules/validation-and-exit.md
+@references/reporting-and-code-improvement.md
 
 # Code Autoresearch
 
@@ -25,7 +26,7 @@ Use a different language only when the user explicitly requests it, an existing 
 
 - Capture the current baseline first, score outcomes with binary evaluations, and keep only changes that improve the score without regression.
 - Systematically improve slow paths, unclear structure, duplicated logic, oversized outputs, unstable validation, or weak developer workflows.
-- Leave improved code plus resumable artifacts under `.hypercore/autoresearch-code/[codebase-name]/`: `results.tsv`, `results.json`, `changelog.md`, `dashboard.html`, and `baseline.md`.
+- Leave improved code plus resumable artifacts under `.hypercore/autoresearch-code/[codebase-name]/`: `results.tsv`, `results.json`, `changelog.md`, `dashboard.html`, `baseline.md`, `code-explanation.md`, and `final-report.md`. Human-readable artifact content must explain in Korean where the score moved, what code changed, which proof commands passed, and whether the change is held, promoted, or rolled back.
 
 </purpose>
 
@@ -203,15 +204,16 @@ Load support files intentionally:
   - [references/self-test-pack.api.md](references/self-test-pack.api.md)
   - [references/self-test-pack.monorepo.md](references/self-test-pack.monorepo.md)
 - Render `dashboard.html` and `results.js` from the official dashboard template with `scripts/render-dashboard.sh`.
+- Use [references/reporting-and-code-improvement.md](references/reporting-and-code-improvement.md) for Korean final reports, code-change attribution, metric movement summaries, proof command evidence, guard results, and dashboard-visible explanations.
 
 Artifact lifecycle requirements:
 
 - Create a workspace under `.hypercore/autoresearch-code/[codebase-name]/`.
 - Synchronize `results.tsv` and `results.json` after every experiment.
-- Record ownership scope, chosen pack, environment, and rollback conditions in artifacts.
+- Record ownership scope, chosen pack, environment, proof commands, guard results, code diff summary, and rollback conditions in artifacts.
 - Treat `dashboard.html` as a live view derived from `results.json`.
 - Keep `results.json.status` as `running` during the loop and `complete` at exit.
-- The dashboard must render when opened directly through a local `file://` URL.
+- The dashboard must render when opened directly through a local `file://` URL, including Markdown-formatted detail logs loaded from `results.js`.
 - Open the dashboard immediately when the runtime can safely open local HTML.
 
 When the codebase structure is weak:
@@ -239,8 +241,8 @@ When the codebase structure is weak:
 - Phase 1: convert success conditions into binary, non-overlapping evals; at least one eval must inspect the user's actual bottleneck.
 - Phase 2: create `.hypercore/autoresearch-code/[codebase-name]/`, write `baseline.md`, initialize `results.tsv`, `results.json`, `changelog.md`, and render `dashboard.html` with `scripts/render-dashboard.sh`.
 - Phase 3: run the unmodified codebase, score every eval, and record experiment `0` as `baseline`.
-- Phase 4: choose the highest-value failure, form one hypothesis, apply exactly one mutation, re-run the same evals and guards. Keep a mutation when score improves; discard it when flat/worse unless an explicit no-regression simplification is justified.
-- Phase 5: stop only when [rules/validation-and-exit.md](rules/validation-and-exit.md) allows it: user stop, budget limit, or stable high score. Then report score delta, experiment count, keep ratio, best change, remaining failures, and promotion state.
+- Phase 4: choose the highest-value failure, form one hypothesis, apply exactly one mutation, re-run the same evals and guards. Keep a mutation only when score improves and guards pass; discard or rework it when flat/worse, when complexity rises, or when any guard fails. Log changed files, metric before/after, proof command output, guard result, and rollback condition for every kept change.
+- Phase 5: stop only when [rules/validation-and-exit.md](rules/validation-and-exit.md) allows it: user stop, budget limit, or stable high score. Then report score delta, experiment count, keep ratio, best change, metric movement, changed files, proof/guard evidence, remaining failures, and promotion state in Korean.
 
 </workflow>
 
@@ -275,6 +277,12 @@ At exit, leave behind:
 - `.hypercore/autoresearch-code/[codebase-name]/results.tsv`.
 - `.hypercore/autoresearch-code/[codebase-name]/changelog.md`.
 - `.hypercore/autoresearch-code/[codebase-name]/baseline.md`.
+- `.hypercore/autoresearch-code/[codebase-name]/code-explanation.md` or `results.json.code_explanation`.
+- `.hypercore/autoresearch-code/[codebase-name]/final-report.md`.
+- `.hypercore/autoresearch-code/[codebase-name]/run-contract.md` when run assumptions were inferred.
+- `.hypercore/autoresearch-code/[codebase-name]/trace-summary.md` when trace-backed evals or runtime traces were used.
+- `.hypercore/autoresearch-code/[codebase-name]/source-ledger.md` when external/current claims influenced code choices.
+- `.hypercore/autoresearch-code/[codebase-name]/details/` for long logs, proof snippets, or structured diagnostics.
 - `.omx/specs/autoresearch-[codebase-name]/result.json` completion artifact.
 - `validation_mode` and `completion_artifact_path` bridge state in `.omx/state/.../autoresearch-state.json`.
 
@@ -290,6 +298,8 @@ The run must satisfy:
 - Baseline-first, one-mutation-at-a-time, and explicit stop conditions are preserved.
 - Scope, pack, proof command, environment, and rollback conditions are recorded in artifacts.
 - Do not claim completion until `.omx/specs/autoresearch-[codebase-name]/result.json` exists and records `passed: true` or `status: "passed"`.
-- Dashboard and support documentation may be localized for readers, but data contracts remain stable.
+- Dashboard, changelog, code explanation, final report, and support documentation default to Korean for readers, but data contracts remain stable.
+- Completed runs expose `results.json.code_explanation` or `code-explanation.md` so the dashboard can show where and how the score improved.
+- Final claims include metric movement, changed files, proof commands, guard results, rollback/promotion state, and remaining risks.
 
 </validation>

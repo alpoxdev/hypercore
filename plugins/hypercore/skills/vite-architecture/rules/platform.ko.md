@@ -60,7 +60,7 @@ export default defineConfig({
 ```tsx
 // src/router.tsx
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { createRouter } from '@tanstack/react-router'
+import { createRouter, RouterProvider } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 
 export const createAppRouter = () => {
@@ -88,6 +88,8 @@ declare module '@tanstack/react-router' {
 
 - root route는 `createRootRouteWithContext<{ queryClient: QueryClient }>()` 팩토리 패턴을 써서 nested route까지 context 타입을 유지합니다
 - SSR 스트리밍 + TanStack Query를 쓸 때는 같은 factory 안에서 `@tanstack/react-router-ssr-query`의 `setupRouterSsrQueryIntegration({ router, queryClient })`를 연결합니다
+
+- App entrypoint는 created router를 `RouterProvider`에 전달합니다. Router setup을 ad-hoc global 뒤에 숨기지 말고 discoverable하게 유지합니다.
 
 ---
 

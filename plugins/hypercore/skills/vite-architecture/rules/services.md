@@ -19,6 +19,8 @@ In Vite projects there are no server functions. All data access goes through **s
 
 ## Service Folder Structure
 
+Canonical ownership path: `services/<domain>/` or `src/services/<domain-or-provider>/`.
+
 ```
 services/
 ├── user/
@@ -33,7 +35,7 @@ services/
 | `queries.ts` | GET requests (read) + queryOptions |
 | `mutations.ts` | POST/PUT/DELETE (write) |
 
-Import service functions directly from `queries.ts` or `mutations.ts`. Do not add `services/index.ts` barrel exports.
+Import service functions directly from `queries.ts` or `mutations.ts`. Do not add `services/index.ts` barrel exports. Shared services are nested by domain or provider; do not add direct leaf files such as `src/services/foo.ts` or `services/foo.ts` unless an explicit project exception is recorded.
 
 ---
 
@@ -216,7 +218,7 @@ apiClient.interceptors.response.use(
 > Third-party integrations follow the same pattern
 
 ```
-services/<provider>/
+services/<domain-or-provider>/
 ├── client.ts       # SDK client initialization
 ├── types.ts        # Type definitions
 └── utils.ts        # Helper functions

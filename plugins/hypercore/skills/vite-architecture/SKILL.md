@@ -1,7 +1,17 @@
 ---
 name: vite-architecture
-description: "[Hyper] Use when working on Vite + TanStack Router projects - enforces architecture rules (layers, routes, hooks, services, conventions) with mandatory validation before any code change. Triggers on file creation, route work, hook patterns, or any structural change in a Vite + TanStack Router codebase."
+description: "Use this skill when reviewing or changing an existing Vite + TanStack Router project architecture, especially routes, loaders, validateSearch, services, hooks, Vite/TanStack Router platform setup, and nested shared folders such as src/lib or src/services. Do not use for TanStack Start or generic Vite apps without TanStack Router."
 ---
+
+@architecture-rules.md
+@rules/conventions.md
+@rules/routes.md
+@rules/services.md
+@rules/hooks.md
+@rules/execution-model.md
+@rules/platform.md
+@rules/validation.md
+@references/official/current-docs-2026-06-02.md
 
 # Vite + TanStack Router Architecture Enforcement
 
@@ -15,6 +25,41 @@ Use a different language only when the user explicitly requests it, an existing 
 
 </output_language>
 
+<purpose>
+
+- Confirm a repository is a Vite + TanStack Router project before enforcing architecture rules.
+- Enforce safety boundaries for client-reachable loaders, route modules, service layers, env usage, generated route trees, and platform setup.
+- Apply Hypercore/repo-local conventions for route folders, hooks, services, naming, and nested shared folders such as `src/lib/<domain>/` and `src/services/<domain-or-provider>/`.
+- Keep current Vite and TanStack Router facts in `references/official/` so rapidly changing tool behavior can be refreshed without bloating the core skill.
+
+</purpose>
+
+<routing_rule>
+
+Use this skill for architecture enforcement, implementation guidance, or review in existing Vite + TanStack Router projects. This includes route structure, route-local folders, loaders, `validateSearch`, service/query layers, custom hooks, Vite plugin setup, generated route tree handling, env/alias safety, and shared nested folder organization.
+
+Do not use this skill when the project uses `@tanstack/react-start` / `app.config.ts`, when the project is generic Vite without TanStack Router, or when the task is a docs-only summary with no project audit or implementation guidance. Route TanStack Start work to `tanstack-start-architecture`.
+
+When official Vite/TanStack Router guidance and Hypercore conventions differ, enforce official and safety rules first, then apply Hypercore conventions only to touched architecture surfaces.
+
+</routing_rule>
+
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Keep Vite + TanStack Router projects architecturally safe, maintainable, and aligned with official Vite/Router behavior plus labelled Hypercore conventions. |
+| Trigger | Existing Vite + TanStack Router project work involving routes, loaders, search params, services, hooks, Vite config, router setup, env/alias boundaries, or shared folder layout. |
+| Scope | Review and guide touched project architecture, topic rule files, official references, validation notes, and small reversible architecture fixes. |
+| Authority | User/project instructions outrank this skill. Official Vite and TanStack Router docs outrank Hypercore conventions for API facts. Safety policy blocks risky runtime/env/import-boundary changes. |
+| Evidence | Use project indicators, local package/config/router files, touched source paths, topic rules, official references, package checks, and validation command output. |
+| Tools | Use local search/read/edit/validation commands; use current official docs when API drift matters; gate broad route migrations, credential access, SSR adoption, and production side effects. |
+| Output | Korean architecture decision or review with rule classifications, changed files if any, validation evidence, remaining risks, and official-doc ambiguity notes. |
+| Verification | Run `rules/validation.md` checks relevant to touched surfaces and `scripts/validate-vite-architecture-skill.mjs` when this skill folder changes. |
+| Stop condition | Stop after project mode is known, applicable safety gates pass, Hypercore conventions are applied or explicitly deferred, validation evidence is recorded, and unresolved API drift is dated and sourced. |
+
+</instruction_contract>
+
 ## Overview
 
 Enforces hypercore Vite + TanStack Router architecture rules with strict validation before editing code.
@@ -25,26 +70,30 @@ Enforces hypercore Vite + TanStack Router architecture rules with strict validat
 
 **NOTE:** Some rules in this skill are stricter than TanStack Router defaults. Treat them as hypercore team conventions unless the user explicitly asks to follow official TanStack defaults instead.
 
-## Trigger Examples
+<activation_examples>
 
-### Positive
+Positive:
 
-- `Audit this Vite + TanStack Router app for route structure, validateSearch, and service boundaries before editing.`
-- `Add a new route folder in a Vite + TanStack Router app and keep hooks/services compliant.`
-- `Refactor a TanStack Router page so the UI stays in the route and logic moves into -hooks/.`
+- "Audit this Vite + TanStack Router app for route structure, validateSearch, and service boundaries before editing."
+- "Add a new route folder in a Vite + TanStack Router app and keep hooks/services compliant."
+- "Refactor a TanStack Router page so the UI stays in the route and logic moves into -hooks/."
+- "Vite Router 프로젝트에서 tanstackRouter plugin order와 routeTree.gen.ts 처리를 점검해줘."
+- "src/lib/utils.ts 말고 src/lib/auth/session.ts, src/services/billing/queries.ts처럼 nested folders로 묶어줘."
 
-### Negative
+Negative:
 
-- `Create a new Codex skill for browser QA.`
-- `Review a TanStack Start app that uses createServerFn and @tanstack/react-start.`
+- "Create a new Codex skill for browser QA."
+- "Review a TanStack Start app that uses createServerFn and @tanstack/react-start."
+- "Review a generic Vite app that does not use TanStack Router."
 
-### Boundary
+Boundary:
 
-- `Make a tiny copy-only text change in a Vite route file.`
-Direct editing can be enough if the change does not cross an architecture boundary, but touched files still need a quick compliance check.
+- "Make a tiny copy-only text change in a Vite route file."
+  Direct editing can be enough if the change does not cross an architecture boundary, but touched files still need a quick compliance check.
+- "The repo actually uses @tanstack/react-start."
+  Route away to `tanstack-start-architecture` instead of forcing Vite rules onto a Start project.
 
-- `The repo actually uses @tanstack/react-start.`
-Route away to `tanstack-start-architecture` instead of forcing Vite rules onto a Start project.
+</activation_examples>
 
 ## Step 1: Project Validation
 
@@ -68,7 +117,7 @@ If the repo matches Vite + TanStack Router: proceed with architecture enforcemen
 
 Load the detailed rules reference:
 
-**REQUIRED:** Read `architecture-rules.md` in this skill directory before writing any code.
+**REQUIRED:** Read `architecture-rules.md` in this skill directory before writing any code. Read `references/official/current-docs-2026-06-02.md` when Vite config, env handling, TanStack Router plugin setup, routeTree generation, or search/load behavior may be API-drift sensitive.
 
 For detailed patterns and examples, also read the relevant rule files:
 - `rules/conventions.md` - naming, TypeScript, imports, comments
@@ -77,6 +126,7 @@ For detailed patterns and examples, also read the relevant rule files:
 - `rules/hooks.md` - custom hook separation and internal order
 - `rules/execution-model.md` - loader/runtime boundaries, SSR-aware caveats, env safety
 - `rules/platform.md` - `vite.config.ts`, router setup, generated files, env and alias rules
+- `rules/validation.md` - project/skill validation and readback checks
 
 ## Step 3: Pre-Change Validation Checklist
 
@@ -237,8 +287,8 @@ src/
 ├── stores/
 ├── components/
 ├── config/
-├── env/
-├── lib/
+├── lib/<domain>/
+├── services/<domain-or-provider>/
 ├── src/router.tsx
 └── routeTree.gen.ts           # generated, do not hand-edit
 ```

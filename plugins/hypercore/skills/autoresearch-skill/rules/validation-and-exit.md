@@ -58,6 +58,8 @@ Check that the workspace contains:
 - `results.json`
 - `results.tsv`
 - `changelog.md`
+- `score-explanation.md` or `results.json.score_explanation` for completed runs
+- `final-report.md` for completed runs
 - `SKILL.md.baseline`
 - `baseline-files.json` or a `baseline/` original snapshot when support files were changed
 
@@ -66,6 +68,7 @@ Expected location:
 - `.hypercore/autoresearch-skill/[skill-name]/`
 
 Also check that `results.json` and `results.tsv` describe score, pass rate, and keep/discard status consistently.
+Also check that completed runs expose Korean score movement: baseline, final/best, exact delta, where the score rose, changed files, and why changes were kept.
 Also check that the dashboard was rendered from the canonical template, not edited arbitrarily.
 Also check that `results.js` exists when `dashboard.html` is expected to work through `file://`.
 Also check that non-happy statuses such as `discard`, `crash`, `no-op`, `hook-blocked`, and `metric-error` are representable in artifacts.
@@ -100,6 +103,8 @@ The final report must include:
 - Total number of experiments
 - Keep ratio
 - Most effective change
+- Where and how the score improved by eval/category
+- Changed files and the reason each kept change improved the score
 - Remaining failure patterns
 - Experiment artifact path
 - Reason if the source ledger or trace summary was omitted
@@ -109,7 +114,7 @@ The final report must include:
 ```bash
 find skills/autoresearch-skill -maxdepth 3 -type f | sort
 wc -l skills/autoresearch-skill/SKILL.md
-rg -n "results.tsv|results.json|dashboard.html|changelog.md|SKILL.md.baseline|run-contract|source-ledger|trace-summary" skills/autoresearch-skill/SKILL.md skills/autoresearch-skill/references skills/autoresearch-skill/rules
+rg -n "results.tsv|results.json|dashboard.html|changelog.md|score-explanation|final-report|SKILL.md.baseline|run-contract|source-ledger|trace-summary" skills/autoresearch-skill/SKILL.md skills/autoresearch-skill/references skills/autoresearch-skill/rules
 find skills/autoresearch-skill -maxdepth 2 \( -name README.md -o -name CHANGELOG.md -o -name QUICK_REFERENCE.md \) -print
 find .hypercore -maxdepth 4 -type f | sort | rg "autoresearch-skill"
 python3 -m json.tool .hypercore/autoresearch-skill/[skill-name]/results.json >/dev/null
