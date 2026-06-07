@@ -7,7 +7,7 @@
 - Initiative:
 - One-line objective:
 - Why now:
-- Package links: [`diagram.md`](./diagram.md), [`feature-spec.md`](./feature-spec.md), [`user-flow.md`](./user-flow.md), [`wireframe.md`](./wireframe.md), [`sources.md`](./sources.md)
+- Package links: [`feature-spec.md`](./feature-spec.md), [`user-flow.md`](./user-flow.md), [`wireframe.md`](./wireframe.md), [`diagram.md`](./diagram.md), [`sources.md`](./sources.md)
 
 ## 2. Problem
 
@@ -46,10 +46,10 @@
 
 ## 7. Requirements
 
-| ID | Requirement | Why it matters | Acceptance signal |
-|------|------|------|------|
-| R1 |  |  |  |
-| R2 |  |  |  |
+| ID | Requirement | Why it matters | Acceptance signal | Downstream links |
+|------|------|------|------|------|
+| R1 |  |  |  | `feature-spec.md`, `user-flow.md`, `wireframe.md` |
+| R2 |  |  |  |  |
 
 ## 8. Metrics And Success Criteria
 
@@ -71,10 +71,10 @@
 
 ## 11. Related Links
 
-- Diagram: `./diagram.md`
 - Feature spec: `./feature-spec.md`
 - User flow: `./user-flow.md`
 - Wireframe: `./wireframe.md`
+- Diagram: `./diagram.md`
 - Source log: `./sources.md`
 - Design:
 - Tickets:

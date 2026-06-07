@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{TITLE}} · Planning Package Preview</title>
+  <title>{{TITLE}} · 기획 패키지 미리보기</title>
   <style>
     :root {
       --bg: #f7f7f5;
@@ -81,6 +81,10 @@
     .content th { background: #faf7f2; }
     .content blockquote { border-left: 4px solid var(--accent); margin: 16px 0; padding: 8px 16px; color: var(--muted); background: #fff8f8; }
     .pill { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; border: 1px solid var(--line); padding: 8px 11px; color: var(--muted); font-size: 13px; margin: 4px 6px 4px 0; background: #fff; }
+    .chain { display: grid; gap: 10px; margin-top: 18px; }
+    .chain-step { border: 1px solid var(--line); border-radius: 16px; padding: 12px; background: #fff; }
+    .chain-step strong { display: block; font-size: 14px; }
+    .chain-step span { color: var(--muted); font-size: 12px; }
     @media (max-width: 900px) { .bar { align-items: flex-start; flex-direction: column; } .tabs { justify-content: flex-start; } .hero { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -88,21 +92,22 @@
   <header>
     <div class="bar">
       <div class="brand">
-        <div class="eyebrow">AI Planning Package</div>
-        <h1 id="title">Planning Package</h1>
+        <div class="eyebrow">AI 기획 패키지</div>
+        <h1 id="title">기획 패키지</h1>
         <div class="meta" id="meta"></div>
       </div>
-      <nav class="tabs" id="tabs" aria-label="Preview sections"></nav>
+      <nav class="tabs" id="tabs" aria-label="미리보기 섹션"></nav>
     </div>
   </header>
   <main>
     <div class="hero">
       <div class="card diagram" id="diagram"></div>
       <aside class="card pad">
-        <div class="eyebrow">Package Contents</div>
-        <h2 style="margin: 8px 0 0;">Review-ready output</h2>
-        <p class="meta">This preview is generated from local package files. Edit markdown, rebuild preview, and refresh this file.</p>
+        <div class="eyebrow">한눈에 보기</div>
+        <h2 style="margin: 8px 0 0;">PRD → 기능명세서 → 유저플로우 → 와이어프레임</h2>
+        <p class="meta">왼쪽은 전체 기획 맵, 아래 탭은 원본 문서입니다. 마크다운을 수정한 뒤 preview를 다시 빌드하면 이 HTML에 최신 상태가 반영됩니다.</p>
         <div class="summary-grid" id="summary"></div>
+        <div class="chain" id="chain"></div>
         <div style="margin-top: 18px;" id="links"></div>
       </aside>
     </div>
@@ -113,19 +118,25 @@
     const data = JSON.parse(document.getElementById('package-data').textContent);
     const docs = data.documents || [];
     const byId = (id) => document.getElementById(id);
-    byId('title').textContent = data.title || 'Planning Package';
+    byId('title').textContent = data.title || '기획 패키지';
     byId('meta').textContent = [data.slug, data.generatedAt].filter(Boolean).join(' · ');
-    byId('diagram').innerHTML = data.diagramSvg || '<div class="empty-diagram">No diagram.svg embedded. Rebuild preview after rendering the planning map.</div>';
+    byId('diagram').innerHTML = data.diagramSvg || '<div class="empty-diagram">아직 diagram.svg가 임베드되지 않았습니다. 기획 맵을 렌더링한 뒤 preview를 다시 빌드하세요.</div>';
 
     const summary = byId('summary');
     const counts = [
-      ['Docs', docs.length],
-      ['Open gaps', data.openQuestionCount || 0],
-      ['Diagram', data.diagramSvg ? 'SVG' : 'Missing'],
-      ['Flow', data.hasFlow ? 'Tracked' : 'Direct']
+      ['문서', docs.length],
+      ['오픈 질문', data.openQuestionCount || 0],
+      ['다이어그램', data.diagramSvg ? 'SVG 있음' : '누락'],
+      ['진행 추적', data.hasFlow ? 'flow.json' : '직접 작성']
     ];
     summary.innerHTML = counts.map(([label, value]) => `<div class="metric"><strong>${escapeHtml(String(value))}</strong><span>${escapeHtml(label)}</span></div>`).join('');
     byId('links').innerHTML = docs.map((doc) => `<span class="pill">${escapeHtml(doc.label)} · ${escapeHtml(doc.path)}</span>`).join('');
+    byId('chain').innerHTML = [
+      ['1. PRD', '문제·목표·범위·요구사항·메트릭을 결정'],
+      ['2. 기능명세서', 'PRD 요구사항을 동작·상태·수락 기준으로 번역'],
+      ['3. 유저플로우', '사용자 진입점·분기·오류·종료 경로를 검증'],
+      ['4. 와이어프레임', '화면 목록·레이아웃·상태를 저충실도로 구조화']
+    ].map(([title, body]) => `<div class="chain-step"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(body)}</span></div>`).join('');
 
     const tabs = byId('tabs');
     const container = byId('docs');

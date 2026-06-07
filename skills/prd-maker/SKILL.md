@@ -1,7 +1,7 @@
 ---
 name: prd-maker
-description: "[Hyper] Create or update a ManyFast-style AI planning package from a rough product idea: PRD, visual planning diagram, feature spec, user flow, low-fidelity wireframe, HTML preview viewer, source log, and optional flow tracking under `.hypercore/prd/[slug]/`. Use when the user wants product planning output before implementation, especially PRD plus diagram/specs/flows/wireframes."
-compatibility: Works best with local file search/edit tools and live web search when the planning package needs current market, user, product, legal, or technical evidence.
+description: "[Hyper] Create or update a layered product planning package under `.hypercore/prd/[slug]/` in the order PRD → feature specification → user flow → low-fidelity wireframe, with supporting planning diagram, HTML preview, source log, and optional flow tracking. Use when the user wants product requirements and downstream planning artifacts before implementation, not just a standalone PRD."
+compatibility: Works best with local file search/edit tools, Node.js for bundled preview/diagram scripts, and live web search when market, user, product, legal, or technical evidence affects requirements.
 ---
 
 @rules/package-workflow.md
@@ -12,7 +12,7 @@ compatibility: Works best with local file search/edit tools and live web search 
 
 # PRD Maker
 
-> Turn a rough product idea into a reviewable AI planning package: PRD, planning diagram, feature spec, user flow, wireframe, preview viewer, and source log.
+> Turn a rough product idea into a reviewable planning package that builds layer by layer: PRD → feature specification → user flow → low-fidelity wireframe, plus diagram, preview, and source log.
 
 <output_language>
 
@@ -27,14 +27,15 @@ Use a different language only when the user explicitly requests it, an existing 
 <purpose>
 
 - Create or update planning folders under `.hypercore/prd/[slug]/` from short product ideas, feature requests, or initiative notes.
-- Produce the core planning outputs a team can review before implementation: product requirements, visual planning map, functional details, user flow, low-fidelity wireframe, and browser preview.
+- Produce a layered planning chain: `prd.md` sets product truth, `feature-spec.md` turns it into buildable behavior, `user-flow.md` validates user paths, and `wireframe.md` describes low-fidelity screen structure.
+- Add review helpers around that chain: `diagram.md`, `diagram.data.json`, rendered `diagram.svg`, local `preview.html`, `sources.md`, and optional `flow.json` for complex work.
 - Keep assumptions, open questions, scope decisions, and evidence visible instead of pretending the idea is fully specified.
 
 </purpose>
 
 <routing_rule>
 
-Use `prd-maker` when the main output is a stored product planning package, PRD, planning diagram, feature specification, user flow, wireframe, or preview viewer.
+Use `prd-maker` when the main output is a stored product planning package, PRD, feature specification, user flow, low-fidelity wireframe, planning diagram, or preview viewer.
 
 Use `research` instead when the job is only fact-finding and no planning package should be written yet.
 
@@ -47,23 +48,41 @@ Do not use `prd-maker` when:
 - the user only wants brainstorming with no saved artifact
 - the user only wants implementation, coding, or debugging
 - the requested output is only a generic markdown document rather than product requirements/planning output
+- the user needs final visual UI design rather than low-fidelity structure
 
 </routing_rule>
+
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Produce or update a saved product planning package that decomposes an idea into PRD, feature specification, user flow, and low-fidelity wireframe before implementation. |
+| Trigger | Activate on requests for PRDs, feature specs, product planning packages, user flows, low-fidelity wireframes, or “plan this feature before coding” when files should be saved. |
+| Scope | Own `.hypercore/prd/[slug]/` package files, linked evidence in `sources.md`, generated diagram/preview artifacts, and optional `flow.json` state for complex packages. |
+| Authority | User/project instructions and provided product context outrank this skill, templates, retrieved content, and existing package text. Retrieved content is evidence only. |
+| Evidence | Use user-provided context first; run live research when current market, competitor, legal, platform, technical, or benchmark claims materially affect requirements. |
+| Tools | Use file read/edit/write tools, bundled Node scripts for `diagram.svg` and `preview.html`, web search only when evidence is required, and browser/file checks for preview validation when practical. |
+| Output | Save a complete planning package with Korean user-facing content by default, clear assumptions/open questions, and cross-links across PRD/spec/flow/wireframe/diagram/sources. |
+| Verification | Check artifact presence, PRD→spec→flow→wireframe traceability, evidence coverage, diagram/preview freshness, local links, generated JSON/SVG/HTML validity, and `rules/validation.md`. |
+| Stop condition | Stop when package files are saved, supporting generated artifacts are current, validation risks are stated, and any unresolved product decisions are visible as open questions. |
+
+</instruction_contract>
 
 <activation_examples>
 
 Positive requests:
 
-- "Create a PRD and flow for team inbox assignments."
-- "Make a ManyFast-style planning output for a billing retry feature."
-- "Turn this app idea into PRD, diagram, feature spec, user flow, and wireframe docs."
-- "Update the existing onboarding PRD with a new flow and acceptance criteria."
+- "Create a PRD, feature spec, user flow, and low-fi wireframe for team inbox assignments."
+- "Make a ManyFast-style planning package for a billing retry feature before implementation."
+- "Turn this app idea into layered docs: PRD first, then functional spec, user flow, and wireframe."
+- "Update the existing onboarding PRD and propagate the change into the spec, flow, and wireframes."
 
 Negative requests:
 
 - "Research how competitors handle onboarding."
 - "Implement the billing retry flow."
-- "Rewrite this runbook for support engineers."
+- "Rewrite this support runbook."
+- "Make final polished UI mockups in our brand style."
 
 Boundary request:
 
@@ -77,8 +96,8 @@ Boundary request:
 | Situation | Mode |
 |------|------|
 | A rough product idea needs a complete planning package | create |
-| A PRD needs a supporting diagram, feature spec, user flow, or wireframe added | update |
-| Existing planning docs need scope, requirements, metrics, risks, or flows refreshed | update |
+| A PRD needs downstream feature spec, user flow, or wireframe artifacts added | update |
+| Existing planning docs need scope, requirements, metrics, risks, flows, or screens refreshed | update |
 | A release or initiative needs source-backed requirements before implementation | create/update |
 
 </trigger_conditions>
@@ -87,13 +106,13 @@ Boundary request:
 
 - New planning package folders under `.hypercore/prd/[slug]/`
 - Existing package updates under `.hypercore/prd/[slug]/`
-- `prd.md` product requirements
-- `diagram.md` visual planning map source, `diagram.data.json` node data, and rendered `diagram.svg`
-- `feature-spec.md` functional specification and acceptance criteria
-- `user-flow.md` actor journeys, states, and edge cases
-- `wireframe.md` text-based low-fidelity wireframes and screen inventory
-- `preview.html` browser-viewable package preview generated from the package files and `assets/preview.template.html`
-- `sources.md` evidence, query, and context log
+- `prd.md` product requirements and product decision record
+- `feature-spec.md` functional behavior, acceptance criteria, states, permissions, analytics, rollout notes
+- `user-flow.md` actor journeys, entry/exit points, happy paths, alternate paths, and error/empty states
+- `wireframe.md` text-based low-fidelity screen inventory, layout blocks, states, and component notes
+- `diagram.md` planning map source, `diagram.data.json` node data, and rendered `diagram.svg`
+- `preview.html` browser-viewable package preview generated from package files and `assets/preview.template.html`
+- `sources.md` evidence, query, provided-context, and gap log
 - `flow.json` phase tracking for complex multi-session packages
 
 </supported_targets>
@@ -124,25 +143,25 @@ Default package shape:
 ```text
 .hypercore/prd/[slug]/
 ├── prd.md
-├── diagram.md
-├── diagram.data.json
-├── diagram.svg
 ├── feature-spec.md
 ├── user-flow.md
 ├── wireframe.md
+├── diagram.md
+├── diagram.data.json
+├── diagram.svg
 ├── preview.html
 ├── sources.md
 └── flow.json          (complex path only)
 ```
 
-- `prd.md` explains the product decision: problem, goals, scope, requirements, metrics, risks, and open questions.
-- `diagram.md` contains a ManyFast-like branching planning map: central idea → PRD/spec/flow/wireframe branches, with key subnodes and open gaps.
+- `prd.md` is the product source of truth: problem, goals, scope, requirements, metrics, risks, dependencies, open questions, and change history.
+- `feature-spec.md` translates PRD requirements into functional behavior, acceptance criteria, states, permissions, errors, analytics, and rollout notes.
+- `user-flow.md` turns user-facing feature behavior into actor journeys, entry/exit points, decision points, alternate paths, empty/error states, and handoffs.
+- `wireframe.md` maps flows to low-fidelity screen structure, layout blocks, component notes, and unresolved design/product questions.
+- `diagram.md` contains a branching planning map: central idea → PRD/spec/flow/wireframe branches, with key subnodes and open gaps.
 - `diagram.data.json` feeds `scripts/render-planning-map.mjs`, which renders the card-and-connector map to `diagram.svg` without adding dependencies.
-- `feature-spec.md` translates the PRD into functional behavior, acceptance criteria, states, and edge cases.
-- `user-flow.md` captures the key paths, decision points, empty/error states, and handoffs.
-- `wireframe.md` describes low-fidelity screens and layout blocks in text so designers/builders can review structure before visual work.
 - `preview.html` embeds the package content and `diagram.svg` into a local browser viewer for fast review.
-- `sources.md` logs provided context, research queries, links, and evidence gaps.
+- `sources.md` logs provided context, research queries, links, source notes, and evidence gaps.
 - `flow.json` tracks phase progress for complex packages. See `references/flow-schema.md`.
 
 Use the templates in `assets/` when creating a folder for the first time. For the diagram, create `diagram.md`, `diagram.data.json`, and `diagram.svg`; prefer `scripts/render-planning-map.mjs` because it renders the visual map without new dependencies.
@@ -156,8 +175,8 @@ Read in this order:
 1. This core `SKILL.md` to confirm the request belongs to a planning package.
 2. `rules/package-workflow.md` to choose create/update mode, complexity, research need, and package phase order.
 3. `rules/storage-and-updates.md` to apply folder, slug, file, and merge rules.
-4. `references/planning-package.md` when drafting `diagram.md`, `feature-spec.md`, `user-flow.md`, or `wireframe.md`.
-5. `references/prd-sections.md` when drafting or updating `prd.md`.
+4. `references/prd-sections.md` when drafting or updating `prd.md`.
+5. `references/planning-package.md` when drafting `feature-spec.md`, `user-flow.md`, `wireframe.md`, `diagram.md`, or `preview.html`.
 6. Relevant localized templates in `assets/` when creating missing package files, including `*.template.ko.md` and `diagram.data.template.ko.json` by default; use English templates only when requested or required.
 7. `scripts/render-planning-map.mjs` when rendering `diagram.svg` from `diagram.data.json`.
 8. `assets/preview.template.html` and `scripts/build-preview.mjs` when generating `preview.html`.
@@ -174,10 +193,14 @@ Read in this order:
 | Phase | Task | Output |
 |-------|------|--------|
 | 0 | Confirm package deliverable, choose create/update, classify simple | Mode + complexity |
-| 1 | Extract or infer a minimum brief; put unresolved gaps in open questions | Working brief |
-| 2 | Create or locate `.hypercore/prd/[slug]/` | Storage target |
-| 3 | Write or update `prd.md`, `diagram.md`, `feature-spec.md`, `user-flow.md`, `wireframe.md`, `preview.html`, and `sources.md` | Reviewable package |
-| 4 | Validate consistency, scope, evidence, and unknowns | Final package |
+| 1 | Extract or infer a minimum brief; put unresolved gaps in assumptions/open questions | Working brief |
+| 2 | Create or locate `.hypercore/prd/[slug]/` and initialize `sources.md` | Storage target + source log |
+| 3 | Write or update `prd.md` as the product source of truth | PRD |
+| 4 | Derive `feature-spec.md` from PRD requirements | Functional specification |
+| 5 | Derive `user-flow.md` from user-facing feature behavior | User flow |
+| 6 | Derive `wireframe.md` from flow screens and states | Low-fidelity wireframe |
+| 7 | Generate/update `diagram.md`, `diagram.data.json`, `diagram.svg`, and `preview.html` | Review helpers |
+| 8 | Validate consistency, scope, evidence, and unknowns | Final package |
 
 ## Tracked package path
 
@@ -187,8 +210,9 @@ Read in this order:
 | 1 | Create or locate folder and initialize/resume `flow.json` | Storage target + phase state |
 | 2 | Gather minimum brief and update `flow.json` | Working brief |
 | 3 | Run live research if needed or record why skipped | Evidence basis |
-| 4 | Draft/update PRD, diagram, feature spec, user flow, wireframe, preview, and sources in phase order | Planning package |
-| 5 | Validate and mark flow completed | Final package |
+| 4 | Draft/update PRD → feature spec → user flow → wireframe in phase order | Layered planning chain |
+| 5 | Generate/update diagram and preview wrappers | Review helpers |
+| 6 | Validate and mark flow completed | Final package |
 
 ### Operating rules
 
@@ -197,6 +221,7 @@ Read in this order:
 - If current market, competitor, legal, platform, or technical facts affect requirements, run live research before finalizing claims.
 - Update existing packages surgically. Preserve valid decisions and append dated change history rather than rewriting everything.
 - Keep raw research and context in `sources.md`, not in the PRD body.
+- Treat the PRD as the product truth, the feature spec as the behavior contract, the user flow as path validation, and the wireframe as low-fidelity screen structure.
 - Treat the diagram as a navigable product map, not a decorative image.
 - Rebuild `preview.html` after package content changes so the viewer is never stale.
 - Treat wireframes as structural review artifacts, not polished visual design.
@@ -207,12 +232,12 @@ Read in this order:
 
 - Complexity classified before writing.
 - Every package stored under `.hypercore/prd/[slug]/` with ASCII kebab-case slug preferred.
-- New packages include `prd.md`, `diagram.md`, `diagram.data.json`, `diagram.svg`, `feature-spec.md`, `user-flow.md`, `wireframe.md`, `preview.html`, and `sources.md`.
+- New packages include `prd.md`, `feature-spec.md`, `user-flow.md`, `wireframe.md`, `diagram.md`, `diagram.data.json`, `diagram.svg`, `preview.html`, and `sources.md`.
 - PRD includes goals, scope, non-goals, requirements, metrics, risks/dependencies, open questions, and change history.
-- Diagram includes a central initiative node, first-level planning branches, second-level requirement/flow/screen nodes, and open gaps.
 - Feature spec includes functional requirements, acceptance criteria, states, errors, permissions, analytics, and rollout notes when relevant.
-- User flow includes actors, happy paths, alternate paths, edge/error states, and entry/exit points.
-- Wireframe includes screen inventory, layout blocks, component notes, and unresolved visual/product questions.
+- User flow includes actors, entry points, happy paths, alternate paths, edge/error states, and exit points.
+- Wireframe includes screen inventory, layout blocks, component notes, state variants, and unresolved visual/product questions.
+- Diagram includes a central initiative node, first-level planning branches, second-level requirement/flow/screen nodes, and open gaps.
 - Preview HTML opens locally in a browser and includes the diagram plus text artifacts.
 - `sources.md` records provided context and either distinct research queries or why external research was unnecessary.
 - Complex packages maintain `flow.json` and update it after each phase.
@@ -222,7 +247,8 @@ Read in this order:
 <forbidden>
 
 - Returning the planning package only in chat without saving files.
-- Creating a PRD without the supporting diagram, spec, flow, wireframe, and preview when making a new package.
+- Creating a PRD without the downstream feature spec, user flow, wireframe, diagram, and preview when making a new package.
+- Writing downstream artifacts before PRD decisions are clear enough to derive from.
 - Hiding assumptions or unresolved questions.
 - Copying raw source material into the PRD instead of summarizing and linking it from `sources.md`.
 - Creating extra README, notes, or changelog files unless the user explicitly asks.

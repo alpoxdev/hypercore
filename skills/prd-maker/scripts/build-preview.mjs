@@ -18,11 +18,11 @@ const template = readFileSync(templatePath, 'utf8');
 
 const docSpecs = [
   ['prd', 'PRD', 'prd.md'],
-  ['diagram', 'Diagram Source', 'diagram.md'],
-  ['featureSpec', 'Feature Spec', 'feature-spec.md'],
-  ['userFlow', 'User Flow', 'user-flow.md'],
-  ['wireframe', 'Wireframe', 'wireframe.md'],
-  ['sources', 'Sources', 'sources.md']
+  ['featureSpec', '기능명세서', 'feature-spec.md'],
+  ['userFlow', '유저플로우', 'user-flow.md'],
+  ['wireframe', '와이어프레임', 'wireframe.md'],
+  ['diagram', '기획 맵', 'diagram.md'],
+  ['sources', '출처 로그', 'sources.md']
 ];
 
 function readMaybe(path) {
