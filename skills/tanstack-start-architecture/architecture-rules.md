@@ -24,7 +24,7 @@ Brownfield adoption: touched files must satisfy applicable safety rules and curr
 | Surface | Classification | Block or fix when |
 |---|---|---|
 | Loader boundaries | Official + Safety policy | A loader assumes server-only execution or reads secrets/DB/filesystem directly |
-| Server functions | Official + Safety policy | Mutation input is not validated at runtime, handler is missing, or `.validator()` is introduced despite current canonical `.inputValidator()` guidance |
+| Server functions | Official + Safety policy | Mutation input is not validated at runtime, handler is missing, or the installed package/API version is not respected |
 | Import protection | Official + Safety policy | Import protection is disabled, config is overwritten, or server/client-only imports leak outside compiler-recognized boundaries |
 | Middleware | Official + Safety policy | Client `sendContext` is trusted server-side without runtime validation |
 | SSR/hydration | Official + Safety policy | First render includes unstable values without a stabilization/fallback strategy |
@@ -100,8 +100,8 @@ Do not auto-apply broad or potentially breaking migrations without a clear user 
 | Treating `loader` as server-only | Move privileged work behind `createServerFn` / `createServerOnlyFn` |
 | Zod v4 search params forced through adapter | Use direct schema unless project convention says adapter |
 | Zod v3 search params without adapter/fallback | Use `zodValidator` / `fallback` from `@tanstack/zod-adapter` |
-| Server function mutation without runtime validation | Add `.inputValidator(...)` |
-| `createMiddleware()` for server function middleware | Use `createMiddleware({ type: 'function' })` |
+| Server function mutation without runtime validation | Add `.validator(...)` before `.handler(...)` |
+| `createMiddleware()` with server-function-only middleware behavior | Use `createMiddleware({ type: 'function' })`; keep request middleware on `createMiddleware()` |
 | Server/client imports leaking across environments | Split file, add marker, or wrap in environment function |
 | Static publishing page forced into empty folders | Do not add folders until logic/server integration exists |
 | Internal app RPC under server route | Prefer server function unless HTTP semantics are required |

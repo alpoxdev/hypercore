@@ -21,6 +21,8 @@ Default-denied patterns include:
 - Client environment: `**/*.server.*` and Start server specifiers.
 - Server environment: `**/*.client.*`.
 
+Type-only imports and re-exports are ignored because they are erased from the runtime bundle. Mixed imports still count when they include runtime values.
+
 ## Marker Imports
 
 ```typescript
@@ -59,6 +61,10 @@ export default defineConfig({
 
 If `tanstackStart()` already exists, extend only the relevant nested options. Do not duplicate plugins or overwrite unrelated options.
 
+Use `behavior: 'error'` when a project wants violations to fail even in development. Current options also include `log`, `include`, `exclude`, `ignoreImporters`, `maxTraceDepth`, and `onViolation` for scoped enforcement and diagnostics.
+
+`client` and `server` rules support `files`, `specifiers`, and `excludeFiles`. The default excludes resolved files under `node_modules`; setting `excludeFiles: []` opts back into those checks for the selected environment and should be deliberate because third-party packages can produce false positives.
+
 ## Compiler Boundary Leak Rule
 
 Server-only imports used inside a `createServerFn` handler may be removed from the client build. If the same import is referenced by code that survives client compilation, import protection should flag it.
@@ -73,7 +79,10 @@ Fix with one of:
 
 - [ ] Import protection is not disabled.
 - [ ] Custom deny rules are present when project directories/packages require them.
+- [ ] Type-only imports are not misreported as runtime boundary leaks.
 - [ ] Existing `tanstackStart()` options are extended, not overwritten.
+- [ ] `behavior: 'error'` vs `{ dev, build }` behavior is chosen intentionally.
+- [ ] `excludeFiles: []` is used only when third-party resolved-file checks are intentionally required.
 - [ ] `.server.*`, `.client.*`, and marker imports are used consistently.
 - [ ] Server-only imports do not survive outside recognized boundaries.
 - [ ] Dev warnings are confirmed with production build when tree-shaking might remove false positives.

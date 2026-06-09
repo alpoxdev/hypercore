@@ -1,6 +1,6 @@
 # TanStack API Drift Notes
 
-- last_verified_at: 2026-04-30
+- last_verified_at: 2026-06-09
 - purpose: Record official-doc conflicts and source-priority decisions so core skill rules do not overfit stale examples.
 
 ## Source Priority
@@ -13,24 +13,44 @@
 
 When sources conflict, do not silently pick the convenient one. Record the conflict with exact date and source links.
 
-## `.inputValidator()` vs `.validator()`
+## `.inputValidator()` vs stale `.validator()` examples
 
-Decision as of 2026-04-30:
+Decision as of 2026-06-09:
 
-- Treat `.inputValidator()` as canonical for Start server functions.
-- Treat `.validator()` examples in some current docs as stale or lower-priority until package types prove otherwise.
+- Treat `.inputValidator(...)` as the current official Server Functions guide API for `createServerFn` input validation.
+- Treat `.validator(...)` examples in older or lower-priority content as version drift unless project-local installed types prove otherwise.
 - If editing a real project, verify against the installed `@tanstack/react-start` version before making broad migrations.
 
 Evidence:
 
-- Canonical Server Functions guide uses `.inputValidator(...)`: <https://tanstack.com/start/latest/docs/framework/react/guide/server-functions>
-- GitHub v1.145.1 release notes include “Rename validator to inputValidator in fetch functions”: <https://github.com/TanStack/router/releases/tag/v1.145.1>
-- Some current pages still include `.validator(...)` snippets, including Server Components and comparison/migration content: <https://tanstack.com/start/latest/docs/framework/react/guide/server-components>
+- Current Server Functions guide uses `.inputValidator(...)`: <https://tanstack.com/start/latest/docs/framework/react/guide/server-functions>
+- Current Middleware guide uses `.inputValidator(...)` for server function middleware-owned data validation: <https://tanstack.com/start/latest/docs/framework/react/guide/middleware>
+- Some older history and examples mention `.validator(...)`; use them as drift context, not as current `latest` docs authority.
 
 Skill implication:
 
-- `rules/services.md` should block new `.validator(...)` usage unless a project-local type check proves that the installed version requires it.
+- `rules/services.md` should recommend `.inputValidator(...)` for new current-docs work.
+- `rules/middleware.md` should recommend `.inputValidator(...)` for server function middleware-owned data validation.
+- For existing projects, verify package types before replacing `.validator(...)`; this skill should not perform broad API migrations from docs alone.
 - The core `SKILL.md` should not repeat long API history; point here instead.
+
+## Server function `.inputValidator()` vs middleware `.inputValidator()`
+
+Decision as of 2026-06-09:
+
+- Treat `.inputValidator(...)` as current official API for both `createServerFn` input validation and server-function middleware data validation.
+- Do not conflate the two uses. They share a method name but belong to different chain objects and receive different data/context.
+- Do not migrate middleware-owned validation based on server-function examples, or server-function validation based on middleware examples, without checking the local chain type.
+
+Evidence:
+
+- Current Server Functions guide uses `.inputValidator(...)`: <https://tanstack.com/start/latest/docs/framework/react/guide/server-functions>
+- Current Middleware guide lists server function middleware validation as `.inputValidator(...)`: <https://tanstack.com/start/latest/docs/framework/react/guide/middleware>
+
+Skill implication:
+
+- `rules/services.md` owns server function `.inputValidator(...)` guidance.
+- `rules/middleware.md` owns middleware `.inputValidator(...)`, request middleware `createMiddleware()`, and server function middleware `createMiddleware({ type: 'function' })` guidance.
 
 ## Search validation and Zod adapters
 

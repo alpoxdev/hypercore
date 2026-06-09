@@ -39,8 +39,8 @@ For edits to this skill itself:
 find skills/tanstack-start-architecture -maxdepth 3 -type f | sort
 wc -l skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architecture/SKILL.ko.md
 rg -n 'architecture-rules|rules/|references/official' skills/tanstack-start-architecture/SKILL.md
-rg -n 'last_verified_at|checked_at|@tanstack/react-start|@tanstack/react-router|source_priority|inputValidator|importProtection|createServerOnlyFn' skills/tanstack-start-architecture/references/official
-rg -n 'Official|Safety policy|Hypercore convention|publishing-only|Zod v4|enabled by default' skills/tanstack-start-architecture/rules skills/tanstack-start-architecture/architecture-rules.md
+rg -n 'last_verified_at|checked_at|2026-06-09|@tanstack/react-start|@tanstack/react-router|source_priority|inputValidator|validator|importProtection|createServerOnlyFn|createMiddleware|createHandlers|excludeFiles' skills/tanstack-start-architecture/references/official
+rg -n 'Official|Safety policy|Hypercore convention|publishing-only|Zod v4|enabled by default|server\.handlers|createHandlers|behavior: '\''error'\''|Type-only imports' skills/tanstack-start-architecture/rules skills/tanstack-start-architecture/architecture-rules.md
 rg -n 'src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: "VITE_"|runtimeEnvStrict|emptyStringAsUndefined|Do not create `src/env/`' skills/tanstack-start-architecture/rules/platform.md
 rg -n 'src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: "VITE_"|runtimeEnvStrict|emptyStringAsUndefined|`src/env/`' skills/tanstack-start-architecture/rules/platform.ko.md
 rg -n 'project-structure|src/routes|routeTree.gen|routesDirectory|src/lib|src/services|direct leaf|repo-local convention' skills/tanstack-start-architecture
@@ -60,6 +60,9 @@ Must pass:
 - Publishing-only route exception and hook extraction rules do not contradict each other.
 - Search validation guidance handles both Zod v4 direct schemas and Zod v3 adapter usage.
 - Import protection guidance says defaults exist and custom config is required when custom deny rules are needed.
+- Middleware guidance distinguishes request middleware `createMiddleware()`, server function middleware `createMiddleware({ type: 'function' })`, middleware `.validator(...)`, and server function `.validator(...)`.
+- Server route guidance includes `server.handlers`, `createHandlers`, route-level `server.middleware`, duplicate method collision checks, and wildcard/splat route notes.
+- Import protection guidance includes type-only import behavior, `behavior: 'error'`, `excludeFiles`, and diagnostic/scoping options.
 - Env validation guidance uses `src/config/env.ts`, forbids new `src/env/` scaffolds, and describes `@t3-oss/env-core` / Vite public-prefix boundaries.
 - Deprecated feature-folder guidance is absent from this skill.
 - English and Korean entrypoints have aligned trigger, boundary, workflow, and read order.

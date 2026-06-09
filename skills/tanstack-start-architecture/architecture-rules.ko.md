@@ -23,7 +23,7 @@ Brownfield 적용: touched files는 해당 safety rules와 현재 hypercore conv
 | Surface | Classification | Block 또는 fix 조건 |
 |---|---|---|
 | Loader boundaries | Official + Safety policy | Loader가 server-only execution을 가정하거나 secrets/DB/filesystem을 직접 읽음 |
-| Server functions | Official + Safety policy | Mutation input이 runtime에 validate되지 않거나 handler가 없거나, 현재 canonical `.inputValidator()` guidance에도 `.validator()`를 도입함 |
+| Server functions | Official + Safety policy | Mutation input이 runtime에 validate되지 않거나 handler가 없거나 installed package/API version을 따르지 않음 |
 | Import protection | Official + Safety policy | Import protection을 disable하거나 config를 overwrite하거나 server/client-only imports가 compiler-recognized boundaries 밖으로 leak됨 |
 | Middleware | Official + Safety policy | Client `sendContext`를 runtime validation 없이 server-side에서 trust함 |
 | SSR/hydration | Official + Safety policy | Stabilization/fallback strategy 없이 first render에 unstable values 포함 |
@@ -99,8 +99,8 @@ Issue가 local, reversible, low-risk이면 직접 auto-fix합니다:
 | `loader`를 server-only로 취급 | Privileged work를 `createServerFn` / `createServerOnlyFn` 뒤로 이동 |
 | Zod v4 search params를 adapter에 강제로 통과 | Project convention이 adapter를 요구하지 않으면 direct schema 사용 |
 | Zod v3 search params에 adapter/fallback 없음 | `@tanstack/zod-adapter`의 `zodValidator` / `fallback` 사용 |
-| Runtime validation 없는 server function mutation | `.inputValidator(...)` 추가 |
-| Server function middleware에 `createMiddleware()` 사용 | `createMiddleware({ type: 'function' })` 사용 |
+| Runtime validation 없는 server function mutation | `.handler(...)` 전에 `.validator(...)` 추가 |
+| Server-function-only middleware behavior에 `createMiddleware()` 사용 | `createMiddleware({ type: 'function' })` 사용. Request middleware는 `createMiddleware()` 유지 |
 | Server/client imports가 environments 사이로 leak | File split, marker 추가, environment function wrapping |
 | Static publishing page에 empty folders 강제 | Logic/server integration이 생길 때까지 folder 추가하지 않음 |
 | Server route 아래 internal app RPC | HTTP semantics가 필요하지 않으면 server function 선호 |
