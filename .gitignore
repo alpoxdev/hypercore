@@ -28,6 +28,7 @@ node_modules/
 dist/
 
 # oh-my-codex runtime state
+.gjc/
 .claude/
 .codex/
 .omx/
