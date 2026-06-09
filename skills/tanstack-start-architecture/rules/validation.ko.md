@@ -32,9 +32,10 @@ wc -l skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architec
 rg -n 'architecture-rules|rules/|references/official' skills/tanstack-start-architecture/SKILL.md
 rg -n 'last_verified_at|checked_at|2026-06-09|@tanstack/react-start|@tanstack/react-router|source_priority|inputValidator|validator|importProtection|createServerOnlyFn|createMiddleware|createHandlers|excludeFiles' skills/tanstack-start-architecture/references/official
 rg -n 'Official|Safety policy|Hypercore convention|publishing-only|Zod v4|enabled by default|server\.handlers|createHandlers|behavior: '\''error'\''|Type-only imports' skills/tanstack-start-architecture/rules skills/tanstack-start-architecture/architecture-rules.md
+rg -n 'functions\.ts|server\.ts|same-origin|CSRF|dynamic import|mixed barrel|routeFileIgnorePrefix|src/modules/<domain>|src/db/<domain>|src/integrations/<provider>' skills/tanstack-start-architecture
 rg -n 'src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: "VITE_"|runtimeEnvStrict|emptyStringAsUndefined|Do not create `src/env/`' skills/tanstack-start-architecture/rules/platform.md
 rg -n 'src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: "VITE_"|runtimeEnvStrict|emptyStringAsUndefined|`src/env/`' skills/tanstack-start-architecture/rules/platform.ko.md
-rg -n 'project-structure|src/routes|routeTree.gen|routesDirectory|src/lib|src/services|direct leaf|repo-local convention' skills/tanstack-start-architecture
+rg -n 'project-structure|src/routes|routeTree.gen|routesDirectory|src/modules|src/lib|src/integrations|direct leaf|repo-local convention' skills/tanstack-start-architecture
 rg -n '@rules/project-structure.md|@rules/project-structure.ko.md' skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architecture/SKILL.ko.md
 ```
 
@@ -46,8 +47,9 @@ Must pass:
 - current official snapshot `references/official/current-docs-2026-06-02.ko.md`는 `SKILL.ko.md`에서 직접 link되며 API drift가 중요할 때 사용됨.
 - hypercore-only convention이 그렇게 label됨.
 - `rules/project-structure.md`와 `rules/project-structure.ko.md`가 존재하고 직접 링크됨.
-- project-structure guidance가 `src/routes`, custom `routesDirectory`, generated `routeTree.gen.ts`, shared nested folders, touched shared root direct leaf file 금지를 다룸.
-- `src/lib`, `src/services` 같은 shared nested folders는 official TanStack law가 아니라 Hypercore/repo-local convention으로 label됨.
+- project-structure guidance가 `src/routes`, custom `routesDirectory`, generated `routeTree.gen.ts`, shared nested folders, touched shared root direct leaf file 금지, route-local/shared server function placement를 다룸.
+- server-function-heavy guidance가 `.functions.ts` wrapper, `.server.ts` helper, static direct imports, no mixed barrels, auth/CSRF boundary를 다룸.
+- `src/modules`, `src/lib`, `src/integrations` 같은 shared nested folders는 official TanStack law가 아니라 Hypercore/repo-local convention으로 label됨.
 - publishing-only route exception과 hook extraction rule이 모순되지 않음.
 - search validation guidance가 Zod v4 direct schema와 Zod v3 adapter를 모두 다룸.
 - import protection guidance가 default 존재와 custom deny 필요 시 explicit config를 모두 설명함.
@@ -65,9 +67,10 @@ Positive:
 - "Add a TanStack Start route with search params and keep the architecture compliant."
 - "Refactor Start route folders, hooks, and server functions to follow hypercore rules."
 - "TanStack Start 프로젝트에서 loader 경계랑 server function 구조 점검해줘."
-- "TanStack Start folder structure를 검토하고 nested `src/lib` / `src/services` grouping을 강제해줘."
-- "TanStack Start에서 `src/services/billing`과 `src/routes/billing` 구조가 맞는지 봐줘."
+- "TanStack Start folder structure를 검토하고 nested `src/modules` / `src/lib` grouping을 강제해줘."
+- "TanStack Start에서 `src/modules/billing/invoices`와 `src/routes/billing` 구조가 맞는지 봐줘."
 - "src/lib/utils.ts 말고 src/lib/auth/session.ts처럼 논리 폴더로 묶어줘."
+- "TanStack Start server functions를 `src/modules/billing/invoices/invoices.functions.ts`와 `.server.ts`로 정리해줘."
 
 Negative:
 
@@ -88,4 +91,5 @@ Boundary:
 - [ ] env scaffold를 건드렸다면 `src/config/env.ts`를 사용하고 `src/env/`를 만들지 않음.
 - [ ] broad migration은 요청 없으면 피함.
 - [ ] verification command를 실행하고 결과를 읽음.
+- [ ] server function wrapper/helper split, static imports, auth/CSRF boundary, no mixed barrels를 확인함.
 - [ ] 남은 risk 또는 TanStack API ambiguity가 정확한 source/date를 인용함.

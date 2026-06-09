@@ -70,6 +70,28 @@ Project가 development에서도 violation을 실패시키길 원하면 `behavior
 - surviving helper를 `*.server.*`로 분리.
 - helper를 `createServerOnlyFn`으로 감싸기.
 - browser-only code는 `*.client.*` 또는 `createClientOnlyFn` 뒤로 이동.
+- server function wrapper는 `*.functions.ts`에 두고 DB/secret/filesystem helper는 sibling `*.server.ts`로 분리.
+- `src/modules/<domain>/<feature>/index.ts`나 `-functions/index.ts`에서 safe exports와 server-only exports를 섞지 않기.
+
+## Server Function Import Shape
+
+Server function wrapper 자체는 loader/component/hook에서 static import할 수 있습니다. 하지만 wrapper file이 client build에서 살아남는 export를 통해 server-only helper를 참조하면 leak입니다.
+
+권장:
+
+```text
+src/modules/users/profile/
+├── profile.functions.ts  # createServerFn exports
+├── profile.server.ts     # DB/secret helper
+└── profile.schemas.ts    # client-safe schema
+```
+
+금지/경고:
+
+- `profile.functions.ts`가 handler 밖 helper export에서 `profile.server.ts`를 참조
+- `index.ts`가 `profile.functions.ts`와 `profile.server.ts`를 함께 re-export
+- client component가 `*.server.ts`, `src/db/**`, privileged SDK를 직접 import
+- server function을 dynamic import해서 bundler rewrite/import-protection trace를 흐리게 함
 
 ## Validation Checklist
 
@@ -81,4 +103,6 @@ Project가 development에서도 violation을 실패시키길 원하면 `behavior
 - [ ] Third-party resolved-file checks가 의도적으로 필요할 때만 `excludeFiles: []`를 사용함.
 - [ ] `.server.*`, `.client.*`, marker import가 일관됨.
 - [ ] server-only import가 recognized boundary 밖에 살아남지 않음.
+- [ ] `*.functions.ts` wrapper와 `*.server.ts` helper가 split되어 있음.
+- [ ] safe/server-only mixed barrel이 없음.
 - [ ] tree-shaking false positive 가능성이 있으면 production build로 확인함.

@@ -11,7 +11,8 @@
 | `beforeLoad` before `loader` lifecycle | Official | Use for auth/context/redirect decisions |
 | Mixed flat/directory routes supported by Router | Official | Do not claim flat routes are invalid TanStack usage |
 | Route-directory preference for app pages | Hypercore convention | Apply to touched app pages unless official defaults requested |
-| `-hooks/`, `-components/`, `-functions/` for pages with logic/server integration | Hypercore convention | Apply when logic/integration exists |
+| `-hooks/` and `-components/` for pages with interactive logic or growing UI | Hypercore convention | Apply when route-local orchestration or UI extraction exists |
+| `-functions/` only for route-local server function exceptions | Hypercore convention + Safety policy | Use domain modules by default; keep route-only actions local |
 
 ## Publishing-Only Exception
 
@@ -20,7 +21,7 @@ Examples: terms, privacy, about, simple marketing content.
 
 - They do **not** require `-components/`, `-hooks/`, or `-functions/`.
 - If interactive logic is added, create `-hooks/` and route-local components as needed.
-- If server integration is added, create `-functions/` and route-local hooks for query/mutation orchestration.
+- When server integration is added, the default is to call server functions from `src/modules/<domain>/<feature>/` via route-local hooks. Use `-functions/` only for truly single-route actions.
 
 ## Hypercore Route Folder Shape
 
@@ -32,11 +33,20 @@ routes/<page>/
 ├── route.tsx          # layout/beforeLoad/loader when needed
 ├── -components/       # page-local components when UI grows or repeats
 ├── -hooks/            # page-local interactive/query orchestration
-├── -functions/        # page-local server functions
 └── -sections/         # optional for large page sections
 ```
 
-Official TanStack Router supports flat route files. The shape above is a hypercore maintainability convention.
+Route-local server function exception:
+
+```text
+routes/<page>/
+└── -functions/
+    ├── <resource>.functions.ts
+    ├── <resource>.server.ts
+    └── <resource>.schemas.ts
+```
+
+Official TanStack Router supports flat route files. The shapes above are hypercore maintainability conventions. `-`-prefixed folders such as `-components/`, `-hooks/`, and `-functions/` align with Router's default ignore prefix and are used as co-location folders that route generation does not treat as route files.
 
 ## File Route Export
 
@@ -102,7 +112,8 @@ If a project standardizes on `zodValidator` for all versions, label that as a hy
 
 - Loaders are isomorphic in TanStack Start.
 - Do not access secrets, database clients, filesystem, or privileged SDKs directly in loader code.
-- Move privileged work to `createServerFn` or `createServerOnlyFn` and call that boundary from the loader.
+- Move privileged work behind `createServerFn` in route-local exception `-functions/<resource>.functions.ts` or the default shared location `src/modules/<domain>/<feature>/<resource>.functions.ts`.
+- Import `*.server.ts` helpers only inside `*.functions.ts` handlers; routes/components/hooks statically import the server function wrapper.
 
 ## Validation Checklist
 
@@ -111,4 +122,5 @@ If a project standardizes on `zodValidator` for all versions, label that as a hy
 - [ ] `beforeLoad` holds auth/context/redirect logic that must run serially.
 - [ ] Loader code contains no direct secret/DB/filesystem access.
 - [ ] Publishing-only pages were not forced into empty route-local folders.
-- [ ] Pages with logic/server integration have route-local organization or a documented reason not to.
+- [ ] Pages with interactive logic have route-local hooks/components or a documented reason not to.
+- [ ] Route-local server functions use `.functions.ts` / `.server.ts` / schema split or have been promoted to `src/modules/<domain>/<feature>/`.

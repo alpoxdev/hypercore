@@ -29,6 +29,9 @@
 
 - `createServerFn()` defines server functions. GET is the default; other HTTP methods such as POST can be specified with `createServerFn({ method: 'POST' })`.
 - Server functions use `.inputValidator(...)` for input validation and `.handler(...)` for execution; current server-function guides show middleware before the handler when needed.
+- Treat server functions as same-origin app RPC endpoints. Browser-origin server function requests are protected with Fetch Metadata, Origin, Referer checks, and CSRF middleware. If a project defines custom `src/start.ts`, it must preserve server function CSRF middleware explicitly.
+- Server functions can be called from loaders, components, hooks, other server functions, and event handlers. Components/hooks can use `useServerFn()` with TanStack Query; route loaders can call server functions directly.
+- Larger-app file organization guidance splits `*.functions.ts` for `createServerFn` wrappers, `*.server.ts` for DB/internal server-only helpers, and unsuffixed `.ts` for client-safe schemas/types/constants. Static imports of server functions are described as safe; dynamic imports are warned against.
 - `createServerFn`, `createServerOnlyFn`, `createClientOnlyFn`, and `createIsomorphicFn` are official execution-control primitives.
 - Client hooks/components may call server functions; `useServerFn` is the React wrapper when hook ergonomics are needed.
 - Sources:
@@ -73,4 +76,5 @@
 
 - Treat this file as a dated official-doc snapshot, not a permanent rulebook.
 - If local installed package types disagree, run typecheck and record the project-specific exception.
-- Keep `src/lib`, `src/services`, `src/db`, `src/server`, and `src/config` grouping as Hypercore conventions, not official TanStack requirements.
+- Keep `src/modules`, `src/lib`, `src/db`, `src/server`, `src/integrations`, and `src/config` grouping as Hypercore conventions, not official TanStack requirements.
+- The `.functions.ts` / `.server.ts` split is an official server-function organization pattern; enforcing that split inside `src/modules/<domain>/<feature>/` nested folders is a Hypercore convention.

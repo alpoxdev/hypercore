@@ -29,6 +29,9 @@
 
 - `createServerFn()`은 server functions를 정의한다. GET이 default이며, `createServerFn({ method: 'POST' })`처럼 다른 HTTP method를 지정할 수 있다.
 - Server functions는 input validation에 `.inputValidator(...)`를 사용하고 execution에 `.handler(...)`를 사용한다. Current server-function guides는 필요하면 handler 전에 middleware를 둔다.
+- Server functions는 app same-origin RPC endpoint로 취급한다. Browser-origin server function requests는 Fetch Metadata, Origin, Referer checks와 CSRF middleware로 보호한다. Custom `src/start.ts`를 정의하면 server function CSRF middleware를 명시적으로 유지해야 한다.
+- Server functions는 loaders, components, hooks, other server functions, event handlers에서 호출할 수 있다. Components/hooks에서는 `useServerFn()`와 TanStack Query 조합을 사용할 수 있고, route loaders는 server function을 직접 호출할 수 있다.
+- Larger-app file organization guidance는 `*.functions.ts`를 `createServerFn` wrapper, `*.server.ts`를 DB/internal server-only helper, suffix 없는 `.ts`를 client-safe schema/types/constants로 분리한다. Static import of server functions는 safe로 설명되며 dynamic import는 피하라고 경고한다.
 - `createServerFn`, `createServerOnlyFn`, `createClientOnlyFn`, `createIsomorphicFn`은 공식 execution-control primitives다.
 - Client hooks/components는 server functions를 호출할 수 있으며, hook ergonomics가 필요하면 React wrapper인 `useServerFn`을 사용한다.
 - Sources:
@@ -73,4 +76,5 @@
 
 - 이 파일은 날짜가 있는 official-doc snapshot이며 영구 rulebook이 아니다.
 - Local installed package types가 다르면 typecheck를 실행하고 project-specific exception을 기록한다.
-- `src/lib`, `src/services`, `src/db`, `src/server`, `src/config` grouping은 official TanStack requirement가 아니라 Hypercore convention으로 유지한다.
+- `src/modules`, `src/lib`, `src/db`, `src/server`, `src/integrations`, `src/config` grouping은 official TanStack requirement가 아니라 Hypercore convention으로 유지한다.
+- `.functions.ts` / `.server.ts` file split은 official guidance에서 가져온 server function organization pattern이지만, 이를 `src/modules/<domain>/<feature>/` nested folder convention으로 강제하는 것은 Hypercore convention이다.

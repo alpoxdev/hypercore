@@ -1,6 +1,6 @@
 ---
 name: tanstack-start-architecture
-description: "Use this skill when reviewing or changing an existing TanStack Start/Router project architecture, especially routes, loaders, server functions, importProtection, SSR/hydration, and nested shared folders such as src/lib or src/services. Do not use for generic React/Vite projects or docs-only summaries."
+description: "Use this skill when reviewing or changing an existing TanStack Start/Router project architecture, especially routes, loaders, server functions, importProtection, SSR/hydration, and nested shared folders such as src/modules, src/lib, or src/integrations. Do not use for generic React/Vite projects or docs-only summaries."
 ---
 
 @architecture-rules.md
@@ -96,7 +96,7 @@ Positive:
 - "Add a TanStack Start route with search params and keep the architecture compliant."
 - "Refactor Start route folders, hooks, and server functions to follow hypercore rules."
 - "Check the loader boundaries and server function structure in this TanStack Start project."
-- "Review this TanStack Start folder structure and enforce nested src/lib or src/services grouping."
+- "Review this TanStack Start folder structure and enforce nested src/modules or src/lib grouping."
 
 Negative:
 
@@ -107,7 +107,7 @@ Negative:
 Boundary:
 
 - "Make a copy-only edit in a static TanStack Start privacy page."
-  Use this skill only for a quick boundary check; publishing-only pages do not need generated `-hooks/`, `-components/`, or `-functions/` folders unless logic/server integration is introduced.
+  Use this skill only for a quick boundary check. Publishing-only pages do not need generated `-hooks/`, `-components/`, or `-functions/` folders; add route-local folders only when interactive UI or route-only server actions are introduced.
 
 </activation_examples>
 
@@ -182,10 +182,13 @@ Apply these to touched files unless the user asks for official defaults only:
 
 - Prefer route directories over flat route files for app pages.
 - Pages/components with interactive logic extract logic into `-hooks/`; publishing-only static pages are exempt.
-- Server-integrated pages use `-functions/` and route-local hooks/components where appropriate.
+- Server-integrated pages call server functions from `src/modules/<domain>/<feature>/` through route-local hooks by default. Use route-local `-functions/` only as an exception for single-route actions.
 - Use `export const Route = createFileRoute(...)` for file routes.
-- Keep routes thin: route/page UI -> hooks/query -> server functions -> services/lib/db layer.
-- Enforce nested shared folders such as `src/lib/<domain>/`, `src/services/<domain-or-provider>/`, `src/db/<area>/`, `src/server/<area>/`, and `src/config/<area>/` when touched shared code is added or reorganized; do not add new direct leaf files like `src/lib/foo.ts` or `src/services/foo.ts` unless an explicit project exception is recorded.
+- Keep routes thin: route/page UI -> hooks/query -> route-local exception or module server functions -> modules/lib/db/integrations layer.
+- Place server functions in `src/modules/<domain>/<feature>/<resource>.functions.ts` by default. Use route-local `-functions/<resource>.functions.ts` only for single-route actions.
+- Split server function wrappers into `.functions.ts`, DB/secret/filesystem helpers into `.server.ts`, and validation/DTO/query-key code into client-safe schema/helper files.
+- Enforce nested shared folders such as `src/modules/<domain>/<feature>/`, `src/lib/<domain>/`, `src/db/<area>/`, `src/server/<area>/`, `src/integrations/<provider>/`, and `src/config/<area>/` when touched shared code is added or reorganized; do not add new direct leaf files like `src/modules/foo.ts` or `src/lib/foo.ts` unless an explicit project exception is recorded.
+- Do not mix safe exports with server-only exports in `functions/index.ts` or `src/modules/<domain>/<feature>/index.ts`.
 - Use kebab-case filenames, explicit return types, no `any`, const arrow functions, and Korean block comments for meaningful code groups.
 
 </hypercore_conventions_summary>
@@ -198,7 +201,8 @@ Before declaring the work done:
 - Confirm official-vs-hypercore labels are preserved in any edited rule.
 - Confirm support files are directly linked from `SKILL.md` and do not require following an indirect reference chain.
 - Confirm English and Korean entrypoints still describe the same trigger, boundary, workflow, contract, and read order.
-- Confirm touched `src/lib`, `src/services`, and similar shared folders use logical nested grouping or record an explicit exception.
+- Confirm touched `src/modules`, `src/lib`, `src/integrations`, and similar shared folders use logical nested grouping or record an explicit exception.
+- Confirm server-function-heavy changes preserve `.functions.ts` / `.server.ts` split, static direct imports, and auth/CSRF boundaries.
 - Record any unresolved TanStack API ambiguity with a source link and exact date.
 
 </validation>

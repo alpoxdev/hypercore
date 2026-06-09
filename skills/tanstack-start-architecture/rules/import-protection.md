@@ -74,6 +74,28 @@ Fix with one of:
 - Split the surviving helper into `*.server.*`.
 - Wrap the helper with `createServerOnlyFn`.
 - Move browser-only code behind `*.client.*` or `createClientOnlyFn`.
+- Put server function wrappers in `*.functions.ts` and split DB/secret/filesystem helpers to sibling `*.server.ts`.
+- Do not mix safe exports with server-only exports in `src/modules/<domain>/<feature>/index.ts` or `-functions/index.ts`.
+
+## Server Function Import Shape
+
+Server function wrappers themselves may be statically imported from loaders/components/hooks. A wrapper still leaks if surviving client-build exports reference server-only helpers outside the handler boundary.
+
+Recommended:
+
+```text
+src/modules/users/profile/
+├── profile.functions.ts  # createServerFn exports
+├── profile.server.ts     # DB/secret helper
+└── profile.schemas.ts    # client-safe schema
+```
+
+Blocked or warned:
+
+- `profile.functions.ts` references `profile.server.ts` from a helper export outside the handler.
+- `index.ts` re-exports both `profile.functions.ts` and `profile.server.ts`.
+- Client components import `*.server.ts`, `src/db/**`, or privileged SDKs directly.
+- Server functions are dynamically imported, obscuring bundler rewrite/import-protection traces.
 
 ## Validation Checklist
 
@@ -85,4 +107,6 @@ Fix with one of:
 - [ ] `excludeFiles: []` is used only when third-party resolved-file checks are intentionally required.
 - [ ] `.server.*`, `.client.*`, and marker imports are used consistently.
 - [ ] Server-only imports do not survive outside recognized boundaries.
+- [ ] `*.functions.ts` wrappers and `*.server.ts` helpers are split.
+- [ ] There are no mixed safe/server-only barrels.
 - [ ] Dev warnings are confirmed with production build when tree-shaking might remove false positives.
