@@ -1,6 +1,6 @@
 {
   "name": "@kood/color-cli",
-  "version": "0.1.0",
+  "version": "1.0.2",
   "description": "CSS color converter CLI — accurate hex, rgb, oklch conversion with CSS Color Level 4 gamut mapping",
   "type": "module",
   "bin": {

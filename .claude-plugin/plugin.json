@@ -1,6 +1,6 @@
 {
   "name": "hypercore",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "AI agent skills and agents collection for Claude Code, Codex, and Cursor",
   "author": {
     "name": "alpoxdev"

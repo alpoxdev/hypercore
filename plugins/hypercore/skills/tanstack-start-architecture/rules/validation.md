@@ -39,11 +39,12 @@ For edits to this skill itself:
 find skills/tanstack-start-architecture -maxdepth 3 -type f | sort
 wc -l skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architecture/SKILL.ko.md
 rg -n 'architecture-rules|rules/|references/official' skills/tanstack-start-architecture/SKILL.md
-rg -n 'last_verified_at|checked_at|@tanstack/react-start|@tanstack/react-router|source_priority|inputValidator|importProtection|createServerOnlyFn' skills/tanstack-start-architecture/references/official
-rg -n 'Official|Safety policy|Hypercore convention|publishing-only|Zod v4|enabled by default' skills/tanstack-start-architecture/rules skills/tanstack-start-architecture/architecture-rules.md
+rg -n 'last_verified_at|checked_at|2026-06-09|@tanstack/react-start|@tanstack/react-router|source_priority|inputValidator|validator|importProtection|createServerOnlyFn|createMiddleware|createHandlers|excludeFiles' skills/tanstack-start-architecture/references/official
+rg -n 'Official|Safety policy|Hypercore convention|publishing-only|Zod v4|enabled by default|server\.handlers|createHandlers|behavior: '\''error'\''|Type-only imports' skills/tanstack-start-architecture/rules skills/tanstack-start-architecture/architecture-rules.md
+rg -n 'functions\.ts|server\.ts|same-origin|CSRF|dynamic import|mixed barrel|routeFileIgnorePrefix|src/modules/<domain>|src/db/<domain>|src/integrations/<provider>' skills/tanstack-start-architecture
 rg -n 'src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: "VITE_"|runtimeEnvStrict|emptyStringAsUndefined|Do not create `src/env/`' skills/tanstack-start-architecture/rules/platform.md
 rg -n 'src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: "VITE_"|runtimeEnvStrict|emptyStringAsUndefined|`src/env/`' skills/tanstack-start-architecture/rules/platform.ko.md
-rg -n 'project-structure|src/routes|routeTree.gen|routesDirectory|src/lib|src/services|direct leaf|repo-local convention' skills/tanstack-start-architecture
+rg -n 'project-structure|src/routes|routeTree.gen|routesDirectory|src/modules|src/lib|src/integrations|direct leaf|repo-local convention' skills/tanstack-start-architecture
 rg -n '@rules/project-structure.md|@rules/project-structure.ko.md' skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architecture/SKILL.ko.md
 ```
 
@@ -55,11 +56,15 @@ Must pass:
 - Current official snapshot `references/official/current-docs-2026-06-02.md` is directly linked from `SKILL.md` and used when API drift matters.
 - Hypercore-only conventions are labelled as such.
 - `rules/project-structure.md` and `rules/project-structure.ko.md` exist and are directly linked.
-- Project-structure guidance handles `src/routes`, custom `routesDirectory`, generated `routeTree.gen.ts`, shared nested folders, and no-new-direct-leaf-files under touched shared roots.
-- Shared nested folders such as `src/lib` and `src/services` are labelled as Hypercore/repo-local convention, not official TanStack law.
+- Project-structure guidance handles `src/routes`, custom `routesDirectory`, generated `routeTree.gen.ts`, shared nested folders, no-new-direct-leaf-files under touched shared roots, and route-local/shared server function placement.
+- Server-function-heavy guidance covers `.functions.ts` wrappers, `.server.ts` helpers, static direct imports, no mixed barrels, and auth/CSRF boundaries.
+- Shared nested folders such as `src/modules`, `src/lib`, and `src/integrations` are labelled as Hypercore/repo-local convention, not official TanStack law.
 - Publishing-only route exception and hook extraction rules do not contradict each other.
 - Search validation guidance handles both Zod v4 direct schemas and Zod v3 adapter usage.
 - Import protection guidance says defaults exist and custom config is required when custom deny rules are needed.
+- Middleware guidance distinguishes request middleware `createMiddleware()`, server function middleware `createMiddleware({ type: 'function' })`, middleware `.validator(...)`, and server function `.validator(...)`.
+- Server route guidance includes `server.handlers`, `createHandlers`, route-level `server.middleware`, duplicate method collision checks, and wildcard/splat route notes.
+- Import protection guidance includes type-only import behavior, `behavior: 'error'`, `excludeFiles`, and diagnostic/scoping options.
 - Env validation guidance uses `src/config/env.ts`, forbids new `src/env/` scaffolds, and describes `@t3-oss/env-core` / Vite public-prefix boundaries.
 - Deprecated feature-folder guidance is absent from this skill.
 - English and Korean entrypoints have aligned trigger, boundary, workflow, and read order.
@@ -72,9 +77,10 @@ Positive examples that should trigger this skill:
 - "Add a TanStack Start route with search params and keep the architecture compliant."
 - "Refactor Start route folders, hooks, and server functions to follow hypercore rules."
 - "Check the loader boundaries and server function structure in this TanStack Start project."
-- "Review this TanStack Start folder structure and enforce nested `src/lib` / `src/services` grouping."
-- "Check whether `src/services/billing` and `src/routes/billing` are organized correctly in TanStack Start."
+- "Review this TanStack Start folder structure and enforce nested `src/modules` / `src/lib` grouping."
+- "Check whether `src/modules/billing/invoices` and `src/routes/billing` are organized correctly in TanStack Start."
 - "src/lib/utils.ts 말고 src/lib/auth/session.ts처럼 논리 폴더로 묶어줘."
+- "Organize TanStack Start server functions under `src/modules/billing/invoices/invoices.functions.ts` and `.server.ts`."
 
 Negative examples that should not trigger this skill:
 
@@ -95,4 +101,5 @@ Boundary example:
 - [ ] Env scaffolds, when touched, use `src/config/env.ts` and do not create `src/env/`.
 - [ ] Broad migrations were avoided unless requested.
 - [ ] Verification commands were run and read.
+- [ ] Server function wrapper/helper split, static imports, auth/CSRF boundary, and no mixed barrels were checked.
 - [ ] Remaining risks or TanStack API ambiguities cite exact sources and dates.

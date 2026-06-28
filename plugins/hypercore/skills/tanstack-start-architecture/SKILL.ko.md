@@ -1,6 +1,6 @@
 ---
 name: tanstack-start-architecture
-description: 기존 TanStack Start/Router 프로젝트의 routes, loaders, server functions, importProtection, SSR/hydration, `src/lib` 또는 `src/services` 같은 nested shared folders 아키텍처를 리뷰하거나 변경할 때 사용합니다. 일반 React/Vite 프로젝트나 문서 요약 전용 요청에는 사용하지 않습니다.
+description: 기존 TanStack Start/Router 프로젝트의 routes, loaders, server functions, importProtection, SSR/hydration, `src/modules`, `src/lib`, `src/integrations` 같은 nested shared folders 아키텍처를 리뷰하거나 변경할 때 사용합니다. 일반 React/Vite 프로젝트나 문서 요약 전용 요청에는 사용하지 않습니다.
 ---
 
 @architecture-rules.md
@@ -96,7 +96,7 @@ Positive:
 - "Add a TanStack Start route with search params and keep the architecture compliant."
 - "Refactor Start route folders, hooks, and server functions to follow hypercore rules."
 - "TanStack Start 프로젝트에서 loader 경계랑 server function 구조 점검해줘."
-- "TanStack Start folder structure를 검토하고 nested src/lib 또는 src/services grouping을 강제해줘."
+- "TanStack Start folder structure를 검토하고 nested src/modules 또는 src/lib grouping을 강제해줘."
 
 Negative:
 
@@ -107,7 +107,7 @@ Negative:
 Boundary:
 
 - "정적인 TanStack Start privacy page의 카피만 바꿔줘."
-  이 경우 빠른 boundary check만 수행합니다. publishing-only 페이지는 logic/server integration을 추가하지 않는 한 `-hooks/`, `-components/`, `-functions/` 폴더가 필요 없습니다.
+  이 경우 빠른 boundary check만 수행합니다. publishing-only 페이지는 `-hooks/`, `-components/`, `-functions/` 폴더가 필요 없으며, interactive UI 또는 route-only server action이 생길 때만 route-local folder를 추가합니다.
 
 </activation_examples>
 
@@ -182,10 +182,13 @@ ls src/routes/__root.tsx 2>/dev/null
 
 - 앱 페이지는 flat route보다 route directory를 선호합니다.
 - interactive logic이 있는 page/component는 logic을 `-hooks/`로 추출합니다. publishing-only static page는 예외입니다.
-- server integration이 있는 페이지는 필요에 따라 `-functions/`, route-local hooks/components를 사용합니다.
+- server integration이 있는 페이지는 기본적으로 `src/modules/<domain>/<feature>/`의 server functions를 route-local hooks에서 호출합니다. route-local `-functions/`는 단일 route 전용 action일 때만 예외로 사용합니다.
 - file route는 `export const Route = createFileRoute(...)`를 사용합니다.
-- route/page UI -> hooks/query -> server functions -> services/lib/db layer 흐름을 유지합니다.
-- touched shared code를 추가하거나 재구성할 때 `src/lib/<domain>/`, `src/services/<domain-or-provider>/`, `src/db/<area>/`, `src/server/<area>/`, `src/config/<area>/` 같은 nested shared folders를 강제합니다. 명시적 project exception을 기록하지 않는 한 `src/lib/foo.ts` 또는 `src/services/foo.ts` 같은 새 direct leaf file을 만들지 않습니다.
+- route/page UI -> hooks/query -> route-local exception 또는 module server functions -> modules/lib/db/integrations layer 흐름을 유지합니다.
+- server functions는 기본적으로 `src/modules/<domain>/<feature>/<resource>.functions.ts`에 둡니다. route-local `-functions/<resource>.functions.ts`는 단일 route 전용 action에만 사용합니다.
+- server function wrapper는 `.functions.ts`, DB/secret/filesystem helper는 `.server.ts`, validation/DTO/query-key는 client-safe schema/helper file로 분리합니다.
+- touched shared code를 추가하거나 재구성할 때 `src/modules/<domain>/<feature>/`, `src/lib/<domain>/`, `src/db/<area>/`, `src/server/<area>/`, `src/integrations/<provider>/`, `src/config/<area>/` 같은 nested shared folders를 강제합니다. 명시적 project exception을 기록하지 않는 한 `src/modules/foo.ts` 또는 `src/lib/foo.ts` 같은 새 direct leaf file을 만들지 않습니다.
+- `functions/index.ts` 또는 `src/modules/<domain>/<feature>/index.ts`에서 safe exports와 server-only exports를 섞지 않습니다.
 - kebab-case filename, explicit return type, no `any`, const arrow function, 의미 있는 코드 그룹의 Korean block comments를 유지합니다.
 
 </hypercore_conventions_summary>
@@ -198,7 +201,8 @@ ls src/routes/__root.tsx 2>/dev/null
 - 수정한 rule에 official-vs-hypercore label이 유지되는지 확인합니다.
 - `SKILL.md`에서 support file이 직접 링크되고 indirect reference chain이 없는지 확인합니다.
 - English/Korean entrypoint가 같은 trigger, boundary, workflow, contract, read order를 설명하는지 확인합니다.
-- touched `src/lib`, `src/services` 및 유사 shared folders가 logical nested grouping을 쓰는지 또는 explicit exception이 기록됐는지 확인합니다.
+- touched `src/modules`, `src/lib`, `src/integrations` 및 유사 shared folders가 logical nested grouping을 쓰는지 또는 explicit exception이 기록됐는지 확인합니다.
+- server function-heavy changes가 `.functions.ts` / `.server.ts` split, static direct imports, auth/CSRF boundary를 유지하는지 확인합니다.
 - 남은 TanStack API ambiguity는 source link와 정확한 날짜로 기록합니다.
 
 </validation>

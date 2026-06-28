@@ -71,7 +71,7 @@ import { z } from 'zod'
 // 2. Internal packages (@/)
 import { Button } from '@/components/ui/button'
 import { prisma } from '@/database/prisma'
-import { getUsers } from '@/services/user'
+import { getUsers } from '@/modules/users/list/users.functions'
 
 // 3. Relative imports (route-specific)
 import { UserCard } from './-components/user-card'

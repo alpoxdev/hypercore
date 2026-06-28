@@ -2,6 +2,8 @@
 
 Use this reference when drafting or updating `prd.md`.
 
+Evidence basis: the section set below is grounded in the local research report [`../../../.hypercore/research/002-prd-package-layered-artifacts.md`](../../../.hypercore/research/002-prd-package-layered-artifacts.md), which reviewed 12 PRD sources and compared them with feature-spec, user-flow, and wireframe sources.
+
 ## Stable section set
 
 This section set is the strongest common denominator across the researched PRD guides:
@@ -10,11 +12,11 @@ This section set is the strongest common denominator across the researched PRD g
 - Problem and objective
 - Users and use cases
 - Scope and non-goals
-- Requirements
+- Requirements with stable IDs
 - Metrics and success criteria
 - Assumptions, constraints, risks, and dependencies
 - Open questions
-- Related links
+- Related downstream artifacts: `feature-spec.md`, `user-flow.md`, `wireframe.md`, `diagram.md`, `sources.md`
 - Change history
 
 Optional sections when justified:
@@ -22,16 +24,16 @@ Optional sections when justified:
 - Alternatives or options considered
 - Release criteria
 - Review or meeting goals
+- Launch/readiness plan
 
 Evidence basis:
 
-- Atlassian emphasizes high-level context, assumptions, user stories, questions, and explicit out-of-scope boundaries. Source: [Atlassian PRD guide](https://www.atlassian.com/agile/product-management/requirements)
-- Aha! lists overview, objective, context, assumptions, scope, requirements, performance, and open questions as recurring PRD components. Source: [Aha! PRD template guide](https://www.aha.io/roadmapping/guide/requirements-management/what-is-a-good-product-requirements-document-template)
-- ProductPlan adds use cases, system or environment requirements, and assumptions, constraints, and dependencies. Source: [ProductPlan PRD glossary](https://www.productplan.com/glossary/product-requirements-document/)
-- Pendo adds out-of-scope, alternatives considered, assumptions and risks, dependencies, go-to-market, open questions, and change log. Source: [Pendo PRD template PDF](https://www.pendo.io/product-led/wp-content/uploads/sites/9/2025/01/Product-Requirements-Document-PRD-Template-_-Pendo.io_.pdf)
-- Atlassian's product requirements template also tracks options considered and keeps dated answers for open questions. Source: [Atlassian product requirements template](https://www.atlassian.com/software/confluence/templates/product-requirements)
-- Notion's PRD guidance treats release criteria as a distinct planning element. Source: [How to write a PRD in 7 simple steps](https://www.notion.com/blog/how-to-write-a-prd)
-- Duolingo's product spec pattern adds summary-of-changes, related work, and meeting goals for better multi-altitude communication. Source: [How Duolingo’s product spec gives everyone full context](https://www.notion.com/blog/connected-organized-product-spec-helps-duolingos-product-team)
+- Atlassian emphasizes high-level context, assumptions, user stories, questions, and explicit out-of-scope boundaries. Source: [Atlassian PRD guide](https://www.atlassian.com/agile/requirements)
+- Atlassian's product requirements template tracks objective, success metrics, assumptions, user stories, and open questions. Source: [Atlassian product requirements template](https://www.atlassian.com/software/confluence/templates/product-requirements)
+- ProductPlan frames a PRD around release-complete capabilities, use cases, constraints, and dependencies. Source: [ProductPlan PRD glossary](https://www.productplan.com/glossary/product-requirements-document)
+- Aha! emphasizes enough context to guide good solutions without over-prescribing implementation. Source: [Aha! PRD template guide](https://www.aha.io/roadmapping/guide/templates/create/prd)
+- Productboard and Miro emphasize outcomes, success measures, out-of-scope decisions, constraints, dependencies, risks, and stakeholders. Sources: [Productboard PRD glossary](https://www.productboard.com/glossary/product-requirements-document/), [Miro PRD template](https://miro.com/templates/prd/)
+- Pendo adds goals, success metrics, out-of-scope items, open questions, and product usage measurement. Source: [Pendo PRD template](https://www.pendo.io/de-de/product-led/artifacts/product-requirements-document-prd-template/)
 
 ## Section prompts
 
@@ -63,6 +65,7 @@ Evidence basis:
 ### Requirements
 
 - What product behavior must exist?
+- Which requirement ID should downstream artifacts use?
 - What acceptance criteria define done at the product level?
 - What linked designs, user stories, or tickets clarify the requirement?
 
@@ -81,7 +84,15 @@ Evidence basis:
 ### Open questions
 
 - What is unresolved?
+- Which question blocks feature-spec, user-flow, or wireframe detail?
 - What research, decision, or validation still needs to happen?
+
+### Related downstream artifacts
+
+- Does `feature-spec.md` cover every must-have PRD requirement?
+- Does `user-flow.md` cover every user-facing feature behavior?
+- Does `wireframe.md` cover every user-facing flow screen/state?
+- Are `diagram.md`, `diagram.svg`, and `preview.html` current?
 
 ### Optional: Alternatives or options considered
 

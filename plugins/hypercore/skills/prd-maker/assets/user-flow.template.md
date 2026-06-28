@@ -8,42 +8,54 @@
 - Secondary actor:
 - Entry point 1:
 - Entry point 2:
+- Related feature requirements:
 
 ## 2. Flow Overview
 
+- User goal:
 - Start:
 - Success end state:
 - Failure/blocked end state:
 
 ## 3. Happy Path
 
-1. User ...
-2. System ...
-3. User ...
-4. Success state ...
+| Step | Actor/system action | Feature IDs | Screen/state |
+|---:|---|---|---|
+| 1 | User ... | F1 |  |
+| 2 | System ... | F1 |  |
+| 3 | User ... |  |  |
+| 4 | Success state ... |  |  |
 
-## 4. Alternate Paths
+## 4. Decision Points
+
+| Decision | Branches | Expected handling |
+|---|---|---|
+|  | Yes / No |  |
+
+## 5. Alternate Paths
 
 - A1:
 - A2:
 
-## 5. Edge And Error Paths
+## 6. Edge And Error Paths
 
 - E1:
 - E2:
+- Recovery path:
 
-## 6. Empty, Loading, And Permission States
+## 7. Empty, Loading, And Permission States
 
 - Empty:
 - Loading:
 - Permission denied:
+- Disabled/unavailable:
 
-## 7. Flow-To-Screen Map
+## 8. Flow-To-Screen Map
 
 | Flow step | Screen/state | Wireframe link | Notes |
 |------|------|------|------|
 | 1 |  | `./wireframe.md` |  |
 
-## 8. Open Questions
+## 9. Open Questions
 
 - [ ] Question 1

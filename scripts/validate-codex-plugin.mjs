@@ -47,7 +47,7 @@ assert(entry.policy?.authentication === "ON_USE", "hypercore authentication poli
 
 const manifest = readJson(pluginManifestPath);
 assert(manifest.name === "hypercore", "plugins/hypercore/.codex-plugin/plugin.json name must be hypercore");
-assert(manifest.version === "1.0.1", "plugins/hypercore/.codex-plugin/plugin.json version must be 1.0.1");
+assert(manifest.version === "1.0.2", "plugins/hypercore/.codex-plugin/plugin.json version must be 1.0.2");
 assert(manifest.skills === "./skills/", "plugins/hypercore/.codex-plugin/plugin.json skills must be ./skills/");
 
 const codexSkillPath = path.join(pluginRoot, "skills", "codex", "SKILL.md");

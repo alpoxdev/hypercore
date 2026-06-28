@@ -33,5 +33,4 @@ app.onError((err, c) => {
 - Central error translation exists when needed
 - Error responses preserve deliberate headers/status
 - Expected HTTP errors are not all generic throws
-- Typed RPC behavior is considered before using `c.notFound()`
-
+- Typed RPC/public-client 404 behavior is covered by `app.notFound()` or an explicit JSON response contract when clients depend on it
