@@ -9,6 +9,7 @@
 | Context Engineering | [`context-engineering/CONTEXT_ENGINEERING.md`](context-engineering/CONTEXT_ENGINEERING.md) | 프롬프트/컨텍스트/도구 지시를 런타임 중립적으로 설계 |
 | Prompt Authoring | [`context-engineering/references/prompt-authoring.md`](context-engineering/references/prompt-authoring.md) | 역할 수행 프롬프트를 실행 계약으로 작성하는 실전 템플릿 |
 | Skill Authoring | [`skill/SKILL_AUTHORING.md`](skill/SKILL_AUTHORING.md) | 재사용 가능한 skill 폴더를 트리거·구조·검증 가능한 실행 패키지로 설계 |
+| Skill Prompt/Loop/Eval | [`skill/references/prompt-loop-eval.md`](skill/references/prompt-loop-eval.md) | skill을 단일 프롬프트가 아니라 반복·검증 가능한 작은 프로그램으로 설계 |
 | Autoresearch | [`autoresearch/AUTORESEARCH.md`](autoresearch/AUTORESEARCH.md) | 목표·범위·측정·검증·가드·로그·rollback 기반 자율 반복 하네스 설계 |
 | Harness Engineering | [`harness-engineering/HARNESS_ENGINEERING.md`](harness-engineering/HARNESS_ENGINEERING.md) | 프롬프트, 에이전트, 도구 사용을 테스트 가능한 하네스로 관리 |
 | Sourcing | [`sourcing/reliable-search.md`](sourcing/reliable-search.md) | 자료조사·검색·출처 검증 기준 |
@@ -30,6 +31,7 @@
 @instructions/context-engineering/CONTEXT_ENGINEERING.md
 @instructions/context-engineering/references/prompt-authoring.md
 @instructions/skill/SKILL_AUTHORING.md
+@instructions/skill/references/prompt-loop-eval.md
 @instructions/autoresearch/AUTORESEARCH.md
 @instructions/harness-engineering/HARNESS_ENGINEERING.md
 @instructions/sourcing/reliable-search.md
@@ -39,7 +41,7 @@
 작업이 특정 런타임에 묶이면 [`context-engineering/references/runtime-profiles.md`](context-engineering/references/runtime-profiles.md)를 추가로 읽는다. 병렬 작업, subagent, background agent, agent team을 사용할 때는 [`context-engineering/references/parallel-workflows.md`](context-engineering/references/parallel-workflows.md)를 함께 읽는다.
 
 
-Skill을 새로 만들거나 `skills/*`를 refactor할 때는 [`skill/SKILL_AUTHORING.md`](skill/SKILL_AUTHORING.md)를 읽고, 필요에 따라 `skill/references/`의 anatomy, trigger, progressive disclosure, resource placement, validation 문서를 함께 읽는다.
+Skill을 새로 만들거나 `skills/*`를 refactor할 때는 [`skill/SKILL_AUTHORING.md`](skill/SKILL_AUTHORING.md)를 읽고, prompt/loop/eval 설계가 필요하면 [`skill/references/prompt-loop-eval.md`](skill/references/prompt-loop-eval.md)를 함께 읽는다. 필요에 따라 `skill/references/`의 anatomy, trigger, progressive disclosure, resource placement, validation 문서를 추가로 읽는다.
 
 Autoresearch-style 반복 개선, metric optimization, autonomous debug/fix/learn/reason loop를 설계할 때는 [`autoresearch/AUTORESEARCH.md`](autoresearch/AUTORESEARCH.md)를 읽고, metric/verify/guard/log/rollback 기준에 따라 `autoresearch/references/`를 추가로 읽는다.
 

@@ -15,6 +15,7 @@ Progressive disclosure는 skill의 핵심 설계 원리다. agent가 모든 skil
 - trigger와 scope
 - authority/evidence 기준
 - workflow 큰 단계
+- loop type, feedback source, stop condition의 요약
 - 꼭 알아야 하는 gotcha
 - support files를 언제 읽을지 알려주는 navigation
 - validation과 stop condition
@@ -25,6 +26,11 @@ Progressive disclosure는 skill의 핵심 설계 원리다. agent가 모든 skil
 |---|---|
 | 긴 공식 문서 요약 | `references/official/*.md` |
 | 반복 정책 | `rules/*.md` |
+| prompt scaffold / reusable prompt template | `assets/prompts/` 또는 `references/examples.md` |
+| loop 세부 규칙과 실패 복구 순서 | `rules/loop.md` |
+| eval case / fixture / expected output | `assets/evals/` 또는 `references/eval-cases.md` |
+| source ledger / vendor drift note | `references/official/` 또는 `references/sources.md` |
+| prompt injection / side-effect safety note | `rules/safety.md` 또는 `references/safety.md` |
 | schema/API/detail | `references/*.md` |
 | deterministic 검증 | `scripts/*.py`, `scripts/*.sh`, `scripts/*.mjs` |
 | 템플릿 | `assets/*` |
@@ -43,9 +49,10 @@ For more information, see references/.
 강한 예:
 
 ```markdown
-Read `references/openai.md` only when provider-specific Codex skill behavior changes the core rule.
-Read `rules/validation.md` before declaring a skill complete.
-Run `scripts/validate-skill.mjs` when the skill includes scripts or generated assets.
+Read `references/official/openai.md` only when provider-specific Codex skill behavior changes the core rule.
+Read `references/prompt-loop-eval.md` before adding an iterative loop, prompt optimizer, or eval fixture.
+Read `rules/safety.md` before enabling network, credential, destructive, or production side effects.
+Run `scripts/validate-skill.mjs` when the skill includes scripts, generated assets, or eval fixtures.
 ```
 
 ## 5. Context 예산 규칙
@@ -55,6 +62,7 @@ Run `scripts/validate-skill.mjs` when the skill includes scripts or generated as
 - deep reference chain을 만들지 않는다.
 - support file을 만들었으면 `SKILL.md`에서 직접 참조한다.
 - support file을 만들지 않아도 되는 설명은 만들지 않는다.
+- eval fixture와 prompt template은 prose reference가 아니라 실제 실행/복사 대상이면 `assets/`에 둔다.
 
 ## 6. Readback check
 

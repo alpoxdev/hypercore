@@ -51,6 +51,9 @@ description: Use this skill when the user asks to create or refactor a reusable 
 - 두 skill이 겹치는 요청
 - research + skill creation처럼 순서가 필요한 요청
 - commit/deploy처럼 후속 skill이 필요한 요청
+- 외부 자료조사 + skill 생성처럼 source ledger가 선행되어야 하는 요청
+- 네트워크, credential, destructive action을 포함해 safety gate가 필요한 요청
+- “프롬프트를 좋게 해줘”처럼 일반 prompt 개선인지 reusable skill 제작인지 애매한 요청
 
 ## 4. Trigger smoke test
 
@@ -63,9 +66,21 @@ description: Use this skill when the user asks to create or refactor a reusable 
   { "id": "p3", "prompt": "스킬 폴더를 새로 만들고 검증 규칙까지 넣어줘", "should_trigger": true },
   { "id": "n1", "prompt": "Rewrite this runbook for readability", "should_trigger": false },
   { "id": "n2", "prompt": "Summarize these OpenAI docs", "should_trigger": false },
-  { "id": "b1", "prompt": "Create a guide for writing skills", "should_trigger": "depends_on_output_shape" }
+  { "id": "b1", "prompt": "Create a guide for writing skills", "should_trigger": "depends_on_output_shape" },
+  { "id": "b2", "prompt": "최신 논문을 보고 새 skill을 만들어줘", "should_trigger": "after_research_or_with_research_skill" },
+  { "id": "b3", "prompt": "이 skill이 배포 명령까지 자동 실행하게 해줘", "should_trigger": true, "requires_gate": "production_side_effect" }
 ]
 ```
+
+Trigger eval에는 prompt wording만 보지 말고, 켜진 뒤 필요한 companion workflow도 기록한다.
+
+| Boundary | 기대 routing |
+|---|---|
+| research + skill creation | sourcing/research 먼저, 그 근거로 skill 작성 |
+| prompt improvement only | context-engineering prompt guide, skill 생성은 하지 않음 |
+| reusable skill folder | skill authoring 활성화 |
+| tool permission 추가 | skill authoring + safety/validation reference |
+| deploy/commit/publish 포함 | 해당 후속 skill 또는 사용자 권한 gate |
 
 ## 5. 실패 패턴
 
@@ -76,6 +91,8 @@ description: Use this skill when the user asks to create or refactor a reusable 
 | 구현 중심 | 사용자는 목적을 말했는데 trigger가 안 됨 | tool/file명보다 outcome을 앞세움 |
 | 모호한 scope | 다른 skill과 충돌 | routing rule에 소유/비소유를 분리 |
 | 긴 설명 | skill list에서 앞부분만 남아 핵심 누락 | 첫 문장에 핵심 trigger 압축 |
+| 안전 gate 누락 | skill이 켜진 뒤 외부 side effect를 당연시함 | description 또는 routing rule에 gated action 명시 |
+| research 선행 누락 | 최신 claim을 skill에 바로 박음 | source-sensitive trigger는 sourcing 단계 요구 |
 
 ## 6. 완료 기준
 
@@ -83,3 +100,4 @@ description: Use this skill when the user asks to create or refactor a reusable 
 - [ ] positive/negative/boundary 예시가 있다.
 - [ ] 비슷한 skill과의 차이가 명시되어 있다.
 - [ ] should-trigger와 should-not-trigger smoke set이 있다.
+- [ ] research, safety, deploy, commit 같은 companion workflow가 필요한 boundary가 있다.
