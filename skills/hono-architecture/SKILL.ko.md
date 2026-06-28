@@ -29,6 +29,8 @@ Hono 프로젝트에서 코드 변경 전에 아키텍처 규칙을 강제합니
 - `Hono route를 추가하는데 testClient랑 AppType 추론도 안 깨지게 해줘.`
 - `Hono API에 Drizzle을 붙이되 route가 DB를 직접 만지지 않게 해줘.`
 - `새 persisted endpoint를 추가하기 전에 database, migration, OpenAPI 경계를 점검해줘.`
+- `hono-architecture 전체 수정`
+- `Hono architecture 스킬을 full-remediation mode로 실행해줘.`
 
 ### Negative
 
@@ -42,6 +44,25 @@ Hono 프로젝트에서 코드 변경 전에 아키텍처 규칙을 강제합니
 
 - `hypercore 규칙 말고 Hono 공식 기본만 따를래.`
 이 경우에도 스킬은 적용되지만, 공식 기본을 넘는 hypercore 전용 규칙은 완화합니다.
+
+## 호출 인자
+
+인자는 핵심 규칙이 아니라 수정 범위를 바꿉니다.
+
+| 인자 | 의미 |
+|------|------|
+| 없음 | 요청된/touched Hono 범위를 검토하고 수정합니다. Untouched legacy drift는 hypercore 전용이거나 이관 위험이 크면 backlog로 보고할 수 있습니다. |
+| `전체 수정` | Full-remediation mode. 감지된 Hono app 전체를 스캔하고, 안전하고 국소적이며 되돌릴 수 있고 검증 가능한 모든 위반을 수정합니다. Touched file에서 멈추지 않습니다. |
+| `full fix` / `fix all` | `전체 수정`과 동일합니다. |
+| `공식 기본만` / `official defaults only` | 공식 Hono 동작을 기본 decision surface로 두고, 사용자가 `전체 수정`도 함께 요청하지 않았다면 hypercore 전용 컨벤션은 optional finding으로 낮춥니다. |
+
+`전체 수정` 모드에서는:
+
+- Hono app file, route module, handler, middleware, validation schema, OpenAPI file, database/repository boundary, tests/RPC surface, runtime entrypoint 전체를 범위에 포함합니다.
+- 감지된 Hono source tree 전체의 folder/file name을 스캔합니다. `package.json`, `tsconfig.json`, `drizzle.config.ts`, lockfile, generated declaration, 명시적으로 설정된 migration artifact처럼 framework/tool이 요구하는 이름을 제외하고 folder/file은 kebab-case여야 합니다.
+- camelCase 또는 PascalCase folder/file은 같은 변경 안에서 import, test path, route reference, configuration reference를 안전하게 갱신할 수 있으면 kebab-case로 rename합니다.
+- 3.5단계의 저위험 auto-remediation을 touched file에 한정하지 않고 앱 전체에 적용합니다.
+- 같은 실행에서 안전하게 끝낼 수 없는 위험한 변경은 file path와 실패한 규칙을 포함해 정확한 blocker/backlog item으로 남깁니다. 조용히 무시하지 않습니다.
 
 ## 1단계: 프로젝트 검증
 
@@ -60,6 +81,13 @@ Database 작업이 범위에 포함되면 아래 지표도 확인합니다:
 ```bash
 rg -n '"drizzle-orm"|drizzle-kit|DATABASE_URL|D1Database|@neondatabase|@libsql|pg|postgres' package.json drizzle.config.ts src app .
 rg -n "from 'drizzle-orm|from \"drizzle-orm|db\\.|transaction\\(|migrate\\(|schema|repositories?" src app .
+```
+
+`전체 수정` 모드에서는 편집 전에 넓게 탐색합니다:
+
+```bash
+rg --files src app routes 2>/dev/null
+rg -n "new Hono\\(|app\\.route\\(|basePath\\(|validator\\(|zValidator\\(|standardValidator\\(|OpenAPIHono|swaggerUI|testClient\\(|hc<|drizzle-orm|DATABASE_URL|D1Database|@neondatabase|@libsql" src app .
 ```
 
 ## 2단계: 아키텍처 규칙 읽기
@@ -114,6 +142,7 @@ rg -n "from 'drizzle-orm|from \"drizzle-orm|db\\.|transaction\\(|migrate\\(|sche
 - 안전, 타입, 검증 문제는 특히 touched file에서 즉시 차단합니다.
 - hypercore 전용 구조 차이는 untouched legacy code에서는 migration backlog로 남길 수 있습니다.
 - 직접 수정하는 파일은, 과도하게 위험한 마이그레이션이 아니라면 규칙에 맞게 끌어올립니다.
+- 사용자가 `전체 수정`을 호출했다면 감지된 Hono app 전체가 touched scope가 됩니다. 이전에 untouched였다는 이유만으로 hypercore 전용 drift를 미루지 말고 안전한 위반은 모두 수정합니다.
 
 ### 비준수 탐지 시그널
 
@@ -147,6 +176,14 @@ rg -n "from 'drizzle-orm|from \"drizzle-orm|db\\.|transaction\\(|migrate\\(|sche
 | 중간 이상 기능이 schema, handler, service를 섞은 flat route file 하나에 남아 있음? | touched scope에 따라 경고 또는 차단. 새 동작을 추가하기 전에 feature folder로 나눕니다. |
 | catch-all 또는 fallback route가 구체적 라우트보다 먼저 등록됨? | 차단. Hono는 등록 순서가 중요합니다. |
 | 라우트 모듈이 `app.route()` 또는 typed sub-app으로 깔끔하게 mount되지 않음? | 차단. |
+
+### 게이트 2.5: 폴더와 파일 이름
+
+| 확인 항목 | 규칙 |
+|------|------|
+| Source folder 또는 file이 camelCase 또는 PascalCase naming을 사용함? | hypercore 규칙상 차단. 안전하면 kebab-case로 rename하고 import/reference를 갱신합니다. |
+| Route folder가 mount path와 불일치하는 plural/domain naming을 사용함? | 경고. 안정적인 kebab-case domain folder name을 선호하고 mount path는 route composition에서 명시합니다. |
+| `전체 수정` 모드에서 원래 요청 파일 밖의 kebab-case 위반을 찾음? | import/config/test path를 안전하게 갱신할 수 있으면 수정하고, 아니면 영향 path와 함께 blocker를 보고합니다. |
 
 ### 게이트 3: 핸들러와 Context 타입
 
@@ -225,6 +262,7 @@ rg -n "from 'drizzle-orm|from \"drizzle-orm|db\\.|transaction\\(|migrate\\(|sche
 
 국소적이고, 되돌리기 쉽고, 저위험이면 직접 수정합니다.
 
+- touched camelCase/PascalCase source folder 또는 file을 kebab-case로 rename하고 import/reference 갱신
 - 누락된 validator middleware 추가
 - shared RPC/client contract가 의존할 때 typed `AppType` export 추가
 - route mounting을 하나의 composition 파일로 정리
@@ -239,7 +277,7 @@ rg -n "from 'drizzle-orm|from \"drizzle-orm|db\\.|transaction\\(|migrate\\(|sche
 
 다만 범위가 넓거나 깨질 수 있는 마이그레이션은 명시적 근거 없이 자동 적용하지 않습니다.
 
-- 대량 route/module rename
+- 대량 route/module rename. 단, `전체 수정` 모드에서 모든 import/reference/config path를 갱신하고 검증할 수 있는 kebab-case-only rename은 예외
 - 전역 레이어 재설계
 - 저장소 전반의 validation library 교체
 - 기존 client를 깨뜨리는 RPC 구조 변경
@@ -254,20 +292,22 @@ rg -n "from 'drizzle-orm|from \"drizzle-orm|db\\.|transaction\\(|migrate\\(|sche
 
 Hono 코드를 변경할 때는 아래 순서를 우선합니다.
 
-1. 현재 구조와 위반 지점을 검증
-2. route composition과 typing 경계부터 정리
-3. touched persistence behavior의 database/repository/connection boundary 정리
-4. validation과 middleware 순서 정리
-5. touched public route의 OpenAPI/Swagger contract drift 정리
-6. error handling과 response shaping 정리
-7. testing/RPC 추론 회귀 수정
-8. 검증 실행
+1. 현재 구조와 위반 지점을 검증. `전체 수정` 모드에서는 편집 전에 감지된 Hono app 전체를 inventory합니다.
+2. folder/file naming을 안전하면 kebab-case로 먼저 정리합니다. 이후 import와 test가 안정적인 path에 의존하기 때문입니다.
+3. route composition과 typing 경계부터 정리
+4. touched persistence behavior의 database/repository/connection boundary 정리. `전체 수정` 모드에서는 앱 전체가 대상입니다.
+5. validation과 middleware 순서 정리
+6. touched public route의 OpenAPI/Swagger contract drift 정리. `전체 수정` 모드에서는 모든 documented/public route가 대상입니다.
+7. error handling과 response shaping 정리
+8. testing/RPC 추론 회귀 수정
+9. 검증 실행
 
 ## 검증 체크리스트
 
 - Hono 프로젝트 감지 확인
 - 관련 rule 파일 읽음
-- touched file이 kebab-case 유지
+- touched file과 folder가 kebab-case 유지
+- `전체 수정` 모드에서는 감지된 Hono source tree 전체의 kebab-case 위반을 스캔함
 - route composition이 명확하고 mount 가능
 - middleware 순서 검증
 - 의미 있는 입력에 validation 적용

@@ -35,6 +35,8 @@ Enforces hypercore Hono architecture rules before code changes. Validate that th
 - `Add a new Hono route and make sure testClient and AppType inference still work.`
 - `Wire Drizzle into this Hono API without routes talking to the database directly.`
 - `Review database, migration, and OpenAPI boundaries before adding a new persisted endpoint.`
+- `hono-architecture 전체 수정`
+- `Run the Hono architecture skill in full-remediation mode.`
 
 ### Negative
 
@@ -48,6 +50,25 @@ Direct editing can be enough if no architectural boundary is affected.
 
 - `Use official Hono defaults only, not the extra hypercore conventions.`
 This skill still applies, but relax hypercore-only strictness that exceeds the official docs.
+
+## Invocation Arguments
+
+Arguments change the remediation scope, not the core rules.
+
+| Argument | Meaning |
+|------|------|
+| missing | Review and fix the requested/touched Hono scope. Untouched legacy drift may be reported as backlog when it is hypercore-only or risky to migrate. |
+| `전체 수정` | Full-remediation mode. Scan the whole detected Hono application and fix every violation that is safe, local, reversible, and verifiable. Do not stop at touched files. |
+| `full fix` / `fix all` | Same as `전체 수정`. |
+| `공식 기본만` / `official defaults only` | Use official Hono behavior as the default surface and downgrade hypercore-only conventions to optional findings unless the user also asks for `전체 수정`. |
+
+In `전체 수정` mode:
+
+- Treat all Hono app files, route modules, handlers, middleware, validation schemas, OpenAPI files, database/repository boundaries, tests/RPC surfaces, and runtime entrypoints as in scope.
+- Scan folder and file names across the detected Hono source tree. Folders and files must be kebab-case except framework/tool-required names such as `package.json`, `tsconfig.json`, `drizzle.config.ts`, lockfiles, generated declarations, and explicitly configured migration artifacts.
+- Rename camelCase or PascalCase folders/files to kebab-case when imports, test paths, route references, and configuration references can be updated safely in the same change.
+- Apply all low-risk auto-remediations listed in Step 3.5 across the app, not only touched files.
+- For risky changes that cannot be completed safely in the same run, leave a precise blocker/backlog item with file paths and the rule that failed. Do not silently ignore it.
 
 ## Step 1: Project Validation
 
@@ -66,6 +87,13 @@ When database work is in scope, also inspect database indicators:
 ```bash
 rg -n '"drizzle-orm"|drizzle-kit|DATABASE_URL|D1Database|@neondatabase|@libsql|pg|postgres' package.json drizzle.config.ts src app .
 rg -n "from 'drizzle-orm|from \"drizzle-orm|db\\.|transaction\\(|migrate\\(|schema|repositories?" src app .
+```
+
+When `전체 수정` mode is active, run broad discovery before editing:
+
+```bash
+rg --files src app routes 2>/dev/null
+rg -n "new Hono\\(|app\\.route\\(|basePath\\(|validator\\(|zValidator\\(|standardValidator\\(|OpenAPIHono|swaggerUI|testClient\\(|hc<|drizzle-orm|DATABASE_URL|D1Database|@neondatabase|@libsql" src app .
 ```
 
 ## Step 2: Read Architecture Rules
@@ -122,6 +150,7 @@ Validate planned changes against these gates.
 - Safety, typing, and validation issues still block immediately, especially in touched files.
 - Hypercore-specific structure drift in untouched legacy code can be recorded as migration backlog.
 - Any file you touch should be brought into compliance unless that would require a materially risky migration.
+- If the user invoked `전체 수정`, the whole detected Hono app becomes the touched scope. Fix all safe violations instead of deferring hypercore-only drift just because it was previously untouched.
 
 ### Non-Compliance Discovery Signals
 
@@ -155,6 +184,14 @@ Use these signals to decide where to inspect before editing:
 | Medium or large feature still lives in one flat route file with mixed schemas, handlers, and services? | WARNING or BLOCKED depending on touched scope. Split by feature folder before adding more behavior. |
 | Catch-all or fallback route registered before specific routes? | BLOCKED. Registration order matters in Hono. |
 | Route module cannot be mounted cleanly with `app.route()` or a typed sub-app? | BLOCKED. |
+
+### Gate 2.5: Folder and File Naming
+
+| Check | Rule |
+|------|------|
+| Source folder or file uses camelCase or PascalCase naming? | BLOCKED by hypercore convention. Rename to kebab-case and update imports/references when safe. |
+| Route folder uses plural/domain naming inconsistently with the mount path? | WARNING. Prefer stable domain folder names in kebab-case, then keep mount paths explicit in route composition. |
+| `전체 수정` mode finds kebab-case violations outside the originally requested files? | FIX if imports/config/test paths can be updated safely; otherwise report a blocker with the affected paths. |
 
 ### Gate 3: Handlers and Context Typing
 
@@ -233,6 +270,7 @@ Use these signals to decide where to inspect before editing:
 
 Auto-fix directly when the issue is local, reversible, and low-risk.
 
+- Rename touched camelCase/PascalCase source folders or files to kebab-case and update imports/references
 - Add missing validator middleware to a touched route
 - Add typed `AppType` export when a shared RPC/client contract depends on it
 - Move route mounting into a single composition file
@@ -247,7 +285,7 @@ Auto-fix directly when the issue is local, reversible, and low-risk.
 
 Do not auto-apply broad or potentially breaking migrations without explicit justification.
 
-- Mass route/module renames
+- Mass route/module renames, except kebab-case-only renames in `전체 수정` mode when every import/reference/config path can be updated and verified
 - Whole-app layer rewrites
 - Validation library swaps across the entire repository
 - RPC shape changes that break existing clients
@@ -262,21 +300,23 @@ Do not auto-apply broad or potentially breaking migrations without explicit just
 
 When changing Hono code, prefer this order:
 
-1. Validate current structure and rule breaches.
-2. Fix route composition and typing boundaries first.
-3. Fix database/repository/connection boundaries for touched persistence behavior.
-4. Fix validation and middleware ordering.
-5. Fix OpenAPI/Swagger contract drift for touched public routes.
-6. Fix error handling and response shaping.
-7. Fix testing/RPC inference regressions.
-8. Run verification.
+1. Validate current structure and rule breaches. In `전체 수정` mode, inventory the whole detected Hono app before editing.
+2. Fix folder/file naming to kebab-case when safe, because later imports and tests depend on stable paths.
+3. Fix route composition and typing boundaries first.
+4. Fix database/repository/connection boundaries for touched persistence behavior, or the full app in `전체 수정` mode.
+5. Fix validation and middleware ordering.
+6. Fix OpenAPI/Swagger contract drift for touched public routes, or all documented/public routes in `전체 수정` mode.
+7. Fix error handling and response shaping.
+8. Fix testing/RPC inference regressions.
+9. Run verification.
 
 ## Verification Checklist
 
 - Hono project detection confirmed
 - Relevant rule files read
 - Official override mode applied when the user requested official Hono defaults
-- Touched files follow kebab-case naming
+- Touched files and folders follow kebab-case naming
+- In `전체 수정` mode, the whole detected Hono source tree was scanned for kebab-case violations
 - Route composition is obvious and mountable
 - Middleware order verified
 - Validation enforced on non-trivial inputs

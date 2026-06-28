@@ -23,7 +23,7 @@ Brownfield adoption rule: untouched legacy code may be tracked as migration work
 | OpenAPI | Public API route changes without matching OpenAPI/Swagger contract updates when the repo publishes docs |
 | RPC | Breaking `AppType` / `testClient` / `hc` inference by losing chained types |
 | Platform | Mixing runtime adapter/bootstrap code into route modules |
-| Filenames | camelCase (`userProfile.ts`, `createUser.ts`) |
+| Paths | camelCase or PascalCase source folders/files (`userProfile.ts`, `createUser.ts`, `routes/UserProfile/`) |
 | TypeScript | `any` type, `function` declaration when a const arrow function is appropriate |
 | Git | AI markers, emojis, multi-line commit messages |
 
@@ -150,6 +150,7 @@ Use this shape when multiple feature areas, generated docs, typed clients, or ru
 - Keep one obvious app composition path
 - Prefer domain sub-apps mounted with `app.route()`
 - Allow single-file route modules only for small endpoints such as health checks
+- Name source folders and files in kebab-case unless a tool or external contract requires a fixed filename
 - Use route folders when a feature needs schemas, handlers, middleware, or service helpers
 - Keep runtime-specific bootstrap outside route modules
 - Keep database clients, ORM schema tables, and migrations outside route modules
@@ -159,6 +160,7 @@ Use this shape when multiple feature areas, generated docs, typed clients, or ru
 ## Scalability Rules
 
 - Scale by feature boundaries first, not by controller classes.
+- Feature, route, service, repository, middleware, and database-support paths should remain kebab-case so large projects stay predictable across imports, tests, docs, and generated artifacts.
 - A route module should orchestrate transport, validation, service calls, and response shaping; it should not own persistence or third-party SDK details.
 - Shared middleware belongs in `middlewares/`; feature-only middleware can live under `routes/<feature>/`.
 - Shared schemas, error envelopes, and OpenAPI components should be centralized only when at least two features reuse them.

@@ -4,17 +4,27 @@
 
 ---
 
-## File Naming
+## Folder And File Naming
 
-> camelCase filenames are forbidden. Keep all filenames in kebab-case.
+> camelCase and PascalCase source paths are forbidden. Keep source folders and files in kebab-case.
 
 | Type | Rule | Example |
 |------|------|---------|
 | General files | kebab-case | `create-app.ts`, `request-id.ts` |
 | Route folders | kebab-case | `routes/user-profile/` |
+| Feature folders | kebab-case | `services/user-profile/`, `repositories/audit-log/` |
+| Database folders | kebab-case | `database/`, `drizzle/migrations/` |
 | Handler files | kebab-case | `handlers.ts`, `list-users.ts` |
 | Schema files | kebab-case | `schemas.ts`, `user-payload.ts` |
 | Middleware | kebab-case | `auth.ts`, `request-id.ts` |
+
+Allowed exceptions:
+
+- Tool-required root files such as `package.json`, `tsconfig.json`, `drizzle.config.ts`, lockfiles, and generated declaration files
+- Provider-generated migration artifacts when the configured migration tool requires a specific name
+- Framework conventions already present in the repo, only when renaming would break external contracts
+
+In `전체 수정` mode, scan all detected Hono source folders and files, then rename kebab-case violations when every import, test path, route reference, and config reference can be updated in the same change.
 
 ---
 
@@ -52,4 +62,3 @@ import type { AppEnv } from '@/lib/types'
 - Prefer short block comments only where a code group needs orientation
 - Do not add line-by-line narration
 - Keep comments durable and architecture-oriented
-
