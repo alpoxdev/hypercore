@@ -8,6 +8,7 @@
 
 - 작은 라우트는 inline handler 허용
 - 핸들러를 분리할 때는 `createFactory()` / `factory.createHandlers()`로 타입 유지
+- Feature module이 자체 typed sub-app 또는 shared factory options를 필요로 하면 `factory.createApp()`을 우선합니다.
 - handler 파일은 transport orchestration까지만 담당하고, 도메인 persistence는 아래 레이어로 내립니다
 
 ## 권장 패턴
@@ -29,7 +30,8 @@ export const usersApp = factory.createApp().get('/', ...listUsers)
 ## 리뷰 체크리스트
 
 - 분리된 handler가 context typing을 유지함
+- 분리된 handler가 `c`, `c.req`, `c.var` typing을 보존함
+- Handler module이 `Env` / `Bindings` / `Variables` 정의를 불필요하게 중복하지 않음
 - `Variables`, `Bindings`가 암묵적이지 않음
 - handler가 giant controller object로 비대해지지 않음
 - business logic은 service가 소유
-

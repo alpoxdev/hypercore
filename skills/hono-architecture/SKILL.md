@@ -1,6 +1,6 @@
 ---
 name: hono-architecture
-description: "[Hyper] Use when working on Hono projects or adding Hono into a codebase. Enforces Hono architecture rules for app composition, route modules, middleware, validation, error handling, testing, and typed RPC boundaries before any code change."
+description: "[Hyper] Use when working on Hono projects or adding Hono into a codebase. Enforces Hono architecture rules for app composition, scalable route modules, middleware, validation, database/ORM boundaries, Drizzle integration, migrations, error handling, OpenAPI/Swagger documentation, testing, and typed RPC boundaries before any code change."
 compatibility: Works best with repo inspection, official Hono docs verification, and direct code edits in Hono applications.
 ---
 
@@ -18,7 +18,7 @@ Use a different language only when the user explicitly requests it, an existing 
 
 ## Overview
 
-Enforces hypercore Hono architecture rules before code changes. Validate that the target is actually a Hono project, then apply strict rules for route composition, handlers, middleware, validation, error handling, platform entrypoints, and typed testing/RPC.
+Enforces hypercore Hono architecture rules before code changes. Validate that the target is actually a Hono project, then apply strict rules for route composition, scalable folder structure, handlers, middleware, validation, database/ORM boundaries, Drizzle connection and migration placement, error handling, OpenAPI/Swagger documentation, platform entrypoints, and typed testing/RPC.
 
 **This skill is strict.** Follow the rules exactly unless the user explicitly asks to prefer official Hono defaults over hypercore-specific conventions.
 
@@ -33,6 +33,8 @@ Enforces hypercore Hono architecture rules before code changes. Validate that th
 - `Review this Hono app structure before I add more routes.`
 - `Refactor a Hono API so routing, middleware, and validators follow one architecture.`
 - `Add a new Hono route and make sure testClient and AppType inference still work.`
+- `Wire Drizzle into this Hono API without routes talking to the database directly.`
+- `Review database, migration, and OpenAPI boundaries before adding a new persisted endpoint.`
 
 ### Negative
 
@@ -54,10 +56,17 @@ Before doing any work, confirm the target is a Hono project:
 ```bash
 rg -n '"hono"|@hono/' package.json
 rg -n "from 'hono'|from \"hono\"" src app .
-rg -n "new Hono\\(|createFactory\\(|testClient\\(|hc<" src app .
+rg -n "new Hono\\(|createFactory\\(|testClient\\(|hc<|OpenAPIHono|swaggerUI" src app .
 ```
 
 If none of those indicators exist, stop and route back to the normal implementation or review path instead of forcing Hono rules.
+
+When database work is in scope, also inspect database indicators:
+
+```bash
+rg -n '"drizzle-orm"|drizzle-kit|DATABASE_URL|D1Database|@neondatabase|@libsql|pg|postgres' package.json drizzle.config.ts src app .
+rg -n "from 'drizzle-orm|from \"drizzle-orm|db\\.|transaction\\(|migrate\\(|schema|repositories?" src app .
+```
 
 ## Step 2: Read Architecture Rules
 
@@ -69,6 +78,8 @@ Read the detailed rules before editing:
 - `rules/handlers.md`
 - `rules/middleware.md`
 - `rules/validation.md`
+- `rules/database.md`
+- `rules/openapi.md`
 - `rules/errors.md`
 - `rules/testing-rpc.md`
 - `rules/platform.md`
@@ -76,6 +87,7 @@ Read the detailed rules before editing:
 When the change depends on current framework behavior or you need to justify a rule from the official docs, read:
 
 - `references/official/hono-docs.md`
+- `references/official/drizzle-docs.md`
 
 ### Task-to-Rule Routing
 
@@ -85,8 +97,10 @@ Use the next file based on the change you are making:
 - For handler extraction, `createFactory()`, `createHandlers()`, or typed context flow, read `rules/handlers.md`
 - For shared request boundaries, auth/logging/request-id flow, or `c.set()` / `c.get()` usage, read `rules/middleware.md`
 - For params/query/json/form validation choices, read `rules/validation.md`
+- For database clients, repositories, ORM boundaries, Drizzle schema, migrations, transactions, D1, Neon, Turso/libSQL, or `DATABASE_URL`, read `rules/database.md`
+- For OpenAPI generation, Swagger UI, operation metadata, schema drift, docs endpoints, or API contract publishing, read `rules/openapi.md`
 - For `HTTPException`, `app.onError()`, or response-shaping problems, read `rules/errors.md`
-- For `testClient()`, `hc<typeof app>`, `AppType`, or larger-app inference, read `rules/testing-rpc.md`
+- For `testClient()`, `hc<AppType>`, `AppType`, or larger-app inference, read `rules/testing-rpc.md`
 - For adapters, entrypoints, bindings, env/config typing, or `basePath()` boundaries, read `rules/platform.md`
 
 ### Official-Defaults Override Mode
@@ -109,12 +123,26 @@ Validate planned changes against these gates.
 - Hypercore-specific structure drift in untouched legacy code can be recorded as migration backlog.
 - Any file you touch should be brought into compliance unless that would require a materially risky migration.
 
+### Non-Compliance Discovery Signals
+
+Use these signals to decide where to inspect before editing:
+
+| Signal | Inspect |
+|------|------|
+| Multiple files call `new Hono()` and mount routes without a single exported app/composition path | `app.ts`, `routes/index.ts`, runtime entrypoint, and all route exports |
+| A route file imports database clients, SDK clients, ORM schema tables, or runtime adapters directly | route module, matching service/repository/client/database folders |
+| Repeated `c.req.json()`, `c.req.query()`, or ad hoc param parsing appears in handlers | validation schemas and route middleware |
+| `drizzle-orm`, `drizzle.config.ts`, `schema.ts`, migration folders, `DATABASE_URL`, `D1Database`, `Pool`, `neon`, or `@libsql/client` appears | database rule file, connection boundary, schema/migration placement, repositories |
+| `AppType`, `hc`, `testClient`, or frontend `InferResponseType` exists | exported app type, sub-app mounting pattern, explicit response statuses |
+| `OpenAPIHono`, `createRoute`, `describeRoute`, `openAPIRouteHandler`, `swaggerUI`, `/doc`, or `/ui` exists | OpenAPI rule file, docs endpoint, Swagger UI exposure, route metadata coverage |
+| API version prefixes such as `/api`, `/v1`, or `basePath()` appear in more than one place | platform entrypoint and route composition boundary |
+
 ### Gate 1: Composition and Layers
 
 | Check | Rule |
 |------|------|
 | Root app mixes transport, business logic, and persistence directly? | BLOCKED. Keep composition in app/route modules and move domain logic down. |
-| Route modules bypass services and talk to DB/SDK directly without a clear reason? | BLOCKED by hypercore convention. Prefer `routes -> services -> repositories/clients`. |
+| Route modules bypass services and talk to DB/ORM/SDK directly without a clear reason? | BLOCKED by hypercore convention. Prefer `routes -> services -> repositories/clients/database`. |
 | Controller-style class or giant controller file introduced for simple handlers? | BLOCKED. Hono best practices prefer smaller apps and route composition over controller-heavy structure. |
 | Large feature area mounted manually without sub-app composition? | WARNING. Prefer `app.route()` / `basePath()` composition. |
 
@@ -124,6 +152,7 @@ Validate planned changes against these gates.
 |------|------|
 | Route registration scattered across unrelated files? | BLOCKED. Keep one obvious composition path. |
 | Larger route module missing a dedicated folder with local schemas/handlers? | BLOCKED by hypercore convention. |
+| Medium or large feature still lives in one flat route file with mixed schemas, handlers, and services? | WARNING or BLOCKED depending on touched scope. Split by feature folder before adding more behavior. |
 | Catch-all or fallback route registered before specific routes? | BLOCKED. Registration order matters in Hono. |
 | Route module cannot be mounted cleanly with `app.route()` or a typed sub-app? | BLOCKED. |
 
@@ -144,6 +173,27 @@ Validate planned changes against these gates.
 | Validation strategy is inconsistent across params/query/json/form in the same feature? | WARNING. Normalize it. |
 | New validation library added without need? | BLOCKED unless explicitly requested. Prefer built-in `validator()`, `@hono/zod-validator`, or `@hono/standard-validator`. |
 
+### Gate 4.25: Database / ORM
+
+| Check | Rule |
+|------|------|
+| Route or handler imports `db`, `drizzle-orm`, schema tables, driver clients, pools, or migration helpers directly? | BLOCKED by hypercore convention. Move database access behind service/repository/database boundaries. |
+| Database client, pool, or Drizzle instance is created inside a request handler? | BLOCKED. Centralize connection lifecycle at the database, platform, or app initialization boundary. |
+| Drizzle schema or migration files live inside route folders? | BLOCKED. Keep schema/migrations under a database or migration boundary that matches `drizzle.config.ts`. |
+| Multi-step write has no transaction or explicit reason? | BLOCKED when atomic behavior is required. Put the transaction boundary in the service/use-case layer and pass `tx` into repositories. |
+| Public response shape is raw ORM row shape with internal fields? | BLOCKED for public APIs. Add DTO mapping and align validation, OpenAPI, and RPC response types. |
+| ORM/provider/driver switch is bundled into an unrelated route change? | BLOCKED. Treat it as an explicit migration. |
+
+### Gate 4.5: OpenAPI / Swagger
+
+| Check | Rule |
+|------|------|
+| Public or partner-facing API route added without OpenAPI coverage in a repo that publishes docs? | BLOCKED. Add operation metadata with request, responses, tags, and `operationId`. |
+| Runtime validation schema and OpenAPI schema drift apart? | BLOCKED. Keep one source of truth or document a synchronization rule. |
+| Swagger UI is exposed in production without auth, admin-only routing, or an explicit public-docs decision? | BLOCKED. |
+| Operation omits expected error responses for auth, validation, not found, conflict, or server failure? | WARNING. Add reusable error response components where applicable. |
+| Large app has per-feature OpenAPI fragments but no single canonical spec endpoint? | BLOCKED. Compose docs at the app boundary. |
+
 ### Gate 5: Middleware
 
 | Check | Rule |
@@ -160,15 +210,16 @@ Validate planned changes against these gates.
 | Handler throws raw generic errors for expected HTTP failures everywhere? | WARNING. Prefer `HTTPException` or one centralized translation policy. |
 | `app.onError()` missing in a non-trivial API? | WARNING. Add a central error boundary. |
 | Code relies on `HTTPException.getResponse()` while forgetting existing `Context` headers? | BLOCKED. Preserve context-set headers when rebuilding responses. |
-| Typed RPC client is exported but the app still depends on `c.notFound()` behavior? | BLOCKED. Avoid patterns the Hono RPC docs call out as incompatible. |
+| Typed RPC client depends on not-found behavior but no explicit `app.notFound()` or JSON response contract is tested? | BLOCKED. Make the 404 response shape explicit for public clients. |
 
 ### Gate 7: Testing and RPC
 
 | Check | Rule |
 |------|------|
-| `testClient()` or `hc<typeof app>` type inference broken by non-chained route definition? | BLOCKED. Keep route types flowing through the exported app. |
-| App type not exported where typed client/test usage is expected? | BLOCKED. Export `AppType`. |
+| `testClient()` or `hc<AppType>` type inference broken by non-chained route definition? | BLOCKED. Keep route types flowing through the exported app. |
+| App type not exported where `hc` or shared RPC client usage is expected? | BLOCKED. Export `AppType` for the shared client contract. |
 | Large app split loses typed inference across sub-apps? | BLOCKED. Follow the larger-app chaining pattern from the Hono RPC docs. |
+| Generated OpenAPI contract and `AppType`/RPC contract disagree on request or response shape? | BLOCKED. Fix the shared schema or response status first. |
 
 ### Gate 8: Platform Entry
 
@@ -183,11 +234,16 @@ Validate planned changes against these gates.
 Auto-fix directly when the issue is local, reversible, and low-risk.
 
 - Add missing validator middleware to a touched route
-- Add typed `AppType` export
+- Add typed `AppType` export when a shared RPC/client contract depends on it
 - Move route mounting into a single composition file
 - Convert extracted untyped handlers to `createFactory()` / `factory.createHandlers()`
 - Add `app.onError()` or improve HTTP exception translation
 - Move runtime adapter imports out of handlers and route modules
+- Move touched direct database calls into existing services/repositories
+- Add a missing repository wrapper for a touched query
+- Centralize repeated database client imports into the existing database client boundary
+- Add missing OpenAPI metadata for touched public routes when the repo already publishes a spec
+- Move Swagger UI exposure behind the existing docs/admin/dev boundary
 
 Do not auto-apply broad or potentially breaking migrations without explicit justification.
 
@@ -196,6 +252,11 @@ Do not auto-apply broad or potentially breaking migrations without explicit just
 - Validation library swaps across the entire repository
 - RPC shape changes that break existing clients
 - Runtime adapter swaps
+- Database provider, ORM, dialect, or Drizzle driver swaps
+- Generating, editing, applying, or deleting production migrations
+- Schema table/column/index renames
+- Transaction boundary rewrites without tests for the affected workflow
+- Switching OpenAPI generators (`@hono/zod-openapi` vs `hono-openapi`) across a whole app
 
 ## Step 4: Implementation
 
@@ -203,10 +264,12 @@ When changing Hono code, prefer this order:
 
 1. Validate current structure and rule breaches.
 2. Fix route composition and typing boundaries first.
-3. Fix validation and middleware ordering.
-4. Fix error handling and response shaping.
-5. Fix testing/RPC inference regressions.
-6. Run verification.
+3. Fix database/repository/connection boundaries for touched persistence behavior.
+4. Fix validation and middleware ordering.
+5. Fix OpenAPI/Swagger contract drift for touched public routes.
+6. Fix error handling and response shaping.
+7. Fix testing/RPC inference regressions.
+8. Run verification.
 
 ## Verification Checklist
 
@@ -217,7 +280,14 @@ When changing Hono code, prefer this order:
 - Route composition is obvious and mountable
 - Middleware order verified
 - Validation enforced on non-trivial inputs
+- Touched routes do not import DB/ORM clients, Drizzle schema tables, or migration helpers directly
+- Database client lifecycle is centralized and runtime-appropriate
+- Schema and migration paths match the configured ORM/drizzle setup
+- Transactions are explicit for affected multi-step writes
+- OpenAPI/Swagger docs updated for touched documented routes
+- Swagger UI exposure is intentional and environment-appropriate
 - Error handling policy is explicit
 - `testClient` / `hc` / `AppType` inference still works when applicable
+- API DTOs, OpenAPI schemas, and RPC response shapes do not accidentally expose raw ORM rows
 - Runtime adapter code stays at the edge
 - Final findings distinguish official Hono rules from hypercore-only conventions

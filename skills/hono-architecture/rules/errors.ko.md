@@ -33,5 +33,4 @@ app.onError((err, c) => {
 - 필요 시 중앙 에러 번역이 존재
 - 에러 응답이 의도한 헤더/상태를 보존
 - 예상 가능한 HTTP 에러를 전부 generic throw로 던지지 않음
-- `c.notFound()` 사용 전 typed RPC 영향 검토
-
+- Client가 의존하는 typed RPC/public-client 404 동작은 `app.notFound()` 또는 explicit JSON response contract로 검증
