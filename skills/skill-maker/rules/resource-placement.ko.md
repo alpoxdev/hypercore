@@ -11,7 +11,7 @@
 | 재사용 정책과 반복 판단 | `rules/` | 모든 run에 적용 |
 | 공식 문서, schema, domain detail, long examples | `references/` | 필요할 때만 로드 |
 | 결정적 validation 또는 transformation | `scripts/` | prose보다 더 reliable |
-| templates, fixtures, static output resources | `assets/` | output에 복사, 채움, 삽입 |
+| templates, reusable eval fixtures, static output resources | `assets/` 또는 `assets/evals/` | output에 복사, 채움, 삽입하거나 validator에서 재사용 |
 | UI/runtime metadata | `agents/` | runtime이 소비할 때만 |
 
 ## 2. 판단 순서
@@ -30,6 +30,7 @@
 `rules/`는 판단 기준에 사용합니다.
 
 - scripts를 언제 추가할지
+- deterministic validator를 언제 `scripts/`에 둘지
 - trigger examples를 어떻게 검증할지
 - source-sensitive claims를 어떻게 처리할지
 - core와 references를 어떻게 나눌지
@@ -54,6 +55,8 @@
 
 모든 script에는 purpose, usage, dependencies, expected output, failure behavior를 문서화합니다.
 
+Deterministic validator는 `scripts/`에 둡니다. `skill-maker`의 validator는 `scripts/validate-skill-maker.mjs`에 두며, network, credential, commit, product-file mutation 없이 repo-local files와 eval fixtures를 소비해야 합니다.
+
 ## 5. Assets
 
 Assets는 output generation을 지원하는 파일에 사용합니다.
@@ -61,7 +64,7 @@ Assets는 output generation을 지원하는 파일에 사용합니다.
 - report templates
 - prompt templates
 - JSON schemas
-- fixtures
+- reusable eval fixtures, 특히 `assets/evals/` 아래 JSONL cases
 - 복사하거나 채우는 examples
 
 reasoning-only documentation에는 assets를 쓰지 않습니다.
@@ -71,5 +74,6 @@ reasoning-only documentation에는 assets를 쓰지 않습니다.
 - [ ] 모든 support file에 placement reason이 있음.
 - [ ] 모든 support file이 `SKILL.md` 또는 직접 연결된 rule에서 discoverable함.
 - [ ] Scripts/assets에 usage와 validation note가 있음.
+- [ ] Deterministic validators는 `scripts/`에, reusable eval fixtures는 `assets/evals/`에 있음.
 - [ ] Provider-sensitive content가 references로 격리됨.
 - [ ] Core trigger logic이 references 안에 숨지 않음.

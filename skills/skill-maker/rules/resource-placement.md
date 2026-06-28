@@ -11,7 +11,7 @@
 | Reusable policies and repeated decisions | `rules/` | Applies across runs |
 | Official docs, schemas, domain details, long examples | `references/` | Load only when needed |
 | Deterministic validation or transformation | `scripts/` | More reliable than prose |
-| Templates, fixtures, static output resources | `assets/` | Copied, filled, or embedded into output |
+| Templates, reusable eval fixtures, static output resources | `assets/` or `assets/evals/` | Copied, filled, embedded into output, or reused by validators |
 | UI/runtime metadata | `agents/` | Only when a runtime consumes it |
 
 ## 2. Decision Order
@@ -30,6 +30,7 @@ Ask these in order:
 Use `rules/` for judgment:
 
 - when to add scripts
+- when a deterministic validator belongs in `scripts/`
 - how to validate trigger examples
 - how to handle source-sensitive claims
 - how to split core and references
@@ -54,6 +55,8 @@ Add scripts only when one or more is true:
 
 Document every script with purpose, usage, dependencies, expected output, and failure behavior.
 
+Put deterministic validators in `scripts/`. For `skill-maker`, the validator belongs in `scripts/validate-skill-maker.mjs` and should consume repo-local files and eval fixtures without network, credentials, commits, or product-file mutation.
+
 ## 5. Assets
 
 Use assets for files that support output generation:
@@ -61,7 +64,7 @@ Use assets for files that support output generation:
 - report templates
 - prompt templates
 - JSON schemas
-- fixtures
+- reusable eval fixtures, especially JSONL cases under `assets/evals/`
 - examples that are copied or filled
 
 Do not use assets for reasoning-only documentation.
@@ -71,5 +74,6 @@ Do not use assets for reasoning-only documentation.
 - [ ] Every support file has a placement reason.
 - [ ] Every support file is discoverable from `SKILL.md` or a directly linked rule.
 - [ ] Scripts/assets have usage and validation notes.
+- [ ] Deterministic validators live in `scripts/`; reusable eval fixtures live in `assets/evals/`.
 - [ ] Provider-sensitive content is isolated into references.
 - [ ] Core trigger logic is not hidden in references.

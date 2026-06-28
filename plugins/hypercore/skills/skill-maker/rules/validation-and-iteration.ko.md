@@ -70,6 +70,8 @@ metrics:
   - completion
 ```
 
+`skill-maker` 자체에는 validator integration이 있을 때 재사용 가능한 machine-readable case를 `assets/evals/`의 JSONL fixture로 둡니다. Fixture는 trigger positive, trigger negative, boundary request, workflow adherence, source/retrieval-safety behavior, permission 또는 side-effect safety를 포함해야 합니다.
+
 ## 5. Agent Workflow Trace Assertions
 
 스킬이 tool use, delegation, parallel work를 가르칠 때는 final text뿐 아니라 trajectory도 검증합니다.
@@ -101,6 +103,7 @@ metrics:
 find skills/skill-maker -maxdepth 3 -type f | sort
 find skills/skill-maker -maxdepth 2 \( -name README.md -o -name CHANGELOG.md -o -name QUICK_REFERENCE.md \) -print
 rg -n "description:" skills/skill-maker/SKILL.md skills/skill-maker/SKILL.ko.md
+test ! -f skills/skill-maker/scripts/validate-skill-maker.mjs || node skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
 python3 - <<'PY'
 from pathlib import Path
 root = Path('skills/skill-maker')
@@ -121,10 +124,18 @@ print('markdown language pairs ok')
 PY
 ```
 
+Deterministic validator가 존재하면 validation gate는 아래를 포함해야 합니다.
+
+- happy path: validator가 exit 0으로 끝나고 `ok=true`를 보고함
+- malformed input: 잘못된 JSONL eval case를 명확한 오류로 거부함
+- regression: skill package 아래에 stray `README.md`, `CHANGELOG.md`, `QUICK_REFERENCE.md`가 추가되지 않음
+- provider-date guard: provider source를 실제로 다시 확인하지 않았다면 official-reference `last_verified_at` 값이 바뀌지 않음
+
 ## 8. Exit Criteria
 
 - Trigger examples가 이웃 skill과 구분될 만큼 구체적임.
 - Core `SKILL.md`가 lean하고 navigable함.
 - Support files가 core skill에서 쉽게 discoverable함.
+- Deterministic validator와 JSONL eval fixture check를 실행했거나, script/eval integration이 아직 pending임을 report에 명시함.
 - 새 maintainer가 다음 정보를 어디에 둘지 추측하지 않아도 됨.
 - Completion claims가 evidence, verification, caveats에 매핑됨.

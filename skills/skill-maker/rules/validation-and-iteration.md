@@ -70,6 +70,8 @@ metrics:
   - completion
 ```
 
+For `skill-maker` itself, keep reusable machine-readable cases in `assets/evals/` as JSONL fixtures when the validator integration is present. The fixture should cover trigger positives, trigger negatives, boundary requests, workflow adherence, source/retrieval-safety behavior, and permission or side-effect safety.
+
 ## 5. Trace Assertions for Agent Workflows
 
 When a skill teaches tool use, delegation, or parallel work, validate trajectory as well as final text.
@@ -101,6 +103,7 @@ Also check whether the next file to read is obvious after each major section.
 find skills/skill-maker -maxdepth 3 -type f | sort
 find skills/skill-maker -maxdepth 2 \( -name README.md -o -name CHANGELOG.md -o -name QUICK_REFERENCE.md \) -print
 rg -n "description:" skills/skill-maker/SKILL.md skills/skill-maker/SKILL.ko.md
+test ! -f skills/skill-maker/scripts/validate-skill-maker.mjs || node skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
 python3 - <<'PY'
 from pathlib import Path
 root = Path('skills/skill-maker')
@@ -121,10 +124,18 @@ print('markdown language pairs ok')
 PY
 ```
 
+When the deterministic validator exists, the validation gate must include:
+
+- happy path: the validator exits 0 and reports `ok=true`
+- malformed input: an invalid JSONL eval case is rejected with a clear error
+- regression: no stray `README.md`, `CHANGELOG.md`, or `QUICK_REFERENCE.md` is added under the skill package
+- provider-date guard: official-reference `last_verified_at` values are unchanged unless the provider source was actually rechecked
+
 ## 8. Exit Criteria
 
 - Trigger examples distinguish this skill from neighboring skills.
 - The core `SKILL.md` remains lean and navigable.
 - Support files are easy to discover from the core skill.
+- Deterministic validator and JSONL eval fixture checks have run, or the report states that script/eval integration is still pending.
 - A new maintainer could place the next piece of information without guessing.
 - Completion claims map to evidence, verification, and caveats.
