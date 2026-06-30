@@ -91,6 +91,21 @@ Boundary example:
 
 </required_inputs>
 
+<skill_architecture>
+
+지원 파일은 의도적으로 로드한다:
+
+- 테스트할 차원을 고를 때 [rules/test-matrix.md](rules/test-matrix.md)를 사용한다.
+- positive, negative, boundary, adversarial, localization 시나리오를 쓸 때 [rules/scenario-design.md](rules/scenario-design.md)를 사용한다.
+- pass/fail 근거와 다음 수정안을 보고할 때 [rules/evidence-reporting.md](rules/evidence-reporting.md)를 사용한다.
+- 파일시스템 스킬 폴더가 있으면 deterministic static check에 `scripts/validate-skill.mjs`를 사용한다.
+- top-level skills corpus 전체를 no-dependency로 확인할 때 `scripts/validate-skills-corpus.mjs --root skills --json`을 사용한다. 팀 lane이 일부 스킬만 소유하면 `--only skill-a,skill-b`를 사용한다.
+- 재사용 가능한 회귀 테스트팩 또는 프롬프트 팩은 기본적으로 [references/prompt-pack-template.ko.md](references/prompt-pack-template.ko.md)의 한국어 템플릿을 사용한다. 사용자가 영어를 요청했거나 정확한 영어 템플릿 문구가 필요할 때만 [references/prompt-pack-template.md](references/prompt-pack-template.md)를 사용한다.
+
+사용자가 재사용 가능한 artifact를 요청하면 test evidence는 대상 스킬 가까이에 둔다. 그렇지 않으면 findings를 inline으로 보고한다.
+
+</skill_architecture>
+
 <workflow>
 
 | Phase | Task | Output |
@@ -175,6 +190,7 @@ Boundary example:
 - [ ] positive, negative, boundary, edge, regression 시나리오를 포함했다.
 - [ ] 주변 스킬과의 트리거 충돌을 고려했다.
 - [ ] 폴더 경로가 있으면 정적 리소스 검사를 실행했다.
+- [ ] 여러 스킬을 건드리거나 팀 lane이 shared validation contract에 의존하면 corpus-wide 또는 `--only` 정적 검증을 실행했다.
 - [ ] 실패를 증거와 최소 수정 안내로 분류했다.
 - [ ] 남은 위험과 미검증 영역을 명시했다.
 

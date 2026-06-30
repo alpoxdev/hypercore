@@ -10,6 +10,7 @@
 | Boundary routing | Requests that overlap neighboring skills | Routing rationale |
 | Workflow completeness | Whether each phase gives the agent a next action | Phase-by-phase simulation |
 | Resource integrity | Linked rules/references/scripts/assets exist and are placed correctly | Static file check |
+| Corpus integrity | Top-level skill folders have `SKILL.md`, metadata, paired Korean markdown, resolvable direct support links, and balanced code fences | `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --json` |
 | Validation strength | Whether completion requires evidence | Checklist/readback |
 | Edge resilience | Missing inputs, malformed paths, localization, conflicts, and unsupported targets | Edge scenario table |
 | Regression risk | Known or likely failures from similar skills | Regression scenario |
@@ -33,4 +34,4 @@ Create at least these cases unless the user explicitly asks for a smaller smoke 
 
 ## Exit rule
 
-A skill passes only when normal positive scenarios route correctly, negative scenarios stay out of scope, support files resolve, and the workflow cannot plausibly claim completion without validation evidence.
+A skill passes only when normal positive scenarios route correctly, negative scenarios stay out of scope, support files resolve, and the workflow cannot plausibly claim completion without validation evidence. A multi-skill or family-lane change also needs corpus validation, either the whole root or a precise `--only` subset.

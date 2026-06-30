@@ -47,7 +47,7 @@ Better:
 ```markdown
 Read `references/official/openai.md` only when OpenAI-specific skill behavior changes the rule.
 Read `rules/validation-and-iteration.md` before declaring the skill complete.
-Run `scripts/validate-skill.mjs` when the target skill includes scripts or generated assets.
+Run the target package's documented validator when present, and run `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json` for repository-skill structural checks.
 ```
 
 ## 4. One Level Deep

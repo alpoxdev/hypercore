@@ -106,6 +106,7 @@ Load support files deliberately:
 - Use [rules/scenario-design.md](rules/scenario-design.md) to write positive, negative, boundary, adversarial, and localization scenarios.
 - Use [rules/evidence-reporting.md](rules/evidence-reporting.md) to report pass/fail evidence and next fixes.
 - Use `scripts/validate-skill.mjs` for deterministic static checks when a filesystem skill folder is available.
+- Use `scripts/validate-skills-corpus.mjs --root skills --json` for deterministic no-dependency checks across the top-level skills corpus. Use `--only skill-a,skill-b` when a team lane owns a subset.
 - Use the localized sibling [references/prompt-pack-template.ko.md](references/prompt-pack-template.ko.md) by default for Korean prompt-pack artifacts; fall back to [references/prompt-pack-template.md](references/prompt-pack-template.md) only when the user requests English or exact English template text.
 
 Keep test evidence close to the target skill when the user asks for reusable artifacts; otherwise report findings inline.
@@ -196,6 +197,7 @@ Before declaring a skill tested, confirm:
 - [ ] Positive, negative, boundary, edge, and regression scenarios were covered.
 - [ ] Trigger overlap with neighboring skills was considered.
 - [ ] Static resource checks were run when a folder path exists.
+- [ ] Corpus-wide or `--only` static validation was run when the task touches multiple skills or a team lane depends on a shared validation contract.
 - [ ] Failures were classified with evidence and minimal fix guidance.
 - [ ] Remaining risks or untested areas were explicitly named.
 

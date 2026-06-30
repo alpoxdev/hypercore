@@ -27,6 +27,7 @@
 - 스킬에 선언되어 있고 디스크에서 확인된 링크
 - 기대 동작과 관찰 동작이 있는 시나리오 표
 - 결정적 스크립트 출력
+- `ok`, `totalTopLevelSkills`, `selectedCount`, `checkedCount`, `summary`, `skills`, `errors`를 포함한 corpus validator JSON
 - 정적 검사에 대한 명령 출력
 
 약한 근거에는 다음이 포함된다:
@@ -47,4 +48,5 @@
 - 추천보다 먼저 시나리오 결과를 보여준다.
 - 스킬의 failure taxonomy를 사용해 실패를 분류한다.
 - 실행한 명령과 검사한 파일을 명명한다.
+- team 또는 multi-skill 작업이면 정확한 `validate-skills-corpus.mjs` 명령, exit code, stdout/stderr artifact path를 포함한다.
 - 전체 커버리지를 암시하지 말고 미테스트 영역을 명시적으로 명명한다.

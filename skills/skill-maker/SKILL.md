@@ -223,6 +223,7 @@ Must-pass thresholds:
 - [ ] New or materially changed markdown files have matching Korean `*.ko.md` translations when following this repo's bilingual convention.
 - [ ] Scripts/assets have explicit purpose, usage, dependency, expected output, and failure handling.
 - [ ] For `skill-maker` package updates, run the deterministic validator and the JSONL eval fixture when `scripts/` and `assets/evals/` integration exists; if not landed yet, state that validator verification is pending integration.
+- [ ] For new or materially refactored repository skills, run the corpus structural validator: `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json`.
 - [ ] Happy-path validation is paired with malformed-input rejection and provider-date/no-stray-doc regression checks.
 - [ ] Local markdown links, code fences, and source-sensitive claims are checked before completion.
 

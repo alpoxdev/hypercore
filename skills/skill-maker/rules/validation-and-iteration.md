@@ -104,6 +104,7 @@ find skills/skill-maker -maxdepth 3 -type f | sort
 find skills/skill-maker -maxdepth 2 \( -name README.md -o -name CHANGELOG.md -o -name QUICK_REFERENCE.md \) -print
 rg -n "description:" skills/skill-maker/SKILL.md skills/skill-maker/SKILL.ko.md
 test ! -f skills/skill-maker/scripts/validate-skill-maker.mjs || node skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
+node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only skill-maker --json
 python3 - <<'PY'
 from pathlib import Path
 root = Path('skills/skill-maker')
@@ -127,9 +128,12 @@ PY
 When the deterministic validator exists, the validation gate must include:
 
 - happy path: the validator exits 0 and reports `ok=true`
+- corpus structure: `validate-skills-corpus.mjs` exits 0 for the touched repository skill and verifies frontmatter, direct support links, bilingual markdown pairs, and balanced code fences
 - malformed input: an invalid JSONL eval case is rejected with a clear error
 - regression: no stray `README.md`, `CHANGELOG.md`, or `QUICK_REFERENCE.md` is added under the skill package
 - provider-date guard: official-reference `last_verified_at` values are unchanged unless the provider source was actually rechecked
+
+The corpus structural validator is a repository-wide integrity gate. Keep package-specific validators, such as `skills/skill-maker/scripts/validate-skill-maker.mjs`, as stricter behavior and package-contract gates when they exist.
 
 ## 8. Exit Criteria
 

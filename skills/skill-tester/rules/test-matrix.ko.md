@@ -10,6 +10,7 @@
 | Boundary routing | 이웃 스킬과 겹치는 요청 | Routing rationale |
 | Workflow completeness | 각 단계가 에이전트에게 다음 행동을 제공하는지 | Phase-by-phase simulation |
 | Resource integrity | 연결된 rules/references/scripts/assets가 존재하고 올바르게 배치되어 있는지 | Static file check |
+| Corpus integrity | top-level skill folders가 `SKILL.md`, metadata, Korean markdown pair, 해석 가능한 direct support links, balanced code fences를 갖는지 | `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --json` |
 | Validation strength | 완료에 근거가 필요한지 | Checklist/readback |
 | Edge resilience | 입력 누락, 잘못된 경로, localization, 충돌, 지원되지 않는 대상 | Edge scenario table |
 | Regression risk | 유사 스킬에서 온 알려졌거나 가능성 큰 실패 | Regression scenario |
@@ -33,4 +34,4 @@
 
 ## Exit rule
 
-일반 positive 시나리오가 올바르게 라우팅되고, negative 시나리오가 범위 밖에 머물며, support files가 해석되고, 워크플로가 validation evidence 없이 완료를 주장할 수 없을 때만 스킬은 통과한다.
+일반 positive 시나리오가 올바르게 라우팅되고, negative 시나리오가 범위 밖에 머물며, support files가 해석되고, 워크플로가 validation evidence 없이 완료를 주장할 수 없을 때만 스킬은 통과한다. 여러 스킬 또는 family lane 변경에는 전체 root 또는 정확한 `--only` subset에 대한 corpus validation도 필요하다.

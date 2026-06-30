@@ -223,6 +223,7 @@ Must-pass thresholds:
 - [ ] 이 repo의 bilingual convention을 따르는 새/실질 수정 markdown에는 대응 `*.ko.md`가 있음.
 - [ ] Scripts/assets에는 purpose, usage, dependency, expected output, failure handling이 있음.
 - [ ] `skill-maker` package update라면 `scripts/`와 `assets/evals/` integration이 존재할 때 deterministic validator와 JSONL eval fixture를 실행함. 아직 landed되지 않았다면 validator verification이 integration pending임을 명시함.
+- [ ] 새 repository skill 또는 실질적으로 refactor한 repository skill에는 corpus structural validator를 실행함: `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json`.
 - [ ] Happy-path validation은 malformed-input rejection과 provider-date/no-stray-doc regression check와 함께 수행함.
 - [ ] 완료 전 local markdown links, code fences, source-sensitive claims를 확인함.
 

@@ -27,6 +27,7 @@ Strong evidence includes:
 - links declared in the skill and confirmed on disk
 - scenario table with expected vs observed behavior
 - deterministic script output
+- corpus validator JSON, including `ok`, `totalTopLevelSkills`, `selectedCount`, `checkedCount`, `summary`, `skills`, and `errors`
 - command output for static checks
 
 Weak evidence includes:
@@ -47,4 +48,5 @@ Weak evidence includes:
 - Show scenario results before recommendations.
 - Classify failures using the skill's failure taxonomy.
 - Name commands run and files inspected.
+- For team or multi-skill work, include the exact `validate-skills-corpus.mjs` command, exit code, and stdout/stderr artifact paths.
 - Name untested areas explicitly instead of implying full coverage.

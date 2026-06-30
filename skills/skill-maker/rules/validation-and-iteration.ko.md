@@ -104,6 +104,7 @@ find skills/skill-maker -maxdepth 3 -type f | sort
 find skills/skill-maker -maxdepth 2 \( -name README.md -o -name CHANGELOG.md -o -name QUICK_REFERENCE.md \) -print
 rg -n "description:" skills/skill-maker/SKILL.md skills/skill-maker/SKILL.ko.md
 test ! -f skills/skill-maker/scripts/validate-skill-maker.mjs || node skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
+node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only skill-maker --json
 python3 - <<'PY'
 from pathlib import Path
 root = Path('skills/skill-maker')
@@ -127,9 +128,12 @@ PY
 Deterministic validator가 존재하면 validation gate는 아래를 포함해야 합니다.
 
 - happy path: validator가 exit 0으로 끝나고 `ok=true`를 보고함
+- corpus structure: `validate-skills-corpus.mjs`가 수정한 repository skill에 대해 exit 0으로 끝나고 frontmatter, direct support links, bilingual markdown pairs, balanced code fences를 확인함
 - malformed input: 잘못된 JSONL eval case를 명확한 오류로 거부함
 - regression: skill package 아래에 stray `README.md`, `CHANGELOG.md`, `QUICK_REFERENCE.md`가 추가되지 않음
 - provider-date guard: provider source를 실제로 다시 확인하지 않았다면 official-reference `last_verified_at` 값이 바뀌지 않음
+
+Corpus structural validator는 repository-wide integrity gate입니다. `skills/skill-maker/scripts/validate-skill-maker.mjs` 같은 package-specific validator가 존재하면 더 엄격한 behavior와 package-contract gate로 유지합니다.
 
 ## 8. Exit Criteria
 
