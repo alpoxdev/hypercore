@@ -35,14 +35,14 @@ Use a different language only when the user explicitly requests it, an existing 
 
 <request_routing>
 
-## Positive triggers
+## Positive examples
 
 - Relayed non-technical stakeholder requests: "The client asked for this", "Leadership wants this changed", "The PM sent this; please analyze it".
 - Pasted email, Slack, ticket, or verbal summary from a client, executive, PM, sales, support, or other non-developer.
 - Vague business/UI/product wording that needs codebase interpretation before implementation.
 - Korean examples: "고객사가 이렇게 바꿔달래, 코드 기준으로 해석해줘", "PM 요청인데 후보군과 리스크를 정리해줘".
 
-## Negative triggers
+## Negative examples
 
 - Clear technical tasks with a specific deliverable, such as "Refactor `src/auth/session.ts`"; route technical tasks to `execute`.
 - Bug reports with concrete errors, stack traces, or reproducible failures; route to `bug-fix`.
@@ -50,7 +50,7 @@ Use a different language only when the user explicitly requests it, an existing 
 - Browser QA testing requests such as "QA test this website" or "run a regression QA pass"; route to a QA/testing workflow, not this stakeholder analyzer.
 - Architecture strategy or product planning before implementation; route to `plan`.
 
-## Boundary cases
+## Boundary examples
 
 - If the stakeholder request is technically precise, still analyze risks and side effects, then fast-track candidate presentation.
 - If the request is a bug disguised as a feature request, own the interpretation phase and label that finding.

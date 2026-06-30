@@ -35,14 +35,14 @@ compatibility: 코드 탐색(Read/Grep/Glob), 편집(Edit/Write), 검증 명령(
 
 <request_routing>
 
-## 작동 조건
+## Positive examples (긍정 예시)
 
 - 전달받은 비기술적 이해관계자 요청: "고객사가 이렇게 해달래", "경영진이 이걸 바꾸래", "PM이 보낸 요청인데 분석해줘".
 - 고객사, 경영진, PM, 영업, 지원 등 비개발자가 보낸 이메일, Slack, 티켓, 구두 요약.
 - 구현 전에 코드베이스 해석이 필요한 모호한 비즈니스/UI/제품 표현.
 - 영어 예시: "The client asked for this", "Leadership wants this changed", "The PM sent this; please analyze it".
 
-## 제외 조건
+## Negative examples (부정 예시)
 
 - "Refactor `src/auth/session.ts`"처럼 산출물이 구체적인 clear technical tasks는 `execute`로 라우팅한다.
 - 구체적 에러, 스택트레이스, 재현 실패가 있는 버그 리포트는 `bug-fix`로 라우팅한다.
@@ -50,7 +50,7 @@ compatibility: 코드 탐색(Read/Grep/Glob), 편집(Edit/Write), 검증 명령(
 - "QA test this website", "run a regression QA pass" 같은 Browser QA testing 요청은 이 이해관계자 분석기가 아니라 QA/테스트 워크플로로 라우팅한다.
 - 구현 전 아키텍처 전략이나 제품 계획은 `plan`으로 라우팅한다.
 
-## 경계 케이스
+## Boundary examples (경계 예시)
 
 - 이해관계자 요청이 기술적으로 정확해도 리스크와 사이드 이펙트를 분석한 뒤 후보 제시를 빠르게 진행한다.
 - 요청이 기능 요청처럼 포장된 버그라면 해석 단계에서 그 발견을 표시한다.

@@ -29,6 +29,22 @@ Use a different language only when the user explicitly requests it, an existing 
 
 </purpose>
 
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Commit and push requested repository changes in one safe operation. |
+| Trigger | Activate only when the user clearly wants commit plus push together. |
+| Scope | Own fast preflight, logical commit grouping, targeted staging/commits, push sequencing, and commit/push reporting. |
+| Authority | User and project instructions outrank this skill; helper output, git diffs, hooks, branch state, and remote output are execution evidence. |
+| Evidence | Use fast helper inventory, git status/diffs, hook output, branch/upstream data, and explicit arguments before mutation. |
+| Tools | Use Bash and repository-local helper scripts; subagents, when used, stay read-only and final git mutations stay with the main integrator. |
+| Output | Korean report of commits created, repositories pushed, skipped or failed push targets, and remaining local changes. |
+| Verification | Run the validation rule checks, confirm all commits succeeded before push, and read final push/status output. |
+| Stop condition | Stop when all intended commit groups have succeeded and all intended push targets are pushed or reported with blockers. |
+
+</instruction_contract>
+
 <routing_rule>
 
 Use `git-maker` when the user wants **commit + push** in one operation.

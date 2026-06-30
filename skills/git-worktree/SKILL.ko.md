@@ -30,6 +30,22 @@ compatibility: '`git worktree`를 지원하는 Git이 필요합니다. 에디터
 
 </purpose>
 
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | 격리된 Git worktree workspace를 생성, 진입, 점검, 삭제, 정리, 복구합니다. |
+| Trigger | worktree/workspace/branch-folder 격리 요청 또는 명시적 `git-worktree` 작업에 활성화합니다. |
+| Scope | repository/worktree 탐지, path와 branch 도출, local exclude 설정, worktree lifecycle command, context movement, status reporting을 담당합니다. |
+| Authority | 사용자와 프로젝트 지시가 이 스킬보다 우선합니다. Git worktree registry 출력, branch state, filesystem check는 실행 근거입니다. |
+| Evidence | mutation 전에 `git rev-parse`, `git worktree list --porcelain`, target-path check, branch ref, per-worktree status를 사용합니다. |
+| Tools | native Git과 shell을 사용합니다. editor, tmux, agent launch는 사용 가능하고 작업상 요청된 경우에만 선택적으로 실행합니다. |
+| Output | worktree path, branch/commit, clean/dirty state, active-context movement, remaining setup/cleanup에 대한 한국어 report입니다. |
+| Verification | repository root, worktree registry, target path safety, post-create working directory/status, pre-remove status 또는 prune dry run을 확인합니다. |
+| Stop condition | 요청된 lifecycle operation이 검증되었거나 dirty/destructive/ambiguous target이 mutation 전에 보고되었을 때 멈춥니다. |
+
+</instruction_contract>
+
 <routing_rule>
 
 다음 요청에는 `git-worktree`를 사용합니다.
@@ -74,6 +90,29 @@ compatibility: '`git worktree`를 지원하는 Git이 필요합니다. 에디터
   브랜치 수준 격리로 충분하면 이 스킬을 사용하고, 런타임·DB·포트 격리가 필요하면 더 강한 격리 워크플로로 넘깁니다.
 
 </activation_examples>
+
+<trigger_conditions>
+
+| User intent | Activate |
+|------|------|
+| branch별 working directory 생성 | yes |
+| 한 저장소에서 병렬 AI agent/coding session 실행 | yes |
+| 기존 worktree 목록 확인 또는 열기 | yes |
+| worktree remove, prune, lock, unlock, repair, move | yes |
+| 현재 linked worktree 안에서 그 worktree 삭제 | yes |
+| 프로젝트 기본 worktree root 설정 | yes |
+| plain `git checkout` 또는 branch-only operation | no |
+| 실행 작업 없는 일반 Git tutorial | no |
+
+</trigger_conditions>
+
+<support_file_read_order>
+
+1. 명령 패턴, 안전 점검, 삭제, prune, repair, context 이동 규칙은 `rules/worktree-lifecycle.md`를 읽습니다.
+2. 근거, upstream behavior, source comparison이 필요할 때만 `references/source-survey.md`를 읽습니다.
+3. 이 스킬 폴더를 수정한 뒤에는 결정적 validator인 `scripts/validate-git-worktree-skill.py`를 실행합니다.
+
+</support_file_read_order>
 
 <argument_handling>
 

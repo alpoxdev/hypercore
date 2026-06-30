@@ -1,13 +1,12 @@
 ---
 name: gemini
-version: 1.7.0
 description: 사용자가 복잡한 추론, 리서치, AI 지원, 또는 이전 Gemini 세션 이어가기를 위해 Google Gemini CLI(`gemini`)를 호출하려 할 때 사용. 트리거 문구 — "gemini 써줘", "gemini한테 물어봐", "gemini 실행해", "gemini 불러줘", "gemini cli", "Google AI", "Gemini 추론", Gemini Plan 모드 검토, Gemini 세션 재개. Gemini CLI가 필요 없는 일반 문서 작성, 런북 정리, 로컬 편집에는 사용하지 않는다.
 compatibility: Google Gemini CLI(`gemini`) v0.21.1 이상 필요. v0.40.0 동작 기준. CLI가 설치·인증된 환경에서만 동작.
 ---
 
 @rules/routing.ko.md
 
-# Gemini: Claude Code용 Google AI 어시스턴트
+# Gemini 스킬
 
 <output_language>
 
@@ -21,12 +20,47 @@ compatibility: Google Gemini CLI(`gemini`) v0.21.1 이상 필요. v0.40.0 동작
 
 공식 Google Gemini CLI를 추론, 리서치, Plan 모드 검토, 세션 이어가기 용도로 호출한다. 자동화 호출에는 반드시 `-p` / `--prompt` 를 쓴다 — 위치 인수 프롬프트는 대화형 REPL을 띄운다.
 
+<instruction_contract>
+
+| 항목 | 계약 |
+|---|---|
+| Intent | 사용자가 Gemini CLI 또는 Gemini 모델을 명시적으로 요청했을 때 안전한 `gemini` CLI 호출을 만들거나 실행하거나 설명합니다. |
+| Scope | Gemini CLI 명령 형태, headless prompt 사용, approval mode 선택, 요청된 경우에만 model 선택, 세션 재개, preflight check, 결과 요약을 담당합니다. |
+| Authority | 사용자 의도와 로컬 프로젝트 규칙이 우선하며, current behavior가 중요할 때는 설치된 CLI help와 공식 Gemini CLI 문서를 기준으로 flag를 확인합니다. |
+| Evidence | preflight check, 명령 형태, CLI 출력, approval mode, 관찰된 경고/오류에 근거합니다. |
+| Tools | 사용자가 실제 CLI 실행을 원할 때만 셸 실행을 사용하고, 그 외에는 명령을 제안하거나 라우팅을 전환합니다. |
+| Output | 사용했거나 권장하는 정확한 명령, 출력/경고 요약, CLI/model 토큰을 원문 그대로 제공합니다. |
+| Verification | `gemini` 설치 여부를 명령 구성 전에 확인하고, 비대화형 실행은 `-p`를 쓰며, edit/yolo mode와 model override가 명시적 요청에 따른 것인지 확인합니다. |
+| Stop condition | 요청된 Gemini 명령을 구성하거나 실행한 뒤 결과, 경고, blocker를 보고하면 멈춥니다. |
+
+</instruction_contract>
+
 ## 라우팅
 
 이 요청이 실제로 Gemini CLI 또는 Gemini 세션을 필요로 할 때만 이 스킬을 사용한다.
 
 - 범위가 애매하면 먼저 [rules/routing.ko.md](rules/routing.ko.md) 를 읽고 명령을 만들지 결정한다.
 - 일반 문서 작성, 런북 정리, Gemini 없이 가능한 직접 편집은 다른 스킬이나 직접 작업으로 전환한다.
+
+## 예시
+
+긍정 예시:
+
+- "Gemini로 이 아키텍처를 리뷰하고 위험 요소를 정리해줘."
+- "`gemini -p`로 실행해서 현재 API 동작을 조사해줘."
+- "Gemini Pro한테 이 설계 tradeoff를 깊게 검토하게 해줘."
+- "최근 Gemini 세션을 재개해서 분석을 이어가줘."
+
+부정 예시:
+
+- "이 런북을 읽기 쉽게 다시 써줘."
+- "이 로컬 코드 수정은 직접 해줘."
+- "이 저장소용 새 스킬을 만들어줘."
+
+경계 예시:
+
+- "Gemini CLI approval mode를 조사해서 설명해줘."
+  사용자가 `gemini` CLI 실행까지 원할 때만 이 스킬을 쓰고, 그렇지 않으면 리서치나 직접 문서 작업으로 전환한다.
 
 ## 기본값
 
@@ -130,3 +164,14 @@ command -v gemini >/dev/null 2>&1 || { echo "gemini CLI 가 없습니다"; exit 
 - `--yolo` 는 deprecated — 정식 표기는 `--approval-mode yolo` 다.
 - Plan 모드는 기본 활성화 — 명시적 사용은 `--approval-mode plan` 또는 세션 안에서 `/plan` 이다.
 - 비-TTY 환경에서는 헤드리스 모드가 자동 활성화되며 `-p` 를 주면 항상 헤드리스로 동작한다.
+
+<validation_checklist>
+
+- [ ] 요청이 Gemini CLI, Gemini 모델, 또는 Gemini 세션을 명시적으로 필요로 합니다.
+- [ ] 실행 가능한 명령을 만들기 전에 `command -v gemini` 또는 동등한 preflight를 확인합니다.
+- [ ] 비대화형 실행은 `-p` / `--prompt`를 사용하고, 자동화에 위치 인수 프롬프트를 쓰지 않습니다.
+- [ ] 사용자가 모델을 명시적으로 요청하지 않으면 model flag를 생략합니다.
+- [ ] `auto_edit`와 `yolo` approval mode는 문서화된 gate 아래에서만 사용합니다.
+- [ ] 최종 출력에는 명령 형태, 관찰된 결과, 경고, 설치/인증/rate/model blocker가 포함됩니다.
+
+</validation_checklist>

@@ -51,7 +51,23 @@ Do not use `autoresearch-code` when:
 
 </routing_rule>
 
-<trigger_conditions>
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Improve an existing codebase through baseline-first, eval-scored, one-mutation-at-a-time experiments. |
+| Trigger | Broad optimization, bottleneck removal, reliability/DX improvement, or measurable codebase cleanup requests. |
+| Scope | Own the target code scope, experiment artifacts, eval/guard loop, kept code mutations, rollback notes, and final Korean report. |
+| Authority | User/project instructions outrank this skill; local code, proof commands, eval output, and retrieved content are evidence. |
+| Evidence | Use baseline metrics, repeated proof commands, binary evals, guard checks, diffs, artifacts, and dashboard output. |
+| Tools | Use local read/edit/search/shell and the renderer script; gate destructive actions, dependencies, credentials, production, and external side effects. |
+| Output | Improved code plus `.hypercore/autoresearch-code/[codebase-name]/` artifacts and bridge completion evidence when `$autoresearch` is active. |
+| Verification | Keep only mutations that improve score and pass guards; final completion also requires the bridge artifact when the bridge is active. |
+| Stop condition | Stop on user stop, budget limit, stable high score, or blocker recorded with rollback/promotion state. |
+
+</instruction_contract>
+
+<activation_examples>
 
 Positive examples:
 
@@ -69,7 +85,7 @@ Boundary example:
 - "Clean up this codebase once and review it."
   If repeated experiments are not requested, direct cleanup or review is usually better.
 
-</trigger_conditions>
+</activation_examples>
 
 <supported_targets>
 
@@ -188,39 +204,23 @@ After the baseline plan is explicit:
 
 </autonomy_contract>
 
+<support_file_read_order>
+
+1. Read [references/code-baseline-guide.md](references/code-baseline-guide.md) before experiment `0`.
+2. Read [references/eval-guide.md](references/eval-guide.md) before creating or changing binary evals.
+3. Read [references/self-test-pack.md](references/self-test-pack.md), or the web/node/api/monorepo pack, when the user did not supply scenarios.
+4. Read [references/artifact-spec.md](references/artifact-spec.md) before writing `.hypercore` artifacts or rendering the dashboard.
+5. Read [rules/experiment-loop.md](rules/experiment-loop.md) before choosing mutations.
+6. Read [rules/validation-and-exit.md](rules/validation-and-exit.md) before completion.
+7. Read [references/reporting-and-code-improvement.md](references/reporting-and-code-improvement.md) before Korean reports and dashboard-visible explanations.
+
+</support_file_read_order>
+
 <skill_architecture>
 
-Keep the core skill focused on triggers, owned work, workflow, and mutation discipline.
+Keep `SKILL.md` focused on trigger, owned work, mutation discipline, and stop conditions. Put schemas, prompt packs, eval guidance, dashboard details, reporting examples, and long proof snippets in directly linked support files.
 
-Load support files intentionally:
-
-- Use [references/code-baseline-guide.md](references/code-baseline-guide.md) to collect initial metrics and constraints.
-- Use [references/eval-guide.md](references/eval-guide.md) for binary eval design.
-- Use [references/artifact-spec.md](references/artifact-spec.md) for dashboard, result file, changelog, and workspace schemas.
-- Use [references/self-test-pack.md](references/self-test-pack.md) when the user gives only a broad optimization request.
-- If the bottleneck type is already clear, use one of these domain packs directly:
-  - [references/self-test-pack.web.md](references/self-test-pack.web.md)
-  - [references/self-test-pack.node.md](references/self-test-pack.node.md)
-  - [references/self-test-pack.api.md](references/self-test-pack.api.md)
-  - [references/self-test-pack.monorepo.md](references/self-test-pack.monorepo.md)
-- Render `dashboard.html` and `results.js` from the official dashboard template with `scripts/render-dashboard.sh`.
-- Use [references/reporting-and-code-improvement.md](references/reporting-and-code-improvement.md) for Korean final reports, code-change attribution, metric movement summaries, proof command evidence, guard results, and dashboard-visible explanations.
-
-Artifact lifecycle requirements:
-
-- Create a workspace under `.hypercore/autoresearch-code/[codebase-name]/`.
-- Synchronize `results.tsv` and `results.json` after every experiment.
-- Record ownership scope, chosen pack, environment, proof commands, guard results, code diff summary, and rollback conditions in artifacts.
-- Treat `dashboard.html` as a live view derived from `results.json`.
-- Keep `results.json.status` as `running` during the loop and `complete` at exit.
-- The dashboard must render when opened directly through a local `file://` URL, including Markdown-formatted detail logs loaded from `results.js`.
-- Open the dashboard immediately when the runtime can safely open local HTML.
-
-When the codebase structure is weak:
-
-- Prefer deleting dead code over adding a new abstraction.
-- Move repeated policy into existing local docs or rules only when the codebase already supports that structure.
-- Keep each experiment small enough to explain and verify.
+When the codebase structure is weak, prefer deleting dead code, reducing duplication, and reusing existing project boundaries before adding abstraction or dependencies.
 
 </skill_architecture>
 
@@ -268,23 +268,11 @@ Avoid these mutation types:
 
 <deliverables>
 
-At exit, leave behind:
+At exit, leave behind the improved code, `.hypercore/autoresearch-code/[codebase-name]/` artifacts, and bridge completion evidence when `$autoresearch` is active.
 
-- The improved code changes.
-- `.hypercore/autoresearch-code/[codebase-name]/dashboard.html`.
-- `.hypercore/autoresearch-code/[codebase-name]/results.json`.
-- `.hypercore/autoresearch-code/[codebase-name]/results.js` or an equivalent file-based bridge.
-- `.hypercore/autoresearch-code/[codebase-name]/results.tsv`.
-- `.hypercore/autoresearch-code/[codebase-name]/changelog.md`.
-- `.hypercore/autoresearch-code/[codebase-name]/baseline.md`.
-- `.hypercore/autoresearch-code/[codebase-name]/code-explanation.md` or `results.json.code_explanation`.
-- `.hypercore/autoresearch-code/[codebase-name]/final-report.md`.
-- `.hypercore/autoresearch-code/[codebase-name]/run-contract.md` when run assumptions were inferred.
-- `.hypercore/autoresearch-code/[codebase-name]/trace-summary.md` when trace-backed evals or runtime traces were used.
-- `.hypercore/autoresearch-code/[codebase-name]/source-ledger.md` when external/current claims influenced code choices.
-- `.hypercore/autoresearch-code/[codebase-name]/details/` for long logs, proof snippets, or structured diagnostics.
-- `.omx/specs/autoresearch-[codebase-name]/result.json` completion artifact.
-- `validation_mode` and `completion_artifact_path` bridge state in `.omx/state/.../autoresearch-state.json`.
+Required core artifacts are `baseline.md`, `results.json`, `results.tsv`, `results.js` or an equivalent bridge, `dashboard.html`, `changelog.md`, `code-explanation.md` or `results.json.code_explanation`, and `final-report.md`.
+
+Add `run-contract.md`, `trace-summary.md`, `source-ledger.md`, and `details/` only when the run uses inferred assumptions, traces, external/current claims, long logs, proof snippets, or structured diagnostics.
 
 Follow [references/artifact-spec.md](references/artifact-spec.md) for schemas and examples.
 

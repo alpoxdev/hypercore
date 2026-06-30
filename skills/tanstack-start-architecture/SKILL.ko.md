@@ -90,7 +90,7 @@ description: 기존 TanStack Start/Router 프로젝트의 routes, loaders, serve
 
 <activation_examples>
 
-Positive:
+Positive examples:
 
 - "Audit this TanStack Start app for server-function, loader, and importProtection violations."
 - "Add a TanStack Start route with search params and keep the architecture compliant."
@@ -98,13 +98,13 @@ Positive:
 - "TanStack Start 프로젝트에서 loader 경계랑 server function 구조 점검해줘."
 - "TanStack Start folder structure를 검토하고 nested src/modules 또는 src/lib grouping을 강제해줘."
 
-Negative:
+Negative examples:
 
 - "TanStack Start가 아닌 일반 React/Vite 앱을 리뷰해줘."
 - "Codex용 browser QA skill을 새로 만들어줘."
 - "프로젝트 감사 없이 TanStack Router 문서만 요약해줘."
 
-Boundary:
+Boundary examples:
 
 - "정적인 TanStack Start privacy page의 카피만 바꿔줘."
   이 경우 빠른 boundary check만 수행합니다. publishing-only 페이지는 `-hooks/`, `-components/`, `-functions/` 폴더가 필요 없으며, interactive UI 또는 route-only server action이 생길 때만 route-local folder를 추가합니다.

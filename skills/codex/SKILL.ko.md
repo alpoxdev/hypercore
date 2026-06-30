@@ -6,6 +6,7 @@ description: >-
   트리거 문구 예시는 "codex 써줘", "codex한테 물어봐", "codex 실행해", "codex exec",
   "codex review", "지난 codex 세션 이어줘", "OpenAI CLI로 이 저장소를 점검하거나 수정해줘"
   등이다.
+compatibility: OpenAI Codex CLI(`codex`)가 필요하며, 해당 CLI가 설치된 환경에서만 동작합니다.
 ---
 
 @rules/routing.ko.md
@@ -21,6 +22,21 @@ description: >-
 사용자가 명시적으로 다른 언어를 요청했거나, 기존 대상 산출물의 언어 일관성을 맞춰야 하거나, 기계 판독 계약상 정확한 영어 토큰이 필요한 경우에만 다른 언어를 사용합니다. 사용자-facing 산출물에 쓸 로컬라이즈된 템플릿/참조(`*.ko.md`, `*.ko.json` 등)가 있으면 우선 사용합니다.
 
 </output_language>
+
+<instruction_contract>
+
+| 항목 | 계약 |
+|---|---|
+| Intent | 사용자가 Codex CLI를 명시적으로 요청했을 때 안전한 `codex` CLI 호출을 만들거나 실행하거나 설명합니다. |
+| Scope | `codex exec`, `codex review`, 세션 재개/분기 흐름, sandbox 선택, 추가 디렉터리 플래그, 결과 요약을 담당합니다. |
+| Authority | 사용자 의도와 로컬 프로젝트 규칙이 우선하며, 필요하면 설치된 명령/help 또는 최신 문서로 Codex CLI 동작을 확인합니다. |
+| Evidence | 명령 형태, CLI 출력, review 출력, sandbox 선택, 관찰된 경고/오류에 근거합니다. |
+| Tools | 사용자가 실제 CLI 실행을 원할 때만 셸 실행을 사용하고, 그 외에는 명령을 제안하거나 라우팅을 전환합니다. |
+| Output | 사용했거나 권장하는 정확한 명령, 출력/경고 요약, CLI 토큰을 원문 그대로 제공합니다. |
+| Verification | 비대화형 실행이 `codex exec`를 쓰는지, review가 read-only인지, writable sandbox가 명시적 요청인지, bypass flag가 gate되어 있는지 확인합니다. |
+| Stop condition | 요청된 Codex 명령을 구성하거나 실행한 뒤 결과, 경고, blocker를 보고하면 멈춥니다. |
+
+</instruction_contract>
 
 ## 기본값
 
@@ -44,19 +60,19 @@ description: >-
 
 ## 예시
 
-긍정 트리거:
+긍정 예시:
 
 - "Codex로 이 저장소를 리뷰하고 위험 요소를 요약해줘."
 - "`codex exec` 로 이 아키텍처를 분석해줘."
 - "지난 Codex 세션 이어서 패치를 마무리하게 해줘."
 - "main 기준으로 `codex review` 실행해서 차단 이슈를 알려줘."
 
-부정 트리거:
+부정 예시:
 
 - "이 런북을 읽기 쉽게 다시 써줘."
 - "우리 저장소용 새 스킬을 만들어줘."
 
-경계 사례:
+경계 예시:
 
 - "Codex 샌드박스 모드를 조사해서 설명해줘."
   사용자가 `codex` CLI 실행까지 원할 때만 이 스킬을 쓰고, 그렇지 않으면 리서치나 직접 문서 작업으로 전환한다.
@@ -159,3 +175,13 @@ Codex를 권위자가 아니라 동료로 다룬다.
 - 세션을 찾지 못함: `codex exec resume` 을 picker로 띄우거나, 최근 대화형 세션이면 `codex resume --last` 로 전환한다.
 - 잘못된 플래그나 모델 오류: `codex --help` 또는 `codex exec --help` 기준으로 지원되는 옵션으로 다시 시도한다.
 - Git 저장소 밖에서 실행: 사용자가 저장소 가드 없이 실행해도 된다고 승인한 뒤에만 `--skip-git-repo-check` 를 추가한다.
+
+<validation_checklist>
+
+- [ ] 요청이 Codex CLI 또는 별도 Codex 세션을 명시적으로 필요로 합니다.
+- [ ] 비대화형 실행은 `codex exec`를 사용하고, 자동화에 대화형 TUI 호출을 쓰지 않습니다.
+- [ ] `codex review`는 read-only로 유지하며 writable sandbox나 bypass flag와 함께 쓰지 않습니다.
+- [ ] `--sandbox workspace-write`는 사용자가 Codex의 workspace 파일 수정을 명시적으로 원할 때만 사용합니다.
+- [ ] 최종 출력에는 명령 형태, 관찰된 결과, 경고, 인증/세션/sandbox blocker가 포함됩니다.
+
+</validation_checklist>

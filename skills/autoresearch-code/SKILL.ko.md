@@ -51,7 +51,23 @@ compatibility: 읽기/수정/쓰기, 셸 실행, 코드 검증 도구를 함께 
 
 </routing_rule>
 
-<trigger_conditions>
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | 기존 코드베이스를 baseline-first, eval-scored, one-mutation-at-a-time experiment로 개선합니다. |
+| Trigger | 넓은 최적화, 병목 제거, reliability/DX 개선, 측정 가능한 codebase cleanup 요청. |
+| Scope | target code scope, experiment artifacts, eval/guard loop, kept code mutations, rollback notes, final Korean report를 담당합니다. |
+| Authority | user/project instructions가 이 스킬보다 우선합니다. local code, proof commands, eval output, retrieved content는 evidence입니다. |
+| Evidence | baseline metrics, repeated proof commands, binary evals, guard checks, diffs, artifacts, dashboard output을 사용합니다. |
+| Tools | local read/edit/search/shell과 renderer script를 사용합니다. destructive actions, dependencies, credentials, production, external side effects는 gate합니다. |
+| Output | 개선된 code와 `.hypercore/autoresearch-code/[codebase-name]/` artifacts, `$autoresearch` active 시 bridge completion evidence. |
+| Verification | score가 오르고 guard를 통과한 mutation만 유지합니다. bridge active 시 final completion에는 bridge artifact도 필요합니다. |
+| Stop condition | user stop, budget limit, stable high score, 또는 rollback/promotion state가 기록된 blocker에서 멈춥니다. |
+
+</instruction_contract>
+
+<activation_examples>
 
 긍정 예시:
 
@@ -69,7 +85,7 @@ compatibility: 읽기/수정/쓰기, 셸 실행, 코드 검증 도구를 함께 
 - "이 코드베이스 한 번만 다듬고 리뷰해줘."
   반복 실험을 명시하지 않았다면 보통 직접 수정이 더 적절하다.
 
-</trigger_conditions>
+</activation_examples>
 
 <supported_targets>
 
@@ -188,39 +204,23 @@ baseline 계획이 명시된 뒤에는:
 
 </autonomy_contract>
 
+<support_file_read_order>
+
+1. experiment `0` 전에 [references/code-baseline-guide.md](references/code-baseline-guide.md)를 읽습니다.
+2. binary eval을 만들거나 바꾸기 전에 [references/eval-guide.md](references/eval-guide.md)를 읽습니다.
+3. 사용자가 scenario를 주지 않았으면 [references/self-test-pack.md](references/self-test-pack.md) 또는 web/node/api/monorepo pack을 읽습니다.
+4. `.hypercore` artifact 작성 또는 dashboard rendering 전 [references/artifact-spec.md](references/artifact-spec.md)를 읽습니다.
+5. mutation 선택 전 [rules/experiment-loop.ko.md](rules/experiment-loop.ko.md)를 읽습니다.
+6. 완료 전 [rules/validation-and-exit.ko.md](rules/validation-and-exit.ko.md)를 읽습니다.
+7. 한국어 report와 dashboard-visible explanation 전 [references/reporting-and-code-improvement.ko.md](references/reporting-and-code-improvement.ko.md)를 읽습니다.
+
+</support_file_read_order>
+
 <skill_architecture>
 
-핵심 스킬은 트리거, 맡은 일, 워크플로, 변이 규율에만 집중한다.
+`SKILL.md`는 trigger, 맡은 일, mutation discipline, stop condition에 집중합니다. Schema, prompt pack, eval guidance, dashboard detail, reporting example, 긴 proof snippet은 직접 연결된 support file에 둡니다.
 
-지원 파일은 의도적으로 로드한다:
-
-- 초기 지표와 제약 수집은 [references/code-baseline-guide.md](references/code-baseline-guide.md)를 사용한다.
-- 코드 최적화용 이진 평가는 [references/eval-guide.md](references/eval-guide.md)를 사용한다.
-- 대시보드, 결과 파일, 변경 로그, 워크스페이스 스키마는 [references/artifact-spec.md](references/artifact-spec.md)를 사용한다.
-- 사용자가 넓은 최적화 요청만 줬다면 [references/self-test-pack.md](references/self-test-pack.md)에서 적절한 도메인 팩을 고른다.
-- 병목 형태가 이미 분명하면 아래 도메인 팩 중 하나를 직접 쓴다:
-  - [references/self-test-pack.web.md](references/self-test-pack.web.md)
-  - [references/self-test-pack.node.md](references/self-test-pack.node.md)
-  - [references/self-test-pack.api.md](references/self-test-pack.api.md)
-  - [references/self-test-pack.monorepo.md](references/self-test-pack.monorepo.md)
-- `scripts/render-dashboard.sh`로 정식 대시보드 템플릿에서 `dashboard.html`과 `results.js`를 생성한다.
-- 한국어 최종 보고, 코드 변경 귀속, 지표 이동 요약, proof command 근거, guard 결과, 대시보드 표시 설명은 [references/reporting-and-code-improvement.ko.md](references/reporting-and-code-improvement.ko.md)를 따른다.
-
-아티팩트 생명주기 요구사항:
-
-- `.hypercore/autoresearch-code/[codebase-name]/` 아래에 워크스페이스를 만든다
-- 매 실험 뒤 `results.tsv`와 `results.json`을 동기화한다
-- 소유 범위, 선택한 팩, 환경, proof command, guard 결과, 코드 diff 요약, 롤백 조건을 아티팩트에 기록한다
-- `dashboard.html`은 `results.json`을 기반으로 하는 실시간 보기로 취급한다
-- 루프 중에는 `results.json.status`를 `running`, 종료 시에는 `complete`로 둔다
-- 로컬 브라우저에서 `file://`로 직접 열어도 `results.js`의 Markdown 상세 로그까지 대시보드가 정상 렌더되어야 한다
-- 런타임이 안전하게 로컬 HTML을 열 수 있으면 대시보드를 즉시 연다
-
-코드베이스 구조가 약할 때는:
-
-- 새 추상화보다 dead code 삭제를 우선한다
-- 코드베이스가 이미 지원하는 구조일 때만 반복 정책을 기존 로컬 문서나 룰로 옮긴다
-- 각 실험은 설명과 검증이 가능한 범위로 충분히 작게 유지한다
+Codebase 구조가 약하면 abstraction/dependency 추가보다 dead code 삭제, duplication 축소, 기존 project boundary 재사용을 우선합니다.
 
 </skill_architecture>
 
@@ -268,23 +268,11 @@ baseline 계획이 명시된 뒤에는:
 
 <deliverables>
 
-실행이 끝나면 다음이 남아 있어야 한다:
+Exit 시 개선된 code, `.hypercore/autoresearch-code/[codebase-name]/` artifacts, `$autoresearch` active 시 bridge completion evidence를 남깁니다.
 
-- 개선된 코드 변경
-- `.hypercore/autoresearch-code/[codebase-name]/dashboard.html`
-- `.hypercore/autoresearch-code/[codebase-name]/results.json`
-- `.hypercore/autoresearch-code/[codebase-name]/results.js` 또는 이에 준하는 파일 기반 브리지
-- `.hypercore/autoresearch-code/[codebase-name]/results.tsv`
-- `.hypercore/autoresearch-code/[codebase-name]/changelog.md`
-- `.hypercore/autoresearch-code/[codebase-name]/baseline.md`
-- `.hypercore/autoresearch-code/[codebase-name]/code-explanation.md` 또는 `results.json.code_explanation`
-- `.hypercore/autoresearch-code/[codebase-name]/final-report.md`
-- 실행 가정을 추론했다면 `.hypercore/autoresearch-code/[codebase-name]/run-contract.md`
-- trace-backed eval 또는 런타임 trace를 썼다면 `.hypercore/autoresearch-code/[codebase-name]/trace-summary.md`
-- 외부/최신 claim이 코드 판단에 영향을 줬다면 `.hypercore/autoresearch-code/[codebase-name]/source-ledger.md`
-- 긴 로그, proof snippet, 구조화 diagnostics용 `.hypercore/autoresearch-code/[codebase-name]/details/`
-- `.omx/specs/autoresearch-[codebase-name]/result.json` completion artifact
-- `.omx/state/.../autoresearch-state.json`의 `validation_mode`/`completion_artifact_path` bridge 상태
+필수 core artifacts는 `baseline.md`, `results.json`, `results.tsv`, `results.js` 또는 equivalent bridge, `dashboard.html`, `changelog.md`, `code-explanation.md` 또는 `results.json.code_explanation`, `final-report.md`입니다.
+
+`run-contract.md`, `trace-summary.md`, `source-ledger.md`, `details/`는 inferred assumptions, traces, external/current claims, 긴 logs, proof snippets, structured diagnostics가 있을 때만 추가합니다.
 
 파일 스키마와 예시는 [references/artifact-spec.md](references/artifact-spec.md)를 따른다.
 

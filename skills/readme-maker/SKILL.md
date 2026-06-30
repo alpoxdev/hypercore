@@ -71,7 +71,7 @@ Do not use `readme-maker` when:
 
 <activation_examples>
 
-Positive requests:
+Positive examples:
 
 - "Read this project carefully and create a README.md."
 - "Refactor the README so it matches the current CLI commands."
@@ -80,14 +80,14 @@ Positive requests:
 - "프로젝트 README.md 만들어줘." (Korean positive create request; should trigger.)
 - "이 저장소를 꼼꼼히 읽고 README를 다시 써줘." (Korean refactor request; should trigger.)
 
-Negative requests:
+Negative examples:
 
 - "Create a CHANGELOG from the commit log." Use `git-commit`/`version-update` paths instead.
 - "Write API documentation for this library." Use `docs-maker`.
 - "Plan the next release of this project." Use `prd-maker` or `plan`.
 - "이 코드베이스에 새 기능을 추가해줘." (Korean feature request; not a README task.)
 
-Boundary requests:
+Boundary examples:
 
 - "Document this project."
   Use `readme-maker` only when the output is a `README.md`. Use `docs-maker` when the output is a guide, runbook, or instruction base.

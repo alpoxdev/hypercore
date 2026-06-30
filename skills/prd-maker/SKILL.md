@@ -70,21 +70,21 @@ Do not use `prd-maker` when:
 
 <activation_examples>
 
-Positive requests:
+Positive examples:
 
 - "Create a PRD, feature spec, user flow, and low-fi wireframe for team inbox assignments."
 - "Make a ManyFast-style planning package for a billing retry feature before implementation."
 - "Turn this app idea into layered docs: PRD first, then functional spec, user flow, and wireframe."
 - "Update the existing onboarding PRD and propagate the change into the spec, flow, and wireframes."
 
-Negative requests:
+Negative examples:
 
 - "Research how competitors handle onboarding."
 - "Implement the billing retry flow."
 - "Rewrite this support runbook."
 - "Make final polished UI mockups in our brand style."
 
-Boundary request:
+Boundary examples:
 
 - "Plan this feature before coding."
   Use `prd-maker` only if the plan should become a saved planning package under `.hypercore/prd/`. Otherwise route to `plan`.
@@ -227,6 +227,16 @@ Read in this order:
 - Treat wireframes as structural review artifacts, not polished visual design.
 
 </workflow>
+
+<validation_checklist>
+
+- Package files exist in the expected `.hypercore/prd/[slug]/` folder and match create/update mode.
+- PRD decisions trace forward into `feature-spec.md`, `user-flow.md`, `wireframe.md`, and the planning diagram.
+- `sources.md` records provided context, research evidence, or a clear reason external research was skipped.
+- `diagram.data.json`, `diagram.svg`, and `preview.html` are regenerated when package content changes.
+- Open questions, assumptions, risks, and validation gaps remain visible instead of being silently resolved.
+
+</validation_checklist>
 
 <required>
 

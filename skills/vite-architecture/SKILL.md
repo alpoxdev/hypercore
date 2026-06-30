@@ -72,7 +72,7 @@ Enforces hypercore Vite + TanStack Router architecture rules with strict validat
 
 <activation_examples>
 
-Positive:
+Positive examples:
 
 - "Audit this Vite + TanStack Router app for route structure, validateSearch, and service boundaries before editing."
 - "Add a new route folder in a Vite + TanStack Router app and keep hooks/services compliant."
@@ -80,13 +80,13 @@ Positive:
 - "Vite Router 프로젝트에서 tanstackRouter plugin order와 routeTree.gen.ts 처리를 점검해줘."
 - "src/lib/utils.ts 말고 src/lib/auth/session.ts, src/services/billing/queries.ts처럼 nested folders로 묶어줘."
 
-Negative:
+Negative examples:
 
 - "Create a new Codex skill for browser QA."
 - "Review a TanStack Start app that uses createServerFn and @tanstack/react-start."
 - "Review a generic Vite app that does not use TanStack Router."
 
-Boundary:
+Boundary examples:
 
 - "Make a tiny copy-only text change in a Vite route file."
   Direct editing can be enough if the change does not cross an architecture boundary, but touched files still need a quick compliance check.
@@ -94,6 +94,28 @@ Boundary:
   Route away to `tanstack-start-architecture` instead of forcing Vite rules onto a Start project.
 
 </activation_examples>
+
+<trigger_conditions>
+
+| Situation | Mode |
+|---|---|
+| Existing Vite + TanStack Router project work touches routes, loaders, services, hooks, router setup, env, aliases, or shared folder layout | enforce |
+| `@tanstack/react-start` or `app.config.ts` is present | route away to `tanstack-start-architecture` |
+| Generic Vite project without TanStack Router indicators | do not apply |
+| Copy-only text change in a route file | direct edit with quick compliance check |
+
+</trigger_conditions>
+
+<support_file_read_order>
+
+1. Read `architecture-rules.md` before code changes or architecture findings.
+2. Read the topic rule file that matches the touched surface: `rules/routes.md`, `rules/services.md`, `rules/hooks.md`, `rules/execution-model.md`, `rules/platform.md`, `rules/conventions.md`, or `rules/validation.md`.
+3. Read the directly linked official current-docs reference only when Vite, TanStack Router, plugin, env, route tree, search, or loader behavior may be API-drift sensitive.
+4. Run `scripts/validate-vite-architecture-skill.mjs` after editing this skill folder.
+
+</support_file_read_order>
+
+<workflow>
 
 ## Step 1: Project Validation
 
@@ -250,6 +272,10 @@ Carry these acceptance criteria into the active task:
 - [ ] const arrow functions with explicit return types
 ```
 
+</workflow>
+
+<validation_checklist>
+
 ## Step 5: Post-Change Verification
 
 After writing code, verify:
@@ -262,58 +288,4 @@ After writing code, verify:
 6. **Execution check**: loaders and route modules do not touch secrets, DB clients, or private env values directly
 7. **Platform check**: `vite.config.ts`, `src/router.tsx`, env wiring, and generated router files remain coherent
 
-## Quick Reference: Folder Structure
-
-```text
-src/
-├── routes/
-│   ├── __root.tsx
-│   ├── index.tsx
-│   └── users/
-│       ├── route.tsx          # shared layout / beforeLoad / loader
-│       ├── index.tsx          # /users
-│       ├── -components/
-│       ├── -hooks/
-│       ├── $id/
-│       │   ├── index.tsx      # /users/$id
-│       │   ├── -components/
-│       │   └── -hooks/
-│       └── -sections/         # optional for large pages
-├── services/<domain>/
-│   ├── schemas.ts
-│   ├── queries.ts
-│   └── mutations.ts
-├── hooks/                     # global hooks
-├── stores/
-├── components/
-├── config/
-├── lib/<domain>/
-├── services/<domain-or-provider>/
-├── src/router.tsx
-└── routeTree.gen.ts           # generated, do not hand-edit
-```
-
-## Common Mistakes
-
-| Mistake | Fix |
-|---------|-----|
-| `routes/users.tsx` for a full page | `routes/users/index.tsx` |
-| `routes/users/$id.tsx` while the page owns its own UI/logic folders | `routes/users/$id/index.tsx` |
-| `const Route = createFileRoute(...)` | `export const Route = createFileRoute(...)` |
-| Direct `fetch()` in route/hook | move to `services/<domain>/queries.ts` or `mutations.ts` |
-| `createServerFn(...)` or `useServerFn(...)` in this app | use services + TanStack Query |
-| Page component holds `useState`, `useQuery`, mutations inline | extract to `-hooks/use-*.ts` |
-| `routeTree.gen.ts` edited manually | regenerate it; do not hand-edit |
-| Loader reads secrets or non-`VITE_` env values | move behind a real backend/API boundary |
-| `validateSearch` uses raw unvalidated search | add `zodValidator(schema)` |
-
-## Red Flags - STOP and Fix
-
-- `@tanstack/react-start` is present but the Vite skill is being applied
-- route or hook imports `fetch`/`axios` directly
-- missing `export` on `const Route`
-- page component contains inline state/query/mutation logic
-- `createServerFn`, `useServerFn`, or `-functions/` appears in the route tree
-- loader or route module reads secrets, DB clients, or private env values directly
-- `routeTree.gen.ts` has hand edits
-- search params are used without `validateSearch`
+</validation_checklist>

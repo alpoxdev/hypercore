@@ -48,7 +48,7 @@ Route neighboring work elsewhere:
 
 </routing_rule>
 
-<trigger_conditions>
+<activation_examples>
 
 Positive examples:
 
@@ -76,9 +76,9 @@ Boundary examples:
 - "Research AI search trends."
   Use `seo-maker` only when the output is tied to a target site, page, or content inventory.
 
-</trigger_conditions>
+</activation_examples>
 
-<modes>
+<trigger_conditions>
 
 | Situation | Mode |
 |------|------|
@@ -91,7 +91,7 @@ Boundary examples:
 | AEO/GEO citation readiness analysis | create |
 | Add AEO/GEO analysis to an existing report | update |
 
-</modes>
+</trigger_conditions>
 
 <supported_targets>
 
@@ -159,6 +159,8 @@ For simple mode, `report.md` and `sources.md` are the minimum. For complex or op
 
 Follow [references/artifact-spec.md](references/artifact-spec.md) for the file schema.
 
+For new reports, use [assets/report.template.ko.md](assets/report.template.ko.md) by default. Use [assets/report.template.md](assets/report.template.md) only when English is explicitly required.
+
 Render order:
 
 1. Gather evidence and write/update `results.json`.
@@ -166,7 +168,25 @@ Render order:
 3. Render `dashboard.html` from the current results.
 4. Write `report.md` and `sources.md` with links or file references.
 
+When `results.json` is finalized, render the dashboard with `scripts/render-dashboard.sh <artifact-dir>`.
+
 </artifact_contract>
+
+<support_file_read_order>
+
+Read in this order:
+
+1. Core `SKILL.md` to confirm the task is an SEO/AEO/GEO audit, optimization report, or score loop.
+2. [rules/seo-workflow.md](rules/seo-workflow.md) for the execution phases.
+3. [references/seo-fundamentals.md](references/seo-fundamentals.md) for E-E-A-T, Core Web Vitals, ranking factors, entity SEO, and schema markup criteria.
+4. [references/aeo-geo-guide.md](references/aeo-geo-guide.md) for AEO/GEO/LLMO strategy, the GEO CORE framework, platform benchmarks, and `llms.txt` guidance.
+5. [references/seo-checklist.md](references/seo-checklist.md) for the practical audit checklist.
+6. [references/artifact-spec.md](references/artifact-spec.md) for `results.json`, dashboard lifecycle, and workspace schema.
+7. For new reports, read [assets/report.template.ko.md](assets/report.template.ko.md) by default; read [assets/report.template.md](assets/report.template.md) only when English is explicitly required.
+8. When rendering a dashboard, read [assets/dashboard-template.html](assets/dashboard-template.html).
+9. Before completion, read [rules/validation.md](rules/validation.md).
+
+</support_file_read_order>
 
 <workflow>
 

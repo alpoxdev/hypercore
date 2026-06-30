@@ -68,7 +68,7 @@ Use a neighboring skill instead when:
 
 <activation_examples>
 
-Positive requests:
+Positive examples:
 
 - "`git-issue` create an issue for OAuth callback failures and move to a branch."
 - "`@skills/git-issue` #123"
@@ -76,13 +76,13 @@ Positive requests:
 - "이 기존 이슈 https://github.com/org/repo/issues/42 작업 브랜치로 들어가줘."
 - "`git-issue` 로그인 리다이렉트 버그"
 
-Negative requests:
+Negative examples:
 
 - "Commit these changes." Use `git-commit`.
 - "Create a worktree for this issue." Use `git-worktree`.
 - "Open a PR for this branch." Use a PR workflow, unless issue branch setup is also requested.
 
-Boundary request:
+Boundary examples:
 
 - "`git-issue`" with no topic, number, URL, or issue details -> ask one concise question in the user's language: "어떤 GitHub issue를 만들까요? 제목과 필요한 맥락을 알려주세요."
 

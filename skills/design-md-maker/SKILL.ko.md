@@ -67,7 +67,7 @@ compatibility: 프로젝트 UI discovery, 레퍼런스 확인, DESIGN.md 작성,
 
 <activation_examples>
 
-Positive requests:
+Positive examples (긍정 예시):
 
 - "Create a DESIGN.md for this project from the current UI."
 - "Generate DESIGN.md with light and dark mode tokens."
@@ -75,14 +75,14 @@ Positive requests:
 - "이 레퍼런스 기반으로 우리 앱 DESIGN.md 만들어줘."
 - "우리 프로젝트용 DESIGN.md를 만들고 라이트/다크 모드 둘 다 넣어줘."
 
-Negative requests:
+Negative examples (부정 예시):
 
 - "Create a README.md for this project." `readme-maker`를 사용합니다.
 - "Write general design system documentation." 산출물이 `DESIGN.md`가 아니면 `docs-maker`를 사용합니다.
 - "Implement dark mode components in the app." 이는 `DESIGN.md` 작성이 아니라 UI 구현입니다.
 - "Make a reusable skill folder for DESIGN.md generation." `skill-maker`를 사용합니다.
 
-Boundary requests:
+Boundary examples (경계 예시):
 
 - "Document our design system." 원하는 산출물이 `DESIGN.md`일 때만 `design-md-maker`를 사용하고, 아니면 `docs-maker`를 사용합니다.
 - "Research DESIGN.md examples and summarize them." 프로젝트 `DESIGN.md`를 만들어야 하는 요청이 아니면 `research` 또는 `docs-maker`를 사용합니다.

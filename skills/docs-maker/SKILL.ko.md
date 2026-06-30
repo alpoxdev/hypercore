@@ -51,20 +51,20 @@ compatibility: 문서 분석, 출처 검증, 품질 점검을 위해 read/edit/w
 
 <activation_examples>
 
-긍정 요청:
+Positive examples (긍정 예시):
 
 - "오래된 에이전트 운영 가이드를 리팩토링해서 provider-specific 규칙을 references로 옮겨줘."
 - "context-engineering, sourcing, validation 섹션이 있는 instruction base를 만들어줘."
 - "프롬프트, 도구, eval, safety gate, context management, trace assertion용 하네스 규칙 팩을 만들어줘."
 - "이 리서치 프로세스를 source ledger와 완료 점검이 있는 런북으로 바꿔줘."
 
-부정 요청:
+Negative examples (부정 예시):
 
 - "브라우저 QA용 새 Codex 스킬을 만들어줘."
 - "TanStack Start 라우트 리팩토링의 아키텍처 위반을 고쳐줘."
 - "현재 시장을 조사해서 답만 줘."
 
-경계 요청:
+Boundary examples (경계 예시):
 
 - "스킬 작성 가이드를 만들어줘."
   결과물이 문서나 런북이면 `docs-maker`를 사용하고, 재사용 가능한 스킬 폴더가 되어야 하면 `skill-maker`를 사용합니다.

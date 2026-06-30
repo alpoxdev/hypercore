@@ -51,20 +51,20 @@ Do not use `docs-maker` when:
 
 <activation_examples>
 
-Positive requests:
+Positive examples:
 
 - "Refactor this stale agent-operation guide so provider-specific rules move to references."
 - "Create an instruction base with context-engineering, sourcing, and validation sections."
 - "Create a harness rule pack for prompts, tools, evals, safety gates, context management, and trace assertions."
 - "Turn this research process into a source-ledger-backed runbook with completion checks."
 
-Negative requests:
+Negative examples:
 
 - "Create a new Codex skill for browser QA."
 - "Fix architecture violations in a TanStack Start route refactor."
 - "Research the current market and give me the answer only."
 
-Boundary request:
+Boundary examples:
 
 - "Create a guide for writing skills."
   Use `docs-maker` only if the output is a document or runbook. Use `skill-maker` if the output should become a reusable skill folder.

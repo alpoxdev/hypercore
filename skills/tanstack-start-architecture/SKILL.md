@@ -90,7 +90,7 @@ When official TanStack guidance and Hypercore conventions differ, enforce offici
 
 <activation_examples>
 
-Positive:
+Positive examples:
 
 - "Audit this TanStack Start app for server-function, loader, and importProtection violations."
 - "Add a TanStack Start route with search params and keep the architecture compliant."
@@ -98,13 +98,13 @@ Positive:
 - "Check the loader boundaries and server function structure in this TanStack Start project."
 - "Review this TanStack Start folder structure and enforce nested src/modules or src/lib grouping."
 
-Negative:
+Negative examples:
 
 - "Review this generic React/Vite app that does not use TanStack Start."
 - "Create a browser QA skill for Codex."
 - "Summarize TanStack Router docs without changing or auditing a project."
 
-Boundary:
+Boundary examples:
 
 - "Make a copy-only edit in a static TanStack Start privacy page."
   Use this skill only for a quick boundary check. Publishing-only pages do not need generated `-hooks/`, `-components/`, or `-functions/` folders; add route-local folders only when interactive UI or route-only server actions are introduced.

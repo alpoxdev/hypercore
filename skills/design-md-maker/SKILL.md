@@ -67,7 +67,7 @@ Do not use `design-md-maker` when the user only asks to implement dark mode, red
 
 <activation_examples>
 
-Positive requests:
+Positive examples:
 
 - "Create a DESIGN.md for this project from the current UI."
 - "Generate DESIGN.md with light and dark mode tokens."
@@ -75,14 +75,14 @@ Positive requests:
 - "이 레퍼런스 기반으로 우리 앱 DESIGN.md 만들어줘."
 - "우리 프로젝트용 DESIGN.md를 만들고 라이트/다크 모드 둘 다 넣어줘."
 
-Negative requests:
+Negative examples:
 
 - "Create a README.md for this project." Use `readme-maker`.
 - "Write general design system documentation." Use `docs-maker` unless the artifact must be `DESIGN.md`.
 - "Implement dark mode components in the app." This is UI implementation, not `DESIGN.md` authoring.
 - "Make a reusable skill folder for DESIGN.md generation." Use `skill-maker`.
 
-Boundary requests:
+Boundary examples:
 
 - "Document our design system." Use `design-md-maker` only when the desired artifact is `DESIGN.md`; otherwise use `docs-maker`.
 - "Research DESIGN.md examples and summarize them." Use `research` or `docs-maker` unless a project `DESIGN.md` must be produced.

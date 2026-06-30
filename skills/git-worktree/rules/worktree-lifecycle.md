@@ -33,8 +33,8 @@ Interaction language:
 
 - Ask clarification questions in the same language as the user's request.
 - For Korean users, ask in Korean only. Do not show English fallback text or generic English operation menus.
-- Infer the operation from the user's wording before asking. If inference fails, ask one localized question. For Korean users, ask which worktree operation they want, such as create, list, open/move, delete, clean up, repair, lock, or unlock.
-- If only the work intent for a new worktree is missing, ask about the work intent, not the operation.
+- Infer the operation from the user's wording before asking. If inference fails, ask one localized question. For Korean users, ask: "어떤 worktree 작업을 원하시나요? 생성, 목록, 열기/이동, 삭제, 정리, 복구, 잠금 중에서 알려주세요."
+- If only the work intent for a new worktree is missing, ask about the work intent, not the operation. For Korean users, ask: "이 worktree에서 어떤 작업을 할 예정인가요?"
 
 Before creating a worktree, establish what will happen there:
 
@@ -105,7 +105,7 @@ git worktree add --detach <path> <commit-or-tag>
 
 Use detached worktrees only for read-only inspection, bisect-like diagnostics, or explicit throwaway review.
 
-After creation, verify the worktree exists and make it the active context for follow-up work. A create request that says "enter", "open", "switch", "go into it", or equivalent Korean wording is not complete until follow-up commands run from the new path:
+After creation, verify the worktree exists and make it the active context for follow-up work. A create request that says "enter", "open", "switch", "go into it", "들어가", "이동", "전환", or equivalent Korean wording is not complete until follow-up commands run from the new path:
 
 ```bash
 git -C <path> status --short --branch

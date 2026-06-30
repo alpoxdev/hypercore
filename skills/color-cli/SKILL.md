@@ -20,6 +20,21 @@ Use a different language only when the user explicitly requests it, an existing 
 
 AI models often produce incorrect oklch conversions due to matrix precision errors, missing gamut mapping, and degree/radian confusion. This skill delegates color conversion to `@kood/color-cli` (powered by culori) for CSS Color Level 4 compliant results.
 
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Produce deterministic color conversions instead of estimating color math in the model. |
+| Scope | Owns single-color conversion, multi-color conversion, and CSS file color-format conversion through `@kood/color-cli`. |
+| Authority | The `color` CLI output is authoritative for conversion values; design or palette judgment belongs to design skills. |
+| Evidence | Report the executed command output, gamut warnings, and CSS converted/skipped summary when applicable. |
+| Tools | Use Bash plus the installed `color` command; do not compute oklch/hex/rgb manually. |
+| Output | Return hex, rgb, and oklch for color values, or the CSS conversion summary for file operations. |
+| Verification | Check the CLI is installed, run conversions through `color`, and preview CSS file changes with `--dry-run` first. |
+| Stop condition | Stop after converted values or CSS dry-run/apply summary are reported, or after the install blocker is clear. |
+
+</instruction_contract>
+
 <request_routing>
 
 ## Positive triggers
@@ -36,7 +51,7 @@ AI models often produce incorrect oklch conversions due to matrix precision erro
 - Color theory explanations — answer directly without this skill.
 - Creating CSS from scratch — use an implementation skill instead.
 
-## Boundary
+## Boundary examples
 
 - "What color is oklch(0.7 0.25 140)?" → Use this skill to get the hex/rgb equivalent.
 - "Pick a good color for a button" → Do not use this skill; this is a design question.
@@ -172,3 +187,13 @@ styles.css: 12 colors found, 8 converted, 4 skipped
 - For CSS file operations, show the summary (converted/skipped counts) to the user.
 
 </guidelines>
+
+<validation_checklist>
+
+- [ ] `color --help` or equivalent install check has succeeded, or the missing-install blocker is reported.
+- [ ] Color values are converted by `color`, not manually estimated.
+- [ ] CSS file conversions are previewed with `--dry-run` before in-place changes.
+- [ ] Output includes hex, rgb, and oklch for single values, or converted/skipped counts for CSS files.
+- [ ] Gamut mapping warnings are preserved in the user-facing result.
+
+</validation_checklist>

@@ -49,6 +49,22 @@ Do not use `autoresearch-skill` when:
 
 </routing_rule>
 
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Improve an existing skill through baseline-first, eval-scored, one-mutation-at-a-time experiments. |
+| Trigger | Repeated experiment requests for skill trigger quality, core size, support placement, workflow clarity, or validation quality. |
+| Scope | Own the target skill files in scope, experiment artifacts, eval/guard loop, kept mutations, rollback notes, and Korean final report. |
+| Authority | User/project instructions outrank this skill; local skill files, eval output, guard checks, and retrieved content are evidence. |
+| Evidence | Use baseline skill snapshots, prompt packs, binary evals, guard checks, diffs, artifacts, and dashboard output. |
+| Tools | Use local read/edit/search/shell and the renderer script; gate destructive actions, dependencies, credentials, production, and external side effects. |
+| Output | Improved skill files plus `.hypercore/autoresearch-skill/[skill-name]/` artifacts and bridge completion evidence when `$autoresearch` is active. |
+| Verification | Keep only mutations that improve score and pass guards; final completion requires Manual QA artifacts and bridge approval when active. |
+| Stop condition | Stop on user stop, budget limit, stable high score, or blocker recorded with rollback/promotion state. |
+
+</instruction_contract>
+
 <missing_target_behavior>
 
 If the user invokes `autoresearch-skill`, `$autoresearch-skill`, or a local slash equivalent without a target skill path, existing experiment workspace, or clear skill name:
@@ -59,7 +75,7 @@ If the user invokes `autoresearch-skill`, `$autoresearch-skill`, or a local slas
 
 </missing_target_behavior>
 
-<trigger_conditions>
+<activation_examples>
 
 Positive examples:
 
@@ -82,7 +98,7 @@ Boundary example:
 - "Polish this skill once and review it."
   If repeated experiments are not requested, direct `skill-maker` refactoring is usually better.
 
-</trigger_conditions>
+</activation_examples>
 
 <supported_targets>
 
@@ -193,38 +209,11 @@ After the baseline plan is explicit:
 
 <skill_architecture>
 
-Keep the core skill focused on trigger, owned work, workflow, and mutation discipline.
+Keep `SKILL.md` focused on trigger, owned work, mutation discipline, and stop conditions. Put schemas, prompt packs, upstream notes, artifact details, long reviews, raw eval output, and narrative analysis in directly linked support files or `details/`.
 
-Load support files intentionally:
+Render `dashboard.html` and `results.js` with `scripts/render-dashboard.sh`; do not hand-edit generated dashboard output. Keep human-readable run descriptions, score rationale, changelog notes, and dashboard text in Korean unless the user requests another language.
 
-- Use [rules/context-sourcing-and-trace.md](rules/context-sourcing-and-trace.md) for run contracts, source policy, reset events, and trace assertions.
-- Use [references/eval-guide.md](references/eval-guide.md) for binary eval design.
-- Use [references/skill-refactor-guide.md](references/skill-refactor-guide.md) when failures point to weak skill structure, weak support files, or poor trigger wording.
-- Use [references/artifact-spec.md](references/artifact-spec.md) for dashboard, result file, changelog, and workspace schemas.
-- Use [references/self-test-pack.md](references/self-test-pack.md) when no prompt pack is supplied.
-- Use [references/upstream-autoresearch-patterns.md](references/upstream-autoresearch-patterns.md) when adapting upstream concepts such as Verify/Guard, git memory, crash recovery, or result log statuses.
-- Use [references/reporting-and-score-explanation.md](references/reporting-and-score-explanation.md) for Korean final reports, score-delta explanations, change attribution, and dashboard-visible summary fields.
-- Render `dashboard.html` and `results.js` from the official dashboard template with `scripts/render-dashboard.sh`.
-- Put long prompt packs, raw eval outputs, reviews, and narrative analysis in `details/` or standard log files; let the renderer load them into the dashboard instead of editing the HTML template by hand.
-- Keep every human-readable `description`, score rationale, score-delta note, changelog entry, and dashboard text in Korean unless the user explicitly requests another language.
-
-Artifact lifecycle requirements:
-
-- Create a workspace under `.hypercore/autoresearch-skill/[skill-name]/`.
-- Save the original target skill as `SKILL.md.baseline` before editing.
-- If support files can change, also create `baseline-files.json` or a `baseline/` snapshot.
-- Synchronize `results.tsv` and `results.json` after every experiment.
-- Record prompt pack, eval set, target files, environment, rollback conditions, guard policy, source policy, and trace assertions in artifacts.
-- Treat `dashboard.html` as a live view derived from `results.json`.
-- Treat `results.js` as the generated bridge for both `results.json` and detailed content files.
-- Keep `results.json.status` as `running` during the loop and `complete` at exit.
-- The dashboard must render when opened directly through a local `file://` URL.
-
-When skill structure is weak:
-
-- Prefer deleting duplication over adding more instructions.
-- Move repeated policy into `rules/` and detailed knowledge into `references/` only when those files will actually be used.
-- Keep each mutation small enough to explain and score.
+When skill structure is weak, prefer deleting duplication, tightening triggers, moving reusable policy to `rules/`, and moving detailed knowledge to `references/` before adding new machinery.
 
 </skill_architecture>
 
@@ -239,54 +228,14 @@ When skill structure is weak:
 | 4 | Repeat one-mutation-at-a-time experiments | Keep/discard decision |
 | 5 | Verify final results and summarize the run | Final report |
 
-### Phase details
+Phase details:
 
-#### Phase 0: Understand the target
-
-- Read `SKILL.md` and only the directly linked support files needed for the target behavior.
-- Record the run contract before mutation: intent, scope, authority, evidence, tools, output, verification, and stop condition.
-- Identify whether the main weakness is trigger precision, core bloat, support-file placement, workflow clarity, or validation.
-- Record non-regression constraints, including instructions that must not be lost.
-- Save `SKILL.md.baseline`; snapshot support files too when they are in scope.
-
-#### Phase 1: Build the eval set
-
-- Convert success criteria into binary pass/fail checks.
-- Dry-run the scoring method and reject outputs that are not parseable, repeatable scores.
-- Add source-sensitive or trace-based checks when external evidence, tools, or delegation affect correctness.
-- Include positive, negative, and boundary trigger prompts.
-- Ensure at least one eval checks the user's actual target improvement rather than generic writing quality.
-- Verify score and Guard checks are separate: Verify measures score movement, while Guard blocks regressions in trigger boundaries, artifact schema, support links, and safety.
-- Do not change the eval set to make a mutation pass. If the eval set is wrong, record a reset event before any new score is compared.
-
-#### Phase 2: Prepare the workspace
-
-- Create `.hypercore/autoresearch-skill/[skill-name]/` at the repository root.
-- Initialize `results.tsv`, `results.json`, `changelog.md`, and `dashboard.html` according to [references/artifact-spec.md](references/artifact-spec.md).
-- Render the official dashboard template with `scripts/render-dashboard.sh`.
-
-#### Phase 3: Establish the baseline
-
-- Run the unmodified skill against the eval set.
-- Score every run against every eval.
-- Record experiment `0` as `baseline`.
-
-#### Phase 4: Experiment loop
-
-- Review recent `results.tsv`, `results.json`, `changelog.md`, and optional git experiment history.
-- Find the highest-value failure pattern and avoid repeating discarded hypotheses.
-- Write exactly one hypothesis and one-sentence mutation description before editing.
-- Apply exactly one mutation.
-- Re-run the same eval set and guard checks.
-- Keep a mutation when score improves and guards pass. Discard it when score is flat/worse, guards fail, or complexity increases without no-regression simplification evidence.
-- Record every attempt, including discard, crash, no-op, hook-blocked, and metric-error statuses.
-- For each kept or reworked mutation, record which eval area improved, how much the score moved, which files changed, and what evidence explains the change.
-
-#### Phase 5: Exit and handoff
-
-- Stop only when [rules/validation-and-exit.md](rules/validation-and-exit.md) allows it: user stop, budget limit, or stable high score.
-- Report score delta, total experiments, keep ratio, most effective change, remaining failure patterns, and whether the best experiment should remain `keep` or be promoted.
-- Write the final report in Korean and include: baseline score, final/best score, exact delta, where the score rose by eval/category, what files changed, why each change was kept, dashboard path, and caveats.
+- Phase 0: read `SKILL.md` plus only needed direct support files, record run contract and non-regression constraints, then save `SKILL.md.baseline` and any scoped support baseline.
+- Phase 1: convert success criteria into binary evals, include positive/negative/boundary prompts, and keep Verify scoring separate from Guard regressions.
+- Phase 2: create `.hypercore/autoresearch-skill/[skill-name]/`, initialize required artifacts from [references/artifact-spec.md](references/artifact-spec.md), and render the dashboard.
+- Phase 3: run the unmodified skill as experiment `0` and record the baseline score.
+- Phase 4: make exactly one hypothesis and mutation at a time; keep it only when score improves and guards pass, and record every keep, discard, crash, no-op, hook-blocked, or metric-error status.
+- Phase 5: stop only under [rules/validation-and-exit.md](rules/validation-and-exit.md), then write the Korean final report with score delta, changed files, evidence, dashboard path, and caveats.
 
 </workflow>
 
@@ -311,22 +260,11 @@ Avoid these mutation types:
 
 <deliverables>
 
-At exit, leave behind:
+At exit, leave behind improved target skill changes plus `.hypercore/autoresearch-skill/[skill-name]/` artifacts.
 
-- The improved target skill changes.
-- `.hypercore/autoresearch-skill/[skill-name]/dashboard.html`.
-- `.hypercore/autoresearch-skill/[skill-name]/results.json`.
-- `.hypercore/autoresearch-skill/[skill-name]/results.js` or an equivalent file-based bridge.
-- `.hypercore/autoresearch-skill/[skill-name]/results.tsv`.
-- `.hypercore/autoresearch-skill/[skill-name]/changelog.md`.
-- `.hypercore/autoresearch-skill/[skill-name]/score-explanation.md` with Korean score movement, eval/category attribution, and file-level change reasons.
-- `.hypercore/autoresearch-skill/[skill-name]/final-report.md` with the Korean user-facing summary.
-- `.hypercore/autoresearch-skill/[skill-name]/details/` when the run has detailed prompts, raw eval output, failure excerpts, or review notes too large for `results.json`.
-- `.hypercore/autoresearch-skill/[skill-name]/SKILL.md.baseline`.
-- `.hypercore/autoresearch-skill/[skill-name]/baseline-files.json` or `baseline/` when support files are mutable.
-- `.omx/specs/autoresearch-[skill-name]/result.json` completion artifact.
-- `run-contract.md`, `source-ledger.md`, or `trace-summary.md` when the run uses external/current sources, tools, or delegation.
-- `validation_mode` and `completion_artifact_path` bridge state in `.omx/state/.../autoresearch-state.json`.
+Required core artifacts are `SKILL.md.baseline`, `results.json`, `results.tsv`, `results.js` or equivalent bridge, `dashboard.html`, `changelog.md`, `score-explanation.md`, and `final-report.md`.
+
+Add `baseline-files.json` or `baseline/`, `details/`, `run-contract.md`, `source-ledger.md`, `trace-summary.md`, `.omx/specs/autoresearch-[skill-name]/result.json`, and `.omx/state/.../autoresearch-state.json` only when support files, long evidence, external/current sources, delegation, or bridge mode are in scope.
 
 Follow [references/artifact-spec.md](references/artifact-spec.md) for schemas and examples, and [references/reporting-and-score-explanation.md](references/reporting-and-score-explanation.md) for the Korean report contract.
 

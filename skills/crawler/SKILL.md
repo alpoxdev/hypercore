@@ -18,21 +18,40 @@ Use a different language only when the user explicitly requests it, an existing 
 
 </output_language>
 
-Use `crawler` when the user wants a reusable crawling flow, site extraction plan, API reverse engineering for crawling, or analysis-backed crawler code.
+<purpose>
 
-For resumable or multi-step crawl work, treat `.hypercore/crawler/<ACTION>.json` as the durable context file that preserves intent, current state, evidence pointers, and the next step.
+- Investigate websites before generating crawler code.
+- Capture API, auth, selector, network, anti-bot, and method-selection evidence.
+- Leave resumable crawl state under `.hypercore/crawler/<ACTION>.json` and site artifacts under `.hypercore/crawler/[site]/`.
+- Generate crawler code only after discovery evidence justifies the method.
 
-Do not use `crawler` for generic browser automation, one-off page clicking, or document rewriting with no crawl deliverable.
+</purpose>
 
-For quick one-off extraction with no reusable crawler, keep the work lightweight and avoid forcing the full artifact set unless the request expands into crawl design.
+<routing_rule>
 
-**Templates:** [document-templates.md](rules/document-templates.md) · [code-templates.md](rules/code-templates.md)
-**Checklists:** [pre-crawl-checklist.md](rules/pre-crawl-checklist.md) · [anti-bot-checklist.md](rules/anti-bot-checklist.md)
-**References:** [playwriter-commands.md](rules/playwriter-commands.md) · [chrome-devtools-mcp.md](rules/chrome-devtools-mcp.md) · [cdp-capture.md](rules/cdp-capture.md) · [crawling-patterns.md](rules/crawling-patterns.md) · [selector-strategies.md](rules/selector-strategies.md) · [network-crawling.md](rules/network-crawling.md) · [action-manifest.md](rules/action-manifest.md)
+Use `crawler` for reusable crawling flows, site extraction plans, API reverse engineering for crawling, or analysis-backed crawler code.
 
----
+Do not use it for generic browser automation, one-off page clicking, or document rewriting with no crawl deliverable. For quick one-off extraction, stay lightweight unless the request expands into reusable crawl design.
 
-<trigger_examples>
+</routing_rule>
+
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Build evidence-backed crawler plans and code after website/API discovery. |
+| Trigger | Reusable crawling, scraping, site-wide extraction, crawl strategy, API reverse engineering, auth/network evidence, or crawler code generation. |
+| Scope | Own discovery, method selection, evidence artifacts, durable action state, and generated crawler code when justified. |
+| Authority | User/project instructions outrank this skill; observed browser/network/CDP evidence and local artifacts are evidence. |
+| Evidence | Use Playwriter, Chrome DevTools/CDP, network summaries, selector checks, anti-bot findings, and artifact files. |
+| Tools | Use browser/CDP tools and local file writes only as needed; gate credentials, anti-bot bypass, production, and unsafe scraping. |
+| Output | Korean findings plus `.hypercore/crawler/` artifacts and crawler code only after evidence supports it. |
+| Verification | Validate method choice, artifacts, selectors/API calls, and generated code against captured evidence. |
+| Stop condition | Stop when the crawl method is justified, artifacts are written, code is generated only if safe, or blockers are documented. |
+
+</instruction_contract>
+
+<activation_examples>
 
 Positive examples:
 
@@ -49,7 +68,7 @@ Boundary example:
 
 - "Grab three prices from this public page right now." Prefer lightweight extraction unless the user asks for a reusable crawler or site-wide strategy.
 
-</trigger_examples>
+</activation_examples>
 
 ---
 
@@ -66,7 +85,7 @@ Boundary example:
 
 ---
 
-<support_file_routing>
+<support_file_read_order>
 
 Read support files in this order:
 
@@ -82,7 +101,7 @@ Read support files in this order:
 10. Use [document-templates.md](rules/document-templates.md) when writing `.hypercore/crawler/[site]/` artifacts.
 11. Use [code-templates.md](rules/code-templates.md) only after the method is chosen and the discovery evidence is documented.
 
-</support_file_routing>
+</support_file_read_order>
 
 ---
 
@@ -146,40 +165,7 @@ Read support files in this order:
 
 <output_structure>
 
-`.hypercore/crawler/<ACTION>.json`
-
-- `ACTION.json` preserves intent, current status, capture mode, blockers, output pointers, and the next step.
-- `.hypercore/crawler/[site-name]/` preserves detailed evidence, analysis, and generated code for that site.
-
-```text
-.hypercore/crawler/
-├── <ACTION>.json              # durable action context
-└── [site-name]/
-    ├── ANALYSIS.md
-    ├── SELECTORS.md
-    ├── API.md
-    ├── NETWORK.md
-    ├── raw/
-    │   ├── network-summary.json
-    │   ├── auth-signals.json
-    │   └── endpoint-candidates.json
-    └── CRAWLER.ts
-```
-
-Site artifact contract:
-
-```
-.hypercore/crawler/[site-name]/
-├── ANALYSIS.md      # Site structure
-├── SELECTORS.md     # DOM selectors
-├── API.md           # API endpoints
-├── NETWORK.md       # Auth/network details
-├── raw/
-│   ├── network-summary.json      # normalized request/response evidence
-│   ├── auth-signals.json         # cookies/storage/header evidence
-│   └── endpoint-candidates.json  # deduped API candidates
-└── CRAWLER.ts       # Generated crawler code
-```
+`ACTION.json` preserves intent, current status, capture mode, blockers, output pointers, and the next step. `.hypercore/crawler/[site-name]/` preserves detailed evidence, analysis, and generated code for that site.
 
 Minimum artifact contract:
 

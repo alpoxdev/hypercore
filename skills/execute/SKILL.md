@@ -18,7 +18,15 @@ Use a different language only when the user explicitly requests it, an existing 
 
 </output_language>
 
-<request_routing>
+<purpose>
+
+- Start clear implementation tasks immediately with proportional reasoning depth.
+- Classify task difficulty before editing so easy work stays light and hard work gets enough context.
+- Route diagnosis, planning, review, deployment, security, or explicit workflow requests to more specific skills.
+
+</purpose>
+
+<routing_rule>
 
 ## Positive triggers
 
@@ -43,7 +51,23 @@ Use a different language only when the user explicitly requests it, an existing 
 - If the user asks for a persistent guaranteed-completion loop ("keep going until done", "until max score", or Ralph-style repetition), route to Ralph when available rather than silently downgrading it to one-shot execute.
 - If the task turns out to require architectural decisions mid-flight, pause and consult the user rather than guessing.
 
-</request_routing>
+</routing_rule>
+
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Execute a clear task directly while scaling reasoning and verification to task difficulty. |
+| Trigger | Direct implementation, refactor, test, cleanup, or "do/build/make this work" requests with an identifiable deliverable. |
+| Scope | Own context gathering, code edits, validation, and final Korean execution report for the requested deliverable. |
+| Authority | User and project instructions outrank this skill; repository files and validation output are evidence. |
+| Evidence | Use local file reads, search results, diffs, test/build/lint output, and runtime checks when relevant. |
+| Tools | Use local read/edit/search/shell tools; gate destructive, credentialed, production, and external side effects. |
+| Output | Implemented change or explicit blocker, with changed files, verification evidence, and residual risks. |
+| Verification | Run the smallest command set that can prove the implemented claim; broaden only when risk requires it. |
+| Stop condition | Stop when the requested deliverable is implemented and verified, or a true blocker is reported with evidence. |
+
+</instruction_contract>
 
 <argument_validation>
 

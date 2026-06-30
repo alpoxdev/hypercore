@@ -47,6 +47,22 @@ Use a different language only when the user explicitly requests it, an existing 
 
 </request_routing>
 
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Prove deploy readiness or narrowly fix reproduced lint/typecheck/build blockers. |
+| Trigger | Activate on pre-deploy, deploy-ready, final quality gate, or local stack validation requests. |
+| Scope | Own target-root validation, stack detection, deploy-check baseline, reproduced blocker triage/fix, remediation tracking, and readiness reporting. |
+| Authority | User and project instructions outrank this skill; local toolchain output, stack markers, and validation scripts are evidence. |
+| Evidence | Use stack detection, the initial full deploy-check output, failing command logs, relevant configs, and targeted recheck output before editing. |
+| Tools | Use the repository-local scripts, local reads/edits, and bounded subagents only for independent lanes; no deploy or production side effects are implied. |
+| Output | Korean readiness report with scope, detected stacks, mode, blockers, fixes, validation commands, skipped checks, and risks. |
+| Verification | Run full `skills/pre-deploy/scripts/deploy-check.sh` first and again before any readiness claim, with targeted checks after fixes. |
+| Stop condition | Stop when deploy readiness is proven, validate-only blockers are reported, unsupported stack is reported, or a handoff/permission blocker is reached. |
+
+</instruction_contract>
+
 <argument_validation>
 
 - If no argument is provided, default to the current repository root.

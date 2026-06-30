@@ -60,14 +60,14 @@ If the request starts as a concrete bug but expands into repo-wide build failure
 
 <activation_examples>
 
-## Positive triggers
+## Positive examples
 
 - "`Cannot read properties of undefined` 에러가 `/users` 페이지에서 나는데 고쳐줘."
 - "최근 변경 뒤 로그인 버튼을 눌러도 세션이 저장되지 않아. 원인 찾고 수정해줘."
 - "이 failing test를 통과하게 실제 버그를 고쳐줘."
 - "API 응답은 오는데 화면에서 같은 카드가 두 번 렌더링돼."
 
-## Negative triggers
+## Negative examples
 
 - "전체 CI가 깨졌는데 의존성/빌드 설정을 전부 정리해줘." Use a build/CI repair skill.
 - "이 인증 흐름의 보안 취약점을 감사해줘." Use a security review/fix skill.

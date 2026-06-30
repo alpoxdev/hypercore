@@ -42,6 +42,22 @@ Use a different language only when the user explicitly requests it, an existing 
 
 </request_routing>
 
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Diagnose and repair concrete build, CI, or deployment failures. |
+| Trigger | Activate only when the user provides or asks to fix a build/CI/deploy failure surface. |
+| Scope | Own failure classification, reproduction, log/config analysis, build/deploy-layer fixes, flow tracking for complex cases, and validation reporting. |
+| Authority | User and project instructions outrank this skill; build logs, CI/deploy output, config files, and local validation are evidence. |
+| Evidence | Collect exact failing command output, first failure point, relevant config, dependency state, and recent-change context before editing. |
+| Tools | Use local reads, edits, Bash validation, and `.hypercore/deploy-fix/flow.json` for complex cases; external production side effects require explicit user authority. |
+| Output | Korean failure/root-cause/fix/validation report, plus updated flow JSON when the complex path is used. |
+| Verification | Re-run the failing build/CI/deploy command or the narrowest equivalent local check, then record commands and results. |
+| Stop condition | Stop when the failure is fixed and verified, diagnose-only output is delivered, or a complex option/permission/production blocker is reported. |
+
+</instruction_contract>
+
 <argument_validation>
 
 If ARGUMENT is missing, ask immediately:

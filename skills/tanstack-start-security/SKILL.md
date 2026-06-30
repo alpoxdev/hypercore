@@ -43,18 +43,18 @@ If the request is a generic non-TanStack security review, route away to the norm
 
 ## Trigger Examples
 
-### Positive
+### Positive examples:
 
 - `Review TanStack Start login and session handling security.`
 - `Prevent secrets from leaking through a TanStack Start server function.`
 - `Review auth, cookies, CSRF, and webhook security in this TanStack Start app.`
 
-### Negative
+### Negative examples:
 
 - `Make a small style-only change to a plain React page.`
 - `Security review an Express API server that is not a TanStack Start app.`
 
-### Boundary
+### Boundary examples:
 
 - `Change only the copy on a TanStack Start page.`
 If there is no change to security boundaries, auth, env handling, server routes, or headers, this skill may be too heavy.
@@ -142,6 +142,8 @@ Block the change until fixed if any of these are true:
 - webhook handlers trust payloads before signature verification
 - auth/session cookies are configured loosely without deliberate environment rules
 
+<validation_checklist>
+
 ## Verification
 
 Before claiming completion:
@@ -151,3 +153,5 @@ Before claiming completion:
 - summarize what was hardened and what remains stack-dependent
 
 For detailed review and command guidance, use `rules/validation.md`.
+
+</validation_checklist>

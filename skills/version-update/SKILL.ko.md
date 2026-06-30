@@ -28,6 +28,22 @@ compatibility: Git 저장소와 `skills/version-update/scripts` 하위 스크립
 
 </purpose>
 
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | 지원되는 project file 전반의 semantic version을 동기화해 업데이트합니다. |
+| Trigger | version bump/set 요청, 특히 version update와 optional commit 요청에 활성화합니다. |
+| Scope | stack detection, version-file discovery, target-version calculation, version application, diff review, git-path selection을 담당합니다. |
+| Authority | 사용자와 프로젝트 지시가 이 스킬보다 우선합니다. discovered version file, semver rule, detector output, diff는 근거입니다. |
+| Evidence | git write 전에 `version-find.sh`, `version-current.sh`, target argument parsing, `git diff`, project-local `git-commit` detection을 사용합니다. |
+| Tools | Bash helper와 local file edit를 사용합니다. git write는 가능하면 project-local `git-commit`에 위임하고, missing일 때만 fallback script를 사용합니다. |
+| Output | current version, target version, changed file, 선택된 git path, commit/push status, caveat에 대한 한국어 report입니다. |
+| Verification | 의도한 모든 version file이 일관되게 변경되었는지 확인하고, diff를 검토하며, `git-commit-detect.sh`를 실행하고, 요청된 경우에만 optional git step을 수행합니다. |
+| Stop condition | version file이 업데이트 및 검토되었거나, 요청된 git step이 완료 또는 근거 있는 blocker로 보고되었을 때 멈춥니다. |
+
+</instruction_contract>
+
 <trigger_conditions>
 
 | 사용자 의도 | Activate |

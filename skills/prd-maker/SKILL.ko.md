@@ -70,21 +70,21 @@ compatibility: 로컬 파일 검색/편집 도구, 번들 미리보기/다이어
 
 <activation_examples>
 
-긍정 요청:
+Positive examples (긍정 예시):
 
 - "팀 인박스 배정 기능 PRD, 기능명세서, 유저플로우, 로우파이 와이어프레임까지 만들어줘."
 - "결제 재시도 기능을 구현 전에 ManyFast 비슷한 기획 패키지로 만들어줘."
 - "이 앱 아이디어를 PRD 먼저, 그다음 기능명세서, 유저플로우, 와이어프레임 순서로 문서화해줘."
 - "기존 온보딩 PRD 변경사항을 스펙, 플로우, 와이어프레임까지 전파해줘."
 
-부정 요청:
+Negative examples (부정 예시):
 
 - "경쟁사 온보딩 방식을 조사해줘."
 - "결제 재시도 플로우 구현해줘."
 - "지원팀 런북을 다시 써줘."
 - "우리 브랜드 스타일로 최종 UI 목업 만들어줘."
 
-경계 요청:
+Boundary examples (경계 예시):
 
 - "코딩 전에 이 기능 기획해줘."
   결과물이 `.hypercore/prd/` 아래의 저장된 기획 패키지여야 할 때만 `prd-maker`를 사용합니다. 아니면 `plan`으로 라우팅합니다.
@@ -227,6 +227,16 @@ compatibility: 로컬 파일 검색/편집 도구, 번들 미리보기/다이어
 - 와이어프레임은 완성 디자인이 아니라 구조 검토 산출물로 취급합니다.
 
 </workflow>
+
+<validation_checklist>
+
+- 패키지 파일이 예상 `.hypercore/prd/[slug]/` 폴더에 있고 create/update 모드와 일치합니다.
+- PRD 결정이 `feature-spec.md`, `user-flow.md`, `wireframe.md`, 기획 다이어그램으로 추적됩니다.
+- `sources.md`에는 제공된 맥락, 조사 근거, 또는 외부 조사를 생략한 명확한 이유가 기록됩니다.
+- 패키지 내용이 바뀌면 `diagram.data.json`, `diagram.svg`, `preview.html`을 다시 생성합니다.
+- 오픈 질문, 가정, 리스크, 검증 공백은 조용히 해결한 것처럼 처리하지 않고 보이게 둡니다.
+
+</validation_checklist>
 
 <required>
 

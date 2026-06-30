@@ -68,7 +68,7 @@ compatibility: Git, 인증된 GitHub CLI (`gh`), 네트워크 접근, 쓰기 가
 
 <activation_examples>
 
-Positive requests:
+Positive examples:
 
 - "`git-issue` create an issue for OAuth callback failures and move to a branch."
 - "`@skills/git-issue` #123"
@@ -76,13 +76,13 @@ Positive requests:
 - "이 기존 이슈 https://github.com/org/repo/issues/42 작업 브랜치로 들어가줘."
 - "`git-issue` 로그인 리다이렉트 버그"
 
-Negative requests:
+Negative examples:
 
 - "Commit these changes." `git-commit`을 사용합니다.
 - "Create a worktree for this issue." `git-worktree`를 사용합니다.
 - "Open a PR for this branch." issue branch setup도 요청한 경우가 아니면 PR workflow를 사용합니다.
 
-Boundary request:
+Boundary examples:
 
 - topic, number, URL, issue detail 없이 "`git-issue`"만 호출 -> 사용자 언어로 한 문장만 묻습니다: "어떤 GitHub issue를 만들까요? 제목과 필요한 맥락을 알려주세요."
 

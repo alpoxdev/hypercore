@@ -18,6 +18,21 @@ Use a different language only when the user explicitly requests it, an existing 
 
 </output_language>
 
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Build, run, or explain a safe `codex` CLI invocation when the user explicitly asks for Codex CLI. |
+| Scope | Owns `codex exec`, `codex review`, resume/fork flows, sandbox choice, extra directory flags, and result summarization. |
+| Authority | User intent and local project rules come first; Codex CLI behavior is verified from the installed command/help or current docs when needed. |
+| Evidence | Ground the answer in the command shape, CLI output, review output, sandbox choice, and observed warnings/errors. |
+| Tools | Use shell execution only when the user wants the CLI run; otherwise provide the command or route away. |
+| Output | Return the exact command used or recommended, summarize output/warnings, and preserve CLI tokens verbatim. |
+| Verification | Check that non-interactive runs use `codex exec`, review stays read-only, writable sandbox is explicit, and bypass flags are gated. |
+| Stop condition | Stop after the requested Codex command is constructed or run and its result, warnings, or blocker are reported. |
+
+</instruction_contract>
+
 ## Defaults
 
 | Parameter | Default |
@@ -40,19 +55,19 @@ Use this skill when the request actually needs Codex CLI or a separate Codex ses
 
 ## Examples
 
-Positive triggers:
+Positive examples:
 
 - "Use Codex to review this repository and summarize the risks."
 - "Run `codex exec` and analyze this architecture."
 - "Continue the last Codex session and ask it to finish the patch."
 - "Run `codex review` against the base branch and list the blocking issues."
 
-Negative triggers:
+Negative examples:
 
 - "Rewrite this runbook for readability."
 - "Create a new skill for our repo."
 
-Boundary trigger:
+Boundary examples:
 
 - "Research Codex sandbox modes and tell me what they do."
   Use this skill only if the user wants the `codex` CLI involved; otherwise route to research or direct documentation work.
@@ -155,3 +170,13 @@ Treat Codex as a colleague, not an authority.
 - Session not found: run `codex exec resume` (without `--last`) to use the picker, or switch to `codex resume --last` for the latest interactive session.
 - Invalid flag or model errors: check `codex --help` or `codex exec --help` and retry with supported options.
 - Outside a Git repo: add `--skip-git-repo-check` only when the user has accepted that the run will operate without repo guardrails.
+
+<validation_checklist>
+
+- [ ] The request explicitly needs Codex CLI or a separate Codex session.
+- [ ] Non-interactive runs use `codex exec`; interactive TUI invocation is not used for automation.
+- [ ] `codex review` remains read-only and is not paired with writable sandbox or bypass flags.
+- [ ] `--sandbox workspace-write` is used only when the user explicitly wants Codex to edit workspace files.
+- [ ] Final output includes the command shape, observed result, warnings, and any auth/session/sandbox blocker.
+
+</validation_checklist>

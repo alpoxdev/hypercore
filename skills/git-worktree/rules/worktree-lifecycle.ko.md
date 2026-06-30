@@ -33,14 +33,14 @@ Interaction language:
 
 - Clarification question은 사용자 요청과 같은 언어로 묻는다.
 - 한국어 사용자에게는 한국어로만 묻는다. English fallback text나 generic English operation menu를 보여주지 않는다.
-- 묻기 전에 사용자 wording에서 operation을 추론한다. 추론이 실패하면 localized question 하나를 묻는다. 한국어 사용자에게는 생성, 목록, 열기/이동, 삭제, 정리, 복구, 잠금, 잠금 해제 중 어떤 worktree 작업을 원하는지 묻는다.
+- 묻기 전에 사용자 wording에서 operation을 추론한다. 추론이 실패하면 "어떤 worktree 작업을 원하시나요? 생성, 목록, 열기/이동, 삭제, 정리, 복구, 잠금 중에서 알려주세요."처럼 localized question 하나를 묻는다.
 - 새 worktree의 work intent만 빠졌다면 operation이 아니라 work intent를 묻는다.
 
 Worktree를 만들기 전에 거기서 무엇을 할지 확정한다.
 
 - direct `git-worktree <ARGUMENT>` argument가 있으면 그것이 work intent다. work-intent question을 건너뛴다.
 - 사용자가 이미 branch, PR, issue, task, concrete work item을 명명했다면 그 context를 사용한다.
-- 사용자가 worktree 생성만 말했고 task가 불명확하면 생성 전에 정확히 하나의 concise localized question을 묻는다. 한국어 사용자에게는 이 worktree에서 어떤 작업을 할 예정인지 묻는다.
+- 사용자가 worktree 생성만 말했고 task가 불명확하면 생성 전에 정확히 하나의 concise localized question을 묻는다. 한국어 사용자에게는 "이 worktree에서 어떤 작업을 할 예정인가요?"라고 묻는다.
 - 답변에서 `<folder_name>`을 도출한다. 사용자가 명시적으로 원하지 않는 한 random timestamp나 generic `worktree-1`을 사용하지 않는다.
 
 Naming rules:
@@ -105,7 +105,7 @@ git worktree add --detach <path> <commit-or-tag>
 
 Detached worktree는 read-only inspection, bisect-like diagnostics, 또는 explicit throwaway review에만 사용한다.
 
-생성 후 worktree가 존재하는지 검증하고 follow-up work의 active context로 만든다. "enter", "open", "switch", "go into it" 또는 같은 의미의 한국어 표현이 있는 create request는 새 path에서 follow-up command가 실행될 때까지 완료되지 않는다.
+생성 후 worktree가 존재하는지 검증하고 follow-up work의 active context로 만든다. "enter", "open", "switch", "go into it", "들어가", "이동", "전환" 또는 같은 의미의 한국어 표현이 있는 create request는 새 path에서 follow-up command가 실행될 때까지 완료되지 않는다.
 
 ```bash
 git -C <path> status --short --branch

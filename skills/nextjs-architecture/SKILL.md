@@ -88,7 +88,7 @@ Enforce official Next.js architecture rules before and after code changes. First
 
 <activation_examples>
 
-Positive:
+Positive examples:
 
 - "Audit this Next.js App Router feature for Server/Client boundaries and cache correctness."
 - "Refactor this form to use Server Actions instead of an internal route handler."
@@ -96,13 +96,13 @@ Positive:
 - "Next.js 16 cacheComponents 기준으로 data fetching 규칙을 점검해줘."
 - "Next.js App Router에서 src/lib/auth/session.ts와 src/services/billing/mutations.ts처럼 nested shared folders로 정리해줘."
 
-Negative:
+Negative examples:
 
 - "Create a generic React architecture guide."
 - "Review a Remix or TanStack Start app."
 - "Write marketing copy for a Next.js landing page without touching architecture."
 
-Boundary:
+Boundary examples:
 
 - "Make a tiny copy-only text change in a Next.js page."
   Direct editing can be enough if no architectural boundary is affected, but touched files still need a quick boundary check.
@@ -224,6 +224,8 @@ Auto-fix local, reversible issues: narrow client boundaries, move server-only co
 
 Do not auto-apply broad migrations: Pages→App Router rewrites, sweeping cache model changes, mass Route Handler→Server Action conversions, or deployment-sensitive origin/encryption changes.
 
+<validation_checklist>
+
 ## Step 5: Post-Change Verification
 
 Run the smallest project-specific checks that prove the claim, then report evidence:
@@ -247,3 +249,5 @@ node skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.mjs
 ## Stop Condition
 
 Finish when the Next.js mode is known, all touched surfaces pass the relevant gates, verification output is fresh, and any remaining repo-local convention or risk is explicitly reported.
+
+</validation_checklist>

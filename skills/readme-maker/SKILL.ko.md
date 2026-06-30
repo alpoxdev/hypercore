@@ -71,7 +71,7 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 
 <activation_examples>
 
-긍정 요청:
+Positive examples (긍정 예시):
 
 - "이 프로젝트를 꼼꼼히 읽고 README.md를 만들어줘."
 - "현재 CLI 명령에 맞게 README를 리팩터해줘."
@@ -80,14 +80,14 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 - "프로젝트 README.md 만들어줘."
 - "이 저장소를 꼼꼼히 읽고 README를 다시 써줘."
 
-부정 요청:
+Negative examples (부정 예시):
 
 - "커밋 로그로 CHANGELOG 만들어줘." → `git-commit`/`version-update` 경로 사용.
 - "이 라이브러리의 API 문서를 작성해줘." → `docs-maker` 사용.
 - "이 프로젝트의 다음 릴리스를 기획해줘." → `prd-maker` 또는 `plan` 사용.
 - "이 코드베이스에 새 기능을 추가해줘." → README 작업이 아님.
 
-경계 요청:
+Boundary examples (경계 예시):
 
 - "이 프로젝트를 문서화해줘."
   산출물이 `README.md`일 때만 `readme-maker`를 사용한다. 가이드, 런북, 인스트럭션 베이스가 산출물이면 `docs-maker`를 사용한다.

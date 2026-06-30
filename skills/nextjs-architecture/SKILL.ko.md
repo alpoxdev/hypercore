@@ -88,7 +88,7 @@ generic React architecture, Remix/TanStack Start project, docs-only summary, arc
 
 <activation_examples>
 
-Positive:
+Positive examples:
 
 - "Audit this Next.js App Router feature for Server/Client boundaries and cache correctness."
 - "Refactor this form to use Server Actions instead of an internal route handler."
@@ -96,13 +96,13 @@ Positive:
 - "Next.js 16 cacheComponents 기준으로 data fetching 규칙을 점검해줘."
 - "Next.js App Router에서 src/lib/auth/session.ts와 src/services/billing/mutations.ts처럼 nested shared folders로 정리해줘."
 
-Negative:
+Negative examples:
 
 - "Create a generic React architecture guide."
 - "Review a Remix or TanStack Start app."
 - "Write marketing copy for a Next.js landing page without touching architecture."
 
-Boundary:
+Boundary examples:
 
 - "Make a tiny copy-only text change in a Next.js page."
   아키텍처 경계가 영향받지 않으면 직접 편집으로 충분할 수 있지만, touched files는 빠른 boundary check를 거쳐야 합니다.
@@ -224,6 +224,8 @@ local, reversible issue는 자동 수정합니다: client boundary 좁히기, se
 
 broad migration은 자동 적용하지 않습니다: Pages→App Router 대규모 rewrite, sweeping cache model change, 대량 Route Handler→Server Action conversion, deployment-sensitive origin/encryption 변경.
 
+<validation_checklist>
+
 ## Step 5: Post-Change Verification
 
 claim을 증명하는 가장 작은 프로젝트별 검사를 실행하고 evidence를 보고합니다:
@@ -247,3 +249,5 @@ node skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.mjs
 ## Stop Condition
 
 Next.js mode가 확인되고, touched surface가 관련 gate를 통과하며, fresh verification output이 있고, 남은 repo-local convention 또는 risk가 명시적으로 보고되면 완료합니다.
+
+</validation_checklist>

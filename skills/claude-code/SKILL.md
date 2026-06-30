@@ -20,6 +20,21 @@ Use a different language only when the user explicitly requests it, an existing 
 
 Source of truth: <https://code.claude.com/docs/en/cli-reference>.
 
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Build or explain a safe `claude` CLI invocation when the user explicitly asks for Claude Code. |
+| Scope | Owns command construction, resume/session flags, permission mode choice, tool restrictions, auth guidance, and result summarization for `claude`. |
+| Authority | User intent and local project rules come first; the linked Claude Code CLI reference is the source of truth for CLI flags. |
+| Evidence | Ground the answer in the command shape, CLI output, support-file guidance, and any warnings/errors observed. |
+| Tools | Use shell execution only when the user wants the CLI run; otherwise provide the command or route away. |
+| Output | Return the exact command used or recommended, summarize output/warnings, and preserve CLI tokens verbatim. |
+| Verification | Check that non-interactive runs use `-p`, permission mode matches the requested authority, and dangerous bypass is gated. |
+| Stop condition | Stop after the requested command is constructed or run and its result, warnings, or blocker are reported. |
+
+</instruction_contract>
+
 ## Defaults
 
 | Parameter | Default |
@@ -42,7 +57,7 @@ Use this skill when the request actually needs the `claude` CLI or a separate Cl
 
 ## Examples
 
-Positive triggers:
+Positive examples:
 
 - "Use Claude Code to review this repository and summarize the risks."
 - "Run `claude` in print mode and analyze this architecture."
@@ -50,12 +65,12 @@ Positive triggers:
 - "Resume the `auth-refactor` claude session and apply the next fix."
 - "Use `claude --bare -p` so this CI step does not pick up local hooks."
 
-Negative triggers:
+Negative examples:
 
 - "Rewrite this runbook for readability."
 - "Create a new skill for our repo."
 
-Boundary trigger:
+Boundary examples:
 
 - "Research Claude Code permissions and tell me what they do."
   Use this skill only if the user wants the `claude` CLI involved; otherwise route to research or direct documentation work.
@@ -172,3 +187,13 @@ The CLI reads credentials in this precedence order: cloud provider env vars (`CL
 - Session not found: run `claude --resume` without an argument to pick from a list, or switch to `claude --continue` for the current directory; `--session-id` requires a UUID.
 - Auto-mode unavailable: this is gated by plan, admin policy, model, and provider — it is not a transient outage; fall back to `default` or `acceptEdits`.
 - Invalid flag or model errors: check `claude --help`, then re-run with supported options. `claude --help` does not list every flag — consult the CLI reference for the full list.
+
+<validation_checklist>
+
+- [ ] The request explicitly needs the `claude` CLI or a separate Claude Code session.
+- [ ] Non-interactive runs use `-p` / `--print`; positional prompts are not used for automation.
+- [ ] Permission mode matches the task: `plan` for read-only, `acceptEdits` only for explicit file edits, and bypass only after explicit approval in an isolated environment.
+- [ ] Scripted or CI runs use `--bare` when reproducibility and local-hook isolation are required.
+- [ ] Final output includes the command shape, observed result, warnings, and any auth/session/permission blocker.
+
+</validation_checklist>

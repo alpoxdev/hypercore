@@ -1,3 +1,17 @@
+@architecture-rules.ko.md
+@rules/conventions.ko.md
+@rules/routes.ko.md
+@rules/handlers.ko.md
+@rules/middleware.ko.md
+@rules/validation.ko.md
+@rules/database.ko.md
+@rules/openapi.ko.md
+@rules/errors.ko.md
+@rules/testing-rpc.ko.md
+@rules/platform.ko.md
+@references/official/hono-docs.ko.md
+@references/official/drizzle-docs.ko.md
+
 # Hono 아키텍처 강제 적용
 
 <output_language>
@@ -10,19 +24,44 @@
 
 </output_language>
 
-## 개요
+<purpose>
 
-Hono 프로젝트에서 코드 변경 전에 아키텍처 규칙을 강제합니다. 실제로 Hono 프로젝트인지 먼저 검증한 뒤, 라우트 조합, 확장 가능한 폴더 구조, 핸들러, 미들웨어, 검증, database/ORM 경계, Drizzle 연결과 migration 배치, 에러 처리, OpenAPI/Swagger 문서화, 플랫폼 엔트리, typed testing/RPC 경계를 엄격히 확인합니다.
+- 코드 변경 전에 Hypercore Hono 아키텍처 규칙을 강제합니다.
+- Hono 전용 gate를 적용하기 전에 대상이 실제 Hono 프로젝트인지 확인합니다.
+- route composition, handler, middleware, validation, database/ORM, Drizzle, OpenAPI/Swagger, platform entrypoint, error handling, testing, typed RPC 경계를 일관되게 유지합니다.
+- Hono 공식 기본보다 엄격한 요구사항은 finding/report에서 Hypercore convention으로 표시합니다.
 
-**이 스킬은 엄격합니다.** 사용자가 공식 Hono 기본만 따르라고 명시하지 않는 한, 여기 적힌 규칙을 그대로 적용합니다.
+</purpose>
 
-**운영 모드:** 이 스킬은 자체적으로 동작해야 합니다. 외부 오케스트레이션에 의존하지 말고, 이 스킬의 검증 흐름으로 바로 진행하세요. 사용자가 exhaustive verification을 요구한 경우에만 더 깊게 확인합니다.
+<routing_rule>
 
-**중요:** 일부 규칙은 Hono 공식 기본보다 더 엄격합니다. 이런 항목은 hypercore 전용 컨벤션으로 분리해서 설명하세요.
+Hono app 구현, 리뷰, remediation, architecture enforcement에 이 스킬을 사용합니다.
 
-## 트리거 예시
+Hono가 아닌 프로젝트, generic Express/Fastify 작업, architecture boundary를 건드리지 않는 copy-only 변경, 사용자가 Hypercore convention 없이 공식 Hono 기본만 원한다고 명시한 요청에는 강제로 적용하지 않습니다.
 
-### Positive
+이 스킬은 자체적으로 동작합니다. Hono 규칙 적용만을 위해 global skill이나 외부 orchestration surface를 기다리지 않습니다.
+
+</routing_rule>
+
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Hono project를 official Hono behavior와 labelled Hypercore conventions에 맞춰 architecture, typing, docs, runtime boundary가 안전한 상태로 유지합니다. |
+| Trigger | routes, handlers, middleware, validation, DB/ORM, Drizzle, OpenAPI, platform entrypoint, error handling, testing, RPC가 포함된 Hono 작업. |
+| Scope | touched Hono source, topic rule files, official references, validation notes, small reversible architecture fixes를 review/guide합니다. |
+| Authority | user/project instructions가 이 스킬보다 우선합니다. API facts에서는 official Hono/Drizzle docs가 Hypercore convention보다 우선합니다. Safety, typing, validation, data-boundary rules는 위험한 변경을 차단합니다. |
+| Evidence | project indicators, local package/source files, touched paths, topic rules, drift가 중요할 때 official references, validation command output을 사용합니다. |
+| Tools | local search/read/edit/validation command를 사용하고 migration, credential access, production side effect, runtime adapter swap, broad rewrite는 gate합니다. |
+| Output | rule classification, changed files, validation evidence, remaining risks, official-vs-Hypercore label을 포함한 한국어 architecture finding 또는 implementation summary. |
+| Verification | 완료 전 touched surface에 맞는 project check와 final checklist를 실행합니다. |
+| Stop condition | project mode가 확인되고 applicable gate가 통과했거나 blocker로 보고되었으며 validation evidence가 기록되면 멈춥니다. |
+
+</instruction_contract>
+
+<activation_examples>
+
+### Positive examples:
 
 - `이 Hono 앱 구조부터 점검하고 라우트 추가하자.`
 - `Hono API를 리팩터링하는데 routing, middleware, validator 구조를 하나로 맞춰줘.`
@@ -32,18 +71,22 @@ Hono 프로젝트에서 코드 변경 전에 아키텍처 규칙을 강제합니
 - `hono-architecture 전체 수정`
 - `Hono architecture 스킬을 full-remediation mode로 실행해줘.`
 
-### Negative
+### Negative examples:
 
 - `Express 미들웨어 가이드 만들어줘.`
 - `Hono를 쓰지 않는 React SPA를 리뷰해줘.`
 
-### Boundary
+### Boundary examples:
 
 - `Hono handler의 응답 문구만 아주 작게 바꿔줘.`
 아키텍처 경계가 안 걸리면 direct edit만으로 충분할 수 있습니다.
 
 - `hypercore 규칙 말고 Hono 공식 기본만 따를래.`
 이 경우에도 스킬은 적용되지만, 공식 기본을 넘는 hypercore 전용 규칙은 완화합니다.
+
+</activation_examples>
+
+<trigger_conditions>
 
 ## 호출 인자
 
@@ -63,6 +106,10 @@ Hono 프로젝트에서 코드 변경 전에 아키텍처 규칙을 강제합니
 - camelCase 또는 PascalCase folder/file은 같은 변경 안에서 import, test path, route reference, configuration reference를 안전하게 갱신할 수 있으면 kebab-case로 rename합니다.
 - 3.5단계의 저위험 auto-remediation을 touched file에 한정하지 않고 앱 전체에 적용합니다.
 - 같은 실행에서 안전하게 끝낼 수 없는 위험한 변경은 file path와 실패한 규칙을 포함해 정확한 blocker/backlog item으로 남깁니다. 조용히 무시하지 않습니다.
+
+</trigger_conditions>
+
+<workflow>
 
 ## 1단계: 프로젝트 검증
 
@@ -91,6 +138,8 @@ rg -n "new Hono\\(|app\\.route\\(|basePath\\(|validator\\(|zValidator\\(|standar
 ```
 
 ## 2단계: 아키텍처 규칙 읽기
+
+<support_file_read_order>
 
 편집 전에 아래 파일들을 읽으세요:
 
@@ -132,131 +181,31 @@ rg -n "new Hono\\(|app\\.route\\(|basePath\\(|validator\\(|zValidator\\(|standar
 - 더 엄격한 hypercore 규칙은 optional overlay로 취급하고, 사용자가 opt out하지 않았을 때만 강제합니다.
 - Finding과 final report에서는 어떤 규칙이 공식 Hono 동작이고 어떤 규칙이 hypercore 전용 컨벤션인지 구분합니다.
 
+</support_file_read_order>
+
 ## 3단계: 변경 전 검증 체크리스트
 
-계획된 변경을 아래 게이트로 검증합니다.
+편집 전 계획된 변경을 `architecture-rules.ko.md`와 topic rule 파일로 검증합니다.
 
-### 브라운필드 적용 규칙
+브라운필드 규칙:
 
-- 레거시 차이를 곧바로 전체 실패로 취급하지 않습니다.
-- 안전, 타입, 검증 문제는 특히 touched file에서 즉시 차단합니다.
-- hypercore 전용 구조 차이는 untouched legacy code에서는 migration backlog로 남길 수 있습니다.
-- 직접 수정하는 파일은, 과도하게 위험한 마이그레이션이 아니라면 규칙에 맞게 끌어올립니다.
-- 사용자가 `전체 수정`을 호출했다면 감지된 Hono app 전체가 touched scope가 됩니다. 이전에 untouched였다는 이유만으로 hypercore 전용 drift를 미루지 말고 안전한 위반은 모두 수정합니다.
+- Untouched legacy style drift는 backlog로 남길 수 있습니다.
+- Safety, typing, validation, persistence, OpenAPI, runtime boundary 문제는 touched work에서 계속 차단합니다.
+- `전체 수정` 모드에서는 감지된 Hono app 전체가 touched scope입니다.
 
-### 비준수 탐지 시그널
+핵심 gate:
 
-편집 전에 아래 시그널로 어디를 볼지 결정합니다:
+- Hono app composition path가 하나로 분명해야 하며, route registration이 흩어지거나 fallback route가 앞서 등록되면 안 됩니다.
+- Touched route module은 service를 우회해 DB/ORM/schema/SDK/runtime adapter 세부사항을 직접 import하지 않습니다.
+- 의미 있는 params/query/json/form 데이터는 domain logic 전에 validator middleware를 거칩니다.
+- 분리된 handler는 inline chaining 또는 `createFactory()` / `createHandlers()`로 typing을 유지합니다.
+- Shared context를 쓰면 middleware order와 typed `Bindings`/`Variables`를 명시합니다.
+- Drizzle schema, migration, client, transaction은 database/service boundary 뒤에 둡니다.
+- Public documented route는 runtime validation, DTO, OpenAPI/Swagger, RPC response shape를 맞춥니다.
+- Runtime adapter/bootstrap code는 platform edge에 둡니다.
+- Tool 또는 외부 contract가 요구하지 않는 한 source folder/file은 kebab-case를 사용합니다.
 
-| 시그널 | 확인 대상 |
-|------|------|
-| 여러 파일이 `new Hono()`를 호출하고 단일 exported app/composition path 없이 route를 mount함 | `app.ts`, `routes/index.ts`, runtime entrypoint, 모든 route export |
-| route file이 database client, SDK client, ORM schema table, runtime adapter를 직접 import함 | route module과 대응되는 service/repository/client/database folders |
-| handler에 `c.req.json()`, `c.req.query()`, ad hoc param parsing이 반복됨 | validation schema와 route middleware |
-| `drizzle-orm`, `drizzle.config.ts`, `schema.ts`, migration folders, `DATABASE_URL`, `D1Database`, `Pool`, `neon`, `@libsql/client`가 나타남 | database rule file, connection boundary, schema/migration placement, repositories |
-| `AppType`, `hc`, `testClient`, frontend `InferResponseType`가 있음 | exported app type, sub-app mounting pattern, explicit response statuses |
-| `OpenAPIHono`, `createRoute`, `describeRoute`, `openAPIRouteHandler`, `swaggerUI`, `/doc`, `/ui`가 있음 | OpenAPI rule file, docs endpoint, Swagger UI 노출, route metadata coverage |
-| `/api`, `/v1`, `basePath()` 같은 API version prefix가 여러 곳에 나타남 | platform entrypoint와 route composition boundary |
-
-### 게이트 1: 조합과 레이어
-
-| 확인 항목 | 규칙 |
-|------|------|
-| 루트 앱이 transport, business logic, persistence를 한곳에서 직접 섞음? | 차단. 조합은 app/route 모듈에 두고, 도메인 로직은 아래 레이어로 내립니다. |
-| 라우트 모듈이 서비스 레이어 없이 DB/ORM/SDK를 직접 호출함? | hypercore 규칙상 차단. `routes -> services -> repositories/clients/database` 선호. |
-| 단순 핸들러에 controller class나 거대한 controller 파일 도입? | 차단. Hono best practices는 작은 app과 route composition을 더 선호합니다. |
-| 큰 기능 영역인데 sub-app 조합 없이 수동 등록만 함? | 경고. `app.route()` / `basePath()` 조합을 우선합니다. |
-
-### 게이트 2: 라우트 모듈
-
-| 확인 항목 | 규칙 |
-|------|------|
-| 라우트 등록이 여러 파일에 흩어져서 진입점이 불명확함? | 차단. 조합 경로를 하나로 유지합니다. |
-| 규모가 있는 라우트 모듈에 local schema/handler 분리가 없음? | hypercore 규칙상 차단. |
-| 중간 이상 기능이 schema, handler, service를 섞은 flat route file 하나에 남아 있음? | touched scope에 따라 경고 또는 차단. 새 동작을 추가하기 전에 feature folder로 나눕니다. |
-| catch-all 또는 fallback route가 구체적 라우트보다 먼저 등록됨? | 차단. Hono는 등록 순서가 중요합니다. |
-| 라우트 모듈이 `app.route()` 또는 typed sub-app으로 깔끔하게 mount되지 않음? | 차단. |
-
-### 게이트 2.5: 폴더와 파일 이름
-
-| 확인 항목 | 규칙 |
-|------|------|
-| Source folder 또는 file이 camelCase 또는 PascalCase naming을 사용함? | hypercore 규칙상 차단. 안전하면 kebab-case로 rename하고 import/reference를 갱신합니다. |
-| Route folder가 mount path와 불일치하는 plural/domain naming을 사용함? | 경고. 안정적인 kebab-case domain folder name을 선호하고 mount path는 route composition에서 명시합니다. |
-| `전체 수정` 모드에서 원래 요청 파일 밖의 kebab-case 위반을 찾음? | import/config/test path를 안전하게 갱신할 수 있으면 수정하고, 아니면 영향 path와 함께 blocker를 보고합니다. |
-
-### 게이트 3: 핸들러와 Context 타입
-
-| 확인 항목 | 규칙 |
-|------|------|
-| 분리된 핸들러 때문에 route typing/context typing이 유실됨? | 차단. inline chaining 또는 `createFactory()` / `factory.createHandlers()` 사용. |
-| `c.set()` / `c.get()` 값을 타입 없이 공유함? | 차단. app/factory에 `Variables`를 명시하세요. |
-| 요청 파싱, 도메인 로직, 응답 포맷이 한 핸들러에 길게 섞여 있음? | 경고. validator, service, response shaping으로 분리합니다. |
-
-### 게이트 4: Validation
-
-| 확인 항목 | 규칙 |
-|------|------|
-| 의미 있는 요청 데이터를 validator 없이 소비함? | 차단. |
-| `await c.req.json()` 같은 raw parsing이 핸들러마다 반복됨? | 아주 단순한 경우가 아니면 차단. |
-| params/query/json/form 검증 전략이 같은 기능 안에서 제각각임? | 경고. 통일하세요. |
-| 새 검증 라이브러리를 이유 없이 추가함? | 명시적 요청이 없으면 차단. `validator()`, `@hono/zod-validator`, `@hono/standard-validator` 우선. |
-
-### 게이트 4.25: Database / ORM
-
-| 확인 항목 | 규칙 |
-|------|------|
-| Route 또는 handler가 `db`, `drizzle-orm`, schema table, driver client, pool, migration helper를 직접 import함? | hypercore 규칙상 차단. Database access를 service/repository/database boundary 뒤로 이동합니다. |
-| Database client, pool, Drizzle instance를 request handler 안에서 생성함? | 차단. Connection lifecycle은 database, platform, app initialization boundary에서 중앙화합니다. |
-| Drizzle schema 또는 migration file이 route folder 안에 있음? | 차단. Schema/migration은 `drizzle.config.ts`와 일치하는 database 또는 migration boundary 아래에 둡니다. |
-| Multi-step write에 transaction 또는 명시적 이유가 없음? | Atomic behavior가 필요하면 차단. Transaction boundary는 service/use-case layer에 두고 repository에는 `tx`를 넘깁니다. |
-| Public response shape가 내부 field를 포함한 raw ORM row shape임? | Public API에서는 차단. DTO mapping을 추가하고 validation, OpenAPI, RPC response type을 맞춥니다. |
-| 관련 없는 route 변경에 ORM/provider/driver 교체가 섞임? | 차단. 명시적 migration으로 다룹니다. |
-
-### 게이트 4.5: OpenAPI / Swagger
-
-| 확인 항목 | 규칙 |
-|------|------|
-| 문서를 공개하는 저장소에서 public/partner-facing API route를 추가했는데 OpenAPI coverage가 없음? | 차단. request, responses, tags, `operationId`를 포함한 operation metadata를 추가합니다. |
-| runtime validation schema와 OpenAPI schema가 어긋남? | 차단. 단일 source of truth를 유지하거나 synchronization rule을 명시합니다. |
-| Swagger UI가 auth, admin-only routing, 명시적 public-docs 결정 없이 production에 노출됨? | 차단. |
-| operation이 auth, validation, not found, conflict, server failure 같은 예상 error response를 빠뜨림? | 경고. 가능하면 reusable error response components를 추가합니다. |
-| 큰 app에 feature별 OpenAPI fragment는 있는데 canonical spec endpoint가 없음? | 차단. app boundary에서 docs를 조합합니다. |
-
-### 게이트 5: Middleware
-
-| 확인 항목 | 규칙 |
-|------|------|
-| 미들웨어 실행 순서를 잘못 가정함? | 차단. 등록 순서가 곧 실행 순서입니다. |
-| 공통 auth/logging/request-id 로직을 핸들러마다 복붙함? | 경고. middleware로 올립니다. |
-| context 값이 요청 간에 유지된다고 가정함? | 차단. Context는 요청 단위입니다. |
-| 런타임 전용 관심사가 middleware를 넘어 도메인 레이어까지 새어 나감? | 차단. |
-
-### 게이트 6: 에러와 응답
-
-| 확인 항목 | 규칙 |
-|------|------|
-| 예상 가능한 HTTP 실패를 전부 raw generic error로 던짐? | 경고. `HTTPException` 또는 중앙 번역 정책 사용. |
-| 중간 이상 규모 API인데 `app.onError()`가 없음? | 경고. 중앙 에러 경계 추가. |
-| `HTTPException.getResponse()`를 쓰면서 기존 `Context` 헤더를 잊음? | 차단. Context에서 세팅한 헤더를 보존해야 합니다. |
-| typed RPC client가 not-found 동작에 의존하지만 explicit `app.notFound()` 또는 JSON response contract가 테스트되지 않음? | 차단. Public client를 위한 404 response shape를 명시합니다. |
-
-### 게이트 7: Testing과 RPC
-
-| 확인 항목 | 규칙 |
-|------|------|
-| non-chained route 정의 때문에 `testClient()` 또는 `hc<AppType>` 추론이 깨짐? | 차단. 타입이 exported app까지 흐르도록 유지합니다. |
-| `hc` 또는 shared RPC client 사용이 필요한데 app type export가 없음? | 차단. Shared client contract를 위해 `AppType`을 export합니다. |
-| 큰 앱 분리 과정에서 sub-app 간 타입 추론이 유실됨? | 차단. Hono RPC larger application 패턴을 따릅니다. |
-| generated OpenAPI contract와 `AppType`/RPC contract의 request 또는 response shape가 다름? | 차단. shared schema 또는 response status를 먼저 고칩니다. |
-
-### 게이트 8: 플랫폼 엔트리
-
-| 확인 항목 | 규칙 |
-|------|------|
-| 런타임 adapter 코드가 route module 안에 섞여 있음? | 차단. adapter/bootstrap은 edge에 둡니다. |
-| 환경 bindings/vars를 타입 경계 없이 사용함? | 차단. |
-| `showRoutes()` 같은 debug helper가 dev-only 가드 없이 켜져 있음? | 경고. |
+Finding과 remediation 세부사항은 연결된 support file의 상세 checklist를 사용하고, core 파일에 중복하지 않습니다.
 
 ## 3.5단계: Auto-Remediation Policy
 
@@ -302,6 +251,10 @@ Hono 코드를 변경할 때는 아래 순서를 우선합니다.
 8. testing/RPC 추론 회귀 수정
 9. 검증 실행
 
+</workflow>
+
+<validation_checklist>
+
 ## 검증 체크리스트
 
 - Hono 프로젝트 감지 확인
@@ -322,3 +275,5 @@ Hono 코드를 변경할 때는 아래 순서를 우선합니다.
 - API DTO, OpenAPI schema, RPC response shape가 raw ORM row를 실수로 노출하지 않음
 - runtime adapter 코드는 edge에 유지
 - final finding은 공식 Hono 규칙과 hypercore 전용 컨벤션을 구분함
+
+</validation_checklist>

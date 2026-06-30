@@ -42,6 +42,22 @@ compatibility: 코드 탐색(Read/Grep/Glob), 수정(Edit), 셸 실행(Bash)이 
 
 </request_routing>
 
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | 구체적인 build, CI, deployment failure를 진단하고 수정합니다. |
+| Trigger | 사용자가 build/CI/deploy failure surface를 제공하거나 수정을 요청할 때만 활성화합니다. |
+| Scope | failure classification, reproduction, log/config analysis, build/deploy-layer fix, complex case flow tracking, validation reporting을 담당합니다. |
+| Authority | 사용자와 프로젝트 지시가 이 스킬보다 우선합니다. build log, CI/deploy output, config file, local validation은 근거입니다. |
+| Evidence | 수정 전에 정확한 failing command output, 첫 failure point, 관련 config, dependency state, recent-change context를 수집합니다. |
+| Tools | local read/edit, Bash validation, complex case의 `.hypercore/deploy-fix/flow.json`을 사용합니다. external production side effect는 explicit user authority가 필요합니다. |
+| Output | failure/root-cause/fix/validation에 대한 한국어 report와, complex path 사용 시 업데이트된 flow JSON입니다. |
+| Verification | failing build/CI/deploy command 또는 가장 좁은 동등 local check를 다시 실행하고 command/result를 기록합니다. |
+| Stop condition | failure가 수정 및 검증되었거나, diagnose-only output이 전달되었거나, complex option/permission/production blocker가 보고되었을 때 멈춥니다. |
+
+</instruction_contract>
+
 <argument_validation>
 
 ARGUMENT가 없으면 즉시 질문:

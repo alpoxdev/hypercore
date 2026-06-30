@@ -18,21 +18,40 @@ description: Playwriter와 CDP로 웹사이트를 조사해 크롤링 방식을 
 
 </output_language>
 
-사용자가 재사용 가능한 크롤링 흐름, 사이트 추출 전략, 크롤링 목적의 API 리버스 엔지니어링, 분석 근거가 있는 크롤러 코드를 원할 때 `crawler`를 사용합니다.
+<purpose>
 
-재개 가능하거나 여러 단계로 이어지는 크롤링 작업에서는 `.hypercore/crawler/<ACTION>.json`을 의도, 현재 상태, 근거 포인터, 다음 단계를 보존하는 durable context 파일로 취급합니다.
+- 크롤러 코드를 만들기 전에 웹사이트를 조사합니다.
+- API, 인증, selector, network, anti-bot, 방식 선택 근거를 수집합니다.
+- 재개 가능한 crawl state는 `.hypercore/crawler/<ACTION>.json`, site artifacts는 `.hypercore/crawler/[site]/` 아래에 남깁니다.
+- 발견 근거가 방식 선택을 정당화할 때만 crawler code를 생성합니다.
 
-일반 브라우저 자동화, 일회성 클릭 작업, 크롤링 산출물이 없는 문서 수정에는 `crawler`를 쓰지 않습니다.
+</purpose>
 
-재사용 가능한 크롤러 없이 단발성 추출만 원하면, 요청이 확장되기 전까지 전체 아티팩트 세트를 강제하지 말고 가볍게 처리합니다.
+<routing_rule>
 
-**Templates:** [document-templates.md](rules/document-templates.md) · [code-templates.md](rules/code-templates.md)
-**Checklists:** [pre-crawl-checklist.md](rules/pre-crawl-checklist.md) · [anti-bot-checklist.md](rules/anti-bot-checklist.md)
-**References:** [playwriter-commands.md](rules/playwriter-commands.md) · [chrome-devtools-mcp.md](rules/chrome-devtools-mcp.md) · [cdp-capture.md](rules/cdp-capture.md) · [crawling-patterns.md](rules/crawling-patterns.md) · [selector-strategies.md](rules/selector-strategies.md) · [network-crawling.md](rules/network-crawling.md) · [action-manifest.md](rules/action-manifest.md)
+재사용 가능한 크롤링 흐름, 사이트 추출 전략, 크롤링 목적의 API 리버스 엔지니어링, 분석 근거가 있는 크롤러 코드를 원할 때 `crawler`를 사용합니다.
 
----
+일반 브라우저 자동화, 일회성 클릭 작업, 크롤링 산출물이 없는 문서 수정에는 사용하지 않습니다. 단발성 추출은 요청이 재사용 가능한 crawl design으로 확장되기 전까지 가볍게 처리합니다.
 
-<trigger_examples>
+</routing_rule>
+
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | website/API discovery 후 evidence-backed crawler plan과 code를 만듭니다. |
+| Trigger | reusable crawling, scraping, site-wide extraction, crawl strategy, API reverse engineering, auth/network evidence, crawler code generation. |
+| Scope | discovery, method selection, evidence artifacts, durable action state, 근거가 있는 generated crawler code를 담당합니다. |
+| Authority | user/project instructions가 이 스킬보다 우선하며 observed browser/network/CDP evidence와 local artifacts는 evidence입니다. |
+| Evidence | Playwriter, Chrome DevTools/CDP, network summaries, selector checks, anti-bot findings, artifact files를 사용합니다. |
+| Tools | browser/CDP tools와 local file writes를 필요한 만큼 사용합니다. credentials, anti-bot bypass, production, unsafe scraping은 gate합니다. |
+| Output | 한국어 findings, `.hypercore/crawler/` artifacts, 근거가 있을 때만 crawler code. |
+| Verification | captured evidence로 method choice, artifacts, selectors/API calls, generated code를 검증합니다. |
+| Stop condition | crawl method가 정당화되고 artifacts가 작성되었으며 code가 안전할 때만 생성되거나 blocker가 문서화되면 멈춥니다. |
+
+</instruction_contract>
+
+<activation_examples>
 
 긍정 예시:
 
@@ -49,7 +68,7 @@ description: Playwriter와 CDP로 웹사이트를 조사해 크롤링 방식을 
 
 - "이 공개 페이지에서 가격 3개만 바로 뽑아 줘." 재사용 가능한 크롤러나 사이트 전반 전략이 필요해질 때까지는 가벼운 추출을 우선합니다.
 
-</trigger_examples>
+</activation_examples>
 
 ---
 
@@ -66,7 +85,7 @@ description: Playwriter와 CDP로 웹사이트를 조사해 크롤링 방식을 
 
 ---
 
-<support_file_routing>
+<support_file_read_order>
 
 보조 파일은 다음 순서로 읽습니다.
 
@@ -82,7 +101,7 @@ description: Playwriter와 CDP로 웹사이트를 조사해 크롤링 방식을 
 10. `.hypercore/crawler/[site]/` 아티팩트를 작성할 때 [document-templates.md](rules/document-templates.md)를 읽습니다.
 11. 방식이 결정되고 발견 근거가 문서화된 뒤에만 [code-templates.md](rules/code-templates.md)를 읽습니다.
 
-</support_file_routing>
+</support_file_read_order>
 
 ---
 
@@ -146,40 +165,7 @@ description: Playwriter와 CDP로 웹사이트를 조사해 크롤링 방식을 
 
 <output_structure>
 
-`.hypercore/crawler/<ACTION>.json`
-
-- `ACTION.json`은 의도, 현재 상태, capture mode, blocker, output pointer, 다음 단계를 보존합니다.
-- `.hypercore/crawler/[site-name]/`는 세부 근거, 분석, 생성 코드를 보존합니다.
-
-```text
-.hypercore/crawler/
-├── <ACTION>.json              # durable action context
-└── [site-name]/
-    ├── ANALYSIS.md
-    ├── SELECTORS.md
-    ├── API.md
-    ├── NETWORK.md
-    ├── raw/
-    │   ├── network-summary.json
-    │   ├── auth-signals.json
-    │   └── endpoint-candidates.json
-    └── CRAWLER.ts
-```
-
-사이트 아티팩트 계약:
-
-```
-.hypercore/crawler/[사이트명]/
-├── ANALYSIS.md      # 사이트 구조
-├── SELECTORS.md     # DOM selector
-├── API.md           # API endpoint
-├── NETWORK.md       # 인증 정보
-├── raw/
-│   ├── network-summary.json      # 정규화된 요청/응답 근거
-│   ├── auth-signals.json         # 쿠키/저장소/헤더 근거
-│   └── endpoint-candidates.json  # 중복 제거한 API 후보
-└── CRAWLER.ts       # 생성 코드
-```
+`ACTION.json`은 의도, 현재 상태, capture mode, blocker, output pointer, 다음 단계를 보존합니다. `.hypercore/crawler/[site-name]/`는 세부 근거, 분석, 생성 코드를 보존합니다.
 
 최소 아티팩트 계약:
 

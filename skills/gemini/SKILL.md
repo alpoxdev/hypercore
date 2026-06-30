@@ -20,6 +20,21 @@ Use a different language only when the user explicitly requests it, an existing 
 
 Wrap the official Google Gemini CLI for reasoning, research, plan-mode review, and session continuation. The CLI must be invoked headlessly with `-p` / `--prompt` — positional prompts open the interactive REPL.
 
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Build, run, or explain a safe `gemini` CLI invocation when the user explicitly asks for Gemini CLI or Gemini models. |
+| Scope | Owns Gemini CLI command shape, headless prompt usage, approval mode choice, model selection only when requested, resume flows, preflight checks, and result summarization. |
+| Authority | User intent and local project rules come first; installed CLI help and official Gemini CLI docs govern flags when current behavior matters. |
+| Evidence | Ground the answer in preflight checks, command shape, CLI output, approval mode, and observed warnings/errors. |
+| Tools | Use shell execution only when the user wants the CLI run; otherwise provide the command or route away. |
+| Output | Return the exact command used or recommended, summarize output/warnings, and preserve CLI/model tokens verbatim. |
+| Verification | Check `gemini` is installed before command construction, non-interactive runs use `-p`, edit/yolo modes are explicit, and model overrides are user-requested. |
+| Stop condition | Stop after the requested Gemini command is constructed or run and its result, warnings, or blocker are reported. |
+
+</instruction_contract>
+
 ## Defaults
 
 | Parameter | Default |
@@ -38,6 +53,26 @@ Use this skill only when the request actually needs the Gemini CLI or a Gemini s
 
 - Read [rules/routing.md](rules/routing.md) before building a command when the request might be out of scope.
 - Route away to direct editing or another skill when the user wants generic writing, runbook cleanup, or local edits without needing the Gemini CLI.
+
+## Examples
+
+Positive examples:
+
+- "Use Gemini to review this architecture and list risks."
+- "Run `gemini -p` and research the current API behavior."
+- "Ask Gemini Pro to reason about this design tradeoff."
+- "Resume the latest Gemini session and continue the analysis."
+
+Negative examples:
+
+- "Rewrite this runbook for readability."
+- "Make this local code edit directly."
+- "Create a new skill for this repo."
+
+Boundary examples:
+
+- "Research Gemini CLI approval modes and explain them."
+  Use this skill only if the user wants the `gemini` CLI involved; otherwise route to research or direct documentation work.
 
 ## CRITICAL: Headless Mode
 
@@ -130,3 +165,14 @@ If the check fails, route to the install handler in **Error Handling** below ins
 - `--yolo` is deprecated; the canonical form is `--approval-mode yolo`.
 - Plan Mode is enabled by default; trigger explicitly with `--approval-mode plan` or `/plan` in-session.
 - Headless mode auto-activates in non-TTY environments and whenever `-p` is supplied.
+
+<validation_checklist>
+
+- [ ] The request explicitly needs Gemini CLI, Gemini models, or a Gemini session.
+- [ ] `command -v gemini` or equivalent preflight is checked before constructing a runnable command.
+- [ ] Non-interactive runs use `-p` / `--prompt`; positional prompts are not used for automation.
+- [ ] Model flags are omitted unless the user explicitly requested a model.
+- [ ] `auto_edit` and `yolo` approval modes are used only under their documented gates.
+- [ ] Final output includes the command shape, observed result, warnings, and any install/auth/rate/model blocker.
+
+</validation_checklist>

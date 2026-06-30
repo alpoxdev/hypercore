@@ -28,6 +28,22 @@ Use a different language only when the user explicitly requests it, an existing 
 
 </purpose>
 
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Update synchronized semantic versions across supported project files. |
+| Trigger | Activate on version bump/set requests, especially when the user asks to update versions and optionally commit them. |
+| Scope | Own stack detection, version-file discovery, target-version calculation, version application, diff review, and git-path selection. |
+| Authority | User and project instructions outrank this skill; discovered version files, semver rules, detector output, and diffs are evidence. |
+| Evidence | Use `version-find.sh`, `version-current.sh`, target argument parsing, `git diff`, and project-local `git-commit` detection before git writes. |
+| Tools | Use Bash helpers and local file edits; git writes are delegated to project-local `git-commit` when available or fallback scripts only when it is missing. |
+| Output | Korean report of current version, target version, changed files, git path chosen, commit/push status, and caveats. |
+| Verification | Confirm all intended version files changed consistently, review diff, run `git-commit-detect.sh`, and execute optional git steps only when requested. |
+| Stop condition | Stop when version files are updated and reviewed, or when requested git steps are completed or blocked with evidence. |
+
+</instruction_contract>
+
 <trigger_conditions>
 
 | User intent | Activate |
