@@ -11,10 +11,10 @@
       "description": "Claude Code, Codex, Cursor에서 사용할 수 있는 AI 에이전트 스킬 및 에이전트 모음",
       "source": "./",
       "category": "productivity",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "homepage": "https://github.com/alpoxdev/hypercore",
       "tags": ["skills", "agents", "architecture", "git", "research", "debugging"]
     }
   ],
-  "version": "1.0.2"
+  "version": "1.0.3"
 }
