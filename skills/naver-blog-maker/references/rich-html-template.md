@@ -17,7 +17,9 @@ Read for every rich deliverable. Use [`../assets/rich-post.html`](../assets/rich
 
 | Template ID | Purpose |
 |---|---|
-| `paragraph` | Paragraphs and explicit `br` line breaks |
+| `paragraph` | Rhythm paragraphs: short explicit `br` line breaks, center alignment, `line-height:1.8` |
+| `spacer` | Blank-paragraph spacing between text blocks (the only spacing mechanism that survives paste) |
+| `highlight-box` | Emphasis box (`padding` + background + left border); pastes as a native one-cell table component |
 | `headings` | `h2` / `h3` subheadings; not the Naver title field |
 | `inline-styles` | Bold, italic, underline, text/background color, font size |
 | `alignment` | Left, center, right paragraphs |
@@ -30,7 +32,7 @@ Read for every rich deliverable. Use [`../assets/rich-post.html`](../assets/rich
 | `image-slot` | Missing real material |
 | `generated-image-slot` | Illustration placeholder paired with a JSON prompt |
 
-Strike-through, styled callout-box fidelity, exact paragraph spacing, and native source-code components are not guaranteed by the supplied sample. Do not add them to the default library as working features.
+Strike-through and the Naver source-code component are not guaranteed even by the supplied sample. Do not add them to the default library as working features. Emphasis boxes are handled by the `highlight-box` block (converts to a native one-cell table component, verified in the editor); paragraph spacing is handled by the `spacer` block.
 
 ## 3. Copy contract
 
@@ -43,9 +45,10 @@ If a ChatGPT preview blocks scripts, provide the completed downloadable HTML and
 ## 4. Verify the deliverable
 
 - Open the file, inspect desktop and narrow layouts, and check the body for demo text, unresolved URLs, overflow, and valid table spans.
+- Check the body rhythm: no line wraps into a stair-stepped shape, a visible gap between every two consecutive text blocks, `line-height:1.8` inline on body paragraphs, and a blank-paragraph spacer (never `margin`) between blocks.
 - Click the rich button and check that only `#sample` is selected, no title/tags/controls/prompts enter the selection, and the status matches the actual copy result.
 - Paste into a disposable local editable region to inspect preserved `strong`, links, and table spans when browser input permits. This verifies local clipboard behavior, not Naver's conversion.
 - Check the blocked-copy branch separately and ensure the manual instruction appears.
 - Naver paste remains a user check; no login, upload, or publication is part of assembling this template.
 
-Maintenance: run `node --test skills/naver-blog-maker/assets/evals/rich-copy.test.cjs` from the repository root. It needs only Node built-ins and must pass all three handler checks; a failure blocks changes to the shell. The stubbed check supplements, not replaces, the browser clipboard test.
+Maintenance: rich-copy handler contracts (selection scope, copy API, honest status, source-button separation) are regression cases in [`../assets/evals/naver-blog-maker-cases.jsonl`](../assets/evals/naver-blog-maker-cases.jsonl) — an agent statically re-judges the shell against them after any shell change, and the browser clipboard test below stays the live check. This verification needs no executable test file, so the package runs in file-execution-free runtimes (ChatGPT web) and coding agents alike.

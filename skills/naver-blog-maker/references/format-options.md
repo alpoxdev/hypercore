@@ -19,20 +19,26 @@ For rich output, follow [`rich-html-template.md`](rich-html-template.md) and del
 |---|---|---|
 | Bold, text color, background highlight, underline | Preserved | `strong`, `em`, `span` with inline color/background styles, `u` |
 | Center/right alignment | Preserved | Inline `text-align` |
+| Paragraph `line-height` inline (e.g. `1.8`) | Preserved; propagated to sibling paragraphs in the same text component | Inline on each `p`; the rhythm contract's default |
+| Paragraph `margin-top`/`margin-bottom` | Not preserved — removed by the editor's conversion; no visible gap remains | Never use `margin` for spacing; use the blank-paragraph spacer instead |
+| Blank-paragraph spacer (`<p>&nbsp;</p>`) | Preserved as a visible blank line | The spacing mechanism of the body rhythm contract |
+| Highlight box (`padding` + `background-color` + `border-left`) | Preserved via conversion into a native one-cell table component (cell background, left border 4px, ~40px height) | `highlight-box` block in `rich-blocks.html`; lands as an editable single-cell table |
 | Quote, divider | Native quote/divider components | `blockquote`, `hr` |
 | Ordered/unordered lists | Preserved | `ol`, `ul`, `li` |
 | Links | Converted to `se-link`, URL retained in `data-href` | Supply ordinary `a href`; do not generate Naver internal markup |
 | Public HTTPS images | Photo components; alignment and width retained | `img` with a real accessible HTTPS source |
 | Tables | Editable native table components | Borders, cell backgrounds, headers, inline cell styling, 100% width, cell alignment, `colspan`, `rowspan` |
 | Data/Base64 images | Removed; surrounding text remained | Do not use `data:image` |
-| Strike-through `s` | Normalized to ordinary text | Leave as a manual editor action |
+| Strike-through `s` | Normalized to ordinary text (live editor test confirmed) | Leave as a manual editor action |
 | `pre/code` | Ordinary text, not a source-code component | Leave as a manual editor action |
 
-Table conversion reportedly exposed row/column addition, merging, row/column splitting, and width/height controls. This is evidence of editable tables, not a guarantee for arbitrarily nested HTML.
+Grades above: the Preserved/Not preserved/Removed rows carry live editor paste evidence (aside editor session; evidence paths listed in `../rules/post-workflow.md` §3 body rhythm contract). Rows without a live note are prior observed reports. Table conversion exposed row/column addition, merging, row/column splitting, and width/height controls. This is evidence of editable tables, not a guarantee for arbitrarily nested HTML.
 
 ## 3. HTML authoring boundaries
 
-Use the user's recommended subset: `p`, `br`, `h2`, `h3`, `strong`, `em`, `u`, `span`, `ul`, `ol`, `li`, `blockquote`, `hr`, `table`, `thead`, `tbody`, `tr`, `th`, `td`, `img`, `a`. Prefer inline styles and simple sibling blocks over deeply nested structures. The subset is a recommendation: exact heading sizes and blank-line behavior were not individually reported as tested.
+Use the user's recommended subset: `p`, `br`, `h2`, `h3`, `strong`, `em`, `u`, `span`, `ul`, `ol`, `li`, `blockquote`, `hr`, `table`, `thead`, `tbody`, `tr`, `th`, `td`, `img`, `a`. Prefer inline styles and simple sibling blocks over deeply nested structures.
+
+Paragraph defaults follow the body rhythm contract in [`../rules/post-workflow.md`](../rules/post-workflow.md) §3: `line-height:1.8` inline on every paragraph, body paragraphs center-aligned, tables/lists/captions left-aligned, blank-paragraph spacers between blocks (not `margin`). The subset remains a recommendation: exact heading sizes were not individually reported as tested.
 
 Escape text and attribute values; exclude scripts, event handlers, and executable URL schemes. Use valid table spans and consistent cell counts. Apply the prose ornament budget; supported styling is not a quota to fill.
 
