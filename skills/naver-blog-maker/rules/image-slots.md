@@ -44,7 +44,7 @@ A generated image never replaces a proof photo; if the proof photo does not exis
 
 ## 4. Prompt block
 
-After the post block, deliver one fenced `json` block per `이미지 생성` marker, numbered to match `프롬프트 #n`, built from the templates in `../references/image-prompt-templates.md`. Each is a complete brief for tools accepting structured natural-language requests, not a universally compatible API payload: no provider flags, no model names, no placeholders. Rendered Korean text inside the image (labels on a diagram) is written once, exactly as it must appear.
+After the post block, deliver one block per `이미지 생성` marker, numbered to match `프롬프트 #n`, built from the templates in `../references/image-prompt-templates.md`. The block's opening fence must carry the `json` language tag; a bare, untagged fence is not an acceptable delivery, because a consumer cannot reliably find the block inside a plain fence. Each is a complete brief for tools accepting structured natural-language requests, not a universally compatible API payload: no provider flags, no model names, no placeholders. Rendered Korean text inside the image (labels on a diagram) is written once, exactly as it must appear.
 
 Order of delivery in `post-workflow.md` §5: titles → post block → **prompt blocks** → keyword line → slot list → publish note.
 
@@ -54,12 +54,20 @@ When the intake blog URL was readable, count images per post in the 3 most recen
 
 ## 6. Compile a complete visual brief
 
-- Give each image one purpose and an explicit first → second → background reading order. Describe subject traits, action, environment, viewpoint, scale, crop, depth, and empty space instead of saying “premium” or “beautiful.”
-- Describe light direction, softness, shadows, color roles (dominant/support/accent), contrast, medium, and material texture when relevant. Omit inapplicable fields rather than filling them with placeholders.
-- Preserve requested lettering exactly: no translation, abbreviation, correction, or duplication. Specify placement, reading order, size, contrast, and clearance. A spelling instruction is not proof that the generated lettering is correct.
-- Repeat the series invariants in every JSON object: palette roles, drawing style, line weight, typography, and lighting/material behavior. Each object must work independently when copied; never say “same as above.” Vary only the image-specific subject or composition.
-- For a supplied reference, distinguish inspiration from an editing source. An editing prompt must identify the source, preserved elements, and allowed changes; never invent missing identity or preservation requirements. Keep unresolved source requirements outside the ready-to-use prompt.
-- Keep tool names, model names, API parameters, file paths, status reports, and capability claims outside the visual brief. JSON here is a portable descriptive brief, not a universal image API schema.
+This section owns the compilation policy. [`../references/image-prompt-templates.md`](../references/image-prompt-templates.md) owns the field descriptions, the 14 section roles, and the 17 template IDs. **§3 outranks every schema and template decision below**: no role or template ever authorizes generating what §3 forbids. This section does not change §7's prompt-only default.
+
+Classify every slot as real material or generated explanation and fix its role and template first (§3, [`topic-research.md`](topic-research.md) §5), then compile in this order:
+
+`use → section_role / template → hierarchy → subject → scene → composition → lighting → color → material_and_rendering → text → series_invariants → must_include / must_exclude → inspection_checks → aspect → caption_note → prompt`
+
+- **One purpose, one reading order.** Give each image one purpose and an explicit first → second → background reading order in `hierarchy`. Describe subject traits, action, environment, viewpoint, scale, crop, depth, and empty space instead of saying “premium” or “beautiful.”
+- **Route each property to its own field.** `style` carries medium, drawing language, and line/shape language only. Palette roles (dominant/support/accent, plus the contrast needed for reading) belong in `color`; surface response, edge behaviour, and texture belong in `material_and_rendering`; light direction, softness, shadows, and separation belong in `lighting`. Omit inapplicable fields rather than filling them with placeholders — never `null`, `"N/A"`, `"없음"`, or `"위와 동일"`.
+- **Preserve requested lettering exactly.** Each `text[].string` appears exactly once inside `text[]` — never listed twice — and `prompt` carries every one of them byte-identical so the paste-ready text renders exactly those labels; descriptive prose in `prompt` may reuse the same words, but `prompt` must not introduce a label `text[]` does not carry. Specify placement, reading order, priority, size, contrast, and clearance. Never translate, abbreviate, or correct a string. Inside `text[]` the same label is never listed twice; inside `prompt` every string must appear verbatim and the surrounding prose may reuse its words freely, but `prompt` must never carry a rendered label that `text[]` does not define. A spelling instruction is not proof that the generated lettering is correct.
+- **Series invariants only for a real series.** When two or more images are intended as ONE visual series, repeat that series' invariants (palette roles, drawing style, line weight, typography, lighting and material behaviour) identically in every object of the series. Independent images covering different roles omit `series_invariants` entirely. Each object must work independently when copied; never say “same as above.” Vary only the image-specific subject or composition.
+- **State the reference boundary.** For a supplied reference, distinguish inspiration from an editing source in `reference.role`. An editing prompt must identify the source, the preserved elements, and the allowed changes; never invent missing identity or preservation requirements. Keep unresolved source requirements outside the ready-to-use prompt.
+- **Separate a blocking gap from a reversible assumption.** If the subject, the exact rendered text, or an edit's preserve/change boundary is missing, do not emit a finished prompt for that image — ask, or leave the slot open. A reversible presentation choice (crop, palette pressure, empty space) is decided by the executor and recorded in `assumptions`. A fact the post itself is missing stays a `[확인 필요]` slot.
+- **Record what to inspect.** `inspection_checks` holds 3-6 observable criteria that can be checked against a returned artifact: reading order, subject facts, exact lettering, palette roles, material, and series consistency.
+- **Keep the compilation boundary.** Tool names, model names, API parameters, provider flags, file paths, status reports, and capability claims stay outside the visual brief. The JSON here is a portable descriptive brief, not a universal image API schema. `prompt` is derived only from the structured fields and adds no fact.
 
 ## 7. Prompt delivery is not image generation
 

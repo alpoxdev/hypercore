@@ -67,6 +67,8 @@ Rules:
 - A marker names what the author must shoot or already has; it never proposes a stock image, a screenshot of someone else's post, or a reused set (R5).
 - Captions state the fact the picture backs (`오후 2시 방문 시 대기 4팀`), not a label (`매장 사진`).
 - Follow [`image-slots.md`](image-slots.md) for density and generated illustrations; deliver matching JSON and never substitute for proof photos.
+- Before choosing anything, classify each slot: **real material** (a photo the author can shoot or already has) or **generated explanation** (a diagram, chart, comparison, or concept visual). The classification fixes the marker kind, and a real location, entrance, receipt, 견적서, instrument reading, result, certificate, or before/after photo is NEVER routed to a generated template.
+- For every generated slot, record its section role and template ID in the fact pack, taken from [`../references/image-prompt-templates.md`](../references/image-prompt-templates.md) §2: the role from the section's job in the skeleton, the template from that role's row. The compile order and the field rules live in [`image-slots.md`](image-slots.md) §6.
 
 ## 6. Fact pack shape (handed to the workflow)
 
@@ -78,7 +80,7 @@ Rules:
 사실 (출처 포함): 
   - … | URL | 날짜 | 섹션
 경험 슬롯: [확인 필요: …] × N
-이미지 슬롯: 섹션별 마커 목록
+이미지 슬롯: 섹션별 마커 목록 (real evidence | generated + section_role/template)
 브랜드 (전환형): 가치입증 원문 / 관계
 어미: -했어요 | -습니다
 ```
