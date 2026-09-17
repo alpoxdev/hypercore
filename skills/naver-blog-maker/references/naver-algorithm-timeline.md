@@ -42,6 +42,8 @@ Read this when a request asks *why* a rule exists, when the writer or user cites
 | 2026-05-26 | AI 시대 콘텐츠 작성 가이드: a channel that keeps publishing quality posts on one topic is recognized as that field's "전문 출처". Favorable: 직접 경험, 일관된 주제, 진정성 (including disclosure), 읽기 쉬운 구조, 최신성. Unfavorable: 반복 키워드, 낚시성, 짜깁기, 기계적 AI 생성, 과도한 홍보. "AI 도구를 사용했다고 해서 무조건 패널티를 받지는 않습니다". | <https://blog.naver.com/naver_search/224296857688> |
 | 2026-06-04 | 실전편 self-check: 독자와 목적, 구체적 절차, 대안 비교, 실제 결과, 맥락에 맞는 미디어; "직접 경험한 사람만이 알 수 있는 팁이나 주의 사항". | <https://blog.naver.com/naver_search/224305800678> |
 | 2026-07-06 | 웹 콘텐츠 스팸 사례: "특정 기술의 활용 여부만으로는 판단하지 않습니다" — the violation is meaningless mass production from identical or similar templates, artificial traffic, comments, or recommendations. | <https://blog.naver.com/naver_search/224335446939> |
+| undated (accessed 2026-09-17) | 서치어드바이저 콘텐츠 작성 5원칙: 전문성과 경험을 바탕으로 작성하기, 일관된 주제로 정체성 만들기, 진정성을 담고 투명하게 소통하기, 읽기 쉬운 구조, 최신 정보 유지. 또 "검색로봇은 이미지 속 텍스트를 인식하기 어려우므로 사이트 내 핵심 정보는 가급적 텍스트로 작성해 주세요"(부득이하면 alt). **The page carries no publication or revision date.** | <https://searchadvisor.naver.com/guide/content-basic> |
+| undated (accessed 2026-09-17) | 검색 의도 기반 랭킹과 제목 원칙: "네이버는 검색 사용자의 선호도를 기반으로 한 랭킹 알고리즘을 사용하여 검색 사용자의 의도를 가장 잘 반영한 문서가…", "제목은 글의 내용을 대표할 수 있는, 명확하고 간결한 것이 좋습니다". 검색어를 인위적으로 반복한 문서는 검색 사용자의 선호도가 떨어져 후순위로 밀린다는 설명. | <https://m.blog.naver.com/naver_search/220736004033> |
 
 ## 4. Claims Naver has never made
 

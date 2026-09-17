@@ -18,7 +18,7 @@ Read this in step 2 of [`../rules/post-workflow.md`](../rules/post-workflow.md) 
    - Demand: relative interest over time, seasonality, device split.
    - Compare candidates on both; prefer the slice with real demand and thinner, weaker supply. A ratio is a triage aid, not a ranking probability — document counts and search counts come from different collection scopes.
 3. **Read the live SERP** for the top 2-3 candidates: block order, block headings, whether the blog block is above the fold, what the top three posts promise and what they lack (missing downside, no price basis, stale date). The gap is the post's angle.
-4. **Decide in one line** and keep it with the draft: `검색어 / 슬라이스 / 근거`.
+4. **Decide in one line** and keep it with the draft: the six-field decision line from `../rules/post-workflow.md` §2 — `검색어 / 의도 슬라이스 / 주 유형 / 보조 유형 / 목표 / 근거` — fed by this procedure's counts and SERP notes.
 
 ## 3. Reading supply and demand without any CLI
 
