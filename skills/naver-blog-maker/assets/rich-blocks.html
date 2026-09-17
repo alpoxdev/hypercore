@@ -5,8 +5,10 @@
   <!-- Agent-only library. Clone template CONTENTS, never the template element.
        Replace all example text and remove unused blocks before delivery. -->
   <template id="paragraph">
-    <p>일반 본문 문장입니다.</p>
-    <p>문장 안의 줄바꿈은<br>이렇게 표현합니다.</p>
+    <!-- Rhythm contract: short manual line breaks (12-25 chars/line), 1-3 sentence blocks,
+         center-aligned body, line-height:1.8 (paste-verified), block spacing via the spacer template. -->
+    <p style="text-align:center;line-height:1.8;">본문은 짧은 줄로 씁니다.<br>한 줄은 12~25자 안에서<br>명시적 줄바꿈으로 끊습니다.</p>
+    <p style="text-align:center;line-height:1.8;">문단 블록은 1~3문장이고<br>핵심 어구만 <span style="color:#e60000;"><strong>색·굵게</strong></span> 강조합니다.</p>
   </template>
   <template id="headings">
     <h2 style="color:#173f8a;">소제목</h2>
@@ -19,13 +21,23 @@
       <span style="font-size:20px;">큰 글씨</span></p>
   </template>
   <template id="alignment">
-    <p style="text-align:left;">왼쪽 정렬</p>
-    <p style="text-align:center;">가운데 정렬</p>
+    <p style="text-align:left;">왼쪽 정렬 — 표·목록·캡션용</p>
+    <p style="text-align:center;">가운데 정렬 — 본문 문단 기본값</p>
     <p style="text-align:right;">오른쪽 정렬</p>
   </template>
   <template id="quote-divider">
     <blockquote>인용문을 입력합니다.</blockquote>
     <hr>
+  </template>
+  <template id="spacer">
+    <!-- Blank-paragraph spacer: the ONLY spacing mechanism between text blocks.
+         A p margin does not survive paste (live editor test). One spacer = one blank line. -->
+    <p style="line-height:1.8;">&nbsp;</p>
+  </template>
+  <template id="highlight-box">
+    <!-- Verified: Naver converts this p into a native one-cell table component
+         (cell background + 4px left border, ~40px height), editable in the editor. -->
+    <p style="padding:14px;background-color:#f0f7ff;border-left:4px solid #173f8a;text-align:center;line-height:1.8;">박스 안에 넣을 강조 문장</p>
   </template>
   <template id="lists">
     <ul><li>항목 하나</li><li>항목 둘</li></ul>
@@ -65,8 +77,8 @@
   <template id="image">
     <!-- Add src only when a real HTTPS image URL is supplied or verified.
          Otherwise replace this block with the image-slot template. -->
-    <p style="text-align:center;"><img alt="사진 설명" width="640" height="360"></p>
-    <p style="text-align:center;color:#666;">사진이 뒷받침하는 사실을 적는 캡션</p>
+    <p style="text-align:left;"><img alt="사진 설명" width="640" height="360"></p>
+    <p style="text-align:left;color:#666;line-height:1.8;">사진이 뒷받침하는 사실을 적는 캡션</p>
   </template>
   <template id="image-slot">
     <p>[이미지: 필요한 실제 자료 | 캡션]</p>
