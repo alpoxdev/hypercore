@@ -27,6 +27,7 @@
 - [ ] **Brand facts verbatim.** 전환형: every 가치입증 line matches the user's input character for character; no added credentials, counts, awards, or prices.
 - [ ] **No manufactured engagement.** No comment/like/subscribe bait, no reciprocal-neighbor call, no length added "for dwell time". (R9)
 - [ ] **Prose self-check passed.** Zero S1 hits under `human-prose.md` §5; one register throughout; no `첫째/둘째/셋째` scaffolding, `결론적으로`, `도움이 되셨다면 공감과 댓글`, `지금 바로`; no markdown `**`/`#` in the deliverable body.
+- [ ] **Voice matched.** Endings, sentence length, lexis, and ornament habit match the settled voice card, card-forbidden lexis appears 0 times, and any tone request the floor rejected is recorded in the publish note ([`tone-manner.md`](tone-manner.md) §4, §5). A tone that replaced the genre row's register is not a failure.
 - [ ] **Tell catalogue walked.** `references/tell-catalog.md` was checked family by family against the draft before delivery: S1 items removed wherever they appeared, and S2 or S3 edits confined to the families the dominant-pattern diagnosis named.
 
 ### Generated visual brief (any failure blocks delivery)
@@ -51,6 +52,7 @@
 
 ### Delivery shape
 
+- [ ] **Body rhythm contract passed** (`post-workflow.md` §3): text blocks 1-5 lines with 12-25-character explicit breaks; paragraph blocks 1-3 sentences; at most 2 text blocks consecutively, with an image/quote/table or a visible gap between blocks; rich body paragraphs center-aligned with `line-height:1.8` inline and blank-paragraph spacers (no `p` `margin`).
 - [ ] Rich files include a formatted-copy button selecting only #sample; title/tags/prompts stay outside; blocked copy reports manual instructions.
 
 - [ ] Titles → chosen-format body → generation JSON → keyword → slots → publish note.

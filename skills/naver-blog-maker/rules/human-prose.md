@@ -14,6 +14,8 @@ Read this before drafting (workflow step 4) and again for the self-check in step
 
 These principles outrank the rules below.
 
+Two boundaries on that register. §4's register column is a **default** — a tone the user supplied can replace the register and the slot values it covers ([`tone-manner.md`](tone-manner.md) §2, §3) — but this file's S1 list, the §4 decoration ceilings, and the one-register-per-post requirement outrank any tone (`tone-manner.md` §4).
+
 ## 2. Generation rules (W-01 to W-26)
 
 Each rule has a stable ID, a one-line rule, and one bad-to-good pair. Korean examples stay in Korean in both language versions.
@@ -156,7 +158,7 @@ When a draft feels wrong but no single sentence looks broken, look for a stack r
 
 Settle the row before the first sentence and hold its register for the whole post. Decoration ceilings below are **per post**, applied in the Naver editor (never markdown), and are ceilings, not quotas.
 
-| Row | Register | Allowed | Decoration ceiling per post | Forbidden |
+| Row | Register (default) | Allowed | Decoration ceiling per post | Forbidden |
 |---|---|---|---|---|
 | 경험·후기·일상 | `-했어요 / -였어요` first person | Owned circumstances, a reaction the writer actually had, photo captions that state a fact, sentence-length variation by content | bold ≤ 1 short phrase per section, emphasis-quote pair ≤ 1, dash 0, emoji ≤ 2, exclamation ≤ 1 | 첫째/둘째 scaffolding, stock verdicts (`정말 만족스러웠어요`), 인사말-only openings, hype adjectives |
 | 정보·비교·가이드 | `-습니다` or `-해요` (pick one) | Sourced facts with dates, tables for comparisons, bare-line subheadings | bold ≤ 1 short phrase per section, emphasis-quote pair ≤ 1, dash 0, emoji 0, exclamation 0 | 결론적으로, `~할 필요가 있다` runs, hedging stacks, list-introducing colons |
@@ -196,5 +198,9 @@ This unit measures author-controlled construction instead of register-bound morp
 7. **"Already good" exit.** When all six checks pass and nothing needs an edit, deliver as is `(출처: judgment)`. Do not manufacture changes to look diligent. An untouched clean draft is a pass, not a skipped step.
 
 8. **Recheck limit.** At most two fix-and-rescan passes `(출처: fixed)`. If something still fails on the second pass, deliver the draft and state the remaining issue in one line rather than churning the wording further.
+
+
+
+**Voice-card comparison** (run when a tone was supplied, `tone-manner.md` §5). Compare the draft against the settled voice card in four places: the endings, the sentence length, the lexis the card forbids (zero occurrences), and the ornament habit, kept inside the genre row's ceiling. A tone request the floor rejected appears in the publish note, not in the post.
 
 Never annotate the post itself with rule IDs.
