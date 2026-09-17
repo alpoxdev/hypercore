@@ -6,6 +6,8 @@
 
 ## 0. When this runs
 
+Run after the intake reply.
+
 | Input the user gave | Path |
 |---|---|
 | Keyword or topic only (`"누수 탐지 비용으로 글 써줘"`) | Run §1-§5 in full |
@@ -64,7 +66,7 @@ Rules:
 - One marker per claim a photo can prove: the product in use, the receipt or 견적서 with the price basis, the before/after, the reading on the instrument, the map or entrance for a place.
 - A marker names what the author must shoot or already has; it never proposes a stock image, a screenshot of someone else's post, or a reused set (R5).
 - Captions state the fact the picture backs (`오후 2시 방문 시 대기 4팀`), not a label (`매장 사진`).
-- Typical count for a 1,500-3,000 character post: 5-12 markers; a how-to has one per step.
+- Follow [`image-slots.md`](image-slots.md) for density and generated illustrations; deliver matching JSON and never substitute for proof photos.
 
 ## 6. Fact pack shape (handed to the workflow)
 

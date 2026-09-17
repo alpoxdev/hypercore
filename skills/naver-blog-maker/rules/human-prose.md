@@ -2,7 +2,7 @@
 
 > Korean version: [`human-prose.ko.md`](human-prose.ko.md)
 
-Read this before drafting (workflow step 4) and again for the self-check in step 5. It is the complete, self-contained set of generation-time rules this skill applies so the post never acquires machine-written texture. It was absorbed from a general Korean-prose rule set and trimmed to compose mode; nothing here depends on any other skill. Sentence rules live only here; decoration ceilings live only in §4 of this file, and [`post-workflow.md`](post-workflow.md) §3 and [`validation.md`](validation.md) refer back to it.
+Read this before drafting (workflow step 4) and again for the self-check in step 5. It is the complete, self-contained set of generation-time rules this skill applies so the post never acquires machine-written texture. It was absorbed from a general Korean-prose rule set and trimmed to compose mode; nothing here depends on any other skill being installed. Sentence rules live only here; decoration ceilings live only in §4 of this file, and [`post-workflow.md`](post-workflow.md) §3 and [`validation.md`](validation.md) refer back to it.
 
 ## 1. Principles
 
@@ -122,6 +122,8 @@ Each rule has a stable ID, a one-line rule, and one bad-to-good pair. Korean exa
 - Bad: 이 도구는 배포를 자동화할 수 있다. 시간을 아낄 수 있고 실수도 줄일 수 있다. 도입은 비용 절감을 위해 추진했고, 검증은 품질 확보를 위해 강화했다.
 - Good: 이 도구는 배포를 자동화한다. 시간이 줄고 실수도 덜한다. 비용을 아끼려고 도입했고, 품질을 지키려고 검증을 강화했다.
 
+The individual patterns inside each family, each with a bad-to-good pair and the W-ID that removes it, live in [`../references/tell-catalog.md`](../references/tell-catalog.md). Reach for it when a draft reads machine-written but no single sentence looks broken.
+
 ## 3. Tell families and why they read as AI
 
 Severity is about drafting cost: **S1** never write it; **S2** one occurrence is fine, three or more in one post is a tell; **S3** harmless alone, a tell only when stacked with others.
@@ -170,7 +172,7 @@ The register never changes inside a post. Only the *allowed content* column may 
 
 Run these in order on the draft you just produced. Steps 1 to 6 are checks; 7 and 8 govern when to stop.
 
-1. **S1 scan.** Reread the draft for the never-write items: 번역투 구문 and the AI 관용구 목록 in §2. Every hit is removed, not softened. This step has no threshold, because one occurrence is one too many.
+1. **S1 scan.** Reread the draft for the never-write items: 번역투 구문 and the AI 관용구 목록 in §2. Every hit is removed, not softened. This step has no threshold, because one occurrence is one too many. When the draft reads wrong but no rule names it, walk [`../references/tell-catalog.md`](../references/tell-catalog.md) family by family instead of guessing.
 
 2. **문두 접속사 count.** Count sentences opening with 또한, 따라서, 즉, or 나아가. Two or more in consecutive sentences fails `(출처: fixed)`. Fix by merging the two sentences or deleting the connective; the logic usually survives without it.
 
