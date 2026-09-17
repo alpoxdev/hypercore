@@ -53,6 +53,12 @@
 - 스팸 사례 (2026-07-06) and 이달의 블로그 exclusion list artificial traffic, comments, recommendations, and 이웃 추가 유도. "이용자 선호도" is a signal family Naver reads; the only disclosed dwell-time use (2016 scroll log) ordered result areas, never individual posts. It is not something the writer simulates or targets.
 - Rule: no "댓글 남기면 ~드려요" bait, no like/subscribe pressure, no reciprocal-neighbor calls, no length added to "increase 체류시간". Optimize task completion instead.
 
+### R10. Keep the key facts in text, not only inside images
+- 서치어드바이저 콘텐츠 가이드: "검색로봇은 이미지 속 텍스트를 인식하기 어려우므로 사이트 내 핵심 정보는 가급적 텍스트로 작성해 주세요."
+- Rule: 가격·수치·조건·절차처럼 독자가 검색으로 찾는 정보는 본문 문장으로 존재해야 합니다. 이미지·인포그래픽은 보조이며 그 정보를 대체하지 않습니다.
+- Scope: this is Naver's published site-content guidance, applied here as this skill's own writing rule. It is not independently confirmed as a Naver Blog ranking rule, so never present it as one.
+- Source: <https://searchadvisor.naver.com/guide/content-basic> (official, undated; accessed 2026-09-17)
+
 ## 3. Planning defaults (`observed`)
 
 Use these to size a draft. State them to the user as defaults, not requirements.

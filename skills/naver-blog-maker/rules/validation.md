@@ -10,6 +10,12 @@
 
 - [ ] **One intent, one lane.** The post answers a single named query slice and the topic fits the author's blog lane recorded at intake. (R1)
 - [ ] **Evidence in every section.** Each section has at least one checkable circumstance (date, place, duration, price basis, quantity, condition) or a cited source; at least one section names a downside, exception, or failure. (R2)
+- [ ] **Decision-complete action layer.** When the intent or the title asks what to do, what to choose, how often, how much, how long, or at what price, the action layer exists: a criterion ≥ 1 · every source-backed option in the fact pack · the operating number that applies · the condition that flips the advice ≥ 1 · exactly one next step. The type is stated in the decision line and the body follows that type's skeleton, with at most one secondary type.
+- [ ] **Actionable decision data.** When the verified, distinct quantitative fields in the fact pack are two or more, the action layer uses at least two of them. When only one is verified, it uses that one and names the unresolved fields in the publish note. No number is invented and no sentence is lengthened to reach a count. **This is this skill's own completeness rule, not a Naver rule.**
+- [ ] **Regulated-number traceability.** Every quantitative claim in a regulated topic traces to a first-party row whose `source_role` is `quantitative_authority` (URL, date, and `claim_scope` present). A `supporting_context` source such as a peer-reviewed review is never the sole basis for a number. A `source-required` slot is a publish blocker, not evidence. Medical topics also pass the boundary gate in `../references/regulated-topic-research.md` §7-§8.
+- [ ] **No facts hidden in images.** Every key number, price, condition, or step exists as body text. Nothing the reader needs is carried only by an image.
+
+- [ ] **Type declared and followed.** The post type is stated in the decision line and the body follows that type's skeleton, with at most one secondary type.
 - [ ] **No inserted keywords.** The target query appears in the title once and in the body only where the sentence needs it. Read the body aloud: no repetition a reader would notice; no hidden or unrelated keywords; hashtags ≤ 7 and all precise. (R3)
 - [ ] **Title promise kept.** The specific answer or finding the title implies is present in the first 3-5 sentences. No concealment words (`이것`, `비밀`, `충격`), no invented statistic, no fake deadline. (R4)
 - [ ] **Original only.** No supplied vendor copy, no template block that appears in another post, no image marker that points at another post's photo set. (R5)
@@ -69,4 +75,4 @@
 - [ ] `assets/evals/naver-blog-maker-cases.jsonl` covers positive, negative, boundary, regression, and adversarial cases and matches the current trigger and workflow.
 - [ ] Repository maintenance only (not a runtime dependency): `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only naver-blog-maker --json` passes.
 - [ ] `bun run --cwd scripts verify` passes.
-- [ ] `README.md` skill count and catalog row are updated.
+- [ ] When this change adds a skill, or changes a skill's name or catalog exposure, `README.md`'s skill count and catalog row are updated; otherwise confirm `README.md` is unchanged.
