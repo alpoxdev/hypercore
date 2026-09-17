@@ -6,6 +6,8 @@ Read after the format choice in [`../rules/intake.md`](../rules/intake.md). This
 
 ## 1. Delivery
 
+For rich output, follow [`rich-html-template.md`](rich-html-template.md) and deliver a **complete HTML file with a formatted-copy button**. Replace the shell’s #sample body and retain its copy behavior.
+
 - `plain`: one fenced `text` draft with title, body markers, and hashtags. Explain that the title field and tag controls still require separate entry.
 - `rich`: separate title, category (if known), and tags from body-only HTML. Deliver an HTML artifact with a rendered preview when file delivery is available; otherwise deliver fenced `html` source explicitly labeled as source, not a styled clipboard.
 - Rich paste requires rendered content copied with HTML clipboard data (`text/html`), not copying literal tags from a code block. Do not promise that a fenced block's copy button preserves styling. When no rendered/HTML clipboard route is available, explain the limitation and provide source plus a plain fallback.
@@ -15,7 +17,7 @@ Read after the format choice in [`../rules/intake.md`](../rules/intake.md). This
 
 | Feature | Reported result | Delivery rule |
 |---|---|---|
-| Bold, text color, background highlight, underline | Preserved | `strong`, `span` with inline color/background styles, `u` |
+| Bold, text color, background highlight, underline | Preserved | `strong`, `em`, `span` with inline color/background styles, `u` |
 | Center/right alignment | Preserved | Inline `text-align` |
 | Quote, divider | Native quote/divider components | `blockquote`, `hr` |
 | Ordered/unordered lists | Preserved | `ol`, `ul`, `li` |
@@ -30,7 +32,7 @@ Table conversion reportedly exposed row/column addition, merging, row/column spl
 
 ## 3. HTML authoring boundaries
 
-Use the user's recommended subset: `p`, `h2`, `h3`, `strong`, `u`, `span`, `ul`, `ol`, `li`, `blockquote`, `hr`, `table`, `thead`, `tbody`, `tr`, `th`, `td`, `img`, `a`. Prefer inline styles and simple sibling blocks over deeply nested structures. The subset is a recommendation: exact heading sizes and blank-line behavior were not individually reported as tested.
+Use the user's recommended subset: `p`, `br`, `h2`, `h3`, `strong`, `em`, `u`, `span`, `ul`, `ol`, `li`, `blockquote`, `hr`, `table`, `thead`, `tbody`, `tr`, `th`, `td`, `img`, `a`. Prefer inline styles and simple sibling blocks over deeply nested structures. The subset is a recommendation: exact heading sizes and blank-line behavior were not individually reported as tested.
 
 Escape text and attribute values; exclude scripts, event handlers, and executable URL schemes. Use valid table spans and consistent cell counts. Apply the prose ornament budget; supported styling is not a quota to fill.
 
