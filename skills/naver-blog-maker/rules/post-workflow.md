@@ -57,7 +57,7 @@ Both modes use the same skeleton; 전환형 adds the bracketed parts.
 해시태그 3-7개 (정확한 주제·개체)
 ```
 
-Follow [`image-slots.md`](image-slots.md): real-material `[이미지: 대상 | 캡션]` and illustration `[이미지 생성: 대상 | 캡션 | 프롬프트 #n]` markers go inside the body; generation JSON goes outside. Alternate short paragraphs with comparisons, processes, and diagrams; never replace proof photos with illustrations.
+Follow [`image-slots.md`](image-slots.md): real-material `[이미지: 대상 | 캡션]` and illustration `[이미지 생성: 대상 | 캡션 | 프롬프트 #n]` markers go inside the body; generation JSON goes outside. Every generation marker names the section role and template it needs, chosen from [`../references/image-prompt-templates.md`](../references/image-prompt-templates.md) §2, so the outline and the delivered JSON agree on the role before drafting starts. Alternate short paragraphs with comparisons, processes, and diagrams; never replace proof photos with illustrations.
 
 Experience slots live inside the body too, as `[확인 필요: …]` with a concrete example of what to write. They are never filled by the skill.
 
@@ -84,7 +84,7 @@ Deliver in this order:
 
 1. **3 title candidates** (decision / question / warning or comparison), recommended one marked.
 2. **Chosen-format body**: plain is one text fence with title/body/hashtags; rich is body HTML with separate title/category/tags, following [`../references/format-options.md`](../references/format-options.md). Source copying is not styled copying. Preserve markers and [확인 필요] in both formats.
-3. **Generation JSON**: one numbered object per generation marker; omit when none.
+3. **Generation JSON**: one numbered object per generation marker, carrying the role's fields and its paste-ready `prompt`; omit when none. The prose prompt lives inside each object, so this workflow adds no separate prose-prompt section.
 4. **Keyword decision** in one line.
 5. **Slots to fill** — the list of `[확인 필요]` markers in order, each with what to write.
 6. **Publish note** (2-4 lines): mode; editor 주제 to select; disclosure check; link check; a length note only when the body is outside the 1,500-3,000 default; the source URLs used for research (for the author's reference, not for the body).

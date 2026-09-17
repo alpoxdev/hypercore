@@ -23,6 +23,18 @@
 - [ ] **Prose self-check passed.** Zero S1 hits under `human-prose.md` §5; one register throughout; no `첫째/둘째/셋째` scaffolding, `결론적으로`, `도움이 되셨다면 공감과 댓글`, `지금 바로`; no markdown `**`/`#` in the deliverable body.
 - [ ] **Tell catalogue walked.** `references/tell-catalog.md` was checked family by family against the draft before delivery: S1 items removed wherever they appeared, and S2 or S3 edits confined to the families the dominant-pattern diagnosis named.
 
+### Generated visual brief (any failure blocks delivery)
+
+- [ ] Every `이미지 생성` marker has exactly one JSON object whose `id` matches that marker, and no object exists without a marker; each object arrives in a fence tagged `json`, never a bare untagged fence.
+- [ ] Each object's `section_role` is one of the 14 roles, and its `template` is a template ID from that role's row in `references/image-prompt-templates.md` §2.
+- [ ] All 14 always-fields are present, and each conditional field appears only where it carries meaning: an inapplicable field is absent, never `null`, `"N/A"`, `"없음"`, `"위와 동일"`, or a placeholder.
+- [ ] Each rendered string appears exactly once inside `text[]`, and `prompt` carries every one of them byte-identical; nothing is translated, corrected, or shortened, no label is listed twice inside `text[]`, and `prompt` carries every string verbatim.
+- [ ] Where two or more images form one intended series, its invariants repeat identically in every object of that series, and no object says "same as above."
+- [ ] A supplied reference is marked as `inspiration` or `edit_source`, and an editing brief names the source, the preserved elements, and the allowed changes.
+- [ ] No object carries a provider, model, quality, or resolution flag, and none borrows a living artist, a real person, or a trademark as a style shortcut.
+- [ ] No generated image stands in for a real site, place, receipt, 견적서, instrument reading, result, certificate, or before/after photo, and no generated map depicts real geography.
+- [ ] `prompt` restates the structured fields only and introduces no fact, brand, person, number, or parameter beyond them.
+
 ### Planning defaults (report, do not block)
 
 - [ ] Body length is within roughly 1,500-3,000 characters or the deviation is explained by the intent (a short how-to may be shorter).
@@ -32,6 +44,8 @@
 - [ ] Ornament: within the chosen row's per-post ceilings in `human-prose.md` §4.
 
 ### Delivery shape
+
+- [ ] Rich files include a formatted-copy button selecting only #sample; title/tags/prompts stay outside; blocked copy reports manual instructions.
 
 - [ ] Titles → chosen-format body → generation JSON → keyword → slots → publish note.
 - [ ] No rule IDs, tier labels, or rubric text in the user-facing output.
