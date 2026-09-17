@@ -167,7 +167,8 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 |------|------|------|
 | `seo-maker` | SEO / AEO / GEO 통합 분석 및 최적화 리포트 | All |
 | `korean-writer` | 한국어 산문을 사람이 쓴 것처럼 — 새 글은 생성 시점 회피로, 기존 글은 앵커 보존과 과교정 가드 아래에서 AI 티 제거 | All |
-| `naver-blog-maker` | 키워드 하나로 리서치부터 초안까지 — 네이버 노출 규칙(C-Rank·D.I.A.+·스마트블록)과 공식 제한 기준 준수, 내장 사람 문장 규칙, 인라인 이미지 슬롯, 복사용 텍스트 블록 전달, 정보/경험형·전환형 | All (self-contained) |
+| `tone-manner-maker` | 글 샘플에서 말투 스펙 문서 추출 — 다른 AI가 그 말투로 쓸 수 있는 self-contained 톤 프로파일, 커뮤니티 말투 7종 근사치 프리셋 포함 | All |
+| `naver-blog-maker` | 키워드 하나로 리서치부터 초안까지 — 네이버 노출 규칙(C-Rank·D.I.A.+·스마트블록)과 공식 제한 기준 준수, 내장 사람 문장 규칙, 인라인 이미지 슬롯, 섹션 역할별 이미지 visual brief(역할·템플릿·시선 순서·색 역할·재질·정확한 글자·점검 기준 + 붙여넣기용 자연어 프롬프트), 복사용 텍스트 블록 전달, 정보/경험형·전환형 | All (self-contained) |
 | `image-maker` | 관찰된 이미지 기능으로 이미지를 생성하고, 미지원 환경에서는 실행 가능한 프롬프트를 안전하게 저장 | Capability-based |
 
 ### 실행 보조
@@ -190,7 +191,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 |------|------|------|
 | `color-cli` | `@kood/color-cli` 기반 hex / rgb / oklch 색상 변환 | All |
 
-총 37개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 38개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
 
