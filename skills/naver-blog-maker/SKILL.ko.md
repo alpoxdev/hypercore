@@ -21,7 +21,7 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 - 사진이 들어갈 자리마다 무엇을 찍고 캡션이 무엇을 증명할지 적은 인라인 이미지 슬롯을 두고, 작성자만 아는 것은 지어내지 않고 `[확인 필요]` 슬롯으로 표시합니다.
 - 선택한 양식으로 전달합니다. plain은 text 블록, rich는 제목·태그와 분리된 본문 HTML입니다.
 - 제목에서 구체적인 약속으로 붙잡고 첫 화면 안에서 지킵니다. 낚시 어휘 대신 수정된 패턴 라이브러리를 씁니다.
-- `rules/human-prose.ko.md`에 내장된 문장 규칙 아래에서 초안을 써서 처음부터 기계가 쓴 질감이 없게 합니다.
+- `rules/human-prose.ko.md`에 내장된 문장 규칙과 이번 실행에서 확정한 목소리(사용자가 준 톤, 블로그에서 본 톤, 유형 기본값 순. `rules/tone-manner.ko.md`) 아래에서 초안을 써서 처음부터 기계가 쓴 질감이 없게 합니다.
 - 네이버가 말한 것(`official`), 실무자가 관찰한 것(`observed`), 속설을 구분하고 사용자가 "규칙"을 물으면 무엇이 무엇인지 말합니다.
 - 두 모드를 지원합니다. 브랜드 없이 노출과 가독을 노리는 정보/경험형, 사용자의 가치입증 사실로 지정 브랜드의 문의나 방문을 만들어야 하는 전환형. 모드는 업체와의 관계와 글의 목표에서 도출하며 따로 묻지 않습니다.
 - 개요를 잡기 전에 글 유형을 고릅니다. 고객 의도, 게시글 형식, 사업 목표를 판정하고 `references/post-type-library.ko.md`에서 주 유형 하나(보조 최대 하나)를 골라 결정 줄에 적습니다. 유형은 섹션 순서를 정하고 단일 의도 슬라이스를 대체하지 않습니다.
@@ -99,11 +99,11 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 
 | 단계 | 작업 | 산출 |
 |---|---|---|
-| 0. 시작 질문 | 블로그 URL, 글의 목표, 선택 업체·제품과 그 관계, 선택 URL·자료, plain·rich를 한 메시지로 확인하고 답을 기다림. 이미 답한 항목은 반복하지 않음. | 확인된 입력 |
+| 0. 시작 질문 | 블로그 URL, 글의 목표, 선택 업체·제품과 그 관계, 선택 URL·자료, plain·rich, 선택 톤앤매너를 한 메시지로 확인하고 답을 기다림. 어조는 여기서 한 번만 묻고 다시 묻지 않음. 이미 답한 항목은 반복하지 않음. | 확인된 입력 |
 | 1. 리서치 | 키워드(또는 브랜드 + 주제 + 가치입증)를 받으면 `rules/topic-research.ko.md` 실행: 검색어 후보, 상위 3편 빈틈 분석, 출처 있는 사실, 경험 슬롯, 인라인 이미지 슬롯. 경험이나 이미지를 받았으면 기록하고 빈틈·이미지 슬롯 단계만 실행합니다. 결정 필드에 숫자가 아직 필요하면 `rules/topic-research.ko.md` §3의 그 필드 레인만 추가 실행합니다. | 사실 묶음 |
 | 2. 키워드 | `references/keyword-research.ko.md`대로 검색어 하나와 의도 슬라이스 하나를 고르고, 공개 도구로 공급·수요를 비교하며 가능하면 실제 검색 결과를 확인하고, `references/post-type-library.ko.md`에서 글 유형을 고름. | `검색어 / 의도 슬라이스 / 주 유형 / 보조 유형 / 목표 / 근거` 한 줄 |
 | 3. 구조 | `rules/post-workflow.ko.md` §3 골격 채움: 제목, 커버 이미지 슬롯, 첫 화면(공감 → 답 → 근거 → 범위), 사실이나 슬롯과 인라인 이미지 마커가 각각 있는 근거 섹션 3~6개, 의도가 필요로 하면 해결 계층, 아쉬운 점 섹션, 마무리, [공개, 브랜드 블록, 행동 유도]. | 개요 |
-| 4. 초안 | 이 스킬의 형식 계약 아래 `rules/human-prose.ko.md`대로 작성. 제목과 서두는 `references/hook-library.ko.md`에서. 사실은 원문 유지. 이미지 마커는 문장 흐름 안에. `[확인 필요]`는 비워 둠. | 초안 |
+| 4. 초안 | 이 스킬의 형식 계약 아래 `rules/human-prose.ko.md`와 확정한 보이스 카드(`rules/tone-manner.ko.md`)대로 작성. 제목과 서두는 `references/hook-library.ko.md`에서. 사실은 원문 유지. 이미지 마커는 문장 흐름 안에. `[확인 필요]`는 비워 둠. | 초안 |
 | 5. 점검 | `rules/validation.ko.md` 초안 점검표를 실행하며 `references/tell-catalog.ko.md`를 패밀리별로 초안과 대조. 강제 규칙 실패 수정(2회 이하). | 점검된 초안 |
 | 6. 전달 | 제목 후보 → plain 텍스트 또는 rich 본문 HTML → 생성 이미지별 JSON → 키워드 → 슬롯 → 발행 메모. | 한국어 결과물 |
 
@@ -113,7 +113,7 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 
 <required>
 
-- 리서치·작성 전에 시작 질문을 한 메시지로 묻고 답을 기다립니다. 답한 항목은 반복하지 않습니다. 다섯 항목은 블로그 URL, 글의 목표, 선택 업체·제품과 그 관계, 선택 URL·자료, 양식이며, 모드는 관계와 목표로 도출하고 따로 묻지 않습니다.
+- 리서치·작성 전에 시작 질문을 한 메시지로 묻고 답을 기다립니다. 답한 항목은 반복하지 않습니다. 여섯 항목은 블로그 URL, 글의 목표, 선택 업체·제품과 그 관계, 선택 URL·자료, 양식, 선택 톤앤매너이며, 어조는 한 번만 묻고 다시 묻지 않습니다. 모드는 관계와 목표로 도출하고 따로 묻지 않습니다.
 - 글 유형을 결정 줄에 밝히고 그 유형의 골격을 따르며 보조 유형은 최대 하나입니다.
 - 시작 질문 뒤에는 사실 묶음을 요구하지 않고 키워드로 리서치합니다. 선택 업체 정보가 없어도 슬롯으로 진행합니다.
 - 작성자의 주제 레인 안에서 의도 슬라이스 하나에 씁니다. 발행 메모에 맞는 에디터 주제를 적습니다.
@@ -122,6 +122,7 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 - 그려질 글자는 `text[]` 안에서 정확히 한 번 나타나고 `prompt`가 그 모두를 byte 단위로 그대로 담게 씁니다. 진짜 시리즈의 공통 조건은 그 시리즈의 모든 객체에 반복합니다.
 - 주제, 정확히 그려질 글자, 편집의 보존·변경 경계가 비어 있으면 그 이미지의 완성 프롬프트를 내지 않습니다. 물어보거나 슬롯을 열어 둡니다.
 - plain은 text 펜스 하나, rich는 본문 HTML과 별도 제목·태그로 전달합니다. HTML 소스 복사와 HTML 클립보드 복사를 구분합니다.
+- 두 양식 모두 `rules/post-workflow.ko.md` §3의 본문 리듬 계약을 따릅니다: 1~5줄 텍스트 블록과 줄당 12~25자 명시적 줄바꿈, 1~3문장 문단 블록, 텍스트 블록은 최대 2개까지만 연속, (rich) 가운데 정렬 문단에 `line-height:1.8` 인라인과 빈 문단 스페이서 — `p`의 `margin`을 간격 수단으로 쓰지 않습니다.
 - 제목의 약속을 첫 3~5문장에 넣습니다. 모든 섹션에 확인 가능한 상황이나 출처가 있고 최소 한 섹션이 아쉬운 점을 말합니다.
 - 목표 검색어는 제목에 한 번, 본문에서는 문장이 필요로 하는 자리에만. 횟수나 밀도 목표 없음.
 - 협찬, 자사, 제휴 관계는 첫 단락에서 쉬운 말로 공개합니다.
@@ -176,7 +177,7 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 3. 제목 후보 3개, 첫 화면의 답, 근거 섹션 3~6개, 해결 계층, 한계, 마무리를 씁니다. 어미 하나를 유지하고 빈말·반복·과장을 줄입니다. 경험·가격·자격을 지어내지 않으며 상업 관계는 서두에 밝히고 전환형 행동 유도는 하나만 둡니다. 기존 글 수정은 사실·어미·마커·구조를 보존합니다.
 4. 커버와 각 설명 지점에 실제 자료 [이미지: 대상 | 캡션] 또는 [이미지 생성: 설명 그림 | 캡션 | 프롬프트 #n]을 둡니다. 짧은 문단 사이에 비교·과정·원리 그림을 배치하되 수량을 맞추려고 채우지 않습니다. 생성 그림은 설명 그림으로 표시하며 현장·인증·결과의 증거로 쓰지 않습니다.
 5. 생성 마커마다 JSON 하나를 본문 밖에 제공합니다. 항상 넣는 필드는 id, section_role, template, use, hierarchy(first, second, background), subject, composition, style, must_include, must_exclude, inspection_checks, aspect, caption_note, prompt입니다. 의미가 있을 때만 넣는 필드는 scene, lighting, color(dominant, support, accent, contrast), material_and_rendering, text(string, role, placement, reading_order, priority, scale, contrast, clearance), series_invariants, reference(role: inspiration 또는 edit_source), assumptions입니다. 적용되지 않는 필드는 아예 없어야 하며 null, "N/A", 자리표시자로 채우지 않습니다. section_role과 template은 짝으로 정해집니다. cover(cover-key-visual), first-screen(first-screen-key-takeaway), mechanism(mechanism-cutaway 또는 mechanism-flow), comparison(comparison-table, comparison-split, before-after-schematic 중 하나), process(process-flow), cost(cost-breakdown), checklist(checklist-card), caution(failure-caution), data(data-chart), timeline(timeline), route(route-schematic), scale(scale-dimension), closing(closing-next-step), concept(concept-mood). template은 그 역할의 괄호 안에서 고르고, `references/image-prompt-templates.ko.md`를 읽을 수 없을 때도 이 짝을 그대로 씁니다. text[].string은 text[] 안에서 정확히 한 번 나타나고 prompt가 그 모두를 byte 단위로 그대로 담습니다. 진짜 시리즈의 공통 조건은 그 시리즈의 모든 객체에 반복합니다. prompt는 구조 필드에서만 파생하고 그 밖의 사실을 더하지 않습니다. 실제 생성 완료라고 말하지 않습니다.
-6. plain은 제목·본문·해시태그를 text 펜스 하나에 둡니다. rich는 별도 제목·태그와 단순 인라인 스타일 본문 HTML을 제공합니다. p/h2/h3/strong/u/span/목록/blockquote/hr/표/a와 실제 HTTPS img만 사용합니다. data:image, 스크립트, 이벤트 핸들러는 제외합니다. 파일 기능이 없으면 HTML 소스로 전달하고 렌더링된 내용을 text/html로 복사해야 서식이 유지된다고 알립니다. 취소선·소스코드·특수 컴포넌트는 수동 편집 사항입니다.
+6. plain은 제목·본문·해시태그를 text 펜스 하나에 둡니다. rich는 별도 제목·태그와 단순 인라인 스타일 본문 HTML을 제공합니다. p/h2/h3/strong/u/span/목록/blockquote/hr/표/a와 실제 HTTPS img만 사용합니다. data:image, 스크립트, 이벤트 핸들러는 제외합니다. 파일 기능이 없으면 HTML 소스로 전달하고 렌더링된 내용을 text/html로 복사해야 서식이 유지된다고 알립니다. 취소선·소스코드·특수 컴포넌트는 수동 편집 사항입니다. 폴백에서도 줄 리듬을 유지합니다: 짧은 명시적 줄바꿈(12~25자), 1~3문장 블록, margin 대신 빈 문단 스페이서, rich 문단의 `line-height:1.8` 인라인.
 7. 사실·공개 문장·링크·이미지/JSON 대응·선택 양식을 점검하고 최대 두 번 수정합니다. 읽지 못한 파일의 정밀 문장 점검은 통과했다고 주장하지 않습니다. 로그인·업로드·발행은 수행하지 않습니다.
 8. 보조 파일을 모두 읽지 못해도 의료 안전은 살아남습니다. `references/regulated-topic-research.ko.md`를 읽었는지와 무관하게 이 다섯 줄이 적용됩니다.
    - 의료 정량값은 같은 주장 범위를 가진 관할 1차 출처(허가사항, 제조사 라벨)로만 근거를 댑니다. peer-reviewed 리뷰는 맥락이며 숫자의 단독 근거가 아닙니다.
@@ -193,7 +194,7 @@ rich 파일을 만들 때 [`references/rich-html-template.ko.md`](references/ric
 
 실행마다 한 언어판만 읽습니다. 경로는 설치된 이 스킬 폴더 기준이며 특정 저장소나 플러그인 캐시 경로를 고정하지 않습니다. 파일은 명시적으로 읽으며 자동으로 포함되지 않습니다. 파일명만 있는 참조는 이 목록에서 일치하는 고유 경로로 찾고 현재 보조 문서 기준으로 해석하지 않습니다.
 
-- 리서치나 작성 전에 [`rules/intake.ko.md`](rules/intake.ko.md)를 읽습니다. 이미 답한 경우를 제외하고 블로그 URL, 글의 목표, 선택 업체·제품과 그 관계, 선택 업체·제품 URL이나 자료, plain·rich 양식의 다섯 항목을 한 번에 묻고 답을 기다립니다.
+- 리서치나 작성 전에 [`rules/intake.ko.md`](rules/intake.ko.md)를 읽습니다. 이미 답한 경우를 제외하고 블로그 URL, 글의 목표, 선택 업체·제품과 그 관계, 선택 업체·제품 URL이나 자료, plain·rich 양식, 선택 톤앤매너의 여섯 항목을 한 번에 묻고 답을 기다립니다.
 - 유형을 고르기 전에 [`references/post-type-library.ko.md`](references/post-type-library.ko.md) §1~§2를 읽고, 고른 뒤에는 그 유형의 §3 플레이북만 읽습니다(보조 유형을 골랐으면 그 플레이북까지).
 - 주제가 의료이거나 정량적 안전·용량·간격·기간·자격·법적 한도 주장이 걸리면 [`references/regulated-topic-research.ko.md`](references/regulated-topic-research.ko.md)를 읽습니다.
 - 이미지를 배치할 때 [`rules/image-slots.ko.md`](rules/image-slots.ko.md)를 읽고, 생성 프롬프트를 작성할 때 [`references/image-prompt-templates.ko.md`](references/image-prompt-templates.ko.md)를 읽습니다.
@@ -211,6 +212,7 @@ rich 파일을 만들 때 [`references/rich-html-template.ko.md`](references/ric
 10. 초안이 기계가 쓴 것처럼 읽히는데 어느 한 문장도 이상하지 않을 때, 수리에 대조할 후보군이 필요할 때, 전달 전 스캔을 돌 때 [`references/tell-catalog.ko.md`](references/tell-catalog.ko.md)를 읽습니다. 패밀리 표 뒤의 패턴별 층입니다.
 11. 전달 전과 이 패키지가 바뀔 때마다 [`rules/validation.ko.md`](rules/validation.ko.md)를 읽습니다.
 12. 트리거, 워크플로, 출력 동작을 바꿀 때 [`assets/evals/naver-blog-maker-cases.jsonl`](assets/evals/naver-blog-maker-cases.jsonl)을 씁니다.
+13. 초안 전과 보이스 카드 대조 때 [`rules/tone-manner.ko.md`](rules/tone-manner.ko.md)를 읽습니다. 세 가지 입력 모양, 보이스 카드, 우선순위 사다리, 하드 플로어, 발행 전 메모 줄.
 
 </support_file_read_order>
 
@@ -233,10 +235,12 @@ rich 파일을 만들 때 [`references/rich-html-template.ko.md`](references/ric
 - [ ] 파일 읽기가 가능하면 tell-catalog를 확인함. 불가능하면 최소 문장 점검을 적용하고 상세 점검 생략을 밝힘.
 - [ ] 수리 경로 전용: 편집 전에 앵커를 기록하고 편집 뒤에 다시 확인했으며(`rules/repair-method.ko.md` §2), 진단이 인용 근거가 있는 패밀리 3~6개로 제한되고, 어미가 양방향으로 그대로이며, 과교정 가드를 통과하고, 변경 요약이 블록 밖에 한두 줄로 있음.
 - [ ] 결과물이 `rules/post-workflow.ko.md` §5 순서를 따르고 규칙 ID나 등급 표시가 없음.
+- [ ] `rules/post-workflow.ko.md` §3의 본문 리듬 계약 통과: 블록 1~5줄에 12~25자 줄바꿈, 문단 블록 1~3문장, 텍스트 블록 최대 2개 연속이고 사이에 눈에 보이는 간격 또는 시각 블록 존재, rich 문단은 가운데 정렬에 `line-height:1.8` 인라인과 빈 문단 스페이서 간격(`p` `margin` 없음).
 - [ ] (저장소 유지보수 전용. 실행 시 의존성 아님) 패키지 변경은 KO/EN 짝을 유지하고 `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only naver-blog-maker --json`과 `bun run --cwd scripts verify`를 통과하며 `README.md`는 바뀌지 않았음을 확인합니다. 단, 이번 변경이 스킬을 추가하거나 스킬 이름·카탈로그 노출을 바꾸면 `README.md`의 스킬 수와 카탈로그 행을 갱신합니다.
 - [ ] 유형이 결정 줄에 밝혀지고 본문이 그 유형의 골격을 따르며 보조 유형은 최대 하나임.
 - [ ] 의도나 제목이 무엇을 할지·고를지·얼마나 자주·얼마만큼·얼마 동안·얼마에 물을 때 해결 계층이 있음: 판단 기준 ≥1, 출처 있는 선택지 전부, 운영 수치, 뒤집히는 조건 ≥1, 다음 단계 정확히 1개.
 - [ ] 규제 정량 주장이 모두 주장 범위가 있는 `quantitative_authority` 출처로 추적되고, `source-required` 슬롯은 발행을 막으며, 의료 경계 gate를 통과함.
 - [ ] 핵심 수치·가격·조건·절차가 이미지만으로 전달되지 않음.
 
+- [ ] 확정한 보이스 카드와 목소리가 일치함: 어미, 문장 길이, 어휘, 장식 습관이 맞고, 플로어가 거절한 톤 요청은 발행 전 메모에 적혀 있음(`rules/tone-manner.ko.md` §5).
 </validation>

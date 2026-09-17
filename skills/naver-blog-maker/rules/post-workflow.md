@@ -25,7 +25,7 @@ First complete [`intake.md`](intake.md) and await the reply. Then research from 
 - **Given experience, facts, or images**: record them verbatim into the pack, then run the gap check and image-slot steps of `topic-research.md` (§4-§5). When a decision field still needs a number, run only that field's lanes in `topic-research.md` §3 — supplied material never cancels an unresolved quantitative field.
 - **Given an existing post** (the user pastes a Naver draft and asks that it read human): keep the supplied text as the base, record its register and its anchors, run the repair path in [`repair-method.md`](repair-method.md), and keep this format contract. Do not restructure the post unless the user asks; a `[확인 필요]` slot is added only where the supplied text leaves a hole that the post cannot stand without.
 
-Fact pack fields (from `topic-research.md` §6): target query and reader job; blog topic lane (or `[확인 필요]`); top-3 gap (covered / missing / stale); facts with `출처 URL | 날짜 | source_grade | source_role | claim_scope | 섹션`; the decision fields (criterion, options, interval, one-time amount or limit, duration, cost range, the condition that flips the advice); `author` slots; `source-required` slots; image slots per section; 전환형 brand facts verbatim + relationship; register (`-했어요` for 경험형, `-습니다` for 전문/서비스형 when unknown).
+Fact pack fields (from `topic-research.md` §6): target query and reader job; blog topic lane (or `[확인 필요]`); top-3 gap (covered / missing / stale); facts with `출처 URL | 날짜 | source_grade | source_role | claim_scope | 섹션`; the decision fields (criterion, options, interval, one-time amount or limit, duration, cost range, the condition that flips the advice); `author` slots; `source-required` slots; image slots per section; 전환형 brand facts verbatim + relationship; register (`-했어요` for 경험형, `-습니다` for 전문/서비스형 when unknown); the voice card ([`tone-manner.md`](tone-manner.md) §2), settled by that file's §3 precedence ladder (user text → blog observation → row default).
 
 Hard boundary: research supplies the informational spine; it never supplies a visit, a purchase, a result, or a downside the author did not report. Those are slots. For a regulated topic (의료·금융·법률·부동산), a quantitative claim needs a `quantitative_authority` source; medical work adds the rules in [`../references/regulated-topic-research.md`](../references/regulated-topic-research.md), and a medical post with no primary source for its required numbers stops here with a list of the sources to find.
 
@@ -94,6 +94,19 @@ Rules that keep it honest:
 
 For the other eight types, follow the type's playbook in [`../references/post-type-library.md`](../references/post-type-library.md) §3.
 
+### Body rhythm contract
+
+Both formats follow the same line rhythm. It is derived from two live measurements of reference posts (`.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md`, PostView DOM analysis) and one editor paste test (`.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt`):
+
+- A text block is 1-5 lines, and each line is 12-25 characters broken by an explicit line break — never one long sentence left to wrap.
+- A paragraph block is 1-3 sentences. Plain separates blocks with a blank line. Rich separates them with a blank-paragraph spacer (`<p style="line-height:1.8;">&nbsp;</p>`, verified to survive paste); a `margin` on `p` does not survive the paste, so it is never the spacing mechanism.
+- At most 2 text blocks run consecutively (the observed mode is 1). Place an image, a quote, or a table between blocks so the scroll never shows two dense screens in a row.
+- Rich only: body paragraphs are center-aligned; a key phrase gets color and bold on the phrase itself, not the paragraph; tables, lists, and captions stay left-aligned; `line-height:1.8` inline on each paragraph is the default (verified paste-surviving).
+- The reference posts' emoji-number heading style is **not** adopted: `emoji as section markers` stays an S1 removal target in `human-prose.md` §4.
+- Before delivery, run the rhythm self-check: no line wraps into a stair-stepped shape, and every two consecutive text blocks show a visible gap.
+
+These are layout rules, not length targets; they never override the sizing defaults above.
+
 ### Common formula
 
 The type's skeleton sits inside one higher contract: **one customer situation → the answer early → real evidence → conditions and limits → the next action.** Mapped onto the skeleton above: 원문 1 is the first screen's empathy sentence, 원문 2 is the first screen's answer, 원문 3 is the evidence sections, 원문 4 is the downside section and the flip condition, 원문 5 is the close.
@@ -108,7 +121,8 @@ The seed prompt's 7 steps map onto this: 공감대 → first sentence; 소개글
 
 Draft the prose under [`human-prose.md`](../rules/human-prose.md) with this skill's format contract as the outer constraint. Practically:
 
-- Genre row from `human-prose.md` §4: 경험·후기·일상, 정보·비교·가이드, or 전문·서비스; one register for the whole post.
+- Voice card before drafting, in this order: the tone the user supplied, then the blog read, then the genre row's default ([`tone-manner.md`](tone-manner.md) §2, §3). Keep the card to one line of working notes.
+- Genre row from `human-prose.md` §4: 경험·후기·일상, 정보·비교·가이드, or 전문·서비스; one register for the whole post. A tone may choose that register, but it never changes facts, numbers, the S1 list, or the decoration ceilings ([`tone-manner.md`](tone-manner.md) §4).
 - Apply W-01 to W-26 at generation time; the Naver-specific S1 additions are: `첫째/둘째/셋째` scaffolding, `결론적으로`, `도움이 되셨다면 공감과 댓글`, `지금 바로`, invented percentages, emoji as section markers, every paragraph the same length.
 - Ornament budget: the per-post ceilings of the chosen row in [`human-prose.md`](human-prose.md) §4, applied in the Naver editor (never markdown `**`).
 - Keep every fact, number, price, date, and brand line exactly as supplied or sourced. If a section needs a fact the pack lacks, leave `[확인 필요: …]` in place; do not fill it.
@@ -122,11 +136,11 @@ Run the self-check protocol in `human-prose.md` §5, then [`validation.md`](vali
 Deliver in this order:
 
 1. **3 title candidates** (decision / question / warning or comparison), recommended one marked.
-2. **Chosen-format body**: plain is one text fence with title/body/hashtags; rich is body HTML with separate title/category/tags, following [`../references/format-options.md`](../references/format-options.md). Source copying is not styled copying. Preserve markers and [확인 필요] in both formats.
+2. **Chosen-format body**: plain is one text fence with title/body/hashtags; rich is body HTML with separate title/category/tags, following [`../references/format-options.md`](../references/format-options.md). Source copying is not styled copying. Preserve markers and [확인 필요] in both formats. Before handing either format over, run the body rhythm self-check in §3.
 3. **Generation JSON**: one numbered object per generation marker, carrying the role's fields and its paste-ready `prompt`; omit when none. The prose prompt lives inside each object, so this workflow adds no separate prose-prompt section.
 4. **Keyword decision** in one line.
 5. **Slots to fill** — the list of `[확인 필요]` markers in order, each with what to write.
-6. **Publish note** (2-4 lines): mode; editor 주제 to select; disclosure check; link check; a length note only when the body is outside the 1,500-3,000 default; the source URLs used for research (for the author's reference, not for the body).
+6. **Publish note** (3-5 lines): mode; editor 주제 to select; disclosure check; link check; a length note only when the body is outside the 1,500-3,000 default; the source URLs used for research (for the author's reference, not for the body); the voice line from [`tone-manner.md`](tone-manner.md) §5, plus that file's request-not-applied line when the floor rejected a tone request.
 
 Nothing else: no rule IDs, no tier labels, no rubric dump, no mention of the tells avoided. The mode statement and every note live outside the text block; the block is what gets pasted. A repair run (a supplied draft) delivers the same items and adds one to three lines naming what changed, also outside the block.
 

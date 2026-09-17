@@ -21,7 +21,7 @@ Default every user-facing deliverable — title candidates, the post block with 
 - Place image slots inline where each photo must appear, naming what to shoot and what the caption proves; mark what only the author can know as `[확인 필요]` slots instead of inventing it.
 - Deliver the chosen format: a text block for plain, or body HTML with separate title and tags for rich.
 - Hook with a specific promise in the title and keep it within the first screen, using the adapted pattern library instead of clickbait vocabulary.
-- Draft under the embedded prose rules in `rules/human-prose.md` so the text has no machine-written texture from the start.
+- Draft under the embedded prose rules in `rules/human-prose.md`, and in the voice this run settled on (the user's own tone text, then the blog read, then the type's default — `rules/tone-manner.md`), so the text has no machine-written texture from the start.
 - Separate what Naver said (`official`) from what practitioners observe (`observed`) and from folklore, and say which is which when the user asks for a "rule".
 - Support two modes: 정보/경험형 for ranking-and-reading posts without a brand, and 전환형 for posts that must generate inquiries or visits for a named brand using the user's own 가치입증 facts. The mode is derived from the brand relationship and the post's goal, never asked as a separate question.
 - Pick the post type before outlining: classify the customer intent, the post format, and the business goal, choose one primary type (at most one secondary) from `references/post-type-library.md`, and record the choice in the decision line. The type shapes the section order and never replaces the single intent slice.
@@ -99,11 +99,11 @@ Boundary:
 
 | Step | Work | Output |
 |---|---|---|
-| 0. Intake | Confirm blog URL, the post's goal, the optional brand/product and the relationship to it, optional URL/material, and plain/rich in one message; await reply. Do not repeat answered items. | Confirmed brief |
+| 0. Intake | Confirm blog URL, the post's goal, the optional brand/product and the relationship to it, optional URL/material, plain/rich, and optional tone and manner in one message; await reply. The tone is asked here once and never re-asked. Do not repeat answered items. | Confirmed brief |
 | 1. Research | Given a keyword (or brand + topic + 가치입증), run `rules/topic-research.md`: query candidates, top-3 gap analysis, sourced facts, experience slots, inline image slots. Given experience or images, record them and run only the gap and image-slot steps — plus a decision field's lanes in `rules/topic-research.md` §3 when a number is still missing. | Fact pack |
 | 2. Keyword | Pick one query and one intent slice per `references/keyword-research.md`; compare supply and demand with public tools; read the live SERP when possible; choose the post type from `references/post-type-library.md`. | `검색어 / 의도 슬라이스 / 주 유형 / 보조 유형 / 목표 / 근거` line |
 | 3. Structure | Fill the skeleton in `rules/post-workflow.md` §3: title, cover image slot, first screen (empathy → answer → basis → scope), 3-6 evidence sections each with a fact or slot and an inline image marker, the decision layer when the intent needs one, a downside section, close, [disclosure, brand block, CTA]. | Outline |
-| 4. Draft | Write under `rules/human-prose.md` with this skill's format contract; titles and openings from `references/hook-library.md`; facts verbatim; image markers in the prose flow; `[확인 필요]` left open. | Draft |
+| 4. Draft | Write under `rules/human-prose.md` and the settled voice card (`rules/tone-manner.md`) with this skill's format contract; titles and openings from `references/hook-library.md`; facts verbatim; image markers in the prose flow; `[확인 필요]` left open. | Draft |
 | 5. Check | Run `rules/validation.md` draft checklist, walking `references/tell-catalog.md` family by family against the draft; fix hard-rule failures (≤ 2 rounds). | Checked draft |
 | 6. Deliver | Titles → plain text or rich body HTML → one JSON per generated-image slot → keyword → slots → publish note. | Korean deliverable |
 
@@ -113,7 +113,7 @@ A supplied draft replaces steps 1 to 3: record its register and its anchors, the
 
 <required>
 
-- Before research or drafting, ask the intake items in one message and await the reply; do not repeat answered items. The five items are blog URL, the post's goal, the optional brand/product and the relationship, optional URL/material, and the format; the mode is derived from the relationship and the goal, never asked separately.
+- Before research or drafting, ask the intake items in one message and await the reply; do not repeat answered items. The six items are blog URL, the post's goal, the optional brand/product and the relationship, optional URL/material, the format, and the optional tone and manner, which is asked once and never re-asked; the mode is derived from the relationship and the goal, never asked separately.
 - State the post type in the decision line and follow that type's skeleton, with at most one secondary type.
 - After intake, research from the keyword without demanding a fact pack; missing optional business details become slots.
 - Write to one intent slice inside the author's topic lane; select the matching editor 주제 in the publish note.
@@ -122,6 +122,7 @@ A supplied draft replaces steps 1 to 3: record its register and its anchors, the
 - Write each rendered string exactly once inside `text[]` and have `prompt` carry every one of them byte-identical, and repeat a real series' invariants in every object of that series.
 - When the subject, the exact rendered text, or an edit's preserve/change boundary is missing, do not emit a finished prompt for that image; ask or leave the slot open.
 - Plain uses one text fence; rich uses body HTML plus separate title/tags. Distinguish copying HTML source from copying HTML clipboard content.
+- Follow the body rhythm contract in `rules/post-workflow.md` §3 for both formats: text blocks of 1-5 lines with 12-25-character explicit line breaks, 1-3-sentence paragraph blocks, at most 2 text blocks in a row, and (rich) center-aligned paragraphs with `line-height:1.8` inline and blank-paragraph spacers — never `p` `margin`.
 - Put the title's promise in the first 3-5 sentences; every section carries a checkable circumstance or a source; at least one section names a downside.
 - Use the target query once in the title and only where sentences need it in the body; no count or density target.
 - Disclose sponsorship, own-business, or affiliate relationships in the first paragraph in plain words.
@@ -175,7 +176,7 @@ If support files cannot be read, disclose the skipped detailed checks in the pub
 3. Write three title candidates, an opening answer, 3-6 evidence sections, the action layer, limitations, and a close. Keep one register; remove filler, repetition, and hype. Never invent experience, prices, or credentials. Disclose commercial relationships early; use one conversion CTA. Repairs preserve facts, register, markers, and structure.
 4. Place a cover and visual explanations between short paragraphs: real-material [이미지: 대상 | 캡션] or [이미지 생성: 설명 그림 | 캡션 | 프롬프트 #n]. Use comparisons, processes, and mechanism illustrations without padding to a count. Label generated illustrations; never use them as proof of a real site, certificate, or result.
 5. Give each generation marker exactly one JSON object outside the body. Always include id, section_role, template, use, hierarchy (first, second, background), subject, composition, style, must_include, must_exclude, inspection_checks, aspect, caption_note, and prompt. Add only when they carry meaning: scene, lighting, color (dominant, support, accent, contrast), material_and_rendering, text (string, role, placement, reading_order, priority, scale, contrast, clearance), series_invariants, reference (role: inspiration or edit_source), assumptions. An inapplicable field is absent — never null, "N/A", or a placeholder. section_role and template are paired as follows: cover (cover-key-visual), first-screen (first-screen-key-takeaway), mechanism (mechanism-cutaway or mechanism-flow), comparison (comparison-table, comparison-split, or before-after-schematic), process (process-flow), cost (cost-breakdown), checklist (checklist-card), caution (failure-caution), data (data-chart), timeline (timeline), route (route-schematic), scale (scale-dimension), closing (closing-next-step), concept (concept-mood). Take the template from that role's parenthesis, and use this pairing even when `references/image-prompt-templates.md` cannot be read. Each text[].string appears exactly once in text[] and prompt carries every one of them byte-identical. Repeat a real series' invariants in every object of that series. prompt derives only from the structured fields and adds no fact beyond them. A prompt is not a generated artifact.
-6. Plain: one text fence containing title/body/hashtags. Rich: separate title/tags and simple inline-styled body HTML using p/h2/h3/strong/u/span/lists/blockquote/hr/tables/a and real HTTPS img sources. Exclude data:image, scripts, and event handlers. Without file capability, provide HTML source and explain that styled paste needs rendered content copied as text/html. Strike-through, source-code, and special components require manual editor work.
+6. Plain: one text fence containing title/body/hashtags. Rich: separate title/tags and simple inline-styled body HTML using p/h2/h3/strong/u/span/lists/blockquote/hr/tables/a and real HTTPS img sources. Exclude data:image, scripts, and event handlers. Without file capability, provide HTML source and explain that styled paste needs rendered content copied as text/html. Strike-through, source-code, and special components require manual editor work. Keep the line rhythm even in the fallback: short explicit line breaks (12-25 characters), 1-3-sentence blocks, blank-paragraph spacers instead of margins, and `line-height:1.8` inline on rich paragraphs.
 7. Check facts, disclosure, links, marker/JSON correspondence, and chosen format; revise at most twice. Do not claim unavailable detailed prose checks passed. No login, upload, or publication.
 8. Medical safety survives the loss of every support file. These five lines hold whether or not `references/regulated-topic-research.md` was read:
    - A medical quantitative value may be based only on a governing first-party source (approval or 허가사항, manufacturer label) with the same claim scope. A peer-reviewed review is context, never the sole basis for a number.
@@ -192,7 +193,7 @@ For rich files, read [`references/rich-html-template.md`](references/rich-html-t
 
 Read only one language version per run. Paths are relative to this installed skill directory, never a hard-coded checkout or plugin cache. File reads are explicit actions, not automatic includes. For bare filenames, resolve the unique matching file in this navigation list; do not interpret them relative to the current support document.
 
-- Before research or drafting, read [`rules/intake.md`](rules/intake.md). Ask the five intake items together and await the reply unless already answered: blog URL, the post's goal, the optional brand/product and the relationship, optional business/product URL or material, and plain/rich format.
+- Before research or drafting, read [`rules/intake.md`](rules/intake.md). Ask the six intake items together and await the reply unless already answered: blog URL, the post's goal, the optional brand/product and the relationship, optional business/product URL or material, plain/rich format, and optional tone and manner.
 - Before choosing the type, read [`references/post-type-library.md`](references/post-type-library.md) §1-§2; after choosing, read only the chosen type's §3 playbook (plus a secondary type's, when one was chosen).
 - When the topic is medical or a quantitative safety, dosage, interval, duration, eligibility, or legal-limit claim is involved, read [`references/regulated-topic-research.md`](references/regulated-topic-research.md).
 - While placing images, read [`rules/image-slots.md`](rules/image-slots.md); when compiling generation prompts, read [`references/image-prompt-templates.md`](references/image-prompt-templates.md).
@@ -210,6 +211,7 @@ Read only one language version per run. Paths are relative to this installed ski
 10. Read [`references/tell-catalog.md`](references/tell-catalog.md) when a draft reads machine-written but no single sentence looks broken, when a repair needs a candidate pool to diagnose against, or before the delivery scan: the per-pattern layer behind the family table.
 11. Read [`rules/validation.md`](rules/validation.md) before delivery and whenever this package changes.
 12. Use [`assets/evals/naver-blog-maker-cases.jsonl`](assets/evals/naver-blog-maker-cases.jsonl) when changing trigger, workflow, or output behavior.
+13. Read [`rules/tone-manner.md`](rules/tone-manner.md) before drafting, and again for the voice-card comparison: the three input shapes, the voice card, the precedence ladder, the floor, and the publish-note line.
 
 </support_file_read_order>
 
@@ -232,10 +234,12 @@ Read only one language version per run. Paths are relative to this installed ski
 - [ ] When file reads work, check the tell catalog; otherwise apply the core prose checks and disclose the skipped detailed scan.
 - [ ] Repair path only: anchors recorded before editing and re-verified after (`rules/repair-method.md` §2), diagnosis limited to three to six quoted families, register unchanged in both directions, the over-correction guard passed, and the change summary outside the block in one to three lines.
 - [ ] Deliverable follows the order in `rules/post-workflow.md` §5 with no rule IDs or tier labels.
+- [ ] The body rhythm contract in `rules/post-workflow.md` §3 passed: blocks 1-5 lines of 12-25-character breaks, paragraph blocks 1-3 sentences, ≤ 2 text blocks in a row with a visible gap or visual block between, rich paragraphs centered with `line-height:1.8` inline and spaced by blank-paragraph spacers (no `p` `margin`).
 - [ ] (Repository maintenance only; not a runtime dependency) package changes keep KO/EN parity, pass `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only naver-blog-maker --json` and `bun run --cwd scripts verify`, and keep `README.md` unchanged — unless this change adds a skill or changes a skill's name or catalog exposure, in which case `README.md`'s count and catalog row are updated.
 - [ ] The post type is declared in the decision line and the body follows that type's skeleton, with at most one secondary type.
 - [ ] The decision layer exists when the intent or the title asks what to do, choose, how often, how much, how long, or at what price: criterion ≥ 1, every source-backed option, the operating number, the flip condition ≥ 1, exactly one next step.
 - [ ] Every regulated quantitative claim traces to a `quantitative_authority` source with a claim scope; `source-required` slots block publishing; the medical boundary gate passed.
 - [ ] No key number, price, condition, or step is carried only by an image.
 
+- [ ] The voice matched the settled card: endings, sentence length, lexis, and ornament habit agree, and a tone request the floor rejected appears in the publish note (`rules/tone-manner.md` §5).
 </validation>
