@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><title>네이버 본문 블록 템플릿</title></head>
+<body>
+  <!-- Agent-only library. Clone template CONTENTS, never the template element.
+       Replace all example text and remove unused blocks before delivery. -->
+  <template id="paragraph">
+    <p>일반 본문 문장입니다.</p>
+    <p>문장 안의 줄바꿈은<br>이렇게 표현합니다.</p>
+  </template>
+  <template id="headings">
+    <h2 style="color:#173f8a;">소제목</h2>
+    <h3 style="color:#555555;">세부 소제목</h3>
+  </template>
+  <template id="inline-styles">
+    <p><strong>굵은 글씨</strong> <em>기울임</em> <u>밑줄</u>
+      <span style="color:#e60000;">강조색</span>
+      <span style="background-color:#fff2cc;">배경 강조</span>
+      <span style="font-size:20px;">큰 글씨</span></p>
+  </template>
+  <template id="alignment">
+    <p style="text-align:left;">왼쪽 정렬</p>
+    <p style="text-align:center;">가운데 정렬</p>
+    <p style="text-align:right;">오른쪽 정렬</p>
+  </template>
+  <template id="quote-divider">
+    <blockquote>인용문을 입력합니다.</blockquote>
+    <hr>
+  </template>
+  <template id="lists">
+    <ul><li>항목 하나</li><li>항목 둘</li></ul>
+    <ol><li>첫 단계</li><li>다음 단계</li></ol>
+  </template>
+  <template id="link">
+    <!-- Replace href with a supplied or verified HTTPS URL. -->
+    <p><a href="https://example.com">출처 이름</a></p>
+  </template>
+  <template id="table">
+    <table border="1" style="border-collapse:collapse;width:100%;border:1px solid #222;">
+      <thead><tr>
+        <th style="border:1px solid #222;padding:10px;background-color:#e8f5e9;text-align:center;">구분</th>
+        <th style="border:1px solid #222;padding:10px;background-color:#e8f5e9;text-align:center;">내용</th>
+      </tr></thead>
+      <tbody><tr>
+        <td style="border:1px solid #222;padding:10px;"><strong>항목</strong></td>
+        <td style="border:1px solid #222;padding:10px;color:#e60000;">설명</td>
+      </tr><tr>
+        <td style="border:1px solid #222;padding:10px;">다른 항목</td>
+        <td style="border:1px solid #222;padding:10px;background-color:#fff2cc;">설명</td>
+      </tr></tbody>
+    </table>
+  </template>
+  <template id="merged-table">
+    <table border="1" style="border-collapse:collapse;width:100%;border:1px solid #222;">
+      <tbody><tr>
+        <th colspan="2" style="border:1px solid #222;padding:10px;background-color:#dbeafe;text-align:center;">병합 헤더</th>
+      </tr><tr>
+        <td rowspan="2" style="border:1px solid #222;padding:10px;background-color:#f3f4f6;">공통 항목</td>
+        <td style="border:1px solid #222;padding:10px;">첫 번째 행</td>
+      </tr><tr>
+        <td style="border:1px solid #222;padding:10px;">두 번째 행</td>
+      </tr></tbody>
+    </table>
+  </template>
+  <template id="image">
+    <!-- Add src only when a real HTTPS image URL is supplied or verified.
+         Otherwise replace this block with the image-slot template. -->
+    <p style="text-align:center;"><img alt="사진 설명" width="640" height="360"></p>
+    <p style="text-align:center;color:#666;">사진이 뒷받침하는 사실을 적는 캡션</p>
+  </template>
+  <template id="image-slot">
+    <p>[이미지: 필요한 실제 자료 | 캡션]</p>
+  </template>
+  <template id="generated-image-slot">
+    <p>[이미지 생성: 설명할 장면 | 설명 그림 캡션 | 프롬프트 #1]</p>
+  </template>
+</body>
+</html>

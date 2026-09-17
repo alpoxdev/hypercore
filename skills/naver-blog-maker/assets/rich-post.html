@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>네이버 블로그 글 복사</title>
+  <style>
+    body { max-width: 900px; margin: 32px auto; padding: 0 20px; font-family: Arial, sans-serif; color: #222; }
+    button { padding: 12px 18px; margin: 4px 8px 4px 0; border: 0; border-radius: 8px; background: #087f3e; color: white; font-weight: 700; cursor: pointer; }
+    button:focus-visible { outline: 3px solid #173f8a; outline-offset: 3px; }
+    #status { min-height: 1.5em; }
+    #sample { margin-top: 24px; padding: 24px; border: 1px solid #ddd; overflow-wrap: anywhere; }
+    #sample img { max-width: 100%; height: auto; }
+    @media (max-width: 600px) { body { margin: 16px auto; padding: 0 12px; } #sample { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- Replace metadata with escaped text. Keep it outside #sample. -->
+    <h1 id="post-title">게시글 제목을 입력하세요</h1>
+    <p>카테고리: <span id="post-category">미지정</span></p>
+    <p>태그: <span id="post-tags">태그를 입력하세요</span></p>
+    <p>제목과 태그는 네이버에서 따로 입력하세요. 아래 버튼은 본문만 복사합니다.</p>
+    <button id="copyRich" type="button">서식 콘텐츠 복사</button>
+    <button id="copySource" type="button">HTML 소스 복사</button>
+    <p id="status" role="status" aria-live="polite"></p>
+  </header>
+
+  <!-- Replace only the children below with the finished post.
+       Use inline styles for copied content. Never copy the page shell. -->
+  <main id="sample" contenteditable="true" aria-label="복사할 블로그 본문">
+    <p>이 문단을 완성된 본문으로 교체하세요.</p>
+  </main>
+
+  <!-- Image-generation JSON and publishing notes belong here, never in #sample. -->
+  <aside id="author-notes" aria-label="작성자 메모"></aside>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const sampleEl = document.getElementById('sample');
+
+    document.getElementById('copyRich').addEventListener('click', () => {
+      const range = document.createRange();
+      range.selectNodeContents(sampleEl);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      let copied = false;
+      try {
+        copied = document.execCommand('copy');
+      } catch {
+        copied = false;
+      }
+      statusEl.textContent = copied
+        ? '서식 복사 완료. 네이버 본문에 붙여넣으세요.'
+        : '자동 복사가 차단됐습니다. 본문이 선택된 상태에서 Ctrl+C 또는 ⌘C를 누르세요.';
+    });
+
+    document.getElementById('copySource').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(sampleEl.innerHTML.trim());
+        statusEl.textContent = 'HTML 소스 복사 완료. 이 버튼은 서식을 복사하지 않습니다.';
+      } catch {
+        statusEl.textContent = 'HTML 소스 복사 실패. 서식 콘텐츠 복사 버튼을 사용하세요.';
+      }
+    });
+  </script>
+</body>
+</html>
