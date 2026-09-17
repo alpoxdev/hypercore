@@ -16,24 +16,34 @@
 - [ ] **Disclosure and links.** 전환형 or any sponsored/affiliate relationship is disclosed in the first paragraph in plain words; every external link says where it goes. (R6)
 - [ ] **Research ran, nothing fabricated.** When the brief lacked facts, the fact pack lists sourced facts (`URL | 날짜`) and a top-3 gap analysis; every first-hand claim the author did not supply is a `[확인 필요: …]` slot with an example, not a sentence.
 - [ ] **Inline image markers.** A cover marker after the title and one `[이미지: 무엇을 찍을지 | 캡션]` per photo-provable claim, at their positions in the body; no stock, screenshot, or reused-set proposals.
-- [ ] **Text block delivery.** The post is one fenced `text` block: title first line, hashtags last line, plain text only (no `#`, `**`, list syntax), all markers inside it.
+- [ ] **Chosen format.** Intake answered. Plain uses one text fence; rich separates title/tags from body HTML. Check HTML clipboard requirements, HTTPS images, table spans; exclude data:image, scripts, event handlers.
 - [ ] **One human-reviewed draft.** Exactly one post; no variants for batch publishing; `[확인 필요]` markers left wherever a fact was missing rather than filled in. (R7)
 - [ ] **Brand facts verbatim.** 전환형: every 가치입증 line matches the user's input character for character; no added credentials, counts, awards, or prices.
 - [ ] **No manufactured engagement.** No comment/like/subscribe bait, no reciprocal-neighbor call, no length added "for dwell time". (R9)
 - [ ] **Prose self-check passed.** Zero S1 hits under `human-prose.md` §5; one register throughout; no `첫째/둘째/셋째` scaffolding, `결론적으로`, `도움이 되셨다면 공감과 댓글`, `지금 바로`; no markdown `**`/`#` in the deliverable body.
+- [ ] **Tell catalogue walked.** `references/tell-catalog.md` was checked family by family against the draft before delivery: S1 items removed wherever they appeared, and S2 or S3 edits confined to the families the dominant-pattern diagnosis named.
 
 ### Planning defaults (report, do not block)
 
 - [ ] Body length is within roughly 1,500-3,000 characters or the deviation is explained by the intent (a short how-to may be shorter).
-- [ ] Image markers: 5-12 for a standard post (one per step for a how-to); each caption states a fact, not a label.
+- [ ] Follow `image-slots.md` §1 density without padding; distinguish real evidence from illustrations and match generation markers to JSON ids one-to-one.
 - [ ] Title 20-35 characters, target query in the front half, no emoji.
 - [ ] Paragraphs 1-3 sentences; subheadings only at real navigation points (usually 3-6).
 - [ ] Ornament: within the chosen row's per-post ceilings in `human-prose.md` §4.
 
 ### Delivery shape
 
-- [ ] Three title candidates with one recommended; the fenced `text` block; one-line keyword decision; slot list; publish note (mode, editor topic, disclosure, links, research URLs; length note only when outside the default).
+- [ ] Titles → chosen-format body → generation JSON → keyword → slots → publish note.
 - [ ] No rule IDs, tier labels, or rubric text in the user-facing output.
+
+### Repair path (only when the user supplied the post)
+
+- [ ] Anchors were recorded before the first edit and re-verified after: facts, numbers, dates, names, prices, durations, quotations, source citations, image markers, `[확인 필요]` slots, the disclosure line, brand lines, the single CTA, hashtags, headings, list and table shapes (`repair-method.md` §2).
+- [ ] The diagnosis names three to six families with a quoted example each, and edits stay inside them plus located S1 items.
+- [ ] Register is unchanged in both directions; contractions, asides, questions, and direct address survive.
+- [ ] The over-correction guard passed, including the new-tell S1 scan on the repaired text.
+- [ ] Uncertain edits were rolled back rather than pushed through.
+- [ ] Deliver repairs in the chosen format; keep the change summary outside the body.
 
 ## 2. Package checklist (when this skill changes)
 

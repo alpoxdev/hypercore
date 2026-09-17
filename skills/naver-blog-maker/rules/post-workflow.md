@@ -17,10 +17,11 @@ If the brief mixes both (a personal review that ends with a shop link), it is �
 
 ## 1. Intake — the fact pack
 
-The minimum input is a keyword or topic. Do not interrogate the user; take what the brief contains, then let research fill the rest.
+First complete [`intake.md`](intake.md) and await the reply. Then research from the keyword without demanding a fact pack.
 
-- **Given a keyword/topic only, or brand + topic + 가치입증 with no experience** (the seed prompt shape): run [`topic-research.md`](topic-research.md) in full. It returns the fact pack below with sourced facts, `[확인 필요]` slots where only the author's own experience can go, and inline image slots. Ask the user at most one question, and only if its answer changes the mode or the topic lane.
+- **Given a keyword/topic only, or brand + topic + 가치입증 with no experience** (the seed prompt shape): run [`topic-research.md`](topic-research.md) in full. It returns the fact pack below with sourced facts, `[확인 필요]` slots where only the author's own experience can go, and inline image slots. Intake already settled the mode and format.
 - **Given experience, facts, or images**: record them verbatim into the pack and run only the gap check and image-slot steps of `topic-research.md` (§4-§5).
+- **Given an existing post** (the user pastes a Naver draft and asks that it read human): keep the supplied text as the base, record its register and its anchors, run the repair path in [`repair-method.md`](repair-method.md), and keep this format contract. Do not restructure the post unless the user asks; a `[확인 필요]` slot is added only where the supplied text leaves a hole that the post cannot stand without.
 
 Fact pack fields (from `topic-research.md` §6): target query and reader job; blog topic lane (or `[확인 필요]`); top-3 gap (covered / missing / stale); facts with `출처 URL | 날짜 | 섹션`; experience slots; image slots per section; 전환형 brand facts verbatim + relationship; register (`-했어요` for 경험형, `-습니다` for 전문/서비스형 when unknown).
 
@@ -56,7 +57,7 @@ Both modes use the same skeleton; 전환형 adds the bracketed parts.
 해시태그 3-7개 (정확한 주제·개체)
 ```
 
-Image slots live **inside the body** at the position where the picture must appear, in the form `[이미지: 무엇을 찍을지 | 캡션]` (rules in `topic-research.md` §5). The user replaces each marker with the photo in SmartEditor; the caption text stays. No separate image plan is delivered.
+Follow [`image-slots.md`](image-slots.md): real-material `[이미지: 대상 | 캡션]` and illustration `[이미지 생성: 대상 | 캡션 | 프롬프트 #n]` markers go inside the body; generation JSON goes outside. Alternate short paragraphs with comparisons, processes, and diagrams; never replace proof photos with illustrations.
 
 Experience slots live inside the body too, as `[확인 필요: …]` with a concrete example of what to write. They are never filled by the skill.
 
@@ -73,6 +74,7 @@ Draft the prose under [`human-prose.md`](../rules/human-prose.md) with this skil
 - Ornament budget: the per-post ceilings of the chosen row in [`human-prose.md`](human-prose.md) §4, applied in the Naver editor (never markdown `**`).
 - Keep every fact, number, price, date, and brand line exactly as supplied or sourced. If a section needs a fact the pack lacks, leave `[확인 필요: …]` in place; do not fill it.
 - Write the image markers as part of the prose flow: a marker follows the sentence whose claim it proves, and the next sentence may refer to it (`위 사진의 온도 차이처럼…`).
+- Deepening pass: during the step-5 self-check, walk [`../references/tell-catalog.md`](../references/tell-catalog.md) family by family against the draft. It carries the individual patterns behind the family table in `human-prose.md` §3, each with a bad-to-good pair and the W-ID that removes it.
 
 ## 5. Self-check, then deliver
 
@@ -81,18 +83,19 @@ Run the self-check protocol in `human-prose.md` §5, then [`validation.md`](vali
 Deliver in this order:
 
 1. **3 title candidates** (decision / question / warning or comparison), recommended one marked.
-2. **The post as one copy-ready block**: the recommended title on the first line, then the full body with its inline `[이미지: …]` and `[확인 필요: …]` markers, then a blank line and the hashtags on the last line. Wrap the whole block in a fenced code block tagged `text` so the user copies it in one motion and nothing renders as markdown. Inside the block: plain text only — no `#`, no `**`, no bullet syntax; use blank lines between paragraphs and a bare line for each subheading.
-3. **Keyword decision** in one line.
-4. **Slots to fill** — the list of `[확인 필요]` markers in order, each with what to write.
-5. **Publish note** (2-4 lines): mode; editor 주제 to select; disclosure check; link check; a length note only when the body is outside the 1,500-3,000 default; the source URLs used for research (for the author's reference, not for the body).
+2. **Chosen-format body**: plain is one text fence with title/body/hashtags; rich is body HTML with separate title/category/tags, following [`../references/format-options.md`](../references/format-options.md). Source copying is not styled copying. Preserve markers and [확인 필요] in both formats.
+3. **Generation JSON**: one numbered object per generation marker; omit when none.
+4. **Keyword decision** in one line.
+5. **Slots to fill** — the list of `[확인 필요]` markers in order, each with what to write.
+6. **Publish note** (2-4 lines): mode; editor 주제 to select; disclosure check; link check; a length note only when the body is outside the 1,500-3,000 default; the source URLs used for research (for the author's reference, not for the body).
 
-Nothing else: no rule IDs, no tier labels, no rubric dump, no mention of the tells avoided. The mode statement and every note live outside the text block; the block is what gets pasted.
+Nothing else: no rule IDs, no tier labels, no rubric dump, no mention of the tells avoided. The mode statement and every note live outside the text block; the block is what gets pasted. A repair run (a supplied draft) delivers the same items and adds one to three lines naming what changed, also outside the block.
 
 ## 6. Forbidden
 
 - Producing more than one post per request, batch variants, or anything meant for automated publishing (R7).
 - Inventing experiences, statistics, quotes, credentials, prices, or filling a `[확인 필요]` slot with plausible text.
-- Interrogating the user for a fact pack when a keyword was given: research first, ask at most one mode- or lane-changing question.
+- Demanding a fact pack after intake or blocking on optional omissions.
 - Stating observed defaults or folklore as Naver rules.
 - Pasting the seed prompt's hook vocabulary; only the adapted forms in the hook library.
 - Targeting dwell time, comments, likes, or neighbors as goals.
