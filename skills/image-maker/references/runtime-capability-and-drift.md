@@ -20,7 +20,7 @@ An exposed-looking control is not evidence that its action, output, permission, 
 
 ### ChatGPT observation
 
-In ChatGPT, the currently exposed native image tool is current-run capability evidence for its declared generate/edit action and direct returned-artifact delivery. For a generation request, compile the prompt and invoke it; do not classify generation as unknown merely because a separate filesystem writer or retrieval adapter is absent. Use the runtime default image model—GPT Image 2 when ChatGPT declares it as the default—without model-selection questions. The product/model label does not grant capability by itself; the exposed tool does.
+In ChatGPT, the currently exposed native image tool is current-run capability evidence for its declared generate/edit action and direct returned-artifact delivery. For a generation request, compile the prompt and invoke it; do not classify generation as unknown merely because a separate filesystem writer or retrieval adapter is absent. When the runtime exposes a model selector, specify exactly `gpt-image-2.5`; when it does not, use the runtime default image model and do not claim 2.5 — report wording is "runtime default model". No model-selection questions. The product/model label does not grant capability by itself; the exposed tool does.
 
 ## Select an action from evidence
 

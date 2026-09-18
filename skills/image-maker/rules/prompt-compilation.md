@@ -24,7 +24,16 @@ The rendered text in the brief must be the exact text to render. Do not silently
 
 ## Use observable constraints
 
-Prefer visible instructions over empty praise. Describe the intended arrangement, surface, light, color, texture, and separation directly. Express exclusions as positive, concrete conditions where possible, such as one isolated subject, an unbranded surface, or an uncluttered background. Avoid artificial perfection and describe natural material or skin texture when relevant.
+Prefer visible instructions over empty praise. Describe the intended arrangement, surface, light, color, texture, and separation directly. Avoid artificial perfection and describe natural material or skin texture when relevant.
+
+Exclusions follow a three-tier policy. Tier 0 (default): every scene exclusion is expressed as a positive, concrete condition, such as one isolated subject, an unbranded surface, or an uncluttered background; negative phrasing is not used because a scene negative can be rendered instead of removed. Tier 1 (text-render guard): only the whitelisted guard phrases below may use `no ...` form, and only when the brief contains rendered text.
+
+| Tier 1 whitelist |
+| --- |
+| `no invented glyphs` |
+| `no watermark` |
+
+This whitelist is canonical in the validator constant `TIER1_NEGATIVE_WHITELIST`; the upstream kit's "exactly seven phrases" figure is unverified, so the set starts with the two evidenced phrases and grows only when an eval row proves the need. Tier 2: any other negative is allowed only when the requester explicitly opts in. Provider-style negative tails (`--no ...`) remain forbidden.
 
 Do not borrow the name of a living artist, real person, or trademark as a visual shortcut when describable properties suffice. Authorized identity or brand material supplied for an edit may be preserved within the stated boundary.
 

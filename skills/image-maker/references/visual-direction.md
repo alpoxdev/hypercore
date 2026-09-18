@@ -37,6 +37,44 @@ Inspect the persisted artifact against the brief when inspection is available an
 
 If inspection is optional but unavailable or uncertain after persistence, report that the artifact exists while explicitly withholding claims about visible constraints, rendered text, legibility, and series consistency. If required inspection is unavailable, fails, or shows a critical miss, stop the visual-success report. Follow the runtime capability guidance for the permitted route and terminal state; do not retry indefinitely or present a prompt as an inspected image.
 
+## Vocabulary and deadwords
+
+Empty praise words reduce to one of three concrete paths before they enter a brief.
+
+| Empty word | Numbers | Body response | Concrete example |
+| --- | --- | --- | --- |
+| 멋지게 / stunning | palette stops, Kelvin, key:fill ratio | where the eye lands first, how wide the frame feels | matte black field, single directional light |
+| 고급스럽게 / beautiful | material count, spacing ratio | the texture a hand would expect | brushed metal, one contact shadow, dead-flat field |
+
+Camera vocabulary describes the result, not the gear name.
+
+| Gear name | Result description |
+| --- | --- |
+| wide-angle / 24mm | edges stretch, background recedes, subject feels small in a large room |
+| telephoto / 85mm | background compresses toward the subject, layers flatten |
+| macro | surface grain and micro-texture dominate, shallow focus |
+| top-down / flat lay | objects read as shapes on a plane, no horizon |
+
+Color binds to a named object: write "the chair is #2F4BFF", not a floating palette. Never emit a bare HEX list.
+
+De-slop axes — replace the AI default with the real-world property.
+
+| AI default | Real-world property |
+| --- | --- |
+| glowing rim light on everything | one motivated light source with a falloff direction |
+| symmetrical centered subject | off-center placement with breathing room on one side |
+| impossibly clean surfaces | seams, grain, wear, or a single imperfection |
+| every color saturated | a restrained palette with one accent |
+
+Deadwords are banned from briefs and reduced through the three paths above. The canonical set is the validator constant `DEADWORD_MAP`; this table mirrors it.
+
+| Code | Surface forms |
+| --- | --- |
+| W_EMPTY_ADJ | 멋지게, 고급스럽게, beautiful, stunning |
+| W_SD_ERA_BOOSTER | masterpiece, 8k, 4k, uhd, trending on artstation |
+| W_WEIGHT_SYNTAX | (word:1.3) and any `(token:number)` weight form |
+| W_SD_FLAG | --ar, --v and other trailing flag syntax |
+
 ## Brief record
 
 Keep the working brief directly navigable with these fields:
