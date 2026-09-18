@@ -4,7 +4,7 @@ Use observed runtime evidence, not product names. A request does not prove a too
 
 ## ChatGPT native-image override
 
-When the current runtime is ChatGPT and exposes a native image tool, an image request MUST compile a complete prompt and invoke that tool in the same run. The exposed tool is observed evidence for the actions and return channel it declares. ChatGPT's native returned image satisfies delivery without repository `file_write`, descriptor-relative secure-write, or a separate retrieve/persist adapter; those capabilities govern only an additional local-file copy. Use the runtime's default image model (GPT Image 2 when it is the default), do not ask the user to select it, and never downgrade a successful native image route to `prompt_saved`.
+When the current runtime is ChatGPT and exposes a native image tool, an image request MUST compile a complete prompt and invoke that tool in the same run. The exposed tool is observed evidence for the actions and return channel it declares. ChatGPT's native returned image satisfies delivery without repository `file_write`, descriptor-relative secure-write, or a separate retrieve/persist adapter; those capabilities govern only an additional local-file copy. When the runtime exposes a model selector, specify exactly `gpt-image-2.5`; when it does not (the ChatGPT web plugin included), use the runtime default image model and do not claim 2.5 — report wording is "runtime default model". Do not ask the user to select a model. Model names never enter the prompt string or the brief. Never downgrade a successful native image route to `prompt_saved`.
 
 Apply this override after required-input and edit-authorization checks but before the generic file-write and fallback resolver. Retry once only after an objective invocation failure. Prompt fallback is allowed only when the native image action is absent or both attempts objectively fail. A tool refusal or safety failure remains `blocked`.
 
@@ -38,6 +38,8 @@ Apply these rules in order and stop at the first applicable result:
 6. `generate` may invoke only when image generation and retrieval/persistence are available and inspection is available or optional.
 7. `edit` may invoke only when image editing and retrieval/persistence are available and inspection is available or optional. Generation never substitutes for editing.
 8. When the relevant image capability, retrieval/persistence, or required inspection is unavailable or unknown, reapply `fallback_policy`: `explicitly_allowed` selects a pending prompt route; `explicitly_rejected` is `blocked`; `unspecified` asks once, returns `awaiting_input`, and stops without invoking or writing.
+
+9. Fileless runtime without a native image tool: when neither file writing nor a native image tool exists, present the compiled brief verbatim in the response body and end `blocked` (reason: a prompt-only file cannot be saved). Claim only that neither image nor prompt file was saved; never use `prompt_saved`. The brief still obeys every compilation rule — the response body is the delivery surface, not a file.
 
 The sole question for the final `unspecified` branch is: “이미지 생성 또는 편집을 완료할 수 없습니다. 이미지 대신 프롬프트 전용 파일을 저장할까요?” Normal package execution does not ask it.
 
