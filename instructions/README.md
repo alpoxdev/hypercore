@@ -17,6 +17,9 @@ This folder is the LLM working-instruction layer for this project. Its purpose i
 | Skill Prompt/Loop/Eval | [`skill/references/prompt-loop-eval.md`](skill/references/prompt-loop-eval.md) | Design a skill as a small iterable, verifiable program rather than a single prompt |
 | Autoresearch | [`autoresearch/AUTORESEARCH.md`](autoresearch/AUTORESEARCH.md) | Design an autonomous iteration harness with goal, scope, metric, verification, guard, log, and rollback |
 | Harness Engineering | [`harness-engineering/HARNESS_ENGINEERING.md`](harness-engineering/HARNESS_ENGINEERING.md) | Manage prompts, agents, and tool use as a testable harness |
+| Harness Measurement | [`harness-engineering/references/measurement.md`](harness-engineering/references/measurement.md) | Derivation for the repetition, aggregation, and context-variable rules: `pass^k`, sample size, behavioral vs end-to-end evals |
+| Harness Evidence & Recovery | [`harness-engineering/references/evidence-and-recovery.md`](harness-engineering/references/evidence-and-recovery.md) | Working shape of the evidence, verification-cost-reduction, and long-horizon recovery rules |
+| Harness Agent Security | [`harness-engineering/references/agent-security.md`](harness-engineering/references/agent-security.md) | The OWASP agentic threat enumeration behind the minimum security assertions |
 | Sourcing | [`sourcing/reliable-search.md`](sourcing/reliable-search.md) | Standards for research, search, and source verification |
 | Validation | [`validation/index.md`](validation/index.md) | Standards to satisfy before claiming a task is complete |
 
@@ -35,6 +38,7 @@ bun run --cwd scripts lint:sh        # static analysis of the checker itself (ne
 The `lint:sh` task runs [ShellCheck](https://www.shellcheck.net/) over `scripts/check-sources.sh`. It is a separate opt-in task because ShellCheck is a system tool rather than a dependency of this repository; `bash-language-server` is declared in `scripts/package.json` for editor diagnostics.
 
 - Last full sweep: **2026-07-29**. Targeted re-verification of the AGENTS.md discovery/precedence area, the CLI runtime profiles, the skill and context-engineering references, the harness-engineering source table, the Hermes Agent guides, and the new caching area: **2026-09-19**. Next full re-verification: **2026-10-29**.
+- Harness-engineering strengthening re-verification: the new `harness-engineering/references/measurement.md`, `harness-engineering/references/evidence-and-recovery.md`, and `harness-engineering/references/agent-security.md` sources were checked on **2026-09-20**.
 - The link check reads inline citations only: it skips fenced code blocks and documentation example URLs on the RFC 2606 reserved domains (`example.com`, `example.net`, `example.org`, `*.example`) and loopback addresses (`localhost`, `127/8`, `[::1]`), and reports how many it skipped — including the URLs inside code blocks that it did not check, so nothing is dropped silently. Every other URL must resolve without a redirect.
 - Keep the quarterly re-verification cadence as project policy: vendor documentation changes on its own schedule, and this cadence is our chosen review interval rather than a vendor guarantee. arXiv and standards documents decay differently, so a URL check is enough for those.
 - `.hyper/` is covered by `.gitignore`. Research reports under it are a **local re-verification cache** and do not exist in another clone. Shareable evidence is always the URL inside the document.

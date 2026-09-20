@@ -17,6 +17,9 @@
 | Skill Prompt/Loop/Eval | [`skill/references/prompt-loop-eval.ko.md`](skill/references/prompt-loop-eval.ko.md) | skill을 단일 프롬프트가 아니라 반복·검증 가능한 작은 프로그램으로 설계 |
 | Autoresearch | [`autoresearch/AUTORESEARCH.ko.md`](autoresearch/AUTORESEARCH.ko.md) | 목표·범위·측정·검증·가드·로그·rollback 기반 자율 반복 하네스 설계 |
 | Harness Engineering | [`harness-engineering/HARNESS_ENGINEERING.ko.md`](harness-engineering/HARNESS_ENGINEERING.ko.md) | 프롬프트, 에이전트, 도구 사용을 테스트 가능한 하네스로 관리 |
+| Harness Measurement | [`harness-engineering/references/measurement.ko.md`](harness-engineering/references/measurement.ko.md) | 반복·집계·컨텍스트 변수 규칙의 유도: `pass^k`, 표본 크기, 행동 평가 vs 종단 벤치마크 |
+| Harness Evidence & Recovery | [`harness-engineering/references/evidence-and-recovery.ko.md`](harness-engineering/references/evidence-and-recovery.ko.md) | 증거·검증 비용 축소·장기 실행 복구 규칙의 작업 형태 |
+| Harness Agent Security | [`harness-engineering/references/agent-security.ko.md`](harness-engineering/references/agent-security.ko.md) | 최소 보안 단언 뒤의 OWASP 에이전트 위협 목록 |
 | Sourcing | [`sourcing/reliable-search.ko.md`](sourcing/reliable-search.ko.md) | 자료조사·검색·출처 검증 기준 |
 | Validation | [`validation/index.ko.md`](validation/index.ko.md) | 작업 완료 전 검증 기준 |
 
@@ -35,6 +38,7 @@ bun run --cwd scripts lint:sh        # 검사기 자체의 정적 분석 (shellc
 `lint:sh`는 `scripts/check-sources.sh`에 [ShellCheck](https://www.shellcheck.net/)를 실행한다. ShellCheck는 이 저장소의 의존성이 아니라 시스템 도구이므로 별도 opt-in 작업으로 둔다. 편집기 진단용 `bash-language-server`는 `scripts/package.json`에 선언되어 있다.
 
 - 마지막 전수 확인: **2026-07-29**. AGENTS.md 탐색/우선순위 영역, CLI 런타임 프로필, skill·context-engineering 레퍼런스, harness-engineering 출처표, Hermes Agent 안내서, 신설 caching 영역의 부분 재검증: **2026-09-19**. 다음 전수 재검증: **2026-10-29**
+- harness-engineering 강화 재검증: 새 `harness-engineering/references/measurement.ko.md`, `harness-engineering/references/evidence-and-recovery.ko.md`, `harness-engineering/references/agent-security.ko.md`의 출처를 **2026-09-20**에 확인했다.
 - 링크 검사는 인라인 인용만 읽는다. 코드 블록과 RFC 2606이 문서용으로 예약한 도메인(`example.com`, `example.net`, `example.org`, `*.example`), 루프백(`localhost`, `127/8`, `[::1]`)의 예시 URL은 제외하고, 제외한 개수를 보고한다. 검사하지 않은 코드 블록 안 URL도 함께 보고하므로 조용히 사라지는 항목이 없다. 나머지는 리다이렉트 없이 해석되어야 한다.
 - 분기 재검증 주기는 이 프로젝트의 정책으로 지킨다. 벤더 문서는 각자의 일정으로 바뀌며, 이 주기는 벤더 보장이 아니라 우리가 고른 검토 간격이다. arXiv·표준 문서는 부패 속도가 달라 URL 확인만으로 충분하다.
 - `.hyper/`는 `.gitignore` 대상이다. 그 아래 리서치 리포트는 **로컬 재검증 캐시**이며 다른 clone에는 없다. 공유 가능한 근거는 항상 문서 안의 URL이다.
