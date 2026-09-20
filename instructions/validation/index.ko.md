@@ -41,6 +41,8 @@ Claim → Risk → Evidence → Verification → Result → Caveat
 
 검증을 실행할 수 없으면 “검증 생략”이 아니라 **왜 불가한지 + next-best check + 남은 risk**를 기록한다.
 
+판정 대상이 비결정적이면 깊이가 충족됐다고 판단하기 전에 `instructions/harness-engineering/HARNESS_ENGINEERING.ko.md`의 `## Judgement Rules`에 있는 반복·집계 규칙을 적용한다.
+
 ---
 
 ## 3. Forbidden Patterns

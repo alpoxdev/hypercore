@@ -57,3 +57,34 @@ metrics:
 - [ ] Same tool availability or explicitly documented difference
 - [ ] Failures categorized by root cause
 - [ ] New failures turned into permanent eval cases
+
+## Negative Fixtures
+
+A format is proven by the inputs it must reject, not by the ones it accepts. Each malformed case is a
+tiny file committed next to the validator, and each one asserts a specific rejection.
+
+Minimum set for an instruction or manifest format:
+
+- [ ] a required header or frontmatter block missing entirely
+- [ ] a name that does not match its directory
+- [ ] a character the format forbids
+- [ ] a value past its length limit
+- [ ] an unknown field
+- [ ] a root that must not be loadable at all — a fixture whose expected outcome is "never loads"
+
+The last one is the security case. A loader that accepts everything it is given will pass every
+positive test, so a "never loads" fixture is what makes the rejection path observable.
+
+A corpus contract test complements the fixtures. It pins the properties of the whole instruction set
+rather than one file: the entry count, required members, forbidden members (retired entries must not
+be advertised), and link resolution.
+
+This repository's execution points:
+
+```bash
+bun run --cwd scripts verify
+node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --json
+```
+
+The first runs the repository's own checks; the second validates the skill corpus and reports JSON.
+Run both when a format, a validator, or the corpus membership changes.

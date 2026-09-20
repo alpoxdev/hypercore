@@ -41,6 +41,8 @@ A completion message must state not "I did it" but **what was done, at what risk
 
 When verification cannot run, record not "verification skipped" but **why it is impossible, the next-best check, and the remaining risk**.
 
+When the thing being judged is non-deterministic, apply the repetition and aggregation rules in `instructions/harness-engineering/HARNESS_ENGINEERING.md` (`## Judgement Rules`) before deciding a depth is satisfied.
+
 ---
 
 ## 3. Forbidden patterns
