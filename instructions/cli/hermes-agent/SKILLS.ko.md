@@ -1,6 +1,7 @@
 # Hermes Agent 스킬
 
 > English: [SKILLS.md](SKILLS.md) · 작성: [SKILL_AUTHORING.ko.md](SKILL_AUTHORING.ko.md) · 런타임 개요: [README.ko.md](README.ko.md) · 조사일: **2026-08-20**
+> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
 
 이 문서는 Hermes Agent 스킬의 실무 참고서다. 아래의 **확인됨** 문장과 명령은 공식 [Skills guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills), [Creating Skills guide](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills), [NousResearch/hermes-agent 소스](https://github.com/NousResearch/hermes-agent)를 근거로 한다. 제품 동작은 바뀔 수 있으므로 자동화하기 전 설치한 버전의 `hermes skills --help`를 확인한다. **권장 사항** 표시는 업스트림 계약이 아닌 작성·운영 조언이다.
 
@@ -138,14 +139,14 @@ hermes skills browse
 hermes skills browse --source official
 hermes skills search kubernetes
 hermes skills search react --source skills-sh
-hermes skills search https://mintlify.com/docs --source well-known
+hermes skills search https://www.mintlify.com/docs --source well-known
 hermes skills inspect openai/skills/k8s
 hermes skills install openai/skills/k8s
 hermes skills install official/security/1password
 hermes skills install skills-sh/vercel-labs/json-render/json-render-react --force
 ```
 
-지원 식별자는 `official/...`, `skills-sh/...`, GitHub 직접 `owner/repo/path`, `well-known:<endpoint>`, HTTPS `SKILL.md` URL이다. well-known 발견은 `/.well-known/skills/index.json`을 읽는다. 직접 URL의 이름 해결 순서는 프런트매터 이름, 유효한 URL 경로 slug, 대화형 TTY 프롬프트, `--name` 순서이며 비대화형 표면에서 이름이 해결되지 않으면 `--name`이 필요하다.
+지원 식별자는 `official/...`, `skills-sh/...`, GitHub 직접 `owner/repo/path`, `well-known:<endpoint>`, HTTPS `SKILL.md` URL이다. well-known 발견은 `/.well-known/skills/index.json`을 읽는다. 직접 URL의 이름 해결 순서는 프런트매터 이름, 유효한 URL 경로 slug, 대화형 TTY 프롬프트, `--name` 순서이며 비대화형 표면에서 이름이 해결되지 않으면 `--name`이 필요하다. 공식 Skills 문서는 endpoint의 두 형태를 보여준다. 검색에는 base URL을, 설치는 전체 `/.well-known/skills/<name>` 경로를 쓴다.
 
 ```bash
 hermes skills install well-known:https://mintlify.com/docs/.well-known/skills/mintlify

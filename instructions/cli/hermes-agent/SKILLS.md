@@ -1,6 +1,7 @@
 # Hermes Agent Skills
 
 > Korean: [SKILLS.ko.md](SKILLS.ko.md) · Authoring: [SKILL_AUTHORING.md](SKILL_AUTHORING.md) · Runtime overview: [README.md](README.md) · Research date: **2026-08-20**
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 This is a practical reference for Hermes Agent skills. **Verified** statements and commands below are drawn from the official [Skills guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills), [Creating Skills guide](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills), and the [NousResearch/hermes-agent source](https://github.com/NousResearch/hermes-agent). Product behavior can change; consult `hermes skills --help` on the installed version before automation. Sections marked **Recommendation** are authoring or operational advice, not an upstream contract.
 
@@ -138,14 +139,14 @@ hermes skills browse
 hermes skills browse --source official
 hermes skills search kubernetes
 hermes skills search react --source skills-sh
-hermes skills search https://mintlify.com/docs --source well-known
+hermes skills search https://www.mintlify.com/docs --source well-known
 hermes skills inspect openai/skills/k8s
 hermes skills install openai/skills/k8s
 hermes skills install official/security/1password
 hermes skills install skills-sh/vercel-labs/json-render/json-render-react --force
 ```
 
-Supported identifiers include `official/...`, `skills-sh/...`, direct GitHub `owner/repo/path`, `well-known:<endpoint>`, and an HTTPS `SKILL.md` URL. Well-known discovery reads `/.well-known/skills/index.json`; direct URLs resolve names in this order: frontmatter name, valid URL-path slug, interactive TTY prompt, then `--name` (required on noninteractive surfaces if no name resolves).
+Supported identifiers include `official/...`, `skills-sh/...`, direct GitHub `owner/repo/path`, `well-known:<endpoint>`, and an HTTPS `SKILL.md` URL. Well-known discovery reads `/.well-known/skills/index.json`; direct URLs resolve names in this order: frontmatter name, valid URL-path slug, interactive TTY prompt, then `--name` (required on noninteractive surfaces if no name resolves). The official Skills guide shows both forms of the endpoint — the base URL for a search and the full `/.well-known/skills/<name>` path for an install.
 
 ```bash
 hermes skills install well-known:https://mintlify.com/docs/.well-known/skills/mintlify

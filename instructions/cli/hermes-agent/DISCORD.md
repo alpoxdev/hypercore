@@ -3,6 +3,7 @@
 > Korean version: [`DISCORD.ko.md`](DISCORD.ko.md)
 >
 > **Research date:** 2026-08-24, against the official documentation only. **Facts** trace to Hermes Agent's official Discord, Messaging Gateway, Security, and Voice Mode pages plus Discord's own developer portal. **Recommendations** are this guide's operational advice. Verify version-sensitive names and defaults in the official reference before operating.
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 ## Primary sources
 - [Discord Setup](https://hermes-agent.nousresearch.com/docs/user-guide/messaging/discord)

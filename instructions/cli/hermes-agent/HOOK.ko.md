@@ -4,6 +4,7 @@
 >
 > 함께 읽을 문서: [개요](README.ko.md), [확장](EXTENSIONS.ko.md), [설정](CONFIGURATION.ko.md), [플러그인](PLUGINS.ko.md), [플러그인 작성](PLUGIN_AUTHORING.ko.md)
 > **조사일:** 2026-08-24. 공식 Hermes Agent 문서와 [`a0ca7c19204e514f9590ce3b812e029b315ab9e9`](https://github.com/NousResearch/hermes-agent/commit/a0ca7c19204e514f9590ce3b812e029b315ab9e9)에 고정한 first-party source를 근거로 삼았다. 아래 **사실**은 해당 근거를 추적하고, **권고**는 Hermes 보장이 아닌 이 안내서의 운영 정책이다. 버전 의존적인 동작은 운영 전에 다시 확인한다.
+> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
 
 ## 1차 출처
 

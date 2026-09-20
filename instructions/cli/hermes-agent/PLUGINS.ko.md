@@ -3,6 +3,7 @@
 > English version: [PLUGINS.md](PLUGINS.md)  
 > 구현 안내: [PLUGIN_AUTHORING.ko.md](PLUGIN_AUTHORING.ko.md)  
 > 조사 기준일: **2026-08-20**. 배포 전 설치된 Hermes 버전의 동작을 확인한다.
+> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
 
 ## 범위 및 주요 출처
 

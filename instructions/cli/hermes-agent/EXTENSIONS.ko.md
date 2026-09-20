@@ -3,6 +3,7 @@
 > 영어 원문: [EXTENSIONS.md](EXTENSIONS.md)  
 > 함께 읽을 문서: [개요 및 런타임 사용](README.ko.md), [설정](CONFIGURATION.ko.md), [Discord](DISCORD.ko.md), [메시징 게이트웨이](MESSAGING.ko.md), [스킬](SKILLS.ko.md), [네이티브 플러그인](PLUGINS.ko.md)
 > **조사 기준일:** 2026-08-24. 아래의 주장과 예시는 공식 Hermes 문서 및 공식 [NousResearch/hermes-agent 저장소](https://github.com/NousResearch/hermes-agent)로 제한한다.
+> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
 
 Hermes 확장은 신뢰 경계를 넘는다. MCP는 로컬 프로그램을 실행하거나 원격 서비스에 호출할 수 있고, 메시징 게이트웨이는 다른 플랫폼의 메시지를 받으며, 도구 제공자는 입력과 자격 증명을 받는다. 활성화는 단순 UI 기능 추가가 아니라 능력 부여로 취급한다. 무엇이든 켜기 전에 소스, 범위, 전송 방식, 자격 증명 흐름을 점검한다.
 
@@ -101,7 +102,7 @@ hermes gateway start
 
 ## Hooks와 shell hooks
 
-Hooks는 수명주기 동작을 확장하고 shell hooks는 특히 명령을 실행한다. 이벤트 이름, 스키마, timeout은 공식 [Hooks 안내서](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks)와 [shell hooks 참조](https://hermes-agent.nousresearch.com/docs/reference/shell-hooks)를 따른다. 훅 구성은 실행 코드처럼 취급한다.
+Hooks는 수명주기 동작을 확장하고 shell hooks는 특히 명령을 실행한다. 이벤트 이름, 스키마, timeout은 공식 [Hooks 안내서](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks)와 [shell hooks 참조](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks#shell-hooks)를 따른다. 훅 구성은 실행 코드처럼 취급한다.
 
 1. 검토되고 접근 제어된 위치에 스크립트를 두고, 참조가 요구하면 절대/통제된 경로를 쓴다.
 2. 이벤트 payload를 검증하고 신뢰할 수 없는 메시지, 파일명, URL, 모델 출력을 셸 문법에 보간하지 않는다.
@@ -162,5 +163,5 @@ Hermes 승인 모드는 `approvals.mode` 아래 `smart`(기본), `manual`, `off`
 - [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security)
 - [Messaging Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/messaging)
 - [AI Providers](https://hermes-agent.nousresearch.com/docs/integrations/providers) 및 [Tool Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/features/tool-gateway)
-- [Hooks](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks) 및 [shell hooks 참조](https://hermes-agent.nousresearch.com/docs/reference/shell-hooks)
+- [Hooks](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks) 및 [shell hooks 참조](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks#shell-hooks)
 - [공식 저장소](https://github.com/NousResearch/hermes-agent) 및 [optional MCP manifest](https://github.com/NousResearch/hermes-agent/tree/main/optional-mcps)

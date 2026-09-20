@@ -1,6 +1,7 @@
 # Hermes Agent 스킬 작성
 
 > English: [SKILL_AUTHORING.md](SKILL_AUTHORING.md) · 스킬 사용과 수명주기: [SKILLS.ko.md](SKILLS.ko.md) · 조사일: **2026-08-20**
+> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
 
 이 동반 문서는 작성, 구조, 검증, 게시를 다룬다. **확인됨** 문장은 공식 [Skills guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills), [Creating Skills guide](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills), [NousResearch/hermes-agent 소스](https://github.com/NousResearch/hermes-agent)를 근거로 한다. **권장 사항**은 업스트림 계약이 아닌 지침을 표시한다.
 

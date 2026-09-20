@@ -3,6 +3,7 @@
 > 영어판: [`DISCORD.md`](DISCORD.md)
 >
 > **조사일:** 2026-08-24, 공식 문서만 근거로 삼았다. 아래 **사실**은 Hermes Agent의 공식 Discord·Messaging Gateway·Security·Voice Mode 문서와 Discord Developer Portal에서 추적한 내용이고, **권고**는 이 문서의 운영 조언이다. 버전 의존적인 이름과 기본값은 운영 전에 공식 reference에서 다시 확인한다.
+> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
 
 ## 1차 출처
 - [Discord Setup](https://hermes-agent.nousresearch.com/docs/user-guide/messaging/discord)
@@ -31,13 +32,15 @@
 ## 3단계 — privileged gateway intent 켜기
 **사실:** 가장 흔한 실패 지점이다. Intent가 맞지 않으면 bot이 연결돼도 message text가 비어 있어 침묵한다.
 
-**Bot** 페이지의 **Privileged Gateway Intents**에서 다음을 설정하고 **Save Changes**를 누른다.
+**Bot** 페이지의 **Privileged Gateway Intents**에서 다음을 설정한다:
 
 | Intent | 목적 | 필요 여부 |
 | --- | --- | --- |
 | Presence Intent | online/offline 상태 보기 | 선택 |
 | Server Members Intent | member list 접근, username 해석 | 필요 |
 | Message Content Intent | 메시지 본문 읽기 | 필요 |
+
+**Server Members Intent**와 **Message Content Intent**를 모두 켜고 **Save Changes**를 누른다.
 
 **사실 — 보존해야 할 미묘한 차이:** 위 setup 표는 Server Members도 필요하다고 표시하지만, 같은 페이지 troubleshooting은 더 좁게 설명한다. Hermes는 항상 Message Content를 요청하고 username allowlist 또는 `DISCORD_ALLOWED_ROLES`를 쓸 때만 Server Members를 추가 요청한다. Text bot에는 Presence가 필요 없다. 별도 Voice Mode 문서는 voice channel에 세 intent 전부를 권장한다.
 

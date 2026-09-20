@@ -3,6 +3,7 @@
 > Korean version: [`README.ko.md`](README.ko.md)
 >
 > **Research date:** 2026-08-24. This is a source-backed overview, not local runtime verification. Commands, providers, and extension APIs vary by Hermes version; confirm version-sensitive behavior in the linked official reference before operating.
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 Hermes Agent is Nous Research's open-source agent runtime. Its CLI supports interactive and one-shot conversations, tool use, profiles, sessions, model/provider configuration, and optional extension systems.
 
@@ -39,7 +40,7 @@ For native Windows, use the official PowerShell installer:
 iex (irm https://hermes-agent.nousresearch.com/install.ps1)
 ```
 
-At first run, use the setup/model flow to configure a provider, credentials, and default model. `hermes model` is the terminal-side provider/model setup flow; in-session `/model` switches among already configured choices. The [CLI reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) and [model documentation](https://hermes-agent.nousresearch.com/docs/user-guide/models) are authoritative for providers and authentication options.
+At first run, use the setup/model flow to configure a provider, credentials, and default model. `hermes model` is the terminal-side provider/model setup flow; in-session `/model` switches among already configured choices. The [CLI reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) and [model documentation](https://hermes-agent.nousresearch.com/docs/user-guide/configuring-models) are authoritative for providers and authentication options.
 
 Do not paste credentials into prompts, skills, plugin manifests, or repositories. Use Hermes's supported authentication, configuration, and secret mechanisms; see [Extensions and operations](EXTENSIONS.md).
 
@@ -66,7 +67,7 @@ Commands above are examples from the official CLI reference, not a promise about
 
 Use `hermes` for an interactive conversation. Use `hermes chat -q` when a one-shot request should retain standard chat output; use `hermes -z` when a caller needs only the final response text. For input that originates outside your control, prefer `--query-file` rather than shell interpolation.
 
-A session can be resumed by ID/title with `--resume <session>` or continued with `--continue [name]`. `--in <dir>` establishes the workspace before starting or resuming and scopes `latest`/continue lookup to that workspace. `hermes sessions` is the management surface for historical sessions. Consult the [session documentation](https://hermes-agent.nousresearch.com/docs/user-guide/features/sessions) before exporting, pruning, or deleting state.
+A session can be resumed by ID/title with `--resume <session>` or continued with `--continue [name]`. `--in <dir>` establishes the workspace before starting or resuming and scopes `latest`/continue lookup to that workspace. `hermes sessions` is the management surface for historical sessions. Consult the [session documentation](https://hermes-agent.nousresearch.com/docs/user-guide/sessions) before exporting, pruning, or deleting state.
 
 For parallel repository work, the CLI also documents `--worktree`; review its current behavior and repository implications in the [CLI reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) before using it.
 

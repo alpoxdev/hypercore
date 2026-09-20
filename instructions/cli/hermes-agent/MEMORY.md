@@ -3,6 +3,7 @@
 > Korean version: [`MEMORY.ko.md`](MEMORY.ko.md)
 >
 > **Research date:** 2026-08-24, against official Hermes Agent documentation and the first-party repository. **Facts** below trace to those sources. **Recommendations** are this guide's operating policy, not Hermes guarantees. Verify version-sensitive configuration and tool behavior in the linked official reference before operating.
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 ## Primary sources
 

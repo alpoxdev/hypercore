@@ -4,6 +4,7 @@
 >
 > Companion guides: [overview](README.md), [extensions](EXTENSIONS.md), [configuration](CONFIGURATION.md), [plugins](PLUGINS.md), and [plugin authoring](PLUGIN_AUTHORING.md)
 > **Research date:** 2026-08-24, against official Hermes Agent documentation and first-party source pinned at [`a0ca7c19204e514f9590ce3b812e029b315ab9e9`](https://github.com/NousResearch/hermes-agent/commit/a0ca7c19204e514f9590ce3b812e029b315ab9e9). **Facts** trace to those sources. **Recommendations** are this guide's operating policy, not Hermes guarantees. Confirm version-sensitive behavior before operating.
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 ## Primary sources
 

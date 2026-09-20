@@ -2,7 +2,7 @@
 
 > 영어판: [`README.md`](README.md)
 
-이 문서는 Codex CLI(`codex`)에서 실행되는 스킬의 런타임 프로필이다. 공통 안전·질문·승인 계약은 [capability-contract.ko.md](../capability-contract.ko.md)를 따른다. 이 문서의 명령과 정책은 로컬 근거인 [`skills/codex/SKILL.ko.ko.md`](../../../skills/codex/SKILL.ko.md)에 한정한다.
+이 문서는 Codex CLI(`codex`)에서 실행되는 스킬의 런타임 프로필이다. 공통 안전·질문·승인 계약은 [capability-contract.ko.md](../capability-contract.ko.md)를 따른다. 이 문서의 명령과 정책은 각 행에 명시한 공식 Codex 문서로 확인했다. 이 프로필이 처음 인용한 로컬 `skills/codex/SKILL.md`는 커밋 `d4f79f9`에서 배포 트리에서 제거되었으므로 더 이상 근거가 아니다.
 
 ## 적용 범위와 계약
 
@@ -13,18 +13,18 @@
 - 외부·파괴적·자격 증명 사용·프로덕션 부작업은 어떤 capability나 CLI 옵션도 승인으로 간주하지 않는다.
 - 안전 또는 산출물을 실질적으로 바꾸는 결정/승인이 빠졌을 때만 사용자에게 묻는다. 런타임에 구조화된 질문·승인 capability가 노출된 것을 확인한 뒤에만 그것을 사용한다. 확인할 수 없으면 한 문장의 평문 질문만 하고, 답을 받기 전 게이트된 작업을 멈춘다. 질문 도구가 있다고 추측하거나 결정을 대신 만들지 않는다.
 
-## 로컬 근거로 확인된 동작
+## 공식 문서로 확인된 동작
 
 | 영역 | 확인된 규칙 | 근거 |
 |---|---|---|
-| 실행 | `codex exec --sandbox read-only "프롬프트"`; 인수 또는 stdin에서 프롬프트를 받고 stdout으로 결과를 낸다 | [`skills/codex/SKILL.ko.ko.md`](../../../skills/codex/SKILL.ko.md) § 핵심 |
-| 리뷰 | `codex review --uncommitted`, `--base <branch>`, `--commit <sha>` 예시; 읽기 전용 | 같은 문서 § 코드 리뷰 |
-| 재개·분기 | 비대화형 최근 세션은 `codex exec resume --last`, 특정 세션은 `codex exec resume <session-id>`; 대화형 최근 세션은 `codex resume --last`; 분기는 `codex fork --last` | 같은 문서 § 세션 재개 |
-| 샌드박스 | `read-only`는 분석, `workspace-write`는 명시적 편집, `danger-full-access` 및 `--dangerously-bypass-approvals-and-sandbox`는 명시적 승인 후 격리 환경에서만 | 같은 문서 § 샌드박스 모드 선택 |
-| 승인 플래그 | `-a/--ask-for-approval`은 대화형 최상위 명령 전용이며 `codex exec`에는 없다 | 같은 문서 § 승인 정책 선택 |
-| 추가 경로·루트 | 필요할 때만 `--add-dir`; 사용자가 작업 디렉터리를 지정할 때 `-C/--cd` | 같은 문서 § 명령 작성 규칙 |
+| 실행 | `codex exec`(단축형 `codex e`)는 프롬프트 없이 끝나는 스크립트·CI 실행의 문서화된 진입점이다. `--json`을 더하면 줄 단위 JSON 이벤트를 받는다 | [Command line options](https://learn.chatgpt.com/docs/developer-commands.md?surface=cli) (확인 2026-09-19) |
+| 리뷰 | `codex review`는 비대화형으로 리뷰하며 대상은 `--uncommitted`, `--base`, `--commit`, 사용자 프롬프트 중 정확히 하나다. `--title`은 `--commit`과만 쓴다 | 같은 문서 `codex review` (확인 2026-09-19) |
+| 재개·분기 | 비대화형 이어가기는 `codex exec resume` 서브커맨드이며 `--last`는 현재 작업 디렉터리로 범위가 좁혀지고 `--all`이 범위를 넓힌다. `codex resume`은 대화형 세션을 이어가고 `codex fork`는 분기한다 | 같은 문서 `codex exec`, `codex resume` (확인 2026-09-19) |
+| 샌드박스 | `--sandbox workspace-write`는 `--ask-for-approval on-request`와 함께 문서화되어 있다. `--sandbox danger-full-access`를 강제하는 대신 `--add-dir`를 선호한다 | 같은 문서, 그리고 [Agent approvals and security](https://learn.chatgpt.com/docs/agent-approvals-security.md) (확인 2026-09-19) |
+| 승인 플래그 | `-a`/`--ask-for-approval`은 대화형 클라이언트의 전역 옵션으로 문서화되어 있다 | 같은 문서 전역 옵션 (확인 2026-09-19) |
+| 추가 경로·루트 | `--add-dir`는 쓰기 가능한 루트를 더하고, `-C`/`--cd`는 실행 전에 작업 디렉터리를 정한다 | 같은 문서 전역 옵션 (확인 2026-09-19) |
 
-위 표는 문서에 기록된 로컬 증거이지 현재 설치된 CLI의 완전한 기능·도구 목록이 아니다. 실제 런타임에서 보이지 않거나 동작이 다르면 `codex --help` 또는 해당 서브커맨드 help로 발견·확인하고, 확인 전에는 지원 사실로 서술하지 않는다.
+위 표는 벤더 문서를 기록한 것이지 현재 설치된 CLI의 완전한 기능·도구 목록이 아니다. 실제 런타임에서 보이지 않거나 동작이 다르면 `codex --help` 또는 해당 서브커맨드 help로 발견·확인하고, 확인 전에는 지원 사실로 서술하지 않는다.
 
 ## 읽기·쓰기·명령 안전
 

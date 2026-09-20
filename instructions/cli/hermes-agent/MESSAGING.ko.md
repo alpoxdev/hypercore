@@ -3,6 +3,7 @@
 > 영어판: [`MESSAGING.md`](MESSAGING.md)
 >
 > **조사일:** 2026-08-24, 공식 문서만 근거로 삼았다. 아래 **사실**은 Hermes Agent 공식 Messaging Gateway·Sessions·Security·플랫폼별 문서에서 추적한 내용이고, **권고**는 이 문서의 운영 조언이다. 전체 Discord 절차는 [`DISCORD.ko.md`](DISCORD.ko.md), 설정 파일은 [`CONFIGURATION.ko.md`](CONFIGURATION.ko.md)을 본다.
+> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
 
 ## 1차 출처
 

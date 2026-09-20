@@ -3,6 +3,7 @@
 > Korean version: [`CONFIGURATION.ko.md`](CONFIGURATION.ko.md)
 >
 > **Research date:** 2026-08-24, against the official documentation only. **Facts** below trace to Hermes Agent's official docs; **Recommendations** are this guide's operational advice. Defaults are documented values as retrieved on that date, not a guarantee about your installed version — re-check the official Configuration and Security references after an upgrade.
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 ## Primary sources
 

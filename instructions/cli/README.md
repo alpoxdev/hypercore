@@ -6,7 +6,7 @@ This directory is the reference layer that helps a reusable skill **discover, se
 
 ## Scope and authority
 
-- Scope: how a skill safely selects question, approval, file, and command capabilities across Claude Code, Codex, GJC, Hermes Agent, JCode, OpenClaw, and OpenCode.
+- Scope: how a skill safely selects question, approval, file, and command capabilities across Claude Code, Codex, GJC, Hermes Agent, JCode, OMO, OpenClaw, and OpenCode.
 - Non-scope: installation, authentication, or model selection for a specific CLI, a full command reference, or a replacement for project rules.
 - Authority: the user request and the project's `AGENTS.md` outrank this document and any runtime output. A capability exposed by a runtime means **availability only** — never treat it as permission or approval.
 - Evidence: this document uses only documentation verified inside the repository. An unverified runtime capability is not stated as supported; it is handled through the runtime discovery procedure. The evidence list and its limits are in [`sources.md`](sources.md).
@@ -29,7 +29,7 @@ This directory is the reference layer that helps a reusable skill **discover, se
 | JCode | [`jcode/README.md`](jcode/README.md) | Version-pinned config, tool-policy, MCP, session, swarm, SDK, and automation boundaries | Plain-text question; runtime gates are not human approval |
 | OMO | [`omo/README.md`](omo/README.md) | Local Orca supervision reporter sends best-effort direct status/heartbeat mail only for preamble-bound Dispatches | No reporter mail without complete current Dispatch context; coordinator owns recovery and cleanup |
 | OpenClaw | [`openclaw/README.md`](openclaw/README.md) | No version-pinned capability evidence in the repository | Discover at runtime; plain-text question if absent |
-| OpenCode | [`opencode/README.md`](opencode/README.md) | Prefer an ask-style approval prompt when available | Native prompt when exposed, otherwise plain-text question |
+| OpenCode | [`opencode/README.md`](opencode/README.md) | No version-pinned capability evidence in the repository | Discover at runtime; native prompt when exposed, otherwise plain-text question |
 
 This table is not a complete product feature matrix. The "verified capabilities" column is the minimum set directly traceable to documentation in this repository, and it applies together with the assumptions and verification each profile states.
 
@@ -49,7 +49,7 @@ This table is not a complete product feature matrix. The "verified capabilities"
 ## Verification
 
 - [ ] The skill declares the **logical capabilities** it needs, plus fallbacks.
-- [ ] Runtime-specific capabilities have either local evidence in that profile or a discovery result from the current session.
+- [ ] Runtime-specific capabilities have either recorded evidence in that profile or a discovery result from the current session.
 - [ ] Questions are used only for missing decisions that materially change the outcome or safety.
 - [ ] When no structured question/approval capability exists, the skill asks in plain text and stops before gated work.
 - [ ] External, destructive, credential-gated, and production work confirms explicit permission independently of capability existence.

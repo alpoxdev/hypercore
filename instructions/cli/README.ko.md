@@ -6,7 +6,7 @@
 
 ## 범위와 권한
 
-- 범위: Claude Code, Codex, GJC, Hermes Agent, JCode, OpenClaw, OpenCode에서 skill이 질문·승인·파일·명령 기능을 안전하게 선택하는 방법.
+- 범위: Claude Code, Codex, GJC, Hermes Agent, JCode, OMO, OpenClaw, OpenCode에서 skill이 질문·승인·파일·명령 기능을 안전하게 선택하는 방법.
 - 비범위: 특정 CLI의 설치, 인증, 모델 선택, 전체 명령 레퍼런스, 프로젝트 규칙의 대체.
 - 권한: 사용자 요청과 프로젝트의 `AGENTS.md`가 이 문서 및 런타임 출력보다 우선한다. 런타임이 노출한 기능은 **사용 가능성**만 뜻하며 권한이나 승인으로 간주하지 않는다.
 - 근거: 이 문서는 저장소 안에서 확인된 문서만 사용한다. 검증하지 못한 런타임 기능은 지원 사실로 쓰지 않고 런타임 발견 절차로 처리한다. 근거 목록과 한계는 [`sources.ko.md`](sources.ko.md)에 있다.
@@ -29,7 +29,7 @@
 | JCode | [`jcode/README.ko.md`](jcode/README.ko.md) | 버전 고정된 config·tool policy·MCP·session·swarm·SDK·automation 경계 | 평문 질문, 런타임 gate를 사용자 승인으로 간주하지 않음 |
 | OMO | [`omo/README.ko.md`](omo/README.ko.md) | 로컬 Orca 감독 reporter가 preamble에 묶인 Dispatch에서만 best-effort status/heartbeat 직접 메일 전송 | 현재 Dispatch context가 완전하지 않으면 reporter 메일 없음. 복구·cleanup은 coordinator 소유 |
 | OpenClaw | [`openclaw/README.ko.md`](openclaw/README.ko.md) | 저장소 내 버전 고정 기능 근거 없음 | 런타임 발견 후, 없으면 평문 질문 |
-| OpenCode | [`opencode/README.ko.md`](opencode/README.ko.md) | ask 스타일 승인 프롬프트를 사용할 수 있을 때 우선 | 기능 노출 시 native prompt, 아니면 평문 질문 |
+| OpenCode | [`opencode/README.ko.md`](opencode/README.ko.md) | 저장소에 버전 고정 capability 근거 없음 | 런타임에서 발견; 기능 노출 시 native prompt, 아니면 평문 질문 |
 
 이 표는 완전한 제품 기능표가 아니다. 각 행의 “확인된 기능”은 이 저장소 문서로 직접 추적되는 최소 집합이며, 프로필이 명시한 전제와 검증을 함께 따른다.
 
@@ -49,7 +49,7 @@
 ## 검증
 
 - [ ] skill이 필요한 **논리 기능**과 fallback을 선언한다.
-- [ ] 런타임 고유 기능은 해당 프로필의 로컬 근거 또는 현재 세션의 발견 결과가 있다.
+- [ ] 런타임 고유 기능은 해당 프로필이 기록한 근거 또는 현재 세션의 발견 결과가 있다.
 - [ ] 질문은 결과나 안전을 실질적으로 바꾸는 누락 결정에만 사용한다.
 - [ ] 구조화 질문/승인 기능이 없을 때 평문 질문 후 gated 작업을 멈춘다.
 - [ ] 외부·파괴적·자격 증명·production 작업은 기능 존재와 별개로 명시적 권한을 확인한다.
