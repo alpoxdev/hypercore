@@ -39,7 +39,7 @@
 
 **범위 한계**: Python 편중 벤치마크, 설정당 1회 샘플링, 생성된 task 설명과 테스트. 모든 모델·저장소에 대한 보편 주장이 아니다.
 
-<https://arxiv.org/html/2602.11988v1> (확인 2026-08-04)
+<https://arxiv.org/html/2602.11988v1> (확인 2026-09-19)
 
 ### 2.2 파일의 존재는 실행 시간과 토큰을 줄일 수 있다
 
@@ -49,7 +49,7 @@
 
 **범위 한계**: 정확성과 의미 품질은 명시적으로 **범위 밖**이며, 50개 task에 대한 수동 sanity check만 수행했다. "좋은 파일은 탐색 비용을 줄인다"는 뒷받침하지만, `AGENTS.md`가 **정확성**을 높인다는 근거는 아니다.
 
-<https://arxiv.org/html/2601.20404v2> (확인 2026-08-04)
+<https://arxiv.org/html/2601.20404v2> (확인 2026-09-19)
 
 ### 2.3 두 결과를 함께 읽기
 
@@ -77,7 +77,7 @@
 
 이는 **효과가 아니라 관행**의 측정이다. 두 방향의 경고로 읽는다. 구현 세부는 과대 대표되어 있으며(그리고 정확히 에이전트가 스스로 찾을 수 있는 것이다), 반대로 에이전트가 추론할 수도 안전하게 추측할 수도 없는 보안·성능 제약은 일곱 파일 중 하나 꼴로만 등장한다.
 
-<https://arxiv.org/html/2511.12884v1> (확인 2026-08-04)
+<https://arxiv.org/html/2511.12884v1> (확인 2026-09-19)
 
 ---
 
@@ -109,7 +109,7 @@ Anthropic 숫자의 배경 동작 두 가지는 *왜 상한이 존재하는가*�
 
 같은 글은 최소가 반드시 짧음을 뜻하지는 않는다고 명시한다. 실제로 하중을 받는 제약으로 채운 긴 파일이 모호한 문장으로 채운 짧은 파일보다 낫다.
 
-<https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> (2025-09-29 게시, 확인 2026-08-04)
+<https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> (2025-09-29 게시, 확인 2026-09-19)
 
 ---
 
@@ -156,16 +156,16 @@ Anthropic 숫자의 배경 동작 두 가지는 *왜 상한이 존재하는가*�
 
 | 출처 | 등급 | URL | 확인일 |
 |---|---|---|---|
-| Evaluating AGENTS.md (AGENTbench) | M | <https://arxiv.org/html/2602.11988v1> | 확인 2026-08-04 |
-| Impact of AGENTS.md on Efficiency | M | <https://arxiv.org/html/2601.20404v2> | 확인 2026-08-04 |
-| Agent READMEs 실증 연구 | D | <https://arxiv.org/html/2511.12884v1> | 확인 2026-08-04 |
-| Anthropic — effective context engineering | V | <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> | 확인 2026-08-04 |
-| Anthropic — Claude Code best practices | V | <https://www.anthropic.com/engineering/claude-code-best-practices> | 확인 2026-08-04 |
-| Claude Code memory 문서 | V | <https://code.claude.com/docs/en/memory> | 확인 2026-08-04 |
-| Claude Code features overview | V | <https://code.claude.com/docs/en/features-overview> | 확인 2026-08-04 |
-| GitHub Copilot repository instructions | V | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> | 확인 2026-08-04 |
-| GitHub Copilot response customization | V | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 확인 2026-08-04 |
-| Cursor rules 문서 | V | <https://cursor.com/en-US/docs/rules> | 확인 2026-08-04 |
+| Evaluating AGENTS.md (AGENTbench) | M | <https://arxiv.org/html/2602.11988v1> | 확인 2026-09-19 |
+| Impact of AGENTS.md on Efficiency | M | <https://arxiv.org/html/2601.20404v2> | 확인 2026-09-19 |
+| Agent READMEs 실증 연구 | D | <https://arxiv.org/html/2511.12884v1> | 확인 2026-09-19 |
+| Anthropic — effective context engineering | V | <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> | 확인 2026-09-19 |
+| Anthropic — Claude Code best practices | V | <https://code.claude.com/docs/en/best-practices> | 확인 2026-09-19 |
+| Claude Code memory 문서 | V | <https://code.claude.com/docs/en/memory> | 확인 2026-09-19 |
+| Claude Code features overview | V | <https://code.claude.com/docs/en/features-overview> | 확인 2026-09-19 |
+| GitHub Copilot repository instructions | V | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> | 확인 2026-09-19 |
+| GitHub Copilot response customization | V | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 확인 2026-09-19 |
+| Cursor rules 문서 | V | <https://cursor.com/en-US/docs/rules> | 확인 2026-09-19 |
 
 ## 함께 읽을 문서
 

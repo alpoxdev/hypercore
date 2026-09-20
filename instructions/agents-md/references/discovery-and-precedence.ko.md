@@ -4,7 +4,7 @@
 
 **목적**: 각 런타임이 instruction 파일을 실제로 어떻게 찾고 결합하는지 기록해, 중첩 파일이 내가 쓰는 하나가 아니라 모든 구현에서 옳도록 작성하게 한다.
 
-아래 사실은 모두 벤더가 자기 제품에 대해 밝힌 내용이며 2026-08-04에 확인했다. 이 베이스에서 가장 빠르게 변하는 자료이므로 분기마다 재검증한다.
+아래 사실은 모두 벤더가 자기 제품에 대해 밝힌 내용이며 2026-09-19에 확인했다. 이 베이스에서 가장 빠르게 변하는 자료이므로 분기마다 재검증한다.
 
 ---
 
@@ -21,7 +21,7 @@
 | 런타임 | 실제 결합 동작 |
 |---|---|
 | **OpenAI Codex** | 루트→말단 concatenate. 더 가까운 파일이 "because they appear later in the combined prompt" override |
-| **Claude Code** | "All discovered files are concatenated into context rather than overriding each other" |
+| **Claude Code** | "All discovered files are concatenated into context rather than overriding each other". 어떤 파일을 *탐색*하는지는 **Project instructions** 설정에 달려 있다. `AGENTS.md`는 작업 디렉터리나 그 위에 `CLAUDE.md` 또는 `CLAUDE.local.md`가 없을 때만 읽힌다(§2) |
 | **Cursor** | "Instructions from nested `AGENTS.md` files are combined with parent directories, with more specific instructions taking precedence" |
 | **GitHub Copilot** | "the nearest `AGENTS.md` file in the directory tree will take precedence" — 단순 해석과 일치하는 유일한 검토 대상 |
 
@@ -39,23 +39,77 @@
 
 ## 2. Claude Code
 
-출처: <https://code.claude.com/docs/en/memory> (확인 2026-08-04)
+출처: <https://code.claude.com/docs/en/memory> (확인 2026-09-19)
 
-### 파일명
+### AGENTS.md는 정식 instruction 파일이다
 
-> "Claude Code reads `CLAUDE.md`, not `AGENTS.md`."
+이 문서의 2026-08-04 판은 Claude Code가 `AGENTS.md`가 아니라 `CLAUDE.md`를 읽는다고 적었다. **더 이상 사실이 아니다.** Claude Code는 v2.1.277부터 `AGENTS.md`를 직접 읽으므로, 다른 에이전트를 위해 이미 준비된 저장소라면 `CLAUDE.md`도, import도, 설정도 필요 없다.
 
-이 문서에서 가장 파급이 큰 호환성 사실이다. 정본 파일 하나로 양쪽 생태계를 지원하려면 문서화된 방법은 import 또는 심볼릭 링크다:
+| 저장소 상태 | Claude가 읽는 것 |
+|---|---|
+| `AGENTS.md`가 있고, 작업 디렉터리나 그 위에 `CLAUDE.md`나 `CLAUDE.local.md`가 없다 | `AGENTS.md` |
+| `AGENTS.md`와 함께 작업 디렉터리나 그 위에 `CLAUDE.md`나 `CLAUDE.local.md`가 있다 | `CLAUDE.md` 파일만 |
+| `CLAUDE.md`가 이미 `AGENTS.md`를 import한다 | `CLAUDE.md`, 그 import를 통해 `AGENTS.md` 포함 |
 
-```bash
-ln -s AGENTS.md CLAUDE.md
+이 판정에 **포함되는**, 따라서 `AGENTS.md`를 억제하는 파일: 작업 디렉터리나 그 위 디렉터리의 `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md`. **포함되지 않아** `AGENTS.md`와 나란히 계속 로드되는 파일: `~/.claude/CLAUDE.md`, 조직의 관리 `CLAUDE.md`, `.claude/rules/` 파일.
+
+### 어떤 instruction 파일을 로드할지 고르기
+
+`/config`에 **Project instructions** 설정이 있다.
+
+| 값 | Claude가 읽는 것 |
+|---|---|
+| `claude-md-or-agents-md` | `CLAUDE.md` 파일, 또는 작업 디렉터리나 그 위에 `CLAUDE.md`·`CLAUDE.local.md`가 없을 때 `AGENTS.md` 파일. **기본값** |
+| `claude-md-and-agents-md` | 둘 다. 각 디렉터리의 `CLAUDE.md` 파일이 먼저, 그다음 `AGENTS.md`. import나 심볼릭 링크로 이미 로드된 `AGENTS.md`는 두 번 읽지 않고 건너뛴다 |
+| `claude-md` | `CLAUDE.md` 파일만 |
+| `managed-only` | 시작 시 조직의 관리 `CLAUDE.md`와 auto memory만. 프로젝트·로컬·사용자 `CLAUDE.md`, `.claude/rules/`, 모든 `AGENTS.md`는 제외된다. 하위 디렉터리 자체 파일은 그곳의 파일을 읽을 때 여전히 로드된다 |
+
+같은 값을 내장 `agents-md` 플러그인 아래 설정 파일에 쓸 수도 있다.
+
+```json
+{
+  "pluginConfigs": {
+    "agents-md@builtin": { "options": { "instructionFiles": "claude-md-and-agents-md" } }
+  }
+}
 ```
 
-또는 `CLAUDE.md` 안에 한 줄: `@AGENTS.md`.
+Claude Code는 **프로젝트·로컬 설정 파일에서는 이 키를 무시한다.** `~/.claude/settings.json`, `--settings` 파일, 또는 managed settings를 쓴다.
+
+### AGENTS.md 지원이 없는 세션
+
+다음 세션에서는 Claude가 `CLAUDE.md`만 읽고 `/config`에 **Project instructions**가 나타나지 않는다.
+
+- v2.1.277 이전 버전.
+- Anthropic에서 기능 플래그를 가져오지 않는 세션. 예: Amazon Bedrock 등 서드파티 프로바이더, telemetry 비활성화.
+- `AGENTS.md` 지원 버전을 설치하거나 업그레이드한 뒤의 첫 세션.
+- `disableAllHooks` 또는 `allowManagedHooksOnly`가 켜졌거나 내장 `agents-md` 플러그인을 꺼둔 경우.
+
+그런 세션을 위한 문서화된 대체 경로는 import다. `CLAUDE.md` 안에 `@AGENTS.md`를 둔다.
+
+### CLAUDE.md와 다른 점
+
+| | `CLAUDE.md` | 설정을 통해 읽는 `AGENTS.md` |
+|---|---|---|
+| `/memory`와 `/context`의 Memory files 목록 | 표시됨 | 표시되지 않음. `AGENTS.md loaded: <path>` 줄을 찾거나 Claude에게 프로젝트 지시가 무엇인지 묻는다 |
+| `InstructionsLoaded` 훅 | 발생 | 발생하지 않음 |
+| `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD`가 켜진 `--add-dir` 디렉터리 | 그 `CLAUDE.md`가 로드됨 | 그 `AGENTS.md`는 로드되지 않음 |
+| 작업 디렉터리 밖 파일의 `@path` import | 승인을 요청함 | 그 프로젝트에서 외부 import를 이미 승인했다면 프롬프트 없이 로드됨 |
+
+**절대 읽지 않는 것**: `AGENTS.local.md`, `AGENTS.override.md`, `.agents/` 디렉터리 아래의 모든 것. 중첩 `AGENTS.md`는 그 하위 디렉터리에 위 세 `CLAUDE.md` 계열 파일이 하나도 없을 때만 로드된다.
+
+### 이전 AGENTS.md 우회책 정리
+
+- **`@AGENTS.md`를 품은 `CLAUDE.md`**: 그대로 둔다. 어떤 설정에서도 두 번 읽히지 않으며, `AGENTS.md`를 직접 읽지 못하는 세션을 계속 커버한다.
+- **글로 "`AGENTS.md`를 읽으라"고 적은 `CLAUDE.md`**: 지우거나 그 문장을 `@AGENTS.md` import로 바꾼다. Claude는 스스로 결정할 때만 그 파일을 연다.
+- **`AGENTS.md`를 가리키는 심볼릭 링크 `CLAUDE.md`**: 아무것도 하지 않거나 링크를 지운다.
+- **`AGENTS.md`를 출력하는 `SessionStart` 훅**: 제거한다. context에 두 번째 사본을 더할 뿐이다.
+
+심볼릭 링크 주의: Edit·Write 도구는 심볼릭 링크를 통해 쓰기를 거부하고 링크 대상 파일을 수정하도록 안내한다. Windows에서는 `core.symlinks`가 켜져 있지 않으면 커밋된 심볼릭 링크가 일반 텍스트 파일로 체크아웃되므로 import를 택한다.
 
 ### 탐색
 
-> "Claude Code reads CLAUDE.md files by walking up the directory tree from your current working directory, checking each directory along the way for CLAUDE.md and CLAUDE.local.md files."
+> "Claude Code loads `CLAUDE.md` and `CLAUDE.local.md` from your current working directory and every directory above it."
 
 > "All discovered files are concatenated into context rather than overriding each other."
 
@@ -73,7 +127,9 @@ ln -s AGENTS.md CLAUDE.md
 
 상대 경로 해석 규칙은 파일을 옮겼을 때 import가 깨지는 흔한 원인이다.
 
-### 크기
+### 규칙, 크기, context 비용
+
+`.claude/rules/`는 주제별 파일을 재귀적으로 탐색한다. 한 파일을 키우는 대신 주제별로 나눌 수 있다. `paths` frontmatter가 없는 규칙은 시작 시 `.claude/CLAUDE.md`와 같은 우선순위로 로드되고, `paths` 목록이 있으면 일치하는 파일을 읽을 때만 로드된다. 규칙은 매 세션 또는 일치 파일을 열 때 로드되므로, 작업 특정 지시는 skill에 둔다.
 
 > "Size: target under 200 lines per CLAUDE.md file."
 
@@ -85,17 +141,18 @@ ln -s AGENTS.md CLAUDE.md
 
 ### 관련 파일과 명령
 
-- `CLAUDE.local.md` — 개인용 프로젝트 선호. `.gitignore`에 추가하도록 문서화되어 있다. 여전히 목록에 있으며 deprecation은 명시되지 않았다.
+- `CLAUDE.local.md` — 개인용 프로젝트 선호. `.gitignore`에 추가하도록 문서화되어 있다. 여전히 목록에 있으며 deprecation은 명시되지 않았다. 이 파일도 `AGENTS.md` 판정에 포함되므로, `AGENTS.md`를 쓰는 저장소에 두면 **Project instructions**가 `claude-md-and-agents-md`가 아닌 한 Claude가 `AGENTS.md`를 읽지 않는다.
 - auto-memory는 프로젝트별로 `~/.claude/projects/<project>/memory/`에 있다.
-- `/init`은 시작용 `CLAUDE.md`를 생성한다. 이미 있으면 "suggests improvements rather than overwriting it". `CLAUDE_CODE_NEW_INIT=1`은 CLAUDE.md, skill, hook을 다루는 대화형 다단계 흐름을 켠다.
+- `/init`은 시작용 `CLAUDE.md`를 생성한다. 이미 있으면 "suggests improvements rather than overwriting it". `CLAUDE_CODE_NEW_INIT=1`은 `AGENTS.md`, `.devin/rules/`, `.windsurf/rules/` 또는 `.windsurfrules`, `.clinerules`도 읽는다.
+- `/import`(v2.1.213+)는 다른 코딩 에이전트의 instruction 파일(AGENTS.md 포함) 사본을 해당 `CLAUDE.md`에 한 번 붙이고, MCP server, command, subagent, skill을 함께 가져온다.
 - `/memory`는 user·project 범위의 memory 파일 위치를 나열하고 auto memory를 토글한다.
-- `#` 단축키는 더 이상 권장 경로가 아니다. 현재 지침: "We used to encourage users to save things to Claude's memory, by using the # hotkey to write to their CLAUDE.md automatically. Instead, Claude now automatically saves memories that are relevant to the work and to you." (<https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models>, 확인 2026-08-04)
+- `#` 단축키는 더 이상 권장 경로가 아니다. 현재 지침: "We used to encourage users to save things to Claude's memory, by using the # hotkey to write to their CLAUDE.md automatically. Instead, Claude now automatically saves memories that are relevant to the work and to you." (<https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models>, 확인 2026-09-19)
 
 ---
 
 ## 3. OpenAI Codex
 
-출처: <https://learn.chatgpt.com/docs/agent-configuration/agents-md> (확인 2026-08-04. `developers.openai.com/codex/agent-configuration/agents-md`는 여기로 리다이렉트된다)
+출처: <https://learn.chatgpt.com/docs/agent-configuration/agents-md> (확인 2026-09-19. `developers.openai.com/codex/agent-configuration/agents-md`는 여기로 리다이렉트된다)
 
 ### 전역 범위
 
@@ -121,7 +178,7 @@ ln -s AGENTS.md CLAUDE.md
 
 ## 4. GitHub Copilot
 
-출처: <https://docs.github.com/en/copilot/concepts/prompting/response-customization>, <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> (확인 2026-08-04)
+출처: <https://docs.github.com/en/copilot/concepts/prompting/response-customization>, <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> (확인 2026-09-19)
 
 ### 전체 우선순위
 
@@ -151,7 +208,7 @@ Copilot에는 다른 도구에 없는 기능도 있다. `.github/instructions/*.
 
 ## 5. Cursor와 Gemini CLI
 
-**Cursor** (<https://cursor.com/en-US/docs/rules>, 확인 2026-08-04)는 `AGENTS.md`를 "a simple markdown file for defining agent instructions", "a plain markdown file without metadata or complex configurations"로 다루며 "in the project root and subdirectories"를 지원한다. 중첩 파일은 "are combined with parent directories, with more specific instructions taking precedence". rule 전반에 대한 크기 휴리스틱은 "Keep rules under 500 lines"다.
+**Cursor** (<https://cursor.com/en-US/docs/rules>, 확인 2026-09-19)는 `AGENTS.md`를 "a simple markdown file for defining agent instructions", "a plain markdown file without metadata or complex configurations"로 다루며 "in the project root and subdirectories"를 지원한다. 중첩 파일은 "are combined with parent directories, with more specific instructions taking precedence". rule 전반에 대한 크기 휴리스틱은 "Keep rules under 500 lines"다.
 
 **Gemini CLI**는 `context.fileName` 설정을 통해 `AGENTS.md`를 지원하지만 기본값은 `GEMINI.md`다. 즉 지원은 자동이 아니라 opt-in이다.
 
@@ -171,7 +228,7 @@ Copilot에는 다른 도구에 없는 기능도 있다. `.github/instructions/*.
 mv AGENT.md AGENTS.md && ln -s AGENTS.md AGENT.md
 ```
 
-검토한 어떤 출처도 `CLAUDE.md` → `AGENTS.md` 일반 마이그레이션 레시피를 문서화하지 않았다. §2의 Claude Code 자체 import/심볼릭 링크 방법이 전부다.
+검토한 어떤 출처도 `CLAUDE.md` → `AGENTS.md` 일반 마이그레이션 레시피를 문서화하지 않았다. §2의 Claude Code 자체 방법, 즉 네이티브 `AGENTS.md` 읽기, `@AGENTS.md` import, `/import`가 전부다.
 
 ---
 
@@ -181,7 +238,8 @@ mv AGENT.md AGENTS.md && ln -s AGENTS.md AGENT.md
 - [ ] 중첩 파일이 부모 로드 여부와 무관하게 옳은 자기 완결적 delta다.
 - [ ] override가 부모를 부정하지 않고 올바른 규칙을 온전히 다시 진술한다.
 - [ ] 모든 중첩 파일이 관장하는 하위 트리를 명시한다.
-- [ ] Claude Code가 대상이면 `CLAUDE.md`가 실제 파일, 심볼릭 링크, 또는 `@AGENTS.md` import로 존재한다. `AGENTS.md`만으로는 읽히지 않는다.
+- [ ] Claude Code가 대상이면 저장소가 자체 `AGENTS.md` 읽기에 기대거나(v2.1.277+, 작업 디렉터리나 그 위에 `CLAUDE.md`·`CLAUDE.local.md` 없음), `AGENTS.md`를 import 또는 심볼릭 링크하는 `CLAUDE.md`를 함께 제공한다. 기능 플래그를 가져오지 않는 세션은 `CLAUDE.md`만 읽기 때문이다.
+- [ ] `AGENTS.md`를 쓰는 저장소에 `CLAUDE.local.md`를 커밋하지 않는다. 기본 설정에서 `AGENTS.md`를 억제하기 때문이다.
 - [ ] `@path` import가 4 hop 이내이며 import한 파일 기준 상대 경로를 쓴다.
 - [ ] `.github/copilot-instructions.md`와 `AGENTS.md`가 함께 있으면 내용이 충돌하지 않는다. Copilot이 전자를 더 높게 매기기 때문이다.
 - [ ] 개인 선호 내용은 공유 파일이 아니라 gitignore된 로컬 파일에 있다.
@@ -192,14 +250,14 @@ mv AGENT.md AGENTS.md && ln -s AGENTS.md AGENT.md
 
 | 출처 | URL | 확인일 |
 |---|---|---|
-| AGENTS.md 표준 | <https://agents.md/> | 확인 2026-08-04 |
-| Claude Code memory | <https://code.claude.com/docs/en/memory> | 확인 2026-08-04 |
-| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 확인 2026-08-04 |
-| Claude 5 context engineering | <https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models> | 확인 2026-08-04 |
-| OpenAI Codex AGENTS.md | <https://learn.chatgpt.com/docs/agent-configuration/agents-md> | 확인 2026-08-04 |
-| GitHub Copilot response customization | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 확인 2026-08-04 |
-| GitHub Copilot repository instructions | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> | 확인 2026-08-04 |
-| Cursor rules | <https://cursor.com/en-US/docs/rules> | 확인 2026-08-04 |
+| AGENTS.md 표준 | <https://agents.md/> | 확인 2026-09-19 |
+| Claude Code memory | <https://code.claude.com/docs/en/memory> | 확인 2026-09-19 |
+| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 확인 2026-09-19 |
+| Claude 5 context engineering | <https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models> | 확인 2026-09-19 |
+| OpenAI Codex AGENTS.md | <https://learn.chatgpt.com/docs/agent-configuration/agents-md> | 확인 2026-09-19 |
+| GitHub Copilot response customization | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 확인 2026-09-19 |
+| GitHub Copilot repository instructions | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> | 확인 2026-09-19 |
+| Cursor rules | <https://cursor.com/en-US/docs/rules> | 확인 2026-09-19 |
 
 ## 함께 읽을 문서
 

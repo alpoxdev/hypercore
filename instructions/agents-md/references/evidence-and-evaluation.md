@@ -39,7 +39,7 @@ Authors' recommendation:
 
 **Scope limits**: Python-heavy benchmark, one sampled completion per configuration, generated task descriptions and tests. This is not a universal claim across all models and repositories.
 
-<https://arxiv.org/html/2602.11988v1> (checked 2026-08-04)
+<https://arxiv.org/html/2602.11988v1> (checked 2026-09-19)
 
 ### 2.2 A file's presence can cut runtime and tokens
 
@@ -49,7 +49,7 @@ Authors' recommendation:
 
 **Scope limits**: correctness and semantic quality were explicitly **out of scope**; only a manual sanity check on 50 tasks was performed. This supports "a good file reduces exploration cost." It does **not** show that `AGENTS.md` improves correctness.
 
-<https://arxiv.org/html/2601.20404v2> (checked 2026-08-04)
+<https://arxiv.org/html/2601.20404v2> (checked 2026-09-19)
 
 ### 2.3 Reading the two together
 
@@ -77,7 +77,7 @@ So the value case for an instruction file is **cost and consistency**, and the r
 
 This measures **what developers write, not what works**. Read it as a warning in two directions: implementation detail is over-represented (and is exactly what agents can discover themselves), while security and performance constraints — which agents cannot infer and cannot safely guess — appear in roughly one file in seven.
 
-<https://arxiv.org/html/2511.12884v1> (checked 2026-08-04)
+<https://arxiv.org/html/2511.12884v1> (checked 2026-09-19)
 
 ---
 
@@ -109,7 +109,7 @@ Note also that "minimal" is not the same as "short":
 
 The post explicitly adds that minimal does not necessarily mean short. A long file of load-bearing constraints beats a short file of vague ones.
 
-<https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> (published 2025-09-29, checked 2026-08-04)
+<https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> (published 2025-09-29, checked 2026-09-19)
 
 ---
 
@@ -156,16 +156,16 @@ This mirrors the harness discipline in [`../../harness-engineering/HARNESS_ENGIN
 
 | Source | Grade | URL | Checked |
 |---|---|---|---|
-| Evaluating AGENTS.md (AGENTbench) | M | <https://arxiv.org/html/2602.11988v1> | 2026-08-04 |
-| Impact of AGENTS.md on Efficiency | M | <https://arxiv.org/html/2601.20404v2> | 2026-08-04 |
-| Agent READMEs empirical study | D | <https://arxiv.org/html/2511.12884v1> | 2026-08-04 |
-| Anthropic — effective context engineering | V | <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> | 2026-08-04 |
-| Anthropic — Claude Code best practices | V | <https://www.anthropic.com/engineering/claude-code-best-practices> | 2026-08-04 |
-| Claude Code memory documentation | V | <https://code.claude.com/docs/en/memory> | 2026-08-04 |
-| Claude Code features overview | V | <https://code.claude.com/docs/en/features-overview> | 2026-08-04 |
-| GitHub Copilot repository instructions | V | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> | 2026-08-04 |
-| GitHub Copilot response customization | V | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 2026-08-04 |
-| Cursor rules documentation | V | <https://cursor.com/en-US/docs/rules> | 2026-08-04 |
+| Evaluating AGENTS.md (AGENTbench) | M | <https://arxiv.org/html/2602.11988v1> | 2026-09-19 |
+| Impact of AGENTS.md on Efficiency | M | <https://arxiv.org/html/2601.20404v2> | 2026-09-19 |
+| Agent READMEs empirical study | D | <https://arxiv.org/html/2511.12884v1> | 2026-09-19 |
+| Anthropic — effective context engineering | V | <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> | 2026-09-19 |
+| Anthropic — Claude Code best practices | V | <https://code.claude.com/docs/en/best-practices> | 2026-09-19 |
+| Claude Code memory documentation | V | <https://code.claude.com/docs/en/memory> | 2026-09-19 |
+| Claude Code features overview | V | <https://code.claude.com/docs/en/features-overview> | 2026-09-19 |
+| GitHub Copilot repository instructions | V | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> | 2026-09-19 |
+| GitHub Copilot response customization | V | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 2026-09-19 |
+| Cursor rules documentation | V | <https://cursor.com/en-US/docs/rules> | 2026-09-19 |
 
 ## Related documents
 

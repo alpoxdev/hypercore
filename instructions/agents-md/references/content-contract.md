@@ -131,12 +131,12 @@ Two consequences for authoring:
 
 | Source | URL | Checked |
 |---|---|---|
-| Anthropic — Claude Code best practices | <https://www.anthropic.com/engineering/claude-code-best-practices> | 2026-08-04 |
-| Anthropic — effective context engineering | <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> | 2026-08-04 |
-| Claude Code memory documentation | <https://code.claude.com/docs/en/memory> | 2026-08-04 |
-| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 2026-08-04 |
-| New rules of context engineering (Claude 5) | <https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models> | 2026-08-04 |
-| GitHub Copilot response customization | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 2026-08-04 |
+| Anthropic — Claude Code best practices | <https://code.claude.com/docs/en/best-practices> | 2026-09-19 |
+| Anthropic — effective context engineering | <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> | 2026-09-19 |
+| Claude Code memory documentation | <https://code.claude.com/docs/en/memory> | 2026-09-19 |
+| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 2026-09-19 |
+| New rules of context engineering (Claude 5) | <https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models> | 2026-09-19 |
+| GitHub Copilot response customization | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 2026-09-19 |
 
 ## Related documents
 

@@ -4,7 +4,7 @@
 
 **Purpose**: record how each runtime actually finds and combines instruction files, so nested files are written to be correct under every implementation rather than under the one you happen to use.
 
-All facts below are vendor statements about their own products, verified 2026-08-04. Re-verify quarterly — this is the fastest-moving material in this base.
+All facts below are vendor statements about their own products, verified 2026-09-19. Re-verify quarterly — this is the fastest-moving material in this base.
 
 ---
 
@@ -21,7 +21,7 @@ The `AGENTS.md` site states the rule simply:
 | Runtime | Actual combining behavior |
 |---|---|
 | **OpenAI Codex** | Concatenates root-to-leaf; closer files override "because they appear later in the combined prompt" |
-| **Claude Code** | "All discovered files are concatenated into context rather than overriding each other" |
+| **Claude Code** | "All discovered files are concatenated into context rather than overriding each other". Which files are *discovered* depends on the **Project instructions** setting: `AGENTS.md` is read only while no `CLAUDE.md` or `CLAUDE.local.md` exists at or above the working directory (§2) |
 | **Cursor** | "Instructions from nested `AGENTS.md` files are combined with parent directories, with more specific instructions taking precedence" |
 | **GitHub Copilot** | "the nearest `AGENTS.md` file in the directory tree will take precedence" — the only reviewed vendor matching the simple reading |
 
@@ -39,23 +39,77 @@ Concretely, in a nested file prefer `Run tests with 'pnpm -C cli test' in this p
 
 ## 2. Claude Code
 
-Source: <https://code.claude.com/docs/en/memory> (checked 2026-08-04)
+Source: <https://code.claude.com/docs/en/memory> (checked 2026-09-19)
 
-### Filename
+### AGENTS.md is a first-class instruction file
 
-> "Claude Code reads `CLAUDE.md`, not `AGENTS.md`."
+The 2026-08-04 revision of this document said Claude Code reads `CLAUDE.md` and not `AGENTS.md`. **That is no longer true.** Claude Code reads `AGENTS.md` directly from v2.1.277 on, so a repository already set up for other agents needs no `CLAUDE.md`, no import, and no setting.
 
-This is the single most consequential compatibility fact in this document. To serve both ecosystems from one canonical file, the documented options are an import or a symlink:
+| Your repository has | Claude reads |
+|---|---|
+| An `AGENTS.md`, and no `CLAUDE.md` or `CLAUDE.local.md` in your working directory or above it | Your `AGENTS.md` |
+| An `AGENTS.md` and a `CLAUDE.md` or `CLAUDE.local.md` in your working directory or above it | Your `CLAUDE.md` files only |
+| A `CLAUDE.md` that already imports `AGENTS.md` | Your `CLAUDE.md`, with `AGENTS.md` included through the import |
 
-```bash
-ln -s AGENTS.md CLAUDE.md
+Files that **count** for that check, and therefore suppress `AGENTS.md`: a `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` in the working directory or any directory above it. Files that **do not count**, and keep loading alongside `AGENTS.md`: `~/.claude/CLAUDE.md`, an organization's managed `CLAUDE.md`, and `.claude/rules/` files.
+
+### Choosing which instruction files load
+
+`/config` exposes a **Project instructions** setting:
+
+| Value | What Claude reads |
+|---|---|
+| `claude-md-or-agents-md` | `CLAUDE.md` files, or `AGENTS.md` files when no `CLAUDE.md` or `CLAUDE.local.md` exists in the working directory or above it. **The default** |
+| `claude-md-and-agents-md` | Both, each directory's `CLAUDE.md` files first and its `AGENTS.md` after them. An `AGENTS.md` already loaded, for example through an import or a symlink, is skipped rather than read twice |
+| `claude-md` | `CLAUDE.md` files only |
+| `managed-only` | Only the organization's managed `CLAUDE.md` and auto memory at launch. Project, local, and user `CLAUDE.md` files, `.claude/rules/`, and every `AGENTS.md` are left out; a subdirectory's own files still load when Claude reads a file there |
+
+The same value can be set in a settings file under the built-in `agents-md` plugin:
+
+```json
+{
+  "pluginConfigs": {
+    "agents-md@builtin": { "options": { "instructionFiles": "claude-md-and-agents-md" } }
+  }
+}
 ```
 
-or inside `CLAUDE.md`, a single line: `@AGENTS.md`.
+Claude Code **ignores this key in project and local settings files.** Use `~/.claude/settings.json`, a `--settings` file, or managed settings.
+
+### When AGENTS.md support is unavailable
+
+In these sessions Claude reads `CLAUDE.md` only, and **Project instructions** does not appear in `/config`:
+
+- A version before v2.1.277.
+- A session that does not fetch feature flags from Anthropic — Amazon Bedrock and other third-party providers, or telemetry disabled.
+- The first session after installing or upgrading to a version with `AGENTS.md` support.
+- `disableAllHooks` or `allowManagedHooksOnly` set, or the built-in `agents-md` plugin disabled.
+
+For those sessions the documented fallback is the import: `@AGENTS.md` inside a `CLAUDE.md`.
+
+### What differs from CLAUDE.md
+
+| | `CLAUDE.md` | `AGENTS.md` read through the setting |
+|---|---|---|
+| `/memory` and the Memory files list in `/context` | Listed | Not listed. Look for the `AGENTS.md loaded: <path>` line, or ask Claude what its project instructions say |
+| `InstructionsLoaded` hooks | Fire | Do not fire |
+| A `--add-dir` directory with `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD` set | Its `CLAUDE.md` loads | Its `AGENTS.md` does not load |
+| An `@path` import of a file outside the working directory | Claude asks for approval | Loads with no prompt when external imports were already approved for the project |
+
+**Never read**: `AGENTS.local.md`, `AGENTS.override.md`, and anything under a `.agents/` directory. A nested `AGENTS.md` loads only when that subdirectory has none of the three counting `CLAUDE.md` files of its own.
+
+### Removing an earlier AGENTS.md workaround
+
+- **A `CLAUDE.md` containing `@AGENTS.md`**: leave it. The import never causes a double read under any setting, and it still covers sessions that cannot load `AGENTS.md` directly.
+- **A `CLAUDE.md` that says in words to read `AGENTS.md`**: delete it, or replace the sentence with an `@AGENTS.md` import. Claude opens the file only if it decides to.
+- **A `CLAUDE.md` symlinked to `AGENTS.md`**: nothing to do, or delete the symlink.
+- **A `SessionStart` hook that prints `AGENTS.md`**: remove it, or it adds a second copy to context.
+
+Symlink caveat: the Edit and Write tools refuse to write through a symlink and direct the agent to edit the link's target. On Windows a committed symlink checks out as a plain text file unless `core.symlinks` is enabled, so prefer the import there.
 
 ### Discovery
 
-> "Claude Code reads CLAUDE.md files by walking up the directory tree from your current working directory, checking each directory along the way for CLAUDE.md and CLAUDE.local.md files."
+> "Claude Code loads `CLAUDE.md` and `CLAUDE.local.md` from your current working directory and every directory above it."
 
 > "All discovered files are concatenated into context rather than overriding each other."
 
@@ -73,7 +127,9 @@ So: ancestors load **eagerly at launch**, descendants load **lazily on file acce
 
 The relative-path resolution rule is a common source of broken imports when a file is moved.
 
-### Size
+### Rules, size, and context cost
+
+`.claude/rules/` holds topic files discovered recursively, so instructions can be split per topic instead of growing one file. A rule without `paths` frontmatter loads at launch with the same priority as `.claude/CLAUDE.md`; a `paths` list scopes it to matching files and loads it only when Claude reads them. Rules load every session or when a matching file is opened, so task-specific instructions belong in a skill instead.
 
 > "Size: target under 200 lines per CLAUDE.md file."
 
@@ -85,17 +141,18 @@ The truncation limit that *does* exist applies to auto-memory: "The first 200 li
 
 ### Related files and commands
 
-- `CLAUDE.local.md` — personal project-specific preferences; documented as something to add to `.gitignore`. Still listed; no deprecation stated.
+- `CLAUDE.local.md` — personal project-specific preferences; documented as something to add to `.gitignore`. Still listed; no deprecation stated. Because it counts for the `AGENTS.md` check, adding one to a repository that relies on `AGENTS.md` stops Claude from reading `AGENTS.md` unless **Project instructions** is set to `claude-md-and-agents-md`.
 - Auto-memory lives per project at `~/.claude/projects/<project>/memory/`.
-- `/init` generates a starting `CLAUDE.md`; if one exists it "suggests improvements rather than overwriting it". `CLAUDE_CODE_NEW_INIT=1` enables an interactive multi-phase flow covering CLAUDE.md files, skills, and hooks.
+- `/init` generates a starting `CLAUDE.md`; if one exists it "suggests improvements rather than overwriting it". `CLAUDE_CODE_NEW_INIT=1` also reads `AGENTS.md`, `.devin/rules/`, `.windsurf/rules/` or `.windsurfrules`, and `.clinerules`.
+- `/import` (v2.1.213+) appends a one-time copy of another coding agent's instruction files, `AGENTS.md` included, to the matching `CLAUDE.md`, and carries over MCP servers, commands, subagents, and skills.
 - `/memory` lists memory file locations across user and project scopes and toggles auto memory.
-- The `#` hotkey is no longer the recommended memory path. Current guidance: "We used to encourage users to save things to Claude's memory, by using the # hotkey to write to their CLAUDE.md automatically. Instead, Claude now automatically saves memories that are relevant to the work and to you." (<https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models>, checked 2026-08-04)
+- The `#` hotkey is no longer the recommended memory path. Current guidance: "We used to encourage users to save things to Claude's memory, by using the # hotkey to write to their CLAUDE.md automatically. Instead, Claude now automatically saves memories that are relevant to the work and to you." (<https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models>, checked 2026-09-19)
 
 ---
 
 ## 3. OpenAI Codex
 
-Source: <https://learn.chatgpt.com/docs/agent-configuration/agents-md> (checked 2026-08-04; `developers.openai.com/codex/agent-configuration/agents-md` redirects here)
+Source: <https://learn.chatgpt.com/docs/agent-configuration/agents-md> (checked 2026-09-19; `developers.openai.com/codex/agent-configuration/agents-md` redirects here)
 
 ### Global scope
 
@@ -121,7 +178,7 @@ This is a hard truncation with a real failure mode: files are dropped **once the
 
 ## 4. GitHub Copilot
 
-Sources: <https://docs.github.com/en/copilot/concepts/prompting/response-customization> and <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> (checked 2026-08-04)
+Sources: <https://docs.github.com/en/copilot/concepts/prompting/response-customization> and <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> (checked 2026-09-19)
 
 ### Full precedence order
 
@@ -151,7 +208,7 @@ Copilot also offers a mechanism the others lack — glob-scoped instruction file
 
 ## 5. Cursor and Gemini CLI
 
-**Cursor** (<https://cursor.com/en-US/docs/rules>, checked 2026-08-04) treats `AGENTS.md` as "a simple markdown file for defining agent instructions" and "a plain markdown file without metadata or complex configurations", supported "in the project root and subdirectories". Nested files "are combined with parent directories, with more specific instructions taking precedence". Its stated size heuristic for rules generally is "Keep rules under 500 lines".
+**Cursor** (<https://cursor.com/en-US/docs/rules>, checked 2026-09-19) treats `AGENTS.md` as "a simple markdown file for defining agent instructions" and "a plain markdown file without metadata or complex configurations", supported "in the project root and subdirectories". Nested files "are combined with parent directories, with more specific instructions taking precedence". Its stated size heuristic for rules generally is "Keep rules under 500 lines".
 
 **Gemini CLI** supports `AGENTS.md` through the configurable `context.fileName` setting but defaults to `GEMINI.md`. Support is therefore opt-in, not automatic.
 
@@ -171,7 +228,7 @@ For legacy singular filenames the documented migration is a rename plus symlink:
 mv AGENT.md AGENTS.md && ln -s AGENTS.md AGENT.md
 ```
 
-No reviewed source documents a general `CLAUDE.md` → `AGENTS.md` migration recipe beyond Claude Code's own import/symlink options in §2.
+No reviewed source documents a general `CLAUDE.md` → `AGENTS.md` migration recipe beyond Claude Code's own options: native `AGENTS.md` reading in §2, the `@AGENTS.md` import, and `/import`.
 
 ---
 
@@ -181,7 +238,8 @@ No reviewed source documents a general `CLAUDE.md` → `AGENTS.md` migration rec
 - [ ] Nested files are self-contained deltas, correct whether or not the parent is loaded.
 - [ ] Overrides restate the correct rule in full instead of negating the parent.
 - [ ] Every nested file names the subtree it governs.
-- [ ] If Claude Code is a target, `CLAUDE.md` exists as a real file, a symlink, or an `@AGENTS.md` import — `AGENTS.md` alone is not read.
+- [ ] If Claude Code is a target, the repository either relies on its native `AGENTS.md` reading (v2.1.277+, and no `CLAUDE.md` or `CLAUDE.local.md` at or above the working directory) or ships a `CLAUDE.md` that imports or symlinks to `AGENTS.md`, because sessions without feature-flag fetching read `CLAUDE.md` only.
+- [ ] `CLAUDE.local.md` is not committed to a repository that relies on `AGENTS.md`, since it suppresses `AGENTS.md` under the default setting.
 - [ ] `@path` imports stay within four hops and use paths relative to the importing file.
 - [ ] If both `.github/copilot-instructions.md` and `AGENTS.md` exist, their content does not conflict, since Copilot ranks the former higher.
 - [ ] Personal-preference content lives in a gitignored local file, not the shared one.
@@ -192,14 +250,14 @@ No reviewed source documents a general `CLAUDE.md` → `AGENTS.md` migration rec
 
 | Source | URL | Checked |
 |---|---|---|
-| AGENTS.md standard | <https://agents.md/> | 2026-08-04 |
-| Claude Code memory | <https://code.claude.com/docs/en/memory> | 2026-08-04 |
-| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 2026-08-04 |
-| Claude 5 context engineering | <https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models> | 2026-08-04 |
-| OpenAI Codex AGENTS.md | <https://learn.chatgpt.com/docs/agent-configuration/agents-md> | 2026-08-04 |
-| GitHub Copilot response customization | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 2026-08-04 |
-| GitHub Copilot repository instructions | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> | 2026-08-04 |
-| Cursor rules | <https://cursor.com/en-US/docs/rules> | 2026-08-04 |
+| AGENTS.md standard | <https://agents.md/> | 2026-09-19 |
+| Claude Code memory | <https://code.claude.com/docs/en/memory> | 2026-09-19 |
+| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 2026-09-19 |
+| Claude 5 context engineering | <https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models> | 2026-09-19 |
+| OpenAI Codex AGENTS.md | <https://learn.chatgpt.com/docs/agent-configuration/agents-md> | 2026-09-19 |
+| GitHub Copilot response customization | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 2026-09-19 |
+| GitHub Copilot repository instructions | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> | 2026-09-19 |
+| Cursor rules | <https://cursor.com/en-US/docs/rules> | 2026-09-19 |
 
 ## Related documents
 
