@@ -9,8 +9,9 @@
 | 영역 | 파일 | 목적 |
 |---|---|---|
 | Context Engineering | [`context-engineering/CONTEXT_ENGINEERING.ko.md`](context-engineering/CONTEXT_ENGINEERING.ko.md) | 프롬프트/컨텍스트/도구 지시를 런타임 중립적으로 설계 |
-| CLI Runtime Profiles | [`cli/README.ko.md`](cli/README.ko.md) | skill이 Claude Code, Codex, GJC, Hermes Agent, OpenClaw, OpenCode의 질문·승인·도구 기능을 안전하게 선택 |
+| CLI Runtime Profiles | [`cli/README.ko.md`](cli/README.ko.md) | skill이 Claude Code, Codex, GJC, Hermes Agent, JCode, OMO, OpenClaw, OpenCode의 질문·승인·도구 기능을 안전하게 선택 |
 | Prompt Authoring | [`context-engineering/references/prompt-authoring.ko.md`](context-engineering/references/prompt-authoring.ko.md) | 역할 수행 프롬프트를 실행 계약으로 작성하는 실전 템플릿 |
+| Prompt & Skill Caching | [`cache/CACHE.ko.md`](cache/CACHE.ko.md) | 프롬프트·스킬의 재사용 접두부를 안정적으로 유지해 프로바이더 프롬프트 캐시가 재사용하게 한다 |
 | AGENTS.md / CLAUDE.md | [`agents-md/AGENTS_MD.ko.md`](agents-md/AGENTS_MD.ko.md) | 저장소 에이전트 instruction 파일을 작고 근거 있고 이식 가능한 계약으로 작성 |
 | Skill Authoring | [`skill/SKILL_AUTHORING.ko.md`](skill/SKILL_AUTHORING.ko.md) | 재사용 가능한 skill 폴더를 트리거·구조·검증 가능한 실행 패키지로 설계 |
 | Skill Prompt/Loop/Eval | [`skill/references/prompt-loop-eval.ko.md`](skill/references/prompt-loop-eval.ko.md) | skill을 단일 프롬프트가 아니라 반복·검증 가능한 작은 프로그램으로 설계 |
@@ -21,17 +22,21 @@
 
 ## 출처 관리
 
-외부 출처는 각 문서의 `Sources` 섹션에 **URL과 확인일을 인라인으로** 둔다. 별도 중앙 원장을 두지 않는다 — 인용 URL이 소수 파일에 집중되어 있어 중앙화의 이득보다 claim과 근거가 분리되는 손실이 크다.
+외부 출처는 **URL과 확인일을 인라인으로** 적는다. `Sources` 섹션이 있는 문서는 그곳에, 없으면 claim 옆에 적는다. 예외는 저장소 유지보수 원장 하나뿐이며(예: [`cli/sources.md`](cli/sources.md)), [`sourcing/reliable-search.ko.md`](sourcing/reliable-search.ko.md) §7에서 정의한다. 나머지 claim을 근거 옆에 두는 편이 중앙화보다 비용이 작다.
 
 ```bash
 bash scripts/check-sources.sh             # 확인일 형식·문서 길이 strict, 링크 advisory
 bash scripts/check-sources.sh --strict    # 링크 이전까지 게이트 (릴리스 전)
 bash scripts/check-sources.sh --offline   # 네트워크 없이 구조 검사만
 bash scripts/check-sources.sh --self-test # 검사 자체가 실패를 잡는지 증명
+bun run --cwd scripts lint:sh        # 검사기 자체의 정적 분석 (shellcheck 필요)
 ```
 
-- 마지막 전수 확인: **2026-07-29** / 다음 재검증: **2026-10-29**
-- 벤더 문서는 분기 단위로 이전되므로 재검증 주기를 지킨다. arXiv·표준 문서는 부패 속도가 달라 URL 확인만으로 충분하다.
+`lint:sh`는 `scripts/check-sources.sh`에 [ShellCheck](https://www.shellcheck.net/)를 실행한다. ShellCheck는 이 저장소의 의존성이 아니라 시스템 도구이므로 별도 opt-in 작업으로 둔다. 편집기 진단용 `bash-language-server`는 `scripts/package.json`에 선언되어 있다.
+
+- 마지막 전수 확인: **2026-07-29**. AGENTS.md 탐색/우선순위 영역, CLI 런타임 프로필, skill·context-engineering 레퍼런스, harness-engineering 출처표, Hermes Agent 안내서, 신설 caching 영역의 부분 재검증: **2026-09-19**. 다음 전수 재검증: **2026-10-29**
+- 링크 검사는 인라인 인용만 읽는다. 코드 블록과 RFC 2606이 문서용으로 예약한 도메인(`example.com`, `example.net`, `example.org`, `*.example`), 루프백(`localhost`, `127/8`, `[::1]`)의 예시 URL은 제외하고, 제외한 개수를 보고한다. 검사하지 않은 코드 블록 안 URL도 함께 보고하므로 조용히 사라지는 항목이 없다. 나머지는 리다이렉트 없이 해석되어야 한다.
+- 분기 재검증 주기는 이 프로젝트의 정책으로 지킨다. 벤더 문서는 각자의 일정으로 바뀌며, 이 주기는 벤더 보장이 아니라 우리가 고른 검토 간격이다. arXiv·표준 문서는 부패 속도가 달라 URL 확인만으로 충분하다.
 - `.hyper/`는 `.gitignore` 대상이다. 그 아래 리서치 리포트는 **로컬 재검증 캐시**이며 다른 clone에는 없다. 공유 가능한 근거는 항상 문서 안의 URL이다.
 
 ## 작성 원칙
@@ -50,6 +55,7 @@ bash scripts/check-sources.sh --self-test # 검사 자체가 실패를 잡는지
 @instructions/README.ko.md
 @instructions/context-engineering/CONTEXT_ENGINEERING.ko.md
 @instructions/context-engineering/references/prompt-authoring.ko.md
+@instructions/cache/CACHE.ko.md
 @instructions/skill/SKILL_AUTHORING.ko.md
 @instructions/skill/references/prompt-loop-eval.ko.md
 @instructions/autoresearch/AUTORESEARCH.ko.md
@@ -61,6 +67,8 @@ bash scripts/check-sources.sh --self-test # 검사 자체가 실패를 잡는지
 작업 언어가 영어면 `.ko.md` 대신 `.md`를 로드한다. 둘을 함께 로드하지 않는다 — 같은 계약이므로 컨텍스트만 두 배로 쓴다.
 
 저장소의 `AGENTS.md`나 `CLAUDE.md`를 만들거나 리팩터링하거나 리뷰할 때는 [`agents-md/AGENTS_MD.ko.md`](agents-md/AGENTS_MD.ko.md)를 읽고, 필요에 따라 `agents-md/references/` 아래 문서를 읽는다 — 런타임 로딩 동작은 `discovery-and-precedence.ko.md`, 어떤 줄이 자격을 얻는지는 `content-contract.ko.md`, 두 파일의 조율은 `claude-md-adapter.ko.md`, 실제로 측정된 것은 `evidence-and-evaluation.ko.md`다.
+
+프롬프트, 시스템 메시지, 도구 설명, 스킬의 로드되는 텍스트를 쓰거나 고칠 때는 [`cache/CACHE.ko.md`](cache/CACHE.ko.md)를 읽어 재사용 접두부를 안정적으로 유지한다. 프로바이더별 임계값은 [`cache/references/provider-cache-facts.ko.md`](cache/references/provider-cache-facts.ko.md)에 있다.
 
 작업이 특정 런타임에 묶이면 [`context-engineering/references/runtime-profiles.ko.md`](context-engineering/references/runtime-profiles.ko.md)를 추가로 읽는다. 병렬 작업, subagent, background agent, agent team을 사용할 때는 [`context-engineering/references/parallel-workflows.ko.md`](context-engineering/references/parallel-workflows.ko.md)를 함께 읽는다. CLI별 질문·승인·도구 기능을 skill에서 사용하려면 [`cli/README.ko.md`](cli/README.ko.md)와 해당 하위 런타임 프로필을 함께 읽는다.
 
