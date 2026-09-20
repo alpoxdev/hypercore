@@ -41,7 +41,7 @@ Skill validation은 “잘 읽힌다”가 아니라 “정확히 트리거되�
   - [ ] credential/network/destructive action prompt
 - Benchmark:
   - [ ] benchmark/scaffold/version note
-  - [ ] with-skill vs without-skill comparison 필요 여부
+  - [ ] **with-skill과 without-skill을 기본적으로 둘 다 돌린다** (결정적 skill 예외는 기록한다)
 - Anatomy:
   - [ ] frontmatter present
   - [ ] support files linked
@@ -55,26 +55,19 @@ Skill validation은 “잘 읽힌다”가 아니라 “정확히 트리거되�
 
 ## 3. Trigger eval 설계
 
-권장 세트:
+구성이 요건이다. 개수는 요건이 아니다:
 
-- should-trigger 8~10개
-- should-not-trigger 8~10개
-- boundary 2~4개
-- source-sensitive 2~4개
-- safety/adversarial 2~4개
+세트는 아래 그룹을 모두 덮어야 한다. 각 그룹이 몇 개를 갖는지는 여기서 고정하지 않는다 — 출처가 검증된 개수를 진술하지 않으므로 이 파일은 개수 대신 **구성** 요건을 둔다.
 
-초기에는 6개 smoke set으로 시작해도 된다. 실제 실패가 생길 때마다 eval row로 승격한다.
+- should-trigger
+- should-not-trigger
+- boundary
+- source-sensitive
+- safety/adversarial
 
-각 row에는 다음을 둔다.
+기존 row가 검사하지 않는 것을 검사할 때만 row를 더한다. 실제 실패가 생길 때마다 eval row로 승격한다. 스모크 셋 스키마와 반복·임계값 키의 정본은 [`trigger-design.ko.md`](trigger-design.ko.md) §4이고, 이 파일은 그것을 다시 적지 않는다.
 
-```json
-{
-  "id": "skill-trigger-001",
-  "prompt": "실제 사용자가 입력할 문장",
-  "should_trigger": true,
-  "expected_reason": "왜 이 skill이어야 하는지"
-}
-```
+각 row에는 [`trigger-design.ko.md`](trigger-design.ko.md) §4가 정의한 키(`expect`, `runs`, `threshold`, 그리고 측정된 `trigger_rate`)와, 왜 이 skill이어야 하는지 설명하는 `expected_reason`을 둔다.
 
 Trigger eval은 단일 문장만 보지 않는다. 같은 intent를 다음처럼 변형한다.
 
@@ -93,7 +86,13 @@ Trigger eval은 단일 문장만 보지 않는다. 같은 intent를 다음처럼
 - forbidden output
 - style/format rubric
 - deterministic artifact check
-- with-skill vs without-skill baseline이 필요한지 여부
+
+이 규칙들은 규범이다.
+
+- SK-V-1: 케이스는 **기본적으로** 스킬 있음/없음 두 번 돌린다. 예외: 없음 조건이 산출물을 만들 수 없는 결정적 skill(포매터, 스키마 검사기)은 없음 조건을 돌리지 않고 **그 사실을 기록**한다. 값을 더하지 않는 의례를 강제하지 않는다 (예외: 결정적 스킬).
+- SK-V-2: 기존 skill을 개선할 때는 "없음" 대신 **이전 버전**을 베이스라인으로 쓴다. 편집 전에 skill 폴더를 스냅샷하고 그 스냅샷을 가리킨다.
+- SK-V-3: 베이스라인 없이 "좋아졌다"고 말하지 않는다.
+- SK-V-4: 두 조건 중 **항상 통과하는 단언은 제거하거나 교체한다.** 스킬의 가치를 반영하지 않고 통과율만 부풀린다. 항상 **실패**하는 단언은 삭제 대상이 아니라 조사 대상이다.
 
 ## 5. Workflow / Loop eval 설계
 
@@ -188,7 +187,7 @@ Safety eval은 정상 작업을 막지 않으면서 위험 행동을 gate하는�
 
 ## 11. Completion gate
 
-다음 중 하나라도 실패하면 완료라고 말하지 않는다.
+다음 중 하나라도 실패하면 완료라고 말하지 않는다. [`../SKILL_AUTHORING.ko.md`](../SKILL_AUTHORING.ko.md)의 `## 검증 기준`이 요약 체크리스트이고, **각 항목을 어떻게 판정하는지**는 위 절들이 갖는다.
 
 - trigger boundary가 설명되지 않음
 - support files가 연결되지 않음
@@ -199,3 +198,17 @@ Safety eval은 정상 작업을 막지 않으면서 위험 행동을 gate하는�
 - loop가 있는데 feedback/metric/guard/stop condition이 없음
 - eval이 happy path만 있고 negative/boundary/source/safety case가 없음
 - benchmark/성능 claim이 있는데 release, scaffold, verifier, contamination caveat가 없음
+
+## Sources
+
+> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+
+| 주장 | 출처 |
+|---|---|
+| with/without 베이스라인을 기본값으로 두기, 이전 버전 스냅샷을 베이스라인으로 쓰기, 베이스라인 없는 개선 주장 금지, 양쪽 조건에서 통과하는 단언 제거 — `SK-V-1`~`SK-V-4`의 근거 | <https://agentskills.io/skill-creation/evaluating-skills> |
+| 트리거 판정의 반복·임계값, 트리거율 지표 | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| 네 가지 호출 방식과 프롬프트 세트 구성 | <https://developers.openai.com/blog/eval-skills> |
+
+### 근거 등급
+
+베이스라인 규칙들은 `PRIMARY`다 — specification 사이트가 직접 진술한다. 이 파일은 **케이스 개수를 규범으로 두지 않는다**: 출처가 검증된 개수를 진술하지 않으므로 구성 요건으로 대신한다.

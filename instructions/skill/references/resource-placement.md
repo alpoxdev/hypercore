@@ -128,6 +128,31 @@ references/
 - When a deterministic runner exists, put it in `scripts/run-evals.*` and document its dependencies and expected output.
 - When an eval case requires an external source, link the source URL, accessed date, and freshness caveat inside the case or in the source ledger.
 
+### Where execution results go
+
+The fixtures above are inputs. The **results** of running them live outside the skill folder, because a shipped skill should not carry its own run history and because every other execution in this repository already writes there.
+
+```text
+.omo/evidence/<skill>/iteration-N/
+├── benchmark.json
+└── eval-<case>/
+    ├── with_skill/
+    │   ├── outputs/
+    │   ├── timing.json
+    │   └── grading.json
+    └── without_skill/
+        ├── outputs/
+        ├── timing.json
+        └── grading.json
+```
+
+This repository already had two competing placements for eval material; adding a third would leave no single answer. The layout above was chosen over the alternative of a workspace beside the skill folder, because the sibling-workspace form has no precedent here and the evidence directory does. The trade-off is real: results do not travel with a distributed skill, so a reader outside this repository cannot see them.
+
+- SK-E-1: Keep execution results **outside the skill folder**, under the evidence path shown above. A shipped skill does not carry its own run history.
+- SK-E-2: Every run leaves `timing.json` (tokens and wall time) and `grading.json` (per-assertion pass/fail **plus the evidence string**). A `passed: true` with no evidence string is not evidence.
+- SK-E-3: Run each execution in an **independent session**. Reusing one session lets the earlier run's context contaminate the next.
+- SK-E-4: Check mechanical assertions (valid JSON, row counts, file existence) with a **script**, not an LLM judge. Reserve the judge for what a script cannot decide.
+
 ## 7. Forbidden patterns
 
 - `SKILL.md` becoming a reference knowledge base
@@ -146,3 +171,16 @@ references/
 - [ ] Provider-sensitive content is isolated in references.
 - [ ] Prompt templates, eval fixtures, source ledgers, and safety notes each sit in the correct place among prose, reference, asset, and script.
 - [ ] Content that loads into every session keeps volatile values (dates, versions, counts, machine paths) out of its loaded head — see [`../../cache/CACHE.md`](../../cache/CACHE.md).
+- [ ] Eval execution results are written outside the skill folder, with per-run timing and grading records.
+
+## Sources
+
+> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+
+| Claim | Source |
+|---|---|
+| Execution results kept outside the skill folder, per-run `timing.json` and `grading.json` with evidence strings, independent sessions per run, and mechanical assertions checked by script — the basis of `SK-E-1` to `SK-E-4` | <https://agentskills.io/skill-creation/evaluating-skills> |
+
+### Evidence grade
+
+The placement and cost-recording rules above are `PRIMARY` — the specification site states them directly. The specific directory layout is a **repository decision**, not a sourced one: the delta flagged it as an unresolved conflict and this file records the choice and its trade-off.

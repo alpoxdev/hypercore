@@ -4,7 +4,7 @@
 
 This document is the standard for designing a skill as a **small, repeatable agent program** rather than a single prompt. `SKILL.md` is the program's entrypoint, and `rules/`, `references/`, `scripts/`, and `assets/` are modules loaded on demand.
 
-Source snapshot: 2026-06-28.
+Source snapshot: 2026-07-29. The snapshot date and the link-check date in §10 now agree; an earlier snapshot date here contradicted them.
 
 ## 1. Core principles
 
@@ -84,9 +84,11 @@ A skill eval does not look at triggers only.
 
 Minimum recommendation:
 
-- Small skill edit: 3-5 smoke cases
-- Standard skill creation or refactor: 8-15 cases
-- Agent/tool workflow skill: 20+ cases, or a representative sample plus targeted adversarial cases
+- Small skill edit: a smoke subset
+- Standard skill creation or refactor: the full composed set
+- Agent/tool workflow skill: the full set plus targeted adversarial cases
+
+The sizes are not fixed here. The source does not state a validated count, so this file states a **composition** requirement instead: every case must probe something the others do not. Case-count policy lives in [`validation.md`](validation.md) §3.
 
 ## 5. Multi-prompt and format robustness
 
@@ -109,7 +111,7 @@ Required records:
 - Whether retrieval was enabled, and the source cutoff
 - How contamination and overlap were checked
 - Public test, hidden test, and oracle weakness caveats
-- Whether a paired with-skill vs without-skill result is needed
+- Whether a with-skill vs without-skill baseline is needed — **run it by default** (see `SK-V-1` in [`validation.md`](validation.md) §4; the deterministic-skill exception applies here too)
 
 Rules:
 
@@ -141,6 +143,26 @@ When a skill touches network, shell, credentials, external APIs, production, or 
 - Document each script's purpose, dependencies, input/output, failure modes, and side effects.
 - Safety instructions can hurt performance, so keep adversarial evals and a normal happy path side by side.
 
+## Artifact audit
+
+The rules above test what a skill **receives** — does it resist an injected instruction. These test what a skill **is**: does the artifact itself carry something it should not. A skill is distributed code plus instructions, so audit it before shipping.
+
+Five categories, with the severity the cited source assigns. This list is not "all of skill security"; it is the set of artifact-level checks that source names.
+
+| Category | What to look at | Severity as assigned by the source |
+|---|---|---|
+| Data-exfiltration pattern | Instructions that read sensitive data and then write, send, or encode it outward | — |
+| MCP server reference | References shaped like `ServerName:tool_name` | High |
+| Network access | URLs, API endpoints, `fetch`, `curl`, `requests` | High |
+| Hardcoded credentials | Keys, tokens, and passwords inside skill files or scripts | High |
+| Filesystem scope | Paths outside the skill directory, broad globs, `../` | Medium |
+
+- SK-A-1: Audit a skill against the five categories above before distributing it, and record the result.
+- SK-A-2: Do not distribute a skill from an untrusted source without a full audit.
+- SK-A-3: Pin a skill to a version, and re-review it when the version changes.
+
+These are `VENDOR` claims: the severity labels come from the cited source, not from a controlled study in this repository. Treat an audit as a checklist that catches known artifact-level problems, not as a proof of safety.
+
 ## 9. Authoring loop
 
 ```text
@@ -159,7 +181,18 @@ Collect failures -> Draft contract -> Build eval set -> Run baseline/readback ->
 
 ## 10. Sources
 
-> Links checked 2026-07-29; link resolution re-checked 2026-09-19. OpenAI Codex documentation moved from `developers.openai.com/codex/*` to `learn.chatgpt.com/docs/*`.
+> Links checked 2026-07-29; link resolution re-checked 2026-09-20. OpenAI Codex documentation moved from `developers.openai.com/codex/*` to `learn.chatgpt.com/docs/*`.
+
+The list below is the URL set this file cites. The table after it maps the claims this file makes to the specific source that carries each one. **The URLs were not re-fetched in the run that added this table**; only link resolution was re-checked.
+
+| Claim | Source |
+|---|---|
+| With/without baseline as the core pattern (the evaluating-skills page names it the core pattern, not an option) | <https://agentskills.io/skill-creation/evaluating-skills> |
+| Case-set composition, and the absence of a stated case count | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| The five artifact-audit categories and their severity labels | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+| Treating third-party skills as subjects of code review, and version pinning with re-review | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+
+### Cited URLs
 
 - OpenAI Codex Agent Skills: <https://learn.chatgpt.com/docs/build-skills>
 - OpenAI API Skills: <https://developers.openai.com/api/docs/guides/tools-skills>

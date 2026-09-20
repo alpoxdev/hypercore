@@ -77,20 +77,41 @@ The positive/negative/boundary sets below are the **activation axis**. Every new
 
 ## 4. Trigger smoke test
 
-Minimum set:
+Minimum set. The earlier boolean `should_trigger` is gone: a trigger is probabilistic, so each case carries its own repetition count and threshold, and the run records the resulting rate. See `SKILL_AUTHORING.md` → `## Judgement Rules` for the judgement rules these keys serve.
 
 ```json
 [
-  { "id": "p1", "prompt": "Create a Codex skill for SQL migration review", "should_trigger": true },
-  { "id": "p2", "prompt": "Refactor this SKILL.md so it loads references correctly", "should_trigger": true },
-  { "id": "p3", "prompt": "Create a new skill folder and include the validation rules", "should_trigger": true },
-  { "id": "n1", "prompt": "Rewrite this runbook for readability", "should_trigger": false },
-  { "id": "n2", "prompt": "Summarize these OpenAI docs", "should_trigger": false },
-  { "id": "b1", "prompt": "Create a guide for writing skills", "should_trigger": "depends_on_output_shape" },
-  { "id": "b2", "prompt": "Read the latest papers and build a new skill", "should_trigger": "after_research_or_with_research_skill" },
-  { "id": "b3", "prompt": "Make this skill run the deploy command automatically", "should_trigger": true, "requires_gate": "production_side_effect" }
+  { "id": "p1", "prompt": "Create a Codex skill for SQL migration review", "expect": "trigger", "runs": 3, "threshold": 0.5 },
+  { "id": "p2", "prompt": "Refactor this SKILL.md so it loads references correctly", "expect": "trigger", "runs": 3, "threshold": 0.5 },
+  { "id": "p3", "prompt": "Create a new skill folder and include the validation rules", "expect": "trigger", "runs": 3, "threshold": 0.5 },
+  { "id": "n1", "prompt": "Rewrite this runbook for readability", "expect": "no_trigger", "runs": 3, "threshold": 0.5 },
+  { "id": "n2", "prompt": "Summarize these OpenAI docs", "expect": "no_trigger", "runs": 3, "threshold": 0.5 },
+  { "id": "b1", "prompt": "Create a guide for writing skills", "expect": "no_trigger", "runs": 3, "threshold": 0.5, "note": "depends on output shape" },
+  { "id": "b2", "prompt": "Read the latest papers and build a new skill", "expect": "trigger", "runs": 3, "threshold": 0.5, "note": "after or with a research skill" },
+  { "id": "b3", "prompt": "Make this skill run the deploy command automatically", "expect": "trigger", "runs": 3, "threshold": 0.5, "requires_gate": "production_side_effect" }
 ]
 ```
+
+A run appends the measured `trigger_rate` to each case, so the result file carries the same four keys plus the outcome:
+
+```json
+{ "id": "p1", "expect": "trigger", "runs": 3, "threshold": 0.5, "trigger_rate": 1.0 }
+```
+
+**Every case states its own `runs` and `threshold`.** Do not let a case inherit a default: the value must be visible at the point of use, because `runs` changes what the rate means. The cases below are **one example set, not a required count** — each exists because it probes something the others do not, and adding a case that probes nothing new only adds calls:
+
+| Case | What it probes that the others do not |
+|---|---|
+| `p1` | A plain build request that should fire on the description alone |
+| `p2` | A request naming an existing artifact rather than the skill |
+| `p3` | A request whose trigger words are spread across the sentence |
+| `n1` | A similar verb on an unrelated artifact (negative control) |
+| `n2` | A documentation task in the same domain (negative control) |
+| `b1` | A request that only becomes skill work depending on the requested output shape |
+| `b2` | A request that needs a companion workflow before this skill applies |
+| `b3` | A request that must additionally trip a safety gate once active |
+
+Do not pad the set to a target size. A case that probes nothing new adds calls, not evidence.
 
 In a trigger eval, do not look only at prompt wording; also record the companion workflow needed once it activates.
 
@@ -122,3 +143,28 @@ In a trigger eval, do not look only at prompt wording; also record the companion
 - [ ] The difference from similar skills is stated.
 - [ ] A should-trigger and should-not-trigger smoke set exists.
 - [ ] Boundaries exist for companion workflows such as research, safety, deploy, and commit.
+
+## 7. Description optimization
+
+Writing a description once is not the whole job; repeated edits overfit the examples they were tuned on. These rules are normative.
+
+- SK-O-1: Split the query set into **train and validation**. Improve against train; **select** by validation pass rate.
+- SK-O-2: **The best description may not be the last one.** When a later iteration scores lower on validation, keep the earlier iteration.
+- SK-O-3: Descriptions grow while you optimize. Re-check the **1024-character limit** on every edit.
+- SK-O-4: When fine-tuning stops helping, **change the structure** — a different framing or a different sentence shape, not another adjective.
+
+A run that reports only its final validation score is not evidence of improvement. Report the train and validation numbers for each iteration so the selection is visible.
+
+## Sources
+
+> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+
+| Claim | Source |
+|---|---|
+| The four invocation modes (explicit, implicit, contextual, negative control) and the 10-20 prompt starting set | <https://developers.openai.com/blog/eval-skills> |
+| Trigger rate as the metric, 3 runs, the 0.5 default threshold, the train/validation split, "the best may not be the last", the 1024-character re-check, and the structural-change fallback behind `SK-O-1` to `SK-O-4` | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| The 1024-character `description` limit | <https://agentskills.io/specification> |
+
+### Evidence grade
+
+The optimization rules above are `PRIMARY` — the specification site states them directly. The 10-20 prompt figure is quoted as a starting point that source recommends, not as a validated optimum. The case count in §4 is deliberately not fixed: the source does not state one, so this file states a **composition** requirement instead — each case must probe something the others do not.

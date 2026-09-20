@@ -26,7 +26,8 @@ Skill은 다음을 동시에 만족해야 한다.
 
 > 아래 출처는 2026-07-29 확인 기준이며, 링크 사용 가능 여부는 2026-09-19에 재확인했다. OpenAI Codex skill 문서는 `developers.openai.com/codex/skills`에서 `learn.chatgpt.com/docs/build-skills`로 이전됐다.
 
-- OpenAI Codex는 skill을 지시문, 리소스, 선택적 스크립트를 묶어 Codex가 workflow를 안정적으로 따르도록 하는 reusable authoring format으로 설명한다. skill은 저장소 `.agents/skills`, 사용자 `$HOME/.agents/skills`, 관리자 `/etc/codex/skills`, 번들 순으로 탐색되며, 호출은 ChatGPT에서 `@skill-name`, Codex/IDE에서 `$skill-name`이다. 목록 단계에서는 name과 description만 로드되고 그 예산은 컨텍스트의 2% 또는 8,000자다. <https://learn.chatgpt.com/docs/build-skills>
+- OpenAI Codex는 skill을 지시문, 리소스, 선택적 스크립트를 묶어 Codex가 workflow를 안정적으로 따르도록 하는 reusable authoring format으로 설명한다. 호출은 ChatGPT에서 `@skill-name`, Codex/IDE에서 `$skill-name` 또는 `/skills`다. 목록 단계에서는 name과 description만 로드되고 그 예산은 컨텍스트의 2% 또는 8,000자다. 설치형 배포에는 OpenAI가 plugins를 권한다. <https://learn.chatgpt.com/docs/build-skills>
+- **Codex 런타임 탐색 (2026-09-20 보고, `VENDOR`).** Codex는 고정된 우선순위 목록을 읽는 대신 현재 작업 디렉터리에서 저장소 루트까지 **모든 디렉터리**의 `.agents/skills`를 훑는다고 보고한다(`$CWD`, `$CWD/../`, `$REPO_ROOT`). 같은 `name`을 가진 두 skill은 **병합되지 않고** 둘 다 선택기에 나타날 수 있다고 보고한다. skill이 많으면 설명을 먼저 줄이고, 일부 skill을 **초기 목록에서 통째로 생략하고 경고를 띄울 수 있다**고 보고한다 — 설명이 잘리는 것만이 아니다. `allow_implicit_invocation`(기본 true)을 false로 두면 암시적 발화가 꺼지고 `$skill` 명시 호출만 동작한다. 이것들은 Codex의 동작이지 보편 규칙이 아니다 — 다른 런타임은 다를 수 있다. <https://learn.chatgpt.com/docs/build-skills>
 - OpenAI API Skills 문서는 skill을 open Agent Skills standard와 호환되는 versioned bundle로 설명하고, prompt injection과 exfiltration 리스크 때문에 skill을 privileged instruction/code처럼 다루라고 경고한다. <https://developers.openai.com/api/docs/guides/tools-skills>
 - OpenAI agent eval 문서는 agent workflow 검증을 trace grading에서 시작하고, 반복 가능성이 필요할 때 dataset/eval run으로 확장하라고 설명한다. <https://developers.openai.com/api/docs/guides/agent-evals>
 - Anthropic은 Agent Skills를 `SKILL.md`, scripts, resources가 담긴 폴더로 보고, metadata → full instructions → referenced files/scripts 순서의 progressive disclosure를 핵심 설계 원리로 설명한다. 신뢰할 수 있는 출처의 skill만 설치하고, 신뢰할 수 없는 skill은 번들 파일·의존성·외부 네트워크 연결까지 감사하라고 경고한다. (발행 2025-10-16) <https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills>
@@ -46,6 +47,11 @@ Skill은 다음을 동시에 만족해야 한다.
 7. **검증 내장**: trigger smoke test, workflow trace check, source grounding, safety case, local link/fence check, eval 또는 readback checklist를 skill 자체에 포함한다.
 8. **안전 경계**: network, credential, destructive action, production side effect, broad tool permission은 skill 안에서 명시적으로 gated 상태로 둔다.
 9. **한국어 산출 기본**: 이 저장소의 사용자-facing 산출물, 보고서, 검증 노트는 기본 한국어다. 단, machine-readable field와 공식 키는 원문을 보존한다.
+10. **취약도에 맞춘 구체성**: 지시의 구체성 수준을 과제의 취약도에 맞춘다. 깨지기 쉬운 단계는 엄격하게 쓰고, 에이전트 판단에 맡겨도 되는 부분은 열어 둔다. 앞의 원칙들이 "무엇을 어디에 두는가"라면 이것은 "얼마나 엄격하게 쓰는가"다.
+
+위 원칙 중 규범 ID를 갖는 하나를 기계가 읽는 형식으로 적는다:
+
+- SK-P-1: 취약도에 맞춘 구체성 — 지시의 구체성 수준은 과제가 얼마나 쉽게 깨지는지에 맞춰야 한다(원칙 10).
 
 ## 기본 폴더 구조
 
@@ -158,7 +164,7 @@ Loop 선택은 [`references/prompt-loop-eval.ko.md`](references/prompt-loop-eval
 | `assets/` | 템플릿, 스키마, 예시 산출물, eval fixture처럼 복사/채움 대상 | reasoning-only 설명 |
 | `agents/` | UI 카드, OpenAI/Vendor metadata, dependency hints가 필요 | core instruction 대체물 |
 
-자세한 배치 규칙은 [`references/resource-placement.ko.md`](references/resource-placement.ko.md)를 읽는다.
+자세한 배치 규칙은 [`references/resource-placement.ko.md`](references/resource-placement.ko.md)를 읽는다 — 그 파일이 배치 기준의 **정본**이고 이 절은 요약이다.
 
 ## Trigger 설계 규칙
 
@@ -168,7 +174,7 @@ Loop 선택은 [`references/prompt-loop-eval.ko.md`](references/prompt-loop-eval
 - should-trigger와 should-not-trigger를 모두 테스트한다.
 - 너무 넓은 skill은 false positive를 만들고, 너무 좁은 skill은 여러 skill이 동시에 로드되어 충돌할 수 있다.
 
-자세한 규칙은 [`references/trigger-design.ko.md`](references/trigger-design.ko.md)를 읽는다.
+자세한 규칙은 [`references/trigger-design.ko.md`](references/trigger-design.ko.md)를 읽는다 — 그 파일이 trigger 완료 기준의 **정본**이고 위 체크리스트는 그것을 다시 적지 않는다.
 
 ## Progressive disclosure 규칙
 
@@ -178,13 +184,26 @@ Loop 선택은 [`references/prompt-loop-eval.ko.md`](references/prompt-loop-eval
 
 즉, `SKILL.md`에는 항상 필요한 것만 둔다. 세부는 “언제 읽을지”와 함께 분리한다. 자세한 규칙은 [`references/progressive-disclosure.ko.md`](references/progressive-disclosure.ko.md)를 읽는다.
 
+## Judgement Rules
+
+확률적 검사가 어떻게 게이트가 되는지. 이 규칙들은 규범이고, `references/` 파일들이 이를 적용한다.
+
+- SK-J-1: trigger 판정을 **단일 실행으로 선언하지 않는다.** 쿼리마다 여러 번 돌려 **트리거율**을 계산한다.
+- SK-J-2: 시작 반복 횟수는 **쿼리당 3회**다.
+- SK-J-3: should-trigger 쿼리는 트리거율이 임계값 **위**면 통과하고, should-not-trigger 쿼리는 **아래**면 통과한다. 기본 임계값은 **0.5**다.
+- SK-J-4: 케이스 수와 반복 횟수를 **함께** 기록한다 — 예: 20 쿼리 x 3회 = 60 호출. 반복 횟수 없는 트리거율은 해석할 수 없다.
+- SK-J-5: 트리거율은 반복 횟수에 따라 달라지므로, 다른 반복 횟수로 낸 결과는 이전 결과와 직접 비교하지 않는다.
+- SK-J-6: 케이스별 통과/실패만 세지 않고 **트리거율 분포**를 남긴다. 임계값 근처에 몰린 쿼리가 불안정한 지점이다.
+
+`SK-J-2`·`SK-J-3`의 값은 출처가 진술한 것이고, 출처는 이를 합리적인 시작점·합리적인 기본값이라고 부른다 — 검증된 최적값이 아니다. 케이스 파일은 자기 `runs`와 `threshold`를 상속하지 않고 명시한다. 그 숫자가 쓰이는 자리에서 보이게 하기 위해서다.
+
 ## 검증 기준
 
 완료 전 최소 확인:
 
 - [ ] `name`은 kebab-case이며 폴더명과 일치한다.
 - [ ] `description`은 무엇을 하는지와 언제 쓰는지를 모두 포함한다.
-- [ ] positive 3개, negative 2개, boundary 1개 이상의 trigger 예시가 있다.
+- [ ] trigger 예시가 positive, negative, boundary를 포괄한다. 케이스 개수는 여기서 고정하지 않는다 — 세트 구성은 [`references/validation.ko.md`](references/validation.ko.md)가, 케이스 판정 방식은 [`references/trigger-design.ko.md`](references/trigger-design.ko.md)가 맡는다.
 - [ ] `instruction_contract`에 intent/scope/authority/evidence/tools/loop/output/verification/stop condition이 있다.
 - [ ] loop가 있으면 feedback source, metric/rubric, guard, stop condition이 있다.
 - [ ] 최신·벤더·논문·보안 claim에는 source URL과 접근일 또는 snapshot date가 있다.
@@ -194,7 +213,7 @@ Loop 선택은 [`references/prompt-loop-eval.ko.md`](references/prompt-loop-eval
 - [ ] local markdown links와 code fence가 깨지지 않는다.
 - [ ] 검증 결과와 남은 risk가 handoff에 남는다.
 
-자세한 검증 루프는 [`references/validation.ko.md`](references/validation.ko.md)를 읽는다.
+자세한 검증 루프는 [`references/validation.ko.md`](references/validation.ko.md)를 읽는다. 위 기준은 **무엇이 성립해야 하는지**의 정본이고, 각 항목을 **어떻게 검사하는지**는 그 파일이 갖는다.
 
 ## 함께 읽을 문서
 
@@ -205,3 +224,18 @@ Loop 선택은 [`references/prompt-loop-eval.ko.md`](references/prompt-loop-eval
 - [`../sourcing/reliable-search.ko.md`](../sourcing/reliable-search.ko.md)
 - [`../sourcing/references/retrieval-safety.ko.md`](../sourcing/references/retrieval-safety.ko.md)
 - [`../validation/index.ko.md`](../validation/index.ko.md)
+
+## Sources
+
+> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+
+| 주장 | 출처 |
+|---|---|
+| `name` 문자 규칙, frontmatter 필드 표, 3단계 점진공개 모델 | <https://agentskills.io/specification> |
+| "취약도에 구체성을 맞춘다" — 원칙 10의 근거 | <https://agentskills.io/skill-creation/best-practices> |
+| **트리거율** 지표, 시작 반복 횟수 **3회**, 기본 임계값 **0.5**, `SK-J-2`·`SK-J-3` 뒤의 "합리적인 시작점·기본값" hedge | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| 컨텍스트 2% / 8,000자 목록 예산, Codex의 저장소 순회 탐색, 같은 `name` 비병합, 경고를 동반한 목록 생략, `allow_implicit_invocation`, `/skills` 호출 형식, plugins 권고 | <https://learn.chatgpt.com/docs/build-skills> |
+
+### 근거 등급
+
+위 trigger 판정 값들은 출처가 **시작점**으로 진술한 것이지 검증된 최적값이 아니다. Codex 탐색 동작은 한 런타임이 보고한 `VENDOR` 주장이다 — 이 문서는 여러 런타임을 다루므로 "Codex는 …라고 보고한다"로 쓴다.

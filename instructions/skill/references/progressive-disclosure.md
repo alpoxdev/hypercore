@@ -59,7 +59,7 @@ Run `scripts/validate-skill.mjs` when the skill includes scripts, generated asse
 
 ## 5. Context budget rules
 
-- Keep the core `SKILL.md` around 300 lines where possible, and never above 500 lines even with a special reason.
+- Keep the core `SKILL.md` within 500 lines — that limit comes from the specification, not from this repository. This repository **additionally** enforces a 300-line gate (`scripts/check-sources.sh`, `MAX_LINES=300`); treat 300 as **this repository's chosen default**, not as a sourced figure. The two are different: 500 is what the source states, 300 is what this repository checks.
 - Keep each `references/` file focused on one topic.
 - Do not build deep reference chains.
 - If you created a support file, reference it directly from `SKILL.md`.
@@ -75,3 +75,23 @@ After splitting, answer the following.
 - Is a definition duplicated between the core and a reference?
 - Is every reference actually useful?
 - Are scripts and assets being misused as reasoning files?
+
+### Removal test
+
+The questions above ask whether content is *useful*. These decide whether it *earns its place*.
+
+- SK-D-1: For each instruction, ask **"if this were absent, would the agent get it wrong?"** If the answer is no, delete it. If you are not sure, test it rather than keeping it on suspicion.
+- SK-D-2: If a task succeeds without the skill, that skill may add no value. A skill that restates what the agent already does reliably is cost without benefit.
+
+## Sources
+
+> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+
+| Claim | Source |
+|---|---|
+| The 500-line and 5,000-token progressive-disclosure budgets, and the removal test behind `SK-D-1` and `SK-D-2` | <https://agentskills.io/skill-creation/best-practices> |
+| The three-stage model (metadata, then full instructions, then referenced files) | <https://agentskills.io/specification> |
+
+### Evidence grade
+
+This file is the **canonical** statement of the disclosure budgets; [`skill-anatomy.md`](skill-anatomy.md) points here rather than restating them. The 500-line and 5,000-token figures are `PRIMARY` — the specification site states them. The 300-line value is a repository gate, labelled as such.
