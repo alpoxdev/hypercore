@@ -9,8 +9,9 @@ This folder is the LLM working-instruction layer for this project. Its purpose i
 | Area | File | Purpose |
 |---|---|---|
 | Context Engineering | [`context-engineering/CONTEXT_ENGINEERING.md`](context-engineering/CONTEXT_ENGINEERING.md) | Design prompt, context, and tool instructions in a runtime-neutral way |
-| CLI Runtime Profiles | [`cli/README.md`](cli/README.md) | Let a skill safely select question, approval, and tool capabilities across Claude Code, Codex, GJC, Hermes Agent, OpenClaw, and OpenCode |
+| CLI Runtime Profiles | [`cli/README.md`](cli/README.md) | Let a skill safely select question, approval, and tool capabilities across Claude Code, Codex, GJC, Hermes Agent, JCode, OMO, OpenClaw, and OpenCode |
 | Prompt Authoring | [`context-engineering/references/prompt-authoring.md`](context-engineering/references/prompt-authoring.md) | Practical template for writing a role prompt as an execution contract |
+| Prompt & Skill Caching | [`cache/CACHE.md`](cache/CACHE.md) | Keep the reusable prefix of a prompt or skill stable so provider prompt caching can serve it |
 | AGENTS.md / CLAUDE.md | [`agents-md/AGENTS_MD.md`](agents-md/AGENTS_MD.md) | Author repository agent instruction files as a small, evidenced, portable contract |
 | Skill Authoring | [`skill/SKILL_AUTHORING.md`](skill/SKILL_AUTHORING.md) | Design a reusable skill folder as a triggerable, structured, verifiable execution package |
 | Skill Prompt/Loop/Eval | [`skill/references/prompt-loop-eval.md`](skill/references/prompt-loop-eval.md) | Design a skill as a small iterable, verifiable program rather than a single prompt |
@@ -21,17 +22,21 @@ This folder is the LLM working-instruction layer for this project. Its purpose i
 
 ## Source management
 
-External sources live **inline in each document's `Sources` section, with the URL and the date it was checked**. There is no separate central ledger — cited URLs are concentrated in a handful of files, so centralizing would cost more (separating a claim from its evidence) than it saves.
+External sources are cited **inline with the URL and the date it was checked** — in a `Sources` section where a document has one, and next to the claim otherwise. A repository-maintenance ledger such as [`cli/sources.md`](cli/sources.md) is the one allowed exception, defined in [`sourcing/reliable-search.md`](sourcing/reliable-search.md) §7; keeping every other claim next to its evidence costs less than centralizing it.
 
 ```bash
 bash scripts/check-sources.sh             # date format + document length strict, links advisory
 bash scripts/check-sources.sh --strict    # gate on moved links too (before a release)
 bash scripts/check-sources.sh --offline   # structural checks only, no network
 bash scripts/check-sources.sh --self-test # prove the checks actually catch failures
+bun run --cwd scripts lint:sh        # static analysis of the checker itself (needs shellcheck)
 ```
 
-- Last full sweep: **2026-07-29** / next re-verification: **2026-10-29**.
-- Vendor documentation moves on a quarterly rhythm, so keep the re-verification cadence. arXiv and standards documents decay differently, so a URL check is enough for those.
+The `lint:sh` task runs [ShellCheck](https://www.shellcheck.net/) over `scripts/check-sources.sh`. It is a separate opt-in task because ShellCheck is a system tool rather than a dependency of this repository; `bash-language-server` is declared in `scripts/package.json` for editor diagnostics.
+
+- Last full sweep: **2026-07-29**. Targeted re-verification of the AGENTS.md discovery/precedence area, the CLI runtime profiles, the skill and context-engineering references, the harness-engineering source table, the Hermes Agent guides, and the new caching area: **2026-09-19**. Next full re-verification: **2026-10-29**.
+- The link check reads inline citations only: it skips fenced code blocks and documentation example URLs on the RFC 2606 reserved domains (`example.com`, `example.net`, `example.org`, `*.example`) and loopback addresses (`localhost`, `127/8`, `[::1]`), and reports how many it skipped — including the URLs inside code blocks that it did not check, so nothing is dropped silently. Every other URL must resolve without a redirect.
+- Keep the quarterly re-verification cadence as project policy: vendor documentation changes on its own schedule, and this cadence is our chosen review interval rather than a vendor guarantee. arXiv and standards documents decay differently, so a URL check is enough for those.
 - `.hyper/` is covered by `.gitignore`. Research reports under it are a **local re-verification cache** and do not exist in another clone. Shareable evidence is always the URL inside the document.
 
 ## Authoring principles
@@ -50,6 +55,7 @@ bash scripts/check-sources.sh --self-test # prove the checks actually catch fail
 @instructions/README.md
 @instructions/context-engineering/CONTEXT_ENGINEERING.md
 @instructions/context-engineering/references/prompt-authoring.md
+@instructions/cache/CACHE.md
 @instructions/skill/SKILL_AUTHORING.md
 @instructions/skill/references/prompt-loop-eval.md
 @instructions/autoresearch/AUTORESEARCH.md
@@ -59,6 +65,8 @@ bash scripts/check-sources.sh --self-test # prove the checks actually catch fail
 ```
 
 Load the `.ko.md` counterpart instead when the working language is Korean. Do not load both — they carry the same contract and loading both only doubles context.
+
+When you author or revise a prompt, a system message, a tool description, or a skill's loaded text, read [`cache/CACHE.md`](cache/CACHE.md) so the reusable prefix stays stable; its per-provider thresholds are in [`cache/references/provider-cache-facts.md`](cache/references/provider-cache-facts.md).
 
 When work is bound to a specific runtime, also read [`context-engineering/references/runtime-profiles.md`](context-engineering/references/runtime-profiles.md). When using parallel work, subagents, background agents, or agent teams, also read [`context-engineering/references/parallel-workflows.md`](context-engineering/references/parallel-workflows.md). To use per-CLI question, approval, and tool capabilities inside a skill, read [`cli/README.md`](cli/README.md) together with the relevant runtime profile.
 
