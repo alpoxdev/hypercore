@@ -37,19 +37,19 @@ Agent Skills specification(<https://agentskills.io/specification>, 확인 2026-0
 | `name` | 필수 | 1-64자. 소문자 `a-z`·숫자·하이픈만. 하이픈으로 시작·종료 불가, 연속 하이픈(`--`) 불가. **부모 디렉터리명과 일치해야 한다** |
 | `description` | 필수 | 1-1024자. 무엇을 하는지와 언제 쓰는지를 모두 포함 |
 | `license` | 선택 | 라이선스명 또는 번들 라이선스 파일 참조. 짧게 유지 |
-| `compatibility` | 선택 | 1-500자. 대상 제품, 시스템 패키지, 네트워크 요구 등 환경 요구가 있을 때만 |
+| `compatibility` | 선택 | 500자 이하(상한만 — 하한은 출처가 진술하지 않는다). 대상 제품, 시스템 패키지, 네트워크 요구 등 환경 요구가 있을 때만 |
 | `metadata` | 선택 | 문자열 key-value 맵. spec 미정의 속성 보관용. 충돌을 피하도록 key를 고유하게 |
 | `allowed-tools` | 선택 | 공백 구분 문자열. 사전 승인 도구 목록. **Experimental — 구현체별 지원이 다르다** |
 
 ### Progressive disclosure 예산
 
-| 단계 | 로드 시점 | 권장 예산 |
-|---|---|---|
-| Metadata | 시작 시 전체 skill에 대해 | `name` + `description` 약 100 토큰 |
-| Instructions | skill 활성화 시 | `SKILL.md` 본문 **5,000 토큰 미만**, **500줄 미만** |
-| Resources | 필요할 때만 | `scripts/`·`references/`·`assets/` 개별 로드 |
+예산 수치를 **여기서 다시 적지 않는다.** [`progressive-disclosure.ko.md`](progressive-disclosure.ko.md) §5가 단계별 예산과 500줄·5,000토큰 한계의 정본이다; 그쪽을 읽는다. 이 절은 frontmatter와 파일 배치에 특정된 것만 갖는다.
 
-Codex 런타임은 목록 단계 예산을 컨텍스트의 2% 또는 8,000자로 제한한다(<https://learn.chatgpt.com/docs/build-skills>). 즉 `description`은 잘릴 수 있다고 가정하고 핵심 트리거를 앞에 둔다.
+Codex 런타임은 목록 단계 예산을 컨텍스트의 2% 또는 8,000자로 제한한다(<https://learn.chatgpt.com/docs/build-skills>). **Codex는 (2026-09-20 보고, `VENDOR`)** skill이 많으면 설명을 먼저 줄이고, 일부 skill을 **초기 목록에서 통째로 생략하고 경고를 띄울 수 있다**고 보고한다 — 위험은 `description`이 잘리는 것만이 아니라 **skill이 아예 나타나지 않는 것**이다. 핵심 트리거를 앞에 둔다.
+
+이 예산은 여기 요약으로 다시 적은 것이다. **정본**은 [`progressive-disclosure.ko.md`](progressive-disclosure.ko.md) §5이고, 이 절이 숫자를 소유하지 않는다.
+
+**Codex 런타임 탐색 (2026-09-20 보고, `VENDOR`).** Codex는 고정된 우선순위 목록 대신 현재 작업 디렉터리에서 저장소 루트까지 **모든 디렉터리**의 `.agents/skills`를 훑는다고 보고한다(`$CWD`, `$CWD/../`, `$REPO_ROOT`). 같은 `name`을 가진 두 skill은 **병합되지 않고** 둘 다 선택기에 나타날 수 있다고 보고한다. `allow_implicit_invocation`(기본 true)을 false로 두면 암시적 발화가 꺼지고 `$skill` 명시 호출만 동작한다. 이것들은 Codex의 동작이지 보편 규칙이 아니다.
 
 ### 규칙
 
@@ -130,7 +130,7 @@ skills-ref validate ./my-skill
 - 같은 변환/검증을 반복한다.
 - 명령 순서가 취약하다.
 - structured output이 필요하다.
-- 실패 메시지를 통해 agent가 self-correct할 수 있다.
+- 실패 메시지로 agent가 self-correct할 수 있다.
 
 필수 설명:
 
@@ -161,3 +161,17 @@ assets는 reasoning을 대체하지 않는다. 사용 조건과 채움 규칙을
 - [ ] support files는 직접 상대경로로 참조된다.
 - [ ] scripts/assets는 존재 이유가 명확하다.
 - [ ] 한국어 mirror가 필요한 파일은 구조적으로 동기화되어 있다.
+
+## Sources
+
+> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+
+| 주장 | 출처 |
+|---|---|
+| frontmatter 필드 표와 제약, 3단계 점진공개 모델 | <https://agentskills.io/specification> |
+| 5,000토큰·500줄 지시 예산 | <https://agentskills.io/skill-creation/best-practices> |
+| 컨텍스트 2% / 8,000자 목록 예산, Codex의 저장소 순회 탐색, 같은 `name` 비병합, 경고를 동반한 목록 생략, `allow_implicit_invocation` | <https://learn.chatgpt.com/docs/build-skills> |
+
+### 근거 등급
+
+frontmatter 제약은 `PRIMARY`다 — specification이 직접 진술한다. `compatibility`의 **하한** 1은 어떤 출처도 진술하지 않아 규칙으로 남기지 않고 지웠다; 상한 500자만 출처가 있다. Codex 탐색 동작은 한 런타임이 보고한 `VENDOR` 주장이므로 "Codex는 …라고 보고한다"로 쓴다.

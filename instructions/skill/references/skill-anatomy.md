@@ -37,19 +37,19 @@ Per the Agent Skills specification (<https://agentskills.io/specification>, chec
 | `name` | Required | 1-64 chars. Lowercase `a-z`, digits, and hyphens only. Cannot start or end with a hyphen, and no consecutive hyphens (`--`). **Must match the parent directory name** |
 | `description` | Required | 1-1024 chars. Covers both what it does and when to use it |
 | `license` | Optional | A license name or a reference to a bundled license file. Keep it short |
-| `compatibility` | Optional | 1-500 chars. Only when there are environment requirements such as intended product, system packages, or network access |
+| `compatibility` | Optional | Up to 500 chars (upper bound only — the lower bound is not stated by the source). Only when there are environment requirements such as intended product, system packages, or network access |
 | `metadata` | Optional | A string key-value map for properties the spec does not define. Keep keys unique to avoid collisions |
 | `allowed-tools` | Optional | A space-separated string of pre-approved tools. **Experimental — support varies between implementations** |
 
 ### Progressive disclosure budgets
 
-| Stage | When it loads | Recommended budget |
-|---|---|---|
-| Metadata | At startup, for every skill | `name` + `description`, roughly 100 tokens |
-| Instructions | On skill activation | `SKILL.md` body **under 5,000 tokens** and **under 500 lines** |
-| Resources | Only when needed | `scripts/`, `references/`, `assets/` loaded individually |
+The budget figures are **not restated here**. [`progressive-disclosure.md`](progressive-disclosure.md) §5 is the canonical statement of the stage budgets and the 500-line / 5,000-token limits; read it there. This section owns only what is specific to frontmatter and file layout.
 
-The Codex runtime caps the listing-stage budget at 2% of context or 8,000 characters (<https://learn.chatgpt.com/docs/build-skills>). Assume `description` may be truncated and put the key trigger up front.
+The Codex runtime caps the listing-stage budget at 2% of context or 8,000 characters (<https://learn.chatgpt.com/docs/build-skills>). **Codex reports (2026-09-20, `VENDOR`)** that when many skills are present it shortens descriptions first and **may omit some skills from the initial list entirely**, emitting a warning — so the risk is not only that `description` gets truncated, but that the skill does not appear at all. Put the key trigger up front.
+
+These budgets are restated here as a summary. The **canonical** statement is [`progressive-disclosure.md`](progressive-disclosure.md) §5; this section does not own the numbers.
+
+**Codex runtime discovery (reported 2026-09-20, `VENDOR`).** Codex reports that it walks `.agents/skills` in every directory from the current working directory up to the repository root (`$CWD`, `$CWD/../`, `$REPO_ROOT`) rather than reading a single fixed precedence list. When two skills share the same `name`, Codex reports that it does **not** merge them and both can appear in the selector. Setting `allow_implicit_invocation` (default true) to false disables implicit invocation so only explicit `$skill` calls work. These are Codex behaviors, not universal rules.
 
 ### Rules
 
@@ -161,3 +161,17 @@ Assets do not substitute for reasoning. Put their usage conditions and fill rule
 - [ ] Support files are referenced directly by relative path.
 - [ ] Scripts and assets have a clear reason to exist.
 - [ ] Files needing a Korean mirror are structurally synchronized.
+
+## Sources
+
+> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+
+| Claim | Source |
+|---|---|
+| The frontmatter field table and its constraints, and the three-stage disclosure model | <https://agentskills.io/specification> |
+| The 5,000-token and 500-line instruction budgets | <https://agentskills.io/skill-creation/best-practices> |
+| The 2%-of-context / 8,000-character listing budget, the Codex repository-walk discovery order, non-merging of same-`name` skills, list omission with a warning, and `allow_implicit_invocation` | <https://learn.chatgpt.com/docs/build-skills> |
+
+### Evidence grade
+
+The frontmatter constraints are `PRIMARY` — the specification states them. The `compatibility` **lower** bound of 1 is not stated by any source consulted, so it was removed rather than carried as a rule; only the 500-character upper bound is sourced. The Codex discovery behaviors are `VENDOR` claims reported by one runtime and are written as "Codex reports ...".

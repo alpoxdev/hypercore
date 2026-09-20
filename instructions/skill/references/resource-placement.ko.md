@@ -128,6 +128,31 @@ references/
 - deterministic runner가 있으면 `scripts/run-evals.*`에 두고, dependency와 expected output을 문서화한다.
 - eval case가 외부 source를 요구하면 source URL, accessed date, freshness caveat를 case 안이나 source ledger에 연결한다.
 
+### 실행 결과는 어디로 가는가
+
+위 fixture는 입력이다. 그것을 돌린 **결과**는 skill 폴더 밖에 산다. 배포되는 skill이 자기 실행 이력을 들고 다니면 안 되고, 이 저장소의 다른 모든 실행이 이미 그 자리에 쓰기 때문이다.
+
+```text
+.omo/evidence/<skill>/iteration-N/
+├── benchmark.json
+└── eval-<case>/
+    ├── with_skill/
+    │   ├── outputs/
+    │   ├── timing.json
+    │   └── grading.json
+    └── without_skill/
+        ├── outputs/
+        ├── timing.json
+        └── grading.json
+```
+
+이 저장소에는 이미 eval 자료를 두는 자리가 둘 있었다. 세 번째를 만들면 하나의 답이 사라진다. 위 배치는 skill 폴더 옆에 별도 작업 공간을 두는 안을 뒤집은 것이다 — 그 형태는 이 저장소에 선례가 없고 evidence 디렉터리에는 있다. 대가는 실재한다: 결과가 배포되는 skill을 따라가지 않으므로, 이 저장소 밖의 독자는 결과를 볼 수 없다.
+
+- SK-E-1: 실행 결과를 **skill 폴더 밖**에, 위에 적은 evidence 경로 아래에 둔다. 배포되는 skill은 자기 실행 이력을 들고 다니지 않는다.
+- SK-E-2: 모든 실행은 `timing.json`(토큰·시간)과 `grading.json`(단언별 통과 여부 **및 증거 문자열**)을 남긴다. 증거 문자열 없는 `passed: true`는 증거가 아니다.
+- SK-E-3: 각 실행을 **독립 세션**에서 돌린다. 한 세션을 재사용하면 앞 실행의 컨텍스트가 다음 실행을 오염시킨다.
+- SK-E-4: 기계적 단언(유효 JSON, 행 수, 파일 존재)은 **스크립트로** 검사한다. LLM 심판은 스크립트가 판정할 수 없는 것에 남겨 둔다.
+
 ## 7. 금지 패턴
 
 - `SKILL.md`가 reference knowledge base가 되는 것
@@ -146,3 +171,16 @@ references/
 - [ ] provider-sensitive content는 references에 격리되어 있다.
 - [ ] prompt templates, eval fixtures, source ledgers, safety notes가 prose/reference/asset/script 중 올바른 위치에 있다.
 - [ ] 모든 세션에 로드되는 내용이 로드되는 머리에 변동값(날짜, 버전, 개수, 머신별 경로)을 두지 않는다 — [`../../cache/CACHE.ko.md`](../../cache/CACHE.ko.md) 참고.
+- [ ] eval 실행 결과가 skill 폴더 밖에, 실행별 timing·grading 기록과 함께 쓰인다.
+
+## Sources
+
+> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+
+| 주장 | 출처 |
+|---|---|
+| 실행 결과를 skill 폴더 밖에 두기, 실행별 `timing.json`·`grading.json`과 증거 문자열, 실행마다 독립 세션, 기계적 단언은 스크립트로 — `SK-E-1`~`SK-E-4`의 근거 | <https://agentskills.io/skill-creation/evaluating-skills> |
+
+### 근거 등급
+
+위 배치·비용 기록 규칙은 `PRIMARY`다 — specification 사이트가 직접 진술한다. 구체적인 디렉터리 배치는 **이 저장소의 결정**이지 출처가 진술한 것이 아니다: 델타가 미해결 충돌로 표시했고, 이 파일이 선택과 대가를 기록한다.

@@ -41,7 +41,7 @@ Every skill leaves at least the following validation note.
   - [ ] credential/network/destructive action prompt
 - Benchmark:
   - [ ] benchmark/scaffold/version note
-  - [ ] whether a with-skill vs without-skill comparison is needed
+  - [ ] **with-skill and without-skill both run by default** (the deterministic-skill exception is recorded)
 - Anatomy:
   - [ ] frontmatter present
   - [ ] support files linked
@@ -55,26 +55,19 @@ Every skill leaves at least the following validation note.
 
 ## 3. Trigger eval design
 
-Recommended set:
+Composition, not counts:
 
-- 8-10 should-trigger
-- 8-10 should-not-trigger
-- 2-4 boundary
-- 2-4 source-sensitive
-- 2-4 safety/adversarial
+The set must cover each of these groups. How many rows each one gets is not fixed here — the source does not state a validated count, so this file states a composition requirement instead.
 
-Starting with a 6-case smoke set is acceptable early on. Promote each real failure into an eval row as it happens.
+- should-trigger
+- should-not-trigger
+- boundary
+- source-sensitive
+- safety/adversarial
 
-Each row carries the following.
+Add a row only when it probes something the existing rows do not. Promote each real failure into an eval row as it happens. The canonical smoke-set schema and the repetition/threshold keys live in [`trigger-design.md`](trigger-design.md) §4; this file does not restate them.
 
-```json
-{
-  "id": "skill-trigger-001",
-  "prompt": "a sentence a real user would type",
-  "should_trigger": true,
-  "expected_reason": "why this skill should handle it"
-}
-```
+Each row carries the keys defined in [`trigger-design.md`](trigger-design.md) §4 (`expect`, `runs`, `threshold`, and the measured `trigger_rate`) plus an `expected_reason` explaining why this skill should handle the prompt.
 
 A trigger eval does not look at one sentence only. Vary the same intent as follows.
 
@@ -93,7 +86,13 @@ A skill whose artifact matters includes the following.
 - Forbidden output
 - Style and format rubric
 - Deterministic artifact check
-- Whether a with-skill vs without-skill baseline is needed
+
+These rules are normative.
+
+- SK-V-1: Run each case **by default** twice — once with the skill and once without it (or against a previous version). Exception: when the no-skill condition cannot produce the artifact at all — a deterministic skill such as a formatter or a schema checker — do not run it; record that fact instead. Do not force a ritual that adds no value (exception: deterministic skill).
+- SK-V-2: When improving an existing skill, use a **snapshot of the previous version** as the baseline instead of the no-skill condition. Snapshot the skill folder before editing and point at that snapshot.
+- SK-V-3: Do not claim the skill improved **without a baseline** to compare against.
+- SK-V-4: Remove or replace any assertion that passes in **both** conditions — it does not reflect the skill's value and only inflates the pass rate. An assertion that always **fails** in both conditions is a subject for investigation, not deletion.
 
 ## 5. Workflow / loop eval design
 
@@ -188,7 +187,7 @@ Confirm the following manually or automatically.
 
 ## 11. Completion gate
 
-Do not call it complete if any of the following fails.
+Do not call it complete if any of the following fails. [`../SKILL_AUTHORING.md`](../SKILL_AUTHORING.md) → `## Verification criteria` is the summary checklist; **how each item is judged** lives in the sections above.
 
 - The trigger boundary is not explained
 - Support files are not linked
@@ -199,3 +198,17 @@ Do not call it complete if any of the following fails.
 - A loop exists without feedback, metric, guard, and stop condition
 - The eval has only happy paths and no negative, boundary, source, or safety cases
 - A benchmark or performance claim lacks release, scaffold, verifier, and contamination caveats
+
+## Sources
+
+> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+
+| Claim | Source |
+|---|---|
+| The with/without baseline as the core pattern, using a previous-version snapshot as the baseline, not claiming improvement without a baseline, and removing assertions that pass in both conditions — the basis of `SK-V-1` to `SK-V-4` | <https://agentskills.io/skill-creation/evaluating-skills> |
+| Repetition count, threshold, and trigger rate as the trigger metric | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| The four invocation modes and the prompt-set composition | <https://developers.openai.com/blog/eval-skills> |
+
+### Evidence grade
+
+The baseline rules above are `PRIMARY` and come from the evaluating-skills page, which names the with/without pair as the **core pattern** rather than an option. This file deliberately states **no normative case count**: no source consulted states a validated one, so a composition requirement takes its place.

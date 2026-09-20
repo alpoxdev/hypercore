@@ -77,20 +77,41 @@ Trigger 예시는 **두 개의 직교하는 축**으로 만든다. 하나는 “
 
 ## 4. Trigger smoke test
 
-최소 세트:
+최소 세트. 이전의 불리언 `should_trigger`는 사라졌다: trigger는 확률적이므로 케이스마다 자기 반복 횟수와 임계값을 싣고, 실행이 결과 비율을 기록한다. 이 키들이 따르는 판정 규칙은 `SKILL_AUTHORING.ko.md`의 `## Judgement Rules`를 본다.
 
 ```json
 [
-  { "id": "p1", "prompt": "Create a Codex skill for SQL migration review", "should_trigger": true },
-  { "id": "p2", "prompt": "Refactor this SKILL.md so it loads references correctly", "should_trigger": true },
-  { "id": "p3", "prompt": "스킬 폴더를 새로 만들고 검증 규칙까지 넣어줘", "should_trigger": true },
-  { "id": "n1", "prompt": "Rewrite this runbook for readability", "should_trigger": false },
-  { "id": "n2", "prompt": "Summarize these OpenAI docs", "should_trigger": false },
-  { "id": "b1", "prompt": "Create a guide for writing skills", "should_trigger": "depends_on_output_shape" },
-  { "id": "b2", "prompt": "최신 논문을 보고 새 skill을 만들어줘", "should_trigger": "after_research_or_with_research_skill" },
-  { "id": "b3", "prompt": "이 skill이 배포 명령까지 자동 실행하게 해줘", "should_trigger": true, "requires_gate": "production_side_effect" }
+  { "id": "p1", "prompt": "Create a Codex skill for SQL migration review", "expect": "trigger", "runs": 3, "threshold": 0.5 },
+  { "id": "p2", "prompt": "Refactor this SKILL.md so it loads references correctly", "expect": "trigger", "runs": 3, "threshold": 0.5 },
+  { "id": "p3", "prompt": "스킬 폴더를 새로 만들고 검증 규칙까지 넣어줘", "expect": "trigger", "runs": 3, "threshold": 0.5 },
+  { "id": "n1", "prompt": "Rewrite this runbook for readability", "expect": "no_trigger", "runs": 3, "threshold": 0.5 },
+  { "id": "n2", "prompt": "Summarize these OpenAI docs", "expect": "no_trigger", "runs": 3, "threshold": 0.5 },
+  { "id": "b1", "prompt": "Create a guide for writing skills", "expect": "no_trigger", "runs": 3, "threshold": 0.5, "note": "출력 형태에 달림" },
+  { "id": "b2", "prompt": "최신 논문을 보고 새 skill을 만들어줘", "expect": "trigger", "runs": 3, "threshold": 0.5, "note": "research skill과 함께 또는 이후" },
+  { "id": "b3", "prompt": "이 skill이 배포 명령까지 자동 실행하게 해줘", "expect": "trigger", "runs": 3, "threshold": 0.5, "requires_gate": "production_side_effect" }
 ]
 ```
+
+실행은 케이스마다 측정된 `trigger_rate`를 덧붙인다. 결과 파일은 같은 네 키에 결과가 더해진 형태다:
+
+```json
+{ "id": "p1", "expect": "trigger", "runs": 3, "threshold": 0.5, "trigger_rate": 1.0 }
+```
+
+**케이스마다 자기 `runs`와 `threshold`를 명시한다.** 기본값을 상속하게 두지 않는다 — `runs`가 비율의 의미를 바꾸므로 그 값이 쓰이는 자리에서 보여야 한다. 아래 케이스들은 **예시 세트 하나이지 요구 개수가 아니다** — 각 케이스는 다른 케이스가 검사하지 않는 것을 검사하기 때문에 존재하고, 새로 검사하는 것이 없는 케이스는 호출만 늘린다:
+
+| 케이스 | 다른 케이스가 검사하지 않는 것 |
+|---|---|
+| `p1` | description만으로 발화해야 하는 평범한 작성 요청 |
+| `p2` | skill 이름이 아니라 기존 산출물을 지목하는 요청 |
+| `p3` | trigger 단어가 문장 전체에 흩어진 요청 |
+| `n1` | 같은 동사를 무관한 산출물에 쓴 경우(negative control) |
+| `n2` | 같은 영역의 문서 작업(negative control) |
+| `b1` | 요청한 출력 형태에 따라 skill 작업이 되기도 하는 요청 |
+| `b2` | 이 skill이 적용되기 전에 companion workflow가 필요한 요청 |
+| `b3` | 발화한 뒤 안전 gate까지 걸려야 하는 요청 |
+
+목표 개수를 채우려고 케이스를 늘리지 않는다. 새로 검사하는 것이 없는 케이스는 증거가 아니라 호출만 늘린다.
 
 Trigger eval에는 prompt wording만 보지 말고, 켜진 뒤 필요한 companion workflow도 기록한다.
 
@@ -122,3 +143,28 @@ Trigger eval에는 prompt wording만 보지 말고, 켜진 뒤 필요한 compani
 - [ ] 비슷한 skill과의 차이가 명시되어 있다.
 - [ ] should-trigger와 should-not-trigger smoke set이 있다.
 - [ ] research, safety, deploy, commit 같은 companion workflow가 필요한 boundary가 있다.
+
+## 7. Description 최적화
+
+description을 한 번 쓰고 끝내는 것이 전부가 아니다. 반복 편집은 그것을 조정한 예시에 과적합된다. 이 규칙들은 규범이다.
+
+- SK-O-1: 쿼리 집합을 **train과 validation으로 나눈다.** 개선은 train으로, **선택**은 validation 통과율로 한다.
+- SK-O-2: **가장 좋은 description이 마지막 것이 아닐 수 있다.** 나중 반복이 validation에서 더 낮으면 이전 반복을 선택한다.
+- SK-O-3: 최적화하는 동안 description은 자란다. 편집할 때마다 **1024자 한계**를 다시 확인한다.
+- SK-O-4: 미세 조정이 도움이 되지 않으면 **구조를 바꾼다** — 형용사를 하나 더 붙이는 것이 아니라 다른 프레이밍, 다른 문장 구조로.
+
+마지막 validation 점수만 보고하는 실행은 개선의 증거가 아니다. 선택 과정이 보이도록 반복마다 train과 validation 수치를 함께 보고한다.
+
+## Sources
+
+> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+
+| 주장 | 출처 |
+|---|---|
+| 네 가지 호출 방식(explicit/implicit/contextual/negative control)과 10-20 프롬프트 시작 세트 | <https://developers.openai.com/blog/eval-skills> |
+| 트리거율 지표, 3회, 기본 임계값 0.5, train/validation 분할, "가장 좋은 것이 마지막이 아닐 수 있다", 1024자 재확인, 구조 변경 fallback — `SK-O-1`~`SK-O-4`의 근거 | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| `description`의 1024자 한계 | <https://agentskills.io/specification> |
+
+### 근거 등급
+
+위 최적화 규칙들은 `PRIMARY`다 — specification 사이트가 직접 진술한다. 10-20 프롬프트 수치는 출처가 권하는 **시작점**으로 인용한 것이지 검증된 최적값이 아니다. §4의 케이스 개수는 의도적으로 고정하지 않는다: 출처가 개수를 진술하지 않으므로 이 파일은 **구성** 요건으로 대신한다 — 각 케이스는 다른 케이스가 검사하지 않는 것을 검사해야 한다.

@@ -4,7 +4,7 @@
 
 이 문서는 skill을 단일 프롬프트가 아니라 **작고 반복 가능한 agent program**으로 설계하는 기준이다. `SKILL.md`는 프로그램의 entrypoint이고, `rules/`, `references/`, `scripts/`, `assets/`는 필요할 때 로드되는 모듈이다.
 
-Source snapshot: 2026-06-28.
+Source snapshot: 2026-07-29. The snapshot date and the link-check date in §10 now agree; an earlier snapshot date here contradicted them.
 
 ## 1. 핵심 원칙
 
@@ -84,9 +84,11 @@ Skill eval은 trigger만 보지 않는다.
 
 최소 권장:
 
-- small skill edit: 3~5 smoke cases
-- standard skill creation/refactor: 8~15 cases
-- agent/tool workflow skill: 20+ cases 또는 대표 샘플 + targeted adversarial cases
+- small skill edit: smoke 부분집합
+- standard skill creation/refactor: 구성된 전체 세트
+- agent/tool workflow skill: 전체 세트 + targeted adversarial case
+
+크기는 여기서 고정하지 않는다. 출처가 검증된 개수를 진술하지 않으므로 이 파일은 개수 대신 **구성** 요건을 둔다: 모든 케이스는 다른 케이스가 검사하지 않는 것을 검사해야 한다. 케이스 개수 정책은 [`validation.ko.md`](validation.ko.md) §3이 갖는다.
 
 ## 5. Multi-Prompt And Format Robustness
 
@@ -109,7 +111,7 @@ Agentic skill, coding skill, tool-use skill을 검증할 때 공개 benchmark �
 - retrieval enabled 여부와 source cutoff
 - contamination/overlap 확인 방식
 - public test, hidden test, oracle weakness caveat
-- with-skill vs without-skill paired result가 필요한지 여부
+- without-skill 조건을 돌리는 것이 이제 **기본값**이다 ([`validation.ko.md`](validation.ko.md) §4의 `SK-V-1`을 보고, 결정적 skill 예외도 같게 적용한다)
 
 규칙:
 
@@ -141,6 +143,26 @@ Skill이 network, shell, credential, external API, production, destructive actio
 - scripts는 목적, dependency, input/output, failure mode, side effect를 문서화한다.
 - 안전 지시는 성능을 해칠 수 있으므로 adversarial eval과 정상 happy path를 같이 둔다.
 
+## 아티팩트 감사
+
+위 규칙들은 skill이 **받는** 것을 시험한다 — 주입된 지시를 견디는가. 이 절은 skill이 **무엇인지**를 본다: 아티팩트 자체가 담지 말아야 할 것을 담고 있는가. skill은 배포되는 코드와 지시이므로 배포 전에 감사한다.
+
+다섯 범주와 인용한 출처가 매긴 심각도다. 이 목록은 "skill 보안의 전부"가 아니다 — 그 출처가 지목한 아티팩트 수준 점검의 집합이다.
+
+| 범주 | 보는 것 | 출처가 매긴 심각도 |
+|---|---|---|
+| 데이터 유출 패턴 | 민감 데이터를 읽고 외부로 쓰기·전송·인코딩하는 지시 | — |
+| MCP 서버 참조 | `ServerName:tool_name` 형태의 참조 | High |
+| 네트워크 접근 | URL·API 엔드포인트·`fetch`·`curl`·`requests` | High |
+| 하드코딩 자격증명 | skill 파일·스크립트 안의 키·토큰·비밀번호 | High |
+| 파일시스템 범위 | skill 디렉터리 밖 경로, 넓은 glob, `../` | Medium |
+
+- SK-A-1: skill을 배포 전에 위 다섯 범주로 감사하고 결과를 기록한다.
+- SK-A-2: 신뢰할 수 없는 출처의 skill은 전체 감사 없이 배포하지 않는다.
+- SK-A-3: skill을 버전에 고정하고, 버전이 바뀌면 재검토한다.
+
+이것들은 `VENDOR` 주장이다: 심각도 라벨은 인용한 출처가 매긴 것이지 이 저장소의 통제된 연구에서 나온 것이 아니다. 감사를 "알려진 아티팩트 수준 문제를 잡는 체크리스트"로 다루고, 안전의 증명으로 다루지 않는다.
+
 ## 9. Authoring Loop
 
 ```text
@@ -159,7 +181,18 @@ Collect failures -> Draft contract -> Build eval set -> Run baseline/readback ->
 
 ## 10. Sources
 
-> 링크 확인 2026-07-29. 링크 사용 가능 여부는 2026-09-19에 재확인했다. OpenAI Codex 문서는 `developers.openai.com/codex/*`에서 `learn.chatgpt.com/docs/*`로 이전됐다.
+> 링크 확인 2026-07-29. 링크 사용 가능 여부는 2026-09-20에 재확인했다. OpenAI Codex 문서는 `developers.openai.com/codex/*`에서 `learn.chatgpt.com/docs/*`로 이전됐다.
+
+아래 목록은 이 파일이 인용하는 URL 세트다. 그 뒤의 표는 이 파일이 하는 주장을 그것을 담은 출처에 매핑한다. **이 표를 추가한 run에서 URL을 재-fetch하지 않았다** — 링크 사용 가능 여부만 재확인했다.
+
+| 주장 | 출처 |
+|---|---|
+| with/without 베이스라인을 핵심 패턴으로(evaluating-skills 페이지가 "선택"이 아니라 "핵심 패턴"으로 규정한다) | <https://agentskills.io/skill-creation/evaluating-skills> |
+| 케이스 세트 구성, 그리고 진술된 케이스 개수의 부재 | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| 아티팩트 감사 다섯 범주와 심각도 라벨 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+| 제3자 skill을 code review 대상으로 다루기, 버전 고정과 재검토 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+
+### 인용 URL
 
 - OpenAI Codex Agent Skills: <https://learn.chatgpt.com/docs/build-skills>
 - OpenAI API Skills: <https://developers.openai.com/api/docs/guides/tools-skills>
