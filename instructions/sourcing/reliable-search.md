@@ -184,6 +184,8 @@ Minimum claim-source matrix fields:
 |---|---|---|---|---|
 ```
 
+A **repository-maintenance ledger** kept inside this instructions base, such as [`../cli/sources.md`](../cli/sources.md), may use a simplified schema: it records the source, its type, what was verified, and where the claim is used, but omits retrieval metadata for material that never leaves the repository. The ledger states that exception where it lives; a research report always uses the full schema above.
+
 Storage principles:
 
 - Store a summary, the relevant claim, the date, and the URL or path rather than a full copy.

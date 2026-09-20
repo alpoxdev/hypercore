@@ -95,7 +95,7 @@ XML 태그는 Claude 계열에서 특히 유용하지만, 핵심은 XML 자체�
 
 ## Sources
 
-> 링크 확인 2026-07-29. 다음 재검증 2026-10-29.
+> 링크 확인 2026-07-29. 링크 사용 가능 여부는 2026-09-19에 재확인했다. 다음 재검증 2026-10-29.
 
 | 주장 | 출처 |
 |---|---|
@@ -108,7 +108,7 @@ XML 태그는 Claude 계열에서 특히 유용하지만, 핵심은 XML 자체�
 | GitHub Copilot repository / path-specific(`applyTo`) / agent instructions와 우선순위(personal > repository > organization) | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> |
 | MCP 보안 원칙과 prompt/tool 경계. tool annotation은 신뢰할 수 있는 서버가 아니면 untrusted로 간주해야 한다(MUST) | <https://modelcontextprotocol.io/specification/2026-07-28> |
 | MCP `2026-07-28` breaking change(stateless 전환, `server/discover`, MRTR, Roots·Sampling·Logging deprecation) | <https://modelcontextprotocol.io/specification/2026-07-28/changelog> |
-| OpenAI evaluation 지침 | <https://developers.openai.com/api/docs/guides/evals>, <https://developers.openai.com/api/docs/guides/agent-evals> |
+| OpenAI evaluation 지침. Evals 플랫폼은 **폐기 예정**(2026-10-31 read-only, 2026-11-30 종료, 후속은 Datasets)이고 agent-evals 지침은 현재 유효하다 | <https://developers.openai.com/api/docs/guides/evals>, <https://developers.openai.com/api/docs/guides/agent-evals> |
 | Anthropic 성공 기준 정의와 eval 구축 | <https://platform.claude.com/docs/en/test-and-evaluate/develop-tests> |
 | Google Vertex Gen AI evaluation adaptive rubrics | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/evaluation-overview> |
 | LangSmith evaluation datasets/evaluators | <https://docs.langchain.com/langsmith/evaluation> |

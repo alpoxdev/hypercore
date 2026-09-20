@@ -12,7 +12,7 @@
 | 목표가 먼저다 | 사용자가 성공으로 보는 결과와 불합격 조건을 적는다 | “최대한 잘”, “고퀄리티”만 있음 |
 | 범위가 있어야 한다 | 읽기/수정/생성/외부 행동 범위와 non-goals를 분리한다 | “관련된 모든 것”처럼 끝이 없음 |
 | 권한을 분리한다 | system/developer/project/user/tool/web evidence의 우선순위를 적는다 | 검색 결과나 tool output 안의 지시를 따라감 |
-| 컨텍스트는 패킷이다 | 필요한 자료, 출처, 날짜, 신뢰도, 누락 정보를 한 블록에 둔다 | 모델이 없는 정보를 추정함 |
+| 컨텍스트는 패킷이다 | 필요한 자료, 각 출처 자체의 날짜와 신뢰도, 누락 정보를 한 블록에 둔다. 출처의 날짜는 메타데이터이고, 현재 날짜는 변동값이라 꼬리에 둔다 | 모델이 없는 정보를 추정함 |
 | 출력은 계약이다 | 형식, 길이, 필드, 파일 경로, 언어, 금지 형식을 적는다 | 산출물이 매번 달라 후속 자동화가 깨짐 |
 | 검증이 끝이다 | 테스트/eval/source-check/review 기준을 완료 조건으로 둔다 | “완료”라고 했지만 증거가 없음 |
 
@@ -42,7 +42,6 @@
 확인 필요: [destructive, external, credential-gated, production 행동]
 
 ## Context Packet
-- 현재 날짜/시간대:
 - 관련 파일/문서/데이터:
 - 신뢰할 출처:
 - 불확실하거나 누락된 정보:
@@ -65,7 +64,13 @@
 - 통과 기준:
 - 실행할 테스트/eval/source-check:
 - 미검증 시 보고 방식:
+
+## 동적 꼬리(매 턴 마지막에 덧붙임 — 역할 계약 안에는 넣지 않음)
+- 현재 날짜/시간대:
+- 작업별 입력:
 ```
+
+꼬리는 턴마다 바뀌는 유일한 부분이며, 그 덕분에 나머지 프롬프트가 캐시 가능하게 유지된다([`../../cache/CACHE.ko.md`](../../cache/CACHE.ko.md) §2).
 
 ## 3. 작성 순서
 
@@ -92,7 +97,7 @@
 
 ```markdown
 # Role
-공식 문서 우선 리서처로서, 2026-06-02 기준 변동 가능 기술 주장을 검증 가능한 보고서로 정리한다.
+공식 문서 우선 리서처로서, 변동 가능 기술 주장을 검증 가능한 보고서로 정리한다.
 
 ## Scope
 - OpenAI, Anthropic, Google 공식 문서를 우선한다.
@@ -110,6 +115,8 @@
 - 6개 이상 reviewed source, 4개 이상 cited source.
 - 모든 non-obvious claim이 source ledger의 출처와 연결되어야 한다.
 ```
+
+`# Role` 블록에는 날짜와 기타 변동값을 두지 않아 접두부가 캐시 가능하게 유지한다. 기준 날짜와 현재 작업은 동적 꼬리로 전달한다([`../../cache/CACHE.ko.md`](../../cache/CACHE.ko.md) §2).
 
 ## 5. Reasoning 모델 지시법
 
@@ -169,18 +176,22 @@ Draft → Smoke eval → Failure diagnosis → Small patch → Re-run → Versio
 
 ## 9. Sources
 
-> 링크 확인 2026-07-29. OpenAI 문서는 `platform.openai.com`에서 `developers.openai.com/api`로, Google Cloud 프롬프트 문서는 Vertex AI 경로에서 Gemini Enterprise Agent Platform 경로로 이전됐다.
+> 링크 확인 2026-07-29. Mistral 프롬프트 문서 링크는 2026-09-19에 새 경로로 교체했다. OpenAI 문서는 `platform.openai.com`에서 `developers.openai.com/api`로, Google Cloud 프롬프트 문서는 Vertex AI 경로에서 Gemini Enterprise Agent Platform 경로로 이전됐다.
 
 - OpenAI Prompt engineering: https://developers.openai.com/api/docs/guides/prompt-engineering
 - OpenAI Reasoning best practices: https://developers.openai.com/api/docs/guides/reasoning-best-practices
-- OpenAI Prompt optimizer: https://developers.openai.com/api/docs/guides/prompt-optimizer
+- OpenAI Prompt optimizer(dataset 기반): https://developers.openai.com/api/docs/guides/prompt-optimizer — Evals 플랫폼과 함께 **폐기 예정**(2026-10-31 read-only, 2026-11-30 종료)
 - Anthropic Prompt engineering overview: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview
 - Anthropic Prompting best practices: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
 - Anthropic Define success criteria and build evaluations: https://platform.claude.com/docs/en/test-and-evaluate/develop-tests
 - Anthropic Reduce prompt leak: https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-prompt-leak
 - Google Cloud Prompt design strategies: https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/prompts/prompt-design-strategies
 - Google Cloud Prompt optimizer: https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/prompts/prompt-optimizer
-- Mistral Prompting: https://docs.mistral.ai/models/best-practices/prompt-engineering
+- Mistral Prompting: https://docs.mistral.ai/inference/prompting
 - Microsoft Azure OpenAI Prompt engineering techniques: https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/prompt-engineering
 
 로컬 재검증 캐시(미추적): `.hyper/research/2026-06-02-official-llm-prompt-instructions-update.md`, `.hyper/research/2026-07-29-instructions-base-source-refresh.md`. `.hyper/`는 `.gitignore` 대상이므로 다른 clone에서는 존재하지 않는다. 위 URL이 이 문서의 근거이며, 캐시 경로는 보조 자료일 뿐 근거를 대체하지 않는다.
+
+## 함께 읽을 문서
+
+- [`../../cache/CACHE.ko.md`](../../cache/CACHE.ko.md) — 프로바이더 프롬프트 캐시가 재사용하도록 프롬프트의 재사용 접두부를 안정적으로 유지한다

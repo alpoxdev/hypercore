@@ -12,7 +12,7 @@ This is the base method for writing a prompt that lets an AI understand a role c
 | Goal comes first | State what the user counts as success and what fails | Only "as well as possible" or "high quality" |
 | Scope must exist | Separate the read/modify/create/external-action boundary and non-goals | Endless scope such as "everything related" |
 | Separate authority | State the priority of system, developer, project, user, tool, and web evidence | The model follows instructions found inside search results or tool output |
-| Context is a packet | Put required material, source, date, trust grade, and missing information in one block | The model guesses information it does not have |
+| Context is a packet | Put required material, each source's own date and trust grade, and missing information in one block. A source's date is metadata; the current date is volatile and belongs in the tail | The model guesses information it does not have |
 | Output is a contract | State format, length, fields, file path, language, and forbidden formats | Artifacts differ every run and break downstream automation |
 | Verification is the end | Make tests, evals, source checks, and reviews the completion condition | It says "done" but there is no evidence |
 
@@ -42,7 +42,6 @@ On conflict: [which rule wins]
 Requires confirmation: [destructive, external, credential-gated, production actions]
 
 ## Context Packet
-- Current date/timezone:
 - Relevant files, documents, data:
 - Trusted sources:
 - Uncertain or missing information:
@@ -65,7 +64,13 @@ Requires confirmation: [destructive, external, credential-gated, production acti
 - Pass criteria:
 - Tests, evals, or source checks to run:
 - How to report when unverified:
+
+## Dynamic tail (appended last, per turn — never inside the role contract)
+- Current date/timezone:
+- Task-specific inputs:
 ```
+
+The tail is the only part that changes between turns, which is what keeps the rest of the prompt cacheable ([`../../cache/CACHE.md`](../../cache/CACHE.md) §2).
 
 ## 3. Authoring order
 
@@ -92,7 +97,7 @@ Problem: no success criteria, source grades, dates, scope, report format, or ver
 
 ```markdown
 # Role
-As an official-documentation-first researcher, compile volatile technical claims as of 2026-06-02 into a verifiable report.
+As an official-documentation-first researcher, compile volatile technical claims into a verifiable report.
 
 ## Scope
 - Prefer official documentation from OpenAI, Anthropic, and Google.
@@ -110,6 +115,8 @@ Write to `.hyper/research/[date]-[slug].md` including a source ledger, claim-sou
 - At least 6 reviewed sources and 4 cited sources.
 - Every non-obvious claim must link to a source in the ledger.
 ```
+
+Keep the `# Role` block free of dates and other volatile values so the prefix stays cacheable; pass the as-of date and the current task in the dynamic tail instead ([`../../cache/CACHE.md`](../../cache/CACHE.md) §2).
 
 ## 5. Instructing reasoning models
 
@@ -169,18 +176,22 @@ Draft -> Smoke eval -> Failure diagnosis -> Small patch -> Re-run -> Version not
 
 ## 9. Sources
 
-> Links checked 2026-07-29. OpenAI documentation moved from `platform.openai.com` to `developers.openai.com/api`, and Google Cloud prompt documentation moved from the Vertex AI path to the Gemini Enterprise Agent Platform path.
+> Links checked 2026-07-29; the Mistral prompting link was re-pointed to its new path on 2026-09-19. OpenAI documentation moved from `platform.openai.com` to `developers.openai.com/api`, and Google Cloud prompt documentation moved from the Vertex AI path to the Gemini Enterprise Agent Platform path.
 
 - OpenAI Prompt engineering: https://developers.openai.com/api/docs/guides/prompt-engineering
 - OpenAI Reasoning best practices: https://developers.openai.com/api/docs/guides/reasoning-best-practices
-- OpenAI Prompt optimizer: https://developers.openai.com/api/docs/guides/prompt-optimizer
+- OpenAI Prompt optimizer (dataset-backed): https://developers.openai.com/api/docs/guides/prompt-optimizer — **deprecated** with the Evals platform (read-only 2026-10-31, shutdown 2026-11-30)
 - Anthropic Prompt engineering overview: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview
 - Anthropic Prompting best practices: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
 - Anthropic Define success criteria and build evaluations: https://platform.claude.com/docs/en/test-and-evaluate/develop-tests
 - Anthropic Reduce prompt leak: https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-prompt-leak
 - Google Cloud Prompt design strategies: https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/prompts/prompt-design-strategies
 - Google Cloud Prompt optimizer: https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/prompts/prompt-optimizer
-- Mistral Prompting: https://docs.mistral.ai/models/best-practices/prompt-engineering
+- Mistral Prompting: https://docs.mistral.ai/inference/prompting
 - Microsoft Azure OpenAI Prompt engineering techniques: https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/prompt-engineering
 
 Local re-verification cache (untracked): `.hyper/research/2026-06-02-official-llm-prompt-instructions-update.md`, `.hyper/research/2026-07-29-instructions-base-source-refresh.md`. `.hyper/` is covered by `.gitignore` and does not exist in another clone. The URLs above are this document's evidence; the cache paths are supplementary and do not substitute for them.
+
+## Related documents
+
+- [`../../cache/CACHE.md`](../../cache/CACHE.md) — keep the reusable prefix of a prompt stable so provider prompt caching can serve it

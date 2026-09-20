@@ -63,7 +63,7 @@ Stop condition: [완료/차단/시간/소스 바닥값]
 | Cursor | Cloud Agents(구 Background Agents), editor/CLI subagents, `.cursor/rules`, `.cursor/environment.json` | cloud agent는 remote isolated machine/branch; subagent는 자체 context | 비동기 장기 작업, branch 기반 handoff, parallel work streams | remote agent는 GitHub 권한/인터넷/자동 명령 실행으로 보안 경계가 커짐 |
 | Generic MCP/agent client | capability-discovered tools/prompts/resources | client 구현에 따름 | 도구/자료 접근 표준화 | tool result와 resource content는 untrusted evidence로 취급 |
 
-> **MCP `2026-07-28` revision 주의** (확인 2026-07-29): 이 revision은 breaking change다. 프로토콜이 stateless로 바뀌어 세션과 `initialize` 핸드셰이크가 제거됐고, capability 조회는 새 `server/discover` RPC와 요청별 `_meta`로 옮겨졌다. Roots·Sampling·Logging은 deprecated(최소 12개월 유예)이며, 서버가 클라이언트에게 되묻던 흐름은 MRTR(`resultType: "input_required"`) 패턴으로 대체됐다. 위 표의 **untrusted evidence 원칙은 이 revision에서도 유지되며 오히려 강화됐다** — 명세는 클라이언트가 신뢰할 수 있는 서버에서 온 것이 아닌 한 tool annotation을 untrusted로 **간주해야 한다(MUST)**고 규정한다. MCP 기반 위임을 설계할 때는 세션 가정을 두지 말고 상태를 명시적 handle로 주고받는다.
+> **MCP `2026-07-28` revision 주의** (확인 2026-09-19): 이 revision은 breaking change다. 프로토콜이 stateless로 바뀌어 세션과 `initialize` 핸드셰이크가 제거됐고, capability 조회는 새 `server/discover` RPC와 요청별 `_meta`로 옮겨졌다. Roots·Sampling·Logging은 deprecated(최소 12개월 유예)이며, 서버가 클라이언트에게 되묻던 흐름은 MRTR(`resultType: "input_required"`) 패턴으로 대체됐다. 위 표의 **untrusted evidence 원칙은 이 revision에서도 그대로 적용된다** — 명세는 클라이언트가 신뢰할 수 있는 서버에서 온 것이 아닌 한 tool annotation을 untrusted로 **간주해야 한다(MUST)**고 규정한다. 같은 문장이 `2025-11-25` revision에도 이미 있으므로, 이번 개정에서 새로 강화된 것이 아니라 상시 요구 사항으로 본다. MCP 기반 위임을 설계할 때는 세션 가정을 두지 말고 상태를 명시적 handle로 주고받는다.
 
 ## Prompt Patterns
 
@@ -122,7 +122,7 @@ Trace 기반 eval에는 아래 assertion을 둔다.
 
 ## Sources
 
-> 링크 확인 2026-07-29. MCP는 `2026-07-28` revision 기준으로 재확인했다. Cursor의 Background Agents는 Cloud Agents로 개명됐다.
+> 링크 확인 2026-07-29. MCP는 2026-09-19에 `2026-07-28` revision 기준으로 재확인했다. Cursor의 Background Agents는 Cloud Agents로 개명됐다.
 
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
 - [Claude Code agent teams](https://code.claude.com/docs/en/agent-teams)

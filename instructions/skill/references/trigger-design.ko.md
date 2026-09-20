@@ -41,7 +41,7 @@ Trigger 예시는 **두 개의 직교하는 축**으로 만든다. 하나는 “
 | 발동 여부 | positive / negative / boundary | description이 옳은 요청에만 반응하는가 |
 | 호출 방식 | explicit / implicit / contextual / negative control | 이름 없이도 매칭되는가, 그리고 오발동하지 않는가 |
 
-호출 방식 축은 OpenAI skill eval 가이드(<https://developers.openai.com/blog/eval-skills>, 확인 2026-07-29)를 따른다.
+호출 방식 축은 OpenAI skill eval 가이드(<https://developers.openai.com/blog/eval-skills>, 확인 2026-09-19)에서 온다. 그 가이드의 표적 프롬프트 세트는 네 가지 호출 사례를 구분한다. **explicit invocation**, **implicit invocation**, **contextual invocation**, **negative control**이다. 이 저장소는 이를 아래 축으로 일반화해 쓴다.
 
 | 호출 방식 | 의미 | 예시 |
 |---|---|---|

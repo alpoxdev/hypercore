@@ -134,19 +134,19 @@ metrics:
 
 ## Sources
 
-> 링크 확인 2026-07-29. 다음 재검증 2026-10-29.
+> 링크 확인 2026-07-29. 링크 사용 가능 여부는 2026-09-19에 재확인했다. 다음 재검증 2026-10-29.
 
 | 주장 | 출처 |
 |---|---|
-| OpenAI evaluation best practices와 Evals API | <https://developers.openai.com/api/docs/guides/evals> |
-| OpenAI Prompt optimizer | <https://developers.openai.com/api/docs/guides/prompt-optimizer> |
+| OpenAI Evals API와 문서화된 평가 workflow. **폐기 예정**: 기존 사용자 대상 2026-10-31 read-only, 플랫폼 종료 2026-11-30 예정. 문서화된 후속은 Datasets | <https://developers.openai.com/api/docs/guides/evals> |
+| OpenAI dataset 기반 prompt optimizer. Evals 플랫폼과 같은 일정으로 **폐기 예정** | <https://developers.openai.com/api/docs/guides/prompt-optimizer> |
 | OpenAI agent workflow 평가 — trace grading에서 시작해 dataset/eval run으로 확장 | <https://developers.openai.com/api/docs/guides/agent-evals> |
 | Anthropic 성공 기준(구체적·측정 가능·달성 가능·관련성)과 eval 구축 | <https://platform.claude.com/docs/en/test-and-evaluate/develop-tests> |
 | Google Vertex Gen AI evaluation — 프롬프트마다 pass/fail 기준을 생성하는 adaptive rubrics | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/evaluation-overview> |
 | adaptive rubric 세부 메트릭(`INSTRUCTION_FOLLOWING`, `TEXT_QUALITY` 등) | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/rubric-metric-details> |
-| LangSmith evaluation — dataset + target function + evaluator 3요소, offline/online 평가 유형 | <https://docs.langchain.com/langsmith/evaluation>, <https://docs.langchain.com/langsmith/evaluation-types> |
+| LangSmith evaluation — dataset + evaluators + experiment workflow, offline/online 평가 유형 | <https://docs.langchain.com/langsmith/evaluation>, <https://docs.langchain.com/langsmith/evaluation-types> |
 | Promptfoo LLM-as-a-judge — 모델이 rubric으로 채점하고 pass/score/reason을 반환 | <https://www.promptfoo.dev/docs/guides/llm-as-a-judge/> |
-| Promptfoo red teaming — 적대적 입력 생성, RAG/agent/MCP 대상 가이드 | <https://www.promptfoo.dev/docs/red-team/> |
+| Promptfoo red teaming — 적대적 입력 생성, RAG/agent 대상 가이드 | <https://www.promptfoo.dev/docs/red-team/> |
 | Google Responsible GenAI 안전 평가 | <https://ai.google.dev/responsible> |
 | OpenAI skill eval 4축(outcome / process / style / efficiency) | <https://developers.openai.com/blog/eval-skills> |
 

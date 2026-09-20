@@ -24,7 +24,7 @@ Skill은 다음을 동시에 만족해야 한다.
 
 ## 공식 근거 요약
 
-> 아래 출처는 2026-07-29 확인 기준이다. OpenAI Codex skill 문서는 `developers.openai.com/codex/skills`에서 `learn.chatgpt.com/docs/build-skills`로 이전됐다.
+> 아래 출처는 2026-07-29 확인 기준이며, 링크 사용 가능 여부는 2026-09-19에 재확인했다. OpenAI Codex skill 문서는 `developers.openai.com/codex/skills`에서 `learn.chatgpt.com/docs/build-skills`로 이전됐다.
 
 - OpenAI Codex는 skill을 지시문, 리소스, 선택적 스크립트를 묶어 Codex가 workflow를 안정적으로 따르도록 하는 reusable authoring format으로 설명한다. skill은 저장소 `.agents/skills`, 사용자 `$HOME/.agents/skills`, 관리자 `/etc/codex/skills`, 번들 순으로 탐색되며, 호출은 ChatGPT에서 `@skill-name`, Codex/IDE에서 `$skill-name`이다. 목록 단계에서는 name과 description만 로드되고 그 예산은 컨텍스트의 2% 또는 8,000자다. <https://learn.chatgpt.com/docs/build-skills>
 - OpenAI API Skills 문서는 skill을 open Agent Skills standard와 호환되는 versioned bundle로 설명하고, prompt injection과 exfiltration 리스크 때문에 skill을 privileged instruction/code처럼 다루라고 경고한다. <https://developers.openai.com/api/docs/guides/tools-skills>

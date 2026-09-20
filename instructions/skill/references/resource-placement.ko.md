@@ -145,3 +145,4 @@ references/
 - [ ] scripts/assets는 usage와 validation이 있다.
 - [ ] provider-sensitive content는 references에 격리되어 있다.
 - [ ] prompt templates, eval fixtures, source ledgers, safety notes가 prose/reference/asset/script 중 올바른 위치에 있다.
+- [ ] 모든 세션에 로드되는 내용이 로드되는 머리에 변동값(날짜, 버전, 개수, 머신별 경로)을 두지 않는다 — [`../../cache/CACHE.ko.md`](../../cache/CACHE.ko.md) 참고.

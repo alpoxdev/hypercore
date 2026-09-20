@@ -134,19 +134,19 @@ A parallel-implementation eval includes at least one "same-file conflict" case a
 
 ## Sources
 
-> Links checked 2026-07-29. Next re-verification 2026-10-29.
+> Links checked 2026-07-29; link resolution re-checked 2026-09-19. Next re-verification 2026-10-29.
 
 | Claim | Source |
 |---|---|
-| OpenAI evaluation best practices and the Evals API | <https://developers.openai.com/api/docs/guides/evals> |
-| OpenAI Prompt optimizer | <https://developers.openai.com/api/docs/guides/prompt-optimizer> |
+| OpenAI Evals API and the documented evaluation workflow. **Deprecated**: read-only for existing users on 2026-10-31, platform shutdown scheduled 2026-11-30; Datasets is the documented successor | <https://developers.openai.com/api/docs/guides/evals> |
+| OpenAI dataset-backed prompt optimizer. **Deprecated** with the Evals platform on the same timeline | <https://developers.openai.com/api/docs/guides/prompt-optimizer> |
 | OpenAI agent workflow evaluation — start with trace grading, expand to datasets and eval runs | <https://developers.openai.com/api/docs/guides/agent-evals> |
 | Anthropic success criteria (specific, measurable, achievable, relevant) and eval construction | <https://platform.claude.com/docs/en/test-and-evaluate/develop-tests> |
 | Google Vertex Gen AI evaluation — adaptive rubrics that generate pass/fail criteria per prompt | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/evaluation-overview> |
 | Adaptive rubric metric details (`INSTRUCTION_FOLLOWING`, `TEXT_QUALITY`, and others) | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/rubric-metric-details> |
-| LangSmith evaluation — the dataset + target function + evaluator triad, and offline/online evaluation types | <https://docs.langchain.com/langsmith/evaluation>, <https://docs.langchain.com/langsmith/evaluation-types> |
+| LangSmith evaluation — the dataset + evaluators + experiment workflow, and offline/online evaluation types | <https://docs.langchain.com/langsmith/evaluation>, <https://docs.langchain.com/langsmith/evaluation-types> |
 | Promptfoo LLM-as-a-judge — a model grades against a rubric and returns pass, score, and reason | <https://www.promptfoo.dev/docs/guides/llm-as-a-judge/> |
-| Promptfoo red teaming — adversarial input generation, with guides for RAG, agents, and MCP | <https://www.promptfoo.dev/docs/red-team/> |
+| Promptfoo red teaming — adversarial input generation, with guides for RAG and agents | <https://www.promptfoo.dev/docs/red-team/> |
 | Google Responsible GenAI safety evaluation | <https://ai.google.dev/responsible> |
 | OpenAI skill eval axes (outcome / process / style / efficiency) | <https://developers.openai.com/blog/eval-skills> |
 

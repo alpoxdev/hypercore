@@ -159,7 +159,7 @@ Collect failures -> Draft contract -> Build eval set -> Run baseline/readback ->
 
 ## 10. Sources
 
-> 링크 확인 2026-07-29. OpenAI Codex 문서는 `developers.openai.com/codex/*`에서 `learn.chatgpt.com/docs/*`로 이전됐다.
+> 링크 확인 2026-07-29. 링크 사용 가능 여부는 2026-09-19에 재확인했다. OpenAI Codex 문서는 `developers.openai.com/codex/*`에서 `learn.chatgpt.com/docs/*`로 이전됐다.
 
 - OpenAI Codex Agent Skills: <https://learn.chatgpt.com/docs/build-skills>
 - OpenAI API Skills: <https://developers.openai.com/api/docs/guides/tools-skills>

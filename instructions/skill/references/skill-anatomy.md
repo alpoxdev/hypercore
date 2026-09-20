@@ -30,7 +30,7 @@ compatibility: Optional runtime/dependency requirements.
 
 ### Spec fields and constraints
 
-Per the Agent Skills specification (<https://agentskills.io/specification>, checked 2026-07-29).
+Per the Agent Skills specification (<https://agentskills.io/specification>, checked 2026-09-19).
 
 | Field | Required | Constraint |
 |---|---|---|

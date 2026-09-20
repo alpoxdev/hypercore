@@ -145,3 +145,4 @@ references/
 - [ ] Scripts and assets have usage and validation.
 - [ ] Provider-sensitive content is isolated in references.
 - [ ] Prompt templates, eval fixtures, source ledgers, and safety notes each sit in the correct place among prose, reference, asset, and script.
+- [ ] Content that loads into every session keeps volatile values (dates, versions, counts, machine paths) out of its loaded head — see [`../../cache/CACHE.md`](../../cache/CACHE.md).

@@ -84,5 +84,5 @@ Define → Test → Diagnose → Patch → Re-run → Document
 ## Related
 
 - [`prompt-authoring.ko.md`](prompt-authoring.ko.md): 역할 수행 프롬프트 작성 템플릿
-- 공식 출처는 [`../CONTEXT_ENGINEERING.ko.md`](../CONTEXT_ENGINEERING.ko.md#sources)의 Sources 표를 따른다 (확인 2026-07-29).
+- 공식 출처는 [`../CONTEXT_ENGINEERING.ko.md`](../CONTEXT_ENGINEERING.ko.md#sources)의 Sources 표를 따른다 (확인 2026-07-29, 링크 사용 가능 여부는 2026-09-19에 재확인).
 - 로컬 재검증 캐시(미추적, `.gitignore` 대상): `.hyper/research/2026-06-02-official-llm-prompt-instructions-update.md`

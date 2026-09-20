@@ -30,7 +30,7 @@ compatibility: Optional runtime/dependency requirements.
 
 ### Spec 필드와 제약
 
-Agent Skills specification(<https://agentskills.io/specification>, 확인 2026-07-29) 기준이다.
+Agent Skills specification(<https://agentskills.io/specification>, 확인 2026-09-19) 기준이다.
 
 | 필드 | 필수 | 제약 |
 |---|---|---|
