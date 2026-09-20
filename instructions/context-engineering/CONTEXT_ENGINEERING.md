@@ -94,7 +94,7 @@ Write a role prompt in the following order. Follow [`references/prompt-authoring
 
 ## Sources
 
-> Links checked 2026-07-29. Next re-verification 2026-10-29.
+> Links checked 2026-07-29; link resolution re-checked 2026-09-19. Next re-verification 2026-10-29.
 
 | Claim | Source |
 |---|---|
@@ -107,7 +107,7 @@ Write a role prompt in the following order. Follow [`references/prompt-authoring
 | GitHub Copilot repository / path-specific (`applyTo`) / agent instructions and precedence (personal > repository > organization) | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> |
 | MCP security principles and the prompt/tool boundary. Clients **MUST** treat tool annotations as untrusted unless they come from a trusted server | <https://modelcontextprotocol.io/specification/2026-07-28> |
 | MCP `2026-07-28` breaking changes (stateless transition, `server/discover`, MRTR, Roots/Sampling/Logging deprecation) | <https://modelcontextprotocol.io/specification/2026-07-28/changelog> |
-| OpenAI evaluation guidance | <https://developers.openai.com/api/docs/guides/evals>, <https://developers.openai.com/api/docs/guides/agent-evals> |
+| OpenAI evaluation guidance. The Evals platform is **deprecated** (read-only 2026-10-31, shutdown 2026-11-30; Datasets is the successor), while the agent-evals guidance is current | <https://developers.openai.com/api/docs/guides/evals>, <https://developers.openai.com/api/docs/guides/agent-evals> |
 | Anthropic success-criteria definition and eval construction | <https://platform.claude.com/docs/en/test-and-evaluate/develop-tests> |
 | Google Vertex Gen AI evaluation adaptive rubrics | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/evaluation-overview> |
 | LangSmith evaluation datasets/evaluators | <https://docs.langchain.com/langsmith/evaluation> |

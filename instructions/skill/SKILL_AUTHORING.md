@@ -24,7 +24,7 @@ A skill must satisfy all of the following at once.
 
 ## Summary of official evidence
 
-> Sources below were checked on 2026-07-29. The OpenAI Codex skill documentation moved from `developers.openai.com/codex/skills` to `learn.chatgpt.com/docs/build-skills`.
+> Sources below were checked on 2026-07-29; their link resolution was re-checked on 2026-09-19. The OpenAI Codex skill documentation moved from `developers.openai.com/codex/skills` to `learn.chatgpt.com/docs/build-skills`.
 
 - OpenAI Codex describes a skill as a reusable authoring format bundling instructions, resources, and optional scripts so Codex follows a workflow reliably. Skills are discovered in order: repository `.agents/skills`, user `$HOME/.agents/skills`, admin `/etc/codex/skills`, then bundled. Invocation is `@skill-name` in ChatGPT and `$skill-name` in Codex/IDE. At the listing stage only name and description load, budgeted at 2% of context or 8,000 characters. <https://learn.chatgpt.com/docs/build-skills>
 - The OpenAI API Skills guide describes a skill as a versioned bundle compatible with the open Agent Skills standard, and warns that skills must be treated as privileged instructions and code because of prompt injection and exfiltration risk. <https://developers.openai.com/api/docs/guides/tools-skills>

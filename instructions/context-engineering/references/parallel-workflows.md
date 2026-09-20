@@ -63,7 +63,7 @@ Stop condition: [done, blocked, time budget, or source floor]
 | Cursor | Cloud Agents (formerly Background Agents), editor/CLI subagents, `.cursor/rules`, `.cursor/environment.json` | A cloud agent runs on a remote isolated machine and branch; a subagent gets its own context | Asynchronous long-running work, branch-based handoff, parallel work streams | A remote agent widens the security boundary through GitHub permissions, internet access, and automatic command execution |
 | Generic MCP/agent client | Capability-discovered tools, prompts, and resources | Depends on the client implementation | Standardizing tool and material access | Treat tool results and resource content as untrusted evidence |
 
-> **Caution on the MCP `2026-07-28` revision** (checked 2026-07-29): this revision is a breaking change. The protocol became stateless, removing sessions and the `initialize` handshake, and capability lookup moved to the new `server/discover` RPC and per-request `_meta`. Roots, Sampling, and Logging are deprecated (with a minimum 12-month window), and the flow where a server asked the client back is replaced by the MRTR pattern (`resultType: "input_required"`). The **untrusted-evidence principle in the table above holds in this revision and is in fact strengthened** — the specification states that clients **MUST** consider tool annotations untrusted unless they come from a trusted server. When designing MCP-based delegation, assume no session and pass state through explicit handles.
+> **Caution on the MCP `2026-07-28` revision** (checked 2026-09-19): this revision is a breaking change. The protocol became stateless, removing sessions and the `initialize` handshake, and capability lookup moved to the new `server/discover` RPC and per-request `_meta`. Roots, Sampling, and Logging are deprecated (with a minimum 12-month window), and the flow where a server asked the client back is replaced by the MRTR pattern (`resultType: "input_required"`). The **untrusted-evidence principle in the table above continues to apply in this revision** — the specification states that clients **MUST** consider tool annotations untrusted unless they come from a trusted server. The same sentence already appears in the `2025-11-25` revision, so treat it as a standing requirement rather than a change introduced here. When designing MCP-based delegation, assume no session and pass state through explicit handles.
 
 ## Prompt patterns
 
@@ -122,7 +122,7 @@ Include the following assertions in a trace-based eval.
 
 ## Sources
 
-> Links checked 2026-07-29. MCP was re-verified against the `2026-07-28` revision. Cursor's Background Agents were renamed Cloud Agents.
+> Links checked 2026-07-29; MCP was re-verified on 2026-09-19 against the `2026-07-28` revision. Cursor's Background Agents were renamed Cloud Agents.
 
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
 - [Claude Code agent teams](https://code.claude.com/docs/en/agent-teams)

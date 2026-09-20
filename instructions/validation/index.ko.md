@@ -111,6 +111,7 @@ Prompt나 instruction 문서를 변경했다면 완료 전 아래를 확인한�
 - [ ] 최소 smoke eval 또는 문서 lint/source-check를 실행했다. `instructions/**`를 바꿨다면 `bash scripts/check-sources.sh`로 링크 이전·확인일 형식·문서 길이를 검사한다(릴리스 게이트는 `--strict`).
 - [ ] known-failure나 edge case가 있으면 최소 1개 이상 재실행했다.
 - [ ] 새 문서가 README 또는 loading map에서 발견 가능하다.
+- [ ] `X.md`와 `X.ko.md` 쌍이 동일한 계약을 담는다.
 
 프롬프트/instruction eval 설계는 [`references/evaluation-design.ko.md`](references/evaluation-design.ko.md)를 따른다.
 

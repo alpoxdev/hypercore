@@ -12,7 +12,7 @@ Autoresearch는 각 시도를 비교할 수 있고, 소유한 상태 안에서 �
 | Scope | 소유한 path/resource와 제외 범위를 선언한다. 기존 변경은 명시적으로 할당되지 않는 한 사용자 소유다. |
 | Metric | 측정 결과, 방향, 비교 규칙, evidence 형태를 정의한다. |
 | Verify | 실제 결과를 충실하게 측정하거나 평가하는 procedure를 실행한다. |
-| Guard | 파일을 변경하는 loop에서는 필수다. 개선 decision과 독립적으로 판정하고, 적용할 guard가 없으면 이유를 기록한다. |
+| Guard | 상태나 resource를 변경하는 mutating loop에서는 필수다. 개선 decision과 독립적으로 판정하고, 적용할 guard가 없으면 이유를 기록한다. |
 | Budget | iteration을 제한하고, 필요하면 wall time, cost, resource도 제한한다. |
 | Log | invalid, blocked, failed, tied, inconclusive 결과를 포함해 모든 시도를 기록한다. |
 | Decision | evidence가 사전 정의한 acceptance rule을 만족하고 모든 mandatory guard가 통과할 때만 frontier를 전진시킨다. |

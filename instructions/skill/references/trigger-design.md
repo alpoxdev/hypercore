@@ -41,7 +41,7 @@ Build trigger examples along **two orthogonal axes**. One is "should it activate
 | Activation | positive / negative / boundary | Whether the description responds only to the right requests |
 | Invocation mode | explicit / implicit / contextual / negative control | Whether it matches without the name, and does not misfire |
 
-The invocation-mode axis follows OpenAI's skill eval guide (<https://developers.openai.com/blog/eval-skills>, checked 2026-07-29).
+The invocation-mode axis comes from OpenAI's skill eval guide (<https://developers.openai.com/blog/eval-skills>, checked 2026-09-19), whose targeted prompt set distinguishes four invocation cases: **explicit invocation**, **implicit invocation**, **contextual invocation**, and **negative control**. This repository generalizes them into the axis below.
 
 | Invocation mode | Meaning | Example |
 |---|---|---|

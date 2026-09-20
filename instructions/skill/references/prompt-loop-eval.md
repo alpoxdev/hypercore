@@ -159,7 +159,7 @@ Collect failures -> Draft contract -> Build eval set -> Run baseline/readback ->
 
 ## 10. Sources
 
-> Links checked 2026-07-29. OpenAI Codex documentation moved from `developers.openai.com/codex/*` to `learn.chatgpt.com/docs/*`.
+> Links checked 2026-07-29; link resolution re-checked 2026-09-19. OpenAI Codex documentation moved from `developers.openai.com/codex/*` to `learn.chatgpt.com/docs/*`.
 
 - OpenAI Codex Agent Skills: <https://learn.chatgpt.com/docs/build-skills>
 - OpenAI API Skills: <https://developers.openai.com/api/docs/guides/tools-skills>
