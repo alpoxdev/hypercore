@@ -2,7 +2,7 @@
 # check-sources.sh — instructions/ 문서의 출처 무결성 검사
 #
 # 검사 항목
-#   1. link   (네트워크) 인용 URL이 이전(3xx)되지 않았는가
+#   1. link   (네트워크) 인용 URL이 이전(3xx)되지 않았는가. 예시 URL과 코드 블록 안의 URL은 제외한다
 #   2. date   (오프라인) `확인 YYYY-MM-DD` 표기가 실재하는 ISO 날짜인가
 #   3. lines  (오프라인) 문서가 300줄 이내인가
 #
@@ -49,10 +49,50 @@ fi
 LINK_SCOPE="instructions"
 DOC_SCOPE="instructions"
 
+# 이 저장소의 인용은 Sources 표나 본문 인라인 링크로 적고, 코드 블록 안에는 예시 명령·설정값을 적는다.
+# 따라서 코드 블록을 걷어낸 본문만 인용으로 보고 링크를 검사한다.
+# CommonMark의 fenced code block을 따른다: 최대 3칸 들여쓰기, ``` 또는 ~~~ fence.
+strip_fences() {
+  if [ -d "$1" ]; then
+    find "$1" -name '*.md' -type f -exec awk 'FNR==1{f=0; c=""} match($0,/^ {0,3}(```+|~~~+)/){m=substr($0,RSTART,RLENGTH); gsub(/ /,"",m); if(f==0){f=1;c=substr(m,1,1)} else if(substr(m,1,1)==c){f=0;c=""}; next} !f' {} +
+  else
+    awk 'BEGIN{f=0; c=""} match($0,/^ {0,3}(```+|~~~+)/){m=substr($0,RSTART,RLENGTH); gsub(/ /,"",m); if(f==0){f=1;c=substr(m,1,1)} else if(substr(m,1,1)==c){f=0;c=""}; next} !f' "$1" 2>/dev/null
+  fi
+}
+
 collect_urls() {
-  grep -rhoE 'https?://[^ )>,`"]+' "$1" 2>/dev/null \
+  strip_fences "$1" \
+    | grep -hioE 'https?://[^ )>,`"]+' \
     | sed -E 's/[.,:;]+$//' \
+    | grep -vE "$PLACEHOLDER_RE" \
     | sort -u
+}
+
+# fence를 걷어내지 않고 모은 URL. 인용으로 보지 않는 대상을 드러내는 데 쓴다.
+all_urls() {
+  grep -rhioE 'https?://[^ )>,`"]+' "$1" 2>/dev/null \
+    | sed -E 's/[.,:;]+$//' \
+    | grep -vE "$PLACEHOLDER_RE" \
+    | sort -u
+}
+
+# 검사에서 빠지는 URL = 전체 - 검사 대상. 조용히 사라지지 않도록 보고한다.
+fence_skipped_urls() {
+  comm -23 <(all_urls "$1") <(collect_urls "$1")
+}
+
+# 문서 안의 예시 URL은 인용이 아니므로 링크 검사에서 제외한다.
+# RFC 2606이 문서용으로 예약한 example.com/.net/.org, *.example, 그리고 루프백(localhost, 127/8, IPv6 ::1)만 해당한다.
+# .invalid는 self-test가 죽은 URL로 쓰므로 제외하지 않는다.
+PLACEHOLDER_RE='^https?://(localhost|127\.[0-9]+\.[0-9]+\.[0-9]+|\[::1\]|([a-z0-9-]+\.)*example\.(com|org|net)|([a-z0-9-]+\.)*example)([:/]|$)'
+
+count_placeholders() {
+  grep -rhioE 'https?://[^ )>,`"]+' "$1" 2>/dev/null \
+    | sed -E 's/[.,:;]+$//' \
+    | grep -iE "$PLACEHOLDER_RE" \
+    | sort -u \
+    | wc -l \
+    | tr -d ' '
 }
 
 is_real_date() {
@@ -73,7 +113,20 @@ is_real_date() {
 # ---------------------------------------------------------------------------
 check_links() {
   echo "== 검사 1: 링크 이전 여부 (${LINK_SCOPE}) =="
-  local moved=0 total=0 url code final
+  local moved=0 total=0 url code final placeholders
+  placeholders=$(count_placeholders "$LINK_SCOPE")
+  if [ "$placeholders" -gt 0 ]; then
+    echo "  -- 예시 URL ${placeholders}개 제외 (RFC 2606 문서용 도메인·루프백)"
+  fi
+  skipped=$(fence_skipped_urls "$LINK_SCOPE")
+  skipped_n=$(printf '%s\n' "$skipped" | grep -c . || true)
+  if [ "${skipped_n:-0}" -gt 0 ]; then
+    echo "  -- 코드 블록 안 URL ${skipped_n}개는 인용으로 보지 않고 건너뜀 (검사 밖):"
+    printf '%s\n' "$skipped" | head -3 | sed 's/^/       /'
+    if [ "$skipped_n" -gt 3 ]; then
+      echo "       ... 나머지 $((skipped_n - 3))개"
+    fi
+  fi
   while IFS= read -r url; do
     [ -z "$url" ] && continue
     total=$((total + 1))
@@ -124,10 +177,10 @@ check_dates() {
       printf '  BADDATE  %s  -> %s\n' "$file" "$date_str"
       bad=$((bad + 1))
     fi
-  done < <(grep -rn '확인 ' "$DOC_SCOPE" 2>/dev/null | grep -E '확인 [0-9]')
+  done < <(grep -rnE '(확인|checked) [0-9]' "$DOC_SCOPE" 2>/dev/null)
 
   if [ "$found" -eq 0 ]; then
-    echo "  FAIL - 확인일 표기가 하나도 없습니다."
+    echo "  FAIL - 확인일 표기(확인/checked)가 하나도 없습니다."
     return 1
   fi
   if [ "$bad" -eq 0 ]; then
@@ -219,9 +272,85 @@ run_self_test() {
   DOC_SCOPE="instructions"
   rm -f "$probe"
 
+  # (4b) 영어 표기 확인일 — 잘못된 영어 날짜도 검출해야 한다
+  printf '# selftest\n\n출처 (checked 2026-13-45)\n' > "$probe"
+  DOC_SCOPE="$probe"
+  if check_dates >/dev/null 2>&1; then
+    echo "  FAIL  영어 표기 확인일의 잘못된 날짜를 놓쳤습니다"; failures=$((failures + 1))
+  else
+    echo "  PASS  영어 표기 확인일의 잘못된 날짜를 검출했습니다"
+  fi
+  DOC_SCOPE="instructions"
+  rm -f "$probe"
+
+  echo
+
+  # (5) 예시 URL 제외 — 예시만 있으면 실패하지 않아야 한다
+  printf '# selftest\n\nhttps://example.com/SKILL.md\nhttp://127.0.0.1:8080\n' > "$probe"
+  LINK_SCOPE="$probe"
+  if check_links >/dev/null 2>&1; then
+    echo "  PASS  예시 URL을 링크 검사에서 제외했습니다"
+  else
+    echo "  FAIL  예시 URL을 죽은 링크로 오탐했습니다"; failures=$((failures + 1))
+  fi
+  LINK_SCOPE="instructions"
+  rm -f "$probe"
+
+  echo
+
+  # (6) 디렉터리 범위 — 코드 블록 처리가 디렉터리 수집을 깨뜨리지 않아야 한다
+  local probe_dir="instructions/__selftest_dir__"
+  mkdir -p "$probe_dir"
+  # shellcheck disable=SC2016  # Markdown fence를 리터럴로 넣는다(확장 의도 없음)
+  printf '# selftest\n\n```bash\nhttps://example.com/example-only\n```\n\nhttps://example.invalid/in-a-directory\n' > "$probe_dir/probe.md"
+  LINK_SCOPE="$probe_dir"
+  if check_links >/dev/null 2>&1; then
+    echo "  FAIL  디렉터리 범위에서 죽은 URL을 놓쳤습니다"; failures=$((failures + 1))
+  else
+    echo "  PASS  디렉터리 범위에서도 죽은 URL을 검출했습니다"
+  fi
+  rm -rf "$probe_dir"
+  LINK_SCOPE="instructions"
+
+  echo
+
+  # (7) fence 형태 — ~~~와 들여쓴 ``` 안의 URL도 제외해야 한다
+  # shellcheck disable=SC2016  # Markdown fence를 리터럴로 넣는다(확장 의도 없음)
+  printf '# selftest\n\n~~~bash\nhttps://example.invalid/tilde-fence\n~~~\n\n   ```bash\n   https://example.invalid/indented-fence\n   ```\n\nhttps://example.invalid/outside-fence\n' > "$probe"
+  LINK_SCOPE="$probe"
+  out=$(check_links 2>&1 || true)
+  # 검사 결과 줄(DEAD/MOVED/STATUS)만 본다. advisory 목록은 제외 대상이므로 판정에서 뺀다.
+  verdicts=$(printf '%s\n' "$out" | grep -E '^  (DEAD|MOVED|STATUS|BADDATE)' || true)
+  if printf '%s' "$verdicts" | grep -q 'outside-fence' && ! printf '%s' "$verdicts" | grep -q 'tilde-fence' && ! printf '%s' "$verdicts" | grep -q 'indented-fence'; then
+    echo "  PASS  ~~~와 들여쓴 fence를 인식했습니다"
+  else
+    echo "  FAIL  fence 형태를 잘못 인식했습니다"; failures=$((failures + 1))
+  fi
+  # 건너뛴 URL은 advisory로 보고되어야 한다(조용한 제외 금지)
+  if printf '%s' "$out" | grep -q '건너뜀' && printf '%s' "$out" | grep -q 'tilde-fence'; then
+    echo "  PASS  건너뛴 URL을 advisory로 보고했습니다"
+  else
+    echo "  FAIL  건너뛴 URL이 조용히 사라졌습니다"; failures=$((failures + 1))
+  fi
+  LINK_SCOPE="instructions"
+  rm -f "$probe"
+
+  echo
+
+  # (8) 대문자 URL 스킴도 수집해야 한다
+  printf '# selftest\n\n출처: HTTPS://example.invalid/uppercase-scheme\n' > "$probe"
+  LINK_SCOPE="$probe"
+  if check_links >/dev/null 2>&1; then
+    echo "  FAIL  대문자 URL 스킴을 놓쳤습니다"; failures=$((failures + 1))
+  else
+    echo "  PASS  대문자 URL 스킴도 검출했습니다"
+  fi
+  LINK_SCOPE="instructions"
+  rm -f "$probe"
+
   echo
   if [ "$failures" -eq 0 ]; then
-    echo "self-test 통과 - 4개 케이스 모두 기대대로 동작합니다."
+    echo "self-test 통과 - 10개 케이스 모두 기대대로 동작합니다."
     return 0
   fi
   echo "self-test 실패 - ${failures}개 케이스가 기대와 다릅니다."

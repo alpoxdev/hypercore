@@ -11,10 +11,12 @@
     "test:vercel-skills:live": "HYPERCORE_ENABLE_VERCEL_SKILLS_LIVE_GATE=1 bun test tests/vercel-skills-lifecycle.test.mjs",
     "validate:vercel-skills:registry": "HYPERCORE_ENABLE_VERCEL_SKILLS_LIVE_GATE=1 node validate-vercel-skills.mjs --live",
     "validate:vercel-skills:live": "bun run test:vercel-skills:live && bun run validate:vercel-skills:registry",
-    "verify": "bun run checkjs && bun run test && bun run validate && bun run validate:vercel-skills"
+    "verify": "bun run checkjs && bun run test && bun run validate && bun run validate:vercel-skills",
+    "lint:sh": "shellcheck check-sources.sh"
   },
   "devDependencies": {
     "@types/bun": "1.3.5",
+    "bash-language-server": "^5.8.0",
     "typescript": "5.9.3"
   }
 }
