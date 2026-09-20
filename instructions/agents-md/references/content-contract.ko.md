@@ -131,12 +131,12 @@ Claude 5 세대에 대한 현재 Anthropic 지침은 과도한 제약을 경고�
 
 | 출처 | URL | 확인일 |
 |---|---|---|
-| Anthropic — Claude Code best practices | <https://www.anthropic.com/engineering/claude-code-best-practices> | 확인 2026-08-04 |
-| Anthropic — effective context engineering | <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> | 확인 2026-08-04 |
-| Claude Code memory 문서 | <https://code.claude.com/docs/en/memory> | 확인 2026-08-04 |
-| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 확인 2026-08-04 |
-| New rules of context engineering (Claude 5) | <https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models> | 확인 2026-08-04 |
-| GitHub Copilot response customization | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 확인 2026-08-04 |
+| Anthropic — Claude Code best practices | <https://code.claude.com/docs/en/best-practices> | 확인 2026-09-19 |
+| Anthropic — effective context engineering | <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> | 확인 2026-09-19 |
+| Claude Code memory 문서 | <https://code.claude.com/docs/en/memory> | 확인 2026-09-19 |
+| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 확인 2026-09-19 |
+| New rules of context engineering (Claude 5) | <https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models> | 확인 2026-09-19 |
+| GitHub Copilot response customization | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 확인 2026-09-19 |
 
 ## 함께 읽을 문서
 

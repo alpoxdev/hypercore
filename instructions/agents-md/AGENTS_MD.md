@@ -27,7 +27,7 @@ The format imposes nothing else — "AGENTS.md is just standard Markdown. Use an
 1. **A bad file is worse than no file.** Measured across 138 AGENTbench and 300 SWE-bench Lite tasks: "Context files tend to reduce task success rates compared to providing no repository context, while also increasing inference cost by over 20%." Only developer-written, minimal files showed a gain (~4%); LLM-generated comprehensive files showed a loss.
 2. **The reliable benefit is cost, not correctness.** A paired study over 124 PRs found ~28.6% lower median runtime and ~16.6% fewer output tokens with a root `AGENTS.md` — while explicitly excluding correctness from scope.
 3. **"Closest file wins" is mostly false.** Codex concatenates root-to-leaf, Claude Code concatenates "rather than overriding each other", Cursor combines with parents. Only Copilot matches the simple reading. Nested files must be correct under both semantics.
-4. **Claude Code does not read `AGENTS.md`.** "Claude Code reads `CLAUDE.md`, not `AGENTS.md`." A repository shipping only `AGENTS.md` gives Claude Code nothing.
+4. **Claude Code reads `AGENTS.md` directly from v2.1.277 on.** A repository shipping only `AGENTS.md` gives Claude Code its instructions with no `CLAUDE.md`, no import, and no setting. Two conditions still matter: a `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` at or above the working directory suppresses `AGENTS.md` under the default **Project instructions** setting, and sessions where `AGENTS.md` support is unavailable read `CLAUDE.md` only ([`references/discovery-and-precedence.md`](references/discovery-and-precedence.md) §2 lists all four conditions).
 5. **Size is a hard limit in one runtime.** Codex "stops adding files once the combined size reaches the limit defined by `project_doc_max_bytes` (32 KiB by default)" — root-to-leaf, so a bloated root file can silently starve the nested file that actually governs the code being edited.
 
 Detail and citations: [`references/evidence-and-evaluation.md`](references/evidence-and-evaluation.md) and [`references/discovery-and-precedence.md`](references/discovery-and-precedence.md).
@@ -100,10 +100,11 @@ Add a nested file only when a subtree genuinely differs in commands, ownership, 
 
 ## Coordinating with CLAUDE.md
 
-Default to one canonical `AGENTS.md`. Add `CLAUDE.md` only when Claude Code is a target or a real Claude-only difference exists.
+Default to one canonical `AGENTS.md`. Add `CLAUDE.md` only for a real Claude-only difference, or for sessions that cannot read `AGENTS.md` directly.
 
 | Strategy | How | Use when |
 |---|---|---|
+| Native only | No `CLAUDE.md` at all | The default: no Claude-only difference, and every session you must support can read `AGENTS.md` |
 | Symlink | `ln -s AGENTS.md CLAUDE.md` | Shared contract, no Claude-only rules |
 | Import stub | `CLAUDE.md` contains `@AGENTS.md` | Same, where symlinks are impractical |
 | Thin adapter | `@AGENTS.md` plus verified Claude-only rules | Skills, hooks, permission modes, MCP |
@@ -138,7 +139,7 @@ The adapter contains only what is false or absent for other runtimes. It never r
 - [ ] Nothing requiring a guarantee is left to prose.
 - [ ] Each rule has exactly one canonical home; root and nested files do not repeat.
 - [ ] Nested files are self-contained deltas correct under both merge and nearest-wins semantics.
-- [ ] If Claude Code is a target, `CLAUDE.md` exists as a file, symlink, or `@AGENTS.md` import.
+- [ ] If Claude Code is a target, the repository either relies on its native `AGENTS.md` reading (v2.1.277+, with no counting `CLAUDE.md` or `CLAUDE.local.md` at or above the working directory) or ships a `CLAUDE.md` that imports or symlinks to `AGENTS.md`.
 - [ ] `@path` imports stay within four hops and resolve relative to the importing file.
 - [ ] Root file is small enough to leave budget for nested files under a 32 KiB combined cap.
 - [ ] No secrets, response-style preferences, or temporary task notes.

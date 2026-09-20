@@ -27,7 +27,7 @@ instruction 파일은 **에이전트가 task가 무엇인지 알기 전에** 주
 1. **나쁜 파일은 없느니만 못하다.** AGENTbench 138개와 SWE-bench Lite 300개 task에서 측정: "Context files tend to reduce task success rates compared to providing no repository context, while also increasing inference cost by over 20%." 성능이 오른 것은 개발자가 쓴 최소 파일(약 +4%)뿐이고, LLM이 생성한 포괄적 파일은 손실을 보였다.
 2. **믿을 만한 이득은 정확성이 아니라 비용이다.** PR 124개 대응 연구에서 루트 `AGENTS.md`가 있을 때 중앙값 실행 시간 약 28.6%, 출력 토큰 약 16.6% 감소 — 다만 정확성은 명시적으로 범위 밖이었다.
 3. **"가장 가까운 파일이 이긴다"는 대체로 사실이 아니다.** Codex는 루트→말단으로 concatenate하고, Claude Code는 "rather than overriding each other" concatenate하며, Cursor는 부모와 결합한다. 단순 해석과 일치하는 것은 Copilot뿐이다. 중첩 파일은 두 방식 모두에서 옳아야 한다.
-4. **Claude Code는 `AGENTS.md`를 읽지 않는다.** "Claude Code reads `CLAUDE.md`, not `AGENTS.md`." `AGENTS.md`만 둔 저장소는 Claude Code에 아무것도 주지 않는다.
+4. **Claude Code는 v2.1.277부터 `AGENTS.md`를 직접 읽는다.** `AGENTS.md`만 둔 저장소도 `CLAUDE.md`나 import, 설정 없이 Claude Code에 지시를 전달한다. 다만 두 가지 조건은 여전히 중요하다. 작업 디렉토리나 그 위에 `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md` 중 하나가 있으면 기본 **Project instructions** 설정에서 `AGENTS.md`가 억제되고, `AGENTS.md` 지원이 불가능한 세션은 `CLAUDE.md`만 읽는다(네 가지 조건 전체는 [`references/discovery-and-precedence.ko.md`](references/discovery-and-precedence.ko.md) §2에 있다).
 5. **한 런타임에서는 크기가 하드 리밋이다.** Codex는 "stops adding files once the combined size reaches the limit defined by `project_doc_max_bytes` (32 KiB by default)" — 루트→말단 순서이므로, 비대한 루트 파일이 정작 지금 수정 중인 코드를 관장하는 중첩 파일을 조용히 굶길 수 있다.
 
 세부와 인용: [`references/evidence-and-evaluation.ko.md`](references/evidence-and-evaluation.ko.md), [`references/discovery-and-precedence.ko.md`](references/discovery-and-precedence.ko.md).
@@ -100,10 +100,11 @@ instruction 파일은 **에이전트가 task가 무엇인지 알기 전에** 주
 
 ## CLAUDE.md와의 조율
 
-기본은 정본 `AGENTS.md` 하나다. Claude Code가 대상이거나 실제 Claude 전용 차이가 있을 때만 `CLAUDE.md`를 추가한다.
+기본은 정본 `AGENTS.md` 하나다. 실제 Claude 전용 차이가 있거나 `AGENTS.md`를 직접 읽지 못하는 세션을 위해서만 `CLAUDE.md`를 추가한다.
 
 | 전략 | 방법 | 사용 시점 |
 |---|---|---|
+| native 단독 | `CLAUDE.md`를 아예 두지 않음 | 기본값: Claude 전용 차이가 없고, 지원해야 하는 모든 세션이 `AGENTS.md`를 읽을 수 있을 때 |
 | 심볼릭 링크 | `ln -s AGENTS.md CLAUDE.md` | 공유 계약뿐, Claude 전용 규칙 없음 |
 | import stub | `CLAUDE.md`에 `@AGENTS.md` | 같은 상황에서 심볼릭 링크가 곤란할 때 |
 | 얇은 adapter | `@AGENTS.md` + 검증된 Claude 전용 규칙 | skill, hook, permission mode, MCP |
@@ -138,7 +139,7 @@ adapter에는 다른 런타임에서 거짓이거나 없는 내용만 담는다.
 - [ ] 보장이 필요한 것이 산문에 맡겨져 있지 않다.
 - [ ] 규칙마다 정본 위치가 하나이며, 루트와 중첩 파일이 반복되지 않는다.
 - [ ] 중첩 파일이 merge와 nearest-wins 양쪽에서 옳은 자기 완결적 delta다.
-- [ ] Claude Code가 대상이면 `CLAUDE.md`가 파일, 심볼릭 링크, 또는 `@AGENTS.md` import로 존재한다.
+- [ ] Claude Code가 대상이면 저장소가 자체 `AGENTS.md` 읽기(v2.1.277+, 작업 디렉토리나 그 위에 판정에 포함되는 `CLAUDE.md`·`CLAUDE.local.md` 없음)에 기대거나, `AGENTS.md`를 import 또는 심볼릭 링크하는 `CLAUDE.md`를 함께 제공한다.
 - [ ] `@path` import가 4 hop 이내이며 import한 파일 기준 상대 경로로 해석된다.
 - [ ] 32 KiB 합산 상한에서 중첩 파일 몫이 남을 만큼 루트 파일이 작다.
 - [ ] 비밀값, 응답 스타일 선호, 임시 task 메모가 없다.
