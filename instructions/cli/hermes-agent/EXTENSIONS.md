@@ -3,6 +3,7 @@
 > Korean translation: [EXTENSIONS.ko.md](EXTENSIONS.ko.md)  
 > Companion guides: [overview and runtime use](README.md), [configuration](CONFIGURATION.md), [Discord](DISCORD.md), [messaging gateway](MESSAGING.md), [skills](SKILLS.md), and [native plugins](PLUGINS.md)
 > **Research date:** 2026-08-24. Claims and examples below are limited to the official Hermes documentation and the official [NousResearch/hermes-agent repository](https://github.com/NousResearch/hermes-agent).
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 Hermes extensions cross trust boundaries: an MCP can run a local program or call a remote service; a messaging gateway accepts messages from another platform; and a tool provider receives input and credentials. Treat enablement as granting capability, not merely adding a UI feature. Inspect source, scopes, transport, and credential flow before enabling anything.
 
@@ -101,7 +102,7 @@ Keep platform bot tokens in `.env`, restrict who may converse through the gatewa
 
 ## Hooks and shell hooks
 
-Hooks extend lifecycle behavior; shell hooks specifically execute commands. Use the official [Hooks guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks) and [shell-hooks reference](https://hermes-agent.nousresearch.com/docs/reference/shell-hooks) for event names, schema, and timeout behavior. Treat hook configuration like executable code:
+Hooks extend lifecycle behavior; shell hooks specifically execute commands. Use the official [Hooks guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks) and [shell-hooks reference](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks#shell-hooks) for event names, schema, and timeout behavior. Treat hook configuration like executable code:
 
 1. Keep scripts in a reviewed, access-controlled location and use absolute/controlled paths where the reference requires them.
 2. Validate event payloads; do not interpolate untrusted message, filename, URL, or model output into shell syntax.
@@ -162,5 +163,5 @@ For an incident or suspected credential exposure: stop the affected gateway/prov
 - [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security)
 - [Messaging Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/messaging)
 - [AI Providers](https://hermes-agent.nousresearch.com/docs/integrations/providers) and [Tool Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/features/tool-gateway)
-- [Hooks](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks) and [shell hooks reference](https://hermes-agent.nousresearch.com/docs/reference/shell-hooks)
+- [Hooks](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks) and [shell hooks reference](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks#shell-hooks)
 - [Official repository](https://github.com/NousResearch/hermes-agent) and [optional MCP manifests](https://github.com/NousResearch/hermes-agent/tree/main/optional-mcps)

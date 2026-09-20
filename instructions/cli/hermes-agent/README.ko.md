@@ -3,6 +3,7 @@
 > 영어판: [`README.md`](README.md)
 >
 > **조사일:** 2026-08-24. 이 문서는 근거를 갖춘 개요이며 로컬 런타임 검증 결과가 아니다. Hermes 버전에 따라 명령, provider, 확장 API가 달라질 수 있으므로 운영 전에 연결된 공식 reference에서 version-sensitive 동작을 확인한다.
+> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
 
 Hermes Agent는 Nous Research의 오픈소스 agent runtime이다. CLI는 대화형·일회성 대화, tool 사용, profile, session, model/provider 설정, 선택적 확장 시스템을 지원한다.
 
@@ -39,7 +40,7 @@ Native Windows에서는 공식 PowerShell installer를 사용한다.
 iex (irm https://hermes-agent.nousresearch.com/install.ps1)
 ```
 
-첫 실행 시 setup/model 흐름으로 provider, credential, 기본 model을 설정한다. `hermes model`은 terminal에서 provider/model을 설정하는 흐름이고, session 안의 `/model`은 이미 설정된 선택지 사이만 전환한다. Provider와 authentication 선택지의 기준은 [CLI reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) 및 [model documentation](https://hermes-agent.nousresearch.com/docs/user-guide/models)이다.
+첫 실행 시 setup/model 흐름으로 provider, credential, 기본 model을 설정한다. `hermes model`은 terminal에서 provider/model을 설정하는 흐름이고, session 안의 `/model`은 이미 설정된 선택지 사이만 전환한다. Provider와 authentication 선택지의 기준은 [CLI reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) 및 [model documentation](https://hermes-agent.nousresearch.com/docs/user-guide/configuring-models)이다.
 
 Credential을 prompt, skill, plugin manifest, repository에 붙여 넣지 않는다. Hermes가 지원하는 authentication, configuration, secret mechanism을 사용하며 [Extensions and operations](EXTENSIONS.ko.md)을 참고한다.
 
@@ -66,7 +67,7 @@ Credential을 prompt, skill, plugin manifest, repository에 붙여 넣지 않는
 
 대화형 대화에는 `hermes`를 사용한다. 일회성 요청에서 표준 chat 출력을 유지하려면 `hermes chat -q`를, 호출자가 최종 응답 text만 필요로 하면 `hermes -z`를 사용한다. 제어할 수 없는 곳에서 온 입력에는 shell interpolation 대신 `--query-file`을 우선한다.
 
-ID/title로 `--resume <session>`을 사용해 session을 재개하거나 `--continue [name]`으로 계속할 수 있다. `--in <dir>`은 시작 또는 재개 전에 workspace를 정하고 `latest`/continue lookup을 해당 workspace 범위로 제한한다. `hermes sessions`는 이전 session의 관리 표면이다. State를 export, prune, delete하기 전에는 [session documentation](https://hermes-agent.nousresearch.com/docs/user-guide/features/sessions)을 확인한다.
+ID/title로 `--resume <session>`을 사용해 session을 재개하거나 `--continue [name]`으로 계속할 수 있다. `--in <dir>`은 시작 또는 재개 전에 workspace를 정하고 `latest`/continue lookup을 해당 workspace 범위로 제한한다. `hermes sessions`는 이전 session의 관리 표면이다. State를 export, prune, delete하기 전에는 [session documentation](https://hermes-agent.nousresearch.com/docs/user-guide/sessions)을 확인한다.
 
 Repository 병렬 작업을 위해 CLI는 `--worktree`도 문서화한다. 사용 전 [CLI reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands)에서 현재 동작과 repository 영향을 검토한다.
 

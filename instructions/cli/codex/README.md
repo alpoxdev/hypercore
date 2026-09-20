@@ -2,7 +2,7 @@
 
 > Korean version: [`README.ko.md`](README.ko.md)
 
-This is the runtime profile for skills executed on the Codex CLI (`codex`). Shared safety, question, and approval contracts follow [capability-contract.md](../capability-contract.md). The commands and policies here are limited to the local evidence in [`skills/codex/SKILL.md`](../../../skills/codex/SKILL.md).
+This is the runtime profile for skills executed on the Codex CLI (`codex`). Shared safety, question, and approval contracts follow [capability-contract.md](../capability-contract.md). The commands and policies here are checked against the official Codex documentation named in each row. The local `skills/codex/SKILL.md` this profile originally cited was removed from the distribution tree in commit `d4f79f9`, so it is no longer evidence.
 
 ## Applicable scope and contract
 
@@ -13,18 +13,18 @@ This is the runtime profile for skills executed on the Codex CLI (`codex`). Shar
 - No capability or CLI option counts as approval for external, destructive, credential-using, or production side work.
 - Ask the user only when a decision or approval that materially changes safety or the artifact is missing. Use a structured question/approval capability only after confirming the runtime exposes it. If you cannot confirm it, ask a single plain-text sentence and stop gated work until you receive an answer. Do not assume a question tool exists, and do not make the decision on the user's behalf.
 
-## Behavior verified by local evidence
+## Behavior verified against official documentation
 
 | Area | Verified rule | Evidence |
 |---|---|---|
-| Execution | `codex exec --sandbox read-only "prompt"`; takes the prompt from an argument or stdin and writes the result to stdout | [`skills/codex/SKILL.md`](../../../skills/codex/SKILL.md), Core section |
-| Review | `codex review --uncommitted`, `--base <branch>`, `--commit <sha>` examples; read-only | Same document, Code review section |
-| Resume and fork | Non-interactive latest session is `codex exec resume --last`, a specific session is `codex exec resume <session-id>`; interactive latest session is `codex resume --last`; forking is `codex fork --last` | Same document, Session resume section |
-| Sandbox | `read-only` for analysis, `workspace-write` for explicit edits; `danger-full-access` and `--dangerously-bypass-approvals-and-sandbox` only after explicit approval and only in an isolated environment | Same document, Sandbox mode selection |
-| Approval flags | `-a/--ask-for-approval` exists only on the interactive top-level command, not on `codex exec` | Same document, Approval policy selection |
-| Extra paths and roots | `--add-dir` only when needed; `-C/--cd` when the user specifies the working directory | Same document, Command construction rules |
+| Execution | `codex exec` (short form `codex e`) is the documented entry for scripted or CI-style runs that should finish without a prompt; add `--json` for newline-delimited JSON events | [Command line options](https://learn.chatgpt.com/docs/developer-commands.md?surface=cli) (checked 2026-09-19) |
+| Review | `codex review` runs a review non-interactively and takes exactly one target — `--uncommitted`, `--base`, `--commit`, or a custom prompt; `--title` applies only with `--commit` | Same page, `codex review` (checked 2026-09-19) |
+| Resume and fork | Non-interactive continuation is the `codex exec resume` subcommand, with `--last` scoped to the current working directory and `--all` to widen it; `codex resume` continues an interactive session and `codex fork` forks one | Same page, `codex exec` and `codex resume` (checked 2026-09-19) |
+| Sandbox | `--sandbox workspace-write` is documented alongside `--ask-for-approval on-request`; prefer `--add-dir` over forcing `--sandbox danger-full-access` | Same page, plus [Agent approvals and security](https://learn.chatgpt.com/docs/agent-approvals-security.md) (checked 2026-09-19) |
+| Approval flags | `-a`/`--ask-for-approval` is documented as a global option of the interactive client | Same page, global options (checked 2026-09-19) |
+| Extra paths and roots | `--add-dir` adds a writable root; `-C`/`--cd` sets the working directory before the run | Same page, global options (checked 2026-09-19) |
 
-The table above is local evidence recorded in documentation, not a complete feature or tool list for the installed CLI. If something is not visible at runtime or behaves differently, discover and confirm it with `codex --help` or the relevant subcommand help, and do not describe it as supported before confirmation.
+The table above records vendor documentation, not a complete feature or tool list for the installed CLI. If something is not visible at runtime or behaves differently, discover and confirm it with `codex --help` or the relevant subcommand help, and do not describe it as supported before confirmation.
 
 ## Read, write, and command safety
 

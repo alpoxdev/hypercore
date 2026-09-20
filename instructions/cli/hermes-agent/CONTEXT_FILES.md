@@ -3,6 +3,7 @@
 > Korean version: [`CONTEXT_FILES.ko.md`](CONTEXT_FILES.ko.md)
 >
 > **Research date:** 2026-08-20. **Upstream facts** below are traced to official Hermes Agent documentation. **Recommendations** are this guide's operational advice, not Hermes behavior or authority.
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 ## Primary sources
 

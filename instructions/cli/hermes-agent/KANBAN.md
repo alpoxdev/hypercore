@@ -3,6 +3,7 @@
 > Korean version: [`KANBAN.ko.md`](KANBAN.ko.md)
 >
 > **Research date:** 2026-08-24, against Hermes Agent's official documentation only. **Facts** describe the documented Kanban behavior; **Recommendations** are operational advice. Commands, settings, defaults, and the dashboard surface are version-sensitive — confirm them with `hermes kanban --help` and the linked official references before automating.
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 ## Primary sources
 

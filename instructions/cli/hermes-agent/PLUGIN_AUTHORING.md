@@ -3,6 +3,7 @@
 > Korean version: [PLUGIN_AUTHORING.ko.md](PLUGIN_AUTHORING.ko.md)  
 > Concepts, lifecycle, portable plugins, and security: [PLUGINS.md](PLUGINS.md)  
 > Research date: **2026-08-20**.
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 ## Sources and architecture
 

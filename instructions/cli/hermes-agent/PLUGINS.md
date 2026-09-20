@@ -3,6 +3,7 @@
 > Korean version: [PLUGINS.ko.md](PLUGINS.ko.md)  
 > Implementation guide: [PLUGIN_AUTHORING.md](PLUGIN_AUTHORING.md)  
 > Research date: **2026-08-20**. Confirm behavior against the installed Hermes version before release.
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 ## Scope and primary sources
 

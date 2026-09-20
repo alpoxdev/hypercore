@@ -1,6 +1,7 @@
 # Hermes Agent Skill Authoring
 
 > Korean: [SKILL_AUTHORING.ko.md](SKILL_AUTHORING.ko.md) · Skills use and lifecycle: [SKILLS.md](SKILLS.md) · Research date: **2026-08-20**
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 This companion covers authoring, structure, validation, and publication. **Verified** statements are drawn from the official [Skills guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills), [Creating Skills guide](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills), and [NousResearch/hermes-agent source](https://github.com/NousResearch/hermes-agent). **Recommendation** marks guidance rather than an upstream contract.
 

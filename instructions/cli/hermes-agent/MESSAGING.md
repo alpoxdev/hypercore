@@ -3,6 +3,7 @@
 > Korean version: [`MESSAGING.ko.md`](MESSAGING.ko.md)
 >
 > **Research date:** 2026-08-24, against the official documentation only. **Facts** trace to Hermes Agent's official Messaging Gateway, Sessions, Security, and per-platform pages. **Recommendations** are this guide's operational advice. For the full Discord walkthrough see [`DISCORD.md`](DISCORD.md); for configuration files see [`CONFIGURATION.md`](CONFIGURATION.md).
+> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
 
 ## Primary sources
 
