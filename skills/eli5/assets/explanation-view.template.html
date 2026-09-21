@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="<!--{{LANG}}-->">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><!--{{TITLE}}--></title>
+<style>
+:root {
+  --bg: #f7f7f5;
+  --panel: #ffffff;
+  --ink: #1c1c1a;
+  --ink-soft: #55554f;
+  --line: #d9d9d2;
+  --accent: #2f5d50;
+  --accent-soft: #e3ede9;
+  --warn: #7a4a1e;
+  --warn-soft: #f6ecdf;
+  --radius: 10px;
+  --step: 8px;
+}
+[data-theme="dark"] {
+  --bg: #17181a;
+  --panel: #202225;
+  --ink: #ececea;
+  --ink-soft: #a9aaa4;
+  --line: #34373b;
+  --accent: #7fc3ad;
+  --accent-soft: #22322e;
+  --warn: #e0b483;
+  --warn-soft: #2f2721;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  padding: 32px 24px 64px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { max-width: 78ch; margin: 0 auto; }
+.view-title { margin: 0 0 6px; font-size: 1.9rem; line-height: 1.25; letter-spacing: -0.01em; }
+.view-summary { margin: 0 0 20px; color: var(--ink-soft); font-size: 1.06rem; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 28px; }
+.controls button, .layer-toggle {
+  font: inherit;
+  font-size: 0.86rem;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.controls button:hover, .layer-toggle:hover { border-color: var(--accent); }
+.controls button:focus-visible, .layer-toggle:focus-visible, .step:focus-visible, .term:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+section { margin: 0 0 34px; }
+section > h2 {
+  margin: 0 0 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.layers { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); }
+.layer { position: relative; padding: 0 0 18px 20px; }
+.layer::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  top: 7px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.layer-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.layer-label { margin: 0; font-size: 1.02rem; }
+.layer-body { margin: 4px 0 0; color: var(--ink-soft); }
+.layer.is-collapsed .layer-body { display: none; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.step {
+  display: grid;
+  grid-template-columns: minmax(8ch, auto) 1fr;
+  gap: 4px 14px;
+  padding: 12px 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.step-actor { font-weight: 650; }
+.step-action { color: var(--ink-soft); }
+.step-effect { grid-column: 2; font-size: 0.94rem; }
+.step-effect::before { content: "\2192  "; color: var(--accent); }
+.step.is-active { border-color: var(--accent); background: var(--accent-soft); }
+.analogy {
+  margin: 0;
+  padding: 16px 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+}
+.analogy-text { margin: 0 0 10px; }
+.analogy-limit { margin: 0; color: var(--ink-soft); font-size: 0.94rem; }
+.analogy-limit::before { content: "\BB  "; color: var(--accent); }
+.terms { margin: 0; display: grid; gap: 8px; }
+.term { display: grid; grid-template-columns: minmax(10ch, auto) 1fr; gap: 2px 14px; cursor: pointer; }
+.term-name { margin: 0; font-weight: 650; }
+.term-plain { margin: 0; color: var(--ink-soft); }
+.cautions { margin: 0; padding-left: 20px; color: var(--warn); }
+.cautions li { background: var(--warn-soft); border-radius: 6px; padding: 6px 10px; margin-bottom: 6px; }
+.is-term-hit { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+.noscript-note { color: var(--ink-soft); font-size: 0.9rem; }
+@media (max-width: 640px) {
+  body { padding: 20px 16px 48px; font-size: 15px; }
+  .view-title { font-size: 1.55rem; }
+  .step { grid-template-columns: 1fr; }
+  .step-effect { grid-column: 1; }
+  .term { grid-template-columns: 1fr; }
+  .layer { padding-left: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; animation: none !important; }
+}
+@page { margin: 16mm; }
+@media print {
+  body { padding: 0; background: #fff; color: #000; font-size: 11.5pt; }
+  .controls, .layer-toggle { display: none !important; }
+  .layer.is-collapsed .layer-body { display: block !important; }
+  .layer-body, .layer-label { display: block !important; }
+  .step, .term, .caution, .analogy, .layer { break-inside: avoid; }
+  .view-title, .view-summary, section > h2 { break-after: avoid; }
+  .step.is-active { background: transparent; border-color: #000; }
+  .is-term-hit { outline: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<!--{{SUMMARY}}-->
+<nav class="controls" aria-label="view controls">
+<button id="theme-toggle" type="button" aria-pressed="false">테마 전환</button>
+<button id="expand-all" type="button" aria-expanded="true">모두 접기</button>
+</nav>
+<main>
+<!--{{LAYERS}}-->
+<!--{{MECHANISM}}-->
+<!--{{ANALOGY}}-->
+<!--{{TERMS}}-->
+<!--{{CAUTIONS}}-->
+</main>
+<noscript><p class="noscript-note">이 페이지의 조작 버튼은 자바스크립트가 필요합니다. 내용과 인쇄는 자바스크립트 없이도 온전합니다.</p></noscript>
+</div>
+<script type="application/json" id="eli5-data">/*{{DATA}}*/</script>
+<script>
+(function () {
+  var doc = document.documentElement;
+  var STORE_KEY = 'eli5-theme';
+  var data = null;
+  try {
+    var payloadNode = document.getElementById('eli5-data');
+    if (payloadNode) data = JSON.parse(payloadNode.textContent || '{}');
+  } catch (error) { data = null; }
+  function readStored() {
+    try { return window.localStorage.getItem(STORE_KEY); } catch (error) { return null; }
+  }
+  function writeStored(value) {
+    try { window.localStorage.setItem(STORE_KEY, value); } catch (error) { /* storage unavailable: theme is not persisted */ }
+  }
+  var stored = readStored();
+  if (stored === 'dark' || stored === 'light') doc.setAttribute('data-theme', stored);
+  var themeButton = document.getElementById('theme-toggle');
+  if (themeButton) {
+    themeButton.setAttribute('aria-pressed', String(doc.getAttribute('data-theme') === 'dark'));
+    themeButton.addEventListener('click', function () {
+      var next = doc.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      doc.setAttribute('data-theme', next);
+      themeButton.setAttribute('aria-pressed', String(next === 'dark'));
+      writeStored(next);
+    });
+  }
+  var expandButton = document.getElementById('expand-all');
+  function layers() { return Array.prototype.slice.call(document.querySelectorAll('.layer')); }
+  function setLayer(layer, collapsed) {
+    layer.classList.toggle('is-collapsed', collapsed);
+    var toggle = layer.querySelector('.layer-toggle');
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', String(!collapsed));
+      toggle.textContent = collapsed ? '펼치기' : '접기';
+    }
+  }
+  function syncExpandButton() {
+    if (!expandButton) return;
+    var all = layers();
+    var anyOpen = all.some(function (layer) { return !layer.classList.contains('is-collapsed'); });
+    expandButton.textContent = anyOpen ? '모두 접기' : '모두 펼치기';
+    expandButton.setAttribute('aria-expanded', String(anyOpen));
+  }
+  document.addEventListener('click', function (event) {
+    var toggle = event.target.closest('.layer-toggle');
+    if (toggle) {
+      var layer = toggle.closest('.layer');
+      if (layer) { setLayer(layer, !layer.classList.contains('is-collapsed')); syncExpandButton(); }
+      return;
+    }
+    var step = event.target.closest('.step');
+    if (step) {
+      var wasActive = step.classList.contains('is-active');
+      Array.prototype.forEach.call(document.querySelectorAll('.step.is-active'), function (other) {
+        other.classList.remove('is-active');
+      });
+      step.classList.toggle('is-active', !wasActive);
+      return;
+    }
+    var term = event.target.closest('.term');
+    if (term) {
+      var name = term.querySelector('.term-name');
+      if (name) jumpToTerm(name.textContent.trim());
+    }
+  });
+  if (expandButton) {
+    expandButton.addEventListener('click', function () {
+      var anyOpen = layers().some(function (layer) { return !layer.classList.contains('is-collapsed'); });
+      layers().forEach(function (layer) { setLayer(layer, anyOpen); });
+      syncExpandButton();
+    });
+  }
+  function jumpToTerm(termText) {
+    if (!termText) return;
+    var known = !data || !Array.isArray(data.terms) || data.terms.some(function (entry) { return entry && entry.term === termText; });
+    if (!known) return;
+    var candidates = document.querySelectorAll('[data-term-search]');
+    var hits = [];
+    for (var index = 0; index < candidates.length; index += 1) {
+      if (candidates[index].textContent.indexOf(termText) !== -1) hits.push(candidates[index]);
+    }
+    if (hits.length === 0) return;
+    hits[0].scrollIntoView({ block: 'center' });
+    hits.forEach(function (hit) { hit.classList.add('is-term-hit'); });
+    window.setTimeout(function () { hits.forEach(function (hit) { hit.classList.remove('is-term-hit'); }); }, 1600);
+  }
+  syncExpandButton();
+})();
+</script>
+</body>
+</html>

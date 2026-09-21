@@ -466,6 +466,21 @@
         "gitMode": "100644"
       },
       "behaviorContractId": "vite-architecture--validate-vite-architecture-skill"
+    },
+    {
+      "path": "skills/eli5/scripts/render-explanation.mjs",
+      "family": "eli5",
+      "legacyOrigin": "authored-mjs",
+      "usage": "render-explanation-view",
+      "behavior": "explanation-view-render",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/eli5/scripts/render-explanation.mjs",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "eli5--render-explanation"
     }
   ],
   "forbiddenDetectorReferences": {
