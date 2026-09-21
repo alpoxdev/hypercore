@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 35,
+    "expectedRows": 36,
     "legacyOriginCounts": {
       "former-sh": 19,
       "former-py": 1,
       "retained-mjs": 9,
-      "authored-mjs": 6
+      "authored-mjs": 7
     },
     "requiredDimensions": [
       "stdout",
@@ -24,7 +24,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 105
+    "expectedFixtures": 108
   },
   "rows": [
     {
@@ -8857,6 +8857,202 @@
             },
             "argv": [
               "--root"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "eli5--render-explanation",
+      "path": "skills/eli5/scripts/render-explanation.mjs",
+      "family": "eli5",
+      "legacyOrigin": "authored-mjs",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/eli5/scripts/render-explanation.mjs",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "eli5--render-explanation--stdout",
+        "stderr": "eli5--render-explanation--stderr",
+        "exit": "eli5--render-explanation--exit",
+        "files": "eli5--render-explanation--files",
+        "modes": "eli5--render-explanation--modes",
+        "cwd": "eli5--render-explanation--cwd",
+        "env": "eli5--render-explanation--env",
+        "argv": "eli5--render-explanation--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bun",
+            "arguments": [
+              "skills/eli5/scripts/render-explanation.mjs"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "artifact"
+            ],
+            "files": [
+              {
+                "path": "artifact/explanation.json",
+                "text": "{\"title\":\"<b>캐시</b> & \\\"따옴표\\\" </script>\",\"summary\":\"자주 쓰는 값을 가까이에 두고 다시 계산하지 않는 것\",\"language\":\"ko\",\"layers\":[{\"id\":\"gist\",\"label\":\"한 줄 정의\",\"body\":\"캐시는 자주 쓰는 값을 빠르게 꺼낼 수 있는 곳에 잠시 두는 장치다.\"},{\"id\":\"boundary\",\"label\":\"한계\",\"body\":\"원본이 바뀌면 오래된 값을 돌려줄 수 있다.\"}],\"mechanism\":[{\"actor\":\"클라이언트\",\"action\":\"값을 요청한다\",\"effect\":\"캐시가 먼저 응답한다\"}],\"analogy\":{\"text\":\"책상 위에 두는 메모\",\"limit\":\"메모는 저절로 갱신되지 않는다\"},\"terms\":[{\"term\":\"캐시\",\"plain\":\"빠른 임시 저장소\"}],\"cautions\":[\"캐시된 값이 최신이 아닐 수 있다\"],\"sources\":[]}"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"status\":\"ok\",\"layers\":2,\"steps\":1,\"terms\":1,\"cautions\":1}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "artifact/explanation.json",
+                "bytes": 755,
+                "sha256": "141f63e2ab7940348cc8b7d3b583d6a0297f39401e27b753ccc400a7618f218c"
+              },
+              {
+                "path": "artifact/explanation.html",
+                "bytes": 11615,
+                "sha256": "2639218de6c1fffd0ba4e0ac6b094dd7b9f78af7f10bab732f631aae6cf61131"
+              }
+            ],
+            "modes": {
+              "artifact/explanation.json": "644",
+              "artifact/explanation.html": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "artifact"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bun",
+            "arguments": [
+              "skills/eli5/scripts/render-explanation.mjs"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "artifact"
+            ],
+            "files": [
+              {
+                "path": "artifact/explanation.json",
+                "text": "{broken"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "contains": [
+                "explanation.json JSON 파싱에 실패했습니다"
+              ]
+            },
+            "exit": 1,
+            "files": [
+              {
+                "path": "artifact/explanation.json",
+                "bytes": 7,
+                "sha256": "be302461cda285db3ed2d45fb767b23e08ca8808b35a638009937df22b332d73"
+              }
+            ],
+            "modes": {
+              "artifact/explanation.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "artifact"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bun",
+            "arguments": [
+              "skills/eli5/scripts/render-explanation.mjs"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "artifact"
+            ],
+            "files": [
+              {
+                "path": "artifact/explanation.json",
+                "text": "{\"title\":\"레이어 없음\",\"summary\":\"스키마 위반 픽스처\"}"
+              },
+              {
+                "path": "artifact/explanation.html",
+                "text": "prior view\n",
+                "mode": "640"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "contains": [
+                "explanation.json 스키마 위반: layers"
+              ]
+            },
+            "exit": 1,
+            "files": [
+              {
+                "path": "artifact/explanation.json",
+                "bytes": 67,
+                "sha256": "ef30423efa0fe642bc3f76d48f71dbfc923c8477e796ee0453d384ec62548564"
+              },
+              {
+                "path": "artifact/explanation.html",
+                "bytes": 11,
+                "sha256": "3b33ca7d62e8bc2604e646cf6a7b067ef9fecc40c25542d0e8921971ba61770a"
+              }
+            ],
+            "modes": {
+              "artifact/explanation.json": "644",
+              "artifact/explanation.html": "640"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "artifact"
             ]
           }
         }

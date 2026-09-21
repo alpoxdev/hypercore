@@ -178,12 +178,12 @@ function validateStaticPolicy(content, file) {
 
 const manifest = /** @type {Record<string, unknown>} */ (JSON.parse(readFileSync(manifestPath, "utf8")));
 assert(Array.isArray(manifest.scripts), "manifest scripts must be an array");
-assert(manifest.scripts.length === 35, "manifest must contain exactly 35 scripts");
+assert(manifest.scripts.length === 36, "manifest must contain exactly 36 scripts");
 assert(manifest.scripts.every(isRecord), "manifest rows must be objects");
 const requiredRowFields = ["path", "family", "legacyOrigin", "usage", "behavior"];
 const legacyOrigins = new Set(["former-sh", "former-py", "retained-mjs", "authored-mjs"]);
-const usages = new Set(["apply-version", "build-preview", "calculate-version", "check-deployment", "check-lint", "check-runtime-capabilities", "commit-files", "detect-package-manager", "detect-stack", "discover-version", "generate-artifact", "inspect-repository", "push-commit", "read-version", "render-dashboard", "render-planning-map", "run-build", "validate-portable-output", "validate-skill", "validate-skill-corpus", "verify-skill"]);
-const behaviors = new Set(["deployment-readiness-check", "fast-git-commit", "git-push", "hermes-artifact-generation", "lint-readiness-check", "package-manager-detection", "planning-map-render", "portable-output-validation", "preview-build", "project-build", "render-dashboard", "repository-discovery", "repository-status", "runtime-capability-check", "scoped-git-commit", "skill-validation", "skill-verification", "skills-corpus-validation", "stack-detection", "version-application", "version-calculation", "version-discovery", "version-reading"]);
+const usages = new Set(["apply-version", "build-preview", "calculate-version", "check-deployment", "check-lint", "check-runtime-capabilities", "commit-files", "detect-package-manager", "detect-stack", "discover-version", "generate-artifact", "inspect-repository", "push-commit", "read-version", "render-dashboard", "render-explanation-view", "render-planning-map", "run-build", "validate-portable-output", "validate-skill", "validate-skill-corpus", "verify-skill"]);
+const behaviors = new Set(["deployment-readiness-check", "explanation-view-render", "fast-git-commit", "git-push", "hermes-artifact-generation", "lint-readiness-check", "package-manager-detection", "planning-map-render", "portable-output-validation", "preview-build", "project-build", "render-dashboard", "repository-discovery", "repository-status", "runtime-capability-check", "scoped-git-commit", "skill-validation", "skill-verification", "skills-corpus-validation", "stack-detection", "version-application", "version-calculation", "version-discovery", "version-reading"]);
 const expectedMetadata = new Map([
   ["skills/autoresearch-skill/scripts/render-dashboard.mjs", ["render-dashboard", "render-dashboard"]],
   ["skills/git-maker/scripts/git-commit.mjs", ["commit-files", "scoped-git-commit"]],
@@ -220,8 +220,9 @@ const expectedMetadata = new Map([
   ["skills/hermes-agent-maker/scripts/generate.mjs", ["generate-artifact", "hermes-artifact-generation"]],
   ["skills/hermes-agent-maker/scripts/validate-hermes-agent-maker.mjs", ["validate-skill", "skill-validation"]],
   ["skills/hermes-agent-maker/scripts/validate-portable-v1-output.mjs", ["validate-portable-output", "portable-output-validation"]],
+  ["skills/eli5/scripts/render-explanation.mjs", ["render-explanation-view", "explanation-view-render"]],
 ]);
-assert(expectedMetadata.size === 35, "concrete metadata mapping must cover exactly 35 scripts");
+assert(expectedMetadata.size === 36, "concrete metadata mapping must cover exactly 36 scripts");
 const originCounts = { "former-sh": 0, "former-py": 0, "retained-mjs": 0, "authored-mjs": 0 };
 for (const [index, row] of manifest.scripts.entries()) {
   for (const field of requiredRowFields) assert(nonEmpty(row[field]), `manifest scripts[${index}].${field} must be a non-empty string`);
@@ -248,16 +249,16 @@ for (const [index, row] of manifest.scripts.entries()) {
   }
   assert(nonEmpty(row.behaviorContractId), `manifest scripts[${index}] requires a behavior contract id`);
 }
-assert(originCounts["former-sh"] === 19 && originCounts["former-py"] === 1 && originCounts["retained-mjs"] === 9 && originCounts["authored-mjs"] === 6, "manifest origin counts must be exactly 19/1/9/6");
+assert(originCounts["former-sh"] === 19 && originCounts["former-py"] === 1 && originCounts["retained-mjs"] === 9 && originCounts["authored-mjs"] === 7, "manifest origin counts must be exactly 19/1/9/7");
 const approved = manifest.scripts.map((row) => /** @type {string} */ (row.path));
 assert(new Set(approved).size === approved.length, "manifest script paths must be unique");
 const behaviorContracts = /** @type {Record<string, unknown>} */ (JSON.parse(readFileSync(behaviorContractsPath, "utf8")));
 assert(behaviorContracts.requiredBy === relative(root, manifestPath), "behavior contracts must name the manifest as their central owner");
 assert(isRecord(behaviorContracts.coverage)
-  && behaviorContracts.coverage.expectedRows === 35
-  && behaviorContracts.coverage.expectedFixtures === 105,
-"behavior contract coverage must be exactly 35 rows and 105 fixtures");
-assert(Array.isArray(behaviorContracts.rows) && behaviorContracts.rows.length === 35, "behavior contracts must contain exactly 35 rows");
+  && behaviorContracts.coverage.expectedRows === 36
+  && behaviorContracts.coverage.expectedFixtures === 108,
+"behavior contract coverage must be exactly 36 rows and 108 fixtures");
+assert(Array.isArray(behaviorContracts.rows) && behaviorContracts.rows.length === 36, "behavior contracts must contain exactly 36 rows");
 for (const [index, contract] of behaviorContracts.rows.entries()) {
   assert(isRecord(contract) && nonEmpty(contract.path) && nonEmpty(contract.id) && isRecord(contract.fixtures),
     `behavior contracts.rows[${index}] must be a complete row`);
@@ -348,4 +349,4 @@ for (const file of approved) {
   if (row.legacyOrigin === "authored-mjs") assert(!existsInBaseline(file), `${file} authored-mjs path must be absent from immutable baseline`);
 }
 
-console.log(`Validated ${approved.length} Bun MJS skill scripts (19 former-sh, 1 former-py, 9 retained-mjs, 6 authored-mjs baseline-absence).`);
+console.log(`Validated ${approved.length} Bun MJS skill scripts (19 former-sh, 1 former-py, 9 retained-mjs, 7 authored-mjs baseline-absence).`);
