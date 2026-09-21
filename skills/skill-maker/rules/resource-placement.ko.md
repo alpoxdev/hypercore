@@ -59,6 +59,16 @@
 속하며, 네트워크, 자격 증명, 커밋, 제품 파일 변경 없이 저장소 로컬 파일과 평가 픽스처를 소비해야
 합니다.
 
+번들 스크립트는 Bun으로 실행합니다. 규칙은 런타임 하나, 확장자 하나입니다. 패키지의 `scripts/`
+디렉터리에 있는 디렉터리가 아닌 모든 엔트리는 `.mjs` 파일이고, `.mjs` 스크립트의 첫 줄은
+`#!/usr/bin/env bun`입니다.
+
+- `scripts/` 아래에 `.sh`, `.py`, `.cjs`, `.js`, 확장자 없는 실행 파일을 두지 않습니다. 그 디렉터리에 `.mjs`가 아닌 파일이 있으면 스타일 문제가 아니라 검증 오류입니다.
+- 스크립트에서 셸을 호출하지 않습니다. 구조적 인자 배열을 쓰고, 사용자 입력을 셸 명령줄에 보간하지 않습니다.
+- 셸 스크립트가 아니라 Bun인 이유: Windows는 콘솔 응용 프로그램으로 Command Prompt와 Windows PowerShell을 씁니다. POSIX `sh`는 그중 하나가 아니며 Git for Windows나 WSL을 설치하면 함께 제공됩니다. 따라서 셸 스크립트는 macOS·Linux·Windows에서 이식성이 더 높기는커녕 오히려 낮습니다. PowerShell로 폴백하는 하네스에서는 아예 실행되지 않습니다.
+- 소비자에게 필요한 것을 알립니다. 패키지가 스크립트를 포함하면 요구 런타임을 `compatibility` frontmatter에 적어, Bun이 없는 독자가 실행 전에 알 수 있게 합니다.
+- 결정적 검증기가 확장자 규칙과 Bun shebang을 강제하므로, 이를 어긴 번들 스크립트는 배포되지 않고 검증에서 실패합니다. 읽을 수 없는 `scripts/` 디렉터리도 오류입니다. 그곳에서는 규칙을 확인할 수 없기 때문입니다.
+
 ## 5. 자산
 
 자산은 출력 생성을 돕는 파일에 씁니다.
@@ -178,7 +188,7 @@ references/
 
 ## Sources
 
-> 링크 확인 2026-09-20.
+> 링크 확인 2026-09-21.
 
 | 주장 | 출처 |
 |---|---|
@@ -188,6 +198,8 @@ references/
 | 프로젝트 스킬 신뢰 게이트, 스캔 격리, 기록되는 설치 출처 | `instructions/cli/hermes-agent/SKILLS.md` |
 | 읽기 전용으로 등록되고 이름 공간이 붙으며 설치 트리에 쓰지 않는 스킬 | `instructions/cli/hermes-agent/PLUGIN_AUTHORING.md` |
 | 스킬 디렉터리의 참조 검증기로서의 `skills-ref validate` | <https://agentskills.io/specification> |
+| Windows는 콘솔 응용 프로그램으로 Command Prompt와 Windows PowerShell을 씁니다. 이 문서가 지목하는 것은 그 둘이며 POSIX `sh`가 아님 | <https://support.microsoft.com/en-us/windows/apps/command-prompt-and-windows-powershell> |
+| 네이티브 Windows의 하네스는 Bash 도구로 Git for Windows를 쓰고 그것이 없으면 PowerShell로 폴백하므로, `sh` 스크립트가 아예 실행되지 않을 수 있음 | <https://code.claude.com/docs/en/setup> |
 
 ### 증거 등급
 

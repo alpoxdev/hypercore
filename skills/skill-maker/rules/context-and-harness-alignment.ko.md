@@ -64,7 +64,7 @@
 `skill-maker` 패키지 갱신에는 결정적 검증기와 JSONL 평가 픽스처를 씁니다.
 
 ```bash
-node skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
+bun skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
 ```
 
 해피 패스와 함께 누락 컨텍스트·도구 실패 처리, 적대적 검색·위험 동작 거부, 알려진 회귀, 형식 불량

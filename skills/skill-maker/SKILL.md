@@ -1,7 +1,7 @@
 ---
 name: skill-maker
 description: "Use this skill when the user asks to create or refactor a reusable Codex skill folder, including SKILL.md trigger wording, instruction contracts, rules, references, scripts, assets, and validation checks. Do not use for generic documentation that is not a skill."
-compatibility: Works best with read/edit/write and shell search tools for skill analysis, example gathering, and validation checks.
+compatibility: Works best with read/edit/write and shell search tools for skill analysis, example gathering, and validation checks; running a bundled script needs Bun.
 ---
 
 @rules/self-containment.md
@@ -264,7 +264,7 @@ Must-pass thresholds:
 - [ ] No reference chain deeper than one level from `SKILL.md` unless explicitly justified.
 - [ ] Core `SKILL.md` stays lean and does not duplicate references.
 - [ ] New or materially changed markdown files have matching Korean `*.ko.md` translations when following this repo's bilingual convention.
-- [ ] Scripts/assets have explicit purpose, usage, dependency, expected output, and failure handling.
+- [ ] Scripts/assets have explicit purpose, usage, dependency, expected output, and failure handling. Every bundled script is a Bun .mjs file whose first line is the Bun shebang, and the package declares its runtime requirement in compatibility.
 - [ ] Validation records scope, risk depth, scenario, oracle, runner, judge, trace, gate, baseline/current results, regressions, and a ship/iterate/block decision at the level warranted by risk.
 - [ ] Eval coverage includes normal, missing-context/tool-failure, boundary, adversarial retrieval or unsafe-action, and known-regression behavior; recommended corpus size remains risk-proportional.
 - [ ] English/Korean parity is checked structurally and with equivalent behavioral cases, not file presence alone.
