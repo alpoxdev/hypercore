@@ -11,16 +11,26 @@
 // headings differ by design), and numerals inside prose (numerals are localized: `primary`
 // vs `1차 출처`, `four-part` vs `4절`). Those are not contract-bearing.
 //
-// Two pair sets, each with its OWN root. The instruction set's root is `--root`; the skill set's
-// root is `--root-skills`. A single global root cannot address both trees, and silently moving the
-// global root would check the wrong tree for one of them - so every pair carries its root explicitly.
+// Four pair sets, each with its OWN root. A single global root cannot address several trees, and
+// silently moving the global root would check the wrong tree for one of them - so every pair carries
+// its root explicitly. `--root` addresses the instruction set; `--root-skills` keeps its historical
+// meaning as the skill-maker root, and additionally overrides the selected skill set when exactly one
+// skill set is selected, so no previously supported invocation changes meaning.
+//
+// The docs-maker and prompt-maker sets are EXPLICIT single pairs (SKILL.md / SKILL.ko.md), declared
+// the same way INSTRUCTION_PAIRS is, rather than discovered by walking the root. Discovering them
+// would pull in rules/**, references/**, and assets/**, and requirement (c) would then demand a
+// Sources section with a checked date in 42 files - a content-authoring project, not a contract fix.
+// Extending those two sets to their full trees requires adding a Sources section to those files first.
 //
 // Usage:
 //   node check-skill-contract-parity.mjs [--root <dir>] [--root-skills <dir>] [--set <name>] [--list]
 //
 //   --root <dir>        root of the instructions/skill pair set (default: ../instructions/skill)
-//   --root-skills <dir> root of the skills/skill-maker pair set (default: ../skills/skill-maker)
-//   --set <name>        restrict to one set: instructions-skill | skill-maker (default: both)
+//   --root-skills <dir> skill-set root override: the skill-maker root when no set is selected, and
+//                       the selected set's own root when exactly one skill set is selected
+//   --set <name>        restrict to one set: instructions-skill | skill-maker | docs-maker | prompt-maker
+//                       (default: all)
 //   --list              print one line per pair as set<TAB>root<TAB>en<TAB>ko, then exit 0
 //
 // Exit 0 when PARITY-FAILURES=0, non-zero otherwise.
@@ -53,7 +63,22 @@ function flagValue(flag) {
 // Argument validation. A verification command whose typo still reports success is worse than one that
 // crashes: `--set skill-mkaer` used to select ZERO pairs and print PARITY-FAILURES=0, and a value-less
 // `--root-skills` silently fell back to the default root. Both are false green.
-const ALLOWED_SETS = ["instructions-skill", "skill-maker"];
+/**
+ * Every skill pair set, with its own default root. `discovered` sets derive their pairs from the
+ * tree; the others use EXPLICIT_SKILL_PAIRS.
+ * @type {Record<string, { root: string, discovered: boolean }>}
+ */
+const SKILL_SETS = {
+  "skill-maker": { root: "skills/skill-maker", discovered: true },
+  "docs-maker": { root: "skills/docs-maker", discovered: false },
+  "prompt-maker": { root: "skills/prompt-maker", discovered: false },
+};
+/** Explicit single-pair skill sets, declared exactly as INSTRUCTION_PAIRS is. */
+const EXPLICIT_SKILL_PAIRS = {
+  "docs-maker": [["SKILL.md", "SKILL.ko.md"]],
+  "prompt-maker": [["SKILL.md", "SKILL.ko.md"]],
+};
+const ALLOWED_SETS = ["instructions-skill", ...Object.keys(SKILL_SETS)];
 const VALUE_FLAGS = ["--root", "--root-skills", "--set"];
 const KNOWN_FLAGS = [...VALUE_FLAGS, "--list"];
 
@@ -96,15 +121,32 @@ if (requestedSet !== null && !ALLOWED_SETS.includes(requestedSet)) {
 }
 if (problems.length > 0) {
   for (const problem of problems) console.error(`ARGUMENT-ERROR: ${problem}`);
-  console.error("Usage: node check-skill-contract-parity.mjs [--root <dir>] [--root-skills <dir>] [--set instructions-skill|skill-maker] [--list]");
+  console.error(`Usage: node check-skill-contract-parity.mjs [--root <dir>] [--root-skills <dir>] [--set ${ALLOWED_SETS.join("|")}] [--list]`);
   process.exit(2);
 }
 
 // `??` rather than `||`: an empty value must never silently fall back to a default, and it is
 // rejected below anyway. Defence in depth, so a future edit cannot reopen the false green.
 const instructionRoot = flagValue("--root") ?? join(import.meta.dirname, "..", "instructions", "skill");
-const skillRoot = flagValue("--root-skills") ?? join(REPO_ROOT, "skills", "skill-maker");
 const onlySet = requestedSet;
+const skillsRootOverride = flagValue("--root-skills");
+/** Skill sets the current `--set` selects: the one named, or all of them when none is named. */
+const selectedSkillSets = onlySet === null
+  ? Object.keys(SKILL_SETS)
+  : (onlySet in SKILL_SETS ? [onlySet] : []);
+/**
+ * `--root-skills` keeps its historical meaning in every previously supported invocation: with no
+ * `--set` it overrides the skill-maker root only, and with `--set skill-maker` it overrides that set.
+ * It additionally overrides the selected skill set when exactly one skill set is selected, which is
+ * what makes `--set docs-maker --root-skills <temp-tree>` possible. It is never an error merely
+ * because zero or several skill sets are selected.
+ */
+const skillSetRoots = {};
+for (const [name, spec] of Object.entries(SKILL_SETS)) {
+  const overrideApplies = skillsRootOverride !== null
+    && (selectedSkillSets.length === 1 ? selectedSkillSets[0] === name : name === "skill-maker");
+  skillSetRoots[name] = overrideApplies ? skillsRootOverride : join(REPO_ROOT, spec.root);
+}
 
 /** A sibling must be a regular file, not merely a path that exists. */
 function isRegularFile(p) {
@@ -199,10 +241,10 @@ const pairs = [];
 // be USED or when it was EXPLICITLY given: `--set skill-maker --root /nonexistent` still names a bad
 // path, so selecting a set must not exempt the other root from validation.
 const explicitRoot = flagValue("--root") !== null;
-const explicitSkillsRoot = flagValue("--root-skills") !== null;
+const explicitSkillsRoot = skillsRootOverride !== null;
 for (const [name, root, explicit] of [
   ["instructions-skill", instructionRoot, explicitRoot],
-  ["skill-maker", skillRoot, explicitSkillsRoot],
+  ...Object.keys(SKILL_SETS).map((name) => [name, skillSetRoots[name], explicitSkillsRoot]),
 ]) {
   if (!explicit && onlySet && onlySet !== name) continue;
   if (!existsSync(root) || !statSync(root).isDirectory()) {
@@ -221,17 +263,22 @@ for (const [name, root, explicit] of [
 for (const [en, ko] of INSTRUCTION_PAIRS) {
   pairs.push({ set: "instructions-skill", root: instructionRoot, en, ko });
 }
-const discovered = discoverPairs(skillRoot);
+const discovered = discoverPairs(skillSetRoots["skill-maker"]);
 for (const [en, ko] of discovered.pairs) {
-  pairs.push({ set: "skill-maker", root: skillRoot, en, ko });
+  pairs.push({ set: "skill-maker", root: skillSetRoots["skill-maker"], en, ko });
+}
+for (const [name, list] of Object.entries(EXPLICIT_SKILL_PAIRS)) {
+  for (const [en, ko] of list) {
+    pairs.push({ set: name, root: skillSetRoots[name], en, ko });
+  }
 }
 
 // Every configured set must yield at least one pair. A wrong root makes a whole set vanish silently,
 // and without this check `--root-skills /nonexistent` would check only the instruction set and still
 // report PARITY-FAILURES=0 - the same false green in a new place.
-for (const name of onlySet ? [onlySet] : ["instructions-skill", "skill-maker"]) {
+for (const name of onlySet ? [onlySet] : ["instructions-skill", ...Object.keys(SKILL_SETS)]) {
   if (!pairs.some((pair) => pair.set === name)) {
-    const root = name === "skill-maker" ? skillRoot : instructionRoot;
+    const root = name === "instructions-skill" ? instructionRoot : skillSetRoots[name];
     console.error(`ARGUMENT-ERROR: the ${name} set has no pairs; its root looks wrong (${root})`);
     process.exit(2);
   }
@@ -241,7 +288,7 @@ const selected = onlySet ? pairs.filter((pair) => pair.set === onlySet) : pairs;
 
 // A valid set is never empty; an empty selection would report success while checking nothing.
 if (selected.length === 0) {
-  console.error(`ARGUMENT-ERROR: the selection matched no pairs (set=${onlySet ?? "all"}, root=${skillRoot})`);
+  console.error(`ARGUMENT-ERROR: the selection matched no pairs (set=${onlySet ?? "all"})`);
   process.exit(2);
 }
 
