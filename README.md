@@ -102,6 +102,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 /prd-maker "<아이디어>"  # 다이어그램·플로우·와이어프레임을 포함한 기획 패키지
 /pre-deploy           # 배포 전 lint/타입/빌드 게이트
 /eli5 "<주제>"        # 독자 수준에 맞추되 정확성과 주의점을 보존한 설명
+/eli5 "<주제>" html   # 같은 설명을 구조 뷰(HTML)로, pdf를 붙이면 인쇄용 PDF까지
 ```
 
 자연어로도 트리거됩니다 — 예: "이 프로젝트 README 다시 써줘" → `readme-maker`, "이 저장소에 맞는 AGENTS.md 만들어줘" → `agent-md-maker`, "방금 변경 사항 커밋하고 푸시" → `git-maker`.
@@ -178,7 +179,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 |------|------|------|
 | `execute` | 난이도 적응형 사고 깊이로 즉시 작업 수행 | All |
 | `adhd-explainer` | 답을 파묻지 않는 ADHD 친화적 출력 — 행동 우선, 번호 단계, 진행 상태 재고지, 발송 전 게이트 | All |
-| `eli5` | 독자의 목표·사전 지식에 맞춰 정확성, 비유 한계, 핵심 주의점을 보존한 쉬운 설명 | All |
+| `eli5` | 독자의 목표·사전 지식에 맞춰 정확성, 비유 한계, 핵심 주의점을 보존한 쉬운 설명. 요청 시 같은 설명을 `md`·`html`·`pdf` 산출물과 구조 뷰로도 출력 | All (HTML/PDF 산출물은 `bun` 또는 Node.js 18+ 필요, PDF는 Chromium 계열 브라우저 추가) |
 
 ### 에이전트 조정
 
