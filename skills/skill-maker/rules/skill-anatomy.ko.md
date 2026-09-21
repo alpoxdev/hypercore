@@ -189,7 +189,7 @@ Claude는 명세 위에 제약을 더합니다. 이것을 어긴 스킬은 Claud
 | Codex의 2%·8,000자 목록 예산, 먼저 줄이고 이후 생략, 생략 경고 | <https://learn.chatgpt.com/docs/build-skills> |
 | 제한적 경계가 아니라 호출 턴에 대한 허용적 부여로서의 `allowed-tools` | <https://code.claude.com/docs/en/skills> |
 | 파싱은 되지만 강제 가능한 권한 경계로 확립되지 않은 `allowed-tools` | `instructions/cli/jcode/README.md` |
-| 첫 줄 규칙을 이미 강제하는 두 게이트 | `skills/skill-maker/scripts/validate-skill-maker.mjs`, `skills/skill-tester/scripts/validate-skills-corpus.mjs` |
+| 첫 줄 규칙을 이미 강제하는 게이트 | `skills/skill-maker/scripts/validate-skill-maker.mjs` |
 | 38개 스킬·14,641자 측정 | 이 저장소, 2026-09-20 측정 |
 
 ### 증거 등급

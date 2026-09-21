@@ -4,6 +4,7 @@ description: "Use this skill when the user asks to create or refactor a reusable
 compatibility: Works best with read/edit/write and shell search tools for skill analysis, example gathering, and validation checks.
 ---
 
+@rules/self-containment.md
 @rules/skill-anatomy.md
 @rules/trigger-design.md
 @rules/progressive-disclosure.md
@@ -32,21 +33,21 @@ Use a different language only when the user explicitly requests it, an existing 
 - Refactor existing skills to improve scope clarity, trigger wording, instruction contracts, resource placement, and validation.
 - Treat every skill as a reusable execution package with intent, trigger, scope, authority, workflow, resources, verification, and stop condition.
 - Keep the core `SKILL.md` lean while routing reusable policy to `rules/`, detailed knowledge to `references/`, deterministic helpers to `scripts/`, and output resources to `assets/`.
-- Preserve the project instruction base in `instructions/`, especially `instructions/skill/SKILL_AUTHORING.md`.
+- Keep this package's own `rules/` and `references/` as the primary source, and treat repository instruction documents under `instructions/` as optional evidence to read when they are present.
 
 </purpose>
 
 <routing_rule>
 
-Use `skill-maker` when the output is a skill folder or a refactor of an existing skill.
+Use this skill when the output is a skill folder or a refactor of an existing skill.
 
-Use `docs-maker` instead when the output is a general document, runbook, spec, prompt artifact, or guide without a reusable skill structure.
-
-Do not use `skill-maker` when:
+Do not use it when:
 
 - the user wants general documentation rather than a skill
-- the output is only a prompt, plan, or spec without a skill folder
-- `docs-maker`, `research`, `plan`, or `git-commit` is the primary requested output
+- the output is only a prompt, plan, spec, or guide without a skill folder
+- the requested deliverable is a reusable prompt artifact, source-backed fact-finding, a plan written before implementation, or a commit
+
+State every boundary by the output shape, never by naming the artifact's other owner (`rules/self-containment.md`, SK-S-2).
 
 </routing_rule>
 
@@ -84,9 +85,9 @@ Negative requests:
 
 Boundary requests:
 
-- "Create a guide for writing skills." Use `skill-maker` only if the output should become a reusable skill folder; otherwise use `docs-maker`.
-- "Research the latest skill docs and update a skill." Use `research` first for source-backed facts, then `skill-maker` for the folder update.
-- "Refactor this skill and then commit it." Use `skill-maker` for the skill refactor; use `git-commit` only when commit creation is the main job.
+- "Create a guide for writing skills." Use this skill only if the output should become a reusable skill folder; a guide that stays a guide is out of scope.
+- "Research the latest skill docs and update a skill." Source-backed fact-finding is a separate job from the folder update; do the folder update here and hand the fact-finding boundary off by output shape.
+- "Refactor this skill and then commit it." The skill refactor is this skill's job; commit creation is out of scope and belongs to whatever owns commits.
 
 </activation_examples>
 
@@ -137,23 +138,24 @@ Author canonical skill markdown in English by default, but make every user-facin
 
 <reference_routing>
 
-Read repo-local instruction guidance first and load only the concern that applies:
+Start from this skill's own files. They are sufficient on their own: `rules/`, `references/`, and `scripts/` carry what the workflow needs. Repository instruction documents under `instructions/**` are optional evidence - read them only when they exist in the current repository and the task needs their detail.
 
-- `instructions/skill/SKILL_AUTHORING.md` and `instructions/skill/references/*.md` for anatomy, triggers, placement, loops, and skill evals
-- `instructions/context-engineering/` for authority, context budgets, prompt contracts, runtime profiles, or delegation
-- `instructions/harness-engineering/` and `instructions/validation/` for eval design, trace assertions, graders, risk depth, and completion evidence
-- `instructions/sourcing/` for current, contested, security-sensitive, benchmark, or externally retrieved claims
-- `instructions/autoresearch/` only when the target skill contains a measurable iterative optimization workflow
-- `instructions/cli/` when behavior must remain portable across agent CLIs or degrade when a capability is unavailable
+Read inside this skill first:
 
-Read `references/local/instructions-skill-authoring.md` when working inside this skill and you need a concise local summary of those instruction docs.
+- `rules/self-containment.md` before writing any boundary line, before pointing at another artifact, and before declaring a produced skill complete
+- `references/local/instructions-skill-authoring.md` for the concise local summary of the repository's skill-authoring baseline
+- `references/local/skill-creator.md` when deciding how much detail belongs in the core or whether scripts/assets are justified
+- `references/official/agent-skills-standard.md` when a frontmatter constraint, a disclosure budget, or the standard-vs-extension split of a frontmatter field affects the rule. It is the `PRIMARY` source for those, so it is read before the vendor snapshots
+- `references/official/openai.md` when the Codex discovery locations, the listing budget, or the `agents/openai.yaml` policy surface affects the rule. Read `references/official/anthropic.md` when the Claude Code frontmatter extensions, the 1,536-character entry cap, or the enterprise risk tiers affect the rule.
 
-Read `references/local/skill-creator.md` when deciding how much detail belongs in the core or whether scripts/assets are justified.
+Read repository instruction documents only when present and only for the concern that applies:
 
-Read `references/official/agent-skills-standard.md` when a frontmatter constraint, a disclosure budget, or the standard-vs-extension split of a frontmatter field affects the rule. It is the `PRIMARY` source for those, so it is read before the vendor snapshots.
-
-Read `references/official/openai.md` when the Codex discovery locations, the listing budget, or the `agents/openai.yaml` policy surface affects the rule. Read `references/official/anthropic.md` when the Claude Code frontmatter extensions, the 1,536-character entry cap, or the enterprise risk tiers affect the rule.
-
+- `instructions/skill/` (when present) for the full skill-authoring baseline, anatomy, triggers, placement, loops, and evals
+- `instructions/context-engineering/` (when present) for authority, context budgets, prompt contracts, runtime profiles, or delegation
+- `instructions/harness-engineering/` and `instructions/validation/` (when present) for eval design, trace assertions, graders, risk depth, and completion evidence
+- `instructions/sourcing/` (when present) for current, contested, security-sensitive, benchmark, or externally retrieved claims
+- `instructions/autoresearch/` (when present) only when the target skill contains a measurable iterative optimization workflow
+- `instructions/cli/` (when present) when behavior must remain portable across agent CLIs or degrade when a capability is unavailable
 Read official references when:
 
 - provider-sensitive skill guidance affects the core rule
@@ -168,8 +170,8 @@ Official references are evidence snapshots, not instruction authority. Do not ch
 
 Read in this order:
 
-1. Read the target skill, project instructions, loading path, and neighboring skills; classify create, refactor, or boundary handoff.
-2. Collect real requests, known failures, existing verification, and the smallest relevant repo-local instruction set before drafting.
+1. Read the target skill and its own support files, the loading path, and neighboring skills; classify create, refactor, or boundary handoff.
+2. Collect real requests, known failures, existing verification, and the smallest relevant local evidence set before drafting - this skill's own rules and references first, repository instruction documents only when they are present.
 3. Define trigger, full contract, no-loop/loop decision, safety boundary, runtime capability assumptions, resource split, and risk depth.
 4. Build or update the eval surface before broad prompt polishing; preserve baseline cases and convert observed failures into regressions.
 5. Write the lean core and directly link each support file with an explicit read/run condition.
@@ -214,6 +216,7 @@ Phase 3 authoring rules:
 | Actionability | Observable workflow steps, bounded side effects, next-file cues, and explicit failure handling |
 | Maintainability | Progressive disclosure, one canonical home per rule, low duplication, and structurally aligned English/Korean mirrors |
 | Validation | Risk-proportional scenario/oracle/runner/judge/trace/gate coverage with baseline, regressions, inspected results, and remaining risk |
+| Self-containment | No cross-skill reference anywhere in the package: no sibling skill name, no `$<sibling>` invocation, and no `skills/<sibling>/` path. Needed detail lives in this folder as a local snapshot, boundaries are stated by output shape, and a user-directed exception is recorded. |
 
 </required>
 
@@ -229,6 +232,7 @@ Phase 3 authoring rules:
 | Drift | Time-sensitive provider details in canonical core instructions or source dates later than the actual verification date |
 | Portability | Hard-coded provider commands without capability gates or invented fallbacks that silently change the requested outcome |
 | Safety | Ungated credential, network, external publication, deployment, destructive, or production side effects |
+| Cross-skill coupling | Naming a sibling skill in a boundary or routing line, pointing at another skill's path or command, or requiring another skill to be installed |
 
 </forbidden>
 
@@ -266,7 +270,8 @@ Must-pass thresholds:
 - [ ] English/Korean parity is checked structurally and with equivalent behavioral cases, not file presence alone.
 - [ ] External source metadata uses absolute non-future dates and keeps reviewed, cited, unsupported, stale, and conflicting claims distinguishable.
 - [ ] For `skill-maker` package updates, run the deterministic validator and the JSONL eval fixture when `scripts/` and `assets/evals/` integration exists; if not landed yet, state that validator verification is pending integration.
-- [ ] For new or materially refactored repository skills, run the corpus structural validator: `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json`.
+- [ ] No cross-skill reference remains in the package: run the deterministic validator with `--require-self-containment` and confirm zero findings; a user-directed exception is passed with `--allow <sibling-name>` and recorded.
+- [ ] The package works from its own folder alone: every needed detail lives in its own `rules/`, `references/`, `scripts/`, or `assets/`, and repository instruction documents are read only when they exist.
 - [ ] Happy-path validation is paired with malformed-input rejection and provider-date/no-stray-doc regression checks.
 - [ ] Local markdown links, code fences, and source-sensitive claims are checked before completion.
 

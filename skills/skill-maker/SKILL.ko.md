@@ -4,6 +4,7 @@ description: 사용자가 재사용 가능한 Codex 스킬 폴더를 만들거�
 compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/write 및 셸 검색 도구가 있는 환경에서 가장 잘 동작합니다.
 ---
 
+@rules/self-containment.ko.md
 @rules/skill-anatomy.ko.md
 @rules/trigger-design.ko.md
 @rules/progressive-disclosure.ko.md
@@ -32,21 +33,21 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 - 기존 스킬의 범위, 트리거, instruction contract, 자원 배치, 검증 구조를 개선합니다.
 - 모든 스킬을 intent, trigger, scope, authority, workflow, resources, verification, stop condition을 가진 재사용 실행 패키지로 다룹니다.
 - 코어 `SKILL.md`는 얇게 유지하고 반복 정책은 `rules/`, 상세 지식은 `references/`, 결정적 helper는 `scripts/`, 출력 자원은 `assets/`로 내립니다.
-- 특히 `instructions/skill/SKILL_AUTHORING.md`를 포함한 프로젝트 instruction base를 보존합니다.
+- 이 패키지의 `rules/`와 `references/`를 1차 근거로 쓰고, `instructions/` 아래 저장소 지침 문서는 있을 때 읽는 선택적 근거로 다룹니다.
 
 </purpose>
 
 <routing_rule>
 
-출력이 스킬 폴더이거나 기존 스킬 리팩토링일 때 `skill-maker`를 사용합니다.
+출력이 스킬 폴더이거나 기존 스킬 리팩토링일 때 이 스킬을 사용합니다.
 
-출력이 재사용 가능한 스킬 구조가 아닌 일반 문서, 런북, 명세, 프롬프트 산출물, 가이드라면 `docs-maker`를 사용합니다.
-
-다음 경우에는 `skill-maker`를 쓰지 않습니다.
+다음 경우에는 쓰지 않습니다.
 
 - 일반 문서가 필요할 뿐 스킬이 필요하지 않은 경우
-- 결과물이 스킬 폴더 없이 프롬프트, 계획, 명세만인 경우
-- `docs-maker`, `research`, `plan`, `git-commit`이 주된 요청 결과물인 경우
+- 결과물이 스킬 폴더 없이 프롬프트, 계획, 명세, 가이드만인 경우
+- 요청한 결과물이 재사용 가능한 프롬프트 산출물, 출처 기반 사실 조사, 구현 전 계획, 커밋인 경우
+
+모든 경계는 그 산출물을 소유한 다른 주체의 이름이 아니라 산출물의 형태로 씁니다(`rules/self-containment.md`, SK-S-2).
 
 </routing_rule>
 
@@ -84,9 +85,9 @@ compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/w
 
 경계 요청:
 
-- "스킬 작성 가이드를 만들어줘." 결과물이 재사용 가능한 스킬 폴더여야 할 때만 `skill-maker`를 쓰고, 그렇지 않으면 `docs-maker`를 사용합니다.
-- "최신 skill 문서를 조사하고 스킬을 업데이트해줘." 출처 기반 사실 조사는 `research`를 먼저 쓰고, 폴더 갱신은 `skill-maker`가 맡습니다.
-- "이 스킬을 고치고 나서 커밋까지 해줘." 스킬 리팩토링은 `skill-maker`, 커밋 생성이 핵심이면 `git-commit`이 맡습니다.
+- "스킬 작성 가이드를 만들어줘." 결과물이 재사용 가능한 스킬 폴더여야 할 때만 이 스킬을 씁니다. 가이드로 남는 산출물은 범위 밖입니다.
+- "최신 skill 문서를 조사하고 스킬을 업데이트해줘." 출처 기반 사실 조사는 폴더 갱신과 다른 일입니다. 폴더 갱신은 이 스킬이 맡고, 조사 경계는 산출물 형태로 넘깁니다.
+- "이 스킬을 고치고 나서 커밋까지 해줘." 스킬 리팩터링은 이 스킬의 일이고, 커밋 생성은 범위 밖이며 커밋을 소유한 주체의 일입니다.
 
 </activation_examples>
 
@@ -137,19 +138,24 @@ canonical 스킬 마크다운은 기본적으로 영어로 작성하되, 스킬�
 
 <reference_routing>
 
-repo-local instruction guidance를 먼저 읽고 해당 concern만 선택적으로 로드합니다.
+이 스킬의 자기 파일에서 시작합니다. 그 파일들만으로 충분합니다: `rules/`, `references/`, `scripts/`가 workflow에 필요한 내용을 담고 있습니다. `instructions/**` 아래 저장소 지침 문서는 선택적 근거이며, 현재 저장소에 그 문서가 있고 작업에 그 내용이 필요할 때만 읽습니다.
 
-- Anatomy, trigger, placement, loop, skill eval은 `instructions/skill/SKILL_AUTHORING.md`와 `instructions/skill/references/*.md`
-- Authority, context budget, prompt contract, runtime profile, delegation은 `instructions/context-engineering/`
-- Eval design, trace assertion, grader, risk depth, completion evidence는 `instructions/harness-engineering/`와 `instructions/validation/`
-- Current, contested, security-sensitive, benchmark, externally retrieved claim은 `instructions/sourcing/`
-- Target skill에 측정 가능한 iterative optimization workflow가 있을 때만 `instructions/autoresearch/`
-- Agent CLI 간 portability 또는 capability 부재 시 degradation이 필요하면 `instructions/cli/`
+먼저 이 스킬 안의 파일을 읽습니다.
 
-이 스킬 안에서 위 instruction docs의 짧은 요약이 필요하면 `references/local/instructions-skill-authoring.ko.md`를 읽습니다.
+- 경계 문장을 쓰기 전, 다른 산출물을 가리키기 전, 만든 스킬의 완료를 선언하기 전에 `rules/self-containment.md`
+- 저장소 skill-authoring baseline의 짧은 로컬 요약이 필요하면 `references/local/instructions-skill-authoring.ko.md`
+- 코어에 어느 정도 상세를 남길지, scripts/assets가 정당한지 판단할 때는 `references/local/skill-creator.ko.md`
+- Frontmatter 제약, disclosure budget, frontmatter 필드의 standard-vs-extension 구분이 규칙에 영향을 줄 때 `references/official/agent-skills-standard.md`. 해당 항목의 `PRIMARY` 출처이므로 벤더 스냅샷보다 먼저 읽습니다
+- Codex 탐색 위치, listing budget, `agents/openai.yaml` 정책 면이 규칙에 영향을 줄 때 `references/official/openai.md`. Claude Code frontmatter 확장, 1,536자 entry 상한, enterprise risk tier가 영향을 줄 때 `references/official/anthropic.md`
 
-코어에 어느 정도 상세를 남길지, scripts/assets가 정당한지 판단할 때는 `references/local/skill-creator.ko.md`를 읽습니다.
+저장소 지침 문서는 있을 때만, 해당 concern에 대해서만 읽습니다.
 
+- `instructions/skill/`(있을 때만) - 전체 skill-authoring baseline, anatomy, trigger, placement, loop, eval
+- `instructions/context-engineering/`(있을 때만) - authority, context budget, prompt contract, runtime profile, delegation
+- `instructions/harness-engineering/`와 `instructions/validation/`(있을 때만) - eval design, trace assertion, grader, risk depth, completion evidence
+- `instructions/sourcing/`(있을 때만) - current, contested, security-sensitive, benchmark, externally retrieved claim
+- `instructions/autoresearch/`(있을 때만) - target skill에 측정 가능한 iterative optimization workflow가 있을 때
+- `instructions/cli/`(있을 때만) - agent CLI 간 portability 또는 capability 부재 시 degradation이 필요할 때
 frontmatter 제약, 공개 예산, 또는 frontmatter 필드의 표준·확장 구분이 규칙에 영향을 줄 때는 `references/official/agent-skills-standard.md`를 읽습니다. 그 항목들의 `PRIMARY` 출처이므로 vendor 스냅샷보다 먼저 읽습니다.
 
 Codex 발견 위치, 목록 예산, `agents/openai.yaml` 정책 표면이 규칙에 영향을 줄 때는 `references/official/openai.md`를 읽습니다. Claude Code frontmatter 확장, 1,536자 항목 한도, 엔터프라이즈 위험 등급이 규칙에 영향을 줄 때는 `references/official/anthropic.md`를 읽습니다.
@@ -168,8 +174,8 @@ Codex 발견 위치, 목록 예산, `agents/openai.yaml` 정책 표면이 규칙
 
 다음 순서로 읽습니다.
 
-1. 대상 스킬, 프로젝트 instructions, loading path, 이웃 스킬을 읽고 create, refactor, boundary handoff를 분류합니다.
-2. 작성 전에 실제 요청, 알려진 실패, 기존 verification과 가장 작은 관련 repo-local instruction set을 수집합니다.
+1. 대상 스킬과 그 스킬의 support file, loading path, 이웃 스킬을 읽고 create, refactor, boundary handoff를 분류합니다.
+2. 작성 전에 실제 요청, 알려진 실패, 기존 verification과 가장 작은 관련 로컬 evidence set을 수집합니다. 이 스킬의 `rules/`와 `references/`를 먼저 보고, 저장소 지침 문서는 있을 때만 봅니다.
 3. Trigger, 전체 contract, no-loop/loop 결정, safety boundary, runtime capability assumption, resource split, risk depth를 정의합니다.
 4. 넓은 prompt polishing 전에 eval surface를 만들거나 갱신하고 baseline case를 보존하며 관측된 실패를 regression으로 바꿉니다.
 5. Lean core를 작성하고 모든 support file을 명시적 read/run condition과 함께 직접 연결합니다.
@@ -214,6 +220,7 @@ Phase 3 작성 규칙:
 | Actionability | Observable workflow steps, bounded side effects, next-file cues, explicit failure handling |
 | Maintainability | Progressive disclosure, rule마다 하나의 canonical home, 낮은 중복, 구조적으로 정렬된 영어/한국어 mirror |
 | Validation | Risk-proportional scenario/oracle/runner/judge/trace/gate coverage, baseline, regressions, inspected results, remaining risk |
+| Self-containment | 패키지 어디에도 다른 스킬 참조가 없음: 형제 스킬 이름, `$<형제>` 호출, `skills/<형제>/` 경로가 모두 0건. 필요한 내용은 이 폴더에 로컬 스냅샷으로 두고, 경계는 산출물 형태로 쓰며, 사용자 지시 예외는 기록함 |
 
 </required>
 
@@ -229,6 +236,7 @@ Phase 3 작성 규칙:
 | Drift | Canonical core instructions의 time-sensitive provider details 또는 실제 verification date보다 미래인 source date |
 | Portability | Capability gate 없는 hard-coded provider command 또는 요청 outcome을 조용히 바꾸는 invented fallback |
 | Safety | Gate되지 않은 credential, network, external publication, deployment, destructive, production side effect |
+| Cross-skill coupling | 경계나 routing 문장에 형제 스킬 이름을 쓰거나, 다른 스킬의 경로나 명령을 가리키거나, 다른 스킬 설치를 요구함 |
 
 </forbidden>
 
@@ -266,7 +274,8 @@ Must-pass thresholds:
 - [ ] English/Korean parity를 file presence만이 아니라 구조와 동등한 behavioral cases로 확인함.
 - [ ] External source metadata가 absolute non-future date를 쓰고 reviewed, cited, unsupported, stale, conflicting claim을 구분함.
 - [ ] `skill-maker` package update라면 `scripts/`와 `assets/evals/` integration이 존재할 때 deterministic validator와 JSONL eval fixture를 실행함. 아직 landed되지 않았다면 validator verification이 integration pending임을 명시함.
-- [ ] 새 repository skill 또는 실질적으로 refactor한 repository skill에는 corpus structural validator를 실행함: `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json`.
+- [ ] 패키지에 다른 스킬 참조가 남아 있지 않음: deterministic validator를 `--require-self-containment`로 돌려 발견 항목 0건을 확인함. 사용자 지시 예외는 `--allow <형제 이름>`으로 넘기고 기록함.
+- [ ] 패키지가 자기 폴더만으로 동작함: 필요한 내용이 모두 자기 `rules/`, `references/`, `scripts/`, `assets/`에 있고, 저장소 지침 문서는 있을 때만 읽음.
 - [ ] Happy-path validation은 malformed-input rejection과 provider-date/no-stray-doc regression check와 함께 수행함.
 - [ ] 완료 전 local markdown links, code fences, source-sensitive claims를 확인함.
 

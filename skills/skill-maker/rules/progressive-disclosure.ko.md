@@ -70,7 +70,8 @@ For more information, see references/.
 ```markdown
 Read `references/official/openai.md` only when Codex-specific skill behavior changes the rule.
 Read `rules/validation-and-iteration.md` before declaring the skill complete.
-Run the target package's documented validator when present, and run `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json` for repository-skill structural checks.
+Run the target package's documented validator when present.
+A repository-maintenance gate stays in the repository's policy documents, not in the skill artifact (`rules/self-containment.md`, SK-S-1).
 ```
 
 ## 5. 한 단계 깊이
