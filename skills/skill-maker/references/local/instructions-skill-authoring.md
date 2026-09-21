@@ -5,6 +5,10 @@ stays self-contained, and it is a summary rather than a copy: where this file an
 base wins. The commit pin is deliberate - it lets a reader tell a stale snapshot from drift, because the
 base moves on its own schedule.
 
+**Edited 2026-09-21**, with the user's approval that lifted the earlier freeze on this copy: the
+neighboring-skill names in the trigger baseline were removed and the `SK-P-2` row was added, so the copy
+no longer names another skill.
+
 Source provenance:
 
 - Root instruction map: `../../../../instructions/README.md`
@@ -80,6 +84,7 @@ file named in each row for the exact wording.
 | Family | Where it lives | What it governs |
 |---|---|---|
 | `SK-P-1` | `SKILL_AUTHORING.md` | Match the level of instruction detail to how easily the task breaks |
+| `SK-P-2` | `SKILL_AUTHORING.md` | Self-contained by default: a skill works from its own folder alone, and a cross-skill reference exists only when the user explicitly asks for one |
 | `SK-O-1` .. `SK-O-4` | `references/trigger-design.md` | Description optimization: train/validation split, the best iteration may not be the last, the 1024-character re-check, and changing structure over adding adjectives |
 | `SK-J-1` .. `SK-J-6` | `SKILL_AUTHORING.md` | Trigger judgement: never judge from a single run, 3 runs per query as the starting count, the 0.5 default threshold with above/below semantics, recording the case and repetition counts together, not comparing results across different repetition counts, and keeping the trigger-rate distribution rather than only per-case pass/fail |
 | `SK-V-1` .. `SK-V-4` | `references/validation.md` | The paired with/without baseline, the previous-version snapshot, no improvement claim without a baseline, and removing assertions that pass in both arms |
@@ -92,7 +97,7 @@ file named in each row for the exact wording.
 A new or materially changed skill should include:
 
 - `description` that states both what the skill does and when to use it, written in third person
-- a boundary against neighboring skills such as `docs-maker`, `prompt-maker`, `research`, `plan`, and `git-commit`
+- a boundary stated by output shape rather than by naming another artifact's owner
 - trigger cases that cover the composed groups rather than a count
 
 **Composition, not counts.** No consulted source states a validated case count, so the base requires

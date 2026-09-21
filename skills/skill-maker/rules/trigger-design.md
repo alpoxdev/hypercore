@@ -136,24 +136,27 @@ The measured overlap in this repository, 2026-09-20:
 
 | Token | Skills sharing it |
 |---|---|
-| `refactor` | 5, including `skill-maker`, `docs-maker`, `prompt-maker`, `readme-maker`, `agent-md-maker` |
+| `refactor` | 5, including this skill and four sibling artifact-authoring skills |
 | `create` | 12 |
 
-So `skill-maker`'s nearest neighbors are the four skills sharing `refactor`, and the coexistence case
+So this skill's nearest neighbors are the four skills sharing `refactor`, and the coexistence case
 must distinguish a reusable *skill folder* from a reusable *prompt*, *document*, or *instruction file*.
+The measurement above names counts, not the neighbors: a rule file that names them would stop being
+usable on its own (`rules/self-containment.md`, SK-S-2).
 
 ## 8. Scope Boundaries
 
-State what the skill does not own.
+State what the skill does not own. Describe every boundary by the output shape, never by naming the skill
+that owns it (`rules/self-containment.md`, SK-S-2).
 
 Examples:
 
-- use `docs-maker` for generic documentation work
-- use `prompt-maker` when the deliverable is a reusable prompt rather than a skill folder
-- use `skill-maker` when the output is a skill folder or skill refactor
-- use `research` when source-backed fact-finding is the main job
-- use `plan` when planning before implementation is the main job
-- use `git-commit` when commit creation is the main job
+- this skill owns a skill folder or a skill refactor
+- a general document, runbook, or guide is out of scope
+- a reusable prompt artifact is out of scope
+- source-backed fact-finding is out of scope
+- planning before implementation is out of scope
+- commit creation is out of scope
 
 ## 9. Anti-Patterns
 

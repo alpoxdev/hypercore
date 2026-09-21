@@ -9,6 +9,8 @@ import process from "node:process";
  *   root: string,
  *   evals: string,
  *   json: boolean,
+ *   requireSelfContainment: boolean,
+ *   allow: string[],
  *   help?: boolean
  * }} CliArgs
  *
@@ -112,6 +114,8 @@ function parseArgs(argv) {
     root: "skills/skill-maker",
     evals: "skills/skill-maker/assets/evals/skill-maker-cases.jsonl",
     json: false,
+    requireSelfContainment: false,
+    allow: /** @type {string[]} */ ([]),
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -120,6 +124,10 @@ function parseArgs(argv) {
       args.root = requireValue(argv, (index += 1), arg);
     } else if (arg === "--evals") {
       args.evals = requireValue(argv, (index += 1), arg);
+    } else if (arg === "--require-self-containment") {
+      args.requireSelfContainment = true;
+    } else if (arg === "--allow") {
+      args.allow.push(requireValue(argv, (index += 1), arg));
     } else if (arg === "--json") {
       args.json = true;
     } else if (arg === "--help" || arg === "-h") {
@@ -795,6 +803,119 @@ function checkSourcesSections(root, markdownFiles, sink) {
   return { ok: invalid.length === 0, checked: targets.length, invalid };
 }
 
+/** Text-bearing files a shipped skill can carry; every other extension is treated as a binary asset. */
+const SELF_CONTAINMENT_EXTENSIONS = new Set([
+  ".md", ".jsonl", ".json", ".mjs", ".js", ".sh", ".py", ".html", ".css", ".yml", ".yaml", ".toml", ".txt",
+]);
+
+/**
+ * Sibling skill packages beside the package root, excluding the package itself. A directory counts
+ * only when it carries a `SKILL.md`, so `scripts/` and `fixtures/` are never read as skills.
+ * @param {string} root
+ * @returns {string[]}
+ */
+function siblingSkillNames(root) {
+  const resolved = path.resolve(root);
+  const parent = path.dirname(resolved);
+  const self = path.basename(resolved);
+  /** @type {string[]} */
+  const names = [];
+  /** @type {import("node:fs").Dirent[]} */
+  let entries = [];
+  try {
+    entries = fs.readdirSync(parent, { withFileTypes: true });
+  } catch {
+    return names;
+  }
+  for (const entry of entries) {
+    if (!entry.isDirectory() || entry.name === self) continue;
+    if (!fs.existsSync(path.join(parent, entry.name, "SKILL.md"))) continue;
+    names.push(entry.name);
+  }
+  return names.sort();
+}
+
+/**
+ * A hyphenated sibling name matched as a bare token. `-` counts as a word character here, so an
+ * extended name such as `alpha-maker-fast` is not read as its prefix `alpha-maker`.
+ * @param {string} name
+ * @returns {RegExp}
+ */
+function bareSiblingNameRe(name) {
+  return new RegExp(`(^|[^A-Za-z0-9-])${escapeRegExp(name)}([^A-Za-z0-9-]|$)`, "u");
+}
+
+/**
+ * A `skills/<name>/` path always points into a skills tree, so in strict mode any name other than the
+ * package's own is a cross-skill path even when that skill is not installed beside this package. A
+ * `$<name>` token gets no such generic treatment: vendor runtime built-ins use the same syntax, so that
+ * form stays sibling-based.
+ */
+const SKILLS_PATH_RE = /skills\/([A-Za-z0-9][A-Za-z0-9._-]*)\//gu;
+
+/**
+ * Cross-skill references a package must not carry. Detection covers (a) a hyphenated sibling name as
+ * a bare or backticked token, (b) any sibling name in `$<name>` invocation form, and (c) any sibling
+ * name as a `skills/<name>/` path segment. A single-word sibling name is not detected as prose or in
+ * backticks, because it is indistinguishable from an ordinary word that also names a capability; its
+ * `$<name>` and `skills/<name>/` forms are still detected. In strict mode, rule (c) widens to any
+ * `skills/<name>/` path other than the package's own, so a standalone package whose siblings are absent
+ * is still caught.
+ * @param {string} root
+ * @param {string[]} files
+ * @param {ValidationIssue[]} sink
+ * @param {{ allow?: string[], strict?: boolean, warningSink?: ValidationIssue[] }} [options]
+ * @returns {{ ok: boolean, strict: boolean, siblings: string[], checkedFiles: number, findings: Array<{ path: string, line: number, name: string, form: string }>, waivers: Array<{ path: string, line: number, name: string, form: string }> }}
+ */
+function checkSelfContainment(root, files, sink, options = {}) {
+  const allow = options.allow ?? [];
+  const strict = options.strict === true;
+  const warningSink = options.warningSink ?? sink;
+  const self = path.basename(path.resolve(root));
+  const siblings = siblingSkillNames(root);
+  /** @type {Array<{ path: string, line: number, name: string, form: string }>} */
+  const findings = [];
+  /** @type {Array<{ path: string, line: number, name: string, form: string }>} */
+  const waivers = [];
+  const textFiles = files.filter((filePath) => SELF_CONTAINMENT_EXTENSIONS.has(path.extname(filePath).toLowerCase()));
+
+  for (const filePath of textFiles) {
+    const rel = relative(root, filePath);
+    const lines = readText(filePath).split("\n");
+    for (const [index, line] of lines.entries()) {
+      /** @type {Map<string, string>} */
+      const hits = new Map();
+      for (const name of siblings) {
+        if (line.includes(`$${name}`)) hits.set(`${name}|$${name}`, name);
+        else if (line.includes(`skills/${name}/`)) hits.set(`${name}|skills/${name}/`, name);
+        else if (name.includes("-") && bareSiblingNameRe(name).test(line)) hits.set(`${name}|${name}`, name);
+      }
+      if (strict) {
+        for (const match of line.matchAll(SKILLS_PATH_RE)) {
+          const name = match[1];
+          if (name === self) continue;
+          hits.set(`${name}|skills/${name}/`, name);
+        }
+      }
+      for (const [key, name] of hits) {
+        const form = key.slice(key.indexOf("|") + 1);
+        const finding = { path: rel, line: index + 1, name, form };
+        if (allow.includes(name)) {
+          waivers.push(finding);
+          // A user-directed waiver never fails the package; it stays visible in the warning channel
+          // even when strict mode routes ordinary findings to the error channel.
+          warningSink.push(errorObject("SELF_CONTAINMENT_WAIVER", `User-directed cross-skill reference waiver for ${name}: ${rel}:${index + 1}`, { path: rel, name, form }));
+        } else {
+          findings.push(finding);
+          sink.push(errorObject("CROSS_SKILL_REFERENCE", `Cross-skill reference to ${name} (${form}): ${rel}:${index + 1}`, { path: rel, name, form, line: index + 1 }));
+        }
+      }
+    }
+  }
+
+  return { ok: findings.length === 0, strict, siblings, checkedFiles: textFiles.length, findings, waivers };
+}
+
 /**
  * EN/KO siblings must carry the same set of normative SK-* ids. Zero on both sides is parity.
  * @param {string} root
@@ -972,6 +1093,11 @@ Options:
   --root <dir>     Skill root directory. Defaults to skills/skill-maker.
   --evals <file>   JSONL eval cases. Defaults to assets/evals/skill-maker-cases.jsonl.
   --json           Emit structured JSON.
+  --require-self-containment
+                   Report cross-skill references as errors for any package, not only for the
+                   contract-adopting package. Use it on a skill this authoring skill produced.
+  --allow <name>   Record a user-directed exception for one sibling skill name. Repeatable;
+                   the finding is reported as a waiver warning.
   --help           Show this help.
 `);
 }
@@ -1029,6 +1155,7 @@ function run() {
     officialLastVerifiedGuard: checkOfficialLastVerified(root, errors),
     sourcesSections: checkSourcesSections(root, markdownFiles, contractSink),
     idParity: checkIdParity(root, markdownFiles, errors),
+    selfContainment: checkSelfContainment(root, files, args.requireSelfContainment ? errors : contractSink, { allow: args.allow, strict: args.requireSelfContainment, warningSink: contractFindings }),
     frontmatterConstraints: checkFrontmatterConstraints(root, errors),
     coreLineBudget: checkCoreLineBudget(root, errors),
     referenceToc: checkReferenceToc(root, markdownFiles, errors),
@@ -1043,7 +1170,7 @@ function run() {
 }
 
 /**
- * @returns {{ ok: boolean, contractPackage: boolean, discoveryMetadata: null, requiredSections: null, links: null, codeFences: null, bilingualPairs: null, bilingualCoreParity: null, triggerCases: null, officialLastVerifiedGuard: null, sourcesSections: null, idParity: null, frontmatterConstraints: null, coreLineBudget: null, referenceToc: null, strayDocs: null, warnings: never[], errors: ValidationIssue[] }}
+ * @returns {{ ok: boolean, contractPackage: boolean, discoveryMetadata: null, requiredSections: null, links: null, codeFences: null, bilingualPairs: null, bilingualCoreParity: null, triggerCases: null, officialLastVerifiedGuard: null, sourcesSections: null, idParity: null, selfContainment: null, frontmatterConstraints: null, coreLineBudget: null, referenceToc: null, strayDocs: null, warnings: never[], errors: ValidationIssue[] }}
  */
 function emptyResult() {
   return {
@@ -1059,6 +1186,7 @@ function emptyResult() {
     officialLastVerifiedGuard: null,
     sourcesSections: null,
     idParity: null,
+    selfContainment: null,
     frontmatterConstraints: null,
     coreLineBudget: null,
     referenceToc: null,

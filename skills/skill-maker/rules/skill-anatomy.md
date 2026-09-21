@@ -187,7 +187,7 @@ Keep headings, section order, links, and examples structurally aligned across th
 | The Codex 2% / 8,000-character listing budget, shorten-then-omit, and the omission warning | <https://learn.chatgpt.com/docs/build-skills> |
 | `allowed-tools` as a permissive grant for the invoking turn rather than a restrictive boundary | <https://code.claude.com/docs/en/skills> |
 | `allowed-tools` observed as parsed but not established as an enforceable permission boundary | `instructions/cli/jcode/README.md` |
-| The two gates that already enforce the first-line rule | `skills/skill-maker/scripts/validate-skill-maker.mjs`, `skills/skill-tester/scripts/validate-skills-corpus.mjs` |
+| The gate that already enforces the first-line rule | `skills/skill-maker/scripts/validate-skill-maker.mjs` |
 | The 38-skill / 14,641-character measurement | this repository, measured 2026-09-20 |
 
 ### Evidence grade
