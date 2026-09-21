@@ -1208,3 +1208,50 @@ test("hermes generator writes a skill as a complete directory tree in one apply 
     rmSync(fixture, { recursive: true, force: true });
   }
 });
+
+test("self-containment check catches cross-skill references, including with no sibling present", () => {
+  const fixture = mkdtempSync(join(tmpdir(), "hypercore-self-containment-"));
+  const validator = join(root, "skills/skill-maker/scripts/validate-skill-maker.mjs");
+  const evals = join(root, "skills/skill-maker/assets/evals/skill-maker-cases.jsonl");
+  /** @param {string} name */
+  const frontmatter = (name) => `---\nname: ${name}\ndescription: fixture package\n---\n`;
+  /** @param {string} stdout */
+  const parse = (stdout) => JSON.parse(stdout);
+  /** @param {string} stdout */
+  const errorCodes = (stdout) => parse(stdout).errors.map((error) => error.code);
+  /** @param {string} stdout */
+  const warningCodes = (stdout) => parse(stdout).warnings.map((warning) => warning.code);
+  try {
+    mkdirSync(join(fixture, "skills/sibling-one"), { recursive: true });
+    mkdirSync(join(fixture, "skills/sibling-two"), { recursive: true });
+    mkdirSync(join(fixture, "skills/target-pkg"), { recursive: true });
+    writeFileSync(join(fixture, "skills/sibling-one/SKILL.md"), frontmatter("sibling-one"));
+    writeFileSync(join(fixture, "skills/sibling-two/SKILL.md"), frontmatter("sibling-two"));
+    writeFileSync(join(fixture, "skills/target-pkg/SKILL.md"), `${frontmatter("target-pkg")}\nSee skills/sibling-one/ and $sibling-two.\n`);
+
+    // A package that does not adopt the contract reports the finding as a warning.
+    const warned = run([process.execPath, validator, "--root", join(fixture, "skills/target-pkg"), "--evals", evals, "--json"], fixture);
+    expect(errorCodes(warned.stdout)).not.toContain("CROSS_SKILL_REFERENCE");
+    expect(warningCodes(warned.stdout)).toContain("CROSS_SKILL_REFERENCE");
+
+    // Strict mode promotes it to an error.
+    const strict = run([process.execPath, validator, "--root", join(fixture, "skills/target-pkg"), "--evals", evals, "--require-self-containment", "--json"], fixture);
+    expect(strict.exitCode).not.toBe(0);
+    expect(errorCodes(strict.stdout)).toContain("CROSS_SKILL_REFERENCE");
+
+    // A user-directed waiver stays visible without failing the package.
+    const waived = run([process.execPath, validator, "--root", join(fixture, "skills/target-pkg"), "--evals", evals, "--require-self-containment", "--allow", "sibling-one", "--allow", "sibling-two", "--json"], fixture);
+    expect(errorCodes(waived.stdout)).not.toContain("CROSS_SKILL_REFERENCE");
+    expect(warningCodes(waived.stdout)).toContain("SELF_CONTAINMENT_WAIVER");
+
+    // Standalone tree: the named sibling does not exist, and strict mode still catches the path.
+    mkdirSync(join(fixture, "lonely/skills/lonely-pkg"), { recursive: true });
+    writeFileSync(join(fixture, "lonely/skills/lonely-pkg/SKILL.md"), `${frontmatter("lonely-pkg")}\nA stale pointer: skills/ghost-skill/ is not here.\n`);
+    const lonely = run([process.execPath, validator, "--root", join(fixture, "lonely/skills/lonely-pkg"), "--evals", evals, "--require-self-containment", "--json"], fixture);
+    expect(lonely.exitCode).not.toBe(0);
+    expect(errorCodes(lonely.stdout)).toContain("CROSS_SKILL_REFERENCE");
+    expect(parse(lonely.stdout).selfContainment.siblings).toEqual([]);
+  } finally {
+    rmSync(fixture, { recursive: true, force: true });
+  }
+});
