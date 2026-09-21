@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 37개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 38개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -123,6 +123,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `hermes-agent-maker` | Hermes Agent 산출물(skill, native/portable plugin, `SOUL.md`, `AGENTS.md`, USER/MEMORY draft) 생성 | Bun 또는 Node.js |
 | `prd-maker` | 증거 기반 Living PRD + 다이어그램·플로우·와이어프레임 생성 | All |
 | `design-md-maker` | 프로젝트별 `DESIGN.md` 디자인 시스템 문서 생성 및 갱신 | All |
+| `prompt-maker` | 재사용 가능한 프롬프트·역할 프롬프트·프롬프트 템플릿/팩·프롬프트 eval 픽스처 생성 및 리팩터링 | All |
 
 ### 아키텍처 가드
 
@@ -190,6 +191,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | 스킬 | 설명 | 호환 |
 |------|------|------|
 | `color-cli` | `@kood/color-cli` 기반 hex / rgb / oklch 색상 변환 | All |
+| `naver-api` | Naver API HUB 검색·DataLab 검색어 트렌드·쇼핑인사이트 조회와 CLI 초기 설정·자격 증명 검증 | Node.js 20+; network; Naver API HUB credentials |
 
 총 38개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
@@ -236,7 +238,7 @@ hypercore/
 │       └── color/         # @kood/color-cli — color-cli 스킬이 호출
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/sourcing/validation)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
-└── skills/                # 37개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 38개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:
