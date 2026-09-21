@@ -178,3 +178,60 @@ Before declaring completion:
 ## stop_condition
 
 Stop only when the requested prompt artifacts exist, critical risk-matched gates pass, eval and schema evidence has been inspected, language/runtime behavior is reconciled where applicable, and residual risk is reported. Ask or block when missing authority, context, evidence, capability, approval, or target-runtime information materially changes the requested outcome.
+
+## required
+
+| Category | Required |
+|---|---|
+| Scope | Owned and excluded files, outputs, and intentional non-goals are named before editing |
+| Contract | Intent, trigger, scope, authority, evidence, capabilities, loop, output, verification, and stop decisions are discoverable |
+| Layering | Canonical core, rules, references, source ledger, local overlay, and validation artifacts each have one canonical home |
+| Sourcing | Current, contested, security, benchmark, or comparative claims carry provenance, an applicable date or version, and a caveat |
+| Portability | Core behavior is capability-based, with an explicit fallback, skip, or block path when a capability is unavailable |
+| Actionability | Workflow steps are observable, side effects are bounded, and failure handling is explicit |
+| Maintainability | Progressive disclosure holds, rules are not duplicated, and English/Korean mirrors stay structurally aligned |
+| Validation | Risk-proportional scenario/oracle/runner/judge/trace/gate coverage exists with baseline, regressions, inspected results, and remaining risk |
+
+## forbidden
+
+| Category | Avoid |
+|---|---|
+| Structure | Mixed-concern prose blocks, duplicated rules, orphan support files, or core trigger/stop logic hidden in references |
+| Vague guidance | "appropriately", "as needed", "when useful" without a decision criterion |
+| Provider coupling | Fixed model literals or volatile provider detail in the canonical core |
+| Resources | Unjustified scripts, assets, ledgers, or extra guides |
+| Loops | Unbounded iteration, self-grading-only acceptance, a changed baseline or eval set, or keeping work after a failed guard |
+| Validation | Declaring completion from prose readback, delegated claims, or happy paths without inspecting claim-matched evidence |
+| Drift | Source dates later than the actual verification date, or a refreshed date on material that was not rechecked |
+| Portability | Hard-coded provider commands without a capability gate, or an invented fallback that silently changes the requested outcome |
+| Safety | Ungated credential, network, publication, deployment, destructive, or production side effects |
+
+## trigger_metric
+
+A trigger case is not a boolean. Every case carries `expect`, `runs`, and `threshold`, and the run records the measured `trigger_rate`.
+
+- `expect`: `trigger` or `no_trigger`. A boundary case whose answer depends on the requested output shape is recorded as `no_trigger` with a `note`, not as a third value.
+- `runs` and `threshold`: every case states its own. Do not let a case inherit a default, because `runs` changes what the rate means. `3` runs and a `0.5` threshold are the recommended starting point, not a validated optimum.
+- A measured trigger rate is a `stochastic-model` measurement: record the model and runtime identity and the run count with the result, and state the target interval width rather than reporting a bare pass rate.
+- Trigger sets are composed, not counted. Cover should-trigger, should-not-trigger, boundary, near-miss, source-sensitive, and safety cases, and add a case only when it probes something the existing cases do not.
+
+Read `instructions/skill/references/trigger-design.md` for the full case shape, the two axes, and the description-optimization rules.
+
+## Sources
+
+> Links checked 2026-09-21 for the repository-local rows; the external rows carry the checked dates recorded in the instruction base and were not re-fetched by this change.
+
+| Claim | Source |
+|---|---|
+| The prompt contract fields, the authoring order, and the improvement loop this core exposes | `instructions/context-engineering/references/prompt-authoring.md` |
+| The runtime-neutral contract sections and the anti-pattern list | `instructions/context-engineering/CONTEXT_ENGINEERING.md` |
+| The eval case shape, the grader hierarchy, and the ship gate | `instructions/validation/references/evaluation-design.md` |
+| The trace fields, judgement rules, and LLM-as-judge calibration | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
+| The trigger case shape and the case-owning `runs`/`threshold` rule | `instructions/skill/references/trigger-design.md` |
+| The with/without baseline and the remove-assertions-that-pass-in-both rule | `instructions/skill/references/validation.md` |
+| The retrieval-safety boundary and the source-ledger fields | `instructions/sourcing/references/retrieval-safety.md` |
+| The stable-prefix authoring rule for a reusable prompt | `instructions/cache/CACHE.md` |
+
+### Evidence grade
+
+The repository-local rows were read in full on 2026-09-21 and are `PRIMARY` for this skill. No external URL is cited, so no external date is asserted.
