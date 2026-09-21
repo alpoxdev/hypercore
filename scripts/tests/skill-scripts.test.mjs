@@ -1255,3 +1255,165 @@ test("self-containment check catches cross-skill references, including with no s
     rmSync(fixture, { recursive: true, force: true });
   }
 });
+
+test("script-runtime check rejects non-.mjs bundled scripts and non-Bun shebangs", () => {
+  const parent = mkdtempSync(join(tmpdir(), "hypercore-script-runtime-"));
+  const validator = join(root, "skills/skill-maker/scripts/validate-skill-maker.mjs");
+  const evals = join(root, "skills/skill-maker/assets/evals/skill-maker-cases.jsonl");
+  // The package directory basename is the expected `name`, and `mkdtemp`'s random suffix contains
+  // uppercase letters, so the package must be a fixed lowercase kebab-case directory inside the parent.
+  const packageName = "fixture-pkg";
+  const pkg = join(parent, packageName);
+  const requiredSections = ["output_language", "purpose", "routing_rule", "instruction_contract", "activation_examples", "trigger_conditions", "skill_architecture", "loop_policy", "language_and_translation_default", "reference_routing", "support_file_read_order", "workflow", "required", "forbidden", "validation"];
+  // Tag form, in the same order on both sides: `checkRequiredSections` accepts an open tag, and
+  // `checkCoreParity` requires the two files to carry identical structural tags.
+  const tags = requiredSections.map((section) => `<${section}>`).join("\n");
+  const english = `---\nname: ${packageName}\ndescription: Use this skill when a fixture package is needed.\n---\n${tags}\n`;
+  const korean = `---\nname: ${packageName}\ndescription: 픽스처 패키지가 필요할 때 사용합니다.\n---\n${tags}\n`;
+  /** @param {string} stdout */
+  const parse = (stdout) => JSON.parse(stdout);
+  /** @param {string} stdout */
+  const codes = (stdout) => parse(stdout).errors.map((error) => error.code);
+  /** @param {(packageDir: string) => void} [extra] */
+  const writePackage = (extra) => {
+    rmSync(pkg, { recursive: true, force: true });
+    mkdirSync(join(pkg, "scripts"), { recursive: true });
+    writeFileSync(join(pkg, "SKILL.md"), english);
+    writeFileSync(join(pkg, "SKILL.ko.md"), korean);
+    if (extra) extra(pkg);
+  };
+  const runValidator = () => run([process.execPath, validator, "--root", pkg, "--evals", evals, "--json"], root);
+  try {
+    // Control: a valid package with no scripts directory passes the whole validator and reports zero
+    // inspected scripts. This is what makes the exit-0 assertions below meaningful.
+    rmSync(pkg, { recursive: true, force: true });
+    mkdirSync(pkg, { recursive: true });
+    writeFileSync(join(pkg, "SKILL.md"), english);
+    writeFileSync(join(pkg, "SKILL.ko.md"), korean);
+    const control = runValidator();
+    expect(codes(control.stdout)).toEqual([]);
+    expect(control.exitCode).toBe(0);
+    expect(parse(control.stdout).scriptRuntime).toEqual({ ok: true, checked: 0, findings: [] });
+
+    // A linked entry must not smuggle a script past the rule: the shared file list skips symbolic links,
+    // so these two targets live outside `scripts/` and are reached only through a link.
+    const nodeTarget = join(parent, "outside-node.mjs");
+    const bunTarget = join(parent, "outside-bun");
+    writeFileSync(nodeTarget, "#!/usr/bin/env node\n");
+    writeFileSync(bunTarget, "#!/usr/bin/env bun\n");
+    const bunBody = "#!/usr/bin/env bun\n";
+    // A case-variant top-level directory is only a distinct directory on a case-sensitive filesystem.
+    // macOS and Windows treat `Scripts` and `scripts` as the same directory, so the case is exercised
+    // only where the filesystem can express it.
+    const caseSensitiveFs = (() => {
+      const probe = join(parent, "CaseProbe");
+      try {
+        mkdirSync(probe);
+        const distinct = !existsSync(join(parent, "caseprobe"));
+        rmSync(probe, { recursive: true, force: true });
+        return distinct;
+      } catch {
+        return false;
+      }
+    })();
+    // Directory permissions are only exercised where the filesystem actually enforces them; running as
+    // root would make the probe succeed and the case meaningless.
+    const permissionsEnforced = (() => {
+      const probe = join(parent, "perm-probe");
+      try {
+        mkdirSync(probe);
+        writeFileSync(join(probe, "child"), "x");
+        chmodSync(probe, 0o000);
+        let denied = false;
+        try {
+          readdirSync(probe);
+        } catch {
+          denied = true;
+        }
+        chmodSync(probe, 0o755);
+        rmSync(probe, { recursive: true, force: true });
+        return denied;
+      } catch {
+        return false;
+      }
+    })();
+    /** @type {Array<{ label: string, code: string, path: string, setup: (packageDir: string) => void }>} */
+    const violations = [
+      { label: "cjs", code: "SCRIPT_RUNTIME_EXTENSION", path: "scripts/probe.cjs", setup: (p) => writeFileSync(join(p, "scripts", "probe.cjs"), bunBody) },
+      { label: "ts", code: "SCRIPT_RUNTIME_EXTENSION", path: "scripts/probe.ts", setup: (p) => writeFileSync(join(p, "scripts", "probe.ts"), bunBody) },
+      { label: "extensionless", code: "SCRIPT_RUNTIME_EXTENSION", path: "scripts/probe", setup: (p) => writeFileSync(join(p, "scripts", "probe"), bunBody) },
+      { label: "uppercase", code: "SCRIPT_RUNTIME_EXTENSION", path: "scripts/probe.MJS", setup: (p) => writeFileSync(join(p, "scripts", "probe.MJS"), bunBody) },
+      { label: "node-shebang", code: "SCRIPT_RUNTIME_SHEBANG", path: "scripts/probe.mjs", setup: (p) => writeFileSync(join(p, "scripts", "probe.mjs"), "#!/usr/bin/env node\n") },
+      { label: "linked-file-bad-shebang", code: "SCRIPT_RUNTIME_SHEBANG", path: "scripts/probe.mjs", setup: (p) => symlinkSync(nodeTarget, join(p, "scripts", "probe.mjs")) },
+      { label: "linked-file-wrong-name", code: "SCRIPT_RUNTIME_EXTENSION", path: "scripts/linked", setup: (p) => symlinkSync(bunTarget, join(p, "scripts", "linked")) },
+      { label: "linked-scripts-dir", code: "SCRIPT_RUNTIME_EXTENSION", path: "scripts/probe.cjs", setup: (p) => { const real = join(p, "real-scripts"); mkdirSync(real); writeFileSync(join(real, "probe.cjs"), bunBody); rmSync(join(p, "scripts"), { recursive: true, force: true }); symlinkSync(real, join(p, "scripts"), "dir"); } },
+    ];
+    // A non-regular entry named *.mjs must be reported, not read: `readFileSync` blocks forever on a FIFO.
+    // Only exercised where `mkfifo` exists.
+    if (run(["mkfifo", join(parent, "fifo-probe")], parent).exitCode === 0) {
+      rmSync(join(parent, "fifo-probe"), { force: true });
+      violations.push({ label: "fifo-entry", code: "SCRIPT_RUNTIME_SHEBANG", path: "scripts/probe.mjs", setup: (p) => { run(["mkfifo", join(p, "scripts", "probe.mjs")], p); } });
+    }
+    if (caseSensitiveFs) {
+      violations.push({ label: "case-variant-dir", code: "SCRIPT_RUNTIME_EXTENSION", path: "Scripts/probe.cjs", setup: (p) => { mkdirSync(join(p, "Scripts")); writeFileSync(join(p, "Scripts", "probe.cjs"), bunBody); } });
+    }
+    for (const violation of violations) {
+      writePackage(violation.setup);
+      const result = runValidator();
+      expect(codes(result.stdout)).toContain(violation.code);
+      expect(result.exitCode).not.toBe(0);
+      const runtime = parse(result.stdout).scriptRuntime;
+      expect(runtime.ok).toBe(false);
+      expect(runtime.checked).toBe(1);
+      expect(runtime.findings).toHaveLength(1);
+      expect(runtime.findings[0].path).toBe(violation.path);
+    }
+
+    // A `scripts` entry that does not resolve must be reported, not silently dropped from the check.
+    writePackage((p) => { rmSync(join(p, "scripts"), { recursive: true, force: true }); symlinkSync(join(parent, "missing-target"), join(p, "scripts"), "dir"); });
+    const brokenLink = runValidator();
+    expect(codes(brokenLink.stdout)).toContain("SCRIPT_RUNTIME_EXTENSION");
+    expect(parse(brokenLink.stdout).scriptRuntime.checked).toBe(0);
+
+    // An unreadable directory must not kill the validator, and it must not be a silent pass either: the
+    // check fails closed and the JSON output contract has to survive. Probed only where the filesystem
+    // actually enforces permissions.
+    if (permissionsEnforced) {
+      writePackage((p) => { mkdirSync(join(p, "scripts", "locked")); writeFileSync(join(p, "scripts", "locked", "probe.cjs"), bunBody); chmodSync(join(p, "scripts", "locked"), 0o000); });
+      const locked = runValidator();
+      chmodSync(join(pkg, "scripts", "locked"), 0o755);
+      expect(codes(locked.stdout)).toContain("SCRIPT_RUNTIME_UNREADABLE");
+      expect(parse(locked.stdout).scriptRuntime.ok).toBe(false);
+
+      // The same failure behind a linked `scripts` directory: the shared file walk skips symbolic links,
+      // so this report cannot be delegated to it.
+      const realScripts = join(parent, "real-scripts-locked");
+      writePackage((p) => {
+        rmSync(join(p, "scripts"), { recursive: true, force: true });
+        mkdirSync(join(realScripts, "locked"), { recursive: true });
+        writeFileSync(join(realScripts, "locked", "probe.cjs"), bunBody);
+        chmodSync(join(realScripts, "locked"), 0o000);
+        symlinkSync(realScripts, join(p, "scripts"), "dir");
+      });
+      const linkedLocked = runValidator();
+      chmodSync(join(realScripts, "locked"), 0o755);
+      expect(codes(linkedLocked.stdout)).toContain("SCRIPT_RUNTIME_UNREADABLE");
+      expect(parse(linkedLocked.stdout).scriptRuntime.ok).toBe(false);
+    }
+
+    // A Bun shebang passes, and CRLF line endings must not be mistaken for a bad shebang.
+    for (const body of ["#!/usr/bin/env bun\n", "#!/usr/bin/env bun\r\n"]) {
+      writePackage((p) => writeFileSync(join(p, "scripts", "probe.mjs"), body));
+      const result = runValidator();
+      expect(codes(result.stdout)).not.toContain("SCRIPT_RUNTIME_EXTENSION");
+      expect(codes(result.stdout)).not.toContain("SCRIPT_RUNTIME_SHEBANG");
+      expect(result.exitCode).toBe(0);
+      const runtime = parse(result.stdout).scriptRuntime;
+      expect(runtime.ok).toBe(true);
+      expect(runtime.checked).toBe(1);
+      expect(runtime.findings).toEqual([]);
+    }
+  } finally {
+    rmSync(parent, { recursive: true, force: true });
+  }
+});

@@ -89,11 +89,25 @@ const TRIGGER_CATEGORIES = ["positive", "negative", "boundary", "coexistence"];
 const BASE_LAST_REVERIFIED = "2026-09-19";
 /** The specification's SKILL.md line budget. */
 const CORE_LINE_BUDGET = 500;
+/** A package's bundled scripts directory ships Bun `.mjs` files only; this is the one allowed extension. */
+const BUNDLED_SCRIPT_EXTENSION = ".mjs";
+/** The shebang every bundled Bun script must start with. */
+const BUNDLED_SCRIPT_SHEBANG = "#!/usr/bin/env bun";
 /** Reference files longer than this must carry a table of contents. */
 const REFERENCE_TOC_THRESHOLD = 100;
 /** XML tags and the reserved words Claude forbids in `name`; XML tags are also forbidden in `description`. */
 const XML_TAG_RE = /<[^>]+>/;
 const RESERVED_NAME_WORDS = ["anthropic", "claude"];
+/**
+ * Whether an error is a permission denial rather than a missing or malformed target.
+ *
+ * @param {unknown} error
+ * @returns {boolean}
+ */
+function isPermissionError(error) {
+  const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
+  return code === "EACCES" || code === "EPERM";
+}
 /** @type {Record<string, number>} */
 const LANGUAGE_FLOORS = {
   en: 1,
@@ -917,6 +931,121 @@ function checkSelfContainment(root, files, sink, options = {}) {
 }
 
 /**
+ * A package's bundled scripts are Bun `.mjs` files only. Every entry under `scripts/` whose extension is
+ * not exactly lowercase `.mjs` is a violation, and so is a `.mjs` entry that does not start with the Bun
+ * shebang.
+ *
+ * The directory is walked here instead of filtering the shared file list, because that list skips symbolic
+ * links and a symlinked entry would otherwise escape the rule; a symlinked `scripts` directory and a
+ * top-level directory whose name differs only by case are both treated as the scripts directory.
+ *
+ * The first line is compared after CRLF normalization, because a Windows checkout can turn the shebang
+ * line into `#!/usr/bin/env bun\r` and a raw `split("\n")` would then flag a valid script.
+ *
+ * This check is always on: it is a hard authoring rule, not a mode.
+ *
+ * `checked` counts the entries under `scripts/` that received a per-entry verdict. A directory-level
+ * failure is reported as a finding instead and is therefore not counted, so `checked` is never the
+ * number of things that passed.
+ *
+ * @param {string} root
+ * @param {ValidationIssue[]} sink
+ * @returns {{ ok: boolean, checked: number, findings: ValidationIssue[] }}
+ */
+function checkScriptRuntime(root, sink) {
+  /** @type {import('node:fs').Dirent[]} */
+  let rootEntries = [];
+  try {
+    rootEntries = fs.readdirSync(root, { withFileTypes: true });
+  } catch {
+    return { ok: true, checked: 0, findings: [] };
+  }
+  const candidates = rootEntries
+    .filter((entry) => entry.name.toLowerCase() === "scripts")
+    .map((entry) => path.join(root, entry.name));
+  if (candidates.length === 0) return { ok: true, checked: 0, findings: [] };
+  /** @type {ValidationIssue[]} */
+  const findings = [];
+  // One issue object goes to both channels, so `ok` below can never disagree with the error sink.
+  /** @param {ValidationIssue} issue */
+  const report = (issue) => {
+    findings.push(issue);
+    sink.push(issue);
+  };
+  /** @type {string[]} */
+  const scriptEntries = [];
+  for (const candidate of candidates) {
+    const relCandidate = relative(root, candidate);
+    /** @type {import('node:fs').Stats | null} */
+    let stats = null;
+    try {
+      stats = fs.statSync(candidate);
+    } catch (error) {
+      // A `scripts` entry that does not resolve is reported rather than skipped: a broken link would
+      // otherwise remove the whole directory from the check. A permission error is a different failure,
+      // so it gets the unreadable code: the rule is unverified there rather than definitely violated.
+      const denied = isPermissionError(error);
+      report(errorObject(
+        denied ? "SCRIPT_RUNTIME_UNREADABLE" : "SCRIPT_RUNTIME_EXTENSION",
+        denied
+          ? `${relCandidate} could not be read, so the bundled-script rule cannot be verified there`
+          : `${relCandidate} must resolve to a directory of Bun .mjs scripts`,
+        { path: relCandidate },
+      ));
+      continue;
+    }
+    if (!stats.isDirectory()) {
+      scriptEntries.push(candidate);
+      continue;
+    }
+    const stack = [candidate];
+    while (stack.length > 0) {
+      const current = stack.pop();
+      if (!current) continue;
+      /** @type {import('node:fs').Dirent[]} */
+      let entries = [];
+      try {
+        entries = fs.readdirSync(current, { withFileTypes: true });
+      } catch {
+        // The directory cannot be read, so the rule cannot be verified there. Report it here instead of
+        // relying on the shared file walk: that walk skips symbolic links, so a linked `scripts/`
+        // directory would otherwise turn this into a silent pass. Reporting also keeps the JSON output
+        // contract, which an exception escaping this check would destroy.
+        report(errorObject("SCRIPT_RUNTIME_UNREADABLE", `${relative(root, current)} could not be read, so the bundled-script rule cannot be verified there`, { path: relative(root, current) }));
+        continue;
+      }
+      for (const entry of entries) {
+        const fullPath = path.join(current, entry.name);
+        // A symbolic link is reported as an entry rather than followed as a directory, so a linked
+        // directory inside `scripts/` cannot smuggle a whole subtree past the extension rule.
+        if (entry.isDirectory()) stack.push(fullPath);
+        else scriptEntries.push(fullPath);
+      }
+    }
+  }
+  for (const entryPath of scriptEntries.sort()) {
+    const rel = relative(root, entryPath);
+    if (path.extname(entryPath) !== BUNDLED_SCRIPT_EXTENSION) {
+      report(errorObject("SCRIPT_RUNTIME_EXTENSION", `${rel} must be a Bun .mjs script; a bundled scripts directory ships no other extension`, { path: rel }));
+      continue;
+    }
+    /** @type {string} */
+    let firstLine = "";
+    try {
+      // Only a regular file is read: `readFileSync` blocks forever on a FIFO, and a directory or
+      // socket target throws. Both fall through to the shebang violation instead of hanging or crashing.
+      if (fs.statSync(entryPath).isFile()) firstLine = readText(entryPath).split(/\r?\n/, 1)[0];
+    } catch {
+      firstLine = "";
+    }
+    if (firstLine !== BUNDLED_SCRIPT_SHEBANG) {
+      report(errorObject("SCRIPT_RUNTIME_SHEBANG", `${rel} must start with ${BUNDLED_SCRIPT_SHEBANG}`, { path: rel, firstLine }));
+    }
+  }
+  return { ok: findings.length === 0, checked: scriptEntries.length, findings };
+}
+
+/**
  * EN/KO siblings must carry the same set of normative SK-* ids. Zero on both sides is parity.
  * @param {string} root
  * @param {string[]} markdownFiles
@@ -1085,9 +1214,9 @@ function escapeRegExp(value) {
 }
 
 function printHelp() {
-  console.log(`Usage: node skills/skill-maker/scripts/validate-skill-maker.mjs --root <dir> --evals <jsonl> [--json]
+  console.log(`Usage: bun skills/skill-maker/scripts/validate-skill-maker.mjs --root <dir> --evals <jsonl> [--json]
 
-Validates the repository-local skill-maker package with Node built-ins only.
+Validates the repository-local skill-maker package with Bun and Node built-ins only.
 
 Options:
   --root <dir>     Skill root directory. Defaults to skills/skill-maker.
@@ -1156,6 +1285,7 @@ function run() {
     sourcesSections: checkSourcesSections(root, markdownFiles, contractSink),
     idParity: checkIdParity(root, markdownFiles, errors),
     selfContainment: checkSelfContainment(root, files, args.requireSelfContainment ? errors : contractSink, { allow: args.allow, strict: args.requireSelfContainment, warningSink: contractFindings }),
+    scriptRuntime: checkScriptRuntime(root, errors),
     frontmatterConstraints: checkFrontmatterConstraints(root, errors),
     coreLineBudget: checkCoreLineBudget(root, errors),
     referenceToc: checkReferenceToc(root, markdownFiles, errors),
@@ -1170,7 +1300,7 @@ function run() {
 }
 
 /**
- * @returns {{ ok: boolean, contractPackage: boolean, discoveryMetadata: null, requiredSections: null, links: null, codeFences: null, bilingualPairs: null, bilingualCoreParity: null, triggerCases: null, officialLastVerifiedGuard: null, sourcesSections: null, idParity: null, selfContainment: null, frontmatterConstraints: null, coreLineBudget: null, referenceToc: null, strayDocs: null, warnings: never[], errors: ValidationIssue[] }}
+ * @returns {{ ok: boolean, contractPackage: boolean, discoveryMetadata: null, requiredSections: null, links: null, codeFences: null, bilingualPairs: null, bilingualCoreParity: null, triggerCases: null, officialLastVerifiedGuard: null, sourcesSections: null, idParity: null, selfContainment: null, scriptRuntime: null, frontmatterConstraints: null, coreLineBudget: null, referenceToc: null, strayDocs: null, warnings: never[], errors: ValidationIssue[] }}
  */
 function emptyResult() {
   return {
@@ -1187,6 +1317,7 @@ function emptyResult() {
     sourcesSections: null,
     idParity: null,
     selfContainment: null,
+    scriptRuntime: null,
     frontmatterConstraints: null,
     coreLineBudget: null,
     referenceToc: null,
