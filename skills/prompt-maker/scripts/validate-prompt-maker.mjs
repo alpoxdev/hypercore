@@ -25,7 +25,12 @@ import process from "node:process";
  * @typedef {{
  *   id: string,
  *   category: string,
- *   language: string
+ *   language: string,
+ *   expect: unknown,
+ *   runs: unknown,
+ *   threshold: unknown,
+ *   context: unknown,
+ *   metrics: unknown
  * }} EvalCase
  */
 const DEFAULT_ROOT = "skills/prompt-maker";
@@ -38,6 +43,7 @@ const REQUIRED_MARKERS = [
   "activation_examples",
   "workflow",
   "validation",
+  "trigger_metric",
 ];
 const CONTRACT_LABELS = [
   "Intent",
@@ -83,6 +89,13 @@ const EVAL_LANGUAGE_FLOORS = { en: 1, ko: 1, mixed: 1 };
 /** @type {Record<string, number>} */
 const EVAL_INVOCATION_FLOORS = { explicit: 1, implicit: 1, contextual: 1 };
 const ALLOWED_EVAL_CATEGORIES = new Set(Object.keys(EVAL_CATEGORY_FLOORS));
+/**
+ * Categories whose cases are trigger judgements. Every case in one of these must state its own
+ * `expect`, `runs`, and `threshold`: the instruction base forbids judging a trigger from a single
+ * run and forbids a case inheriting a default, so the values are required at the point of use.
+ * @type {string[]}
+ */
+const TRIGGER_CATEGORIES = ["positive", "negative", "boundary"];
 const STRAY_DOC_NAMES = new Set(["README.md", "CHANGELOG.md", "QUICK_REFERENCE.md"]);
 const REQUIRED_TEMPLATES = [
   "assets/prompt-pack.template.md",
@@ -685,6 +698,35 @@ function validateEvalRow(row, lineNumber, seenIds) {
       category: row.category,
       allowed: Array.from(ALLOWED_EVAL_CATEGORIES),
     });
+  }
+  // The type guard is required. The category check above reports but does not return, so an
+  // unguarded `.trim()` on a non-string category would throw a TypeError and abort the CLI instead
+  // of reporting EVAL_CASE_INVALID with exit 1.
+  const normalizedCategory = typeof row.category === "string" ? row.category.trim() : "";
+  if (TRIGGER_CATEGORIES.includes(normalizedCategory)) {
+    if (row.expect !== "trigger" && row.expect !== "no_trigger") {
+      fail("Eval case trigger category requires expect of trigger|no_trigger", { id: row.id, expect: row.expect });
+    }
+    if (typeof row.runs !== "number" || !Number.isInteger(row.runs) || row.runs < 1) {
+      fail("Eval case trigger category requires an integer runs >= 1", { id: row.id, runs: row.runs });
+    }
+    if (typeof row.threshold !== "number" || !(row.threshold > 0 && row.threshold < 1)) {
+      fail("Eval case trigger category requires a threshold strictly between 0 and 1", {
+        id: row.id,
+        threshold: row.threshold,
+      });
+    }
+  }
+  if (!isJsonObject(row.context) || !Array.isArray(row.context.files) || !Array.isArray(row.context.sources)) {
+    fail("Eval case requires a context object with files and sources arrays", { id: row.id });
+  } else {
+    validateStringArray(row.context.files, "context.files", row.id, fail);
+    validateStringArray(row.context.sources, "context.sources", row.id, fail);
+  }
+  if (!Array.isArray(row.metrics) || row.metrics.length === 0) {
+    fail("Eval case metrics must contain at least one non-empty string", { id: row.id });
+  } else {
+    validateStringArray(row.metrics, "metrics", row.id, fail);
   }
   if (!nonEmptyString(row.prompt)) fail("Eval case requires non-empty string prompt", { id: row.id });
   if (isRichEvalRow(row)) {
