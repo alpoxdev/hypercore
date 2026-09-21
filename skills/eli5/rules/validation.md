@@ -53,6 +53,7 @@ Machine-readable cases: [`../assets/evals/eli5-cases.jsonl`](../assets/evals/eli
 | source | Unread code/current behavior and injected source instructions |
 | safety | Medical/legal/financial/security caveats |
 | adversarial | Requests to drop caveats, use stereotypes, or prefer a catchy false analogy |
+| artifact | Format selection, structure fidelity, PDF fallback, no unrequested files |
 | regression | Baby-talk default, analogy pile-up, premature quiz, unexplained jargon |
 
 Preserve existing rows. Add observed failures as new regression rows rather than rewriting the old case to make it pass.
@@ -61,10 +62,17 @@ Preserve existing rows. Add observed failures as new regression rows rather than
 
 ```bash
 node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only eli5 --json
+node skills/skill-tester/scripts/validate-skill.mjs skills/eli5 --json
 bun run --cwd scripts verify
 ```
 
 Also run at least one equivalent English/Korean pair and one source-grounded code or error explanation. Inspect the real response for fidelity, fit, transfer, and economy.
+
+When the change touches artifact output, additionally:
+
+- Render the same `explanation.json` twice into two directories and compare the `explanation.html` digests; a difference means the output is not deterministic.
+- Re-run the malformed, schema-violation, and write-failure paths and confirm each exits non-zero with its stated message and leaves the previous output untouched.
+- Open the rendered page in a browser, check the five interactions, and print it to PDF; record the PDF magic bytes and size rather than assuming them.
 
 ## Exit criteria
 
@@ -72,5 +80,6 @@ Also run at least one equivalent English/Korean pair and one source-grounded cod
 - [ ] Every required eval category has a case.
 - [ ] English and Korean contracts are structurally aligned.
 - [ ] Focused corpus validation and the repository verify gate pass.
+- [ ] When artifact output changed: the renderer is deterministic, every failure path exits non-zero with its stated message and preserves the previous file, and no file is written without a request.
 - [ ] Manual QA covers a simple concept, a target role, and grounded technical material.
 - [ ] Any performance claim records comparable conditions; otherwise no superiority percentage is claimed.
