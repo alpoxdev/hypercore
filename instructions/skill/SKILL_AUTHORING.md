@@ -48,10 +48,12 @@ A skill must satisfy all of the following at once.
 8. **Safety boundary**: keep network, credential, destructive action, production side effect, and broad tool permission explicitly gated inside the skill.
 9. **Korean output by default**: user-facing artifacts, reports, and verification notes in this repository default to Korean. Machine-readable fields and official keys keep their original form.
 10. **Match specificity to fragility**: set the level of instruction detail to how easily the task breaks. Write brittle steps strictly; leave room for agent judgement where the task tolerates it. The remaining principles say *what goes where*; this one says *how strictly to write it*.
+11. **Self-contained by default**: a skill ships whole. It must not require another skill's installation, invocation, path, or documents; when content from elsewhere is genuinely needed, bring it into the skill's own `references/` as a local snapshot. Describe boundaries by output shape rather than by naming a neighbor. A user instruction is the only exception, and it is recorded.
 
-The one principle above that carries a normative id, in machine-readable form:
+The principles above that carry a normative id, in machine-readable form:
 
 - SK-P-1: Match specificity to fragility — the level of instruction detail must match how easily the task breaks (principle 10).
+- SK-P-2: Self-contained by default — a skill works from its own folder alone; a cross-skill reference exists only when the user explicitly asks for one, and that instruction is recorded (principle 11).
 
 ## Base folder structure
 
