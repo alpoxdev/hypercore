@@ -182,3 +182,66 @@ Core exit gates:
 요청한 문서 산출물이 존재하고, 핵심 risk-matched gate가 통과하며, 대표 eval 결과를 실제로 검사하고, 적용되는 bilingual behavior를 조정하고, 잔여 risk를 보고했을 때만 멈춥니다. Authority, scope, evidence, capability, safety approval이 실질적으로 부족하면 질문하거나 block합니다.
 
 </stop_condition>
+
+<required>
+
+| 범주 | 요구 사항 |
+|---|---|
+| 범위 | 편집 전에 소유 파일과 제외 파일, 산출물, 의도적 비목표를 명시한다 |
+| 계약 | 의도, 트리거, 범위, 권위, 근거, 역량, 루프, 출력, 검증, 정지 결정을 확인할 수 있어야 한다 |
+| 계층 | 정본 코어, 규칙, 참조, 출처 원장, 로컬 오버레이, 검증 산출물이 각각 하나의 정본 위치를 갖는다 |
+| 출처 | 최신·쟁점·보안·벤치마크·비교 주장에는 출처, 적용 날짜나 버전, 단서를 붙인다 |
+| 이식성 | 코어 동작은 역량 기준으로 쓰고, 역량이 없을 때의 폴백·건너뛰기·차단 경로를 명시한다 |
+| 실행 가능성 | 워크플로 단계를 관찰 가능하게 쓰고, 부작용 범위를 한정하며, 실패 처리를 명시한다 |
+| 유지보수성 | 점진적 공개를 지키고, 규칙을 중복하지 않으며, 영어·한국어 미러의 구조를 맞춘다 |
+| 검증 | 위험에 비례한 시나리오·판정 기준·실행자·판정자·추적·게이트 범위를 기준선, 회귀, 확인된 결과, 남은 위험과 함께 갖춘다 |
+
+</required>
+
+<forbidden>
+
+| 범주 | 피할 것 |
+|---|---|
+| 구조 | 여러 관심사가 섞인 산문 덩어리, 중복 규칙, 고아 지원 파일, 참조에 숨긴 핵심 트리거·정지 로직 |
+| 모호한 지침 | 결정 기준 없이 쓰는 "적절히", "필요에 따라", "유용할 때" |
+| 공급자 결합 | 정본 코어에 박아 넣은 모델 리터럴이나 변동성 큰 공급자 세부 사항 |
+| 자원 | 정당화되지 않은 스크립트, 자산, 원장, 추가 안내 문서 |
+| 루프 | 무한 반복, 자기 채점만 하는 수용, 기준선이나 평가 세트 변경, 가드 실패 결과 유지 |
+| 검증 | 산문 재읽기, 위임된 주장, 정상 경로만 보고 증거 대조 없이 완료 선언 |
+| 표류 | 실제 확인 날짜보다 미래인 출처 날짜, 다시 읽지 않은 자료에 갱신한 날짜 |
+| 이식성 | 역량 게이트 없는 공급자 명령 하드코딩, 요청된 결과를 조용히 바꾸는 폴백 발명 |
+| 안전 | 자격 증명, 네트워크, 배포, 게시, 파괴적 작업, 프로덕션 부작용에 대한 게이트 누락 |
+
+</forbidden>
+
+<trigger_metric>
+
+트리거 케이스는 참·거짓이 아니다. 모든 케이스가 `expect`, `runs`, `threshold`를 갖고, 실행은 측정된 `trigger_rate`를 기록한다.
+
+- `expect`: `trigger` 또는 `no_trigger`. 답이 요청된 산출물 형태에 따라 갈리는 경계 케이스는 세 번째 값이 아니라 `note`를 붙인 `no_trigger`로 기록한다.
+- `runs`와 `threshold`: 모든 케이스가 스스로 밝힌다. 기본값을 상속하게 두지 않는다. `runs`가 달라지면 비율의 의미가 달라지기 때문이다. `runs` `3`회와 `threshold` `0.5`는 권장 출발점이며 검증된 최적값이 아니다.
+- 측정된 트리거 비율은 `stochastic-model` 측정이다. 결과와 함께 모델·런타임 식별자와 실행 횟수를 기록하고, 단순 통과율 대신 목표 구간 폭을 밝힌다.
+- 트리거 세트는 세는 것이 아니라 구성하는 것이다. 켜져야 하는 경우, 켜지면 안 되는 경우, 경계, 근접 실패, 출처 민감, 안전 케이스를 덮고, 기존 케이스가 다루지 않는 것을 탐침할 때만 케이스를 추가한다.
+
+케이스 전체 형태와 두 축, 설명 최적화 규칙은 `instructions/skill/references/trigger-design.md`에서 읽는다.
+
+</trigger_metric>
+
+## Sources
+
+> 링크 확인 2026-09-21 (저장소 로컬 행 기준, 외부 행은 안내 문서의 확인일을 따릅니다).
+
+| 주장 | 출처 |
+|---|---|
+| 이 코어가 드러내는 문서 계약 형태, 계층 분할, 완료 게이트 | `instructions/context-engineering/CONTEXT_ENGINEERING.md` |
+| 하네스 계층, 추적 필드, 판정 규칙, 증거 규율 | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
+| 위험 깊이 척도, 금지 패턴, 완료 계약 | `instructions/validation/index.md` |
+| 출처 등급, 원장 필드, 검색 안전 경계 | `instructions/sourcing/reliable-search.md`, `instructions/sourcing/references/source-ledger.md` |
+| 트리거 케이스 형태, 두 축, 설명 최적화 규칙 | `instructions/skill/references/trigger-design.md` |
+| 문서 대 스킬 경계와 지원 파일 기준 | `instructions/skill/SKILL_AUTHORING.md`, `instructions/skill/references/resource-placement.md` |
+| 단계별 공개 예산과 목록 단계 한도 | `instructions/skill/references/progressive-disclosure.md`, <https://agentskills.io/specification> |
+| 변동성 큰 값은 재사용 앞부분이 아니라 꼬리에 둔다는 규칙 | `instructions/cache/CACHE.md` |
+
+### Evidence grade
+
+저장소 로컬 행은 2026-09-21에 전문을 읽었고 이 스킬의 `PRIMARY` 근거다. 규격 행이 유일한 외부 주장이며, 이번 변경에서 다시 가져오지 않았으므로 새 날짜 대신 안내 문서의 확인일을 그대로 쓴다.
