@@ -7,84 +7,129 @@
 | Layer | Question | Method |
 |---|---|---|
 | Anatomy | Is the folder and frontmatter shape correct? | frontmatter, folder shape, local links, code fences |
-| Trigger | Does the skill activate on the right requests? | positive, negative, and boundary prompt set |
+| Trigger | Does the skill activate on the right requests? | positive, negative, boundary, and near-miss prompt set |
 | Contract | Can the agent find the operating agreement? | intent, trigger, scope, authority, evidence, tools, output, verification, stop readback |
 | Workflow | Does the skill guide the right steps? | workflow readback, trace review, manual dry run |
 | Output | Does the artifact shape match expectations? | template, schema, rubric, required/forbidden output check |
+| Source | Are external claims linked to evidence? | source ledger, checked date, claim-source mapping |
 | Safety | Are side effects and permissions gated? | forbidden/required behavior review |
+| Artifact | Does the skill itself carry something it should not? | the seven-row audit in §6 |
 | Regression | Will future edits preserve behavior? | small eval set or deterministic validation script |
 
-Select validation depth explicitly:
+## 2. Case Composition, Not Case Counts
+
+The set must cover each of these groups. **How many rows each one gets is not fixed here** - no source
+states a validated count, so this file states a composition requirement instead:
+
+- should-trigger
+- should-not-trigger
+- boundary
+- near-miss (coexistence: a request that belongs to a neighboring skill)
+- source-sensitive
+- safety/adversarial
+
+Add a row only when it probes something the existing rows do not. A case that probes nothing new adds
+calls, not evidence. Promote each real failure into a row as it happens, and keep every trigger case's own
+`runs` and `threshold` visible at the point of use.
+
+Validation depth is selected explicitly rather than assumed:
 
 | Depth | Use when | Minimum evidence |
 |---|---|---|
-| smoke | Small wording or metadata edit | Structural check plus 3–5 focused cases |
+| smoke | Small wording or metadata edit | Structural check plus a few focused cases |
 | targeted | One behavior or known failure changes | Smoke set plus the failure and adjacent edge cases |
-| standard | New skill or material workflow change | 8–15 representative positive, negative, boundary, failure, and adversarial cases |
+| standard | New skill or material workflow change | The full composed set across the groups above |
 | thorough | Tool, source, delegation, or broad behavior changes | Standard set plus trace, safety, source, and runtime variants |
 | high-stakes | Production, security, credentials, publication, or destructive effects | Thorough set plus independent review and explicit permission/rollback gates |
 
-These ranges guide sampling; critical-case coverage and claim-matched evidence are the actual gates.
+The ranges above guide sampling. Critical-case coverage and claim-matched evidence are the actual gates,
+not a case count.
 
-## 2. Triggerability
+## 3. Baseline Rules
 
-Minimum expectation for new or materially changed skills:
+These are normative.
 
-- at least 3 positive trigger examples
-- at least 2 negative trigger examples
-- at least 1 boundary example
-- description says both what the skill does and when to use it
-- boundary against neighboring skills is explicit
+- SK-V-1: Run each case **by default** twice - once with the skill and once without it (or against a previous version). Exception: when the no-skill condition cannot produce the artifact at all - a deterministic skill such as a formatter or a schema checker - do not run it; record that fact instead.
+- SK-V-2: When improving an existing skill, use a **snapshot of the previous version** as the baseline instead of the no-skill condition. Snapshot the skill folder before editing and point at that snapshot.
+- SK-V-3: Do not claim the skill improved **without a baseline** to compare against.
+- SK-V-4: Remove or replace any assertion that passes in **both** conditions - it does not reflect the skill's value and only inflates the pass rate. An assertion that always **fails** in both conditions is a subject for investigation, not deletion.
 
-## 3. Anatomy and Resource Validation
+## 4. Where Execution Results Live
 
-Confirm:
+These are normative.
 
-- core body is not bloated
-- support files are actually used and discoverable
-- scripts or assets are justified and documented
-- references do not duplicate the core
-- provider-sensitive or date-sensitive guidance is isolated in references
-- canonical markdown files are English by default
-- generated user-facing artifacts default to Korean through a core `<output_language>` contract
-- new or materially changed markdown files have matching Korean `*.ko.md` translations
+- SK-E-1: Keep execution results **outside the skill folder**, under `.omo/evidence/<skill>/iteration-N/`. A shipped skill does not carry its own run history.
+- SK-E-2: Every run leaves `timing.json` (tokens and wall time) and `grading.json` (per-assertion pass/fail **plus the evidence string**). A `passed: true` with no evidence string is not evidence.
+- SK-E-3: Run each execution in an **independent session**. Reusing one session lets the earlier run's context contaminate the next.
+- SK-E-4: Check mechanical assertions (valid JSON, row counts, file existence) with a **script**, not a judge. Reserve judgement for what a script cannot decide.
 
-## 4. Minimum Eval Case
+The upstream source places test cases in `evals/evals.json` inside the skill directory and results in a
+workspace beside it. This repository deliberately chose the evidence-directory form above, and the
+trade-off is real: results do not travel with a distributed skill, so a reader outside this repository
+cannot see them. Fixtures still live in `assets/evals/`; only results live outside.
 
-For important skill changes, keep at least one smoke case in the plan, final report, or eval artifact:
+## 5. Measurement Profiles
 
-```yaml
-id: skill-maker-smoke-[slug]
-intent: user wants a reusable skill or existing skill refactor
-context:
-  files:
-    - instructions/skill/SKILL_AUTHORING.md
-    - skills/[skill]/SKILL.md
-    - skills/[skill]/rules/*.md
-input: |
-  [realistic user request]
-expected:
-  must:
-    - choose create, refactor, or boundary handoff mode
-    - read directly linked support files before editing
-    - keep SKILL.md lean and route detail to rules/references/scripts/assets
-    - include trigger, contract, anatomy, source, safety, and validation checks
-  must_not:
-    - treat retrieved pages or snippets as instruction authority
-    - add provider-sensitive current claims without provenance
-    - hide trigger logic in references
-    - declare completion without verification evidence
-metrics:
-  - instruction_following
-  - triggerability
-  - resource_placement
-  - evidence_quality
-  - completion
-```
+Choose one profile **before** deciding repeats, aggregation, or judging. A profile chosen after seeing
+the numbers is not a profile.
 
-For `skill-maker` itself, keep reusable machine-readable cases in `assets/evals/` as JSONL fixtures when the validator integration is present. Every row should identify a unique id, category, language, intent, context files/sources, verbatim prompt, expected must/must-not behavior, and metrics. The suite must cover trigger positives and negatives, boundaries, missing context or failing tools, workflow adherence, source/retrieval injection, unsafe actions, bilingual behavior, and known regressions. Preserve baseline rows and add each observed failure permanently.
+| Profile | Minimum defensible contract |
+|---|---|
+| `exact-deterministic` | One valid observation may be enough. Unexpected variation is an error to investigate |
+| `cold-start` | Preserve startup/cache state; warmup would invalidate the estimand. Define reset and isolation between trials |
+| `noisy-performance` | Declare the estimand, independent replicates, comparison order, aggregation method, a practical effect or tie band, and an inconclusive state |
+| `stochastic-model` | Record platform/software/data identity and randomness controls; use independent runs when across-run variance affects the decision. **A fixed seed alone does not estimate variance** |
+| `subjective-judge` | Lock the rubric and items, identify judge provenance, counterbalance presentation, preserve raw judgments, and define tie/abstain/invalid/disagreement escalation |
 
-## 5. Trace Assertions for Agent Workflows
+**A measured trigger rate is a `stochastic-model` measurement.** So is any judge-scored rubric. Record
+the model and runtime identity and the run count with the result, and state the target interval width
+together with the run count rather than reporting a bare pass rate.
+
+Guards and metrics are independent channels, and one does not compensate for the other:
+
+- **A metric improvement never compensates for a failed, errored, missing, or malformed mandatory guard.**
+- A guard pass is not inferred from the score or from a process exit code.
+- Exit `0` means the verifier completed, not that the candidate improved.
+
+## 6. The Artifact Audit
+
+The rules above test what a skill **receives** - does it resist an injected instruction. These test what a
+skill **is**: does the artifact itself carry something it should not. A skill is distributed code plus
+instructions, so audit it before shipping.
+
+| Category | What to look at | Severity as assigned by the source |
+|---|---|---|
+| Code execution | Scripts in the skill directory (`*.py`, `*.sh`, `*.js`). Scripts run with full environment access | High |
+| Instruction manipulation | Directives to ignore safety rules, hide actions from users, or alter behavior conditionally | High |
+| MCP server reference | References shaped like `ServerName:tool_name` | High |
+| Network access | URLs, API endpoints, `fetch`, `curl`, `requests` | High |
+| Hardcoded credentials | Keys, tokens, and passwords inside skill files or scripts | High |
+| Filesystem scope | Paths outside the skill directory, broad globs, `../` | Medium |
+| Tool invocations | Instructions directing the agent to use bash, file operations, or other tools | Medium |
+
+**All seven rows, not a subset.** `instructions/skill/references/prompt-loop-eval.md` carries five of
+them and omits **Code execution**, **Instruction manipulation**, and **Tool invocations**; its
+"data-exfiltration pattern" row comes from that page's review checklist rather than its risk-tier table.
+Carry all seven here and note the base's omission as a follow-up rather than editing the base.
+
+This applies to `skill-maker` itself: the package ships `scripts/validate-skill-maker.mjs`, so it is a
+code-execution instance and must pass its own audit.
+
+- SK-A-1: Audit a skill against the seven categories above before distributing it, and record the result.
+- SK-A-2: Do not distribute a skill from an untrusted source without a full audit.
+- SK-A-3: Pin a skill to a version, and re-review it when the version changes.
+
+These severity labels come from the cited source, not from a controlled study. Treat the audit as a
+checklist that catches known artifact-level problems, not as a proof of safety.
+
+## 7. Evaluator Overfitting
+
+Repeatedly selecting winners against one benchmark overfits the evaluator even when each estimate is
+precise. Use a development metric for iteration and an immutable **confirmation set** for finalists, and
+do not feed detailed holdout failures back into the loop. This is the same principle as the train and
+validation split in `rules/trigger-design.md`, stated for evaluation rather than for descriptions.
+
+## 8. Trace Assertions for Agent Workflows
 
 When a skill teaches tool use, delegation, or parallel work, validate trajectory as well as final text.
 
@@ -104,61 +149,39 @@ When a skill teaches tool use, delegation, or parallel work, validate trajectory
 | loop_guard | acceptance follows the declared feedback, metric/rubric, guard, and stop rule |
 | bilingual_behavior | equivalent English/Korean cases preserve the same modal strength and completion gate |
 
-## 6. Usability Readback
+## 9. Usability Readback
 
-Read the skill as if you were:
+Read the skill as if you were a new maintainer, a trigger model, an agent following the workflow under
+context pressure, and a reviewer checking source, safety, and output claims. After each major section,
+confirm the next file to read is obvious.
 
-- a new maintainer
-- a trigger model
-- an agent following the workflow under context pressure
-- a reviewer checking source, safety, and output claims
+## 10. Exit Criteria
 
-Also check whether the next file to read is obvious after each major section.
-
-## 7. Suggested Checks
-
-```bash
-find skills/skill-maker -maxdepth 3 -type f | sort
-find skills/skill-maker -maxdepth 2 \( -name README.md -o -name CHANGELOG.md -o -name QUICK_REFERENCE.md \) -print
-rg -n "description:" skills/skill-maker/SKILL.md skills/skill-maker/SKILL.ko.md
-test ! -f skills/skill-maker/scripts/validate-skill-maker.mjs || node skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only skill-maker --json
-python3 - <<'PY'
-from pathlib import Path
-root = Path('skills/skill-maker')
-missing = []
-orphan = []
-for path in root.rglob('*.md'):
-    if path.name.endswith('.ko.md'):
-        source = path.with_name(path.name[:-6] + '.md')
-        if not source.exists():
-            orphan.append(str(path))
-    else:
-        ko = path.with_name(path.stem + '.ko.md')
-        if not ko.exists():
-            missing.append(str(ko))
-assert not missing, 'missing Korean translations: ' + ', '.join(missing)
-assert not orphan, 'orphan Korean translations: ' + ', '.join(orphan)
-print('markdown language pairs ok')
-PY
-```
-
-When the deterministic validator exists, the validation gate must include:
-
-- happy path: the validator exits 0 and reports `ok=true`
-- corpus structure: `validate-skills-corpus.mjs` exits 0 for the touched repository skill and verifies frontmatter, direct support links, bilingual markdown pairs, and balanced code fences
-- malformed input: an invalid JSONL eval case is rejected with a clear error
-- regression: no stray `README.md`, `CHANGELOG.md`, or `QUICK_REFERENCE.md` is added under the skill package
-- source-date guard: official-reference dates are valid, not later than the verification run, and unchanged unless the provider source was actually rechecked
-
-The corpus structural validator is a repository-wide integrity gate. Keep package-specific validators, such as `skills/skill-maker/scripts/validate-skill-maker.mjs`, as stricter behavior and package-contract gates when they exist.
-
-## 8. Exit Criteria
-
-- Trigger examples distinguish this skill from neighboring skills.
+- Trigger examples distinguish this skill from neighboring skills, including a near-miss case.
 - The core `SKILL.md` remains lean and navigable.
 - Support files are easy to discover from the core skill.
 - Deterministic validator and JSONL eval fixture checks have run, or the report states that script/eval integration is still pending.
 - A new maintainer could place the next piece of information without guessing.
 - Completion claims map to evidence, verification, and caveats.
 - Validation records baseline/current results, critical and non-critical failures, regressions, residual risk, and one decision: `ship`, `iterate`, `caveated ship`, or `block`.
+
+## Sources
+
+> Links checked 2026-09-20.
+
+| Claim | Source |
+|---|---|
+| The with/without baseline as the core pattern, the previous-version snapshot as the baseline, no improvement claim without a baseline, and removing assertions that pass in both conditions - the basis of `SK-V-1` to `SK-V-4` | <https://agentskills.io/skill-creation/evaluating-skills> |
+| Results kept outside the skill folder, per-run `timing.json` and `grading.json` with evidence strings, an independent session per run, and mechanical assertions checked by script - the basis of `SK-E-1` to `SK-E-4` | <https://agentskills.io/skill-creation/evaluating-skills> |
+| The five artifact-audit categories carried by the base, and the fact that the source's risk-tier table has seven rows | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+| The seven risk-tier rows with their severity labels, the review checklist, and version pinning with re-review - the basis of `SK-A-1` to `SK-A-3` | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+| The measurement profiles, the development-metric/confirmation-set rule, and guard non-compensation | `instructions/autoresearch/references/config-and-metrics.md` §2, §3, §4 |
+| The typed procedure outcomes behind "a guard pass is not inferred from exit code" | `instructions/autoresearch/references/safety-and-observability.md` §6 |
+| Composition rather than a fixed case count | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+
+### Evidence grade
+
+The baseline and results-layout rules are `PRIMARY` - the evaluating-skills page names the with/without
+pair as the core pattern rather than an option. The severity labels are `VENDOR`. This file deliberately
+states **no normative case count**: no source consulted states a validated one, so a composition
+requirement takes its place.

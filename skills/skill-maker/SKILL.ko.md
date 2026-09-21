@@ -150,6 +150,10 @@ repo-local instruction guidance를 먼저 읽고 해당 concern만 선택적으�
 
 코어에 어느 정도 상세를 남길지, scripts/assets가 정당한지 판단할 때는 `references/local/skill-creator.ko.md`를 읽습니다.
 
+frontmatter 제약, 공개 예산, 또는 frontmatter 필드의 표준·확장 구분이 규칙에 영향을 줄 때는 `references/official/agent-skills-standard.md`를 읽습니다. 그 항목들의 `PRIMARY` 출처이므로 vendor 스냅샷보다 먼저 읽습니다.
+
+Codex 발견 위치, 목록 예산, `agents/openai.yaml` 정책 표면이 규칙에 영향을 줄 때는 `references/official/openai.md`를 읽습니다. Claude Code frontmatter 확장, 1,536자 항목 한도, 엔터프라이즈 위험 등급이 규칙에 영향을 줄 때는 `references/official/anthropic.md`를 읽습니다.
+
 공식 references는 다음 경우에만 읽습니다.
 
 - 공급자 민감한 스킬 가이드가 코어 규칙에 영향을 줄 때
@@ -228,13 +232,27 @@ Phase 3 작성 규칙:
 
 </forbidden>
 
+<trigger_metric>
+
+트리거 케이스는 불리언이 아닙니다. 모든 케이스가 `expect`, `runs`, `threshold`를 갖고, 실행은 측정된 `trigger_rate`를 기록합니다.
+
+- `expect`: `trigger` 또는 `no_trigger`입니다. 요청된 출력 형태에 따라 답이 갈리는 경계 케이스는 세 번째 값이 아니라 `note`를 붙인 `no_trigger`로 기록합니다.
+- `runs`와 `threshold`: 모든 케이스가 자기 값을 밝힙니다. 기본값을 상속하게 두지 않습니다. `runs`가 비율의 의미를 바꾸기 때문입니다. `3`회 실행과 `0.5` 임계값은 권장 시작점이며 검증된 최적값이 아닙니다.
+- 측정된 트리거 비율은 `stochastic-model` 측정입니다. 결과와 함께 모델·런타임 식별자와 실행 횟수를 기록하고, 맨 통과율 대신 목표 구간 폭을 밝힙니다.
+- 트리거 집합은 개수가 아니라 구성입니다. 트리거해야 하는 경우, 트리거하지 말아야 하는 경우, 경계, 근접 오답, 출처 민감, 안전 케이스를 덮고, 기존 케이스가 탐침하지 않는 것을 탐침할 때만 케이스를 더합니다.
+
+전체 케이스 형태와 두 축, 설명 최적화 규칙은 `rules/trigger-design.md`를 읽습니다.
+
+</trigger_metric>
+
 <validation>
 
 Must-pass thresholds:
 
 - [ ] Mode가 create/refactor/boundary handoff 중 하나로 결정됨.
 - [ ] 중요한 작업에서는 프로젝트 skill-authoring baseline을 고려함.
-- [ ] 새 스킬 또는 대규모 변경 스킬에는 positive trigger 3개, negative 2개, boundary 1개 이상이 있음.
+- [ ] 트리거 케이스가 구성된 묶음 - 트리거해야 하는 경우, 트리거하지 말아야 하는 경우, 경계, 근접 오답, 출처 민감, 안전 - 을 덮고, 모든 케이스가 자기 `runs`와 `threshold`를 밝힘. 어떤 케이스 개수도 요건으로 취급하지 않음.
+- [ ] 근접 오답 케이스가 있어 이웃 스킬의 트리거 가로채기를 가정이 아니라 측정함.
 - [ ] `description`이 무엇을 하는지와 언제 쓰는지를 모두 말함.
 - [ ] Intent, trigger, scope, authority, evidence, tools, output, verification, stop condition이 드러남.
 - [ ] Skill이 no loop를 명시적으로 선택했거나 feedback, metric/rubric, guard, bounded iterations, acceptance rule, stop condition을 정의함.
@@ -253,3 +271,23 @@ Must-pass thresholds:
 - [ ] 완료 전 local markdown links, code fences, source-sensitive claims를 확인함.
 
 </validation>
+
+## Sources
+
+> 링크 확인 2026-09-20.
+
+| 주장 | 출처 |
+|---|---|
+| 이 코어가 드러내는 `SKILL.md` 계약 형태, 폴더 책임, `name`·`description` 요건 | `instructions/skill/SKILL_AUTHORING.md` |
+| frontmatter 제약과 500줄·5,000토큰 공개 예산 | <https://agentskills.io/specification> |
+| 트리거 케이스 형태, 두 축, 구성 요건 | `rules/trigger-design.md`, <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| Codex 발견 위치와 2%·8,000자 목록 예산 | <https://learn.chatgpt.com/docs/build-skills> |
+| Claude Code frontmatter 확장, 1,536자 항목 한도, 1% 목록 예산 | <https://code.claude.com/docs/en/skills> |
+| 일곱 행 산출물 감사와 평가 차원으로서의 공존 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+| 짝지은 스킬 있음·없음 기준선과 결과 배치 | `rules/validation-and-iteration.md` |
+
+### 증거 등급
+
+이 코어는 지식 기반이 아니라 계약 요약입니다. 규범적 세부는 `rules/`에 있고 각 규칙 파일이 자기
+등급이 붙은 출처 표를 지닙니다. `description`은 이전 판에서 의도적으로 바꾸지 않았습니다. 이
+저장소가 이미 Codex 목록 예산을 넘겼고 더 긴 설명은 기존 문제를 악화시키기 때문입니다.

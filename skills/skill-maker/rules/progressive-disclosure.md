@@ -14,7 +14,32 @@ Design every skill as if agents load it in stages:
 
 The deeper the layer, the more specific and optional the content should become.
 
-## 2. Keep the Core Lean
+## 2. Context Budgets
+
+The two figures below are **different things**, and the difference matters.
+
+| Figure | Status | What it covers |
+|---|---|---|
+| 500 lines | `PRIMARY` - stated by the specification | The `SKILL.md` body |
+| 5,000 tokens | `PRIMARY` - stated by the specification | The `SKILL.md` body |
+| 300 lines | **This repository's chosen gate** | Only the files under `instructions/` |
+
+The 300-line value is not a sourced figure. It is this repository's own default, enforced by
+`scripts/check-sources.sh` through `MAX_LINES=300`, and that script sets `DOC_SCOPE="instructions"` - so
+it checks `instructions/**` and **does not currently cover this skill**. Do not present 300 as a
+specification requirement, and do not treat this skill as exempt from the 500-line budget because a
+different check happens to scope elsewhere.
+
+Other budget rules:
+
+- Keep each `references/` file focused on one topic.
+- Do not build deep reference chains.
+- If you created a support file, reference it directly from `SKILL.md`.
+- Do not create explanations that did not need a support file.
+- Put eval fixtures and prompt templates in `assets/` when they are actually run or copied, rather than in
+  a prose reference.
+
+## 3. Keep the Core Lean
 
 The core skill should contain:
 
@@ -32,7 +57,7 @@ Move out:
 - deterministic command logic
 - output templates
 
-## 3. Navigation Cues
+## 4. Navigation Cues
 
 Do not write vague references like `see references/`.
 
@@ -45,17 +70,27 @@ For more information, see references/.
 Better:
 
 ```markdown
-Read `references/official/openai.md` only when OpenAI-specific skill behavior changes the rule.
+Read `references/official/openai.md` only when Codex-specific skill behavior changes the rule.
 Read `rules/validation-and-iteration.md` before declaring the skill complete.
 Run the target package's documented validator when present, and run `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json` for repository-skill structural checks.
 ```
 
-## 4. One Level Deep
+## 5. One Level Deep
 
-Prefer support files linked directly from `SKILL.md`.
-Avoid reference chains where a rule requires another rule that requires another reference unless the chain is explicitly justified.
+Prefer support files linked directly from `SKILL.md`. Keep references **one level deep** from the core.
 
-## 5. Split by Need
+The reason is not tidiness: an agent may partially read a file that is referenced from another referenced
+file, previewing it with something like `head -100` rather than reading it whole, and act on an incomplete
+picture. A file that `SKILL.md` links directly is read in full. Avoid reference chains where a rule
+requires another rule that requires another reference unless the chain is explicitly justified.
+
+## 6. Reference File Structure
+
+**For a reference file longer than 100 lines, put a table of contents at the top.** The same partial-read
+behavior that makes deep chains risky also means a reader may see only the opening lines; a table of
+contents makes the file's full scope visible even then.
+
+## 7. Split by Need
 
 Move content to:
 
@@ -65,7 +100,7 @@ Move content to:
 - `assets/` for output resources
 - `agents/` for consumed runtime/UI metadata
 
-## 6. Readback Check
+## 8. Readback Check
 
 After splitting:
 
@@ -73,3 +108,31 @@ After splitting:
 - confirm support files are findable from the core
 - confirm no key instruction is duplicated across layers
 - confirm every support file has a reason to exist
+
+### Removal test
+
+The questions above ask whether content is *useful*. These decide whether it *earns its place*.
+
+- SK-D-1: For each instruction, ask **"if this were absent, would the agent get it wrong?"** If the answer is no, delete it. If you are not sure, test it rather than keeping it on suspicion.
+- SK-D-2: If a task succeeds without the skill, that skill may add no value. A skill that restates what the agent already does reliably is cost without benefit.
+
+Keep the usefulness questions **and** the removal test. They answer different questions: the first asks
+whether a reader can find things, the second whether the thing should be there at all.
+
+## Sources
+
+> Links checked 2026-09-20.
+
+| Claim | Source |
+|---|---|
+| The 500-line and 5,000-token progressive-disclosure budgets, and the removal test behind `SK-D-1` and `SK-D-2` | <https://agentskills.io/skill-creation/best-practices> |
+| The three-stage model (metadata, then full instructions, then referenced files) | <https://agentskills.io/specification> |
+| The one-level-deep reference rule and the partial-read reason for it | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices> |
+| The table-of-contents rule for reference files longer than 100 lines | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices> |
+| The 300-line repository gate and its scope | `scripts/check-sources.sh` (`MAX_LINES=300`, `DOC_SCOPE="instructions"`) |
+
+### Evidence grade
+
+This file is the **canonical** statement of the disclosure budgets; `rules/skill-anatomy.md` points here
+rather than restating them. The 500-line and 5,000-token figures are `PRIMARY` - the specification states
+them. The 300-line value is a repository gate, labelled as such and never presented as sourced.

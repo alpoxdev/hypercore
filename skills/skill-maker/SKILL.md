@@ -150,6 +150,10 @@ Read `references/local/instructions-skill-authoring.md` when working inside this
 
 Read `references/local/skill-creator.md` when deciding how much detail belongs in the core or whether scripts/assets are justified.
 
+Read `references/official/agent-skills-standard.md` when a frontmatter constraint, a disclosure budget, or the standard-vs-extension split of a frontmatter field affects the rule. It is the `PRIMARY` source for those, so it is read before the vendor snapshots.
+
+Read `references/official/openai.md` when the Codex discovery locations, the listing budget, or the `agents/openai.yaml` policy surface affects the rule. Read `references/official/anthropic.md` when the Claude Code frontmatter extensions, the 1,536-character entry cap, or the enterprise risk tiers affect the rule.
+
 Read official references when:
 
 - provider-sensitive skill guidance affects the core rule
@@ -228,13 +232,27 @@ Phase 3 authoring rules:
 
 </forbidden>
 
+<trigger_metric>
+
+A trigger case is not a boolean. Every case carries `expect`, `runs`, and `threshold`, and the run records the measured `trigger_rate`.
+
+- `expect`: `trigger` or `no_trigger`. A boundary case whose answer depends on the requested output shape is recorded as `no_trigger` with a `note`, not as a third value.
+- `runs` and `threshold`: every case states its own. Do not let a case inherit a default, because `runs` changes what the rate means. `3` runs and a `0.5` threshold are the recommended starting point, not a validated optimum.
+- A measured trigger rate is a `stochastic-model` measurement: record the model and runtime identity and the run count with the result, and state the target interval width rather than reporting a bare pass rate.
+- Trigger sets are composed, not counted. Cover should-trigger, should-not-trigger, boundary, near-miss, source-sensitive, and safety cases, and add a case only when it probes something the existing cases do not.
+
+Read `rules/trigger-design.md` for the full case shape, the two axes, and the description-optimization rules.
+
+</trigger_metric>
+
 <validation>
 
 Must-pass thresholds:
 
 - [ ] Mode decided: create/refactor/boundary handoff.
 - [ ] Project skill-authoring baseline considered for non-trivial work.
-- [ ] At least 3 positive trigger examples, 2 negative examples, and 1 boundary example exist for new or substantially changed skills.
+- [ ] Trigger cases cover the composed groups - should-trigger, should-not-trigger, boundary, near-miss, source-sensitive, and safety - and every case states its own `runs` and `threshold`; no case count is treated as the requirement.
+- [ ] A near-miss case exists, so trigger stealing by a neighboring skill is measured rather than assumed.
 - [ ] `description` states what the skill does and when to use it.
 - [ ] Intent, trigger, scope, authority, evidence, tools, output, verification, and stop condition are discoverable.
 - [ ] The skill explicitly selects no loop or defines feedback, metric/rubric, guard, bounded iterations, acceptance rule, and stop condition.
@@ -253,3 +271,24 @@ Must-pass thresholds:
 - [ ] Local markdown links, code fences, and source-sensitive claims are checked before completion.
 
 </validation>
+
+## Sources
+
+> Links checked 2026-09-20.
+
+| Claim | Source |
+|---|---|
+| The `SKILL.md` contract shape, the folder responsibilities, and the `name`/`description` requirements this core exposes | `instructions/skill/SKILL_AUTHORING.md` |
+| The frontmatter constraints and the 500-line / 5,000-token disclosure budgets | <https://agentskills.io/specification> |
+| The trigger case shape, the two axes, and the composition requirement | `rules/trigger-design.md`, <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| The Codex discovery locations and the 2% / 8,000-character listing budget | <https://learn.chatgpt.com/docs/build-skills> |
+| The Claude Code frontmatter extensions, the 1,536-character entry cap, and the 1% listing budget | <https://code.claude.com/docs/en/skills> |
+| The seven-row artifact audit and coexistence as an evaluation dimension | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+| The paired with/without baseline and the results layout | `rules/validation-and-iteration.md` |
+
+### Evidence grade
+
+This core is a contract summary, not a knowledge base: the normative detail lives in `rules/`, and each
+rule file carries its own graded source table. The `description` is deliberately unchanged from the
+previous revision, because this repository is already over the Codex listing budget and a longer
+description would make an existing problem worse.

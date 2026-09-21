@@ -1,79 +1,196 @@
 # 자원 배치
 
-**목적**: 스킬 내용의 각 조각을 책임에 맞는 파일 유형에 배치합니다.
+**Purpose**: 스킬 내용의 각 조각을 그 책임에 맞는 파일 유형에 둡니다.
 
-## 1. Placement Matrix
+## 1. 배치 행렬
 
-| 내용 | 위치 | 이유 |
+| 내용 | 자리 | 이유 |
 |---|---|---|
-| 언제 skill을 쓰는지 | `description`, routing rule | Discovery와 trigger signal |
-| 일, boundary, top-level workflow, stop condition | `SKILL.md` | Activation 후 항상 필요 |
-| 재사용 정책과 반복 판단 | `rules/` | 모든 run에 적용 |
-| 공식 문서, schema, domain detail, long examples | `references/` | 필요할 때만 로드 |
-| 결정적 validation 또는 transformation | `scripts/` | prose보다 더 reliable |
-| templates, reusable eval fixtures, static output resources | `assets/` 또는 `assets/evals/` | output에 복사, 채움, 삽입하거나 validator에서 재사용 |
-| UI/runtime metadata | `agents/` | runtime이 소비할 때만 |
+| 스킬을 언제 쓰는지 | `description`, 라우팅 규칙 | 발견과 트리거 신호 |
+| 직업, 경계, 상위 워크플로, 정지 조건 | `SKILL.md` | 활성화 후 항상 필요 |
+| 재사용 정책과 반복되는 판단 | `rules/` | 실행 전반에 적용 |
+| 공식 문서, 스키마, 도메인 세부, 긴 예시 | `references/` | 필요할 때만 로드 |
+| 결정적 검증이나 변환 | `scripts/` | 산문보다 신뢰할 수 있음 |
+| 템플릿, 재사용 평가 픽스처, 정적 출력 자원 | `assets/` 또는 `assets/evals/` | 복사·채움·출력 삽입되거나 검증기가 재사용 |
+| UI·런타임 메타데이터 | `agents/` | 런타임이 소비할 때만 |
 
 ## 2. 판단 순서
 
-다음 질문을 순서대로 봅니다.
+순서대로 묻습니다.
 
-1. 이것이 core identity, trigger, boundary, stop condition인가?
-2. 이것이 재사용 정책 또는 반복 판단 가이드인가?
+1. 핵심 정체성, 트리거, 경계, 정지 조건인가?
+2. 재사용 정책이나 반복되는 판단 안내인가?
 3. 필요할 때만 로드하는 상세 지식인가?
 4. 결정적 실행이 더 나은가?
-5. reasoning context보다 output resource에 가까운가?
-6. runtime 또는 UI가 소비하는 platform metadata인가?
+5. 추론 컨텍스트가 아니라 출력 자원인가?
+6. 런타임이나 UI가 소비하는 플랫폼 메타데이터인가?
 
-## 3. Rules vs References
+## 3. 규칙과 참조
 
-`rules/`는 판단 기준에 사용합니다.
+`rules/`는 판단에 씁니다.
 
-- scripts를 언제 추가할지
-- deterministic validator를 언제 `scripts/`에 둘지
-- trigger examples를 어떻게 검증할지
-- source-sensitive claims를 어떻게 처리할지
-- core와 references를 어떻게 나눌지
+- 언제 스크립트를 더하는지
+- 언제 결정적 검증기를 `scripts/`에 두는지
+- 트리거 예시를 어떻게 검증하는지
+- 출처 민감 주장을 어떻게 다루는지
+- 핵심과 참조를 어떻게 나누는지
 
-`references/`는 지식에 사용합니다.
+`references/`는 지식에 씁니다.
 
 - 공식 문서 요약
-- API schemas
-- long examples
-- provider-specific edge cases
-- domain glossary
+- API 스키마
+- 긴 예시
+- 제공자별 경계 사례
+- 도메인 용어집
 
-## 4. Scripts
+## 4. 스크립트
 
-다음 중 하나 이상일 때만 scripts를 추가합니다.
+다음 중 하나라도 참일 때만 스크립트를 더합니다.
 
-- 같은 check 또는 transform을 자주 반복함
-- command sequence가 fragile함
-- machine-readable output이 필요함
-- failure message가 agent self-correction에 도움됨
-- version pinning 또는 parameter normalization이 reliability를 높임
+- 같은 검사나 변환이 자주 반복됨
+- 명령 순서가 깨지기 쉬움
+- 기계 판독 가능한 출력이 필요함
+- 실패 메시지가 에이전트의 자기 수정에 도움
+- 버전 고정이나 매개변수 정규화가 신뢰성을 높임
 
-모든 script에는 purpose, usage, dependencies, expected output, failure behavior를 문서화합니다.
+모든 스크립트에 목적, 사용법, 의존성, 기대 출력, 실패 동작을 적습니다.
 
-Deterministic validator는 `scripts/`에 둡니다. `skill-maker`의 validator는 `scripts/validate-skill-maker.mjs`에 두며, network, credential, commit, product-file mutation 없이 repo-local files와 eval fixtures를 소비해야 합니다.
+결정적 검증기는 `scripts/`에 둡니다. `skill-maker`의 검증기는 `scripts/validate-skill-maker.mjs`에
+속하며, 네트워크, 자격 증명, 커밋, 제품 파일 변경 없이 저장소 로컬 파일과 평가 픽스처를 소비해야
+합니다.
 
-## 5. Assets
+## 5. 자산
 
-Assets는 output generation을 지원하는 파일에 사용합니다.
+자산은 출력 생성을 돕는 파일에 씁니다.
 
-- report templates
-- prompt templates
-- JSON schemas
-- reusable eval fixtures, 특히 `assets/evals/` 아래 JSONL cases
-- 복사하거나 채우는 examples
+- 보고서 템플릿
+- 프롬프트 템플릿
+- JSON 스키마
+- 재사용 평가 픽스처, 특히 `assets/evals/` 아래 JSONL 케이스
+- 복사하거나 채우는 예시
 
-reasoning-only documentation에는 assets를 쓰지 않습니다.
+추론 전용 문서에는 자산을 쓰지 않습니다.
 
-## 6. Quality Gate
+## 6. 공식 참조 배치
 
-- [ ] 모든 support file에 placement reason이 있음.
-- [ ] 모든 support file이 `SKILL.md` 또는 직접 연결된 rule에서 discoverable함.
-- [ ] Scripts/assets에 usage와 validation note가 있음.
-- [ ] Deterministic validators는 `scripts/`에, reusable eval fixtures는 `assets/evals/`에 있음.
-- [ ] Provider-sensitive content가 references로 격리됨.
-- [ ] Core trigger logic이 references 안에 숨지 않음.
+긴 공식 문서 증거를 핵심에 넣지 않습니다. 밖으로 나눕니다.
+
+```text
+references/
+└── official/
+    ├── agent-skills-standard.md
+    ├── openai.md
+    └── anthropic.md
+```
+
+각 파일은 확인 날짜, 출처 URL, 이 스킬에 영향을 주는 주장, 변동 주의 사항, 그리고 핵심 규칙으로
+승격된 요약을 담습니다.
+
+**`references/official/agent-skills-standard.md`가 공개 표준 스냅샷의 정본 파일 이름입니다.** 표준은
+frontmatter 제약과 공개 예산의 일차 출처입니다. 그러므로 표준을 인용하는 패키지는 그것을 벤더 파일에
+합쳐 넣지 않고 그 이름으로 함께 지녀야 합니다.
+
+## 7. 평가 자원 배치
+
+평가 자료를 "읽는 설명"과 "실행하거나 비교하는 픽스처"로 나눕니다.
+
+```text
+assets/
+└── evals/
+    ├── trigger-cases.jsonl
+    └── workflow-cases.jsonl
+
+references/
+└── eval-rubric.md
+```
+
+- `assets/evals/*.jsonl`은 파서나 러너가 읽는 기계 판독 케이스를 담습니다.
+- `references/eval-rubric.md`는 사람이 읽는 채점 기준과 주의 사항을 담습니다.
+- 결정적 러너가 있으면 `scripts/run-evals.*`에 두고 의존성과 기대 출력을 문서화합니다.
+- 평가 케이스가 외부 출처를 요구하면 출처 URL, 접근 날짜, 신선도 주의를 케이스 안이나 출처 원장에 적습니다.
+
+## 8. 실행 결과가 사는 자리
+
+위 픽스처는 입력입니다. 그것을 돌린 **결과**는 스킬 폴더 밖에 삽니다.
+
+다음은 규범입니다.
+
+- SK-E-1: 실행 결과를 스킬 폴더 **밖** `.omo/evidence/<skill>/iteration-N/`에 둡니다. 배포되는 스킬은 자기 실행 이력을 지니지 않습니다.
+- SK-E-2: 모든 실행이 `timing.json`(토큰과 벽시계 시간)과 `grading.json`(단언별 통과·실패 **및 증거 문자열**)을 남깁니다. 증거 문자열 없는 `passed: true`는 증거가 아닙니다.
+- SK-E-3: 각 실행을 **독립 세션**에서 돌립니다. 한 세션을 재사용하면 앞선 실행의 컨텍스트가 다음을 오염시킵니다.
+- SK-E-4: 기계적 단언(유효한 JSON, 행 수, 파일 존재)은 판단자가 아니라 **스크립트**로 점검합니다.
+
+배치:
+
+```text
+.omo/evidence/<skill>/iteration-N/
+├── benchmark.json
+└── eval-<case>/
+    ├── with_skill/
+    │   ├── outputs/
+    │   ├── timing.json
+    │   └── grading.json
+    └── without_skill/
+        ├── outputs/
+        ├── timing.json
+        └── grading.json
+```
+
+**업스트림 출처는 다르며 그 차이는 의도적입니다.** 그쪽은 테스트 케이스를 스킬 디렉터리 안
+`evals/evals.json`에, 결과를 스킬 옆 워크스페이스에 둡니다. 이 저장소에는 이미 평가 자료 배치가 둘로
+갈려 있었고, 세 번째를 더하면 단일 답이 사라집니다. 증거 디렉터리 형태는 형제 워크스페이스 대신
+골랐습니다. 형제 형태는 이 저장소에 선례가 없고 증거 디렉터리에는 있기 때문입니다. 맞바꿈은
+실재합니다. 결과가 배포 스킬과 함께 다니지 않으므로 이 저장소 밖의 독자는 볼 수 없습니다.
+
+## 9. 설치 신뢰와 출처
+
+스킬이 어디서 왔는지는 그것이 무엇인지의 일부입니다.
+
+- 프로젝트 범위 스킬 디렉터리는 그 자체로 **신뢰 경계가 아닙니다.** 문서화된 런타임은 프로젝트 스킬을
+  명시적 신뢰 단계 뒤에 두고, 스캔에 실패한 스킬을 격리합니다.
+- 디렉터리 위치에 기대지 말고 설치 출처(출처 식별자, 내용 해시, 스캐너 결과)를 기록합니다.
+- 서드파티 스킬과 함께 넣은 스크립트는 프롬프트 조각이 아니라 **코드 검토** 대상입니다.
+- 동적 셸 보간보다 입력이 명시된 스크립트를 선호하고, 스킬 파일·예시·스크립트에 자격 증명을 넣지
+  않습니다.
+- 변경 가능한 상태를 설치 트리에 쓰지 않습니다.
+
+## 10. 금지 패턴
+
+- `SKILL.md`가 참조 지식 기반이 되는 것
+- `references/` 파일이 여러 단계 참조를 다시 요구하는 것
+- `SKILL.md`에 사용 조건을 밝히지 않고 스크립트를 만드는 것
+- 실제 워크플로에 연결되지 않은 자산
+- 공식 문서를 길게 그대로 옮기는 것
+- 평가 픽스처를 다시 돌릴 수 없는 산문 체크리스트로 남기는 것
+- 안전 경계를 도구 게이트에 연결하지 않고 최종 답변 어조 규칙으로만 쓰는 것
+- 배포되는 스킬 폴더 안에 실행 결과를 커밋하는 것
+
+## 11. 완료 기준
+
+- [ ] 모든 지원 파일에 배치 이유가 있습니다.
+- [ ] 모든 지원 파일을 `SKILL.md`나 직접 연결된 규칙에서 찾을 수 있습니다.
+- [ ] 스크립트·자산에 사용법과 검증 기록이 있습니다.
+- [ ] 결정적 검증기는 `scripts/`에, 재사용 평가 픽스처는 `assets/evals/`에 있습니다.
+- [ ] 제공자 민감 내용이 참조로 격리되어 있습니다.
+- [ ] 핵심 트리거 로직이 참조에 숨지 않았습니다.
+- [ ] 표준 스냅샷이 `references/official/agent-skills-standard.md`에 존재합니다.
+- [ ] 평가 실행 결과가 스킬 폴더 밖에, 실행별 시간·채점 기록과 함께 쓰입니다.
+
+## Sources
+
+> 링크 확인 2026-09-20.
+
+| 주장 | 출처 |
+|---|---|
+| 스킬 폴더 밖에 두는 실행 결과, 증거 문자열이 있는 실행별 `timing.json`과 `grading.json`, 실행마다 독립 세션, 스크립트로 점검하는 기계적 단언 - `SK-E-1`부터 `SK-E-4`의 근거 | <https://agentskills.io/skill-creation/evaluating-skills> |
+| 업스트림의 `evals/evals.json` 배치와 형제 워크스페이스 결과 배치, 그리고 이 저장소가 의도적으로 갈라서는 지점 | <https://agentskills.io/skill-creation/evaluating-skills> |
+| `references/official/` 관례와 파일별 내용 | `instructions/skill/references/resource-placement.md` §5 |
+| 프로젝트 스킬 신뢰 게이트, 스캔 격리, 기록되는 설치 출처 | `instructions/cli/hermes-agent/SKILLS.md` |
+| 읽기 전용으로 등록되고 이름 공간이 붙으며 설치 트리에 쓰지 않는 스킬 | `instructions/cli/hermes-agent/PLUGIN_AUTHORING.md` |
+| 스킬 디렉터리의 참조 검증기로서의 `skills-ref validate` | <https://agentskills.io/specification> |
+
+### 증거 등급
+
+배치와 비용 기록 규칙은 `PRIMARY`이며 evaluating-skills 문서가 말합니다. 구체적 디렉터리 배치는
+**저장소 결정**이며 출처가 말한 것이 아닙니다. 표준의 배치인 것처럼 제시하지 않고 선택과 그 맞바꿈을
+기록합니다.

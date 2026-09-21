@@ -1,51 +1,103 @@
 # 스킬 안티패턴
 
-**목적**: 스킬 작성에서 자주 실패하는 패턴을 막습니다.
+**Purpose**: 스킬 작성에서 흔한 실패를 막습니다.
 
 ## 피할 것
 
-- 너무 모호해서 안정적으로 트리거되지 않는 description
-- 스킬이 무엇인지만 말하고 언제 써야 하는지 말하지 않는 description
-- positive/negative/boundary trigger examples가 없음
-- 미니 위키처럼 비대해진 `SKILL.md`
-- core trigger 또는 stop-condition logic이 references에 숨어 있음
-- core, rules, references 사이의 중복 상세 내용
-- 찾기 어렵게 깊게 중첩된 references
-- runtime이나 사용자가 명시적으로 필요로 하지 않는 `README.md`, `CHANGELOG.md`, `QUICK_REFERENCE.md` 같은 추가 문서
-- canonical core instructions에 넣은 시간 민감 provider detail
-- clear reliability justification, usage, dependency, failure behavior 없이 추가한 scripts
-- workflow에서 복사, 채움, 사용되지 않는 assets
-- provider docs 또는 retrieved snippets를 user/project instructions보다 높은 authority로 취급하는 것
-- credential, network, destructive, production side effects를 explicit gates 없이 지시하는 것
-- 스킬이 경로를 추천해야 하는데 선택지만 너무 많이 늘어놓는 경우
-- feedback, metric/rubric, independent guard, acceptance rule, hard stop이 없는 loop
-- baseline 또는 eval set을 바꾸고 improvement라고 부르는 것
-- capability check나 explicit degradation path 없이 shared core에 둔 provider-specific command
-- 실제 verification run보다 미래인 source date 또는 source로 기록한 snippet/model summary
-- structural bilingual pairing을 equivalent behavior의 증거로 취급하는 것
-- tool argument, ownership, permission, side effect가 중요한 workflow를 final output만으로 검증하는 것
+- 안정적으로 발동하기에 너무 모호한 설명
+- 스킬이 무엇인지는 말하고 언제 쓰는지는 말하지 않는 설명
+- positive·negative·boundary 트리거 예시가 없음
+- 근접 오답 케이스가 없어 이웃 스킬의 트리거 가로채기를 한 번도 측정하지 않음
+- 미니 위키가 된 `SKILL.md` 본문
+- 참조에 숨은 핵심 트리거나 정지 조건 로직
+- 핵심, 규칙, 참조에 중복된 세부
+- 발견하기 어려울 만큼 깊게 중첩된 참조
+- 런타임이나 사용자가 명시적으로 필요로 하지 않는 한 스킬 안에 두는 `README.md`, `CHANGELOG.md`, `QUICK_REFERENCE.md` 같은 추가 문서
+- 정본 핵심 지침에 들어간 시점 민감 제공자 세부
+- 신뢰성 근거, 사용법, 의존성, 실패 동작 없이 추가한 스크립트
+- 복사되거나 채워지거나 워크플로에서 쓰이지 않는 자산
+- 사용자·프로젝트 지침보다 높은 권위로 취급한 제공자 문서나 검색 조각
+- 명시적 게이트 없는 자격 증명, 네트워크, 파괴적, 프로덕션 부작용
+- 스킬이 하나의 길을 권해야 할 때 제시하는 너무 많은 선택지
+- 피드백, 지표·루브릭, 독립 가드, 수용 규칙, 확고한 정지가 없는 루프
+- 기준선이나 평가 집합을 바꾸고 그 결과를 개선이라 부르는 것
+- 역량 확인이나 명시적 열화 경로 없는 공유 핵심의 제공자별 명령
+- 실제 검증 실행보다 뒤인 출처 날짜, 또는 검색 조각·모델 요약을 출처로 기록하는 것
+- 동등한 동작의 증거로 취급한 구조적 양언어 짝
+- 도구 인자, 소유, 권한, 부작용이 중요한 워크플로에서 최종 출력만 검증하는 것
+- `runs`나 `threshold`를 밝히지 않고 상속하는 트리거 케이스
+- 길이 한도를 다시 확인하지 않고 항목 한도를 넘겨 키운 설명
+- 스킬 있음·없음 **양쪽** 조건에서 통과해, 스킬의 가치를 반영하지 않고 통과율만 부풀리는 단언
+- **증거 문자열** 없이 `passed: true`만 있는 `grading.json` 기록
+- 배포되는 스킬 폴더 안에 둔 실행 결과 (`.omo/evidence/` 아래가 아니라)
+- 에이전트가 이미 안정적으로 하는 일을 다시 적는 스킬, 즉 이익 없는 비용
+- 편의를 위한 부여가 아니라 권한 경계로 제시한 `allowed-tools`
+
+## 산출물 감사
+
+이 절은 스킬이 받는 것이 아니라 스킬이 **무엇인지**를 시험합니다. 스킬은 배포되는 코드와 지침이므로
+배포 전에 감사합니다. 일부가 아니라 일곱 행 전부입니다.
+
+| 범주 | 볼 것 | 출처가 부여한 심각도 |
+|---|---|---|
+| 코드 실행 | 스킬 디렉터리의 스크립트(`*.py`, `*.sh`, `*.js`). 스크립트는 환경 전체 접근으로 실행됩니다 | 높음 |
+| 지침 조작 | 안전 규칙을 무시하거나, 동작을 사용자에게 숨기거나, 조건부로 동작을 바꾸라는 지시 | 높음 |
+| MCP 서버 참조 | `ServerName:tool_name` 형태의 참조 | 높음 |
+| 네트워크 접근 | URL, API 엔드포인트, `fetch`, `curl`, `requests` | 높음 |
+| 하드코딩된 자격 증명 | 스킬 파일이나 스크립트 안의 키, 토큰, 비밀번호 | 높음 |
+| 파일시스템 범위 | 스킬 디렉터리 밖 경로, 넓은 글롭, `../` | 중간 |
+| 도구 호출 | 에이전트에게 bash, 파일 연산, 기타 도구를 쓰라고 지시하는 문장 | 중간 |
+
+- SK-A-1: 배포 전에 스킬을 위 일곱 범주로 감사하고 결과를 기록합니다.
+- SK-A-2: 신뢰할 수 없는 출처의 스킬은 전체 감사 없이 배포하지 않습니다.
+- SK-A-3: 스킬을 버전에 고정하고, 버전이 바뀌면 다시 검토합니다.
+
+**이 패키지는 자기 감사의 코드 실행 사례입니다.** `skills/skill-maker/scripts/validate-skill-maker.mjs`는
+배포되는 스킬 디렉터리 안의 실행 코드이므로, 높음 등급의 코드 실행 행이 `skill-maker` 자신에게
+적용됩니다. 체크리스트로만이 아니라 대상으로서 감사합니다.
 
 ## 위험 신호
 
-- "This skill helps with many things."
-- 어떤 파일을 언제 읽을지 없이 "See references/"라고만 함.
-- source ledger 또는 refresh condition 없이 "latest best practice"라고 함.
-- recommended decision path 없이 "다섯 가지 접근법이 있다"고만 함.
-- 여러 파일에 같은 정의가 반복됨
-- 현재 core rules에 오래된 provider guidance가 섞여 있음
-- 중요한 skill 변경에서 local `instructions/skill/` guidance를 무시함
-- "구조가 좋아 보인다"는 이유로 validation을 생략함
-- Budget 또는 keep/discard rule 없이 "에이전트가 계속 시도할 수 있다"고 함.
-- Outcome, safety, failure semantics를 보존하지 않고 "사용 가능한 아무 tool이나 사용"하라고 함.
-- Child agent의 success claim을 parent verification으로 사용함.
+- "이 스킬은 여러 가지를 돕습니다."
+- 어느 파일을 언제 읽을지 말하지 않는 "references/를 보세요."
+- 출처 원장이나 갱신 조건 없는 "최신 모범 사례를 쓰세요."
+- 권장 판단 경로 없는 "다섯 가지 접근이 있습니다."
+- 같은 정의를 반복하는 여러 파일
+- 현재 핵심 규칙에 섞인 오래된 제공자 지침
+- 비사소한 스킬 변경에서 무시한 로컬 `instructions/skill/` 지침
+- "구조가 좋아 보인다"는 이유로 생략한 검증
+- 예산이나 유지·폐기 규칙 없는 "에이전트가 계속 시도할 수 있습니다."
+- 결과·안전·실패 의미를 보존하지 않는 "쓸 수 있는 도구를 쓰세요."
+- 부모 검증으로 대신 쓴 자식 에이전트의 성공 주장
+- 무엇이 통과했는지 말하는 증거 문자열 없는 "통과했습니다"
 
-## Repair Pattern
+## 수리 패턴
 
-이 중 하나가 보이면:
+이 중 하나가 나타나면:
 
-1. 스킬을 trigger 가능한 execution package로 다시 설명합니다.
-2. `description`과 trigger examples를 다시 씁니다.
-3. 잘못 배치된 상세를 rules, references, scripts, assets로 옮깁니다.
-4. instruction contract를 추가하거나 갱신합니다.
-5. 명시적 no-loop/loop policy, runtime capability boundary, source/retrieval guard, risk-proportional eval surface를 추가합니다.
-6. 같은 baseline과 adversarial/known-regression cases를 다시 실행하고 trace를 확인한 뒤 `ship`, `iterate`, `caveated ship`, `block`을 기록합니다.
+1. 스킬을 트리거 가능한 실행 패키지로 다시 서술합니다.
+2. 근접 오답 케이스를 포함해 `description`과 트리거 예시를 다시 씁니다.
+3. 잘못 놓인 세부를 규칙, 참조, 스크립트, 자산으로 옮깁니다.
+4. 지침 계약을 추가하거나 갱신합니다.
+5. 명시적 no-loop·loop 정책, 런타임 역량 경계, 출처·검색 가드, 위험에 비례하는 평가 표면을 더합니다.
+6. 일곱 행 산출물 감사를 실행하고 결과를 기록합니다.
+7. 같은 기준선과 적대적·알려진 회귀 케이스를 다시 돌리고, 추적을 살피고, `ship`, `iterate`, `caveated ship`, `block` 중 하나를 기록합니다.
+
+## Sources
+
+> 링크 확인 2026-09-20.
+
+| 주장 | 출처 |
+|---|---|
+| 심각도 표시가 있는 위험 등급 일곱 행, 재검토가 따르는 버전 고정 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+| 양쪽 조건과 증거 문자열, 그 뒤에 있는 양쪽 조건·`grading.json` 안티패턴 | <https://agentskills.io/skill-creation/evaluating-skills> |
+| 스킬 폴더 밖에 두는 결과, 그 뒤에 있는 `.omo/evidence/` 안티패턴 | <https://agentskills.io/skill-creation/evaluating-skills> |
+| "에이전트가 이미 하는 일을 다시 적는" 안티패턴의 근거인 제거 시험 | <https://agentskills.io/skill-creation/best-practices> |
+| 경계가 아니라 허용적 부여로서의 `allowed-tools` | <https://code.claude.com/docs/en/skills> |
+| 최적화 중 다시 확인해야 하는 설명 길이 한도 | <https://agentskills.io/specification> |
+
+### 증거 등급
+
+심각도 표시는 `VENDOR`이며 그 문서의 부여이지 통제된 연구의 결과가 아닙니다. 그것에 대한 감사는
+알려진 산출물 수준 문제를 걸러내며 안전의 증명이 아닙니다. 나머지 안티패턴은 인용한 문서와 이
+저장소에서 관찰한 결함에서 도출했습니다.

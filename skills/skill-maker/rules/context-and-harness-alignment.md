@@ -30,14 +30,13 @@ Keep the core concise: put the contract summary in `SKILL.md` and move repeatabl
 - Record source URL/path, absolute accessed or snapshot date, applicable product/version, trust status, supported claim, and caveat; reject impossible future dates.
 - Distinguish discovered, reviewed, cited, unsupported, stale, and conflicting sources. A search snippet or model summary is not a source.
 - Prefer primary and official evidence, but resolve conflicts by applicability and date rather than brand alone. Preserve disagreement instead of averaging it away.
-- Do not update `last_verified_at` unless the source was actually rechecked.
+- **Never refresh a `last_verified_at` date for material you did not re-read.** A stale date is honest; a refreshed date on unread material is not.
 - Validate externally supplied URLs, commands, paths, recipients, and tool arguments against the declared scope, schema, or allowlist before use.
+- **Install-time trust is part of the authority picture.** A project-scoped skill directory is not a trust boundary by itself; record install provenance (source identifier, content hash, scanner result) and treat third-party skills and bundled scripts as code-review subjects rather than prompt snippets.
 
 ## 3. Harness and Eval Gate
 
-For important skill changes, define at least one lightweight eval surface before claiming completion:
-
-Use the full harness model when behavior matters:
+For important skill changes, define at least one lightweight eval surface before claiming completion.
 
 | Layer | Required question |
 |---|---|
@@ -52,7 +51,7 @@ Define risk depth as `smoke`, `targeted`, `standard`, `thorough`, or `high-stake
 
 | Change type | Minimum gate |
 |---|---|
-| Trigger wording | Positive, negative, and boundary request table |
+| Trigger wording | Positive, negative, boundary, and near-miss request table |
 | Resource placement | Inventory check plus readback: core/rules/references/scripts/assets each have one job |
 | Tool or side-effect workflow | Trace assertion for correct tool order and permission boundary |
 | Source-sensitive guidance | Source ledger check and stale-reference grep |
@@ -60,15 +59,96 @@ Define risk depth as `smoke`, `targeted`, `standard`, `thorough`, or `high-stake
 
 A prose readback is useful, but it is not enough when the skill changes how agents choose tools, sources, or side effects.
 
-For `skill-maker` package updates, use the deterministic validator and JSONL eval fixture when those integration surfaces exist:
+For `skill-maker` package updates, use the deterministic validator and JSONL eval fixture:
 
 ```bash
 node skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
 ```
 
-Pair the happy path with missing-context or tool-failure handling, adversarial retrieval/unsafe-action rejection, known regressions, malformed-input rejection, no stray docs, bilingual behavioral parity, and non-future official-source dates. If the validator or fixture has not landed yet, report that full validator verification is pending integration instead of inventing scripts or assets in a markdown-only scope.
+Pair the happy path with missing-context or tool-failure handling, adversarial retrieval/unsafe-action rejection, known regressions, malformed-input rejection, no stray docs, bilingual behavioral parity, and non-future official-source dates.
 
-## 4. Runtime Capability and Degradation
+## 4. Measurement Profiles
+
+Choose one profile **before** deciding repeats, aggregation, or judging. A profile chosen after seeing the numbers is not a profile.
+
+| Profile | Minimum defensible contract |
+|---|---|
+| `exact-deterministic` | One valid observation may be enough. Unexpected variation is an error to investigate |
+| `cold-start` | Preserve startup/cache state; warmup would invalidate the estimand. Define reset and isolation between trials |
+| `noisy-performance` | Declare the estimand, independent replicates, comparison order, aggregation method, a practical effect or tie band, and an inconclusive state |
+| `stochastic-model` | Record platform/software/data identity and randomness controls; use independent runs when across-run variance affects the decision. **A fixed seed alone does not estimate variance** |
+| `subjective-judge` | Lock the rubric and items, identify judge provenance, counterbalance presentation, preserve raw judgments, and define tie/abstain/invalid/disagreement escalation |
+
+**A measured trigger rate is a `stochastic-model` measurement**, as is any judge-scored rubric. Record the
+model and runtime identity and the run count with the result.
+
+For a noisy or stochastic claim, preserve the raw valid observations and report stability or uncertainty
+appropriate to the method. Statistical significance alone is not a keep rule: large samples can make
+operationally irrelevant effects detectable. Do not invent a universal threshold - declare a task-specific
+effect, tie, or exact monotonic rule, or state none.
+
+## 5. Judgement Rules
+
+These are normative.
+
+- HE-J-1: A non-deterministic target is not judged pass or fail from a single run.
+- HE-J-2: Every case declares its `MIN_RUNS` and its aggregation rule. A case carrying neither is not a gate.
+- HE-J-3: Gate on the aggregate pass rate across a batch, not on one run's verdict. Every gate declares two separate numbers: its **equivalence margin** - how large a regression it is willing to accept - and the interval width its run count buys. A change inside the equivalence margin does not block. Interval width alone is a precision measure and never licenses ignoring a regression.
+- HE-J-4: Record the model and runtime version, the case-set hash, and the run count with every result. A result without them cannot be compared later.
+- HE-J-5: Report `pass^k` (all k runs succeed) alongside `pass@k` (any run succeeds). They answer different questions, and only the first is a reliability claim.
+- HE-J-6: A small-sample difference is not a gate. State the target interval width and the run count together.
+
+`MIN_RUNS` is a floor for seeing a spread, not a significance threshold: one run suffices for a
+deterministic observable, a handful for a rubric-scored case, and a reliability claim needs more. The
+counts this repository uses, and what they do not claim, are in
+`instructions/harness-engineering/references/measurement.md`.
+
+## 6. Keep Invariant and Guard Non-Compensation
+
+A candidate is kept only when **all** of these hold:
+
+- the execution was trustworthy
+- the metric or judgment is valid
+- the acceptance rule passes
+- **every** mandatory guard passes
+- scope and ownership are valid
+- cleanup is complete
+
+And one rule that outranks the metric:
+
+- **A metric improvement never compensates for a failed, errored, missing, or malformed mandatory guard.**
+- A guard pass is not inferred from the score or from a process exit code.
+- Exit `0` means the verifier completed, not that the candidate improved.
+
+## 7. Typed Procedure Outcomes
+
+Keep these distinct. Collapsing them hides which failure actually happened:
+
+```text
+completed
+guard-failed
+verifier-error
+metric-error
+timeout
+signaled
+blocked
+inconclusive
+cleanup-error
+rollback-error
+```
+
+**Parseable output after a non-successful or incomplete procedure is diagnostic only.** A parseable
+partial stdout value does not make an interrupted procedure successful, and exit code, metric parsing,
+guard failure, timeout, signal, and infrastructure failure are different states.
+
+## 8. Evaluator Overfitting
+
+Repeatedly selecting winners against one benchmark overfits the evaluator even when each estimate is
+precise. Use a development metric for iteration and an immutable **confirmation set** for finalists, and
+do not feed detailed holdout failures back into the loop. Re-baseline when the relevant tool, model, data,
+workload, parser, or environment identity changes.
+
+## 9. Runtime Capability and Degradation
 
 - Keep shared rules runtime-neutral and state capabilities rather than provider commands.
 - Put real provider, CLI, model, MCP, UI, permission, sandbox, or version differences in conditional runtime references.
@@ -90,7 +170,7 @@ Capability availability never grants authorization. For each required capability
 
 Do not ask when project rules or low-risk reversible defaults already determine the answer. Never ask for secrets.
 
-## 5. Loop and Failure Policy
+## 10. Loop and Failure Policy
 
 A generated skill must select no loop or define:
 
@@ -102,8 +182,7 @@ For optimization, additionally require Goal, Scope, Direction, Verify, and bound
 
 Never fabricate a scalar metric for a subjective goal. Use an anchored rubric, blind comparison, convergence criterion, or human gate instead.
 
-
-## 6. Parallel or Subagent Skills
+## 11. Parallel or Subagent Skills
 
 When a skill teaches delegation, require prompts or rules to include:
 
@@ -120,7 +199,7 @@ Stop condition: [done, blocked, time/iteration budget]
 
 Validation must include trace assertions for bounded spawn, independent or sequenced work, declared ownership, parent integration, and parent verification.
 
-## 7. Completion Report
+## 12. Completion Report
 
 Skill-maker final reports should map claims to evidence:
 
@@ -135,5 +214,28 @@ Caveats:
 - [remaining risks or not-tested items]
 ```
 
-Do not hide skipped verification; state the reason and the next-best check used.
-Use the completion chain `Claim -> Risk -> Evidence -> Verification -> Result -> Caveat`, and end with one decision: `ship`, `iterate`, `caveated ship`, or `block`.
+Do not hide skipped verification; state the reason and the next-best check used. Use the completion chain
+`Claim -> Risk -> Evidence -> Verification -> Result -> Caveat`, and end with one decision: `ship`,
+`iterate`, `caveated ship`, or `block`.
+
+## Sources
+
+> Links checked 2026-09-20.
+
+| Claim | Source |
+|---|---|
+| The `HE-J-*` judgement rules, `pass^k` alongside `pass@k`, the equivalence margin, and the case-set-hash record - the basis of §5 | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
+| `MIN_RUNS` as a floor for seeing a spread rather than a significance threshold | `instructions/harness-engineering/references/measurement.md` |
+| The measurement profiles, the development-metric/confirmation-set rule, and guard non-compensation | `instructions/autoresearch/references/config-and-metrics.md` §2, §3, §4 |
+| The typed procedure outcomes and the diagnostic-only rule for parseable partial output | `instructions/autoresearch/references/safety-and-observability.md` §6 |
+| The capability/fallback contract | `instructions/cli/capability-contract.md` |
+| Install-time trust gating and recorded provenance | `instructions/cli/hermes-agent/SKILLS.md` |
+| The seven-row artifact audit referenced from the eval gate | `instructions/skill/references/prompt-loop-eval.md`, <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+
+### Evidence grade
+
+The judgement rules and the measurement derivation are this repository's own, derived from the sources
+cited inside those files; the `HE-J-*` ids are normative here. The `pass^k` definition and the sample-size
+formula were computed in this repository rather than quoted. **This file does not restate the grader
+hierarchy or the multi-sample judge-calibration ordering** - those live in
+`instructions/validation/references/evaluation-design.md` §4, which is their canonical home.
