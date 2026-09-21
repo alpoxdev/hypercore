@@ -1,7 +1,7 @@
 ---
 name: skill-maker
 description: 사용자가 재사용 가능한 Codex 스킬 폴더를 만들거나 리팩토링해 달라고 요청할 때 사용합니다. `SKILL.md` 트리거 문구, instruction contract, `rules/`, `references/`, `scripts/`, `assets/`, 검증 체크를 다룹니다. 스킬이 아닌 일반 문서 작업에는 사용하지 않습니다.
-compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/write 및 셸 검색 도구가 있는 환경에서 가장 잘 동작합니다.
+compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/write 및 셸 검색 도구가 있는 환경에서 가장 잘 동작합니다. 번들 스크립트 실행에는 Bun이 필요합니다.
 ---
 
 @rules/self-containment.ko.md
@@ -268,7 +268,7 @@ Must-pass thresholds:
 - [ ] 명시적 정당화 없이 `SKILL.md`에서 한 단계보다 깊은 reference chain이 없음.
 - [ ] 코어 `SKILL.md`가 얇고 references를 복제하지 않음.
 - [ ] 이 repo의 bilingual convention을 따르는 새/실질 수정 markdown에는 대응 `*.ko.md`가 있음.
-- [ ] Scripts/assets에는 purpose, usage, dependency, expected output, failure handling이 있음.
+- [ ] Scripts/assets에는 purpose, usage, dependency, expected output, failure handling이 있음. 번들 스크립트는 첫 줄이 Bun shebang인 .mjs 파일이고, 패키지가 런타임 요구를 compatibility에 선언함.
 - [ ] Validation이 risk에 맞는 scope, risk depth, scenario, oracle, runner, judge, trace, gate, baseline/current results, regressions, ship/iterate/block 결정을 기록함.
 - [ ] Eval coverage가 normal, missing-context/tool-failure, boundary, adversarial retrieval/unsafe-action, known-regression behavior를 포함하고 권장 corpus size는 risk-proportional로 유지됨.
 - [ ] English/Korean parity를 file presence만이 아니라 구조와 동등한 behavioral cases로 확인함.

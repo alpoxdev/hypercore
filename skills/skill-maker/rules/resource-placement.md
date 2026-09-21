@@ -57,6 +57,23 @@ Document every script with purpose, usage, dependencies, expected output, and fa
 
 Put deterministic validators in `scripts/`. For `skill-maker`, the validator belongs in `scripts/validate-skill-maker.mjs` and should consume repo-local files and eval fixtures without network, credentials, commits, or product-file mutation.
 
+Bundled scripts run on Bun. The rule is one runtime and one extension: every non-directory entry under a
+package's `scripts/` directory is a `.mjs` file, and a `.mjs` script's first line is `#!/usr/bin/env bun`.
+
+- Do not ship `.sh`, `.py`, `.cjs`, `.js`, or extensionless executables under `scripts/`. A non-`.mjs`
+  file in that directory is a validation error, not a style preference.
+- Do not invoke a shell from a script. Use a structured argument array, and never interpolate user input
+  into a shell command line.
+- Why Bun and not a shell script: Windows ships Command Prompt and Windows PowerShell as its console
+  applications; a POSIX `sh` is not one of them and arrives with Git for Windows or WSL. A shell
+  script is therefore *less* portable across macOS, Linux, and Windows, not more - and a harness that falls
+  back to PowerShell cannot run it at all.
+- Tell the consumer what the package needs: when a package bundles a script, state the runtime requirement
+  in the `compatibility` frontmatter so a reader without Bun learns it before running anything.
+- The deterministic validator enforces the extension rule and the Bun shebang, so a bundled script that
+  breaks either fails validation instead of shipping. It also fails closed: a `scripts/` directory it
+  cannot read is an error, because the rule cannot be verified there.
+
 ## 5. Assets
 
 Use assets for files that support output generation:
@@ -179,7 +196,7 @@ Where a skill came from is part of what it is.
 
 ## Sources
 
-> Links checked 2026-09-20.
+> Links checked 2026-09-21.
 
 | Claim | Source |
 |---|---|
@@ -189,6 +206,8 @@ Where a skill came from is part of what it is.
 | Project-skill trust gating, scan quarantine, and recorded install provenance | `instructions/cli/hermes-agent/SKILLS.md` |
 | Skills registered read-only, namespaced, and never written to in the install tree | `instructions/cli/hermes-agent/PLUGIN_AUTHORING.md` |
 | `skills-ref validate` as the reference validator for a skill directory | <https://agentskills.io/specification> |
+| Windows hosts Command Prompt and Windows PowerShell as its console applications; the page names those two, not a POSIX `sh` | <https://support.microsoft.com/en-us/windows/apps/command-prompt-and-windows-powershell> |
+| A harness on native Windows uses Git for Windows for its Bash tool and falls back to PowerShell when it is absent, so a `sh` script may not run at all | <https://code.claude.com/docs/en/setup> |
 
 ### Evidence grade
 

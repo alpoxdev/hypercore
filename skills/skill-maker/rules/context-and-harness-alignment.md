@@ -62,7 +62,7 @@ A prose readback is useful, but it is not enough when the skill changes how agen
 For `skill-maker` package updates, use the deterministic validator and JSONL eval fixture:
 
 ```bash
-node skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
+bun skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
 ```
 
 Pair the happy path with missing-context or tool-failure handling, adversarial retrieval/unsafe-action rejection, known regressions, malformed-input rejection, no stray docs, bilingual behavioral parity, and non-future official-source dates.
