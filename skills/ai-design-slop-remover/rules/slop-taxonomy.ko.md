@@ -48,3 +48,9 @@ Finding마다 정확히 하나를 선택한다.
 - `preserve`: brand, brief, data, function이 패턴을 정당화함.
 - `ask`: 사용자 결정이 안전한 결과를 실질적으로 바꿈.
 - `block`: evidence, scope, authority가 부족함.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 외부 출처는 사용하지 않았다.
+
+finding class, registry scope, category는 이 패키지 자체 어휘이고 번들 rule registry가 같은 이름을 구현한다. 외부 분류 체계는 참조하지 않았다.

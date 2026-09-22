@@ -1,16 +1,26 @@
-#!/usr/bin/env node
-const { readFile, readdir, stat } = require('node:fs/promises');
-const { extname, relative, resolve } = require('node:path');
-const process = require('node:process');
-const { RULES, RULE_BY_ID } = require('./rules/registry.cjs');
-const { SUPPORTED, IGNORED_DIRS, fingerprint, sortFindings, summarize } = require('./rules/shared.cjs');
-const { scanText } = require('./engines/text.cjs');
-const { scanCss } = require('./engines/css.cjs');
-const { scanMarkup } = require('./engines/markup.cjs');
-const { resolveContext } = require('./resolve-context.cjs');
+#!/usr/bin/env bun
+// @ts-check
+/** Deterministic static slop detector: collect supported files, run the registered rules, and report stable JSON. */
+import { readFile, readdir, stat } from 'node:fs/promises';
+import { extname, relative, resolve } from 'node:path';
+import { RULES, RULE_BY_ID } from './rule-registry.mjs';
+import { SUPPORTED, IGNORED_DIRS, fingerprint, sortFindings, summarize } from './rule-shared.mjs';
+import { scanText } from './engine-text.mjs';
+import { scanCss } from './engine-css.mjs';
+import { scanMarkup } from './engine-markup.mjs';
+import { resolveContext } from './resolve-context.mjs';
 
+/** @typedef {{ id: string, defaultSeverity: string, class: string, engines: string[], evidence: string, action: string, fix: string, clusterKey: string, dispositionPolicy: string, matcher: RegExp }} Rule */
+/** @typedef {{ id: string, defaultSeverity: string, class: string, engines: string[], evidence: string, action: string, fix: string, clusterKey: string, dispositionPolicy: string }} DetectorRule */
+/** @typedef {{ rule: DetectorRule, engine: string, location: { file: string, line: number }, match: string }} DetectorMatch */
+/** @typedef {{ brandGradient: boolean, pricingComparison: boolean, realState: boolean, reducedMotion: boolean }} Context */
+/** @typedef {{ id: string, severity: string, confidence: string, scope: string, location: { file: string, line: number }, evidence: string, action: string, fix: string, engine: string, evidenceKind: string, detectionConfidence: string, remediationConfidence: string, ruleClass: string, clusterKey: string, renderConfirmationRequired: boolean, exceptionStatus: string }} Finding */
+/** @typedef {{ target?: string, baseline?: string | null, rules?: string[] | null, json: boolean, onlyNew: boolean, help: boolean }} DetectorArgs */
+
+/** @param {string[]} argv @returns {DetectorArgs} @throws {Error} for unknown arguments, a missing target, or an unusable rule/baseline combination */
 function parseArgs(argv) {
-  const args = { json: false, onlyNew: false, rules: null, baseline: null };
+  /** @type {DetectorArgs} */
+  const args = { json: false, onlyNew: false, rules: null, baseline: null, help: false };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === '--target') args.target = argv[++index];
@@ -27,13 +37,16 @@ function parseArgs(argv) {
   if (args.rules?.some((id) => !RULE_BY_ID.has(id))) throw new Error(`Unknown rule: ${args.rules.find((id) => !RULE_BY_ID.has(id))}`);
   return args;
 }
+/** @param {string} target @returns {Promise<string[]>} @throws {Error} when the target is not a supported file or directory */
 async function collectFiles(target) {
   const info = await stat(target);
   if (info.isFile()) { if (!SUPPORTED.has(extname(target).toLowerCase())) throw new Error(`Unsupported file type: ${extname(target) || '(none)'}`); return [target]; }
   if (!info.isDirectory()) throw new Error('Target must be a supported file or directory');
+  /** @type {string[]} */
   const files = []; const stack = [target];
   while (stack.length) {
     const current = stack.pop();
+    if (!current) continue;
     for (const entry of await readdir(current, { withFileTypes: true })) {
       const file = resolve(current, entry.name);
       if (entry.isDirectory() && !IGNORED_DIRS.has(entry.name)) stack.push(file);
@@ -42,12 +55,14 @@ async function collectFiles(target) {
   }
   return files.sort();
 }
+/** @param {DetectorRule} rule @param {Context} context @param {string} text @returns {string} */
 function exceptionStatus(rule, context, text) {
   if ((rule.id === 'surface.gradient-text' || rule.id === 'surface.purple-gradient') && context.brandGradient) return 'candidate';
   if (rule.id === 'structure.three-equal-cards' && (context.pricingComparison || /pricing|plan|tier|comparison/i.test(text))) return 'candidate';
   if ((rule.id === 'surface.status-dot' || rule.id === 'motion.pulse-without-state') && (context.realState || /recording|live|sync|unread/i.test(text))) return 'candidate';
   return 'not-checked';
 }
+/** @param {DetectorMatch} match @param {Context} context @param {string} text @returns {Finding} */
 function makeFinding(match, context, text) {
   const { rule, location, match: evidenceMatch } = match;
   const candidate = exceptionStatus(rule, context, text);
@@ -59,28 +74,35 @@ function makeFinding(match, context, text) {
     clusterKey: rule.clusterKey, renderConfirmationRequired: rule.class !== 'universal', exceptionStatus: candidate,
   };
 }
+/** @param {string} path @returns {Promise<Set<string>>} @throws {Error} when the baseline is not a detector v2 result */
 async function baselineFingerprints(path) {
   let value;
   try { value = JSON.parse(await readFile(resolve(path), 'utf8')); } catch (error) { throw new Error(`Invalid baseline: ${error instanceof Error ? error.message : String(error)}`); }
   if (value.detectorVersion !== 2 || !Array.isArray(value.findings)) throw new Error('Invalid baseline: expected detectorVersion 2 with findings array');
   return new Set(value.findings.map(fingerprint));
 }
+/** @param {Finding[]} findings @returns {string} */
 function genericOutputRisk(findings) {
   const categories = new Set(findings.filter((finding) => finding.ruleClass === 'default-risk' && finding.exceptionStatus !== 'candidate').map((finding) => finding.id.split('.')[0]));
   return categories.size >= 2 ? 'medium' : 'low';
 }
+/** @returns {Promise<void>} */
 async function main() {
+  /** @type {DetectorArgs | undefined} */
   let args;
   try {
     args = parseArgs(process.argv.slice(2));
-    if (args.help) { console.log('Usage: node detect-slop.cjs --target <file-or-directory> [--json] [--rules a,b] [--baseline result.json --only-new]'); return; }
-    const target = resolve(args.target); const files = await collectFiles(target); const root = (await stat(target)).isDirectory() ? target : resolve(target, '..');
-    const context = await resolveContext(target); const selected = args.rules ? RULES.filter((rule) => args.rules.includes(rule.id)) : RULES;
+    if (args.help) { console.log('Usage: node detect-slop.mjs --target <file-or-directory> [--json] [--rules a,b] [--baseline result.json --only-new]'); return; }
+    const target = resolve(args.target ?? ''); const files = await collectFiles(target); const root = (await stat(target)).isDirectory() ? target : resolve(target, '..');
+    const context = await resolveContext(target); const requestedRules = args.rules; const selected = requestedRules ? RULES.filter((rule) => requestedRules.includes(rule.id)) : RULES;
+    /** @param {string} engine @returns {Rule[]} */
     const byEngine = (engine) => selected.filter((rule) => rule.engines.includes(engine));
     const enginesRun = new Set(['context']);
+    /** @type {Finding[]} */
     const findings = [];
     for (const file of files) {
       const text = await readFile(file, 'utf8'); const fileName = relative(root, file) || file; const extension = extname(file).toLowerCase();
+      /** @type {DetectorMatch[]} */
       const matches = [];
       if (byEngine('text').length) { matches.push(...scanText(fileName, text, root, byEngine('text'), 'text')); enginesRun.add('text'); }
       if (byEngine('css').length) { matches.push(...scanCss(fileName, text, root, byEngine('css'))); enginesRun.add('css'); }

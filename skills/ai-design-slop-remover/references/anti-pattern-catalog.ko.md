@@ -52,3 +52,9 @@ Detector 출력이나 렌더링 관찰을 rule에 연결할 때만 이 목록을
 Static `yes`는 포함 detector가 source signature를 찾는다는 뜻이지 UI 결함 확정이 아니다. `partial`은 source heuristic에 맥락 또는 렌더링이 필요하다는 뜻이다. Browser-only·주관적 pattern은 명시적 warrant와 caveat가 있을 때만 보고한다. 수정 단계에는 `fix-playbook.ko.md`를 읽는다.
 
 Detector v2는 `engine`, `evidenceKind`, detection/remediation confidence, cluster, exception status를 보고한다. `candidate` exception은 계속 보이는 review item이며 finding을 suppress하거나 automatic removal 권한을 주지 않는다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 외부 출처는 사용하지 않았다.
+
+모든 rule ID, category, scope, severity, exception 설명은 이 패키지 자체 registry 항목이다. 외부 catalogue나 pattern library는 사용하지 않았다.

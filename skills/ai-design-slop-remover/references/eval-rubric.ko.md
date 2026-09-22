@@ -27,3 +27,9 @@ workflow JSONL case는 trigger, mode, 보호 계약, browser capability fallback
 - rendered evidence에는 유효한 browser handoff capture가 필요하다.
 - screenshot evidence는 keyboard, semantic, accessibility, task completion을 증명하지 않는다.
 - `generic-output risk`는 우선순위 label일 뿐 AI 저작 주장에 쓰지 않는다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 외부 출처는 사용하지 않았다.
+
+detector, workflow, human sampling 기준은 이 패키지 자체 것이다. 10% false-positive 임계값과 5개 표본 크기는 외부 지침이 아니라 이 패키지가 정한 값이다.

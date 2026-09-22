@@ -1,13 +1,15 @@
-#!/usr/bin/env node
-const { readFile, readdir, stat } = require('node:fs/promises');
-const { extname, relative, resolve } = require('node:path');
-const process = require('node:process');
+#!/usr/bin/env bun
+// @ts-check
+/** Count repeated page-structure signals in supported source files and emit stable JSON. */
+import { readFile, readdir, stat } from 'node:fs/promises';
+import { extname, relative, resolve } from 'node:path';
 
 const SUPPORTED = new Set(['.html', '.jsx', '.tsx', '.vue', '.svelte']);
 const IGNORED = new Set(['.git', 'node_modules', 'dist', 'build', 'coverage', '.next', '.nuxt', '.svelte-kit']);
 
-/** @param {string[]} argv */
+/** @param {string[]} argv @returns {{ target?: string, help: boolean }} @throws {Error} for unknown arguments or a missing target */
 function parseArgs(argv) {
+  /** @type {string | undefined} */
   let target;
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === '--target') target = argv[++index];
@@ -19,7 +21,7 @@ function parseArgs(argv) {
   return { target, help: false };
 }
 
-/** @param {string} target @returns {Promise<string[]>} */
+/** @param {string} target @returns {Promise<string[]>} @throws {Error} when the target is not a supported file or directory */
 async function filesFor(target) {
   const info = await stat(target);
   if (info.isFile()) {
@@ -27,6 +29,7 @@ async function filesFor(target) {
     return [target];
   }
   if (!info.isDirectory()) throw new Error('Target must be a file or directory');
+  /** @type {string[]} */
   const files = [];
   const stack = [target];
   while (stack.length) {
@@ -41,16 +44,17 @@ async function filesFor(target) {
   return files.sort();
 }
 
-/** @param {string} text @param {RegExp} pattern */
+/** @param {string} text @param {RegExp} pattern @returns {number} */
 function count(text, pattern) {
   return [...text.matchAll(pattern)].length;
 }
 
+/** @returns {Promise<void>} @throws {Error} when the target cannot be scanned */
 async function main() {
   try {
     const args = parseArgs(process.argv.slice(2));
     if (args.help) {
-      console.log('Usage: node analyze-structure.cjs --target <file-or-directory> --json');
+      console.log('Usage: node analyze-structure.mjs --target <file-or-directory> --json');
       return;
     }
     if (!args.target) throw new Error('--target requires a path');

@@ -26,3 +26,9 @@ Use this schema only when supplying evidence collected by an already available b
 ```
 
 `state` is one of `default`, `hover`, `focus`, `active`, `disabled`, `loading`, `empty`, or `error`. `computed` contains only string primitive values. `screenshot` is optional metadata and never proof of accessibility or behavior.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file.
+
+The handoff schema is this package's own JSON contract, enforced by its collector and fixtures. The example values are illustrative, not data taken from an external service.

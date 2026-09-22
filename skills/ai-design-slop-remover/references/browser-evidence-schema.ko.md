@@ -26,3 +26,9 @@
 ```
 
 `state`는 `default`, `hover`, `focus`, `active`, `disabled`, `loading`, `empty`, `error` 중 하나다. `computed`에는 string primitive value만 넣는다. `screenshot`은 optional metadata이며 accessibility나 behavior의 증거가 아니다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 외부 출처는 사용하지 않았다.
+
+handoff schema는 이 패키지 자체 JSON 계약이며 collector와 fixture가 이를 강제한다. 예시 값은 외부 서비스에서 가져온 데이터가 아니라 설명용이다.

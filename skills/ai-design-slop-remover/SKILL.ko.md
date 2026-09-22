@@ -1,6 +1,6 @@
 ---
 name: ai-design-slop-remover
-description: "기존 UI의 제품 정체성, 실제 데이터, 콘텐츠, 정보 구조, 기능을 보존하면서 AI스럽거나 generic·template 기반 패턴을 audit, clean, remove, verify해 달라는 요청에 사용한다. 새 디자인 생성, 브랜드 방향 선택, 접근성 전용 QA에는 사용하지 않는다."
+description: "기존 UI의 제품 정체성, 실제 데이터, 콘텐츠, 정보 구조, 기능을 보존하면서 AI스럽거나 generic·template 기반 패턴을 audit, clean, remove, verify해 달라는 요청에 이 스킬을 사용한다. 새 디자인 생성, 브랜드 방향 선택, 접근성 전용 QA에는 사용하지 않는다."
 compatibility: Node.js 18+에서 정적 탐지가 가능하다. rendered evidence는 선택적 capability이며 검증된 browser handoff가 없으면 반드시 static-only 또는 unavailable로 보고한다.
 ---
 
@@ -76,7 +76,7 @@ Boundary:
 | Loop | primary pass와 관찰된 guard 실패를 고치는 1회 correction pass만 허용한다. |
 | Output | `assets/report-template.ko.md`를 따르는 한국어 v2 report. 소스 변경은 `clean`에서만 한다. |
 | Verification | detector, 해당 프로젝트 검사, 사용 가능할 때 검증된 rendered handoff, report validation을 다시 실행한다. static/screenshot evidence를 관찰하지 않은 pass로 승격하지 않는다. |
-| Stop | 해당 guard가 통과하고 residual risk가 명시될 때만 완료한다. 아니면 `ask` 또는 `block`한다. |
+| Stop condition | 해당 guard가 통과하고 residual risk가 명시될 때만 완료한다. 아니면 `ask` 또는 `block`한다. |
 
 </instruction_contract>
 
@@ -88,7 +88,7 @@ Boundary:
 4. 정적 탐지를 실행한다.
 
    ```bash
-   node skills/ai-design-slop-remover/scripts/detect-slop.cjs --target <path> --json
+   node skills/ai-design-slop-remover/scripts/detect-slop.mjs --target <path> --json
    ```
 
    report-only delta visibility에만 `--baseline <result.json> --only-new`을 사용한다. 먼저 `rules/waivers-and-baselines.ko.md`를 읽는다.
@@ -124,9 +124,9 @@ feedback은 detector delta, project check, 검증된 rendered fact, 관찰된 be
 - browser capability가 있거나 rendered-evidence handoff를 받았을 때만 `rules/rendered-evidence.ko.md`를 읽는다.
 - identity, data cardinality, 명시 brand commitment, exception이 불확실하면 `references/context-signals.ko.md`를 읽는다.
 - rule lookup에는 `references/anti-pattern-catalog.ko.md`, confirmed remediation에는 `references/fix-playbook.ko.md`, safe structural alternative에는 `references/replacement-patterns.ko.md`만 읽는다.
-- source count에는 `scripts/analyze-structure.cjs`, handoff 검증에는 `scripts/collect-rendered-evidence.cjs --input <capture.json>`, waiver 검증에는 `scripts/validate-waivers.cjs --input <config.json>`, report 전에는 `scripts/validate-report.cjs --report <report.md>`를 실행한다.
-- detector rule, fixture, output schema를 바꾸면 `scripts/run-detector-evals.cjs --json`을 실행한다. report validation, waiver validation, rendered-evidence handoff validation 또는 해당 fixture를 바꾸면 `scripts/run-contract-evals.cjs --json`을 실행한다. false positive를 판단하기 전 `references/eval-rubric.ko.md`를 읽는다.
-- 이 bilingual core 또는 직접 연결된 Markdown support file을 바꾸면 `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only ai-design-slop-remover --json`을 실행한다.
+- source count에는 `scripts/analyze-structure.mjs`, handoff 검증에는 `scripts/collect-rendered-evidence.mjs --input <capture.json>`, waiver 검증에는 `scripts/validate-waivers.mjs --input <config.json>`, report 전에는 `scripts/validate-report.mjs --report <report.md>`를 실행한다.
+- detector rule, fixture, output schema를 바꾸면 `scripts/run-detector-evals.mjs --json`을 실행한다. report validation, waiver validation, rendered-evidence handoff validation 또는 해당 fixture를 바꾸면 `scripts/run-contract-evals.mjs --json`을 실행한다. false positive를 판단하기 전 `references/eval-rubric.ko.md`를 읽는다.
+- 이 bilingual core 또는 직접 연결된 Markdown support file을 바꾸면 저장소가 제공하는 스킬 코퍼스 검증기를 이 패키지에 실행한다: `<corpus-validator> --root <skills-root> --only ai-design-slop-remover --json`.
 
 </resource_navigation>
 

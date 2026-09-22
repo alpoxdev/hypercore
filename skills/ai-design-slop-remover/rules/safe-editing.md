@@ -35,3 +35,9 @@ Never automatically change or delete:
 ## Side-effect gates
 
 Network use, credentials, destructive operations, external publication, production access, deployment, package installation, and broad file deletion require explicit user authority and validated targets. If the requested anti-slop outcome depends on one of these effects, block rather than silently substitute a smaller result.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file.
+
+The removal boundary, the protected-by-default list, and the edit discipline are this package's own rules, grounded in the safety boundary of `SKILL.md` rather than in an external style guide.

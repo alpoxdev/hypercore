@@ -35,3 +35,9 @@
 ## Side-effect gate
 
 Network, credential, destructive operation, external publication, production access, deployment, package installation, 광범위 파일 삭제에는 명시적 사용자 권한과 검증된 대상이 필요하다. anti-slop 결과가 이런 effect에 의존하면 조용히 범위를 축소하지 말고 block한다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 외부 출처는 사용하지 않았다.
+
+제거 경계, 기본 보호 목록, 수정 규율은 이 패키지 자체 규칙이며 외부 style guide가 아니라 `SKILL.md`의 safety boundary에 근거한다.

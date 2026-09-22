@@ -74,6 +74,12 @@ Treat these as quality guards, not aesthetic slop. Use project accessibility con
 ## Baseline, waiver, and rendered handoff
 
 1. A baseline compares detector v2 findings only; it never approves a design choice. Read `rules/waivers-and-baselines.md` before `--only-new`.
-2. Validate an optional waiver with `validate-waivers.cjs`. It must be narrow, reasoned, and sourced; it cannot hide a P0 or protected contract.
-3. Validate supplied browser facts with `collect-rendered-evidence.cjs`. Use only the captured viewport/state/locator observations.
+2. Validate an optional waiver with `validate-waivers.mjs`. It must be narrow, reasoned, and sourced; it cannot hide a P0 or protected contract.
+3. Validate supplied browser facts with `collect-rendered-evidence.mjs`. Use only the captured viewport/state/locator observations.
 4. Do not install tooling or write a consumer config file to obtain any of these inputs.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file.
+
+The remediation steps are this package's own guidance, derived from the anti-pattern catalog and the safe-editing rules. No external design or accessibility source was consulted.

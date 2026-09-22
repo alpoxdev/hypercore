@@ -18,3 +18,9 @@ Every replacement preserves real data, copy, links/actions, semantics, focus ord
 | Generic motion | State-linked transform/opacity plus reduced-motion alternative | Keep genuine feedback and task state change | Hover/focus/state and reduced motion |
 
 Do not use a replacement pattern to create a new brand world, change information architecture, or fabricate proof.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file.
+
+The alternative patterns are this package's own options, not a published pattern library, and every entry is bounded by the package's preservation rules.

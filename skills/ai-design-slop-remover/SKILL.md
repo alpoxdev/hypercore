@@ -1,6 +1,6 @@
 ---
 name: ai-design-slop-remover
-description: "Use when the user asks to audit, clean, remove, or verify AI-like, generic, or template-driven patterns in an existing UI while preserving product identity, real data, content, information architecture, and functionality. Do not use for greenfield design, brand-direction selection, or accessibility-only QA."
+description: "Use this skill when the user asks to audit, clean, remove, or verify AI-like, generic, or template-driven patterns in an existing UI while preserving product identity, real data, content, information architecture, and functionality. Do not use for greenfield design, brand-direction selection, or accessibility-only QA."
 compatibility: Node.js 18+ enables static detection. Rendered evidence is optional, capability-gated, and must be reported as static-only or unavailable when no validated browser handoff exists.
 ---
 
@@ -76,7 +76,7 @@ Boundary:
 | Loop | At most two edit passes: primary plus one correction only for an observed failed guard. |
 | Output | Korean v2 report using `assets/report-template.ko.md`; source changes only in `clean` mode. |
 | Verification | Re-run detector, applicable project checks, validated rendered handoff when available, and report validation. Never promote static/screenshot evidence into unobserved passes. |
-| Stop | Complete only when applicable guards pass and residual risk is explicit; otherwise `ask` or `block`. |
+| Stop condition | Complete only when applicable guards pass and residual risk is explicit; otherwise `ask` or `block`. |
 
 </instruction_contract>
 
@@ -88,7 +88,7 @@ Boundary:
 4. Run static detection:
 
    ```bash
-   node skills/ai-design-slop-remover/scripts/detect-slop.cjs --target <path> --json
+   node skills/ai-design-slop-remover/scripts/detect-slop.mjs --target <path> --json
    ```
 
    Use `--baseline <result.json> --only-new` only for report-only delta visibility. Read `rules/waivers-and-baselines.md` first.
@@ -124,9 +124,9 @@ Feedback is detector delta, project checks, validated rendered facts, and observ
 - Read `rules/rendered-evidence.md` only when browser capability exists or a rendered-evidence handoff is supplied.
 - Read `references/context-signals.md` when identity, data cardinality, explicit brand commitments, or exceptions are uncertain.
 - Read `references/anti-pattern-catalog.md` for rule lookup, `references/fix-playbook.md` for a confirmed remediation, and `references/replacement-patterns.md` only for safe structural alternatives.
-- Run `scripts/analyze-structure.cjs` for compact source counts, `scripts/collect-rendered-evidence.cjs --input <capture.json>` for handoff validation, `scripts/validate-waivers.cjs --input <config.json>` for waiver validation, and `scripts/validate-report.cjs --report <report.md>` before reporting.
-- Run `scripts/run-detector-evals.cjs --json` when changing detector rules, fixtures, or output schema. Run `scripts/run-contract-evals.cjs --json` when changing report validation, waiver validation, rendered-evidence handoff validation, or their fixtures. Read `references/eval-rubric.md` before judging false positives.
-- Run `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only ai-design-slop-remover --json` after changing this bilingual core or directly linked Markdown support files.
+- Run `scripts/analyze-structure.mjs` for compact source counts, `scripts/collect-rendered-evidence.mjs --input <capture.json>` for handoff validation, `scripts/validate-waivers.mjs --input <config.json>` for waiver validation, and `scripts/validate-report.mjs --report <report.md>` before reporting.
+- Run `scripts/run-detector-evals.mjs --json` when changing detector rules, fixtures, or output schema. Run `scripts/run-contract-evals.mjs --json` when changing report validation, waiver validation, rendered-evidence handoff validation, or their fixtures. Read `references/eval-rubric.md` before judging false positives.
+- After changing this bilingual core or directly linked Markdown support files, run the repository's skill-corpus validator on this package when the repository ships one: `<corpus-validator> --root <skills-root> --only ai-design-slop-remover --json`.
 
 </resource_navigation>
 

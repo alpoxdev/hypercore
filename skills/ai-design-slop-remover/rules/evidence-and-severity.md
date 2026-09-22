@@ -47,3 +47,9 @@ High confidence in a source match does not imply high confidence that removal is
 - `rationale`: decision record, rejected alternative, owner, debt, or review trigger.
 
 A static detector cannot establish actual contrast, visual hierarchy, usability, or user preference. A screenshot cannot prove semantic correctness, keyboard behavior, or all responsive states. State these limits in the finding and final report.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file.
+
+The severity, confidence, and evidence-family definitions are this package's own. WCAG AA is named only as the `P1` severity anchor; no WCAG document is quoted or restated here.
