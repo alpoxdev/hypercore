@@ -6,7 +6,7 @@
     "checkjs": "bunx tsc --project tsconfig.scripts.json",
     "test": "bun test tests",
     "test:vercel-skills": "bun test tests/vercel-skills-lifecycle.test.mjs",
-    "validate": "bun validate-skills.mjs && node check-skill-contract-parity.mjs",
+    "validate": "bun validate-skills.mjs && node check-skill-contract-parity.mjs && node check-skill-standards.mjs",
     "validate:vercel-skills": "node validate-vercel-skills.mjs",
     "test:vercel-skills:live": "HYPERCORE_ENABLE_VERCEL_SKILLS_LIVE_GATE=1 bun test tests/vercel-skills-lifecycle.test.mjs",
     "validate:vercel-skills:registry": "HYPERCORE_ENABLE_VERCEL_SKILLS_LIVE_GATE=1 node validate-vercel-skills.mjs --live",

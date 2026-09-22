@@ -1,0 +1,88 @@
+{
+  "skills": {
+    "adhd-explainer": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "agent-md-maker": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "ai-design-slop-remover": {},
+    "autoresearch-skill": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "bug-fix": {},
+    "client-feedback": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "color-cli": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "deploy-fix": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "design-md-maker": {},
+    "docs-maker": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "eli5": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "execute": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "expo-architecture": {},
+    "git-issue": {},
+    "git-maker": {},
+    "git-worktree": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "hermes-agent-maker": {},
+    "hono-architecture": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "image-maker": {},
+    "korean-writer": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "naver-api": {},
+    "naver-blog-maker": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "nextjs-architecture": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "orca-orchestration": {},
+    "prd-maker": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "pre-deploy": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "prompt-maker": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "readme-maker": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "research": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "seo-maker": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "skill-maker": {},
+    "skill-tester": {},
+    "tanstack-start-architecture": {},
+    "tanstack-start-security": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "tauri-architecture": {},
+    "tone-manner-maker": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "version-update": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "vite-architecture": {}
+  }
+}

@@ -23,6 +23,100 @@ const repoDiscoverPath = join(root, "skills/git-maker/scripts/repo-discover.mjs"
 const repoStatusPath = join(root, "skills/git-maker/scripts/repo-status.mjs");
 const gitMakerFastPath = join(root, "skills/git-maker/scripts/git-maker-fast.mjs");
 const legacyPreimageBase = "990359457e2ccbf2bd4bb65065037d456c5940bc";
+/** The migration ref holds the pre-rename `.js` blob of the one script this change moved to `.mjs`. */
+const migrationPreimageRef = "d648cf6eeba28402f0b3c1265ca5d9f05995a131";
+/**
+ * Pre-migration preimages keyed by the renamed script's current path. Every rename in the
+ * inventory must appear here and nowhere else, so a stale hash, a moved ref, or an
+ * unrecorded rename fails the inventory test instead of passing silently.
+ * @type {Record<string, { fromPath: string, fromSha256: string, fromMode: string, fromRef: string }>}
+ */
+const migrationPreimages = {
+  "skills/ai-design-slop-remover/scripts/analyze-structure.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/analyze-structure.cjs",
+    fromSha256: "9b379e486755ea09729d7b52097718868ef8817dbb4e9169e9bcab34152eb8d0",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.cjs",
+    fromSha256: "562f561401694e9e8b0377a88e0a48884812929ca50c7c6e202896119ab1d7a3",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/ai-design-slop-remover/scripts/detect-slop.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/detect-slop.cjs",
+    fromSha256: "17e5c21a8eec75f0f4638196f67aca8de0bf5ff49b6bb6ff71c9d156e56e847a",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/ai-design-slop-remover/scripts/engine-css.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/engines/css.cjs",
+    fromSha256: "2cc502ed2086a4ff293a153e7981da7738dc019cbd3fd0d64ce1da1418d7a03c",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/ai-design-slop-remover/scripts/engine-markup.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/engines/markup.cjs",
+    fromSha256: "d283db47e8a7464a29a08ad2035e77e46a895a11693eb4b40842628caff06161",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/ai-design-slop-remover/scripts/engine-text.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/engines/text.cjs",
+    fromSha256: "d892fa19e78bc785631ec8ca0d472566a160898b035345a9c9136db49c91a7df",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/ai-design-slop-remover/scripts/resolve-context.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/resolve-context.cjs",
+    fromSha256: "4cd95ded813c423e0c3deba3e4af9240d38e4c88d5ca6e15e5be9fae5f8a27cc",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/ai-design-slop-remover/scripts/rule-registry.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/rules/registry.cjs",
+    fromSha256: "67492b55d8417e73ecdad9b32de902aca674cdd576f7cc9f920c595f8694db05",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/ai-design-slop-remover/scripts/rule-shared.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/rules/shared.cjs",
+    fromSha256: "0d4f0fec0192872ec25a459426ceae5707c45befa71a203de21a12f4088a40ce",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/ai-design-slop-remover/scripts/run-contract-evals.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/run-contract-evals.cjs",
+    fromSha256: "f9d5abe484d028aebcd7dad92e90dbc77ee6144f9ee96db98cb9393d5c7bca5b",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/ai-design-slop-remover/scripts/run-detector-evals.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/run-detector-evals.cjs",
+    fromSha256: "fddb35e5a47670733d2b85f657b88e6136d0bad7482d3e652bd3129466c4dbf4",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/ai-design-slop-remover/scripts/validate-report.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/validate-report.cjs",
+    fromSha256: "0876b9f0c9291cc590c406fb6552363de33303b9fdb244dfcd940d85798c7d1f",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/ai-design-slop-remover/scripts/validate-waivers.mjs": {
+    fromPath: "skills/ai-design-slop-remover/scripts/validate-waivers.cjs",
+    fromSha256: "f288eaeca8342136488d50ba456dfc00acc2fa78177ce356cb9256691075f1f7",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+  "skills/skill-tester/scripts/validate-skill-tester.mjs": {
+    fromPath: "skills/skill-tester/scripts/validate-skill-tester.js",
+    fromSha256: "978399934eee9ee856d07ae6703c6181ab4ec2c25e19ab420107682b0bebee56",
+    fromMode: "100644",
+    fromRef: migrationPreimageRef,
+  },
+};
 const hermesGeneratePath = join(root, "skills/hermes-agent-maker/scripts/generate.mjs");
 const hermesPortableValidatorPath = join(root, "skills/hermes-agent-maker/scripts/validate-portable-v1-output.mjs");
 const hermesRoutingPath = join(root, "skills/hermes-agent-maker/rules/routing.md");
@@ -70,6 +164,24 @@ function filesBelow(directory) {
   return files;
 }
 
+/**
+ * Pins the pre-migration blob of a renamed script: the recorded object must match the migration
+ * ref's bytes and tree mode exactly, so a stale hash or a moved ref cannot pass silently.
+ *
+ * @param {{ path: string, sourcePreimage: { migration?: { fromPath: string, fromSha256: string, fromMode: string, fromRef: string } } }} row
+ */
+function expectMigrationEvidence(row) {
+  const migration = row.sourcePreimage.migration;
+  expect(migration).toEqual(migrationPreimages[row.path]);
+  const migrated = run(["git", "show", `${migration.fromRef}:${migration.fromPath}`], root);
+  expect(migrated.exitCode).toBe(0);
+  expect(createHash("sha256").update(migrated.stdout).digest("hex")).toBe(migration.fromSha256);
+  const tree = run(["git", "ls-tree", migration.fromRef, "--", migration.fromPath], root).stdout.trim().split(/\s+/);
+  expect(tree[0]).toBe(migration.fromMode);
+  expect(tree[1]).toBe("blob");
+  expect(tree[3]).toBe(migration.fromPath);
+}
+
 /** @param {string} fixture */
 function initializeGit(fixture) {
   expect(run(["git", "init", "-q"], fixture).exitCode).toBe(0);
@@ -96,16 +208,29 @@ function killRecordedPid(pidFile) {
 }
 
 
-test("manifest centrally inventories 36 scripts including seven authored baseline-absent MJS paths", () => {
+test("manifest centrally inventories 50 scripts including twenty-one authored baseline-absent MJS paths", () => {
   const manifest = /** @type {{ scripts: { path: string, family: string, legacyOrigin: string, usage: string, behavior: string }[], forbiddenDetectorReferences: { records: { literal: string, allowedLocations: { file: string, jsonPath: string }[] }[] }, versionUpdateDetectorAbsentCorrection: { detectorRestored: boolean, legacyFiles: { legacyPath: string, sha256: string, gitMode: string, finalPath: string }[], restoreOrder: string[] } }} */ (JSON.parse(readFileSync(manifestPath, "utf8")));
-  expect(manifest.scripts).toHaveLength(36);
-  expect(new Set(manifest.scripts.map((row) => row.path)).size).toBe(36);
+  expect(manifest.scripts).toHaveLength(50);
+  expect(new Set(manifest.scripts.map((row) => row.path)).size).toBe(50);
   expect(manifest.scripts.every((row) => [row.path, row.family, row.legacyOrigin, row.usage, row.behavior].every(Boolean))).toBe(true);
   expect(Object.fromEntries(["former-sh", "former-py", "retained-mjs", "authored-mjs"].map((origin) => [
     origin,
     manifest.scripts.filter((row) => row.legacyOrigin === origin).length,
-  ]))).toEqual({ "former-sh": 19, "former-py": 1, "retained-mjs": 9, "authored-mjs": 7 });
+  ]))).toEqual({ "former-sh": 19, "former-py": 1, "retained-mjs": 9, "authored-mjs": 21 });
   const authored = [
+    "skills/ai-design-slop-remover/scripts/analyze-structure.mjs",
+    "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs",
+    "skills/ai-design-slop-remover/scripts/detect-slop.mjs",
+    "skills/ai-design-slop-remover/scripts/engine-css.mjs",
+    "skills/ai-design-slop-remover/scripts/engine-markup.mjs",
+    "skills/ai-design-slop-remover/scripts/engine-text.mjs",
+    "skills/ai-design-slop-remover/scripts/resolve-context.mjs",
+    "skills/ai-design-slop-remover/scripts/rule-registry.mjs",
+    "skills/ai-design-slop-remover/scripts/rule-shared.mjs",
+    "skills/ai-design-slop-remover/scripts/run-contract-evals.mjs",
+    "skills/ai-design-slop-remover/scripts/run-detector-evals.mjs",
+    "skills/ai-design-slop-remover/scripts/validate-report.mjs",
+    "skills/ai-design-slop-remover/scripts/validate-waivers.mjs",
     "skills/eli5/scripts/render-explanation.mjs",
     "skills/hermes-agent-maker/scripts/generate.mjs",
     "skills/hermes-agent-maker/scripts/validate-hermes-agent-maker.mjs",
@@ -113,13 +238,16 @@ test("manifest centrally inventories 36 scripts including seven authored baselin
     "skills/orca-orchestration/scripts/check-runtime-capabilities.mjs",
     "skills/orca-orchestration/scripts/validate-orca-orchestration.mjs",
     "skills/orca-orchestration/scripts/verify-orca-orchestration.mjs",
+    "skills/skill-tester/scripts/validate-skill-tester.mjs",
   ];
   expect(manifest.scripts.map((row) => row.path).sort()).toEqual(filesBelow(join(root, "skills")).map((file) => relative(root, file)).sort());
   expect(manifest.scripts.filter((row) => row.legacyOrigin === "authored-mjs").map((row) => row.path).sort()).toEqual(authored);
+  expect(manifest.scripts.filter((row) => row.sourcePreimage.migration).map((row) => row.path).sort()).toEqual(Object.keys(migrationPreimages).sort());
   for (const path of authored) {
     const row = manifest.scripts.find((candidate) => candidate.path === path);
     expect(row.sourcePreimage.baselineAbsence).toEqual({ baselineRef: legacyPreimageBase, path, absent: true });
     expect(run(["git", "cat-file", "-e", `${legacyPreimageBase}:${path}`], root).exitCode).not.toBe(0);
+    if (row.sourcePreimage.migration) expectMigrationEvidence(row);
   }
   expect(manifest.forbiddenDetectorReferences.records).toHaveLength(6);
   expect(manifest.forbiddenDetectorReferences.records.every((row) => row.literal && row.allowedLocations.length === 1)).toBe(true);
@@ -155,17 +283,18 @@ function materializeFixture(files, cwd) {
   }
 }
 
-test("behavior contracts execute all 108 isolated semantic fixtures with exact observables", () => {
+test("behavior contracts execute all 150 isolated semantic fixtures with exact observables", () => {
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
   const contracts = JSON.parse(readFileSync(contractsPath, "utf8"));
   const dimensions = ["stdout", "stderr", "exit", "files", "modes", "cwd", "env", "argv"];
   expect(contracts.requiredBy).toBe(relative(root, manifestPath));
   expect(manifest.legacyPreimageBase).toBe(legacyPreimageBase);
   expect(contracts.legacyPreimageBase).toBe(legacyPreimageBase);
-  expect(contracts.coverage.expectedRows).toBe(36);
-  expect(contracts.coverage.expectedFixtures).toBe(108);
-  expect(contracts.coverage.legacyOriginCounts).toEqual({ "former-sh": 19, "former-py": 1, "retained-mjs": 9, "authored-mjs": 7 });
-  expect(contracts.rows).toHaveLength(36);
+  expect(contracts.coverage.expectedRows).toBe(50);
+  expect(contracts.coverage.expectedFixtures).toBe(150);
+  expect(contracts.coverage.legacyOriginCounts).toEqual({ "former-sh": 19, "former-py": 1, "retained-mjs": 9, "authored-mjs": 21 });
+  expect(contracts.rows).toHaveLength(50);
+  expect(contracts.rows.filter((row) => row.sourcePreimage.migration).map((row) => row.path).sort()).toEqual(Object.keys(migrationPreimages).sort());
   let cases = 0;
   for (const row of contracts.rows) {
     const manifestRow = manifest.scripts.find((candidate) => candidate.path === row.path);
@@ -212,13 +341,14 @@ test("behavior contracts execute all 108 isolated semantic fixtures with exact o
     if (manifestRow.legacyOrigin === "authored-mjs") {
       expect(row.sourcePreimage.baselineAbsence).toEqual({ baselineRef: legacyPreimageBase, path: row.path, absent: true });
       expect(run(["git", "cat-file", "-e", `${legacyPreimageBase}:${row.path}`], root).exitCode).not.toBe(0);
+      if (row.sourcePreimage.migration) expectMigrationEvidence(row);
     } else {
       const source = run(["git", "show", `${manifest.legacyPreimageBase}:${row.sourcePreimage.path}`], root);
       expect(source.exitCode).toBe(0);
       expect(createHash("sha256").update(source.stdout).digest("hex")).toBe(row.sourcePreimage.sha256);
     }
   }
-  expect(cases).toBe(108);
+  expect(cases).toBe(150);
 }, 30_000);
 
 test("Hermes renders deterministic previews for all seven artifact kinds and keeps routing cases mandatory", () => {
@@ -516,7 +646,7 @@ test("validator accepts the approved inventory", () => {
   const result = run([process.execPath, validatorPath], root);
   expect(result.stderr).toBe("");
   expect(result.exitCode).toBe(0);
-  expect(result.stdout).toContain("Validated 36 Bun MJS skill scripts (19 former-sh, 1 former-py, 9 retained-mjs, 7 authored-mjs baseline-absence).");
+  expect(result.stdout).toContain("Validated 50 Bun MJS skill scripts (19 former-sh, 1 former-py, 9 retained-mjs, 21 authored-mjs baseline-absence).");
 });
 test("validator rejects AST-visible static policy and declaration mutations", () => {
   const fixture = mkdtempSync(join(tmpdir(), "hypercore-validator-mutation-"));
@@ -747,6 +877,20 @@ test("autoresearch dashboard accepts typed non-happy outcomes", () => {
     rmSync(fixture, { recursive: true, force: true });
   }
 });
+/**
+ * Messages the seo-maker structure gate prints when it rejects a payload. The atomic-write
+ * fixtures must not contain any of them: an exit code of 1 produced by validation would
+ * leave both prior outputs untouched for the wrong reason and read as a passing atomicity
+ * check. Only the injected write or rename failure may end the run.
+ */
+const STRUCTURE_GATE_MARKERS = [
+  "필수 키가 없습니다",
+  "값이 유효하지 않습니다",
+  "배열이어야 합니다",
+  "객체여야 합니다",
+  "0..100 또는 null이어야 합니다",
+  "JSON 파싱에 실패했습니다",
+];
 for (const renderer of [
   {
     name: "autoresearch-skill",
@@ -758,7 +902,12 @@ for (const renderer of [
     name: "seo-maker",
     scriptPath: join(root, "skills/seo-maker/scripts/render-dashboard.mjs"),
     templatePath: join(root, "skills/seo-maker/assets/dashboard-template.html"),
-    results: { project_name: "fixture", status: "running", keywords: [] },
+    results: {
+      project_name: "fixture",
+      status: "running",
+      categories: [{ name: "Technical SEO", status: "unknown", score: null }],
+      findings: [{ id: "T1", severity: "info", finding: "fixture finding", evidence_grade: "heuristic", source_tier: "research-backed-heuristic" }],
+    },
   },
 ]) {
   for (const failure of ["second-write", "second-rename"]) {
@@ -786,7 +935,10 @@ function renameSync(from, to) {
         expect(failingSource).not.toBe(source);
         const failingScript = join(scriptDirectory, `${failure}.mjs`);
         writeFileSync(failingScript, failingSource);
-        expect(run([process.execPath, failingScript, fixture], fixture).exitCode).toBe(1);
+        const forcedFailure = run([process.execPath, failingScript, fixture], fixture);
+        expect(forcedFailure.exitCode).toBe(1);
+        expect(forcedFailure.stderr).toContain(`forced ${failure.replace("-", " ")}`);
+        for (const marker of STRUCTURE_GATE_MARKERS) expect(forcedFailure.stderr).not.toContain(marker);
         expect(readFileSync(join(fixture, "dashboard.html"), "utf8")).toBe("prior dashboard\n");
         expect(readFileSync(join(fixture, "results.js"), "utf8")).toBe("prior results\n");
         expect(statSync(join(fixture, "dashboard.html")).mode & 0o7777).toBe(0o640);

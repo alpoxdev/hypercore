@@ -16,6 +16,20 @@ const expectedForbiddenLiterals = ["git-commit-detect", ".agents/skills/git-comm
 const expectedScanTargets = ["skills/version-update", "scripts/fixtures/skill-script-parity/behavior"];
 const expectedEnforcementFiles = ["scripts/fixtures/skill-script-parity/manifest.json", "scripts/validate-skills.mjs", "scripts/tests/skill-scripts.test.mjs"];
 
+/**
+ * Approved runtime local import edges, keyed by script path. Every bundled script may import
+ * `node:` built-ins freely; a local edge is allowed only when this map names that exact pair.
+ * @type {Map<string, string[]>}
+ */
+const approvedLocalImportEdges = new Map([
+  ["skills/hermes-agent-maker/scripts/generate.mjs", ["./validate-portable-v1-output.mjs"]],
+  ["skills/ai-design-slop-remover/scripts/detect-slop.mjs", ["./rule-registry.mjs", "./rule-shared.mjs", "./engine-text.mjs", "./engine-css.mjs", "./engine-markup.mjs", "./resolve-context.mjs"]],
+  ["skills/ai-design-slop-remover/scripts/validate-waivers.mjs", ["./rule-registry.mjs"]],
+  ["skills/ai-design-slop-remover/scripts/engine-css.mjs", ["./engine-text.mjs"]],
+  ["skills/ai-design-slop-remover/scripts/engine-markup.mjs", ["./engine-text.mjs"]],
+  ["skills/ai-design-slop-remover/scripts/engine-text.mjs", ["./rule-shared.mjs"]],
+]);
+
 /** @param {string} directory @returns {string[]} */
 function filesBelow(directory) {
   const files = [];
@@ -151,9 +165,8 @@ function validateStaticPolicy(content, file) {
       assert(false, `${file} must not use generic Object/object/any JSDoc types`);
     }
     if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
-      const approvedSiblingImport = file === "skills/hermes-agent-maker/scripts/generate.mjs"
-        && node.moduleSpecifier.text === "./validate-portable-v1-output.mjs";
-      assert(node.moduleSpecifier.text.startsWith("node:") || approvedSiblingImport, `${file} imports must use node: built-ins or its approved portable oracle`);
+      const approvedEdges = approvedLocalImportEdges.get(file) ?? [];
+      assert(node.moduleSpecifier.text.startsWith("node:") || approvedEdges.includes(node.moduleSpecifier.text), `${file} imports must use node: built-ins or its approved local edges`);
     }
     if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
       assert(node.arguments.length === 1 && ts.isStringLiteral(node.arguments[0]) && node.arguments[0].text.startsWith("node:"), `${file} dynamic imports must use node: built-ins`);
@@ -178,13 +191,26 @@ function validateStaticPolicy(content, file) {
 
 const manifest = /** @type {Record<string, unknown>} */ (JSON.parse(readFileSync(manifestPath, "utf8")));
 assert(Array.isArray(manifest.scripts), "manifest scripts must be an array");
-assert(manifest.scripts.length === 36, "manifest must contain exactly 36 scripts");
+assert(manifest.scripts.length === 50, "manifest must contain exactly 50 scripts");
 assert(manifest.scripts.every(isRecord), "manifest rows must be objects");
 const requiredRowFields = ["path", "family", "legacyOrigin", "usage", "behavior"];
 const legacyOrigins = new Set(["former-sh", "former-py", "retained-mjs", "authored-mjs"]);
-const usages = new Set(["apply-version", "build-preview", "calculate-version", "check-deployment", "check-lint", "check-runtime-capabilities", "commit-files", "detect-package-manager", "detect-stack", "discover-version", "generate-artifact", "inspect-repository", "push-commit", "read-version", "render-dashboard", "render-explanation-view", "render-planning-map", "run-build", "validate-portable-output", "validate-skill", "validate-skill-corpus", "verify-skill"]);
-const behaviors = new Set(["deployment-readiness-check", "explanation-view-render", "fast-git-commit", "git-push", "hermes-artifact-generation", "lint-readiness-check", "package-manager-detection", "planning-map-render", "portable-output-validation", "preview-build", "project-build", "render-dashboard", "repository-discovery", "repository-status", "runtime-capability-check", "scoped-git-commit", "skill-validation", "skill-verification", "skills-corpus-validation", "stack-detection", "version-application", "version-calculation", "version-discovery", "version-reading"]);
+const usages = new Set(["analyze-structure", "apply-version", "build-preview", "calculate-version", "check-deployment", "check-lint", "check-runtime-capabilities", "collect-rendered-evidence", "commit-files", "detect-package-manager", "detect-slop", "detect-stack", "discover-version", "generate-artifact", "inspect-repository", "push-commit", "read-version", "render-dashboard", "render-explanation-view", "render-planning-map", "resolve-context", "run-build", "run-contract-evals", "run-detector-evals", "slop-engine-css", "slop-engine-markup", "slop-engine-text", "slop-rule-registry", "slop-rule-shared", "validate-portable-output", "validate-report", "validate-skill", "validate-skill-corpus", "validate-waivers", "verify-skill"]);
+const behaviors = new Set(["context-resolution", "contract-eval-run", "deployment-readiness-check", "detector-eval-run", "explanation-view-render", "fast-git-commit", "git-push", "hermes-artifact-generation", "lint-readiness-check", "package-manager-detection", "planning-map-render", "portable-output-validation", "preview-build", "project-build", "render-dashboard", "rendered-evidence-collection", "report-validation", "repository-discovery", "repository-status", "runtime-capability-check", "scoped-git-commit", "skill-validation", "skill-verification", "skills-corpus-validation", "slop-detection", "slop-engine-css", "slop-engine-markup", "slop-engine-text", "slop-rule-registry", "slop-rule-shared", "stack-detection", "structure-analysis", "version-application", "version-calculation", "version-discovery", "version-reading", "waiver-validation"]);
 const expectedMetadata = new Map([
+  ["skills/ai-design-slop-remover/scripts/analyze-structure.mjs", ["analyze-structure", "structure-analysis"]],
+  ["skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs", ["collect-rendered-evidence", "rendered-evidence-collection"]],
+  ["skills/ai-design-slop-remover/scripts/detect-slop.mjs", ["detect-slop", "slop-detection"]],
+  ["skills/ai-design-slop-remover/scripts/engine-css.mjs", ["slop-engine-css", "slop-engine-css"]],
+  ["skills/ai-design-slop-remover/scripts/engine-markup.mjs", ["slop-engine-markup", "slop-engine-markup"]],
+  ["skills/ai-design-slop-remover/scripts/engine-text.mjs", ["slop-engine-text", "slop-engine-text"]],
+  ["skills/ai-design-slop-remover/scripts/resolve-context.mjs", ["resolve-context", "context-resolution"]],
+  ["skills/ai-design-slop-remover/scripts/rule-registry.mjs", ["slop-rule-registry", "slop-rule-registry"]],
+  ["skills/ai-design-slop-remover/scripts/rule-shared.mjs", ["slop-rule-shared", "slop-rule-shared"]],
+  ["skills/ai-design-slop-remover/scripts/run-contract-evals.mjs", ["run-contract-evals", "contract-eval-run"]],
+  ["skills/ai-design-slop-remover/scripts/run-detector-evals.mjs", ["run-detector-evals", "detector-eval-run"]],
+  ["skills/ai-design-slop-remover/scripts/validate-report.mjs", ["validate-report", "report-validation"]],
+  ["skills/ai-design-slop-remover/scripts/validate-waivers.mjs", ["validate-waivers", "waiver-validation"]],
   ["skills/autoresearch-skill/scripts/render-dashboard.mjs", ["render-dashboard", "render-dashboard"]],
   ["skills/git-maker/scripts/git-commit.mjs", ["commit-files", "scoped-git-commit"]],
   ["skills/git-maker/scripts/git-maker-fast.mjs", ["commit-files", "fast-git-commit"]],
@@ -209,6 +235,7 @@ const expectedMetadata = new Map([
   ["skills/skill-maker/scripts/validate-skill-maker.mjs", ["validate-skill", "skill-validation"]],
   ["skills/skill-tester/scripts/validate-skill.mjs", ["validate-skill", "skill-validation"]],
   ["skills/skill-tester/scripts/validate-skills-corpus.mjs", ["validate-skill-corpus", "skills-corpus-validation"]],
+  ["skills/skill-tester/scripts/validate-skill-tester.mjs", ["validate-skill", "skill-validation"]],
   ["skills/version-update/scripts/git-commit.mjs", ["commit-files", "scoped-git-commit"]],
   ["skills/version-update/scripts/git-push.mjs", ["push-commit", "git-push"]],
   ["skills/version-update/scripts/stack-detect.mjs", ["detect-stack", "stack-detection"]],
@@ -222,7 +249,7 @@ const expectedMetadata = new Map([
   ["skills/hermes-agent-maker/scripts/validate-portable-v1-output.mjs", ["validate-portable-output", "portable-output-validation"]],
   ["skills/eli5/scripts/render-explanation.mjs", ["render-explanation-view", "explanation-view-render"]],
 ]);
-assert(expectedMetadata.size === 36, "concrete metadata mapping must cover exactly 36 scripts");
+assert(expectedMetadata.size === 50, "concrete metadata mapping must cover exactly 50 scripts");
 const originCounts = { "former-sh": 0, "former-py": 0, "retained-mjs": 0, "authored-mjs": 0 };
 for (const [index, row] of manifest.scripts.entries()) {
   for (const field of requiredRowFields) assert(nonEmpty(row[field]), `manifest scripts[${index}].${field} must be a non-empty string`);
@@ -249,16 +276,16 @@ for (const [index, row] of manifest.scripts.entries()) {
   }
   assert(nonEmpty(row.behaviorContractId), `manifest scripts[${index}] requires a behavior contract id`);
 }
-assert(originCounts["former-sh"] === 19 && originCounts["former-py"] === 1 && originCounts["retained-mjs"] === 9 && originCounts["authored-mjs"] === 7, "manifest origin counts must be exactly 19/1/9/7");
+assert(originCounts["former-sh"] === 19 && originCounts["former-py"] === 1 && originCounts["retained-mjs"] === 9 && originCounts["authored-mjs"] === 21, "manifest origin counts must be exactly 19/1/9/21");
 const approved = manifest.scripts.map((row) => /** @type {string} */ (row.path));
 assert(new Set(approved).size === approved.length, "manifest script paths must be unique");
 const behaviorContracts = /** @type {Record<string, unknown>} */ (JSON.parse(readFileSync(behaviorContractsPath, "utf8")));
 assert(behaviorContracts.requiredBy === relative(root, manifestPath), "behavior contracts must name the manifest as their central owner");
 assert(isRecord(behaviorContracts.coverage)
-  && behaviorContracts.coverage.expectedRows === 36
-  && behaviorContracts.coverage.expectedFixtures === 108,
-"behavior contract coverage must be exactly 36 rows and 108 fixtures");
-assert(Array.isArray(behaviorContracts.rows) && behaviorContracts.rows.length === 36, "behavior contracts must contain exactly 36 rows");
+  && behaviorContracts.coverage.expectedRows === 50
+  && behaviorContracts.coverage.expectedFixtures === 150,
+"behavior contract coverage must be exactly 37 rows and 111 fixtures");
+assert(Array.isArray(behaviorContracts.rows) && behaviorContracts.rows.length === 50, "behavior contracts must contain exactly 50 rows");
 for (const [index, contract] of behaviorContracts.rows.entries()) {
   assert(isRecord(contract) && nonEmpty(contract.path) && nonEmpty(contract.id) && isRecord(contract.fixtures),
     `behavior contracts.rows[${index}] must be a complete row`);
@@ -335,9 +362,7 @@ for (const file of approved) {
   assert(!/\bBun\.\$|\b(?:bash|sh|zsh)\s+-c\b/u.test(content), `${file} must not use shell command patterns`);
   assert(!/\b(?:import\s*\{[^}]*\bspawnSync\b[^}]*\}|(?:const|let|var)\s+spawnSync\s*=)\b/u.test(content), `${file} must not use spawnSync`);
   const localImports = [...content.matchAll(/\b(?:import|export)\s+(?:[^"']+?\s+from\s+)?["'](\.{1,2}\/[^"']+)["']/gu)].map((match) => match[1]);
-  const approvedLocalImports = file === "skills/hermes-agent-maker/scripts/generate.mjs"
-    ? ["./validate-portable-v1-output.mjs"]
-    : [];
+  const approvedLocalImports = approvedLocalImportEdges.get(file) ?? [];
   assert(localImports.every((value) => approvedLocalImports.includes(value)) && localImports.length === approvedLocalImports.length,
     `${file} must not have unapproved runtime local imports`);
   assert(!/\bimport\s*\(\s*["']\.{1,2}\//u.test(content), `${file} must not dynamically import local modules`);
@@ -349,4 +374,4 @@ for (const file of approved) {
   if (row.legacyOrigin === "authored-mjs") assert(!existsInBaseline(file), `${file} authored-mjs path must be absent from immutable baseline`);
 }
 
-console.log(`Validated ${approved.length} Bun MJS skill scripts (19 former-sh, 1 former-py, 9 retained-mjs, 7 authored-mjs baseline-absence).`);
+console.log(`Validated ${approved.length} Bun MJS skill scripts (19 former-sh, 1 former-py, 9 retained-mjs, 21 authored-mjs baseline-absence).`);
