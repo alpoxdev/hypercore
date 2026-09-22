@@ -39,6 +39,15 @@ field-data, live, lab, tool, synthetic, local-only 결과를 동등한 것처럼
 - HTTP status codes — broken links 없음, proper redirects(301 vs 302)
 - Clean URL structure — descriptive, kebab-case, query string abuse 없음
 
+크롤, 렌더링, 색인은 서로 다른 상태이므로 어느 것을 관찰했는지 기록한다:
+
+- `robots.txt`의 allow/disallow rule, `noindex` 또는 X-Robots-Tag directive, canonical target은 서로 다른 신호이며 그중 어느 하나도 페이지가 크롤·색인·서빙되었다는 증거가 아니다.
+- raw HTML 응답과 rendered DOM을 별도로 감사하고 각 발견사항의 basis를 표시한다. runtime이 JavaScript를 실행할 수 없거나 live URL에 접근할 수 없으면 capability fallback을 기록하고 DOM 전용 검사는 `unknown`으로 남긴다.
+- JavaScript 렌더링은 그 자체로 실패도 보장도 아니다. content와 metadata가 rendered result에 도달하는지가 발견사항이며, browser 렌더링 성공은 색인 증거가 아니다.
+- `robots.txt`는 일반적인 색인 제거 수단이 아니며, 제거가 목적이면 `noindex` 또는 X-Robots-Tag directive를 사용한다.
+- sitemap 포함은 discovery hint이며 index guarantee가 아니다. scope, absolute URL, `lastmod` 정확성을 확인한다.
+- filter, faceted, paginated URL 폭증, empty-result 응답(soft 404), client-side-only navigation은 기본 허용이 아니라 발견사항이다.
+
 Tools: 파일 스캔에는 `Glob`, `Grep`, `Read`. 가능한 경우 live URL 분석에는 `WebFetch`.
 
 ## 4. Platform Policy Phase
@@ -51,6 +60,25 @@ Tools: 파일 스캔에는 `Glob`, `Grep`, `Read`. 가능한 경우 live URL 분
 - `nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`, canonical, X-Robots-Tag effects
 - `llms.txt`는 optional proposal/content map이며 표준 또는 ranking/citation requirement가 아님
 - Google AI 기능은 일반 SEO 기본 원칙을 사용한다. 관련 indexability와 snippet eligibility를 점검하되 special AI schema나 text file을 요구하지 않으며, eligibility가 inclusion을 보장하지는 않는다.
+- target set이 Naver surface를 포함할 때: `Yeti` 크롤러 접근과 서치어드바이저 소유확인, 네이버 자체의 `robots.txt` 응답 처리(4xx는 전체 허용, 5xx는 전체 차단, 리다이렉트 5회 초과는 전체 허용), 소유확인 도메인과 일치하는 RSS·사이트맵 URL, `og:image` 조건(150x150 초과, 5,000 byte 이상, 3:1 이하, 페이지 고유), 그리고 사이트의 AI 자동 생성 출처설명만 억제하는 `nosourceinfo`(AI 브리핑이나 모델 학습 전반을 제외하는 지시자가 아님)를 점검한다.
+- Google 전용 지시자를 Naver로 전이하지 않는다. `nosnippet`, `max-snippet`, `data-nosnippet`, `Google-Extended`, FAQPage 리치 결과, `llms.txt`는 네이버에 대응 문서가 없으므로 네이버 요건으로 보고하지 않는다. 네이버 문서가 없다는 사실은 네이버가 그 신호를 무시한다는 근거가 아니다.
+- Naver에서는 soft 404 응답과 JavaScript 전용 내비게이션이 색인 제외 위험이다. 내용 없는 200 응답은 정상 문서로 수집되고, JavaScript로만 도달하는 내용은 색인에서 빠질 수 있다.
+- target set이 Bing surface를 포함할 때: IndexNow를 변경 알림으로만 다룬다. 200 응답은 URL 수신, 202는 키 검증 대기를 뜻하며 어느 쪽도 색인·순위·AI 인용 증거가 아니다. `key file` 소유 증명(8-128자의 `[A-Za-z0-9-]`, 호스트 루트 또는 `keyLocation` 경로에서 로그인 없이 접근 가능)을 확인하고, POST당 10,000 URL 상한을 기록하며, 429에서는 `Retry-After`를 따르고 배치를 줄이고, 제출한 URL마다 크롤 쿼터가 소모됨을 반영하고, 기존 URL을 소급 제출하지 않는다. 사용자가 요청하지 않으면 URL을 제출하거나 키 파일을 배포하지 않는다.
+- Bing 사이트맵 처리는 `changefreq`와 `priority`를 무시하고 ISO 8601 `lastmod`만 읽으므로, 두 필드를 Bing 요건으로 보고하지 않는다.
+
+Crawler controls와 별개인 policy risk review:
+
+- 대량 생성 콘텐츠(scaled content abuse), 만료 도메인 재사용, site reputation abuse, doorway page, thin affiliate page에 대해 target이 spam·abuse policy를 위반하는지 점검한다. 정책 세부는 `references/seo-fundamentals.md`를 참고한다.
+- 생성형 AI 사용 자체는 policy violation이 아니며, 사용한 도구가 아니라 결과와 부가 가치를 기준으로 판단한다.
+- 모든 policy finding은 정의된 evidence class(`official`, `live`, `tool`, `lab`, `synthetic`, `heuristic`) 중 하나로 기록하고, 확인되지 않은 정책을 사실로 단정하지 않는다.
+
+조건부 platform module — target 조건이 성립할 때만 module에 진입하고, 성립하지 않으면 해당 dimension을 `not-applicable`로 기록한다:
+
+- **Naver** — 감사 대상 target set이 Naver 검색 surface를 포함하거나 사용자가 Naver 감사를 요청한 경우. 조건부 항목은 `references/seo-checklist.md`의 Naver 블록에 있다.
+- **Bing/IndexNow** — target set이 Bing surface를 포함하거나 사용자가 변경 알림을 요청한 경우. 조건부 항목은 `references/seo-checklist.md`의 Bing 블록에 있다.
+- **Commerce/i18n** — target에 product listing, merchant feed, multi-locale surface가 있는 경우. 별도 dimension이 아니라 Technical SEO와 Structured Data 안에서 평가한다.
+
+Module 조건은 성립하지만 account, console, live 접근이 불가능하면 pass가 아니라 `unknown`으로 기록한다.
 
 Applicable official source 또는 직접 관찰한 files/headers가 뒷받침할 때만 policy findings를 high confidence로 기록한다. source-sensitive claim에는 URL, date, applicable claim, evidence class, limitation이 있는 source-ledger entry를 추가한다.
 
@@ -66,6 +94,7 @@ Applicable official source 또는 직접 관찰한 files/headers가 뒷받침할
 - Twitter Card tags — sharing surface가 범위에 있을 때 `twitter:card`, `twitter:title`, `twitter:description`
 - Internal links — descriptive anchor text와 contextual relevance; link density는 requirement가 아닌 heuristic observation이다.
 - URL slug — 프로젝트가 URL을 제어할 때 descriptive하고 stable한지 점검하며 query parameter는 목적에 따라 평가한다.
+- Rendering basis — title, description, heading, link를 raw HTML 응답에서 읽었는지 rendered DOM에서 읽었는지 기록하고, client-rendered 값은 그 basis와 함께 보고한다.
 
 Tools: Pattern matching에는 `Grep`(`<title>`, `<meta`, `<h1>`, `alt=`), page content에는 `Read`.
 
@@ -81,6 +110,7 @@ Tools: Pattern matching에는 `Grep`(`<title>`, `<meta`, `<h1>`, `alt=`), page c
 - Freshness — 주제의 time sensitivity에 맞는 dates와 updates
 - Uniqueness — 페이지 간 harmful duplicate content 없음
 - AI content — blanket AI-content rule이 아니라 관련 있을 때 review와 value-add evidence
+- Rendering basis — client-side rendering 이후에만 content가 존재하면 rendered DOM으로 평가했음을 밝히고 capability limit을 기록한다.
 
 Tools: Content analysis에는 `Read`, 필요한 경우 competitor/SERP context에는 `WebSearch`.
 
@@ -94,6 +124,7 @@ AI direct answers와 Featured Snippets 준비도를 평가한다:
 - **Answer extraction ease** — clear structure와 concise passage가 reader와 system에 도움이 되는지 평가한다. 문장 수는 heuristic이다.
 - **FAQ/Q&A structure** — visible FAQ/Q&A content의 유용성을 평가하고 Google FAQ rich result eligibility와 answer-friendly content를 구분한다.
 - **Platform observations** — ChatGPT, Perplexity, Google AI Overviews에 고정된 content preference를 처방하지 않는다. platform-specific probe는 dated, volatile live 또는 synthetic evidence로 기록한다.
+- **Entry condition** — target의 intent가 answer/citation과 관련 있을 때 이 phase를 실행하고, 그렇지 않으면 AEO readiness를 scoring하지 않고 `not-applicable`로 기록한다.
 
 Tools: Q&A patterns와 heading structures에는 `Grep`, content analysis에는 `Read`. Strategy details는 `references/aeo-geo-guide.md`를 참고한다.
 
@@ -113,7 +144,7 @@ Generative responses에서 가능한 AI citation 준비도를 평가하되 citat
 
 Tools: Citation patterns와 statistics에는 `Grep`, content freshness에는 `Read`, `llms.txt`에는 `Glob`. named tool 또는 live probe를 쓸 수 없으면 결과를 꾸며내지 말고 capability fallback과 resulting unknown을 기록한다.
 
-접근이 허용될 때의 선택적 high-confidence extensions:
+접근이 허용될 때의 선택적 high-confidence extensions — runtime과 접근이 허용할 때만 각 extension에 진입하고, 그렇지 않으면 `unknown`으로 기록하고 계속 진행한다:
 - **Query fan-out simulator** — 유한하고 문서화한 subquery set을 생성하고 content expansion 권장 전에 missing coverage를 매핑한다.
 - **AI citation probe** — ChatGPT, Perplexity, Gemini 또는 기타 엔진용 stable, comparable prompt set을 실행하거나 준비한다. Engine, date, sample size, prompts, cited URLs, brand mentions, evidence class, unresolved volatility를 기록한다.
 
@@ -170,3 +201,9 @@ Evidence와 raw data는 `sources.md`에 source ledger로 쓴다. 각 official �
 - Audit에 live SERP data, competitor analysis, current ranking info가 필요하면 specific queries로 web searches를 실행한다.
 - 사용자가 충분한 context를 이미 제공했다면 unnecessary external research를 강제하지 않는다.
 - 모든 external queries와 sources를 `sources.md`에 기록한다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-22.
+
+이 파일은 이 패키지 자체의 실행 단계, 증거 등급 분류, 리포트 순서를 적는다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

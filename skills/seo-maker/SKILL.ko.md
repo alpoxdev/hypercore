@@ -11,6 +11,22 @@ compatibility: 로컬 파일 검색/수정 도구와 경쟁사/SERP/AI 인용 �
 
 > 프로젝트의 SEO/AEO/GEO 상태를 분석하고, 전통 검색엔진과 AI 검색엔진 모두에 대한 최적화 리포트를 산출한다.
 
+<instruction_contract>
+
+| 필드 | 계약 |
+|---|---|
+| 의도 | 이름이 지정된 대상에 대해 증거 등급이 매겨진 SEO/AEO/GEO/LLMO 감사와 우선순위화된 실행 가능 개선안 리포트를 만들고, 사용자가 도달 가능한 최고 점수를 요청하면 유한 예산의 점수 개선 루프를 돌린다. |
+| 범위 | 대상 분류, 측정 방법 선택, 온페이지·기술·콘텐츠·Core Web Vitals·AEO·GEO·LLMO 평가, 점수 산정, 발견 사항, 개선안, 리포트 워크스페이스를 담당한다. 감사 대상 밖의 구현, 릴리스 게이트, 페이지·제품 디자인, 대상 사이트나 콘텐츠 집합이 없는 광범위한 시장 조사는 담당하지 않는다. |
+| 권한 | 시스템/하네스와 사용자 지시 > 감사 대상 자체 파일과 라이브 관측 > 공식 플랫폼 문서 > 이 스킬 > 휴리스틱 선호. 도구·lab·synthetic·heuristic 관측은 공식 요구사항으로 승격하지 않는다. |
+| 근거 | 점수를 매기기 전에 대상 자체 파일, 렌더된 페이지, 라이브 응답을 읽고, 모든 critical·warning 발견 사항에 명령 출력·URL·파일 경로·probe 결과를 붙인다. 확인할 수 없는 점검은 `unknown`, 해당 없는 점검은 `not-applicable`로 기록하고, 점수·순위·포함·인용을 지어내지 않는다. |
+| 도구 | 사용 가능한 읽기/검색/브라우저 도구를 쓰고, 대시보드는 `scripts/render-dashboard.mjs <artifact-dir>`로 렌더한다. 웹 검색, 브라우저 점검, 필드 Core Web Vitals, Search Console, AI 인용 probe는 실제로 사용 가능할 때만 쓰고, 없으면 능력 한계와 더 낮은 등급의 대체 방법을 밝힌다. |
+| 루프 | optimize 모드 전용으로 `audit -> 수정 또는 개선안 -> re-audit`을 유한하게 반복하며 기본 예산은 3회다. 피드백은 비교 가능한 재감사 증거, 지표는 `unknown`·`not-applicable` 카테고리를 제외한 100점 점수, 가드는 비교 가능한 카테고리 회귀 없음과 증거 등급 승격 없음, 중단은 목표 달성·예산 소진·정체·가드 실패·외부 자격 증명이나 사업 판단이 필요한 시점이다. |
+| 출력 | `.hyper/seo-maker/[slug]/`에 `results.json`, `results.js`, `dashboard.html`, `report.md`, `sources.md`, complex·optimize 모드의 `flow.json`을 둔다. simple 모드는 `report.md`와 `sources.md`가 최소다. `sources.md`는 URL, 날짜, 적용 주장, 증거 등급, 한계를 적는 출처 원장이다. |
+| 검증 | 완료 시 `rules/validation.md`를 적용한다. 모든 critical·warning 발견 사항에 증거가 있고, 점수는 관측 증거에서 나오며 `unknown`·`not-applicable`을 명시적으로 처리하고, optimize 모드는 기준선·평가자·예산·가드·폐기한 반복·중단 사유·비교 가능한 최고 검증 결과를 기록한다. 패키지 변경 시에는 집중 코퍼스 검증기, 저장소 표준 게이트, 패키지 테스트를 함께 실행한다. |
+| 중단 조건 | 요청된 감사나 리포트가 등급이 매겨진 증거와 미해결 critical 공백 없이 끝났을 때, 또는 optimize 모드가 목표·예산·정체·가드·외부 의존에 도달했을 때 중단한다. 증거가 뒷받침하지 않는 순위·AI 기능 포함·인용을 주장하며 중단하지 않는다. |
+
+</instruction_contract>
+
 <output_language>
 
 사용자에게 보이는 모든 산출물, 저장 아티팩트, 리포트, 계획서, 생성 문서, 요약, 인수인계 메모, 커밋/메시지 초안, 검증 메모는 기본적으로 한국어로 작성합니다.
@@ -39,9 +55,9 @@ SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`�
 
 경쟁사/시장 조사처럼 SEO 산출물이 아닌 일반 리서치면 `research`를 사용한다.
 
-결과물이 PRD면 `prd-maker`를 사용한다.
+결과물이 제품 요구사항 문서(PRD)면 이 스킬의 산출물이 아니다.
 
-배포 전 검증이 목적이면 `pre-deploy`를 사용한다.
+배포 전 검증이 목적이면 산출물이 배포 게이트 판정이므로 이 스킬이 소유하지 않는다.
 
 다음 경우에는 `seo-maker`를 사용하지 않는다:
 
@@ -70,7 +86,7 @@ SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`�
 
 - "랜딩 페이지 디자인해줘." → `designer` 사용
 - "경쟁사 시장조사 해줘." → `research` 사용
-- "배포 전 체크리스트 확인해줘." → `pre-deploy` 사용
+- "배포 전 체크리스트 확인해줘." → 배포 게이트 판정이며 검색 가시성 감사가 아니다
 
 경계 요청:
 
@@ -108,7 +124,9 @@ SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`�
 - AEO 요소 — Q&A 포맷, 직접 답변 구조, Featured Snippet 준비도
 - GEO 요소 — 출처가 있는 검증 가능한 주장, 엔터티 권위, 인용 준비도. 인용을 보장하지 않는다.
 - LLMO 요소 — AI 크롤러 접근성, 콘텐츠 신선도, 선택적 `llms.txt`. `llms.txt`는 표준이나 랭킹/인용 요건이 아닌 선택적 제안이다.
-- Platform policy — Googlebot, Google-Extended, OAI-SearchBot, GPTBot, ChatGPT-User를 목적별로 별도 점검하고 하나의 bot rule을 다른 bot에 적용하지 않는다.
+- Naver 검색 surface — target set이 Naver 검색 surface를 포함할 때만 점검한다. `Yeti` 크롤러 접근, 서치어드바이저 소유확인, RSS·사이트맵 소유확인 도메인 일치, `og:image` 조건, `nosourceinfo` 범위.
+- Bing surface — target set이 Bing surface를 포함할 때만 점검한다. IndexNow 변경 알림(수신 코드는 색인·인용 증거가 아님), 키 파일 소유 증명, POST당 제출 상한, Bing 사이트맵 필드 처리.
+- Platform policy — Googlebot, Google-Extended, OAI-SearchBot, GPTBot, ChatGPT-User를 목적별로 별도 점검하고 하나의 bot rule을 다른 bot에 적용하지 않는다. Naver surface에서는 `Yeti` 접근, 서치어드바이저 소유확인, 피드 소유 도메인 일치, `og:image` 조건, `nosourceinfo` 범위를 점검하고, `nosnippet`·`Google-Extended`·FAQPage 리치 결과·`llms.txt` 같은 Google 전용 지시자를 Naver로 전이하지 않는다.
 - Google AI 기능 — 일반 SEO 기본 원칙과 관련 있는 index/snippet eligibility를 점검한다. 특별 AI schema나 text file을 요구하지 않으며, 적격한 indexed/snippet-eligible 페이지도 포함이 보장되지는 않는다.
 
 </supported_targets>
@@ -133,24 +151,6 @@ Complexity: [simple/complex] — [한 줄 이유]
 애매하면 complex로 분류한다.
 
 </complexity_routing>
-
-<optimize_loop>
-
-## 점수 최적화 모드
-
-사용자가 최고 점수, 만점, max score, 무한 반복을 요청하면 이 모드를 사용한다. 여기서 “무한”은 위험한 무제한 루프가 아니라 유한한 예산과 안전 게이트가 있는 반복으로 해석한다.
-
-필수 루프 규율:
-1. 변경 전에 유한한 iteration budget(사용자가 더 작은 한도를 정하지 않으면 기본 3회), 목표, stable evaluator, baseline score, regression guard를 확정하고 `results.json`에 기록한다.
-2. 한 iteration에는 하나의 고영향 변경 또는 권장 조치 묶음만 선택하고, 적용 또는 명시한 뒤 비교 가능한 범위만 다시 감사한다.
-3. 결과에는 evidence class, capability limitation, `unknown`/`not-applicable` 상태를 기록한다.
-4. 비교 가능한 evidence가 개선되고 regression guard를 통과할 때만 변경을 유지한다. 그렇지 않으면 가능한 경우 rollback/revert하고 `discarded`로 표시하며 이전 `best_run`을 유지한다.
-5. 목표 달성, budget 소진, plateau, guard failure, 안전한 로컬 수정 부재, 외부 credential/business decision 필요, 사용자 중단 중 하나에서 멈추고 stop reason을 기록한다.
-6. `results.json`에 `score_history`, `best_run`, iteration notes, discarded iteration, validator evidence를 기록하고, `report.md`에는 사람이 읽는 요약을 남긴다.
-
-완료는 artifact-gated다. `results.json.status`가 `complete`이고, `best_run`이 채워져 있으며, 최종 결과가 비교 가능한 최고 검증 결과인 근거와 stop reason이 있을 때만 완료라고 말한다. 외부 evidence가 없으면 unknown과 capability limit을 보고하며, 순위·AI 기능 포함·인용을 보장하지 않는다.
-
-</optimize_loop>
 
 <universal_intake>
 
@@ -193,9 +193,8 @@ Complexity: [simple/complex] — [한 줄 이유]
 - 폴더가 아직 없으면 기본적으로 [assets/report.template.ko.md](assets/report.template.ko.md)로 report를 만든다. 영어가 명시적으로 필요할 때만 [assets/report.template.md](assets/report.template.md)를 사용한다.
 - `results.json`이 확정되면 `scripts/render-dashboard.mjs <artifact-dir>`로 dashboard를 렌더한다.
 
-</artifact_contract>
 
-<flow_tracking>
+complex 또는 optimize 모드에서는 `flow.json`은 정본 순서대로 단계를 추적한다: `scope` → `measurement` → `technical` → `platform_policy` → `onpage` → `content` → `aeo` → `geo` → `report`.
 
 ## Flow Tracking (Complex Path Only)
 
@@ -218,8 +217,7 @@ complex로 분류되면 `flow.json`을 쓰고 각 단계가 진행될 때마다 
 ### Resume support
 
 `flow.json`이 이미 있으면 먼저 읽고, 마지막 미완료 단계부터 이어간다.
-
-</flow_tracking>
+</artifact_contract>
 
 <support_file_read_order>
 
@@ -280,46 +278,56 @@ complex로 분류되면 `flow.json`을 쓰고 각 단계가 진행될 때마다 
 
 </workflow>
 
-<required>
+<audit_dimensions>
 
-- 작업 시작 전에 complexity(simple/complex)를 분류한다.
-- 모든 report는 `.hyper/seo-maker/[slug]/` 아래에 저장한다.
-- slug는 가능하면 ASCII kebab-case를 사용한다.
-- 모든 finding에는 severity(`critical`/`warning`/`info`)와 구체적 fix recommendation이 있어야 한다.
-- 모든 non-obvious finding에는 `evidence_grade`, `confidence`, `measurement_method`, `source_tier`를 포함하며, evidence class는 `official`/`live`/`field`/`tool`/`lab`/`synthetic`/`heuristic` 중 하나다.
-- 공식 플랫폼 요구사항, live/field/tool/lab/synthetic 관찰, heuristic AEO/GEO 전술을 구분한다. heuristic을 official failure로 점수화하지 않는다.
-- Optimize mode에서는 reset event를 기록하지 않는 한 동일한 comparable eval set, scoring categories, evidence class, tool/version, pass/fail check을 유지한다.
-- Optimize mode에서는 iteration마다 하나의 변경만 적용하고, regression guard 없이 비교 가능한 evidence가 개선된 변경만 유지한다.
-- 권장 조치는 SEO 영향도 순으로 정렬한다. (high → low)
-- E-E-A-T와 Core Web Vitals 기준은 `references/seo-fundamentals.md`를 따른다.
-- AI 검색 준비도를 볼 때는 `references/aeo-geo-guide.md`를 따른다.
-- complex 경로에서는 `flow.json`을 유지하고 단계별로 갱신한다.
-- 사용자가 전통 SEO만 명시적으로 요청한 경우가 아니면 complex 경로에 AEO와 GEO 단계를 포함한다.
+대상에 해당할 때 다음 차원을 감사한다: technical SEO(크롤 가능성, 색인 가능성, canonical, sitemap, robots 지시자, 응답 상태, 리다이렉트, 중복 페이지), platform policy(Googlebot, Google-Extended, OAI-SearchBot, GPTBot, ChatGPT-User를 각각 별개 제어로 보고 snippet control과 X-Robots-Tag를 점검하며, 대상에 해당할 때만 Naver·Bing/IndexNow 모듈을 추가), on-page SEO(title, description, 제목 계층, 키워드 정합, URL 가독성, 내부 링크), content SEO(검색 의도 일치, 깊이, 주제 커버리지, 최신성, 고유성, 가독성), Core Web Vitals(LCP, INP, CLS, 렌더 차단 리소스, 이미지 크기, 상호작용 지연), structured data(JSON-LD 유효성, Schema.org 적합성, 표시 콘텐츠와의 일치, 엔터티 식별자, breadcrumb, FAQ·제품·글·조직 마크업), AEO(눈에 보이는 답변 블록, Q&A 구조, snippet 대응 요약, 음성 검색 표현, 직접 답변 명확성), GEO(인용 가능한 주장, 출처가 붙은 통계, 엔터티 권위, 저자·브랜드 신뢰 신호, 안전하게 인용 가능한 콘텐츠), LLMO(선택적 `llms.txt`, AI 크롤러 접근, 정돈된 markdown 또는 시맨틱 HTML, 명확한 엔터티 관계, 최신 canonical 콘텐츠).
 
-</required>
+차원별 기준과 조건부 플랫폼 모듈은 [rules/seo-workflow.md](rules/seo-workflow.md) 3-8단계, [references/seo-checklist.md](references/seo-checklist.md), [references/seo-fundamentals.md](references/seo-fundamentals.md), [references/aeo-geo-guide.md](references/aeo-geo-guide.md)에 있다.
+
+글자 수·제목 개수·링크 밀도·답변 길이·단어 수·플랫폼 콘텐츠 선호는 맥락 의존 휴리스틱이며 공식 통과/실패 조건이 아니다. 구조화 데이터나 `llms.txt`, 일반적인 색인·snippet 자격이 리치 결과·순위·AI 포함·인용을 보장한다고 암시하지 않는다. Google AI features는 특별한 AI 스키마나 텍스트 파일 없이 일반 SEO 기본기로 평가한다.
+
+</audit_dimensions>
+
+<scoring>
+
+근거가 충분할 때 투명한 100점 점수를 쓴다:
+
+- Technical SEO: 20
+- On-page SEO: 20
+- Content SEO: 15
+- Core Web Vitals: 15
+- Structured data: 10
+- AEO readiness: 10
+- GEO/LLMO readiness: 10
+
+근거가 불완전하면 해당 범주를 `unknown`으로 표시한다. 해당 없는 범주는 `not-applicable`로 표시하고 점수 분모에서 제외한다. 확신을 지어내지 말고 휴리스틱을 공식 실패로 바꾸지 않는다.
+
+각 finding에는 다음을 포함한다:
+- Severity: `critical`, `warning`, `info` (severity 외 우선순위는 impact/effort 필드를 쓴다).
+- Confidence: high, medium, low.
+- `evidence_grade`: `official`, `live`, `field`, `tool`, `lab`, `synthetic`, `heuristic`.
+- `measurement_method`: 사용한 scan, tool, probe, source, command.
+- `source_tier`: `official-doc`, `observed-file`, `live-observation`, `field-data`, `tool-output`, `lab-result`, `synthetic-probe`, `research-backed-heuristic`.
+- Evidence: command 출력, URL, 로컬 파일 경로, 브라우저 관찰, 저장한 probe 결과.
+- Recommendation: 구체적 조치와 기대 영향.
+- Owner surface: code, content, infrastructure, analytics, external platform.
+
+</scoring>
+
+<optimize_loop>
+
+## 점수 최적화 모드
+
+사용자가 최고 점수·만점·지속적 개선을 요청할 때만 optimize 모드를 쓰고, `audit -> 수정 또는 개선안 -> re-audit`을 유한하게 반복하는 과정으로 다룬다. 변경 전에 baseline, stable evaluator, 목표, 유한한 iteration budget(기본 3회), regression guard를 `results.json`에 기록하고, 비교 가능한 evidence가 개선되고 guard를 통과할 때만 유지하며 그렇지 않으면 가능한 경우 rollback/revert하고 `discarded`로 표시한다. 목표 달성, budget 소진, plateau, guard failure, 안전한 로컬 수정 부재, 외부 credential·business decision 필요, 사용자 중단 중 하나에서 멈추고 stop reason을 기록한다. 전체 루프 규칙은 [rules/seo-workflow.md](rules/seo-workflow.md) 9단계에 있다.
+
+만점을 조작하지 않고, 순위·AI 기능 포함·인용을 보장하지 않는다. unknown과 capability limit, 비교 가능한 최고 검증 결과를 보고한다.
+
+</optimize_loop>
 
 <validation>
 
-실행이 끝나면 다음이 `.hyper/seo-maker/[slug]/`에 남아 있어야 한다:
+완료를 선언하기 전에 [rules/validation.md](rules/validation.md)를 적용한다. 모든 critical·warning finding에 evidence가 있고, recommendation은 engineer·marketer·content owner가 실행할 수 있을 만큼 구체적이며, score는 `unknown`·`not-applicable`을 명시적으로 처리한 observed evidence에서 도출하고 assumption이나 heuristic official failure에서 도출하지 않는다. Google AI 기능은 일반 SEO 기본 원칙으로 설명하고, FAQPage 권장은 Google rich-result eligibility와 answer-friendly visible FAQ content를 구분한다. `sources.md`는 URL, date, applicable claim, evidence class, limitation을 담은 source ledger여야 하며, optimize 모드는 baseline, evaluator, finite budget, guard, 변경/권장 조치, re-audit evidence, discarded iteration, stop reason, best comparable verified result를 기록한다.
 
-- `results.json` — 구조화된 감사 결과 (`status: complete`)
-- `dashboard.html` — 브라우저 대시보드 (`render-dashboard.mjs`로 생성)
-- `results.js` — `file://` 폴백
-- `report.md` — 마크다운 리포트
-- `sources.md` — 출처 기록
-- `flow.json` — complex path only
-- Optimize mode에서는 `results.json` 안에 `score_history`, `best_run`, validator evidence를 추가 기록
-
-파일 스키마는 [references/artifact-spec.md](references/artifact-spec.md)를 따른다.
-
-검증한다:
-
-- 모든 critical 또는 warning finding에는 evidence가 있다.
-- Recommendation은 engineer, marketer, content owner가 실행할 수 있을 만큼 구체적이다.
-- Score는 `unknown`과 `not-applicable`을 명시적으로 처리한 observed evidence에서 도출하며, assumption이나 heuristic official failure에서 도출하지 않는다.
-- Google AI 기능은 일반 SEO 기본 원칙을 사용하며, 관련 indexed/snippet-eligible 페이지도 포함이 보장되지는 않고 special schema나 AI text file이 필요하지 않다고 설명한다.
-- FAQPage 권장은 Google rich-result eligibility와 answer-friendly visible FAQ content를 구분한다.
-- `sources.md`는 URL, date, applicable claim, evidence class, limitation이 있는 source ledger다.
-- Optimize mode는 baseline, evaluator, finite budget, guard, 변경/권장 조치, re-audit evidence, discarded iteration, stop reason, best comparable verified result를 기록한다.
+함께 지킨다: 시작 전 complexity(simple/complex) 분류, 모든 report를 `.hyper/seo-maker/[slug]/`에 저장, slug는 가능하면 ASCII kebab-case, complex 경로에서 `flow.json` 유지, 사용자가 전통 SEO만 요청한 경우가 아니면 AEO·GEO 단계 포함, E-E-A-T와 Core Web Vitals 기준은 [references/seo-fundamentals.md](references/seo-fundamentals.md), AI 검색 준비도는 [references/aeo-geo-guide.md](references/aeo-geo-guide.md)를 따른다. 남아 있어야 할 `.hyper/seo-maker/[slug]/` 산출물은 `<artifact_contract>`에 있다.
 
 </validation>

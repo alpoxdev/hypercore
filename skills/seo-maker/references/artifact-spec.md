@@ -2,6 +2,16 @@
 
 Use this reference when creating or reviewing the result workspace for an SEO audit run.
 
+## Contents
+
+- Workspace Shape
+- `results.json`
+- `results.js`
+- `dashboard.html`
+- `report.md`
+- `flow.json`
+- Lifecycle Rules
+
 ## Workspace Shape
 
 ```text
@@ -29,15 +39,15 @@ Canonical generated assets:
   "date": "2026-03-27",
   "scope": "Full site audit",
   "status": "complete",
-  "overall_grade": "B",
+  "overall_grade": "C",
   "categories": [
-    { "name": "Technical SEO", "score": 85 },
-    { "name": "On-Page SEO", "score": 72 },
-    { "name": "Content SEO", "score": 68 },
-    { "name": "Core Web Vitals", "score": 90 },
-    { "name": "Structured Data", "score": 88 },
-    { "name": "AEO Readiness", "score": 45 },
-    { "name": "GEO Readiness", "score": 38 }
+    { "name": "Technical SEO", "status": "measured", "score": 85, "evidence": "crawl plus robots/header scan", "confidence": "high" },
+    { "name": "On-Page SEO", "status": "measured", "score": 72, "evidence": "title/meta/heading sample of 40 pages", "confidence": "high" },
+    { "name": "Content SEO", "status": "measured", "score": 68, "evidence": "thin-content and internal-link scan", "confidence": "medium" },
+    { "name": "Core Web Vitals", "status": "measured", "score": 90, "evidence": "Lighthouse lab run, no field data", "confidence": "medium" },
+    { "name": "Structured Data", "status": "measured", "score": 88, "evidence": "schema static scan plus rich results test", "confidence": "high" },
+    { "name": "AEO Readiness", "status": "measured", "score": 45, "evidence": "answer-block detector over the top pages", "confidence": "medium" },
+    { "name": "GEO Readiness", "status": "measured", "score": 38, "evidence": "citation and entity scan of the top pages", "confidence": "low" }
   ],
   "measurement_methods": {
     "search_console": { "status": "unavailable", "confidence_impact": "medium" },
@@ -49,7 +59,11 @@ Canonical generated assets:
   "platform_policy": {
     "oai_searchbot": { "status": "allowed", "purpose": "ChatGPT Search inclusion", "evidence_grade": "official", "confidence": "high", "source_tier": "official-doc" },
     "gptbot": { "status": "blocked", "purpose": "OpenAI model training", "evidence_grade": "official", "confidence": "high", "source_tier": "official-doc" },
-    "llms_txt": { "status": "missing", "severity": "info", "evidence_grade": "heuristic", "confidence": "medium", "source_tier": "research-backed-heuristic" }
+    "llms_txt": { "status": "missing", "severity": "info", "evidence_grade": "heuristic", "confidence": "medium", "source_tier": "research-backed-heuristic" },
+    "naver_yeti": { "status": "unknown", "purpose": "Naver Yeti crawler access to the audited pages", "evidence_grade": "official", "confidence": "medium", "source_tier": "official-doc" },
+    "naver_nosourceinfo": { "status": "not-applicable", "purpose": "Naver AI-generated source description exclusion", "evidence_grade": "official", "confidence": "high", "source_tier": "official-doc" },
+    "naver_feeds": { "status": "unknown", "purpose": "RSS and sitemap ownership-domain match", "evidence_grade": "official", "confidence": "medium", "source_tier": "official-doc" },
+    "bing_indexnow": { "status": "unknown", "purpose": "IndexNow change notification for the audited URLs", "http_code": null, "batch_size": 0, "key_location_verified": false, "quota_source": "unknown", "evidence_grade": "official", "confidence": "low", "source_tier": "official-doc" }
   },
   "query_fanout": {
     "status": "not-run",
@@ -102,6 +116,8 @@ Canonical generated assets:
       "grade": "C",
       "critical_count": 1,
       "decision": "baseline",
+      "evaluator_version": "2026-03-27.1",
+      "weights": [20, 20, 15, 15, 10, 10, 10],
       "evidence": "Initial audit before optimization changes"
     },
     {
@@ -110,6 +126,8 @@ Canonical generated assets:
       "grade": "B",
       "critical_count": 0,
       "decision": "kept",
+      "evaluator_version": "2026-03-27.1",
+      "weights": [20, 20, 15, 15, 10, 10, 10],
       "changed": "Removed robots.txt block for /blog/",
       "evidence": "Re-audit confirmed indexability restored"
     }
@@ -157,7 +175,7 @@ Use high confidence for official docs, direct file/header observations, or field
 ### Measurement and platform fields
 
 - `measurement_methods` records which evidence channels were available and how they affected confidence.
-- `platform_policy` records search/AI crawler and snippet controls by platform or bot. Separate `OAI-SearchBot` search inclusion from `GPTBot` training policy.
+- `platform_policy` records search/AI crawler and snippet controls by platform or bot. Separate `OAI-SearchBot` search inclusion from `GPTBot` training policy. Conditional platform entries are target-gated: use `not-applicable` when the target is out of scope and `unknown` when the target applies but console, account, or live access is unavailable. When the target set includes Naver surfaces, record `naver_yeti`, `naver_nosourceinfo`, and `naver_feeds`. When it includes Bing surfaces, record `bing_indexnow` with the observed response code, the batch size, whether the key file was verified, and a quota source of `engine` or `unknown`; a receipt code is never recorded as index evidence and no quota number is estimated.
 - `query_fanout` records generated subqueries and missing topical coverage.
 - `citation_probe` records AI engine, prompt set, cited URLs, brand mentions, sample size, date, and confidence when run. If not run, store `status: "not-run"` and the reason.
 
@@ -166,7 +184,7 @@ Use high confidence for official docs, direct file/header observations, or field
 When `mode` is `optimize` or the user asked for highest/max/perfect score, add these fields to `results.json`:
 
 - `target_score` — optional user-defined or evaluator-defined goal; record its rationale and do not default to an arbitrary “perfect” threshold.
-- `score_history[]` — ordered iteration log. Each item includes `iteration`, `score`, `grade`, `critical_count`, `decision`, `changed`, `evidence`, `evaluator_version`, and `guard`.
+- `score_history[]` — ordered iteration log. Each item includes `iteration`, `score`, `grade`, `critical_count`, `decision`, `changed`, `evidence`, `evaluator_version`, `weights`, and `guard`.
 - `best_run` — the highest-scoring kept iteration. Required before completion.
 - `validator` — artifact-gated completion evidence, such as `{ "status": "passed" }` or an architect review verdict.
 - `plateau` — optional object with `consecutive_iterations` and `reason` when completion is due to no further score gains.
@@ -179,6 +197,9 @@ Rules:
 4. If code changes were made, validator evidence should include the relevant test/build/lint command output summary.
 5. A higher rubric score is not sufficient when an indexing, correctness, accessibility, policy, or project guard regresses.
 6. `unknown` and `not-applicable` categories never become numeric zeroes.
+7. Every `score_history[]` entry records `evaluator_version` and `weights` (the category weights in canonical order). Scores are comparable only inside one evaluator version and weight set.
+8. When `evaluator_version`, `weights`, or the category set changes, the first iteration under the new definition carries `decision: "reset"`. Do not report a score delta across a reset.
+9. `best_run` must be the highest-scoring `kept` iteration, not merely a kept one.
 
 ### Status values
 
@@ -222,7 +243,7 @@ Fallback for browsers where `fetch` does not work when opened via `file://`:
 window.__SEO_RESULTS__ = { /* same content as results.json */ };
 ```
 
-Always keep it synchronized with `results.json`.
+`render-dashboard.mjs` writes this file from the same parsed `results.json` payload as `dashboard.html`, so it is generated output rather than a hand-maintained file. Re-run the renderer after `results.json` changes; hand edits are overwritten.
 
 ## `dashboard.html`
 
@@ -244,6 +265,36 @@ Required behavior:
 
 Generate it from the existing `assets/report.template.md`. It is a Markdown rendering of the data in `results.json`.
 
+## `flow.json`
+
+Complex and optimize runs record phase state here. Minimal contract:
+
+```json
+{
+  "status": "running",
+  "resume_at": "onpage",
+  "phases": [
+    { "name": "scope", "status": "complete" },
+    { "name": "measurement", "status": "complete" },
+    { "name": "technical", "status": "complete" },
+    { "name": "platform_policy", "status": "complete" },
+    { "name": "onpage", "status": "running" },
+    { "name": "content", "status": "pending" },
+    { "name": "aeo", "status": "pending" },
+    { "name": "geo", "status": "pending" },
+    { "name": "report", "status": "pending" }
+  ]
+}
+```
+
+| Field | Contract |
+|-------|----------|
+| `phases[].name` | canonical phase name, in the phase order below |
+| `phases[].status` | `pending`, `running`, `complete`, or `skipped` |
+| `resume_at` | `name` of the first phase whose `status` is not `complete`; a resumed run reads `flow.json` first and continues there |
+
+Canonical phase order: `scope` → `measurement` → `technical` → `platform_policy` → `onpage` → `content` → `aeo` → `geo` → `report`. Keep this list identical to the phase order in `SKILL.md`.
+
 ## Lifecycle Rules
 
 1. Create `.hyper/seo-maker/[slug]/` when the audit starts.
@@ -257,7 +308,21 @@ Generate it from the existing `assets/report.template.md`. It is a Markdown rend
 
 ### Grade Calculation
 
-Average only comparable categories whose `status` is `measured`. Record the included categories, weights, evaluator version, and evidence availability. If the category set, weights, or evaluator changes, start a new baseline instead of reporting a delta.
+The weighted formula is the only aggregation. Category scores come from the seven default categories in canonical order, and the weights come from the `<scoring>` block in `SKILL.md`.
+
+```text
+overall_score = Σ(category_score × category_weight) / Σ(category_weight)
+```
+
+| Rule | Contract |
+|------|----------|
+| Aggregation | `overall_score = Σ(score × weight) / Σ(weight)` over the included categories |
+| Included categories | only `status: "measured"` categories count; `unknown` and `not-applicable` categories leave both the numerator and the denominator |
+| Weights | the `<scoring>` weights in `SKILL.md`, applied in canonical category order |
+| Recorded | included categories, weights, evaluator version, and evidence availability |
+| Definition change | when the category set, weights, or evaluator version changes, start a new baseline and record a reset instead of reporting a delta |
+
+Apply the thresholds below to the weighted score.
 
 | Average | Grade |
 |---------|-------|
@@ -273,3 +338,9 @@ Average only comparable categories whose `status` is `measured`. Record the incl
 skills/seo-maker/scripts/render-dashboard.mjs .hyper/seo-maker/my-site
 open .hyper/seo-maker/my-site/dashboard.html
 ```
+
+## Sources
+
+> No external sources; content checked 2026-09-22.
+
+This file specifies this package's own workspace layout, `results.json` schema, dashboard lifecycle, and render order. It states no external claim, so no external source is cited.

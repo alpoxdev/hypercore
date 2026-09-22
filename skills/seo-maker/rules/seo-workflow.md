@@ -39,6 +39,15 @@ Scan for:
 - HTTP status codes — no broken links, proper redirects (301 vs 302)
 - Clean URL structure — descriptive, kebab-case, no query string abuse
 
+Crawl, render, and index are separate states; record which one was observed:
+
+- A `robots.txt` allow or disallow rule, a `noindex` or X-Robots-Tag directive, and a canonical target are different signals; none of them alone proves that a page is crawled, indexed, or served.
+- Audit the raw HTML response and the rendered DOM separately and label the basis of every finding. When the runtime cannot execute JavaScript or reach a live URL, record the capability fallback and leave DOM-only checks `unknown`.
+- JavaScript rendering is not itself a failure and not itself a guarantee: the finding is whether the content and metadata reach the rendered result, and a successful browser render is not evidence of indexing.
+- `robots.txt` is not a general index-removal tool; use `noindex` or an X-Robots-Tag directive when the intent is removal.
+- Sitemap inclusion is a discovery hint, not an index guarantee: check scope, absolute URLs, and `lastmod` accuracy.
+- Filter, faceted, and paginated URL explosion, empty-result responses (soft 404), and client-side-only navigation are findings, not acceptable defaults.
+
 Tools: `Glob`, `Grep`, `Read` for file scanning. `WebFetch` for live URL analysis if available.
 
 ## 4. Platform Policy Phase
@@ -51,6 +60,25 @@ Inspect crawler and AI/search visibility controls separately by platform:
 - `nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`, canonical, and X-Robots-Tag effects
 - `llms.txt` only as an optional proposal/content map, not a standard or ranking/citation requirement
 - Google AI features using ordinary SEO fundamentals: assess relevant indexability and snippet eligibility, without prescribing special AI schema or text files; eligibility does not guarantee inclusion
+- Naver surfaces when the target set includes them: `Yeti` crawler access and Search Advisor ownership verification, Naver's own `robots.txt` response handling (4xx is allow-all, 5xx is block-all, more than five redirects is allow-all), RSS and sitemap URLs matching the ownership-verified domain, the `og:image` conditions (larger than 150x150, at least 5,000 bytes, no wider than 3:1, page-unique), and `nosourceinfo`, which suppresses only Naver's AI-generated source description for the site — not AI briefing or model training in general
+- Do not transfer Google-only directives to Naver: `nosnippet`, `max-snippet`, `data-nosnippet`, `Google-Extended`, FAQPage rich results, and `llms.txt` have no documented Naver counterpart, so none of them is reported as a Naver requirement. A missing Naver document is not evidence that Naver ignores the signal
+- On Naver, soft 404 responses and JavaScript-only navigation are index-exclusion risks: a content-free 200 response is collected as a normal page, and content reachable only through JavaScript can be left out of the index
+- Bing surfaces when the target set includes them: treat IndexNow as change notification only — a 200 response means the URL was received and a 202 that key validation is pending, and neither one is index, ranking, or AI-citation evidence. Verify the `key file` as ownership proof (8-128 characters of `[A-Za-z0-9-]`, reachable at the host root or at the `keyLocation` path without a login), record the per-POST limit of 10,000 URLs, honor `Retry-After` and shrink the batch on a 429, account for the crawl quota each submitted URL consumes, and do not backfill existing URLs. Do not submit URLs or deploy a key file unless the user asks
+- Bing sitemap processing ignores `changefreq` and `priority`; only `lastmod` in ISO 8601 is read, so neither field is reported as a Bing requirement
+
+Policy risk review, separate from crawler controls:
+
+- Check the target against spam and abuse policies: scaled content abuse, expired-domain reuse, site reputation abuse, doorway pages, and thin affiliate pages. See `references/seo-fundamentals.md` for the policy detail.
+- Using generative AI is not by itself a policy violation; judge the outcome and the value added rather than the tool used.
+- Record every policy finding with one of the defined evidence classes (`official`, `live`, `tool`, `lab`, `synthetic`, `heuristic`); do not state an unverified policy as fact.
+
+Conditional platform modules — enter a module only when its target condition holds; when it does not, record that dimension as `not-applicable`:
+
+- **Naver** — the audited target set includes Naver search surfaces, or the user asks for a Naver audit. Its conditional items are the Naver block in `references/seo-checklist.md`.
+- **Bing/IndexNow** — the target set includes Bing surfaces, or the user asks for change notification. Its conditional items are the Bing block in `references/seo-checklist.md`.
+- **Commerce/i18n** — the target has product listing, merchant feed, or multi-locale surfaces; assess these inside Technical SEO and Structured Data rather than as separate dimensions.
+
+When a module condition holds but account, console, or live access is unavailable, record `unknown` rather than a pass.
 
 Record policy findings with high confidence only when backed by an applicable official source or directly observed files/headers. For source-sensitive claims, add a source-ledger entry with URL, date, applicable claim, evidence class, and limitation.
 
@@ -66,6 +94,7 @@ Scan for:
 - Twitter Card tags — `twitter:card`, `twitter:title`, `twitter:description` when the sharing surface is in scope
 - Internal links — descriptive anchor text and contextual relevance; link density is a heuristic observation, not a requirement
 - URL slug — descriptive and stable when the URL is under project control; query parameters are assessed by purpose
+- Rendering basis — record whether title, description, headings, and links were read from the raw HTML response or from the rendered DOM; client-rendered values are reported with that basis.
 
 Tools: `Grep` for pattern matching (`<title>`, `<meta`, `<h1>`, `alt=`), `Read` for page content.
 
@@ -81,6 +110,7 @@ Evaluate for:
 - Freshness — dates and updates appropriate to the topic's time sensitivity
 - Uniqueness — no harmful duplicate content across pages
 - AI content — when relevant, evidence of review and value-add rather than a blanket AI-content rule
+- Rendering basis — when content exists only after client-side rendering, state that the evaluation used the rendered DOM and record the capability limit.
 
 Tools: `Read` for content analysis, `WebSearch` for competitor/SERP context if needed.
 
@@ -94,6 +124,7 @@ Evaluate readiness for AI direct answers and Featured Snippets:
 - **Answer extraction ease** — Whether clear structure and concise passages help readers and systems; sentence counts are heuristic.
 - **FAQ/Q&A structure** — Whether visible FAQ/Q&A content is useful, while distinguishing Google FAQ rich-result eligibility from answer-friendly content.
 - **Platform observations** — Do not prescribe fixed content preferences for ChatGPT, Perplexity, or Google AI Overviews. Record any platform-specific probe as dated, volatile live or synthetic evidence.
+- **Entry condition** — run this phase when the target's intent is answer- or citation-relevant; otherwise record AEO readiness as `not-applicable` instead of scoring it.
 
 Tools: `Grep` for Q&A patterns, heading structures. `Read` for content analysis. See `references/aeo-geo-guide.md` for strategy details.
 
@@ -113,7 +144,7 @@ Evaluate readiness for possible citation in generative responses; never promise 
 
 Tools: `Grep` for citation patterns and statistics, `Read` for content freshness, and `Glob` for `llms.txt`. If named tools or live probes are unavailable, record the capability fallback and resulting unknowns rather than simulating a result.
 
-Optional high-confidence extensions when access allows:
+Optional high-confidence extensions — enter each extension only when the runtime and access allow it; otherwise record it as `unknown` and continue:
 - **Query fan-out simulator** — generate a bounded, documented subquery set and map missing coverage before recommending content expansion.
 - **AI citation probe** — run or prepare a stable, comparable prompt set for ChatGPT, Perplexity, Gemini, or other engines; record engine, date, sample size, prompts, cited URLs, brand mentions, evidence class, and unresolved volatility.
 
@@ -170,3 +201,9 @@ Write evidence and raw data to `sources.md` as a source ledger. For each officia
 - If the audit needs live SERP data, competitor analysis, or current ranking info, run web searches with specific queries.
 - If the user already provided sufficient context, do not force unnecessary external research.
 - Record all external queries and sources in `sources.md`.
+
+## Sources
+
+> No external sources; content checked 2026-09-22.
+
+This file states this package's own execution phases, evidence grading, and reporting order. It makes no external claim, so no external source is cited.

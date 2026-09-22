@@ -45,7 +45,7 @@
 
 ### Critical
 
-| # | 발견사항 | 위치 | evidence_grade | 신뢰도 | measurement_method | source_tier | 권장사항 |
+| # | 발견사항 | 위치 | 증거 등급 | 신뢰도 | 방법 | 출처 계층 | 권장사항 |
 |---|----------|------|----------------|--------|--------------------|-------------|----------|
 | T1 | [finding] | [file/url] | [official/live/field/tool/lab/synthetic/heuristic] | [high/medium/low] | [method] | [source_tier] | [fix] |
 
