@@ -3,6 +3,7 @@
 > Context7-checked official documentation facts for drift-sensitive Next.js architecture decisions. Use this file before older doc maps when cache, Proxy, route handler, or Server Action behavior matters.
 
 checked_at: 2026-06-02
+last_verified_at: 2026-06-02
 library_id: `/vercel/next.js` and `/vercel/next.js/v16.2.2`
 source_priority: official Next.js docs via Context7, backed by `https://github.com/vercel/next.js/blob/v16.2.2/docs/...` and canonical `https://nextjs.org/docs/...` pages.
 
@@ -47,3 +48,12 @@ source_priority: official Next.js docs via Context7, backed by `https://github.c
 - `https://nextjs.org/docs/app/guides/environment-variables`
 - `https://nextjs.org/docs/app/guides/data-security`
 - `https://nextjs.org/docs/app/guides/upgrading/version-16`
+
+## Sources
+
+> Links checked 2026-06-02, the date carried by this file's own `last_verified_at` marker. No page was re-fetched in this pass, and no source outside the URLs listed above is claimed.
+
+| Claim | Source |
+|---|---|
+| The official facts recorded in "Current Official Facts" above | the `https://nextjs.org/docs/...` pages listed under "Source URLs Checked", read through Context7 for `/vercel/next.js` and `/vercel/next.js/v16.2.2` |
+| The architecture implications in "Architecture Implications" above | those same official pages; the `src/lib` / `src/services` naming is a Hypercore/repo-local convention, not an official requirement |

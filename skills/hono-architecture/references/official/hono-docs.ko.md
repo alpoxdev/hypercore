@@ -1,6 +1,6 @@
 # Hono 공식 문서 요약
 
-검증일: 2026-08-04
+last_verified_at: 2026-08-04
 
 ## Stable package snapshot
 
@@ -85,3 +85,12 @@
 - Swagger UI 노출은 spec generation과 별개의 platform/security 결정입니다.
 - 큰 앱에서는 route modules, typed clients, OpenAPI metadata가 같은 app boundary에서 조합되도록 해야 drift를 줄일 수 있습니다.
 - Database binding과 request-scoped database variable은 `Bindings` / `Variables`로 type 지정하고, route module은 provider-specific setup에서 독립적으로 유지해야 합니다.
+
+## Sources
+
+> 링크 확인 2026-08-04, 이 파일 자체의 `last_verified_at` 표기가 가진 날짜입니다. 2026-09-21 pass에서 페이지를 다시 가져오지 않았고, 위에 인용한 출처 밖의 출처는 주장하지 않습니다.
+
+| 주장 | 출처 |
+|---|---|
+| 위 snapshot 표의 package version과 compatibility 범위 | 그 표 옆에 적은 registry·repository URL |
+| 위 1-17번 항목에 기록한 공식 Hono·OpenAPI 동작 | 각 번호 항목에 붙은 inline `Source:` 링크 |

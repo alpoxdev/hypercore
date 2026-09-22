@@ -88,3 +88,7 @@ When `.hyper/pre-deploy/flow.json` already exists:
 - [ ] Every fix maps back to a reproduced failure group.
 - [ ] Final readiness is based on a leader-run full deploy check, not only targeted checks.
 - [ ] Skipped or unavailable checks are listed separately from passed checks.
+
+## Sources
+
+> No external sources were used. This rule states this package's own workflow, and its script paths were checked 2026-09-22.

@@ -6,6 +6,22 @@
 
 Catalog IDs (`T-` + family letter + index) name patterns; the `W-` IDs in `human-prose.md` §2 are the prescriptions you actually apply. Where the two seem to disagree, the W-ID wins. Naver-specific S1 additions live in `human-prose.md` §4; family K below is their worked-pair layer, not a second list.
 
+## Contents
+
+- A Translationese syntax (번역투)
+- B Loanword and vocabulary habits (어휘 습관)
+- C Structural AI patterns (구조적 AI 패턴)
+- D Stock phrases (AI 특유 관용구)
+- E Rhythm uniformity (리듬 균일성)
+- F Modification and redundancy (수식·중복)
+- G Hedging (헤지 남용)
+- H Connective overload (접속사 남발)
+- I Empty formal nouns (형식명사 과다)
+- J Visual decoration (시각 장식)
+- K Naver-post tells (이 스킬 고유 S1)
+- Using this catalog
+- Sources
+
 ## A Translationese syntax (번역투)
 
 | ID | Pattern | Bad → Good | Movement | W |
@@ -141,3 +157,9 @@ These are this skill's own style rules, not a Naver source; `human-prose.md` §4
 - S1 items (`human-prose.md` §3 severities, plus family K) are removed wherever they appear. S2 and S3 work follows the dominant-pattern diagnosis in [`repair-method.md`](../rules/repair-method.md) §3, so one stray occurrence of the writer's own habit stays.
 - Count what needs counting with the protocol in `human-prose.md` §5, and take genre allowances from its §4 rows.
 - Korean examples stay in Korean in both language versions so the pattern under discussion is the same object in each.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own tell catalog; every prescription it names is the matching `W-` ID in [`human-prose.md`](../rules/human-prose.md) §2-§5, and it cites no external publication because it makes no external claim.

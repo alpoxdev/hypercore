@@ -96,3 +96,7 @@ Verified:
 Caveats:
 - [discarded experiments, remaining failures, not-tested items]
 ```
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 링크 확인 2026-09-21.

@@ -72,3 +72,9 @@ The final message should include:
 - the main conclusion
 - the saved report path
 - the evidence quality or main caveat if confidence is limited
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file states this package's own research workflow - request confirmation, channel priority, evidence collection, save path, and closeout. It cites no external source.

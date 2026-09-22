@@ -89,3 +89,7 @@ Stop condition: targeted check passes, blocked, ownership conflict, or broader f
 - [ ] The leader integrated findings instead of pasting them through
 - [ ] The leader ran or read final verification directly
 - [ ] Final readiness was not delegated to a subagent
+
+## Sources
+
+> No external sources were used. This rule states this package's own workflow, and its script paths were checked 2026-09-22.

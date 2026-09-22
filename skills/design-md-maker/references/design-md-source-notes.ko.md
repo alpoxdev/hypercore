@@ -53,3 +53,9 @@
 - 사용자가 exact official wording 또는 provider-sensitive behavior를 요청할 때.
 - 생성되는 `DESIGN.md`가 특정 public example과 밀접하게 맞아야 할 때.
 - getdesign.md/awesome-design-md의 count, category list, available examples가 산출물에 중요할 때.
+
+## Sources
+
+> 위 ledger page는 2026-06-07에 마지막으로 fetch했고, 이 패키지 source note 확인 2026-09-21.
+
+위 ledger는 이 패키지가 참고한 모든 외부 출처를 URL, fetch 날짜, grade, 뒷받침하는 claim, caveat과 함께 기록합니다. 이번 확인에서 page를 다시 fetch하지 않았고, 기록된 ledger를 그대로 읽어 대조했습니다. 그 밖의 외부 출처는 인용하지 않습니다.

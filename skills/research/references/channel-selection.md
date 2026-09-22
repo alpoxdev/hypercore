@@ -19,3 +19,9 @@ Use this reference when the core skill tells you to pick the right evidence chan
 - Use live search whenever the user asks for current, latest, or date-sensitive information.
 - For codebase-only questions, stay inside the repository unless outside evidence is explicitly needed.
 - When a package version is specified, start with the vendor or official docs for that version.
+
+## Sources
+
+> No external sources were used. Channel guidance checked 2026-09-21.
+
+This file states this package's own channel-selection policy. The runtime names it mentions (`Context7`, `WebFetch`) are capability labels, not cited sources, and this file makes no external factual claim.

@@ -45,3 +45,9 @@ marker payload는 정확히 `schema_version`, `artifact_kind`, 정규화된 `tar
 - 유일한 해시 유효 상태가 없으면 아무것도 지우거나 덮어쓰지 않습니다. journal 증거를 보존하고 복구 차단을 보고하며 검토를 요구합니다.
 
 필요한 journal과 해시 증거 없이 crash atomicity, 정전 atomicity, 복구를 주장하지 않습니다.
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 트랜잭션 불변식 확인 2026-09-21.
+
+marker payload, preflight, 트랜잭션 규칙은 이 패키지의 `scripts/generate.mjs`가 구현하고 `scripts/validate-hermes-agent-maker.mjs`가 검사하는 동작을 그대로 옮긴 것입니다. 외부 출처를 인용하지 않습니다.

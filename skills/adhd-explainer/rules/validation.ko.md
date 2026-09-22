@@ -58,7 +58,8 @@ baseline 행은 유지한다. 관찰된 실패는 기존 행을 통과하도록 
 ## 패키지 변경 검사
 
 ```bash
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only adhd-explainer --json
+# 저장소가 스킬 코퍼스 검증기를 제공하면 이 패키지에도 함께 실행한다:
+#   <corpus-validator> --root <skills-root> --only adhd-explainer --json
 bun run --cwd scripts verify
 ```
 
@@ -83,3 +84,9 @@ corpus validator는 frontmatter, name/폴더 일치, 직접 support link, 영어
 - [ ] 동등한 케이스 쌍으로 이중 언어 동작 동일성을 확인했다.
 - [ ] 루브릭 비교를 주장했다면 케이스, 모델, 시행 횟수, 루브릭이 동일했다.
 - [ ] 결과를 ship, iterate, caveated ship, block 중 하나의 결정으로 기록했다.
+
+## Sources
+
+> 업스트림 출처와 이 패키지 자체 게이트 확인 2026-09-21, 업스트림 대조 2026-08-10.
+
+루브릭 가중치와 릴리스 게이트는 [`../references/upstream-i-have-adhd.ko.md`](../references/upstream-i-have-adhd.ko.md)에 기록된 MIT 라이선스 업스트림 프로젝트에서 유래했다. eval 케이스 스키마, 깊이 표, 종료 기준은 이 패키지의 작업이다. 그 밖의 외부 출처는 인용하지 않는다.

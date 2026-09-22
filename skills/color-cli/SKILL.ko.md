@@ -29,6 +29,7 @@ AI 모델은 행렬 정밀도 오차, gamut mapping 누락, degree/radian 혼동
 | Authority | 변환 값은 `color` CLI 출력이 권위이며, 디자인 판단이나 palette 선택은 design skill 영역입니다. |
 | Evidence | 실행한 명령 출력, gamut 경고, CSS 변환의 converted/skipped 요약을 필요할 때 보고합니다. |
 | Tools | Bash와 설치된 `color` 명령을 사용하며 oklch/hex/rgb 값을 수동 계산하지 않습니다. |
+| Loop | 루프 없음: 요청 한 건은 한 번의 변환으로 끝납니다. 사용자가 다른 값이나 파일을 주면 그때 다시 실행합니다. |
 | Output | 색상 값에는 hex, rgb, oklch를 반환하고, 파일 작업에는 CSS 변환 요약을 반환합니다. |
 | Verification | CLI 설치를 확인하고, 변환은 `color`로 실행하며, CSS 파일 변경은 먼저 `--dry-run`으로 preview합니다. |
 | Stop condition | 변환 값 또는 CSS dry-run/apply 요약을 보고하거나 설치 blocker를 명확히 보고하면 멈춥니다. |

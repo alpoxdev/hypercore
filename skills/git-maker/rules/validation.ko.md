@@ -39,3 +39,9 @@
 3. commit reviewer: 생성된 한국어 subject가 instruction이 아니라 간결한 change/result summary처럼 보인다.
 4. maintainer: future speed rules는 `rules/speed-and-automation.md`에, durable commit policy는 `rules/commit-and-push-policy.md`에, subagent lane rules는 `rules/agent-parallelism.md`에 속한다.
 5. branch operator: `/git-maker && dev`, `/git-maker CURRENT && dev && deploy/staging`, `/git-maker all && dev`의 scope와 propagation behavior가 모호하지 않다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-22.
+
+이 규칙은 이 패키지의 저장소 작업 경험에서 작성했다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

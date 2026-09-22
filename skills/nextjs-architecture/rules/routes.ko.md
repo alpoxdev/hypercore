@@ -88,3 +88,7 @@ route segment가 되면 안 되는 colocated implementation files에는 private 
 - Route groups와 private folders를 의도적으로 사용함.
 - Parallel/intercepted route patterns에 필요한 layout 및 navigation behavior가 있음.
 - UX에 필요한 loading, error, not-found, auth interruption boundaries가 있음.
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Next.js 동작은 `references/official/nextjs-docs.md`(last verified 2026-05-24)와 `references/official/current-docs-2026-06-02.md`(스냅샷 날짜 2026-06-02)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.

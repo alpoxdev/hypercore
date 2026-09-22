@@ -59,3 +59,9 @@ version_note:
 prompt pack에는 identity, variables, context packet, examples, constraints, output schema, eval cases, version note가 있어야 한다. 값이 비어 있어야 한다면 이유를 함께 적는다.
 
 `format`이 `json` 또는 `yaml`이면 정확한 key name과 type을 정의하고 malformed required input을 reject하며 output을 parse하는 schema eval을 포함합니다. Required field를 prose로 언급만 한 결과는 허용하지 않습니다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 참고 문서는 이 패키지 자체의 schema 문서이며 외부 출처를 인용하지 않습니다.

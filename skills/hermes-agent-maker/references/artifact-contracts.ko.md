@@ -47,3 +47,14 @@ draft는 무엇을 제안하는지 밝히고, 비밀값과 일시적인 로그�
 4. 기존 대상은 사용자가 명시적으로 요청할 때만 `overwrite: true`로 덮어씁니다. 디렉터리 kind는 여기에 더해 검증된 ownership marker가 필요합니다. 고정 단일 파일 kind(`soul`, `agents`, `user-draft`, `memory-draft`)는 기존 대상이 일반 파일이고 symlink가 아니면 되며, 손으로 작성한 파일도 교체할 수 있습니다.
 5. portable 출력은 Hermes subset 정책보다 먼저 오프라인 v1.0.0 계약을 실행합니다. schema를 가져오거나 서버에 접속하지 않습니다.
 6. 기록된 트리를 다시 읽어 apply 영수증과 일치하는지 확인합니다.
+
+## Sources
+
+> Hermes 문서와 저장소 로컬 근거 확인 2026-09-21.
+
+| 주장 | 출처 |
+| --- | --- |
+| context files, personality, memory, plugin, skill 작성 동작 | [Hermes context files](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files), [personality](https://hermes-agent.nousresearch.com/docs/user-guide/features/personality), [memory](https://hermes-agent.nousresearch.com/docs/user-guide/features/memory), [plugins](https://hermes-agent.nousresearch.com/docs/user-guide/features/plugins), [plugin authoring](https://hermes-agent.nousresearch.com/docs/developer-guide/plugins), [creating skills](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills) |
+| marker 형식, 생성기 동작, portable v1.0.0 경계 | 이 패키지의 `scripts/`와 `assets/`, 로컬 `instructions/cli/hermes-agent/` |
+
+이 문서 위쪽에 기록한 출처와 같습니다. 이 절을 위해 새로 추가한 출처는 없습니다.

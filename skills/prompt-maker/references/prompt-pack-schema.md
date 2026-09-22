@@ -59,3 +59,9 @@ version_note:
 Every prompt pack should include identity, variables, context packet, examples, constraints, output schema, eval cases, and version note even when some values are intentionally empty with a reason.
 
 When `format` is `json` or `yaml`, define exact key names and types, reject malformed required inputs, and include a schema eval that parses the output. Do not accept prose that merely mentions the required fields.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This reference file is this package's own schema text; it cites no external source.

@@ -29,6 +29,7 @@ AI models often produce incorrect oklch conversions due to matrix precision erro
 | Authority | The `color` CLI output is authoritative for conversion values; design or palette judgment belongs to design skills. |
 | Evidence | Report the executed command output, gamut warnings, and CSS converted/skipped summary when applicable. |
 | Tools | Use Bash plus the installed `color` command; do not compute oklch/hex/rgb manually. |
+| Loop | No loop: each request is one conversion pass. Rerun only when the user supplies another value or file. |
 | Output | Return hex, rgb, and oklch for color values, or the CSS conversion summary for file operations. |
 | Verification | Check the CLI is installed, run conversions through `color`, and preview CSS file changes with `--dry-run` first. |
 | Stop condition | Stop after converted values or CSS dry-run/apply summary are reported, or after the install blocker is clear. |

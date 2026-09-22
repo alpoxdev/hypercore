@@ -39,3 +39,9 @@ In a typical SPA-only Vite app, loaders run in the browser during navigation. If
 - No route code imports DB clients or privileged SDKs
 - Browser-only code does not execute at module scope
 - Loader networking stays behind service/query-option helpers
+
+---
+
+## Sources
+
+> The client-reachability of route modules and loaders and the `VITE_`-only client env rule stated here come from the dated snapshot recorded in `references/official/current-docs-2026-06-02.md`, whose own verification date is 2026-06-02. The server-render caveat and the routing-loader-networking-through-service-helpers rule are this package's own guidance and Hypercore/repo-local conventions, not facts taken from the snapshot. No page was re-fetched for this file. Rule text and repository-local paths checked 2026-09-21.

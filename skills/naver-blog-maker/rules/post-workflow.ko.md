@@ -152,3 +152,9 @@
 - 시드 프롬프트의 훅 어휘를 그대로 붙이는 것. 훅 라이브러리의 수정된 형태만.
 - 체류시간, 댓글, 좋아요, 이웃을 목표로 삼는 것.
 - 네이버 로그인, 네이버 API 엔드포인트 호출, 스크래핑.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 워크플로를 담습니다. 본문 리듬 수치는 이 저장소 자체의 측정 기록인 `.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md`(실제 PostView DOM 관찰)와 `.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt`(에디터 붙여넣기 시험)에서 왔고, 외부 출처는 인용하지 않습니다.

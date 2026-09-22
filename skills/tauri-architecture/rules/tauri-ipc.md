@@ -169,3 +169,13 @@ Block the change until every applicable gate is satisfied:
 7. **Security gate:** the custom command's capability/permission/scope review required by [security.md](security.md) is complete before exposing the adapter.
 
 Do not bypass a failed gate with a type assertion, a broad catch, a frontend-only check, or an event-based workaround.
+
+## Sources
+
+> Links checked 2026-07-30.
+
+| Claim | Source |
+|---|---|
+| Commands, events, channels, and managed `State` in the frontend-to-Rust IPC surface | [tauri-v2-2026-07-30.md](../references/official/tauri-v2-2026-07-30.md); <https://v2.tauri.app/develop/calling-rust/>; <https://v2.tauri.app/develop/calling-frontend/>; <https://v2.tauri.app/develop/state-management/> |
+| Query passes an `AbortSignal` that does not cancel a Rust command Tauri already accepted | [tanstack-vite-react-2026-07-30.md](../references/official/tanstack-vite-react-2026-07-30.md); <https://tanstack.com/query/latest/docs/framework/react/guides/query-cancellation>; [tauri-v2-2026-07-30.md](../references/official/tauri-v2-2026-07-30.md) |
+| DTO/error shape, listener cleanup, and managed-state concurrency requirements | This file's convention and safety policy; no external source |

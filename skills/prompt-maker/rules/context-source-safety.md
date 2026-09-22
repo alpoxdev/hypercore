@@ -21,3 +21,9 @@ Generated prompts must gate credentialed, destructive, external-production, fina
 ## Missing Evidence
 
 If evidence is missing, stale, or conflicting, instruct the agent to state the gap and choose the smallest safe next step rather than guessing.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file is this package's own procedure text; it cites no external source.

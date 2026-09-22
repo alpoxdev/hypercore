@@ -56,3 +56,7 @@ If server HTML and client render can differ, treat it as a design problem, not a
 - `ClientOnly` is used intentionally, not as a blanket escape hatch
 - `ssr` mode is explicit for unstable routes
 - Fallback and shell behavior are understood for reduced SSR routes
+
+## Sources
+
+> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, and `references/official/current-docs-2026-06-02.md` (snapshot dates 2026-04-30 and 2026-06-09). Repository-local links checked 2026-09-21.

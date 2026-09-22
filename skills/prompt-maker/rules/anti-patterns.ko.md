@@ -10,3 +10,9 @@
 - baseline과 rerun 없이 optimization claims를 하는 것.
 - specific side effects를 gate하지 않고 정상 사용까지 막는 broad safety refusals.
 - global 또는 home directories를 project authority로 인용하는 prompt artifacts.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 규칙 문서는 이 패키지 자체의 절차 문서이며 외부 출처를 인용하지 않습니다.

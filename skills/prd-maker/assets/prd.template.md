@@ -7,7 +7,7 @@
 - Initiative:
 - One-line objective:
 - Why now:
-- Package links: [`feature-spec.md`](./feature-spec.md), [`user-flow.md`](./user-flow.md), [`wireframe.md`](./wireframe.md), [`diagram.md`](./diagram.md), [`sources.md`](./sources.md)
+- Package links: `feature-spec.md`, `user-flow.md`, `wireframe.md`, `diagram.md`, `sources.md`
 
 ## 2. Problem
 

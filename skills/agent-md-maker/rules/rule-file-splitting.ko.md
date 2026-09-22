@@ -43,9 +43,11 @@ repository/
 ```markdown
 ## 조건부 규칙
 
-- 테스트 인프라나 테스트 명령을 바꾸기 전에 [`rules/testing.ko.md`](rules/testing.ko.md)를 읽는다.
-- 패키지 경계를 넘어 코드를 옮기기 전에 [`rules/architecture-boundaries.ko.md`](rules/architecture-boundaries.ko.md)를 읽는다.
+- 테스트 인프라나 테스트 명령을 바꾸기 전에 `rules/testing.md`를 읽는다.
+- 패키지 경계를 넘어 코드를 옮기기 전에 `rules/architecture-boundaries.md`를 읽는다.
 ```
+
+각 항목은 지원 파일로 가는 Markdown 링크 하나와 그 파일을 읽어야 하는 조건으로 이루어진다. 위에 나온 경로는 대상 저장소 내부의 예시 경로이므로, 이 package에서는 해석되지 않을 링크 대신 code span으로 표기한다.
 
 “`rules/` 참고” 같은 모호한 안내를 사용하지 않는다. 대상 런타임과 문법을 명시적으로 검증하지 않았다면 공유 `AGENTS.md`에서 런타임 전용 import 문법을 사용하지 않는다. 일반 Markdown 링크와 읽기 조건을 함께 쓰는 것이 이식 가능한 기본값이다.
 
@@ -81,3 +83,11 @@ repository/
 - [ ] 기존의 비문서용 `rules/` 내용을 덮어쓰거나 에이전트 정책과 섞지 않았다.
 - [ ] 미러가 필요할 때 영어/한국어 링크가 의미상 정렬된 파일로 해석된다.
 - [ ] 루트와 적용 가능한 중첩 지침 파일이 설정된 런타임 예산에서 여유를 유지한다.
+
+## Sources
+
+> 링크 확인 2026-09-21. 이 파일에는 외부 출처를 사용하지 않았습니다.
+
+| 주장 | 출처 |
+|---|---|
+| 이 파일의 분리·배치·로딩·소유권·언어 규칙 | `instructions/skill/` 아래의 저장소 skill 저작 기준과 이 package의 `SKILL.md`. 벤더 문서나 웹 출처는 인용하지 않는다 |

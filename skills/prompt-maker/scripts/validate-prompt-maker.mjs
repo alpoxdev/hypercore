@@ -38,7 +38,7 @@ const REQUIRED_MARKERS = [
   "output_language",
   "purpose",
   "routing_rule",
-  "instruction_contract",
+  "Contract",
   "support_file_read_order",
   "activation_examples",
   "workflow",

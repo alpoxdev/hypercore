@@ -1,6 +1,6 @@
 # 플랫폼 설정: Tauri v2 + Vite + React + TanStack Router + Query
 
-> 렌더러/부트스트랩/설정 검토에 이 규칙을 사용합니다. 먼저 날짜가 기록된 근거를 읽습니다: [Tauri v2 근거](../references/official/tauri-v2-2026-07-30.ko.md), [TanStack + Vite + React 근거](../references/official/tanstack-vite-react-2026-07-30.ko.md). TanStack Start 프로젝트는 이 규칙의 범위 밖이며 `tanstack-start-architecture`로 라우팅한다.
+> 렌더러/부트스트랩/설정 검토에 이 규칙을 사용합니다. 먼저 날짜가 기록된 근거를 읽습니다: [Tauri v2 근거](../references/official/tauri-v2-2026-07-30.ko.md), [TanStack + Vite + React 근거](../references/official/tanstack-vite-react-2026-07-30.ko.md). TanStack Start 프로젝트는 이 규칙의 범위 밖이며, server-owned route tree, loader, SSR data-flow plan을 산출물로 하는 full-stack architecture workflow로 라우팅한다.
 
 ## 분류
 
@@ -132,3 +132,15 @@ Platform setup을 수락하기 전에 configuration과 build output에서 다음
 5. 어떤 secret도 `VITE_*`, `public/`, renderer source에 도달하지 않는다.
 6. Query는 async cache/freshness를, Router는 파일 기반 라우팅을 소유하며 loader에 필요한 data는 타입화된 context를 통해 사용할 수 있다.
 7. 문서화되고 완료된 migration이 의도적으로 처리하지 않는 한 v1 config key가 남아 있지 않다.
+
+## Sources
+
+> 링크 확인 2026-07-30.
+
+| 주장 | 출처 |
+|---|---|
+| `devUrl`, `frontendDist`, Tauri v1 -> v2 key 대응, build-hook config key | [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md); <https://v2.tauri.app/reference/config/>; <https://v2.tauri.app/start/frontend/vite/>; <https://v2.tauri.app/start/migrate/from-tauri-1/> |
+| Router plugin 순서, `tanstackRouter({ target: 'react', autoCodeSplitting: true })`, Router와 Query의 소유권 구분 | [tanstack-vite-react-2026-07-30.ko.md](../references/official/tanstack-vite-react-2026-07-30.ko.md); <https://tanstack.com/router/latest/docs/framework/react/routing/file-based-routing> |
+| `VITE_*` 렌더러 노출, `build.target`, public directory 규칙 | [tanstack-vite-react-2026-07-30.ko.md](../references/official/tanstack-vite-react-2026-07-30.ko.md); <https://vite.dev/guide/env-and-mode>; <https://vite.dev/config/build-options> |
+| 하나의 React bootstrap, `StrictMode` 개발 검사, effect cleanup | [tanstack-vite-react-2026-07-30.ko.md](../references/official/tanstack-vite-react-2026-07-30.ko.md); <https://react.dev/reference/react-dom/client/createRoot>; <https://react.dev/reference/react/useEffect> |
+| Loopback host, strict dev port, 명시적 asset base/target 결정, "Hypercore convention" 분류 | 이 저장소의 규약과 안전 정책; 외부 출처 없음 |

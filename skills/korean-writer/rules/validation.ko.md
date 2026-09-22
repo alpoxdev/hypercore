@@ -60,15 +60,15 @@ rg -n "[를] 통해|[에] 있어서|[되]어진다|[시]사하는 바|[결]론�
 
 **예외**: `rules/writing-method.ko.md`, `rules/tell-avoidance.ko.md`, `references/ai-tell-catalog.ko.md`는 감사에서 제외한다. 세 파일은 설계상 금지 패턴을 그대로 인용하며, 번역투 예시를 보이려면 그 표현을 쓸 수밖에 없다. 그래서 통과하도록 고치는 대신 감사 대상에서 뺀다.
 
-## 4. 패키지 검증 커맨드
+## 4. 패키지 검증 게이트
 
-이 스킬의 파일을 고치면 아래 셋을 순서대로 실행한다. 모두 exit 0이어야 한다.
+이 스킬의 파일을 고치면 아래 세 게이트를 저장소 루트에서 순서대로 실행한다. 모두 exit 0이어야 한다.
 
-```bash
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only korean-writer --json
-node skills/skill-tester/scripts/validate-skill.mjs skills/korean-writer
-bun run --cwd scripts verify
-```
+- 이 패키지로 범위를 좁힌 corpus validator: `validate-skills-corpus.mjs --root skills --only korean-writer --json`
+- 이 패키지 폴더에 돌리는 단일 패키지 validator: `validate-skill.mjs skills/korean-writer`
+- 저장소 스크립트 게이트: `bun run --cwd scripts verify`
+
+명령의 위치와 플래그는 저장소 정책 문서가 갖는다. 이 파일은 패키지 변경이 통과해야 할 게이트의 이름을 적는다.
 
 ## 종료 기준
 
@@ -79,4 +79,10 @@ bun run --cwd scripts verify
 - [ ] 불릿 목록, 볼드, 강조용 따옴표 쌍, 대시, 이모지를 각각 세서 `genre-calibration.ko.md` 장르 행의 개수 이하로 맞췄다.
 - [ ] 깨끗한 상태로 납품했거나, 최대 3회 재검토 뒤 남은 문제를 밝히고 납품했다.
 - [ ] humanize 모드라면 앵커를 재확인했고 과교정 가드를 통과했으며 전달에 변경 요약이 붙었다.
-- [ ] 패키지를 고친 경우 자기적용 감사 히트 0건과 세 커맨드 exit 0을 유지했다.
+- [ ] 패키지를 고친 경우 자기적용 감사 히트 0건과 세 게이트 exit 0을 유지했다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 자체 점검 절차와 고정한 임계값을 서술한다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

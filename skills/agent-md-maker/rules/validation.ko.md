@@ -130,11 +130,13 @@ Claim -> Risk -> Evidence -> Verification -> Result -> Caveat
 
 ## 9. Skill Package Gate
 
-이 skill package 자체를 변경할 때:
+이 skill package 자체를 변경할 때는 저장소 루트에서 다음을 실행한다.
 
 ```bash
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only agent-md-maker --json
+node scripts/check-skill-standards.mjs --skill agent-md-maker --json
 ```
+
+저장소의 skill corpus validator도 이 package에 대해 실행한다(`--root skills --only agent-md-maker --json`).
 
 추가로:
 
@@ -143,3 +145,12 @@ node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only
 - 영어/한국어 Markdown pair가 존재하고 equivalent modal strength를 유지하는지 확인
 - 생성한 모든 `rules/*.md`에 하나의 책임, 직접적인 조건부 링크, core 계약 누락 없음, 의미상 정렬된 필수 한국어 미러가 있는지 확인
 - package 내부에 stray `README.md`, `CHANGELOG.md`, `QUICK_REFERENCE.md`가 없는지 확인
+
+## Sources
+
+> 링크 확인 2026-09-21. 이 파일에는 외부 출처를 직접 사용하지 않았습니다.
+
+| 주장 | 출처 |
+|---|---|
+| 이 파일의 risk depth, 구조, 근거, 행동 rubric, repair loop 규칙 | 이 package의 `rules/project-discovery.md`와 `rules/instruction-design.md`, 그리고 `instructions/skill/` 아래의 저장소 skill 저작 기준 |
+| 런타임 동작 서술(root-to-leaf 절단, `CLAUDE.md` 로딩, 중첩 파일 의미) | 저장소 루트의 `instructions/agents-md/AGENTS_MD.ko.md`. 벤더 확인 날짜는 그 문서가 갖고 있고, 이 파일은 그 내용을 다시 서술한다 |

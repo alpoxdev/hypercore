@@ -1,6 +1,6 @@
 ---
 name: git-worktree
-description: "[Hyper] Create, enter, list, remove, clean up, or repair Git worktrees for isolated branches and parallel agent sessions, including direct `git-worktree <ARGUMENT>` creation without follow-up questions. Use when the user asks for git worktree setup/removal, branch-per-folder workflows, parallel Codex/Claude/Cursor workspaces, or the repository-local `.hyper/git-worktree/<folder_name>` convention; when creating and no argument/task is clear, ask what work will happen there in the user's language, derive the folder name, then move subsequent work into the new worktree."
+description: "[Hyper] Create, enter, list, remove, clean up, or repair Git worktrees for isolated branches and parallel agent sessions, including direct `git-worktree ARGUMENT` creation without follow-up questions. Use when the user asks for git worktree setup/removal, branch-per-folder workflows, parallel Codex/Claude/Cursor workspaces, or the repository-local `.hyper/git-worktree/` convention; when creating and no argument/task is clear, ask what work will happen there in the user's language, derive the folder name, then move subsequent work into the new worktree."
 compatibility: Requires Git with `git worktree`; optional editor, tmux, and agent CLIs may be used only when already available in the repository environment.
 ---
 
@@ -40,6 +40,7 @@ Use a different language only when the user explicitly requests it, an existing 
 | Authority | User and project instructions outrank this skill; Git worktree registry output, branch state, and filesystem checks are execution evidence. |
 | Evidence | Use `git rev-parse`, `git worktree list --porcelain`, target-path checks, branch refs, and per-worktree status before mutation. |
 | Tools | Use native Git and shell; editor, tmux, or agent launches are optional and only run when available and requested by the operation. |
+| Loop | None. One pass per requested lifecycle operation: discover the repository, resolve the target, check safety, mutate, verify, and report. Repeat only for a further requested worktree operation; a dirty, destructive, or ambiguous target stops before mutation. |
 | Output | Korean report of worktree path, branch/commit, clean or dirty state, active-context movement, and remaining setup or cleanup. |
 | Verification | Confirm repository root, worktree registry, target path safety, post-create working directory/status, and pre-remove status or prune dry run. |
 | Stop condition | Stop when the requested lifecycle operation is verified, or a dirty/destructive/ambiguous target is reported before mutation. |
@@ -87,8 +88,7 @@ Negative requests:
 
 Boundary request:
 
-- "Set up an isolated workspace for this risky refactor."
-  Use this skill if Git branch isolation is enough; escalate to a container/VM workflow only if runtime, database, port, or dependency isolation is required.
+- "Set up an isolated workspace for this risky refactor." Use this skill if Git branch isolation is enough; escalate to a container/VM workflow only if runtime, database, port, or dependency isolation is required.
 
 </activation_examples>
 

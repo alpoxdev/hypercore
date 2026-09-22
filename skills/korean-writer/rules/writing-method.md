@@ -132,3 +132,9 @@ Quantitative signals from detection tooling are excluded here because they descr
 - **Nonstandard spacing as a "human" signal**: deliberately mis-spacing 의존명사 or 보조용언 to imitate human irregularity trades a real spelling standard for a fake tell; this package keeps standard 표기.
 
 Anything measurable only after the draft exists belongs to the self-check protocol in `rules/validation.md`, not to this file.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own generation-time prescriptions (the W-IDs), the Korean tell patterns they target, and the detection-tooling metrics the package declines to use. Those prescriptions come from this package's drafting practice rather than from a published style guide, so no external source is cited.

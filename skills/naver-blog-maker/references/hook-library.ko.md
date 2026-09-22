@@ -91,3 +91,7 @@
 ## 7. 발행 전 적신호 점검
 
 다음 중 하나라도 있으면 초안을 실패로 처리합니다. 만들어낸 퍼센트나 통계, 숨긴 경제적 관계, 절대적 보장, 가짜 기한, 첫 화면이 이행하지 않는 제목, 일반적 행동 유도(`도움이 되셨다면 공감/댓글`), 네이버 에디터에 붙인 마크다운 `**굵게**`나 `#` 제목.
+
+## Sources
+
+> 낚시성 정의는 <https://searchadvisor.naver.com/guide/content-abusing>와 <https://searchadvisor.naver.com/guide/content-basic>에서 다시 확인했습니다(둘 다 HTTP 200, 링크 확인 2026-09-21). 제목 패턴의 근거는 네이버 밖 현장 실험(DOI는 `.omo/ulw-research/20260916-163039/sources-ledger.md` S73, S75)이며 랭킹 요소가 아닙니다. 패턴의 결과는 [`../rules/naver-ranking-contract.ko.md`](../rules/naver-ranking-contract.ko.md) R4, R6, R9.

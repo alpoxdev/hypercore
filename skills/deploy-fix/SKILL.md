@@ -34,7 +34,7 @@ Use a different language only when the user explicitly requests it, an existing 
 
 - **Negative control**: a healthy deployment, release, publish, or pipeline execution request. Use the relevant deployment/release workflow with its own permission gate.
 - Designing a new CI/CD pipeline or writing a general deployment runbook without a concrete failure.
-- Runtime bugs in application code with a reproduction path. Route to `bug-fix`.
+- Runtime bugs in application code with a reproduction path. The deliverable for this case is a runtime-defect report carrying the observed symptom and its reproduction steps, not a build/CI/deploy repair.
 - Security audits, exploit review, or trust-boundary analysis. Route to `security-review`.
 - New feature work, refactors, or speculative cleanup not tied to a concrete failure.
 - General performance optimization without a failing build or deploy.
@@ -42,8 +42,8 @@ Use a different language only when the user explicitly requests it, an existing 
 ## Boundary cases
 
 - If the user asks for root-cause analysis only, stay in diagnosis mode and do not edit.
-- If a CI failure is caused by a single runtime bug (e.g., a failing test from a code defect), this skill owns the CI-level fix; hand off the underlying code bug to `bug-fix` if the root cause is application logic.
-- If the failure spans build + deployment + runtime, own the build/deploy layer and hand off runtime to `bug-fix`.
+- If a CI failure is caused by a single runtime bug (e.g., a failing test from a code defect), this skill owns the CI-level fix; when the root cause is application logic, the deliverable is a runtime-defect report with the reproduction evidence and the application code stays unchanged.
+- If the failure spans build + deployment + runtime, own the build/deploy layer and deliver the runtime portion as a scope-boundary note with its runtime reproduction evidence.
 - If the fix is locally verified and the user asks to retry a remote or production deployment, finish the repair first, then treat the retry as a separate gated side effect.
 
 </request_routing>
@@ -139,7 +139,7 @@ Use one of these branches explicitly:
 - **Diagnose-only**: reproduce failure, isolate the failing step, summarize evidence, and stop before code edits.
 - **Fix-now** (simple path): If the user explicitly asks for a direct fix and one path is clearly the safest, say which path you are taking and implement without a second confirmation round. No flow tracking.
 - **Option-first** (complex path): present 2-3 repair options with flow tracking and wait for user selection.
-- **Handoff**: route runtime application bugs to `bug-fix` and security review requests to `security-review`.
+- **Handoff**: when the remaining work is an application runtime defect or a security review, the deliverable is a scope-boundary note with the evidence collected so far, and that fix itself is not produced here.
 
 </execution_modes>
 

@@ -23,3 +23,7 @@ Prefer shared behavior with explicit adapters. Use `.ios.ts(x)` / `.android.ts(x
 ## Dependencies and native effects
 
 Use the installed Expo SDK compatibility path and inspect package support for the applicable React Native architecture. Package installs, pod/Gradle changes, `prebuild`, EAS credentials/build/update/submit, signing, push credentials, and store actions are gated side effects. When required capability or authorization is unavailable, provide the exact blocked check/change without claiming it ran.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file; the Expo-specific statements restate this package's own official snapshot, references/official/expo-react-native-2026-08-03.md.

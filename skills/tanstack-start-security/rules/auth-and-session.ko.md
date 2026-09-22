@@ -63,3 +63,9 @@
 - cross-origin auth flow가 의도적으로 allowlist 됨
 - 브라우저 state change에 대해 CSRF / origin 체크가 존재함
 - Better Auth 보안 완화 설정이 이유 없이 켜져 있지 않음
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-22.
+
+이 규칙은 이 패키지에서 작성했습니다. 여기서 말하는 프레임워크·auth stack 동작(`beforeLoad`, `auth.api.getSession({ headers })`, `tanstackStartCookies()`, trusted origin, cookie 속성)은 이 패키지 자체 snapshot인 `../references/official-security-notes.md`를 따르며, 그 밖의 외부 출처는 인용하지 않습니다.

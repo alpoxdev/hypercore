@@ -33,3 +33,9 @@ Reject without rendering or writing any request that creates or modifies Discord
 | Journal belongs to a different artifact | `E_FOREIGN_TRANSACTION`; no write |
 | Recovery state ambiguous | preserve evidence and block |
 | `mode: "preview"` | report the complete ordered change-set; no write |
+
+## Sources
+
+> No external sources were used. Repository-local write-safety contract checked 2026-09-21.
+
+The apply decision table and the forbidden boundary restate the transaction logic in this package's `scripts/generate.mjs` and the invariants in `references/transaction-invariants.md`. No vendor documentation is cited and no external claim is made.

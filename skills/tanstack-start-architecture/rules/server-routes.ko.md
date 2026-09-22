@@ -65,3 +65,7 @@ Handlers에 middleware composition이 필요하면 current server-routes guide�
 - [ ] request body, params, headers, client-sent context를 trust 전에 검증함.
 - [ ] user가 HTTP endpoint를 명시 요청하지 않았다면 internal app RPC는 server function을 사용함.
 - [ ] 필요한 경우 route/handler level middleware가 적용됨.
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, `references/official/current-docs-2026-06-02.md`, 스냅샷 날짜 2026-04-30 및 2026-06-09)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.

@@ -2,7 +2,7 @@
 
 > drift-sensitive Vite + TanStack Router architecture decision을 위한 Context7 확인 official docs facts입니다.
 
-checked_at: 2026-06-02
+last_verified_at: 2026-06-02
 library_ids: `/websites/vite_dev`, `/tanstack/router`
 source_priority: Context7를 통한 official Vite docs 및 official TanStack Router docs.
 
@@ -32,7 +32,9 @@ source_priority: Context7를 통한 official Vite docs 및 official TanStack Rou
 - explicit project exception이 없으면 touched shared roots에 `src/lib/foo.ts`, `src/services/foo.ts` 같은 new direct leaf files를 추가하지 않습니다.
 - Vite SPA에서는 public client-side API wrappers로 Services를 선호합니다. 이 skill에서 TanStack Start server functions(`createServerFn`, `useServerFn`, Start middleware APIs`)를 도입하지 않습니다.
 
-## Source URLs Checked
+## Sources
+
+> 출처 확인 2026-06-02 (Context7 `/websites/vite_dev`, `/tanstack/router`). 이 스냅샷이 기록한 확인일이며, 원래 `checked_at: 2026-06-02` 표기를 그대로 옮긴 값입니다. 이번 pass에서는 페이지를 다시 가져오지 않았고, 아래 목록 밖의 출처는 주장하지 않습니다.
 
 - `https://vite.dev/guide/env-and-mode`
 - `https://vite.dev/config/`

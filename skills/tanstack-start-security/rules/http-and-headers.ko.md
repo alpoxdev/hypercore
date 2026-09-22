@@ -67,3 +67,9 @@
 - cross-origin 동작이 명시적이고 최소화됨
 - webhook이 payload 신뢰 전에 signature를 검증함
 - 남용 가능 endpoint에 rate limiting 또는 동등한 보호가 있음
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-22.
+
+이 규칙은 이 패키지에서 작성했습니다. TanStack Start 요청 미들웨어와 rate limit 관련 서술은 이 패키지 자체 snapshot인 `../references/official-security-notes.md`를 따르고, CSP·CORS·HSTS·webhook 지침은 외부 인용 없이 여기서 서술한 일반 웹 보안 관행입니다.

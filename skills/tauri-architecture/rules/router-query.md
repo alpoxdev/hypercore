@@ -16,7 +16,7 @@ export default defineConfig({
 })
 ```
 
-TanStack Start is outside this skill's scope. A request for it, including server functions, server routes, middleware, or SSR, MUST be routed to `tanstack-start-architecture` rather than added to this packaged Vite SPA.
+TanStack Start is outside this skill's scope. A request for it, including server functions, server routes, middleware, or SSR, MUST be routed to the full-stack architecture workflow rather than added to this packaged Vite SPA.
 
 Native functionality crosses the reviewed desktop API/IPC boundary; remote services use ordinary browser HTTP APIs. Tauri Rust commands retain native authority. Do not treat a Vite module, route, or WebView state as a native trust boundary.
 
@@ -162,3 +162,14 @@ Reject the proposed implementation or correct it when any condition holds:
 5. A client-side guard is presented as the authorization control for a native capability.
 
 See [`../references/official/tanstack-vite-react-2026-07-30.md`](../references/official/tanstack-vite-react-2026-07-30.md) for dated API evidence and [`tauri-ipc.md`](tauri-ipc.md) and [`security.md`](security.md) for command-boundary requirements.
+
+## Sources
+
+> Links checked 2026-07-30.
+
+| Claim | Source |
+|---|---|
+| Router plugin ordering and file-route generation, typed router context, `defaultPreloadStaleTime`, `validateSearch`/`loaderDeps`, and pending/error/not-found components | [tanstack-vite-react-2026-07-30.md](../references/official/tanstack-vite-react-2026-07-30.md); <https://tanstack.com/router/v1/docs/framework/react/guide/data-loading>; <https://tanstack.com/router/v1/docs/framework/react/guide/not-found-errors> |
+| `queryOptions`, `ensureQueryData`, `useSuspenseQuery`, query-key inputs, staleness, and invalidation behavior | [tanstack-vite-react-2026-07-30.md](../references/official/tanstack-vite-react-2026-07-30.md); <https://tanstack.com/query/v5/docs/reference/QueryClient>; <https://tanstack.com/query/latest/docs/framework/react/guides/query-keys> |
+| The packaged static-asset boundary and Rust-side authority for native operations | [tauri-v2-2026-07-30.md](../references/official/tauri-v2-2026-07-30.md); <https://v2.tauri.app/security/> |
+| Route/page/module ownership, the narrow desktop adapter, and the rule that a client guard is not authorization | This repository's convention and safety policy; no external source |

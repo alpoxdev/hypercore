@@ -45,11 +45,11 @@ compatibility: 프로젝트 조사와 로컬 검증을 위해 저장소 범위�
 
 다음 경우에는 인접 workflow를 사용한다.
 
-- 주요 산출물이 `README.md`: `readme-maker`
-- 산출물이 `AGENTS.md`에 기반하지 않은 일반 가이드, runbook, instruction base, runtime rule pack: `docs-maker`
-- 산출물이 재사용 가능한 skill folder: `skill-maker`
+- 주요 산출물이 `README.md`: README 작성 workflow로 보낸다
+- 산출물이 `AGENTS.md`에 기반하지 않은 일반 가이드, runbook, instruction base, runtime rule pack: 일반 문서 workflow로 보낸다
+- 산출물이 재사용 가능한 skill folder: 재사용 가능한 skill 저작 workflow로 보낸다
 - 작성 전 최신 provider 동작을 조사해야 함: 먼저 `research`, 이후 이 skill로 복귀
-- 사용자가 독립적인 prompt만 원함: `prompt-maker`
+- 사용자가 독립적인 prompt만 원함: 독립 prompt 작성 workflow로 보낸다
 
 도움이 될 수 있다는 이유만으로 `CLAUDE.md`, 중첩 지침, 런타임별 파일을 만들지 않는다. 명시적 요청이나 대상 계약에 포함된다는 저장소 근거가 필요하다.
 
@@ -86,13 +86,13 @@ Positive examples:
 
 Negative examples:
 
-- "Rewrite README.md so new contributors can understand the project." `readme-maker`를 사용한다.
-- "Create a general guide to prompt engineering." 산출물 형태에 따라 `docs-maker` 또는 `prompt-maker`를 사용한다.
-- "Build a reusable skill that generates project docs." `skill-maker`를 사용한다.
+- "Rewrite README.md so new contributors can understand the project." 주요 산출물이 `README.md`이므로 README 작성 workflow로 보낸다.
+- "Create a general guide to prompt engineering." 산출물 형태로 구분한다. 일반 가이드는 문서 workflow로, 재사용 가능한 prompt 산출물은 독립 prompt 작성 workflow로 보낸다.
+- "Build a reusable skill that generates project docs." 주요 산출물이 skill folder이므로 재사용 가능한 skill 저작 workflow로 보낸다.
 
 Boundary examples:
 
-- "Add instructions for Codex and Claude." 요청 산출물이 `AGENTS.md` 및/또는 `AGENTS.md` 기반 `CLAUDE.md`일 때만 이 skill을 사용한다. 그 외 runtime rule pack은 `docs-maker`로 보낸다.
+- "Add instructions for Codex and Claude." 요청 산출물이 `AGENTS.md` 및/또는 `AGENTS.md` 기반 `CLAUDE.md`일 때만 이 skill을 사용한다. 그 외 runtime rule pack은 일반 문서 workflow로 보낸다.
 - "Research the latest AGENTS.md precedence rules and update ours." 먼저 출처 기반 조사를 끝내고, 검색한 페이지를 권위로 취급하지 않은 채 검토한 근거로 작성한다.
 - "Create AGENTS.md and commit it." 여기서 파일을 생성·검증하고, 이후 commit 생성은 저장소의 commit workflow로 보낸다.
 
@@ -129,7 +129,7 @@ Boundary examples:
 2. root/nested placement 선택, 계약 작성, `CLAUDE.md` 조정 시 `rules/instruction-design.md`를 읽는다.
 3. `AGENTS.md`가 길거나, 사용자가 `rules/` 분리를 요청했거나, 같은 범위의 상세 정책을 조건부로 로드해야 할 때 `rules/rule-file-splitting.ko.md`를 읽는다.
 4. 수정 전과 완료 전에 `rules/validation.md`를 읽어 risk-matched gate를 정의하고 실행한다.
-5. 규칙의 근거가 필요하거나, 벤더 주장을 재검증해야 하거나, 대상 런타임이 `rules/instruction-design.ko.md`에 없을 때 [`instructions/agents-md/AGENTS_MD.ko.md`](../../instructions/agents-md/AGENTS_MD.ko.md)를 읽는다. `instructions/agents-md/references/`는 필요한 관심사만 로드한다 — 로딩 동작은 `discovery-and-precedence.ko.md`, admission 판단은 `content-contract.ko.md`, 두 파일 조율은 `claude-md-adapter.ko.md`, 측정된 것과 권고의 구분은 `evidence-and-evaluation.ko.md`.
+5. 규칙의 근거가 필요하거나, 벤더 주장을 재검증해야 하거나, 대상 런타임이 `rules/instruction-design.ko.md`에 없을 때 저장소 루트의 `instructions/agents-md/AGENTS_MD.ko.md`를 읽는다. `instructions/agents-md/references/`는 필요한 관심사만 로드한다 — 로딩 동작은 `discovery-and-precedence.ko.md`, admission 판단은 `content-contract.ko.md`, 두 파일 조율은 `claude-md-adapter.ko.md`, 측정된 것과 권고의 구분은 `evidence-and-evaluation.ko.md`.
 6. 이 skill의 trigger, routing, workflow, safety behavior를 변경할 때 `assets/evals/agent-md-maker-cases.jsonl`을 사용한다. 기존 case를 보존하고 관찰된 실패를 regression으로 추가한다.
 
 </support_file_read_order>
@@ -207,12 +207,12 @@ Must-pass gates:
 - [ ] validation output을 확인했고 실패는 최대 2회의 focused repair pass만 받았다.
 - [ ] 완료 보고는 `Claim -> Risk -> Evidence -> Verification -> Result -> Caveat`를 따르고 `ship`, `caveated ship`, `block` 중 하나로 끝난다.
 
-이 저장소의 skill package에 대해 다음을 실행한다.
+이 저장소의 skill package에 대해 저장소 루트에서 다음을 실행한다.
 
 ```bash
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only agent-md-maker --json
+node scripts/check-skill-standards.mjs --skill agent-md-maker --json
 ```
 
-이 skill이 실질적으로 변경되면 `assets/evals/agent-md-maker-cases.jsonl`을 JSONL로 parse하고 trigger/routing/safety coverage를 검사한다.
+저장소의 skill corpus validator도 이 package에 대해 실행한다(`--root skills --only agent-md-maker --json`). 이 skill이 실질적으로 변경되면 `assets/evals/agent-md-maker-cases.jsonl`을 JSONL로 parse하고 trigger/routing/safety coverage를 검사한다.
 
 </validation>

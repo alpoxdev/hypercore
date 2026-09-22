@@ -13,7 +13,7 @@ For this skill itself, keep at least this smoke set:
 | p3 | "이 레퍼런스 기반으로 우리 앱 DESIGN.md 만들어줘." | trigger |
 | n1 | "Create a README.md." | no trigger |
 | n2 | "Implement dark mode components." | no trigger |
-| n3 | "Make a reusable skill folder for DESIGN.md generation." | no trigger; use `skill-maker` |
+| n3 | "Make a reusable skill folder for DESIGN.md generation." | no trigger; the deliverable is a reusable skill folder, not `DESIGN.md` |
 | b1 | "Document our design system." | trigger only when the artifact is `DESIGN.md` |
 
 ## 2. Project Discovery Checks
@@ -116,3 +116,9 @@ Final user-facing summary should be Korean and include:
 - Whether light/dark mode was generated, preserved, or not requested.
 - Validation checks passed.
 - Remaining assumptions, TODOs, or caveats.
+
+## Sources
+
+> This package's own validation procedure checked 2026-09-21; no external source is cited.
+
+The checks above are this package's own procedure for the `DESIGN.md` artifact, and the trigger smoke set restates the activation examples in `SKILL.md`. No external source is cited for this file.

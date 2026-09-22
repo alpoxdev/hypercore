@@ -2,7 +2,24 @@
 
 `prd.md`를 작성하거나 갱신할 때 이 reference를 사용합니다.
 
-근거 기반: 아래 섹션 집합은 PRD 출처 12개를 검토하고 기능명세서, 유저플로우, 와이어프레임 출처와 비교한 로컬 조사 보고서 [`../../../.hyper/research/002-prd-package-layered-artifacts.md`](../../../.hyper/research/002-prd-package-layered-artifacts.md)에 기반합니다.
+근거 기반: 아래 섹션 집합은 PRD 출처 12개를 검토하고 기능명세서, 유저플로우, 와이어프레임 출처와 비교한 저장소 로컬 조사 보고서 `../../../.hyper/research/002-prd-package-layered-artifacts.md`에 기반합니다. 그 보고서는 이 스킬 패키지 밖에 있는 로컬 산출물이라 함께 배포되지 않으므로, 아래 섹션 집합과 출처 메모는 보고서 없이도 단독으로 읽히도록 작성했습니다.
+
+## 목차
+
+- 안정적인 기본 섹션 집합
+- 섹션별 질문
+- 개요와 상태
+- 문제와 목표
+- 사용자와 유스케이스
+- 범위와 비목표
+- 요구사항
+- 메트릭과 성공 기준
+- 가정, 제약, 리스크, 의존성
+- 오픈 질문
+- 관련 후속 산출물
+- 선택: 검토한 대안 또는 옵션
+- 선택: 출시 기준
+- 변경 이력
 
 ## 안정적인 기본 섹션 집합
 
@@ -109,3 +126,20 @@
 - 무엇이 바뀌었는가?
 - 언제 바뀌었는가?
 - 왜 바뀌었는가?
+
+## Sources
+
+> 외부 출처 링크 확인 2026-09-21.
+
+위 섹션 집합은 이 패키지가 직접 작성한 것이고, 아래 PRD 가이드는 본문 메모가 인용하는 외부 출처입니다.
+
+| 본문 주장 | 출처 |
+|---|---|
+| 상위 맥락, 가정, 사용자 스토리, 질문, 명시적 비범위 | [Atlassian PRD guide](https://www.atlassian.com/agile/requirements) |
+| product requirements template의 objective, success metrics, assumptions, user stories, open questions | [Atlassian product requirements template](https://www.atlassian.com/software/confluence/templates/product-requirements) |
+| release-complete capability, use case, constraints, dependencies 중심의 PRD | [ProductPlan PRD glossary](https://www.productplan.com/glossary/product-requirements-document) |
+| 구현을 과도하게 지시하지 않으면서 좋은 해법을 유도할 만큼의 맥락 | [Aha! PRD template guide](https://www.aha.io/roadmapping/guide/templates/create/prd) |
+| outcome, success measure, out-of-scope 결정, constraints, dependencies, risks, stakeholders | [Productboard PRD glossary](https://www.productboard.com/glossary/product-requirements-document/), [Miro PRD template](https://miro.com/templates/prd/) |
+| goals, success metrics, out-of-scope items, open questions, product usage measurement | [Pendo PRD template](https://www.pendo.io/de-de/product-led/artifacts/product-requirements-document-prd-template/) |
+
+위 링크는 모두 2026-09-21에 응답했습니다. 본문 요약은 최초 조사에 기록된 각 가이드의 강조점을 옮긴 것이며, 그날 다시 한 줄씩 대조하지는 않았습니다.

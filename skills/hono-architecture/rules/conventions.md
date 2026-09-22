@@ -72,3 +72,7 @@ import type { AppEnv } from '@/lib/types'
 - Prefer short block comments only where a code group needs orientation
 - Do not add line-by-line narration
 - Keep comments durable and architecture-oriented
+
+## Sources
+
+> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.

@@ -120,3 +120,7 @@ export const routesApp = createApp()
 - Feature boundaries are clear enough that new routes have an obvious home
 - Persistence work flows through service/repository boundaries when the route is not trivial
 - Route structure still preserves typed app inference for tests, RPC, and OpenAPI generation
+
+## Sources
+
+> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.

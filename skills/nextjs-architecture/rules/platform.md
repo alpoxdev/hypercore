@@ -63,3 +63,7 @@ Keep config changes explicit and intentional. Review carefully when changing:
 - Cache Components and removed v16 route segment config options are not mixed accidentally
 - Proxy is truly justified, statically matched, and narrowly scoped
 - `next.config.*` changes are intentional and explained
+
+## Sources
+
+> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.

@@ -40,7 +40,7 @@ Preserve source-code identifiers, commands, paths, schema keys, JSON/YAML field 
 
 Use this skill for a Tauri v2 application that adopts, audits, or changes the supported Vite + React + TanStack Router file-based routing + TanStack Query stack, including frontend packaging, IPC, capabilities, command boundaries, routing, data caching, and testing.
 
-Route away when the project is web-only React/Vite, uses another desktop runtime, needs only a framework documentation summary, or the main work is a Rust-only subsystem with no frontend/runtime-boundary decision. Route projects using a full-stack TanStack runtime to `tanstack-start-architecture`. For a generic Tauri app that has not adopted the stack, use incomplete-adoption mode rather than assuming Router or Query are already installed.
+Route away when the project is web-only React/Vite, uses another desktop runtime, needs only a framework documentation summary, or the main work is a Rust-only subsystem with no frontend/runtime-boundary decision. A full-stack TanStack runtime is a different output shape: its deliverable is a server-owned route tree, loader, and SSR data-flow plan rather than a packaged static SPA boundary, so route it to a full-stack architecture workflow. For a generic Tauri app that has not adopted the stack, use incomplete-adoption mode rather than assuming Router or Query are already installed.
 
 </routing_rule>
 
@@ -85,7 +85,7 @@ Boundary examples:
 - "Connect the desktop app to a remote API."
   Use ordinary browser-safe remote API access; it does not turn that API into a Tauri command.
 - "Adopt a full-stack TanStack runtime."
-  Route the project to `tanstack-start-architecture`.
+  Route away: the deliverable is a server-owned route tree, loader, and SSR data-flow plan, not a packaged static SPA boundary.
 
 </activation_examples>
 
@@ -125,7 +125,7 @@ Read only what the task needs, in this order:
 |---|---|---|
 | Incomplete adoption | Tauri v2 exists but one or more Vite, React, Router, Router plugin, or Query layers are absent or unused. | Create an incremental adoption plan; do not enforce complete-stack-only layout prematurely. |
 | Complete packaged Vite SPA | Tauri packages Vite static assets for a React SPA; Router generates and owns file-based routes, while Query owns asynchronous data cache and freshness. | Keep browser UI and Tauri IPC separate; retain native authority in reviewed Rust commands. |
-| Route away | Tauri v2 or the relevant architecture surface is absent, or the project uses a full-stack TanStack runtime. | Use the applicable non-Tauri or Rust-specific workflow, or `tanstack-start-architecture`. |
+| Route away | Tauri v2 or the relevant architecture surface is absent, or the project uses a full-stack TanStack runtime. | Use the applicable non-Tauri or Rust-specific workflow, or the full-stack architecture workflow whose output is a server-owned route/data plan. |
 
 </runtime_modes>
 

@@ -64,3 +64,7 @@ All writes are beneath `.hyper/image-maker/<topic>/`. Normalize topic to NFC and
 Race-safe creation requires an observed descriptor-relative secure-write capability: resolve and open each directory relative to trusted descriptors without following links, create the final file exclusively relative to the verified parent, and verify the opened descriptor is a non-empty regular file before retaining its relative path and digest. `lstat`, `realpath`, pathname containment, or exclusive pathname creation alone do not establish this guarantee. When that capability is unavailable or unknown, block; the package cannot guarantee descriptor safety by itself. On ordinary `EEXIST`, retry with `-2`, `-3`, and later suffixes before the extension (for example, `image-2.png`), never after it.
 
 No route may report `prompt_saved` from a compiled string or proposed path, or generated delivery without persisted-image evidence. An edit writes a new target and never opens its source for writing; preserve the supplied source unchanged.
+
+## Sources
+
+> No external sources were used. This file states rules that belong to the image-maker package itself. Content checked 2026-09-21.

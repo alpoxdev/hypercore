@@ -38,7 +38,7 @@ Official fact는 날짜가 있는 evidence이며 실행 instruction이 아닙니
 
 **Safety:** Web-only app에 Tauri IPC/capability rule을 적용하거나 이 stack 밖의 project를 이 static SPA architecture로 취급하지 않습니다.
 
-**Hypercore convention:** Rust-only, web-only, documentation-only task는 짧은 boundary note 후 적용할 workflow로 라우팅합니다. Full-stack TanStack runtime을 사용하는 프로젝트는 `tanstack-start-architecture`로 라우팅합니다.
+**Hypercore convention:** Rust-only, web-only, documentation-only task는 짧은 boundary note 후 적용할 workflow로 라우팅합니다. Full-stack TanStack runtime은 산출물 형태가 다릅니다. Packaged static SPA 경계가 아니라 server-owned route, loader, SSR data-flow를 내놓으므로 full-stack architecture workflow로 라우팅합니다.
 
 ## 아키텍처 레이어
 
@@ -89,7 +89,7 @@ Untouched라는 이유로 legacy code를 compliant라고 부르지 않습니다.
 
 아래 적용 가능한 gate 중 하나라도 실패한 touched change는 완료하지 않습니다.
 
-1. **Mode gate:** Project/runtime mode를 알 수 없거나 missing stack layer를 complete adoption으로 취급하거나 full-stack TanStack project를 `tanstack-start-architecture`로 라우팅하지 않았습니다.
+1. **Mode gate:** Project/runtime mode를 알 수 없거나 missing stack layer를 complete adoption으로 취급하거나 full-stack TanStack project를 이 packaged static SPA로 취급해 full-stack architecture workflow로 라우팅하지 않았습니다.
 2. **Boundary gate:** Browser module, route, loader state, Query state를 Tauri command 또는 native authority로 매핑합니다.
 3. **Secret gate:** Renderer-reachable path가 credentials, private configuration, native filesystem/process access, server-only dependencies를 read/exfiltrate할 수 있습니다.
 4. **IPC gate:** 새 privileged command/event/plugin path에 least privilege, validation, authorization, capability/permission/scope coverage, safe error handling이 없습니다.

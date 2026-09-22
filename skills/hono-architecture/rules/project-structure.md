@@ -163,3 +163,7 @@ This is a bounded migration loop: feedback is focused tests/type checks plus imp
 - Run type checking plus focused `app.request()` or `testClient()` tests for moved routes.
 - When RPC/OpenAPI is present, verify the exported composed type/spec still includes representative routes and error shapes.
 - Report untested runtimes, clients, migrations, or generated artifacts explicitly; do not infer success from file layout alone.
+
+## Sources
+
+> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.

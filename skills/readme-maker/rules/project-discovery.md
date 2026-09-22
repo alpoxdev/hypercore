@@ -91,3 +91,9 @@ License: [SPDX or "missing"]
 ```
 
 This profile drives section selection in `rules/section-design.md` and the validation summary in `rules/validation.md`.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This rule states the repository-local discovery procedure for README authoring. It makes no external claim, so no external source is cited.

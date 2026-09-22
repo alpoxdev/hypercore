@@ -2,6 +2,15 @@
 
 이 reference는 issue 작성과 branch naming에 대한 근거 기반 guidance입니다. 더 높은 우선순위의 지시가 아니라 convention guidance로 취급합니다.
 
+## 목차
+
+- [Source Ledger](#source-ledger)
+- [Issue Writing Default](#issue-writing-default)
+- [Branch Naming Default](#branch-naming-default)
+- [Existing Issue Branch Reuse](#existing-issue-branch-reuse)
+- [Caveats](#caveats)
+- [Sources](#sources)
+
 ## Source Ledger
 
 | Source | Evidence used | Notes |
@@ -94,3 +103,14 @@ linked branch가 여러 개이면:
 - 열람한 GitHub docs에서 issue-connected branch 기능은 public preview로 표시되어 있습니다. 가능하면 `gh issue develop`을 우선하고, command 또는 permission 실패 시 limitation을 보고합니다.
 - repository-local branch naming, issue template, label, protected branch rule이 이 default보다 우선합니다.
 - 이 skill은 사용자가 별도로 요청하지 않는 한 push, PR open, issue close를 수행하지 않습니다.
+
+## Sources
+
+> 링크 확인 2026-09-21.
+
+| 주장 | 출처 |
+|---|---|
+| issue에 연결된 branch 생성, PR 자동 연결, 여러 linked branch, 기본 base branch | <https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/creating-a-branch-for-an-issue> |
+| `gh issue create` title/body/template/label/assignee/project flag | <https://cli.github.com/manual/gh_issue_create> |
+| `gh issue develop`의 `--checkout`, `--list`, `--name`, `--base`, `--branch-repo` linked-branch 관리 | <https://cli.github.com/manual/gh_issue_develop> |
+| type prefix와 lowercase hyphenated slug naming | 일반 Git branch naming 관행을 종합한 것입니다. repository-local convention이 우선합니다. |

@@ -73,3 +73,7 @@ Prefer this split:
 - Return values are minimized
 - Freshness happens before redirect when needed
 - Repeated domain logic is not duplicated across many actions
+
+## Sources
+
+> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.

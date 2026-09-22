@@ -100,3 +100,7 @@ const requestLogger = createMiddleware({ type: 'function' })
 - 공통 request 로직이 middleware에 중앙화됨
 - `sendContext`가 최소화되어 있고 서버에서 검증됨
 - Context 확장이 명시적이고 typed 되어 있음
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, `references/official/current-docs-2026-06-02.md`, 스냅샷 날짜 2026-04-30 및 2026-06-09)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.

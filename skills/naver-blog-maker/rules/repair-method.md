@@ -77,3 +77,9 @@ Deliver the repaired post in the same shape as a compose run — the `text` bloc
 - [ ] Every repaired passage passes the over-correction guard, including the new-tell S1 scan.
 - [ ] Edits stayed local; uncertain edits were rolled back.
 - [ ] The delivery carries the repaired post in the standard block shape plus a one-to-three-line change summary.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own repair procedure, authority chain, and over-correction guard. It makes no external claim, so no external source is cited.

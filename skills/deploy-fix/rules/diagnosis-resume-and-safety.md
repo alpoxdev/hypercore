@@ -46,3 +46,9 @@ Otherwise stop after local or sandboxed validation and report the external state
 ## 5. Bounded recovery
 
 Retry only when the failed check yields new evidence and the next approach is materially different. After three failed approaches, restore only task-owned in-flight changes to the last known-good state without destructive version-control commands, preserve attempt evidence, set tracked work to `blocked`, report each attempt, and ask one precise question.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule set is authored in this package from repository practice. It makes no external claim, so no external source is cited.

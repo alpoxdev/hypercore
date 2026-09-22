@@ -130,3 +130,7 @@ Experiment-owned state만 복구한다. Mutation 전에 real path를 resolve하�
 - Verify, Guard, source, tool, authority, ownership, cleanup, recovery를 더 이상 신뢰할 수 없다
 
 멈추기 전에 last complete iteration, terminal reason, cleanup/rollback receipt, resumability disposition을 finalize한다. Unfinished candidate를 promote하지 않는다. Eval은 통과하지만 실제 산출물이 약하면 reset한 뒤 변이를 더하기 전에 eval을 먼저 고친다.
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 링크 확인 2026-09-21.

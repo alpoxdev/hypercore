@@ -1,5 +1,21 @@
 # OpenAI 공식 참고 자료
 
+## 목차
+
+- 갱신 정책
+- 프롬프트 엔지니어링
+- Agent Builder
+- 에이전트 구축 시 안전
+- 평가 작업
+- Agent Evals
+- 프롬프트 캐싱
+- 대화 상태
+- 압축
+- 프롬프트 최적화기
+- GPT-5 모델 문서
+- 2026-06-02 Prompt Authoring Refresh
+- Sources
+
 ## 갱신 정책
 - last_verified_at: 2026-03-19
 - refresh_when:
@@ -113,3 +129,7 @@
 - refresh_when: prompt optimizer 또는 grader workflow가 바뀜
 - summary: Prompt optimization은 dataset, annotation, grader, production 전 수동 review에 근거해야 합니다.
 - implication_for_docs_maker: Prompt 개선 지침에는 보기 좋은 문장 개선뿐 아니라 smoke eval 또는 regression case가 포함되어야 합니다.
+
+## Sources
+
+> 링크 확인 2026-06-02, 위 항목이 기록한 가장 최근 검증일이며 그 날짜 이후 다시 확인한 URL은 없습니다. 이 섹션은 출처 기록용이고, 사용자와 프로젝트 지시가 우선입니다.

@@ -6,6 +6,27 @@ Read this when the draft contains any `[이미지 생성: … | 프롬프트 #n]
 
 **Authority**: this file owns the detailed schema and the role → template matrix. [`image-slots.md`](../rules/image-slots.md) §6 owns the compilation order and the field rules; §3 there owns what may never be generated. Where they disagree, `image-slots.md` §3 wins, then this file.
 
+## Contents
+
+- 1. Schema
+- 2. Section roles and templates
+- 2.1 cover — `cover-key-visual`
+- 2.2 first-screen — `first-screen-key-takeaway`
+- 2.3 mechanism — `mechanism-cutaway`, `mechanism-flow`
+- 2.4 comparison — `comparison-table`, `comparison-split`, `before-after-schematic`
+- 2.5 process — `process-flow`
+- 2.6 cost — `cost-breakdown`
+- 2.7 checklist — `checklist-card`
+- 2.8 caution — `failure-caution`
+- 2.9 data — `data-chart`
+- 2.10 timeline — `timeline`
+- 2.11 route — `route-schematic`
+- 2.12 scale — `scale-dimension`
+- 2.13 closing — `closing-next-step`
+- 2.14 concept — `concept-mood`
+- 3. Checks before delivery
+- Sources
+
 ## 1. Schema
 
 Fourteen fields are always present. Eight more appear only when they carry meaning; an inapplicable field is **absent**, never filled with `null`, `"N/A"`, `"없음"`, `"위와 동일"`, `"same as above"`, or a brace placeholder.
@@ -1023,3 +1044,9 @@ Two role limits worth repeating here. `route-schematic` covers a **logical** flo
 - `route-schematic` never depicts real geography; real places stay `[이미지: …]` markers.
 - Cover and cutaway objects carry an `aspect`; body images default to `4:3`.
 - A generated image that could be mistaken for a photograph is labelled as an illustration in its caption.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own prompt schema and role → template matrix; the field rules it defers to are [`../rules/image-slots.md`](../rules/image-slots.md) §3-§6, and it cites no external publication because it makes no external claim.

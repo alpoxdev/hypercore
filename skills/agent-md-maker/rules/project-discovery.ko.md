@@ -94,3 +94,12 @@ Package manager의 일반적인 default만으로 command를 추론하지 않는�
 - [ ] nested file과 `CLAUDE.md`에 입증된 placement reason이 있다.
 - [ ] 인접한 `rules/*.md` 산출물에 같은 범위라는 배치 근거, 충돌하지 않는 디렉터리, 관할 `AGENTS.md`의 직접 읽기 조건이 있다.
 - [ ] 대상 런타임이 confirmed 또는 assumed로 기록되었고, Claude Code가 대상이면 `CLAUDE.md` 경로가 결정되었다.
+
+## Sources
+
+> 링크 확인 2026-09-21. 이 파일에는 외부 출처를 직접 사용하지 않았습니다.
+
+| 주장 | 출처 |
+|---|---|
+| 이 파일의 조사 순서, evidence map, 종료 gate | 이 package의 `rules/instruction-design.md`와 `instructions/skill/` 아래의 저장소 skill 저작 기준 |
+| 런타임 감지 신호와 우선순위 서술 | 저장소 루트의 `instructions/agents-md/AGENTS_MD.ko.md`. 벤더 확인 날짜는 그 문서가 갖고 있고, 이 파일은 그 내용을 다시 서술한다 |

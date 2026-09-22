@@ -126,5 +126,10 @@ find .hyper -maxdepth 4 -type f | sort | rg "autoresearch-skill"
 python3 -m json.tool .hyper/autoresearch-skill/[skill-name]/results.json >/dev/null
 test -f .hyper/autoresearch-skill/[skill-name]/results.js
 bun test scripts/tests/skill-scripts.test.mjs --test-name-pattern "autoresearch"
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only autoresearch-skill --json
+# When the repository provides a skill-corpus validator, run it on this package too:
+#   <corpus-validator> --root <skills-root> --only <skill-name> --json
 ```
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.

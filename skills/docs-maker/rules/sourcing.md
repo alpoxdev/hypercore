@@ -82,3 +82,9 @@ Stop searching when:
 - core claims are cross-checked or backed by a direct primary source
 - repeated results add no new information
 - remaining evidence is weak and the document can state a caveat instead of overclaiming
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This file is this package's own procedure text and cites no external source.

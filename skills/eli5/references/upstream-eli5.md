@@ -68,3 +68,15 @@ Do not claim that this package beats upstream by percentage unless both are eval
 5. allowed tools and source material
 
 Until then, describe the package as broader and more explicit in contract coverage, not empirically superior.
+
+## Sources
+
+> No new external source was used. Content checked 2026-09-22; the upstream snapshot recorded in the ledger above was accessed 2026-08-29.
+
+| Claim | Source |
+|---|---|
+| The upstream activation phrases, its audience categories, its default structure, its reader priorities, its paired evaluation, and the consulted file inventory above | <https://github.com/dreambigou/eli5> (MIT) at commit `a766623b062331fdde53467001379b4ddf3acc2f`, accessed 2026-08-29 |
+| The reported 91.7% versus 33.3% assertion pass rate | the upstream repository's own published evaluation report listed above; not reproduced by this package |
+| The package's own contract coverage, layer model, and comparison limits described here | this package's own files: `SKILL.md`, `rules/explanation-method.md`, and `rules/validation.md` |
+
+No other external source is cited: upstream is a single public repository, and every remaining statement is this package's own record.

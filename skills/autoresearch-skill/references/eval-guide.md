@@ -2,6 +2,14 @@
 
 How to write eval criteria that lead to real skill improvement instead of false confidence.
 
+## Contents
+
+- Core Principles
+- Good and Bad Evals
+- Common Mistakes
+- Three Questions Before Using an Eval
+- Template
+
 ---
 
 ## Core Principles
@@ -159,3 +167,7 @@ Question: Does this skill include concrete examples of requests that should and 
 Pass: At least one positive example and one out-of-scope example make the boundary clear
 Fail: It only explains when to use the skill abstractly or omits boundary examples
 ```
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.

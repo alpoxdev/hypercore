@@ -98,3 +98,12 @@
 | 권위 전달용 내부 링크 | 링크는 독자가 이어 읽게 돕는 용도. 그래프 권위 주장 없음 |
 | Helpful Content | 방향이 같음. 경험, 독창성, 충실성, 가독성 |
 | 결과 화면 | 파란 링크 열 개가 아님. 블로그·카페·동영상·지식iN을 섞은 의도별 스마트블록, AI 브리핑 인용, 홈피드 추천 |
+
+## Sources
+
+> 네이버 공식 링크 확인 2026-09-21. 규칙별 출처 목록은 [`../references/naver-algorithm-timeline.ko.md`](../references/naver-algorithm-timeline.ko.md)에 있습니다.
+
+| 주장 | 출처 |
+|---|---|
+| R1-R10 강제 규칙, observed 계획 기본값, 속설 배제 | [`../references/naver-algorithm-timeline.ko.md`](../references/naver-algorithm-timeline.ko.md), [`../references/evidence-digest.ko.md`](../references/evidence-digest.ko.md) |
+| R10 사이트 콘텐츠 지침("검색로봇은 이미지 속 텍스트를…") | <https://searchadvisor.naver.com/guide/content-basic> (official, 날짜 없음; 접근 2026-09-17; 링크 확인 2026-09-21) |

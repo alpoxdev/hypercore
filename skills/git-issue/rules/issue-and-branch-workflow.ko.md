@@ -115,3 +115,13 @@ Examples:
 - command가 없지만 issue creation은 성공했다면, 선택한 base에서 `git switch -c "$branch"`로 local branch를 만들고 GitHub linked-branch 상태를 확인하지 못했다고 보고합니다.
 - local changes 때문에 checkout이 실패하면 stash 또는 discard하지 말고 정확한 blocking file을 보고하고 멈춥니다.
 - authentication 또는 permission이 실패하면 GitHub-linked branch가 존재하는 것처럼 보이는 local state를 만들기 전에 멈춥니다.
+
+## Sources
+
+> 링크 확인 2026-09-21.
+
+| 주장 | 출처 |
+|---|---|
+| 이 workflow가 기반으로 삼는 `gh issue create` title/body/template flag와 `gh issue develop --checkout --name` linked-branch 동작 | <https://cli.github.com/manual/gh_issue_create>, <https://cli.github.com/manual/gh_issue_develop> |
+| preconditions와 fallbacks에서 쓰는 `git switch`/`git checkout` branch 이동과 working-tree 보존 동작 | <https://git-scm.com/docs/git-switch>, <https://git-scm.com/docs/git-checkout> |
+| issue-to-branch 연결 모델과 `type/<issue-number>-<slug>` naming default | [`../references/github-issue-branch-conventions.ko.md`](../references/github-issue-branch-conventions.ko.md) |

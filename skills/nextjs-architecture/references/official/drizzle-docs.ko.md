@@ -2,6 +2,8 @@
 
 > Next.js architecture decision에 필요한 version-sensitive Drizzle facts입니다. package-specific import paths 또는 migration commands를 변경하기 전 official docs를 다시 확인합니다.
 
+last_verified_at: 2026-07-04
+
 ## Source URLs
 
 - `https://orm.drizzle.team/docs/sql-schema-declaration`
@@ -46,3 +48,12 @@
 - 정확한 Drizzle Kit CLI command names와 config properties는 installed `drizzle-kit` version에 맞춰 다시 확인합니다.
 - serverless, Edge, Neon, D1, Turso/libSQL, Postgres connection code 변경 전 dialect-specific driver imports와 runtime support를 다시 확인합니다.
 - 새 generated schemas를 추가하기 전 validation integration package names와 generation APIs를 다시 확인합니다.
+
+## Sources
+
+> 링크 확인 2026-07-04, 이 파일 자체의 `last_verified_at` 표기가 가진 날짜입니다. 이 snapshot에는 별도의 page 검증 날짜가 없어 그 표기를 이 파일의 최종 검토 날짜로 사용합니다. 이번 pass에서 페이지를 다시 가져오지 않았고, 위에 나열한 URL 밖의 출처는 주장하지 않습니다.
+
+| 주장 | 출처 |
+|---|---|
+| 위 "Official Facts"에 기록한 Drizzle 동작 | "Source URLs"에 나열한 `orm.drizzle.team` 문서 페이지 |
+| 위 "Next.js Architecture Implications"의 배치·경계 지침 | 같은 Drizzle 페이지와 Next.js server-boundary 규칙을 담은 `references/official/nextjs-docs.md`. `src/db/...` 명명은 Hypercore local convention이며 official requirement가 아닙니다 |

@@ -1,6 +1,6 @@
 # TanStack Start Current Docs Snapshot
 
-- checked_at: 2026-06-09
+- last_verified_at: 2026-06-09
 - source: Context7 `/websites/tanstack_start_framework_react`, TanStack 공식 docs pages와 직접 TanStack 공식 페이지 확인 기반
 - use_when: Start/Router API behavior, Start Vite plugin config, import protection, execution boundaries, server-function API shape가 architecture decision에 영향을 줄 때
 - authority: API 사실은 TanStack 공식 문서가 기준이며, Hypercore convention은 `rules/`에 남긴다.
@@ -78,3 +78,7 @@
 - Local installed package types가 다르면 typecheck를 실행하고 project-specific exception을 기록한다.
 - `src/modules`, `src/lib`, `src/db`, `src/server`, `src/integrations`, `src/config` grouping은 official TanStack requirement가 아니라 Hypercore convention으로 유지한다.
 - `.functions.ts` / `.server.ts` file split은 official guidance에서 가져온 server function organization pattern이지만, 이를 `src/modules/<domain>/<feature>/` nested folder convention으로 강제하는 것은 Hypercore convention이다.
+
+## Sources
+
+> 출처 확인 2026-06-09 (Context7 `/websites/tanstack_start_framework_react`). 이 파일의 원래 `checked_at: 2026-06-09` 표기를 그대로 옮겨 `last_verified_at`으로 기록한 날짜입니다. 이번 pass에서는 페이지를 다시 가져오지 않았고, 위 목록 밖의 출처는 주장하지 않습니다.

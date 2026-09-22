@@ -92,3 +92,7 @@ Do not treat Drizzle table definitions as sufficient user-input validation by th
 - [ ] RQB usage registers the required schema/tables/relations at `drizzle()` initialization.
 - [ ] Validation integrations are used deliberately and do not replace boundary validation.
 - [ ] Folder placement is labelled Hypercore local convention, not official Next.js law.
+
+## Sources
+
+> No external sources were used in this file. Drizzle behavior is delegated to `references/official/drizzle-docs.md`, and Next.js server-boundary behavior to `references/official/nextjs-docs.md` (last verified 2026-05-24). Repository-local links checked 2026-09-21.

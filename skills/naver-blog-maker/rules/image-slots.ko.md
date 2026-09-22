@@ -76,3 +76,12 @@
 실제 반환된 이미지가 확인된 뒤에만 이미지가 있다고 말합니다. 시각적 성공을 주장하기 전에 시선 순서, 대상의 사실, 구도, 조명, 팔레트, 재질, 정확한 글자, 시리즈 통일성을 확인합니다. 이미지를 볼 수 없으면 이 항목들은 미검증이라고 밝힙니다. 제공자 이름이나 과거 실행으로 현재 기능을 추정하지 않습니다.
 
 관찰 참고: [누수 글](https://m.blog.naver.com/greenbirdiebest/224406174599), [지게차 글](https://m.blog.naver.com/greenbirdiebest/224403853347). 위 수치는 DOM 이미지 요소와 본문 텍스트 집계이며 고유 사진 수나 순위 효과를 입증하지 않습니다.
+
+## Sources
+
+> 참조 글 두 편과 밀도 측정값 확인 2026-09-21.
+
+| 주장 | 출처 |
+|---|---|
+| §1 밀도: 1,477자에 28장, 1,012자에 25장, 15-16개 이미지 블록 | [누수 글](https://m.blog.naver.com/greenbirdiebest/224406174599), [지게차 글](https://m.blog.naver.com/greenbirdiebest/224403853347) (사용자가 제시한 실제 글, 2026-09 관찰) |
+| 두 수치의 측정 기록 | [`../references/evidence-digest.ko.md`](../references/evidence-digest.ko.md) T4/T10 메모 |

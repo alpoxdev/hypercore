@@ -67,3 +67,7 @@ completion을 보고하기 전에 다음을 기록합니다:
 - captured artifact path
 
 이 skill folder 변경에서는 edit 후 changed English/Korean sibling files를 read back하고 links, headings, rule responsibilities가 맞는지 확인합니다. canonical source files만 검증하며 plugin mirror, symlink, adapter 동기화는 필요하지 않습니다.
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 저장소 로컬 명령과 readback 절차만 다룹니다. 프레임워크 사실은 `rules/` 아래 topic rule 파일과 `references/official/`에 있습니다. 저장소 로컬 링크 확인 2026-09-21.

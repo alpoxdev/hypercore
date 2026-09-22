@@ -236,7 +236,7 @@ rich 파일을 만들 때 [`references/rich-html-template.ko.md`](references/ric
 - [ ] 수리 경로 전용: 편집 전에 앵커를 기록하고 편집 뒤에 다시 확인했으며(`rules/repair-method.ko.md` §2), 진단이 인용 근거가 있는 패밀리 3~6개로 제한되고, 어미가 양방향으로 그대로이며, 과교정 가드를 통과하고, 변경 요약이 블록 밖에 한두 줄로 있음.
 - [ ] 결과물이 `rules/post-workflow.ko.md` §5 순서를 따르고 규칙 ID나 등급 표시가 없음.
 - [ ] `rules/post-workflow.ko.md` §3의 본문 리듬 계약 통과: 블록 1~5줄에 12~25자 줄바꿈, 문단 블록 1~3문장, 텍스트 블록 최대 2개 연속이고 사이에 눈에 보이는 간격 또는 시각 블록 존재, rich 문단은 가운데 정렬에 `line-height:1.8` 인라인과 빈 문단 스페이서 간격(`p` `margin` 없음).
-- [ ] (저장소 유지보수 전용. 실행 시 의존성 아님) 패키지 변경은 KO/EN 짝을 유지하고 `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only naver-blog-maker --json`과 `bun run --cwd scripts verify`를 통과하며 `README.md`는 바뀌지 않았음을 확인합니다. 단, 이번 변경이 스킬을 추가하거나 스킬 이름·카탈로그 노출을 바꾸면 `README.md`의 스킬 수와 카탈로그 행을 갱신합니다.
+- [ ] (저장소 유지보수 전용. 실행 시 의존성 아님) 패키지 변경은 KO/EN 짝을 유지하고 이 패키지로 범위를 좁힌 corpus validator(`validate-skills-corpus.mjs --root skills --only naver-blog-maker --json`)와 `bun run --cwd scripts verify`를 통과하며 `README.md`는 바뀌지 않았음을 확인합니다. 단, 이번 변경이 스킬을 추가하거나 스킬 이름·카탈로그 노출을 바꾸면 `README.md`의 스킬 수와 카탈로그 행을 갱신합니다.
 - [ ] 유형이 결정 줄에 밝혀지고 본문이 그 유형의 골격을 따르며 보조 유형은 최대 하나임.
 - [ ] 의도나 제목이 무엇을 할지·고를지·얼마나 자주·얼마만큼·얼마 동안·얼마에 물을 때 해결 계층이 있음: 판단 기준 ≥1, 출처 있는 선택지 전부, 운영 수치, 뒤집히는 조건 ≥1, 다음 단계 정확히 1개.
 - [ ] 규제 정량 주장이 모두 주장 범위가 있는 `quantitative_authority` 출처로 추적되고, `source-required` 슬롯은 발행을 막으며, 의료 경계 gate를 통과함.

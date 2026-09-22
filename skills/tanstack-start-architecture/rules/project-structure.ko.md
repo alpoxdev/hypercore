@@ -238,3 +238,7 @@ Route loader 또는 client-reachable module이 DB clients, secret env, filesyste
 - [ ] `functions/index.ts` 또는 mixed `src/modules/<domain>/<feature>/index.ts` barrel을 만들지 않음.
 - [ ] Official Start facts, Safety policy, Hypercore conventions를 별도로 label함.
 - [ ] Server-only shared modules에 명시적 import/runtime protection이 있음.
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, `references/official/current-docs-2026-06-02.md`, 스냅샷 날짜 2026-04-30 및 2026-06-09)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.

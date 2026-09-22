@@ -38,7 +38,7 @@ description: "기존 Vite + TanStack Router 프로젝트 아키텍처를 리뷰�
 
 existing Vite + TanStack Router project의 architecture enforcement, implementation guidance, review에 사용합니다. Route structure, route-local folders, loaders, `validateSearch`, service/query layers, custom hooks, Vite plugin setup, generated route tree handling, env/alias safety, shared nested folder organization이 포함됩니다.
 
-`@tanstack/react-start` / `app.config.ts`를 쓰는 project, TanStack Router 없는 generic Vite project, project audit/implementation guidance 없는 docs-only summary에는 사용하지 않습니다. TanStack Start work는 `tanstack-start-architecture`로 route합니다.
+`@tanstack/react-start` / `app.config.ts`를 쓰는 project, TanStack Router 없는 generic Vite project, project audit/implementation guidance 없는 docs-only summary에는 사용하지 않습니다. Start project라면 이 skill의 Vite route rules를 적용하지 않고, Start 전용 표면(`createServerFn`, `useServerFn`, Start middleware APIs, `app.config.ts`)을 나열한 boundary note를 반환하고 중단합니다.
 
 official Vite/TanStack Router guidance와 Hypercore conventions가 다르면 official/safety rules를 먼저 적용하고 touched architecture surfaces에만 Hypercore conventions를 적용합니다.
 
@@ -54,6 +54,7 @@ official Vite/TanStack Router guidance와 Hypercore conventions가 다르면 off
 | Authority | user/project instructions가 이 skill보다 우선. Official Vite/TanStack Router docs가 API facts에서 Hypercore convention보다 우선. Safety policy는 risky runtime/env/import-boundary changes를 차단. |
 | Evidence | project indicators, local package/config/router files, touched source paths, topic rules, official references, package checks, validation command output. |
 | Tools | local search/read/edit/validation commands 사용; API drift가 중요하면 current official docs 사용; broad route migrations, credential access, SSR adoption, production side effects는 gate. |
+| Loop | 최적화 loop 없음. architecture pass 후 `rules/validation.ko.md`의 touched-surface check에 대해 verify-repair를 최대 2회만 수행하고, touched scope를 벗어나지 않으면서 해당 check를 통과한 변경만 유지합니다. Step 5 checklist가 통과하거나 blocker가 보고되면 중단합니다. |
 | Output | rule classification, changed files, validation evidence, remaining risks, official-doc ambiguity notes를 포함한 Korean architecture decision/review. |
 | Verification | touched surface 관련 `rules/validation.ko.md` checks와 이 skill folder 변경 시 `scripts/validate-vite-architecture-skill.mjs` 실행. |
 | Stop condition | project mode 확인, applicable safety gates 통과, Hypercore conventions 적용 또는 defer, validation evidence 기록, unresolved API drift가 dated/source된 상태. |
@@ -91,7 +92,7 @@ Boundary examples:
 - "Vite route 파일에서 아주 작은 문구만 수정해줘."
   직접 수정만으로 끝날 수 있지만, touched file에는 빠른 architecture compliance check가 필요합니다.
 - "이 저장소는 사실 @tanstack/react-start를 쓰고 있어."
-  Vite rules를 강제로 적용하지 말고 `tanstack-start-architecture`로 route합니다.
+  Start 전용 표면을 처리 대상으로 나열한 boundary note를 반환하고, Vite rules를 강제로 적용하지 않습니다.
 
 </activation_examples>
 
@@ -100,7 +101,7 @@ Boundary examples:
 | 상황 | 모드 |
 |---|---|
 | 기존 Vite + TanStack Router 프로젝트에서 routes, loaders, services, hooks, router setup, env, aliases, shared folder layout을 건드림 | enforce |
-| `@tanstack/react-start` 또는 `app.config.ts`가 있음 | `tanstack-start-architecture`로 route |
+| `@tanstack/react-start` 또는 `app.config.ts`가 있음 | 적용하지 않음; Start-boundary note 반환 |
 | TanStack Router 지표가 없는 generic Vite 프로젝트 | 적용하지 않음 |
 | route 파일의 copy-only 문구 변경 | 직접 수정하되 빠른 compliance check 수행 |
 
@@ -131,7 +132,7 @@ ls src/routes/__root.tsx 2>/dev/null
 
 아무것도 없으면: **중단. 이 스킬은 해당하지 않습니다.** 사용자에게 알리고 일반 구현/리뷰 경로로 돌아갑니다.
 
-`@tanstack/react-start` 또는 `app.config.ts`가 있으면: **중단.** `tanstack-start-architecture`로 라우팅합니다.
+`@tanstack/react-start` 또는 `app.config.ts`가 있으면: **중단.** Start 전용 표면을 나열한 boundary note를 반환하고 Vite route rules는 적용하지 않습니다.
 
 Vite + TanStack Router 프로젝트가 맞다면 아키텍처 강제 적용 진행.
 

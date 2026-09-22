@@ -57,3 +57,14 @@ Portable package는 native Python `register(ctx)`, Python tool/handler, hook, sl
 4. 모든 MCP entry가 `stdio` 또는 Streamable HTTP이고 subset constraint를 충족한다.
 5. `sse` entry가 subset validation을 통과하지 않는다.
 6. Native-only feature, credential, external side effect를 portable behavior로 표현하지 않는다.
+
+## Sources
+
+> Pin된 명세, 로컬 schema 사본, Hermes 근거 확인 2026-09-21.
+
+| 주장 | 출처 |
+| --- | --- |
+| v1.0.0 normative component와 transport 형태 | [Agent Plugins specification v1.0.0](https://github.com/agentplugins/agent-plugins-spec/blob/main/spec/1.0.0.md), v1.0.0으로 pin, 오프라인 사본 `assets/schemas/agent-plugins-v1.0.0/`와 그 `provenance.json` |
+| Hermes portable subset 정책 | [Plugins](https://hermes-agent.nousresearch.com/docs/user-guide/features/plugins), [MCP](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp), 로컬 `instructions/cli/hermes-agent/PLUGINS.md` |
+
+pin은 정확히 v1.0.0입니다. 생성과 검증 중에 network로 schema를 가져오지 않습니다.

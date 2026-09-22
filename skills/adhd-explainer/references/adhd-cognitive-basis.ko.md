@@ -39,3 +39,14 @@
 ## 크레딧
 
 J. Russell Ramsay와 Anthony L. Rostain의 *The Adult ADHD Tool Kit*을 느슨하게 참고했으며, 사람이 하루를 조직하는 방법이 아니라 에이전트가 응답해야 하는 방식에 맞춰 재해석했다. 재해석, 한국어 출력 규칙, 자율성 규칙, 발송 전 게이트는 이 패키지의 작업이다. 출처는 [`upstream-i-have-adhd.ko.md`](upstream-i-have-adhd.ko.md)를 참고한다.
+
+## Sources
+
+> 인용 도서와 업스트림 출처 확인 2026-09-21, 업스트림 대조 2026-08-10.
+
+| 주장 | 출처 |
+|---|---|
+| 다섯 가지 읽기 사실, 사실과 규칙의 매핑, 그 뒤의 실패 유형 | J. Russell Ramsay와 Anthony L. Rostain의 *The Adult ADHD Tool Kit*, 에이전트 응답 설계에 맞게 느슨하게 재해석 |
+| 위에서 참조한 규칙 10개 형태, 예외 6개, 루브릭 가중치 | [`upstream-i-have-adhd.ko.md`](upstream-i-have-adhd.ko.md)에 기록된 MIT 라이선스 업스트림 프로젝트, 2026-08-10 대조 |
+
+이 문서는 설계 근거이며 임상 지침이 아니다. 임상 연구나 의료 기관 자료는 인용하지 않는다.

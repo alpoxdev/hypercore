@@ -75,3 +75,9 @@ Deliver the repaired text in full, followed by one to three lines naming the dia
 - [ ] Every repaired passage passes the over-correction guard, including the new-tell S1 scan.
 - [ ] Edits stayed local and conservative; uncertain edits were rolled back.
 - [ ] The delivery carries the repaired text plus a one-to-three-line change summary.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own repair procedure: the authority chain, the anchor contract, the dominant-pattern diagnosis, the over-correction guard, and the delivery rule. It makes no external claim, so no external source is cited.

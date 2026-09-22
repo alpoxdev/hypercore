@@ -94,3 +94,12 @@ Preserve restrictive safety and scope rules until their replacement is proven at
 - [ ] Nested files and `CLAUDE.md` have a demonstrated placement reason.
 - [ ] Any adjacent `rules/*.md` output has a demonstrated same-scope placement reason, a non-conflicting directory, and a direct read condition from the governing `AGENTS.md`.
 - [ ] Target runtimes are recorded as confirmed or assumed, and a Claude Code target has a `CLAUDE.md` path decided.
+
+## Sources
+
+> Links checked 2026-09-21. No external source was used directly in this file.
+
+| Claim | Source |
+|---|---|
+| The discovery order, evidence map, and exit gate in this file | this package's `rules/instruction-design.md` and the repository skill-authoring standard under `instructions/skill/` |
+| The runtime detection signals and precedence notes | `instructions/agents-md/AGENTS_MD.md` at the repository root, which carries the vendor checked dates; this file restates them |

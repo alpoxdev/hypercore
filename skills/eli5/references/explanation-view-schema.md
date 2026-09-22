@@ -4,6 +4,16 @@
 
 This is the reference for `explanation.html`. Read it when producing an HTML artifact; the rules that decide *whether* to produce one live in [`../rules/output-artifacts.md`](../rules/output-artifacts.md).
 
+## Contents
+
+- 1. Renderer command
+- 2. Input schema
+- 3. Template tokens
+- 4. Escaping and injection safety
+- 5. Error contract
+- 6. Worked example
+- Sources
+
 ## 1. Renderer command
 
 ```bash
@@ -103,3 +113,9 @@ A cache explanation, complete and valid:
 ```
 
 Run the renderer against it and it exits 0 with the JSON line shown in section 1.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-22.
+
+The renderer command, the input schema, the template tokens, the escaping rules, and the error contract describe this package's own renderer script and template. No external claim is made, so no external source is cited.

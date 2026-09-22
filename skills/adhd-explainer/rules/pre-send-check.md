@@ -112,3 +112,9 @@ Korean after:
 - [ ] No banned phrase from either table survived.
 - [ ] The first-and-last test answers both questions.
 - [ ] No claim was added that the rewrite cannot support with evidence.
+
+## Sources
+
+> Upstream provenance and this package's own gate text checked 2026-09-21; upstream accessed 2026-08-10.
+
+The delete-before-sending list derives from the MIT-licensed upstream project recorded in [`../references/upstream-i-have-adhd.md`](../references/upstream-i-have-adhd.md). The eight-item gate, the loop contract, and both banned-phrase tables are this package's own work. No other external source is cited.

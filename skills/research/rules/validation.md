@@ -55,3 +55,9 @@ Close with:
 - the headline conclusion
 - the saved file path
 - one sentence on confidence, risk, or unresolved gaps if needed
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file states this package's own pre-closeout checklist for the research workflow. It cites no external source.

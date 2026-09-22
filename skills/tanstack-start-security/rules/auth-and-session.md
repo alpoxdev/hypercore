@@ -63,3 +63,9 @@ If the app uses Better Auth:
 - Cross-origin auth flows are allowlisted intentionally
 - CSRF / origin checks exist for browser-triggered state changes
 - Better Auth security overrides are justified explicitly instead of relaxed casually
+
+## Sources
+
+> No external source was used. Content checked 2026-09-22.
+
+This rule set is authored in this package. The framework and auth-stack statements here (`beforeLoad`, `auth.api.getSession({ headers })`, `tanstackStartCookies()`, trusted origins, cookie attributes) follow this package's own snapshot `../references/official-security-notes.md`; no other external source is cited.

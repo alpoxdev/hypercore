@@ -138,3 +138,9 @@ Never remove the causal link, decision-relevant trade-off, safety caveat, or sou
 ## 9. Pre-send readback
 
 Read the first paragraph alone: it must answer the question. Then read every sentence containing "like", "imagine", or "think of": the mapped concept and important mismatch must be nearby. Finally, read the explanation without examples: the real mechanism must still be present.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-22.
+
+This rule set is authored in this package from repository practice. It makes no external claim, so no external source is cited.

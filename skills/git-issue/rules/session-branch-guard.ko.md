@@ -44,3 +44,9 @@ final 또는 handoff message에서 다음을 말합니다.
 - guarded branch가 외부에서 삭제되거나 renamed됨
 - `gh`가 issue를 더 이상 resolve할 수 없음
 - 사용자가 guard를 명시적으로 retarget/exit하지 않고 conflicting branch operation을 요청함
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 rule은 이 package가 소유한 session-local branch guard를 정의합니다. 외부 주장을 하지 않으므로 외부 출처를 인용하지 않습니다.

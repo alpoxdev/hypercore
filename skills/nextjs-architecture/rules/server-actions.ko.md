@@ -73,3 +73,7 @@ page-level UI gating만 신뢰하지 않습니다.
 - return values 최소화
 - 필요할 때 redirect 전 freshness 수행
 - 반복 domain logic이 여러 actions에 중복되지 않음
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Next.js 동작은 `references/official/nextjs-docs.md`(last verified 2026-05-24)와 `references/official/current-docs-2026-06-02.md`(스냅샷 날짜 2026-06-02)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.

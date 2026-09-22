@@ -7,7 +7,7 @@
 - 이니셔티브:
 - 한 줄 목표:
 - 왜 지금인가:
-- 패키지 링크: [`feature-spec.md`](./feature-spec.md), [`user-flow.md`](./user-flow.md), [`wireframe.md`](./wireframe.md), [`diagram.md`](./diagram.md), [`sources.md`](./sources.md)
+- 패키지 링크: `feature-spec.md`, `user-flow.md`, `wireframe.md`, `diagram.md`, `sources.md`
 
 ## 2. 문제
 

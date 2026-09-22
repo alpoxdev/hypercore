@@ -7,7 +7,7 @@
 - Feature:
 - User value:
 - Related PRD requirements:
-- Downstream links: [`user-flow.md`](./user-flow.md), [`wireframe.md`](./wireframe.md)
+- Downstream links: `user-flow.md`, `wireframe.md`
 
 ## 2. Feature Inventory
 

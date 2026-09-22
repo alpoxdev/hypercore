@@ -2,6 +2,17 @@
 
 Approximation presets for well-known Korean community styles, for use when the user has no samples. Every preset here is `preset_approximation`: a schema-shaped summary from secondary research, not an extraction from verified primary samples.
 
+## Contents
+
+- How to use presets
+- Preset: 디시인사이드 (DC Inside)
+- Preset: 네이트판 (Nate Pan)
+- Preset: 더쿠 · 인스티즈 (Theqoo / Instiz)
+- Preset: 펨코 (Femco)
+- Preset: 블라인드 (Blind)
+- Preset: 맘카페 (Mom Cafe)
+- Preset: 스레드 (Threads Korea)
+
 ## How to use presets
 
 - Presets are starting points. `sample_count: 0` means no primary sample supports them; treat every rule as PREFER-grade unless labeled otherwise, and never claim author or subcommunity fidelity — only the community-wide approximation.
@@ -131,3 +142,9 @@ Approximation presets for well-known Korean community styles, for use when the u
 - PREFER: daily-life and self-employment, politics as common topics
 - AVOID: formal narration; board-style formatting (titles, structured sections)
 - Profanity: mild slang common (PREFER); intensity via casualness, not aggression
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+Every preset is this package's own `preset_approximation` summary. The `Basis:` labels (C2-C8, U1) name claims from the research run that produced these presets; that run's ledger is not shipped with this package, so no external page or publication is cited or re-checked here. Where the research could not confirm a detail, the preset says 미검증 instead of naming a source, and `valid_at` is the observation basis rather than a citation.

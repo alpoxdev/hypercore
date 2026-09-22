@@ -70,13 +70,12 @@ After the second failed pass, stop changing code. Report the two observed failur
 When this skill package changes, run these repository-root checks in order:
 
 ```bash
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only tauri-architecture --json
 node -e "const fs=require('node:fs'); const p='skills/tauri-architecture/assets/evals/tauri-architecture-cases.jsonl'; fs.readFileSync(p,'utf8').trim().split(/\\n/).forEach((line,index)=>{try{JSON.parse(line)}catch(error){throw new Error(`${p}:${index+1}: ${error.message}`)}});"
 bash scripts/check-sources.sh --offline
 bun run --cwd scripts verify
 ```
 
-The corpus validator is the structural gate. The JSONL parse is a fixture-integrity gate, not behavioral execution. This package has no package-specific behavior runner; inspect the stable positive, negative, boundary, missing-context, unsafe-action, source-guard, and regression cases in the fixture instead of claiming they executed. Do not invent a validator or treat fixture presence as proof of behavior.
+The repository's skill-corpus validator is the structural gate; it is a repository-maintenance command, so this file names it instead of embedding a sibling skill's path: `validate-skills-corpus.mjs --root skills --only tauri-architecture --json`. The JSONL parse is a fixture-integrity gate, not behavioral execution. This package has no package-specific behavior runner; inspect the stable positive, negative, boundary, missing-context, unsafe-action, source-guard, and regression cases in the fixture instead of claiming they executed. Do not invent a validator or treat fixture presence as proof of behavior.
 
 ## Readback Checklist
 
@@ -88,3 +87,14 @@ Before handoff, state which gates ran and their outcomes, or state precisely why
 - [ ] Packaged SPA evidence covers the Vite production build plus generated-route navigation, deep-link handling, and reload without a development server.
 - [ ] Native E2E used only disposable state and made no publication, signing, credential, or destructive production change.
 - [ ] The same gates passed within no more than two correction passes.
+
+## Sources
+
+> Links checked 2026-07-30.
+
+| Claim | Source |
+|---|---|
+| Tauri's testing layers, IPC mocks, mock runtime, and WebDriver support behind the native-evidence rows | [tauri-v2-2026-07-30.md](../references/official/tauri-v2-2026-07-30.md); <https://v2.tauri.app/develop/tests/>; <https://v2.tauri.app/develop/tests/mocking/>; <https://v2.tauri.app/develop/tests/webdriver/> |
+| Router plugin order, the generated route tree, `defaultPreloadStaleTime`, and the loader/Query assertions | [tanstack-vite-react-2026-07-30.md](../references/official/tanstack-vite-react-2026-07-30.md) |
+| Packaged navigation, deep-link, and reload evidence in a disposable profile | [tauri-v2-2026-07-30.md](../references/official/tauri-v2-2026-07-30.md); <https://v2.tauri.app/develop/tests/webdriver/> |
+| The bounded correction loop, the skill package checks, and the readback checklist | This file's convention; the repository commands it names are repository policy, not external sources |

@@ -58,7 +58,8 @@ Preserve baseline rows. Add every observed failure as a permanent regression row
 ## Package change checks
 
 ```bash
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only adhd-explainer --json
+# When the repository provides a skill-corpus validator, run it on this package too:
+#   <corpus-validator> --root <skills-root> --only adhd-explainer --json
 bun run --cwd scripts verify
 ```
 
@@ -83,3 +84,9 @@ Structural pairing is not behavioral parity. Run at least one equivalent English
 - [ ] Bilingual behavioral parity was checked with at least one equivalent case pair.
 - [ ] Rubric comparison, when claimed, used identical cases, model, trials, and rubric.
 - [ ] The result is recorded as one decision: ship, iterate, caveated ship, or block.
+
+## Sources
+
+> Upstream provenance and this package's own gates checked 2026-09-21; upstream accessed 2026-08-10.
+
+The rubric weights and the release gate derive from the MIT-licensed upstream project recorded in [`../references/upstream-i-have-adhd.md`](../references/upstream-i-have-adhd.md). The eval-case schema, the depth table, and the exit criteria are this package's own work. No other external source is cited.

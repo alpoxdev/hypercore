@@ -4,7 +4,16 @@
 
 Last verified: 2026-05-24 against latest stable Next.js 16.2.6 (`npm dist-tag latest`).
 
+last_verified_at: 2026-05-24
+
 Reader access rule: when re-checking official docs, prefer Jina Reader markdown URLs in the form `https://r.jina.ai/https://nextjs.org/docs/...` so agents can inspect the current page text without relying on browser rendering. Keep the canonical URL listed below as the original source URL.
+
+## Contents
+
+- [Core Sources](#core-sources)
+- [Drift Watchlist](#drift-watchlist)
+- [Interpretation Rules](#interpretation-rules)
+- [Sources](#sources)
 
 ## Core Sources
 
@@ -125,3 +134,12 @@ Re-check official docs before relying on these behaviors:
 - If a newer Next.js release changes caching, Proxy, Route Handler, or Server Action behavior, update the relevant rule file rather than bloating `SKILL.md`.
 - When local repo conventions exceed the docs, label them as local conventions in reviews and change reports.
 - Treat this file as a doc map, not a replacement for rereading official docs on version-sensitive work.
+
+## Sources
+
+> Links checked 2026-05-24, the date carried by this file's own `last_verified_at` marker. No page was re-fetched in this pass, and no source outside the canonical `nextjs.org/docs/...` URLs listed above is claimed.
+
+| Claim | Source |
+|---|---|
+| The official Next.js surfaces and their "Use for" scope in "Core Sources" above | the canonical `nextjs.org/docs/...` URL listed with each entry |
+| The drift-sensitive behaviors listed in "Drift Watchlist" above | those same canonical URLs plus `references/official/current-docs-2026-06-02.md` |

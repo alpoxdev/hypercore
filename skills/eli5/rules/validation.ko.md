@@ -61,8 +61,8 @@
 ## 패키지 검사
 
 ```bash
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only eli5 --json
-node skills/skill-tester/scripts/validate-skill.mjs skills/eli5 --json
+# 저장소가 스킬 코퍼스 검증기를 제공하면 이 패키지에도 함께 실행한다:
+#   <corpus-validator> --root <skills-root> --only eli5 --json
 bun run --cwd scripts verify
 ```
 
@@ -83,3 +83,9 @@ bun run --cwd scripts verify
 - [ ] 산출물 출력이 바뀌었으면: 렌더러가 결정론적이고, 모든 실패 경로가 비영 종료와 명시한 메시지를 내며 이전 파일을 보존하고, 요청 없이 파일을 쓰지 않는다.
 - [ ] 수동 QA가 쉬운 개념, 특정 역할, 근거 기반 기술 자료를 포함한다.
 - [ ] 성능 주장에는 비교 가능한 조건을 기록하며, 아니면 우월성 비율을 주장하지 않는다.
+
+## Sources
+
+> 새 외부 출처는 사용하지 않았다. 내용 확인 2026-09-22. `../references/upstream-eli5.md`에 기록된 원본 스냅샷 접근일은 2026-08-29이다.
+
+다섯 질문 게이트, 루브릭 가중치, 종료 기준은 이 패키지 자체 작업이다. 위에서 언급한 공개 원본 결과는 패키지 원장에 기록된 맥락일 뿐, 이 패키지에서 재현한 근거가 아니다.

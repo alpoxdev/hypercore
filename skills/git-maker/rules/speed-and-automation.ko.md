@@ -66,3 +66,9 @@ helper는 피할 수 있는 overhead를 제거하기 위한 것이지 safety를 
 - `grep` process를 만들지 않는 Bash 내부 commit-message 검증
 
 diff inspection, logical change grouping, 올바른 commit message 작성, hook failure 처리가 필요 없어진 것은 아니다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-22.
+
+이 규칙은 이 패키지의 저장소 작업 경험에서 작성했다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

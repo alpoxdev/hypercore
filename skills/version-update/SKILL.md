@@ -37,6 +37,7 @@ Use a different language only when the user explicitly requests it, an existing 
 | Authority | User and project instructions outrank this skill; discovered version files, semver rules, script output, and diffs are evidence. |
 | Evidence | Use Bun MJS helpers, target argument parsing, and `git diff` before git writes. |
 | Tools | Use `bun scripts/*.mjs` helpers and local file edits; use this skill's direct git helpers only when requested. |
+| Loop | None. One pass per request: detect the stack, discover the version files, read the current version, compute the target, apply it, review the diff, then stop. Re-invoke only when the user asks for another version change. |
 | Output | Korean report of current version, target version, changed files, commit/push status, and caveats. |
 | Verification | Confirm all intended version files changed consistently, review diff, and execute optional git steps only when requested. |
 | Stop condition | Stop when version files are updated and reviewed, or when requested git steps are completed or blocked with evidence. |

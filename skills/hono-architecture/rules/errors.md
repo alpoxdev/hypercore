@@ -44,3 +44,7 @@ app.onError((err, c) => {
 - Error responses preserve deliberate headers/status
 - Expected HTTP errors are not all generic throws
 - Typed RPC/public-client 404 behavior is covered by `app.notFound()` or an explicit JSON response contract when clients depend on it
+
+## Sources
+
+> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.

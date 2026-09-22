@@ -130,3 +130,7 @@ Stop when any of the following becomes true:
 - Verify, Guard, source, tool, authority, ownership, cleanup, or recovery can no longer be trusted
 
 Finalize the last complete iteration, terminal reason, cleanup/rollback receipts, and resumability disposition before stopping. Never promote an unfinished candidate. If evals pass but the actual output is weak, reset and fix the eval before adding more mutations.
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.

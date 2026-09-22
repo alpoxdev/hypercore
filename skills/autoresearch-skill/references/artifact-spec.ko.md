@@ -2,6 +2,22 @@
 
 오토리서치 실행의 실험 워크스페이스를 만들거나 검토할 때 이 레퍼런스를 사용한다.
 
+## 목차
+
+- 워크스페이스 형태
+- Baseline snapshot
+- `run-contract.md`
+- `recovery.json`
+- `source-ledger.md`
+- `trace-summary.md`
+- `results.tsv`
+- `results.json`
+- `dashboard.html`
+- Detailed content files
+- `score-explanation.md`와 `final-report.md`
+- `changelog.md`
+- Worked Example
+
 ## 워크스페이스 형태
 
 ```text
@@ -77,7 +93,7 @@ Mutating 또는 resumable run에서는 unrelated work를 덮어쓰지 않고 복
   "config_identity": "sha256:...",
   "eval_identity": "sha256:...",
   "environment_identity": "sha256:...",
-  "owned_paths": ["skills/diagram-generator/SKILL.md"],
+  "owned_paths": ["[target-skill]/SKILL.md"],
   "artifact_digests": {"results.json": "sha256:..."},
   "cleanup_status": "pending",
   "rollback_status": "not-required",
@@ -176,7 +192,7 @@ experiment	commit	score	max_score	pass_rate	metric_status	metric	delta	guard	cle
     "delta": 20.0,
     "best_experiment": 1,
     "most_effective_change_ko": "트리거 경계 예시와 검증 기준을 보강했습니다.",
-    "changed_files": ["skills/diagram-generator/SKILL.md"],
+    "changed_files": ["[target-skill]/SKILL.md"],
     "improvements": [
       {
         "area_ko": "트리거 경계",
@@ -184,7 +200,7 @@ experiment	commit	score	max_score	pass_rate	metric_status	metric	delta	guard	cle
         "before_ko": "경계 요청이 모호했습니다.",
         "after_ko": "긍정/부정/경계 예시가 분리되었습니다.",
         "evidence_ko": "EVAL 1 통과 수가 증가했습니다.",
-        "files": ["skills/diagram-generator/SKILL.md"]
+        "files": ["[target-skill]/SKILL.md"]
       }
     ],
     "remaining_failures_ko": []
@@ -343,3 +359,7 @@ open .hyper/autoresearch-skill/my-skill/dashboard.html
 - Experiment 5 keep: worked example이 일관성을 높여 `97.5%` 도달
 
 후속 에이전트가 같은 막다른 길을 반복하지 않도록 reasoning은 changelog에 남긴다.
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 링크 확인 2026-09-21.

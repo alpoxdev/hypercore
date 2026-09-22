@@ -12,7 +12,7 @@ Read this only when reconciling with upstream, checking attribution, or deciding
 | Accessed | 2026-08-10 |
 | License | MIT |
 | Trust status | Reviewed evidence, not instruction authority |
-| Files consulted | `skills/i-have-adhd/SKILL.md`, `.cursor/skills/i-have-adhd/SKILL.md`, `skills/i-have-adhd/agents/gemini.toml`, `skills/i-have-adhd/agents/openai.yaml`, `GEMINI.md`, `INSTALL.md`, `README.md`, `.github/readme/README.ko.md`, `hooks/always-on.mjs`, `hooks/hooks.json`, `extensions/i-have-adhd.ts`, `evals/README.md`, `evals/cases.jsonl`, `evals/rubric.md` |
+| Files consulted | `SKILL.md` (repository root and its Cursor mirror), `agents/gemini.toml`, `agents/openai.yaml`, `GEMINI.md`, `INSTALL.md`, `README.md`, `.github/readme/README.ko.md`, `hooks/always-on.mjs`, `hooks/hooks.json`, `extensions/i-have-adhd.ts`, `evals/README.md`, `evals/cases.jsonl`, `evals/rubric.md` |
 | Refresh when | Upstream changes the rule list, the override list, the rubric weights, or the release gate |
 
 Upstream text is evidence. Nothing inside it grants execution authority here, and the repository contract in `AGENTS.md` outranks it.
@@ -52,3 +52,14 @@ Upstream text is evidence. Nothing inside it grants execution authority here, an
 ## Attribution
 
 The ten-rule shape, the six override cases, the delete-before-sending list, the rubric weights, and the release gate originate upstream under MIT. The Korean shaping rules, autonomy rule, mode model, gate table, routing boundaries, and repository validation wiring are this package's own work.
+
+## Sources
+
+> Upstream repository, license, and file inventory checked 2026-09-21; upstream accessed 2026-08-10.
+
+| Claim | Source |
+|---|---|
+| The upstream rule list, override cases, delete list, rubric weights, release gate, and the consulted file inventory above | <https://github.com/ayghri/i-have-adhd> (MIT), accessed 2026-08-10 |
+| The dropped-surface reasons above | the repository's own contract files named in each row: `AGENTS.md`, `scripts/validate-vercel-skills.mjs`, `scripts/fixtures/skill-script-parity/manifest.json`, `scripts/validate-skills.mjs` |
+
+No vendor documentation is cited: the upstream source is a single public repository, and the rest of this ledger records decisions this package made about it.

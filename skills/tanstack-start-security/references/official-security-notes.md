@@ -36,3 +36,11 @@ Primary docs:
 ## Usage Note
 
 If the repository uses a different auth provider, keep the TanStack execution-boundary rules and replace the Better Auth-specific guidance with that provider's official requirements.
+
+## Sources
+
+> Links checked 2026-09-22: every documentation URL listed above returned HTTP 200 on that date. No other external source was used.
+
+- TanStack Start and TanStack Router guides (execution model, code execution patterns, environment variables, server functions, middleware, authenticated routes, search-param validation, SSR): the `Primary docs` list above under `TanStack Start`, from https://tanstack.com/
+- Better Auth documentation (TanStack Start integration, installation, cookies, security, rate limit): the `Primary docs` list above under `Better Auth`, from https://www.better-auth.com/
+- The `Usage Note` section is this package's own guidance for non-Better-Auth stacks and cites no external source.

@@ -52,3 +52,7 @@ export const authMiddleware = createMiddleware<AppEnv>(async (c, next) => {
 - context variable이 타입화됨
 - middleware가 숨은 business-logic layer가 되지 않음
 - request-scoped context value가 이를 읽는 handler보다 먼저 설정됨
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Hono 동작은 `references/official/hono-docs.ko.md`에 위임합니다(last verified 2026-08-04). 저장소 로컬 링크 확인 2026-09-21.

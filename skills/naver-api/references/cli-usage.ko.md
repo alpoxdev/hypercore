@@ -71,6 +71,8 @@ stdin 입력에는 `--input=-`처럼 `=`를 포함한 형식을 사용합니다.
 
 요청 제한 시간은 15초입니다. 트렌드 비율은 반환된 비교 그룹 내 최댓값이 100인 상대 정규화 지수이며 검색량이 아닙니다.
 
-## 근거
+## Sources
 
-저장소의 `cli/packages/naver-api/README.md`와 `cli/packages/naver-api/package.json`을 바탕으로 하며 2026-07-29에 검토했습니다. 패키지 버전 또는 명령 표면이 바뀌면 해당 파일을 다시 확인합니다.
+> 저장소 로컬 출처만 사용합니다. `cli/packages/naver-api/README.md`와 `cli/packages/naver-api/package.json`을 이 문서와 대조해 다시 읽었고 확인 2026-09-21.
+
+위 파일을 바탕으로 하며 2026-07-29에 최초 검토했습니다. 패키지 버전 또는 명령 표면이 바뀌면 해당 파일을 다시 확인합니다.

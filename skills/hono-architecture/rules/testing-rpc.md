@@ -74,3 +74,7 @@ Use `app.request()` for request/response behavior tests, `testClient()` for type
 - Detached registration did not silently erase route typing
 - Request-level tests cover changed behavior with `app.request()` or the runtime adapter's equivalent
 - Typed client or OpenAPI contract checks are updated when public route shapes change
+
+## Sources
+
+> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.

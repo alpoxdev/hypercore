@@ -75,6 +75,12 @@
 - [ ] Every claim that names Naver behavior traces to an `official` row in `references/naver-algorithm-timeline.md`; observed and folklore items are labeled as such.
 - [ ] Local links resolve; code fences are balanced.
 - [ ] `assets/evals/naver-blog-maker-cases.jsonl` covers positive, negative, boundary, regression, and adversarial cases and matches the current trigger and workflow.
-- [ ] Repository maintenance only (not a runtime dependency): `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only naver-blog-maker --json` passes.
+- [ ] Repository maintenance only (not a runtime dependency): the corpus validator scoped to this package (`validate-skills-corpus.mjs --root skills --only naver-blog-maker --json`) passes.
 - [ ] `bun run --cwd scripts verify` passes.
 - [ ] When this change adds a skill, or changes a skill's name or catalog exposure, `README.md`'s skill count and catalog row are updated; otherwise confirm `README.md` is unchanged.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own draft and package checklists. Every Naver-behavior item it carries traces to an `official` row in [`../references/naver-algorithm-timeline.md`](../references/naver-algorithm-timeline.md); no external source of its own is cited.

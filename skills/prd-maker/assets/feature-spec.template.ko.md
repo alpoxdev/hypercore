@@ -7,7 +7,7 @@
 - 기능:
 - 사용자 가치:
 - 관련 PRD 요구사항:
-- 후속 링크: [`user-flow.md`](./user-flow.md), [`wireframe.md`](./wireframe.md)
+- 후속 링크: `user-flow.md`, `wireframe.md`
 
 ## 2. 기능 목록
 

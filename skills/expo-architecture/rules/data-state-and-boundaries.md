@@ -25,3 +25,7 @@ If offline persistence is required, define source of truth, conflict policy, que
 ## Configuration
 
 Read public environment variables through one validated config module. `EXPO_PUBLIC_*` is bundled client-visible data. Server secrets and signing credentials must remain outside the app bundle. Fail early for required config in the appropriate build/runtime path without leaking values.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file; the Expo-specific statements restate this package's own official snapshot, references/official/expo-react-native-2026-08-03.md.

@@ -23,3 +23,9 @@ hidden chain-of-thought, private reasoning transcripts, internal scratchpad 공�
 ## Prompt Shape
 
 prompt pack에는 identity, variables, context packet, examples, constraints, output schema, eval cases, version note가 있어야 한다. downstream tools가 의존하면 정확한 schema keys를 사용한다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 규칙 문서는 이 패키지 자체의 절차 문서이며 외부 출처를 인용하지 않습니다.

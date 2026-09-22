@@ -115,3 +115,13 @@ Examples:
 - If the command is unavailable but issue creation succeeded, create a local branch with `git switch -c "$branch"` from the chosen base and report that GitHub's linked-branch state was not confirmed.
 - If checkout fails because of local changes, stop and report the exact blocking files instead of stashing or discarding them.
 - If authentication or permission fails, stop before creating local state that implies a GitHub-linked branch exists.
+
+## Sources
+
+> Links checked 2026-09-21.
+
+| Claim | Source |
+|---|---|
+| `gh issue create` title/body/template flags and `gh issue develop --checkout --name` linked-branch behavior this workflow builds on | <https://cli.github.com/manual/gh_issue_create>, <https://cli.github.com/manual/gh_issue_develop> |
+| `git switch`/`git checkout` branch movement and working-tree preservation used by the preconditions and fallbacks | <https://git-scm.com/docs/git-switch>, <https://git-scm.com/docs/git-checkout> |
+| Issue-to-branch linkage model and `type/<issue-number>-<slug>` naming defaults | [`../references/github-issue-branch-conventions.md`](../references/github-issue-branch-conventions.md) |

@@ -81,3 +81,7 @@ export const useInvoices = (): UseInvoicesReturn => {
 - [ ] Server Action calls는 여전히 server-side에서 validate/authorize됨. hook-level checks는 UX aid일 뿐임.
 - [ ] Hook은 internal records가 아니라 client-safe DTO/view state를 반환함.
 - [ ] segment-local hooks는 `_hooks/`에 있고 cross-route hooks는 shared domain/component folder로 이동함.
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Next.js 동작은 `references/official/nextjs-docs.md`(last verified 2026-05-24)와 `references/official/current-docs-2026-06-02.md`(스냅샷 날짜 2026-06-02)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.

@@ -150,3 +150,7 @@ Do not auto-apply without explicit justification:
 - API DTOs, validation schemas, OpenAPI responses, and typed RPC contracts still agree.
 - Persistence behavior is covered by the smallest useful repository, service, or request-level test.
 
+
+## Sources
+
+> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md`, and Drizzle behavior to `references/official/drizzle-docs.md` (both last verified 2026-08-04). Repository-local links checked 2026-09-21.

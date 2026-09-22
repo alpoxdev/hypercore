@@ -52,3 +52,9 @@ ChatGPT 미리보기가 스크립트를 막으면 완성된 HTML 파일을 내�
 - 네이버 붙여넣기는 사용자가 확인합니다. 템플릿 조립에 로그인·업로드·발행은 포함되지 않습니다.
 
 유지보수: rich 복사 처리 계약(선택 범위, 복사 API, 정직한 상태 문구, 소스 버튼 분리)은 [`../assets/evals/naver-blog-maker-cases.jsonl`](../assets/evals/naver-blog-maker-cases.jsonl)의 회귀 케이스에 있다. 셸을 바꾼 뒤 에이전트가 이 케이스를 읽어 셸을 정적으로 재판정하고, 브라우저 클립보드 실측이 살아있는 검증으로 남는다. 이 검증은 실행형 테스트 파일이 필요 없으므로 패키지가 파일 실행 불가 런타임(ChatGPT 웹)과 코딩 에이전트 모두에서 같은 방식으로 유지된다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+붙여넣기 동작 주장은 이 저장소가 직접 측정한 에디터 세션 결과이며 [`../rules/post-workflow.ko.md`](../rules/post-workflow.ko.md) §3에 기록했습니다. 복사 처리 계약은 셸 자체([`../assets/rich-post.html`](../assets/rich-post.html))로 검증하고 회귀 케이스는 [`../assets/evals/naver-blog-maker-cases.jsonl`](../assets/evals/naver-blog-maker-cases.jsonl)에 있습니다.

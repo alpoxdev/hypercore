@@ -135,3 +135,13 @@ Block implementation, review approval, and release of the affected change until 
 7. **Evidence gate:** the change includes allowed and denied label/resource cases, malformed input, authorization failure, listener cleanup where applicable, and safe-error behavior. Security-sensitive changes without focused negative evidence are blocked.
 
 A blocker is resolved by narrowing the design or obtaining explicit authority and documented review evidence—not by disabling checks, adding a catch-all permission, or declaring the WebView trusted.
+
+## Sources
+
+> Links checked 2026-07-30.
+
+| Claim | Source |
+|---|---|
+| Capabilities, permissions, scopes, runtime authority, the application manifest, CSP, the asset protocol, and updater security behavior | [tauri-v2-2026-07-30.md](../references/official/tauri-v2-2026-07-30.md); <https://v2.tauri.app/security/capabilities/>; <https://v2.tauri.app/security/permissions/>; <https://v2.tauri.app/security/scope/>; <https://v2.tauri.app/security/runtime-authority/>; <https://v2.tauri.app/security/csp/>; <https://v2.tauri.app/security/asset-protocol/>; <https://v2.tauri.app/plugin/updater/> |
+| The v1 -> v2 access-control change behind the "do not reintroduce v1 patterns" list | [tauri-v2-2026-07-30.md](../references/official/tauri-v2-2026-07-30.md); <https://v2.tauri.app/start/migrate/from-tauri-1/> |
+| Command-side validation, authorization, least privilege, secret handling, and allowed/denied evidence | This file's safety policy and this repository's convention; no external source |

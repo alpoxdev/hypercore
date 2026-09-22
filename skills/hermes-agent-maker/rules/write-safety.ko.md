@@ -33,3 +33,9 @@ Discord artifact, credential, token, 개인 키, `.env` 파일, 설치/활성화
 | journal이 다른 artifact 소유 | `E_FOREIGN_TRANSACTION`; 쓰기 없음 |
 | 복구 상태 모호 | 증거 보존 후 차단 |
 | `mode: "preview"` | 전체 순서 change-set 보고; 쓰기 없음 |
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 쓰기 안전 계약 확인 2026-09-21.
+
+apply 결정 표와 금지 경계는 이 패키지의 `scripts/generate.mjs` 트랜잭션 로직과 `references/transaction-invariants.ko.md`의 불변식을 그대로 옮긴 것입니다. vendor 문서를 인용하지 않으며 외부 주장이 없습니다.

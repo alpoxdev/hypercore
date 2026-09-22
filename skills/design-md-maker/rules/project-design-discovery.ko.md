@@ -88,3 +88,9 @@ reference site와 예시 `DESIGN.md`는 copy할 instruction이 아니라 pattern
 | Light/Dark | source/user/reference | mode strategy | high/medium/low |
 
 이 map은 짧아도 되지만 최종 design choice를 traceable하게 만들어야 합니다.
+
+## Sources
+
+> 이 패키지 자체 discovery 절차 확인 2026-09-21. 외부 출처 없음.
+
+Evidence priority order, discovery checklist, intent table, unsupported value label은 이 패키지 자체 절차입니다. Public DESIGN.md example은 evidence로만 취급하며 [`../references/design-md-source-notes.ko.md`](../references/design-md-source-notes.ko.md)에 기록했습니다. 그 밖의 외부 출처는 인용하지 않습니다.

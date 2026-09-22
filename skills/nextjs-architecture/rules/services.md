@@ -79,3 +79,7 @@ For touched service code:
 - [ ] Client-visible outputs are minimal DTOs, not raw DB rows or broad provider objects.
 - [ ] Provider adapters live under `src/integrations/<provider>/` or an equivalent server-only provider module.
 - [ ] Folder placement is reported as Hypercore local convention, not official Next.js requirement.
+
+## Sources
+
+> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.

@@ -33,8 +33,8 @@ Use a different language only when the user explicitly requests it, an existing 
 
 ## Out-of-scope
 
-- A concrete failed deployment log, platform build failure, CI-only environment mismatch, or production deploy issue. Route to `deploy-fix`.
-- A runtime bug with reproduction steps or wrong application behavior. Route to `bug-fix`.
+- A concrete failed deployment log, platform build failure, CI-only environment mismatch, or production deploy issue. Hand off to a deployment-remediation pass whose output is a corrected platform or build configuration traced to the log.
+- A runtime bug with reproduction steps or wrong application behavior. Hand off to a defect-repair pass whose output is a minimal code change plus the reproduction that proves it.
 - New feature work, broad refactors, or speculative cleanup not tied to a reproduced pre-deploy blocker. Route to `execute` or the relevant implementation skill.
 - Unsupported repositories with no root marker for `package.json`, `Cargo.toml`, `pyproject.toml`, `requirements.txt`, `setup.py`, `Pipfile`, or `poetry.lock`.
 
@@ -57,6 +57,7 @@ Use a different language only when the user explicitly requests it, an existing 
 | Authority | User and project instructions outrank this skill; local toolchain output, stack markers, and validation scripts are evidence. |
 | Evidence | Use stack detection, the initial full deploy-check output, failing command logs, relevant configs, and targeted recheck output before editing. |
 | Tools | Use the repository-local scripts, local reads/edits, and bounded subagents only for independent lanes; no deploy or production side effects are implied. |
+| Loop | No loop: one bounded validate -> triage -> fix -> re-verify pass per request. Re-enter only for a newly reproduced blocker, and stop at the readiness proof, an unsupported stack, or a handoff. |
 | Output | Korean readiness report with scope, detected stacks, mode, blockers, fixes, validation commands, skipped checks, and risks. |
 | Verification | Run full `skills/pre-deploy/scripts/deploy-check.mjs` first and again before any readiness claim, with targeted checks after fixes. |
 | Stop condition | Stop when deploy readiness is proven, validate-only blockers are reported, unsupported stack is reported, or a handoff/permission blocker is reached. |
@@ -133,7 +134,7 @@ When uncertain, classify upward. It is better to preserve evidence and ownership
 - **Fix-now**: for simple/medium reproduced blockers, create TodoWrite items, fix narrowly, re-run targeted checks, then re-run full deploy check.
 - **Parallel remediation**: after failure grouping, use bounded subagents/background agents only for independent diagnosis or disjoint edit lanes. The leader owns integration and final verification. Load `rules/parallel-remediation.md` first.
 - **Tracked remediation**: for complex cases, load `rules/tracked-remediation.md`, then create or resume `.hyper/pre-deploy/flow.json` with phases `detect`, `baseline`, `triage`, `fix`, `verify`, `report`.
-- **Handoff**: route platform deployment failures to `deploy-fix`, runtime application bugs to `bug-fix`, and unrelated implementation requests to `execute`.
+- **Handoff**: route platform deployment failures to a log-driven deployment-remediation pass, runtime application bugs to a reproduction-backed defect repair, and unrelated implementation requests to `execute`.
 
 </execution_modes>
 

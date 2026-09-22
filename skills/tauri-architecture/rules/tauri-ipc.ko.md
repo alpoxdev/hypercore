@@ -169,3 +169,13 @@ export function settingsQueryOptions() {
 7. **보안 gate:** adapter를 노출하기 전에 [security.md](security.md)가 요구하는 custom command capability/permission/scope 검토를 완료합니다.
 
 실패한 gate를 type assertion, 넓은 catch, frontend-only check 또는 event 기반 우회로 통과시키지 않습니다.
+
+## Sources
+
+> 링크 확인 2026-07-30.
+
+| 주장 | 출처 |
+|---|---|
+| Frontend-to-Rust IPC 표면의 command, event, channel, managed `State` | [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md); <https://v2.tauri.app/develop/calling-rust/>; <https://v2.tauri.app/develop/calling-frontend/>; <https://v2.tauri.app/develop/state-management/> |
+| Query가 넘긴 `AbortSignal`은 Tauri가 이미 수락한 Rust command를 취소하지 않는다 | [tanstack-vite-react-2026-07-30.ko.md](../references/official/tanstack-vite-react-2026-07-30.ko.md); <https://tanstack.com/query/latest/docs/framework/react/guides/query-cancellation>; [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md) |
+| DTO/error 형태, listener cleanup, managed state 동시성 요구 | 이 파일의 규약과 안전 정책; 외부 출처 없음 |

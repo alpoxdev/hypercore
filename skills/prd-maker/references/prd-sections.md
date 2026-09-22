@@ -2,7 +2,24 @@
 
 Use this reference when drafting or updating `prd.md`.
 
-Evidence basis: the section set below is grounded in the local research report [`../../../.hyper/research/002-prd-package-layered-artifacts.md`](../../../.hyper/research/002-prd-package-layered-artifacts.md), which reviewed 12 PRD sources and compared them with feature-spec, user-flow, and wireframe sources.
+Evidence basis: the section set below is grounded in a repository-local research report, `../../../.hyper/research/002-prd-package-layered-artifacts.md`, which reviewed 12 PRD sources and compared them with feature-spec, user-flow, and wireframe sources. That report is a local artifact outside this skill package and is not shipped with it, so the section set and the source notes below are written to stand alone without it.
+
+## Contents
+
+- Stable section set
+- Section prompts
+- Overview and status
+- Problem and objective
+- Users and use cases
+- Scope and non-goals
+- Requirements
+- Metrics and success criteria
+- Assumptions, constraints, risks, dependencies
+- Open questions
+- Related downstream artifacts
+- Optional: Alternatives or options considered
+- Optional: Release criteria
+- Change history
 
 ## Stable section set
 
@@ -109,3 +126,20 @@ Evidence basis:
 - What changed?
 - When did it change?
 - Why did it change?
+
+## Sources
+
+> External links checked 2026-09-21.
+
+The section set above is repository-authored; the PRD guides below are the external sources the inline notes cite.
+
+| Inline claim | Source |
+|---|---|
+| High-level context, assumptions, user stories, questions, and explicit out-of-scope boundaries | [Atlassian PRD guide](https://www.atlassian.com/agile/requirements) |
+| Objective, success metrics, assumptions, user stories, and open questions in the product requirements template | [Atlassian product requirements template](https://www.atlassian.com/software/confluence/templates/product-requirements) |
+| PRDs framed around release-complete capabilities, use cases, constraints, and dependencies | [ProductPlan PRD glossary](https://www.productplan.com/glossary/product-requirements-document) |
+| Enough context to guide good solutions without over-prescribing implementation | [Aha! PRD template guide](https://www.aha.io/roadmapping/guide/templates/create/prd) |
+| Outcomes, success measures, out-of-scope decisions, constraints, dependencies, risks, and stakeholders | [Productboard PRD glossary](https://www.productboard.com/glossary/product-requirements-document/), [Miro PRD template](https://miro.com/templates/prd/) |
+| Goals, success metrics, out-of-scope items, open questions, and product usage measurement | [Pendo PRD template](https://www.pendo.io/de-de/product-led/artifacts/product-requirements-document-prd-template/) |
+
+Every link above resolved on 2026-09-21. The inline summaries paraphrase each guide's emphasis as recorded in the original survey; they were not re-read line by line on that date, and the guides may have changed since.

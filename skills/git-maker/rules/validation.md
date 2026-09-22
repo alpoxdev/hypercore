@@ -39,3 +39,9 @@ Read as:
 3. a commit reviewer: generated Korean subjects look like concise change/result summaries, not instructions.
 4. a maintainer: future speed rules belong in `rules/speed-and-automation.md`; durable commit policy belongs in `rules/commit-and-push-policy.md`; subagent lane rules belong in `rules/agent-parallelism.md`.
 5. a branch operator: `/git-maker && dev`, `/git-maker CURRENT && dev && deploy/staging`, and `/git-maker all && dev` have unambiguous scope and propagation behavior.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-22.
+
+This rule set is authored in this package from repository practice. It makes no external claim, so no external source is cited.

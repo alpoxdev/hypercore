@@ -46,3 +46,7 @@ For a series, write shared invariants into every brief: the recurring visual lan
 The compiled text must remain exact and ready to use as-is. Keep delivery reports, capability observations, paths, error explanations, and runtime parameters outside the prompt file. Do not add hidden provider flags, legacy shorthand, profile labels, fixed tiering, aspect-ratio tails, or static size assumptions. Pass supported structured fields separately only when the active runtime exposes them; their absence does not alter the rendered brief.
 
 Before delivery, ensure every brief is complete, maps to one image, preserves exact requested text, identifies reference and edit boundaries, contains concrete visual constraints, and contains no report prose or unresolved choice.
+
+## Sources
+
+> No external sources were used. This file states rules that belong to the image-maker package itself. Content checked 2026-09-21.

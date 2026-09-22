@@ -85,3 +85,7 @@ Refresh this snapshot when:
 - This skill starts relying on a new Start guide page.
 - Start project structure, `srcDirectory`, `routesDirectory`, or route tree generation guidance changes.
 - Local package versions move materially beyond the versions above.
+
+## Sources
+
+> Sources checked 2026-04-30, the date this snapshot records as `last_verified_at`; every claim above names the TanStack Start guide or API page it came from. No page was re-fetched in this pass and no source outside the list above is claimed.

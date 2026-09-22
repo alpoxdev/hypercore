@@ -38,7 +38,7 @@ Use a different language only when the user explicitly requests it, an existing 
 
 Use this skill for architecture enforcement, implementation guidance, or review in existing Vite + TanStack Router projects. This includes route structure, route-local folders, loaders, `validateSearch`, service/query layers, custom hooks, Vite plugin setup, generated route tree handling, env/alias safety, and shared nested folder organization.
 
-Do not use this skill when the project uses `@tanstack/react-start` / `app.config.ts`, when the project is generic Vite without TanStack Router, or when the task is a docs-only summary with no project audit or implementation guidance. Route TanStack Start work to `tanstack-start-architecture`.
+Do not use this skill when the project uses `@tanstack/react-start` / `app.config.ts`, when the project is generic Vite without TanStack Router, or when the task is a docs-only summary with no project audit or implementation guidance. For a Start project, return a boundary note that names the Start-only surfaces (`createServerFn`, `useServerFn`, Start middleware APIs, `app.config.ts`) and stops, instead of applying Vite route rules.
 
 When official Vite/TanStack Router guidance and Hypercore conventions differ, enforce official and safety rules first, then apply Hypercore conventions only to touched architecture surfaces.
 
@@ -54,6 +54,7 @@ When official Vite/TanStack Router guidance and Hypercore conventions differ, en
 | Authority | User/project instructions outrank this skill. Official Vite and TanStack Router docs outrank Hypercore conventions for API facts. Safety policy blocks risky runtime/env/import-boundary changes. |
 | Evidence | Use project indicators, local package/config/router files, touched source paths, topic rules, official references, package checks, and validation command output. |
 | Tools | Use local search/read/edit/validation commands; use current official docs when API drift matters; gate broad route migrations, credential access, SSR adoption, and production side effects. |
+| Loop | No optimization loop. After an architecture pass, allow at most two verify-repair iterations against the touched-surface checks in `rules/validation.md`; keep a change only when it stays inside the touched scope and passes those checks, and stop when the Step 5 checklist passes or a blocker is reported. |
 | Output | Korean architecture decision or review with rule classifications, changed files if any, validation evidence, remaining risks, and official-doc ambiguity notes. |
 | Verification | Run `rules/validation.md` checks relevant to touched surfaces and `scripts/validate-vite-architecture-skill.mjs` when this skill folder changes. |
 | Stop condition | Stop after project mode is known, applicable safety gates pass, Hypercore conventions are applied or explicitly deferred, validation evidence is recorded, and unresolved API drift is dated and sourced. |
@@ -91,7 +92,7 @@ Boundary examples:
 - "Make a tiny copy-only text change in a Vite route file."
   Direct editing can be enough if the change does not cross an architecture boundary, but touched files still need a quick compliance check.
 - "The repo actually uses @tanstack/react-start."
-  Route away to `tanstack-start-architecture` instead of forcing Vite rules onto a Start project.
+  Return a boundary note that names the Start-only surfaces to handle on a Start surface instead of forcing Vite rules onto a Start project.
 
 </activation_examples>
 
@@ -100,7 +101,7 @@ Boundary examples:
 | Situation | Mode |
 |---|---|
 | Existing Vite + TanStack Router project work touches routes, loaders, services, hooks, router setup, env, aliases, or shared folder layout | enforce |
-| `@tanstack/react-start` or `app.config.ts` is present | route away to `tanstack-start-architecture` |
+| `@tanstack/react-start` or `app.config.ts` is present | do not apply; return a Start-boundary note |
 | Generic Vite project without TanStack Router indicators | do not apply |
 | Copy-only text change in a route file | direct edit with quick compliance check |
 
@@ -131,7 +132,7 @@ ls src/routes/__root.tsx 2>/dev/null
 
 If NONE found: **STOP. This skill does not apply.** Inform the user and return to the normal implementation or review path.
 
-If `@tanstack/react-start` or `app.config.ts` is present: **STOP.** Route to `tanstack-start-architecture`.
+If `@tanstack/react-start` or `app.config.ts` is present: **STOP.** Return a Start-boundary note that names the Start-only surfaces instead of enforcing Vite route rules.
 
 If the repo matches Vite + TanStack Router: proceed with architecture enforcement.
 

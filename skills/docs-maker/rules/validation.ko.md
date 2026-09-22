@@ -94,3 +94,13 @@ English/Korean mirror는 파일 존재만이 아니라 동등한 contract field,
 - loop가 unbounded이거나 self-grading만 하거나 baseline을 바꾸거나 failed-guard result를 유지함
 - harness docs가 범위 내 scenario/oracle/runner/judge/trace/gate coverage를 빠뜨림
 - English/Korean mirror가 호환되지 않는 behavioral contract를 드러냄
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 절차 문서이며 외부 출처를 인용하지 않습니다.
+
+| 주장 | 출처 |
+|---|---|
+| 이 파일이 지목하는 회귀 fixture와 EN/KO 행동 비교 | `../assets/evals/docs-maker.jsonl`, `../assets/evals/docs-maker.ko.jsonl` (이 패키지) |

@@ -47,3 +47,14 @@ Generated artifacts must not contain credentials, tokens, private keys, `.env` v
 4. Overwrite an existing target only on explicit user request, with `overwrite: true`. For a directory kind, this additionally requires a validated ownership marker. For a fixed single-file kind (`soul`, `agents`, `user-draft`, `memory-draft`), the target only has to be a regular, non-symlink file — a hand-authored file is replaceable.
 5. For portable output, run the offline v1.0.0 contract before Hermes subset policy; never fetch a schema or contact a server.
 6. Read the written tree back and confirm it matches the apply receipt.
+
+## Sources
+
+> Hermes documentation and repository-local evidence checked 2026-09-21.
+
+| Claim | Source |
+| --- | --- |
+| Context files, personality, memory, plugin, and skill-authoring behavior | [Hermes context files](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files), [personality](https://hermes-agent.nousresearch.com/docs/user-guide/features/personality), [memory](https://hermes-agent.nousresearch.com/docs/user-guide/features/memory), [plugins](https://hermes-agent.nousresearch.com/docs/user-guide/features/plugins), [plugin authoring](https://hermes-agent.nousresearch.com/docs/developer-guide/plugins), [creating skills](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills) |
+| Marker format, generator behavior, and the portable v1.0.0 boundary | this package's `scripts/` and `assets/`, plus local `instructions/cli/hermes-agent/` |
+
+These are the same sources recorded at the top of this file; no source was added for this section.

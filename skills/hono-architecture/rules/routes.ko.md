@@ -120,3 +120,7 @@ export const routesApp = createApp()
 - 새 route가 들어갈 위치가 명확할 만큼 feature boundary가 분명함
 - Persistence 작업이 사소하지 않다면 service/repository boundary를 거침
 - Route structure가 tests, RPC, OpenAPI generation을 위한 typed app inference를 보존함
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Hono 동작은 `references/official/hono-docs.ko.md`에 위임합니다(last verified 2026-08-04). 저장소 로컬 링크 확인 2026-09-21.

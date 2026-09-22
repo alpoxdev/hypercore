@@ -7,6 +7,17 @@
 
 이 파일은 버전에 민감한 API와 런타임 사실에만 사용합니다. 프로젝트 및 사용자 지시가 항상 우선합니다. Tauri 전용 신뢰 및 패키징 경계는 `tauri-v2-2026-07-30.ko.md`에 기록합니다.
 
+## 목차
+
+- 패키지 스냅샷
+- TanStack Router 사실
+- TanStack Query 사실
+- Vite 사실
+- React 사실
+- 프로젝트 구조 근거
+- 통합 주의사항
+- Sources
+
 ## 패키지 스냅샷
 
 다음 npm `latest` metadata는 2026-07-30에 확인했습니다. 이는 registry 상태의 근거이며 dependency upgrade 지시가 아닙니다.
@@ -118,3 +129,16 @@
 - Tauri는 이 정확한 Vite SPA stack을 공식적으로 보증하지 않습니다. Production build와 packaged-WebView smoke test를 통과해야 하는 통합으로 취급합니다.
 - TanStack, Vite, React 문서로 Tauri security behavior를 추론하지 않습니다. Native trust boundary는 `tauri-v2-2026-07-30.ko.md`를 사용합니다.
 - Official fact를 Hypercore convention으로 바꾸거나 그 반대로 표현하지 않습니다. 공식 문서가 규정하지 않는 directory layout 및 typed adapter 위치는 repository convention입니다.
+
+## Sources
+
+> 링크 확인 2026-07-30.
+
+| 주장 | 출처 |
+|---|---|
+| Package snapshot 버전 | 위 Package snapshot 표의 registry URL |
+| Router와 Query 사실 | 위 섹션의 TanStack 출처 목록 (`tanstack.com/router/...`, `tanstack.com/query/...`) |
+| Vite 사실 | 위 섹션의 Vite 출처 목록 (`vite.dev/...`) |
+| React 사실 | 위 섹션의 React 출처 목록 (`react.dev/...`) |
+| 프로젝트 구조 비교 근거 | <https://v2.tauri.app/start/project-structure/>; <https://legacy.reactjs.org/docs/faq-structure.html>; <https://redux.js.org/faq/code-structure/> |
+| 도출한 `routes/`/`pages/`/`modules/`/`components/` 관례 | 이 저장소의 관례; 외부 출처 없음 |

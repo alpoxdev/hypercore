@@ -101,3 +101,9 @@ Rules:
 ```
 
 The workflow's §3 skeleton is filled from this pack. If the pack has zero primary or dated sources for a regulated topic, stop and tell the user which sources are required before a draft can be responsible.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own research procedure and source-role taxonomy. The live-SERP observation it describes is recorded in [`../references/evidence-digest.md`](../references/evidence-digest.md); it cites no external URL of its own.

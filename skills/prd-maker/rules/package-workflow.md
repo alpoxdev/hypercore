@@ -92,3 +92,9 @@ After drafting or updating, check cross-document consistency:
 - `preview.html` reflects the latest package files and rendered diagram
 - every research-backed non-obvious claim has a source entry
 - every unresolved ambiguity is visible in open questions or assumptions
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own create/update workflow and layered handoff contract. It cites no external URL and asserts no external fact, so no external source is recorded.

@@ -1,6 +1,6 @@
 ---
 name: git-worktree
-description: '격리된 브랜치 폴더와 병렬 에이전트 세션을 위해 Git worktree를 생성, 진입, 목록화, 삭제, 정리, 복구할 때 사용하며, 이미 해당 linked worktree 안에 있는 상태에서 "워크트리 삭제"처럼 요청한 경우에도 안전하게 처리합니다. `git-worktree <ARGUMENT>`처럼 인자가 있으면 되묻지 않고 바로 생성 대상으로 사용합니다. `.hyper/git-worktree/<folder_name>` 프로젝트 규칙으로 워크트리를 만들거나 관리해 달라는 요청에 맞추며, 생성 작업의 목적과 인자가 모두 불명확할 때만 한국어로 어떤 작업을 할지 물어 폴더명을 정한 뒤 새 worktree로 후속 작업 컨텍스트를 이동합니다.'
+description: '격리된 브랜치 폴더와 병렬 에이전트 세션을 위해 Git worktree를 생성, 진입, 목록화, 삭제, 정리, 복구할 때 사용하며, 이미 해당 linked worktree 안에 있는 상태에서 "워크트리 삭제"처럼 요청한 경우에도 안전하게 처리합니다. `git-worktree ARGUMENT`처럼 인자가 있으면 되묻지 않고 바로 생성 대상으로 사용합니다. `.hyper/git-worktree/` 프로젝트 규칙으로 워크트리를 만들거나 관리해 달라는 요청에 맞추며, 생성 작업의 목적과 인자가 모두 불명확할 때만 한국어로 어떤 작업을 할지 물어 폴더명을 정한 뒤 새 worktree로 후속 작업 컨텍스트를 이동합니다.'
 compatibility: '`git worktree`를 지원하는 Git이 필요합니다. 에디터, tmux, 에이전트 CLI는 이미 사용 가능한 경우에만 선택적으로 사용합니다.'
 ---
 
@@ -40,6 +40,7 @@ compatibility: '`git worktree`를 지원하는 Git이 필요합니다. 에디터
 | Authority | 사용자와 프로젝트 지시가 이 스킬보다 우선합니다. Git worktree registry 출력, branch state, filesystem check는 실행 근거입니다. |
 | Evidence | mutation 전에 `git rev-parse`, `git worktree list --porcelain`, target-path check, branch ref, per-worktree status를 사용합니다. |
 | Tools | native Git과 shell을 사용합니다. editor, tmux, agent launch는 사용 가능하고 작업상 요청된 경우에만 선택적으로 실행합니다. |
+| Loop | 루프 없음. 요청된 lifecycle 작업마다 한 번씩 repository 탐지, 대상 해석, 안전 점검, mutation, 검증, 보고를 수행합니다. 추가 worktree 작업이 요청된 경우에만 반복하며, dirty/destructive/ambiguous 대상은 mutation 전에 멈춥니다. |
 | Output | worktree path, branch/commit, clean/dirty state, active-context movement, remaining setup/cleanup에 대한 한국어 report입니다. |
 | Verification | repository root, worktree registry, target path safety, post-create working directory/status, pre-remove status 또는 prune dry run을 확인합니다. |
 | Stop condition | 요청된 lifecycle operation이 검증되었거나 dirty/destructive/ambiguous target이 mutation 전에 보고되었을 때 멈춥니다. |
@@ -86,8 +87,7 @@ compatibility: '`git worktree`를 지원하는 Git이 필요합니다. 에디터
 
 경계 요청:
 
-- "위험한 리팩터링을 격리 작업공간에서 하게 세팅해줘."
-  브랜치 수준 격리로 충분하면 이 스킬을 사용하고, 런타임·DB·포트 격리가 필요하면 더 강한 격리 워크플로로 넘깁니다.
+- "위험한 리팩터링을 격리 작업공간에서 하게 세팅해줘." 브랜치 수준 격리로 충분하면 이 스킬을 사용하고, 런타임·DB·포트 격리가 필요하면 더 강한 격리 워크플로로 넘깁니다.
 
 </activation_examples>
 
@@ -137,6 +137,18 @@ compatibility: '`git worktree`를 지원하는 Git이 필요합니다. 에디터
 - worktree 하나당 작업 하나, 브랜치 하나, 터미널/에디터/에이전트 세션 하나를 선호합니다.
 
 </defaults>
+
+<supported_operations>
+
+- 새 브랜치, 기존 local branch, remote branch, PR ref, 이슈 작업, commit에서 worktree를 생성합니다.
+- shell, editor, tmux session, agent CLI를 사용할 수 있을 때 worktree에 진입/오픈합니다.
+- branch, path, dirty/clean 상태, lock/prunable annotation, 다음 action과 함께 worktree를 목록화합니다.
+- 커밋되었거나 의도적으로 버린 변경을 확인한 뒤 완료된 worktree를 삭제합니다.
+- 현재 linked worktree 안에서 요청된 경우에도 현재 top-level path를 먼저 해석하고 안전한 다른 worktree에서 `git worktree remove`를 실행해 삭제합니다.
+- stale metadata는 dry run을 먼저 실행한 뒤 prune합니다.
+- 옮겨진 worktree를 repair하고, 실수로 prune되면 위험한 long-lived worktree는 lock합니다.
+
+</supported_operations>
 
 <workflow>
 

@@ -20,3 +20,9 @@
 ## Optimize
 
 Record a baseline case, diagnose failures, patch the smallest instruction surface, rerun the same cases, and keep only changes that improve the target behavior without breaking safety, source, or schema constraints.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file is this package's own procedure text; it cites no external source.

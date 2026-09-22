@@ -60,6 +60,7 @@ generic React architecture, Remix/TanStack Start project, docs-only summary, arc
 | Authority | user/project instructions가 이 skill보다 우선. Current official Next.js docs가 framework behavior에서 local convention보다 우선. Safety policy는 risky runtime/auth/secret/import-boundary change를 차단. |
 | Evidence | local package/config/router indicators, touched source paths, topic rules, official references, validation scripts, project check output. |
 | Tools | local search/read/edit/validation commands 사용; API drift가 중요하면 current official docs 사용; destructive migrations, credentials, production side effects, broad codemods는 gate. |
+| Loop | 없음. 요청당 한 번의 enforcement pass만 실행하고, 사용자가 추가 pass를 요청할 때만 다시 진입합니다. |
 | Output | rule classification, changed files, validation evidence, remaining risks, dated official-doc ambiguity notes를 포함한 Korean architecture decision/review. |
 | Verification | touched surface 관련 `rules/validation.ko.md` checks와 이 skill folder 변경 시 `scripts/validate-nextjs-architecture-skill.mjs` 실행. |
 | Stop condition | project mode 확인, applicable safety gates 통과, local conventions 적용 또는 defer, validation evidence 기록, unresolved API drift가 dated/source된 상태. |

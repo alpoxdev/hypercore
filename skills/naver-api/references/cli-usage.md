@@ -71,6 +71,8 @@ Use `--json` for deterministic parsing. Success writes one stdout document shape
 
 Requests have a 15-second deadline. Trend ratios are normalized relative indices whose maximum is 100 within the returned comparison group; they are not search volume.
 
-## Evidence
+## Sources
 
-Derived from `cli/packages/naver-api/README.md` and `cli/packages/naver-api/package.json` in this repository, reviewed 2026-07-29. Recheck those files whenever the package version or command surface changes.
+> Repository-local sources only: `cli/packages/naver-api/README.md` and `cli/packages/naver-api/package.json`. Both were re-read against this document and checked 2026-09-21.
+
+Derived from those files and first reviewed 2026-07-29. Recheck them whenever the package version or command surface changes.

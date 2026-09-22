@@ -46,3 +46,9 @@ remote CI retry, deployment, publish, rollback, production check, credential acc
 ## 5. Bounded recovery
 
 실패 check가 새 근거를 제공하고 다음 접근이 실질적으로 다를 때만 재시도한다. 서로 다른 접근 3개가 실패하면 destructive version-control command 없이 task-owned 진행 중 변경만 마지막 known-good 상태로 되돌리고, attempt evidence를 보존하며, tracked work를 `blocked`로 설정하고, 각 시도를 보고한 뒤 정확한 질문 하나를 한다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 규칙은 이 패키지의 저장소 작업 경험에서 작성했다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

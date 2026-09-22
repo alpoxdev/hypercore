@@ -36,3 +36,11 @@
 ## 사용 메모
 
 저장소가 다른 auth provider를 쓰면, TanStack 실행 경계 규칙은 유지하고 Better Auth 전용 가이드는 해당 provider의 공식 요구사항으로 대체합니다.
+
+## Sources
+
+> 링크 확인 2026-09-22: 위에 적힌 문서 URL 전부가 그 날짜에 HTTP 200을 반환했습니다. 그 밖의 외부 출처는 사용하지 않았습니다.
+
+- TanStack Start·TanStack Router 가이드(실행 모델, code execution pattern, environment variable, server function, middleware, authenticated route, search param 검증, SSR): 위 `TanStack Start` 절의 `주요 문서` 목록이며 출처는 https://tanstack.com/ 입니다.
+- Better Auth 문서(TanStack Start 통합, 설치, cookie, security, rate limit): 위 `Better Auth` 절의 `주요 문서` 목록이며 출처는 https://www.better-auth.com/ 입니다.
+- `사용 메모` 절은 Better Auth가 아닌 stack을 위한 이 패키지 자체 지침이며 외부 출처를 인용하지 않습니다.

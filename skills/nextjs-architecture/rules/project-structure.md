@@ -166,3 +166,7 @@ Add `import 'server-only'` to modules that must never enter the client graph, es
 - Flat shared folders are not forced when nested grouping would be clearer, and the choice is labelled as repo-local convention.
 - Framework-required rules and repo-local conventions are labeled separately.
 - Server-only shared modules have `import 'server-only'` or an equally clear boundary.
+
+## Sources
+
+> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.

@@ -63,3 +63,9 @@ Add one line to the publish note, naming the voice used and where it came from.
 `보이스: <어미> · <문장 길이> · <금기 준수> · <장식 습관> (출처: 사용자 입력 / 블로그 관찰 / 유형 기본값)`
 
 When a request hit the floor, the same block carries one more line: `요청 <X>는 <Y> 규칙에 따라 적용하지 않았습니다.`
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own tone policy and voice card. It makes no external claim, so no external source is cited.

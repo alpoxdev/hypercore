@@ -56,15 +56,15 @@ Expect zero hits. Any hit is rewritten to follow the rule it violates. The Korea
 
 **Exception**: `rules/writing-method.ko.md`, `rules/tell-avoidance.ko.md`, and `references/ai-tell-catalog.ko.md` are exempt. All three quote the forbidden patterns by design, since listing 번역투 examples requires writing them, so they are excluded from this audit rather than being made to pass it.
 
-## 4. Package verification commands
+## 4. Package verification gates
 
-Any change to this skill's files runs all three, in order. All must exit 0.
+Any change to this skill's files runs all three gates, in order, from the repository root. All must exit 0.
 
-```bash
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only korean-writer --json
-node skills/skill-tester/scripts/validate-skill.mjs skills/korean-writer
-bun run --cwd scripts verify
-```
+- the corpus validator scoped to this package: `validate-skills-corpus.mjs --root skills --only korean-writer --json`
+- the single-package validator run against this package folder: `validate-skill.mjs skills/korean-writer`
+- the repository script gate: `bun run --cwd scripts verify`
+
+The repository's policy documents own these commands' locations and flags; this file names the gates a package change must pass.
 
 ## Exit criteria
 
@@ -75,4 +75,10 @@ bun run --cwd scripts verify
 - [ ] Each of bullet lists, bold, emphasis-quotation pairs, dashes, and emoji was counted and lands at or under the number in the genre row of `genre-calibration.md`.
 - [ ] The draft was delivered clean, or after at most three rescan passes with the remainder stated.
 - [ ] In humanize mode: anchors re-verified, the over-correction guard passed, and the delivery carries the change summary.
-- [ ] Package changes keep the self-application audit at zero hits and all three commands at exit 0.
+- [ ] Package changes keep the self-application audit at zero hits and all three gates at exit 0.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own self-check protocol and its pinned thresholds. It makes no external claim, so no external source is cited.

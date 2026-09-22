@@ -53,3 +53,7 @@ const app = new Hono().post(
 - One feature does not mix unrelated validation styles without reason
 - No new dependency is added without need
 
+
+## Sources
+
+> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.

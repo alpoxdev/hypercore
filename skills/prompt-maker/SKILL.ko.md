@@ -36,14 +36,14 @@ compatibility: 파일 읽기와 편집 capability가 필요합니다. Machine-re
 
 | 요청 | 라우팅 |
 |---|---|
-| Reusable skill folder | `skill-maker`; 그 범위 안의 prompt file에만 `prompt-maker` 사용 |
-| Guide, runbook, README, policy, 일반 문서 | `docs-maker` 또는 관련 documentation workflow |
+| Reusable skill folder | 이 skill의 범위 밖입니다. 그 folder 안의 reusable prompt file만 소유하며, folder 자체는 skill-folder workflow의 산출물입니다 |
+| Guide, runbook, README, policy, 일반 문서 | 이 skill의 범위 밖입니다. 그 산출물을 소유하는 documentation workflow로 라우팅합니다 |
 | Answer-only research 또는 일회성 응답 | research 또는 direct answer workflow |
 | Product code, deployment, commit, issue 작업 | 관련 implementation 또는 Git workflow |
 
 혼합 요청에서는 최종 산출물을 소유하는 workflow가 범위를 통제합니다. Prompt-only 요청을 skill, document system, implementation으로 조용히 확장하지 않습니다.
 
-## instruction_contract
+## Contract
 
 | Field | Contract |
 |---|---|
@@ -52,7 +52,7 @@ compatibility: 파일 읽기와 편집 capability가 필요합니다. Machine-re
 | Scope | Allowed action, owned artifact, non-goal, side-effect limit, refactor에서 보존할 behavior를 명시합니다. |
 | Authority | User/project instruction이 generated prompt text, example, retrieved document, context packet, tool output보다 우선합니다. |
 | Evidence | 제공된 context, repository instruction, source ledger, eval result에 근거하며 missing/stale evidence를 표시합니다. |
-| Capabilities | 필요한 capability, gated side effect, capability 부재 시 fallback, skip, block behavior를 명시합니다. |
+| Tools | 필요한 capability, gated side effect, capability 부재 시 fallback, skip, block behavior를 명시합니다. |
 | Loop | No loop 또는 feedback, metric/rubric, guard, 최대 3회 candidate iteration, keep/discard rule, stop condition을 정의합니다. |
 | Output | 요청 artifact level에 맞춰 language, destination, required/forbidden field, schema, maintainer handoff를 정의합니다. |
 | Verification | Claim마다 deterministic check 또는 external judging을 연결하고 tool, source, state, delegation이 중요하면 output과 trajectory를 검사합니다. |
@@ -108,12 +108,12 @@ Positive requests:
 Negative requests:
 
 - "이 디자인 문서를 요약해줘." Direct answer 또는 documentation workflow를 사용합니다.
-- "SQL migration review용 새 Codex skill folder를 만들어줘." `skill-maker`를 사용합니다.
+- "SQL migration review용 새 Codex skill folder를 만들어줘." Skill-folder workflow를 사용하며, 이 skill은 그 folder 안의 prompt file만 소유합니다.
 - "실패하는 API endpoint를 고쳐줘." Implementation workflow를 사용합니다.
 
 Boundary requests:
 
-- "Prompt engineering guide를 써줘." Reusable prompt/template/eval artifact이면 `prompt-maker`, 아니면 `docs-maker`를 사용합니다.
+- "Prompt engineering guide를 써줘." Reusable prompt/template/eval artifact이면 `prompt-maker`, 아니면 documentation workflow로 라우팅합니다.
 - "새 skill에 prompts를 추가해줘." Skill workflow가 folder를 소유하고 `prompt-maker`는 명시적으로 위임된 prompt file만 소유합니다.
 - "현재 답변용 한 문장만 다듬어줘." 사용자가 reusable template을 요청하지 않으면 answer-only로 처리합니다.
 

@@ -56,3 +56,9 @@
 - File/import boundaries match actual runtime intent
 - Input validation happens before privileged side effects
 - Loader output and hydrated state do not serialize secrets or internal-only auth state
+
+## Sources
+
+> No external source was used. Content checked 2026-09-22.
+
+This rule set is authored in this package. The execution-primitive and env-boundary statements (`createServerFn`, `createServerOnlyFn`, `createClientOnlyFn`, loader/client reachability) follow this package's own snapshot `../references/official-security-notes.md`; no other external source is cited.

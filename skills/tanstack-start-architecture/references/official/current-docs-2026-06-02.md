@@ -1,6 +1,6 @@
 # TanStack Start Current Docs Snapshot
 
-- checked_at: 2026-06-09
+- last_verified_at: 2026-06-09
 - source: Context7 `/websites/tanstack_start_framework_react`, backed by TanStack official docs pages and direct TanStack official page checks
 - use_when: Start/Router API behavior, Start Vite plugin config, import protection, execution boundaries, or server-function API shape affects an architecture decision
 - authority: Official TanStack docs for API facts; Hypercore conventions remain in `rules/`
@@ -78,3 +78,7 @@
 - If local installed package types disagree, run typecheck and record the project-specific exception.
 - Keep `src/modules`, `src/lib`, `src/db`, `src/server`, `src/integrations`, and `src/config` grouping as Hypercore conventions, not official TanStack requirements.
 - The `.functions.ts` / `.server.ts` split is an official server-function organization pattern; enforcing that split inside `src/modules/<domain>/<feature>/` nested folders is a Hypercore convention.
+
+## Sources
+
+> Sources checked 2026-06-09 via Context7 (`/websites/tanstack_start_framework_react`), carried over from this file's original `checked_at: 2026-06-09` marker and recorded as `last_verified_at`. No page was re-fetched in this pass and no source outside the list above is claimed.

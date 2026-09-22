@@ -37,9 +37,11 @@ Use a different language only when the user explicitly requests it, an existing 
 
 Use `autoresearch-skill` when the user wants to optimize an existing skill through repeated experiments and evaluation.
 
-Use `skill-maker` when the main job is creating a new skill or doing one structural refactor without an experiment loop.
-Use `skill-tester` when the main job is validating a skill once without a mutation loop.
-Use `docs-maker` when the main job is rewriting a general document, runbook, or prose artifact rather than improving a reusable skill.
+Route by output shape rather than by another skill's name:
+
+- A new skill folder, or one structural refactor with no experiment loop, is a skill-authoring job that belongs to a different workflow.
+- A single validation verdict on an existing skill, with no mutation loop, is a one-shot validation job that belongs to a different workflow.
+- A rewritten general document, runbook, or prose artifact rather than an improved reusable skill is a document job that belongs to a different workflow.
 
 Do not use `autoresearch-skill` when:
 
@@ -80,8 +82,8 @@ If the user invokes `autoresearch-skill`, `$autoresearch-skill`, or a local slas
 
 Positive examples:
 
-- "Run autoresearch on `skills/web-clone/SKILL.md` and keep only changes that raise the score."
-- "Run autoresearch on `skills/foo/SKILL.md` and keep only score-improving mutations."
+- "Run autoresearch on the target skill's `SKILL.md` and keep only changes that raise the score."
+- "Run autoresearch on the skill folder for this request and keep only score-improving mutations."
 - "Benchmark this skill with binary evals and save the results under `.hyper`."
 - "Improve this skill prompt and references through repeated experiments."
 - "이 스킬을 반복 실험으로 개선해서 점수 올려줘."
@@ -97,7 +99,7 @@ Negative examples:
 Boundary example:
 
 - "Polish this skill once and review it."
-  If repeated experiments are not requested, direct `skill-maker` refactoring is usually better.
+  If repeated experiments are not requested, a single structural refactor with no experiment loop is usually better.
 
 </activation_examples>
 

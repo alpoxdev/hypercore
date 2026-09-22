@@ -197,3 +197,7 @@ If ownership is unclear, keep the module close to its only caller. Premature sha
 ## 9. Migration and validation
 
 Move one vertical feature at a time. Update routes, public exports, aliases, tests, mocks, and persisted/import contracts in the same slice. Check dependency cycles and forbidden imports after every move. Preserve generated/native outputs and user changes. Delete obsolete code only after the replacement and callers are verified.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file; the Expo-specific statements restate this package's own official snapshot, references/official/expo-react-native-2026-08-03.md.

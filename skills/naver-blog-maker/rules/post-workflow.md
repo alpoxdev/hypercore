@@ -155,3 +155,9 @@ Nothing else: no rule IDs, no tier labels, no rubric dump, no mention of the tel
 - Pasting the seed prompt's hook vocabulary; only the adapted forms in the hook library.
 - Targeting dwell time, comments, likes, or neighbors as goals.
 - Logging into Naver, calling Naver API endpoints, or scraping.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own workflow. The body-rhythm numbers come from this repository's own measurements, recorded in `.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md` (live PostView DOM observation) and `.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt` (editor paste test); no external source is cited.

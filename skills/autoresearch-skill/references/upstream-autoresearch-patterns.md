@@ -61,8 +61,18 @@ Valid statuses should distinguish `baseline`, `keep`, `keep-reworked`, `discard`
 
 ## Source map
 
-- Repository overview and command map: `https://github.com/uditgoenka/autoresearch`
-- Codex skill source: `.agents/skills/autoresearch/SKILL.md`
-- Loop protocol: `.agents/skills/autoresearch/references/autonomous-loop-protocol.md`
-- Result log protocol: `.agents/skills/autoresearch/references/results-logging.md`
-- Plan/Verify/Guard setup: `.agents/skills/autoresearch/references/plan-workflow.md`
+Upstream material was reviewed in the repository at `https://github.com/uditgoenka/autoresearch` on 2026-05-02. The document names below are relative to that repository's own skill folder; this file deliberately carries no path into a skills tree.
+
+- Skill definition: `SKILL.md`
+- Loop protocol: `autonomous-loop-protocol.md`
+- Result log protocol: `results-logging.md`
+- Plan/Verify/Guard setup: `plan-workflow.md`
+
+## Sources
+
+> No new source was fetched for this change; the upstream row carries the review date recorded above. Repository-local links checked 2026-09-21.
+
+| Claim | Source |
+|---|---|
+| The transferable patterns, the Verify/Guard split, the logging fields, and the git/dirty-tree safety notes | upstream repository `uditgoenka/autoresearch`, reviewed 2026-05-02 |
+| The local adaptations, the recommended guards, and the local status values | this package's own experiment-loop and artifact rules |

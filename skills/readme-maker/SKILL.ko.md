@@ -36,21 +36,21 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 
 주요 산출물이 프로젝트, 라이브러리, CLI, 플러그인, 워크스페이스, 프레임워크, 문서 사이트, 서비스에 대한 (루트 또는 하위 패키지) `README.md`일 때 `readme-maker`를 사용한다.
 
-인접 작업은 다른 스킬로 라우팅한다:
+인접 작업은 산출물 형태로 경계를 나눈다:
 
-- 산출물이 일반 문서, 런북, 인스트럭션 베이스, 하니스 룰 팩일 때 `docs-maker`를 사용한다.
-- 산출물이 제품 기획 패키지(PRD, 다이어그램, 기능 명세, 사용자 플로우, 와이어프레임)일 때 `prd-maker`를 사용한다.
-- 산출물이 SEO/AEO/GEO 감사 또는 마케팅 페이지 최적화일 때 `seo-maker`를 사용한다.
-- 작업이 README 산출물 없는 순수 사실 조사일 때 `research`를 사용한다.
-- 주된 작업이 버전 업이나 릴리스 노트 생성일 때 `version-update`를 사용한다.
-- 주된 작업이 README 마무리 후 변경 커밋을 만드는 것일 때 `git-commit` 또는 `git-maker`를 사용한다.
+- 일반 문서, 런북, 인스트럭션 베이스, 하니스 룰 팩은 README가 아니라 문서 산출물이다.
+- 제품 기획 패키지(PRD, 다이어그램, 기능 명세, 사용자 플로우, 와이어프레임)는 기획 산출물이다.
+- SEO/AEO/GEO 감사 또는 마케팅 페이지 최적화는 검색 최적화 산출물이다.
+- README 산출물 없는 순수 사실 조사는 조사 작업이다.
+- 버전 업이나 릴리스 노트 묶음은 릴리스 산출물이다.
+- 마무리된 README를 커밋하는 일은 README 작성이 아니라 버전 관리 작업이다.
 
 다음의 경우에는 `readme-maker`를 사용하지 않는다:
 
 - 사용자가 `CHANGELOG.md`, `CONTRIBUTING.md`, `LICENSE` 등 README가 아닌 파일만 원할 때
 - 사용자가 소스 코드 수정, 리팩터, 기능 구현을 원하고 README는 부수적으로 언급될 때
 - 사용자가 README 산출물 없이 실시간 외부 조사만 원할 때
-- 사용자가 AI가 읽기 좋은 인스트럭션 문서나 하니스 룰 팩을 원할 때 (`docs-maker` 사용)
+- 사용자가 AI가 읽기 좋은 인스트럭션 문서나 하니스 룰 팩을 원할 때 (문서 산출물이므로 범위 밖)
 
 </routing_rule>
 
@@ -63,6 +63,7 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 | Authority | 사용자 지시와 프로젝트 로컬 문서(`AGENTS.md`, `CLAUDE.md`, 루트 README, 패키지 매니페스트)가 일반 README 관습이나 외부 템플릿보다 우선한다. |
 | Evidence | 모든 설치 명령, 스크립트 호출, 파일 경로, 배지, 기능 주장은 프로젝트의 실제 파일에 근거해야 한다. 명령이나 API를 지어내지 않는다. |
 | Tools | 프로젝트 내부에서만 read/edit/write와 셸 검색(`find`, `grep`, `ls`)을 사용한다. 작성 과정에서 install, build, deploy, release 명령을 실행하지 않는다. |
+| Loop | 없음. 요청 하나당 한 번만 수행한다. 프로젝트 발견, 섹션 설계, 초안 작성, 검증, 보고 후 종료하며, 다른 README나 후속 섹션 갱신을 사용자가 요청할 때만 다시 호출한다. |
 | Output | 작성 또는 갱신된 단일 `README.md`와, 어떤 파일을 살폈고 어떤 섹션이 바뀌었는지 적은 짧은 요약. |
 | Verification | 완료 전에 `rules/validation.md`의 프로젝트 디스커버리·형태·언어·증거 검사를 실행한다. |
 | Stop condition | 검사가 통과하고 불확실한 주장에 `<!-- TODO -->`가 표시되었을 때 종료한다. 프로젝트 형태가 모호하거나 라이선스가 불명확하거나 명령을 저장소에서 검증할 수 없으면 에스컬레이션한다. |
@@ -82,18 +83,18 @@ Positive examples (긍정 예시):
 
 Negative examples (부정 예시):
 
-- "커밋 로그로 CHANGELOG 만들어줘." → `git-commit`/`version-update` 경로 사용.
-- "이 라이브러리의 API 문서를 작성해줘." → `docs-maker` 사용.
-- "이 프로젝트의 다음 릴리스를 기획해줘." → `prd-maker` 또는 `plan` 사용.
+- "커밋 로그로 CHANGELOG 만들어줘." → 산출물은 릴리스 문서이며 README가 아님.
+- "이 라이브러리의 API 문서를 작성해줘." → 산출물은 문서이며 README가 아님.
+- "이 프로젝트의 다음 릴리스를 기획해줘." → 산출물은 기획 문서이며 README가 아님.
 - "이 코드베이스에 새 기능을 추가해줘." → README 작업이 아님.
 
 Boundary examples (경계 예시):
 
 - "이 프로젝트를 문서화해줘."
-  산출물이 `README.md`일 때만 `readme-maker`를 사용한다. 가이드, 런북, 인스트럭션 베이스가 산출물이면 `docs-maker`를 사용한다.
+  산출물이 `README.md`일 때만 `readme-maker`를 사용한다. 가이드, 런북, 인스트럭션 베이스는 문서 산출물이므로 범위 밖이다.
 - "README를 리팩터하고 커밋해줘."
-  README 자체는 `readme-maker`로 작업하고, README가 마무리된 뒤 커밋은 `git-commit` 또는 `git-maker`로 라우팅한다.
-- "이 README 리팩터하고 커밋도 같이 해줘." (한국어 경계 예시. README는 `readme-maker`로 먼저, 커밋은 그다음 `git-commit`/`git-maker`로.)
+  README 자체는 `readme-maker`로 작업하고, 뒤따르는 커밋은 README 작성이 아니라 버전 관리 작업으로 처리한다.
+- "이 README 리팩터하고 커밋도 같이 해줘." (한국어 경계 예시. README 작성은 `readme-maker`로 먼저, 커밋은 별도의 버전 관리 작업으로.)
 
 </activation_examples>
 

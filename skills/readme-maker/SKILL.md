@@ -36,21 +36,21 @@ Use a different language only when the user explicitly requests it, an existing 
 
 Use `readme-maker` when the primary deliverable is a `README.md` (root or sub-package) for a project, library, CLI, plugin, workspace, framework, docs site, or service.
 
-Route neighboring work elsewhere:
+Route neighboring work elsewhere by the shape of its output:
 
-- Use `docs-maker` when the output is a general doc, runbook, instruction base, or harness rule pack.
-- Use `prd-maker` when the output is a product planning package (PRD, diagram, feature spec, user flow, wireframe).
-- Use `seo-maker` when the output is an SEO/AEO/GEO audit or marketing-page optimization.
-- Use `research` when the job is pure fact-finding with no README artifact.
-- Use `version-update` when the main job is bumping a version or producing release notes.
-- Use `git-commit` or `git-maker` when the main job is committing a README change after the README is finalized.
+- A general doc, runbook, instruction base, or harness rule pack is a documentation artifact, not a README.
+- A product planning package (PRD, diagram, feature spec, user flow, wireframe) is a planning artifact.
+- An SEO/AEO/GEO audit or marketing-page optimization is a search-optimization artifact.
+- Pure fact-finding with no README artifact is a research task.
+- A version bump or a release-note set is a release artifact.
+- Committing a finished README is a version-control action, not README authoring.
 
 Do not use `readme-maker` when:
 
 - the user wants only a `CHANGELOG.md`, `CONTRIBUTING.md`, `LICENSE`, or other non-README file
 - the user wants source-code edits, refactors, or feature implementation and only mentions README in passing
 - the user wants live external research with no README artifact
-- the user wants AI-readable instruction docs or harness rule packs (use `docs-maker`)
+- the user wants AI-readable instruction docs or harness rule packs, which are documentation artifacts
 
 </routing_rule>
 
@@ -63,6 +63,7 @@ Do not use `readme-maker` when:
 | Authority | User instructions and project-local docs (`AGENTS.md`, `CLAUDE.md`, root README, package manifests) outrank generic README conventions and external templates. |
 | Evidence | Ground every install command, script invocation, file path, badge, and feature claim in a real file under the project. Do not invent commands or APIs. |
 | Tools | Use read/edit/write and shell search (`find`, `grep`, `ls`) only inside the project. Do not run install, build, deploy, or release commands as part of authoring. |
+| Loop | None. One pass per request: discover the project, plan sections, draft, validate, report, then stop. Re-invoke only when the user asks for another README or a follow-up section update. |
 | Output | A single written or updated `README.md`, plus a short summary noting which files were inspected and which sections changed. |
 | Verification | Run project-discovery, shape, language, and evidence checks from `rules/validation.md` before completion. |
 | Stop condition | Finish when checks pass and any uncertain claims are flagged with `<!-- TODO -->`; escalate when project shape is ambiguous, license is unclear, or commands cannot be verified from the repo. |
@@ -82,18 +83,18 @@ Positive examples:
 
 Negative examples:
 
-- "Create a CHANGELOG from the commit log." Use `git-commit`/`version-update` paths instead.
-- "Write API documentation for this library." Use `docs-maker`.
-- "Plan the next release of this project." Use `prd-maker` or `plan`.
+- "Create a CHANGELOG from the commit log." The output is a release artifact, not a README.
+- "Write API documentation for this library." The output is a documentation artifact, not a README.
+- "Plan the next release of this project." The output is a planning artifact, not a README.
 - "이 코드베이스에 새 기능을 추가해줘." (Korean feature request; not a README task.)
 
 Boundary examples:
 
 - "Document this project."
-  Use `readme-maker` only when the output is a `README.md`. Use `docs-maker` when the output is a guide, runbook, or instruction base.
+  Use `readme-maker` only when the output is a `README.md`. A guide, runbook, or instruction base is a documentation artifact and stays out of scope.
 - "Refactor this README and commit the change."
-  Use `readme-maker` for the README itself; route the commit to `git-commit` or `git-maker` after the README is finalized.
-- "이 README 리팩터하고 커밋도 같이 해줘." (Korean boundary; README first via `readme-maker`, then commit via `git-commit`/`git-maker`.)
+  Use `readme-maker` for the README itself; the commit that follows is a version-control action, not README authoring.
+- "이 README 리팩터하고 커밋도 같이 해줘." (Korean boundary; README authoring first via `readme-maker`, then the commit as a separate version-control action.)
 
 </activation_examples>
 
