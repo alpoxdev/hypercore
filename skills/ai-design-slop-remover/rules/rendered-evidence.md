@@ -6,7 +6,7 @@ Read this rule only when browser capability exists or a user supplies a rendered
 
 - Do not install Playwright, Axe, a browser, or dependencies to obtain rendered evidence.
 - Without a valid handoff, report `static_only` or `unavailable`; do not claim visual hierarchy, actual contrast, keyboard, accessibility, or behavior passed.
-- Validate a handoff with `scripts/collect-rendered-evidence.cjs --input <capture.json>` before citing it.
+- Validate a handoff with `scripts/collect-rendered-evidence.mjs --input <capture.json>` before citing it.
 
 ## Evidence minimum
 
@@ -17,3 +17,9 @@ Use project breakpoints when known; otherwise inspect 375, 768, and 1280 widths.
 ## Finding boundary
 
 A rendered finding records the viewport, state, locator, captured values, and the exact claim it supports. Static findings remain static unless an observed rendered fact independently confirms the claim.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file.
+
+The capability gate and the minimum evidence fields are this package's own contract. The tool names Playwright and Axe appear only as things not to install, and no external document is cited.

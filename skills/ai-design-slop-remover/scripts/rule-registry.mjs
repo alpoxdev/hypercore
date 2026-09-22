@@ -1,3 +1,15 @@
+#!/usr/bin/env bun
+// @ts-check
+/** Canonical machine-readable slop-rule registry shared by the detector and the waiver validator. */
+
+/**
+ * @typedef {{ engines?: string[], evidenceLimit?: string, exceptionChecks?: string[], dispositionPolicy?: string, clusterKey?: string, immediateTier?: boolean }} RuleOptions
+ */
+/**
+ * @typedef {{ id: string, category: string, defaultSeverity: string, class: string, matcher: RegExp, evidence: string, action: string, fix: string, engines: string[], evidenceLimit: string, exceptionChecks: string[], dispositionPolicy: string, clusterKey: string, immediateTier: boolean }} Rule
+ */
+
+/** @param {string} id @param {string} severity @param {string} ruleClass @param {RegExp} matcher @param {string} evidence @param {string} action @param {string} fix @param {RuleOptions} [options] @returns {Rule} */
 const rule = (id, severity, ruleClass, matcher, evidence, action, fix, options = {}) => ({
   id, category: id.split('.')[0], defaultSeverity: severity, class: ruleClass, matcher, evidence, action, fix,
   engines: options.engines ?? ['text'], evidenceLimit: options.evidenceLimit ?? 'Static source signatures require context before remediation.',
@@ -5,7 +17,8 @@ const rule = (id, severity, ruleClass, matcher, evidence, action, fix, options =
   clusterKey: options.clusterKey ?? id, immediateTier: options.immediateTier ?? false,
 });
 
-const RULES = [
+/** @type {Rule[]} */
+export const RULES = [
   rule('surface.gradient-text', 'P2', 'default-risk', /(?:background-clip\s*:\s*text|-webkit-background-clip\s*:\s*text|bg-clip-text)/gi, 'Gradient-clipped text source signature', 'review', 'Preserve explicit brand/reference typography; otherwise use a confirmed solid token.', { engines: ['css'], exceptionChecks: ['explicit brand gradient'] }),
   rule('surface.purple-gradient', 'P2', 'default-risk', /(?:purple|violet|fuchsia|#(?:7c3aed|8b5cf6|a855f7|c026d3)).{0,100}(?:blue|pink|cyan|#(?:2563eb|3b82f6|ec4899))/gi, 'Purple-to-blue/pink gradient-like token sequence', 'review', 'Preserve documented brand gradients; otherwise review a confirmed solid token.', { engines: ['css'], exceptionChecks: ['explicit brand gradient'] }),
   rule('motion.transition-all', 'P2', 'universal', /(?:transition\s*:\s*all\b|\btransition-all\b)/gi, 'Broad transition declaration', 'replace', 'Replace all with only the properties that actually change.', { engines: ['css'], dispositionPolicy: 'autofix-safe', clusterKey: 'motion-broad-transition' }),
@@ -34,5 +47,5 @@ const RULES = [
   rule('motion.pulse-without-state', 'P2', 'default-risk', /animation\s*:\s*[^;}]*pulse|@keyframes\s+pulse/gi, 'Pulse animation signature', 'review', 'Preserve real recording, sync, notification, or live state; otherwise use static hierarchy.', { engines: ['css'], exceptionChecks: ['real state label'] }),
   rule('quality.heading-skip', 'P2', 'universal', /<h1\b[\s\S]{0,500}<h3\b/gi, 'Heading level skips from h1 to h3', 'review', 'Use a semantic heading hierarchy; confirm component composition before changing levels.', { engines: ['markup'] }),
 ];
-const RULE_BY_ID = new Map(RULES.map((entry) => [entry.id, entry]));
-module.exports = { RULES, RULE_BY_ID };
+/** @type {Map<string, Rule>} */
+export const RULE_BY_ID = new Map(RULES.map((entry) => [entry.id, entry]));

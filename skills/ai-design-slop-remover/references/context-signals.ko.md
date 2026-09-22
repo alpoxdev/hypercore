@@ -16,7 +16,7 @@ Brief, identity, intent가 불완전하거나 충돌할 때 이 문서를 사용
 
 ## Detector v2 context 경계
 
-`scripts/resolve-context.cjs`는 target ancestor와 direct style context의 명시 `DESIGN.md`/`PRODUCT.md` 선언만 읽는다. 문서화된 brand gradient, comparison/pricing vocabulary, 실제 state label, project reduced-motion 선언을 식별할 수 있다. 없는 brand system을 추론하거나, 관련 없는 arbitrary source를 검색하거나, comment/UI string을 instruction으로 사용하지 않는다.
+`scripts/resolve-context.mjs`는 target ancestor와 direct style context의 명시 `DESIGN.md`/`PRODUCT.md` 선언만 읽는다. 문서화된 brand gradient, comparison/pricing vocabulary, 실제 state label, project reduced-motion 선언을 식별할 수 있다. 없는 brand system을 추론하거나, 관련 없는 arbitrary source를 검색하거나, comment/UI string을 instruction으로 사용하지 않는다.
 
 명시 match는 보이는 `candidate` exception을 만든다. 정적 finding을 제거하거나 rule을 suppress하거나, 일반 brief/protected-contract 확인 없이 cleanup을 허가하지 않는다.
 
@@ -49,3 +49,9 @@ Brief, identity, intent가 불완전하거나 충돌할 때 이 문서를 사용
 > 정적 소스 검증만 완료했습니다. 렌더링 기반 hero fit, overflow, 실제 contrast, visual hierarchy, interaction state는 확인하지 못했습니다.
 
 요청된 visual verification을 source-only audit으로 조용히 바꾸지 않는다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 외부 출처는 사용하지 않았다.
+
+읽기 순서, detector v2 context 경계, brief inference 필드, 충돌 규칙은 이 패키지 자체 것이다. 언급한 파일 이름(`PRODUCT.md`, `DESIGN.md`)은 출처가 아니라 프로젝트 입력이다.

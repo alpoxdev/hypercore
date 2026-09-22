@@ -52,3 +52,9 @@ Load this catalog only when mapping detector output or a rendered observation to
 Static `yes` means the bundled detector can find a source signature, not that the UI is defective. `partial` means source heuristics need context or rendering. Browser-only and subjective patterns remain reportable only with an explicit warrant and caveat. For remediation steps, load `fix-playbook.md`.
 
 Detector v2 reports `engine`, `evidenceKind`, detection/remediation confidence, cluster, and exception status. A `candidate` exception remains a visible review item; it does not suppress a finding or authorize automatic removal.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file.
+
+Every rule ID, category, scope, severity, and exception note is this package's own registry entry. No external catalogue or pattern library was used.

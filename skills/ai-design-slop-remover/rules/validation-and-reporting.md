@@ -2,12 +2,12 @@
 
 ## Verification order
 
-1. Re-run `detect-slop.cjs` against the same target and compare rule IDs, severity counts, engine/evidence fields, and baseline delta when used.
+1. Re-run `detect-slop.mjs` against the same target and compare rule IDs, severity counts, engine/evidence fields, and baseline delta when used.
 2. Run the smallest project build, typecheck, lint, and test commands that cover changed files; inspect failures rather than suppressing them.
 3. When rendering is available, inspect representative desktop and mobile widths and relevant interaction/async states.
 4. Check keyboard focus, semantics, contrast where measurable, reduced motion, and responsive overflow affected by the change.
 5. Exercise directly affected behavior and preserve copy, routes, form contracts, state transitions, and analytics hooks.
-6. Validate a saved report with `validate-report.cjs` and record residual risk.
+6. Validate a saved report with `validate-report.mjs` and record residual risk.
 
 ## Claim rules
 
@@ -43,3 +43,9 @@ V2 reports also record detector version/engines, generic-output risk, baseline d
 - `blocked`: required evidence, authority, capability, or a critical guard is missing.
 
 A caveated result is valid only when limitations are explicit and no hidden critical failure is presented as passed.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file.
+
+The verification order, claim rules, and report sections are this package's own. The required Korean headings match the package's report template and its report validator.

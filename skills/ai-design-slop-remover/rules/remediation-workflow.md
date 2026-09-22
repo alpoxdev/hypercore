@@ -11,7 +11,7 @@
 1. Confirm target and mode from the request. A missing target blocks mutation.
 2. Read project authority and available product/design context before scanning implementation details.
 3. Write the brief inference and mark unknowns. Do not interpret missing `PRODUCT.md` or `DESIGN.md` as greenfield permission.
-4. Run `detect-slop.cjs`; use `--baseline <result.json> --only-new` only for report-only delta comparison, never to approve debt. Optionally run `analyze-structure.cjs` when repeated page structure is relevant.
+4. Run `detect-slop.mjs`; use `--baseline <result.json> --only-new` only for report-only delta comparison, never to approve debt. Optionally run `analyze-structure.mjs` when repeated page structure is relevant.
 5. Collect rendered evidence only with an already available browser capability or validated handoff. Use project breakpoints or 375, 768, and 1280 widths. Inspect only relevant hover, focus, active, disabled, loading, empty, error, and reduced-motion states.
 6. Classify every finding by engine, evidence kind, detection/remediation confidence, exception status, rule scope, severity, and evidence family. Select `remove`, `replace`, `preserve`, `ask`, or `block`.
 7. In `clean`, apply the smallest low-risk category first. Do not combine unrelated redesigns into one pass.
@@ -33,3 +33,9 @@ Keep a pass only when all applicable conditions hold:
 - the inferred or explicit brief is still satisfied
 
 If a guard fails, discard or correct the specific change. Never redefine the baseline to make a pass look successful.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file.
+
+This file is this package's own workflow definition. The three modes, the ordered procedure, and the pass-acceptance conditions are authored here and restated in `SKILL.md`.

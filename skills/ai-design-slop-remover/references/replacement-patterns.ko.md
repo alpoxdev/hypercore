@@ -18,3 +18,9 @@ confirmed `clean` finding에 구조 또는 presentation 대안이 필요할 때�
 | Generic motion | state-linked transform/opacity + reduced-motion alternative | 실제 feedback/task state change 보존 | hover/focus/state, reduced motion |
 
 대체 패턴으로 새 brand world를 만들거나, 정보 구조를 바꾸거나, proof를 발명하지 않는다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 외부 출처는 사용하지 않았다.
+
+대체 패턴은 공개된 pattern library가 아니라 이 패키지 자체 선택지이며, 각 항목은 패키지의 보존 규칙으로 제한된다.

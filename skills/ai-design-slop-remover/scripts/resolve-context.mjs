@@ -1,10 +1,19 @@
-const { readFile, readdir, stat } = require('node:fs/promises');
-const { dirname, extname, join, resolve, relative } = require('node:path');
+#!/usr/bin/env bun
+// @ts-check
+/** Read only explicit local context declarations that the detector may treat as evidence. */
+import { readFile, readdir, stat } from 'node:fs/promises';
+import { dirname, extname, join, resolve, relative } from 'node:path';
 
+/**
+ * @typedef {{ brandGradient: boolean, pricingComparison: boolean, realState: boolean, reducedMotion: boolean }} Context
+ */
+
+/** @param {string} path @returns {Promise<string>} */
 async function maybeRead(path) {
   try { return await readFile(path, 'utf8'); } catch { return ''; }
 }
-async function resolveContext(target) {
+/** @param {string} target @returns {Promise<Context>} */
+export async function resolveContext(target) {
   const targetInfo = await stat(target);
   const scope = targetInfo.isDirectory() ? target : dirname(target);
   const inputs = [];
@@ -28,4 +37,3 @@ async function resolveContext(target) {
     reducedMotion: /prefers-reduced-motion|motion-reduce:/.test(text),
   };
 }
-module.exports = { resolveContext };

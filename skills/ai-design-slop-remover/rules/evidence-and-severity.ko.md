@@ -47,3 +47,9 @@ Source match의 high confidence가 제거 판단의 high confidence를 뜻하지
 - `rationale`: decision record, rejected alternative, owner, debt, review trigger.
 
 정적 detector는 실제 contrast, visual hierarchy, usability, user preference를 확정할 수 없다. Screenshot은 semantic correctness, keyboard behavior, 모든 responsive state를 증명하지 못한다. finding과 최종 리포트에 이 한계를 쓴다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 외부 출처는 사용하지 않았다.
+
+severity, confidence, evidence family 정의는 이 패키지 자체 것이다. WCAG AA는 `P1` severity 기준 이름으로만 쓰였고 WCAG 문서를 인용하거나 재진술하지 않았다.

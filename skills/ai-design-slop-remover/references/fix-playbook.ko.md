@@ -74,6 +74,12 @@
 ## Baseline, waiver, rendered handoff
 
 1. baseline은 detector v2 finding만 비교하며 design choice를 승인하지 않는다. `--only-new` 전 `rules/waivers-and-baselines.ko.md`를 읽는다.
-2. optional waiver는 `validate-waivers.cjs`로 검증한다. 좁은 범위, reason, source가 있어야 하며 P0 또는 protected contract를 숨길 수 없다.
-3. 제공된 browser fact는 `collect-rendered-evidence.cjs`로 검증한다. capture된 viewport/state/locator observation만 사용한다.
+2. optional waiver는 `validate-waivers.mjs`로 검증한다. 좁은 범위, reason, source가 있어야 하며 P0 또는 protected contract를 숨길 수 없다.
+3. 제공된 browser fact는 `collect-rendered-evidence.mjs`로 검증한다. capture된 viewport/state/locator observation만 사용한다.
 4. 이 input을 얻기 위해 tooling을 설치하거나 consumer config file을 쓰지 않는다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 외부 출처는 사용하지 않았다.
+
+수정 단계는 anti-pattern 목록과 safe-editing 규칙에서 나온 이 패키지 자체 guidance다. 외부 디자인·접근성 출처는 참조하지 않았다.

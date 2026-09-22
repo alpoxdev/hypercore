@@ -27,3 +27,9 @@ Before promoting a static rule to `P1` or an immediate tier, inspect at least fi
 - Rendered evidence requires a valid browser handoff capture.
 - Screenshot evidence does not prove keyboard, semantic, accessibility, or task completion.
 - `generic-output risk` is a prioritization label, never a claim of AI authorship.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file.
+
+The detector, workflow, and human-sampling criteria are this package's own. The 10% false-positive threshold and the five-example sample size are values this package chose, not external guidance.

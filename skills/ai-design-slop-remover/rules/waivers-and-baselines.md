@@ -4,7 +4,7 @@ Read this rule when using detector baseline output, interpreting a waiver, or do
 
 ## Baselines
 
-- A baseline is a saved `detect-slop.cjs` v2 JSON result used only to compare known static findings with a later scan.
+- A baseline is a saved `detect-slop.mjs` v2 JSON result used only to compare known static findings with a later scan.
 - Run `--only-new` only with an explicit `--baseline <result.json>`; malformed or incompatible baselines block the comparison.
 - A baseline is debt visibility, not approval. It does not turn an existing finding into a visual, accessibility, or remediation pass.
 - The detector never creates, rewrites, or broadens a baseline. Consumer projects own their local baseline file.
@@ -12,7 +12,7 @@ Read this rule when using detector baseline output, interpreting a waiver, or do
 Example report-only command:
 
 ```bash
-node skills/ai-design-slop-remover/scripts/detect-slop.cjs \
+node skills/ai-design-slop-remover/scripts/detect-slop.mjs \
   --target src --baseline .ai-slop-remover-baseline.json --only-new --json
 ```
 
@@ -20,7 +20,7 @@ Do not make this command block CI, install dependencies, or mutate project confi
 
 ## Narrow waivers
 
-An optional `.ai-slop-remover.json` may document one sanctioned value or one rule in one file. Validate it with `scripts/validate-waivers.cjs` before relying on it.
+An optional `.ai-slop-remover.json` may document one sanctioned value or one rule in one file. Validate it with `scripts/validate-waivers.mjs` before relying on it.
 
 Every waiver requires a known `ruleId`, exactly one of `value` or `file`, a non-empty reason, and a source: `user-confirmed`, `documented-brand`, `fixture`, or `generated-output`. `reviewAfter`, when present, uses an absolute `YYYY-MM-DD` date.
 
@@ -32,3 +32,9 @@ Waivers never:
 - replace a user decision when the exception is not documented
 
 Prefer a value waiver for an explicit brand font/gradient and a file waiver only for generated, exported, or deliberate demonstration files. A source-local `ai-slop-disable-next-line <rule> -- <reason>` marker is documentation-only guidance for portable generated output; this skill does not write markers automatically.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file.
+
+The baseline and waiver rules are this package's own contract for its bundled detector and waiver validator. The `ai-slop-disable-next-line` marker shape is documented package guidance, not an external standard.

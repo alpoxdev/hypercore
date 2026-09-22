@@ -48,3 +48,9 @@ Use exactly one action per finding:
 - `preserve`: brand, brief, data, or function justifies the pattern.
 - `ask`: a user decision materially changes the safe result.
 - `block`: evidence, scope, or authority is inadequate.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file.
+
+The finding classes, registry scopes, and categories are this package's own vocabulary, and the bundled rule registry implements the same names. No external taxonomy was consulted.
