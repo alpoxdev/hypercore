@@ -1,6 +1,6 @@
-# Skill-maker Handoff
+# Structural Refactor Handoff
 
-**Purpose**: 측정된 구조 결함을 근거, 쓰기 충돌, 리팩터링 후 검증 손실 없이 `skill-maker`에 넘긴다.
+**Purpose**: 측정된 구조 결함을 근거, 쓰기 충돌, 리팩터링 후 검증 손실 없이 스킬 저작 워크플로에 넘긴다.
 
 ## When to hand off
 
@@ -8,7 +8,7 @@
 
 ## 인계 패킷
 
-`skill-maker`가 대상을 편집하기 전에 다음 필드를 모두 포함한 한국어 인계 패킷을 만든다.
+받는 워크플로가 대상을 편집하기 전에 다음 필드를 모두 포함한 한국어 인계 패킷을 만든다.
 
 | Field | Required evidence |
 |---|---|
@@ -24,12 +24,18 @@
 ## Sequential ownership
 
 1. `skill-tester`가 baseline을 고정하고 패킷을 만든다.
-2. `skill-maker`만 승인된 구조 리팩터링의 작성자가 된다.
+2. 받는 워크플로만 승인된 구조 리팩터링의 작성자가 된다.
 3. 리팩터링 후 `skill-tester`가 read-only verification을 다시 소유하고 바꾸지 않은 영향 케이스를 재실행한다.
 4. 부모가 직접 확인한 리팩터링 후 근거로 최종 결정을 보고한다.
 
-`skill-tester`와 `skill-maker`는 같은 대상을 동시에 또는 중복으로 수정하면 안 되며, 요약을 통과 검사로 받거나, 후보에 맞추어 baseline case를 바꾸거나, 증명된 대상 ownership 밖을 삭제하면 안 된다.
+`skill-tester`와 받는 워크플로는 같은 대상을 동시에 또는 중복으로 수정하면 안 되며, 요약을 통과 검사로 받거나, 후보에 맞추어 baseline case를 바꾸거나, 증명된 대상 ownership 밖을 삭제하면 안 된다.
 
 ## Return and recheck
 
-`skill-maker`의 반환에는 변경·삭제 경로, bilingual update, 보존한 contract field, 출력이 있는 validator 명령, 남은 위험이 있어야 한다. 이후 `skill-tester`는 미리 선언한 리팩터링 후 validator, link/fence와 한국어/영어 동작 검사, 영향받은 모든 scenario를 실행한다. 필수 검사가 실패하거나 사용 불가하면 `ship`이 아니라 `iterate` 또는 `block`이다.
+받는 워크플로의 반환에는 변경·삭제 경로, bilingual update, 보존한 contract field, 출력이 있는 validator 명령, 남은 위험이 있어야 한다. 이후 `skill-tester`는 미리 선언한 리팩터링 후 validator, link/fence와 한국어/영어 동작 검사, 영향받은 모든 scenario를 실행한다. 필수 검사가 실패하거나 사용 불가하면 `ship`이 아니라 `iterate` 또는 `block`이다.
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 링크 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 구조 인계와 재검증 계약을 서술한다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

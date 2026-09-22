@@ -34,7 +34,7 @@ Reusable cases live at `assets/evals/<skill>-cases.jsonl`, one JSON object per l
   "risk": "targeted",
   "intent": "Validate a named behavior",
   "shouldTrigger": true,
-  "context": { "files": ["skills/example/SKILL.md"], "sources": [] },
+  "context": { "files": ["<target-skill>/SKILL.md"], "sources": [] },
   "prompt": "Test this skill before release.",
   "expected": {
     "must": ["inspect target"],
@@ -58,3 +58,9 @@ Reusable cases live at `assets/evals/<skill>-cases.jsonl`, one JSON object per l
 | regression | Same baseline input retains the repaired behavior. |
 
 Never accept a self-written narrative as the only judge. Prefer deterministic checks; use a rubric only where semantics cannot be made binary, and record the rubric and reviewer/runtime.
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.
+
+This file states this package's own scenario and fixture design and makes no external claim, so no external source is cited.

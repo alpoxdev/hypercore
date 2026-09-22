@@ -34,7 +34,7 @@
   "risk": "targeted",
   "intent": "Validate a named behavior",
   "shouldTrigger": true,
-  "context": { "files": ["skills/example/SKILL.md"], "sources": [] },
+  "context": { "files": ["<target-skill>/SKILL.md"], "sources": [] },
   "prompt": "Test this skill before release.",
   "expected": {
     "must": ["inspect target"],
@@ -58,3 +58,9 @@
 | regression | 같은 baseline 입력이 고쳐진 동작을 유지. |
 
 자체 작성 서술만으로 판정하지 않는다. 결정적 검사를 우선하고, 의미를 이진화할 수 없을 때만 rubric을 사용하며 rubric과 reviewer/runtime을 기록한다.
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 링크 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 시나리오와 fixture 설계을 서술한다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

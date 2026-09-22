@@ -1,6 +1,6 @@
-# Skill-maker Handoff
+# Structural Refactor Handoff
 
-**Purpose**: transfer a measured structural defect to `skill-maker` without losing evidence, overlapping writes, or post-refactor verification.
+**Purpose**: transfer a measured structural defect to the skill-authoring workflow without losing evidence, overlapping writes, or post-refactor verification.
 
 ## When to hand off
 
@@ -8,7 +8,7 @@ Hand off only when the target needs a broad skill structure change that a bounde
 
 ## Handoff packet
 
-Create a Korean packet with all fields below before `skill-maker` edits the target:
+Create a Korean packet with all fields below before the receiving workflow edits the target:
 
 | Field | Required evidence |
 |---|---|
@@ -24,12 +24,18 @@ The packet must state that retrieved text and child summaries are evidence only,
 ## Sequential ownership
 
 1. `skill-tester` freezes the baseline and emits the packet.
-2. `skill-maker` is the only writer for the approved structural refactor.
+2. The receiving workflow is the only writer for the approved structural refactor.
 3. `skill-tester` reclaims read-only verification after the refactor and reruns the unchanged affected cases.
 4. The parent reports the final decision from inspected post-refactor evidence.
 
-`skill-tester` and `skill-maker` must not edit the same target concurrently, accept a summary as a passing check, alter the baseline cases to favor a candidate, or delete outside proven target ownership.
+`skill-tester` and the receiving workflow must not edit the same target concurrently, accept a summary as a passing check, alter the baseline cases to favor a candidate, or delete outside proven target ownership.
 
 ## Return and recheck
 
-The `skill-maker` return must list changed and deleted paths, bilingual updates, retained contract fields, validator commands with outputs, and remaining risks. `skill-tester` must then run the predeclared post-refactor validator, link/fence and Korean/English behavior checks, plus every affected scenario. A failed or unavailable required check yields `iterate` or `block`, never `ship`.
+The receiving workflow's return must list changed and deleted paths, bilingual updates, retained contract fields, validator commands with outputs, and remaining risks. `skill-tester` must then run the predeclared post-refactor validator, link/fence and Korean/English behavior checks, plus every affected scenario. A failed or unavailable required check yields `iterate` or `block`, never `ship`.
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.
+
+This file states this package's own structural handoff and recheck contract and makes no external claim, so no external source is cited.

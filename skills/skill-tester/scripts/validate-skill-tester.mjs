@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // @ts-check
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { basename, dirname, join, normalize, relative, resolve, sep } from 'node:path';
@@ -16,7 +16,7 @@ const VALID_RISKS = new Set(['smoke', 'targeted', 'standard', 'thorough', 'high-
 /** @typedef {{ code: string, message: string, path?: string, line?: number, [key: string]: unknown }} Issue */
 /** @typedef {{ root: string, evals: string, json: boolean, help: boolean }} Arguments */
 
-/** @param {string[]} argv @returns {Arguments} */
+/** @param {string[]} argv @returns {Arguments} @throws {Error} When an argument is unknown or its value is missing. */
 function parseArgs(argv) {
   const args = { root: 'skills/skill-tester', evals: 'skills/skill-tester/assets/evals/skill-tester-cases.jsonl', json: false, help: false };
   for (let index = 0; index < argv.length; index += 1) {
@@ -266,7 +266,7 @@ function checkEvals(evalPath, errors) {
 }
 
 function help() {
-  console.log('Usage: node skills/skill-tester/scripts/validate-skill-tester.js [--root <skill-dir>] [--evals <jsonl>] [--json]\n\nValidates the skill-tester core, local markdown resources, and machine-readable regression fixture with Node built-ins only.');
+  console.log('Usage: node skills/skill-tester/scripts/validate-skill-tester.mjs [--root <skill-dir>] [--evals <jsonl>] [--json]\n\nValidates the skill-tester core, local markdown resources, and machine-readable regression fixture with Node built-ins only.');
 }
 
 try {

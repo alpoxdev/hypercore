@@ -11,7 +11,7 @@ Edit only when the user explicitly asks to fix, strengthen, add, edit, prune, or
 - a requested target-local eval artifact; or
 - a minimal resource newly required to close a measured gap.
 
-Do not edit neighboring skills, shared instructions, application code, generated files, or external systems. Hand broad architecture, naming, or package redesign to `skill-maker` after recording the findings.
+Do not edit neighboring skills, shared instructions, application code, generated files, or external systems. Hand broad architecture, naming, or package redesign to the skill-authoring workflow after recording the findings.
 
 ## Baseline -> repair -> recheck
 
@@ -44,4 +44,10 @@ For a non-keep candidate, issue a **compare-before-restore** receipt: restore on
 
 ## Stop and handoff
 
-Stop after one repair cycle. Hand to `skill-maker` for a new skill, resource redesign, or broad package refactor; hand to `autoresearch-skill` for a bounded metric experiment. Block when the target, ownership, permission, or required verification capability remains unavailable.
+Stop after one repair cycle. Hand a new skill, resource redesign, or broad package refactor to the skill-authoring workflow; hand a bounded metric experiment to the measured optimization loop. Block when the target, ownership, permission, or required verification capability remains unavailable.
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.
+
+This file states this package's own repair, deletion, and restore procedure and makes no external claim, so no external source is cited.

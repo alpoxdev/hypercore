@@ -41,4 +41,10 @@ If an executable check cannot run, state why, the next-best check, and the concr
 
 ## Handoff
 
-Hand to `skill-maker` for new or structurally redesigned skill packages, `autoresearch-skill` for bounded score optimization, and an application QA workflow for application behavior. Use `rules/skill-maker-handoff.md` for a structural refactor: it carries the target, baseline, failed scenarios, modified paths, untested risks, ownership, and exact post-refactor verifier. Do not treat the receiving skill's claim as verification.
+Hand a new or structurally redesigned skill package to the skill-authoring workflow, a bounded score optimization to the measured optimization loop, and application behavior to an application QA workflow. Use `rules/skill-maker-handoff.md` for a structural refactor: it carries the target, baseline, failed scenarios, modified paths, untested risks, ownership, and exact post-refactor verifier. Do not treat the receiving skill's claim as verification.
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.
+
+This file states this package's own verdict, claim-chain, and evidence format and makes no external claim, so no external source is cited.
