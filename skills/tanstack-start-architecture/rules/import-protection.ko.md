@@ -7,6 +7,7 @@
 | Rule | Classification | Enforcement |
 |---|---|---|
 | Start import protection은 기본 enabled | Official | custom config 전 behavior 확인 |
+| 공식 페이지가 **Experimental** 상태를 달고 있음 | Official | option surface를 재확인하고 변경 가능한 것으로 취급 |
 | `.server.*`는 client에서, `.client.*`는 server에서 deny | Official | leak 차단 |
 | marker import는 module을 한 environment로 제한 | Official | suffix가 부족할 때 사용 |
 | `database/`, `server/`, ORM package custom deny rules | Safety policy | 프로젝트에 필요하면 추가/확장 |
@@ -15,6 +16,18 @@
 ## Official Defaults
 
 TanStack Start import protection은 기본 enabled입니다. explicit `importProtection` object가 항상 필요하다고 말하지 않습니다.
+
+공식 가이드 페이지는 `> **Experimental:** Import protection is experimental and subject to change.`로 시작합니다. option surface를 이미 확정된 API가 아니라 변경될 수 있는 것으로 취급합니다.
+
+문서화된 기본값 (Official, 가이드 option table):
+
+| Option | Default |
+|---|---|
+| `enabled` | `true` |
+| `behavior` | `{ dev: 'mock', build: 'error' }` |
+| `log` | `'once'` |
+| `include` | Start의 `srcDirectory` |
+| `maxTraceDepth` | `20` |
 
 기본 deny pattern:
 
@@ -55,11 +68,28 @@ tanstackStart({
 })
 ```
 
+## Replace vs Additive (Official)
+
+가이드 option table은 각 key가 어느 쪽인지 표시합니다. 여기가 함정입니다. 어떤 key는 내장 규칙에 더해지고, 어떤 key는 내장 규칙을 통째로 대체합니다.
+
+| Key | Semantics | 대체하는 기본값 |
+|---|---|---|
+| `client.specifiers` | Additive with defaults | framework server specifiers |
+| `client.files` | Replaces defaults | `['**/*.server.*']` |
+| `client.excludeFiles` | Replaces defaults | `['**/node_modules/**']` |
+| `server.files` | Replaces defaults | `['**/*.client.*']` |
+| `server.specifiers` | Replaces defaults | `[]` — 그래서 `client.specifiers`와 달리 실제로는 additive가 아닙니다 |
+| `server.excludeFiles` | Replaces defaults | `['**/node_modules/**']` |
+
+`client.files`를 설정하면서 `'**/*.server.*'`를 다시 적지 않으면 기본 deny rule이 조용히 사라집니다. 위 예시가 그 값을 다시 적은 이유입니다. `excludeFiles`는 기본값 `['**/node_modules/**']`를 **fully replaces**, 즉 통째로 대체합니다. `node_modules`는 계속 건너뛰면서 경로를 더 제외하려면 두 pattern을 함께 넘깁니다: `excludeFiles: ['**/node_modules/**', '**/vendor/**']`.
+
 기존 `tanstackStart()`가 있으면 관련 nested option만 확장합니다. plugin을 중복 추가하거나 unrelated option을 덮어쓰지 않습니다.
 
 Project가 development에서도 violation을 실패시키길 원하면 `behavior: 'error'`를 사용합니다. Current options에는 scoped enforcement와 diagnostics를 위한 `log`, `include`, `exclude`, `ignoreImporters`, `maxTraceDepth`, `onViolation`도 포함됩니다.
 
-`client`와 `server` rules는 `files`, `specifiers`, `excludeFiles`를 지원합니다. Default는 `node_modules` 아래 resolved files를 제외합니다. `excludeFiles: []`는 선택한 environment에서 이 검사를 다시 켜므로, third-party package false positive 가능성을 고려해 의도적으로만 사용합니다.
+`client`와 `server` rules는 `files`, `specifiers`, `excludeFiles`를 지원합니다(설정 전에 위의 replace-vs-additive 표를 먼저 확인합니다). Default는 `node_modules` 아래 resolved files를 제외합니다. `excludeFiles: []`는 선택한 environment에서 이 검사를 다시 켜므로, third-party package false positive 가능성을 고려해 의도적으로만 사용합니다.
+
+`mockAccess`(`'error' | 'warn' | 'off'`, default `'error'`)는 `packages/start-plugin-core/src/schema.ts`에 존재하며, `behavior: 'mock'`일 때 mock된 import가 runtime console diagnostic을 내보낼지 제어합니다. 공식 가이드의 option table에는 **없습니다** — 문서가 다루지 않는 실제 schema option입니다. 인용할 때는 undocumented로 표시하고, 의존하기 전에 설치된 package types와 다시 대조합니다. 문서화된 option처럼 적지 않습니다.
 
 ## Compiler Boundary Leak Rule
 
@@ -100,6 +130,7 @@ src/modules/users/profile/
 - [ ] Type-only imports를 runtime boundary leak로 잘못 보고하지 않음.
 - [ ] 기존 `tanstackStart()` option을 덮어쓰지 않고 확장함.
 - [ ] `behavior: 'error'`와 `{ dev, build }` behavior를 의도적으로 선택함.
+- [ ] Custom `client.files` / `server.files` / `excludeFiles` list가 대체하는 기본값을 다시 적었음.
 - [ ] Third-party resolved-file checks가 의도적으로 필요할 때만 `excludeFiles: []`를 사용함.
 - [ ] `.server.*`, `.client.*`, marker import가 일관됨.
 - [ ] server-only import가 recognized boundary 밖에 살아남지 않음.
@@ -109,4 +140,4 @@ src/modules/users/profile/
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, `references/official/current-docs-2026-06-02.md`, 스냅샷 날짜 2026-04-30 및 2026-06-09)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.
+> 이 파일의 공식 TanStack Start import protection 사실(defaults 표, replace-vs-additive 시맨틱, **Experimental** 상태, `mockAccess`)은 2026-09-22에 `https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md`와 고정 SHA `fe7f1fd0e6ef73c3f341dd2338b406749538a85d`의 `packages/start-plugin-core/src/schema.ts`로 검증했습니다. 이 사실은 이 패키지 자체의 2026-09-22 snapshot `references/official/current-docs-2026-09-22.md`에 담겨 있고, 외부 출처는 runtime 의존이 아닙니다. 저장소 로컬 링크 확인 2026-09-22.

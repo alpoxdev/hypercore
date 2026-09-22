@@ -9,6 +9,7 @@
 ```bash
 rg -n "const Route = createFileRoute|export const Route" src/routes 2>/dev/null
 rg -n "from ['\"]@/database|from ['\"].*/database|@prisma/client|drizzle-orm" src/routes 2>/dev/null
+# 탐지 grep: 구버전 프로젝트의 폐기 별칭 `.inputValidator(`도 계속 찾도록 두 철자를 모두 유지합니다
 rg -n "\.validator\(|\.inputValidator\(|createServerFn" src 2>/dev/null
 rg -n "server-only|client-only|\.server\.|\.client\.|importProtection|tanstackStart" vite.config.* src 2>/dev/null
 rg -n "loader:|beforeLoad:|Date\.now\(|Math\.random\(|localStorage|window\." src/routes src/components 2>/dev/null
@@ -30,13 +31,16 @@ grep 결과만으로 판단하지 말고 topic rule file과 함께 해석합니�
 find skills/tanstack-start-architecture -maxdepth 3 -type f | sort
 wc -l skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architecture/SKILL.ko.md
 rg -n 'architecture-rules|rules/|references/official' skills/tanstack-start-architecture/SKILL.md
-rg -n 'last_verified_at|checked_at|2026-06-09|@tanstack/react-start|@tanstack/react-router|source_priority|inputValidator|validator|importProtection|createServerOnlyFn|createMiddleware|createHandlers|excludeFiles' skills/tanstack-start-architecture/references/official
+# snapshot metadata grep: `last_verified_at` 필드 모양을 검사하고 특정 날짜를 박지 않아, snapshot을 새로 받아도 이 검사가 조용히 깨지지 않습니다
+rg -n 'last_verified_at: [0-9]{4}-[0-9]{2}-[0-9]{2}|checked_at|@tanstack/react-start|@tanstack/react-router|source_priority|inputValidator|validator|importProtection|createServerOnlyFn|createMiddleware|createHandlers|excludeFiles' skills/tanstack-start-architecture/references/official
 rg -n 'Official|Safety policy|Hypercore convention|publishing-only|Zod v4|enabled by default|server\.handlers|createHandlers|behavior: '\''error'\''|Type-only imports' skills/tanstack-start-architecture/rules skills/tanstack-start-architecture/architecture-rules.md
 rg -n 'functions\.ts|server\.ts|same-origin|CSRF|dynamic import|mixed barrel|routeFileIgnorePrefix|src/modules/<domain>|src/db/<domain>|src/integrations/<provider>' skills/tanstack-start-architecture
 rg -n 'src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: "VITE_"|runtimeEnvStrict|emptyStringAsUndefined|Do not create `src/env/`' skills/tanstack-start-architecture/rules/platform.md
 rg -n 'src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: "VITE_"|runtimeEnvStrict|emptyStringAsUndefined|`src/env/`' skills/tanstack-start-architecture/rules/platform.ko.md
 rg -n 'project-structure|src/routes|routeTree.gen|routesDirectory|src/modules|src/lib|src/integrations|direct leaf|repo-local convention' skills/tanstack-start-architecture
 rg -n '@rules/project-structure.md|@rules/project-structure.ko.md' skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architecture/SKILL.ko.md
+# 고아 방지: rules/conventions.md가 진입점과 주제 색인에서 직접 link된 상태를 유지해야 합니다
+rg -n 'conventions(\.ko)?\.md' skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architecture/SKILL.ko.md skills/tanstack-start-architecture/architecture-rules.md
 ```
 
 Must pass:
@@ -44,7 +48,7 @@ Must pass:
 - `SKILL.md`와 `SKILL.ko.md`가 duplicated rulebook이 아니라 lean entrypoint임.
 - core에서 참조하는 support file은 직접 링크되어 있고 indirect reference chain이 없음.
 - 공식 TanStack 사실은 긴 core section이 아니라 `references/official/`에 있음.
-- current official snapshot `references/official/current-docs-2026-06-02.ko.md`는 `SKILL.ko.md`에서 직접 link되며 API drift가 중요할 때 사용됨.
+- current official snapshot `references/official/current-docs-2026-09-22.ko.md`는 `SKILL.ko.md`에서 직접 link되며 API drift가 중요할 때 사용됨.
 - hypercore-only convention이 그렇게 label됨.
 - `rules/project-structure.md`와 `rules/project-structure.ko.md`가 존재하고 직접 링크됨.
 - project-structure guidance가 `src/routes`, custom `routesDirectory`, generated `routeTree.gen.ts`, shared nested folders, touched shared root direct leaf file 금지, route-local/shared server function placement를 다룸.
@@ -53,10 +57,11 @@ Must pass:
 - publishing-only route exception과 hook extraction rule이 모순되지 않음.
 - search validation guidance가 Zod v4 direct schema와 Zod v3 adapter를 모두 다룸.
 - import protection guidance가 default 존재와 custom deny 필요 시 explicit config를 모두 설명함.
-- Middleware guidance가 request middleware `createMiddleware()`, server function middleware `createMiddleware({ type: 'function' })`, middleware `.validator(...)`, server function `.validator(...)`를 구분함.
+- Middleware guidance가 request middleware `createMiddleware()`, server function middleware `createMiddleware({ type: 'function' })`, middleware `.validator(...)`, server function `.validator(...)`를 구분하며, 두 체인 모두에서 `.validator(...)`가 정본이고 `.inputValidator(...)`는 폐기 별칭임.
 - Server route guidance가 `server.handlers`, `createHandlers`, route-level `server.middleware`, duplicate method collision checks, wildcard/splat route notes를 포함함.
 - Import protection guidance가 type-only import behavior, `behavior: 'error'`, `excludeFiles`, diagnostic/scoping options를 포함함.
 - env validation guidance가 `src/config/env.ts`를 사용하고, 새 `src/env/` scaffold를 금지하며, `@t3-oss/env-core` / Vite public-prefix boundary를 설명함.
+- Deprecated feature-folder guidance가 이 스킬에 없음.
 - English/Korean entrypoint의 trigger, boundary, workflow, read order가 일치함.
 
 ## Trigger Tests
@@ -96,4 +101,4 @@ Boundary:
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, `references/official/current-docs-2026-06-02.md`, 스냅샷 날짜 2026-04-30 및 2026-06-09)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, `references/official/current-docs-2026-09-22.md`)에 위임합니다. 공식 사실 검증 2026-09-22. 저장소 로컬 링크 확인 2026-09-22.

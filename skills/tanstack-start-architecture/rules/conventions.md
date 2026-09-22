@@ -32,13 +32,15 @@ FORBIDDEN camelCase: getUserById.ts, authService.ts, useUserFilter.ts
 REQUIRED kebab-case: get-user-by-id.ts, auth-service.ts, use-user-filter.ts
 ```
 
+Folder shape and placement (route roots, shared folders, and co-located `-hooks/` / `-components/` / `-functions/` directories) are owned by [`rules/project-structure.md`](project-structure.md); this file owns file naming. Apply both when adding files.
+
 ---
 
 ## TypeScript Rules
 
 | Rule | Description | Example |
 |------|-------------|---------|
-| **Function declaration** | const arrow function, explicit return type | `const fn = (): ReturnType => {}` |
+| **Function declaration** | const arrow function, explicit return type (framework entrypoint exemption below) | `const fn = (): ReturnType => {}` |
 | **Type definition** | interface (objects), type (unions) | `interface User {}`, `type Status = 'a' \| 'b'` |
 | **No any** | Use unknown | `const data: unknown = JSON.parse(str)` |
 | **Type imports** | Separate type imports | `import type { User } from '@/types'` |
@@ -54,9 +56,11 @@ const parseJSON = (data: string): unknown => {
   return JSON.parse(data)
 }
 
-// function keyword FORBIDDEN
+// function keyword FORBIDDEN, except at a framework entrypoint whose official example is a declaration
 // function badFunction() {} -> use const arrow function
 ```
+
+**Framework entrypoint exemption (Official).** The ban on function declarations has exactly one exception: a framework-mandated entrypoint whose official example uses a declaration. `src/router.tsx` must `export function getRouter()` (Official), so that single file keeps its declaration. The exemption covers the declaration FORM only - explicit return types, `no any`, kebab-case filenames, and Korean block comments still apply there, and the const arrow function rule still applies to every other file (route files, hooks, components, server functions, and libs).
 
 ---
 
@@ -142,4 +146,4 @@ export class UnauthorizedError extends AppError {
 
 ## Sources
 
-> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, and `references/official/current-docs-2026-06-02.md` (snapshot dates 2026-04-30 and 2026-06-09). Repository-local links checked 2026-09-21.
+> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, and `references/official/current-docs-2026-09-22.md` (official facts verified 2026-09-22). Repository-local links checked 2026-09-22.

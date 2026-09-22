@@ -14,11 +14,12 @@ description: "Use this skill when reviewing or changing an existing TanStack Sta
 @rules/server-routes.md
 @rules/ssr-hydration.md
 @rules/platform.md
+@rules/conventions.md
 @rules/validation.md
-@references/official/tanstack-start-2026-04-30.md
-@references/official/tanstack-router-2026-04-30.md
+@references/official/tanstack-start-2026-09-22.md
+@references/official/tanstack-router-2026-09-22.md
 @references/official/api-drift-notes.md
-@references/official/current-docs-2026-06-02.md
+@references/official/current-docs-2026-09-22.md
 
 # TanStack Start Architecture Enforcement
 
@@ -143,11 +144,12 @@ Read only what the task needs:
    - `rules/server-routes.md` — justified HTTP endpoints vs internal app RPC.
    - `rules/ssr-hydration.md` — deterministic first render, `ClientOnly`, route SSR modes.
    - `rules/platform.md` — `getRouter()`, env validation, path aliases, operational endpoints.
-3. `references/official/tanstack-start-2026-04-30.md` when Start API behavior matters.
-4. `references/official/tanstack-router-2026-04-30.md` when Router/file-route/search/loading behavior matters.
-5. `references/official/current-docs-2026-06-02.md` when current Start docs, plugin config, import protection, server functions, or execution-control APIs affect the decision.
-6. `references/official/api-drift-notes.md` when docs conflict or current package behavior is uncertain.
-7. `rules/validation.md` before claiming completion.
+3. `rules/conventions.md` — file naming, TypeScript style, comment, and error-class conventions for any touched file.
+4. `references/official/tanstack-start-2026-09-22.md` when Start API behavior matters.
+5. `references/official/tanstack-router-2026-09-22.md` when Router/file-route/search/loading behavior matters.
+6. `references/official/current-docs-2026-09-22.md` when current Start docs, plugin config, import protection, server functions, or execution-control APIs affect the decision.
+7. `references/official/api-drift-notes.md` when docs conflict or current package behavior is uncertain.
+8. `rules/validation.md` before claiming completion.
 
 </support_file_read_order>
 

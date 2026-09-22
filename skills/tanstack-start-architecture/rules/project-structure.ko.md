@@ -8,7 +8,7 @@
 |---|---|---|
 | Start source와 route root는 `tanstackStart({ srcDirectory, router: { routesDirectory } })` 또는 defaults에서 도출 | Official | config가 다르면 `src/routes`를 hard-code하지 않음 |
 | `src/router.tsx`가 `getRouter()`를 export하고 generated `routeTree.gen.ts`를 import | Official | `rules/platform.md`와 함께 확인 |
-| `routeTree.gen.ts`는 Start/Router tooling이 생성 | Official + Safety policy | 일반 architecture work에서 수동 편집 금지 |
+| `routeTree.gen.ts`는 Start/Router tooling이 생성하며 git에 커밋해야 함 | Official + Safety policy | 일반 architecture work에서 수동 편집 금지, 생성 파일은 커밋 |
 | `public/`, root `vite.config.ts`, `package.json`, `tsconfig.json`는 project-level surface로 유지 | Official/docs-derived | source folder 안의 app code처럼 이동하지 않음 |
 | `src/modules`, `src/lib`, `src/db`, `src/server`, `src/integrations`, `src/config` 같은 shared folders | Hypercore convention | domain/runtime ownership을 nested folder로 표현 |
 | server-only shared code는 compiler-recognized boundaries 뒤에 둠 | Safety policy | client-reachable secret/DB/privileged import 차단 |
@@ -38,7 +38,7 @@ tsconfig.json
 
 - `src/routes`는 default route directory이며, config가 override하면 무조건적인 path가 아닙니다.
 - `src/router.tsx`는 router creation을 담당하고 `getRouter()`를 export해야 합니다.
-- `src/routeTree.gen.ts`는 generated file입니다. route 변경을 위해 수동 rewrite하지 않습니다.
+- `src/routeTree.gen.ts`는 generated file입니다. route 변경을 위해 수동 rewrite하지 않고, 커밋합니다. 공식 FAQ는 "Should I commit my `routeTree.gen.ts` file into git?"에 "Yes!"라고 답하며, generated route tree가 "part of your application's runtime, not a build artifact"라고 설명합니다 (Official).
 - `public/`은 static assets용입니다.
 - `vite.config.ts`에는 Start plugin과 route/source directory customization이 있습니다.
 
@@ -61,6 +61,8 @@ export default defineConfig({
   ],
 })
 ```
+
+위 예시는 Start의 Vite plugin(`@tanstack/react-start/plugin/vite`)을 사용합니다. Vite는 공식 번들러 통합 둘 중 하나이고, 다른 하나는 Rsbuild이며 자체 plugin entry `@tanstack/react-start/plugin/rsbuild`를 가집니다 (Official). Vite를 당연하게 가정하지 말고 프로젝트 번들러에 맞는 plugin path를 사용합니다.
 
 Default route root는 `src/routes`입니다. `srcDirectory` 또는 `router.routesDirectory`가 custom이면 config에서 실제 route root를 도출하고 review에 보고합니다.
 
@@ -87,7 +89,7 @@ Default route root는 `src/routes`입니다. `srcDirectory` 또는 `router.route
 │   └── schemas.ts               # route-local client-safe validation/types
 ```
 
-이 shape는 Hypercore convention입니다. TanStack Router는 flat, directory, mixed route structures를 공식 지원하므로 flat route files를 official TanStack usage로 invalid라고 말하지 않습니다. Router의 `routeFileIgnorePrefix` 기본값은 `-`이므로 `-components`, `-hooks`, `-functions` 같은 route-local folders는 route file로 처리되지 않는 co-location 용도로 적합합니다.
+이 shape는 Hypercore convention입니다. TanStack Router는 flat, directory, mixed route structures를 공식 지원하므로 flat route files를 official TanStack usage로 invalid라고 말하지 않습니다. Router의 `routeFileIgnorePrefix` 기본값은 `-`이며 (Official), `-components`, `-hooks`, `-functions` 같은 route-local folders는 route file로 처리되지 않는 co-location 용도로 적합합니다. 이 공식 기본값이 이 스킬의 `-hooks/`, `-components/`, `-functions/` 관례를 뒷받침합니다. Hypercore가 만들어 낸 규칙이 아니라 이 prefix가 해당 folder를 route tree 밖에 두기 때문입니다. 같은 문서는 `routeFilePrefix`, `routeFileIgnorePrefix`, `routeFileIgnorePattern`을 File Naming Conventions 가이드에서 쓰는 token과 겹치게 설정하지 말라고 경고합니다. 겹치면 예기치 않은 동작이 생길 수 있습니다 (Official).
 
 Page UI composition과 route-specific orchestration은 route-local folders를 사용합니다. Publishing-only static pages에 empty folders를 강제하지 않습니다. Server function은 기본적으로 `src/modules/<domain>/<feature>/`에 두고, route-only action일 때만 route-local `-functions/`를 예외적으로 사용합니다.
 
@@ -113,6 +115,8 @@ Naming decision:
 - Domain-owned feature code는 `src/modules/<domain>/<feature>/`를 사용합니다. Server functions, server-only helpers, feature hooks, feature components, schemas, query keys, DTOs를 함께 담아도 좁은 service wrapper처럼 오해되지 않기 때문입니다.
 - `src/services/`는 기본 domain layer로 사용하지 않습니다. Hooks, schemas, query keys, UI support가 RPC wrapper 옆에 함께 있을 때 이름이 너무 좁고 애매해집니다.
 - External SDK/client adapters는 `src/integrations/<provider>/`를 사용합니다. Domain modules가 provider를 orchestration할 수는 있지만 provider-specific client가 domain workflow를 소유하지는 않습니다.
+
+파일 명명 규칙(kebab-case 파일명, hook과 component 명명, TypeScript style)은 [`rules/conventions.ko.md`](conventions.ko.md)가 소유하고, 이 파일은 folder shape와 placement를 소유합니다. 파일을 추가할 때 두 규칙을 함께 적용합니다.
 
 권장 Hypercore shape 예시:
 
@@ -186,7 +190,7 @@ TanStack Start 공식 file organization guidance는 큰 앱에서 server functio
 src/modules/users/profile/
 ├── profile.functions.ts      # createServerFn wrappers; route loader/component/hook에서 static import
 ├── profile.server.ts         # DB/secret/filesystem access; handler 내부에서만 import
-├── profile.schemas.ts        # inputValidator schema, serializable DTO
+├── profile.schemas.ts        # validator schema, serializable DTO
 └── profile-query-keys.ts     # client-safe query keys
 ```
 
@@ -241,4 +245,4 @@ Route loader 또는 client-reachable module이 DB clients, secret env, filesyste
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, `references/official/current-docs-2026-06-02.md`, 스냅샷 날짜 2026-04-30 및 2026-06-09)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, `references/official/current-docs-2026-09-22.md`)에 위임합니다. 이 snapshot의 공식 사실은 2026-09-22에 검증했습니다. 저장소 로컬 링크 확인 2026-09-22.
