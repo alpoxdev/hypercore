@@ -1,7 +1,24 @@
 # AEO/GEO/LLMO Strategy Guide
 
 **Purpose**: AI search optimization reference for AEO/GEO phases.
-**Last verified**: 2026-07-28 from Google Search Central, OpenAI crawler docs, web.dev, arXiv GEO research, and the llms.txt proposal.
+**Last verified**: 2026-09-21 from Google Search Central, OpenAI crawler docs, web.dev, arXiv GEO research, the llms.txt proposal, and the Search Console generative AI inclusion and performance documentation.
+
+## Contents
+
+- Evidence Discipline
+- Official Caveats
+- Terminology
+- SEO vs AEO vs GEO
+- AEO Strategy
+- GEO Strategy
+- Platform Policy Matrix
+- Search Console AI Inclusion Controls (`official`)
+- Generative AI Performance Report (`official`)
+- Bot Purpose vs Observed Access (`official` + `field`)
+- llms.txt
+- Measurement KPIs
+- Practical Optimization Order
+- Source Ledger
 
 ## Evidence Discipline
 
@@ -112,6 +129,51 @@ If probing is unavailable, save the prompt pack as `not-run` rather than pretend
 | ChatGPT-User | User-triggered fetches | Not a normal automatic search crawler; document separately |
 | PerplexityBot / ClaudeBot | AI retrieval/crawling only where currently documented or directly observed | Re-check current official policy before recommending a rule; otherwise record `unknown` |
 
+## Search Console AI Inclusion Controls (`official`)
+
+Google surfaces generative AI inclusion as a per-property setting, not a ranking signal.
+
+| Aspect | What to record | Why it matters |
+|--------|----------------|----------------|
+| Location | Settings > Search generative AI in the property | This is where inclusion is controlled, not in robots.txt |
+| States | Included, excluded, or inherited from a parent property | Record the observed state and whether it was set locally or inherited |
+| Targets | AI Overviews, AI Mode, Discover | One property can be included in one surface and excluded from another |
+| Default | A property is included or inherits unless someone excluded it | Absence of an explicit choice is not evidence of exclusion |
+| Separation | Distinct from `Google-Extended`, which governs AI product and training use | Blocking training is not an inclusion decision, and inclusion is not a training allowance |
+| Ranking | Not a ranking or inclusion signal for ordinary Search | Do not present it as an SEO lever |
+
+Audit the policy and the live setting as two separate items. Per-property access conditions can leave the setting unreadable, so a missing value is `unknown`, not a finding that inclusion is disabled.
+
+## Generative AI Performance Report (`official`)
+
+The Search Console generative AI performance report reports exposure counts, not citations.
+
+| Aspect | What to record | Why it matters |
+|--------|----------------|----------------|
+| Dimensions | Page, country, date, device | Exposure is only interpretable with the dimension it was sliced by |
+| Date handling | Dates are reported in Pacific Time | Compare against the same calendar basis before drawing a trend |
+| Availability | Global rollout reached all users by 2026-08-31 | Absence before that date is a rollout artifact, not a performance signal |
+| Aggregation | Do not merge these numbers with ordinary web search data | They are a separate surface with separate semantics |
+| Collection | No dedicated API was documented as of 2026-09-21 | Automated collection is `unknown`; do not script an undocumented endpoint |
+| Export caveat | Exported `~` and `-` values are converted to `0` | A zero in an export is not a measured zero |
+| Meaning | Exposure visibility only; it does not measure citations | Do not report exposure as citation evidence |
+
+## Bot Purpose vs Observed Access (`official` + `field`)
+
+Keep four channels separate, because each one answers a different question.
+
+| Channel | Evidence tier | Question it answers |
+|---------|---------------|---------------------|
+| Published policy | `official` | What the vendor says the bot is for |
+| Crawl configuration | `tool` | What the site currently allows in robots.txt, meta, or headers |
+| Observed requests | `field` | What actually reached the origin |
+| Observed citations | `synthetic` | Whether answers cited the source |
+
+- A robots allowance is not evidence of crawling, and crawling is not evidence of citation.
+- `OAI-SearchBot`, `GPTBot`, and `ChatGPT-User` have different purposes. `ChatGPT-User` is not an automatic crawler, so absent requests from it are not a defect.
+- Exclude `OAI-AdsBot` from search-visibility findings.
+- Inspect these bots only when the target actually depends on the related service; otherwise record `unknown`.
+
 ## llms.txt
 
 Use `llms.txt` as an optional, low-risk content map:
@@ -162,3 +224,18 @@ Rules:
 | https://developers.openai.com/api/docs/bots | 2026-07-28 | OAI-SearchBot/GPTBot/ChatGPT-User purpose separation | Bot strings and policies can change |
 | https://llmstxt.org/ | 2026-07-28 | Format and stated intent of the llms.txt proposal | Proposal, not a standards-body or ranking contract |
 | https://arxiv.org/abs/2311.09735 | 2026-07-28 | Origin and benchmark scope of GEO research | 2023 benchmark result is not a live-engine guarantee |
+| https://support.google.com/webmasters/answer/16908024 | 2026-09-21 | Search Console generative AI inclusion controls and their per-property states | A setting audit is not a ranking or traffic guarantee; unreadable settings stay `unknown` |
+| https://support.google.com/webmasters/answer/16984139 | 2026-09-21 | Generative AI performance report dimensions, Pacific Time dates, and export caveats | Exposure counts are not citation measurements; exported `0` may be an unset value |
+
+## Sources
+
+> No new external source was used. Content checked 2026-09-22; the sources below were last read on the dates recorded in the ledger above.
+
+| Claim | Source |
+|---|---|
+| AI-feature requirements, snippet eligibility, query fan-out, and crawl controls | <https://developers.google.com/search/docs/appearance/ai-features>, accessed 2026-07-28 |
+| OpenAI crawler purpose separation (OAI-SearchBot, GPTBot, ChatGPT-User) | <https://developers.openai.com/api/docs/bots>, accessed 2026-07-28 |
+| Format and stated intent of the llms.txt proposal | <https://llmstxt.org/>, accessed 2026-07-28 |
+| Origin and benchmark scope of the GEO research the GEO CORE framework summarizes | <https://arxiv.org/abs/2311.09735>, accessed 2026-07-28 |
+| Search Console generative AI inclusion controls and their per-property states | <https://support.google.com/webmasters/answer/16908024>, accessed 2026-09-21 |
+| Generative AI performance report dimensions, Pacific Time dates, and export caveats | <https://support.google.com/webmasters/answer/16984139>, accessed 2026-09-21 |

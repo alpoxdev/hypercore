@@ -1,7 +1,24 @@
 # AEO/GEO/LLMO 전략 가이드
 
 **목적**: AEO/GEO 단계에서 사용하는 AI 검색 최적화 레퍼런스.
-**최종 확인**: 2026-07-28, Google Search Central, OpenAI crawler docs, web.dev, arXiv GEO research, llms.txt proposal 기준.
+**최종 확인**: 2026-09-21, Google Search Central, OpenAI crawler docs, web.dev, arXiv GEO research, llms.txt proposal, Search Console 생성 AI 포함 제어·성과 보고서 문서 기준.
+
+## 목차
+
+- 증거 규율
+- 공식 주의사항
+- 용어
+- SEO vs AEO vs GEO
+- AEO 전략
+- GEO 전략
+- 플랫폼 정책 매트릭스
+- Search Console 생성 AI 포함 제어(`official`)
+- 생성 AI 성과 보고서(`official`)
+- 봇 목적과 관측 접근의 구분(`official` + `field`)
+- llms.txt
+- 측정 KPI
+- 실무 최적화 순서
+- Source Ledger
 
 ## 증거 규율
 
@@ -112,6 +129,51 @@ Probe를 사용할 수 없으면 신호가 있는 것처럼 꾸미지 말고 pro
 | ChatGPT-User | 사용자 트리거 fetch | 일반 자동 search crawler가 아니므로 별도 문서화 |
 | PerplexityBot / ClaudeBot | 현재 문서화되었거나 직접 관측된 경우의 AI retrieval/crawling | Rule 권장 전 current official policy를 다시 확인하고 그렇지 않으면 `unknown` 기록 |
 
+## Search Console 생성 AI 포함 제어(`official`)
+
+Google은 생성 AI 포함 여부를 속성별 설정으로 다룬다. 순위 신호가 아니다.
+
+| 항목 | 기록할 내용 | 중요한 이유 |
+|------|-------------|-------------|
+| 위치 | 속성의 설정 > Search 생성 AI | 포함 여부를 정하는 자리는 여기이고 robots.txt가 아니다 |
+| 상태 | 포함, 제외, 상위 속성에서 상속 | 관측한 상태와 그것이 로컬 설정인지 상속인지 함께 기록한다 |
+| 대상 | AI Overviews, AI Mode, Discover | 한 속성이 한 surface에는 포함되고 다른 surface에서는 제외될 수 있다 |
+| 기본값 | 누군가 제외하지 않았다면 포함 또는 상속 | 명시적 선택이 없다는 사실은 제외의 근거가 아니다 |
+| 분리 | AI 제품·학습 용도를 다루는 `Google-Extended`와 별개 | 학습 차단은 포함 결정이 아니고 포함은 학습 허용이 아니다 |
+| 순위 | 일반 Search의 순위·포함 신호가 아님 | SEO 지렛대처럼 제시하지 않는다 |
+
+정책과 실제 설정은 별개 항목으로 감사한다. 속성별 접근 조건 때문에 설정을 읽지 못할 수 있으므로 값이 없으면 `unknown`이고, 포함이 꺼졌다는 발견이 아니다.
+
+## 생성 AI 성과 보고서(`official`)
+
+Search Console 생성 AI 성과 보고서가 보고하는 것은 노출 수이고 인용이 아니다.
+
+| 항목 | 기록할 내용 | 중요한 이유 |
+|------|-------------|-------------|
+| 차원 | 페이지, 국가, 날짜, 기기 | 노출은 어느 차원으로 잘랐는지와 함께라야 해석된다 |
+| 날짜 처리 | 날짜는 Pacific Time 기준 | 추세를 판단하기 전에 같은 달력 기준으로 맞춘다 |
+| 제공 범위 | 2026-08-31까지 전 세계 배포 완료 | 그 이전의 부재는 배포 시점의 산물이고 성과 신호가 아니다 |
+| 집계 | 일반 웹 검색 데이터와 합치지 않는다 | 별도 surface이고 의미도 별도다 |
+| 수집 | 2026-09-21 기준 전용 API 미문서화 | 자동 수집은 `unknown`이며 문서화되지 않은 endpoint를 스크립트로 두드리지 않는다 |
+| 내보내기 주의 | 내보낸 `~`와 `-` 값이 `0`으로 변환됨 | 내보낸 0은 실측 0이 아니다 |
+| 의미 | 노출 가시성만이며 인용을 측정하지 않음 | 노출을 인용 근거로 보고하지 않는다 |
+
+## 봇 목적과 관측 접근의 구분(`official` + `field`)
+
+네 채널을 분리해 둔다. 각 채널이 답하는 질문이 다르기 때문이다.
+
+| 채널 | 근거 등급 | 답하는 질문 |
+|------|-----------|-------------|
+| 공개 정책 | `official` | 벤더가 그 봇의 용도를 무엇이라 말하는가 |
+| 크롤 설정 | `tool` | 사이트가 robots.txt, meta, header에서 현재 무엇을 허용하는가 |
+| 실제 요청 | `field` | 실제로 origin에 도달한 것은 무엇인가 |
+| 관측 인용 | `synthetic` | 답변이 그 출처를 인용했는가 |
+
+- robots 허용은 크롤의 증거가 아니고, 크롤은 인용의 증거가 아니다.
+- `OAI-SearchBot`, `GPTBot`, `ChatGPT-User`는 목적이 다르다. `ChatGPT-User`는 자동 크롤러가 아니므로 이 봇의 요청 부재는 결함이 아니다.
+- `OAI-AdsBot`은 search visibility 조사에서 제외한다.
+- 타깃이 관련 서비스에 실제로 의존할 때만 이 봇을 점검하고, 아니면 `unknown`으로 남긴다.
+
 ## llms.txt
 
 `llms.txt`를 선택적이고 저위험인 콘텐츠 맵으로 사용한다:
@@ -162,3 +224,18 @@ Probe를 사용할 수 없으면 신호가 있는 것처럼 꾸미지 말고 pro
 | https://developers.openai.com/api/docs/bots | 2026-07-28 | OAI-SearchBot/GPTBot/ChatGPT-User purpose separation | Bot string과 policy는 변할 수 있음 |
 | https://llmstxt.org/ | 2026-07-28 | llms.txt proposal의 format과 stated intent | Standards-body/ranking contract가 아닌 proposal |
 | https://arxiv.org/abs/2311.09735 | 2026-07-28 | GEO research의 origin과 benchmark scope | 2023 benchmark result는 live-engine guarantee가 아님 |
+| https://support.google.com/webmasters/answer/16908024 | 2026-09-21 | Search Console 생성 AI 포함 제어와 속성별 상태 | 설정 감사는 순위·트래픽 보장이 아니고 읽지 못한 설정은 `unknown`으로 남김 |
+| https://support.google.com/webmasters/answer/16984139 | 2026-09-21 | 생성 AI 성과 보고서의 차원, Pacific Time 날짜, 내보내기 주의 | 노출 수는 인용 측정이 아니고 내보낸 `0`은 미설정 값일 수 있음 |
+
+## Sources
+
+> 새 외부 출처는 사용하지 않았다. 내용 확인 2026-09-22. 아래 출처의 마지막 열람일은 위 원장에 기록된 날짜와 같다.
+
+| 주장 | 출처 |
+|---|---|
+| AI features의 ordinary SEO 요구사항, snippet 자격, query fan-out, 크롤 제어 | <https://developers.google.com/search/docs/appearance/ai-features>, 2026-07-28 확인 |
+| OpenAI 크롤러 목적 구분(OAI-SearchBot, GPTBot, ChatGPT-User) | <https://developers.openai.com/api/docs/bots>, 2026-07-28 확인 |
+| llms.txt 제안의 형식과 표명된 의도 | <https://llmstxt.org/>, 2026-07-28 확인 |
+| GEO CORE 프레임워크가 요약하는 GEO 연구의 출처와 벤치마크 범위 | <https://arxiv.org/abs/2311.09735>, 2026-07-28 확인 |
+| Search Console 생성 AI 포함 제어와 속성별 상태 | <https://support.google.com/webmasters/answer/16908024>, 2026-09-21 확인 |
+| 생성 AI 성과 보고서의 차원, Pacific Time 날짜, 내보내기 주의 | <https://support.google.com/webmasters/answer/16984139>, 2026-09-21 확인 |
