@@ -11,5 +11,5 @@
     "target": "ES2022",
     "types": ["bun"]
   },
-  "include": ["../skills/**/scripts/**/*.mjs"]
+  "include": ["./check-skill-standards.mjs", "../skills/**/scripts/**/*.mjs"]
 }

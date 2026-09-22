@@ -1,6 +1,279 @@
 {
   "scripts": [
     {
+      "path": "skills/ai-design-slop-remover/scripts/analyze-structure.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "analyze-structure",
+      "behavior": "structure-analysis",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/analyze-structure.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/analyze-structure.cjs",
+          "fromSha256": "9b379e486755ea09729d7b52097718868ef8817dbb4e9169e9bcab34152eb8d0",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--analyze-structure"
+    },
+    {
+      "path": "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "collect-rendered-evidence",
+      "behavior": "rendered-evidence-collection",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.cjs",
+          "fromSha256": "562f561401694e9e8b0377a88e0a48884812929ca50c7c6e202896119ab1d7a3",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--collect-rendered-evidence"
+    },
+    {
+      "path": "skills/ai-design-slop-remover/scripts/detect-slop.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "detect-slop",
+      "behavior": "slop-detection",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/detect-slop.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/detect-slop.cjs",
+          "fromSha256": "17e5c21a8eec75f0f4638196f67aca8de0bf5ff49b6bb6ff71c9d156e56e847a",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--detect-slop"
+    },
+    {
+      "path": "skills/ai-design-slop-remover/scripts/engine-css.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "slop-engine-css",
+      "behavior": "slop-engine-css",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/engine-css.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/engines/css.cjs",
+          "fromSha256": "2cc502ed2086a4ff293a153e7981da7738dc019cbd3fd0d64ce1da1418d7a03c",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--engine-css"
+    },
+    {
+      "path": "skills/ai-design-slop-remover/scripts/engine-markup.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "slop-engine-markup",
+      "behavior": "slop-engine-markup",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/engine-markup.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/engines/markup.cjs",
+          "fromSha256": "d283db47e8a7464a29a08ad2035e77e46a895a11693eb4b40842628caff06161",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--engine-markup"
+    },
+    {
+      "path": "skills/ai-design-slop-remover/scripts/engine-text.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "slop-engine-text",
+      "behavior": "slop-engine-text",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/engine-text.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/engines/text.cjs",
+          "fromSha256": "d892fa19e78bc785631ec8ca0d472566a160898b035345a9c9136db49c91a7df",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--engine-text"
+    },
+    {
+      "path": "skills/ai-design-slop-remover/scripts/resolve-context.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "resolve-context",
+      "behavior": "context-resolution",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/resolve-context.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/resolve-context.cjs",
+          "fromSha256": "4cd95ded813c423e0c3deba3e4af9240d38e4c88d5ca6e15e5be9fae5f8a27cc",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--resolve-context"
+    },
+    {
+      "path": "skills/ai-design-slop-remover/scripts/rule-registry.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "slop-rule-registry",
+      "behavior": "slop-rule-registry",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/rule-registry.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/rules/registry.cjs",
+          "fromSha256": "67492b55d8417e73ecdad9b32de902aca674cdd576f7cc9f920c595f8694db05",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--rule-registry"
+    },
+    {
+      "path": "skills/ai-design-slop-remover/scripts/rule-shared.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "slop-rule-shared",
+      "behavior": "slop-rule-shared",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/rule-shared.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/rules/shared.cjs",
+          "fromSha256": "0d4f0fec0192872ec25a459426ceae5707c45befa71a203de21a12f4088a40ce",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--rule-shared"
+    },
+    {
+      "path": "skills/ai-design-slop-remover/scripts/run-contract-evals.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "run-contract-evals",
+      "behavior": "contract-eval-run",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/run-contract-evals.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/run-contract-evals.cjs",
+          "fromSha256": "f9d5abe484d028aebcd7dad92e90dbc77ee6144f9ee96db98cb9393d5c7bca5b",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--run-contract-evals"
+    },
+    {
+      "path": "skills/ai-design-slop-remover/scripts/run-detector-evals.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "run-detector-evals",
+      "behavior": "detector-eval-run",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/run-detector-evals.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/run-detector-evals.cjs",
+          "fromSha256": "fddb35e5a47670733d2b85f657b88e6136d0bad7482d3e652bd3129466c4dbf4",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--run-detector-evals"
+    },
+    {
+      "path": "skills/ai-design-slop-remover/scripts/validate-report.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "validate-report",
+      "behavior": "report-validation",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/validate-report.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/validate-report.cjs",
+          "fromSha256": "0876b9f0c9291cc590c406fb6552363de33303b9fdb244dfcd940d85798c7d1f",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--validate-report"
+    },
+    {
+      "path": "skills/ai-design-slop-remover/scripts/validate-waivers.mjs",
+      "family": "ai-design-slop-remover",
+      "legacyOrigin": "authored-mjs",
+      "usage": "validate-waivers",
+      "behavior": "waiver-validation",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/ai-design-slop-remover/scripts/validate-waivers.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/ai-design-slop-remover/scripts/validate-waivers.cjs",
+          "fromSha256": "f288eaeca8342136488d50ba456dfc00acc2fa78177ce356cb9256691075f1f7",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "ai-design-slop-remover--validate-waivers"
+    },
+    {
       "path": "skills/autoresearch-skill/scripts/render-dashboard.mjs",
       "family": "autoresearch-skill",
       "legacyOrigin": "former-sh",
@@ -362,6 +635,27 @@
         "gitMode": "100644"
       },
       "behaviorContractId": "skill-tester--validate-skills-corpus"
+    },
+    {
+      "path": "skills/skill-tester/scripts/validate-skill-tester.mjs",
+      "family": "skill-tester",
+      "legacyOrigin": "authored-mjs",
+      "usage": "validate-skill",
+      "behavior": "skill-validation",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/skill-tester/scripts/validate-skill-tester.mjs",
+          "absent": true
+        },
+        "migration": {
+          "fromPath": "skills/skill-tester/scripts/validate-skill-tester.js",
+          "fromSha256": "978399934eee9ee856d07ae6703c6181ab4ec2c25e19ab420107682b0bebee56",
+          "fromMode": "100644",
+          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
+        }
+      },
+      "behaviorContractId": "skill-tester--validate-skill-tester"
     },
     {
       "path": "skills/version-update/scripts/git-commit.mjs",
