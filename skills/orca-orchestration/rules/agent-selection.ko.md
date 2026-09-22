@@ -79,7 +79,8 @@ terminal_created -> terminal_ready -> dispatch_created -> prompt_delivered -> wo
 `terminal create`, `terminal wait`, `dispatch`만으로 `worker_active`를 표시하지 않습니다.
 `prompt_delivered`에는 terminal-send receipt와 prompt가 수락됐다는 전송 뒤 terminal read가 모두
 필요합니다. `worker_completed`에는 활성 Dispatch의 수락된 `worker_done`, `escalation` 또는
-정확한 recovery outcome이 필요합니다.
+정확한 recovery outcome이 필요합니다. `worker_stalled`와 `recovery_in_progress`는 체인
+상태가 아니라 fence 밖의 부모 측 관측 주석입니다.
 
 ### 기존 OMO 터미널: 재사용하고 절대 교체하지 않기
 
@@ -165,11 +166,11 @@ Dispatch가 모두 `completed`인지 확인한 후에만 완료를 주장합니�
 | `dispatch-show`가 `--run`을 거부 | 현재 명령이 그 flag를 받지 않는다. 정확히 지원되는 `--task <task-id> --preamble --json` 형태로 다시 실행하고 state를 다시 만들지 않는다. |
 | Prompt-send 실패 | 기존 Dispatch를 보존하고 delivery/terminal 상태를 검사하며 exact recovery action을 따른다. 새 Dispatch를 만들거나 prompt를 무작정 중복 전송하지 않는다. |
 | accepted send 뒤 `unsupervised` / `context_only` | low-level Dispatch에는 소유 terminal resource가 없다. 같은 탭을 계속 감독하고 delivery를 낮게 판정하거나 탭을 교체하거나 lifecycle completion 전 수동 정산하지 않는다. |
-| 확인된 중간 작업 stall (네이티브) | SKILL.md의 Supervision loop 복구 사다리를 따른다: bounded 확인, nudge 최대 1회, `worker-show`가 `failed` 또는 `stopped`를 보고할 때만 사다리 3단. |
-| 확인된 중간 작업 stall (커스텀) | SKILL.md의 Supervision loop 복구 사다리를 따른다: bounded 확인, read-before-send 뒤 nudge 최대 1회, 그다음 사용자 에스컬레이션. 자동 재디스패치하지 않는다. |
-| `worker-show` `failed` 또는 `stopped` | SKILL.md Supervision loop의 복구 사다리 3단: 네이티브 전용 `worker-start --task <task> --retry-of <dispatch_id>` 1회. `--on`/worktree와 `--agent`/terminal 선택을 반복하며 placement를 상속하지 않는다. |
-| `outcome_unknown` | 자동 교체하지 않는다. SKILL.md Supervision loop에 따라 명시적 사용자 승인을 요구한다. |
-| `terminal_gone` | 런타임 healthy + 정확한 handle 부재뿐이다. SKILL.md Supervision loop에 따라 분류하고 증거와 함께 에스컬레이션하며 런타임 장애와 혼동하지 않는다. |
+| 확인된 중간 작업 stall (네이티브) | [`../references/supervision-loop.ko.md`](../references/supervision-loop.ko.md)의 Supervision loop 복구 사다리를 따른다: bounded 확인, nudge 최대 1회, `worker-show`가 `failed` 또는 `stopped`를 보고할 때만 사다리 3단. |
+| 확인된 중간 작업 stall (커스텀) | [`../references/supervision-loop.ko.md`](../references/supervision-loop.ko.md)의 Supervision loop 복구 사다리를 따른다: bounded 확인, read-before-send 뒤 nudge 최대 1회, 그다음 사용자 에스컬레이션. 자동 재디스패치하지 않는다. |
+| `worker-show` `failed` 또는 `stopped` | [`../references/supervision-loop.ko.md`](../references/supervision-loop.ko.md)의 복구 사다리 3단: 네이티브 전용 `worker-start --task <task> --retry-of <dispatch_id>` 1회. `--on`/worktree와 `--agent`/terminal 선택을 반복하며 placement를 상속하지 않는다. |
+| `outcome_unknown` | 자동 교체하지 않는다. [`../references/supervision-loop.ko.md`](../references/supervision-loop.ko.md)에 따라 명시적 사용자 승인을 요구한다. |
+| `terminal_gone` | 런타임 healthy + 정확한 handle 부재뿐이다. [`../references/supervision-loop.ko.md`](../references/supervision-loop.ko.md)에 따라 분류하고 증거와 함께 에스컬레이션하며 런타임 장애와 혼동하지 않는다. |
 
 새 OMO 워커에 native `worker-start` 기능이 엄격히 필요하면 custom-dispatch 대신 등록된 `pi`
 에이전트(`worker-start --agent pi`)를 씁니다. 선택한 에이전트에 필요한 native 기능이 정말로 없으면
@@ -186,7 +187,7 @@ release/close, retain 접수 결정 대상입니다. stall 정산 뒤 접수 rec
 
 | 자식 종류와 소유권 | 정산 뒤 부모 동작 |
 |---|---|
-| `worker-start`가 만든 native supervised terminal | 같은 terminal을 즉시 follow-up Dispatch에 재사용하거나, 사용자가 요청하면 명시적으로 보존하거나, `worker-release --dispatch <dispatch-id> --json`을 실행한다. release receipt 대신 넓은 `terminal close`를 호출하지 않는다. |
+| `worker-start`가 만든 native supervised terminal | 같은 terminal을 즉시 follow-up Dispatch에 재사용하거나, 사용자가 열어 두라고 명시하면 `worker-retain`으로 보존하거나, `worker-release --dispatch <dispatch-id> --json`을 실행한다. release receipt 대신 넓은 `terminal close`를 호출하지 않는다. |
 | 부모가 만든 custom-dispatch terminal | Dispatch가 settled됐고 handle이 여전히 같은 자식임을 확인한 뒤, 재사용하거나 사용자 명시 요청으로 보존하거나, `terminal close --terminal <handle> --json`을 실행한다. close receipt를 기록한다. |
 | stall 정산된 부모 생성 자식(`failed`/`stopped`/`abandoned`) | 다른 부모 생성 정산과 같은 reuse/release/retain 접수 결정을 적용한다. 접수 receipt 없이 열린 상태로 두지 않는다. |
 | 기존/재사용/사용자 소유 custom terminal | 자동으로 닫지 않는다. Task/Dispatch 완료 뒤 retained/user-owned를 기록하고 사용자가 명시적으로 닫으라고 할 때까지 열린 상태로 둔다. |
@@ -298,3 +299,9 @@ agent의 CLI 내부에서만 고릅니다.
 - heartbeat 주기, stall 증거 경로, nudge 접수·응답, stall 분류 결과
 - 교체/정산 결정과 권한 출처
 - 쿼터 대체 또는 차단 원인(해당 시)
+
+## Sources
+
+> 외부 출처를 사용하지 않았습니다. 위 규칙은
+> [`../references/runtime-cli-evidence.ko.md`](../references/runtime-cli-evidence.ko.md)에 기록된
+> Orca/OMO/GJC CLI 근거에서 나왔으며, 그 원장을 확인 2026-09-21.
