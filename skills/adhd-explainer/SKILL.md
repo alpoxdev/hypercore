@@ -40,10 +40,10 @@ Use `adhd-explainer` when the request is about **how the answer is shaped**: ADH
 
 Route elsewhere when:
 
-- the request is a normal task with no shape requirement — use `execute`, `bug-fix`, or the relevant architecture skill
-- the deliverable is a document, runbook, or rule pack — use `docs-maker`
-- the deliverable is a reusable prompt artifact or prompt pack — use `prompt-maker`
-- the deliverable is a new or refactored skill folder — use `skill-maker`
+- the request is an ordinary task with no shape requirement — the task's own rules shape the answer and this style adds nothing
+- the deliverable is a document, runbook, or rule pack — its authoring contract owns the content, and this style only shapes how the answer is presented
+- the deliverable is a reusable prompt artifact or prompt pack — the artifact's own authoring contract owns it
+- the deliverable is a new or refactored skill folder — skill packaging rules own it, and this style applies to the answer text only
 - the request is medical (diagnosis, symptoms, medication, treatment) — answer as general non-diagnostic information and state the boundary; do not shape it as an action plan for a health decision
 
 This skill is a modifier, not a replacement: it changes the shape of another skill's output, never its correctness, tool use, or safety gates.
@@ -80,13 +80,13 @@ Negative requests:
 
 - "Do I have ADHD? Diagnose me from my messages."
 - "Fix the failing auth test." (plain task, no shape request)
-- "Write a README for this repository." (use `readme-maker`)
+- "Write a README for this repository." (an authoring deliverable, not a shape request)
 
 Boundary requests:
 
 - "Explain OAuth PKCE in detail, in ADHD mode." Stay in the mode but switch to deep mode: full depth, skimmable headers, still no preamble and no closer.
-- "Make a reusable ADHD-style prompt for our support bot." The deliverable is a prompt artifact; use `prompt-maker` and apply this shape only to the answer text.
-- "Turn ADHD mode into a project rule file." The deliverable is a document; use `docs-maker` or `agent-md-maker` and cite this skill as the source of the rules.
+- "Make a reusable ADHD-style prompt for our support bot." The deliverable is a prompt artifact, so its own authoring contract owns it; apply this shape only to the answer text.
+- "Turn ADHD mode into a project rule file." The deliverable is a document, so its authoring contract owns it; cite this skill as the source of the rules.
 
 </activation_examples>
 
@@ -226,7 +226,7 @@ Must-pass thresholds:
 - [ ] Progress restatement exists for multi-step work, through the harness task capability or one inline line.
 - [ ] The mode persists across turns and is re-asserted after compaction without an announcement.
 - [ ] Package changes keep English and Korean markdown pairs structurally aligned.
-- [ ] Package changes run: `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only adhd-explainer --json`.
+- [ ] Package changes run the repository skill-corpus validator on this package, when the repository ships one: `<corpus-validator> --root <skills-root> --only adhd-explainer --json`.
 - [ ] Package changes run: `bun run --cwd scripts verify`.
 - [ ] Eval cases in [`assets/evals/adhd-explainer-cases.jsonl`](assets/evals/adhd-explainer-cases.jsonl) are updated when behavior changes, keeping baseline rows intact.
 

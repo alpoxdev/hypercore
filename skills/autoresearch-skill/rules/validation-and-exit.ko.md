@@ -126,5 +126,10 @@ find .hyper -maxdepth 4 -type f | sort | rg "autoresearch-skill"
 python3 -m json.tool .hyper/autoresearch-skill/[skill-name]/results.json >/dev/null
 test -f .hyper/autoresearch-skill/[skill-name]/results.js
 bun test scripts/tests/skill-scripts.test.mjs --test-name-pattern "autoresearch"
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only autoresearch-skill --json
+# 저장소가 스킬 코퍼스 검증기를 제공한다면 이 패키지에도 함께 돌린다:
+#   <corpus-validator> --root <skills-root> --only <skill-name> --json
 ```
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 링크 확인 2026-09-21.

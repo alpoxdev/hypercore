@@ -57,3 +57,14 @@ A portable package does not provide native Python `register(ctx)`, Python tools/
 4. Every MCP entry is `stdio` or Streamable HTTP and meets its subset constraints.
 5. No `sse` entry survives subset validation.
 6. No native-only feature, credential, or external side effect is represented as portable behavior.
+
+## Sources
+
+> Pinned specification, local schema copy, and Hermes evidence checked 2026-09-21.
+
+| Claim | Source |
+| --- | --- |
+| Normative v1.0.0 component and transport shapes | [Agent Plugins specification v1.0.0](https://github.com/agentplugins/agent-plugins-spec/blob/main/spec/1.0.0.md), pinned at v1.0.0, with the offline copy in `assets/schemas/agent-plugins-v1.0.0/` and its `provenance.json` |
+| Hermes portable subset policy | [Plugins](https://hermes-agent.nousresearch.com/docs/user-guide/features/plugins), [MCP](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp), and local `instructions/cli/hermes-agent/PLUGINS.md` |
+
+The pin is exactly v1.0.0. No schema is fetched over the network during generation or validation.

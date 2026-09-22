@@ -37,9 +37,11 @@ compatibility: 읽기/수정/쓰기와 셸 검색 도구를 함께 쓸 때 가�
 
 사용자가 기존 스킬을 반복 실험과 평가 기반으로 최적화하려 할 때 `autoresearch-skill`을 사용한다.
 
-새 스킬 생성이나 한 번의 구조 리팩터링이 주된 작업이면 `skill-maker`를 사용한다.
-반복 mutation loop 없이 스킬을 한 번 검증하는 것이 주된 작업이면 `skill-tester`를 사용한다.
-일반 문서, runbook, prose artifact를 다시 쓰는 것이 주된 작업이면 `docs-maker`를 사용한다.
+다른 스킬 이름이 아니라 산출물 형태로 라우팅을 가른다:
+
+- 새 스킬 폴더이거나 실험 루프 없는 단일 구조 리팩터링이면 다른 워크플로가 맡는 스킬 저작 작업이다.
+- mutation loop 없이 기존 스킬에 대한 검증 판정 하나만 내리면 다른 워크플로가 맡는 일회성 검증 작업이다.
+- 개선된 재사용 스킬이 아니라 다시 쓴 일반 문서, runbook, prose artifact이면 다른 워크플로가 맡는 문서 작업이다.
 
 다음 경우에는 `autoresearch-skill`을 사용하지 않는다:
 
@@ -82,8 +84,8 @@ compatibility: 읽기/수정/쓰기와 셸 검색 도구를 함께 쓸 때 가�
 
 긍정 예시:
 
-- "`skills/web-clone/SKILL.md`에 autoresearch 돌려서 점수 오르는 수정만 남겨줘."
-- "Run autoresearch on `skills/foo/SKILL.md` and keep only score-improving mutations."
+- "이 스킬의 `SKILL.md`에 autoresearch 돌려서 점수 오르는 수정만 남겨줘."
+- "작업 중인 스킬 폴더에 autoresearch 돌려서 점수 오르는 변이만 남겨줘."
 - "이 스킬을 binary eval로 벤치마크하고 `.hyper`에 결과를 저장해."
 - "이 스킬 프롬프트와 references를 반복 실험으로 개선해줘."
 - "이 스킬을 반복 실험으로 개선해서 점수 올려줘."
@@ -100,7 +102,7 @@ compatibility: 읽기/수정/쓰기와 셸 검색 도구를 함께 쓸 때 가�
 경계 예시:
 
 - "이 스킬 한 번만 다듬고 리뷰해줘."
-  반복 실험을 명시하지 않았다면 보통 직접 수정이 더 적절하다.
+  반복 실험을 명시하지 않았다면 실험 루프 없는 단일 구조 리팩터링이 보통 더 적절하다.
 
 </activation_examples>
 

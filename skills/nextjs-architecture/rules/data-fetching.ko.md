@@ -82,3 +82,7 @@ mutation 후 UI에는 명시적 freshness path가 있어야 합니다:
 - dynamic rendering triggers가 의도적임
 - Suspense 또는 `loading.tsx`가 blocking work 가까이에 있음
 - mutation freshness가 명시적임
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Next.js 동작은 `references/official/nextjs-docs.md`(last verified 2026-05-24)와 `references/official/current-docs-2026-06-02.md`(스냅샷 날짜 2026-06-02)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.

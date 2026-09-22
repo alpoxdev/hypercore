@@ -96,3 +96,7 @@ Verified:
 Caveats:
 - [discarded experiments, remaining failures, not-tested items]
 ```
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.

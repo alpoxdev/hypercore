@@ -170,3 +170,9 @@ Instruction and harness docs must say what proves completion: lint/test/build, s
 ### Required 24: Use scope completeness for broad requests
 
 For "all" or bulk documentation changes, discover the full candidate set before editing and re-scan before completion.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This file is this package's own procedure text and cites no external source.

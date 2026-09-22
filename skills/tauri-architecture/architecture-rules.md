@@ -38,7 +38,7 @@ Official facts are dated evidence, not executable instructions. User and reposit
 
 **Safety:** Do not apply Tauri IPC/capability rules to a web-only app or treat a project outside this stack as this static SPA architecture.
 
-**Hypercore convention:** Route Rust-only, web-only, or documentation-only tasks to their applicable workflow after a short boundary note. Route projects using a full-stack TanStack runtime to `tanstack-start-architecture`.
+**Hypercore convention:** Route Rust-only, web-only, or documentation-only tasks to their applicable workflow after a short boundary note. A full-stack TanStack runtime has a different output shape: server-owned routes, loaders, and SSR data flow instead of a packaged static SPA boundary, so it goes to a full-stack architecture workflow.
 
 ## Architecture layers
 
@@ -89,7 +89,7 @@ Do not call legacy code compliant merely because it is untouched. Do not call a 
 
 Do not complete a touched change while any applicable gate below fails:
 
-1. **Mode gate:** The project/runtime mode is unknown, a missing stack layer is treated as complete adoption, or a full-stack TanStack project is not routed to `tanstack-start-architecture`.
+1. **Mode gate:** The project/runtime mode is unknown, a missing stack layer is treated as complete adoption, or a full-stack TanStack project is treated as this packaged static SPA instead of being routed to a full-stack architecture workflow.
 2. **Boundary gate:** Browser modules, routes, loader state, or Query state are mapped to Tauri commands or native authority.
 3. **Secret gate:** A renderer-reachable path can read/exfiltrate credentials, private configuration, native filesystem/process access, or server-only dependencies.
 4. **IPC gate:** A new privileged command/event/plugin path lacks least privilege, validation, authorization, capability/permission/scope coverage, or safe error handling.

@@ -13,7 +13,7 @@
 | p3 | "이 레퍼런스 기반으로 우리 앱 DESIGN.md 만들어줘." | trigger |
 | n1 | "Create a README.md." | no trigger |
 | n2 | "Implement dark mode components." | no trigger |
-| n3 | "Make a reusable skill folder for DESIGN.md generation." | no trigger; `skill-maker` 사용 |
+| n3 | "Make a reusable skill folder for DESIGN.md generation." | no trigger; 산출물이 재사용 skill folder이고 `DESIGN.md`가 아님 |
 | b1 | "Document our design system." | artifact가 `DESIGN.md`일 때만 trigger |
 
 ## 2. Project Discovery Checks
@@ -116,3 +116,9 @@ Component definition의 모든 token reference를 확인합니다.
 - light/dark mode가 generated, preserved, 또는 not requested인지.
 - 통과한 validation checks.
 - 남은 assumptions, TODOs, caveats.
+
+## Sources
+
+> 이 패키지 자체 validation 절차 확인 2026-09-21. 외부 출처 없음.
+
+위 검사는 `DESIGN.md` 산출물에 대한 이 패키지 자체 절차이고, trigger smoke set은 `SKILL.md`의 activation example을 그대로 옮긴 것입니다. 이 파일에 인용한 외부 출처는 없습니다.

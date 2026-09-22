@@ -45,3 +45,9 @@ Must pass:
 - Deprecated feature-folder guidance is absent from this skill.
 - Vite plugin order, generated route tree, env prefix, route export, search validation, loader safety, service layering guidance가 current-docs compatible함.
 - English/Korean entrypoint의 trigger, boundary, workflow, contract, read order가 일치함.
+
+---
+
+## Sources
+
+> 이 파일의 validation/readback 명령은 project 상태와 이 package 자체에 대한 이 패키지 고유의 check입니다. 이 명령들이 인용하는 official snapshot 참조는 `references/official/current-docs-2026-06-02.ko.md`이고, 그 스냅샷이 기록한 자체 검증일은 2026-06-02입니다. 명령 작성에 외부 출처를 사용하지 않았고 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 명령 문장과 저장소 로컬 경로 확인 2026-09-21.

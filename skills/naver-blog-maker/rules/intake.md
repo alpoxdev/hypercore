@@ -41,3 +41,9 @@ Reading the blog URL or brand URL is a visitor read of public pages only (no log
 - Restate the six answers in one line (`블로그 / 목표 / 업체·관계 / 자료 / 양식 / 톤앤매너`) at the top of the reply, then run `post-workflow.md` from §0 without further questions. The mode (정보/전환) is derived there from the relationship and the goal, not asked here.
 - A brief that already contains all six (for example a returning user pasting the line above) skips the message entirely.
 - Do not ask about keywords, audience, length, or images: research and the mode row decide those. Tone is asked once, as item 6, and is never re-asked.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own intake message and what each of its six answers feeds. It makes no external claim, so no external source is cited.

@@ -223,4 +223,12 @@ Normal local reads, scoped edits explicitly requested by the user, and project-s
 
 ## 9. Source of Record
 
-The source-grounded knowledge behind these rules — vendor loading mechanics, measured evidence, and verification dates — lives in [`instructions/agents-md/`](../../../instructions/agents-md/AGENTS_MD.md). Read it when a rule here needs justification, when a vendor claim must be re-verified, or when authoring for a runtime not covered above. Vendor behavior moves quarterly; that base carries the checked dates, this file does not.
+The source-grounded knowledge behind these rules — vendor loading mechanics, measured evidence, and verification dates — lives in `instructions/agents-md/AGENTS_MD.md` at the repository root. Read it when a rule here needs justification, when a vendor claim must be re-verified, or when authoring for a runtime not covered above. Vendor behavior moves quarterly; that base carries the checked dates, this file does not.
+
+## Sources
+
+> Links checked 2026-09-21. No external source was used directly in this file.
+
+| Claim | Source |
+|---|---|
+| Every rule in this file, including the vendor loading, truncation, and precedence statements | `instructions/agents-md/AGENTS_MD.md`, the repository-local source of record named in section 9. It carries the vendor checked dates; this file restates them rather than citing an external page |

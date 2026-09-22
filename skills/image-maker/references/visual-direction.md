@@ -1,5 +1,16 @@
 # Visual Direction Playbook
 
+## Contents
+
+- Load when
+- Establish the visual promise
+- Build the scene deliberately
+- Maintain a series
+- Inspect before making visual claims
+- Vocabulary and deadwords
+- Brief record
+- Sources
+
 ## Load when
 
 Load this reference after a request is in scope for image making and before a brief is compiled. Use it for a new image, an edit, or a prompt-only artifact. Do not load it for visual analysis, a collection of prompts, interface implementation, or code work.
@@ -95,3 +106,7 @@ assumptions_and_open_question:
 ```
 
 Omit fields that genuinely do not apply, rather than filling them with placeholders. The record is a decision aid and inspection target, not proof that an image was generated or saved.
+
+## Sources
+
+> No external sources were used. This file states rules that belong to the image-maker package itself. Content checked 2026-09-21.

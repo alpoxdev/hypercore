@@ -52,3 +52,9 @@ credential을 요구하지 않고, 결과가 크게 달라지는데도 plugin �
 ## 경로 완료 경계
 
 라우팅이 곧 생성 권한입니다. 필요한 값이 모두 정해지면 엄격한 JSON으로 정규화하고 생성기를 `apply` 모드로 실행합니다. 라우팅과 쓰기 사이에 승인 단계는 없습니다. 기존 artifact를 덮어쓰거나 낯선 대상을 건드릴 때만 `preview`를 먼저 쓰고 change-set을 보고합니다. 기존 대상은 [`write-safety.ko.md`](write-safety.ko.md)에 정의된 대로 spec에 `overwrite: true`가 있고 ownership marker가 검증될 때만 바뀝니다.
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 라우팅 정책 확인 2026-09-21.
+
+경로 표, 제외 요청 경계, spec 해석 표는 이 패키지의 `assets/manifest.schema.json`, `scripts/generate.mjs`, `rules/write-safety.ko.md`를 그대로 옮긴 것입니다. vendor 문서를 인용하지 않으며 외부 주장이 없습니다.

@@ -135,3 +135,13 @@ commands.allow = ["settings_update"]
 7. **근거 gate:** 변경에 allowed/denied label/resource case, malformed input, authorization failure, 해당하는 listener cleanup, safe-error behavior가 포함됩니다. focused negative evidence 없는 security-sensitive change는 차단됩니다.
 
 blocker는 design을 좁히거나 명시적 권한과 문서화된 review evidence를 얻어 해결합니다. check를 끄거나 catch-all permission을 추가하거나 WebView를 trusted라고 선언해서 해결하지 않습니다.
+
+## Sources
+
+> 링크 확인 2026-07-30.
+
+| 주장 | 출처 |
+|---|---|
+| Capability, permission, scope, runtime authority, application manifest, CSP, asset protocol, updater 보안 동작 | [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md); <https://v2.tauri.app/security/capabilities/>; <https://v2.tauri.app/security/permissions/>; <https://v2.tauri.app/security/scope/>; <https://v2.tauri.app/security/runtime-authority/>; <https://v2.tauri.app/security/csp/>; <https://v2.tauri.app/security/asset-protocol/>; <https://v2.tauri.app/plugin/updater/> |
+| "v1 pattern을 다시 도입하지 않는다" 목록의 근거인 v1 -> v2 access-control 변화 | [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md); <https://v2.tauri.app/start/migrate/from-tauri-1/> |
+| Command 측 validation, authorization, 최소 권한, secret 처리, 허용/거부 근거 | 이 파일의 안전 정책과 이 저장소의 규약; 외부 출처 없음 |

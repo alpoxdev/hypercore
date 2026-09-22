@@ -53,3 +53,9 @@ Use this checklist before declaring the planning package complete.
 - Could design understand the required screens and states before making visual comps?
 - Could someone revisit the package next month and see what changed?
 - If evidence shifts, can `sources.md` be refreshed without rewriting the package?
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own completion checklist and review questions. It cites no external URL and asserts no external fact, so no external source is recorded.

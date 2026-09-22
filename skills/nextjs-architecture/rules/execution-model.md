@@ -73,3 +73,7 @@ Use client-only wrappers for browser-dependent third-party components that do no
 - Props crossing the server/client boundary are narrow and serializable
 - Providers are placed as deep as practical
 - Third-party browser-only UI is wrapped behind a clear Client Component boundary
+
+## Sources
+
+> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.

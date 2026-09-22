@@ -30,13 +30,13 @@ Genre columns override each other only inside one row. 기술문서 forbidding m
 
 Visual decoration (category J: bold, emphasis-quotation pairs, dashes, emoji) is budgeted by this skill only in prose genres, where the writer owns the page. The table above holds the per-genre counts, and `rules/writing-method.md` governs how the allowance is spent.
 
-When the deliverable is a structured document owned by another skill, that skill's formatting contract wins and this skill's decoration budget yields:
+When the deliverable is a structured document whose shape its own format contract fixes, that contract wins and this skill's decoration budget yields:
 
-- `docs-maker` owns document structure, so its section, table, and emphasis conventions govern the document shape.
-- `readme-maker` owns README shape, so its badge, heading, and code-block conventions govern the file.
+- A document whose sections and tables come from a structure contract follows that contract's section, table, and emphasis conventions.
+- A README follows the README's own badge, heading, and code-block conventions.
 - A DESIGN.md or similar contract document follows the contract's own format rules.
 
-Yielding is scoped to format. Sentence-level work stays with this skill: inside a docs-maker section or a readme-maker block, the Korean sentences still follow the settled genre's register and the avoidance rules. Report the yield in one clause when the contract and the genre row disagree, then follow the contract.
+Yielding is scoped to format. Sentence-level work stays with this skill: inside a structured section, the Korean sentences still follow the settled genre's register and the avoidance rules. Report the yield in one clause when the contract and the genre row disagree, then follow the contract.
 
 ## 3. Conflict resolution
 
@@ -45,3 +45,9 @@ Apply in order and stop at the first rule that resolves the case.
 1. **User's explicit request wins.** A stated register, bullet preference, or ornament instruction overrides the genre row, including when it contradicts the default. Follow it and do not argue the row back in.
 2. **Genre table wins over habit.** With no explicit user instruction, the row for the settled genre decides register, structure, and ornament. Do not carry a previous draft's voice into a new genre.
 3. **Default to 칼럼 when the genre is unresolved.** When the single question goes unanswered, write under 칼럼·에세이, state the assumption in one clause, and switch without argument if the user corrects it.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file pins the per-genre decoration counts from this package's own drafting practice and states where the decoration budget yields. It makes no external claim, so no external source is cited.

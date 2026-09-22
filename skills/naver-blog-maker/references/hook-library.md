@@ -91,3 +91,7 @@ Drop: `큰 변화를 경험하게 될 것입니다`, `새로운 시각을 가지
 ## 7. Pre-publish red-flag pass
 
 Fail the draft if any of these is present: an invented percentage or statistic; a hidden economic relationship; an absolute guarantee; a fake deadline; a title the first screen does not fulfil; a generic CTA (`도움이 되셨다면 공감/댓글`); markdown `**bold**` or `#` headings pasted into the Naver editor.
+
+## Sources
+
+> Naver's 낚시성 definition was re-checked 2026-09-21 at <https://searchadvisor.naver.com/guide/content-abusing> and <https://searchadvisor.naver.com/guide/content-basic> (both HTTP 200); the headline effects are non-Naver field experiments (DOIs in `.omo/ulw-research/20260916-163039/sources-ledger.md`, S73 and S75), not Naver ranking factors; the pattern consequences are [`../rules/naver-ranking-contract.md`](../rules/naver-ranking-contract.md) R4, R6, R9.

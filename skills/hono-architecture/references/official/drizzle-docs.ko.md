@@ -1,6 +1,6 @@
 # Drizzle 공식 문서 요약
 
-검증일: 2026-08-04
+last_verified_at: 2026-08-04
 
 ## Stable package snapshot
 
@@ -64,3 +64,13 @@ Hono 아키텍처 결정이 Drizzle ORM, `drizzle-kit`, runtime-specific databas
 - Repository helper가 `tx`를 받아야 한다는 규칙은 Drizzle transaction API 형태에서 나온 아키텍처 추론이지, 공식 문서의 문장을 그대로 옮긴 요구사항은 아닙니다.
 - Neon, D1, Turso/libSQL 등 provider runtime 문서는 provider SDK 변화에 따라 바뀔 수 있습니다.
 
+
+## Sources
+
+> 링크 확인 2026-08-04, 이 파일 자체의 `last_verified_at` 표기가 가진 날짜입니다. 2026-09-21 pass에서 페이지를 다시 가져오지 않았고, 위에 인용한 출처 밖의 출처는 주장하지 않습니다.
+
+| 주장 | 출처 |
+|---|---|
+| 위 snapshot 표의 `drizzle-orm`, `drizzle-kit` version | 그 표 옆에 적은 registry·release URL |
+| 위 1-10번 항목에 기록한 Drizzle 동작 | 각 번호 항목에 붙은 inline `Source:` 링크 |
+| 마지막 caveat 절. 그 절이 공식 요구사항이 아니라 이 package의 추론이라고 표시한 `tx` 설명 포함 | 1-10번 항목에서 링크한 같은 Drizzle 문서 page. 추론 부분은 그 절에서 이 package의 것으로 밝힘 |

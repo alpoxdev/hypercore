@@ -74,3 +74,7 @@ Route behavior test에는 `app.request()`, typed server-side ergonomics에는 `t
 - detached registration이 조용히 타입을 지우지 않음
 - 변경된 동작을 `app.request()` 또는 runtime adapter의 동등한 방식으로 request-level test가 검증함
 - Public route shape가 바뀌면 typed client 또는 OpenAPI contract check도 갱신됨
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Hono 동작은 `references/official/hono-docs.ko.md`에 위임합니다(last verified 2026-08-04). 저장소 로컬 링크 확인 2026-09-21.

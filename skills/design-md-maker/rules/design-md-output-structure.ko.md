@@ -140,3 +140,9 @@ implementation-critical rule을 다룹니다.
 | Primary color | user request / theme file / reference URL | high/medium/low |
 
 Unsupported value에는 `Proposed`, `Assumption`, 또는 `TODO`를 사용합니다.
+
+## Sources
+
+> 이 패키지 자체 output structure 규칙 확인 2026-09-21. 비교 대상으로 삼은 public example은 [`../references/design-md-source-notes.ko.md`](../references/design-md-source-notes.ko.md)에 기록했습니다.
+
+Required shape, frontmatter key, section list는 이 패키지 자체 rubric입니다. Frontmatter convention은 그 파일의 source ledger에 기록된 public example과 비교했으며, 그 밖의 외부 출처는 인용하지 않습니다.

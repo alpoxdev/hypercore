@@ -124,3 +124,9 @@ Conflict가 생기면 기본적으로 자율 해결한다:
 | 하나의 일관된 intent-preserving 결과가 있는 propagation conflict | 해결하고 검증한 뒤 계속 진행하며 reconciliation을 보고한다 |
 | 중요한 behavior/architecture 결정이 필요한 propagation conflict | 한 가지 집중된 질문을 하고 이후 target을 시작하지 않는다 |
 | network/auth prompt 위험 | non-interactive push helper output을 사용한다. push할 수 없으면 remote/auth blocker를 보고한다 |
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-22.
+
+이 규칙은 이 패키지의 저장소 작업 경험에서 작성했다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

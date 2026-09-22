@@ -244,3 +244,9 @@ export const stripe = new Stripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 | **No direct fetch** | Never call `fetch`/`axios` in routes or hooks - use service functions |
 | **Public-safe loaders** | Loaders only call services/query options and do not read secrets or private env values |
 | **Error handling** | Let errors propagate to `errorComponent`; handle 401/403 in interceptors |
+
+---
+
+## Sources
+
+> No external source was used for this file. The TanStack Query and TanStack Router behavior stated here (query-option factories, loader prefetching through the query client, and the loader/component cache pairing) is this package's own guidance; the dated snapshot recorded in `references/official/current-docs-2026-06-02.md` (its own verification date is 2026-06-02) does not record these Query APIs, so it is not cited as their source. The `services/<domain>/` layout, the no-barrel-export rule, and the `src/services/<domain-or-provider>/` grouping are Hypercore/repo-local conventions. No page was re-fetched for this file. Rule text and repository-local paths checked 2026-09-21.

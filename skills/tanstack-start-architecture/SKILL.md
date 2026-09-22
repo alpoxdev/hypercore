@@ -82,6 +82,7 @@ When official TanStack guidance and Hypercore conventions differ, enforce offici
 | Authority | User/project instructions outrank this skill. Official TanStack docs outrank Hypercore conventions for API facts. Safety policy blocks risky runtime or import-boundary changes. |
 | Evidence | Use project indicators, local config/package files, touched source paths, topic rules, official references, package typechecks, and validation command output. |
 | Tools | Use local search/read/edit/validation commands; use current official docs when API drift matters; gate destructive migrations, credential access, network side effects, and production changes. |
+| Loop | None. This skill runs a single enforcement pass per request; after applying fixes it runs the `rules/validation.md` checks once and re-enters only when the user asks for another pass. |
 | Output | Korean architecture decision or review with rule classifications, changed files if any, validation evidence, remaining risks, and official-doc ambiguity notes. |
 | Verification | Run `rules/validation.md` checks relevant to touched surfaces and skill-anatomy checks when this skill folder changes. |
 | Stop condition | Stop after applicable safety gates pass, Hypercore conventions are applied or explicitly deferred, validation evidence is recorded, and unresolved API drift is dated and sourced. |

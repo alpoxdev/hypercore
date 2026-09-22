@@ -98,3 +98,12 @@ Use these to size a draft. State them to the user as defaults, not requirements.
 | Internal linking as authority flow | Links help readers continue; no graph authority claim |
 | Helpful Content | Strongly aligned: experience, originality, completeness, readability |
 | Result page | Not ten blue links: intent 스마트블록 mixing blog, cafe, video, 지식iN; AI 브리핑 citations; 홈피드 recommendation |
+
+## Sources
+
+> Official Naver links were re-checked 2026-09-21; the per-rule source list lives in [`../references/naver-algorithm-timeline.md`](../references/naver-algorithm-timeline.md).
+
+| Claim | Source |
+|---|---|
+| R1-R10 hard rules, the observed planning defaults, and the folklore rejections | [`../references/naver-algorithm-timeline.md`](../references/naver-algorithm-timeline.md), [`../references/evidence-digest.md`](../references/evidence-digest.md) |
+| R10 site-content guidance ("검색로봇은 이미지 속 텍스트를…") | <https://searchadvisor.naver.com/guide/content-basic> (official, undated; accessed 2026-09-17; link re-checked 2026-09-21) |

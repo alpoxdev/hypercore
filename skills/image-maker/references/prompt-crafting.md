@@ -42,3 +42,7 @@ Rendered characters are quote-pinned inside the brief. The string inside quotes 
 - Density lever: as text volume grows, prefer a portrait canvas orientation; for dense work consider the 2048 long side (carried via the `canvas` optional key).
 - Chart breakthrough: for complex charts, try coordinate placement (assign each element a 3×3 area), arrow verbalization ("arrow from A to B"), and dual anchoring (position plus role), and retry in that order on failure.
 - Post-generation lettering edits are forbidden. If a character is wrong, fix the brief and regenerate — no compositing or patching.
+
+## Sources
+
+> No external sources were used. This file states rules that belong to the image-maker package itself. Content checked 2026-09-21.

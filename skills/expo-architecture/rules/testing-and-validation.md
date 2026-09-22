@@ -39,3 +39,7 @@ Claim -> Risk -> Evidence -> Verification -> Result -> Caveat
 ```
 
 Include installed versions, commands actually run, Android/iOS coverage, skipped checks, and one decision: `ship`, `iterate`, `caveated ship`, or `block`. Repair only observed failures and stop after two passes; never weaken checks to pass.
+
+## Sources
+
+> Claims checked 2026-09-21. No external source was used in this file; the Expo-specific statements restate this package's own official snapshot, references/official/expo-react-native-2026-08-03.md.

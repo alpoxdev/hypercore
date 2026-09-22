@@ -1,5 +1,21 @@
 # OpenAI Official References for Docs Maker
 
+## Contents
+
+- Refresh Policy
+- Prompt Engineering
+- Agent Builder
+- Safety in Building Agents
+- Working with Evals
+- Agent Evals
+- Prompt Caching
+- Conversation State
+- Compaction
+- Prompt Optimizer
+- GPT-5 Model Docs
+- 2026-06-02 Prompt Authoring Refresh
+- Sources
+
 ## Refresh Policy
 - last_verified_at: 2026-03-19
 - refresh_when:
@@ -123,3 +139,7 @@
 - refresh_when: prompt optimizer or grader workflow changes
 - summary: Prompt optimization should be grounded in datasets, annotations, graders, and manual review before production use.
 - implication_for_docs_maker: Prompt improvement guidance must include smoke evals or regression cases, not only better-looking prose.
+
+## Sources
+
+> Links checked 2026-06-02, the newest `last_verified_at` recorded by the entries above; no listed URL was rechecked after that date. This section records provenance only, and user or project instructions remain authoritative.

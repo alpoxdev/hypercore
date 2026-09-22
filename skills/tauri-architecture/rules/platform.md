@@ -1,6 +1,6 @@
 # Platform Setup: Tauri v2 + Vite + React + TanStack Router + Query
 
-> Use this rule for renderer/bootstrap/configuration review. Read the dated evidence first: [Tauri v2 evidence](../references/official/tauri-v2-2026-07-30.md) and [TanStack + Vite + React evidence](../references/official/tanstack-vite-react-2026-07-30.md). TanStack Start projects are outside this rule’s scope; route them to `tanstack-start-architecture`.
+> Use this rule for renderer/bootstrap/configuration review. Read the dated evidence first: [Tauri v2 evidence](../references/official/tauri-v2-2026-07-30.md) and [TanStack + Vite + React evidence](../references/official/tanstack-vite-react-2026-07-30.md). TanStack Start projects are outside this rule’s scope; route them to the full-stack architecture workflow whose deliverable is a server-owned route tree, loader, and SSR data-flow plan.
 
 ## Classification
 
@@ -132,3 +132,15 @@ Before accepting platform setup, establish all of the following from configurati
 5. No secret reaches `VITE_*`, `public/`, or renderer source.
 6. Query owns async cache/freshness, while Router owns file-based routing; data needed by loaders is available through typed context.
 7. No v1 config keys remain unless a documented, completed migration intentionally handles them.
+
+## Sources
+
+> Links checked 2026-07-30.
+
+| Claim | Source |
+|---|---|
+| `devUrl`, `frontendDist`, the Tauri v1 -> v2 key mapping, and the build-hook configuration keys | [tauri-v2-2026-07-30.md](../references/official/tauri-v2-2026-07-30.md); <https://v2.tauri.app/reference/config/>; <https://v2.tauri.app/start/frontend/vite/>; <https://v2.tauri.app/start/migrate/from-tauri-1/> |
+| Router plugin order, `tanstackRouter({ target: 'react', autoCodeSplitting: true })`, and Router-versus-Query ownership | [tanstack-vite-react-2026-07-30.md](../references/official/tanstack-vite-react-2026-07-30.md); <https://tanstack.com/router/latest/docs/framework/react/routing/file-based-routing> |
+| `VITE_*` renderer exposure, `build.target`, and the public-directory rule | [tanstack-vite-react-2026-07-30.md](../references/official/tanstack-vite-react-2026-07-30.md); <https://vite.dev/guide/env-and-mode>; <https://vite.dev/config/build-options> |
+| One React bootstrap, `StrictMode` development checks, and effect cleanup | [tanstack-vite-react-2026-07-30.md](../references/official/tanstack-vite-react-2026-07-30.md); <https://react.dev/reference/react-dom/client/createRoot>; <https://react.dev/reference/react/useEffect> |
+| Loopback host, strict dev port, explicit asset-base/target decisions, and the classification of the "Hypercore convention" rows | This repository's convention and safety policy; no external source |

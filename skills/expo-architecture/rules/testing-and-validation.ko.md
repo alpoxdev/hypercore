@@ -39,3 +39,7 @@ Claim -> Risk -> Evidence -> Verification -> Result -> Caveat
 ```
 
 설치 version, 실제 실행 command, Android/iOS coverage, skipped check, `ship`/`iterate`/`caveated ship`/`block` 중 하나를 포함합니다. 관찰된 실패만 수정하고 2회 pass 후 멈추며 통과를 위해 check를 약화하지 않습니다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 이 파일은 외부 출처를 직접 사용하지 않았고, Expo 관련 서술은 이 패키지 자체의 공식 snapshot(references/official/expo-react-native-2026-08-03.md)을 재진술한 것입니다.

@@ -2,7 +2,18 @@
 
 `feature-spec.md`, `user-flow.md`, `wireframe.md`, `diagram.md`, `preview.html`을 작성할 때 이 레퍼런스를 사용합니다.
 
-근거 기반: 이 레퍼런스의 산출물 체인은 PRD, 기능명세서, 유저플로우, 와이어프레임 각각 10개 이상의 출처를 검토한 로컬 조사 보고서 [`../../../.hyper/research/002-prd-package-layered-artifacts.md`](../../../.hyper/research/002-prd-package-layered-artifacts.md)에 기반합니다.
+근거 기반: 이 레퍼런스의 산출물 체인은 PRD, 기능명세서, 유저플로우, 와이어프레임 각각 10개 이상의 출처를 검토한 저장소 로컬 조사 보고서 `../../../.hyper/research/002-prd-package-layered-artifacts.md`에 기반합니다. 그 보고서는 이 스킬 패키지 밖에 있는 로컬 산출물이라 함께 배포되지 않으므로, 이 레퍼런스는 보고서 없이도 단독으로 읽히도록 작성했습니다.
+
+## 목차
+
+- 패키지 원칙
+- 산출물 인수인계 계약
+- `feature-spec.md`
+- `user-flow.md`
+- `wireframe.md`
+- `diagram.md`
+- `preview.html`
+- 정렬 규칙
 
 ## 패키지 원칙
 
@@ -188,3 +199,9 @@ mindmap
 - 사용자-facing 화면이면 와이어프레임 화면과 플로우 단계를 연결합니다.
 - 큰 수정 후에는 다이어그램과 미리보기도 패키지 문서와 동기화합니다.
 - 영향을 받는 각 파일에 미해결 질문을 남기되, canonical 목록은 `prd.md`에서 보이게 합니다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 산출물 체인과 산출물별 작성 규칙을 담습니다. 체인은 파일 상단에 밝힌 저장소 로컬 조사 보고서에서 파생했고 그 보고서는 이 스킬 패키지 밖에 있습니다. 이 파일은 외부 URL을 인용하지 않고 자체 외부 사실을 주장하지 않으므로 외부 출처를 기록하지 않습니다.

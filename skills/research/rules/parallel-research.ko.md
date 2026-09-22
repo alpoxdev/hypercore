@@ -91,3 +91,9 @@ Standard/deep 또는 parallel research에서는 저장 report나 cache에 최소
 - [ ] leader가 충돌을 해소하거나 공개함
 - [ ] leader가 final synthesis와 saved report를 작성함
 - [ ] final claim에 source link가 있고 recency가 중요하면 exact date를 포함함
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 규칙 문서는 이 패키지 자체의 parallel research lane 분할 및 dedupe 절차를 담습니다. 외부 출처를 인용하지 않습니다.

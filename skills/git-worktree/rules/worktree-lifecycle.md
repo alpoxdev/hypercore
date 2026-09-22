@@ -254,3 +254,14 @@ When a worktree’s task is complete:
 - Linked worktrees share Git object storage and config but have independent working files.
 - Per-worktree dependency folders, ports, databases, and generated artifacts may still collide; use separate env files or ports when needed.
 - Windows/WSL path portability can break if a worktree is created by one Git executable and used by another.
+
+## Sources
+
+> Links checked 2026-09-21.
+
+| Claim | Source |
+|---|---|
+| `git worktree add`, `list`, `remove`, `prune`, `lock`, `unlock`, `repair`, `--porcelain`, `--detach`, and the already-checked-out-branch error this rule set builds on | <https://git-scm.com/docs/git-worktree.html> |
+| `git rev-parse --show-toplevel`, `--git-dir`, `--git-common-dir`, and `--git-path info/exclude` used by the discovery and local-exclude steps | <https://git-scm.com/docs/git-rev-parse> |
+| The local-exclude file semantics that keep `.hyper/git-worktree/` out of status output | <https://git-scm.com/docs/gitignore> |
+| Why this package prefers native Git, one task per worktree, and checks before delete | [`../references/source-survey.md`](../references/source-survey.md) |

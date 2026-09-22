@@ -71,3 +71,9 @@ Use branching when comparing alternative document structures or rule-pack splits
 - [ ] Write the first step as a problem definition
 - [ ] Revise or branch if the scope changes
 - [ ] End with a clear decision and next edit target
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This file is this package's own procedure text and cites no external source.

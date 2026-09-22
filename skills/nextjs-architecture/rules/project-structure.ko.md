@@ -166,3 +166,7 @@ DB clients, DAL modules, secret-bearing SDK wrappers, authorization helpers처�
 - Nested grouping이 더 명확할 때 flat shared folders를 강요하지 않음.
 - Framework-required rules와 repo-local conventions를 별도로 labeling함.
 - Server-only shared modules에 `import 'server-only'` 또는 동등하게 명확한 boundary가 있음.
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Next.js 동작은 `references/official/nextjs-docs.md`(last verified 2026-05-24)와 `references/official/current-docs-2026-06-02.md`(스냅샷 날짜 2026-06-02)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.

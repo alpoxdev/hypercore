@@ -89,3 +89,9 @@ Both scripts are frozen. Do not modify them to move the parse inside the `try` b
 2. Extract the code. If it is in Group 1 **and** the failure occurred before any write → correct that specific input and re-run once.
 3. If it is in Group 2, or a Group 1 code surfaced from the validator against an already-written tree → terminal stop. Preserve the target, marker, journal, stage, backup, and lock. Report the code and the paths.
 4. Never set `overwrite: true`, never poll a lock, never delete recovery evidence, and never edit a marker to satisfy a check.
+
+## Sources
+
+> Repository-local script sources checked 2026-09-21.
+
+Every code, phase, and envelope line number below is reconciled against the thrown codes in this package's `scripts/generate.mjs` and `scripts/validate-portable-v1-output.mjs` and nothing else. No vendor documentation is cited.

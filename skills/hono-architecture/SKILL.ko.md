@@ -1,3 +1,9 @@
+---
+name: hono-architecture
+description: "[Hyper] Hono 프로젝트를 작업하거나 기존 코드베이스에 Hono를 추가할 때 사용합니다. 코드 변경 전에 app composition, 확장 가능한 route module, middleware, validation, database/ORM 경계, Drizzle 통합, migration, error handling, OpenAPI/Swagger 문서화, testing, typed RPC 경계에 대한 Hono 아키텍처 규칙을 강제합니다."
+compatibility: 저장소 검사, 공식 Hono 문서 확인, Hono 애플리케이션에서의 직접 코드 편집과 함께 사용할 때 가장 적합합니다.
+---
+
 @architecture-rules.ko.md
 @rules/conventions.ko.md
 @rules/project-structure.ko.md
@@ -54,6 +60,7 @@ Hono가 아닌 프로젝트, generic Express/Fastify 작업, architecture bounda
 | Authority | user/project instructions가 이 스킬보다 우선합니다. API facts에서는 official Hono/Drizzle docs가 Hypercore convention보다 우선합니다. Safety, typing, validation, data-boundary rules는 위험한 변경을 차단합니다. |
 | Evidence | project indicators, local package/source files, touched paths, topic rules, drift가 중요할 때 official references, validation command output을 사용합니다. |
 | Tools | local search/read/edit/validation command를 사용하고 migration, credential access, production side effect, runtime adapter swap, broad rewrite는 gate합니다. |
+| Loop | 최적화 루프는 사용하지 않습니다. remediation pass 이후 3단계 gate와 touched check 실패에 대해서만 최대 2회 verify-repair를 허용하고, touched 범위를 벗어나지 않고 해당 gate를 통과한 변경만 유지하며, 검증 체크리스트를 통과하거나 blocker를 보고하면 멈춥니다. |
 | Output | rule classification, changed files, validation evidence, remaining risks, official-vs-Hypercore label을 포함한 한국어 architecture finding 또는 implementation summary. |
 | Verification | 완료 전 touched surface에 맞는 project check와 final checklist를 실행합니다. |
 | Stop condition | project mode가 확인되고 applicable gate가 통과했거나 blocker로 보고되었으며 validation evidence가 기록되면 멈춥니다. |

@@ -286,3 +286,9 @@ export const Route = createFileRoute('/dashboard')({
 | ~100 lines | `route.tsx` when shared layout/loader exists, plus `-components/`, `-hooks/` | - |
 | 100-200 lines | `-components/`, `-hooks/` | - |
 | 200+ lines | `-components/`, `-hooks/` | `-sections/` |
+
+---
+
+## Sources
+
+> The dated snapshot recorded in `references/official/current-docs-2026-06-02.md` (its own verification date is 2026-06-02) records file-based routing, route tree generation, search-param validation with `validateSearch` and the `zodValidator`/`fallback` helpers, and that route loaders are client-reachable; those points are restated here. The route-structure, route-filename, route-option, and loader-execution-order guidance in this file is this package's own guidance, and no external source was used for it. The folder-route preference, the `-components/`/`-hooks/`/`-sections/` requirements, and the page-size thresholds are Hypercore/repo-local conventions. No page was re-fetched for this file. Rule text and repository-local paths checked 2026-09-21.

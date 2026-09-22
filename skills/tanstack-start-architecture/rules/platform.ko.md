@@ -87,3 +87,7 @@ export const env = createEnv({
 - env 사용이 typed이고 경계가 안전함
 - alias 설정이 사용 중인 Vite 버전과 맞음
 - 운영 endpoint가 내부 앱 RPC와 섞이지 않음
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, `references/official/current-docs-2026-06-02.md`, 스냅샷 날짜 2026-04-30 및 2026-06-09)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.

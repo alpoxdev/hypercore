@@ -88,3 +88,9 @@ Before drafting `DESIGN.md`, keep a compact evidence map in notes or the complet
 | Light/Dark | source/user/reference | mode strategy | high/medium/low |
 
 This map can be brief, but it must make the final design choices traceable.
+
+## Sources
+
+> This package's own discovery procedure checked 2026-09-21; no external source is cited.
+
+The evidence priority order, discovery checklist, intent table, and unsupported-value labels are this package's own procedure. Public DESIGN.md examples are treated as evidence only and are recorded in [`../references/design-md-source-notes.md`](../references/design-md-source-notes.md). No other external source is cited.

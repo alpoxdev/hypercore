@@ -204,3 +204,9 @@ This unit measures author-controlled construction instead of register-bound morp
 **Voice-card comparison** (run when a tone was supplied, `tone-manner.md` §5). Compare the draft against the settled voice card in four places: the endings, the sentence length, the lexis the card forbids (zero occurrences), and the ornament habit, kept inside the genre row's ceiling. A tone request the floor rejected appears in the publish note, not in the post.
 
 Never annotate the post itself with rule IDs.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states the prose rules this package applies (W-01 to W-26, the tell families, the genre rows, and the self-check). It cites no external URL and asserts no external fact, so no external source is recorded.

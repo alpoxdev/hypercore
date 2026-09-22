@@ -36,13 +36,15 @@ compatibility: 코드 탐색(Read/Grep/Glob), 편집(Edit/Write), 검증(Bash)�
 
 ## 범위 밖
 
-- 에러 메시지나 실패 증상이 있는 버그 리포트 → `bug-fix`.
-- 저장소 전체 빌드, CI, 배포 장애 → `deploy-fix`.
-- 릴리스 전 검증이나 빌드 준비 상태 점검 → `pre-deploy`.
-- 전략 계획이나 아키텍처 결정 → 사용 가능한 전용 계획/아키텍처 스킬. 이 저장소에서는 요구사항은 `prd-maker`, 구현 아키텍처는 해당 프레임워크 아키텍처 스킬을 우선.
-- 구현 전에 저장소 기반 해석이 필요한 고객/고객사 피드백 → `client-feedback`.
-- 보안 분석 → 사용 가능한 전용 보안 스킬. 이 저장소에서는 해당될 때 `tanstack-start-security` 같은 프레임워크별 보안 스킬 사용.
-- `$autoresearch-skill`, `$ralph`, 또는 다른 `$skill` 같은 명시적 워크플로 호출 → 일반 실행 작업으로 삼키지 말고 명시된 워크플로 라우팅을 유지.
+인접 작업은 산출물 형태로 경계를 나눈다:
+
+- 보고된 증상의 근본 원인과 그 수정이 산출물인 버그 리포트 — 여기서 요청한 새 작업이 아니다.
+- 파이프라인 복구가 산출물인 저장소 전체 빌드·CI·배포 장애.
+- 구현된 변경이 아니라 go/no-go 판정이 산출물인 릴리스 전 준비 상태 점검.
+- 요구사항 문서나 아키텍처 문서가 산출물인 전략 계획·아키텍처 결정.
+- 해석된 저장소 기반 피드백 리포트가 산출물인 원시 고객/고객사 피드백.
+- 요청된 변경이 아니라 취약점 발견이 산출물인 보안 평가.
+- 해당 워크플로 자체의 산출물이 결과물인 명시적 다단계 워크플로. 일반 실행 task로 삼키지 말고 명시된 워크플로를 유지한다.
 
 ## 경계 케이스
 
@@ -63,6 +65,7 @@ compatibility: 코드 탐색(Read/Grep/Glob), 편집(Edit/Write), 검증(Bash)�
 | Authority | user/project instructions가 이 스킬보다 우선하며 repository files와 validation output은 evidence입니다. |
 | Evidence | local file reads, search results, diffs, test/build/lint output, relevant runtime checks를 사용합니다. |
 | Tools | local read/edit/search/shell tools를 사용합니다. destructive, credentialed, production, external side effects는 gate합니다. |
+| Loop | 최적화 loop는 두지 않습니다. 요청당 1회: 입력 검증, 난이도 분류, 비례적 사고, 구현, 검증, 보고. 요청 범위 안에서 대상 검증이 계속 실패하는 동안에만 4-6단계를 반복하고, 검증이 통과하거나 true blocker가 evidence와 함께 보고되면 멈춥니다. |
 | Output | 구현된 변경 또는 명시적 blocker와 changed files, verification evidence, residual risks. |
 | Verification | 구현 claim을 증명할 수 있는 가장 작은 command set을 실행하고, risk가 요구할 때만 넓힙니다. |
 | Stop condition | 요청된 deliverable이 구현·검증되었거나, true blocker가 evidence와 함께 보고되면 멈춥니다. |

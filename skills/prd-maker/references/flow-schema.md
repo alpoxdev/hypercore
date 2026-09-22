@@ -2,6 +2,13 @@
 
 > JSON schema for `.hyper/prd/[slug]/flow.json` — used for complex planning packages only.
 
+## Contents
+
+- Schema
+- Status values
+- Rules
+- Example: initial state
+
 ## Schema
 
 ```json
@@ -154,3 +161,9 @@
   }
 }
 ```
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own `flow.json` schema, status vocabulary, and phase rules. It cites no external URL and asserts no external fact, so no external source is recorded.

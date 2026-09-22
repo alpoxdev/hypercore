@@ -88,3 +88,7 @@ Phase는 `detect` -> `baseline` -> `triage` -> `fix` -> `verify` -> `report` 순
 - [ ] 모든 fix는 재현된 failure group으로 역추적됩니다.
 - [ ] Final readiness는 targeted check만이 아니라 leader가 실행한 full deploy check에 근거합니다.
 - [ ] Skipped 또는 unavailable check는 passed check와 분리해 나열합니다.
+
+## Sources
+
+> 외부 출처를 사용하지 않았습니다. 이 패키지 자체 절차를 적은 문서이며 스크립트 경로를 확인 2026-09-22.

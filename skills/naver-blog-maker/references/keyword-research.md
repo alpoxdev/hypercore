@@ -51,3 +51,14 @@ Not available without login: absolute monthly search volume, clicks, CTR (네이
 | `docs / monthly searches ≤ 1` is a good target | single source | Internally inconsistent wording; triage only |
 | `200-1,000 mobile searches` is the right band for a small blog | single source | One author's audience filter |
 | A commercial query with a Shopping/Place-heavy SERP is a weak blog target unless the post is the review/comparison readers want | observed (2 sources) | Confirm on the live SERP |
+
+## Sources
+
+> <https://datalab.naver.com/keyword/trendSearch.naver> was re-checked 2026-09-21 (HTTP 200); the method rows come from the practitioner sources counted in [`evidence-digest.md`](evidence-digest.md) §7.
+
+| Claim | Source |
+|---|---|
+| §1 intent slicing and C-Rank topic trust | [`../rules/naver-ranking-contract.md`](../rules/naver-ranking-contract.md); the primary Naver posts in [`naver-algorithm-timeline.md`](naver-algorithm-timeline.md) |
+| §3 demand surface | <https://datalab.naver.com/keyword/trendSearch.naver> (official, link re-checked 2026-09-21) |
+| §4 tool rows | The vendors' own pages, read in a browser; tiers and limits change, so verify before relying on them. No vendor page is cited here |
+| §5 method rows | The practitioner sources counted in [`evidence-digest.md`](evidence-digest.md) §7; no threshold in this file has an official source |

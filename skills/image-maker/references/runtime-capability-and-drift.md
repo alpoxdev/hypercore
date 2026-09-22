@@ -67,3 +67,7 @@ When a runtime observation conflicts with a ledger claim, use the observation fo
 Stop before invocation or writing when necessary authority, source material, a preserve/change boundary, or a required capability is missing. Ask only for information that can resolve the missing condition; otherwise report a blocked outcome with the observed reason. Never loop on an unknown capability or a rejected provenance row.
 
 After an objective invocation failure, use no more than one retry of the unchanged brief. If completion remains impossible, follow the effective fallback policy and file-write evidence requirements. A refusal to allow fallback, an unavailable write capability, failed required inspection, failed persistence, or unverified provenance must never be described as successful image delivery.
+
+## Sources
+
+> No external sources were used. This file states rules that belong to the image-maker package itself. Content checked 2026-09-21.

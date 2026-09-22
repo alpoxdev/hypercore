@@ -20,3 +20,9 @@ Use `prompt-maker` only when the requested deliverable is a reusable prompt arti
 ## Boundary
 
 If a request can be read as either a prompt artifact or general documentation, choose `prompt-maker` only when the output will be reused as an instruction contract or eval target. Otherwise route to the documentation or implementation workflow.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file is this package's own procedure text; it cites no external source.

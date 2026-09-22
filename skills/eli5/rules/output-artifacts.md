@@ -95,3 +95,9 @@ The view must not add anything the explanation does not already say.
 - If the renderer fails, keep the conversational answer and report the failure. Never present a partial or stale view as the result.
 - The renderer writes atomically: a failure preserves the previous `explanation.html` byte for byte and leaves no temporary file.
 - Report the artifact paths that actually exist. Do not claim a PDF that was skipped.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-22.
+
+The format contract, the artifact path scheme, the structure-view interaction limit, and the PDF fallback are authored in this package around its own renderer script. No external claim is made, so no external source is cited.

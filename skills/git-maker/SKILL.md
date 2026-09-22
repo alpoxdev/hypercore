@@ -39,6 +39,7 @@ Use a different language only when the user explicitly requests it, an existing 
 | Authority | User and project instructions outrank this skill; helper output, git diffs, hooks, branch state, and remote output are execution evidence. |
 | Evidence | Use fast helper inventory, git status/diffs, hook output, branch/upstream data, and explicit arguments before mutation. |
 | Tools | Use Bash and repository-local helper scripts; subagents, when used, stay read-only and final git mutations stay with the main integrator. |
+| Loop | No optimization loop. One deterministic pass per request: preflight, group, commit, push, propagate, report. Retry only when a failed check inside the requested scope yields new evidence; stop when every intended commit and push target succeeds or a material conflict decision blocks. |
 | Output | Korean report of commits created, repositories pushed, skipped or failed push targets, and remaining local changes. |
 | Verification | Run the validation rule checks, confirm all commits succeeded before push, and read final push/status output. |
 | Stop condition | Stop when all intended commit groups and branch propagations have succeeded and every intended push target is pushed, or when a conflict requires a user decision under the escalation rule. |

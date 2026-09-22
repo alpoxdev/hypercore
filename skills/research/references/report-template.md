@@ -32,7 +32,7 @@ Example:
 ### 1. [Finding]
 - Claim:
 - Why it matters:
-- Source: [Title](URL)
+- Source: [Title](https://example.com/source)
 
 ## Comparison
 | Criteria | Option A | Option B | Notes |
@@ -64,7 +64,7 @@ Example:
 - [Decision or next action]
 
 ## References
-- [Title](URL)
+- [Title](https://example.com/source)
 ```
 
 ## Writing Rules
@@ -75,3 +75,9 @@ Example:
 - Keep caveats explicit instead of hiding them in prose.
 - For standard, deep, or parallel research, include the source ledger and claim-source matrix.
 - Count duplicate sources once, even if multiple lanes found them.
+
+## Sources
+
+> No external sources were used. Template and writing rules checked 2026-09-21.
+
+This file carries this package's own report template and writing rules. The `https://example.com/source` destination in the template is a placeholder host, not a source, and this file makes no external factual claim.

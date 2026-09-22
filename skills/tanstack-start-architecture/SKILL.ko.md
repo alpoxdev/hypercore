@@ -82,6 +82,7 @@ description: 기존 TanStack Start/Router 프로젝트의 routes, loaders, serve
 | Authority | 사용자/프로젝트 지시가 이 스킬보다 우선합니다. API 사실은 공식 TanStack 문서가 Hypercore convention보다 우선합니다. Safety policy는 위험한 runtime/import-boundary 변경을 차단합니다. |
 | Evidence | project indicators, local config/package files, touched source paths, topic rules, official references, package typecheck, validation command output을 사용합니다. |
 | Tools | local search/read/edit/validation commands를 사용합니다. API drift가 중요하면 최신 공식 문서를 확인합니다. destructive migration, credential access, network side effect, production change는 gate합니다. |
+| Loop | 없음. 요청당 한 번의 enforcement pass만 실행하고, 수정 후 `rules/validation.md` check를 한 번 실행하며, 사용자가 추가 pass를 요청할 때만 다시 진입합니다. |
 | Output | rule classification, 변경 파일, 검증 근거, 남은 risk, official-doc ambiguity note가 포함된 한국어 architecture decision/review. |
 | Verification | touched surface에 맞는 `rules/validation.ko.md` checks와, 이 스킬 폴더 변경 시 skill-anatomy checks를 실행합니다. |
 | Stop condition | applicable safety gate가 통과하고, Hypercore convention을 적용 또는 명시적으로 보류했으며, 검증 근거와 unresolved API drift의 날짜/출처를 기록하면 멈춥니다. |

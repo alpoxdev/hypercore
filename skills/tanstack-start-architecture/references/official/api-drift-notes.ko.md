@@ -83,3 +83,7 @@ Evidence: <https://tanstack.com/start/latest/docs/framework/react/guide/import-p
 - Hypercore의 route-directory preference는 maintainability를 위한 local convention이며 official TanStack behavior로 설명하면 안 됩니다.
 
 Evidence: <https://tanstack.com/router/latest/docs/routing/file-based-routing>
+
+## Sources
+
+> 출처 확인 2026-06-09. 이 파일이 `last_verified_at`으로 기록한 날짜이며, 위 각 결정은 날짜와 근거 TanStack page를 함께 밝히고 있습니다. 이번 pass에서는 페이지를 다시 가져오지 않았고, 위 목록 밖의 출처는 주장하지 않습니다.

@@ -66,3 +66,7 @@ mutation이 app UI에서 시작된다면 Server Action을 먼저 가정하고, �
 - method exports와 request/response handling이 명시적임
 - 현재 caching behavior를 이해하고 문서화함
 - Proxy-specific behavior가 Route Handler로 새지 않음
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Next.js 동작은 `references/official/nextjs-docs.md`(last verified 2026-05-24)와 `references/official/current-docs-2026-06-02.md`(스냅샷 날짜 2026-06-02)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.

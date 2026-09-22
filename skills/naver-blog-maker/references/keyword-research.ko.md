@@ -51,3 +51,14 @@
 | `문서수 / 월 검색량 ≤ 1`이 좋은 목표 | 단일 출처 | 표현이 내부적으로 모순. 선별용만 |
 | `모바일 월 200~1,000회`가 작은 블로그에 맞는 구간 | 단일 출처 | 한 작성자의 독자 기준 |
 | 쇼핑·플레이스가 많은 상업 검색어는 독자가 원하는 후기·비교가 아니면 블로그 목표로 약함 | observed (2개 출처) | 실제 검색 결과로 확인 |
+
+## Sources
+
+> <https://datalab.naver.com/keyword/trendSearch.naver>는 HTTP 200으로 응답했습니다(링크 확인 2026-09-21). 방법 행은 [`evidence-digest.ko.md`](evidence-digest.ko.md) §7에 집계한 실무 출처에서 나왔습니다.
+
+| 주장 | 출처 |
+|---|---|
+| §1 의도 슬라이스와 C-Rank 주제 신뢰 | [`../rules/naver-ranking-contract.ko.md`](../rules/naver-ranking-contract.ko.md); 1차 네이버 게시물은 [`naver-algorithm-timeline.ko.md`](naver-algorithm-timeline.ko.md) |
+| §3 수요 지면 | <https://datalab.naver.com/keyword/trendSearch.naver> (공식, 링크 확인 2026-09-21) |
+| §4 도구 행 | 각 도구 자체 페이지를 브라우저에서 확인. 등급과 한도가 바뀌므로 의존 전에 직접 확인. 도구 페이지 URL은 여기서 인용하지 않음 |
+| §5 방법 행 | [`evidence-digest.ko.md`](evidence-digest.ko.md) §7에 집계한 실무 출처. 이 파일의 어떤 임계값에도 공식 출처가 없음 |

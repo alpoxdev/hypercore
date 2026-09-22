@@ -39,6 +39,7 @@ compatibility: Bash와 `skills/git-maker/scripts` 아래 스크립트를 필요�
 | Authority | 사용자와 프로젝트 지시가 이 스킬보다 우선합니다. helper 출력, git diff, hook, branch state, remote output은 실행 근거입니다. |
 | Evidence | mutation 전에 fast helper inventory, git status/diff, hook 출력, branch/upstream data, 명시적 인자를 사용합니다. |
 | Tools | Bash와 repository-local helper script를 사용합니다. subagent를 쓰더라도 read-only로 제한하고 최종 git mutation은 main integrator가 수행합니다. |
+| Loop | 최적화 루프는 사용하지 않는다. 요청마다 preflight, grouping, commit, push, propagation, report를 한 번 수행하는 deterministic pass다. 요청 범위 안의 실패한 검사가 새 근거를 제공할 때만 재시도하고, 의도한 모든 commit과 push target이 성공하거나 material conflict 결정이 막을 때 멈춘다. |
 | Output | 생성된 commit, push된 repository, skipped/failed push target, 남은 local change에 대한 한국어 report입니다. |
 | Verification | validation rule check를 실행하고, 모든 commit이 push 전에 성공했는지와 최종 push/status 출력을 확인합니다. |
 | Stop condition | 의도한 모든 commit group과 branch 전파가 성공하고 모든 push target이 push되었거나, escalation rule상 사용자 결정이 필요한 conflict가 생겼을 때 멈춥니다. |

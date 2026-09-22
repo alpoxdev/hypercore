@@ -44,3 +44,7 @@ app.onError((err, c) => {
 - 에러 응답이 의도한 헤더/상태를 보존
 - 예상 가능한 HTTP 에러를 전부 generic throw로 던지지 않음
 - Client가 의존하는 typed RPC/public-client 404 동작은 `app.notFound()` 또는 explicit JSON response contract로 검증
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Hono 동작은 `references/official/hono-docs.ko.md`에 위임합니다(last verified 2026-08-04). 저장소 로컬 링크 확인 2026-09-21.

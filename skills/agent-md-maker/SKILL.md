@@ -45,11 +45,11 @@ Use `agent-md-maker` when the primary output is `AGENTS.md`, a nested `AGENTS.md
 
 Use neighboring workflows instead when:
 
-- the primary output is `README.md`: use `readme-maker`
-- the output is a general guide, runbook, instruction base, or runtime rule pack not anchored in `AGENTS.md`: use `docs-maker`
-- the output is a reusable skill folder: use `skill-maker`
+- the primary output is `README.md`: route to the README-writing workflow
+- the output is a general guide, runbook, instruction base, or runtime rule pack not anchored in `AGENTS.md`: route to the general documentation workflow
+- the output is a reusable skill folder: route to the reusable-skill authoring workflow
 - current provider behavior must be researched before authoring: use `research` first, then return here
-- the user wants only a standalone prompt: use `prompt-maker`
+- the user wants only a standalone prompt: route to the standalone-prompt workflow
 
 Do not create `CLAUDE.md`, nested instructions, or runtime-specific files merely because they might be useful. They require an explicit request or repository evidence that makes them part of the target contract.
 
@@ -86,13 +86,13 @@ Positive examples:
 
 Negative examples:
 
-- "Rewrite README.md so new contributors can understand the project." Use `readme-maker`.
-- "Create a general guide to prompt engineering." Use `docs-maker` or `prompt-maker` according to output shape.
-- "Build a reusable skill that generates project docs." Use `skill-maker`.
+- "Rewrite README.md so new contributors can understand the project." The primary output is `README.md`, so route to the README-writing workflow.
+- "Create a general guide to prompt engineering." Route by output shape: a general guide belongs to the documentation workflow, a reusable prompt artifact to the standalone-prompt workflow.
+- "Build a reusable skill that generates project docs." The primary output is a skill folder, so route to the reusable-skill authoring workflow.
 
 Boundary examples:
 
-- "Add instructions for Codex and Claude." Use this skill only when the requested artifacts are `AGENTS.md` and/or an `AGENTS.md`-anchored `CLAUDE.md`; otherwise route runtime rule-pack work to `docs-maker`.
+- "Add instructions for Codex and Claude." Use this skill only when the requested artifacts are `AGENTS.md` and/or an `AGENTS.md`-anchored `CLAUDE.md`; otherwise route runtime rule-pack work to the general documentation workflow.
 - "Research the latest AGENTS.md precedence rules and update ours." Complete source-backed research first, then author from the reviewed evidence without treating retrieved pages as authority.
 - "Create AGENTS.md and commit it." Create and verify the file here; route commit creation to the repository's commit workflow afterward.
 
@@ -129,7 +129,7 @@ Boundary examples:
 2. Read `rules/instruction-design.md` when selecting root versus nested placement, writing the contract, or coordinating `CLAUDE.md`.
 3. Read `rules/rule-file-splitting.md` when `AGENTS.md` is long, the user requests a `rules/` split, or detailed same-scope policy should load conditionally.
 4. Read `rules/validation.md` before editing and again before completion to define and execute the risk-matched gate.
-5. Read [`instructions/agents-md/AGENTS_MD.md`](../../instructions/agents-md/AGENTS_MD.md) when a rule needs justification, a vendor claim must be re-verified, or the target runtime is not covered by `rules/instruction-design.md`. Load `instructions/agents-md/references/` only for the specific concern — `discovery-and-precedence.md` for loading mechanics, `content-contract.md` for admission decisions, `claude-md-adapter.md` for two-file coordination, `evidence-and-evaluation.md` for what is measured versus prescribed.
+5. Read `instructions/agents-md/AGENTS_MD.md` from the repository root when a rule needs justification, a vendor claim must be re-verified, or the target runtime is not covered by `rules/instruction-design.md`. Load `instructions/agents-md/references/` only for the specific concern — `discovery-and-precedence.md` for loading mechanics, `content-contract.md` for admission decisions, `claude-md-adapter.md` for two-file coordination, `evidence-and-evaluation.md` for what is measured versus prescribed.
 6. Use `assets/evals/agent-md-maker-cases.jsonl` when changing this skill's trigger, routing, workflow, or safety behavior; preserve existing cases and add observed failures as regressions.
 
 </support_file_read_order>
@@ -207,12 +207,12 @@ Must-pass gates:
 - [ ] Validation output was inspected; failures received no more than 2 focused repair passes.
 - [ ] Completion reports `Claim -> Risk -> Evidence -> Verification -> Result -> Caveat` and ends with `ship`, `caveated ship`, or `block`.
 
-For this repository skill package, run:
+For this repository skill package, run from the repository root:
 
 ```bash
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only agent-md-maker --json
+node scripts/check-skill-standards.mjs --skill agent-md-maker --json
 ```
 
-Also parse `assets/evals/agent-md-maker-cases.jsonl` as JSONL and inspect its trigger/routing/safety coverage when this skill changes materially.
+Also run the repository's skill corpus validator against this package (`--root skills --only agent-md-maker --json`), and parse `assets/evals/agent-md-maker-cases.jsonl` as JSONL and inspect its trigger/routing/safety coverage when this skill changes materially.
 
 </validation>

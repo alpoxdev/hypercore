@@ -83,3 +83,7 @@ Decision as of 2026-04-30:
 - Hypercore's route-directory preference is a local convention for maintainability and should not be described as official TanStack behavior.
 
 Evidence: <https://tanstack.com/router/latest/docs/routing/file-based-routing>
+
+## Sources
+
+> Sources checked 2026-06-09, the date this file records as `last_verified_at`; each decision above is dated and names the TanStack page it rests on. No page was re-fetched in this pass and no source outside the list above is claimed.

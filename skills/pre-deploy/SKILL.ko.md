@@ -33,8 +33,8 @@ compatibility: 지원 스택(node/rust/python) 중 하나 이상의 로컬 툴�
 
 ## 범위 밖
 
-- 구체적인 배포 실패 로그, 플랫폼 빌드 실패, CI 전용 환경 차이, production deploy 문제는 `deploy-fix`로 보냅니다.
-- 재현 절차가 있는 runtime bug나 잘못된 앱 동작은 `bug-fix`로 보냅니다.
+- 구체적인 배포 실패 로그, 플랫폼 빌드 실패, CI 전용 환경 차이, production deploy 문제는 로그에서 원인을 추적해 플랫폼·빌드 설정을 바로잡는 산출물을 내는 배포 remediation 작업으로 넘깁니다.
+- 재현 절차가 있는 runtime bug나 잘못된 앱 동작은 재현 절차와 최소 코드 수정을 산출물로 내는 결함 수정 작업으로 넘깁니다.
 - 재현된 pre-deploy blocker와 연결되지 않은 신규 기능, 광범위 리팩터, 추측성 cleanup은 `execute` 또는 관련 구현 스킬로 보냅니다.
 - `package.json`, `Cargo.toml`, `pyproject.toml`, `requirements.txt`, `setup.py`, `Pipfile`, `poetry.lock` 중 루트 marker가 없는 unsupported 저장소는 대상이 아닙니다.
 
@@ -57,6 +57,7 @@ compatibility: 지원 스택(node/rust/python) 중 하나 이상의 로컬 툴�
 | Authority | 사용자와 프로젝트 지시가 이 스킬보다 우선합니다. local toolchain output, stack marker, validation script는 근거입니다. |
 | Evidence | 수정 전에 stack detection, initial full deploy-check output, failing command log, 관련 config, targeted recheck output을 사용합니다. |
 | Tools | repository-local script, local read/edit, independent lane용 bounded subagent를 사용합니다. deploy 또는 production side effect는 암시되지 않습니다. |
+| Loop | 루프 없음: 요청당 한 번의 validate -> triage -> fix -> re-verify 패스만 수행합니다. 새로 재현된 blocker가 있을 때만 다시 들어가고, readiness 증명, unsupported stack, handoff에서 멈춥니다. |
 | Output | scope, detected stack, mode, blocker, fix, validation command, skipped check, risk를 포함한 한국어 readiness report입니다. |
 | Verification | readiness claim 전 full `skills/pre-deploy/scripts/deploy-check.mjs`를 처음과 마지막에 실행하고, fix 후 targeted check를 실행합니다. |
 | Stop condition | deploy readiness가 증명되었거나, validate-only blocker가 보고되었거나, unsupported stack이 보고되었거나, handoff/permission blocker에 도달했을 때 멈춥니다. |
@@ -133,7 +134,7 @@ Detection이 정확하도록 현재 작업 디렉터리를 target root로 설정
 - **Fix-now**: simple/medium 재현 blocker는 TodoWrite에 등록하고 좁게 수정한 뒤 targeted check와 full deploy check를 재실행합니다.
 - **Parallel remediation**: 실패를 grouping한 뒤 독립 diagnosis 또는 겹치지 않는 edit lane에 한해 bounded subagent/background agent를 사용합니다. leader가 integration과 final verification을 소유합니다. 먼저 `rules/parallel-remediation.ko.md`를 읽습니다.
 - **Tracked remediation**: complex case에서는 `rules/tracked-remediation.ko.md`를 읽은 뒤 `.hyper/pre-deploy/flow.json`을 만들거나 재개하며 phase는 `detect`, `baseline`, `triage`, `fix`, `verify`, `report`입니다.
-- **Handoff**: platform deployment 실패는 `deploy-fix`, runtime application bug는 `bug-fix`, 무관한 구현 요청은 `execute`로 보냅니다.
+- **Handoff**: platform deployment 실패는 로그 기반 배포 remediation 작업으로, runtime application bug는 재현 절차가 있는 결함 수정으로, 무관한 구현 요청은 `execute`로 보냅니다.
 
 </execution_modes>
 

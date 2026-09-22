@@ -89,3 +89,9 @@ try { main(process.argv.slice(2)); } catch (error) { process.stderr.write(`${JSO
 2. 코드를 추출합니다. 그룹 1이고 **또한** 쓰기 이전에 발생했다면 → 해당 입력만 고쳐 한 번 재실행합니다.
 3. 그룹 2이거나, 이미 쓰인 트리에 대한 validator에서 그룹 1 코드가 나왔다면 → 종료 정지. 대상, marker, journal, stage, backup, lock을 보존하고 코드와 경로를 보고합니다.
 4. `overwrite: true`를 스스로 켜지 말고, lock을 폴링하지 말고, 복구 증거를 지우지 말고, 검사를 만족시키려고 marker를 편집하지 마십시오.
+
+## Sources
+
+> 저장소 로컬 script 출처 확인 2026-09-21.
+
+아래의 모든 코드, 단계, envelope 줄 번호는 이 패키지의 `scripts/generate.mjs`와 `scripts/validate-portable-v1-output.mjs`가 실제로 던지는 코드와만 대조했습니다. vendor 문서를 인용하지 않습니다.

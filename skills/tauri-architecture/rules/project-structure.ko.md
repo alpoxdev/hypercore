@@ -235,7 +235,9 @@ Folder migration을 Tauri v1 migration, permission 확대, dependency upgrade, w
 7. 현재 소유자 없이 빈 folder/layer를 scaffold했거나 workspace/package extraction의 consumer가 하나뿐입니다.
 8. `frontendDist`, generated route-tree path, human/generated ownership이 모호합니다.
 
-## 출처 링크
+## Sources
+
+> 링크 확인 2026-07-30.
 
 공식 제약:
 
@@ -252,3 +254,7 @@ Dependency나 framework mandate가 아닌 비교 조직 근거:
 
 - React file-structure FAQ(legacy, 명시적으로 non-prescriptive): <https://legacy.reactjs.org/docs/faq-structure.html>
 - Redux feature/domain folder 논의: <https://redux.js.org/faq/code-structure/>
+
+Vendor mandate가 아닌 Hypercore layout 규약:
+
+- `pages/`, `modules/`, `components/`, `platform/`, `shared/`, tier 표, promotion 규칙은 이 저장소의 규약이며 외부 출처가 없음

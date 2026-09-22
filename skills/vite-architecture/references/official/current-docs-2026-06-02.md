@@ -2,7 +2,7 @@
 
 > Context7-checked official documentation facts for drift-sensitive Vite + TanStack Router architecture decisions.
 
-checked_at: 2026-06-02
+last_verified_at: 2026-06-02
 library_ids: `/websites/vite_dev`, `/tanstack/router`
 source_priority: official Vite docs and official TanStack Router docs via Context7.
 
@@ -32,7 +32,9 @@ source_priority: official Vite docs and official TanStack Router docs via Contex
 - Do not add new direct leaf files such as `src/lib/foo.ts` or `src/services/foo.ts` in touched shared roots unless an explicit project exception is recorded.
 - Prefer Services for public client-side API wrappers in Vite SPAs. Do not introduce TanStack Start server functions (`createServerFn`, `useServerFn`, Start middleware APIs) in this skill.
 
-## Source URLs Checked
+## Sources
+
+> Sources checked 2026-06-02 via Context7 (`/websites/vite_dev`, `/tanstack/router`). This is the snapshot's own verification date, carried over from the file's original `checked_at: 2026-06-02` marker; no page was re-fetched in this pass and no source outside the list below is claimed.
 
 - `https://vite.dev/guide/env-and-mode`
 - `https://vite.dev/config/`

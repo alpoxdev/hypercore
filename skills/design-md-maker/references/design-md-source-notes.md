@@ -53,3 +53,9 @@ Recheck these sources when:
 - The user asks for exact official wording or provider-sensitive behavior.
 - A generated `DESIGN.md` must match a specific public example closely.
 - The count, category list, or available examples from getdesign.md/awesome-design-md matters to the output.
+
+## Sources
+
+> The four ledger pages above were last fetched 2026-06-07; this package's source notes checked 2026-09-21.
+
+The ledger above records every external source consulted for this package, with its URL, fetch date, grade, supported claim, and caveat. No page was refetched for this check: the notes were read back against the ledger as recorded. No other external source is cited.

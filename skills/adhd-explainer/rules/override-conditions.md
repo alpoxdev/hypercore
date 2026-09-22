@@ -73,3 +73,9 @@ This skill is an output style. It is not a diagnosis, screening instrument, or t
 - [ ] A debug spiral produced a named assumption and one diagnostic question, not another blind fix.
 - [ ] Ambiguity produced exactly one question, after cheap reads were exhausted.
 - [ ] No response implied a diagnosis or a clinical claim.
+
+## Sources
+
+> Upstream provenance and this package's own handling text checked 2026-09-21; upstream accessed 2026-08-10.
+
+The six override cases derive from the MIT-licensed upstream project recorded in [`../references/upstream-i-have-adhd.md`](../references/upstream-i-have-adhd.md). The handling text, the medical boundary, and the quality gate are this package's own work. No other external source is cited.

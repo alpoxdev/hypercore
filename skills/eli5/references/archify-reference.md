@@ -43,3 +43,14 @@ Only paths verified to exist at the pinned commit are listed. External repositor
 ## Comparison rule
 
 No code, template, or prose was copied from the reference; the relationship is design inspiration, recorded here for provenance. Do not claim that this package matches or exceeds the reference. A comparison would require the same task set, the same runtime, the same reviewer, and a published receipt, and none of those exist.
+
+## Sources
+
+> No new external source was used. Content checked 2026-09-22; the design reference recorded in the ledger above was accessed 2026-09-21.
+
+| Claim | Source |
+|---|---|
+| The reference's typed-input contract, its validation gate, its self-contained output, its bounded interaction, and the consulted file inventory above | <https://github.com/tt-a1i/archify> (MIT) at commit `29f1ff53814b7b13fa161687e0565e8f596c9257`, accessed 2026-09-21 |
+| The renderer behavior, the token contract, and the comparison limits described here | this package's own files: `scripts/render-explanation.mjs`, `rules/output-artifacts.md`, and `references/explanation-view-schema.md` |
+
+No other external source is cited: the reference is a single public repository, and every remaining statement is this package's own design record.

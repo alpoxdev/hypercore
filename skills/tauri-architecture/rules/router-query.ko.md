@@ -16,7 +16,7 @@ export default defineConfig({
 })
 ```
 
-TanStack Start는 이 skill의 범위 밖이다. server function, server route, middleware, SSR을 포함한 요청은 이 패키징된 Vite SPA에 추가하지 말고 반드시 `tanstack-start-architecture`로 라우팅한다.
+TanStack Start는 이 skill의 범위 밖이다. server function, server route, middleware, SSR을 포함한 요청은 이 패키징된 Vite SPA에 추가하지 말고 반드시 full-stack architecture workflow로 라우팅한다.
 
 네이티브 기능은 검토된 desktop API/IPC 경계를 통과하고, 원격 서비스는 일반 브라우저 HTTP API를 사용한다. Tauri Rust command가 네이티브 authority를 유지한다. Vite module, route, WebView state를 네이티브 trust boundary로 취급하지 않는다.
 
@@ -162,3 +162,14 @@ const mutation = useMutation({
 5. client-side guard를 native capability의 authorization control로 제시한다.
 
 날짜가 기록된 API 근거는 [`../references/official/tanstack-vite-react-2026-07-30.ko.md`](../references/official/tanstack-vite-react-2026-07-30.ko.md)를, command-boundary 요구 사항은 [`tauri-ipc.ko.md`](tauri-ipc.ko.md)와 [`security.ko.md`](security.ko.md)를 읽는다.
+
+## Sources
+
+> 링크 확인 2026-07-30.
+
+| 주장 | 출처 |
+|---|---|
+| Router plugin 순서와 file-route 생성, typed router context, `defaultPreloadStaleTime`, `validateSearch`/`loaderDeps`, pending/error/not-found component | [tanstack-vite-react-2026-07-30.ko.md](../references/official/tanstack-vite-react-2026-07-30.ko.md); <https://tanstack.com/router/v1/docs/framework/react/guide/data-loading>; <https://tanstack.com/router/v1/docs/framework/react/guide/not-found-errors> |
+| `queryOptions`, `ensureQueryData`, `useSuspenseQuery`, query key 입력, staleness, invalidation 동작 | [tanstack-vite-react-2026-07-30.ko.md](../references/official/tanstack-vite-react-2026-07-30.ko.md); <https://tanstack.com/query/v5/docs/reference/QueryClient>; <https://tanstack.com/query/latest/docs/framework/react/guides/query-keys> |
+| 패키징된 정적 asset 경계와 native 작업의 Rust 측 권한 | [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md); <https://v2.tauri.app/security/> |
+| Route/page/module 소유권, 좁은 desktop adapter, client guard는 authorization이 아니라는 규칙 | 이 저장소의 규약과 안전 정책; 외부 출처 없음 |

@@ -75,6 +75,12 @@
 - [ ] 네이버 동작을 말하는 모든 주장이 `references/naver-algorithm-timeline.ko.md`의 `official` 행으로 추적되고 observed·folklore 항목은 그렇게 표시됨.
 - [ ] 로컬 링크가 열리고 코드 펜스가 닫힘.
 - [ ] `assets/evals/naver-blog-maker-cases.jsonl`이 긍정, 부정, 경계, 회귀, 적대 사례를 덮고 현재 트리거·워크플로와 맞음.
-- [ ] 저장소 유지보수 전용(실행 시 의존성 아님): `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only naver-blog-maker --json` 통과.
+- [ ] 저장소 유지보수 전용(실행 시 의존성 아님): 이 패키지로 범위를 좁힌 corpus validator(`validate-skills-corpus.mjs --root skills --only naver-blog-maker --json`) 통과.
 - [ ] `bun run --cwd scripts verify` 통과.
 - [ ] 이번 변경이 스킬을 추가하거나 스킬 이름·카탈로그 노출을 바꾸면 `README.md`의 스킬 수와 카탈로그 행을 갱신하고, 그 밖에는 `README.md`가 바뀌지 않았음을 확인함.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 초안·패키지 점검표를 담습니다. 파일이 담은 네이버 동작 관련 항목은 모두 [`../references/naver-algorithm-timeline.ko.md`](../references/naver-algorithm-timeline.ko.md)의 `official` 행으로 추적되며, 자체 외부 출처는 인용하지 않습니다.

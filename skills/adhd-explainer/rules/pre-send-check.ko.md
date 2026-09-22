@@ -112,3 +112,9 @@ Next: paste the first failing line if a test fails.
 - [ ] 두 표의 금지 표현이 하나도 남지 않았다.
 - [ ] 첫 줄·마지막 줄 테스트가 두 질문에 모두 답한다.
 - [ ] 재작성 과정에서 근거 없는 주장이 추가되지 않았다.
+
+## Sources
+
+> 업스트림 출처와 이 패키지 자체 게이트 문장 확인 2026-09-21, 업스트림 대조 2026-08-10.
+
+발송 전 삭제 목록은 [`../references/upstream-i-have-adhd.ko.md`](../references/upstream-i-have-adhd.ko.md)에 기록된 MIT 라이선스 업스트림 프로젝트에서 유래했다. 8개 게이트, 루프 계약, 두 언어 금지 표현 표는 이 패키지의 작업이다. 그 밖의 외부 출처는 인용하지 않는다.

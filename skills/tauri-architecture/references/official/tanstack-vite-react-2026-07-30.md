@@ -7,6 +7,17 @@
 
 Use this file only for version-sensitive API and runtime facts. Project and user instructions remain authoritative. The Tauri-specific trust and packaging boundary is recorded in `tauri-v2-2026-07-30.md`.
 
+## Contents
+
+- Package Snapshot
+- TanStack Router Facts
+- TanStack Query Facts
+- Vite Facts
+- React Facts
+- Project-Structure Evidence
+- Integration Caveats
+- Sources
+
 ## Package Snapshot
 
 The following npm `latest` metadata was observed on 2026-07-30. It is evidence of the registry state, not a dependency-upgrade instruction:
@@ -118,3 +129,16 @@ Sources:
 - Tauri does not publish an official endorsement of this exact Vite SPA stack. Treat compatibility as an integration that must pass a production build and packaged-WebView smoke test.
 - Do not infer Tauri security behavior from TanStack, Vite, or React docs. Use `tauri-v2-2026-07-30.md` for native trust boundaries.
 - Do not rename an official fact into a Hypercore convention or vice versa. Directory layout and typed adapter placement remain repository conventions unless official docs say otherwise.
+
+## Sources
+
+> Links checked 2026-07-30.
+
+| Claim | Source |
+|---|---|
+| Package snapshot versions | The registry URLs in the Package Snapshot table above |
+| Router and Query facts | The TanStack source lists in the sections above (`tanstack.com/router/...`, `tanstack.com/query/...`) |
+| Vite facts | The Vite source list in the section above (`vite.dev/...`) |
+| React facts | The React source list in the section above (`react.dev/...`) |
+| Project-structure comparison evidence | <https://v2.tauri.app/start/project-structure/>; <https://legacy.reactjs.org/docs/faq-structure.html>; <https://redux.js.org/faq/code-structure/> |
+| The derived `routes/`/`pages/`/`modules/`/`components/` convention | This repository's convention; no external source |

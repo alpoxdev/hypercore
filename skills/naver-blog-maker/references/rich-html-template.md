@@ -52,3 +52,9 @@ If a ChatGPT preview blocks scripts, provide the completed downloadable HTML and
 - Naver paste remains a user check; no login, upload, or publication is part of assembling this template.
 
 Maintenance: rich-copy handler contracts (selection scope, copy API, honest status, source-button separation) are regression cases in [`../assets/evals/naver-blog-maker-cases.jsonl`](../assets/evals/naver-blog-maker-cases.jsonl) — an agent statically re-judges the shell against them after any shell change, and the browser clipboard test below stays the live check. This verification needs no executable test file, so the package runs in file-execution-free runtimes (ChatGPT web) and coding agents alike.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+The paste-behavior claims are this repository's own editor-session measurements, recorded in [`../rules/post-workflow.md`](../rules/post-workflow.md) §3. The copy-handler contract is verified against the shell itself, [`../assets/rich-post.html`](../assets/rich-post.html), with the regression cases in [`../assets/evals/naver-blog-maker-cases.jsonl`](../assets/evals/naver-blog-maker-cases.jsonl).

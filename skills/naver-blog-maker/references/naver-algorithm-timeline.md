@@ -54,3 +54,9 @@ These circulate widely and have no official source. Do not present them as rules
 - "C-Rank 2.0", a "March 2025 algorithm change" (the proximate official event is the 2025-02-28 notice), or the removal of D.I.A.+ (still named in 2025-02).
 - Same-IP or same-Wi-Fi as a standalone penalty (officially denied 2016-07-12: <https://blog.naver.com/naver_search/220760111725>).
 - Discontinuation of 연관검색어 in 2026 — reported by English-language guides only; no official notice found.
+
+## Sources
+
+> Every link in this file was re-checked 2026-09-21 (all HTTP 200): `blog.naver.com/naver_search`, `blog.naver.com/blogpeople`, `searchadvisor.naver.com`, and `help.naver.com`.
+
+The date column is the publication date Naver itself gave. The two Search Advisor rows are marked undated because those pages carry no publication or revision date. [`evidence-digest.md`](evidence-digest.md) and [`../rules/naver-ranking-contract.md`](../rules/naver-ranking-contract.md) draw on the same link set.

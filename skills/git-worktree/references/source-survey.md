@@ -2,7 +2,9 @@
 
 This survey captures patterns distilled from public Git worktree documentation, tools, editor integrations, and AI-agent workflows. Use it as rationale; keep operational rules in `rules/worktree-lifecycle.md`.
 
-## Sources reviewed
+## Sources
+
+> Links checked 2026-09-21. Each of the 17 numbered entries below answered HTTP 200 on that date.
 
 1. **Official Git `git-worktree` documentation** — authoritative command behavior for `add`, `list`, `remove`, `prune`, `lock`, `unlock`, `repair`, `--porcelain`, and annotations.  
    URL: https://git-scm.com/docs/git-worktree.html

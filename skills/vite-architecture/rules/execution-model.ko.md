@@ -39,3 +39,9 @@ route module이나 loader를 private server boundary처럼 취급하지 않습�
 - route 코드가 DB client나 privileged SDK를 import하지 않음
 - 브라우저 전용 코드가 module scope에서 실행되지 않음
 - loader의 네트워킹이 service/query-option 헬퍼 뒤에 있음
+
+---
+
+## Sources
+
+> route module과 loader의 client-reachability, client env에 `VITE_`만 허용하는 규칙은 `references/official/current-docs-2026-06-02.ko.md`에 기록된 dated snapshot에서 왔고, 그 스냅샷이 기록한 자체 검증일은 2026-06-02입니다. server render 주의점과 loader 네트워킹을 service helper 뒤로 두는 규칙은 이 패키지 자체의 guidance이자 Hypercore/repo-local convention이며 스냅샷에서 가져온 사실이 아닙니다. 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 규칙 문장과 저장소 로컬 경로 확인 2026-09-21.

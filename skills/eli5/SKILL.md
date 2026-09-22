@@ -39,8 +39,8 @@ Route elsewhere when:
 
 - the user wants a short summary but gives no teaching or audience-calibration intent — summarize directly
 - the user wants code changed, a bug fixed, or a feature implemented — use the implementation skill; apply `eli5` only to the explanation portion if requested
-- the user wants ADHD-shaped output rather than conceptual simplification — use `adhd-explainer`; both may compose when both intents are explicit
-- the user wants a reusable prompt, document, or skill artifact — use `prompt-maker`, `docs-maker`, or `skill-maker`
+- the user wants short, low-load, prioritized output rather than conceptual simplification — that output-shaping style owns it; both may compose when both intents are explicit
+- the user wants a reusable prompt, document, or skill artifact — that artifact's own authoring contract owns it; this skill only supplies the explanation it contains
 - the user asks for personalized medical, legal, or financial judgment — preserve uncertainty and professional boundaries; simplification may clarify general information but must not manufacture a recommendation
 
 This skill owns explanation design, not the truth of unread source material. Read the relevant code, error, document, diagram, or source before explaining it.
@@ -202,7 +202,7 @@ Read [`rules/output-artifacts.md`](rules/output-artifacts.md) before producing a
 - [ ] The structure view adds no claim, number, or source the explanation does not already contain, and the analogy keeps its stated limit.
 - [ ] The generated HTML is byte-identical for identical input, and a failed render preserves the previous file.
 - [ ] Package changes preserve English/Korean structure and all eval categories.
-- [ ] Package changes run `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only eli5 --json`.
+- [ ] Package changes run the repository skill-corpus validator on this package, when the repository ships one: `<corpus-validator> --root <skills-root> --only eli5 --json`.
 - [ ] Package changes run `bun run --cwd scripts verify`.
 
 </validation>

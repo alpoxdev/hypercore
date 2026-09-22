@@ -76,3 +76,9 @@ Gate 2 and Gate 3 are different: they are the mechanical rules (endings, punctua
 - If the samples are in another language, write the spec in that language.
 - The user's explicit language request outranks both defaults.
 - Mechanical tokens (종결어미, symbols, slang terms) stay in their original form regardless of the spec's language.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file states this package's own rules and makes no external claim, so no external source is cited.

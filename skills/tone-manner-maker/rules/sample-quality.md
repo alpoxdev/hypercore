@@ -47,3 +47,9 @@ When a spec starts from a preset (`preset_approximation`) and samples arrive lat
 ## Transcript handling
 
 Chat logs and transcripts mix spoken register with written prose. Analyze the prose passages for the spec; spoken asides may inform reader stance at most, and their register must not leak into written-ending rules.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file states this package's own rules and makes no external claim, so no external source is cited.

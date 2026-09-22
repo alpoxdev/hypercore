@@ -45,3 +45,9 @@ Reject an absolute, empty, `.`, `..`, or escaping relative path. For target, anc
 - If no unique hash-valid state exists, do not delete or overwrite anything: preserve journal evidence, report a blocked recovery, and require review.
 
 Do not claim crash atomicity, power-loss atomicity, or recovery without the required journal and hash-valid evidence.
+
+## Sources
+
+> No external sources were used. Repository-local transaction invariants checked 2026-09-21.
+
+The marker payload, preflight, and transaction rules restate the behavior implemented by this package's `scripts/generate.mjs` and exercised by `scripts/validate-hermes-agent-maker.mjs`. No external source is cited.

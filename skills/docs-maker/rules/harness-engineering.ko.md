@@ -265,3 +265,9 @@ metrics:
 ```text
 Define success → collect baseline cases → run current doc → diagnose failures → patch smallest surface → re-run → document risk
 ```
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 절차 문서이며 외부 출처를 인용하지 않습니다.

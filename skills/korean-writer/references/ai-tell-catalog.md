@@ -4,6 +4,20 @@ Load this on demand, not on every request: it is the deep-reference layer behind
 
 Reach for it when a draft feels machine-written but no W-rule names the problem, when a humanize diagnosis needs the candidate pool to diagnose against, when a reviewer asks why a construction was avoided, or when a new pattern needs a home in the right family. Each entry carries a catalog ID (`C-` + family letter + index), the Korean pattern itself, one bad-to-good pair, the reason it reads as generated, and the move to make. Catalog IDs index knowledge; `rules/writing-method.md` W-IDs index the prescriptions you actually apply. Where the two seem to disagree, the W-rule wins.
 
+## Contents
+
+- A 번역투 — translationese
+- B 영어 인용·용어 과다 — excess English quotation and loanwords
+- C 구조적 AI 패턴 — structural AI patterns
+- D AI 특유 관용구 — AI-specific stock phrases
+- E 리듬 균일성 — uniform rhythm
+- F 수식·중복 — modifiers and redundancy
+- G Hedging 남용 — overused hedging
+- H 접속사 남발 — overused connectives
+- I 형식명사 과다 — empty formal nouns
+- J 시각 장식 — visual decoration
+- Using this catalog
+
 ## A 번역투
 
 - **C-A1 `~를 통해` as an all-purpose instrument marker.** Korean marks instruments with `~로` or folds them into a verb; the noun-phrase detour is English `through`/`via` wearing a 조사.
@@ -167,3 +181,9 @@ Reach for it when a draft feels machine-written but no W-rule names the problem,
 ## Using this catalog
 
 Read one family, not the whole file: a draft with a translationese problem needs A, not J. Apply the prescription from the matching W-rule in `rules/writing-method.md`, take genre exceptions from `rules/genre-calibration.md`, and count what needs counting with the self-check in `rules/validation.md`. In humanize mode, `rules/humanize-method.md` uses this catalog as the candidate pool for the dominant-pattern diagnosis and treats every `Fix` as an edit that must survive the anchors and the over-correction guard. The Korean examples stay in Korean in both language versions of this file so the pattern under discussion is the same object in each.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+The catalog entries (C-A1 through C-J5), their Korean bad-to-good pairs, and the family letters are this package's own pattern catalog, written from this package's drafting and repair practice. No published text is quoted, so no external source is cited; each entry points at the W-ID in `rules/writing-method.md` that carries the prescription.

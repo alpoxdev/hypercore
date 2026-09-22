@@ -94,3 +94,13 @@ Fail or block the document when any condition is true:
 - a loop is unbounded, self-graded only, baseline-changing, or keeps a failed-guard result
 - harness docs omit in-scope scenario/oracle/runner/judge/trace/gate coverage
 - English/Korean mirrors expose incompatible behavioral contracts
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This file is this package's own procedure text and cites no external source.
+
+| Claim | Source |
+|---|---|
+| The regression fixture and the EN/KO behavioral comparison named in this file | `../assets/evals/docs-maker.jsonl`, `../assets/evals/docs-maker.ko.jsonl` (this package) |

@@ -37,9 +37,26 @@ Use this skill when the job is specifically about security posture in a TanStack
 
 Do not use this skill for generic React work or non-security copy edits.
 
-If the task is mainly TanStack Start architecture compliance rather than security hardening, use `skills/tanstack-start-architecture/` instead of stretching this skill.
+This skill's output shape is a security decision set: the mapped security surface, the rule file that governs it, the smallest change that closes the risk, and the verification output that proves the risk is closed. Work whose deliverable is an architecture plan instead of a closed security risk - folder layout, routing conventions, data-loading model, cache behavior - does not fit that shape, so do not stretch this skill to cover it: harden and report only the security surfaces actually in scope, and name the remaining architecture items as outside this skill's output shape.
 
 If the request is a generic non-TanStack security review, route away to the normal security-review path instead of forcing TanStack Start rules.
+
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | Reduce the real security risk in a TanStack Start app without turning every change into a full security rewrite. |
+| Scope | Auth and sessions, cookies/CSRF/trusted origins, secrets and env exposure, request middleware, server functions, server routes, headers/CSP/CORS, webhooks, rate limiting, and SSR/hydration/import-boundary leaks in a TanStack Start project. |
+| Authority | User and project instructions outrank this skill. Current official TanStack Start and auth-library documentation outranks this skill's notes when the two disagree. The core security gates block a change regardless of other preferences. |
+| Evidence | Repository signals (`app.config.ts`, `@tanstack/react-start`, `@tanstack/react-router`, `src/routes/__root.tsx`), the touched source paths, the rule files that govern them, and the project check output. |
+| Tools | Local search, read, and edit commands plus the project's own lint, typecheck, test, and build commands. Network access, credential use, and destructive or production-affecting commands need explicit user approval. |
+| Loop | No loop: one mapping-and-fix pass over the affected surfaces followed by the rule-file checklists, repeated only when a new surface is touched or a check fails. |
+| Output | Korean security report or change set: the mapped security surfaces, the rule file behind each fix, the changed files, the verification commands with their results, and the residual stack-dependent risk. |
+| Verification | Run the `rules/validation.md` gates for every touched surface plus the project's own checks, then record the exact commands and their results. |
+| Stop condition | Stop when each mapped surface is hardened or explicitly deferred, the relevant rule-file gates pass, verification output is recorded, and the remaining stack-dependent risk is named. |
+
+</instruction_contract>
+
 
 ## Trigger Examples
 

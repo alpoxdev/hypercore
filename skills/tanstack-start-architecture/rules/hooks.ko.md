@@ -94,3 +94,7 @@ export const useUsers = (): UseUsersReturn => {
 - [ ] hook에 explicit return type/interface가 있음.
 - [ ] `useServerFn` wrapper가 `@tanstack/react-start`에서 import됨.
 - [ ] hook order가 hypercore sequence를 따르거나 deviation 이유가 기록됨.
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, `references/official/current-docs-2026-06-02.md`, 스냅샷 날짜 2026-04-30 및 2026-06-09)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.

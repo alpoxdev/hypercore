@@ -35,3 +35,9 @@ Medium 이상 case는 다음을 정의합니다.
 ## Stop
 
 Target 달성, candidate 3회 평가, 더 넓은 scope가 필요한 guard failure, missing context/capability/model/runtime/user authority가 필요한 failure에서 optimization을 멈춥니다. Improvement를 주장하려고 baseline, case, runner, judge를 바꾸지 않습니다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 규칙 문서는 이 패키지 자체의 절차 문서이며 외부 출처를 인용하지 않습니다.

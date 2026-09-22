@@ -130,11 +130,13 @@ Do not claim that a generated command works merely because it exists in `AGENTS.
 
 ## 9. Skill Package Gate
 
-When this skill package itself changes:
+When this skill package itself changes, run from the repository root:
 
 ```bash
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only agent-md-maker --json
+node scripts/check-skill-standards.mjs --skill agent-md-maker --json
 ```
+
+Also run the repository's skill corpus validator against this package (`--root skills --only agent-md-maker --json`).
 
 Additionally:
 
@@ -143,3 +145,12 @@ Additionally:
 - confirm English/Korean Markdown pairs exist and preserve equivalent modal strength
 - confirm every generated `rules/*.md` has one responsibility, a direct conditional link, no core-contract leakage, and the required semantically aligned Korean mirror
 - confirm no stray `README.md`, `CHANGELOG.md`, or `QUICK_REFERENCE.md` exists inside the package
+
+## Sources
+
+> Links checked 2026-09-21. No external source was used directly in this file.
+
+| Claim | Source |
+|---|---|
+| The risk-depth, structural, evidence, behavioral, and repair-loop rules in this file | this package's `rules/project-discovery.md` and `rules/instruction-design.md`, plus the repository skill-authoring standard under `instructions/skill/` |
+| The runtime behavior statements (root-to-leaf truncation, `CLAUDE.md` loading, nested-file semantics) | `instructions/agents-md/AGENTS_MD.md` at the repository root, which carries the vendor checked dates; this file restates them |

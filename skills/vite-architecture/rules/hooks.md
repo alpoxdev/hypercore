@@ -195,3 +195,9 @@ export const useUsers = (): UseUsersReturn => {
 | **useCallback** | Memoize event handlers with useCallback |
 | **Clear naming** | `use-users.ts`, `use-user-filter.ts` |
 | **No server functions** | Never use `useServerFn` - call services directly |
+
+---
+
+## Sources
+
+> No external source was used for this file. The mandatory `-hooks/` separation, the State -> Global -> Query -> Handlers -> Memo -> Effect order, the exported return-type interface requirement, and the `use-kebab-case.ts` naming rule are Hypercore/repo-local conventions; the React and TanStack Query API names used in the examples are library identifiers, not claims taken from a dated source. Rule text and repository-local paths checked 2026-09-21.

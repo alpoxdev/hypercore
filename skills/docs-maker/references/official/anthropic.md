@@ -1,5 +1,21 @@
 # Anthropic Official References for Docs Maker
 
+## Contents
+
+- Refresh Policy
+- Prompting Best Practices
+- Prompt Engineering Overview
+- Prompt Templates and Variables
+- Long Context Tips
+- Define Success
+- Context Windows
+- Compaction
+- Prompt Caching
+- Agent Skills Best Practices
+- Migration Guide
+- 2026-06-02 Prompt Authoring Refresh
+- Sources
+
 ## Refresh Policy
 - last_verified_at: 2026-03-19
 - refresh_when:
@@ -123,3 +139,7 @@
 - refresh_when: guardrail or prompt-leak guidance changes
 - summary: Prompt-leak reduction should be applied where needed and combined with context separation, post-processing, and audits rather than a single magic instruction.
 - implication_for_docs_maker: Safety guidance should combine authority boundaries, minimal context, output checks, and audit/eval paths.
+
+## Sources
+
+> Links checked 2026-06-02, the newest `last_verified_at` recorded by the entries above; no listed URL was rechecked after that date. This section records provenance only, and user or project instructions remain authoritative.

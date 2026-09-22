@@ -91,3 +91,9 @@ For standard/deep or parallel research, preserve at least this schema in the sav
 - [ ] The leader resolved or disclosed conflicts
 - [ ] The leader wrote the final synthesis and saved report
 - [ ] Final claims link to sources and include exact dates when recency matters
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file states this package's own lane-splitting and dedupe procedure for parallel research. It cites no external source.

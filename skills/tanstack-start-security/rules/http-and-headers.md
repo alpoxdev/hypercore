@@ -67,3 +67,9 @@ Use explicit response headers where security behavior matters:
 - Cross-origin behavior is explicit and minimal
 - Webhooks verify signatures before trusting payloads
 - Abuse-prone endpoints have rate limiting or equivalent protection
+
+## Sources
+
+> No external source was used. Content checked 2026-09-22.
+
+This rule set is authored in this package. The TanStack Start request-middleware and rate-limit statements follow this package's own snapshot `../references/official-security-notes.md`; the CSP, CORS, HSTS, and webhook guidance is general web-security practice stated here without an external citation.

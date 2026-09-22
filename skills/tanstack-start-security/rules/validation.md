@@ -62,3 +62,9 @@ Run only the commands that exist in the repository, but do not skip available ve
 - The changed behavior is backed by repository verification evidence
 - Remaining risks are stated in stack-specific terms, not generic fear
 - If SSR is in play, no sensitive loader/context data is serialized into hydration output
+
+## Sources
+
+> No external source was used. Content checked 2026-09-22.
+
+This review and verification procedure is authored in this package from repository review practice. It makes no external claim, so no external source is cited.

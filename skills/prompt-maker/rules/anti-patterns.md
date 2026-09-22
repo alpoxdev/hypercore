@@ -10,3 +10,9 @@
 - Optimization claims made without a baseline and rerun.
 - Broad safety refusals that block normal use instead of gating specific side effects.
 - Prompt artifacts that cite global or home directories as project authority.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file is this package's own procedure text; it cites no external source.

@@ -66,3 +66,9 @@ The helper is meant to remove avoidable overhead, not bypass safety. It speeds u
 - commit-message validation in Bash without spawning `grep`
 
 It does not remove the need to inspect diffs, group logical changes, write correct commit messages, or handle hook failures.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-22.
+
+This rule set is authored in this package from repository practice. It makes no external claim, so no external source is cited.

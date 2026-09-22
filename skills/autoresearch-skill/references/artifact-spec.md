@@ -2,6 +2,22 @@
 
 Use this reference when creating or reviewing the experiment workspace for an autoresearch run.
 
+## Contents
+
+- Workspace Shape
+- Baseline snapshot
+- `run-contract.md`
+- `recovery.json`
+- `source-ledger.md`
+- `trace-summary.md`
+- `results.tsv`
+- `results.json`
+- `dashboard.html`
+- Detailed content files
+- `score-explanation.md` and `final-report.md`
+- `changelog.md`
+- Worked Example
+
 ## Workspace Shape
 
 ```text
@@ -77,7 +93,7 @@ For mutating or resumable runs, record enough state to recover without overwriti
   "config_identity": "sha256:...",
   "eval_identity": "sha256:...",
   "environment_identity": "sha256:...",
-  "owned_paths": ["skills/diagram-generator/SKILL.md"],
+  "owned_paths": ["[target-skill]/SKILL.md"],
   "artifact_digests": {"results.json": "sha256:..."},
   "cleanup_status": "pending",
   "rollback_status": "not-required",
@@ -176,7 +192,7 @@ Required minimum shape:
     "delta": 20.0,
     "best_experiment": 1,
     "most_effective_change_ko": "트리거 경계 예시와 검증 기준을 보강했습니다.",
-    "changed_files": ["skills/diagram-generator/SKILL.md"],
+    "changed_files": ["[target-skill]/SKILL.md"],
     "improvements": [
       {
         "area_ko": "트리거 경계",
@@ -184,7 +200,7 @@ Required minimum shape:
         "before_ko": "경계 요청이 모호했습니다.",
         "after_ko": "긍정/부정/경계 예시가 분리되었습니다.",
         "evidence_ko": "EVAL 1 통과 수가 증가했습니다.",
-        "files": ["skills/diagram-generator/SKILL.md"]
+        "files": ["[target-skill]/SKILL.md"]
       }
     ],
     "remaining_failures_ko": []
@@ -341,3 +357,7 @@ Example summary for a diagram skill:
 - Experiment 5 keep: the worked example improved consistency and reached `97.5%`
 
 Leave reasoning in the changelog so later agents do not repeat the same dead ends.
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.

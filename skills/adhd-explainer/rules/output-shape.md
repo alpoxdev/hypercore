@@ -138,3 +138,9 @@ Mixed-language input keeps the reader's language. A Korean question gets a Korea
 - [ ] Every estimate has a unit and an execution owner.
 - [ ] Agent-owned work was performed, not delegated.
 - [ ] Korean output passes the Korean shaping table.
+
+## Sources
+
+> Upstream provenance and this package's own rule text checked 2026-09-21; upstream accessed 2026-08-10.
+
+The ten-rule shape derives from the MIT-licensed upstream project recorded in [`../references/upstream-i-have-adhd.md`](../references/upstream-i-have-adhd.md). The examples, the Korean shaping table, and rule 11 are this package's own work. No other external source is cited.

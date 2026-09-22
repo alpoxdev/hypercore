@@ -79,3 +79,7 @@ touched service code에서는:
 - [ ] client-visible outputs가 raw DB rows 또는 broad provider objects가 아니라 minimal DTO임.
 - [ ] provider adapters가 `src/integrations/<provider>/` 또는 동등한 server-only provider module에 있음.
 - [ ] folder placement를 official Next.js requirement가 아니라 Hypercore local convention으로 보고함.
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Next.js 동작은 `references/official/nextjs-docs.md`(last verified 2026-05-24)와 `references/official/current-docs-2026-06-02.md`(스냅샷 날짜 2026-06-02)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.

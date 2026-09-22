@@ -4,6 +4,29 @@
 
 **Purpose**: The business-blog post types and the section order each one uses. [`../rules/post-workflow.md`](../rules/post-workflow.md) §2 picks one primary type here; this file supplies the shape it then fills. A type is a content format, not a commercial category — the commercial relationship stays in the mode line that `post-workflow.md` §0 derives.
 
+## Contents
+
+- 0. How to use
+- 1. The three axes
+- 2. Type index
+- 3. Type playbooks
+- 문제 해결형
+- 체크리스트·템플릿형
+- 비교·선택 기준형
+- 후기·리뷰형
+- 고객 성공 사례형
+- FAQ·반론 해소형
+- 현장·프로세스 공개형
+- 인터뷰·전문가형
+- 트렌드·업계 해석형
+- 브랜드 스토리·비하인드형
+- 제품·서비스 소개형
+- 프로모션·오퍼형
+- 4. Common formula
+- 5. Buyer journey → type
+- 6. What this library does not do
+- Sources
+
 ## 0. How to use
 
 Read §1 and the §2 index to pick the type. Then read **only** the §3 playbook of the chosen type, plus the playbooks of a secondary type when §2 picked one. Nothing else in this file is needed for a normal run.
@@ -172,3 +195,9 @@ Alias map for names used in other material: 가이드형 → 문제 해결형, �
 - It is not a ranking rule. A type does not make a post rank, and no type is "favored" by Naver.
 - It does not replace R1. The single intent slice is chosen in `post-workflow.md` §2 from the search result, before the type is picked.
 - It does not set the commercial relationship. The mode in `post-workflow.md` §0 and the disclosure rule in R6 do that.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own post-type library; the type selection and the mode and disclosure rules it defers to are [`../rules/post-workflow.md`](../rules/post-workflow.md) §0-§2, and it cites no external publication because it makes no external claim.

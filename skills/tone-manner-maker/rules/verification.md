@@ -56,3 +56,9 @@ A fidelity claim without its layer is the exact circularity this file exists to 
 - Self-contained check: the document is readable and usable with no access to this skill package, this repository, or any external file. A consumer AI needs the spec alone.
 - Save as `tone-profile-<name>.md` in the location the user's environment expects; state where it was saved in the summary.
 - Summary to the user: what was captured, the profile_mode, what verification ran, and what Known Limits says — in two to four lines, not a process dump.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file states this package's own rules and makes no external claim, so no external source is cited.

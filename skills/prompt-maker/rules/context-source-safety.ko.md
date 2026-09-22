@@ -21,3 +21,9 @@ Current, provider-sensitive, security-sensitive, comparative claim에 retrieval�
 ## Missing Evidence
 
 evidence가 missing, stale, conflicting이면 추정하지 말고 gap을 명시하고 가장 작은 safe next step을 선택하도록 지시한다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 규칙 문서는 이 패키지 자체의 절차 문서이며 외부 출처를 인용하지 않습니다.

@@ -52,3 +52,9 @@ Never request credentials, never infer a plugin form silently when the consequen
 ## Route completion boundary
 
 Routing authorizes generation. Once every required value is known, normalize the strict JSON and run the generator in `apply` mode; no approval step stands between routing and writing. Use `preview` first only when the run would overwrite an existing artifact or touch an unfamiliar target, and report the change-set in that case. An existing target still stays unchanged unless the spec sets `overwrite: true` and the ownership marker validates, as defined in [`write-safety.md`](write-safety.md).
+
+## Sources
+
+> No external sources were used. Repository-local routing policy checked 2026-09-21.
+
+The route table, the excluded-request boundary, and the spec-resolution table restate this package's own `assets/manifest.schema.json`, `scripts/generate.mjs`, and `rules/write-safety.md`. No vendor documentation is cited and no external claim is made.

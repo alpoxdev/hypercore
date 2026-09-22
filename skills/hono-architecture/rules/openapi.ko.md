@@ -137,3 +137,7 @@ app.get('/ui', swaggerUI({ url: '/doc' }))
 - Error responses가 중앙 error handling과 일치함
 - RPC `AppType`/typed client shape와 generated OpenAPI shape가 충돌하지 않음
 - Publish 전에 CI 또는 local verification이 generated spec을 lint, bundle, validate함
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Hono 동작은 `references/official/hono-docs.ko.md`에 위임합니다(last verified 2026-08-04). 저장소 로컬 링크 확인 2026-09-21.

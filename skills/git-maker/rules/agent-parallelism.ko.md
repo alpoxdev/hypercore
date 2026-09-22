@@ -106,3 +106,9 @@ Return: pass/block verdict for secrets, destructive git operations, protected br
 - 최종 staged 파일이 main integrator가 선택한 그룹과 일치한다
 - push는 모든 커밋 그룹이 성공한 뒤에만 시도되었다
 - 건너뛴/실패한 push target이 명시적으로 보고되었다
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-22.
+
+이 규칙은 이 패키지의 저장소 작업 경험에서 작성했다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

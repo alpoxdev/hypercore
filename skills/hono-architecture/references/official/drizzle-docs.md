@@ -1,6 +1,6 @@
 # Drizzle Official Docs Summary
 
-Verified on: 2026-08-04
+last_verified_at: 2026-08-04
 
 ## Stable package snapshot
 
@@ -64,3 +64,13 @@ Source: [Transactions](https://orm.drizzle.team/docs/transactions)
 - The rule that repository helpers should accept `tx` is an architectural inference from the Drizzle transaction API shape, not a verbatim official requirement.
 - Runtime pages for Neon, D1, Turso/libSQL, and other providers can change as provider SDKs change.
 
+
+## Sources
+
+> Links checked 2026-08-04, the date carried by this file's own `last_verified_at` marker. No page was re-fetched in the 2026-09-21 pass, and no source outside the citations above is claimed.
+
+| Claim | Source |
+|---|---|
+| The `drizzle-orm` and `drizzle-kit` versions in the snapshot table above | the registry and release URLs listed beside that table |
+| The Drizzle behavior recorded in points 1-10 above | the inline `Source:` links on each numbered point above |
+| The closing caveats, including the `tx` note that section marks as this package's inference rather than an official requirement | the same Drizzle documentation pages linked in points 1-10; the inference is attributed in that section to this package |

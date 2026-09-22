@@ -58,3 +58,9 @@ rubric judge가 필요하면 case마다 아래 JSON object 하나만 출력하�
 - `blocked`: candidate output 또는 필요한 evidence가 없거나, parse할 수 없거나, 판단하기에 부족하다.
 
 run score는 `passed_cases / total_cases`로 보고하고 `blocked`는 non-pass로 계산한다. case 내부 partial credit은 주지 않는다. 별도 weight가 필요한 behavior는 새 case로 분리한다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 참고 문서는 이 패키지 자체의 harness 문서이며 외부 출처를 인용하지 않습니다.

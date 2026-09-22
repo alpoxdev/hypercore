@@ -43,9 +43,11 @@ Good:
 ```markdown
 ## Conditional rules
 
-- Read [`rules/testing.md`](rules/testing.md) before changing test infrastructure or test commands.
-- Read [`rules/architecture-boundaries.md`](rules/architecture-boundaries.md) before moving code across package boundaries.
+- Read `rules/testing.md` before changing test infrastructure or test commands.
+- Read `rules/architecture-boundaries.md` before moving code across package boundaries.
 ```
+
+Each entry is one Markdown link to the support file plus the condition that triggers reading it. The paths above are example paths inside a target repository, so they appear here as code spans instead of links that would not resolve from this package.
 
 Do not use vague cues such as “see `rules/`.” Do not use runtime-specific import syntax in shared `AGENTS.md` unless the target runtime and syntax were explicitly verified. A plain Markdown link plus a read condition is the portable default.
 
@@ -81,3 +83,11 @@ A nested rule mirror follows the same policy selected for its governing nested `
 - [ ] Existing non-documentation `rules/` content was not overwritten or mixed with agent policy.
 - [ ] English/Korean links resolve to semantically aligned files when mirrors are required.
 - [ ] Root plus applicable nested instruction files still leave headroom under the configured runtime budget.
+
+## Sources
+
+> Links checked 2026-09-21. No external source was used in this file.
+
+| Claim | Source |
+|---|---|
+| The split, placement, loading, ownership, and language rules in this file | the repository skill-authoring standard under `instructions/skill/` and this package's `SKILL.md`; no vendor or web source is cited |

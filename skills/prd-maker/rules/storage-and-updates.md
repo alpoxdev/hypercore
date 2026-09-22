@@ -89,3 +89,9 @@ If the user asks to update a package but no matching folder exists:
 - create a new folder
 - note the missing baseline as an assumption in `prd.md` change history
 - continue in `create` mode
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own storage location, slug rules, and create/update procedure. It cites no external URL and asserts no external fact, so no external source is recorded.

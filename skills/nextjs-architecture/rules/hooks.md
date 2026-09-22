@@ -81,3 +81,7 @@ export const useInvoices = (): UseInvoicesReturn => {
 - [ ] Server Action calls still validate and authorize server-side; hook-level checks are UX aids only.
 - [ ] Hook returns client-safe DTO/view state, not internal records.
 - [ ] Segment-local hooks stay in `_hooks/`; cross-route hooks move to a shared domain/component folder.
+
+## Sources
+
+> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.

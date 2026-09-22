@@ -72,3 +72,9 @@ Sixteen public Naver-post prompts and skills were read. None separates official 
 - 연관검색어 discontinuation in 2026: English-language guides only; no official notice found.
 - 신뢰도 중심 통합 랭킹: announced as an A/B test 2025-11; rollout status unknown.
 - AI 브리핑 citation selection weights: unpublished; the 2026-05 guide lists traits, not weights.
+
+## Sources
+
+> Every URL cited above was re-checked 2026-09-21 (all HTTP 200). The findings themselves come from the 2026-09-16 research run recorded in `.omo/ulw-research/20260916-163039/sources-ledger.md`.
+
+The per-row links are Naver's own posts and help pages (`blog.naver.com/naver_search`, `blog.naver.com/blogpeople`, `searchadvisor.naver.com`, `help.naver.com`). Three groups carry no external source and are marked as such in the body: §4's numeric ranges (this repository's own measurement of live top posts), §6's field experiments (DOIs in the session ledger; not re-verified here), and §10 (unresolved items). [`naver-algorithm-timeline.md`](naver-algorithm-timeline.md) holds the same official links with their publication dates.

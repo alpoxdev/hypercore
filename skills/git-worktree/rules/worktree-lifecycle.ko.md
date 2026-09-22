@@ -254,3 +254,14 @@ Worktree의 task가 완료되면:
 - Linked worktree는 Git object storage와 config를 공유하지만 working file은 독립적이다.
 - Per-worktree dependency folder, port, database, generated artifact는 여전히 충돌할 수 있다. 필요하면 별도 env file 또는 port를 사용한다.
 - 한 Git executable이 만든 worktree를 다른 executable이 사용할 때 Windows/WSL path portability가 깨질 수 있다.
+
+## Sources
+
+> 링크 확인 2026-09-21.
+
+| 주장 | 출처 |
+|---|---|
+| 이 규칙이 기반으로 삼는 `git worktree add`, `list`, `remove`, `prune`, `lock`, `unlock`, `repair`, `--porcelain`, `--detach`와 이미 checkout된 branch 오류 | <https://git-scm.com/docs/git-worktree.html> |
+| repository 탐지와 local exclude 단계에서 쓰는 `git rev-parse --show-toplevel`, `--git-dir`, `--git-common-dir`, `--git-path info/exclude` | <https://git-scm.com/docs/git-rev-parse> |
+| `.hyper/git-worktree/`를 status 출력에서 제외하는 local exclude 파일의 의미 | <https://git-scm.com/docs/gitignore> |
+| 이 패키지가 native Git, worktree당 하나의 task, 삭제 전 확인을 우선하는 이유 | [`../references/source-survey.ko.md`](../references/source-survey.ko.md) |

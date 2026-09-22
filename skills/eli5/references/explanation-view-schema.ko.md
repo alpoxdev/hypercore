@@ -4,6 +4,16 @@
 
 이 문서는 `explanation.html`의 레퍼런스다. HTML 산출물을 만들 때 읽는다. 산출물을 *만들지*를 결정하는 규칙은 [`../rules/output-artifacts.md`](../rules/output-artifacts.md)에 있다.
 
+## 목차
+
+- 1. 렌더러 명령
+- 2. 입력 스키마
+- 3. 템플릿 토큰
+- 4. 이스케이프와 주입 안전성
+- 5. 오류 계약
+- 6. 예제
+- Sources
+
 ## 1. 렌더러 명령
 
 ```bash
@@ -103,3 +113,9 @@ node skills/eli5/scripts/render-explanation.mjs <artifact-dir>
 ```
 
 이 입력으로 렌더러를 돌리면 1절의 JSON 줄을 내며 exit 0으로 끝난다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-22.
+
+렌더러 명령, 입력 스키마, 템플릿 토큰, 이스케이프 규칙, 오류 계약은 이 패키지 자체 렌더러 스크립트와 템플릿을 서술한다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

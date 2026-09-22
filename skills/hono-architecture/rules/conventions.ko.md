@@ -72,3 +72,7 @@ import type { AppEnv } from '@/lib/types'
 - 코드 묶음에 방향 설명이 필요할 때만 짧은 블록 주석 사용
 - line-by-line 설명 금지
 - 주석은 아키텍처 의도 중심으로 유지
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Hono 동작은 `references/official/hono-docs.ko.md`에 위임합니다(last verified 2026-08-04). 저장소 로컬 링크 확인 2026-09-21.

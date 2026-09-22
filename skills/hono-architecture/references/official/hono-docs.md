@@ -1,6 +1,6 @@
 # Hono Official Docs Summary
 
-Verified on: 2026-08-04
+last_verified_at: 2026-08-04
 
 ## Stable package snapshot
 
@@ -85,3 +85,12 @@ Source: [Hono repository](https://github.com/honojs/hono), [Node.js Guide](https
 - Swagger UI exposure is a platform/security decision separate from spec generation.
 - Large apps should compose route modules, typed clients, and OpenAPI metadata from the same app boundary to avoid drift.
 - Database bindings and request-scoped database variables should be typed through `Bindings` / `Variables`, while route modules should stay independent from provider-specific setup.
+
+## Sources
+
+> Links checked 2026-08-04, the date carried by this file's own `last_verified_at` marker. No page was re-fetched in the 2026-09-21 pass, and no source outside the citations above is claimed.
+
+| Claim | Source |
+|---|---|
+| The package versions and compatibility ranges in the snapshot table above | the registry and repository URLs listed beside that table |
+| The official Hono and OpenAPI behavior recorded in points 1-17 above | the inline `Source:` links on each numbered point above |

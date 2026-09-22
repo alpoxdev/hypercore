@@ -44,3 +44,7 @@ export const usersApp = factory.createApp().get('/', ...listUsers)
 - `Variables` and `Bindings` are not implicit
 - Handlers are not giant controller objects
 - Services own business logic
+
+## Sources
+
+> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.

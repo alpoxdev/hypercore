@@ -76,3 +76,12 @@ This workflow delivers prompts, not generated images. Do not invoke an image ser
 Claim an image exists only after an actual returned artifact is observed. Before claiming visual success, inspect hierarchy, subject facts, composition, light, palette, material, exact lettering, and series consistency. If inspection is unavailable, state that those properties remain unverified. Do not infer current capability from a provider name or an earlier run.
 
 Observed references: [leak post](https://m.blog.naver.com/greenbirdiebest/224406174599), [forklift post](https://m.blog.naver.com/greenbirdiebest/224403853347). Counts describe DOM image elements and body text, not verified unique photos or ranking effects.
+
+## Sources
+
+> The two reference posts and their density measurements were re-checked 2026-09-21.
+
+| Claim | Source |
+|---|---|
+| §1 density: 28 images / 1,477자 and 25 images / 1,012자, grouped into 15-16 image blocks | [leak post](https://m.blog.naver.com/greenbirdiebest/224406174599), [forklift post](https://m.blog.naver.com/greenbirdiebest/224403853347) (live posts the user supplied, observed 2026-09) |
+| The measurement record behind those two counts | [`../references/evidence-digest.md`](../references/evidence-digest.md) T4/T10 note |

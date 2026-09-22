@@ -1,5 +1,21 @@
 # Anthropic 공식 참고 자료
 
+## 목차
+
+- 갱신 정책
+- 프롬프팅 모범 사례
+- 프롬프트 엔지니어링 개요
+- 프롬프트 템플릿과 변수
+- 긴 컨텍스트 팁
+- 성공 기준 정의
+- 컨텍스트 윈도우
+- 압축
+- 프롬프트 캐싱
+- 에이전트 스킬 모범 사례
+- 마이그레이션 가이드
+- 2026-06-02 Prompt Authoring Refresh
+- Sources
+
 ## 갱신 정책
 - last_verified_at: 2026-03-19
 - refresh_when:
@@ -123,3 +139,7 @@
 - refresh_when: guardrail 또는 prompt-leak guidance가 바뀜
 - summary: Prompt leak 완화는 필요한 곳에 적용하고 단일 magic instruction이 아니라 context separation, post-processing, audit와 함께 설계해야 합니다.
 - implication_for_docs_maker: Safety guidance는 authority boundary, 최소 context, output check, audit/eval path를 함께 다뤄야 합니다.
+
+## Sources
+
+> 링크 확인 2026-06-02, 위 항목이 기록한 가장 최근 검증일이며 그 날짜 이후 다시 확인한 URL은 없습니다. 이 섹션은 출처 기록용이고, 사용자와 프로젝트 지시가 우선입니다.

@@ -74,4 +74,10 @@ Negative examples that should not trigger this skill:
 Boundary examples:
 
 - "Make a tiny copy-only text change in a Vite route file." Expected: quick boundary check only.
-- "The repo actually uses @tanstack/react-start." Expected: route away to `tanstack-start-architecture`.
+- "The repo actually uses @tanstack/react-start." Expected: a Start-boundary note that states this skill does not apply, names the Start-only surfaces, and enforces no Vite route rules.
+
+---
+
+## Sources
+
+> This file's validation and readback commands are this package's own checks over project state and over the package itself. The official-snapshot reference they cite is `references/official/current-docs-2026-06-02.md`, whose own verification date is 2026-06-02; no external source was used to author the commands and no page was re-fetched for this file. Command text and repository-local paths checked 2026-09-21.

@@ -2,6 +2,16 @@
 
 Use this reference when an autoresearch-skill run must explain its score movement, kept changes, dashboard content, and final handoff to a human reader.
 
+## Contents
+
+- 1. Language contract
+- 2. Required score-explanation fields
+- 3. `score-explanation.md` template
+- 4. `final-report.md` template
+- 5. Changelog entry requirements
+- 6. Dashboard display requirements
+- 7. Final response checklist
+
 ## 1. Language contract
 
 All human-readable outputs are Korean by default:
@@ -32,8 +42,8 @@ Recommended `results.json.score_explanation` shape:
   "best_experiment": 3,
   "most_effective_change_ko": "트리거 경계 예시를 한국어 요청 기준으로 보강했습니다.",
   "changed_files": [
-    "skills/example-skill/SKILL.md",
-    "skills/example-skill/rules/validation.md"
+    "[target-skill]/SKILL.md",
+    "[target-skill]/rules/validation.md"
   ],
   "improvements": [
     {
@@ -42,7 +52,7 @@ Recommended `results.json.score_explanation` shape:
       "before_ko": "단발성 polish 요청과 반복 실험 요청이 분리되지 않았습니다.",
       "after_ko": "긍정/부정/경계 예시가 분리되어 오작동 가능성이 줄었습니다.",
       "evidence_ko": "EVAL 1이 4/6에서 6/6으로 상승했습니다.",
-      "files": ["skills/example-skill/SKILL.md"]
+      "files": ["[target-skill]/SKILL.md"]
     }
   ],
   "remaining_failures_ko": [
@@ -157,3 +167,7 @@ Before answering the user, confirm the report includes:
 - dashboard path and artifact path
 - verification commands/results
 - remaining failures or explicit “없음”
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.

@@ -53,3 +53,9 @@ Those metrics observe a finished text's distribution, so they can only be comput
 ## How to use this file
 
 Read the table for the reasoning; apply the W-IDs in `rules/writing-method.md` for the actual moves. Genre exceptions, especially for C and J, are settled in `rules/genre-calibration.md`. When a prescription here and a W-rule appear to disagree, the W-rule wins.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file restates this package's own tell-family table, its severity ranking, and its decision to exclude detection scoring. The families summarize this package's own pattern catalog in `references/ai-tell-catalog.md`, so no external source is cited.

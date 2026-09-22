@@ -232,3 +232,9 @@ export const Route = createFileRoute('/dashboard')({
 | ~100줄 | shared layout/loader가 있으면 `route.tsx`, 그리고 `-components/`, `-hooks/` | - |
 | 100-200줄 | `-components/`, `-hooks/` | - |
 | 200줄+ | `-components/`, `-hooks/` | `-sections/` |
+
+---
+
+## Sources
+
+> `references/official/current-docs-2026-06-02.ko.md`에 기록된 dated snapshot은 file-based routing, route tree 생성, `validateSearch`와 `zodValidator`/`fallback` helper를 사용한 search param validation, route loader가 client-reachable하다는 점을 기록하고 있고(그 스냅샷이 기록한 자체 검증일은 2026-06-02), 이 파일은 그 항목들을 그대로 서술합니다. 이 파일의 route 구조·route 파일 이름·route option·loader 실행 순서 서술은 이 패키지 자체의 guidance이며 외부 출처를 사용하지 않았습니다. folder route 선호, `-components/`/`-hooks/`/`-sections/` 요구사항, 페이지 크기 기준은 Hypercore/repo-local convention입니다. 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 규칙 문장과 저장소 로컬 경로 확인 2026-09-21.

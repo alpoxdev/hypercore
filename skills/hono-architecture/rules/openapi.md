@@ -137,3 +137,7 @@ For `hono-openapi`, prefer route-local `describeRoute()` metadata and a single a
 - Error responses match central error handling
 - RPC `AppType`/typed client shapes do not conflict with generated OpenAPI shapes
 - CI or local verification lints, bundles, or validates the generated spec before publication
+
+## Sources
+
+> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.

@@ -35,3 +35,9 @@ Use no loop when direct deterministic checks prove the requested artifact. For o
 ## Stop
 
 Stop optimizing when the target is met, three candidates have been evaluated, a guard failure would require broader scope, or remaining failures need missing context, capability, model/runtime, or user authority. Never change the baseline, cases, runner, or judge to claim improvement.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file is this package's own procedure text; it cites no external source.

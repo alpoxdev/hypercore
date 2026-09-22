@@ -1,3 +1,8 @@
+---
+name: tanstack-start-security
+description: "TanStack Start 프로젝트에서 auth, session, cookie, CSRF, secret, env 노출, server function/route, header/CSP, webhook, 보안 리뷰·수정 작업을 할 때 사용합니다. 보호된 route, 인증 흐름 하드닝, secret 유출 차단, server 경계 보안, HTTP/보안 동작 검토를 트리거합니다."
+---
+
 # TanStack Start 보안 강화
 
 <output_language>
@@ -32,9 +37,26 @@ TanStack Start 앱에서 보안 이슈를 직접 줄이는 데 쓰는 스킬입�
 
 일반 React 작업이나 단순 문구 수정에는 쓰지 않습니다.
 
-작업의 중심이 보안 하드닝이 아니라 TanStack Start 아키텍처 준수라면 이 스킬을 늘리지 말고 `skills/tanstack-start-architecture/`로 보냅니다.
+이 스킬의 산출물 형태는 보안 결정 세트입니다. 매핑한 보안 표면, 그 표면을 지배하는 규칙 파일, 위험을 닫는 가장 작은 변경, 위험이 닫혔음을 증명하는 검증 출력입니다. 산출물이 아키텍처 계획인 작업 - 폴더 구조, 라우팅 관례, 데이터 로딩 모델, 캐시 동작 - 은 이 형태에 맞지 않으므로 이 스킬을 늘리지 않습니다. 실제 범위 안의 보안 표면만 강화해 보고하고, 남은 아키텍처 항목은 이 스킬의 산출물 형태 밖이라고 명시합니다.
 
 TanStack Start가 아닌 일반 보안 리뷰 요청이면 이 스킬을 강제로 적용하지 말고 일반 security-review 경로로 돌립니다.
+
+<instruction_contract>
+
+| Field | Contract |
+|---|---|
+| Intent | 모든 변경을 대규모 보안 리라이트로 만들지 않고 TanStack Start 앱의 실제 보안 위험을 줄입니다. |
+| Scope | TanStack Start 프로젝트의 auth/session, cookie·CSRF·trusted origin, secret·env 노출, 요청 미들웨어, server function, server route, header·CSP·CORS, webhook, rate limiting, SSR·hydration·import boundary 누수. |
+| Authority | user/project 지시가 이 스킬보다 우선합니다. 공식 TanStack Start 문서와 auth 라이브러리 문서가 이 스킬 노트와 충돌하면 공식 문서가 우선합니다. 핵심 보안 게이트는 다른 선호와 무관하게 변경을 차단합니다. |
+| Evidence | 저장소 신호(`app.config.ts`, `@tanstack/react-start`, `@tanstack/react-router`, `src/routes/__root.tsx`), 수정한 소스 경로, 그 경로를 지배하는 규칙 파일, 프로젝트 검증 명령 출력. |
+| Tools | 로컬 검색·읽기·편집 명령과 프로젝트 자체 lint·typecheck·test·build 명령. 네트워크 접근, credential 사용, 파괴적이거나 운영에 영향을 주는 명령은 사용자의 명시적 승인이 필요합니다. |
+| Loop | 루프 없음: 영향 표면을 한 번 매핑하고 수정한 뒤 규칙 파일 체크리스트로 확인하며, 새 표면이 걸리거나 검사가 실패할 때만 반복합니다. |
+| Output | 한국어 보안 리포트 또는 변경 세트: 매핑한 보안 표면, 각 수정을 뒷받침한 규칙 파일, 변경 파일, 검증 명령과 결과, 스택 의존 잔여 위험. |
+| Verification | 수정한 모든 표면에 대해 `rules/validation.ko.md` 게이트와 프로젝트 자체 검사를 실행하고 명령과 결과를 기록합니다. |
+| Stop condition | 매핑한 표면이 모두 강화되었거나 명시적으로 보류되었고, 관련 규칙 파일 게이트를 통과했고, 검증 출력이 기록되었고, 남은 스택 의존 위험이 명시되면 멈춥니다. |
+
+</instruction_contract>
+
 
 ## 트리거 예시
 

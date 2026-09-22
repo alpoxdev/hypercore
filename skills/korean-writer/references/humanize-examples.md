@@ -71,3 +71,9 @@ Anchors verified: no numbers or names existed; meaning, scope, and the 합니다
 ## How to read these examples
 
 The good outcomes share one shape: the smallest set of edits that removes diagnosed tells while every anchor and every voice marker survives. The bad outcomes are never over-ambitious rewrites that read badly — they are confident rewrites that read smoothly and lost the writer. That asymmetry is why `rules/humanize-method.md` treats fidelity failures as the primary risk and wording quality as the secondary one.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+Every input, repair, and delivery note in these worked examples was written for this package to demonstrate the procedure in `rules/humanize-method.md`. No supplied or published text is quoted as a source, so no external source is cited.

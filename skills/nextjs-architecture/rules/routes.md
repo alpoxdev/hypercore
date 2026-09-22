@@ -87,3 +87,7 @@ Use private folders for colocated implementation files that must not become rout
 - Route groups and private folders are used intentionally.
 - Parallel/intercepted route patterns have the required layout and navigation behavior.
 - Loading, error, not-found, and auth interruption boundaries are present where the UX needs them.
+
+## Sources
+
+> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.

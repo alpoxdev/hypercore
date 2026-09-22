@@ -91,3 +91,9 @@ License: [SPDX 또는 "missing"]
 ```
 
 이 프로필이 `rules/section-design.md`의 섹션 선택과 `rules/validation.md`의 검증 요약을 이끈다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 규칙은 README 작성을 위한 저장소 로컬 탐색 절차를 서술한다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

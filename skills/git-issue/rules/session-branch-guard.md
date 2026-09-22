@@ -44,3 +44,9 @@ Stop and report the blocker when:
 - the guarded branch was deleted or renamed externally
 - `gh` can no longer resolve the issue
 - the user requests a conflicting branch operation without explicitly retargeting or exiting the guard
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule defines a session-local branch guard owned by this package. It cites no external source because it makes no external claim.

@@ -31,3 +31,7 @@ As verified on 2026-08-04, Hono is 4.13.0. `@hono/node-server` 2.1.0 requires No
 - Config and bindings are typed
 - Database client setup matches the runtime and stays outside route modules
 - Debug helpers are not left enabled accidentally
+
+## Sources
+
+> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.

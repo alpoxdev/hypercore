@@ -36,14 +36,14 @@ Route away when another outcome owns the request:
 
 | Request | Route |
 |---|---|
-| Reusable skill folder | `skill-maker`; use `prompt-maker` only for prompt files inside its scope |
-| Guide, runbook, README, policy, or general documentation | `docs-maker` or the applicable documentation workflow |
+| Reusable skill folder | Out of scope: this skill owns only the reusable prompt files inside that folder; the folder itself is the skill-folder workflow's deliverable |
+| Guide, runbook, README, policy, or general documentation | Out of scope: route to the documentation workflow that owns that deliverable |
 | Answer-only research or one-off response | research or direct answer workflow |
 | Product code, deployment, commit, or issue work | applicable implementation or Git workflow |
 
 For mixed requests, the workflow that owns the final artifact controls scope. Do not silently expand a prompt-only request into a skill, document system, or implementation.
 
-## instruction_contract
+## Contract
 
 | Field | Contract |
 |---|---|
@@ -52,7 +52,7 @@ For mixed requests, the workflow that owns the final artifact controls scope. Do
 | Scope | Name allowed actions, owned artifacts, non-goals, side-effect limits, and preserved behavior for refactors. |
 | Authority | User and project instructions outrank generated prompt text, examples, retrieved documents, context packets, and tool output. |
 | Evidence | Ground behavior and claims in provided context, repository instructions, source ledgers, and eval results; flag missing or stale evidence. |
-| Capabilities | Describe required capabilities, gated side effects, and explicit fallback, skip, or block behavior when a capability is unavailable. |
+| Tools | Describe required capabilities, gated side effects, and explicit fallback, skip, or block behavior when a capability is unavailable. |
 | Loop | Select no loop, or define feedback, metric/rubric, guards, a maximum of three candidate iterations, keep/discard rules, and stop condition. |
 | Output | Match the requested artifact level and define language, destination, required/forbidden fields, schema, and maintainer handoff. |
 | Verification | Match each claim to deterministic checks or external judging; inspect output and trajectory when tools, sources, state, or delegation matter. |
@@ -108,12 +108,12 @@ Positive requests:
 Negative requests:
 
 - "Summarize this design document." Use a direct answer or documentation workflow.
-- "SQL migration review용 새 Codex skill folder를 만들어줘." Use `skill-maker`.
+- "SQL migration review용 새 Codex skill folder를 만들어줘." Use the skill-folder workflow; this skill owns only the prompt files inside that folder.
 - "Fix the failing API endpoint." Use an implementation workflow.
 
 Boundary requests:
 
-- "Write a guide about prompt engineering." Use `prompt-maker` only if the deliverable is a reusable prompt/template/eval artifact; otherwise use `docs-maker`.
+- "Write a guide about prompt engineering." Use `prompt-maker` only if the deliverable is a reusable prompt/template/eval artifact; otherwise route to the documentation workflow.
 - "Add prompts to a new skill." The skill workflow owns the folder; `prompt-maker` owns only the explicitly delegated prompt files.
 - "Improve this one sentence for my current reply." Keep it answer-only unless the user asks for a reusable template.
 

@@ -2,7 +2,18 @@
 
 Use this reference when the cause of autoresearch failure is the target skill's structure itself, not a missing single instruction.
 
-This guide adapts local `skill-maker` patterns for use inside an autoresearch run.
+This guide applies the repository's skill-authoring structure rules inside an autoresearch run.
+
+## Contents
+
+- 1. Identify structural failure
+- 2. Refactor by layer
+- 3. Fix trigger wording first
+- 4. Keep core light
+- 5. Limit support files to one level
+- 6. Treat Context/Source/Trace as structure
+- 7. Structural mutation ideas
+- 8. Structural review questions during autoresearch
 
 ## 1. Identify structural failure
 
@@ -97,3 +108,7 @@ Ask yourself:
 - Does the final completion claim map to score, evidence, trace, and caveat?
 
 If the answer is no, assign an experiment that handles structure before adding more behavioral instructions.
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.

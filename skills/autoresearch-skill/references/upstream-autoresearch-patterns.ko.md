@@ -61,8 +61,18 @@ Upstream은 각 반복을 commit, metric, delta, guard, status, description으�
 
 ## Source map
 
-- 저장소 개요와 command map: `https://github.com/uditgoenka/autoresearch`
-- Codex skill source: `.agents/skills/autoresearch/SKILL.md`
-- Loop protocol: `.agents/skills/autoresearch/references/autonomous-loop-protocol.md`
-- Result log protocol: `.agents/skills/autoresearch/references/results-logging.md`
-- Plan/Verify/Guard setup: `.agents/skills/autoresearch/references/plan-workflow.md`
+Upstream 자료는 `https://github.com/uditgoenka/autoresearch` 저장소에서 2026-05-02에 검토했다. 아래 문서 이름은 upstream 저장소의 스킬 폴더 기준 상대 이름이며, 이 파일에는 skills 트리 경로를 두지 않는다.
+
+- Skill definition: `SKILL.md`
+- Loop protocol: `autonomous-loop-protocol.md`
+- Result log protocol: `results-logging.md`
+- Plan/Verify/Guard setup: `plan-workflow.md`
+
+## Sources
+
+> 이번 변경에서 새로 가져온 출처는 없습니다. upstream 행은 위에 기록한 검토일을 따릅니다. 저장소 로컬 링크 확인 2026-09-21.
+
+| 주장 | 출처 |
+|---|---|
+| 옮겨올 패턴, Verify/Guard 분리, 로그 필드, git/dirty-tree 안전 수칙 | upstream 저장소 `uditgoenka/autoresearch`, 2026-05-02 검토 |
+| 로컬 적용, 권장 guard, 로컬 status 값 | 이 패키지의 experiment-loop 및 artifact 규칙 |

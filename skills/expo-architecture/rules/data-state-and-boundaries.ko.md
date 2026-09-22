@@ -25,3 +25,7 @@ Offline persistence가 필요하면 source of truth, conflict policy, queue idem
 ## Configuration
 
 Public environment variable은 하나의 validated config module에서 읽습니다. `EXPO_PUBLIC_*`는 bundle에 포함되는 client-visible data입니다. Server secret/signing credential은 app bundle 밖에 둡니다. 값을 노출하지 않으면서 적절한 build/runtime path에서 required config 누락을 조기에 실패시킵니다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 이 파일은 외부 출처를 직접 사용하지 않았고, Expo 관련 서술은 이 패키지 자체의 공식 snapshot(references/official/expo-react-native-2026-08-03.md)을 재진술한 것입니다.

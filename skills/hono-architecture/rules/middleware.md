@@ -52,3 +52,7 @@ export const authMiddleware = createMiddleware<AppEnv>(async (c, next) => {
 - Context variables are typed
 - Middleware does not become a hidden business-logic layer
 - Request-scoped context values are set before handlers that read them
+
+## Sources
+
+> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.

@@ -169,3 +169,9 @@ export const useBadHook = () => {
 | **useCallback** | 이벤트 핸들러를 useCallback으로 메모이제이션 |
 | **명확한 네이밍** | `use-users.ts`, `use-user-filter.ts` |
 | **서버 함수 없음** | `useServerFn` 절대 사용 금지 - 서비스 직접 호출 |
+
+---
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. `-hooks/` 분리 의무, State -> Global -> Query -> Handlers -> Memo -> Effect 순서, exported return-type interface 요구, `use-kebab-case.ts` 네이밍 규칙은 Hypercore/repo-local convention이고, 예시에 나오는 React/TanStack Query API 이름은 dated source에서 가져온 주장이 아니라 라이브러리 식별자입니다. 규칙 문장과 저장소 로컬 경로 확인 2026-09-21.

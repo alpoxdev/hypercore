@@ -58,3 +58,9 @@ Unknowns flagged: [count + locations of <!-- TODO --> markers]
 ```
 
 If any check fails, fix the README rather than relaxing the check.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This rule states the repository-local validation gates for README authoring. It makes no external claim, so no external source is cited.

@@ -23,3 +23,7 @@ Permission을 build-time native declaration/purpose text와 runtime request/deni
 ## Dependency/native effect
 
 설치 Expo SDK compatibility path를 사용하고 해당 React Native architecture에 대한 package 지원을 확인합니다. Package install, pod/Gradle 변경, `prebuild`, EAS credential/build/update/submit, signing, push credential, store action은 gated side effect입니다. 필요한 capability/authorization이 없으면 실행했다고 주장하지 말고 blocked check/change를 정확히 제공합니다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 이 파일은 외부 출처를 직접 사용하지 않았고, Expo 관련 서술은 이 패키지 자체의 공식 snapshot(references/official/expo-react-native-2026-08-03.md)을 재진술한 것입니다.

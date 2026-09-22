@@ -2,6 +2,13 @@
 
 > 복잡 경로에서만 사용하는 `.hyper/bug-fix/flow.json`용 JSON schema.
 
+## 목차
+
+- Schema
+- Status values
+- Rules
+- Example: initial state
+
 ## Schema
 
 ```json
@@ -109,3 +116,9 @@
   }
 }
 ```
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 참고 문서는 이 패키지가 소유한 `.hyper/bug-fix/flow.json` 계약을 설명한다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

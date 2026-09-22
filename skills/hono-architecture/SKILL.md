@@ -60,6 +60,7 @@ This skill is self-contained. Do not block on global skills or external orchestr
 | Authority | User/project instructions outrank this skill. Official Hono/Drizzle docs outrank Hypercore conventions for API facts. Safety, typing, validation, and data-boundary rules block unsafe changes. |
 | Evidence | Use project indicators, local package/source files, touched paths, topic rules, official references when drift matters, and validation command output. |
 | Tools | Use local search/read/edit/validation commands; gate migrations, credential access, production side effects, runtime adapter swaps, and broad rewrites. |
+| Loop | Use no optimization loop. After a remediation pass, allow at most two verify-repair iterations against the Step 3 gates and the touched checks; keep a change only when it stays inside the touched scope and passes those gates, and stop when the verification checklist passes or a blocker is reported. |
 | Output | Korean architecture finding or implementation summary with rule classification, changed files if any, validation evidence, remaining risks, and official-vs-Hypercore labels. |
 | Verification | Run the relevant project checks and the final checklist for touched surfaces before declaring completion. |
 | Stop condition | Stop after project mode is known, applicable gates pass or are reported as blockers, and validation evidence is recorded. |

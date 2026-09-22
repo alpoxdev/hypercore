@@ -27,3 +27,7 @@ Route group은 arbitrary code ownership이 아니라 navigation/product flow를 
 ## Platform과 web
 
 Android back action, iOS gesture, web URL, modal, tab lifecycle이 동일하다고 가정하지 않습니다. 영향 navigation을 요청된 각 platform에서 시험합니다. Route 이동 시 URL/deep-link compatibility를 보존하거나 redirect/migration 동작을 명시합니다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 이 파일은 외부 출처를 직접 사용하지 않았고, Expo 관련 서술은 이 패키지 자체의 공식 snapshot(references/official/expo-react-native-2026-08-03.md)을 재진술한 것입니다.

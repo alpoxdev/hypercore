@@ -2,6 +2,13 @@
 
 > 복잡 기획 패키지에서만 사용하는 `.hyper/prd/[slug]/flow.json`용 JSON schema.
 
+## 목차
+
+- Schema
+- Status values
+- Rules
+- Example: initial state
+
 ## Schema
 
 ```json
@@ -154,3 +161,9 @@
   }
 }
 ```
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 `flow.json` 스키마, 상태 어휘, 단계 규칙을 담습니다. 외부 URL을 인용하지 않고 외부 사실을 주장하지 않으므로 외부 출처를 기록하지 않습니다.

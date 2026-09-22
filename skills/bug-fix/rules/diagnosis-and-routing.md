@@ -68,3 +68,9 @@ Ask for user selection before editing when:
 - the user explicitly requested options first
 
 Do not ask for confirmation just to do an obvious low-risk direct bug fix.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule set is authored in this package from repository practice. It makes no external claim, so no external source is cited.

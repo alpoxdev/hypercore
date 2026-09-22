@@ -70,13 +70,12 @@ Rust는 happy-path JavaScript만이 아니라 policy boundary에서 테스트한
 이 skill package를 변경하면 저장소 root에서 다음 검사를 순서대로 실행한다.
 
 ```bash
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only tauri-architecture --json
 node -e "const fs=require('node:fs'); const p='skills/tauri-architecture/assets/evals/tauri-architecture-cases.jsonl'; fs.readFileSync(p,'utf8').trim().split(/\\n/).forEach((line,index)=>{try{JSON.parse(line)}catch(error){throw new Error(`${p}:${index+1}: ${error.message}`)}});"
 bash scripts/check-sources.sh --offline
 bun run --cwd scripts verify
 ```
 
-Corpus validator는 구조 gate다. JSONL parse는 fixture-integrity gate이며 behavior 실행이 아니다. 이 package에는 package-specific behavior runner가 없다. Fixture의 stable positive, negative, boundary, missing-context, unsafe-action, source-guard, regression case를 직접 검사하고 실행했다고 주장하지 않는다. Validator를 지어내거나 fixture 존재를 behavior 증거로 취급하지 않는다.
+저장소의 skill-corpus validator가 구조 gate다. 저장소 유지보수 명령이므로 형제 skill의 경로를 넣지 않고 이름으로만 적는다: `validate-skills-corpus.mjs --root skills --only tauri-architecture --json`. JSONL parse는 fixture-integrity gate이며 behavior 실행이 아니다. 이 package에는 package-specific behavior runner가 없다. Fixture의 stable positive, negative, boundary, missing-context, unsafe-action, source-guard, regression case를 직접 검사하고 실행했다고 주장하지 않는다. Validator를 지어내거나 fixture 존재를 behavior 증거로 취급하지 않는다.
 
 ## Readback checklist
 
@@ -88,3 +87,14 @@ Handoff 전 어떤 gate를 실행했고 결과가 무엇인지, 또는 gate를 �
 - [ ] 패키징된 SPA 근거가 Vite production build와 development server 없는 생성-route navigation, deep-link handling, reload를 다룬다.
 - [ ] Native E2E는 disposable state만 사용했으며, publication, signing, credential, destructive production change를 하지 않았다.
 - [ ] 동일 gate가 두 번 이하의 correction pass 안에 통과했다.
+
+## Sources
+
+> 링크 확인 2026-07-30.
+
+| 주장 | 출처 |
+|---|---|
+| Native 근거 행의 근거인 Tauri testing layer, IPC mock, mock runtime, WebDriver 지원 | [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md); <https://v2.tauri.app/develop/tests/>; <https://v2.tauri.app/develop/tests/mocking/>; <https://v2.tauri.app/develop/tests/webdriver/> |
+| Router plugin 순서, 생성된 route tree, `defaultPreloadStaleTime`, loader/Query assertion | [tanstack-vite-react-2026-07-30.ko.md](../references/official/tanstack-vite-react-2026-07-30.ko.md) |
+| Disposable profile에서의 패키징된 navigation, deep-link, reload 근거 | [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md); <https://v2.tauri.app/develop/tests/webdriver/> |
+| 범위가 제한된 수정 루프, 스킬 패키지 검사, readback checklist | 이 파일의 규약; 여기서 이름을 밝히는 저장소 명령은 외부 출처가 아닌 저장소 정책이다 |

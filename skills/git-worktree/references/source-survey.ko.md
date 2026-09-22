@@ -2,7 +2,9 @@
 
 이 조사는 공개 Git worktree 문서, 도구, editor integration, AI-agent workflow에서 추출한 패턴을 기록한다. 근거로 사용하고, operational rule은 `rules/worktree-lifecycle.md`에 유지한다.
 
-## 검토한 소스
+## Sources
+
+> 링크 확인 2026-09-21. 아래 17개 항목의 URL은 같은 날짜에 요청해 모두 HTTP 200을 받았습니다.
 
 1. **공식 Git `git-worktree` 문서** — `add`, `list`, `remove`, `prune`, `lock`, `unlock`, `repair`, `--porcelain`, annotation의 authoritative command behavior.  
    URL: https://git-scm.com/docs/git-worktree.html

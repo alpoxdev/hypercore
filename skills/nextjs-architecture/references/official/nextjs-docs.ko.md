@@ -4,7 +4,16 @@
 
 Last verified: 2026-05-24 against latest stable Next.js 16.2.6 (`npm dist-tag latest`).
 
+last_verified_at: 2026-05-24
+
 Reader access rule: official docs를 다시 확인할 때는 `https://r.jina.ai/https://nextjs.org/docs/...` 형식의 Jina Reader markdown URL을 우선 사용하여 browser rendering에 의존하지 않고 현재 page text를 검사합니다. 아래 canonical URL은 원본 source URL로 유지합니다.
+
+## 목차
+
+- [Core Sources](#core-sources)
+- [Drift Watchlist](#drift-watchlist)
+- [Interpretation Rules](#interpretation-rules)
+- [Sources](#sources)
 
 ## Core Sources
 
@@ -125,3 +134,12 @@ Reader access rule: official docs를 다시 확인할 때는 `https://r.jina.ai/
 - 새 Next.js release가 caching, Proxy, Route Handler, Server Action behavior를 바꾸면 `SKILL.md`를 부풀리지 말고 관련 rule file을 업데이트합니다.
 - local repo conventions가 docs보다 엄격하면 reviews와 change reports에서 local convention으로 표시합니다.
 - 이 파일은 doc map이며 version-sensitive work에서는 official docs를 다시 읽어야 합니다.
+
+## Sources
+
+> 링크 확인 2026-05-24, 이 파일 자체의 `last_verified_at` 표기가 가진 날짜입니다. 이번 pass에서 페이지를 다시 가져오지 않았고, 위에 나열한 canonical `nextjs.org/docs/...` URL 밖의 출처는 주장하지 않습니다.
+
+| 주장 | 출처 |
+|---|---|
+| 위 "Core Sources"의 official Next.js surface와 각 항목의 "Use for" 범위 | 각 항목에 적힌 canonical `nextjs.org/docs/...` URL |
+| 위 "Drift Watchlist"에 나열한 drift-sensitive behavior | 같은 canonical URL과 `references/official/current-docs-2026-06-02.md` |

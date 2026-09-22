@@ -124,3 +124,9 @@ Ask the user one narrow outcome question only if at least one material decision 
 | propagation conflict with one coherent intent-preserving result | resolve, validate, continue, and report the reconciliation |
 | propagation conflict requires a material behavior/architecture decision | ask one focused question; do not begin later targets |
 | network/auth prompt risk | use non-interactive push helper output; report remote/auth blocker if push cannot proceed |
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-22.
+
+This rule set is authored in this package from repository practice. It makes no external claim, so no external source is cited.

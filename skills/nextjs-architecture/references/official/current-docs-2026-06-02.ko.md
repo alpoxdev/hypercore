@@ -3,6 +3,7 @@
 > drift-sensitive Next.js architecture decision을 위한 Context7 확인 official docs facts입니다. cache, Proxy, Route Handler, Server Action behavior가 중요하면 older doc map보다 먼저 사용합니다.
 
 checked_at: 2026-06-02
+last_verified_at: 2026-06-02
 library_id: `/vercel/next.js`, `/vercel/next.js/v16.2.2`
 source_priority: Context7를 통한 official Next.js docs. `https://github.com/vercel/next.js/blob/v16.2.2/docs/...` 및 canonical `https://nextjs.org/docs/...` page 기반.
 
@@ -47,3 +48,12 @@ source_priority: Context7를 통한 official Next.js docs. `https://github.com/v
 - `https://nextjs.org/docs/app/guides/environment-variables`
 - `https://nextjs.org/docs/app/guides/data-security`
 - `https://nextjs.org/docs/app/guides/upgrading/version-16`
+
+## Sources
+
+> 링크 확인 2026-06-02, 이 파일 자체의 `last_verified_at` 표기가 가진 날짜입니다. 이번 pass에서 페이지를 다시 가져오지 않았고, 위에 나열한 URL 밖의 출처는 주장하지 않습니다.
+
+| 주장 | 출처 |
+|---|---|
+| 위 "Current Official Facts"에 기록한 official facts | "Source URLs Checked"에 나열한 `https://nextjs.org/docs/...` 페이지를 Context7의 `/vercel/next.js`, `/vercel/next.js/v16.2.2`로 읽은 내용 |
+| 위 "Architecture Implications"의 결론 | 같은 official 페이지. `src/lib` / `src/services` 명명은 Hypercore/repo-local convention이며 official requirement가 아닙니다 |

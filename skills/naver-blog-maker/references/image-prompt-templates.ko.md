@@ -6,6 +6,27 @@
 
 **권위**: 이 파일이 상세 스키마와 역할 → 템플릿 매트릭스를 소유합니다. 컴파일 순서와 필드 규칙은 [`image-slots.ko.md`](../rules/image-slots.ko.md) §6이, 생성하면 안 되는 대상은 같은 문서 §3이 소유합니다. 서로 어긋나면 `image-slots.ko.md` §3이 먼저이고, 그다음이 이 파일입니다.
 
+## 목차
+
+- 1. 스키마
+- 2. 섹션 역할과 템플릿
+- 2.1 cover — `cover-key-visual`
+- 2.2 first-screen — `first-screen-key-takeaway`
+- 2.3 mechanism — `mechanism-cutaway`, `mechanism-flow`
+- 2.4 comparison — `comparison-table`, `comparison-split`, `before-after-schematic`
+- 2.5 process — `process-flow`
+- 2.6 cost — `cost-breakdown`
+- 2.7 checklist — `checklist-card`
+- 2.8 caution — `failure-caution`
+- 2.9 data — `data-chart`
+- 2.10 timeline — `timeline`
+- 2.11 route — `route-schematic`
+- 2.12 scale — `scale-dimension`
+- 2.13 closing — `closing-next-step`
+- 2.14 concept — `concept-mood`
+- 3. 전달 전 점검
+- Sources
+
 ## 1. 스키마
 
 열네 개 필드는 항상 들어갑니다. 나머지 여덟 개는 의미가 있을 때만 나타나며, 적용되지 않는 필드는 **아예 없습니다**. `null`, `"N/A"`, `"없음"`, `"위와 동일"`, `"same as above"`, 중괄호 자리표시자로 채우지 않습니다.
@@ -1023,3 +1044,9 @@
 - `route-schematic`은 실제 지리를 그리지 않습니다. 실제 장소는 `[이미지: …]` 마커로 남습니다.
 - 커버와 단면도 객체에는 `aspect`가 있고, 본문 이미지는 기본 `4:3`입니다.
 - 사진으로 오해될 수 있는 생성 이미지는 캡션에 일러스트라고 표기합니다.
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 프롬프트 스키마와 역할 → 템플릿 매트릭스를 담습니다. 위임한 필드 규칙은 [`../rules/image-slots.ko.md`](../rules/image-slots.ko.md) §3~§6에 있으며, 외부 사실을 주장하지 않으므로 외부 출처를 인용하지 않습니다.

@@ -4,6 +4,19 @@
 
 > All templates below are written in English. Translate headings and prose into Korean by default; keep code blocks intact. Use another language only when the user explicitly requests it or an existing target README must preserve its current language.
 
+## Contents
+
+- CLI
+- Library
+- Web app
+- Monorepo
+- Plugin
+- Framework
+- Docs site
+- Service / API
+- Notes on placeholders
+- Sources
+
 ## CLI
 
 ```markdown
@@ -301,3 +314,9 @@ See per-package READMEs for package-specific docs.
 - Replace every `<placeholder>` with a value verified from the repo.
 - Drop entire sections that the project does not support (no tests, no env vars, no published package).
 - Keep at most one example per section unless the project genuinely has distinct flows worth showing separately.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+These templates are repository-authored skeletons derived from the section policy in `rules/section-design.md`. They make no external claim, so no external source is cited.

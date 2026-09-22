@@ -197,3 +197,7 @@ Ownership이 불명확하면 유일한 caller 가까이에 둡니다. Premature 
 ## 9. Migration/validation
 
 한 번에 vertical feature 하나를 이동합니다. 같은 slice에서 route, public export, alias, test, mock, persisted/import contract를 갱신합니다. 이동마다 dependency cycle/forbidden import를 확인합니다. Generated/native output과 user change를 보존합니다. Replacement와 caller 검증 후에만 obsolete code를 삭제합니다.
+
+## Sources
+
+> 자체 검토 확인 2026-09-21. 이 파일은 외부 출처를 직접 사용하지 않았고, Expo 관련 서술은 이 패키지 자체의 공식 snapshot(references/official/expo-react-native-2026-08-03.md)을 재진술한 것입니다.

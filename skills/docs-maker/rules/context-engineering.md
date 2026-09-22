@@ -255,3 +255,9 @@ Ship only when all pass:
 - Redundancy and ambiguity are removed
 - Provider-sensitive guidance is isolated and source-backed
 - Reference entries are dated and maintained in the correct layer
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This file is this package's own procedure text and cites no external source.

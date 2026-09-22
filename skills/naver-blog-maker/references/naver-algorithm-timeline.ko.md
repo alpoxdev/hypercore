@@ -54,3 +54,9 @@
 - "C-Rank 2.0", "2025년 3월 알고리즘 변경"(가장 가까운 공식 사건은 2025-02-28 공지), D.I.A.+ 폐기(2025-02 공지에 여전히 명시).
 - 같은 IP나 같은 와이파이 단독 페널티(2016-07-12 공식 부정: <https://blog.naver.com/naver_search/220760111725>).
 - 2026년 연관검색어 종료. 영어권 가이드만 보고했고 공식 공지는 확인되지 않음.
+
+## Sources
+
+> 이 파일의 모든 링크는 HTTP 200으로 응답했습니다(링크 확인 2026-09-21). `blog.naver.com/naver_search`, `blog.naver.com/blogpeople`, `searchadvisor.naver.com`, `help.naver.com`.
+
+날짜 열은 네이버가 밝힌 게시 날짜입니다. 서치어드바이저 두 행은 해당 페이지에 게시·수정 날짜가 없어 날짜 없음으로 표시했습니다. [`evidence-digest.ko.md`](evidence-digest.ko.md)와 [`../rules/naver-ranking-contract.ko.md`](../rules/naver-ranking-contract.ko.md)도 같은 링크 묶음을 씁니다.

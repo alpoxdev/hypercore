@@ -39,3 +39,14 @@ Depth, safety confirmations, ranked options, and harness-mandated sections all a
 ## Credit
 
 Loosely based on *The Adult ADHD Tool Kit* by J. Russell Ramsay and Anthony L. Rostain, adapted for how an agent should respond rather than how a person should organize their day. The adaptation, the Korean shaping rules, the autonomy rule, and the pre-send gate are this package's own work; see [`upstream-i-have-adhd.md`](upstream-i-have-adhd.md) for provenance.
+
+## Sources
+
+> Cited book and upstream provenance checked 2026-09-21; upstream accessed 2026-08-10.
+
+| Claim | Source |
+|---|---|
+| The five reading facts, the fact-to-rule mapping, and the failure modes behind them | *The Adult ADHD Tool Kit* by J. Russell Ramsay and Anthony L. Rostain, loosely adapted for agent response design |
+| The ten-rule shape, the six override cases, and the rubric weights referenced above | the MIT-licensed upstream project in [`upstream-i-have-adhd.md`](upstream-i-have-adhd.md), accessed 2026-08-10 |
+
+This document is design rationale, not clinical guidance, and it cites no clinical study or medical body.

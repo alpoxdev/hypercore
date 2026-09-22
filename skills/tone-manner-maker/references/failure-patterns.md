@@ -61,3 +61,9 @@ Known failure modes of tone extraction, each as pattern → symptom → counterm
 - Pattern: slang or in-jokes appear in the spec that no sample or verified preset basis contains.
 - Symptom: the consumer uses terms from the wrong community or the wrong year; the voice is instantly off.
 - Countermeasure: lexicon entries only from samples or preset entries marked verified; anything else is 미검증 or left out. `valid_at` records the basis.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This file catalogues failure modes defined by this package's own rules; it makes no external claim and cites no external source.

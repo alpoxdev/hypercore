@@ -215,3 +215,9 @@ apiClient.interceptors.response.use(
 | **직접 fetch 금지** | 라우트나 훅에서 `fetch`/`axios` 직접 호출 금지 |
 | **공개 가능한 loader** | loader는 services/query options만 호출하고 secret/private env를 직접 읽지 않음 |
 | **에러 처리** | 에러는 `errorComponent`로 전파; 401/403은 인터셉터에서 처리 |
+
+---
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 이 파일이 서술하는 TanStack Query와 TanStack Router 동작(query option factory, query client를 통한 loader prefetch, loader/component cache 조합)은 이 패키지 자체의 guidance이며, `references/official/current-docs-2026-06-02.ko.md`에 기록된 dated snapshot(그 스냅샷이 기록한 자체 검증일은 2026-06-02)은 이 Query API들을 기록하고 있지 않으므로 그 출처로 인용하지 않습니다. `services/<domain>/` 구조, barrel export 금지, `src/services/<domain-or-provider>/` 그룹화는 Hypercore/repo-local convention입니다. 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 규칙 문장과 저장소 로컬 경로 확인 2026-09-21.

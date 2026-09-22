@@ -90,3 +90,9 @@ For monorepos, the root README orients readers across packages; per-package READ
 - Root README: list packages with one-line purpose and folder path; show the workspace-aware install/dev command at the root.
 - Package README: treat the package as its own project and apply the matching type policy from the table above.
 - Avoid duplicating per-package install instructions in the root README; link instead.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This rule states the repository-local section-design policy for README authoring. It makes no external claim, so no external source is cited.

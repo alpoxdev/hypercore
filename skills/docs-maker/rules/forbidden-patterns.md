@@ -133,3 +133,9 @@ Do not document a subagent/background-agent workflow without objective, scope, o
 ### Forbidden 20: completion without evidence
 
 Do not claim a document is done without a readback, grep/link/fence check, source check, smoke eval, or explicit caveat that explains the skipped verification.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This file is this package's own procedure text and cites no external source.

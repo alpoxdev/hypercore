@@ -6,6 +6,19 @@
 
 Scope is medical. Financial, legal, and real-estate quantitative claims follow the general rule in `topic-research.md` §3 (a governing first-party source plus the grade and role split in §2 below). Add a field-specific lane to §3 of this file the first time a run actually needs one; do not stretch the medical lanes to cover another field.
 
+## Contents
+
+- 1. Scope and when this file is read
+- 2. Source grade and source role
+- 3. Quantitative query lanes (medical)
+- 4. Claim scope
+- 5. How quantitative sentences are written
+- 6. Slot kinds
+- 7. Medical advertising boundary
+- 8. Medical CTA default while the boundary is UNKNOWN
+- 9. When research fails
+- Sources
+
 ## 1. Scope and when this file is read
 
 Read it when the topic is medical, or when the title or intent turns on a quantitative safety, dosage, interval, duration, eligibility, or legal-limit claim.
@@ -102,3 +115,9 @@ For a promotional or offer type, or when the goal is a booking or a purchase: do
 - **Some primary coverage:** rebuild the title and the body's scope around what the verified sources actually support, and list the unresolved quantitative fields separately. Do not keep a title promise the sources cannot pay off.
 - **No primary coverage for a required regulated claim:** do not deliver a publish-ready quantitative draft. Deliver the decision-complete structure with `[확인 필요]` slots plus one compact list of the sources to find, and say the post is not ready to publish.
 - **Neither case asks a second intake question.** The author's memory is not a substitute for a primary source, and the author's own numbers are `author slot`s, which cannot fill a `source-required slot`.
+
+## Sources
+
+> <https://www.law.go.kr/LSW/lsLinkCommonInfo.do?lsJoLnkSeq=1026149431&chrClsCd=010202> was re-checked 2026-09-21 (HTTP 200); the §7 statute rows keep their recorded access date 2026-09-17.
+
+The §7 statute rows come from 국가법령정보센터's 의료법 제56조 page; the source-grade and claim-scope taxonomy in §2-§6 is this package's own and cites no third party.

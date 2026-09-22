@@ -140,3 +140,9 @@ End with a short trace when helpful:
 | Primary color | user request / theme file / reference URL | high/medium/low |
 
 Use `Proposed`, `Assumption`, or `TODO` for unsupported values.
+
+## Sources
+
+> This package's own output-structure rules checked 2026-09-21; the observed public examples they were compared against are recorded in [`../references/design-md-source-notes.md`](../references/design-md-source-notes.md).
+
+The required shape, frontmatter keys, and section list are this package's own rubric. The frontmatter convention was compared against the public examples recorded in the source ledger above that file; no other external source is cited.

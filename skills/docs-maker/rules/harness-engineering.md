@@ -269,3 +269,9 @@ When the document covers parallel agents, verify the trajectory as well as the f
 ```text
 Define success → collect baseline cases → run current doc → diagnose failures → patch smallest surface → re-run → document risk
 ```
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This file is this package's own procedure text and cites no external source.

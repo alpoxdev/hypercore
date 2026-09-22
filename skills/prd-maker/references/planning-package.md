@@ -2,7 +2,18 @@
 
 Use this reference when drafting `feature-spec.md`, `user-flow.md`, `wireframe.md`, `diagram.md`, or `preview.html`.
 
-Evidence basis: the artifact chain in this reference is grounded in the local research report [`../../../.hyper/research/002-prd-package-layered-artifacts.md`](../../../.hyper/research/002-prd-package-layered-artifacts.md), which reviewed 10+ sources each for PRDs, feature specifications, user flows, and wireframes.
+Evidence basis: the artifact chain in this reference is grounded in a repository-local research report, `../../../.hyper/research/002-prd-package-layered-artifacts.md`, which reviewed 10+ sources each for PRDs, feature specifications, user flows, and wireframes. That report is a local artifact outside this skill package and is not shipped with it, so this reference is written to stand alone without it.
+
+## Contents
+
+- Package principle
+- Artifact handoff contract
+- `feature-spec.md`
+- `user-flow.md`
+- `wireframe.md`
+- `diagram.md`
+- `preview.html`
+- Alignment rules
 
 ## Package principle
 
@@ -188,3 +199,9 @@ Preview rules:
 - Link wireframe screens to flow steps when the screen is user-facing.
 - Keep diagram and preview synchronized with package docs after significant edits.
 - Keep unresolved questions in each affected file, but make the canonical list visible in `prd.md`.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own artifact chain and per-artifact drafting rules. The chain was derived from the repository-local research report named at the top of the file, which sits outside this skill package; the file cites no external URL and asserts no external fact of its own, so no external source is recorded.

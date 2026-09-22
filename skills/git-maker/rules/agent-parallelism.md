@@ -106,3 +106,9 @@ Before final reporting, confirm:
 - final staged files match the main integrator's selected group
 - push was attempted only after all commit groups succeeded
 - skipped/failed push targets are reported explicitly
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-22.
+
+This rule set is authored in this package from repository practice. It makes no external claim, so no external source is cited.

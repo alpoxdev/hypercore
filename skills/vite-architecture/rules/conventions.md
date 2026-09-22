@@ -128,3 +128,9 @@ export class UnauthorizedError extends AppError {
   }
 }
 ```
+
+---
+
+## Sources
+
+> This file's naming, TypeScript, import-order, comment, and error-handling rules are Hypercore/repo-local conventions, not official Vite or TanStack Router requirements. Its TanStack Router route-filename entries are this package's own guidance and are not facts taken from the dated snapshot recorded in `references/official/current-docs-2026-06-02.md` (that snapshot's own verification date is 2026-06-02); no external source was used for them. No page was re-fetched for this file, and no other external source is cited. Rule text and repository-local paths checked 2026-09-21.

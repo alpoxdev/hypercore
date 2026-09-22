@@ -40,7 +40,7 @@ compatibility: "정적 Vite frontend를 사용하는 Tauri v2, React, `@tanstack
 
 Tauri v2 앱에서 지원 대상인 Vite + React + TanStack Router file-based routing + TanStack Query 스택을 도입, 감사 또는 변경하는 요청에 이 스킬을 사용합니다. Frontend packaging, IPC, capabilities, command boundary, routing, data caching, testing이 포함됩니다.
 
-프로젝트가 web-only React/Vite이거나 다른 desktop runtime을 사용하거나, framework documentation 요약만 필요하거나, frontend/runtime-boundary 판단이 없는 Rust-only subsystem이 주 작업이면 다른 경로로 라우팅합니다. Full-stack TanStack runtime을 사용하는 프로젝트는 `tanstack-start-architecture`로 라우팅합니다. 스택을 아직 도입하지 않은 일반 Tauri 앱에는 Router나 Query가 이미 설치되었다고 가정하지 말고 incomplete-adoption mode를 사용합니다.
+프로젝트가 web-only React/Vite이거나 다른 desktop runtime을 사용하거나, framework documentation 요약만 필요하거나, frontend/runtime-boundary 판단이 없는 Rust-only subsystem이 주 작업이면 다른 경로로 라우팅합니다. Full-stack TanStack runtime은 산출물 형태가 다릅니다. Packaged static SPA 경계가 아니라 server-owned route tree, loader, SSR data-flow 계획을 내놓으므로 full-stack architecture workflow로 라우팅합니다. 스택을 아직 도입하지 않은 일반 Tauri 앱에는 Router나 Query가 이미 설치되었다고 가정하지 말고 incomplete-adoption mode를 사용합니다.
 
 </routing_rule>
 
@@ -85,7 +85,7 @@ Tauri v2 앱에서 지원 대상인 Vite + React + TanStack Router file-based ro
 - "desktop app을 remote API에 연결해 주세요."
   일반 browser-safe remote API access를 사용하며 그 API를 Tauri command로 바꾸지 않습니다.
 - "Full-stack TanStack runtime을 도입해 주세요."
-  프로젝트를 `tanstack-start-architecture`로 라우팅합니다.
+  다른 경로로 라우팅합니다. 산출물은 server-owned route tree, loader, SSR data-flow 계획이며 packaged static SPA 경계가 아닙니다.
 
 </activation_examples>
 
@@ -125,7 +125,7 @@ Query dependency만으로 file-based routing을 추론하지 않습니다. File-
 |---|---|---|
 | Incomplete adoption | Tauri v2는 있지만 Vite, React, Router, Router plugin, Query 중 하나 이상이 없거나 사용되지 않습니다. | Incremental adoption plan을 만들고 complete-stack-only layout을 성급하게 강제하지 않습니다. |
 | Complete packaged Vite SPA | Tauri가 React SPA용 Vite static asset을 package하며 Router는 file-based route를 생성·소유하고 Query는 asynchronous data cache와 freshness를 소유합니다. | Browser UI와 Tauri IPC를 분리하고 검토된 Rust command에 native authority를 유지합니다. |
-| Route away | Tauri v2 또는 관련 architecture surface가 없거나 프로젝트가 full-stack TanStack runtime을 사용합니다. | 적용할 non-Tauri 또는 Rust-specific workflow나 `tanstack-start-architecture`를 사용합니다. |
+| Route away | Tauri v2 또는 관련 architecture surface가 없거나 프로젝트가 full-stack TanStack runtime을 사용합니다. | 적용할 non-Tauri 또는 Rust-specific workflow를 사용하거나, server-owned route/data 계획을 산출하는 full-stack architecture workflow를 사용합니다. |
 
 </runtime_modes>
 

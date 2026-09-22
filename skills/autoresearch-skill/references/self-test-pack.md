@@ -8,7 +8,7 @@ This pack is intentionally conservative. Its purpose is to verify the skill's re
 
 Use the following ten prompts as the default execution set for skill-targeted autoresearch:
 
-1. ``Run autoresearch on `skills/web-clone/SKILL.md` and keep only changes that improve the score.``
+1. ``Run autoresearch on the target skill's `SKILL.md` and keep only changes that improve the score.``
 2. `Benchmark this skill with binary evals and save artifacts under .hyper.`
 3. `Tidy up this skill once and review it.`
 4. `Create a new Codex skill for browser QA.`
@@ -89,3 +89,7 @@ Replace this pack in the following cases:
 - The user provided better domain-specific prompts
 - The target skill's domain is so narrow that these prompts cannot verify it enough
 - The current failure is clearly domain-specific rather than structural
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.

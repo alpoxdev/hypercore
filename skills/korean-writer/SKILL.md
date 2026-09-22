@@ -56,15 +56,15 @@ Use `korean-writer` when the deliverable is Korean prose the user wants to read 
 
 This skill owns prose naturalness: word choice, sentence rhythm, endings, connectives, register, and ornament budget. It does not own document architecture, explanation design, or the truth of unread material.
 
-Route elsewhere when:
+Route away when the deliverable is not prose this skill can own. The boundary is the output's shape, not the name of whatever handles it:
 
-- the user wants a document's structure, sections, or information architecture designed — use `docs-maker`
-- the user wants a concept explained to a named audience or knowledge level — use `eli5`
-- the user wants a README or repository landing document — use `readme-maker`
+- the deliverable is a document's structure, sections, or information architecture — a section plan rather than sentences
+- the deliverable is a concept explained to a named audience or knowledge level
+- the deliverable is a README or repository landing document, whose shape its own format contract fixes
 - the user wants spelling, spacing, and grammar correctness checked and explained item by item, with no naturalness work — a proofreading task, out of scope
 - the user supplies text in another language and asks for a translation — out of scope
 
-Compose rather than route away when the deliverable is a structured artifact whose Korean prose must also read naturally: the structure-owning skill sets the format contract, and this skill writes the sentences inside it.
+Compose rather than route away when the deliverable is a structured artifact whose Korean prose must also read naturally: the format contract that owns the structure sets the shape, and this skill writes the sentences inside it.
 
 </routing_rule>
 
@@ -97,15 +97,15 @@ Positive:
 
 Negative:
 
-- "이 문서 구조 짜줘." (document architecture — `docs-maker`)
+- "이 문서 구조 짜줘." (document architecture — out of scope; the deliverable is a section plan, not prose)
 - "이 영어 문장 한국어로 번역해줘." (translation — out of scope)
-- "이 개념을 신입도 알게 설명해줘." (explanation design — `eli5`)
+- "이 개념을 신입도 알게 설명해줘." (explanation design for a named audience — out of scope)
 - "맞춤법이랑 띄어쓰기만 검사해줘." (itemized proofreading — out of scope)
 
 Boundary:
 
-- "한국어 README를 자연스럽게 써줘." Compose: `readme-maker` sets the README contract, this skill writes the Korean sentences.
-- "기술 문서 초안을 한국어로 써줘." Compose with `docs-maker` for the section plan, then draft the prose under this skill's rules.
+- "한국어 README를 자연스럽게 써줘." Compose inside the README's own format contract: the contract fixes the file's shape, and this skill writes the Korean sentences inside it.
+- "기술 문서 초안을 한국어로 써줘." Compose: settle the section plan first, then draft the prose under this skill's rules.
 - "AI 탐지기에 안 걸리게 한국어 칼럼 써줘." Compose the column under the avoidance rules, and state plainly that this skill does not target or test against detection tooling.
 - "이 글 고치되 뭐가 어떻게 바뀌었는지 전부 보여줘." Humanize, and the user's explicit ask for a full diff overrides the default one-to-three-line summary.
 
@@ -175,7 +175,7 @@ Boundary:
 - [ ] Package changes preserve the English/Korean structure of every file in this package.
 - [ ] Package changes keep the self-application audit clean: this package's Korean bodies contain zero S1 tells.
 - [ ] Package changes keep the eval cases present and aligned with the trigger and workflow.
-- [ ] Package changes run `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only korean-writer --json`.
+- [ ] Package changes run the corpus validator scoped to this package: `validate-skills-corpus.mjs --root skills --only korean-writer --json`.
 - [ ] Package changes run `bun run --cwd scripts verify`.
 
 </validation>

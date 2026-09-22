@@ -36,13 +36,15 @@ Use a different language only when the user explicitly requests it, an existing 
 
 ## Out-of-scope
 
-- Bug reports with error messages or failing symptoms. Route to `bug-fix`.
-- Repository-wide build, CI, or deployment failures. Route to `deploy-fix`.
-- Pre-release validation or build readiness checks. Route to `pre-deploy`.
-- Strategic planning or architecture decisions. Route to a dedicated planning or architecture skill when available; in this repo prefer `prd-maker` for requirements and framework-specific architecture skills for implementation architecture.
-- Client or customer feedback that needs repository-grounded interpretation before implementation. Route to `client-feedback`.
-- Security analysis. Route to a dedicated security skill when available; in this repo use framework-specific security skills such as `tanstack-start-security` when applicable.
-- Explicit workflow invocations such as `$autoresearch-skill`, `$ralph`, or another `$skill` request. Preserve the explicitly requested workflow instead of treating the prompt as a generic execute task.
+Route neighboring work elsewhere by the shape of its output:
+
+- A bug report whose deliverable is a root cause and a repair for the reported symptom, not the new work requested here.
+- A repository-wide build, CI, or deployment failure whose deliverable is a restored pipeline.
+- A pre-release readiness verdict whose deliverable is a go/no-go assessment instead of an implemented change.
+- A strategic plan or architecture decision whose deliverable is a requirements document or an architecture document.
+- Raw client or customer feedback whose deliverable is an interpreted, repository-grounded feedback report.
+- A security assessment whose deliverable is a vulnerability finding instead of the requested change.
+- An explicitly named multi-step workflow whose deliverable is that workflow's own artifact. Preserve the explicitly requested workflow instead of treating the prompt as a generic execute task.
 
 ## Boundary cases
 
@@ -63,6 +65,7 @@ Use a different language only when the user explicitly requests it, an existing 
 | Authority | User and project instructions outrank this skill; repository files and validation output are evidence. |
 | Evidence | Use local file reads, search results, diffs, test/build/lint output, and runtime checks when relevant. |
 | Tools | Use local read/edit/search/shell tools; gate destructive, credentialed, production, and external side effects. |
+| Loop | No optimization loop. One pass per request: validate input, classify difficulty, think proportionally, implement, validate, report. Repeat steps 4-6 only while a targeted validation still fails inside the requested scope; stop when validation passes or a true blocker is reported with evidence. |
 | Output | Implemented change or explicit blocker, with changed files, verification evidence, and residual risks. |
 | Verification | Run the smallest command set that can prove the implemented claim; broaden only when risk requires it. |
 | Stop condition | Stop when the requested deliverable is implemented and verified, or a true blocker is reported with evidence. |

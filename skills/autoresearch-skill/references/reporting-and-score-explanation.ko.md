@@ -2,6 +2,16 @@
 
 오토리서치 스킬 실행에서 점수 변화, 유지된 변경, 대시보드 내용, 최종 전달 내용을 사람이 읽을 수 있게 설명해야 할 때 이 레퍼런스를 사용한다.
 
+## 목차
+
+- 1. 언어 계약
+- 2. 필수 점수 설명 필드
+- 3. `score-explanation.md` 템플릿
+- 4. `final-report.md` 템플릿
+- 5. Changelog 항목 요구사항
+- 6. 대시보드 표시 요구사항
+- 7. 최종 응답 체크리스트
+
 ## 1. 언어 계약
 
 사람이 읽는 산출물은 기본적으로 모두 한국어다:
@@ -32,8 +42,8 @@
   "best_experiment": 3,
   "most_effective_change_ko": "트리거 경계 예시를 한국어 요청 기준으로 보강했습니다.",
   "changed_files": [
-    "skills/example-skill/SKILL.md",
-    "skills/example-skill/rules/validation.md"
+    "[target-skill]/SKILL.md",
+    "[target-skill]/rules/validation.md"
   ],
   "improvements": [
     {
@@ -42,7 +52,7 @@
       "before_ko": "단발성 polish 요청과 반복 실험 요청이 분리되지 않았습니다.",
       "after_ko": "긍정/부정/경계 예시가 분리되어 오작동 가능성이 줄었습니다.",
       "evidence_ko": "EVAL 1이 4/6에서 6/6으로 상승했습니다.",
-      "files": ["skills/example-skill/SKILL.md"]
+      "files": ["[target-skill]/SKILL.md"]
     }
   ],
   "remaining_failures_ko": [
@@ -157,3 +167,7 @@
 - dashboard 경로와 artifact 경로
 - 검증 명령/결과
 - 남은 실패 또는 명시적 “없음”
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 링크 확인 2026-09-21.

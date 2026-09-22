@@ -61,8 +61,8 @@ Preserve existing rows. Add observed failures as new regression rows rather than
 ## Package checks
 
 ```bash
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only eli5 --json
-node skills/skill-tester/scripts/validate-skill.mjs skills/eli5 --json
+# When the repository provides a skill-corpus validator, run it on this package too:
+#   <corpus-validator> --root <skills-root> --only eli5 --json
 bun run --cwd scripts verify
 ```
 
@@ -83,3 +83,9 @@ When the change touches artifact output, additionally:
 - [ ] When artifact output changed: the renderer is deterministic, every failure path exits non-zero with its stated message and preserves the previous file, and no file is written without a request.
 - [ ] Manual QA covers a simple concept, a target role, and grounded technical material.
 - [ ] Any performance claim records comparable conditions; otherwise no superiority percentage is claimed.
+
+## Sources
+
+> No new external source was used. Content checked 2026-09-22; the upstream snapshot recorded in `../references/upstream-eli5.md` was accessed 2026-08-29.
+
+The five-question gate, the rubric weights, and the exit criteria are this package's own work. The published upstream result mentioned above is context recorded in the package ledger, not reproduced evidence for this package.

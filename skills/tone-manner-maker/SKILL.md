@@ -162,7 +162,7 @@ Boundary:
 - [ ] Verification ran at the depth the degradation policy allows, and Known Limits records everything skipped.
 - [ ] Delivered spec is self-contained and contains no analysis scaffolding.
 - [ ] Package changes preserve the English/Korean pair of every markdown file in this package.
-- [ ] Package changes run `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only tone-manner-maker --json`.
+- [ ] Package changes run the corpus validator scoped to this package: `validate-skills-corpus.mjs --root skills --only tone-manner-maker --json`.
 - [ ] Package changes run `bun run --cwd scripts verify`.
 
 </validation>

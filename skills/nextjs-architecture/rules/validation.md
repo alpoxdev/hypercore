@@ -97,3 +97,7 @@ Boundary examples:
 
 - "Make a tiny copy-only text change in a Next.js page." Expected: quick boundary check only.
 - "This repo is Pages Router only and I am not migrating to App Router." Expected: shared Next.js checks, no App Router-only enforcement.
+
+## Sources
+
+> No external sources were used in this file; it describes repository-local commands and readback steps. Framework facts live in the topic rule files under `rules/` and in `references/official/`. Repository-local links checked 2026-09-21.

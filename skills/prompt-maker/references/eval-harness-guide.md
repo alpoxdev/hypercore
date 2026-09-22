@@ -58,3 +58,9 @@ Score each case deterministically:
 - `blocked`: the candidate output or required evidence is missing, unparsable, or insufficient to judge.
 
 Report run score as `passed_cases / total_cases`, with `blocked` counted as non-pass. Do not award partial credit inside a case; add a new case when a separate behavior deserves independent weight.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This reference file is this package's own harness text; it cites no external source.

@@ -62,3 +62,7 @@ Route, search, loader, context, SSR rules에 Router behavior가 영향을 줄 �
 - Zod/adapter usage에 대한 search validation guidance가 변경됨.
 - Loader/beforeLoad lifecycle 또는 pending behavior가 변경됨.
 - Local package versions가 위 versions보다 materially 이동함.
+
+## Sources
+
+> 출처 확인 2026-04-30. 이 snapshot이 `last_verified_at`으로 기록한 날짜이며, 위 모든 주장은 해당 주장 아래에 밝힌 TanStack Router docs page를 근거로 합니다. 이번 pass에서는 페이지를 다시 가져오지 않았고, 위 목록 밖의 출처는 주장하지 않습니다.

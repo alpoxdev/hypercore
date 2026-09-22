@@ -23,3 +23,9 @@ Do not require hidden chain-of-thought, private reasoning transcripts, or intern
 ## Prompt Shape
 
 A prompt pack should contain identity, variables, context packet, examples, constraints, output schema, eval cases, and version note. Use exact schema keys when downstream tools depend on them.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file is this package's own procedure text; it cites no external source.

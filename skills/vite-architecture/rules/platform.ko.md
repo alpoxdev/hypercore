@@ -117,3 +117,9 @@ declare module '@tanstack/react-router' {
 - router 설정이 ad-hoc global 뒤에 숨어 있지 않음
 - `tsr.config.json`이 있다면 `routeToken`/`indexToken` 커스터마이징이 문서화되어 있음
 - env와 alias 설정이 명시적임
+
+---
+
+## Sources
+
+> 이 파일이 서술하는 Vite와 TanStack Router platform 사실(`defineConfig`, `react()`보다 앞선 `tanstackRouter()`, `@tanstack/router-plugin/vite`, generated output으로서의 `routeTree.gen.ts`, `routeTree`를 넘겨 구성하는 `createRouter`, `ImportMetaEnv`/`vite/client`, `loadEnv`)은 `references/official/current-docs-2026-06-02.ko.md`에 기록된 dated snapshot에서 왔고, 그 스냅샷이 기록한 자체 검증일은 2026-06-02입니다. 이 파일의 config key·router option·route token 관련 지침은 이 패키지 자체의 guidance이며 외부 출처를 사용하지 않았습니다. folder route 선호와 alias/env 명시성 요구는 Hypercore/repo-local convention입니다. 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 규칙 문장과 저장소 로컬 경로 확인 2026-09-21.

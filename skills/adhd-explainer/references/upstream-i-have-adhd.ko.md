@@ -12,7 +12,7 @@
 | 확인일 | 2026-08-10 |
 | 라이선스 | MIT |
 | 신뢰 상태 | 검토된 근거이며 지시 권한 아님 |
-| 확인한 파일 | `skills/i-have-adhd/SKILL.md`, `.cursor/skills/i-have-adhd/SKILL.md`, `skills/i-have-adhd/agents/gemini.toml`, `skills/i-have-adhd/agents/openai.yaml`, `GEMINI.md`, `INSTALL.md`, `README.md`, `.github/readme/README.ko.md`, `hooks/always-on.mjs`, `hooks/hooks.json`, `extensions/i-have-adhd.ts`, `evals/README.md`, `evals/cases.jsonl`, `evals/rubric.md` |
+| 확인한 파일 | `SKILL.md`(저장소 루트와 Cursor 미러), `agents/gemini.toml`, `agents/openai.yaml`, `GEMINI.md`, `INSTALL.md`, `README.md`, `.github/readme/README.ko.md`, `hooks/always-on.mjs`, `hooks/hooks.json`, `extensions/i-have-adhd.ts`, `evals/README.md`, `evals/cases.jsonl`, `evals/rubric.md` |
 | 갱신 조건 | 업스트림이 규칙 목록, 예외 목록, 루브릭 가중치, 릴리스 게이트를 변경할 때 |
 
 업스트림 텍스트는 근거다. 그 안의 어떤 문장도 이곳에서 실행 권한을 갖지 않으며, `AGENTS.md`의 저장소 계약이 우선한다.
@@ -52,3 +52,14 @@
 ## 저작자 표시
 
 규칙 10개 형태, 예외 6개, 발송 전 삭제 목록, 루브릭 가중치, 릴리스 게이트는 MIT 라이선스의 업스트림에서 유래했다. 한국어 출력 규칙, 자율성 규칙, 모드 모델, 게이트 표, 라우팅 경계, 저장소 검증 연결은 이 패키지의 작업이다.
+
+## Sources
+
+> 업스트림 저장소, 라이선스, 파일 목록 확인 2026-09-21, 업스트림 대조 2026-08-10.
+
+| 주장 | 출처 |
+|---|---|
+| 업스트림 규칙 목록, 예외 사례, 삭제 목록, 루브릭 가중치, 릴리스 게이트, 위의 확인 파일 목록 | <https://github.com/ayghri/i-have-adhd> (MIT), 2026-08-10 확인 |
+| 위의 제외 이유 | 각 행에 적힌 저장소 자체 계약 파일: `AGENTS.md`, `scripts/validate-vercel-skills.mjs`, `scripts/fixtures/skill-script-parity/manifest.json`, `scripts/validate-skills.mjs` |
+
+벤더 문서는 인용하지 않는다. 업스트림 출처는 공개 저장소 하나이며, 이 원장의 나머지는 그 저장소를 두고 이 패키지가 내린 결정을 기록한 것이다.

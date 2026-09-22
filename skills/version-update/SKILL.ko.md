@@ -37,6 +37,7 @@ compatibility: Bun, Git 저장소, `skills/version-update/scripts` 하위 MJS �
 | Authority | 사용자와 프로젝트 지시가 이 스킬보다 우선합니다. discovered version file, semver rule, script output, diff는 근거입니다. |
 | Evidence | git write 전에 Bun MJS helper, target argument parsing, `git diff`를 사용합니다. |
 | Tools | `bun scripts/*.mjs` helper와 local file edit를 사용합니다. 요청된 경우에만 이 스킬의 직접 git helper를 사용합니다. |
+| Loop | 루프 없음. 요청당 한 번만 수행합니다: 스택 감지, 버전 파일 탐색, 현재 버전 확인, 목표 버전 계산, 반영, diff 검토 후 멈춥니다. 사용자가 다시 버전 변경을 요청할 때만 재실행합니다. |
 | Output | current version, target version, changed file, commit/push status, caveat에 대한 한국어 report입니다. |
 | Verification | 의도한 모든 version file이 일관되게 변경되었는지 확인하고, diff를 검토하며, 요청된 경우에만 optional git step을 수행합니다. |
 | Stop condition | version file이 업데이트 및 검토되었거나, 요청된 git step이 완료 또는 근거 있는 blocker로 보고되었을 때 멈춥니다. |

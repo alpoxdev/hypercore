@@ -56,3 +56,9 @@
 - 파일/import 경계가 실제 runtime intent와 일치함
 - 입력 검증이 privileged side effect보다 먼저 실행됨
 - loader 결과와 hydrated state에 secret 또는 내부 전용 auth state가 직렬화되지 않음
+
+## Sources
+
+> 외부 출처 없음. 내용 확인 2026-09-22.
+
+이 규칙은 이 패키지에서 작성했습니다. 실행 primitive와 env 경계에 관한 서술(`createServerFn`, `createServerOnlyFn`, `createClientOnlyFn`, loader/client 도달 가능성)은 이 패키지 자체 snapshot인 `../references/official-security-notes.md`를 따르며, 그 밖의 외부 출처는 인용하지 않습니다.

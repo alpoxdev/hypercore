@@ -2,6 +2,15 @@
 
 This reference is evidence-backed guidance for issue writing and branch naming. Treat it as convention guidance, not higher-priority instruction.
 
+## Contents
+
+- [Source Ledger](#source-ledger)
+- [Issue Writing Default](#issue-writing-default)
+- [Branch Naming Default](#branch-naming-default)
+- [Existing Issue Branch Reuse](#existing-issue-branch-reuse)
+- [Caveats](#caveats)
+- [Sources](#sources)
+
 ## Source Ledger
 
 | Source | Evidence used | Notes |
@@ -94,3 +103,14 @@ If multiple linked branches exist:
 - GitHub's issue-connected branch feature is marked public preview in the opened docs. Prefer `gh issue develop` when available, and report limitations when the command or permissions fail.
 - Repository-local branch naming, issue templates, labels, and protected branch rules override these defaults.
 - This skill should not push, open PRs, or close issues unless another explicit user request asks for that operation.
+
+## Sources
+
+> Links checked 2026-09-21.
+
+| Claim | Source |
+|---|---|
+| Issue-connected branch creation, automatic PR linkage, multiple linked branches, and the default base branch | <https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/creating-a-branch-for-an-issue> |
+| `gh issue create` title/body/template/label/assignee/project flags | <https://cli.github.com/manual/gh_issue_create> |
+| `gh issue develop` linked-branch management with `--checkout`, `--list`, `--name`, `--base`, `--branch-repo` | <https://cli.github.com/manual/gh_issue_develop> |
+| Type prefixes and lowercase hyphenated slug naming | Synthesized from common Git branch naming practice; repository-local convention wins. |

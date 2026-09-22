@@ -2,6 +2,13 @@
 
 > JSON schema for `.hyper/bug-fix/flow.json` — used in complex path only.
 
+## Contents
+
+- Schema
+- Status values
+- Rules
+- Example: initial state
+
 ## Schema
 
 ```json
@@ -109,3 +116,9 @@
   }
 }
 ```
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This reference documents the `.hyper/bug-fix/flow.json` contract owned by this package. It cites no external source because it makes no external claim.

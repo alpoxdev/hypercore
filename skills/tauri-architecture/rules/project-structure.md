@@ -235,7 +235,9 @@ Reject or correct a structure when any condition holds:
 7. Empty folders or layers were scaffolded without current owners, or a workspace/package extraction has only one consumer.
 8. `frontendDist`, generated route-tree path, or human/generated ownership is ambiguous.
 
-## Source Links
+## Sources
+
+> Links checked 2026-07-30.
 
 Official constraints:
 
@@ -252,3 +254,7 @@ Comparative organization evidence, not dependencies or framework mandates:
 
 - React file-structure FAQ (legacy, explicitly non-prescriptive): <https://legacy.reactjs.org/docs/faq-structure.html>
 - Redux feature/domain folder discussion: <https://redux.js.org/faq/code-structure/>
+
+Hypercore layout conventions, not vendor mandates:
+
+- `pages/`, `modules/`, `components/`, `platform/`, `shared/`, the tier table, and the promotion rules are this repository's convention; no external source

@@ -51,3 +51,9 @@ Body paste does not populate title, category, tags, visibility, comments, likes,
 Video, stickers, files, schedules, equations, places/maps, books, 글감, external-content components, and source-code components remain manual editor actions unless separately requested and supported. User-recommended automation is not authorization to add it here.
 
 Before publication, the user checks the rendered body or editor DOM for missing/duplicated blocks, links, table spans, image placement, and title/tag separation. Publication remains the user's action.
+
+## Sources
+
+> No external sources; content checked 2026-09-21.
+
+This file states this package's own delivery contract. The paste-behavior rows come from the package's own editor sessions, recorded in [`../rules/post-workflow.md`](../rules/post-workflow.md) §3; no external publication is cited because the file makes no external claim.

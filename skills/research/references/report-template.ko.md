@@ -32,7 +32,7 @@
 ### 1. [발견]
 - 주장:
 - 왜 중요한가:
-- 출처: [제목](URL)
+- 출처: [제목](https://example.com/source)
 
 ## Comparison
 | 기준 | 옵션 A | 옵션 B | 메모 |
@@ -64,7 +64,7 @@
 - [판단 또는 다음 액션]
 
 ## References
-- [제목](URL)
+- [제목](https://example.com/source)
 ```
 
 ## 작성 규칙
@@ -75,3 +75,9 @@
 - 한계는 문장 속에 숨기지 말고 명시적으로 적습니다.
 - standard, deep, parallel research에서는 source ledger와 claim-source matrix를 포함합니다.
 - 여러 lane이 같은 source를 찾았더라도 duplicate source는 한 번만 셉니다.
+
+## Sources
+
+> 외부 출처 없음. 템플릿과 작성 규칙 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 리포트 템플릿과 작성 규칙을 담습니다. 템플릿의 `https://example.com/source` 주소는 자리표시자 호스트이며 출처가 아니고, 외부 사실 주장을 하지 않습니다.

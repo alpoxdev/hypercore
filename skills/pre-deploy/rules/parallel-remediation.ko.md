@@ -89,3 +89,7 @@ Stop condition: targeted check passes, blocked, ownership conflict, or broader f
 - [ ] leader가 결과를 그대로 붙이지 않고 통합함
 - [ ] leader가 final verification을 직접 실행하거나 출력 확인함
 - [ ] final readiness를 subagent에 위임하지 않음
+
+## Sources
+
+> 외부 출처를 사용하지 않았습니다. 이 패키지 자체 절차를 적은 문서이며 스크립트 경로를 확인 2026-09-22.

@@ -66,3 +66,7 @@ Choose:
 - Method exports and request/response handling are explicit
 - Current caching behavior is understood and documented
 - Proxy-specific behavior is not leaking into the Route Handler
+
+## Sources
+
+> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.

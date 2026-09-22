@@ -44,3 +44,7 @@ export const usersApp = factory.createApp().get('/', ...listUsers)
 - `Variables`, `Bindings`가 암묵적이지 않음
 - handler가 giant controller object로 비대해지지 않음
 - business logic은 service가 소유
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Hono 동작은 `references/official/hono-docs.ko.md`에 위임합니다(last verified 2026-08-04). 저장소 로컬 링크 확인 2026-09-21.

@@ -72,3 +72,9 @@ Otherwise proceed without stopping. In particular, do not stop to confirm when t
 ## Averaging prohibition
 
 Do not average samples into a composite voice. If sample 1 uses `~임` and sample 2 uses `~합니다`, the answer is a rule split by context or a Known Limit, never "~을 때도 있습니다". A composite of two voices is neither voice.
+
+## Sources
+
+> No external sources were used. Content checked 2026-09-21.
+
+This rule file states this package's own rules and makes no external claim, so no external source is cited.
