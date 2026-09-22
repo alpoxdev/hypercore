@@ -32,13 +32,15 @@ camelCase 금지: getUserById.ts, authService.ts, useUserFilter.ts
 kebab-case 필수: get-user-by-id.ts, auth-service.ts, use-user-filter.ts
 ```
 
+Folder shape와 placement(route root, shared folder, co-located `-hooks/` / `-components/` / `-functions/` directory)는 [`rules/project-structure.md`](project-structure.md)가 소유하고, 이 파일은 파일 명명을 소유합니다. 파일을 추가할 때 두 규칙을 함께 적용합니다.
+
 ---
 
 ## TypeScript 규칙
 
 | 규칙 | 설명 | 예시 |
 |------|------|------|
-| **함수 선언** | const 함수, 명시적 return type | `const fn = (): ReturnType => {}` |
+| **함수 선언** | const 함수, 명시적 return type (아래 framework entrypoint 예외) | `const fn = (): ReturnType => {}` |
 | **타입 정의** | interface (객체), type (유니온) | `interface User {}`, `type Status = 'a' \| 'b'` |
 | **any 금지** | unknown 사용 | `const data: unknown = JSON.parse(str)` |
 | **Import 타입** | type import 분리 | `import type { User } from '@/types'` |
@@ -54,9 +56,11 @@ const parseJSON = (data: string): unknown => {
   return JSON.parse(data)
 }
 
-// function 키워드 금지
+// function 키워드 금지, 단 공식 예시가 declaration인 framework entrypoint는 예외
 // function badFunction() {} -> const 화살표 함수 사용
 ```
+
+**Framework entrypoint 예외 (Official).** function declaration 금지에는 예외가 정확히 하나 있습니다. 공식 예시가 declaration을 쓰는 framework-mandated entrypoint입니다. `src/router.tsx`는 `export function getRouter()`를 써야 하므로 (Official), 그 파일 하나만 declaration을 유지합니다. 예외는 declaration이라는 형태에만 적용합니다 - 명시적 return type, `any` 금지, kebab-case 파일명, Korean block comment는 그 파일에도 그대로 적용되고, const 화살표 함수 규칙은 나머지 모든 파일(route file, hook, component, server function, lib)에 그대로 적용됩니다.
 
 ---
 
@@ -142,4 +146,4 @@ export class UnauthorizedError extends AppError {
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, `references/official/current-docs-2026-06-02.md`, 스냅샷 날짜 2026-04-30 및 2026-06-09)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, `references/official/current-docs-2026-09-22.md`)에 위임합니다. 공식 사실 검증 2026-09-22. 저장소 로컬 링크 확인 2026-09-22.

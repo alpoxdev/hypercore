@@ -12,6 +12,7 @@ rg -n "const Route = createFileRoute|export const Route" src/routes 2>/dev/null
 rg -n "from ['\"]@/database|from ['\"].*/database|@prisma/client|drizzle-orm" src/routes 2>/dev/null
 
 # Server function validation and stale API checks
+# Detection grep: keep BOTH spellings so the deprecated `.inputValidator(` alias is still found in older projects
 rg -n "\.validator\(|\.inputValidator\(|createServerFn" src 2>/dev/null
 
 # Import boundary checks
@@ -39,13 +40,16 @@ For edits to this skill itself:
 find skills/tanstack-start-architecture -maxdepth 3 -type f | sort
 wc -l skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architecture/SKILL.ko.md
 rg -n 'architecture-rules|rules/|references/official' skills/tanstack-start-architecture/SKILL.md
-rg -n 'last_verified_at|checked_at|2026-06-09|@tanstack/react-start|@tanstack/react-router|source_priority|inputValidator|validator|importProtection|createServerOnlyFn|createMiddleware|createHandlers|excludeFiles' skills/tanstack-start-architecture/references/official
+# Snapshot metadata grep: match the `last_verified_at` field shape, never a specific date, so a snapshot refresh cannot silently break this check
+rg -n 'last_verified_at: [0-9]{4}-[0-9]{2}-[0-9]{2}|checked_at|@tanstack/react-start|@tanstack/react-router|source_priority|inputValidator|validator|importProtection|createServerOnlyFn|createMiddleware|createHandlers|excludeFiles' skills/tanstack-start-architecture/references/official
 rg -n 'Official|Safety policy|Hypercore convention|publishing-only|Zod v4|enabled by default|server\.handlers|createHandlers|behavior: '\''error'\''|Type-only imports' skills/tanstack-start-architecture/rules skills/tanstack-start-architecture/architecture-rules.md
 rg -n 'functions\.ts|server\.ts|same-origin|CSRF|dynamic import|mixed barrel|routeFileIgnorePrefix|src/modules/<domain>|src/db/<domain>|src/integrations/<provider>' skills/tanstack-start-architecture
 rg -n 'src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: "VITE_"|runtimeEnvStrict|emptyStringAsUndefined|Do not create `src/env/`' skills/tanstack-start-architecture/rules/platform.md
 rg -n 'src/config/env.ts|@t3-oss/env-core|createEnv|clientPrefix: "VITE_"|runtimeEnvStrict|emptyStringAsUndefined|`src/env/`' skills/tanstack-start-architecture/rules/platform.ko.md
 rg -n 'project-structure|src/routes|routeTree.gen|routesDirectory|src/modules|src/lib|src/integrations|direct leaf|repo-local convention' skills/tanstack-start-architecture
 rg -n '@rules/project-structure.md|@rules/project-structure.ko.md' skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architecture/SKILL.ko.md
+# Orphan guard: rules/conventions.md must stay directly linked from an entrypoint and the topic index
+rg -n 'conventions(\.ko)?\.md' skills/tanstack-start-architecture/SKILL.md skills/tanstack-start-architecture/SKILL.ko.md skills/tanstack-start-architecture/architecture-rules.md
 ```
 
 Must pass:
@@ -53,7 +57,7 @@ Must pass:
 - `SKILL.md` and `SKILL.ko.md` are lean entrypoints, not duplicated rulebooks.
 - Support files referenced from the core are directly linked; there is no indirect reference chain.
 - Official TanStack facts live in `references/official/`, not in long core sections.
-- Current official snapshot `references/official/current-docs-2026-06-02.md` is directly linked from `SKILL.md` and used when API drift matters.
+- Current official snapshot `references/official/current-docs-2026-09-22.md` is directly linked from `SKILL.md` and used when API drift matters.
 - Hypercore-only conventions are labelled as such.
 - `rules/project-structure.md` and `rules/project-structure.ko.md` exist and are directly linked.
 - Project-structure guidance handles `src/routes`, custom `routesDirectory`, generated `routeTree.gen.ts`, shared nested folders, no-new-direct-leaf-files under touched shared roots, and route-local/shared server function placement.
@@ -62,7 +66,7 @@ Must pass:
 - Publishing-only route exception and hook extraction rules do not contradict each other.
 - Search validation guidance handles both Zod v4 direct schemas and Zod v3 adapter usage.
 - Import protection guidance says defaults exist and custom config is required when custom deny rules are needed.
-- Middleware guidance distinguishes request middleware `createMiddleware()`, server function middleware `createMiddleware({ type: 'function' })`, middleware `.validator(...)`, and server function `.validator(...)`.
+- Middleware guidance distinguishes request middleware `createMiddleware()`, server function middleware `createMiddleware({ type: 'function' })`, middleware `.validator(...)`, and server function `.validator(...)`; `.validator(...)` is canonical in both chains and `.inputValidator(...)` is the deprecated alias.
 - Server route guidance includes `server.handlers`, `createHandlers`, route-level `server.middleware`, duplicate method collision checks, and wildcard/splat route notes.
 - Import protection guidance includes type-only import behavior, `behavior: 'error'`, `excludeFiles`, and diagnostic/scoping options.
 - Env validation guidance uses `src/config/env.ts`, forbids new `src/env/` scaffolds, and describes `@t3-oss/env-core` / Vite public-prefix boundaries.
@@ -106,4 +110,4 @@ Boundary example:
 
 ## Sources
 
-> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, and `references/official/current-docs-2026-06-02.md` (snapshot dates 2026-04-30 and 2026-06-09). Repository-local links checked 2026-09-21.
+> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, and `references/official/current-docs-2026-09-22.md` (official facts verified 2026-09-22). Repository-local links checked 2026-09-22.

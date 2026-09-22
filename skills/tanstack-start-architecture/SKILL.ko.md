@@ -3,7 +3,7 @@ name: tanstack-start-architecture
 description: 기존 TanStack Start/Router 프로젝트의 routes, loaders, server functions, importProtection, SSR/hydration, `src/modules`, `src/lib`, `src/integrations` 같은 nested shared folders 아키텍처를 리뷰하거나 변경할 때 사용합니다. 일반 React/Vite 프로젝트나 문서 요약 전용 요청에는 사용하지 않습니다.
 ---
 
-@architecture-rules.md
+@architecture-rules.ko.md
 @rules/project-structure.ko.md
 @rules/routes.ko.md
 @rules/services.ko.md
@@ -14,11 +14,12 @@ description: 기존 TanStack Start/Router 프로젝트의 routes, loaders, serve
 @rules/server-routes.ko.md
 @rules/ssr-hydration.ko.md
 @rules/platform.ko.md
+@rules/conventions.ko.md
 @rules/validation.ko.md
-@references/official/tanstack-start-2026-04-30.md
-@references/official/tanstack-router-2026-04-30.md
-@references/official/api-drift-notes.md
-@references/official/current-docs-2026-06-02.ko.md
+@references/official/tanstack-start-2026-09-22.ko.md
+@references/official/tanstack-router-2026-09-22.ko.md
+@references/official/api-drift-notes.ko.md
+@references/official/current-docs-2026-09-22.ko.md
 
 # TanStack Start Architecture Enforcement
 
@@ -143,11 +144,12 @@ ls src/routes/__root.tsx 2>/dev/null
    - `rules/server-routes.ko.md` — HTTP endpoint와 internal app RPC 구분.
    - `rules/ssr-hydration.ko.md` — deterministic first render, `ClientOnly`, route SSR mode.
    - `rules/platform.ko.md` — `getRouter()`, env validation, path aliases, operational endpoints.
-3. Start API behavior가 중요하면 `references/official/tanstack-start-2026-04-30.md`.
-4. Router/file-route/search/loading behavior가 중요하면 `references/official/tanstack-router-2026-04-30.md`.
-5. current Start docs, plugin config, import protection, server functions, execution-control API가 판단에 영향을 주면 `references/official/current-docs-2026-06-02.ko.md`.
-6. 공식 문서 충돌이나 package behavior가 불확실하면 `references/official/api-drift-notes.md`.
-7. 완료 전 `rules/validation.ko.md`.
+3. `rules/conventions.ko.md` — touched file 전반의 file naming, TypeScript style, comment, error-class convention.
+4. Start API behavior가 중요하면 `references/official/tanstack-start-2026-09-22.ko.md`.
+5. Router/file-route/search/loading behavior가 중요하면 `references/official/tanstack-router-2026-09-22.ko.md`.
+6. current Start docs, plugin config, import protection, server functions, execution-control API가 판단에 영향을 주면 `references/official/current-docs-2026-09-22.ko.md`.
+7. 공식 문서 충돌이나 package behavior가 불확실하면 `references/official/api-drift-notes.ko.md`.
+8. 완료 전 `rules/validation.ko.md`.
 
 </support_file_read_order>
 

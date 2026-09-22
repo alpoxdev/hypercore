@@ -61,6 +61,14 @@ export const Route = createFileRoute('/users/')({
 - The route instance must be exported as `Route`.
 - `createFileRoute` path strings are generated/updated by the router plugin or CLI.
 
+## Route Tokens and Code Splitting
+
+- `routeToken` (default `route`) identifies the layout route file; `indexToken` (default `index`) identifies the index route file (Official).
+- Both tokens accept a regex — `{ "regex": "...", "flags": "..." }` in `tsr.config.json`, or a native `RegExp` inline — and the regex is matched against the entire final segment of the route path (Official).
+- A segment can be escaped with square brackets to keep it literal: with `indexToken: { "regex": "[a-z]+-page" }`, a literal `home-page` segment is named `[home-page].tsx` (Official).
+- `autoCodeSplitting` is a TanStack Router bundler-plugin option, opt-in and defaulting to `false` (the next major release defaults it to `true`) (Official).
+- It cannot be passed through `tanstackStart()`: the Start plugin omits `autoCodeSplitting` and `target` from the router config it accepts (Official).
+
 ## Route Lifecycle
 
 | Step | Official behavior | Use for |
@@ -71,9 +79,28 @@ export const Route = createFileRoute('/users/')({
 | `pendingComponent` | Optional threshold-based pending UI | Slow critical loader UX |
 | `errorComponent` | Handles route lifecycle/render errors | Recoverable route errors |
 
+## Search Transform
+
+The current search-transform API is `search.middlewares` on route options: functions that transform search params when generating new links for that route or its descendants (Official).
+
+```typescript
+import { createFileRoute, retainSearchParams } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/')({
+  search: {
+    middlewares: [retainSearchParams(['rootValue'])],
+  },
+})
+```
+
+- Router ships `retainSearchParams` (keep a parent's params in descendant links) and `stripSearchParams` (drop params that hold their default value) for the two common cases (Official).
+- `preSearchFilters` / `postSearchFilters` are deprecated and absent from the current search-params guide; the API reference still lists both as `⚠️ deprecated, use search.middlewares instead` (Official). Treat them as deprecated, not removed.
+
 ## Search Validation
 
 When a route consumes search params, validate them.
+
+`validateSearch` is a planning callback: it must be deterministic and side-effect-free for the same input, and it must not navigate or mutate application or router state (Official).
 
 Zod v4 official path:
 
@@ -127,4 +154,4 @@ If a project standardizes on `zodValidator` for all versions, label that as a hy
 
 ## Sources
 
-> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, and `references/official/current-docs-2026-06-02.md` (snapshot dates 2026-04-30 and 2026-06-09). Repository-local links checked 2026-09-21.
+> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, and `references/official/current-docs-2026-09-22.md` (official facts verified 2026-09-22). Repository-local links checked 2026-09-22.

@@ -12,9 +12,9 @@ Brownfield adoption: touched files must satisfy applicable safety rules and curr
 
 ## Source Priority
 
-1. `references/official/current-docs-2026-06-02.md`
-2. `references/official/tanstack-start-2026-04-30.md`
-3. `references/official/tanstack-router-2026-04-30.md`
+1. `references/official/current-docs-2026-09-22.md`
+2. `references/official/tanstack-start-2026-09-22.md`
+3. `references/official/tanstack-router-2026-09-22.md`
 4. `references/official/api-drift-notes.md`
 5. Topic rules under `rules/`
 6. Project-local package types and tests when installed versions differ
@@ -25,15 +25,15 @@ Brownfield adoption: touched files must satisfy applicable safety rules and curr
 |---|---|---|
 | Loader boundaries | Official + Safety policy | A loader assumes server-only execution or reads secrets/DB/filesystem directly |
 | Server functions | Official + Safety policy | Mutation input is not validated at runtime, handler is missing, installed package/API version is not respected, or auth-required RPC lacks its own auth boundary |
-| Import protection | Official + Safety policy | Import protection is disabled, config is overwritten, or server/client-only imports leak outside compiler-recognized boundaries |
-| Middleware | Official + Safety policy | Client `sendContext` is trusted server-side without runtime validation |
+| Import protection | Official + Safety policy (Official page status: **Experimental**) | Import protection is disabled, config is overwritten, or server/client-only imports leak outside compiler-recognized boundaries |
+| Middleware | Official + Safety policy | Client `sendContext` is trusted server-side without runtime validation, or a `sendContext` value selects which rows are read or written without a separate authorization check (Official: "shape validation is not authorization"; derive the session from a server-trusted source, never from `sendContext`) |
 | SSR/hydration | Official + Safety policy | First render includes unstable values without a stabilization/fallback strategy |
 | Server routes | Official + Hypercore convention | Internal app RPC is implemented as server routes instead of server functions without explicit justification |
 | Route export | Official | File routes do not export the route instance as `Route` |
 | Route organization | Hypercore convention | Touched app pages use flat files, omit needed route-local hooks/components, or treat route-local `-functions/` as the default server-function home |
 | Project structure | Official + Hypercore convention + Safety policy | Review ignores custom route roots, hand-edits `routeTree.gen.ts`, treats shared folder conventions as official law, exposes server-only shared code to clients, or mixes server function wrappers/helpers |
 | Hooks | Hypercore convention | Touched interactive page/component logic remains inline instead of moving to `-hooks/` |
-| Code style | Hypercore convention | Touched files use camelCase filenames, `any`, function declarations, missing return types, or omit required Korean block comments |
+| Code style | Hypercore convention | Touched files use camelCase filenames, `any`, function declarations, missing return types, or omit required Korean block comments. Exemption (Official): a framework-mandated entrypoint whose official example is a declaration keeps that declaration — `src/router.tsx` must `export function getRouter()`; the ban applies to every other file |
 
 ## Layer Architecture
 
@@ -69,6 +69,7 @@ Rules:
 ## Topic Files
 
 - `rules/project-structure.md` — Start project shape, route-root discovery, generated route tree, shared nested folder grouping, and route-local/shared server function placement.
+- `rules/conventions.md` — file naming, TypeScript style, import order, comment policy, and error-class rules for touched files.
 - `rules/routes.md` — route organization, route lifecycle, search params, folder policy.
 - `rules/services.md` — server functions, validation, query/mutation layering.
 - `rules/hooks.md` — hook extraction and `useServerFn` wrapper policy.
@@ -106,7 +107,7 @@ Do not auto-apply broad or potentially breaking migrations without a clear user 
 | Treating `loader` as server-only | Move privileged work behind `createServerFn` / `createServerOnlyFn` |
 | Zod v4 search params forced through adapter | Use direct schema unless project convention says adapter |
 | Zod v3 search params without adapter/fallback | Use `zodValidator` / `fallback` from `@tanstack/zod-adapter` |
-| Server function mutation without runtime validation | Add `.inputValidator(...)` before `.handler(...)` |
+| Server function mutation without runtime validation | Add `.validator(...)` before `.handler(...)` |
 | Auth-required server function relies only on route `beforeLoad` | Add server function middleware or handler-level auth check |
 | `*.functions.ts` references DB/secret helpers from a surviving export outside the handler | Split to `*.server.ts` and move usage inside handler boundary |
 | `src/modules/<domain>/<feature>/index.ts` exports both `.functions.ts` and `.server.ts` | Remove barrel or split safe/server-only entrypoints |
@@ -118,3 +119,7 @@ Do not auto-apply broad or potentially breaking migrations without a clear user 
 ## Completion Rule
 
 A change is complete only when `rules/validation.md` passes and any remaining official API ambiguity is recorded with exact date and source.
+
+## Sources
+
+> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, and `references/official/current-docs-2026-09-22.md`, plus the decision log `references/official/api-drift-notes.md`. Official facts verified 2026-09-22; repository-local links checked 2026-09-22.

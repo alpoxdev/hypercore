@@ -12,9 +12,9 @@ Brownfield 적용: touched files는 해당 safety rules와 현재 hypercore conv
 
 ## Source Priority
 
-1. `references/official/current-docs-2026-06-02.ko.md`
-2. `references/official/tanstack-start-2026-04-30.ko.md`
-3. `references/official/tanstack-router-2026-04-30.ko.md`
+1. `references/official/current-docs-2026-09-22.ko.md`
+2. `references/official/tanstack-start-2026-09-22.ko.md`
+3. `references/official/tanstack-router-2026-09-22.ko.md`
 4. `references/official/api-drift-notes.ko.md`
 5. `rules/` 아래 topic rules
 6. Installed versions가 다르면 project-local package types와 tests
@@ -25,15 +25,15 @@ Brownfield 적용: touched files는 해당 safety rules와 현재 hypercore conv
 |---|---|---|
 | Loader boundaries | Official + Safety policy | Loader가 server-only execution을 가정하거나 secrets/DB/filesystem을 직접 읽음 |
 | Server functions | Official + Safety policy | Mutation input이 runtime에 validate되지 않거나 handler가 없거나 installed package/API version을 따르지 않거나 auth-required RPC가 자체 auth boundary를 갖지 않음 |
-| Import protection | Official + Safety policy | Import protection을 disable하거나 config를 overwrite하거나 server/client-only imports가 compiler-recognized boundaries 밖으로 leak됨 |
-| Middleware | Official + Safety policy | Client `sendContext`를 runtime validation 없이 server-side에서 trust함 |
+| Import protection | Official + Safety policy (Official 페이지 상태: **Experimental**) | Import protection을 disable하거나 config를 overwrite하거나 server/client-only imports가 compiler-recognized boundaries 밖으로 leak됨 |
+| Middleware | Official + Safety policy | Client `sendContext`를 runtime validation 없이 server-side에서 trust하거나, `sendContext` 값이 어떤 row를 읽고 쓸지 고르는 데 별도 authorization 검증 없이 쓰임 (Official: "shape validation is not authorization". session은 server-trusted source에서 얻고 `sendContext`에서 얻지 않음) |
 | SSR/hydration | Official + Safety policy | Stabilization/fallback strategy 없이 first render에 unstable values 포함 |
 | Server routes | Official + Hypercore convention | Explicit justification 없이 internal app RPC를 server functions 대신 server routes로 구현 |
 | Route export | Official | File routes가 route instance를 `Route`로 export하지 않음 |
 | Route organization | Hypercore convention | Touched app pages가 flat files를 쓰거나 필요한 route-local hooks/components를 생략하거나 route-local `-functions/`를 server function 기본 위치처럼 취급 |
 | Project structure | Official + Hypercore convention + Safety policy | Review가 custom route root를 무시하거나, `routeTree.gen.ts`를 수동 편집하거나, shared folder convention을 official law처럼 취급하거나, server-only shared code를 client에 노출하거나, server function wrapper/helper를 섞음 |
 | Hooks | Hypercore convention | Touched interactive page/component logic이 `-hooks/`로 이동하지 않고 inline으로 남음 |
-| Code style | Hypercore convention | Touched files가 camelCase filenames, `any`, function declarations, missing return types를 쓰거나 required Korean block comments를 생략 |
+| Code style | Hypercore convention | Touched files가 camelCase filenames, `any`, function declarations, missing return types를 쓰거나 required Korean block comments를 생략. 예외(Official): 공식 예시가 declaration인 framework entrypoint(`src/router.tsx`의 `export function getRouter()`)는 declaration 유지. 금지는 다른 모든 파일에 그대로 적용 |
 
 ## Layer Architecture
 
@@ -69,6 +69,7 @@ Rules:
 ## Topic Files
 
 - `rules/project-structure.md` — Start project shape, route-root discovery, generated route tree, shared nested folder grouping, route-local/shared server function placement.
+- `rules/conventions.ko.md` — touched files의 file naming, TypeScript style, import order, comment policy, error-class 규칙.
 - `rules/routes.md` — route organization, route lifecycle, search params, folder policy.
 - `rules/services.md` — server functions, validation, query/mutation layering.
 - `rules/hooks.md` — hook extraction and `useServerFn` wrapper policy.
@@ -106,7 +107,7 @@ Issue가 local, reversible, low-risk이면 직접 auto-fix합니다:
 | `loader`를 server-only로 취급 | Privileged work를 `createServerFn` / `createServerOnlyFn` 뒤로 이동 |
 | Zod v4 search params를 adapter에 강제로 통과 | Project convention이 adapter를 요구하지 않으면 direct schema 사용 |
 | Zod v3 search params에 adapter/fallback 없음 | `@tanstack/zod-adapter`의 `zodValidator` / `fallback` 사용 |
-| Runtime validation 없는 server function mutation | `.handler(...)` 전에 `.inputValidator(...)` 추가 |
+| Runtime validation 없는 server function mutation | `.handler(...)` 전에 `.validator(...)` 추가 |
 | Auth-required server function이 route `beforeLoad`만 의존 | server function middleware 또는 handler-level auth check 추가 |
 | `*.functions.ts`가 DB/secret helper를 handler 밖 surviving export에서 참조 | `*.server.ts`로 split하고 handler 내부 boundary로 이동 |
 | `src/modules/<domain>/<feature>/index.ts`가 `.functions.ts`와 `.server.ts`를 함께 export | barrel 제거 또는 safe/server-only entrypoint 분리 |
@@ -118,3 +119,7 @@ Issue가 local, reversible, low-risk이면 직접 auto-fix합니다:
 ## Completion Rule
 
 `rules/validation.md`가 통과하고 남은 official API ambiguity가 exact date와 source로 기록되어야 change가 complete입니다.
+
+## Sources
+
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.ko.md`, `references/official/tanstack-router-2026-09-22.ko.md`, `references/official/current-docs-2026-09-22.ko.md`)과 결정 로그 `references/official/api-drift-notes.ko.md`에 위임합니다. 공식 사실 검증 2026-09-22, 저장소 로컬 링크 확인 2026-09-22.

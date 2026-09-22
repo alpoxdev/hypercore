@@ -1,7 +1,18 @@
 # TanStack API Drift Notes
 
-- last_verified_at: 2026-06-09
+- last_verified_at: 2026-09-22
 - purpose: Record official-doc conflicts and source-priority decisions so core skill rules do not overfit stale examples.
+
+## Contents
+
+- [Source Priority](#source-priority)
+- [`.inputValidator()` vs stale `.validator()` examples — SUPERSEDED 2026-09-22](#inputvalidator-vs-stale-validator-examples--superseded-2026-09-22)
+- [Server function `.inputValidator()` vs middleware `.inputValidator()` — SUPERSEDED 2026-09-22](#server-function-inputvalidator-vs-middleware-inputvalidator--superseded-2026-09-22)
+- [Search validation and Zod adapters](#search-validation-and-zod-adapters)
+- [Import protection defaults](#import-protection-defaults)
+- [Official vs Hypercore routing structure](#official-vs-hypercore-routing-structure)
+- [Corrected 2026-09-22: `.validator()` is canonical, `.inputValidator()` is deprecated](#corrected-2026-09-22-validator-is-canonical-inputvalidator-is-deprecated)
+- [Sources](#sources)
 
 ## Source Priority
 
@@ -13,7 +24,7 @@
 
 When sources conflict, do not silently pick the convenient one. Record the conflict with exact date and source links.
 
-## `.inputValidator()` vs stale `.validator()` examples
+## `.inputValidator()` vs stale `.validator()` examples — SUPERSEDED 2026-09-22 (see the corrected decision below)
 
 Decision as of 2026-06-09:
 
@@ -34,7 +45,7 @@ Skill implication:
 - For existing projects, verify package types before replacing `.validator(...)`; this skill should not perform broad API migrations from docs alone.
 - The core `SKILL.md` should not repeat long API history; point here instead.
 
-## Server function `.inputValidator()` vs middleware `.inputValidator()`
+## Server function `.inputValidator()` vs middleware `.inputValidator()` — SUPERSEDED 2026-09-22 (see the corrected decision below)
 
 Decision as of 2026-06-09:
 
@@ -84,6 +95,18 @@ Decision as of 2026-04-30:
 
 Evidence: <https://tanstack.com/router/latest/docs/routing/file-based-routing>
 
+## Corrected 2026-09-22: `.validator()` is canonical, `.inputValidator()` is deprecated
+
+Decision as of 2026-09-22. This supersedes both 2026-06-09 decisions above.
+
+- Policy: `.validator(...)` is canonical, and `.inputValidator(...)` is a deprecated alias that still works.
+- Evidence, three independent surfaces, all re-checked 2026-09-22:
+  1. Docs: `guide/server-functions.md` uses `.validator(...)` throughout (7 occurrences, zero `inputValidator`); `guide/middleware.md:34` reads ``Input Validation | No | Yes (`.validator()`)``, and `:232` is headed "The `.validator` method".
+  2. Pinned source at `fe7f1fd0e6ef73c3f341dd2338b406749538a85d`: `packages/start-client-core/src/createServerFn.ts:511` carries ``/** @deprecated Use `validator` instead. */`` above `inputValidator`, `createMiddleware.ts:182-183` carries the same marker, and `createServerFn.ts:921` reads `const validator = options.validator ?? options.inputValidator`. The alias is still resolved at runtime, which is why it still works.
+  3. Release: PR #7566 "rename inputValidator to validator" merged 2026-06-06T21:05:57Z with 212 changed files, and shipped in `@tanstack/react-start@1.168.25`, published 2026-06-06T21:43:40Z.
+- The skill recorded the opposite three days AFTER the rename merged: `last_verified_at` was 2026-06-09, and the two decisions above call `.validator(...)` examples version drift. That pass was wrong, not merely stale. The inverted decisions stay above, marked SUPERSEDED, because how the skill got this wrong is the useful part of this log.
+- `rules/services.md:18` links this file, so that link now points at the corrected direction rather than the inverted one.
+
 ## Sources
 
-> Sources checked 2026-06-09, the date this file records as `last_verified_at`; each decision above is dated and names the TanStack page it rests on. No page was re-fetched in this pass and no source outside the list above is claimed.
+> Sources checked 2026-09-22, the date this file records as `last_verified_at`; each decision above is dated and names the TanStack page it rests on. The 2026-09-22 pass re-fetched every source cited in the corrected section and claims no source outside this file.

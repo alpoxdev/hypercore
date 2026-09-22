@@ -7,6 +7,7 @@
 | Rule | Classification | Enforcement |
 |---|---|---|
 | Start import protection exists and is enabled by default | Official | Verify behavior before custom config |
+| The official page carries an **Experimental** status | Official | Re-check the option surface; treat it as subject to change |
 | `.server.*` denied from client and `.client.*` denied from server | Official | Block leaks |
 | Marker imports restrict modules to one environment | Official | Use when suffix is not enough |
 | Custom deny rules for `database/`, `server/`, ORM packages | Safety policy | Add/extend when project needs them |
@@ -15,6 +16,18 @@
 ## Official Defaults
 
 TanStack Start import protection is enabled by default. Do not claim an explicit `importProtection` object is always required.
+
+The official guide's page opens with `> **Experimental:** Import protection is experimental and subject to change.` Treat the option surface as unstable rather than as a settled API.
+
+Documented defaults (Official, the guide's option table):
+
+| Option | Default |
+|---|---|
+| `enabled` | `true` |
+| `behavior` | `{ dev: 'mock', build: 'error' }` |
+| `log` | `'once'` |
+| `include` | Start's `srcDirectory` |
+| `maxTraceDepth` | `20` |
 
 Default-denied patterns include:
 
@@ -59,11 +72,28 @@ export default defineConfig({
 })
 ```
 
+## Replace vs Additive (Official)
+
+The guide's option table marks each key, and this is the trap: some keys extend the built-in rules and some replace them outright.
+
+| Key | Semantics | Default it touches |
+|---|---|---|
+| `client.specifiers` | Additive with defaults | framework server specifiers |
+| `client.files` | Replaces defaults | `['**/*.server.*']` |
+| `client.excludeFiles` | Replaces defaults | `['**/node_modules/**']` |
+| `server.files` | Replaces defaults | `['**/*.client.*']` |
+| `server.specifiers` | Replaces defaults | `[]` — unlike `client.specifiers` it is therefore not additive in practice |
+| `server.excludeFiles` | Replaces defaults | `['**/node_modules/**']` |
+
+Setting `client.files` without re-listing `'**/*.server.*'` silently drops the default deny rule, which is why the example above repeats it. `excludeFiles` **fully replaces** `['**/node_modules/**']`; to keep skipping `node_modules` while excluding more paths, pass both patterns: `excludeFiles: ['**/node_modules/**', '**/vendor/**']`.
+
 If `tanstackStart()` already exists, extend only the relevant nested options. Do not duplicate plugins or overwrite unrelated options.
 
 Use `behavior: 'error'` when a project wants violations to fail even in development. Current options also include `log`, `include`, `exclude`, `ignoreImporters`, `maxTraceDepth`, and `onViolation` for scoped enforcement and diagnostics.
 
-`client` and `server` rules support `files`, `specifiers`, and `excludeFiles`. The default excludes resolved files under `node_modules`; setting `excludeFiles: []` opts back into those checks for the selected environment and should be deliberate because third-party packages can produce false positives.
+`client` and `server` rules support `files`, `specifiers`, and `excludeFiles` (read the replace-vs-additive table above before setting any of them). The default excludes resolved files under `node_modules`; setting `excludeFiles: []` opts back into those checks for the selected environment and should be deliberate because third-party packages can produce false positives.
+
+`mockAccess` (`'error' | 'warn' | 'off'`, default `'error'`) exists in `packages/start-plugin-core/src/schema.ts`, where it controls whether mocked imports emit a runtime console diagnostic under `behavior: 'mock'`. It is **absent from the official guide's option table** — a real schema option that the docs do not document. Cite it as undocumented and re-check it against the installed package types before relying on it; never present it as a documented option.
 
 ## Compiler Boundary Leak Rule
 
@@ -104,6 +134,7 @@ Blocked or warned:
 - [ ] Type-only imports are not misreported as runtime boundary leaks.
 - [ ] Existing `tanstackStart()` options are extended, not overwritten.
 - [ ] `behavior: 'error'` vs `{ dev, build }` behavior is chosen intentionally.
+- [ ] Custom `client.files` / `server.files` / `excludeFiles` lists re-state the defaults they replace.
 - [ ] `excludeFiles: []` is used only when third-party resolved-file checks are intentionally required.
 - [ ] `.server.*`, `.client.*`, and marker imports are used consistently.
 - [ ] Server-only imports do not survive outside recognized boundaries.
@@ -113,4 +144,4 @@ Blocked or warned:
 
 ## Sources
 
-> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, and `references/official/current-docs-2026-06-02.md` (snapshot dates 2026-04-30 and 2026-06-09). Repository-local links checked 2026-09-21.
+> Official TanStack Start import-protection facts in this file (the defaults table, replace-vs-additive semantics, the **Experimental** status, and `mockAccess`) were verified 2026-09-22 against `https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md` and `packages/start-plugin-core/src/schema.ts` at pinned SHA `fe7f1fd0e6ef73c3f341dd2338b406749538a85d`. They are carried in this package's own 2026-09-22 snapshot, `references/official/current-docs-2026-09-22.md`; no external source is a runtime dependency. Repository-local links checked 2026-09-22.

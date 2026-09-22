@@ -12,6 +12,32 @@
 | server/client env boundary | Safety policy | secret leak 차단 |
 | non-trivial app runtime env validation | Hypercore convention + Safety policy | warn 또는 `src/config/env.ts` scaffold 추가 |
 | Vite version-aware path alias | Hypercore convention | touched code에서 수정 |
+| 설치된 `@tanstack/*` 버전을 공식 공급망 권고의 영향·패치 범위와 대조 | Safety policy | install 또는 upgrade 전에 확인 |
+
+---
+
+## Dependency Safety
+
+- **Safety policy.** install 또는 upgrade 전에 설치된 `@tanstack/*` 버전을 공식 권고의 영향·패치 범위와 대조합니다. 선례는 권고 [`GHSA-g7cv-rxg3-hmpx`](https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx)(2026-05-11 게시, critical)입니다. `@tanstack/*` 패키지의 악성 버전이 배포되어 install 시점에 클라우드 자격증명, GitHub 토큰, SSH 키를 수집했습니다. 이 스냅샷들이 고정한 패키지 중 `@tanstack/cli`만 영향을 받지 않았습니다.
+- **Official.** 권고가 기록한 영향 → 패치 범위입니다. 이 표는 provenance로만 쓰고, 권위 있는 범위 확인은 권고 원문에서 합니다.
+
+| 패키지 | 악성 버전 | 패치 버전 |
+|---|---|---|
+| `@tanstack/react-router` | 1.169.5, 1.169.8 | 1.169.9 |
+| `@tanstack/react-start` | 1.167.68, 1.167.71 | 1.167.72 |
+| `@tanstack/router-cli` | 1.166.46, 1.166.49 | 1.166.50 |
+| `@tanstack/router-plugin` | 1.167.38, 1.167.41 | 1.167.42 |
+| `@tanstack/start-client-core` | 1.168.5, 1.168.8 | 1.168.9 |
+| `@tanstack/start-plugin-core` | 1.169.23, 1.169.26 | 1.169.27 |
+| `@tanstack/start-server-core` | 1.167.33, 1.167.36 | 1.167.37 |
+| `@tanstack/zod-adapter` | 1.166.12, 1.166.15 | 1.166.16 |
+
+- 특정 버전을 이 파일에서 "안전하다"고 적지 않습니다. 권고의 postmortem은 현재 배포된 모든 TanStack 패키지 버전이 설치해도 안전하다고 밝혔고, 권위 있는 범위 확인은 이 파일이 아니라 권고와 npm advisory database에 있습니다.
+- 영향을 받은 버전을 설치한 호스트가 있으면 그 호스트를 침해 가능 상태로 보고, 호스트에서 접근 가능한 자격증명(AWS, GCP, Kubernetes, Vault, GitHub, npm, SSH)을 교체합니다. 페이로드가 install lifecycle script로 실행됐기 때문입니다.
+
+## Release Status
+
+- **Official.** Start는 v1 GA가 아니라 **Release Candidate** 단계입니다. 원문: "TanStack Start is currently in the **Release Candidate** stage! This means it is considered feature-complete and its API is considered stable." 같은 문단이 "**This does not mean it is bug-free or without issues**"라고 덧붙이므로, Start API를 확정된 것으로 다루지 말고 고정된 스냅샷을 다시 확인합니다.
 
 ---
 
@@ -90,4 +116,4 @@ export const env = createEnv({
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, `references/official/current-docs-2026-06-02.md`, 스냅샷 날짜 2026-04-30 및 2026-06-09)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.
+> Safety policy 사실은 공식 권고 <https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx>와 그 postmortem <https://tanstack.com/blog/npm-supply-chain-compromise-postmortem>에서, Release Candidate 문구는 <https://tanstack.com/start/latest/docs/framework/react/overview.md>에서 왔습니다. 공식 사실 검증일 2026-09-22. 나머지는 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, `references/official/current-docs-2026-09-22.md`)에 위임합니다. 저장소 로컬 링크 확인 2026-09-22.

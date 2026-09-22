@@ -61,6 +61,14 @@ export const Route = createFileRoute('/users/')({
 - route instance는 `Route`로 export해야 합니다.
 - `createFileRoute` path string은 router plugin 또는 CLI가 생성/갱신합니다.
 
+## Route Tokens and Code Splitting
+
+- `routeToken`(기본값 `route`)은 layout route file을, `indexToken`(기본값 `index`)은 index route file을 식별합니다 (Official).
+- 두 token 모두 regex를 받습니다. `tsr.config.json`에서는 `{ "regex": "...", "flags": "..." }` 형태이고 inline config에서는 native `RegExp`를 씁니다. regex는 route path의 마지막 segment 전체에 대해 매칭됩니다 (Official).
+- segment를 대괄호로 감싸면 token으로 해석되지 않고 literal로 남습니다. `indexToken: { "regex": "[a-z]+-page" }`일 때 literal `home-page` segment는 `[home-page].tsx`로 이름 짓습니다 (Official).
+- `autoCodeSplitting`은 TanStack Router bundler plugin option입니다. opt-in이고 기본값은 `false`입니다(다음 major release에서는 기본값이 `true`가 됩니다) (Official).
+- `tanstackStart()`로는 전달할 수 없습니다. Start plugin이 받는 router config에서 `autoCodeSplitting`과 `target`을 제외하기 때문입니다 (Official).
+
 ## Route Lifecycle
 
 | Step | Official behavior | Use for |
@@ -71,9 +79,28 @@ export const Route = createFileRoute('/users/')({
 | `pendingComponent` | threshold 기반 optional pending UI | 느린 critical loader UX |
 | `errorComponent` | route lifecycle/render error 처리 | Recoverable route errors |
 
+## Search Transform
+
+현재 검색 변환 API는 route option의 `search.middlewares`입니다. 이 route와 하위 route의 새 link를 만들 때 search params를 변환하는 함수들입니다 (Official).
+
+```typescript
+import { createFileRoute, retainSearchParams } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/')({
+  search: {
+    middlewares: [retainSearchParams(['rootValue'])],
+  },
+})
+```
+
+- Router는 흔한 두 경우를 위해 `retainSearchParams`(하위 link에 부모 params 유지)와 `stripSearchParams`(기본값을 가진 params 제거)를 제공합니다 (Official).
+- `preSearchFilters` / `postSearchFilters`는 폐기 예정이고 현재 search-params guide에는 없습니다. API reference에는 아직 `⚠️ deprecated, use search.middlewares instead`로 남아 있습니다 (Official). 삭제된 것이 아니라 폐기 예정으로 취급합니다.
+
 ## Search Validation
 
 search params를 사용하면 검증합니다.
+
+`validateSearch`는 planning callback입니다. 같은 입력에 대해 결정적이고 부수효과가 없어야 하며, 그 안에서 navigate하거나 application/router state를 변경하지 않습니다 (Official).
 
 Zod v4 official path:
 
@@ -123,4 +150,4 @@ export const Route = createFileRoute('/products/')({
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-04-30.md`, `references/official/tanstack-router-2026-04-30.md`, `references/official/current-docs-2026-06-02.md`, 스냅샷 날짜 2026-04-30 및 2026-06-09)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.
+> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, `references/official/current-docs-2026-09-22.md`)에 위임합니다. 공식 사실 검증 2026-09-22. 저장소 로컬 링크 확인 2026-09-22.
