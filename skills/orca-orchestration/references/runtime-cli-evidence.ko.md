@@ -3,6 +3,17 @@
 Orca 터미널에서 코딩 에이전트를 실행하거나 대상 CLI에 따라 모델, thinking, credential, quota
 규칙이 달라질 때만 이 참조를 읽습니다.
 
+## 목차
+
+- [근거 원장](#근거-원장)
+- [Orca 패턴](#orca-패턴)
+- [pi로 실행하는 OMO 네이티브 워커 (우선)](#pi로-실행하는-omo-네이티브-워커-우선)
+- [미등록 OMO 터미널 (custom-dispatch 폴백)](#미등록-omo-터미널-custom-dispatch-폴백)
+- [OMO 명령 구성](#omo-명령-구성)
+- [GJC 명령 구성](#gjc-명령-구성)
+- [실패 분류](#실패-분류)
+- [Sources](#sources)
+
 ## 근거 원장
 
 | 출처 | 확인 버전/날짜 | 뒷받침하는 주장 | 주의점 |
@@ -13,7 +24,7 @@ Orca 터미널에서 코딩 에이전트를 실행하거나 대상 CLI에 따라
 | 공식 Orca orchestration 문서와 [#14952](https://github.com/stablyai/orca/issues/14952) | 2026-08-30 조회 | 공개 문서는 native `worker-start`와 low-level Dispatch를 설명하고, issue는 custom/vendor agent 등록을 문서화한 것이 아니라 요청한다. | 보조 근거일 뿐이다. 설치된 runtime help와 관찰한 결과가 우선한다. |
 | 실제 read-only OMO custom-dispatch run | Orca 1.4.192 / OMO beta 5.0.0-0.beta.26, 2026-08-30 | `omo --model opencodex/gpt-5.6-sol --thinking high --permission-preset workspace --no-model-fallback` terminal이 `tui-idle`에 도달했다. injection 없이 low-level Dispatch를 만들고 반환 preamble 4943 bytes를 수락했으며 OMO는 Working 뒤 수락된 `worker_done`을 보내 Task와 Dispatch를 완료했고 탭은 열린 상태로 남았다. | 한 번의 read-only run이다. 이후 Orca/OMO 버전에 적용하기 전 runtime 동작을 다시 확인한다. |
 | 로컬 `orca status --json`, `orchestration check/worker-show/worker-read/send/worker-start --help`, `terminal read/wait --help` | Orca 1.4.193 / OMO 5.0.0-0.beta.31, 2026-09-01 | 감독 원시 명령이 시맨틱과 함께 존재한다: `check --wait` 타임아웃은 체크포인트이지 실패가 아니고 `{count:0}`은 일치하는 메시지가 없음을 뜻하며, 15초 keepalive는 liveness이지 진행이 아니다; `worker-show --dispatch` 상태와 `observation.agentWait`(null = 조사했고 대기 없음을 발견, 부재 = 조사하지 않음, 대기 중 워커는 실패가 아니라 healthy)로 조건부 복구가 가능하다; `worker-read --source/--cursor/--limit`은 source_changed 처리를 포함한 bounded 변화 감지용이다; `send --to dispatch:<id>`는 시도별 coordinator 지침을 중계한다; `worker-start --retry-of`는 placement를 상속하지 않고 네이티브 failed 또는 stopped에서만 교체 attempt를 연결한다; `terminal read --cursor/--limit` 델타와 `--screen` 프레임(상호 배타)은 변화/Working 마커 신호를 준다; heartbeat/status는 alive-not-done 신호다. | help token 가용성은 runtime 동작이나 기본값을 증명하지 않는다. 이후 Orca/OMO 버전에 적용하기 전 다시 확인한다. |
-| W1.8b 격리 nudge 프로브: 테스트 OMO custom-dispatch terminal, 최소 과제 1건과 완료 후 `terminal send` 상태 질의 1건 | Orca 1.4.193 / OMO 5.0.0-0.beta.31, 2026-09-01 | 문서화된 custom nudge 절차는 idle custom-dispatch 화면에서 안전하다: 수락된 `worker_done`(Task와 Dispatch `completed`) 뒤 `terminal send` 상태 질의 1건이 수락됐고(receipt 110 bytes 표시), OMO 워커는 90초 안에 화면으로 한 줄 idle-phase 응답을 보냈으며, `--screen` 출력에 composer draft 오염이 없었고 TUI 잔상도 없었으며, 새 Working 마커가 없었고 후속 orchestration 메일도 생성되지 않았다. 즉 워커는 질의를 새 작업으로 오인하지 않았다. 이는 SKILL.md Supervision loop의 read-before-send와 단일 상태 질의 문구 절차를 뒷받침한다. | idle 화면에서 테스트 문구로 수행한 단일 격리 프로브일 뿐이다. 작업 중 busy 화면은 시험하지 않았고 모델도 한 종(opencodex/combo/glm-5.3-flash)만 썼다. busy 화면, 다른 모델, 이후 버전으로 일반화하기 전 다시 확인한다. 근거: `.omo/evidence/w18b-nudge-probe/`. |
+| W1.8b 격리 nudge 프로브: 테스트 OMO custom-dispatch terminal, 최소 과제 1건과 완료 후 `terminal send` 상태 질의 1건 | Orca 1.4.193 / OMO 5.0.0-0.beta.31, 2026-09-01 | 문서화된 custom nudge 절차는 idle custom-dispatch 화면에서 안전하다: 수락된 `worker_done`(Task와 Dispatch `completed`) 뒤 `terminal send` 상태 질의 1건이 수락됐고(receipt 110 bytes 표시), OMO 워커는 90초 안에 화면으로 한 줄 idle-phase 응답을 보냈으며, `--screen` 출력에 composer draft 오염이 없었고 TUI 잔상도 없었으며, 새 Working 마커가 없었고 후속 orchestration 메일도 생성되지 않았다. 즉 워커는 질의를 새 작업으로 오인하지 않았다. 이는 [`supervision-loop.ko.md`](supervision-loop.ko.md)의 read-before-send와 단일 상태 질의 문구 절차를 뒷받침한다. | idle 화면에서 테스트 문구로 수행한 단일 격리 프로브일 뿐이다. 작업 중 busy 화면은 시험하지 않았고 모델도 한 종(opencodex/combo/glm-5.3-flash)만 썼다. busy 화면, 다른 모델, 이후 버전으로 일반화하기 전 다시 확인한다. 근거: `.omo/evidence/w18b-nudge-probe/`. |
 | 실제 read-only OMO 네이티브 `pi` run | Orca 1.4.195, 2026-09-02 | `worker-start --agent pi`는 OMO의 네이티브 감독 워커 경로다: 한 번의 호출로 agent terminal을 만들고 `pi` 런처로 OMO를 띄우고 task를 전달(`stage: input_accepted`)했으며, 워커가 스스로 수락된 `worker_done`을 보내 Task가 `completed`(provenance `worker_report`)로 정산됐다. `omo` id는 여전히 미등록이고 `worker-start --agent pi --model <id>`는 "Agent pi does not support launch-time model selection"으로 거부된다. | 한 번의 read-only run(run_c5379d5dd75d / task_5fc2c7713ffd / dispatch ctx_9f9f358e4220)이다. 이후 Orca/OMO 버전 적용 전과 다른 호스트에서 `pi` 등록을 다시 확인한다. 모델을 고정하려면 pane에서 `pi --model <id>`를 띄우고 `worker-start --terminal`로 adoption한다. |
 
 이 표는 로컬 명령 근거이며 credential 공개나 유료 요청 발생 권한이 아닙니다. 변동 가능한
@@ -153,3 +164,8 @@ gjc --prefer-credential <authorized-selector>
 | Dispatch는 만들었지만 preamble을 가져올 수 없음 | Dispatch는 존재하지만 안전한 custom-worker prompt가 없다. | Dispatch와 terminal을 보존하고 부분 prompt를 보내지 않는다. Orca의 exact recovery action을 따른다. |
 | Dispatch 뒤 prompt-send 실패 | delivery가 불명확하므로 다른 Dispatch나 duplicate prompt는 중복 작업을 만들 수 있다. | Dispatch를 보존하고 정확한 terminal/Dispatch 상태를 검사하며 반환된 recovery action을 따른다. |
 | `tui-idle` 대기 시간 초과 | 에이전트가 프롬프트를 받을 준비가 안 됐다. | 해당 터미널 하나를 한 번 읽고 차단 원인을 알리며 무작정 전송하지 않는다. |
+
+## Sources
+
+> 위의 Orca 문서와 이슈 링크는 2026-08-30에 조회했습니다. 나머지는 각자의 관측 날짜를 가진
+> 로컬 CLI 근거입니다. 링크 확인 2026-09-21.

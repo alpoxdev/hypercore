@@ -3,6 +3,17 @@
 Read this reference only when launching a coding agent through an Orca terminal or when a
 model, thinking, credential, or quota rule depends on the target CLI.
 
+## Contents
+
+- [Evidence ledger](#evidence-ledger)
+- [Orca patterns](#orca-patterns)
+- [Native OMO worker via `pi` (preferred)](#native-omo-worker-via-pi-preferred)
+- [Unregistered OMO terminal (custom-dispatch fallback)](#unregistered-omo-terminal-custom-dispatch-fallback)
+- [OMO command construction](#omo-command-construction)
+- [GJC command construction](#gjc-command-construction)
+- [Failure classification](#failure-classification)
+- [Sources](#sources)
+
 ## Evidence ledger
 
 | Source | Observed version/date | Supported claim | Caveat |
@@ -13,7 +24,7 @@ model, thinking, credential, or quota rule depends on the target CLI.
 | Official Orca orchestration docs and issue [#14952](https://github.com/stablyai/orca/issues/14952) | Retrieved 2026-08-30 | The public docs describe native `worker-start` and low-level Dispatch; the issue requests custom/vendor agent registration rather than documenting one. | These are supporting evidence only. The installed runtime help and observed result take precedence. |
 | Live read-only OMO custom-dispatch run | Orca 1.4.192 / OMO beta 5.0.0-0.beta.26, 2026-08-30 | A terminal launched with `omo --model opencodex/gpt-5.6-sol --thinking high --permission-preset workspace --no-model-fallback` reached `tui-idle`; low-level Dispatch was created without injection; returned preamble was accepted as 4943 bytes; OMO reported Working then sent accepted `worker_done`, completing Task and Dispatch while the tab remained open. | One read-only run; recheck runtime behavior before applying to later Orca/OMO versions. |
 | Local `orca status --json`, `orchestration check/worker-show/worker-read/send/worker-start --help`, `terminal read/wait --help` | Orca 1.4.193 / OMO 5.0.0-0.beta.31, 2026-09-01 | Supervision primitives exist with their semantics: `check --wait` timeout is a checkpoint not a failure and `{count:0}` means no matching message, 15s keepalive is liveness not progress; `worker-show --dispatch` state plus `observation.agentWait` (null = looked and found no wait; absent = never looked; a waiting worker is healthy, not failed) enables conditional recovery; `worker-read --source/--cursor/--limit` for bounded change detection with source_changed handling; `send --to dispatch:<id>` relays attempt-specific coordinator guidance; `worker-start --retry-of` links a replacement attempt without inheriting placement, for native failed|stopped only; `terminal read --cursor/--limit` deltas and `--screen` frames (mutually exclusive) give change/Working-marker signals; heartbeat/status are alive-not-done signals. | Help-token availability does not prove runtime behavior or defaults; recheck before applying to later Orca/OMO versions. |
-| Isolated W1.8b nudge probe: test OMO custom-dispatch terminal, one minimal task plus one post-completion status query via `terminal send` | Orca 1.4.193 / OMO 5.0.0-0.beta.31, 2026-09-01 | The documented custom nudge procedure is safe on an idle custom-dispatch screen: after an accepted `worker_done` (Task and Dispatch `completed`), one `terminal send` status query was accepted (110 bytes, receipt shown), the OMO worker replied on screen with a single idle-phase line within 90 seconds, no composer draft contamination appeared in `--screen` output, no TUI artifacts, no new Working marker, and no follow-up orchestration mail was generated - the worker did not misread the query as a new task. Supports read-before-send plus the single status-query wording in the SKILL.md Supervision loop. | Single isolated probe with test wording on an idle screen only; mid-task busy screens were not probed, and one model (opencodex/combo/glm-5.3-flash) was used. Recheck before generalizing to busy screens, other models, or later versions. Evidence: `.omo/evidence/w18b-nudge-probe/`. |
+| Isolated W1.8b nudge probe: test OMO custom-dispatch terminal, one minimal task plus one post-completion status query via `terminal send` | Orca 1.4.193 / OMO 5.0.0-0.beta.31, 2026-09-01 | The documented custom nudge procedure is safe on an idle custom-dispatch screen: after an accepted `worker_done` (Task and Dispatch `completed`), one `terminal send` status query was accepted (110 bytes, receipt shown), the OMO worker replied on screen with a single idle-phase line within 90 seconds, no composer draft contamination appeared in `--screen` output, no TUI artifacts, no new Working marker, and no follow-up orchestration mail was generated - the worker did not misread the query as a new task. Supports read-before-send plus the single status-query wording in [`supervision-loop.md`](supervision-loop.md). | Single isolated probe with test wording on an idle screen only; mid-task busy screens were not probed, and one model (opencodex/combo/glm-5.3-flash) was used. Recheck before generalizing to busy screens, other models, or later versions. Evidence: `.omo/evidence/w18b-nudge-probe/`. |
 | Live read-only OMO native `pi` run | Orca 1.4.195, 2026-09-02 | `worker-start --agent pi` is a native supervised worker path for OMO: one call created the agent terminal, launched OMO via the `pi` launcher, delivered the task (`stage: input_accepted`), the worker sent its own accepted `worker_done`, and the Task settled `completed` (provenance `worker_report`). The `omo` id stays unregistered, and `worker-start --agent pi --model <id>` is rejected with "Agent pi does not support launch-time model selection". | One read-only run (run_c5379d5dd75d / task_5fc2c7713ffd / dispatch ctx_9f9f358e4220). Recheck before applying to later Orca/OMO versions and re-verify `pi` registration on other hosts; to pin a model, launch `pi --model <id>` in a pane and adopt it with `worker-start --terminal`. |
 
 The table is local command evidence, not authorization to expose credentials or incur paid
@@ -159,3 +170,8 @@ probe the provider with a paid task.
 | Dispatch created but preamble unavailable | A Dispatch exists but no safe custom-worker prompt is available. | Preserve the Dispatch and terminal; do not send a partial prompt. Follow Orca's exact recovery action. |
 | Prompt-send failure after Dispatch | Delivery is unknown, so another Dispatch or duplicate prompt could create duplicate work. | Preserve the Dispatch, inspect exact terminal/Dispatch state, and follow the returned recovery action. |
 | `tui-idle` wait timeout | Agent is not ready to receive a prompt. | Read the one terminal once, report the blocker, and do not send blindly. |
+
+## Sources
+
+> The Orca docs and issue link above were retrieved 2026-08-30; every other row is local CLI
+> evidence carrying its own observation date. Links checked 2026-09-21.

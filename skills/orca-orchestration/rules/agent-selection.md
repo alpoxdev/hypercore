@@ -84,7 +84,9 @@ terminal_created -> terminal_ready -> dispatch_created -> prompt_delivered -> wo
 Do not mark `worker_active` from `terminal create`, `terminal wait`, or `dispatch` alone.
 `prompt_delivered` requires the terminal-send receipt and a post-send terminal read showing
 the prompt was accepted. `worker_completed` requires the active Dispatch's accepted
-`worker_done`, `escalation`, or an exact recovery outcome.
+`worker_done`, `escalation`, or an exact recovery outcome. `worker_stalled` and
+`recovery_in_progress` are parent-side observation annotations outside the fence, not chain
+states.
 
 ### Existing OMO terminal: reuse, never replace
 
@@ -173,11 +175,11 @@ transition unless the user explicitly asks to close it.
 | `dispatch-show` rejects `--run` | The current command does not accept that flag. Re-run the exact supported `--task <task-id> --preamble --json` form; do not recreate state. |
 | Prompt-send failure | Preserve the existing Dispatch, inspect its delivery/terminal state, and follow the exact recovery action. Never create another Dispatch or blindly duplicate the prompt. |
 | `unsupervised` / `context_only` after accepted send | Low-level Dispatch has no owned terminal resource. Keep supervising the same tab; do not downgrade delivery, replace the tab, or manually settle before accepted lifecycle completion. |
-| Confirmed mid-task stall (native) | Follow the Supervision loop recovery ladder in `SKILL.md`: bounded confirmation, at most one nudge, then ladder step 3 only if `worker-show` reports `failed` or `stopped`. |
-| Confirmed mid-task stall (custom) | Follow the Supervision loop recovery ladder in `SKILL.md`: bounded confirmation, at most one nudge after read-before-send, then user escalation. Do not auto-redispatch. |
-| `worker-show` `failed` or `stopped` | Recovery ladder step 3 in the SKILL.md Supervision loop: native-only `worker-start --task <task> --retry-of <dispatch_id>` once. Repeat `--on`/worktree and `--agent`/terminal choices; do not inherit placement. |
-| `outcome_unknown` | Do not auto-replace. Require explicit user approval per the SKILL.md Supervision loop. |
-| `terminal_gone` | Runtime healthy plus exact handle absent only. Classify per the SKILL.md Supervision loop and escalate with evidence; never confuse with a runtime outage. |
+| Confirmed mid-task stall (native) | Follow the Supervision loop recovery ladder in [`references/supervision-loop.md`](../references/supervision-loop.md): bounded confirmation, at most one nudge, then ladder step 3 only if `worker-show` reports `failed` or `stopped`. |
+| Confirmed mid-task stall (custom) | Follow the Supervision loop recovery ladder in [`references/supervision-loop.md`](../references/supervision-loop.md): bounded confirmation, at most one nudge after read-before-send, then user escalation. Do not auto-redispatch. |
+| `worker-show` `failed` or `stopped` | Recovery ladder step 3 in the [`references/supervision-loop.md`](../references/supervision-loop.md) supervision loop: native-only `worker-start --task <task> --retry-of <dispatch_id>` once. Repeat `--on`/worktree and `--agent`/terminal choices; do not inherit placement. |
+| `outcome_unknown` | Do not auto-replace. Require explicit user approval per [`references/supervision-loop.md`](../references/supervision-loop.md). |
+| `terminal_gone` | Runtime healthy plus exact handle absent only. Classify per [`references/supervision-loop.md`](../references/supervision-loop.md) and escalate with evidence; never confuse with a runtime outage. |
 
 If native `worker-start` features are strictly required for a fresh OMO worker, use the
 registered `pi` agent (`worker-start --agent pi`) rather than the custom-dispatch path. If a
@@ -196,7 +198,7 @@ prohibited; live abandoned x2 leftovers are the leak precedent.
 
 | Child kind and ownership | Parent action after settlement |
 |---|---|
-| Native supervised terminal created by `worker-start` | Reuse the exact terminal immediately for a follow-up Dispatch, explicitly retain it when the user asks, or run `worker-release --dispatch <dispatch-id> --json`. Do not call broad `terminal close` instead of a release receipt. |
+| Native supervised terminal created by `worker-start` | Reuse the exact terminal immediately for a follow-up Dispatch, retain it with `worker-retain` when the user explicitly asks to keep it open, or run `worker-release --dispatch <dispatch-id> --json`. Do not call broad `terminal close` instead of a release receipt. |
 | Custom-dispatch terminal created by the parent | After verifying the Dispatch is settled and the handle still identifies that same child, reuse it, retain it by explicit user request, or run `terminal close --terminal <handle> --json`. Record the close receipt. |
 | Stall-settled parent-created child (`failed`/`stopped`/`abandoned`) | Same reuse/release/retain receipt decision as any other parent-created settlement. Do not leave it open without a settlement receipt. |
 | Existing/reused/user-owned custom terminal | Never close it automatically. Record retained/user-owned after Task and Dispatch completion; leave it open unless the user explicitly asks to close it. |
@@ -319,3 +321,9 @@ For each launched agent, retain in the task/worktree record:
 - heartbeat cadence, stall evidence path, nudge receipts and response, stall classification
   result;
 - replacement or settlement decision and its authority source.
+
+## Sources
+
+> No external source was used. Every rule above restates local Orca/OMO/GJC CLI evidence that
+> is recorded in [`../references/runtime-cli-evidence.md`](../references/runtime-cli-evidence.md)
+> and was checked 2026-09-21.
