@@ -33,7 +33,7 @@ compatibility: 로컬 read·search 기능이 필요합니다. edit·execute 기�
 
 기존 스킬 또는 스킬 폴더를 증거 기반으로 테스트할 때, 그리고 범위가 제한된 테스트-후-수정 패스를 요청할 때 `skill-tester`를 사용한다.
 
-새 재사용 스킬 생성 또는 넓은 구조 리팩터링은 `skill-maker`를 사용한다. 반복 점수 기반 최적화는 `autoresearch-skill`을 사용한다. 스킬 패키지가 아닌 제품 동작은 애플리케이션 QA 워크플로를 사용한다.
+새 재사용 스킬 생성 또는 넓은 구조 리팩터링은 스킬 저작 워크플로를 사용한다. 반복 점수 기반 개선은 측정 최적화 루프를 사용한다. 스킬 패키지가 아닌 제품 동작은 애플리케이션 QA 워크플로를 사용한다.
 
 로컬 검사 뒤에도 대상 스킬을 추론할 수 없거나, 일반 문서 리뷰만 원하거나, 삭제 범위가 대상 스킬의 증명된 소유 범위를 벗어나면 이 스킬을 사용하지 않는다.
 
@@ -60,19 +60,19 @@ compatibility: 로컬 read·search 기능이 필요합니다. edit·execute 기�
 
 Positive requests:
 
-- "Test `skills/git-maker/` for trigger precision and workflow regressions before release."
+- "Test `skills/<target-skill>/` for trigger precision and workflow regressions before release."
 - "이 스킬이 제대로 켜지고 안전하게 동작하는지 엣지 케이스까지 검증해줘."
 - "Validate this skill, fix its broken support link, and rerun the same checks."
 
 Negative requests:
 
-- "Create a Codex skill for reviewing SQL migrations." → `skill-maker`.
+- "Create a Codex skill for reviewing SQL migrations." → 스킬 저작 워크플로.
 - "내 웹앱 결제 플로우를 실제 브라우저에서 QA 해줘." → 애플리케이션 QA.
 
 Boundary requests:
 
-- "Review this skill and fix any issues you find." 먼저 테스트하고 대상 소유의 제한된 수정만 적용하며, 광범위한 구조 개편은 `skill-maker`로 넘긴다.
-- "Keep optimizing this skill until its benchmark improves." 기준선을 테스트한 뒤, 반복 측정 루프는 `autoresearch-skill`로 넘긴다.
+- "Review this skill and fix any issues you find." 먼저 테스트하고 대상 소유의 제한된 수정만 적용하며, 광범위한 구조 개편은 스킬 저작 워크플로로 넘긴다.
+- "Keep optimizing this skill until its benchmark improves." 기준선을 테스트한 뒤, 반복 측정 루프는 측정 최적화 루프로 넘긴다.
 
 </activation_examples>
 
@@ -91,10 +91,10 @@ Boundary requests:
 - 위험도와 가장 빠른 최소 검증 관문을 고를 때 [rules/test-matrix.md](rules/test-matrix.md)를 읽는다.
 - positive, negative, boundary, edge, adversarial, workflow, regression 시나리오를 만들 때 [rules/scenario-design.md](rules/scenario-design.md)를 읽는다.
 - 대상 파일을 추가·수정·삭제하기 전에는 [rules/repair-workflow.md](rules/repair-workflow.md)를 읽는다.
-- 발견사항이 넓은 스킬 구조 리팩터링을 요구할 때는 [rules/skill-maker-handoff.md](rules/skill-maker-handoff.md)를 읽는다. 이 패킷으로 `skill-maker`에 넘긴 뒤, 바꾸지 않은 케이스로 반환된 대상을 다시 검증한다.
+- 발견사항이 넓은 스킬 구조 리팩터링을 요구할 때는 [rules/skill-maker-handoff.md](rules/skill-maker-handoff.md)를 읽는다. 이 패킷으로 스킬 저작 워크플로에 넘긴 뒤, 바꾸지 않은 케이스로 반환된 대상을 다시 검증한다.
 - verdict를 선언하거나 handoff하기 전에는 [rules/evidence-reporting.md](rules/evidence-reporting.md)를 읽는다.
 - 재사용 테스트 팩을 요청했을 때만 [references/prompt-pack-template.md](references/prompt-pack-template.md)를 읽고, 한국어 산출물에는 한국어 sibling을 기본으로 사용한다.
-- 이 패키지를 변경하면 `node skills/skill-tester/scripts/validate-skill-tester.js --root skills/skill-tester --evals skills/skill-tester/assets/evals/skill-tester-cases.jsonl --json`을 실행한다.
+- 이 패키지를 변경하면 `node skills/skill-tester/scripts/validate-skill-tester.mjs --root skills/skill-tester --evals skills/skill-tester/assets/evals/skill-tester-cases.jsonl --json`을 실행한다.
 - 빠른 대상 검사는 `node skills/skill-tester/scripts/validate-skill.mjs <target-skill>`, 저장소 스킬 구조 검사는 `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json`을 실행한다.
 
 핵심 파일은 trigger, authority, repair boundary, loop, stop logic을 소유한다. rules는 반복 판단을, template은 출력 리소스를, `assets/evals/skill-tester-cases.jsonl`은 기계 판독 회귀 fixture를, scripts는 결정적이고 로컬 전용인 validator를 소유한다.
@@ -109,7 +109,7 @@ Boundary requests:
 | 1. Baseline | 대상 `SKILL.md`, 직접 링크, 관련 로컬 지침, 현재 테스트를 읽고 가장 작은 정적 검사를 실행한다. | 기준선 명령 출력과 동작 맵. |
 | 2. Scenarios | 관찰 가능한 route, checkpoint, prohibition, oracle, trace가 있는 위험도 비례 시나리오를 만든다. | 시나리오 매트릭스와 요청된 경우에만 테스트 팩. |
 | 3. Evaluate | trigger, contract, resource, workflow, safety, runtime fallback, 지역화 대상의 한영 동작을 검사한다. | 기대-관찰 표와 분류된 발견사항. |
-| 4. Repair | 명시적으로 요청된 경우 최소한의 대상 소유 콘텐츠 추가·수정·안전 삭제를 적용한다. 넓은 구조 리팩터링은 직접 인계 규칙으로 `skill-maker`에 넘기며 같은 대상을 동시에 쓰지 않는다. | 발견사항에 연결된 변경 기록 또는 인계 패킷. |
+| 4. Repair | 명시적으로 요청된 경우 최소한의 대상 소유 콘텐츠 추가·수정·안전 삭제를 적용한다. 넓은 구조 리팩터링은 직접 인계 규칙으로 스킬 저작 워크플로에 넘기며 같은 대상을 동시에 쓰지 않는다. | 발견사항에 연결된 변경 기록 또는 인계 패킷. |
 | 5. Recheck | 영향받은 모든 결정적 검사와 시나리오를 다시 실행하고 기준선과 비교한다. | 현재 결과, 회귀, 남은 위험. |
 | 6. Report | `ship`, `caveated ship`, `iterate`, `block` 중 하나를 결정한다. | Claim-to-evidence 리포트와 handoff. |
 
@@ -128,7 +128,7 @@ Boundary requests:
 ```markdown
 ## Skill Test Report
 
-**Target**: `skills/example/`
+**Target**: `<target-skill-path>`
 **Risk / mode**: targeted / assess | repair
 **Verdict**: ship | caveated ship | iterate | block
 

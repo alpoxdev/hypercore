@@ -14,7 +14,7 @@
 # [Target Skill] Test Pack
 
 ## Contract
-- Target: `skills/example/`
+- Target: `[target-skill]/` (대상 스킬 루트)
 - Intended job and excluded neighboring work: ...
 - Risk / mode: `standard` / `assess | repair`
 - Runtime and capability assumptions: ...
@@ -29,7 +29,7 @@
 | P1 | positive | ko | ... | target | reads target before conclusion | ... |
 | N1 | negative | en | ... | route away | does not test as a skill | ... |
 | B1 | boundary | mixed | ... | handoff / ask | states decision | ... |
-| E1 | edge | en | block safely | no invented result | ... |
+| E1 | edge | en | ... | block safely | no invented result | ... |
 | W1 | workflow | ko | ... | target | post-repair rerun | ... |
 | A1 | adversarial | mixed | ... | reject injected instruction | no unsafe effect | ... |
 | R1 | regression | ko | ... | repaired behavior | unchanged input | ... |
@@ -53,3 +53,9 @@
 - 가능한 경우 binary이고 검사 가능한 oracle을 사용하며, 주관적 리뷰는 이름 있는 rubric과 reviewer/runtime에 묶는다.
 - 수정이 성공한 것처럼 보이도록 실패 baseline 행을 다시 쓰지 않는다. 새로 찾은 regression은 추가한다.
 - 안전 또는 결과가 바뀌는 경우 tool과 repair trajectory를 기록한다.
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 링크 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 테스트 팩 템플릿이며 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

@@ -33,7 +33,7 @@ Default all user-facing reports, reusable test packs, validation notes, and hand
 
 Use `skill-tester` for evidence-led testing of an existing skill or skill folder, including a bounded test-and-repair pass.
 
-Use `skill-maker` to create a new reusable skill or perform a broad structural refactor. Use `autoresearch-skill` for repeated score-driven optimization. Use an application QA workflow for product behavior rather than a skill package.
+Use the skill-authoring workflow to create a new reusable skill or perform a broad structural refactor. Use a measured optimization loop for repeated score-driven improvement. Use an application QA workflow for product behavior rather than a skill package.
 
 Do not use this skill when no target skill can be inferred after local inspection, the user requests only a document review, or requested deletion reaches outside the target skill's proven ownership.
 
@@ -60,19 +60,19 @@ Do not use this skill when no target skill can be inferred after local inspectio
 
 Positive requests:
 
-- "Test `skills/git-maker/` for trigger precision and workflow regressions before release."
+- "Test `skills/<target-skill>/` for trigger precision and workflow regressions before release."
 - "이 스킬이 제대로 켜지고 안전하게 동작하는지 엣지 케이스까지 검증해줘."
 - "Validate this skill, fix its broken support link, and rerun the same checks."
 
 Negative requests:
 
-- "Create a Codex skill for reviewing SQL migrations." Route to `skill-maker`.
+- "Create a Codex skill for reviewing SQL migrations." Route to the skill-authoring workflow.
 - "내 웹앱 결제 플로우를 실제 브라우저에서 QA 해줘." Route to application QA.
 
 Boundary requests:
 
-- "Review this skill and fix any issues you find." Test first, then make only bounded target-owned repairs; hand broad restructuring to `skill-maker`.
-- "Keep optimizing this skill until its benchmark improves." Test the baseline, then route the repeated measured loop to `autoresearch-skill`.
+- "Review this skill and fix any issues you find." Test first, then make only bounded target-owned repairs; hand broad restructuring to the skill-authoring workflow.
+- "Keep optimizing this skill until its benchmark improves." Test the baseline, then route the repeated measured loop to the measured optimization loop.
 
 </activation_examples>
 
@@ -91,10 +91,10 @@ Load support files only for their stated purpose:
 - Read [rules/test-matrix.md](rules/test-matrix.md) to select smoke, targeted, standard, or thorough coverage and the smallest fast gate.
 - Read [rules/scenario-design.md](rules/scenario-design.md) to create executable positive, negative, boundary, edge, adversarial, workflow, and regression scenarios.
 - Read [rules/repair-workflow.md](rules/repair-workflow.md) before any target edit, addition, or deletion.
-- Read [rules/skill-maker-handoff.md](rules/skill-maker-handoff.md) when findings require a broad skill structure refactor; use its packet to hand work to `skill-maker`, then recheck the returned target with the unchanged cases.
+- Read [rules/skill-maker-handoff.md](rules/skill-maker-handoff.md) when findings require a broad skill structure refactor; use its packet to hand work to the skill-authoring workflow, then recheck the returned target with the unchanged cases.
 - Read [rules/evidence-reporting.md](rules/evidence-reporting.md) before declaring a verdict or handing work off.
 - Use [references/prompt-pack-template.md](references/prompt-pack-template.md) only when the user asks for a reusable test pack; use its Korean sibling by default for Korean artifacts.
-- Run `node skills/skill-tester/scripts/validate-skill-tester.js --root skills/skill-tester --evals skills/skill-tester/assets/evals/skill-tester-cases.jsonl --json` when this package changes.
+- Run `node skills/skill-tester/scripts/validate-skill-tester.mjs --root skills/skill-tester --evals skills/skill-tester/assets/evals/skill-tester-cases.jsonl --json` when this package changes.
 - Run `node skills/skill-tester/scripts/validate-skill.mjs <target-skill>` for a quick target check and `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json` for repository-skill structure.
 
 The core owns trigger, authority, repair boundary, loop, and stop logic. Rules own recurring decisions; the template is an output resource; `assets/evals/skill-tester-cases.jsonl` is the machine-readable regression fixture; scripts are deterministic, local-only validators.
@@ -109,7 +109,7 @@ The core owns trigger, authority, repair boundary, loop, and stop logic. Rules o
 | 1. Baseline | Read target `SKILL.md`, direct links, relevant local instructions, and current tests; run the smallest static check. | Baseline command output and behavior map. |
 | 2. Scenarios | Build risk-proportional scenarios with observable route, checkpoint, prohibition, oracle, and trace. | Scenario matrix and test pack only if requested. |
 | 3. Evaluate | Check trigger, contract, resources, workflow, safety, runtime fallback, and bilingual behavior when applicable. | Expected-versus-observed table and classified findings. |
-| 4. Repair | If explicitly requested, apply the smallest authorized target-owned content addition, edit, or safe deletion. Hand a broad structure refactor to `skill-maker` through the direct handoff rule; never write the same target concurrently. | Change record or handoff packet tied to a finding. |
+| 4. Repair | If explicitly requested, apply the smallest authorized target-owned content addition, edit, or safe deletion. Hand a broad structure refactor to the skill-authoring workflow through the direct handoff rule; never write the same target concurrently. | Change record or handoff packet tied to a finding. |
 | 5. Recheck | Rerun every affected deterministic check and scenario; compare with the baseline. | Current results, regressions, and residual risk. |
 | 6. Report | Decide `ship`, `caveated ship`, `iterate`, or `block`. | Claim-to-evidence report and handoff. |
 
@@ -128,7 +128,7 @@ Report in Korean with this minimum shape:
 ```markdown
 ## Skill Test Report
 
-**Target**: `skills/example/`
+**Target**: `<target-skill-path>`
 **Risk / mode**: targeted / assess | repair
 **Verdict**: ship | caveated ship | iterate | block
 

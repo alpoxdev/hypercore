@@ -14,7 +14,7 @@
 # [Target Skill] Test Pack
 
 ## Contract
-- Target: `skills/example/`
+- Target: `[target-skill]/` (the target skill root)
 - Intended job and excluded neighboring work: ...
 - Risk / mode: `standard` / `assess | repair`
 - Runtime and capability assumptions: ...
@@ -53,3 +53,9 @@
 - Use binary, inspectable oracles whenever possible; bind subjective review to a named rubric and reviewer/runtime.
 - Do not rewrite a failing baseline row to make a repair look successful. Append newly found regressions.
 - Record tool and repair trajectory where it changes safety or outcome.
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.
+
+This file is this package's own test-pack template and makes no external claim, so no external source is cited.

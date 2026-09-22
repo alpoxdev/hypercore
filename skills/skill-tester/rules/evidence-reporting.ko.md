@@ -41,4 +41,10 @@ tool, repair, deletion, retrieval, delegation 동작에는 편집 전 읽은 파
 
 ## Handoff
 
-새 스킬 또는 구조 재설계는 `skill-maker`로, 제한된 점수 최적화는 `autoresearch-skill`로, 애플리케이션 동작은 application QA workflow로 넘긴다. 구조 리팩터링에는 `rules/skill-maker-handoff.md`를 사용하며 대상, baseline, 실패 시나리오, 수정 경로, 미검증 위험, ownership, 리팩터링 후 verifier를 담는다. 받는 스킬의 주장만으로 검증을 끝내지 않는다.
+새 스킬 또는 구조 재설계는 스킬 저작 워크플로로, 제한된 점수 최적화는 측정 최적화 루프로, 애플리케이션 동작은 application QA workflow로 넘긴다. 구조 리팩터링에는 `rules/skill-maker-handoff.md`를 사용하며 대상, baseline, 실패 시나리오, 수정 경로, 미검증 위험, ownership, 리팩터링 후 verifier를 담는다. 받는 스킬의 주장만으로 검증을 끝내지 않는다.
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 링크 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 판정·주장 사슬·근거 형식을 서술한다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

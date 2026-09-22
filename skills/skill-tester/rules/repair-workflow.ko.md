@@ -11,7 +11,7 @@
 - 요청된 대상 로컬 eval 산출물;
 - 측정한 공백을 닫는 데 필요한 최소 신규 리소스.
 
-이웃 스킬, 공유 지침, 애플리케이션 코드, 생성 파일, 외부 시스템은 수정하지 않는다. 넓은 구조, 이름, 패키지 재설계는 발견사항을 기록한 뒤 `skill-maker`로 넘긴다.
+이웃 스킬, 공유 지침, 애플리케이션 코드, 생성 파일, 외부 시스템은 수정하지 않는다. 넓은 구조, 이름, 패키지 재설계는 발견사항을 기록한 뒤 스킬 저작 워크플로로 넘긴다.
 
 ## Baseline -> repair -> recheck
 
@@ -44,4 +44,10 @@
 
 ## Stop and handoff
 
-한 번의 repair cycle 뒤에 멈춘다. 새 스킬, resource redesign, 넓은 package refactor는 `skill-maker`로, 제한된 metric experiment는 `autoresearch-skill`로 넘긴다. 대상, ownership, permission, 필수 verification capability가 없으면 block한다.
+한 번의 repair cycle 뒤에 멈춘다. 새 스킬, resource redesign, 넓은 package refactor는 스킬 저작 워크플로로, 제한된 metric experiment는 측정 최적화 루프로 넘긴다. 대상, ownership, permission, 필수 verification capability가 없으면 block한다.
+
+## Sources
+
+> 외부 출처 없음. 저장소 로컬 링크 확인 2026-09-21.
+
+이 파일은 이 패키지 자체의 수리·삭제·복구 절차를 서술한다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

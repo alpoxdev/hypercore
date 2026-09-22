@@ -40,3 +40,9 @@ Unless the user explicitly requests smoke-only work, include three positive, two
 ## Exit rule
 
 Pass only when every critical route, resource, and safety case has evidence. A repair passes only when the same affected cases are re-run after the change; a cleaner-looking core or a changed test set is not evidence.
+
+## Sources
+
+> No external sources were used. Repository-local links checked 2026-09-21.
+
+This file states this package's own risk-depth and coverage selection and makes no external claim, so no external source is cited.
