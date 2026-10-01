@@ -775,6 +775,21 @@
         }
       },
       "behaviorContractId": "eli5--render-explanation"
+    },
+    {
+      "path": "skills/jev-maker/scripts/check-jev-request.mjs",
+      "family": "jev-maker",
+      "legacyOrigin": "authored-mjs",
+      "usage": "check-jev-request",
+      "behavior": "jev-request-validation",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/jev-maker/scripts/check-jev-request.mjs",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "jev-maker--check-jev-request"
     }
   ],
   "forbiddenDetectorReferences": {

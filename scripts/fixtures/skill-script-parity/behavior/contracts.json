@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 50,
+    "expectedRows": 51,
     "legacyOriginCounts": {
       "former-sh": 19,
       "former-py": 1,
       "retained-mjs": 9,
-      "authored-mjs": 21
+      "authored-mjs": 22
     },
     "requiredDimensions": [
       "stdout",
@@ -24,7 +24,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 150
+    "expectedFixtures": 153
   },
   "rows": [
     {
@@ -11877,6 +11877,185 @@
             },
             "argv": [
               "artifact"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "jev-maker--check-jev-request",
+      "path": "skills/jev-maker/scripts/check-jev-request.mjs",
+      "family": "jev-maker",
+      "legacyOrigin": "authored-mjs",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/jev-maker/scripts/check-jev-request.mjs",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "jev-maker--check-jev-request--stdout",
+        "stderr": "jev-maker--check-jev-request--stderr",
+        "exit": "jev-maker--check-jev-request--exit",
+        "files": "jev-maker--check-jev-request--files",
+        "modes": "jev-maker--check-jev-request--modes",
+        "cwd": "jev-maker--check-jev-request--cwd",
+        "env": "jev-maker--check-jev-request--env",
+        "argv": "jev-maker--check-jev-request--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bun",
+            "arguments": [
+              "skills/jev-maker/scripts/check-jev-request.mjs"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "request.json"
+            ],
+            "files": [
+              {
+                "path": "request.json",
+                "text": "{\n  \"model\": \"jev-latest\",\n  \"state\": {\n    \"ticket\": \"The export button returns a 500 error after a long report runs.\",\n    \"history\": [\n      \"report finished\",\n      \"export clicked\",\n      \"server error\"\n    ]\n  },\n  \"questions\": {\n    \"is_bug_report\": {\n      \"type\": \"noul\",\n      \"instructions\": \"Decide whether `state.ticket` reports a product defect rather than a question or a request.\",\n      \"criteria\": {\n        \"true\": \"The ticket describes behaviour that is broken.\",\n        \"false\": \"The ticket asks for something new or asks a question.\"\n      }\n    },\n    \"category\": {\n      \"type\": \"choice\",\n      \"instructions\": \"Choose the single best category for `state.ticket`.\",\n      \"criteria\": {\n        \"billing\": \"About invoices or payments.\",\n        \"export\": \"About producing or downloading a file.\",\n        \"none\": \"No listed category fits.\"\n      }\n    },\n    \"severity\": {\n      \"type\": \"score\",\n      \"instructions\": \"Score how much of the product is unusable according to `state.ticket`.\",\n      \"criteria\": [\n        \"Cosmetic only.\",\n        \"A single feature is degraded.\",\n        \"A single feature is unusable.\",\n        \"A whole workflow is blocked.\"\n      ]\n    }\n  }\n}\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"ok\": true,\n  \"route\": \"direct\",\n  \"errors\": [],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 3,\n    \"noul\": 1,\n    \"choice\": 1,\n    \"score\": 1,\n    \"estimatedStateTokens\": 99\n  }\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "request.json",
+                "bytes": 1203,
+                "sha256": "d4ca9cdb61a8da641526cb46cdaccc054fd8872cb36625eed681568835652ee2"
+              }
+            ],
+            "modes": {
+              "request.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "request.json"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bun",
+            "arguments": [
+              "skills/jev-maker/scripts/check-jev-request.mjs"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "request.json"
+            ],
+            "files": [
+              {
+                "path": "request.json",
+                "text": "{broken"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"ok\": false,\n  \"route\": \"direct\",\n  \"errors\": [\n    {\n      \"code\": \"INVALID_JSON\",\n      \"path\": \"$\",\n      \"message\": \"The request file is not valid JSON.\"\n    }\n  ],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 0,\n    \"noul\": 0,\n    \"choice\": 0,\n    \"score\": 0,\n    \"estimatedStateTokens\": 0\n  }\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 1,
+            "files": [
+              {
+                "path": "request.json",
+                "bytes": 7,
+                "sha256": "be302461cda285db3ed2d45fb767b23e08ca8808b35a638009937df22b332d73"
+              }
+            ],
+            "modes": {
+              "request.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "request.json"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bun",
+            "arguments": [
+              "skills/jev-maker/scripts/check-jev-request.mjs"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--route",
+              "bai",
+              "request.json"
+            ],
+            "files": [
+              {
+                "path": "request.json",
+                "text": "{\n  \"model\": \"jev-latest\",\n  \"state\": {\n    \"ticket\": \"The export button returns a 500 error after a long report runs.\",\n    \"history\": [\n      \"report finished\",\n      \"export clicked\",\n      \"server error\"\n    ]\n  },\n  \"questions\": {\n    \"is_bug_report\": {\n      \"type\": \"noul\",\n      \"instructions\": \"Decide whether `state.ticket` reports a product defect rather than a question or a request.\",\n      \"criteria\": {\n        \"true\": \"The ticket describes behaviour that is broken.\",\n        \"false\": \"The ticket asks for something new or asks a question.\"\n      }\n    },\n    \"category\": {\n      \"type\": \"choice\",\n      \"instructions\": \"Choose the single best category for `state.ticket`.\",\n      \"criteria\": {\n        \"billing\": \"About invoices or payments.\",\n        \"export\": \"About producing or downloading a file.\",\n        \"none\": \"No listed category fits.\"\n      }\n    },\n    \"severity\": {\n      \"type\": \"score\",\n      \"instructions\": \"Score how much of the product is unusable according to `state.ticket`.\",\n      \"criteria\": [\n        \"Cosmetic only.\",\n        \"A single feature is degraded.\",\n        \"A single feature is unusable.\",\n        \"A whole workflow is blocked.\"\n      ]\n    }\n  },\n  \"stream\": true\n}\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"ok\": false,\n  \"route\": \"bai\",\n  \"errors\": [\n    {\n      \"code\": \"STREAM_NOT_SUPPORTED\",\n      \"path\": \"$.stream\",\n      \"message\": \"The b.ai Decisions API returns one complete result; omit stream or set it to false.\"\n    }\n  ],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 3,\n    \"noul\": 1,\n    \"choice\": 1,\n    \"score\": 1,\n    \"estimatedStateTokens\": 99\n  }\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 1,
+            "files": [
+              {
+                "path": "request.json",
+                "bytes": 1221,
+                "sha256": "7d11c63aac78324a35f4ff05592fe386b6936e5ee257c0bee7abcd7f098a9704"
+              }
+            ],
+            "modes": {
+              "request.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--route",
+              "bai",
+              "request.json"
             ]
           }
         }

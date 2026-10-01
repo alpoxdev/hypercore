@@ -191,12 +191,12 @@ function validateStaticPolicy(content, file) {
 
 const manifest = /** @type {Record<string, unknown>} */ (JSON.parse(readFileSync(manifestPath, "utf8")));
 assert(Array.isArray(manifest.scripts), "manifest scripts must be an array");
-assert(manifest.scripts.length === 50, "manifest must contain exactly 50 scripts");
+assert(manifest.scripts.length === 51, "manifest must contain exactly 51 scripts");
 assert(manifest.scripts.every(isRecord), "manifest rows must be objects");
 const requiredRowFields = ["path", "family", "legacyOrigin", "usage", "behavior"];
 const legacyOrigins = new Set(["former-sh", "former-py", "retained-mjs", "authored-mjs"]);
-const usages = new Set(["analyze-structure", "apply-version", "build-preview", "calculate-version", "check-deployment", "check-lint", "check-runtime-capabilities", "collect-rendered-evidence", "commit-files", "detect-package-manager", "detect-slop", "detect-stack", "discover-version", "generate-artifact", "inspect-repository", "push-commit", "read-version", "render-dashboard", "render-explanation-view", "render-planning-map", "resolve-context", "run-build", "run-contract-evals", "run-detector-evals", "slop-engine-css", "slop-engine-markup", "slop-engine-text", "slop-rule-registry", "slop-rule-shared", "validate-portable-output", "validate-report", "validate-skill", "validate-skill-corpus", "validate-waivers", "verify-skill"]);
-const behaviors = new Set(["context-resolution", "contract-eval-run", "deployment-readiness-check", "detector-eval-run", "explanation-view-render", "fast-git-commit", "git-push", "hermes-artifact-generation", "lint-readiness-check", "package-manager-detection", "planning-map-render", "portable-output-validation", "preview-build", "project-build", "render-dashboard", "rendered-evidence-collection", "report-validation", "repository-discovery", "repository-status", "runtime-capability-check", "scoped-git-commit", "skill-validation", "skill-verification", "skills-corpus-validation", "slop-detection", "slop-engine-css", "slop-engine-markup", "slop-engine-text", "slop-rule-registry", "slop-rule-shared", "stack-detection", "structure-analysis", "version-application", "version-calculation", "version-discovery", "version-reading", "waiver-validation"]);
+const usages = new Set(["analyze-structure", "apply-version", "build-preview", "calculate-version", "check-deployment", "check-jev-request", "check-lint", "check-runtime-capabilities", "collect-rendered-evidence", "commit-files", "detect-package-manager", "detect-slop", "detect-stack", "discover-version", "generate-artifact", "inspect-repository", "push-commit", "read-version", "render-dashboard", "render-explanation-view", "render-planning-map", "resolve-context", "run-build", "run-contract-evals", "run-detector-evals", "slop-engine-css", "slop-engine-markup", "slop-engine-text", "slop-rule-registry", "slop-rule-shared", "validate-portable-output", "validate-report", "validate-skill", "validate-skill-corpus", "validate-waivers", "verify-skill"]);
+const behaviors = new Set(["context-resolution", "contract-eval-run", "deployment-readiness-check", "detector-eval-run", "explanation-view-render", "fast-git-commit", "git-push", "hermes-artifact-generation", "jev-request-validation", "lint-readiness-check", "package-manager-detection", "planning-map-render", "portable-output-validation", "preview-build", "project-build", "render-dashboard", "rendered-evidence-collection", "report-validation", "repository-discovery", "repository-status", "runtime-capability-check", "scoped-git-commit", "skill-validation", "skill-verification", "skills-corpus-validation", "slop-detection", "slop-engine-css", "slop-engine-markup", "slop-engine-text", "slop-rule-registry", "slop-rule-shared", "stack-detection", "structure-analysis", "version-application", "version-calculation", "version-discovery", "version-reading", "waiver-validation"]);
 const expectedMetadata = new Map([
   ["skills/ai-design-slop-remover/scripts/analyze-structure.mjs", ["analyze-structure", "structure-analysis"]],
   ["skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs", ["collect-rendered-evidence", "rendered-evidence-collection"]],
@@ -248,8 +248,9 @@ const expectedMetadata = new Map([
   ["skills/hermes-agent-maker/scripts/validate-hermes-agent-maker.mjs", ["validate-skill", "skill-validation"]],
   ["skills/hermes-agent-maker/scripts/validate-portable-v1-output.mjs", ["validate-portable-output", "portable-output-validation"]],
   ["skills/eli5/scripts/render-explanation.mjs", ["render-explanation-view", "explanation-view-render"]],
+  ["skills/jev-maker/scripts/check-jev-request.mjs", ["check-jev-request", "jev-request-validation"]],
 ]);
-assert(expectedMetadata.size === 50, "concrete metadata mapping must cover exactly 50 scripts");
+assert(expectedMetadata.size === 51, "concrete metadata mapping must cover exactly 51 scripts");
 const originCounts = { "former-sh": 0, "former-py": 0, "retained-mjs": 0, "authored-mjs": 0 };
 for (const [index, row] of manifest.scripts.entries()) {
   for (const field of requiredRowFields) assert(nonEmpty(row[field]), `manifest scripts[${index}].${field} must be a non-empty string`);
@@ -276,16 +277,16 @@ for (const [index, row] of manifest.scripts.entries()) {
   }
   assert(nonEmpty(row.behaviorContractId), `manifest scripts[${index}] requires a behavior contract id`);
 }
-assert(originCounts["former-sh"] === 19 && originCounts["former-py"] === 1 && originCounts["retained-mjs"] === 9 && originCounts["authored-mjs"] === 21, "manifest origin counts must be exactly 19/1/9/21");
+assert(originCounts["former-sh"] === 19 && originCounts["former-py"] === 1 && originCounts["retained-mjs"] === 9 && originCounts["authored-mjs"] === 22, "manifest origin counts must be exactly 19/1/9/22");
 const approved = manifest.scripts.map((row) => /** @type {string} */ (row.path));
 assert(new Set(approved).size === approved.length, "manifest script paths must be unique");
 const behaviorContracts = /** @type {Record<string, unknown>} */ (JSON.parse(readFileSync(behaviorContractsPath, "utf8")));
 assert(behaviorContracts.requiredBy === relative(root, manifestPath), "behavior contracts must name the manifest as their central owner");
 assert(isRecord(behaviorContracts.coverage)
-  && behaviorContracts.coverage.expectedRows === 50
-  && behaviorContracts.coverage.expectedFixtures === 150,
-"behavior contract coverage must be exactly 37 rows and 111 fixtures");
-assert(Array.isArray(behaviorContracts.rows) && behaviorContracts.rows.length === 50, "behavior contracts must contain exactly 50 rows");
+  && behaviorContracts.coverage.expectedRows === 51
+  && behaviorContracts.coverage.expectedFixtures === 153,
+"behavior contract coverage must be exactly 51 rows and 153 fixtures");
+assert(Array.isArray(behaviorContracts.rows) && behaviorContracts.rows.length === 51, "behavior contracts must contain exactly 51 rows");
 for (const [index, contract] of behaviorContracts.rows.entries()) {
   assert(isRecord(contract) && nonEmpty(contract.path) && nonEmpty(contract.id) && isRecord(contract.fixtures),
     `behavior contracts.rows[${index}] must be a complete row`);
@@ -374,4 +375,4 @@ for (const file of approved) {
   if (row.legacyOrigin === "authored-mjs") assert(!existsInBaseline(file), `${file} authored-mjs path must be absent from immutable baseline`);
 }
 
-console.log(`Validated ${approved.length} Bun MJS skill scripts (19 former-sh, 1 former-py, 9 retained-mjs, 21 authored-mjs baseline-absence).`);
+console.log(`Validated ${approved.length} Bun MJS skill scripts (19 former-sh, 1 former-py, 9 retained-mjs, 22 authored-mjs baseline-absence).`);
