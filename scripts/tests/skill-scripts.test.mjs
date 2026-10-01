@@ -208,15 +208,15 @@ function killRecordedPid(pidFile) {
 }
 
 
-test("manifest centrally inventories 50 scripts including twenty-one authored baseline-absent MJS paths", () => {
+test("manifest centrally inventories 51 scripts including twenty-two authored baseline-absent MJS paths", () => {
   const manifest = /** @type {{ scripts: { path: string, family: string, legacyOrigin: string, usage: string, behavior: string }[], forbiddenDetectorReferences: { records: { literal: string, allowedLocations: { file: string, jsonPath: string }[] }[] }, versionUpdateDetectorAbsentCorrection: { detectorRestored: boolean, legacyFiles: { legacyPath: string, sha256: string, gitMode: string, finalPath: string }[], restoreOrder: string[] } }} */ (JSON.parse(readFileSync(manifestPath, "utf8")));
-  expect(manifest.scripts).toHaveLength(50);
-  expect(new Set(manifest.scripts.map((row) => row.path)).size).toBe(50);
+  expect(manifest.scripts).toHaveLength(51);
+  expect(new Set(manifest.scripts.map((row) => row.path)).size).toBe(51);
   expect(manifest.scripts.every((row) => [row.path, row.family, row.legacyOrigin, row.usage, row.behavior].every(Boolean))).toBe(true);
   expect(Object.fromEntries(["former-sh", "former-py", "retained-mjs", "authored-mjs"].map((origin) => [
     origin,
     manifest.scripts.filter((row) => row.legacyOrigin === origin).length,
-  ]))).toEqual({ "former-sh": 19, "former-py": 1, "retained-mjs": 9, "authored-mjs": 21 });
+  ]))).toEqual({ "former-sh": 19, "former-py": 1, "retained-mjs": 9, "authored-mjs": 22 });
   const authored = [
     "skills/ai-design-slop-remover/scripts/analyze-structure.mjs",
     "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs",
@@ -235,6 +235,7 @@ test("manifest centrally inventories 50 scripts including twenty-one authored ba
     "skills/hermes-agent-maker/scripts/generate.mjs",
     "skills/hermes-agent-maker/scripts/validate-hermes-agent-maker.mjs",
     "skills/hermes-agent-maker/scripts/validate-portable-v1-output.mjs",
+    "skills/jev-maker/scripts/check-jev-request.mjs",
     "skills/orca-orchestration/scripts/check-runtime-capabilities.mjs",
     "skills/orca-orchestration/scripts/validate-orca-orchestration.mjs",
     "skills/orca-orchestration/scripts/verify-orca-orchestration.mjs",
@@ -283,17 +284,17 @@ function materializeFixture(files, cwd) {
   }
 }
 
-test("behavior contracts execute all 150 isolated semantic fixtures with exact observables", () => {
+test("behavior contracts execute all 153 isolated semantic fixtures with exact observables", () => {
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
   const contracts = JSON.parse(readFileSync(contractsPath, "utf8"));
   const dimensions = ["stdout", "stderr", "exit", "files", "modes", "cwd", "env", "argv"];
   expect(contracts.requiredBy).toBe(relative(root, manifestPath));
   expect(manifest.legacyPreimageBase).toBe(legacyPreimageBase);
   expect(contracts.legacyPreimageBase).toBe(legacyPreimageBase);
-  expect(contracts.coverage.expectedRows).toBe(50);
-  expect(contracts.coverage.expectedFixtures).toBe(150);
-  expect(contracts.coverage.legacyOriginCounts).toEqual({ "former-sh": 19, "former-py": 1, "retained-mjs": 9, "authored-mjs": 21 });
-  expect(contracts.rows).toHaveLength(50);
+  expect(contracts.coverage.expectedRows).toBe(51);
+  expect(contracts.coverage.expectedFixtures).toBe(153);
+  expect(contracts.coverage.legacyOriginCounts).toEqual({ "former-sh": 19, "former-py": 1, "retained-mjs": 9, "authored-mjs": 22 });
+  expect(contracts.rows).toHaveLength(51);
   expect(contracts.rows.filter((row) => row.sourcePreimage.migration).map((row) => row.path).sort()).toEqual(Object.keys(migrationPreimages).sort());
   let cases = 0;
   for (const row of contracts.rows) {
@@ -348,7 +349,7 @@ test("behavior contracts execute all 150 isolated semantic fixtures with exact o
       expect(createHash("sha256").update(source.stdout).digest("hex")).toBe(row.sourcePreimage.sha256);
     }
   }
-  expect(cases).toBe(150);
+  expect(cases).toBe(153);
 }, 30_000);
 
 test("Hermes renders deterministic previews for all seven artifact kinds and keeps routing cases mandatory", () => {
@@ -646,7 +647,7 @@ test("validator accepts the approved inventory", () => {
   const result = run([process.execPath, validatorPath], root);
   expect(result.stderr).toBe("");
   expect(result.exitCode).toBe(0);
-  expect(result.stdout).toContain("Validated 50 Bun MJS skill scripts (19 former-sh, 1 former-py, 9 retained-mjs, 21 authored-mjs baseline-absence).");
+  expect(result.stdout).toContain("Validated 51 Bun MJS skill scripts (19 former-sh, 1 former-py, 9 retained-mjs, 22 authored-mjs baseline-absence).");
 });
 test("validator rejects AST-visible static policy and declaration mutations", () => {
   const fixture = mkdtempSync(join(tmpdir(), "hypercore-validator-mutation-"));
