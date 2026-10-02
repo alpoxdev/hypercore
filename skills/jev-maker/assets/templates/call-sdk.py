@@ -36,6 +36,21 @@ STATE = {
     "customer": {"plan": "growth"},
 }
 
+# The option set and the level list are defined once here, so the check on the response reads the
+# same keys and the same level count the question was built from.
+QUEUE_OPTIONS = {
+    "billing": "Charges, payouts, invoices, refunds.",
+    "technical": "Bugs, outages, integrations, API errors.",
+    "account": "Login, plan changes, team membership.",
+    "other": None,
+}
+
+URGENCY_LEVELS = [
+    "Can wait: no money or access is blocked this week.",
+    "Time-boxed: money or access is blocked within the next few days.",
+    "Blocking: the customer cannot operate and is losing money today.",
+]
+
 
 def build_questions() -> dict:
     """Return the question set, spelled the way the HTTP API reference spells it."""
@@ -49,20 +64,11 @@ def build_questions() -> dict:
         ),
         "queue": Choice(
             instructions="Which queue should own this ticket?",
-            criteria={
-                "billing": "Charges, payouts, invoices, refunds.",
-                "technical": "Bugs, outages, integrations, API errors.",
-                "account": "Login, plan changes, team membership.",
-                "other": None,
-            },
+            criteria=QUEUE_OPTIONS,
         ),
         "urgency": Score(
             instructions="How urgent is this ticket for the customer right now?",
-            criteria=[
-                "Can wait: no money or access is blocked this week.",
-                "Time-boxed: money or access is blocked within the next few days.",
-                "Blocking: the customer cannot operate and is losing money today.",
-            ],
+            criteria=URGENCY_LEVELS,
         ),
     }
 
@@ -77,7 +83,11 @@ def validated_signal(value: object) -> float | None:
     """Return the value only when it is a real number inside 0..1, else None."""
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return None
-    if not math.isfinite(value) or value < 0 or value > 1:
+    # An int can be far larger than a float can hold, and math.isfinite on such an int raises
+    # OverflowError instead of answering, so the range check runs first and isfinite only for floats.
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    if value < 0 or value > 1:
         return None
     return float(value)
 
@@ -88,6 +98,31 @@ def decision_for(question: str, value: object, threshold: float) -> tuple[str, f
     if signal is None:
         return "review", None
     return ("act" if signal >= threshold else "review"), signal
+
+
+def choice_is_allowed(value: object, option_keys: tuple[str, ...]) -> bool:
+    """Report whether an answered choice is one of the option keys its question was built from."""
+    return isinstance(value, str) and value in option_keys
+
+
+def score_is_allowed(value: object, level_count: int) -> bool:
+    """Report whether an answered score is a finite number inside 0..(level_count - 1)."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False
+    # Same order as validated_signal: the exact int comparison comes before math.isfinite, which
+    # would raise OverflowError on a Python int larger than a float can represent.
+    if isinstance(value, float) and not math.isfinite(value):
+        return False
+    return 0 <= value <= level_count - 1
+
+
+def answer_decision_for(
+    question: str, value: object, threshold: float, allowed: bool
+) -> tuple[str, float | None]:
+    """Return the outcome and the signal, after checking the answer against the set it came from."""
+    if not allowed:
+        return "review", None
+    return decision_for(question, value, threshold)
 
 
 def main() -> None:
@@ -108,30 +143,39 @@ def main() -> None:
     urgency = response.scores["urgency"]
 
     decisions = [
-        ("needs_human", needs_human, THRESHOLDS["noul_act_at_or_above"]),
+        ("needs_human", needs_human, THRESHOLDS["noul_act_at_or_above"], True),
         (
             "queue",
             raw_answers.get("queue", {}).get("confidence"),
             THRESHOLDS["answer_confidence_at_or_above"],
+            choice_is_allowed(queue.choice, tuple(QUEUE_OPTIONS)),
         ),
         (
             "urgency",
             raw_answers.get("urgency", {}).get("confidence"),
             THRESHOLDS["answer_confidence_at_or_above"],
+            score_is_allowed(urgency.score, len(URGENCY_LEVELS)),
         ),
     ]
-    for question, value, threshold in decisions:
-        outcome, signal = decision_for(question, value, threshold)
+    for question, value, threshold, allowed in decisions:
+        outcome, signal = answer_decision_for(question, value, threshold, allowed)
         if signal is None:
-            reason = "the value is missing or outside 0..1, so a person decides"
+            reason = (
+                "the value is missing or outside 0..1, so a person decides"
+                if allowed
+                else "the value is missing or outside the allowed set, so a person decides"
+            )
         elif outcome == "act":
             reason = "at or above the threshold"
         else:
             reason = "below the threshold"
         shown = "null" if signal is None else signal
         print(f"{question}: {outcome} (signal {shown}, threshold {threshold}) - {reason}")
-    print(f"Chosen queue: {queue.choice}")
-    print(f"Urgency score: {urgency.score}")
+    # An answer outside the set its question was built from is printed as invalid, never as itself.
+    queue_allowed = choice_is_allowed(queue.choice, tuple(QUEUE_OPTIONS))
+    urgency_allowed = score_is_allowed(urgency.score, len(URGENCY_LEVELS))
+    print(f"Chosen queue: {queue.choice if queue_allowed else 'invalid'}")
+    print(f"Urgency score: {urgency.score if urgency_allowed else 'invalid'}")
 
 
 if __name__ == "__main__":
