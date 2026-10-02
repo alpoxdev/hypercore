@@ -37,7 +37,7 @@ Use this skill when the deliverable is an artifact about a Jev judgment: a fit v
 
 Do not use it when:
 
-- the deliverable is generated prose or generated code, which is a language model's job and not a judgment model's
+- the thing Jev must itself produce is generated prose or generated code (writing a Jev caller or request is in scope), which is a language model's job and not a judgment model's
 - the request is to replace the model behind a coding agent, which Jev cannot do
 - the classification, scoring, or extraction being asked about never mentions Jev, TypeSafe, System One, or an existing label-only model call
 - the work is prompt authoring, prompt packs, or general writing
@@ -104,17 +104,17 @@ Read the mode from the artifact the user wants to open, not from the keyword the
 | `audit` | a ranked, read-only table of existing calls that return only a label |
 | `provider` | a route choice and the setup steps for it |
 
-When two rows fit, run the row whose artifact the user reads first, and say which mode ran.
+One request may land on two modes; run them in the order the user reads the artifacts, and say which modes ran.
 
-The fit gate in `rules/modes-and-routing.md` runs before any mode and returns one of five verdicts.
+The fit gate in `rules/modes-and-routing.md` runs before any mode and returns one of five verdicts. It applies to the Jev judgment in the request; a mode that produces no Jev artifact, such as `provider`, is not gated by it.
 
 | Verdict | What the run does |
 |---|---|
 | `jev` | Continue in the mode and build the Jev artifact. |
 | `decompose` | Return the split design first, code owning the arithmetic and the policy and Jev owning the judgment, and re-check each half against the gate. Then continue for the Jev-owned part only. |
-| `hybrid` | Split first, naming which sentence goes to Jev and which goes to a language model, then continue for the Jev half only. |
 | `code` | Stop. Say why plain code answers it exactly, offer that path, and produce no Jev artifact. |
 | `llm` | Stop. Keep the model that already writes the text, and produce no Jev artifact. |
+| `hybrid` | Split first, naming which sentence goes to Jev and which goes to a language model, then continue for the Jev half only. |
 
 </trigger_conditions>
 
@@ -135,7 +135,7 @@ Keep volatile vendor facts out of this file. They live in `references/official/j
 
 No loop. One request produces one artifact.
 
-- Run the fit gate once, before any generation. A `code` or `llm` verdict ends the run there with the reason and the alternative. A `hybrid` or `decompose` verdict produces the split first, and then continues for the Jev-owned part alone.
+- Run the fit gate once, before any generation. A `code` or `llm` verdict ends the run there with the reason and the alternative. A `hybrid` or `decompose` verdict produces the split first, re-checks each part once against the gate, and then continues for the Jev-owned part alone.
 - Run the offline request checker once per request file. When it reports an error, fix the named field and re-run it. Two re-runs after the first failure is the ceiling; a third failure means the shape is wrong at the design level, so stop and say what is unclear instead of guessing again.
 - Never widen the run to compensate: no batch generation, no retry against the live API, no second artifact to cover an uncertain first one.
 

@@ -7,7 +7,10 @@ the result is verified, and the condition that ends the run.
 
 The mode is read from the artifact the user wants to open, using the table in
 [`../rules/modes-and-routing.md`](../rules/modes-and-routing.md). The fit gate in that file runs
-before any mode below, and a verdict other than `jev` stops the work there. Route facts come from
+before any mode below: a `code` or `llm` verdict stops the work there, a `hybrid` or `decompose`
+verdict splits the request first and continues on the Jev-owned part alone, `provider` and any request
+whose deliverable is an action rather than a judgment skip the gate, and `audit` runs the gate once per
+candidate call. Route facts come from
 [`./providers.md`](./providers.md) and [`./official/jev-platform.md`](./official/jev-platform.md);
 prices, limits, endpoints, and model aliases are not restated in this file because they move.
 
@@ -60,7 +63,8 @@ and route come from [`../rules/modes-and-routing.md`](../rules/modes-and-routing
 3. If the verdict is `jev`, `decompose`, or `hybrid`, write the decision contract: one row per
    decision, with the question it asks, the type of answer it takes, who acts on the answer, and what
    happens when confidence is low. For `hybrid`, write the split first and then write the contract for
-   the Jev half only.
+   the Jev half only. For `decompose`, move the arithmetic and the policy to code, write the contract
+   for the Jev part only, and re-check that part against the gate.
 4. Name the fields of the state each question reads, so the next mode has a fixed input shape.
 5. Mark every part that still needs a person's decision instead of guessing it.
 
@@ -81,8 +85,9 @@ Korean: "질문 만들어", "질문 묶음", "선택지", "점수 단계".
 
 **Required inputs and defaults.** The decision from `design`, or a description of it. The language of
 the instructions defaults to English; the state keeps whatever language the user's data is in. Per
-question, choose `choice`, `score`, or `noul` from the shape of the answer, per
-[`./question-design.md`](./question-design.md).
+question, choose `choice`, `score`, or the yes/no type from the shape of the answer, per
+[`./question-design.md`](./question-design.md). The yes/no type is `noul` on the direct and b.ai routes
+and `boolean` on the AI SDK route.
 
 **Steps.**
 
@@ -96,6 +101,8 @@ question, choose `choice`, `score`, or `noul` from the shape of the answer, per
 5. Assemble the questions into a request file with a sample state so it can be checked.
 6. Run the offline checker on the assembled file for the route in play. When Bun is unavailable, run
    the checklist in [`./question-design.md`](./question-design.md) by hand and say so.
+7. Write `questions.md`: the choice behind each question, the source file the snapshot's values came
+   from, and the snapshot date, with the note to re-check it before the first live call.
 
 **Output files and location.** `request.json` plus a short `questions.md` explaining the choices, under
 the default location or the path the user gave. The request JSON carries no comment, so the snapshot
@@ -115,7 +122,8 @@ and the request passes the check for its route.
 Korean: "호출 코드", "연결 코드", "연동".
 
 **Required inputs and defaults.** Questions and thresholds if they exist, otherwise a question set from
-the `questions` mode. Language defaults to TypeScript unless `pyproject.toml` is present. Route follows
+the `questions` mode. Language defaults to TypeScript; `pyproject.toml` means Python only when
+`package.json` is absent, so when both files exist the language is TypeScript. Route follows
 the order in [`./providers.md`](./providers.md). Read what is needed from
 [`./official/jev-platform.md`](./official/jev-platform.md) rather than writing contract values into the
 code. The one exception is the single named endpoint and model constants described in
@@ -162,8 +170,9 @@ code. The one exception is the single named endpoint and model constants describ
 constants file and `request.json` carry the same model id and must be kept in step. Report all three
 paths and the checker exit code.
 
-**Verification.** The checker exits 0 for the route, the caller compiles in the target language, and the
-response validation from step 6 is present in the file rather than promised in a comment.
+**Verification.** The checker exits 0 for the route, or the manual checklist cleared every line when Bun
+is unavailable; the caller compiles in the target language, and the response validation from step 6 is
+present in the file rather than promised in a comment.
 
 **Stop when** the constants file and the caller exist, the checker passed for the route in play, and
 the live call is left to the user with the consent step stated.
@@ -178,7 +187,8 @@ the point of this mode is to leave the defaults visible so the user edits them.
 
 **Steps.**
 
-1. Write `request.json` with a sample state, one `noul`, one `choice`, and one `score` question, and a
+1. Write `request.json` with a sample state, one yes/no question (named `noul` on the direct and b.ai
+   routes and `boolean` on the AI SDK route), one `choice`, and one `score` question, and a
    model field that carries the id the snapshot lists as accepted for the chosen route; the constants
    header records the snapshot date and says to re-check it before the first call, because a placeholder
    cannot pass the checker on a b.ai route.
@@ -189,9 +199,8 @@ the point of this mode is to leave the defaults visible so the user edits them.
 4. Run the checker on `request.json` for each route the template is meant to serve. The template in this
    package passes both `direct` and `bai`; a template written for the SDK route is checked with
    `--route aisdk`.
-5. Leave a short note at the top of each file that accepts comments saying what the user must replace
-   before the first call; a JSON file gets no note key (the checker reports an unknown field), so its
-   replace-before-call list goes into the constants file header and the report.
+5. Put the replace-before-call note in the constants file header and in the report; a JSON file gets
+   none, because a note key would come back as an unknown field from the checker.
 
 **Output files and location.** `request.json`, `constants.ts`, and `routing-table.json` under the
 default location or the path the user gave.
@@ -200,7 +209,7 @@ default location or the path the user gave.
 row for every answer the questions can produce.
 
 **Stop when** the three files exist, every claimed route passes the check, and the replace-before-call
-note is present in each file.
+note is present in the constants header and the report.
 
 ## eval
 
@@ -227,19 +236,20 @@ provisional.
    cost of each error, not from the accuracy curve alone.
 6. Name the baselines the result is compared against, including the current rule or regex where one
    exists.
-7. Before any live run, ask the person, state the estimated cost from
-   [`./official/jev-platform.md`](./official/jev-platform.md), and keep the run to the smallest number
-   of requests that answers the question.
+7. Before any live measurement, the safety rules apply: the person's consent for the call, separate
+   consent when the state carries private data, and one request first, in the smallest useful shape.
+   State the estimated cost from [`./official/jev-platform.md`](./official/jev-platform.md).
 
 **Output files and location.** `eval-plan.md` and `eval-cases.jsonl` under the default location or the
 path the user gave. Case rows carry the expected label, including a null label where the honest answer
 is "not enough information".
 
-**Verification.** The frozen set is read once, after tuning, and its result is reported as measured.
-Cases the model cannot answer are counted, not dropped.
+**Verification.** The plan names the tuning set, the frozen set, and the measurement that decides each
+threshold, and the case rows carry their expected labels including the null rows.
 
-**Stop when** the plan defines both error costs, the two sets are separate, thresholds were tuned on one
-and reported on the other, and no live call was made without consent.
+**Stop when** the plan defines both error costs, the two sets are separate, and the tuning procedure is
+written. This mode produces the plan, the case template, and the tuning procedure; it does not run the
+live measurement itself.
 
 ## audit
 
@@ -261,11 +271,12 @@ care about. Default scope is the whole working tree minus dependencies and gener
 4. Rank by what the swap would save and by how small the change is.
 5. Write the table, then stop.
 
-**Output files and location.** A single report, `audit.md`, under the default location or the path the
-user gave. Nothing else is written.
+**Output files and location.** A single report, `audit.md`, written under `.hyper/jev-maker/<topic>/`
+outside the tree being audited, or given in the reply, or at the path the user gave when that path is
+outside the audited tree. Nothing else is written.
 
-**Verification.** Every row cites a file and line, and the report was produced without editing any file
-in the audited tree.
+**Verification.** Every row cites a file and line, the report was produced without editing any file in
+the audited tree, and the report itself sits outside that tree.
 
 **Stop when** the table is written and the working tree is unchanged. This mode is read-only: it finds
 candidates and never rewrites them.
