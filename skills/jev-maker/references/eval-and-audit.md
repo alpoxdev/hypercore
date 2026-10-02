@@ -65,15 +65,22 @@ Then add hard cases on purpose, because these are where a judgment model is docu
 The state used for a case is data. A case that only works because the state happens to be clean is not a
 case; keep the messy ones.
 
+Report the representative sample's result and the hard cases' result separately, so a hard-case failure
+does not hide behind a good average. Estimate cost from the representative sample only, because that
+sample is the traffic the system will actually see.
+
 ### Tuning set and frozen test set
 
-Split the cases before tuning anything. Tune thresholds on the tuning set. Read the frozen set once,
+Split the cases before tuning anything. Group before you split: variants derived from the same source or
+the same conversation belong to the same split, because a near-duplicate case on the other side leaks the
+answer and flatters the result. Tune thresholds on the tuning set. Read the frozen set once,
 after tuning is finished, and report that number as the measured result. Looking at the frozen set
 while tuning turns it into a second tuning set and the reported number stops meaning anything.
 
 When the two sets disagree, the frozen set wins and the disagreement is the finding. Keep both sets in
 the repository with the case rows and the expected labels so a later change can be re-measured against
-the same cases.
+the same cases. Reusing a set after tuning on it is regression checking, not a final evaluation; once
+the tuning responds to the frozen set's result, evaluate again on a fresh set the tuning has not seen.
 
 ### Pin the version when behavior must hold still
 
@@ -121,8 +128,9 @@ right, plus the reverse.
 Evaluation can be planned without calling anything. The moment a live run is proposed, ask the person
 first, state the estimated cost using the price page in
 [`./official/jev-platform.md`](./official/jev-platform.md), and run the smallest number of requests that
-answers the question. A first run over a handful of cases is enough to find out whether the direction is
-right; a full sweep can wait until the question set has stopped moving.
+answers the question. A first run over a handful of cases checks that the pipeline works; it is not enough
+for a performance claim, which needs a sample sized to the tolerance you can accept, with the uncertainty
+reported beside the number. A full sweep can wait until the question set has stopped moving.
 
 ## Audit
 
@@ -188,7 +196,9 @@ One row per candidate, sorted by rank. The columns are fixed:
 - **file:line** points at the call itself, not at the module.
 - **what it decides** is the label in plain words, not the function name.
 - **current cost** is the measured cost from the section above. When the repository holds no call log and no timing to read, write `not measurable here` and list what the owner would have to record (calls per day, latency, tokens) instead of estimating a number.
-- **estimated cost after the swap** is an estimate, marked as one, derived from the same unit.
+- **estimated cost after the swap** is an estimate, marked as one, derived from the same unit, and it
+  states its source, its formula, and its assumptions. When a measurement it needs is missing, write
+  `not computable` instead of a number.
 - **route when confidence is low** names the path taken for an uncertain answer: a human queue, a
   fallback rule, a retry, or nothing when the action is reversible. A row with no review path is a
   finding in itself.

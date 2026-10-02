@@ -34,8 +34,8 @@ unverified row is a name to look up, nothing more.
 | Route | Endpoint | Auth | Model id | Question types | Confidence | Env var | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | TypeSafe direct | `POST https://api.typesafe.ai/v1/systemone` | `Authorization: Bearer plus your key` | `jev-latest`, `jev-preview`, `jev-1.13.0` | `noul`, `choice`, `score` | `answers.<id>.confidence` on choice and score; none on noul | `TYPESAFE_API_KEY` | verified |
-| b.ai | `POST https://api.b.ai/v1/decisions` | `Authorization: Bearer plus your key`, or the `x-api-key` header with the same value | `jev-1.13.0`, `jev-latest` only | `noul`, `choice`, `score` | `answers.<id>.confidence` on choice and score; none on noul | `BAI_API_KEY` | verified |
-| Vercel AI SDK and AI Gateway | No direct endpoint; the SDK resolves the model, and a string id goes through Vercel AI Gateway | Gateway key through `AI_GATEWAY_API_KEY`, or Vercel OIDC | `typesafe-ai/jev` as a string id, or `typeSafeAi.evaluationModel('jev-latest')` | `boolean`, `choice`, `score` | `result.providerMetadata?.typesafe?.confidence`, keyed by question id | `AI_GATEWAY_API_KEY` | verified |
+| b.ai | `POST https://api.b.ai/v1/decisions` | `Authorization: Bearer <key>`, or `x-api-key: <key>` | `jev-1.13.0`, `jev-latest` only | `noul`, `choice`, `score` | `answers.<id>.confidence` on choice and score; none on noul | `BAI_API_KEY` (project convention, not named by the vendor) | verified |
+| Vercel AI SDK and AI Gateway | No direct endpoint; the SDK resolves the model, and a string id goes through Vercel AI Gateway when no default provider is configured | Gateway key through `AI_GATEWAY_API_KEY`, or Vercel OIDC | `typesafe-ai/jev` as a string id, or `typeSafeAi.evaluationModel('jev-latest')` | `boolean`, `choice`, `score` | `result.providerMetadata?.typesafe?.confidence`, keyed by question id | `AI_GATEWAY_API_KEY` | verified |
 
 Details that the table cannot hold:
 
@@ -61,10 +61,11 @@ Pick the first rule that matches, and say which route was chosen when the answer
    question type. The dependency decides, because the package is already installed and the
    project's other model calls already go through it.
 2. Otherwise, if the environment has `BAI_API_KEY` set (check the name only, never the value),
-   use the b.ai route. A key name being set on the machine is evidence about the machine, not
-   about this project. When the project's own files, such as a lock file, config, existing client
-   code, or an env example, name a different route, that route wins, and when the two disagree,
-   say which route was chosen and why.
+   use the b.ai route. `BAI_API_KEY` is this project's own convention for that route; the vendor
+   pages this snapshot holds name no environment variable for it. A key name being set on the
+   machine is evidence about the machine, not about this project. When the project's own files,
+   such as a lock file, config, existing client code, or an env example, name a different route,
+   that route wins, and when the two disagree, say which route was chosen and why.
 3. Otherwise use the TypeSafe direct route with `TYPESAFE_API_KEY`.
 
 When more than one rule matches, the earlier rule wins. Changing the route is a request-level
@@ -122,7 +123,10 @@ no vendor page documenting them, and one entry (OpenRouter) rests only on the ve
 integration example, which shows a base URL and a model slug rather than a full contract.
 
 The environment variable names for the direct route are taken from the vendor's SDK pages, which
-read the key from the environment by that name.
+read the key from the environment by that name. `BAI_API_KEY` is a project convention rather than a
+vendor name: the saved b.ai pages name no environment variable for that route, and the direct
+provider's (non-Gateway) authentication and environment variable are not in the saved pages either,
+so neither is stated as a verified fact here.
 
 Not evidenced here and deliberately left unspecified: the version of any client package, the
 current model ids on the unverified routes, and whether any unverified route supports streaming.

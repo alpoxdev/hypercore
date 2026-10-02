@@ -51,7 +51,9 @@ need costs almost nothing.
 string. Reach for structure in three cases: the question needs background or examples, part of the
 question comes from your code, or several questions share similar wording and need separating.
 
-Put the question in one field and the data it refers to in the others:
+Put the question in one field and the data it refers to in the others. The JSON blocks in this section
+and in the Choice criteria section are question fragments, not whole requests, so each one goes under
+`questions` in a request:
 
 ```json
 "same_as_record": {
@@ -59,6 +61,22 @@ Put the question in one field and the data it refers to in the others:
   "instructions": {
     "potential_duplicate": { "name": "John Smith", "location": "Oakland, California" },
     "question": "Is the resume for the same person as `potential_duplicate`?"
+  }
+}
+```
+
+A complete minimal request holds `state`, `model`, and `questions`, and it passes the checker on both
+direct routes:
+
+```json
+{
+  "state": "Payouts have been failing since Monday.",
+  "model": "jev-latest",
+  "questions": {
+    "needs_human": {
+      "type": "noul",
+      "instructions": "Does this ticket need a human agent, rather than an automated reply?"
+    }
   }
 }
 ```
@@ -73,7 +91,8 @@ the value without rewriting the question.
 
 A Choice question returns the option with the highest probability, so the options have to be
 separable. Each option's description can be an object that says what the option covers, what
-belongs to a different option, and a few examples:
+belongs to a different option, and a few examples. This block is the `criteria` fragment of one
+question, not a whole request:
 
 ```json
 "criteria": {
@@ -107,8 +126,9 @@ word. "Very angry" means something different to every reader; "uses strong langu
 the complaint" does not. Give each level a description and, where it helps, example situations, and
 always define the low end so the middle of the scale has somewhere to sit.
 
-Levels are weak for recovering an exact number, and a Score cannot interpolate a value between two
-levels. Use a Score to clear a threshold or to sort, never to reconstruct a quantity.
+Levels are weak for recovering an exact number: an in-between score is possible, but the number is
+not a precise measurement of the underlying value. Use a Score to clear a threshold or to sort, never
+to reconstruct a quantity.
 
 ## Noul true and false descriptions
 
@@ -191,7 +211,8 @@ for one, including the error codes that script prints.
 
 **The document**
 
-1. The file is valid JSON. Otherwise `INVALID_JSON`.
+1. The file is valid JSON. Otherwise `INVALID_JSON`, or `INPUT_TOO_DEEP` when the document nests
+deeper than the engine stack can read.
 2. The root is a JSON object, not an array or a scalar. Otherwise `ROOT_NOT_OBJECT`.
 3. `state` is present and is a string, an object, or an array. `null`, numbers, and booleans are
    rejected. Otherwise `STATE_MISSING` or `STATE_TYPE`.
@@ -204,7 +225,8 @@ for one, including the error codes that script prints.
 
 6. `questions` is a non-empty object. Otherwise `QUESTIONS_MISSING` or `QUESTIONS_EMPTY`.
 7. Every id holds non-whitespace text. Otherwise `QUESTION_ID_BLANK`.
-8. Every entry is a JSON object with `type` and `instructions`. Otherwise `QUESTION_NOT_OBJECT`.
+8. Every entry is a JSON object. Otherwise `QUESTION_NOT_OBJECT`. A missing `type` or `instructions`
+   field is caught by items 9 and 10 below, not by this code.
 9. `type` is one of the route's names. Direct and b.ai: `noul`, `choice`, `score`. AI SDK:
    `boolean`, `choice`, `score`. Otherwise `QUESTION_TYPE`.
 10. `instructions` is present and is a string, an object, or an array. Otherwise
@@ -212,9 +234,10 @@ for one, including the error codes that script prints.
 
 **Criteria, by question type**
 
-11. Yes/no (`noul`, or `boolean` on the AI SDK route): criteria is optional; when present it is an
-    object whose keys are exactly `true` and `false`, each a string, an object, or an array.
-    Otherwise `NOUL_CRITERIA_TYPE`, `NOUL_CRITERIA_KEY`, or `NOUL_CRITERIA_VALUE`.
+11. Yes/no (`noul`, or `boolean` on the AI SDK route): criteria is optional; when present each key is
+    `true` or `false` and either key may be omitted, so an empty object and a one-key object both pass.
+    Each present value is a string, an object, or an array. Otherwise `NOUL_CRITERIA_TYPE`,
+    `NOUL_CRITERIA_KEY`, or `NOUL_CRITERIA_VALUE`.
 12. `choice`: criteria is a required object with 1 to 255 options; each option description is
     `null`, a string, an object, or an array. Otherwise `CHOICE_CRITERIA_MISSING`,
     `CHOICE_CRITERIA_COUNT`, or `CHOICE_CRITERIA_VALUE`.
@@ -225,24 +248,27 @@ for one, including the error codes that script prints.
 
 The 255-option and 2-to-10 bounds in items 12 and 13 are what the offline checker enforces. For
 the vendor statement behind them, read
-[the platform snapshot](../references/official/jev-platform.md).
+[the platform snapshot](../references/official/jev-platform.md). The ban on a `null` description for
+a yes/no criteria value and for a score level is the checker's own constraint, matching the direct
+route's pages; the AI SDK route allows `null` descriptions, so it is not an AI SDK rule.
 
 **Route-specific and cross-cutting**
 
 14. On b.ai, `stream` is absent or `false`. Otherwise `STREAM_NOT_SUPPORTED`.
-15. No string in the document looks like a credential. Otherwise `SECRET_IN_REQUEST`. The checker
-    matches a `sk-` prefix followed by 16 or more alphanumerics, and a bearer token of 16 or more
-    characters after the scheme word, and it reports the path without echoing the value.
+15. No string value in the document looks like a credential; object keys are not scanned, and the
+    value itself is never echoed. Otherwise `SECRET_IN_REQUEST`. The checker matches a `sk-` prefix
+    followed by 16 or more alphanumerics, and the case-sensitive pattern `Bearer ` followed by 16 or
+    more characters from `[A-Za-z0-9._-]`.
 
 **Warnings the checker raises without failing the request:** `UNKNOWN_TOP_LEVEL_FIELD` for a
 top-level key outside `state`, `model`, `questions`, and `stream`; `NO_FALLBACK_OPTION` for a
-Choice with no `none`, `other`, or `unknown` option; `STATE_LARGE` when a length-divided-by-four
-estimate puts the state plus the longest question over the API budget; and `MODEL_UNVERIFIED` for
-a direct-route alias outside the known list.
+Choice that has 1 to 255 options and none of `none`, `other`, or `unknown`; `STATE_LARGE` when a
+length-divided-by-four estimate puts the state plus the longest question over the API budget; and
+`MODEL_UNVERIFIED` for a direct-route alias outside the known list.
 
 **Exit codes.** 0 when there are no errors, 1 when there is at least one error including an
-unparsable file, and 2 for a usage problem (no file argument, an unreadable file, or an unknown
-route). Run it from the skill folder as:
+unparsable file or a document nested past the engine stack, and 2 for a usage problem (no file
+argument, an unreadable file, or an unknown route). Run it from the skill folder as:
 
 ```bash
 bun scripts/check-jev-request.mjs --route direct path/to/request.json

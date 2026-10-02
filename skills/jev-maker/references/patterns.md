@@ -1,9 +1,10 @@
 # Judgement Patterns Reference
 
-Every Jev call answers one narrow judgment, and the shape of that judgment decides three things:
-which question type to use, how the code composes several answers, and where a threshold belongs.
-This file maps the eight shapes that show up most often to a question type and a vendor cookbook,
-then covers the four documented patterns and the rules for reading confidence.
+Every question asks one narrow judgment, and one call can carry several independent questions; the
+shape of that judgment decides three things: which question type to use, how the code composes
+several answers, and where a threshold belongs. This file maps the eight patterns this file covers to
+a question type and a vendor cookbook, then covers the four documented patterns and the rules for
+reading confidence.
 
 Cookbook names and links below come from the vendor cookbook index captured on 2026-10-01. Treat
 every threshold they print as an example for that recipe, not as a value to copy.
@@ -48,7 +49,8 @@ how to treat a threshold, and the closest vendor cookbook.
 - **Composition:** code thresholds the probability and picks a path. Several detectors over the
   same state go in one request and combine in code.
 - **Thresholds:** the setting depends on what a miss costs against what a false alarm costs, so the
-  two directions usually get different values. Tune both on labeled data.
+  two directions usually get different values. Tune both on labeled data, and send a probability that
+  lands between the two thresholds to review rather than to either path.
 - **Nearest cookbook:** [Guardrails for LLMs](https://docs.typesafe.ai/cookbooks/llm_guardrails)
 
 ### Scoring
@@ -83,8 +85,9 @@ how to treat a threshold, and the closest vendor cookbook.
 
 ### Retrieval and selection
 
-- **Question type:** Choice over the shortlist, one question per query and candidate pair when the
-  shortlist is small enough to enumerate in code.
+- **Question type:** two shapes. Pick one from a candidate set with a Choice over the shortlist, or
+  rate each candidate with a Score or a Noul per candidate and rank in code. Ask one question per query
+  and candidate pair when the shortlist is small enough to enumerate in code.
 - **Composition:** code builds the shortlist, sends one request per candidate set, and keeps the
   top matches. The retriever stays in code; the model only reorders what the retriever found.
 - **Thresholds:** compare a confidence-gated automatic path against a human-reviewed path, and
@@ -93,8 +96,8 @@ how to treat a threshold, and the closest vendor cookbook.
 
 ### Ranking
 
-- **Question type:** Choice or Score over the candidates, with options ordered so the answer maps
-  onto a position.
+- **Question type:** Choice or Score over the candidates. The order the options are listed in is not a
+  ranking; rank in code from a per-candidate Score or from the Choice answer's `probabilities`.
 - **Composition:** code ranks by the answer, then rechecks the top few against a fuller state in a
   second request when the first request only saw a summary.
 - **Thresholds:** a rank cutoff is a product decision, not a model one. Set it where the cost of
@@ -103,7 +106,9 @@ how to treat a threshold, and the closest vendor cookbook.
 
 ### Verification
 
-- **Question type:** Choice or Noul over a claim and the source it cites.
+- **Question type:** Choice or Noul over a claim and the source it cites. One Noul cannot tell "the
+  source gives no evidence" apart from "the source cannot be checked", so use a three-state Choice, or
+  a second question that asks whether the source is sufficient to check the claim at all.
 - **Composition:** code holds the claim and the source side by side in the state and asks one
   question per pair. The verdict drives a review path in code.
 - **Thresholds:** an unsupported claim and an unverifiable one are different outcomes. Give them
@@ -188,17 +193,18 @@ The vendor index lists the recipes below. Each name links to the page it names.
 | Batching many questions in one call and combining the answers in code | <https://docs.typesafe.ai/concepts/how-to-build-with-system-one> |
 | Not carrying a threshold between questions or question types, and the weak Score interpolation | <https://docs.typesafe.ai/model-jaggedness/jev-1.13> |
 | The cookbook names, their URLs, and the one-line purpose of each | <https://docs.typesafe.ai/llms.txt> |
-| The caution that schema conformity is not correctness and that thresholds belong on representative data | <https://docs.typesafe.ai/api> |
+| The caution that schema conformity is not correctness and that thresholds belong on representative data | <https://docs.b.ai/llmservice/models/jev-1.13.0/> |
 
 ### Evidence grade
 
-`PRIMARY` for everything above. Each shape, pattern, and confidence rule traces to a vendor page
+`PRIMARY` for the vendor facts above: each shape, pattern, and confidence rule traces to a vendor page
 captured on 2026-10-01, and the cookbook names and links come from the vendor's own index rather
-than from a third-party list.
+than from a third-party list. `LOCAL` for the parts of this file that are this package's own
+recommendation rather than a vendor statement.
 
 The mapping from a judgement shape to a particular cookbook is this package's recommendation. The
 cookbook page linked in each row is the vendor's own recipe; the pairing is an editorial choice
 that the vendor index does not state.
 
-Not evidenced here and deliberately left unspecified: any numeric threshold, price, rate limit, or
-model alias. Those belong in the platform snapshot beside this file.
+Not evidenced here and deliberately left unspecified: any universal recommended threshold, price, rate
+limit, or model alias. Those belong in the platform snapshot beside this file.
