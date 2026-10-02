@@ -32,13 +32,17 @@ Run this gate before any mode runs. It is five questions, answered in order.
 
 Then read the verdict.
 
+Read the rows top to bottom and take the first that applies. Q1 = no means the answer is not a closed
+set, a scale, or a yes/no, so treat it as `llm` (Q3 yes) or `code` (Q2 yes) by the question that
+decides it; when neither applies, say the request is not a Jev judgment and offer a plain alternative.
+
 | Verdict | When it applies | What to do |
 |---|---|---|
 | `jev` | Q1 yes, Q2 no, Q3 no, Q4 no, Q5 yes | Run the mode. Build the question set or the call, state the fallback option, and give the low-confidence band a review path. |
+| `decompose` | Q4 yes, and the request also contains a judgment part that passes Q1, Q2 = no, Q3 = no, Q5 yes | Return a design that splits the work. Code owns the arithmetic and the policy, Jev owns the judgment, and each half is re-checked against this gate. |
 | `code` | Q2 yes, or Q4 yes, or Q5 no | Stop. Say why code answers it exactly, runs offline, and is testable, and produce no Jev artifact. Offer the plain code path instead. |
 | `llm` | Q3 yes | Stop. The deliverable is generated text or generated code, and a judgment model picks among options instead of writing. Keep the model that already does this. |
-| `hybrid` | The request mixes a judgment part with a generation part | Produce no Jev artifact yet. Split it first: name which sentence goes to Jev and which goes to a language model, then run only the Jev half. |
-| `decompose` | Q4 yes inside a request that is otherwise judgable | Return a design that splits the work. Code owns the arithmetic and the policy, Jev owns the judgment, and each half is re-checked against this gate. |
+| `hybrid` | The request mixes a judgment part with a generation part; checked before `llm` when the request mixes judgment and generation | Produce no Jev artifact yet. Split it first: name which sentence goes to Jev and which goes to a language model, then run only the Jev half. |
 
 Worked rows:
 
