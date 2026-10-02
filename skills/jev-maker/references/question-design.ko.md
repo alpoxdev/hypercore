@@ -49,7 +49,8 @@ Jev 요청은 `state` 하나와 유형이 붙은 질문 묶음입니다. 답을 
 구조가 필요해지는 경우는 세 가지입니다. 질문에 배경이나 예시가 붙을 때, 질문의 일부가 코드에서
 올 때, 여러 질문의 문장이 비슷해 서로 구분해야 할 때입니다.
 
-질문은 한 필드에, 그 질문이 가리키는 데이터는 다른 필드에 넣습니다.
+질문은 한 필드에, 그 질문이 가리키는 데이터는 다른 필드에 넣습니다. 이 절과 Choice 기준 절의 JSON
+조각은 요청 전체가 아니라 질문 조각이므로, 각각 요청의 `questions` 아래에 넣습니다.
 
 ```json
 "same_as_record": {
@@ -57,6 +58,22 @@ Jev 요청은 `state` 하나와 유형이 붙은 질문 묶음입니다. 답을 
   "instructions": {
     "potential_duplicate": { "name": "John Smith", "location": "Oakland, California" },
     "question": "Is the resume for the same person as `potential_duplicate`?"
+  }
+}
+```
+
+요청 한 건의 최소 형태는 `state`, `model`, `questions`를 갖추면 되고, 두 직접 경로에서 모두
+검사기를 통과합니다.
+
+```json
+{
+  "state": "Payouts have been failing since Monday.",
+  "model": "jev-latest",
+  "questions": {
+    "needs_human": {
+      "type": "noul",
+      "instructions": "Does this ticket need a human agent, rather than an automated reply?"
+    }
   }
 }
 ```
@@ -70,7 +87,7 @@ Jev 요청은 `state` 하나와 유형이 붙은 질문 묶음입니다. 답을 
 
 Choice는 확률이 가장 높은 선택지 하나를 돌려줍니다. 그러니 선택지가 서로 구분되어야 합니다.
 선택지 설명은 객체로 쓸 수 있고, 그 선택지가 무엇을 덮는지, 무엇이 다른 선택지에 속하는지,
-예시가 무엇인지 적습니다.
+예시가 무엇인지 적습니다. 이 조각은 질문 하나의 `criteria` 부분이고 요청 전체가 아닙니다.
 
 ```json
 "criteria": {
@@ -103,8 +120,8 @@ Score는 정해 둔 단계를 따라 확률로 가중된 위치를 돌려주고,
 다른 뜻이지만, "강한 표현을 쓰고 불만을 되풀이함"은 다르지 않습니다. 단계마다 설명을 붙이고
 필요하면 예시 상황도 붙이세요. 낮은 쪽 끝도 꼭 정의해야 중간 단계가 설 자리를 얻습니다.
 
-단계는 정확한 수치를 복원하는 데 약합니다. Score로 두 단계 사이의 값을 보간할 수 없습니다.
-임계값을 넘는지 보거나 정렬할 때 쓰고, 수량을 되살리는 데는 쓰지 마세요.
+단계는 정확한 수치를 복원하는 데 약합니다. 중간 점수는 나올 수 있지만 그 수가 실제 값을 정확히
+잰 값은 아닙니다. 임계값을 넘는지 보거나 정렬할 때 쓰고, 수량을 되살리는 데는 쓰지 마세요.
 
 ## Noul의 true와 false 설명
 
@@ -185,7 +202,8 @@ Bun이 없거나 검사기를 지운 환경처럼 오프라인 검사기를 돌�
 
 **문서 전체**
 
-1. 파일이 올바른 JSON입니다. 아니면 `INVALID_JSON`.
+1. 파일이 올바른 JSON입니다. 아니면 `INVALID_JSON`, 문서가 엔진 스택이 읽을 수 있는 깊이보다
+   깊게 중첩되면 `INPUT_TOO_DEEP`.
 2. 뿌리가 JSON 객체입니다. 배열이나 스칼라가 아닙니다. 아니면 `ROOT_NOT_OBJECT`.
 3. `state`가 있고 문자열, 객체, 배열 가운데 하나입니다. `null`, 숫자, 불리언은 거부됩니다.
    아니면 `STATE_MISSING` 또는 `STATE_TYPE`.
@@ -198,7 +216,8 @@ Bun이 없거나 검사기를 지운 환경처럼 오프라인 검사기를 돌�
 
 6. `questions`가 비어 있지 않은 객체입니다. 아니면 `QUESTIONS_MISSING` 또는 `QUESTIONS_EMPTY`.
 7. 아이디마다 공백이 아닌 글자가 있습니다. 아니면 `QUESTION_ID_BLANK`.
-8. 각 항목이 `type`과 `instructions`를 가진 JSON 객체입니다. 아니면 `QUESTION_NOT_OBJECT`.
+8. 각 항목이 JSON 객체입니다. 아니면 `QUESTION_NOT_OBJECT`. `type`이나 `instructions` 필드가
+   없는 경우는 이 코드가 아니라 아래 9번과 10번이 잡습니다.
 9. `type`이 해당 경로의 이름 가운데 하나입니다. 직접 경로와 b.ai는 `noul`, `choice`, `score`,
    AI SDK는 `boolean`, `choice`, `score`입니다. 아니면 `QUESTION_TYPE`.
 10. `instructions`가 있고 문자열, 객체, 배열 가운데 하나입니다. 아니면
@@ -206,8 +225,9 @@ Bun이 없거나 검사기를 지운 환경처럼 오프라인 검사기를 돌�
 
 **유형별 criteria**
 
-11. 예/아니오(`noul`, AI SDK에서는 `boolean`): criteria는 선택 사항이고, 쓸 때는 키가 `true`와
-    `false`뿐인 객체이며 각 값이 문자열, 객체, 배열입니다. 아니면 `NOUL_CRITERIA_TYPE`,
+11. 예/아니오(`noul`, AI SDK에서는 `boolean`): criteria는 선택 사항입니다. 쓸 때 각 키는 `true`
+    또는 `false`이고 어느 키든 생략할 수 있으므로, 빈 객체와 키 하나짜리 객체가 모두 통과합니다.
+    값이 있는 키의 값은 문자열, 객체, 배열입니다. 아니면 `NOUL_CRITERIA_TYPE`,
     `NOUL_CRITERIA_KEY`, `NOUL_CRITERIA_VALUE` 가운데 하나.
 12. `choice`: criteria는 선택지 1개에서 255개까지 담은 필수 객체이고, 선택지 설명은 `null`,
     문자열, 객체, 배열 가운데 하나입니다. 아니면 `CHOICE_CRITERIA_MISSING`,
@@ -219,22 +239,27 @@ Bun이 없거나 검사기를 지운 환경처럼 오프라인 검사기를 돌�
     때문입니다.
 
 12번과 13번의 255개, 2개에서 10개라는 경계는 오프라인 검사기가 강제하는 값입니다. 그 뒤에 있는
-벤더 설명은 [플랫폼 스냅샷](../references/official/jev-platform.md)에서 읽으세요.
+벤더 설명은 [플랫폼 스냅샷](../references/official/jev-platform.md)에서 읽으세요. 예/아니오
+criteria의 값과 score 단계에서 `null` 설명을 막는 것도 검사기 자체의 제약이고 직접 경로 문서와
+맞습니다. AI SDK 경로 문서는 `null` 설명을 허용하므로 이것은 AI SDK 규칙이 아닙니다.
 
 **경로별 항목과 공통 항목**
 
 14. b.ai에서는 `stream`이 없거나 `false`입니다. 아니면 `STREAM_NOT_SUPPORTED`.
-15. 문서 안 어느 문자열도 자격 증명처럼 생기지 않았습니다. 아니면 `SECRET_IN_REQUEST`. 검사기는
-    `sk-` 뒤에 영숫자 16자 이상이 붙은 형태와, 인증 방식 이름 뒤에 16자 이상 토큰이 붙은 형태를
-    찾아내고, 값은 출력하지 않고 경로만 알립니다.
+15. 문서 안 어느 문자열 값도 자격 증명처럼 생기지 않았습니다. 객체 키는 검사하지 않고, 그 값을
+    그대로 출력하지도 않습니다. 아니면 `SECRET_IN_REQUEST`. 검사기는 `sk-` 뒤에 영숫자 16자
+    이상이 붙은 형태와, 대소문자를 구분하는 `Bearer ` 뒤에 `[A-Za-z0-9._-]` 문자가 16자 이상
+    붙은 형태를 찾습니다.
 
 **요청을 실패시키지 않고 남기는 경고:** 최상위 키가 `state`, `model`, `questions`, `stream`
-밖일 때 `UNKNOWN_TOP_LEVEL_FIELD`, Choice에 `none`, `other`, `unknown` 선택지가 없을 때
-`NO_FALLBACK_OPTION`, 길이를 4로 나눈 어림값이 state와 가장 긴 질문의 합을 API 예산 위로
-밀어 올릴 때 `STATE_LARGE`, 직접 경로의 별칭이 알려진 목록 밖일 때 `MODEL_UNVERIFIED`.
+밖일 때 `UNKNOWN_TOP_LEVEL_FIELD`, 선택지가 1개에서 255개이면서 `none`, `other`, `unknown`
+선택지가 없을 때 `NO_FALLBACK_OPTION`, 길이를 4로 나눈 어림값이 state와 가장 긴 질문의 합을
+API 예산 위로 밀어 올릴 때 `STATE_LARGE`, 직접 경로의 별칭이 알려진 목록 밖일 때
+`MODEL_UNVERIFIED`.
 
-**종료 코드.** 오류가 없으면 0, 읽을 수 없는 파일까지 포함해 오류가 하나라도 있으면 1, 사용법
-문제(파일 인자 없음, 읽을 수 없는 파일, 알 수 없는 경로)면 2입니다. 실행은 스킬 폴더에서 이렇게 합니다.
+**종료 코드.** 오류가 없으면 0, 읽을 수 없는 파일이나 엔진 스택을 넘겨 중첩된 문서까지 포함해
+오류가 하나라도 있으면 1, 사용법 문제(파일 인자 없음, 읽을 수 없는 파일, 알 수 없는 경로)면
+2입니다. 실행은 스킬 폴더에서 이렇게 합니다.
 
 ```bash
 bun scripts/check-jev-request.mjs --route direct path/to/request.json

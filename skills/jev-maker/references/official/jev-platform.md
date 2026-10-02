@@ -2,7 +2,7 @@
 
 What the vendor pages say about Jev as a platform: the HTTP endpoint, the question and answer
 shape, the limits and price in force when this file was written, the known jagged edges of the
-current version, and the three routes that ship official documentation. Everything here was read
+current version, and the three routes this snapshot covers. Everything here was read
 from the pages listed under Sources and captured on 2026-10-01. This file is the only place in
 this skill where price, limits, model aliases, and route contracts belong.
 
@@ -57,11 +57,13 @@ Request body:
 | --- | --- | --- |
 | `state` | string, object, or array | The content to evaluate. A chat log, a record, or the current state of your application. |
 | `model` | string | `"jev-latest"` is the flagship alias. See the alias table below. |
-| `questions` | map of id to question | A non-empty map you name. Answers come back under the same ids. The vendor states the id "is not sent to the underlying model and is not used in inference" (api, 2026-10-01). |
+| `questions` | map of id to question | A map you name. Answers come back under the same ids. The vendor states the id "is not sent to the underlying model and is not used in inference" (api, 2026-10-01). The b.ai page states that its map must be non-empty and that ids must not be empty or whitespace-only. |
 
-Every question carries `type` and `instructions`. Both `criteria` and `instructions` accept a
-string, an object, or an array, so a long prompt with reference data can be split into a question
-field and data fields, then pointed at by name in backticks.
+Every question carries `type` and `instructions`. `instructions` accepts a string, an object, or an
+array, so a long prompt with reference data can be split into a question field and data fields, then
+pointed at by name in backticks. `criteria` is never a bare string: it is an object for a `noul`
+question, a map of option to description for a `choice` question, and an ordered array for a `score`
+question.
 
 Response body: `model` (the versioned id that answered), `answers` (one entry per question id),
 and `usage` with `input_tokens` and `output_tokens`.
@@ -121,7 +123,7 @@ before trusting a non-English workload, and read the confidence signal closely w
 
 | Type | Criteria | Answer |
 | --- | --- | --- |
-| `noul` | Optional object. Only the keys `true` and `false` are allowed, and each value is a string, object, or array | `noul`, a number from 0 (no) to 1 (yes) |
+| `noul` | Optional object with the properties `true` and `false`; the b.ai route adds that only those two keys are allowed, and that each value is a string, object, or array | `noul`, a number from 0 (no) to 1 (yes) |
 | `choice` | Required map of option to description. Maximum 255 options; `null` is allowed when an option needs no detail | `choice` (the highest-probability option), `probabilities` for every option, and `confidence` |
 | `score` | Required ordered array of level descriptions. At least two levels; the API accepts up to 10. Items may be strings, objects, or arrays, but not `null` | `score` (a probability-weighted value that can fall between levels), `legend`, `probabilities`, and `confidence` |
 
@@ -181,7 +183,7 @@ whether a value clears a threshold, but not reconstruct the value itself.
 - volatility: volatile
 - summary: The vendor ships one agent skill that gives a coding agent the three question types,
   the architectural patterns, and best practices for structuring evaluations. It is an
-  orientation and design aid, not a generator of request files or call code.
+  orientation and design aid.
 
 Installation, per the page:
 

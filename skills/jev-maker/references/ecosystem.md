@@ -1,7 +1,7 @@
 # Ecosystem
 
 Where this package sits, as of 2026-10-01. Three things are described below: the vendor's own agent
-skill, the community skills that surround the same model, and the gap this package fills.
+skill, the community skills that surround the same model, and what this package delivers.
 
 The landscape is written from what is stored in this package: the vendor's page on its own skill, and
 a search of public skill repositories done on 2026-10-01 whose results were not stored here. Community skills are named as leads,
@@ -13,14 +13,14 @@ Label for every community item: **community, not required, inspiration only**.
 
 - The official skill
 - Community skills
-- What this package adds that the others do not
+- What this package delivers
 - How to read this landscape
 - Unverified items
 - Sources
 
 ## The official skill
 
-The vendor ships one agent skill. It lives in the `typesafe-ai` folder of the `typesafe-ai/skills`
+The vendor documents a TypeSafe skill in the `typesafe-ai` folder of the `typesafe-ai/skills`
 repository, and the install command on the vendor's page is:
 
 ```bash
@@ -30,12 +30,12 @@ npx skills add typesafe-ai/skills --skill typesafe-ai
 The installer asks which agent to target and installs project-local by default; a global install is a
 flag away. A plugin path and a manual copy exist as alternates, and the page asks for exactly one
 installation method so an agent does not end up with duplicate copies. A stale copy is named on that
-page as the cause of an agent inventing request or response fields.
+page as a possible cause of an agent inventing request or response fields.
 
 What it carries: the three question types, the architectural patterns for composing them, and guidance
-on structuring evaluations. What it does not carry: request files, constants files, caller code, or
-templates. It is an orientation and design aid. It also asks the reader to open the live documentation
-while working, which is the right instinct and also the reason it moves with the vendor's site.
+on structuring evaluations. It is an orientation and design aid, and it asks the reader to open the live
+documentation while working, which is the right instinct and also the reason it moves with the vendor's
+site.
 
 Two habits from that page are kept in this package: the questions and the thresholds belong in a single
 file a person can review, and a first draft of a question set is expected to be edited rather than
@@ -43,9 +43,10 @@ accepted.
 
 ## Community skills
 
-The 2026-10-01 search of public skill repositories found a crowd of community skills around the same model, and
-they fall into six families. Representative names are listed as they were recorded; repository
-locations were not saved into this package, so none is asserted here.
+The 2026-10-01 search of public skill repositories whose results were not saved here returned a set of
+community skills around the same model. They are grouped into six families below as an unverified
+hypothesis, not as a confirmed taxonomy. Representative names are listed as they were recorded;
+repository locations were not saved into this package, so none is asserted here.
 
 | Family | Representative names | Repository | Status |
 | --- | --- | --- | --- |
@@ -56,10 +57,11 @@ locations were not saved into this package, so none is asserted here.
 | Agent-harness connectors | no name captured | not captured in this package | unverified |
 | Domain-specific | no name captured | not captured in this package | unverified |
 
-What each family does, as that search showed it:
+What each family seems to do, as an unverified hypothesis from that search rather than a confirmed
+description:
 
 - **Design guidance** explains when the model is the right tool and how to split a feature between code
-  and a judgment call. This is the most crowded family, and the official skill covers the same ground.
+  and a judgment call.
 - **Question generation** drafts question sets and criteria, which overlaps with the `questions` mode in
   this package.
 - **Classification templates** show a worked classification, usually a routing or triage case, as an
@@ -73,10 +75,9 @@ What each family does, as that search showed it:
 None of the names above is required, endorsed, or checked for currency. They are listed so a request
 that mentions one is recognized.
 
-## What this package adds that the others do not
+## What this package delivers
 
-The official skill advises; the community skills mostly advise as well. Neither category ships the
-artifacts a project needs to start. This package does:
+This package ships the artifacts a project needs to start:
 
 - It writes files: a request JSON, a constants file, caller code for the chosen route and language, a
   fill-in template set, an evaluation case skeleton, and an audit table.
@@ -101,10 +102,9 @@ Names on this page are leads, not dependencies. A skill listed here may be unmai
 with the current vendor documentation, and may be written for a version of the model that no longer
 exists. Read the vendor page before adopting anyone's advice about a request field.
 
-Popularity numbers on a repository page, including star counts, are partly promotional: they reward
-careful positioning and timing as much as quality, and a small, focused skill can be more useful than a
-popular general one. They are not used as a selection signal here. What is used instead is whether a
-skill produces the artifact in hand and whether its advice matches the vendor's current page.
+Popularity numbers on a repository page, including star counts, are not used as a selection signal
+here. What is used instead is whether a skill produces the artifact in hand and whether its advice
+matches the vendor's current page.
 
 Nothing on this page is a dependency of this package. This package runs on its own files.
 
@@ -136,7 +136,7 @@ Recorded so they are not mistaken for confirmed facts later:
 | The official skill's location, its install commands, what it carries, the single-installation rule, the stale-copy failure, and the single-constants-file habit | <https://docs.typesafe.ai/agent-skill.md> |
 | The question types and the architectural patterns the official skill covers | <https://docs.typesafe.ai/primitives> and <https://docs.typesafe.ai/concepts/how-to-build-with-system-one> |
 | The community skill families and the representative names listed above | a public repository search on 2026-10-01; no source page saved |
-| The gap statement, the artifact list, and the audit scope | this package's own rules and procedures, [`../rules/modes-and-routing.md`](../rules/modes-and-routing.md) |
+| The delivery statement, the artifact list, and the audit scope | this package's own rules and procedures, [`../rules/modes-and-routing.md`](../rules/modes-and-routing.md) |
 | The routes that carry a verified contract, and the rule that others get no generated code | [`./providers.md`](./providers.md) |
 
 ### Evidence grade
@@ -144,13 +144,12 @@ Recorded so they are not mistaken for confirmed facts later:
 `VENDOR` for the official skill section: location, install commands, scope, and the two working habits
 all come from the vendor page named above, captured on 2026-10-01.
 
-`SECONDARY` for the community section, and only as a list of names. The families and the representative
+`UNVERIFIED` for the community section, and only as a list of names. The families and the representative
 skills came from that 2026-10-01 search, whose results were not saved into this package. No
 repository was confirmed, nothing was read end to end, and no popularity or maintenance claim is made.
 Every community row is marked unverified for exactly that reason.
 
-`LOCAL` for the gap statement, which describes what this package does rather than what another package
-does.
+`LOCAL` for the delivery statement, which describes what this package does.
 
 Not evidenced here, and deliberately absent: prices, rate limits, context budgets, endpoint names, and
 the model alias table. They belong to [`./official/jev-platform.md`](./official/jev-platform.md), behind

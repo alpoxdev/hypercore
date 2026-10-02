@@ -33,8 +33,8 @@ Jev를 부르는 공식 문서 경로는 셋이고, 각각 계약이 다릅니�
 | 경로 | 엔드포인트 | 인증 | 모델 아이디 | 질문 유형 | 신뢰도 위치 | 환경변수 | 상태 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | TypeSafe 직접 | `POST https://api.typesafe.ai/v1/systemone` | `Authorization: Bearer plus your key` | `jev-latest`, `jev-preview`, `jev-1.13.0` | `noul`, `choice`, `score` | choice와 score는 `answers.<id>.confidence`, noul은 없음 | `TYPESAFE_API_KEY` | verified |
-| b.ai | `POST https://api.b.ai/v1/decisions` | `Authorization: Bearer plus your key`, 또는 같은 값을 담은 `x-api-key` 헤더 | `jev-1.13.0`, `jev-latest`만 | `noul`, `choice`, `score` | choice와 score는 `answers.<id>.confidence`, noul은 없음 | `BAI_API_KEY` | verified |
-| Vercel AI SDK와 AI Gateway | 직접 엔드포인트가 없습니다. SDK가 모델을 찾고, 문자열 아이디는 Vercel AI Gateway로 갑니다 | Gateway 키를 담은 `AI_GATEWAY_API_KEY`, 또는 Vercel OIDC | 문자열 아이디 `typesafe-ai/jev`, 또는 `typeSafeAi.evaluationModel('jev-latest')` | `boolean`, `choice`, `score` | 질문 아이디별 `result.providerMetadata?.typesafe?.confidence` | `AI_GATEWAY_API_KEY` | verified |
+| b.ai | `POST https://api.b.ai/v1/decisions` | `Authorization: Bearer <key>`, 또는 `x-api-key: <key>` | `jev-1.13.0`, `jev-latest`만 | `noul`, `choice`, `score` | choice와 score는 `answers.<id>.confidence`, noul은 없음 | `BAI_API_KEY`(프로젝트 관례 이름이며 벤더가 밝힌 이름이 아닙니다) | verified |
+| Vercel AI SDK와 AI Gateway | 직접 엔드포인트가 없습니다. SDK가 모델을 찾고, 문자열 아이디는 기본 provider를 설정하지 않았을 때 Vercel AI Gateway로 갑니다 | Gateway 키를 담은 `AI_GATEWAY_API_KEY`, 또는 Vercel OIDC | 문자열 아이디 `typesafe-ai/jev`, 또는 `typeSafeAi.evaluationModel('jev-latest')` | `boolean`, `choice`, `score` | 질문 아이디별 `result.providerMetadata?.typesafe?.confidence` | `AI_GATEWAY_API_KEY` | verified |
 
 표에 담기 어려운 차이는 이렇습니다.
 
@@ -57,10 +57,11 @@ Jev를 부르는 공식 문서 경로는 셋이고, 각각 계약이 다릅니�
 1. 저장소가 이미 `ai` 패키지에 의존하면 AI SDK 경로와 `boolean` 질문 유형을 씁니다. 그 패키지가
    이미 설치되어 있고 프로젝트의 다른 모델 호출도 그리로 가기 때문입니다.
 2. 아니면 환경에 `BAI_API_KEY`가 있으면(이름만 확인하고 값은 보지 않습니다) b.ai 경로를 씁니다.
-   기기에 키 이름이 설정되어 있다는 것은 그 기기에 대한 증거이지 이 프로젝트에 대한 증거가
-   아닙니다. 잠금 파일, 설정, 기존 클라이언트 코드, 환경 변수 예시 파일처럼 프로젝트 자체의
-   파일이 다른 경로를 가리키면 그 경로가 이기고, 둘이 어긋나면 어느 경로를 골랐는지와 그 이유를
-   밝힙니다.
+   `BAI_API_KEY`는 이 프로젝트가 정한 관례 이름이고, 이 스냅샷에 담긴 벤더 문서는 그 경로의
+   환경변수 이름을 밝히지 않습니다. 기기에 키 이름이 설정되어 있다는 것은 그 기기에 대한
+   증거이지 이 프로젝트에 대한 증거가 아닙니다. 잠금 파일, 설정, 기존 클라이언트 코드, 환경 변수
+   예시 파일처럼 프로젝트 자체의 파일이 다른 경로를 가리키면 그 경로가 이기고, 둘이 어긋나면 어느
+   경로를 골랐는지와 그 이유를 밝힙니다.
 3. 그 밖에는 `TYPESAFE_API_KEY`를 쓰는 TypeSafe 직접 경로입니다.
 
 규칙이 둘 이상 맞으면 앞의 규칙이 이깁니다. 경로를 바꾸는 일은 요청 단위의 결정이지 조용히
@@ -115,6 +116,9 @@ verified 줄은 모두 `PRIMARY`입니다. 계약의 각 항목이 위 표에 �
 전체가 아니라 base URL과 모델 슬러그를 보여 줄 뿐입니다.
 
 직접 경로의 환경변수 이름은 그 이름으로 키를 읽는 벤더의 SDK 문서에서 가져왔습니다.
+`BAI_API_KEY`는 벤더가 밝힌 이름이 아니라 프로젝트 관례입니다. 이 스냅샷에 담긴 b.ai 문서는 그
+경로의 환경변수 이름을 적지 않았고, 직접 provider(Gateway가 아닌 쪽)의 인증 방식과 환경변수도
+담긴 문서에 없으므로 여기서도 확인된 사실로 적지 않습니다.
 
 여기서 확인되지 않아 일부러 비워 둔 것: 클라이언트 패키지의 버전, 미검증 경로의 현재 모델
 아이디, 그리고 미검증 경로가 스트리밍을 지원하는지 여부입니다.
