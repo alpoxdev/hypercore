@@ -7,10 +7,10 @@
 A key is never typed into chat, never written into a generated file, and never printed to a log or a command output. To find out whether a key exists, check the name only:
 
 ```bash
-test -n "${NAME:-}" && echo "set" || echo "unset"
+printenv NAME >/dev/null && echo set || echo unset
 ```
 
-That form prints `set` or `unset` and never the value. Don't run a command that echoes the variable, don't put the value into a request body you show back, and don't copy it into files inside the repository.
+That form prints `set` or `unset` and never the value, because the argument is the variable's name rather than its value, so no shell expansion puts the value into a traced word. Do not run it under shell tracing with the value in the command line. Don't run a command that echoes the variable, don't put the value into a request body you show back, and don't copy it into files inside the repository.
 
 If a user pastes a key into the conversation, don't repeat it, don't store it, and don't write it anywhere. Tell them to rotate it, because it has already left their machine, and point them at setting the environment variable themselves.
 
