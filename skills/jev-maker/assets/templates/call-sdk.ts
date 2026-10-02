@@ -24,6 +24,25 @@ const STATE = {
   customer: { plan: "growth" }
 };
 
+// The option set and the level list are defined once here, so the check on the response reads the
+// same keys and the same level count the question was built from.
+const QUEUE_OPTIONS = {
+  billing: "Charges, payouts, invoices, refunds.",
+  technical: "Bugs, outages, integrations, API errors.",
+  account: "Login, plan changes, team membership.",
+  other: null
+};
+
+const QUEUE_OPTION_KEYS = Object.keys(QUEUE_OPTIONS);
+
+// The SDK types a score rubric as a tuple of at least two entries, so the level list carries that
+// type as well as being the single source of the level count.
+const URGENCY_LEVELS: readonly [string, string, ...string[]] = [
+  "Can wait: no money or access is blocked this week.",
+  "Time-boxed: money or access is blocked within the next few days.",
+  "Blocking: the customer cannot operate and is losing money today."
+];
+
 interface Decision {
   readonly question: string;
   readonly outcome: "act" | "review";
@@ -59,6 +78,39 @@ function decisionFor(question: string, value: unknown, threshold: number): Decis
   return { question, outcome: "review", signal, threshold, reason: "below the threshold" };
 }
 
+/** Reports whether an answered choice is one of the option keys its question was built from. */
+function choiceIsAllowed(value: unknown, optionKeys: readonly string[]): boolean {
+  return typeof value === "string" && optionKeys.includes(value);
+}
+
+/** Reports whether an answered score is a finite number inside 0..(levelCount - 1). */
+function scoreIsAllowed(value: unknown, levelCount: number): boolean {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= levelCount - 1;
+}
+
+/**
+ * Turns one answered value into a decision, after checking the answer itself against the set its
+ * question was built from: a choice outside the option keys, or a score outside the level range,
+ * is a review and never an act, so an out-of-set value can never be printed as a valid answer.
+ */
+function answerDecisionFor(
+  question: string,
+  value: unknown,
+  threshold: number,
+  allowed: boolean
+): Decision {
+  if (!allowed) {
+    return {
+      question,
+      outcome: "review",
+      signal: null,
+      threshold,
+      reason: "the value is missing or outside the allowed set, so a person decides"
+    };
+  }
+  return decisionFor(question, value, threshold);
+}
+
 /** Sends one consented request and prints one act or review decision per question. */
 async function main() {
   const client = new TypeSafeClient();
@@ -67,13 +119,9 @@ async function main() {
     model: MODEL,
     state: STATE,
     questions: {
-      // The SDK page documents the choice() helper, so the choice question uses it.
-      queue: choice("Which queue should own this ticket?", {
-        billing: "Charges, payouts, invoices, refunds.",
-        technical: "Bugs, outages, integrations, API errors.",
-        account: "Login, plan changes, team membership.",
-        other: null
-      }),
+      // The SDK page documents the choice() helper, so the choice question uses it, with the same
+      // option object the response check reads its keys from.
+      queue: choice("Which queue should own this ticket?", QUEUE_OPTIONS),
       // noul and score stay plain question objects, as the HTTP API reference writes them.
       needs_human: {
         type: "noul",
@@ -86,21 +134,28 @@ async function main() {
       urgency: {
         type: "score",
         instructions: "How urgent is this ticket for the customer right now?",
-        criteria: [
-          "Can wait: no money or access is blocked this week.",
-          "Time-boxed: money or access is blocked within the next few days.",
-          "Blocking: the customer cannot operate and is losing money today."
-        ]
+        criteria: URGENCY_LEVELS
       }
     }
   });
 
   // A noul answer is the yes probability; a choice or score answer carries the model's confidence.
-  // Each value is validated before the comparison, so a bad value can never route to act.
+  // Each value is validated before the comparison, so a bad value can never route to act, and an
+  // answered choice or score is checked against the set its question was built from first.
   const decisions = [
     decisionFor("needs_human", response.answers.needs_human.noul, THRESHOLDS.noulActAtOrAbove),
-    decisionFor("queue", response.answers.queue.confidence, THRESHOLDS.answerConfidenceAtOrAbove),
-    decisionFor("urgency", response.answers.urgency.confidence, THRESHOLDS.answerConfidenceAtOrAbove)
+    answerDecisionFor(
+      "queue",
+      response.answers.queue.confidence,
+      THRESHOLDS.answerConfidenceAtOrAbove,
+      choiceIsAllowed(response.answers.queue.choice, QUEUE_OPTION_KEYS)
+    ),
+    answerDecisionFor(
+      "urgency",
+      response.answers.urgency.confidence,
+      THRESHOLDS.answerConfidenceAtOrAbove,
+      scoreIsAllowed(response.answers.urgency.score, URGENCY_LEVELS.length)
+    )
   ];
 
   for (const decision of decisions) {
@@ -108,12 +163,16 @@ async function main() {
       `${decision.question}: ${decision.outcome} (signal ${decision.signal}, threshold ${decision.threshold}) - ${decision.reason}`
     );
   }
-  console.log(`Chosen queue: ${response.answers.queue.choice}`);
+  // An answer that is not one of the option keys is printed as invalid, never as itself.
+  const chosenQueue = choiceIsAllowed(response.answers.queue.choice, QUEUE_OPTION_KEYS)
+    ? response.answers.queue.choice
+    : "invalid";
+  console.log(`Chosen queue: ${chosenQueue}`);
 }
 
 if (LIVE_CALL_APPROVED) {
-  main().catch((error: unknown) => {
-    console.error(error instanceof Error ? error.message : String(error));
+  main().catch(() => {
+    console.error("The call failed; no response was acted on. Check the status and the route in references/providers.md.");
     process.exitCode = 1;
   });
 } else {

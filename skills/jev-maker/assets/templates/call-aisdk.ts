@@ -144,8 +144,8 @@ async function main() {
 }
 
 if (LIVE_CALL_APPROVED) {
-  main().catch((error: unknown) => {
-    console.error(error instanceof Error ? error.message : String(error));
+  main().catch(() => {
+    console.error("The call failed; no response was acted on. Check the status and the route in references/providers.md.");
     process.exitCode = 1;
   });
 } else {
