@@ -22,7 +22,8 @@
 - [ ] **Disclosure and links.** 전환형 or any sponsored/affiliate relationship is disclosed in the first paragraph in plain words; every external link says where it goes. (R6)
 - [ ] **Research ran, nothing fabricated.** When the brief lacked facts, the fact pack lists sourced facts (`URL | 날짜`) and a top-3 gap analysis; every first-hand claim the author did not supply is a `[확인 필요: …]` slot with an example, not a sentence.
 - [ ] **Inline image markers.** A cover marker after the title and one `[이미지: 무엇을 찍을지 | 캡션]` per photo-provable claim, at their positions in the body; no stock, screenshot, or reused-set proposals.
-- [ ] **Chosen format.** Intake answered. Plain uses one text fence; rich separates title/tags from body HTML. Check HTML clipboard requirements, HTTPS images, table spans; exclude data:image, scripts, event handlers.
+- [ ] **Delivery shape.** Intake answered and the platform resolved (`naver` or `inblog`). The body is HTML by default with title/tags separate; a single text fence only when the user explicitly requested plain, and the format was never asked. Check HTML clipboard requirements, HTTPS images, table spans; exclude data:image, scripts, event handlers.
+- [ ] **Platform-conditional formatting.** A Naver post uses the Naver rhythm contract; an inblog post uses left-aligned natural paragraphs, `h2`/`h3` subheadings, no duplicate H1, and separate metadata ([`../references/inblog-format.md`](../references/inblog-format.md)). No Naver-only rule (hashtag, editor 주제, ranking or algorithm reference, DataLab check) is applied to an inblog post.
 - [ ] **One human-reviewed draft.** Exactly one post; no variants for batch publishing; `[확인 필요]` markers left wherever a fact was missing rather than filled in. (R7)
 - [ ] **Brand facts verbatim.** 전환형: every 가치입증 line matches the user's input character for character; no added credentials, counts, awards, or prices.
 - [ ] **No manufactured engagement.** No comment/like/subscribe bait, no reciprocal-neighbor call, no length added "for dwell time". (R9)
@@ -52,10 +53,10 @@
 
 ### Delivery shape
 
-- [ ] **Body rhythm contract passed** (`post-workflow.md` §3): text blocks 1-5 lines with 12-25-character explicit breaks; paragraph blocks 1-3 sentences; at most 2 text blocks consecutively, with an image/quote/table or a visible gap between blocks; rich body paragraphs center-aligned with `line-height:1.8` inline and blank-paragraph spacers (no `p` `margin`).
-- [ ] Rich files include a formatted-copy button selecting only #sample; title/tags/prompts stay outside; blocked copy reports manual instructions.
+- [ ] **Body rhythm contract passed** (Naver only; `post-workflow.md` §3): text blocks 1-5 lines with 12-25-character explicit breaks; paragraph blocks 1-3 sentences; at most 2 text blocks consecutively, with an image/quote/table or a visible gap between blocks; HTML body paragraphs center-aligned with `line-height:1.8` inline and blank-paragraph spacers (no `p` `margin`). An inblog post skips this and is checked against [`../references/inblog-format.md`](../references/inblog-format.md) instead.
+- [ ] HTML files include a formatted-copy button selecting only #sample; title/tags/prompts stay outside; blocked copy reports manual instructions.
 
-- [ ] Titles → chosen-format body → generation JSON → keyword → slots → publish note.
+- [ ] Titles → body HTML by default (plain only on explicit request) → generation JSON → keyword → slots → publish note.
 - [ ] No rule IDs, tier labels, or rubric text in the user-facing output.
 
 ### Repair path (only when the user supplied the post)
@@ -65,13 +66,15 @@
 - [ ] Register is unchanged in both directions; contractions, asides, questions, and direct address survive.
 - [ ] The over-correction guard passed, including the new-tell S1 scan on the repaired text.
 - [ ] Uncertain edits were rolled back rather than pushed through.
-- [ ] Deliver repairs in the chosen format; keep the change summary outside the body.
+- [ ] Deliver repairs in the default body HTML (plain only when explicitly requested); keep the change summary outside the body.
 
 ## 2. Package checklist (when this skill changes)
 
 - [ ] `name` in frontmatter is `blog-maker` and matches the folder.
 - [ ] `description` states when to use and when not to; at least 3 positive, 2 negative, 1 boundary activation examples exist in `SKILL.md`.
+- [ ] The `description` and activation examples name `naver` and `inblog` as the supported platforms, keep website SEO and other platforms out of scope, and confirm the format is HTML by default and never asked.
 - [ ] Every rule and reference file has a `*.ko.md` mirror with the same section structure; both languages of a file change together.
+- [ ] Platform-conditional formatting lives in `references/inblog-format.md`; every inblog fact there traces to its source ledger (checked 2026-10-15), and no Naver paste row is presented as an inblog guarantee.
 - [ ] Every claim that names Naver behavior traces to an `official` row in `references/naver-algorithm-timeline.md`; observed and folklore items are labeled as such.
 - [ ] Local links resolve; code fences are balanced.
 - [ ] `assets/evals/blog-maker-cases.jsonl` covers positive, negative, boundary, regression, and adversarial cases and matches the current trigger and workflow.
@@ -81,6 +84,6 @@
 
 ## Sources
 
-> No external sources; content checked 2026-09-21.
+> No external sources; content checked 2026-10-15 (the Naver-behavior items keep the 2026-09-21 check).
 
-This file states this package's own draft and package checklists. Every Naver-behavior item it carries traces to an `official` row in [`../references/naver-algorithm-timeline.md`](../references/naver-algorithm-timeline.md); no external source of its own is cited.
+This file states this package's own draft and package checklists. Every Naver-behavior item it carries traces to an `official` row in [`../references/naver-algorithm-timeline.md`](../references/naver-algorithm-timeline.md); no external source of its own is cited. The inblog layout and editor facts live in [`../references/inblog-format.md`](../references/inblog-format.md) with its own source ledger.

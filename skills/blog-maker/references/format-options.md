@@ -1,19 +1,30 @@
-# Format Options: plain vs rich
+# Format Options: HTML default, plain on request
 
 > Korean version: [`format-options.ko.md`](format-options.ko.md)
 
-Read after the format choice in [`../rules/intake.md`](../rules/intake.md). This reference defines delivery, not authorization to operate or publish in Naver.
+Read before delivery, from [`../rules/intake.md`](../rules/intake.md). This reference defines delivery, not authorization to operate or publish.
 
 ## 1. Delivery
 
-For rich output, follow [`rich-html-template.md`](rich-html-template.md) and deliver a **complete HTML file with a formatted-copy button**. Replace the shell’s #sample body and retain its copy behavior.
+The format is never asked. Body HTML is the default; plain text is used only when the user explicitly requests it. Both supported platforms (`naver`, `inblog`) receive this same delivery shape, but the paste contract branches: §2 carries the Naver editor observations, and [`inblog-format.md`](inblog-format.md) carries the inblog layout and editor facts.
 
-- `plain`: one fenced `text` draft with title, body markers, and hashtags. Explain that the title field and tag controls still require separate entry.
-- `rich`: separate title, category (if known), and tags from body-only HTML. Deliver an HTML artifact with a rendered preview when file delivery is available; otherwise deliver fenced `html` source explicitly labeled as source, not a styled clipboard.
-- Rich paste requires rendered content copied with HTML clipboard data (`text/html`), not copying literal tags from a code block. Do not promise that a fenced block's copy button preserves styling. When no rendered/HTML clipboard route is available, explain the limitation and provide source plus a plain fallback.
+For HTML output, follow [`rich-html-template.md`](rich-html-template.md) and deliver a **complete HTML file with a formatted-copy button**. Replace the shell’s #sample body and retain its copy behavior.
+
+- `html` (default): separate title, category (if known), and tags from body-only HTML. Deliver an HTML artifact with a rendered preview when file delivery is available; otherwise deliver fenced `html` source explicitly labeled as source, not a styled clipboard.
+- `plain` (only when the user explicitly asks for plain text): one fenced `text` draft with title, body markers, and hashtags. Explain that the title field and tag controls still require separate entry.
+- HTML paste requires rendered content copied with HTML clipboard data (`text/html`), not copying literal tags from a code block. Do not promise that a fenced block's copy button preserves styling. When no rendered/HTML clipboard route is available, explain the limitation and provide source plus a plain fallback.
 - Keep image-generation JSON prompts and publishing notes outside the body HTML. Unknown image sources remain visible instructions; never invent a URL or claim a prompt is an image.
 
-## 2. Supported features and limits
+## 2. Platform support entry
+
+Body layout and paste behavior differ by platform. This file carries the **Naver** editor observations; inblog has its own file.
+
+| Platform | Layout and paste contract |
+|---|---|
+| `naver` | The Naver editor observations in the table below; body paragraphs center-aligned with the 12-25-character line rhythm (the body rhythm contract in [`../rules/post-workflow.md`](../rules/post-workflow.md) §3). |
+| `inblog` | Read [`inblog-format.md`](inblog-format.md): left-aligned natural paragraphs, `h2`/`h3` subheadings, no duplicate H1, and the HTML embed block route. |
+
+The rows below are paste observations from the Naver editor, recorded in this package's own editor sessions. They are the delivery contract for a **Naver** post; the same behavior is not verified for inblog, so these rows are never presented as an inblog guarantee.
 
 | Feature | Reported result | Delivery rule |
 |---|---|---|
@@ -38,7 +49,7 @@ Grades above: the Preserved/Not preserved/Removed rows carry live editor paste e
 
 Use the user's recommended subset: `p`, `br`, `h2`, `h3`, `strong`, `em`, `u`, `span`, `ul`, `ol`, `li`, `blockquote`, `hr`, `table`, `thead`, `tbody`, `tr`, `th`, `td`, `img`, `a`. Prefer inline styles and simple sibling blocks over deeply nested structures.
 
-Paragraph defaults follow the body rhythm contract in [`../rules/post-workflow.md`](../rules/post-workflow.md) §3: `line-height:1.8` inline on every paragraph, body paragraphs center-aligned, tables/lists/captions left-aligned, blank-paragraph spacers between blocks (not `margin`). The subset remains a recommendation: exact heading sizes were not individually reported as tested.
+Paragraph defaults follow the body rhythm contract in [`../rules/post-workflow.md`](../rules/post-workflow.md) §3, which is platform-conditional. On Naver: `line-height:1.8` inline on every paragraph and body paragraphs center-aligned. On inblog: left-aligned natural paragraphs with no forced line breaks ([`inblog-format.md`](inblog-format.md)). Tables, lists, and captions stay left-aligned on both, with blank-paragraph spacers between blocks (not `margin`). The subset remains a recommendation: exact heading sizes were not individually reported as tested.
 
 Escape text and attribute values; exclude scripts, event handlers, and executable URL schemes. Use valid table spans and consistent cell counts. Apply the prose ornament budget; supported styling is not a quota to fill.
 
@@ -54,6 +65,6 @@ Before publication, the user checks the rendered body or editor DOM for missing/
 
 ## Sources
 
-> No external sources; content checked 2026-09-21.
+> No external sources; content checked 2026-10-15 (the Naver paste rows come from the 2026-09-21 editor sessions).
 
-This file states this package's own delivery contract. The paste-behavior rows come from the package's own editor sessions, recorded in [`../rules/post-workflow.md`](../rules/post-workflow.md) §3; no external publication is cited because the file makes no external claim.
+This file states this package's own delivery contract. The Naver paste-behavior rows come from the package's own editor sessions, recorded in [`../rules/post-workflow.md`](../rules/post-workflow.md) §3; no external publication is cited because the file makes no external claim. The inblog facts live in [`inblog-format.md`](inblog-format.md) with its own source ledger.
