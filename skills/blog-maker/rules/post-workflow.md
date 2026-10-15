@@ -2,7 +2,7 @@
 
 > Korean version: [`post-workflow.ko.md`](post-workflow.ko.md)
 
-**Purpose**: The ordered procedure for one Naver blog post, from brief to a draft the user pastes into SmartEditor ONE. Ranking rules live in [`naver-ranking-contract.md`](naver-ranking-contract.md); hook patterns in [`../references/hook-library.md`](../references/hook-library.md); prose rules are in [`human-prose.md`](../rules/human-prose.md).
+**Purpose**: The ordered procedure for one Naver or inblog blog post, from brief to a draft the user pastes into the platform's editor (Naver SmartEditor ONE, or the inblog editor for the inblog branch). Ranking rules live in [`naver-ranking-contract.md`](naver-ranking-contract.md); hook patterns in [`../references/hook-library.md`](../references/hook-library.md); prose rules are in [`human-prose.md`](../rules/human-prose.md).
 
 ## 0. Mode decision (state it in one clause)
 
@@ -94,14 +94,14 @@ Rules that keep it honest:
 
 For the other eight types, follow the type's playbook in [`../references/post-type-library.md`](../references/post-type-library.md) §3.
 
-### Body rhythm contract
+### Body rhythm contract (Naver)
 
-Both formats follow the same line rhythm. It is derived from two live measurements of reference posts (`.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md`, PostView DOM analysis) and one editor paste test (`.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt`):
+On Naver, both output shapes (HTML and plain) follow the same line rhythm. It is derived from two live measurements of reference posts (`.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md`, PostView DOM analysis) and one editor paste test (`.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt`). This rhythm is **Naver's**: the paragraph alignment and the explicit 12-25-character breaks are Naver editor observations. An inblog post does not use it — it uses left-aligned natural paragraphs with `h2`/`h3` subheadings and no forced breaks ([`../references/inblog-format.md`](../references/inblog-format.md)).
 
 - A text block is 1-5 lines, and each line is 12-25 characters broken by an explicit line break — never one long sentence left to wrap.
 - A paragraph block is 1-3 sentences. A plain delivery separates blocks with a blank line. Body HTML separates them with a blank-paragraph spacer (`<p style="line-height:1.8;">&nbsp;</p>`, verified to survive paste); a `margin` on `p` does not survive the paste, so it is never the spacing mechanism.
 - At most 2 text blocks run consecutively (the observed mode is 1). Place an image, a quote, or a table between blocks so the scroll never shows two dense screens in a row.
-- Body HTML only: body paragraphs are center-aligned; a key phrase gets color and bold on the phrase itself, not the paragraph; tables, lists, and captions stay left-aligned; `line-height:1.8` inline on each paragraph is the default (verified paste-surviving).
+- Body HTML only, Naver: body paragraphs are center-aligned; a key phrase gets color and bold on the phrase itself, not the paragraph; tables, lists, and captions stay left-aligned; `line-height:1.8` inline on each paragraph is the default (verified paste-surviving).
 - The reference posts' emoji-number heading style is **not** adopted: `emoji as section markers` stays an S1 removal target in `human-prose.md` §4.
 - Before delivery, run the rhythm self-check: no line wraps into a stair-stepped shape, and every two consecutive text blocks show a visible gap.
 
@@ -140,7 +140,7 @@ Deliver in this order:
 3. **Generation JSON**: one numbered object per generation marker, carrying the role's fields and its paste-ready `prompt`; omit when none. The prose prompt lives inside each object, so this workflow adds no separate prose-prompt section.
 4. **Keyword decision** in one line.
 5. **Slots to fill** — the list of `[확인 필요]` markers in order, each with what to write.
-6. **Publish note** (3-5 lines): mode; the platform (`naver` or `inblog`); the Naver editor 주제 to select; disclosure check; link check; a length note only when the body is outside the 1,500-3,000 default; the source URLs used for research (for the author's reference, not for the body); the voice line from [`tone-manner.md`](tone-manner.md) §5, plus that file's request-not-applied line when the floor rejected a tone request.
+6. **Publish note** (3-5 lines): mode; the platform (`naver` or `inblog`); for Naver the editor 주제 to select, for inblog the metadata fields to set (title, description, optional meta title/meta description, slug, category) with no hashtag or editor topic requirement; disclosure check; link check; a length note only when the body is outside the 1,500-3,000 default; the source URLs used for research (for the author's reference, not for the body); the voice line from [`tone-manner.md`](tone-manner.md) §5, plus that file's request-not-applied line when the floor rejected a tone request.
 
 Nothing else: no rule IDs, no tier labels, no rubric dump, no mention of the tells avoided. The mode statement and every note live outside the text block; the block is what gets pasted. A repair run (a supplied draft) delivers the same items and adds one to three lines naming what changed, also outside the block.
 
@@ -154,10 +154,11 @@ Nothing else: no rule IDs, no tier labels, no rubric dump, no mention of the tel
 - Stating observed defaults or folklore as Naver rules.
 - Pasting the seed prompt's hook vocabulary; only the adapted forms in the hook library.
 - Targeting dwell time, comments, likes, or neighbors as goals.
+- Applying Naver-only rules to an inblog post: the Naver hashtag rule, the Naver editor 주제 selection, Naver ranking or algorithm references, or a required DataLab demand check.
 - Logging into Naver, calling Naver API endpoints, or scraping.
 
 ## Sources
 
-> No external sources; content checked 2026-09-21.
+> No external sources; content checked 2026-10-15 (the body-rhythm numbers come from the 2026-09-21 measurements).
 
-This file states this package's own workflow. The body-rhythm numbers come from this repository's own measurements, recorded in `.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md` (live PostView DOM observation) and `.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt` (editor paste test); no external source is cited.
+This file states this package's own workflow. The body-rhythm numbers come from this repository's own measurements, recorded in `.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md` (live PostView DOM observation) and `.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt` (editor paste test); no external source is cited. The inblog layout and editor facts live in [`../references/inblog-format.md`](../references/inblog-format.md) with its own source ledger.

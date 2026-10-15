@@ -1,10 +1,12 @@
-# Naver Post Tell Catalog
+# Post Tell Catalog
 
 > Korean version: [`tell-catalog.ko.md`](tell-catalog.ko.md)
 
 **Purpose**: the deep layer behind the family table in [`human-prose.md`](../rules/human-prose.md) §3. That table says which families matter and how severe each one is; this file holds the individual patterns inside each family, each with a bad-to-good pair and the W-ID that removes it. Load it when a draft reads machine-written but no single sentence looks broken, when a repair needs a candidate pool to diagnose against, or when the user asks why a construction was avoided.
 
 Catalog IDs (`T-` + family letter + index) name patterns; the `W-` IDs in `human-prose.md` §2 are the prescriptions you actually apply. Where the two seem to disagree, the W-ID wins. Naver-specific S1 additions live in `human-prose.md` §4; family K below is their worked-pair layer, not a second list.
+
+Families A-J are the shared machine-prose catalog and apply to both `naver` and `inblog`. Family K is **Naver-only**: it is this skill's own S1 list for Naver posts, owned by [`human-prose.md`](../rules/human-prose.md) §4, and it does not apply to an inblog body.
 
 ## Contents
 

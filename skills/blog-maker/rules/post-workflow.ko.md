@@ -2,7 +2,7 @@
 
 > 영어 원본: [`post-workflow.md`](post-workflow.md)
 
-**목적**: 네이버 블로그 글 한 편을 브리프에서 사용자가 스마트에디터 ONE에 붙일 초안까지 만드는 순서입니다. 랭킹 규칙은 [`naver-ranking-contract.ko.md`](naver-ranking-contract.ko.md), 훅 패턴은 [`../references/hook-library.ko.md`](../references/hook-library.ko.md)에 있고 문장 규칙은 [`human-prose.ko.md`](../rules/human-prose.ko.md)에 있습니다.
+**목적**: 네이버 또는 inblog 블로그 글 한 편을 브리프에서 사용자가 플랫폼 에디터(네이버는 스마트에디터 ONE, inblog 분기는 inblog 에디터)에 붙일 초안까지 만드는 순서입니다. 랭킹 규칙은 [`naver-ranking-contract.ko.md`](naver-ranking-contract.ko.md), 훅 패턴은 [`../references/hook-library.ko.md`](../references/hook-library.ko.md)에 있고 문장 규칙은 [`human-prose.ko.md`](../rules/human-prose.ko.md)에 있습니다.
 
 ## 0. 모드 결정 (한 절로 밝힘)
 
@@ -91,14 +91,14 @@
 
 나머지 여덟 유형은 [`../references/post-type-library.ko.md`](../references/post-type-library.ko.md) §3의 해당 유형 플레이북을 따릅니다.
 
-### 본문 리듬 계약
+### 본문 리듬 계약 (네이버)
 
-두 형식 모두 같은 줄 리듬을 따릅니다. 이 계약은 참고 블로그 2건의 실측(`.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md`, PostView DOM 분석)과 에디터 붙여넣기 실측(`.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt`)에서 뽑았습니다:
+네이버에서 두 출력 형태(HTML과 plain)가 같은 줄 리듬을 따릅니다. 이 계약은 참고 블로그 2건의 실측(`.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md`, PostView DOM 분석)과 에디터 붙여넣기 실측(`.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt`)에서 뽑았습니다. 이 리듬은 **네이버의 것**입니다. 문단 정렬과 12~25자 명시적 줄바꿈은 네이버 에디터 관찰값입니다. inblog 글은 이 리듬을 쓰지 않고, 강제 줄바꿈 없는 왼쪽 정렬 자연 문단과 `h2`/`h3` 소제목을 씁니다([`../references/inblog-format.ko.md`](../references/inblog-format.ko.md)).
 
 - 텍스트 블록은 1~5줄이고 각 줄은 12~25자를 명시적 줄바꿈으로 끊습니다. 긴 문장 한 개를 그대로 두어 래핑하게 두지 않습니다.
 - 문단 블록은 1~3문장입니다. plain 전달은 블록 사이에 빈 줄을 넣습니다. 본문 HTML은 빈 문단 스페이서(`<p style="line-height:1.8;">&nbsp;</p>`, 붙여넣기 생존 실측)로 분리하고, `p`의 `margin`은 붙여넣기에서 사라지므로 간격 수단으로 쓰지 않습니다.
 - 텍스트 블록은 최대 2개까지만 연속됩니다(관찰 최빈값은 1). 블록 사이에 이미지, 인용구, 표를 배치해 스크롤 어느 지점에서도 밀집 화면이 연달아 오지 않게 합니다.
-- 본문 HTML 전용: 본문 문단은 가운데 정렬, 핵심 어구는 문단이 아니라 어구 자체에 색·굵게, 표·목록·캡션은 왼쪽 정렬, 문단마다 `line-height:1.8` 인라인이 기본값(붙여넣기 생존 실측).
+- 본문 HTML 전용, 네이버: 본문 문단은 가운데 정렬, 핵심 어구는 문단이 아니라 어구 자체에 색·굵게, 표·목록·캡션은 왼쪽 정렬, 문단마다 `line-height:1.8` 인라인이 기본값(붙여넣기 생존 실측).
 - 참고 블로그의 이모지 번호 소제목 스타일은 **채택하지 않습니다**: `emoji as section markers`는 `human-prose.md` §4의 S1 제거 대상으로 유지됩니다.
 - 전달 전 리듬 자가검증: 계단식 래핑(25자 넘는 줄이 접히는 모양)이 없고, 연속한 텍스트 블록 2개 사이에 눈에 보이는 간격이 있는지 확인합니다.
 
@@ -137,7 +137,7 @@
 3. **이미지 생성 JSON**: 생성 마커마다 번호가 같은 JSON 하나. 그 역할의 필드와 바로 붙여넣을 `prompt`를 포함합니다. 없으면 생략. 산문 프롬프트는 이 객체 안에 있으므로 별도 산문 프롬프트 절을 만들지 않습니다.
 4. **키워드 결정** 한 줄.
 5. **채울 슬롯** — `[확인 필요]` 마커 목록을 순서대로, 각각 무엇을 쓸지 함께.
-6. **발행 전 메모**(3~5줄): 모드, 플랫폼(`naver` 또는 `inblog`), 에디터에서 고를 주제, 공개 문장 확인, 링크 확인, 본문이 1,500~3,000자 기본값을 벗어날 때만 분량 메모, 리서치에 쓴 출처 URL(작성자 참고용. 본문에는 넣지 않음), [`tone-manner.ko.md`](tone-manner.ko.md) §5의 보이스 줄(플로어가 거절한 톤 요청이 있으면 적용하지 않은 이유 줄을 함께).
+6. **발행 전 메모**(3~5줄): 모드, 플랫폼(`naver` 또는 `inblog`), 네이버는 에디터에서 고를 주제, inblog는 설정할 메타데이터 필드(제목, 설명, 선택 메타 제목·설명, 슬러그, 카테고리)와 해시태그·에디터 주제 요구 없음, 공개 문장 확인, 링크 확인, 본문이 1,500~3,000자 기본값을 벗어날 때만 분량 메모, 리서치에 쓴 출처 URL(작성자 참고용. 본문에는 넣지 않음), [`tone-manner.ko.md`](tone-manner.ko.md) §5의 보이스 줄(플로어가 거절한 톤 요청이 있으면 적용하지 않은 이유 줄을 함께).
 
 그 밖에는 없음. 규칙 ID 없음, 등급 표시 없음, 채점표 없음, 피한 tell 언급 없음. 모드 문장과 모든 메모는 텍스트 블록 밖에 두고 블록만 붙여 넣습니다. 사용자가 준 글을 다듬은 수리 실행이면 같은 항목을 전달하고 바뀐 점을 한두 줄 덧붙이며, 이 요약도 블록 밖에 둡니다.
 
@@ -151,10 +151,11 @@
 - observed 기본값이나 속설을 네이버 규칙으로 말하는 것.
 - 시드 프롬프트의 훅 어휘를 그대로 붙이는 것. 훅 라이브러리의 수정된 형태만.
 - 체류시간, 댓글, 좋아요, 이웃을 목표로 삼는 것.
+- 네이버 전용 규칙을 inblog 글에 적용하는 것. 네이버 해시태그 규칙, 네이버 에디터 주제 선택, 네이버 순위·알고리즘 참조, 데이터랩 수요 확인 요구.
 - 네이버 로그인, 네이버 API 엔드포인트 호출, 스크래핑.
 
 ## Sources
 
-> 외부 출처 없음. 내용 확인 2026-09-21.
+> 외부 출처 없음. 내용 확인 2026-10-15(본문 리듬 수치는 2026-09-21 측정에서 옴).
 
-이 파일은 이 패키지 자체의 워크플로를 담습니다. 본문 리듬 수치는 이 저장소 자체의 측정 기록인 `.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md`(실제 PostView DOM 관찰)와 `.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt`(에디터 붙여넣기 시험)에서 왔고, 외부 출처는 인용하지 않습니다.
+이 파일은 이 패키지 자체의 워크플로를 담습니다. 본문 리듬 수치는 이 저장소 자체의 측정 기록인 `.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md`(실제 PostView DOM 관찰)와 `.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt`(에디터 붙여넣기 시험)에서 왔고, 외부 출처는 인용하지 않습니다. inblog 배치와 에디터 사실은 자체 출처 원장을 가진 [`../references/inblog-format.ko.md`](../references/inblog-format.ko.md)에 있습니다.

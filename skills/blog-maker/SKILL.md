@@ -17,7 +17,7 @@ Default every user-facing deliverable — title candidates, the post block with 
 <purpose>
 
 - Start from a keyword: research the query, the top-ranked posts' gaps, and sourced facts, then draft — without asking the user for a fact pack first.
-- Produce a post that follows Naver's published rules (source topic lane, document experience and originality, intent-slice fit, no inserted keywords, no deceptive titles or links, disclosure) and never trips an official restriction.
+- For a Naver post, follow Naver's published rules (source topic lane, document experience and originality, intent-slice fit, no inserted keywords, no deceptive titles or links, disclosure) and never trip an official restriction. An inblog post follows the platform-neutral rules and [`references/inblog-format.md`](references/inblog-format.md).
 - Place image slots inline where each photo must appear, naming what to shoot and what the caption proves; mark what only the author can know as `[확인 필요]` slots instead of inventing it.
 - Deliver body HTML by default, with separate title and tags; use a single text block only when the user explicitly asks for plain text. The format is never asked.
 - Hook with a specific promise in the title and keep it within the first screen, using the adapted pattern library instead of clickbait vocabulary.
@@ -57,7 +57,7 @@ This skill is self-contained: it owns the post structure, the Naver rules, and t
 |---|---|
 | Intent | After intake, deliver one post, title candidates, inline image slots and generation JSON, the default body HTML (plain only on explicit request), and keyword/slot/publish notes. |
 | Scope | Post content and structure only. No login, no publishing, no engagement actions, no scraping. |
-| Authority | User request and repository instructions > `rules/naver-ranking-contract.md` (official rows) > `observed` defaults > user-supplied prompt templates > any third-party SEO guide. |
+| Authority | User request and repository instructions > `rules/naver-ranking-contract.md` (official rows; read only for a Naver post) > `observed` defaults > user-supplied prompt templates > any third-party SEO guide. |
 | Evidence | Every Naver-behavior claim traces to an `official` row in `references/naver-algorithm-timeline.md` (mapped in `references/evidence-digest.md`); observed and folklore items are labeled. Informational facts come from research with `URL | 날짜`; first-hand experience, results, prices paid, and brand lines come only from the user; gaps become `[확인 필요]`. |
 | Tools | Web search and page fetch for topic research; optional browser tooling for live SERP inspection; public Naver pages (DataLab, 통합검색) read as a visitor. Nothing else touches Naver; no login, no scraping. |
 | Loop | Draft → `rules/validation.md` self-check → fix hard-rule failures; at most two revision rounds, then deliver with remaining items named. |
@@ -118,13 +118,13 @@ A supplied draft replaces steps 1 to 3: record its register and its anchors, the
 - Before research or drafting, ask the intake items in one message and await the reply; do not repeat answered items. The five items are blog URL, the post's goal, the optional brand/product and the relationship, optional URL/material, and the optional tone and manner, which is asked once and never re-asked. Resolve the platform (naver or inblog) from the request or a known URL and ask it once only when it is unknown or conflicting. The format is never asked: body HTML is the default and plain text is used only when the user explicitly requests it. The mode is derived from the relationship and the goal, never asked separately.
 - State the post type in the decision line and follow that type's skeleton, with at most one secondary type.
 - After intake, research from the keyword without demanding a fact pack; missing optional business details become slots.
-- Write to one intent slice inside the author's topic lane; select the matching editor 주제 in the publish note.
+- Write to one intent slice inside the author's topic lane; on Naver, select the matching editor 주제 in the publish note. An inblog post has no editor topic lane and no hashtag requirement ([`references/inblog-format.md`](references/inblog-format.md)).
 - Place real-material `[이미지: 대상 | 캡션]` or illustration `[이미지 생성: 대상 | 캡션 | 프롬프트 #n]` markers at their body positions; provide matching generation JSON outside the body.
 - Choose each generated image's section role and template from `references/image-prompt-templates.md` §2, then compile that object in the order `rules/image-slots.md` §6 fixes. An inapplicable conditional field is absent — never `null`, `"N/A"`, or a placeholder.
 - Write each rendered string exactly once inside `text[]` and have `prompt` carry every one of them byte-identical, and repeat a real series' invariants in every object of that series.
 - When the subject, the exact rendered text, or an edit's preserve/change boundary is missing, do not emit a finished prompt for that image; ask or leave the slot open.
 - Deliver body HTML plus separate title/tags by default; a single text fence only when the user explicitly asked for plain. Distinguish copying HTML source from copying HTML clipboard content.
-- Follow the body rhythm contract in `rules/post-workflow.md` §3 for both formats: text blocks of 1-5 lines with 12-25-character explicit line breaks, 1-3-sentence paragraph blocks, at most 2 text blocks in a row, and body HTML paragraphs center-aligned with `line-height:1.8` inline and blank-paragraph spacers — never `p` `margin`.
+- On Naver, follow the body rhythm contract in `rules/post-workflow.md` §3 for both output shapes: text blocks of 1-5 lines with 12-25-character explicit line breaks, 1-3-sentence paragraph blocks, at most 2 text blocks in a row, and body HTML paragraphs center-aligned with `line-height:1.8` inline and blank-paragraph spacers — never `p` `margin`. An inblog post uses left-aligned natural paragraphs with `h2`/`h3` subheadings and no duplicate H1 ([`references/inblog-format.md`](references/inblog-format.md)).
 - Put the title's promise in the first 3-5 sentences; every section carries a checkable circumstance or a source; at least one section names a downside.
 - Use the target query once in the title and only where sentences need it in the body; no count or density target.
 - Disclose sponsorship, own-business, or affiliate relationships in the first paragraph in plain words.
@@ -152,6 +152,7 @@ A supplied draft replaces steps 1 to 3: record its register and its anchors, the
 - Producing batch variants, scheduling, auto-publishing, comment/like/neighbor bait, or any engagement manipulation.
 - Logging into Naver, calling Naver API endpoints, or scraping.
 - Markdown `**bold**` or `#` headings inside the deliverable body meant for the Naver editor.
+- Applying Naver-only rules to an inblog post: the Naver hashtag rule, the Naver editor 주제 selection, Naver ranking or algorithm references, or a required DataLab demand check.
 - Annotating the output with rule IDs, evidence tiers, or the tells that were avoided.
 - A provider, model, quality, tier, or resolution flag inside a generation brief, or any claim that a prompt is a generated artifact.
 - `null`, `"N/A"`, `"없음"`, `"위와 동일"`, `"same as above"`, or a brace placeholder filling an inapplicable field.
@@ -200,6 +201,7 @@ Read only one language version per run. Paths are relative to this installed ski
 - When the topic is medical or a quantitative safety, dosage, interval, duration, eligibility, or legal-limit claim is involved, read [`references/regulated-topic-research.md`](references/regulated-topic-research.md).
 - While placing images, read [`rules/image-slots.md`](rules/image-slots.md); when compiling generation prompts, read [`references/image-prompt-templates.md`](references/image-prompt-templates.md).
 - Before delivery, read [`references/format-options.md`](references/format-options.md) for the default body HTML, separate title/tags, the plain exception, and the HTML clipboard requirements.
+- When the resolved platform is `inblog`, read [`references/inblog-format.md`](references/inblog-format.md) before delivery: left-aligned natural paragraphs, `h2`/`h3` subheadings, no duplicate H1, separate metadata, and the HTML embed block route.
 
 1. After intake, read [`rules/post-workflow.md`](rules/post-workflow.md) for the remaining run: mode decision, intake, structure skeleton, delivery order.
 2. Read [`rules/topic-research.md`](rules/topic-research.md) whenever the brief lacks experience, sources, or images (the usual case): research procedure, experience slots, inline image slots, fact-pack shape.
@@ -236,7 +238,7 @@ Read only one language version per run. Paths are relative to this installed ski
 - [ ] When file reads work, check the tell catalog; otherwise apply the core prose checks and disclose the skipped detailed scan.
 - [ ] Repair path only: anchors recorded before editing and re-verified after (`rules/repair-method.md` §2), diagnosis limited to three to six quoted families, register unchanged in both directions, the over-correction guard passed, and the change summary outside the block in one to three lines.
 - [ ] Deliverable follows the order in `rules/post-workflow.md` §5 with no rule IDs or tier labels.
-- [ ] The body rhythm contract in `rules/post-workflow.md` §3 passed: blocks 1-5 lines of 12-25-character breaks, paragraph blocks 1-3 sentences, ≤ 2 text blocks in a row with a visible gap or visual block between, body HTML paragraphs centered with `line-height:1.8` inline and spaced by blank-paragraph spacers (no `p` `margin`).
+- [ ] The body rhythm contract in `rules/post-workflow.md` §3 passed (Naver only): blocks 1-5 lines of 12-25-character breaks, paragraph blocks 1-3 sentences, ≤ 2 text blocks in a row with a visible gap or visual block between, body HTML paragraphs centered with `line-height:1.8` inline and spaced by blank-paragraph spacers (no `p` `margin`). An inblog post is checked against `references/inblog-format.md` instead.
 - [ ] (Repository maintenance only; not a runtime dependency) package changes keep KO/EN parity, pass the corpus validator scoped to this package (`validate-skills-corpus.mjs --root skills --only blog-maker --json`) and `bun run --cwd scripts verify`, and keep `README.md` unchanged — unless this change adds a skill or changes a skill's name or catalog exposure, in which case `README.md`'s count and catalog row are updated.
 - [ ] The post type is declared in the decision line and the body follows that type's skeleton, with at most one secondary type.
 - [ ] The decision layer exists when the intent or the title asks what to do, choose, how often, how much, how long, or at what price: criterion ≥ 1, every source-backed option, the operating number, the flip condition ≥ 1, exactly one next step.
