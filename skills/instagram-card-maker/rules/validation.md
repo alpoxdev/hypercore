@@ -9,8 +9,10 @@ Read before delivery and whenever this package changes. This file owns the pre-d
 - [ ] Intake answered; delivery matches the chosen format; the format is stated and is 4:5 by default unless the user asked otherwise.
 - [ ] Research ran when the brief lacked facts: sourced facts with URL and date, a reader question per card, no fabricated experience.
 - [ ] Card count is 2–20.
-- [ ] Every card keeps the title and hook at the left-bottom; photo and text are separate layers; a supplied logo is unchanged.
-- [ ] Only the photo background is blurred, and subtly; the text sits on the opaque `#151515` panel.
+- [ ] Only the cover fixes its title at `bottom-left`; body layouts have content/image-based reasons. Photo and text are separate layers; a supplied logo is unchanged.
+- [ ] Every card records `scene`, `visualType`, `layout`, and `layoutReason`; meaningful scene/type changes support the narrative, and repeated images have an explicit `reuseReason`. Inspect actual images, not just distinct scene names.
+- [ ] Top, center, and bottom layouts keep contrast across the actual text region and do not collide with the brand/logo. Saved HTML reopens with the same layout and image plan.
+- [ ] Only the photo background is blurred, and subtly; the text sits on the translucent black scrim over the photo, so the photo shows through while white text keeps contrast.
 - [ ] `window.cardStudio.render` resolved; `#status[data-error]` is not `true`.
 - [ ] Real PNGs exist at the chosen size, one per card, in posting order.
 - [ ] `caption.txt` is in posting order; `alt-text.json` matches the card count and order.
@@ -24,6 +26,7 @@ Read before delivery and whenever this package changes. This file owns the pre-d
 The composer throws on the failures in [`../references/output-contract.md`](../references/output-contract.md) §4 and sets `#status[data-error="true"]`.
 
 - On a schema or dimension error, fix the input document.
+- On an invalid cover/body layout or unexplained repeated photo, fix the plan rather than assigning a generic reason to bypass validation.
 - On a missing or broken image, fix the `photo` value.
 - On an overflow error, split the card or shorten the text; never shrink the font.
 - On a `fontData` load error, supply valid font data or drop `fontData` to use the system fallback.

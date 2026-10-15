@@ -33,11 +33,11 @@ Never call 4:5 the only Instagram format. It is this package's default, not a pl
 This package uses the W3C Web Content Accessibility Guidelines contrast minimum (SC 1.4.3) as a design benchmark: a 4.5:1 contrast ratio for text and images of text, and 3:1 for large text.
 
 - This is a web accessibility standard adopted here as a design target. It is not an Instagram rule and Instagram does not enforce it.
-- The composer meets the target structurally: the text sits on a fully opaque `#151515` panel with white text, so contrast does not depend on the photo behind it.
+- The composer meets the target structurally: the text is white on a translucent black scrim (alpha 0.62) held constant under every text pixel, so contrast does not depend on the photo behind it and the photograph stays visible.
 
 ## 4. Typography and layout are defaults
 
-The Korean font family, the margins, the blur amount, the left-bottom title placement, and the card count are this package's defaults and the user's preferences. None is a platform mandate. State them as defaults when the user asks for a rule.
+The Korean font family, margins, blur amount, bottom-left cover, content-led body placement, and card count are this package's defaults and the user's preferences. None is a platform mandate. State them as defaults when the user asks for a rule.
 
 ## Sources
 

@@ -18,7 +18,7 @@ label{display:block;margin-top:12px;font-weight:600}input{max-width:100%;margin:
 </style>
 </head>
 <body>
-<header><h1>인스타그램 카드뉴스 제작</h1><p>사진과 한글을 따로 합성합니다. 배경만 살짝 흐리게 하고 제목은 왼쪽 하단에 선명하게 배치합니다.</p></header>
+<header><h1>인스타그램 카드뉴스 제작</h1><p>사진이 카드 전체를 채웁니다. 커버는 왼쪽 하단에, 본문은 내용과 사진 구도에 맞는 위치에 글을 얹습니다. 사진만 살짝 흐리게 하고 반투명 어둠막으로 대비를 확보합니다.</p></header>
 <main>
 <section aria-label="카드 입력">
 <label for="input">카드 자료 (JSON)</label>
@@ -43,6 +43,11 @@ label{display:block;margin-top:12px;font-weight:600}input{max-width:100%;margin:
   const saveButton = document.querySelector("#save");
   const family = 'Pretendard,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
   const imagePattern = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=\r\n]+$/;
+  const SCRIM_ALPHA = 0.62;
+  const SCRIM_FADE = 0.3;
+  const SCRIM_PAD = 24;
+  const layouts = ["bottom-left","bottom-right","top-left","top-right","center"];
+  const visualTypes = ["photo","illustration","diagram","screenshot"];
   let current = null;
   let canvases = [];
   let generation = 0;
@@ -65,6 +70,11 @@ label{display:block;margin-top:12px;font-weight:600}input{max-width:100%;margin:
       text(slide.title, "title"); text(slide.body, "body"); text(slide.alt, "alt"); text(slide.photoSource, "photoSource");
       if (typeof slide.photo !== "string" || !imagePattern.test(slide.photo)) fail((i+1)+"번 사진 data URI가 필요합니다.");
       if (typeof slide.generated !== "boolean") fail((i+1)+"번 generated는 true 또는 false여야 합니다.");
+      if (!layouts.includes(slide.layout)) fail((i+1)+"번 layout을 올바르게 지정하십시오.");
+      if (i===0 && slide.layout!=="bottom-left") fail("커버 layout은 bottom-left여야 합니다.");
+      text(slide.scene, "scene"); text(slide.layoutReason, "layoutReason");
+      if (!visualTypes.includes(slide.visualType)) fail((i+1)+"번 visualType을 올바르게 지정하십시오.");
+      if (slide.reuseReason!==undefined || doc.slides.slice(0,i).some(previous=>previous.photo===slide.photo)) text(slide.reuseReason, (i+1)+"번 사진 재사용 사유 reuseReason");
     });
     return doc;
   }
@@ -91,6 +101,28 @@ label{display:block;margin-top:12px;font-weight:600}input{max-width:100%;margin:
     }
     return lines;
   }
+  function drawScrim(ctx,w,h,textTop,textBottom) {
+    // Fade in above the text block, then hold one constant alpha over every text pixel.
+    const solidTop = Math.max(0,Math.min(h,textTop-SCRIM_PAD));
+    const fadeStart = Math.max(0,solidTop-Math.round(h*SCRIM_FADE));
+    if (solidTop>fadeStart) {
+      const grad = ctx.createLinearGradient(0,fadeStart,0,solidTop);
+      grad.addColorStop(0,"rgba(0,0,0,0)");
+      grad.addColorStop(1,"rgba(0,0,0,"+SCRIM_ALPHA+")");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0,fadeStart,w,solidTop-fadeStart);
+    }
+    const solidBottom=Math.min(h,textBottom+SCRIM_PAD);
+    ctx.fillStyle = "rgba(0,0,0,"+SCRIM_ALPHA+")";
+    ctx.fillRect(0,solidTop,w,solidBottom-solidTop);
+    const fadeEnd=Math.min(h,solidBottom+Math.round(h*SCRIM_FADE));
+    if(fadeEnd>solidBottom){
+      const grad=ctx.createLinearGradient(0,solidBottom,0,fadeEnd);
+      grad.addColorStop(0,"rgba(0,0,0,"+SCRIM_ALPHA+")");
+      grad.addColorStop(1,"rgba(0,0,0,0)");
+      ctx.fillStyle=grad;ctx.fillRect(0,solidBottom,w,fadeEnd-solidBottom);
+    }
+  }
   function draw(doc,slide,image,logo,font,index) {
     const c = document.createElement("canvas");
     c.width = doc.width; c.height = doc.height;
@@ -98,38 +130,45 @@ label{display:block;margin-top:12px;font-weight:600}input{max-width:100%;margin:
     const ctx = c.getContext("2d");
     if (!ctx) fail("이 브라우저는 Canvas를 지원하지 않습니다.");
     const w = c.width, h = c.height, margin = 72, maxWidth = w-margin*2;
+    // The photo fills the whole card; only the photo layer is blurred.
     ctx.save();
     ctx.filter = "blur(2px)";
     const scale = Math.max((w+16)/image.naturalWidth,(h+16)/image.naturalHeight);
     const iw = image.naturalWidth*scale, ih=image.naturalHeight*scale;
     ctx.drawImage(image,(w-iw)/2,(h-ih)/2,iw,ih);
     ctx.restore();
-    // An opaque text surface makes contrast independent of the photo.
     const titleSize=72, bodySize=40, titleStep=92, bodyStep=58;
     ctx.font = "700 "+titleSize+"px "+font;
     const titles = wrap(ctx,slide.title,maxWidth);
     ctx.font = "500 "+bodySize+"px "+font;
     const bodies = wrap(ctx,slide.body,maxWidth);
     const contentHeight=titles.length*titleStep+24+bodies.length*bodyStep;
-    const panelHeight=Math.max(h*.48,contentHeight+margin*2);
-    if (titles.length>3 || bodies.length>5 || panelHeight>h*.69) fail((index+1)+"번 글자가 넘칩니다. 내용을 나누거나 줄이십시오.");
-    ctx.fillStyle="#151515"; ctx.fillRect(0,h-panelHeight,w,panelHeight);
-    ctx.fillStyle="#fff"; ctx.textBaseline="top"; ctx.textAlign="left";
-    let y=h-margin-contentHeight;
+    const textBlockHeight=contentHeight+margin*2;
+    if (titles.length>3 || bodies.length>5 || textBlockHeight>h*.69) fail((index+1)+"번 글자가 넘칩니다. 내용을 나누거나 줄이십시오.");
+    const textTop=slide.layout.startsWith("top-") ? 200 : slide.layout==="center" ? Math.max(200,(h-contentHeight)/2) : h-margin-contentHeight;
+    if(textTop<200 || textTop+contentHeight>h-margin) fail((index+1)+"번 배치에서 글자가 넘칩니다. 내용을 나누거나 줄이십시오.");
+    const align=slide.layout.endsWith("-right") ? "right" : slide.layout==="center" ? "center" : "left";
+    const textX=align==="right" ? w-margin : align==="center" ? w/2 : margin;
+    c.dataset.layout=slide.layout;
+    // A translucent scrim keeps white text legible without hiding the photo behind it.
+    drawScrim(ctx,w,h,textTop,slide.layout.startsWith("bottom-") ? h : textTop+contentHeight);
+    ctx.fillStyle="#fff"; ctx.textBaseline="top"; ctx.textAlign=align;
+    let y=textTop;
     ctx.font="700 "+titleSize+"px "+font;
-    for (const line of titles) { ctx.fillText(line,margin,y); y+=titleStep; }
+    for (const line of titles) { ctx.fillText(line,textX,y); y+=titleStep; }
     y+=24; ctx.font="500 "+bodySize+"px "+font;
-    for (const line of bodies) { ctx.fillText(line,margin,y); y+=bodyStep; }
+    for (const line of bodies) { ctx.fillText(line,textX,y); y+=bodyStep; }
+    ctx.textAlign="left";
     // Logo is never filtered or recolored; preserve its original aspect ratio.
     if (logo) {
       const s=Math.min(170/logo.naturalWidth,96/logo.naturalHeight);
       ctx.drawImage(logo,w-margin-logo.naturalWidth*s,margin,logo.naturalWidth*s,logo.naturalHeight*s);
     }
-    ctx.font="500 24px "+font; ctx.fillStyle="#fff";
-    // A solid label keeps brand/index readable even over bright photography.
+    ctx.font="500 24px "+font;
+    // A translucent chip keeps brand/index readable even over bright photography.
     const label=doc.brand+"  "+(index+1)+"/"+doc.slides.length;
     if (ctx.measureText(label).width>620) fail("브랜드명이 너무 깁니다.");
-    ctx.fillStyle="#151515"; ctx.fillRect(margin-12,margin-10,Math.ceil(ctx.measureText(label).width)+24,48);
+    ctx.fillStyle="rgba(0,0,0,"+SCRIM_ALPHA+")"; ctx.fillRect(margin-12,margin-10,Math.ceil(ctx.measureText(label).width)+24,48);
     ctx.fillStyle="#fff"; ctx.fillText(label,margin,margin);
     return c;
   }
@@ -142,11 +181,12 @@ label{display:block;margin-top:12px;font-weight:600}input{max-width:100%;margin:
   }
   function textData(value,type="text/plain") { return "data:"+type+";charset=utf-8,"+encodeURIComponent(value); }
   function sidecarValues(doc) {
+    const photos=doc.slides.map((s,i)=>({file:"cards/"+String(i+1).padStart(2,"0")+".png",photoSource:s.photoSource,generated:s.generated,layout:s.layout,layoutReason:s.layoutReason,scene:s.scene,visualType:s.visualType,...(s.reuseReason?{reuseReason:s.reuseReason}:{})}));
     return {
       "caption.txt":doc.caption,
       "alt-text.json":JSON.stringify(doc.slides.map((s,i)=>({file:String(i+1).padStart(2,"0")+".png",alt:s.alt})),null,2),
       "sources.md":"# 출처\n\n"+doc.sources.map(s=>"- "+s).join("\n")+"\n\n"+doc.slides.map((s,i)=>"- "+(i+1)+". "+s.photoSource+" ("+(s.generated?"생성 이미지":"제공/허가 사진")+")").join("\n"),
-      "manifest.json":JSON.stringify({width:doc.width,height:doc.height,count:doc.slides.length,files:doc.slides.map((s,i)=>"cards/"+String(i+1).padStart(2,"0")+".png"),font:doc.fontData?"embedded":"system-fallback; Korean glyph inspection required",generated:doc.slides.map(s=>s.generated),photos:doc.slides.map((s,i)=>({file:"cards/"+String(i+1).padStart(2,"0")+".png",photoSource:s.photoSource,generated:s.generated}))},null,2)
+      "manifest.json":JSON.stringify({width:doc.width,height:doc.height,count:doc.slides.length,files:doc.slides.map((s,i)=>"cards/"+String(i+1).padStart(2,"0")+".png"),font:doc.fontData?"embedded":"system-fallback; Korean glyph inspection required",generated:doc.slides.map(s=>s.generated),photos},null,2)
     };
   }
   async function render(doc) {
@@ -211,7 +251,7 @@ label{display:block;margin-top:12px;font-weight:600}input{max-width:100%;margin:
       for(const file of event.target.files){
         if(!["image/png","image/jpeg","image/webp"].includes(file.type)) fail("PNG, JPEG, WebP 사진만 추가할 수 있습니다.");
         const photo=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error("파일을 읽지 못했습니다."));reader.readAsDataURL(file);});
-        doc.slides.push({title:"카드 제목",body:"카드 내용을 입력하십시오.",photo,photoSource:"사진 출처와 사용 허가를 입력하십시오.",generated:false,alt:"사진과 카드 내용을 설명하십시오."});
+        doc.slides.push({title:"카드 제목",body:"카드 내용을 입력하십시오.",photo,photoSource:"사진 출처와 사용 허가를 입력하십시오.",generated:false,alt:"사진과 카드 내용을 설명하십시오.",layout:doc.slides.length===0?"bottom-left":"top-left",layoutReason:"내용과 사진 구도를 보고 배치 사유를 입력하십시오.",scene:"이 카드의 내용과 연결되는 장면을 설명하십시오.",visualType:"photo"});
       }
       generation++;busy=false;clearOutput();input.value=JSON.stringify(doc,null,2);status.textContent="사진을 추가했습니다. 제목, 내용, 출처, 대체 텍스트를 채운 뒤 카드를 만드십시오.";
     }catch(error){generation++;busy=false;clearOutput();status.dataset.error="true";status.textContent=error instanceof Error?error.message:String(error);}

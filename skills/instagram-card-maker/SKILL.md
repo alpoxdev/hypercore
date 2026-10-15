@@ -1,6 +1,6 @@
 ---
 name: instagram-card-maker
-description: Use this skill when the user wants an Instagram carousel or card-news post built as a set of same-size images plus a Korean caption. A topic or brand brief goes in; an editable HTML composer, ordered card images, caption text, per-card alt text, a source ledger, and a manifest come out. Covers research-grounded card narration, photo and Korean text composed as separate layers, photo-background-only blur, left-bottom title and hook placement, and a WAI contrast check used as a design benchmark. Not for publishing, scheduling, or API upload; not for other platforms, single-image editing, or prose-only requests.
+description: Use this skill when the user wants an Instagram carousel or card-news post built as a set of same-size images plus a Korean caption. A topic or brand brief goes in; an editable HTML composer, ordered card images, caption text, per-card alt text, a source ledger, and a manifest come out. Covers research-grounded narration, separate photo and Korean text layers, photo-background-only blur, bottom-left cover placement, content-led body layouts and image scenes, and a WAI contrast benchmark. Not for publishing, scheduling, or API upload; not for other platforms, single-image editing, or prose-only requests.
 compatibility: Self-contained Markdown skill plus one dependency-free HTML asset. Web search and page fetch are used for topic research. The card composer runs in a browser with Canvas and File APIs; no login, no network call, no auto-publishing, no bundled font binary.
 ---
 
@@ -18,8 +18,8 @@ Write every user-facing deliverable — the card titles and body, the caption, t
 
 - Start from a topic, a brand, or a brief: research the subject and the reader's question first, then compose. Do not demand a fact pack from the user before the research step.
 - Ground every card claim in a source with a URL and an accessed date. A first-hand claim, a price, a result, or a brand line comes only from the user; a gap becomes an explicit slot instead of an invented fact.
-- Compose the carousel as a sequence where each card carries one idea and the order builds the argument. The hook and title sit at the left-bottom of the card; the photo and the text are separate layers so the Korean stays crisp.
-- Blur only the photo background, and only subtly. Keep the title, the body, and any supplied logo sharp, and place a dark scrim or a solid text area behind the text so contrast does not depend on the photo.
+- Compose the carousel as a sequence where each card carries one idea and the order builds the argument. Only the cover fixes its hook and title at the bottom-left; body layouts follow the content and image composition. Keep photo and text as separate layers so the Korean stays crisp.
+- Let the photo fill the whole card edge to edge, and blur only the photo background, subtly. Keep the title, the body, and any supplied logo sharp, and place a translucent dark scrim behind the text so contrast does not depend on the photo and the photograph stays visible under the text.
 - Deliver an HTML composer with an editable JSON input, a live gallery, per-card PNG export, and a machine-readable API an agent can call to read the exported images without a human clicking save.
 - Deliver the sidecars beside the images: the post's single `caption.txt`, `alt-text.json` matching count and order, `sources.md`, and `manifest.json`.
 - Label a generated photo as an illustration and keep its provenance; never present a generated image as a real site, product, receipt, certificate, or result.
@@ -47,7 +47,7 @@ This skill is self-contained. It owns the card contract, the composer asset, the
 |---|---|
 | Intent | After intake, deliver an HTML composer with an embedded document, ordered card PNG images, `caption.txt`, `alt-text.json`, `sources.md`, and `manifest.json` under `.hyper/instagram-card-maker/<slug>/`. |
 | Scope | Card content, card layout, caption, alt text, and the composer asset. No login, no publishing, no scheduling, no API upload, no other platform. |
-| Authority | User request and repository instructions > the researched source ledger > this package's defaults (4:5, left-bottom title, photo-background-only blur, WAI contrast benchmark) > any third-party sizing guide. |
+| Authority | User request and repository instructions > the researched source ledger > this package's defaults (4:5, bottom-left cover, content-led body layout, photo-background-only blur, WAI contrast benchmark) > any third-party sizing guide. |
 | Evidence | Every factual card claim traces to a source with `URL | accessed date` in `sources.md`. First-hand experience, prices paid, results, and brand lines come only from the user; gaps become slots. A generated photo is marked `generated` in `manifest.json` and named as an illustration. |
 | Tools | Web search and page fetch for topic research. A browser with Canvas and File APIs to run and export the composer. Native image generation only when the environment exposes it and the user wants a photo that does not exist. Nothing else touches Instagram; no login, no scraping. |
 | Loop | Compose → run the composer's own validation and the `validation` checklist → fix hard failures; at most two revision rounds, then deliver with remaining items named. The composer refuses to export while a validation error stands. |
@@ -101,9 +101,10 @@ Do not activate for a non-Instagram platform, a single-image edit, a prose-only 
 | `rules/validation.md` | The pre-delivery checklist and failure handling | Before delivery and on a package change |
 | `references/output-contract.md` | Input schema, output layout, `window.cardStudio` API, error codes | Before building or calling the composer |
 | `references/platform-specs.md` | App vs API image specs, format presets, contrast benchmark | Before choosing a format |
-| `references/card-composition.md` | Card narrative, layers, blur, scrim, left-bottom placement | While composing cards |
+| `references/card-composition.md` | Card narrative, scene plan, layers, blur, scrim, cover/body placement | While composing cards |
 | `references/caption-and-alt.md` | Korean caption and alt-text rules, sidecar format | While writing the caption and alt |
 | `references/photo-sourcing.md` | Photo provenance, generated-photo labeling, logo handling | While sourcing photos |
+| `references/carousel-observations.md` | Observed scenes/layouts, within-account comparisons and metric limits | When choosing scenes or interpreting public reaction |
 | `assets/card-studio.html` | The composer: editable JSON, gallery, PNG export, API | To compose and export the cards |
 
 </skill_architecture>
@@ -127,6 +128,7 @@ Deliver in Korean by default: card text, caption, alt text, source ledger, and t
 - While composing cards, read `references/card-composition.md`.
 - While writing the caption and alt text, read `references/caption-and-alt.md`.
 - While sourcing photos or handling a supplied logo, read `references/photo-sourcing.md`.
+- When choosing visual scenes or interpreting public reaction, read `references/carousel-observations.md`; its observations do not prove performance causality.
 - Before starting a run, read `rules/workflow.md`.
 - Before composing cards, read `rules/legibility-and-typography.md`.
 - Before delivery and whenever this package changes, read `rules/validation.md`.
@@ -172,8 +174,9 @@ A supplied draft or an existing card set replaces steps 1–2: record its struct
 - After intake, research from the topic without requiring the user to supply facts; missing optional brand details become slots.
 - Ground every factual card claim in a source with `URL | accessed date`; mark a first-hand claim, a price, or a result that only the user can know as a slot.
 - Choose the format from `references/platform-specs.md` and state it; the default is 1080×1350 (4:5), and 1080×1440 (3:4, app-only) or 1080×1080 (1:1) only when the user asks or the evidence supports it.
-- Keep the title and the hook at the left-bottom of the card; keep the photo and the text as separate layers.
-- Blur only the photo background, and subtly; keep the text and any supplied logo sharp, and place a scrim or a solid text area so contrast does not depend on the photo.
+- Keep the cover title and hook at `bottom-left`; choose each body's `layout` and `layoutReason` from the content and photo composition. Keep photo and text as separate layers.
+- Plan `scene` and `visualType` per card before sourcing images. Use meaningful scene or visual-type changes across the narrative, not groups of cards repeating one photo by default. Reuse requires `reuseReason`; a repeated information type may retain its layout.
+- Let the photo fill the whole card edge to edge; blur only the photo background, subtly. Keep the text and any supplied logo sharp, and place a translucent dark scrim so contrast does not depend on the photo and the photograph stays visible under the text.
 - Place a supplied logo exactly as supplied and never redraw, recolor, or restyle it.
 - Build the input document per `references/output-contract.md` and validate before export: reject empty, one-card, or over-20-card sets, unsupported dimensions, missing or broken images, and text that overflows its card.
 - Export real PNG files at the chosen size, one per card, in posting order, through `window.cardStudio.exportCards()`.
@@ -220,8 +223,8 @@ If the composer asset cannot be opened, or the environment has no browser with C
 - [ ] Intake answered and delivery matches the chosen format; the format is stated and is 4:5 by default unless the user asked otherwise.
 - [ ] Research ran when the brief lacked facts: sourced facts with URL and date, a reader question per card, and no fabricated experience.
 - [ ] Card count is 2–20; the composer rejected any empty, one-card, or over-20-card set before export.
-- [ ] Every card keeps the title and hook at the left-bottom; the photo and text are separate layers; the logo (if supplied) is unchanged.
-- [ ] Only the photo background is blurred, and subtly; a scrim or solid text area keeps the text contrast independent of the photo.
+- [ ] The cover uses `bottom-left`; body layouts follow the content and image composition. Each card has a scene plan and any repeated photo has a meaningful `reuseReason`. Photo and text are separate layers; the logo (if supplied) is unchanged.
+- [ ] The photo fills the whole card edge to edge; only the photo background is blurred, and subtly; a translucent scrim keeps the text contrast independent of the photo while the photograph stays visible.
 - [ ] `render` resolved and `#status[data-error]` is not `true` at export; no silent shrink, truncate, or overflow occurred.
 - [ ] Real PNGs exist at the chosen size, one per card, in posting order.
 - [ ] `caption.txt` holds the post's single caption; `alt-text.json` matches the card count and order.
