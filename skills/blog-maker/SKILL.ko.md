@@ -1,10 +1,10 @@
 ---
-name: naver-blog-maker
+name: blog-maker
 description: "[Hyper] 네이버 블로그 글을 쓰거나 고칠 때 사용합니다. 블로그 URL, 글의 목표, 업체와의 관계, plain·rich 양식을 먼저 확인하고, 유형을 고른 뒤 키워드 리서치, 출처 있는 운영 수치를 담은 해결 계층이 있는 자연스러운 한국어 초안, 실제 이미지 슬롯과 복사용 이미지 생성 JSON을 제공합니다. plain 텍스트 또는 본문 HTML로 전달하며 다른 플랫폼, API 조회만 하는 요청, 자동 발행에는 쓰지 않습니다."
 compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색과 페이지 조회만 필요합니다. 실제 검색 결과 확인용 브라우저 도구는 선택입니다. 로그인, 스크래핑, 자동 발행 없음.
 ---
 
-# Naver Blog Maker
+# Blog Maker
 
 > 네이버의 현행 시스템이 노출할 수 있고, 검색한 사람이 클릭해서 끝까지 읽고, 독자가 사람이 직접 쓴 글로 받아들이는 네이버 블로그 글 한 편을 씁니다.
 
@@ -35,7 +35,7 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 
 <routing_rule>
 
-결과물이 네이버 블로그 글(또는 그 제목·개요·수정)이고 사용자가 네이버 검색이나 네이버 앱 노출을 신경 쓸 때 `naver-blog-maker`를 씁니다.
+결과물이 네이버 블로그 글(또는 그 제목·개요·수정)이고 사용자가 네이버 검색이나 네이버 앱 노출을 신경 쓸 때 `blog-maker`를 씁니다.
 
 다음은 활성하지 않습니다.
 
@@ -211,7 +211,7 @@ rich 파일을 만들 때 [`references/rich-html-template.ko.md`](references/ric
 9. 사용자가 이미 쓴 글을 주면 [`rules/repair-method.ko.md`](rules/repair-method.ko.md)를 처음부터 끝까지 읽습니다. 앵커, 우세 패턴 진단, 수리 절차, 과교정 가드, 종료 기준.
 10. 초안이 기계가 쓴 것처럼 읽히는데 어느 한 문장도 이상하지 않을 때, 수리에 대조할 후보군이 필요할 때, 전달 전 스캔을 돌 때 [`references/tell-catalog.ko.md`](references/tell-catalog.ko.md)를 읽습니다. 패밀리 표 뒤의 패턴별 층입니다.
 11. 전달 전과 이 패키지가 바뀔 때마다 [`rules/validation.ko.md`](rules/validation.ko.md)를 읽습니다.
-12. 트리거, 워크플로, 출력 동작을 바꿀 때 [`assets/evals/naver-blog-maker-cases.jsonl`](assets/evals/naver-blog-maker-cases.jsonl)을 씁니다.
+12. 트리거, 워크플로, 출력 동작을 바꿀 때 [`assets/evals/blog-maker-cases.jsonl`](assets/evals/blog-maker-cases.jsonl)을 씁니다.
 13. 초안 전과 보이스 카드 대조 때 [`rules/tone-manner.ko.md`](rules/tone-manner.ko.md)를 읽습니다. 세 가지 입력 모양, 보이스 카드, 우선순위 사다리, 하드 플로어, 발행 전 메모 줄.
 
 </support_file_read_order>
@@ -236,7 +236,7 @@ rich 파일을 만들 때 [`references/rich-html-template.ko.md`](references/ric
 - [ ] 수리 경로 전용: 편집 전에 앵커를 기록하고 편집 뒤에 다시 확인했으며(`rules/repair-method.ko.md` §2), 진단이 인용 근거가 있는 패밀리 3~6개로 제한되고, 어미가 양방향으로 그대로이며, 과교정 가드를 통과하고, 변경 요약이 블록 밖에 한두 줄로 있음.
 - [ ] 결과물이 `rules/post-workflow.ko.md` §5 순서를 따르고 규칙 ID나 등급 표시가 없음.
 - [ ] `rules/post-workflow.ko.md` §3의 본문 리듬 계약 통과: 블록 1~5줄에 12~25자 줄바꿈, 문단 블록 1~3문장, 텍스트 블록 최대 2개 연속이고 사이에 눈에 보이는 간격 또는 시각 블록 존재, rich 문단은 가운데 정렬에 `line-height:1.8` 인라인과 빈 문단 스페이서 간격(`p` `margin` 없음).
-- [ ] (저장소 유지보수 전용. 실행 시 의존성 아님) 패키지 변경은 KO/EN 짝을 유지하고 이 패키지로 범위를 좁힌 corpus validator(`validate-skills-corpus.mjs --root skills --only naver-blog-maker --json`)와 `bun run --cwd scripts verify`를 통과하며 `README.md`는 바뀌지 않았음을 확인합니다. 단, 이번 변경이 스킬을 추가하거나 스킬 이름·카탈로그 노출을 바꾸면 `README.md`의 스킬 수와 카탈로그 행을 갱신합니다.
+- [ ] (저장소 유지보수 전용. 실행 시 의존성 아님) 패키지 변경은 KO/EN 짝을 유지하고 이 패키지로 범위를 좁힌 corpus validator(`validate-skills-corpus.mjs --root skills --only blog-maker --json`)와 `bun run --cwd scripts verify`를 통과하며 `README.md`는 바뀌지 않았음을 확인합니다. 단, 이번 변경이 스킬을 추가하거나 스킬 이름·카탈로그 노출을 바꾸면 `README.md`의 스킬 수와 카탈로그 행을 갱신합니다.
 - [ ] 유형이 결정 줄에 밝혀지고 본문이 그 유형의 골격을 따르며 보조 유형은 최대 하나임.
 - [ ] 의도나 제목이 무엇을 할지·고를지·얼마나 자주·얼마만큼·얼마 동안·얼마에 물을 때 해결 계층이 있음: 판단 기준 ≥1, 출처 있는 선택지 전부, 운영 수치, 뒤집히는 조건 ≥1, 다음 단계 정확히 1개.
 - [ ] 규제 정량 주장이 모두 주장 범위가 있는 `quantitative_authority` 출처로 추적되고, `source-required` 슬롯은 발행을 막으며, 의료 경계 gate를 통과함.

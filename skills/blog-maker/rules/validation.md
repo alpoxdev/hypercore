@@ -69,13 +69,13 @@
 
 ## 2. Package checklist (when this skill changes)
 
-- [ ] `name` in frontmatter is `naver-blog-maker` and matches the folder.
+- [ ] `name` in frontmatter is `blog-maker` and matches the folder.
 - [ ] `description` states when to use and when not to; at least 3 positive, 2 negative, 1 boundary activation examples exist in `SKILL.md`.
 - [ ] Every rule and reference file has a `*.ko.md` mirror with the same section structure; both languages of a file change together.
 - [ ] Every claim that names Naver behavior traces to an `official` row in `references/naver-algorithm-timeline.md`; observed and folklore items are labeled as such.
 - [ ] Local links resolve; code fences are balanced.
-- [ ] `assets/evals/naver-blog-maker-cases.jsonl` covers positive, negative, boundary, regression, and adversarial cases and matches the current trigger and workflow.
-- [ ] Repository maintenance only (not a runtime dependency): the corpus validator scoped to this package (`validate-skills-corpus.mjs --root skills --only naver-blog-maker --json`) passes.
+- [ ] `assets/evals/blog-maker-cases.jsonl` covers positive, negative, boundary, regression, and adversarial cases and matches the current trigger and workflow.
+- [ ] Repository maintenance only (not a runtime dependency): the corpus validator scoped to this package (`validate-skills-corpus.mjs --root skills --only blog-maker --json`) passes.
 - [ ] `bun run --cwd scripts verify` passes.
 - [ ] When this change adds a skill, or changes a skill's name or catalog exposure, `README.md`'s skill count and catalog row are updated; otherwise confirm `README.md` is unchanged.
 

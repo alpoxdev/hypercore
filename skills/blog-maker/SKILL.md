@@ -1,10 +1,10 @@
 ---
-name: naver-blog-maker
+name: blog-maker
 description: "[Hyper] Write or revise one Naver blog post: confirm blog URL, the post's goal, the brand relationship, and plain/rich format first, then pick a post type, research a keyword, draft natural Korean with a decision layer that carries sourced operating numbers, place real-image slots and copy-ready image prompt JSON, and deliver plain text or body HTML. Use for Naver blog drafts, reviews, guides, and business posts; not other platforms, API-only requests, or automatic publishing."
 compatibility: Self-contained Markdown skill; needs only web search and page fetch for topic research. Browser tooling for live SERP inspection is optional. No login, scraping, or auto-publishing.
 ---
 
-# Naver Blog Maker
+# Blog Maker
 
 > Write one Naver blog post that Naver's current systems can surface, that a searcher clicks and finishes, and that a reader takes for a person's own writing.
 
@@ -35,7 +35,7 @@ Default every user-facing deliverable — title candidates, the post block with 
 
 <routing_rule>
 
-Use `naver-blog-maker` when the deliverable is a Naver blog post (or its title/outline/rework) and the user cares about exposure in Naver search or the Naver app.
+Use `blog-maker` when the deliverable is a Naver blog post (or its title/outline/rework) and the user cares about exposure in Naver search or the Naver app.
 
 Do not activate when:
 
@@ -210,7 +210,7 @@ Read only one language version per run. Paths are relative to this installed ski
 9. Read [`rules/repair-method.md`](rules/repair-method.md) in full when the user supplies an existing post: anchors, dominant-pattern diagnosis, repair procedure, over-correction guard, exit criteria.
 10. Read [`references/tell-catalog.md`](references/tell-catalog.md) when a draft reads machine-written but no single sentence looks broken, when a repair needs a candidate pool to diagnose against, or before the delivery scan: the per-pattern layer behind the family table.
 11. Read [`rules/validation.md`](rules/validation.md) before delivery and whenever this package changes.
-12. Use [`assets/evals/naver-blog-maker-cases.jsonl`](assets/evals/naver-blog-maker-cases.jsonl) when changing trigger, workflow, or output behavior.
+12. Use [`assets/evals/blog-maker-cases.jsonl`](assets/evals/blog-maker-cases.jsonl) when changing trigger, workflow, or output behavior.
 13. Read [`rules/tone-manner.md`](rules/tone-manner.md) before drafting, and again for the voice-card comparison: the three input shapes, the voice card, the precedence ladder, the floor, and the publish-note line.
 
 </support_file_read_order>
@@ -235,7 +235,7 @@ Read only one language version per run. Paths are relative to this installed ski
 - [ ] Repair path only: anchors recorded before editing and re-verified after (`rules/repair-method.md` §2), diagnosis limited to three to six quoted families, register unchanged in both directions, the over-correction guard passed, and the change summary outside the block in one to three lines.
 - [ ] Deliverable follows the order in `rules/post-workflow.md` §5 with no rule IDs or tier labels.
 - [ ] The body rhythm contract in `rules/post-workflow.md` §3 passed: blocks 1-5 lines of 12-25-character breaks, paragraph blocks 1-3 sentences, ≤ 2 text blocks in a row with a visible gap or visual block between, rich paragraphs centered with `line-height:1.8` inline and spaced by blank-paragraph spacers (no `p` `margin`).
-- [ ] (Repository maintenance only; not a runtime dependency) package changes keep KO/EN parity, pass the corpus validator scoped to this package (`validate-skills-corpus.mjs --root skills --only naver-blog-maker --json`) and `bun run --cwd scripts verify`, and keep `README.md` unchanged — unless this change adds a skill or changes a skill's name or catalog exposure, in which case `README.md`'s count and catalog row are updated.
+- [ ] (Repository maintenance only; not a runtime dependency) package changes keep KO/EN parity, pass the corpus validator scoped to this package (`validate-skills-corpus.mjs --root skills --only blog-maker --json`) and `bun run --cwd scripts verify`, and keep `README.md` unchanged — unless this change adds a skill or changes a skill's name or catalog exposure, in which case `README.md`'s count and catalog row are updated.
 - [ ] The post type is declared in the decision line and the body follows that type's skeleton, with at most one secondary type.
 - [ ] The decision layer exists when the intent or the title asks what to do, choose, how often, how much, how long, or at what price: criterion ≥ 1, every source-backed option, the operating number, the flip condition ≥ 1, exactly one next step.
 - [ ] Every regulated quantitative claim traces to a `quantitative_authority` source with a claim scope; `source-required` slots block publishing; the medical boundary gate passed.
