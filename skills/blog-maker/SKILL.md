@@ -1,12 +1,12 @@
 ---
 name: blog-maker
-description: "[Hyper] Write or revise one Naver blog post: confirm blog URL, the post's goal, the brand relationship, and plain/rich format first, then pick a post type, research a keyword, draft natural Korean with a decision layer that carries sourced operating numbers, place real-image slots and copy-ready image prompt JSON, and deliver plain text or body HTML. Use for Naver blog drafts, reviews, guides, and business posts; not other platforms, API-only requests, or automatic publishing."
+description: "[Hyper] Write or revise one Naver or inblog blog post: confirm the platform and the post's goal first, then pick a post type, research a keyword, draft natural Korean with a decision layer that carries sourced operating numbers, place real-image slots and copy-ready image prompt JSON, and deliver body HTML by default (plain text only on an explicit request). Use for Naver or inblog drafts, reviews, guides, title or outline rework, and business posts; not website SEO audits, other platforms, API-only requests, or automatic publishing."
 compatibility: Self-contained Markdown skill; needs only web search and page fetch for topic research. Browser tooling for live SERP inspection is optional. No login, scraping, or auto-publishing.
 ---
 
 # Blog Maker
 
-> Write one Naver blog post that Naver's current systems can surface, that a searcher clicks and finishes, and that a reader takes for a person's own writing.
+> Write one blog post for Naver or inblog that a searcher clicks and finishes, and that a reader takes for a person's own writing.
 
 <output_language>
 
@@ -19,7 +19,7 @@ Default every user-facing deliverable — title candidates, the post block with 
 - Start from a keyword: research the query, the top-ranked posts' gaps, and sourced facts, then draft — without asking the user for a fact pack first.
 - Produce a post that follows Naver's published rules (source topic lane, document experience and originality, intent-slice fit, no inserted keywords, no deceptive titles or links, disclosure) and never trips an official restriction.
 - Place image slots inline where each photo must appear, naming what to shoot and what the caption proves; mark what only the author can know as `[확인 필요]` slots instead of inventing it.
-- Deliver the chosen format: a text block for plain, or body HTML with separate title and tags for rich.
+- Deliver body HTML by default, with separate title and tags; use a single text block only when the user explicitly asks for plain text. The format is never asked.
 - Hook with a specific promise in the title and keep it within the first screen, using the adapted pattern library instead of clickbait vocabulary.
 - Draft under the embedded prose rules in `rules/human-prose.md`, and in the voice this run settled on (the user's own tone text, then the blog read, then the type's default — `rules/tone-manner.md`), so the text has no machine-written texture from the start.
 - Separate what Naver said (`official`) from what practitioners observe (`observed`) and from folklore, and say which is which when the user asks for a "rule".
@@ -35,7 +35,7 @@ Default every user-facing deliverable — title candidates, the post block with 
 
 <routing_rule>
 
-Use `blog-maker` when the deliverable is a Naver blog post (or its title/outline/rework) and the user cares about exposure in Naver search or the Naver app.
+Use `blog-maker` when the deliverable is a Naver or inblog blog post (or its title/outline/rework) and the user cares about the platform's search exposure. Supported platforms are `naver` and `inblog`; resolve the platform from the request or a known URL and ask it once only when it is unknown or conflicting.
 
 Do not activate when:
 
@@ -55,13 +55,13 @@ This skill is self-contained: it owns the post structure, the Naver rules, and t
 
 | Field | Contract |
 |---|---|
-| Intent | After intake, deliver one post, title candidates, inline image slots and generation JSON, the chosen body format, and keyword/slot/publish notes. |
+| Intent | After intake, deliver one post, title candidates, inline image slots and generation JSON, the default body HTML (plain only on explicit request), and keyword/slot/publish notes. |
 | Scope | Post content and structure only. No login, no publishing, no engagement actions, no scraping. |
 | Authority | User request and repository instructions > `rules/naver-ranking-contract.md` (official rows) > `observed` defaults > user-supplied prompt templates > any third-party SEO guide. |
 | Evidence | Every Naver-behavior claim traces to an `official` row in `references/naver-algorithm-timeline.md` (mapped in `references/evidence-digest.md`); observed and folklore items are labeled. Informational facts come from research with `URL | 날짜`; first-hand experience, results, prices paid, and brand lines come only from the user; gaps become `[확인 필요]`. |
 | Tools | Web search and page fetch for topic research; optional browser tooling for live SERP inspection; public Naver pages (DataLab, 통합검색) read as a visitor. Nothing else touches Naver; no login, no scraping. |
 | Loop | Draft → `rules/validation.md` self-check → fix hard-rule failures; at most two revision rounds, then deliver with remaining items named. |
-| Output | Korean: titles → chosen-format body → generation JSON → keyword → slots → publish note. Keep rich title/tags separate from body HTML. |
+| Output | Korean: titles → body HTML by default (a plain text block only on explicit request) → generation JSON → keyword → slots → publish note. Keep title/tags separate from body HTML. |
 | Verification | Draft checklist in `rules/validation.md`; package checklist when the skill changes (corpus validator, `bun run --cwd scripts verify`, KO/EN parity, README catalog only when this change adds a skill or changes a skill's name or catalog exposure; otherwise confirm `README.md` is unchanged). |
 | Stop condition | Await intake answers before work. Deliver after checks pass; stop and name missing required sources for regulated topics. No batch or auto-publishing. |
 
@@ -75,6 +75,7 @@ Positive:
 - "강남 임플란트 가격 비교 주제로 네이버 블로그 글 써줘, 상위노출 되게."
 - "우리 누수탐지 업체 문의 늘리는 네이버 블로그 포스팅 써줘. 브랜드명은 ○○, 가치입증은 이거야."
 - "제주 3박4일 여행 후기를 네이버 블로그에 올릴 건데 사람이 쓴 것처럼 써줘."
+- "inblog 블로그에 올릴 누수 탐지 비용 글 하나 써줘." (inblog platform — same intake and default HTML delivery)
 - "Write a Naver blog post about a 에어프라이어 review that can rank in Naver search."
 - "이 네이버 블로그 글 제목이랑 서두만 다시 잡아줘, 낚시 같지 않게."
 - "이미 쓴 네이버 블로그 글인데 AI 티가 나. 사람이 쓴 것처럼 다듬어줘. (글 전문 붙여넣음)" (repair path — anchors recorded, register kept)
@@ -88,7 +89,8 @@ Negative:
 
 Boundary:
 
-- "블로그 글 하나 써줘." — ask which platform; activate only when it is Naver.
+- "블로그 글 하나 써줘." — ask which platform once; activate only for Naver or inblog.
+- "제목만 세 개 뽑아줘." — deliver title candidates only; do not force a full post or ask the format.
 - "네이버 블로그 글 50개 자동으로 만들어서 올려줘." — activate for one reviewed draft; decline the batch and auto-publishing (R7).
 - "협찬 받은 제품인데 광고처럼 안 보이게 써줘." — activate; disclosure stays in the opening (R6), and the post is written as a real review with a downside.
 - "네이버 블로그 글인데 노출은 상관없고 문장만 사람 냄새 나게 다듬어줘." — activate in the repair path; the ranking steps are skipped, the format contract and the anchors still apply.
@@ -99,13 +101,13 @@ Boundary:
 
 | Step | Work | Output |
 |---|---|---|
-| 0. Intake | Confirm blog URL, the post's goal, the optional brand/product and the relationship to it, optional URL/material, plain/rich, and optional tone and manner in one message; await reply. The tone is asked here once and never re-asked. Do not repeat answered items. | Confirmed brief |
+| 0. Intake | Resolve the platform (naver or inblog) from the request or a known URL, asking it once only when unknown or conflicting. Confirm blog URL, the post's goal, the optional brand/product and the relationship to it, optional URL/material, and optional tone and manner in one message; await reply. The format is never asked — HTML is the default and plain is used only on an explicit request. The tone is asked here once and never re-asked. Do not repeat answered items. | Confirmed brief |
 | 1. Research | Given a keyword (or brand + topic + 가치입증), run `rules/topic-research.md`: query candidates, top-3 gap analysis, sourced facts, experience slots, inline image slots. Given experience or images, record them and run only the gap and image-slot steps — plus a decision field's lanes in `rules/topic-research.md` §3 when a number is still missing. | Fact pack |
 | 2. Keyword | Pick one query and one intent slice per `references/keyword-research.md`; compare supply and demand with public tools; read the live SERP when possible; choose the post type from `references/post-type-library.md`. | `검색어 / 의도 슬라이스 / 주 유형 / 보조 유형 / 목표 / 근거` line |
 | 3. Structure | Fill the skeleton in `rules/post-workflow.md` §3: title, cover image slot, first screen (empathy → answer → basis → scope), 3-6 evidence sections each with a fact or slot and an inline image marker, the decision layer when the intent needs one, a downside section, close, [disclosure, brand block, CTA]. | Outline |
 | 4. Draft | Write under `rules/human-prose.md` and the settled voice card (`rules/tone-manner.md`) with this skill's format contract; titles and openings from `references/hook-library.md`; facts verbatim; image markers in the prose flow; `[확인 필요]` left open. | Draft |
 | 5. Check | Run `rules/validation.md` draft checklist, walking `references/tell-catalog.md` family by family against the draft; fix hard-rule failures (≤ 2 rounds). | Checked draft |
-| 6. Deliver | Titles → plain text or rich body HTML → one JSON per generated-image slot → keyword → slots → publish note. | Korean deliverable |
+| 6. Deliver | Titles → body HTML by default (a plain text block only on explicit request) → one JSON per generated-image slot → keyword → slots → publish note. | Korean deliverable |
 
 </workflow>
 
@@ -113,7 +115,7 @@ A supplied draft replaces steps 1 to 3: record its register and its anchors, the
 
 <required>
 
-- Before research or drafting, ask the intake items in one message and await the reply; do not repeat answered items. The six items are blog URL, the post's goal, the optional brand/product and the relationship, optional URL/material, the format, and the optional tone and manner, which is asked once and never re-asked; the mode is derived from the relationship and the goal, never asked separately.
+- Before research or drafting, ask the intake items in one message and await the reply; do not repeat answered items. The five items are blog URL, the post's goal, the optional brand/product and the relationship, optional URL/material, and the optional tone and manner, which is asked once and never re-asked. Resolve the platform (naver or inblog) from the request or a known URL and ask it once only when it is unknown or conflicting. The format is never asked: body HTML is the default and plain text is used only when the user explicitly requests it. The mode is derived from the relationship and the goal, never asked separately.
 - State the post type in the decision line and follow that type's skeleton, with at most one secondary type.
 - After intake, research from the keyword without demanding a fact pack; missing optional business details become slots.
 - Write to one intent slice inside the author's topic lane; select the matching editor 주제 in the publish note.
@@ -121,8 +123,8 @@ A supplied draft replaces steps 1 to 3: record its register and its anchors, the
 - Choose each generated image's section role and template from `references/image-prompt-templates.md` §2, then compile that object in the order `rules/image-slots.md` §6 fixes. An inapplicable conditional field is absent — never `null`, `"N/A"`, or a placeholder.
 - Write each rendered string exactly once inside `text[]` and have `prompt` carry every one of them byte-identical, and repeat a real series' invariants in every object of that series.
 - When the subject, the exact rendered text, or an edit's preserve/change boundary is missing, do not emit a finished prompt for that image; ask or leave the slot open.
-- Plain uses one text fence; rich uses body HTML plus separate title/tags. Distinguish copying HTML source from copying HTML clipboard content.
-- Follow the body rhythm contract in `rules/post-workflow.md` §3 for both formats: text blocks of 1-5 lines with 12-25-character explicit line breaks, 1-3-sentence paragraph blocks, at most 2 text blocks in a row, and (rich) center-aligned paragraphs with `line-height:1.8` inline and blank-paragraph spacers — never `p` `margin`.
+- Deliver body HTML plus separate title/tags by default; a single text fence only when the user explicitly asked for plain. Distinguish copying HTML source from copying HTML clipboard content.
+- Follow the body rhythm contract in `rules/post-workflow.md` §3 for both formats: text blocks of 1-5 lines with 12-25-character explicit line breaks, 1-3-sentence paragraph blocks, at most 2 text blocks in a row, and body HTML paragraphs center-aligned with `line-height:1.8` inline and blank-paragraph spacers — never `p` `margin`.
 - Put the title's promise in the first 3-5 sentences; every section carries a checkable circumstance or a source; at least one section names a downside.
 - Use the target query once in the title and only where sentences need it in the body; no count or density target.
 - Disclose sponsorship, own-business, or affiliate relationships in the first paragraph in plain words.
@@ -171,13 +173,13 @@ A supplied draft replaces steps 1 to 3: record its register and its anchors, the
 
 If support files cannot be read, disclose the skipped detailed checks in the publish note and execute this minimum contract without claiming those files were read. Coding-agent and web runtimes use only currently exposed read/search/file/render capabilities.
 
-1. Ask blog URL, the post's goal, the optional brand/product and the relationship (자사 / 협찬 / 제휴 / 없음), optional URL/material, and plain/rich in one message and await the reply. Reuse supplied answers; optional items stay optional. Derive the mode from the relationship and the goal.
+1. Resolve the platform (naver or inblog) from the request or a known URL, asking it once only when unknown or conflicting. Ask blog URL, the post's goal, the optional brand/product and the relationship (자사 / 협찬 / 제휴 / 없음), optional URL/material, and optional tone and manner in one message and await the reply. Reuse supplied answers; optional items stay optional. The format is never asked: body HTML is the default, plain only on an explicit request. Derive the mode from the relationship and the goal.
 2. Then select one keyword and reader question and one post type; when available read three top posts and official or dated sources. Record source URLs and dates. Without search, use supplied evidence only and disclose unverified research/freshness. Mark gaps [확인 필요]. For a regulated topic, a number needs a first-party source (role `quantitative_authority`); with none, publish the decision-complete structure with slots and a list of the sources to find instead of a quantitative draft. Never ask a second intake question.
 3. Write three title candidates, an opening answer, 3-6 evidence sections, the action layer, limitations, and a close. Keep one register; remove filler, repetition, and hype. Never invent experience, prices, or credentials. Disclose commercial relationships early; use one conversion CTA. Repairs preserve facts, register, markers, and structure.
 4. Place a cover and visual explanations between short paragraphs: real-material [이미지: 대상 | 캡션] or [이미지 생성: 설명 그림 | 캡션 | 프롬프트 #n]. Use comparisons, processes, and mechanism illustrations without padding to a count. Label generated illustrations; never use them as proof of a real site, certificate, or result.
 5. Give each generation marker exactly one JSON object outside the body. Always include id, section_role, template, use, hierarchy (first, second, background), subject, composition, style, must_include, must_exclude, inspection_checks, aspect, caption_note, and prompt. Add only when they carry meaning: scene, lighting, color (dominant, support, accent, contrast), material_and_rendering, text (string, role, placement, reading_order, priority, scale, contrast, clearance), series_invariants, reference (role: inspiration or edit_source), assumptions. An inapplicable field is absent — never null, "N/A", or a placeholder. section_role and template are paired as follows: cover (cover-key-visual), first-screen (first-screen-key-takeaway), mechanism (mechanism-cutaway or mechanism-flow), comparison (comparison-table, comparison-split, or before-after-schematic), process (process-flow), cost (cost-breakdown), checklist (checklist-card), caution (failure-caution), data (data-chart), timeline (timeline), route (route-schematic), scale (scale-dimension), closing (closing-next-step), concept (concept-mood). Take the template from that role's parenthesis, and use this pairing even when `references/image-prompt-templates.md` cannot be read. Each text[].string appears exactly once in text[] and prompt carries every one of them byte-identical. Repeat a real series' invariants in every object of that series. prompt derives only from the structured fields and adds no fact beyond them. A prompt is not a generated artifact.
-6. Plain: one text fence containing title/body/hashtags. Rich: separate title/tags and simple inline-styled body HTML using p/h2/h3/strong/u/span/lists/blockquote/hr/tables/a and real HTTPS img sources. Exclude data:image, scripts, and event handlers. Without file capability, provide HTML source and explain that styled paste needs rendered content copied as text/html. Strike-through, source-code, and special components require manual editor work. Keep the line rhythm even in the fallback: short explicit line breaks (12-25 characters), 1-3-sentence blocks, blank-paragraph spacers instead of margins, and `line-height:1.8` inline on rich paragraphs.
-7. Check facts, disclosure, links, marker/JSON correspondence, and chosen format; revise at most twice. Do not claim unavailable detailed prose checks passed. No login, upload, or publication.
+6. Body HTML by default: separate title/tags and simple inline-styled body HTML using p/h2/h3/strong/u/span/lists/blockquote/hr/tables/a and real HTTPS img sources. Plain (only on an explicit request): one text fence containing title/body/hashtags. Exclude data:image, scripts, and event handlers. Without file capability, provide HTML source and explain that styled paste needs rendered content copied as text/html. Strike-through, source-code, and special components require manual editor work. Keep the line rhythm even in the fallback: short explicit line breaks (12-25 characters), 1-3-sentence blocks, blank-paragraph spacers instead of margins, and `line-height:1.8` inline on HTML paragraphs.
+7. Check facts, disclosure, links, marker/JSON correspondence, and the delivery shape; revise at most twice. Do not claim unavailable detailed prose checks passed. No login, upload, or publication.
 8. Medical safety survives the loss of every support file. These five lines hold whether or not `references/regulated-topic-research.md` was read:
    - A medical quantitative value may be based only on a governing first-party source (approval or 허가사항, manufacturer label) with the same claim scope. A peer-reviewed review is context, never the sole basis for a number.
    - A review, a blog, or a cafe post is not a pass because it has a URL.
@@ -189,15 +191,15 @@ If support files cannot be read, disclose the skipped detailed checks in the pub
 
 <support_file_read_order>
 
-For rich files, read [`references/rich-html-template.md`](references/rich-html-template.md), retain the formatted-copy button in [`assets/rich-post.html`](assets/rich-post.html), and reuse [`assets/rich-blocks.html`](assets/rich-blocks.html). If assets cannot be read, provide complete HTML with body-only DOM selection and `document.execCommand('copy')` inside the button click; on blocking, leave the body selected and explain manual copying.
+For the default HTML delivery, read [`references/rich-html-template.md`](references/rich-html-template.md), retain the formatted-copy button in [`assets/rich-post.html`](assets/rich-post.html), and reuse [`assets/rich-blocks.html`](assets/rich-blocks.html). If assets cannot be read, provide complete HTML with body-only DOM selection and `document.execCommand('copy')` inside the button click; on blocking, leave the body selected and explain manual copying.
 
 Read only one language version per run. Paths are relative to this installed skill directory, never a hard-coded checkout or plugin cache. File reads are explicit actions, not automatic includes. For bare filenames, resolve the unique matching file in this navigation list; do not interpret them relative to the current support document.
 
-- Before research or drafting, read [`rules/intake.md`](rules/intake.md). Ask the six intake items together and await the reply unless already answered: blog URL, the post's goal, the optional brand/product and the relationship, optional business/product URL or material, plain/rich format, and optional tone and manner.
+- Before research or drafting, read [`rules/intake.md`](rules/intake.md). Resolve the platform (naver or inblog) from the request or a known URL, asking it once only when unknown or conflicting, then ask the five intake items together and await the reply unless already answered: blog URL, the post's goal, the optional brand/product and the relationship, optional business/product URL or material, and optional tone and manner. The format is never asked — HTML is the default and plain is used only on an explicit request.
 - Before choosing the type, read [`references/post-type-library.md`](references/post-type-library.md) §1-§2; after choosing, read only the chosen type's §3 playbook (plus a secondary type's, when one was chosen).
 - When the topic is medical or a quantitative safety, dosage, interval, duration, eligibility, or legal-limit claim is involved, read [`references/regulated-topic-research.md`](references/regulated-topic-research.md).
 - While placing images, read [`rules/image-slots.md`](rules/image-slots.md); when compiling generation prompts, read [`references/image-prompt-templates.md`](references/image-prompt-templates.md).
-- After format selection, read [`references/format-options.md`](references/format-options.md) for plain delivery or body-only HTML, separate title/tags, and HTML clipboard requirements.
+- Before delivery, read [`references/format-options.md`](references/format-options.md) for the default body HTML, separate title/tags, the plain exception, and the HTML clipboard requirements.
 
 1. After intake, read [`rules/post-workflow.md`](rules/post-workflow.md) for the remaining run: mode decision, intake, structure skeleton, delivery order.
 2. Read [`rules/topic-research.md`](rules/topic-research.md) whenever the brief lacks experience, sources, or images (the usual case): research procedure, experience slots, inline image slots, fact-pack shape.
@@ -219,7 +221,7 @@ Read only one language version per run. Paths are relative to this installed ski
 
 - [ ] Mode stated and consistent with the deliverable (전환형 has disclosure, verbatim brand block, one CTA).
 - [ ] Research step ran when the brief lacked facts: fact pack has sourced facts with URL and date, gap analysis of the top 3, and no fabricated experience.
-- [ ] Intake was answered and delivery matches the selected format; rich title/tags are separate and generation markers map one-to-one to JSON objects.
+- [ ] Intake was answered and the delivery is body HTML by default (a plain text block only when the user explicitly requested plain; the format was never asked); title/tags are separate and generation markers map one-to-one to JSON objects.
 - [ ] Every generation object carries the 14 always-fields; conditional fields appear only where they carry meaning and inapplicable ones are truly absent (no `null`, `"N/A"`, `"없음"`, `"위와 동일"`).
 - [ ] Each object's `section_role` is one of the 14 roles and `template` is a template ID from that role's row.
 - [ ] Each rendered string appears once in `text[]`, and `prompt` carries every one of them byte-identical; a real series' invariants repeat in every object of that series.
@@ -234,7 +236,7 @@ Read only one language version per run. Paths are relative to this installed ski
 - [ ] When file reads work, check the tell catalog; otherwise apply the core prose checks and disclose the skipped detailed scan.
 - [ ] Repair path only: anchors recorded before editing and re-verified after (`rules/repair-method.md` §2), diagnosis limited to three to six quoted families, register unchanged in both directions, the over-correction guard passed, and the change summary outside the block in one to three lines.
 - [ ] Deliverable follows the order in `rules/post-workflow.md` §5 with no rule IDs or tier labels.
-- [ ] The body rhythm contract in `rules/post-workflow.md` §3 passed: blocks 1-5 lines of 12-25-character breaks, paragraph blocks 1-3 sentences, ≤ 2 text blocks in a row with a visible gap or visual block between, rich paragraphs centered with `line-height:1.8` inline and spaced by blank-paragraph spacers (no `p` `margin`).
+- [ ] The body rhythm contract in `rules/post-workflow.md` §3 passed: blocks 1-5 lines of 12-25-character breaks, paragraph blocks 1-3 sentences, ≤ 2 text blocks in a row with a visible gap or visual block between, body HTML paragraphs centered with `line-height:1.8` inline and spaced by blank-paragraph spacers (no `p` `margin`).
 - [ ] (Repository maintenance only; not a runtime dependency) package changes keep KO/EN parity, pass the corpus validator scoped to this package (`validate-skills-corpus.mjs --root skills --only blog-maker --json`) and `bun run --cwd scripts verify`, and keep `README.md` unchanged — unless this change adds a skill or changes a skill's name or catalog exposure, in which case `README.md`'s count and catalog row are updated.
 - [ ] The post type is declared in the decision line and the body follows that type's skeleton, with at most one secondary type.
 - [ ] The decision layer exists when the intent or the title asks what to do, choose, how often, how much, how long, or at what price: criterion ≥ 1, every source-backed option, the operating number, the flip condition ≥ 1, exactly one next step.

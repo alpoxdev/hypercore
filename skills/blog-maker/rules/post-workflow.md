@@ -19,9 +19,9 @@ The mode is **derived, not asked**. A commercial relationship recorded at intake
 
 ## 1. Intake — the fact pack
 
-First complete [`intake.md`](intake.md) and await the reply. Then research from the keyword without demanding a fact pack.
+First complete [`intake.md`](intake.md) (which also resolves the platform, `naver` or `inblog`) and await the reply. Then research from the keyword without demanding a fact pack.
 
-- **Given a keyword/topic only, or brand + topic + 가치입증 with no experience** (the seed prompt shape): run [`topic-research.md`](topic-research.md) in full. It returns the fact pack below with sourced facts, `[확인 필요]` slots where only the author's own experience can go, and inline image slots. Intake already settled the mode and format.
+- **Given a keyword/topic only, or brand + topic + 가치입증 with no experience** (the seed prompt shape): run [`topic-research.md`](topic-research.md) in full. It returns the fact pack below with sourced facts, `[확인 필요]` slots where only the author's own experience can go, and inline image slots. Intake already settled the mode; the format is body HTML by default (plain only on an explicit request).
 - **Given experience, facts, or images**: record them verbatim into the pack, then run the gap check and image-slot steps of `topic-research.md` (§4-§5). When a decision field still needs a number, run only that field's lanes in `topic-research.md` §3 — supplied material never cancels an unresolved quantitative field.
 - **Given an existing post** (the user pastes a Naver draft and asks that it read human): keep the supplied text as the base, record its register and its anchors, run the repair path in [`repair-method.md`](repair-method.md), and keep this format contract. Do not restructure the post unless the user asks; a `[확인 필요]` slot is added only where the supplied text leaves a hole that the post cannot stand without.
 
@@ -99,9 +99,9 @@ For the other eight types, follow the type's playbook in [`../references/post-ty
 Both formats follow the same line rhythm. It is derived from two live measurements of reference posts (`.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md`, PostView DOM analysis) and one editor paste test (`.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt`):
 
 - A text block is 1-5 lines, and each line is 12-25 characters broken by an explicit line break — never one long sentence left to wrap.
-- A paragraph block is 1-3 sentences. Plain separates blocks with a blank line. Rich separates them with a blank-paragraph spacer (`<p style="line-height:1.8;">&nbsp;</p>`, verified to survive paste); a `margin` on `p` does not survive the paste, so it is never the spacing mechanism.
+- A paragraph block is 1-3 sentences. A plain delivery separates blocks with a blank line. Body HTML separates them with a blank-paragraph spacer (`<p style="line-height:1.8;">&nbsp;</p>`, verified to survive paste); a `margin` on `p` does not survive the paste, so it is never the spacing mechanism.
 - At most 2 text blocks run consecutively (the observed mode is 1). Place an image, a quote, or a table between blocks so the scroll never shows two dense screens in a row.
-- Rich only: body paragraphs are center-aligned; a key phrase gets color and bold on the phrase itself, not the paragraph; tables, lists, and captions stay left-aligned; `line-height:1.8` inline on each paragraph is the default (verified paste-surviving).
+- Body HTML only: body paragraphs are center-aligned; a key phrase gets color and bold on the phrase itself, not the paragraph; tables, lists, and captions stay left-aligned; `line-height:1.8` inline on each paragraph is the default (verified paste-surviving).
 - The reference posts' emoji-number heading style is **not** adopted: `emoji as section markers` stays an S1 removal target in `human-prose.md` §4.
 - Before delivery, run the rhythm self-check: no line wraps into a stair-stepped shape, and every two consecutive text blocks show a visible gap.
 
@@ -136,11 +136,11 @@ Run the self-check protocol in `human-prose.md` §5, then [`validation.md`](vali
 Deliver in this order:
 
 1. **3 title candidates** (decision / question / warning or comparison), recommended one marked.
-2. **Chosen-format body**: plain is one text fence with title/body/hashtags; rich is body HTML with separate title/category/tags, following [`../references/format-options.md`](../references/format-options.md). Source copying is not styled copying. Preserve markers and [확인 필요] in both formats. Before handing either format over, run the body rhythm self-check in §3.
+2. **Body**: body HTML by default with separate title/category/tags, following [`../references/format-options.md`](../references/format-options.md); plain is one text fence with title/body/hashtags only when the user explicitly asked for plain. Source copying is not styled copying. Preserve markers and [확인 필요] in both shapes. Before handing the body over, run the body rhythm self-check in §3.
 3. **Generation JSON**: one numbered object per generation marker, carrying the role's fields and its paste-ready `prompt`; omit when none. The prose prompt lives inside each object, so this workflow adds no separate prose-prompt section.
 4. **Keyword decision** in one line.
 5. **Slots to fill** — the list of `[확인 필요]` markers in order, each with what to write.
-6. **Publish note** (3-5 lines): mode; editor 주제 to select; disclosure check; link check; a length note only when the body is outside the 1,500-3,000 default; the source URLs used for research (for the author's reference, not for the body); the voice line from [`tone-manner.md`](tone-manner.md) §5, plus that file's request-not-applied line when the floor rejected a tone request.
+6. **Publish note** (3-5 lines): mode; the platform (`naver` or `inblog`); the Naver editor 주제 to select; disclosure check; link check; a length note only when the body is outside the 1,500-3,000 default; the source URLs used for research (for the author's reference, not for the body); the voice line from [`tone-manner.md`](tone-manner.md) §5, plus that file's request-not-applied line when the floor rejected a tone request.
 
 Nothing else: no rule IDs, no tier labels, no rubric dump, no mention of the tells avoided. The mode statement and every note live outside the text block; the block is what gets pasted. A repair run (a supplied draft) delivers the same items and adds one to three lines naming what changed, also outside the block.
 

@@ -1,19 +1,23 @@
-# Format Options: plain vs rich
+# Format Options: HTML default, plain on request
 
 > Korean version: [`format-options.ko.md`](format-options.ko.md)
 
-Read after the format choice in [`../rules/intake.md`](../rules/intake.md). This reference defines delivery, not authorization to operate or publish in Naver.
+Read before delivery, from [`../rules/intake.md`](../rules/intake.md). This reference defines delivery, not authorization to operate or publish.
 
 ## 1. Delivery
 
-For rich output, follow [`rich-html-template.md`](rich-html-template.md) and deliver a **complete HTML file with a formatted-copy button**. Replace the shell’s #sample body and retain its copy behavior.
+The format is never asked. Body HTML is the default; plain text is used only when the user explicitly requests it. Both supported platforms (`naver`, `inblog`) receive the same delivery shape here — platform-specific paste behavior is not assumed.
 
-- `plain`: one fenced `text` draft with title, body markers, and hashtags. Explain that the title field and tag controls still require separate entry.
-- `rich`: separate title, category (if known), and tags from body-only HTML. Deliver an HTML artifact with a rendered preview when file delivery is available; otherwise deliver fenced `html` source explicitly labeled as source, not a styled clipboard.
-- Rich paste requires rendered content copied with HTML clipboard data (`text/html`), not copying literal tags from a code block. Do not promise that a fenced block's copy button preserves styling. When no rendered/HTML clipboard route is available, explain the limitation and provide source plus a plain fallback.
+For HTML output, follow [`rich-html-template.md`](rich-html-template.md) and deliver a **complete HTML file with a formatted-copy button**. Replace the shell’s #sample body and retain its copy behavior.
+
+- `html` (default): separate title, category (if known), and tags from body-only HTML. Deliver an HTML artifact with a rendered preview when file delivery is available; otherwise deliver fenced `html` source explicitly labeled as source, not a styled clipboard.
+- `plain` (only when the user explicitly asks for plain text): one fenced `text` draft with title, body markers, and hashtags. Explain that the title field and tag controls still require separate entry.
+- HTML paste requires rendered content copied with HTML clipboard data (`text/html`), not copying literal tags from a code block. Do not promise that a fenced block's copy button preserves styling. When no rendered/HTML clipboard route is available, explain the limitation and provide source plus a plain fallback.
 - Keep image-generation JSON prompts and publishing notes outside the body HTML. Unknown image sources remain visible instructions; never invent a URL or claim a prompt is an image.
 
 ## 2. Supported features and limits
+
+The rows below are paste observations from the Naver editor, recorded in this package's own editor sessions. They are the delivery contract for a Naver post; the same behavior is **not** verified for inblog, so these rows are never presented as an inblog guarantee.
 
 | Feature | Reported result | Delivery rule |
 |---|---|---|
