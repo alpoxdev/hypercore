@@ -30,12 +30,17 @@ Each `slides[]` entry:
 
 | Key | Type | Rule |
 |---|---|---|
-| `title` | string | Non-empty. Left-bottom title. |
-| `body` | string | Non-empty. Left-bottom body. `\n` forces a line break. |
-| `photo` | string | A `data:image/(png|jpeg|webp);base64,…` URI. Cover-cropped and background-blurred. |
+| `title` | string | Non-empty. Placed according to `layout`. |
+| `body` | string | Non-empty. Uses the same layout as the title. `\n` forces a line break. |
+| `photo` | string | A `data:image/(png|jpeg|webp);base64,…` URI. Cover-cropped to fill the whole card and background-blurred. |
 | `photoSource` | string | Non-empty. Provenance string. |
 | `generated` | boolean | `true` when the photo is generated. |
 | `alt` | string | Non-empty. Korean alt text for the card. |
+| `layout` | string | `bottom-left`, `bottom-right`, `top-left`, `top-right`, or `center`. The first card must use `bottom-left`; body cards choose explicitly. |
+| `layoutReason` | string | Non-empty. Explain the information role and the image space kept clear. |
+| `scene` | string | Non-empty. Describe the image scene that supports this card's point. |
+| `visualType` | string | `photo`, `illustration`, `diagram`, or `screenshot`. |
+| `reuseReason` | string | Required when an earlier card uses exactly the same `photo` URI. Explain the meaningful continuation or comparison; do not repeat an image merely to fill cards. |
 
 ```json
 {
@@ -51,7 +56,11 @@ Each `slides[]` entry:
       "photo": "data:image/png;base64,…",
       "photoSource": "사진 출처와 사용 허가",
       "generated": false,
-      "alt": "첫 카드에 보이는 사진과 내용 설명"
+      "alt": "첫 카드에 보이는 사진과 내용 설명",
+      "layout": "bottom-left",
+      "layoutReason": "오른쪽 인물을 가리지 않고 아래 여백에 질문 배치",
+      "scene": "질문을 떠올리는 인물의 첫 장면",
+      "visualType": "photo"
     },
     {
       "title": "둘째 카드 제목",
@@ -59,7 +68,11 @@ Each `slides[]` entry:
       "photo": "data:image/jpeg;base64,…",
       "photoSource": "생성 이미지 (일러스트)",
       "generated": true,
-      "alt": "둘째 카드에 보이는 사진과 내용 설명"
+      "alt": "둘째 카드에 보이는 사진과 내용 설명",
+      "layout": "top-left",
+      "layoutReason": "아래쪽 설명 그림을 비워 두고 위에 답 배치",
+      "scene": "첫 질문의 원리를 보여주는 새 설명 그림",
+      "visualType": "illustration"
     }
   ]
 }
@@ -94,7 +107,7 @@ sources.md        # sidecars["sources.md"]
 manifest.json     # sidecars["manifest.json"]
 ```
 
-`manifest.json` carries `width`, `height`, `count`, `files` (the `cards/NN.png` names), `font` (`embedded` or `system-fallback; Korean glyph inspection required`), `generated` (one boolean per card), and `photos` (one `{ file, photoSource, generated }` object per card, in order).
+`manifest.json` carries `width`, `height`, `count`, `files` (the `cards/NN.png` names), `font` (`embedded` or `system-fallback; Korean glyph inspection required`), `generated` (one boolean per card), and `photos` (one object per card containing `file`, `photoSource`, `generated`, `layout`, `layoutReason`, `scene`, `visualType`, and `reuseReason` when supplied).
 
 ## 4. Failure behavior
 
@@ -105,8 +118,11 @@ manifest.json     # sidecars["manifest.json"]
 - a `slides` array that is empty, holds one card, or holds more than 20
 - a `photo`, `logo`, or `fontData` value that is not the matching data URI form
 - an image that cannot load, times out after 10 seconds, or has zero size
-- text that overflows the card (more than 3 title lines, more than 5 body lines, or a text panel taller than 69% of the card) — the composer fails instead of shrinking or truncating
+- text that overflows the card (more than 3 title lines, more than 5 body lines, or a text block taller than 69% of the card) — the composer fails instead of shrinking or truncating
 - a `fontData` face that fails to load
+- an unknown `layout` or `visualType`, a cover layout other than `bottom-left`, missing scene/placement reasons, or identical photo reuse without `reuseReason`
+
+The renderer compares exact image URIs, not perceptual similarity. A visually repeated image with different encoding still requires editorial review. It checks required explanations for presence, not truth or quality.
 
 Editing the JSON after a render invalidates the previous output: the gallery and sidecars clear and `exportCards` fails until the next successful render.
 

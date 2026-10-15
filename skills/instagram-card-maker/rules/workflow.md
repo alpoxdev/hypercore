@@ -20,12 +20,13 @@ Research from the topic without demanding a fact pack. For each card, write the 
 - Choose the card count: at least 2 and at most 20, since the app carousel holds up to 20 items. Compose as many cards as the content needs and no more.
 - Choose the format from [`../references/platform-specs.md`](../references/platform-specs.md). Default 1080×1350 (4:5).
 - Order the ideas as hook → sourced explanation → relevant caveat → next step. Allocate cards according to the content; combine roles in a short set rather than forcing a fixed card count. Do not invent a downside when the subject has none.
+- Assign `scene`, `visualType`, `layout`, and `layoutReason` per card before sourcing images. Let the narrative change the scene or visual type. Reuse the same photo only for a meaningful continuation or comparison, with `reuseReason`; never default to repeating one photo across groups of cards.
 
 ## 3. Compose
 
 - Build the input document per [`../references/output-contract.md`](../references/output-contract.md).
 - Compose each card per [`../references/card-composition.md`](../references/card-composition.md) and [`legibility-and-typography.md`](legibility-and-typography.md).
-- Keep the photo and the text as separate layers; keep the title and hook at the left-bottom.
+- Keep photo and text as separate layers. Fix only the cover at `bottom-left`; choose body layouts to avoid the image subject. Repeated information types may keep a layout.
 
 ## 4. Export
 
