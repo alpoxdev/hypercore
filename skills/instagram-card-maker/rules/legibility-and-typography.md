@@ -22,7 +22,7 @@ When the run uses the system fallback, inspect the exported Korean directly befo
 
 ## 3. Contrast
 
-Keep the text on the opaque `#151515` panel with white text so contrast does not depend on the photo. The W3C 4.5:1 text / 3:1 large-text minimum is the design benchmark (see [`../references/platform-specs.md`](../references/platform-specs.md) §3); the panel meets it structurally.
+Keep the text as white text on the translucent black scrim over the photo, so contrast does not depend on the raw photo. The W3C 4.5:1 text / 3:1 large-text minimum is the design benchmark (see [`../references/platform-specs.md`](../references/platform-specs.md) §3); the scrim holds one constant alpha under every text pixel and meets it structurally, even over a pure white photo.
 
 ## 4. Wrapping
 
@@ -35,7 +35,7 @@ The composer measures each character with the canvas `measureText` and wraps at 
 
 The composer fails rather than shrink or truncate.
 
-- Title over 3 lines, body over 5 lines, or a text panel taller than 69% of the card is an error.
+- Title over 3 lines, body over 5 lines, or a text block taller than 69% of the card is an error.
 - The fix is to split the card or shorten the text; never shrink the font to fit.
 
 ## 6. Loading gates

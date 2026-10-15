@@ -20,12 +20,13 @@
 - 카드 수를 정합니다. 앱 캐러셀이 최대 20개이므로 최소 2, 최대 20입니다. 내용이 필요한 만큼만 구성하고 그보다 늘리지 않습니다.
 - [`../references/platform-specs.ko.md`](../references/platform-specs.ko.md)에서 형식을 고릅니다. 기본은 1080×1350(4:5)입니다.
 - 문구를 훅 → 출처 있는 설명 → 필요한 주의점 → 다음 행동 순서로 구성합니다. 내용에 맞게 장수를 정하며 짧은 세트에서는 역할을 합칩니다. 정해진 장수를 채우려고 카드를 늘리거나 없는 단점을 만들지 않습니다.
+- 이미지를 확보하기 전에 카드마다 `scene`, `visualType`, `layout`, `layoutReason`을 정합니다. 서사에 맞게 장면이나 이미지 종류를 바꿉니다. 같은 사진은 장면 연결이나 비교에 필요할 때만 `reuseReason`과 함께 재사용하며 여러 장씩 묶어 반복하는 방식을 기본값으로 삼지 않습니다.
 
 ## 3. 구성
 
 - [`../references/output-contract.ko.md`](../references/output-contract.ko.md)대로 입력 문서를 만듭니다.
 - 카드마다 [`../references/card-composition.ko.md`](../references/card-composition.ko.md)와 [`legibility-and-typography.ko.md`](legibility-and-typography.ko.md)대로 구성합니다.
-- 사진과 글자를 분리한 레이어로 유지하고, 제목과 훅을 왼쪽 하단에 둡니다.
+- 사진과 글자를 분리한 레이어로 유지합니다. 커버만 `bottom-left`에 고정하고 본문은 이미지 속 대상을 피하도록 배치합니다. 같은 정보 유형의 배치는 유지할 수 있습니다.
 
 ## 4. 내보내기
 

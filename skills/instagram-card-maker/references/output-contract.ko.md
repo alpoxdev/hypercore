@@ -30,12 +30,17 @@
 
 | 키 | 형 | 규칙 |
 |---|---|---|
-| `title` | 문자열 | 비어 있지 않아야 합니다. 왼쪽 하단 제목입니다. |
-| `body` | 문자열 | 비어 있지 않아야 합니다. 왼쪽 하단 본문입니다. `\n`은 줄바꿈입니다. |
-| `photo` | 문자열 | `data:image/(png|jpeg|webp);base64,…` URI입니다. 커버 크롭하고 배경만 흐리게 합니다. |
+| `title` | 문자열 | 비어 있지 않아야 합니다. `layout`에 따라 배치합니다. |
+| `body` | 문자열 | 비어 있지 않아야 합니다. 제목과 같은 배치를 사용합니다. `\n`은 줄바꿈입니다. |
+| `photo` | 문자열 | `data:image/(png|jpeg|webp);base64,…` URI입니다. 카드 전체를 채우도록 커버 크롭하고 배경만 흐리게 합니다. |
 | `photoSource` | 문자열 | 비어 있지 않아야 합니다. 출처 문자열입니다. |
 | `generated` | 불리언 | 생성 사진이면 `true`입니다. |
 | `alt` | 문자열 | 비어 있지 않아야 합니다. 카드의 한국어 대체 텍스트입니다. |
+| `layout` | 문자열 | `bottom-left`, `bottom-right`, `top-left`, `top-right`, `center` 중 하나입니다. 첫 카드는 `bottom-left`이며 본문은 명시적으로 선택합니다. |
+| `layoutReason` | 문자열 | 비어 있지 않아야 합니다. 정보 역할과 가리지 않을 이미지 영역을 설명합니다. |
+| `scene` | 문자열 | 비어 있지 않아야 합니다. 이 카드의 요점을 뒷받침하는 이미지 장면을 설명합니다. |
+| `visualType` | 문자열 | `photo`, `illustration`, `diagram`, `screenshot` 중 하나입니다. |
+| `reuseReason` | 문자열 | 앞 카드와 `photo` URI가 완전히 같으면 필수입니다. 이어지는 장면이나 비교 등 재사용 이유를 설명하며 장수를 채우려고 반복하지 않습니다. |
 
 ```json
 {
@@ -51,7 +56,11 @@
       "photo": "data:image/png;base64,…",
       "photoSource": "사진 출처와 사용 허가",
       "generated": false,
-      "alt": "첫 카드에 보이는 사진과 내용 설명"
+      "alt": "첫 카드에 보이는 사진과 내용 설명",
+      "layout": "bottom-left",
+      "layoutReason": "오른쪽 인물을 가리지 않고 아래 여백에 질문 배치",
+      "scene": "질문을 떠올리는 인물의 첫 장면",
+      "visualType": "photo"
     },
     {
       "title": "둘째 카드 제목",
@@ -59,7 +68,11 @@
       "photo": "data:image/jpeg;base64,…",
       "photoSource": "생성 이미지 (일러스트)",
       "generated": true,
-      "alt": "둘째 카드에 보이는 사진과 내용 설명"
+      "alt": "둘째 카드에 보이는 사진과 내용 설명",
+      "layout": "top-left",
+      "layoutReason": "아래쪽 설명 그림을 비워 두고 위에 답 배치",
+      "scene": "첫 질문의 원리를 보여주는 새 설명 그림",
+      "visualType": "illustration"
     }
   ]
 }
@@ -94,7 +107,7 @@ sources.md        # sidecars["sources.md"]
 manifest.json     # sidecars["manifest.json"]
 ```
 
-`manifest.json`은 `width`, `height`, `count`, `files`(`cards/NN.png` 이름), `font`(`embedded` 또는 `system-fallback; Korean glyph inspection required`), `generated`(카드마다 불리언 하나), `photos`(카드마다 순서대로 `{ file, photoSource, generated }` 객체 하나)를 담습니다.
+`manifest.json`은 `width`, `height`, `count`, `files`(`cards/NN.png` 이름), `font`(`embedded` 또는 `system-fallback; Korean glyph inspection required`), `generated`(카드마다 불리언 하나), `photos`(카드마다 `file`, `photoSource`, `generated`, `layout`, `layoutReason`, `scene`, `visualType`과 입력한 경우 `reuseReason`을 담은 객체)를 담습니다.
 
 ## 4. 실패 동작
 
@@ -105,8 +118,13 @@ manifest.json     # sidecars["manifest.json"]
 - 비었거나 한 장이거나 20장을 넘는 `slides` 배열
 - `photo`, `logo`, `fontData`가 각 형식의 data URI가 아닌 경우
 - 불러올 수 없거나 10초 뒤 시간 초과이거나 크기가 0인 이미지
-- 카드를 넘치는 글자(제목 3줄 초과, 본문 5줄 초과, 텍스트 패널이 카드 높이의 69% 초과). 컴포저는 축소나 자르기 대신 실패합니다.
+- 카드를 넘치는 글자(제목 3줄 초과, 본문 5줄 초과, 텍스트 블록이 카드 높이의 69% 초과). 컴포저는 축소나 자르기 대신 실패합니다.
 - 불러오기에 실패한 `fontData` 글꼴
+- 알 수 없는 `layout`이나 `visualType`, `bottom-left`가 아닌 커버 배치, 장면·배치 사유 누락, `reuseReason` 없는 동일 사진 재사용
+
+렌더러는 이미지 URI의 완전 일치를 비교하며 눈에 보이는 유사도는 검사하지 않습니다. 다른 방식으로 인코딩한 같은 사진은 사람이 다시 확인해야 합니다. 설명이 있는지는 검사하지만 진실성과 품질까지 판단하지 않습니다.
+
+이전 입력 문서를 새 컴포저로 렌더링하려면 `layout`, `layoutReason`, `scene`, `visualType`을 추가해야 합니다. 빠진 필드를 조용히 모두 왼쪽 하단으로 채우지 않고 거부합니다. 이전에 내보낸 자체 완결 HTML은 내장된 컴포저를 유지하며 새로 내보낸 HTML에는 명시적인 배치와 이미지 계획이 함께 저장됩니다.
 
 렌더링 뒤 JSON을 편집하면 이전 출력이 무효가 됩니다. 갤러리와 사이드카가 비워지고 다음 렌더링이 성공할 때까지 `exportCards`가 실패합니다.
 
