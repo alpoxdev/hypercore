@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 39개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 40개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -172,6 +172,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `tone-manner-maker` | 글 샘플에서 말투 스펙 문서 추출 — 다른 AI가 그 말투로 쓸 수 있는 self-contained 톤 프로파일, 커뮤니티 말투 7종 근사치 프리셋 포함 | All |
 | `naver-blog-maker` | 키워드 하나로 리서치부터 초안까지 — 네이버 노출 규칙(C-Rank·D.I.A.+·스마트블록)과 공식 제한 기준 준수, 내장 사람 문장 규칙, 인라인 이미지 슬롯, 섹션 역할별 이미지 visual brief(역할·템플릿·시선 순서·색 역할·재질·정확한 글자·점검 기준 + 붙여넣기용 자연어 프롬프트), 복사용 텍스트 블록 전달, 정보/경험형·전환형 | All (self-contained) |
 | `image-maker` | 관찰된 이미지 기능으로 이미지를 생성하고, 미지원 환경에서는 실행 가능한 프롬프트를 안전하게 저장 | Capability-based |
+| `instagram-card-maker` | 브랜드·글감 조사 후 흐름에 맞는 카드뉴스 제작. 편집 가능한 HTML, 같은 비율의 이미지 여러 장, 한국어 캡션과 대체 텍스트 전달 | All (이미지 출력은 브라우저 필요) |
 
 ### 실행 보조
 
@@ -195,9 +196,17 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `naver-api` | Naver API HUB 검색·DataLab 검색어 트렌드·쇼핑인사이트 조회와 CLI 초기 설정·자격 증명 검증 | Node.js 20+; network; Naver API HUB credentials |
 | `jev-maker` | TypeSafe Jev(System One) 판단 모델용 질문, 호출 코드, 템플릿, 평가 세트 생성과 코드 감사, 연결 설정 | Bun (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 39개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 40개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
+
+**인스타그램 카드뉴스를 만들 때**
+
+```text
+instagram-card-maker로 우리 브랜드의 봄 신제품을 소개하는 카드뉴스를 만들어줘.
+브랜드 자료를 조사하고 4:5 이미지 여러 장, 편집 가능한 HTML, 캡션까지 전달해줘.
+사진 배경만 살짝 흐리게 하고 한글 제목은 왼쪽 하단에 선명하게 배치해줘.
+```
 
 **1) 기존 프로젝트의 README가 오래됐을 때**
 
@@ -240,7 +249,7 @@ hypercore/
 │       └── color/         # @kood/color-cli — color-cli 스킬이 호출
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/sourcing/validation)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
-└── skills/                # 39개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 40개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:
