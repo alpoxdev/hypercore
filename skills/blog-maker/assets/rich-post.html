@@ -3,31 +3,51 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>네이버 블로그 글 복사</title>
+  <title>블로그 글 복사</title>
   <style>
     body { max-width: 900px; margin: 32px auto; padding: 0 20px; font-family: Arial, sans-serif; color: #222; }
     button { padding: 12px 18px; margin: 4px 8px 4px 0; border: 0; border-radius: 8px; background: #087f3e; color: white; font-weight: 700; cursor: pointer; }
     button:focus-visible { outline: 3px solid #173f8a; outline-offset: 3px; }
     #status { min-height: 1.5em; }
+    .meta { margin: 4px 0; }
+    .paste-note { margin: 8px 0; color: #444; }
     #sample { margin-top: 24px; padding: 24px; border: 1px solid #ddd; overflow-wrap: anywhere; }
     #sample img { max-width: 100%; height: auto; }
+    #author-notes { margin-top: 24px; padding: 16px; border: 1px dashed #bbb; color: #444; }
+    /* Platform toggle: the generated file sets data-platform="naver" or "inblog" on <body>.
+       Nothing here is reactive beyond this CSS switch; there is no library. */
+    .inblog-only { display: none; }
+    body[data-platform="inblog"] .inblog-only { display: block; }
+    body[data-platform="inblog"] .naver-only { display: none; }
     @media (max-width: 600px) { body { margin: 16px auto; padding: 0 12px; } #sample { padding: 16px; } }
   </style>
 </head>
-<body>
+<body data-platform="naver">
   <header>
-    <!-- Replace metadata with escaped text. Keep it outside #sample. -->
+    <!-- Metadata are separate editor fields, never part of the copied body.
+         Set data-platform="naver" or "inblog" on <body> to match the target platform.
+         Fill the fields for that platform with escaped text. Keep them outside #sample. -->
     <h1 id="post-title">게시글 제목을 입력하세요</h1>
-    <p>카테고리: <span id="post-category">미지정</span></p>
-    <p>태그: <span id="post-tags">태그를 입력하세요</span></p>
-    <p>제목과 태그는 네이버에서 따로 입력하세요. 아래 버튼은 본문만 복사합니다.</p>
+    <p class="meta naver-only">카테고리: <span id="post-category">미지정</span></p>
+    <p class="meta naver-only">태그: <span id="post-tags">태그를 입력하세요</span></p>
+    <div class="inblog-only">
+      <p class="meta">Description: <span id="post-description">설명을 입력하세요</span></p>
+      <p class="meta">Meta title(선택): <span id="post-meta-title">비우면 글 제목을 씁니다</span></p>
+      <p class="meta">Meta description(선택): <span id="post-meta-description">비우면 글 설명을 씁니다</span></p>
+      <p class="meta">Slug: <span id="post-slug">제목에서 생성</span></p>
+      <p class="meta">Category: <span id="post-category-inblog">미지정</span></p>
+    </div>
+    <p class="paste-note naver-only">제목·카테고리·태그는 네이버에서 따로 입력하세요. 아래 버튼은 본문만 복사합니다. 붙여넣기는 Ctrl+V / ⌘V를 씁니다.</p>
+    <p class="paste-note inblog-only">Title·Description·Slug·Category는 inblog에서 따로 입력하세요. 아래 버튼은 본문만 복사하고 본문은 H2부터 시작합니다. 렌더링된 본문을 서식 그대로 inblog에 붙여 넣는 것은 확인되지 않았습니다. 확인된 경로는 에디터의 HTML 임베드 블록에 HTML 소스를 넣는 것이고, 일반 편집 블록이 필요하면 HTML을 Markdown으로 바꿔 붙여 넣는 보조 경로를 씁니다. 붙여넣기는 Ctrl+V / ⌘V를 씁니다.</p>
     <button id="copyRich" type="button">서식 콘텐츠 복사</button>
     <button id="copySource" type="button">HTML 소스 복사</button>
     <p id="status" role="status" aria-live="polite"></p>
   </header>
 
   <!-- Replace only the children below with the finished post.
-       Use inline styles for copied content. Never copy the page shell. -->
+       Use inline styles for copied content. Never copy the page shell.
+       Naver: center-aligned body, explicit 12-25 character breaks, blank-paragraph spacer.
+       inblog: left-aligned natural paragraphs starting at H2, no forced breaks. -->
   <main id="sample" contenteditable="true" aria-label="복사할 블로그 본문">
     <p>이 문단을 완성된 본문으로 교체하세요.</p>
   </main>
@@ -52,16 +72,22 @@
         copied = false;
       }
       statusEl.textContent = copied
-        ? '서식 복사 완료. 네이버 본문에 붙여넣으세요.'
+        ? '서식 복사 완료. 본문을 붙여넣으세요.'
         : '자동 복사가 차단됐습니다. 본문이 선택된 상태에서 Ctrl+C 또는 ⌘C를 누르세요.';
     });
 
     document.getElementById('copySource').addEventListener('click', async () => {
+      if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+        statusEl.textContent = '이 브라우저에서는 HTML 소스 복사를 쓸 수 없습니다. 이 버튼은 서식을 복사하지 않습니다.';
+        return;
+      }
       try {
         await navigator.clipboard.writeText(sampleEl.innerHTML.trim());
         statusEl.textContent = 'HTML 소스 복사 완료. 이 버튼은 서식을 복사하지 않습니다.';
-      } catch {
-        statusEl.textContent = 'HTML 소스 복사 실패. 서식 콘텐츠 복사 버튼을 사용하세요.';
+      } catch (error) {
+        statusEl.textContent = error && error.name === 'NotAllowedError'
+          ? 'HTML 소스 복사 권한이 거부됐습니다. 이 버튼은 서식을 복사하지 않으며, 서식 콘텐츠 복사 버튼을 사용하세요.'
+          : 'HTML 소스 복사 실패. 서식 콘텐츠 복사 버튼을 사용하세요.';
       }
     });
   </script>

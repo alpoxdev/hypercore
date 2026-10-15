@@ -3,7 +3,14 @@
 <head><meta charset="utf-8"><title>네이버 본문 블록 템플릿</title></head>
 <body>
   <!-- Agent-only library. Clone template CONTENTS, never the template element.
-       Replace all example text and remove unused blocks before delivery. -->
+       Replace all example text and remove unused blocks before delivery.
+       Platform profiles: a Naver post uses `paragraph`, `headings`, `alignment`, and
+       `highlight-box` (center-aligned body rhythm; the highlight-box one-cell-table conversion is
+       a Naver editor observation). An inblog post uses `inblog-paragraph` and `inblog-headings`
+       (left-aligned natural paragraphs, H2/H3 only, no forced breaks, no duplicate H1). Shared on
+       both: `inline-styles`, `lists`, `link`, `table`, `merged-table`, `quote-divider`, `spacer`,
+       `image`, `image-slot`, `generated-image-slot`. Never force the Naver center-aligned rhythm
+       or its one-cell-table conversion onto an inblog post. -->
   <template id="paragraph">
     <!-- Rhythm contract: short manual line breaks (12-25 chars/line), 1-3 sentence blocks,
          center-aligned body, line-height:1.8 (paste-verified), block spacing via the spacer template. -->
@@ -19,6 +26,17 @@
       <span style="color:#e60000;">강조색</span>
       <span style="background-color:#fff2cc;">배경 강조</span>
       <span style="font-size:20px;">큰 글씨</span></p>
+  </template>
+  <template id="inblog-paragraph">
+    <!-- inblog rhythm: left-aligned natural paragraphs, no forced <br>, no center-align.
+         Do not reuse the Naver center-aligned paragraph for an inblog post. -->
+    <p style="text-align:left;line-height:1.7;">자연스러운 문단을 왼쪽 정렬로 씁니다. 한 문단은 1~3문장이고 줄바꿈을 강제하지 않습니다.</p>
+    <p style="text-align:left;line-height:1.7;">핵심 어구는 <strong>굵게</strong> 정도로만 강조합니다.</p>
+  </template>
+  <template id="inblog-headings">
+    <!-- inblog: the Title field is the H1, so the body starts at H2 and never repeats the title. -->
+    <h2 style="text-align:left;">소제목</h2>
+    <h3 style="text-align:left;">세부 소제목</h3>
   </template>
   <template id="alignment">
     <p style="text-align:left;">왼쪽 정렬 — 표·목록·캡션용</p>
