@@ -124,6 +124,8 @@ manifest.json     # sidecars["manifest.json"]
 
 The renderer compares exact image URIs, not perceptual similarity. A visually repeated image with different encoding still requires editorial review. It checks required explanations for presence, not truth or quality.
 
+Legacy input documents must add `layout`, `layoutReason`, `scene`, and `visualType` before being rendered with this composer. Missing fields are rejected rather than silently restoring the old all-bottom-left layout. Previously exported self-contained HTML keeps its embedded composer; the newly exported HTML stores the explicit layout and image plan together.
+
 Editing the JSON after a render invalidates the previous output: the gallery and sidecars clear and `exportCards` fails until the next successful render.
 
 ## Sources

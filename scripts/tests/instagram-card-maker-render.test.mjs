@@ -105,9 +105,12 @@ test.skipIf(!hasWebView)("body layouts move text and keep contrast while the cov
       const photo=solid(1080,1350,"#ffffff");
       const layouts=["bottom-left","top-left","top-right","center","bottom-right"];
       const doc=docOf(photo);
+      doc.logo=solid(100,100,"#00ffff");
       doc.slides=layouts.map(layout=>slide(photo,{layout}));
       await window.cardStudio.render(doc);
       return {drawn, backgrounds:drawn.map((v,i)=>px(cardCtx(i),540,v.y-10)),
+        contrasts:drawn.map((v,i)=>contrast(...px(cardCtx(i),540,v.y-10).slice(0,3))),
+        logoPixels:drawn.map((v,i)=>px(cardCtx(i),950,100)),
         manifest:JSON.parse(window.cardStudio.exportSidecars()["manifest.json"])};
     } finally { CanvasRenderingContext2D.prototype.fillText=original; }
   `);
@@ -119,6 +122,8 @@ test.skipIf(!hasWebView)("body layouts move text and keep contrast while the cov
   expect(result.drawn[3].y).toBeGreaterThan(200);
   expect(result.drawn[3].y).toBeLessThan(1046);
   expect(result.backgrounds.every((/** @type {number[]} */ p)=>p[0]>=90 && p[0]<=100 && p[3]===255)).toBe(true);
+  expect(result.contrasts.every((/** @type {number} */ c)=>c>=4.5)).toBe(true);
+  expect(result.logoPixels.every((/** @type {number[]} */ p)=>p[0]===0 && p[1]===255 && p[2]===255 && p[3]===255)).toBe(true);
 });
 
 test.skipIf(!hasWebView)("invalid layout, cover alignment and unexplained photo reuse block exports", async () => {
