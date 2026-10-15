@@ -74,7 +74,7 @@ label{display:block;margin-top:12px;font-weight:600}input{max-width:100%;margin:
       if (i===0 && slide.layout!=="bottom-left") fail("커버 layout은 bottom-left여야 합니다.");
       text(slide.scene, "scene"); text(slide.layoutReason, "layoutReason");
       if (!visualTypes.includes(slide.visualType)) fail((i+1)+"번 visualType을 올바르게 지정하십시오.");
-      if (doc.slides.slice(0,i).some(previous=>previous.photo===slide.photo)) text(slide.reuseReason, (i+1)+"번 사진 재사용 사유 reuseReason");
+      if (slide.reuseReason!==undefined || doc.slides.slice(0,i).some(previous=>previous.photo===slide.photo)) text(slide.reuseReason, (i+1)+"번 사진 재사용 사유 reuseReason");
     });
     return doc;
   }

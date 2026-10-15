@@ -19,12 +19,41 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { runInNewContext } from "node:vm";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const composerPath = join(root, "skills/instagram-card-maker/assets/card-studio.html");
 const composerSource = readFileSync(composerPath, "utf8");
 const WebView = Reflect.get(Bun, "WebView");
 const hasWebView = typeof WebView === "function";
+
+test("the production input contract rejects malformed fields without WebView", () => {
+  const start=composerSource.indexOf("  const imagePattern =");
+  const end=composerSource.indexOf("  function loadImage(",start);
+  expect(start).toBeGreaterThan(0);
+  expect(end).toBeGreaterThan(start);
+  const validate=runInNewContext(composerSource.slice(start,end)+"\nvalidate");
+  const slides=[0,1].map(i=>({title:"Title",body:"Body",alt:"Card",photoSource:"Fixture",
+    photo:"data:image/png;base64,"+(i===0?"AAAA":"BBBB"),generated:false,layout:i===0?"bottom-left":"top-left",
+    scene:"Scene "+i,layoutReason:"Keep the subject clear",visualType:"photo"}));
+  const doc={brand:"Test",caption:"Caption",width:1080,height:1350,sources:[],slides};
+  expect(()=>validate(doc)).not.toThrow();
+  for(const reuseReason of [7,{},[],null,""," "]){
+    const bad=structuredClone(doc);
+    Object.assign(bad.slides[1],{reuseReason});
+    expect(()=>validate(bad)).toThrow();
+  }
+  for(const field of ["scene","layoutReason","layout","visualType"]){
+    const bad=structuredClone(doc);
+    Reflect.deleteProperty(bad.slides[1],field);
+    expect(()=>validate(bad)).toThrow();
+  }
+  const repeated=structuredClone(doc);
+  repeated.slides[1].photo=repeated.slides[0].photo;
+  expect(()=>validate(repeated)).toThrow();
+  Object.assign(repeated.slides[1],{reuseReason:"Continue the same scene"});
+  expect(()=>validate(repeated)).not.toThrow();
+});
 
 /** In-page helpers available to every probe body. */
 const PAGE_HELPERS = `
@@ -72,10 +101,10 @@ const renderOne = async (photo, extra) => { await window.cardStudio.render(docOf
  * @param {string} body async in-page body; its resolved value is returned
  * @returns {Promise<any>}
  */
-async function observe(body) {
+async function observe(body, source=composerSource) {
   const dir = mkdtempSync(join(tmpdir(), "icm-render-"));
   try {
-    writeFileSync(join(dir, "card-studio.html"), composerSource);
+    writeFileSync(join(dir, "card-studio.html"), source);
     const view = new WebView({ width: 1000, height: 800 });
     try {
       await view.navigate(`file://${join(dir, "card-studio.html")}`);
@@ -124,6 +153,31 @@ test.skipIf(!hasWebView)("body layouts move text and keep contrast while the cov
   expect(result.backgrounds.every((/** @type {number[]} */ p)=>p[0]>=90 && p[0]<=100 && p[3]===255)).toBe(true);
   expect(result.contrasts.every((/** @type {number} */ c)=>c>=4.5)).toBe(true);
   expect(result.logoPixels.every((/** @type {number[]} */ p)=>p[0]===0 && p[1]===255 && p[2]===255 && p[3]===255)).toBe(true);
+  expect(result.manifest.photos.map((/** @type {{layout:string}} */ p)=>p.layout)).toEqual(["bottom-left","top-left","top-right","center","bottom-right"]);
+  expect(result.manifest.photos.every((/** @type {{scene:string,visualType:string,layoutReason:string}} */ p)=>p.scene==="Synthetic pixel fixture" && p.visualType==="photo" && p.layoutReason==="Keep the test subject clear")).toBe(true);
+});
+
+test.skipIf(!hasWebView)("different cards draw their own photo and saved HTML reopens with the same plan", async () => {
+  const original=await observe(`
+    const doc=docOf(solid(1080,1350,"#ff0000"));
+    delete doc.slides[0].reuseReason;
+    doc.slides[1]=slide(solid(1080,1350,"#0000ff"),{layout:"top-right",scene:"Second distinct scene"});
+    delete doc.slides[1].reuseReason;
+    await window.cardStudio.render(doc);
+    return {html:window.cardStudio.exportHTML(),cards:window.cardStudio.exportCards(),
+      sidecars:window.cardStudio.exportSidecars(),samples:[px(cardCtx(0),540,600),px(cardCtx(1),540,1000)]};
+  `);
+  expect(original.samples).toEqual([[255,0,0,255],[0,0,255,255]]);
+  const manifest=JSON.parse(original.sidecars["manifest.json"]);
+  expect(manifest.photos.map((/** @type {{layout:string,scene:string}} */ p)=>[p.layout,p.scene])).toEqual([["bottom-left","Synthetic pixel fixture"],["top-right","Second distinct scene"]]);
+  expect(manifest.photos.every((/** @type {object} */ p)=>!Object.prototype.hasOwnProperty.call(p,"reuseReason"))).toBe(true);
+  const reopened=await observe(`
+    const doc=JSON.parse(document.querySelector("#card-document").textContent);
+    await window.cardStudio.render(doc);
+    return {cards:window.cardStudio.exportCards(),sidecars:window.cardStudio.exportSidecars()};
+  `,original.html);
+  expect(reopened.cards).toEqual(original.cards);
+  expect(reopened.sidecars).toEqual(original.sidecars);
 });
 
 test.skipIf(!hasWebView)("invalid layout, cover alignment and unexplained photo reuse block exports", async () => {
@@ -301,6 +355,7 @@ test.skipIf(!hasWebView)("overflowing text fails instead of shrinking (requires 
   const result = await observe(`
     const longTitle = ["A", "B", "C", "D", "E", "F"].join(NL);
     const longBody = ["1", "2", "3", "4", "5", "6"].join(NL);
+    await window.cardStudio.render(docOf(solid(1080,1350,"#3366cc")));
     let titleError = null, bodyError = null;
     try { await window.cardStudio.render(docOf(solid(1080, 1350, "#3366cc"), { title: longTitle })); } catch (e) { titleError = String(e); }
     const titleGallery = document.querySelectorAll("#gallery canvas").length;
