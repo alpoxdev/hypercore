@@ -1,8 +1,12 @@
-# Human Prose Rules for Naver Posts
+# Human Prose Rules
 
 > Korean version: [`human-prose.ko.md`](human-prose.ko.md)
 
 Read this before drafting (workflow step 4) and again for the self-check in step 5. It is the complete, self-contained set of generation-time rules this skill applies so the post never acquires machine-written texture. It was absorbed from a general Korean-prose rule set and trimmed to compose mode; nothing here depends on any other skill being installed. Sentence rules live only here; decoration ceilings live only in §4 of this file, and [`post-workflow.md`](post-workflow.md) §3 and [`validation.md`](validation.md) refer back to it.
+
+## Platform scope
+
+This file is the shared natural-prose contract for both `naver` and `inblog`. §1-§3 and §5 apply unchanged on either platform. §4 is **Naver-only**: its genre rows and per-post decoration ceilings are stated for the Naver editor, where body text is center-aligned and wrapped at 12-25 characters. An inblog body does not use §4. It uses left alignment, natural paragraph wrapping, and H2/H3 subheadings instead, so never carry the Naver centered layout or forced wraps over to it.
 
 ## 1. Principles
 

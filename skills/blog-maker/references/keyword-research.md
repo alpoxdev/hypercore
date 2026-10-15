@@ -1,10 +1,16 @@
-# Keyword and Intent Research for Naver Blog
+# Keyword and Intent Research (naver and inblog)
 
 > Korean version: [`keyword-research.ko.md`](keyword-research.ko.md)
 
 Read this in step 2 of [`../rules/post-workflow.md`](../rules/post-workflow.md) when the user has not fixed the target query, or when the chosen query looks too broad or too commercial for a blog post. It documents what practitioners do, which parts are readable from public pages, and which numbers are heuristics.
 
+## Platform branch
+
+`naver` uses the Naver-specific procedure in this file: intent slicing, the C-Rank topic lane, supply and demand read from public Naver surfaces, and the live SERP. `inblog` requires none of it. For `inblog`, pick the query from the reader's plain intent, expand it with plain-language modifiers, and read the public web plus the topic's first-party sources for what the strongest existing explainers cover and miss. No Naver SERP, top-3 post survey, DataLab trend, editor topic pick, or ranking algorithm is required for `inblog`. What both platforms share is the rule that one post answers one query and one intent slice.
+
 ## 1. What the target query has to be
+
+These conditions describe `naver`. On `inblog` the query still names one intent slice, but the C-Rank topic lane, 스마트블록 behavior, and the Shopping/Place first-screen effects below do not apply.
 
 - **One intent slice.** `[official, T3]` Since 2024-02 Naver splits compound queries into intent units and ranks each 스마트블록 separately (`캠핑` → 캠핑요리 / 캠핑용품 / 캠핑장소). The query must name the slice the post answers.
 - **A slice where blog posts actually surface.** `[observed, T3]` For purchase or booking queries the first screen is often Shopping, Place, or ads; blog posts appear in a 후기/비교/인기글 block further down or not at all. Look before writing.
@@ -17,12 +23,14 @@ Read this in step 2 of [`../rules/post-workflow.md`](../rules/post-workflow.md) 
    - Supply: how many blog documents already match the exact phrase.
    - Demand: relative interest over time, seasonality, device split.
    - Compare candidates on both; prefer the slice with real demand and thinner, weaker supply. A ratio is a triage aid, not a ranking probability — document counts and search counts come from different collection scopes.
-3. **Read the live SERP** for the top 2-3 candidates: block order, block headings, whether the blog block is above the fold, what the top three posts promise and what they lack (missing downside, no price basis, stale date). The gap is the post's angle.
+3. **Read the market** for the top 2-3 candidates.
+   - `naver`: read the live SERP — block order, block headings, whether the blog block is above the fold, what the top three posts promise and what they lack (missing downside, no price basis, stale date). The gap is the post's angle.
+   - `inblog`: public web search for each candidate plus the topic's first-party sources; note what the strongest existing explainers cover and miss. The gap is the post's angle, with no Naver SERP or top-3 step required.
 4. **Decide in one line** and keep it with the draft: the six-field decision line from `../rules/post-workflow.md` §2 — `검색어 / 의도 슬라이스 / 주 유형 / 보조 유형 / 목표 / 근거` — fed by this procedure's counts and SERP notes.
 
 ## 3. Reading supply and demand without any CLI
 
-All three measurements are available on public pages a visitor can open:
+This section describes the `naver` surfaces; the same three measurements do not apply to `inblog`, which reads the public web and first-party sources instead. All three measurements are available on public pages a visitor can open:
 
 | Need | Where | What the number means | What it is not |
 |---|---|---|---|
@@ -34,6 +42,8 @@ Not available without login: absolute monthly search volume, clicks, CTR (네이
 
 ## 4. Third-party tools practitioners use
 
+These are `naver` tools; `inblog` query selection does not depend on them.
+
 | Tool | Gives | Access | Caveat |
 |---|---|---|---|
 | 네이버 검색광고 키워드도구 | PC/mobile monthly searches, clicks, CTR, competition | Advertiser login | No document counts |
@@ -42,6 +52,8 @@ Not available without login: absolute monthly search volume, clicks, CTR (네이
 | 키워드마스터 (WhereIsPost) | Volume, blog document count, docs/searches ratio, CSV | Public | Its own page warns the two counts have different scopes |
 
 ## 5. Heuristics and their evidence grade
+
+The heuristics are drawn from `naver` practice; treat them as optional leads for `inblog`, not requirements.
 
 | Heuristic | Grade | Note |
 |---|---|---|
@@ -54,7 +66,7 @@ Not available without login: absolute monthly search volume, clicks, CTR (네이
 
 ## Sources
 
-> <https://datalab.naver.com/keyword/trendSearch.naver> was re-checked 2026-09-21 (HTTP 200); the method rows come from the practitioner sources counted in [`evidence-digest.md`](evidence-digest.md) §7.
+> <https://datalab.naver.com/keyword/trendSearch.naver> was re-checked 2026-09-21 (HTTP 200); the method rows come from the practitioner sources counted in [`evidence-digest.md`](evidence-digest.md) §7. These `naver` sources do not apply to the `inblog` branch.
 
 | Claim | Source |
 |---|---|

@@ -4,11 +4,13 @@
 
 **Purpose**: How many images a post carries, where each one sits, which ones the author must shoot and which ones may be AI-generated, and the copy-paste prompt that goes with every generated one. Marker syntax is fixed here; [`topic-research.md`](topic-research.md) §5 decides what each image must prove, and [`../references/image-prompt-templates.md`](../references/image-prompt-templates.md) holds the JSON templates.
 
+**Platform scope.** The slot markers, generation rules, and the visual-brief contract (§2-§7) are shared by `naver` and `inblog`. The §1 density default is measured from Naver reference posts; its centered 2-4 line text rhythm and the `naver-ranking-contract.md` folklore note are **Naver-only**, and an inblog body uses left-aligned natural paragraphs instead.
+
 ## 1. Density (observed default)
 
 Two reference posts the user supplied as the target feel (2026-09, 전환형 B2B, `evidence-digest.md` T4/T10 note) measured 28 images over 1,477자 and 25 images over 1,012자, grouped into 15-16 image blocks each: text runs of 25-250자 (2-4 short centered lines), then an image block, repeated to the end. Blocks mix a single photo, a 2-8 photo collage, and one explanatory diagram at the point where the mechanism is explained.
 
-Defaults derived from that (observed, non-blocking; `naver-ranking-contract.md` folklore rules still apply):
+Defaults derived from that (observed from Naver posts, non-blocking; `naver-ranking-contract.md` folklore rules apply to a Naver post only):
 
 | Post length | Image blocks | Placement rhythm |
 |---|---|---|

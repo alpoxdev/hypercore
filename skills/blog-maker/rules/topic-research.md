@@ -4,6 +4,19 @@
 
 **Purpose**: When the user gives only a keyword, topic, or a brand plus a topic — no experience, no sources, no images — this rule builds the fact pack the draft needs. It is the research-first branch that [`post-workflow.md`](post-workflow.md) §1 runs by default; it is one bounded research pass and it never manufactures first-hand experience: what research cannot verify becomes a `[확인 필요]` slot the author fills, not a sentence the skill invents.
 
+## Platform branch
+
+Research runs the same way on both supported platforms — one bounded pass, sourced facts, slots, and image slots — but the discovery surfaces differ.
+
+| Step | `naver` | `inblog` |
+|---|---|---|
+| Query candidates (§1.1) | Expand with Naver modifiers; browser-only surfaces (자동완성, 연관검색어) when available. | Expand with plain-language modifiers from the topic and its readers. |
+| Market to read (§1.2) | The live Naver SERP, else `site:blog.naver.com` web search. | Public web search plus the topic's first-party sources (the maker, operator, government, standards body, or professional society). |
+| Top-post gap (§2) | The three highest-ranked Naver blog posts for the query. | Reader intent and editorial structure: what a reader arriving on this topic must decide, and how the strongest existing explainers are organized. No Naver top-3, SERP, or ranking-algorithm step is required. |
+| Ranking signals | Naver topic lane (C-Rank) and intent slice apply. | No Naver topic lane, DataLab, editor topic pick, or ranking algorithm applies. |
+
+Everything from §3 on — sourced facts, the source-grade and source-role split, the medical `quantitative_authority` rule and its recommendation scope, the experience and source-required slots, and image slots — is platform-independent and unchanged.
+
 ## 0. When this runs
 
 Run after the intake reply.
@@ -19,12 +32,17 @@ Budget: one research pass, up to the query caps in §3. Research is not the deli
 ## 1. Query and reader job (5 minutes)
 
 1. Expand the keyword per [`../references/keyword-research.md`](../references/keyword-research.md) §2 into 3-6 candidates.
-2. Read the live SERP for the top candidate when browser tooling exists; otherwise web-search `"<candidate>" site:blog.naver.com` and read the top results.
+2. Read the market for the top candidate.
+   - `naver`: read the live SERP when browser tooling exists; otherwise web-search `"<candidate>" site:blog.naver.com` and read the top results.
+   - `inblog`: public web search for the candidate, plus the topic's first-party sources (the maker, operator, government, standards body, or professional society).
 3. Draft the research memo: the query, the intent slice, and the basis. The post's final one-line decision is the six-field line written in `post-workflow.md` §2 (`검색어 / 의도 슬라이스 / 주 유형 / 보조 유형 / 목표 / 근거`); this step only feeds it.
 
 ## 2. What the top posts already say (gap analysis)
 
-Read the three highest-ranked blog posts for the chosen query (titles, first screen, section headings, whether they name a price basis, a downside, a date). Record:
+- `naver`: read the three highest-ranked Naver blog posts for the chosen query (titles, first screen, section headings, whether they name a price basis, a downside, a date).
+- `inblog`: read the reader intent and the editorial structure instead — what a reader arriving on this topic must decide, and how the strongest existing explainers (first-party docs, practitioner posts, public web results) are organized. No Naver top-3, SERP, or ranking-algorithm step is required.
+
+Record:
 
 - **Covered**: claims all three make — the post must at least match these.
 - **Missing**: what none of them gives (a failure case, a condition under which the advice flips, a price breakdown, a dated source, a step-by-step with a photo). The missing item is the post's angle and its title promise.
@@ -88,8 +106,8 @@ Rules:
 ```
 검색어 / 의도 슬라이스 / 주 유형 / 보조 유형 / 목표 / 근거: …
 독자 과제: …
-주제 레인: (사용자 블로그 최근 글 주제; 모르면 [확인 필요])
-상위 3편 갭: 공통 / 빠진 것 / 오래된 것
+주제 레인: (naver 전용 — 사용자 블로그 최근 글 주제; 모르면 [확인 필요])
+상위 3편 갭: 공통 / 빠진 것 / 오래된 것 (naver; inblog는 독자 의도·편집 구조로 대체)
 사실 (출처 포함): 
   - … | URL | 날짜 | source_grade | source_role | claim_scope | 섹션
 결정 필드: 판단 기준 | 선택지(출처 있음/없음) | 주기 | 1회량·한도 | 지속 기간 | 비용 범위 | 뒤집히는 조건
@@ -106,4 +124,4 @@ The workflow's §3 skeleton is filled from this pack. If the pack has zero prima
 
 > No external sources; content checked 2026-09-21.
 
-This file states this package's own research procedure and source-role taxonomy. The live-SERP observation it describes is recorded in [`../references/evidence-digest.md`](../references/evidence-digest.md); it cites no external URL of its own.
+This file states this package's own research procedure and source-role taxonomy. The live-SERP observation it describes belongs to the `naver` branch and is recorded in [`../references/evidence-digest.md`](../references/evidence-digest.md); the `inblog` branch uses public web search and first-party topic sources instead. It cites no external URL of its own.

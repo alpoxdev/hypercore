@@ -4,6 +4,8 @@
 
 Read this when drafting the title, the first screen, the closing, or the call to action. Every pattern is graded against two things: what Naver's own guidance permits (see [`../rules/naver-ranking-contract.md`](../rules/naver-ranking-contract.md) R4, R6, R9) and whether it reads as a person wrote it. The library generalizes a practitioner's conversion-oriented prompt and keeps only what survives both tests.
 
+**Platform scope.** The hook rules here — a specific promise the first screen keeps, no concealment, no invented statistics, one CTA, and disclosure before evaluation — are shared by `naver` and `inblog`, and the title examples are platform-neutral. The Naver grading is **Naver-only**: the 낚시성 definition, the Naver intent labels in the "Why it works" column (D.I.A. 경험 정보, 스마트블록), and the [`naver-ranking-contract.md`](../rules/naver-ranking-contract.md) R4/R6/R9 consequences apply to a Naver post. An inblog post keeps the same hook rules but is not graded against Naver's ranking contract.
+
 ## 1. The one rule behind every hook
 
 A hook is a **specific promise the first screen keeps**. Naver defines 낚시성 as a title/body–query mismatch and asks that readers can predict the content from the title. So:
@@ -14,7 +16,7 @@ A hook is a **specific promise the first screen keeps**. Naver defines 낚시성
 
 ## 2. Title patterns
 
-| Pattern | Naver-ready example | Why it works | Risk |
+| Pattern | Example | Why it works | Risk |
 |---|---|---|---|
 | Decision boundary with a number | `직접 써 본 무선청소기 3개, 반려동물 털 기준으로 고른 1개` | Scope is scannable; the count is literal | High if the count is invented or padded |
 | Specific curiosity gap | `성수역 3번 출구 카페, 재방문 전 확인할 한 가지` | Names the subject, withholds only the answer the body opens with | Medium if the gap is vague; fails if the body delays the answer |
