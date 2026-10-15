@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>인스타그램 카드뉴스 제작</title>
+<style>
+:root{color-scheme:light dark;font-family:Pretendard,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:#f4f2ed;color:#222}
+*{box-sizing:border-box}body{margin:0;padding:28px;max-width:1500px;margin-inline:auto}h1{font-size:28px;margin:0 0 12px}p{line-height:1.65}main{display:grid;grid-template-columns:minmax(280px,420px) minmax(0,1fr);gap:28px}
+textarea{width:100%;min-height:350px;padding:14px;font:14px/1.5 monospace;border:1px solid #888;border-radius:6px;background:#fff;color:#222}
+button,.download{display:inline-block;font:inherit;min-height:44px;padding:10px 16px;margin:6px 8px 6px 0;border:1px solid #666;background:#fff;color:#222;border-radius:6px;cursor:pointer}
+button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid #2474b8;outline-offset:3px}button:disabled{opacity:.5;cursor:not-allowed}
+label{display:block;margin-top:12px;font-weight:600}input{max-width:100%;margin:8px 0}#status{min-height:3em;overflow-wrap:anywhere}#status[data-error="true"]{color:#a41414}
+#gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;align-content:start}figure{margin:0;min-width:0}canvas{display:block;width:100%;height:auto;background:#ddd}figcaption{font-size:14px;line-height:1.6;margin-top:8px}
+#sidecars{white-space:pre-wrap;overflow-wrap:anywhere}small{display:block;line-height:1.6}
+@media(max-width:760px){body{padding:18px}main{grid-template-columns:1fr}#gallery{grid-template-columns:1fr}textarea{min-height:240px}}
+@media(prefers-color-scheme:dark){:root{background:#171717;color:#eee}textarea,button,.download{background:#272727;color:#eee;border-color:#aaa}#status[data-error="true"]{color:#ffb4b4}}
+</style>
+</head>
+<body>
+<header><h1>인스타그램 카드뉴스 제작</h1><p>사진과 한글을 따로 합성합니다. 배경만 살짝 흐리게 하고 제목은 왼쪽 하단에 선명하게 배치합니다.</p></header>
+<main>
+<section aria-label="카드 입력">
+<label for="input">카드 자료 (JSON)</label>
+<textarea id="input" spellcheck="false" aria-describedby="hint"></textarea>
+<small id="hint">사진은 PNG, JPEG, WebP의 data URI로 넣습니다. 기본 규격은 1080×1350이며 1080×1080과 앱용 1080×1440도 지원합니다. 사진 출처와 카드별 대체 텍스트를 입력하십시오.</small>
+<label for="photos">사진 파일 추가</label><input id="photos" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+<button id="render" type="button">카드 만들기</button>
+<button id="save" type="button" disabled>편집 가능한 HTML 저장</button>
+<p id="status" role="status" aria-live="polite">브랜드 자료와 사진을 입력하십시오.</p>
+<section id="sidecars" aria-label="캡션과 보조 파일"></section>
+</section>
+<section id="gallery" aria-label="카드 미리보기"></section>
+</main>
+<script id="card-document" type="application/json">{"brand":"브랜드명","width":1080,"height":1350,"caption":"전체 게시글의 한국어 캡션을 입력합니다.","sources":[],"slides":[]}</script>
+<script>
+"use strict";
+(() => {
+  const input = document.querySelector("#input");
+  const status = document.querySelector("#status");
+  const gallery = document.querySelector("#gallery");
+  const sidecars = document.querySelector("#sidecars");
+  const saveButton = document.querySelector("#save");
+  const family = 'Pretendard,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+  const imagePattern = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=\r\n]+$/;
+  let current = null;
+  let canvases = [];
+  let generation = 0;
+  let busy = false;
+  function fail(message) { throw new Error(message); }
+  function text(value, name) {
+    if (typeof value !== "string" || !value.trim()) fail(name + " 값이 필요합니다.");
+    return value;
+  }
+  function validate(doc) {
+    if (!doc || typeof doc !== "object" || Array.isArray(doc)) fail("자료는 JSON 객체여야 합니다.");
+    text(doc.brand, "brand"); text(doc.caption, "caption");
+    if (doc.width !== 1080 || ![1080,1350,1440].includes(doc.height)) fail("규격은 1080×1080, 1080×1350, 1080×1440 중 하나여야 합니다.");
+    if (!Array.isArray(doc.slides) || doc.slides.length < 2 || doc.slides.length > 20) fail("카드는 2~20장이어야 합니다.");
+    if (!Array.isArray(doc.sources) || doc.sources.some(s => typeof s !== "string" || !s.trim())) fail("sources는 출처 문자열 배열이어야 합니다.");
+    if (doc.fontData !== undefined && (typeof doc.fontData !== "string" || !/^data:font\/(?:woff2?|ttf|otf);base64,[A-Za-z0-9+/=]+$/.test(doc.fontData))) fail("fontData는 글꼴 data URI여야 합니다.");
+    if (doc.logo !== undefined && (typeof doc.logo !== "string" || !imagePattern.test(doc.logo))) fail("logo는 PNG, JPEG, WebP data URI여야 합니다.");
+    doc.slides.forEach((slide,i) => {
+      if (!slide || typeof slide !== "object" || Array.isArray(slide)) fail((i+1)+"번 카드가 객체가 아닙니다.");
+      text(slide.title, "title"); text(slide.body, "body"); text(slide.alt, "alt"); text(slide.photoSource, "photoSource");
+      if (typeof slide.photo !== "string" || !imagePattern.test(slide.photo)) fail((i+1)+"번 사진 data URI가 필요합니다.");
+      if (typeof slide.generated !== "boolean") fail((i+1)+"번 generated는 true 또는 false여야 합니다.");
+    });
+    return doc;
+  }
+  function loadImage(uri) {
+    return new Promise((resolve,reject) => {
+      const image = new Image();
+      const timer = setTimeout(() => reject(new Error("사진 로딩 시간이 초과됐습니다.")),10000);
+      image.onload = () => { clearTimeout(timer); if (!image.naturalWidth || !image.naturalHeight) reject(new Error("빈 이미지입니다.")); else resolve(image); };
+      image.onerror = () => { clearTimeout(timer); reject(new Error("사진을 읽을 수 없습니다. 이미지 파일을 확인하십시오.")); };
+      image.src = uri;
+    });
+  }
+  function wrap(ctx,value,width) {
+    const lines = [];
+    for (const paragraph of value.split("\n")) {
+      let line = "";
+      for (const char of Array.from(paragraph)) {
+        if (ctx.measureText(line+char).width > width) {
+          if (!line) fail("글자 하나가 카드 폭을 넘습니다.");
+          lines.push(line.trimEnd()); line = char.trimStart();
+        } else line += char;
+      }
+      lines.push(line.trimEnd());
+    }
+    return lines;
+  }
+  function draw(doc,slide,image,logo,font,index) {
+    const c = document.createElement("canvas");
+    c.width = doc.width; c.height = doc.height;
+    c.setAttribute("role","img"); c.setAttribute("aria-label",slide.alt);
+    const ctx = c.getContext("2d");
+    if (!ctx) fail("이 브라우저는 Canvas를 지원하지 않습니다.");
+    const w = c.width, h = c.height, margin = 72, maxWidth = w-margin*2;
+    ctx.save();
+    ctx.filter = "blur(2px)";
+    const scale = Math.max((w+16)/image.naturalWidth,(h+16)/image.naturalHeight);
+    const iw = image.naturalWidth*scale, ih=image.naturalHeight*scale;
+    ctx.drawImage(image,(w-iw)/2,(h-ih)/2,iw,ih);
+    ctx.restore();
+    // An opaque text surface makes contrast independent of the photo.
+    const titleSize=72, bodySize=40, titleStep=92, bodyStep=58;
+    ctx.font = "700 "+titleSize+"px "+font;
+    const titles = wrap(ctx,slide.title,maxWidth);
+    ctx.font = "500 "+bodySize+"px "+font;
+    const bodies = wrap(ctx,slide.body,maxWidth);
+    const contentHeight=titles.length*titleStep+24+bodies.length*bodyStep;
+    const panelHeight=Math.max(h*.48,contentHeight+margin*2);
+    if (titles.length>3 || bodies.length>5 || panelHeight>h*.69) fail((index+1)+"번 글자가 넘칩니다. 내용을 나누거나 줄이십시오.");
+    ctx.fillStyle="#151515"; ctx.fillRect(0,h-panelHeight,w,panelHeight);
+    ctx.fillStyle="#fff"; ctx.textBaseline="top"; ctx.textAlign="left";
+    let y=h-margin-contentHeight;
+    ctx.font="700 "+titleSize+"px "+font;
+    for (const line of titles) { ctx.fillText(line,margin,y); y+=titleStep; }
+    y+=24; ctx.font="500 "+bodySize+"px "+font;
+    for (const line of bodies) { ctx.fillText(line,margin,y); y+=bodyStep; }
+    // Logo is never filtered or recolored; preserve its original aspect ratio.
+    if (logo) {
+      const s=Math.min(170/logo.naturalWidth,96/logo.naturalHeight);
+      ctx.drawImage(logo,w-margin-logo.naturalWidth*s,margin,logo.naturalWidth*s,logo.naturalHeight*s);
+    }
+    ctx.font="500 24px "+font; ctx.fillStyle="#fff";
+    // A solid label keeps brand/index readable even over bright photography.
+    const label=doc.brand+"  "+(index+1)+"/"+doc.slides.length;
+    if (ctx.measureText(label).width>620) fail("브랜드명이 너무 깁니다.");
+    ctx.fillStyle="#151515"; ctx.fillRect(margin-12,margin-10,Math.ceil(ctx.measureText(label).width)+24,48);
+    ctx.fillStyle="#fff"; ctx.fillText(label,margin,margin);
+    return c;
+  }
+  function clearOutput() {
+    current=null; canvases=[]; gallery.replaceChildren(); sidecars.replaceChildren(); saveButton.disabled=true;
+  }
+  function link(name,data) {
+    const a=document.createElement("a"); a.className="download"; a.download=name; a.href=data; a.textContent=name;
+    return a;
+  }
+  function textData(value,type="text/plain") { return "data:"+type+";charset=utf-8,"+encodeURIComponent(value); }
+  function sidecarValues(doc) {
+    return {
+      "caption.txt":doc.caption,
+      "alt-text.json":JSON.stringify(doc.slides.map((s,i)=>({file:String(i+1).padStart(2,"0")+".png",alt:s.alt})),null,2),
+      "sources.md":"# 출처\n\n"+doc.sources.map(s=>"- "+s).join("\n")+"\n\n"+doc.slides.map((s,i)=>"- "+(i+1)+". "+s.photoSource+" ("+(s.generated?"생성 이미지":"제공/허가 사진")+")").join("\n"),
+      "manifest.json":JSON.stringify({width:doc.width,height:doc.height,count:doc.slides.length,files:doc.slides.map((s,i)=>"cards/"+String(i+1).padStart(2,"0")+".png"),font:doc.fontData?"embedded":"system-fallback; Korean glyph inspection required",generated:doc.slides.map(s=>s.generated),photos:doc.slides.map((s,i)=>({file:"cards/"+String(i+1).padStart(2,"0")+".png",photoSource:s.photoSource,generated:s.generated}))},null,2)
+    };
+  }
+  async function render(doc) {
+    const ticket=++generation;
+    clearOutput(); busy=true; status.dataset.error="false"; status.textContent="사진과 글꼴을 불러오는 중입니다.";
+    try {
+      doc=structuredClone(doc);
+      validate(doc);
+      let font=family;
+      if (doc.fontData) {
+        font="CardKorean"+ticket;
+        const face=new FontFace(font,'url("'+doc.fontData+'")');
+        await face.load(); document.fonts.add(face);
+      }
+      await document.fonts.load("700 72px "+font,"한글 카드뉴스");
+      await document.fonts.load("500 40px "+font,"한글 카드뉴스");
+      await document.fonts.ready;
+      const images=await Promise.all(doc.slides.map(s=>loadImage(s.photo)));
+      const logo=doc.logo ? await loadImage(doc.logo) : null;
+      const result=doc.slides.map((s,i)=>draw(doc,s,images[i],logo,font,i));
+      if(ticket!==generation) fail("새 요청으로 취소된 렌더링입니다.");
+      current=structuredClone(doc); canvases=result;
+      result.forEach((canvas,i)=>{
+        const figure=document.createElement("figure");
+        const caption=document.createElement("figcaption"); caption.textContent=(i+1)+". "+doc.slides[i].title+" · "+doc.slides[i].alt;
+        figure.append(canvas,caption,link(String(i+1).padStart(2,"0")+".png",canvas.toDataURL("image/png"))); gallery.append(figure);
+      });
+      const preview=document.createElement("p"); preview.textContent=doc.caption; sidecars.append(preview);
+      Object.entries(sidecarValues(doc)).forEach(([name,value])=>{sidecars.append(link(name,textData(value)));});
+      saveButton.disabled=false; status.textContent=doc.slides.length+"장 준비 완료. "+doc.width+"×"+doc.height+" PNG. 한글 글리프와 사진 잘림을 확인하십시오.";
+      input.value=JSON.stringify(doc,null,2);
+      return {count:result.length,width:doc.width,height:doc.height};
+    } catch(error) {
+      if(ticket===generation){clearOutput();status.dataset.error="true";status.textContent=error instanceof Error?error.message:String(error);}
+      throw error;
+    } finally { if(ticket===generation) busy=false; }
+  }
+  function exportCards() {
+    if(busy || !current || !canvases.length) fail("검증된 카드가 없습니다. 먼저 카드를 만드십시오.");
+    return canvases.map((c,i)=>({name:String(i+1).padStart(2,"0")+".png",dataUrl:c.toDataURL("image/png"),width:c.width,height:c.height}));
+  }
+  function exportSidecars() { if(busy||!current) fail("검증된 카드가 없습니다."); return sidecarValues(current); }
+  function exportHTML() {
+    if(busy||!current) fail("검증된 카드가 없습니다.");
+    const clone=document.documentElement.cloneNode(true);
+    clone.querySelector("#card-document").textContent=JSON.stringify(current).replace(/</g,"\\u003c");
+    clone.querySelector("#input").textContent="";
+    clone.querySelector("#gallery").replaceChildren(); clone.querySelector("#sidecars").replaceChildren();
+    clone.querySelector("#save").disabled=true; clone.querySelector("#status").textContent="저장된 자료를 준비하는 중입니다.";
+    return "<!doctype html>\n"+clone.outerHTML;
+  }
+  input.value=document.querySelector("#card-document").textContent;
+  input.addEventListener("input",()=>{generation++;busy=false;clearOutput();status.textContent="입력이 바뀌었습니다. 카드를 다시 만드십시오.";});
+  document.querySelector("#render").addEventListener("click",async()=>{
+    try{await render(JSON.parse(input.value));}catch(error){status.dataset.error="true";status.textContent=error instanceof Error?error.message:String(error);}
+  });
+  saveButton.addEventListener("click",()=>{const a=link("index.html",textData(exportHTML(),"text/html"));a.click();});
+  document.querySelector("#photos").addEventListener("change",async event=>{
+    try{
+      const doc=JSON.parse(input.value);
+      if(!Array.isArray(doc.slides)) fail("slides 배열이 필요합니다.");
+      for(const file of event.target.files){
+        if(!["image/png","image/jpeg","image/webp"].includes(file.type)) fail("PNG, JPEG, WebP 사진만 추가할 수 있습니다.");
+        const photo=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error("파일을 읽지 못했습니다."));reader.readAsDataURL(file);});
+        doc.slides.push({title:"카드 제목",body:"카드 내용을 입력하십시오.",photo,photoSource:"사진 출처와 사용 허가를 입력하십시오.",generated:false,alt:"사진과 카드 내용을 설명하십시오."});
+      }
+      generation++;busy=false;clearOutput();input.value=JSON.stringify(doc,null,2);status.textContent="사진을 추가했습니다. 제목, 내용, 출처, 대체 텍스트를 채운 뒤 카드를 만드십시오.";
+    }catch(error){generation++;busy=false;clearOutput();status.dataset.error="true";status.textContent=error instanceof Error?error.message:String(error);}
+  });
+  window.cardStudio=Object.freeze({validate,render,exportCards,exportSidecars,exportHTML});
+  const initial=JSON.parse(input.value);
+  if(Array.isArray(initial.slides)&&initial.slides.length) render(initial).catch(()=>{});
+})();
+</script>
+</body>
+</html>
