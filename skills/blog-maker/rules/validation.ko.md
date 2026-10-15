@@ -69,13 +69,13 @@
 
 ## 2. 패키지 점검표 (이 스킬이 바뀔 때)
 
-- [ ] frontmatter의 `name`이 `naver-blog-maker`이고 폴더명과 같음.
+- [ ] frontmatter의 `name`이 `blog-maker`이고 폴더명과 같음.
 - [ ] `description`이 언제 쓰고 언제 쓰지 않는지 밝히고, `SKILL.md`에 활성 예시가 긍정 3개, 부정 2개, 경계 1개 이상 있음.
 - [ ] 모든 규칙·참조 파일에 같은 섹션 구조의 `*.ko.md` 짝이 있고 두 언어가 함께 바뀜.
 - [ ] 네이버 동작을 말하는 모든 주장이 `references/naver-algorithm-timeline.ko.md`의 `official` 행으로 추적되고 observed·folklore 항목은 그렇게 표시됨.
 - [ ] 로컬 링크가 열리고 코드 펜스가 닫힘.
-- [ ] `assets/evals/naver-blog-maker-cases.jsonl`이 긍정, 부정, 경계, 회귀, 적대 사례를 덮고 현재 트리거·워크플로와 맞음.
-- [ ] 저장소 유지보수 전용(실행 시 의존성 아님): 이 패키지로 범위를 좁힌 corpus validator(`validate-skills-corpus.mjs --root skills --only naver-blog-maker --json`) 통과.
+- [ ] `assets/evals/blog-maker-cases.jsonl`이 긍정, 부정, 경계, 회귀, 적대 사례를 덮고 현재 트리거·워크플로와 맞음.
+- [ ] 저장소 유지보수 전용(실행 시 의존성 아님): 이 패키지로 범위를 좁힌 corpus validator(`validate-skills-corpus.mjs --root skills --only blog-maker --json`) 통과.
 - [ ] `bun run --cwd scripts verify` 통과.
 - [ ] 이번 변경이 스킬을 추가하거나 스킬 이름·카탈로그 노출을 바꾸면 `README.md`의 스킬 수와 카탈로그 행을 갱신하고, 그 밖에는 `README.md`가 바뀌지 않았음을 확인함.
 
