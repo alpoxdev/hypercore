@@ -124,7 +124,7 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 - 그려질 글자는 `text[]` 안에서 정확히 한 번 나타나고 `prompt`가 그 모두를 byte 단위로 그대로 담게 씁니다. 진짜 시리즈의 공통 조건은 그 시리즈의 모든 객체에 반복합니다.
 - 주제, 정확히 그려질 글자, 편집의 보존·변경 경계가 비어 있으면 그 이미지의 완성 프롬프트를 내지 않습니다. 물어보거나 슬롯을 열어 둡니다.
 - 기본은 본문 HTML과 별도 제목·태그로 전달하고, 사용자가 plain을 명시적으로 요청했을 때만 text 펜스 하나를 씁니다. HTML 소스 복사와 HTML 클립보드 복사를 구분합니다.
-- 네이버에서는 두 출력 형태 모두 `rules/post-workflow.ko.md` §3의 본문 리듬 계약을 따릅니다: 1~5줄 텍스트 블록과 줄당 12~25자 명시적 줄바꿈, 1~3문장 문단 블록, 텍스트 블록은 최대 2개까지만 연속, 본문 HTML 문단은 가운데 정렬에 `line-height:1.8` 인라인과 빈 문단 스페이서 — `p`의 `margin`을 간격 수단으로 쓰지 않습니다. inblog 글은 강제 줄바꿈 없는 왼쪽 정렬 자연 문단과 `h2`/`h3` 소제목을 쓰고 H1을 중복하지 않습니다([`references/inblog-format.ko.md`](references/inblog-format.ko.md)).
+- 네이버에서는 두 출력 형태 모두 `rules/post-workflow.ko.md` §3의 본문 리듬 계약을 따릅니다: 1~5줄 텍스트 블록과 줄당 12~25자 명시적 줄바꿈, 1~3문장 문단 블록, 텍스트 블록은 최대 2개까지만 연속, 본문 HTML 문단은 가운데 정렬에 `line-height:1.8` 인라인과 빈 문단 스페이서 — `p`의 `margin`을 간격 수단으로 쓰지 않습니다. inblog 글은 강제 줄바꿈 없는 왼쪽 정렬 자연 문단과 `h2`~`h4` 소제목을 쓰고 H1을 중복하지 않습니다([`references/inblog-format.ko.md`](references/inblog-format.ko.md)).
 - 제목의 약속을 첫 3~5문장에 넣습니다. 모든 섹션에 확인 가능한 상황이나 출처가 있고 최소 한 섹션이 아쉬운 점을 말합니다.
 - 목표 검색어는 제목에 한 번, 본문에서는 문장이 필요로 하는 자리에만. 횟수나 밀도 목표 없음.
 - 협찬, 자사, 제휴 관계는 첫 단락에서 쉬운 말로 공개합니다.
@@ -202,7 +202,7 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 - 주제가 의료이거나 정량적 안전·용량·간격·기간·자격·법적 한도 주장이 걸리면 [`references/regulated-topic-research.ko.md`](references/regulated-topic-research.ko.md)를 읽습니다.
 - 이미지를 배치할 때 [`rules/image-slots.ko.md`](rules/image-slots.ko.md)를 읽고, 생성 프롬프트를 작성할 때 [`references/image-prompt-templates.ko.md`](references/image-prompt-templates.ko.md)를 읽습니다.
 - 전달 전에 [`references/format-options.ko.md`](references/format-options.ko.md)를 읽습니다. 기본 본문 HTML, 제목·태그 분리, plain 예외, HTML 클립보드 조건을 따릅니다.
-- 판별된 플랫폼이 `inblog`이면 전달 전에 [`references/inblog-format.ko.md`](references/inblog-format.ko.md)를 읽습니다. 왼쪽 정렬 자연 문단, `h2`/`h3` 소제목, H1 중복 없음, 분리된 메타데이터, 서식 복사 경로를 확인합니다. 렌더링된 본문을 `서식 콘텐츠 복사`로 복사해 inblog 일반 본문에 Ctrl+V/⌘V로 붙이고, 자동 복사가 막히면 선택된 본문에서 Ctrl+C/⌘C를 누릅니다. 본문은 HTML 임베드 블록에 넣지 않으며(외부 임베드 전용), Markdown 복사 경로는 없습니다.
+- 판별된 플랫폼이 `inblog`이면 전달 전에 [`references/inblog-format.ko.md`](references/inblog-format.ko.md)를 읽습니다. 왼쪽 정렬 자연 문단, `h2`~`h4` 소제목, H1 중복 없음, 분리된 메타데이터, 서식 복사 경로를 확인합니다. 렌더링된 본문을 `서식 콘텐츠 복사`로 복사해 inblog 일반 본문에 Ctrl+V/⌘V로 붙이고, 자동 복사가 막히면 선택된 본문에서 Ctrl+C/⌘C를 누릅니다. 본문은 HTML 임베드 블록에 넣지 않으며(외부 임베드 전용), Markdown 복사 경로는 없습니다.
 
 1. 시작 질문을 마친 뒤 매 실행마다 [`rules/post-workflow.ko.md`](rules/post-workflow.ko.md)를 읽습니다. 모드 결정, 접수, 구조 골격, 전달 순서.
 2. 브리프에 경험·출처·이미지가 없을 때(보통의 경우) [`rules/topic-research.ko.md`](rules/topic-research.ko.md)를 읽습니다. 리서치 절차, 경험 슬롯, 인라인 이미지 슬롯, 사실 묶음 형태.

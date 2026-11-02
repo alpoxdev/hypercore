@@ -6,7 +6,7 @@ Read this before drafting (workflow step 4) and again for the self-check in step
 
 ## Platform scope
 
-This file is the shared natural-prose contract for both `naver` and `inblog`. §1-§3 and §5 apply unchanged on either platform. §4 is **Naver-only**: its genre rows and per-post decoration ceilings are stated for the Naver editor, where body text is center-aligned and wrapped at 12-25 characters. An inblog body does not use §4. It uses left alignment, natural paragraph wrapping, and H2/H3 subheadings instead, so never carry the Naver centered layout or forced wraps over to it.
+This file is the shared natural-prose contract for both `naver` and `inblog`. §1-§3 and §5 apply unchanged on either platform. §4 is **Naver-only**: its genre rows and per-post decoration ceilings are stated for the Naver editor, where body text is center-aligned and wrapped at 12-25 characters. An inblog body does not use §4. It uses left alignment, natural paragraph wrapping, and H2-H4 subheadings instead, so never carry the Naver centered layout or forced wraps over to it.
 
 ## 1. Principles
 
