@@ -11,7 +11,8 @@ Read before delivery and whenever this package changes. This file owns the pre-d
 - [ ] Card count is 2–20.
 - [ ] Only the cover fixes its title at `bottom-left`; body layouts have content/image-based reasons. Photo and text are separate layers; a supplied logo is unchanged.
 - [ ] Every card records `scene`, `visualType`, `layout`, and `layoutReason`; meaningful scene/type changes support the narrative, and repeated images have an explicit `reuseReason`. Inspect actual images, not just distinct scene names.
-- [ ] Top, center, and bottom layouts keep contrast across the actual text region and do not collide with the brand/logo. Saved HTML reopens with the same layout and image plan.
+- [ ] Top, center, and bottom layouts keep contrast across the actual text region and do not collide with the supplied logo. Saved HTML reopens with the same layout and image plan.
+- [ ] Card images have no page label, slide counter, or automatic brand-name chip.
 - [ ] Only the photo background is blurred, and subtly; the text sits on the translucent black scrim over the photo, so the photo shows through while white text keeps contrast.
 - [ ] `window.cardStudio.render` resolved; `#status[data-error]` is not `true`.
 - [ ] Real PNGs exist at the chosen size, one per card, in posting order.

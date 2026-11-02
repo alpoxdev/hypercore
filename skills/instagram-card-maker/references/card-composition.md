@@ -19,7 +19,7 @@ Plan each card's `scene`, `visualType`, `layout`, and `layoutReason` before acqu
 
 ## 2. Layers
 
-The composer draws in this order: a full-bleed photo layer, a translucent scrim, the title and body text, the logo, and the top-left brand label. The photo covers 100% of the card and the text is a separate layer drawn on top, so the Korean stays crisp while only the photo is soft and the photograph stays visible under the text.
+The composer draws in this order: a full-bleed photo layer, a translucent scrim, the title and body text, and the supplied logo. The photo covers 100% of the card and the text is a separate layer drawn on top, so the Korean stays crisp while only the photo is soft and the photograph stays visible under the text.
 
 ## 3. Blur
 
@@ -32,9 +32,9 @@ The text sits on a translucent black scrim over the photo, with white text on to
 ## 5. Placement
 
 - Cover title and body: `bottom-left`, inside a 72 px margin.
-- Body title and body: choose `top-left`, `top-right`, `center`, `bottom-left`, or `bottom-right` to suit the image and information role. Top layouts start at 200 px to clear the brand/logo area. Center layouts center the text block vertically and horizontally. Right layouts right-align both title and body.
+- Body title and body: choose `top-left`, `top-right`, `center`, `bottom-left`, or `bottom-right` to suit the image and information role. Top layouts start at 200 px to clear the logo area. Center layouts center the text block vertically and horizontally. Right layouts right-align both title and body.
 - Logo: top-right, drawn at its original aspect ratio, never filtered, recolored, or stretched.
-- Brand label: top-left, white text on a small translucent black chip, reading `brand  index/total`.
+- Do not add a page label, slide counter, or automatic brand-name chip. Card order belongs in filenames and metadata, not on the image.
 
 ## 6. What not to do
 

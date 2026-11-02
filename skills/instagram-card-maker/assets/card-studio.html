@@ -164,12 +164,6 @@ label{display:block;margin-top:12px;font-weight:600}input{max-width:100%;margin:
       const s=Math.min(170/logo.naturalWidth,96/logo.naturalHeight);
       ctx.drawImage(logo,w-margin-logo.naturalWidth*s,margin,logo.naturalWidth*s,logo.naturalHeight*s);
     }
-    ctx.font="500 24px "+font;
-    // A translucent chip keeps brand/index readable even over bright photography.
-    const label=doc.brand+"  "+(index+1)+"/"+doc.slides.length;
-    if (ctx.measureText(label).width>620) fail("브랜드명이 너무 깁니다.");
-    ctx.fillStyle="rgba(0,0,0,"+SCRIM_ALPHA+")"; ctx.fillRect(margin-12,margin-10,Math.ceil(ctx.measureText(label).width)+24,48);
-    ctx.fillStyle="#fff"; ctx.fillText(label,margin,margin);
     return c;
   }
   function clearOutput() {

@@ -16,6 +16,7 @@ Write every user-facing deliverable — the card titles and body, the caption, t
 
 <purpose>
 
+- Do not add page labels, slide counters, or automatic brand-name chips to card images. Keep card order in filenames and metadata, not in a visible `brand index/total` overlay.
 - Start from a topic, a brand, or a brief: research the subject and the reader's question first, then compose. Do not demand a fact pack from the user before the research step.
 - Ground every card claim in a source with a URL and an accessed date. A first-hand claim, a price, a result, or a brand line comes only from the user; a gap becomes an explicit slot instead of an invented fact.
 - Compose the carousel as a sequence where each card carries one idea and the order builds the argument. Only the cover fixes its hook and title at the bottom-left; body layouts follow the content and image composition. Keep photo and text as separate layers so the Korean stays crisp.

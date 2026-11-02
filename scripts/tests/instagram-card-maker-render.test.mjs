@@ -122,6 +122,26 @@ async function observe(body, source=composerSource) {
 
 // ------------------------------------------------------------- composition
 
+test.skipIf(!hasWebView)("cards do not draw a brand and page label over the photo", async () => {
+  const result = await observe(`
+    const drawn = [];
+    const original = CanvasRenderingContext2D.prototype.fillText;
+    CanvasRenderingContext2D.prototype.fillText = function(value,...args) {
+      drawn.push(value);
+      return original.call(this,value,...args);
+    };
+    try {
+      const ctx = await renderOne(solid(1080,1350,"#ffffff"));
+      return {drawn,topLeft:px(ctx,72,72)};
+    } finally {
+      CanvasRenderingContext2D.prototype.fillText = original;
+    }
+  `);
+  expect(result.drawn).toContain("HOOK TITLE");
+  expect(result.drawn.some((/** @type {string} */ value) => value.includes("BRAND"))).toBe(false);
+  expect(result.topLeft).toEqual([255,255,255,255]);
+});
+
 test.skipIf(!hasWebView)("body layouts move text and keep contrast while the cover stays bottom-left", async () => {
   const result = await observe(`
     const drawn = [];

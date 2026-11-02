@@ -17,7 +17,7 @@ The composer takes one JSON object. Every key below is required unless marked op
 
 | Key | Type | Rule |
 |---|---|---|
-| `brand` | string | Non-empty. Rendered in the top-left label with the card index. |
+| `brand` | string | Non-empty brand context in the editable document. Not rendered as a label or slide counter. |
 | `width` | number | Must be `1080`. |
 | `height` | number | One of `1080`, `1350`, `1440`. Default `1350` (4:5). |
 | `caption` | string | Non-empty Korean caption for the whole post. |
