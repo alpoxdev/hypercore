@@ -4,13 +4,10 @@ Run these checks before declaring `git-maker` changes complete or before reporti
 
 ## Skill Quality Checks
 
-- Description says this skill commits and pushes together, and distinguishes it from `git-commit` and `git-push`.
-- At least 3 positive trigger examples exist.
-- At least 2 negative trigger examples exist.
-- At least 1 boundary example exists.
-- Core `SKILL.md` stays lean and points directly to rules/scripts without duplicating them.
+- The description says this skill commits and pushes together; every boundary (commit-only, push-only, history rewrite, pull request) is stated by the requested result, never by naming another skill.
+- `assets/evals/git-maker-cases.jsonl` composes should-trigger, should-not-trigger, boundary, near-miss, safety, adversarial, and regression cases; every case states its own `intent`, `runs`, `threshold`, and `metrics`. Add a case only when it probes something the existing cases do not.
+- Core `SKILL.md` stays lean and points directly to rules/scripts without duplicating them; subagent lane rules live only in `rules/agent-parallelism.md`.
 - Script additions are justified by deterministic speed or safety improvements.
-- Agent parallelism guidance is isolated in `rules/agent-parallelism.md` and not duplicated in the core.
 - Worktree guidance is explicit: linked worktrees are valid contexts, checkout roots stay separate, and `.git` is not assumed to be a directory.
 - Missing arguments and `current`/`CURRENT` select current-session changes; `all`/`ALL` select every uncommitted change.
 - `&&` propagation syntax is defined for all scope modes and validates every target before mutation.
@@ -26,7 +23,7 @@ Run these checks before declaring `git-maker` changes complete or before reporti
 - Commit subjects read like neutral Conventional Commit summaries, not Korean command-style imperatives.
 - Push phase is automatic only after all commit groups succeed.
 - Force push remains blocked for `main` and `master`.
-- If subagents were used, their work was read-only and final git mutations stayed with the main integrator.
+- If subagents were used, their work was read-only, no two agents owned the same git index mutation, final staged files match the main integrator's selected group, and every skipped or failed push target is reported.
 - A local multi-branch fixture verifies that only commits created by the run reach each target, in left-to-right order.
 - A local conflict fixture verifies one mechanical conflict is resolved and validated without asking, while an intentionally ambiguous behavior conflict triggers one focused question before later targets.
 

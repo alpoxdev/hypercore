@@ -38,20 +38,6 @@
 - 프로젝트 로컬 에이전트 정의는 나중에 `.claude/agents/` 또는 `.codex/agents/` 아래에 추가할 수 있지만, 이 스킬은 home/global 에이전트 디렉터리에 의존하면 안 된다.
 - 런타임이 하위 에이전트를 실행할 수 없으면 main context에서 같은 레인 체크리스트를 수동으로 사용한다.
 
-## 권장 흐름
-
-1. Main integrator가 실행한다.
-
-   ```bash
-   scripts/git-maker-fast.sh inspect . --jobs 4
-   ```
-
-2. 복잡하면 같은 inspect 출력을 사용해 독립 읽기 전용 레인을 실행한다.
-3. 레인 출력을 하나의 최종 커밋 계획으로 통합한다.
-4. `scripts/git-commit.sh`로 각 그룹을 순차적으로 stage하고 commit한다.
-5. 모든 커밋이 성공한 뒤에만 push하며, 가능하면 preflight의 명시적 repo path를 사용한다.
-
-
 ## 위임 프롬프트 템플릿
 
 다음 템플릿은 바로 복사해 사용할 수 있다. 대괄호 필드는 현재 inspect 출력이나 파일 목록으로 바꾼다. 모든 레인은 읽기 전용이다.
@@ -96,16 +82,6 @@ Return: pass/block verdict for secrets, destructive git operations, protected br
 | Safety Verifier가 blocker를 보고 | mutation을 중단하고 blocker를 보고한다 |
 | Repo Mapper가 repo boundary mismatch를 발견 | staging 전에 focused inspect를 다시 실행한다 |
 | 편집/hooks 이후 에이전트 출력이 오래됨 | push 전에 status를 갱신하고 다시 검증한다 |
-
-## 검증
-
-최종 보고 전에 확인한다.
-
-- 실행한 모든 레인이 읽기 전용이었다
-- 두 에이전트가 같은 Git index mutation을 소유하지 않았다
-- 최종 staged 파일이 main integrator가 선택한 그룹과 일치한다
-- push는 모든 커밋 그룹이 성공한 뒤에만 시도되었다
-- 건너뛴/실패한 push target이 명시적으로 보고되었다
 
 ## Sources
 

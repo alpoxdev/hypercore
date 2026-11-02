@@ -38,20 +38,6 @@ Do not spawn agents for a single obvious one-file or one-group commit; coordinat
 - Project-local agent definitions may be added later under `.claude/agents/` or `.codex/agents/`, but this skill must not depend on home/global agent directories.
 - If the runtime cannot spawn subagents, use the same lane checklist manually in the main context.
 
-## Recommended Flow
-
-1. Main integrator runs:
-
-   ```bash
-   scripts/git-maker-fast.sh inspect . --jobs 4
-   ```
-
-2. If complex, spawn independent read-only lanes with the same inspect output.
-3. Integrate lane outputs into one final commit plan.
-4. Stage and commit each group sequentially with `scripts/git-commit.sh`.
-5. Push only after every commit succeeds, preferably with explicit repo paths from preflight.
-
-
 ## Delegation Prompt Templates
 
 Use these templates as copy-ready prompts. Replace bracketed fields with the current inspect output or file list. Every lane is read-only.
@@ -96,16 +82,6 @@ Return: pass/block verdict for secrets, destructive git operations, protected br
 | Safety Verifier reports a blocker | stop mutation and report the blocker |
 | Repo Mapper finds repo boundary mismatch | re-run focused inspect before staging |
 | Agent output is stale after edits/hooks | refresh status and revalidate before push |
-
-## Validation
-
-Before final reporting, confirm:
-
-- every spawned lane was read-only
-- no two agents owned the same git index mutation
-- final staged files match the main integrator's selected group
-- push was attempted only after all commit groups succeeded
-- skipped/failed push targets are reported explicitly
 
 ## Sources
 
