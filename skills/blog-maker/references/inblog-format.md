@@ -29,7 +29,7 @@ Read only when the resolved platform is `inblog`, before delivery, from [`format
 inblog is not Naver; the Naver rhythm contract does not apply.
 
 - Body paragraphs are **left-aligned natural paragraphs**. Do not force 12-25-character line breaks and do not center-align the body.
-- Subheadings are `h2` and `h3` (the editor's heading blocks cover H2-H4).
+- Subheadings are `h2`-`h4` (the editor's heading blocks cover H2-H4).
 - The `Title` field is the H1, so the body carries **no duplicate H1**: start at H2 and never repeat the title as a heading.
 
 ## 3. Metadata separate from the body
