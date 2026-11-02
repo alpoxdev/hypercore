@@ -2,17 +2,18 @@
 
 > Korean version: [`CONFIGURATION.ko.md`](CONFIGURATION.ko.md)
 >
-> **Research date:** 2026-08-24, against the official documentation only. **Facts** below trace to Hermes Agent's official docs; **Recommendations** are this guide's operational advice. Defaults are documented values as retrieved on that date, not a guarantee about your installed version — re-check the official Configuration and Security references after an upgrade.
-> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
+> **Research date:** 2026-11-03, against the official documentation shipped in Hermes Agent **v0.22.5** (commit `bf0203a794a`, released 2026-10-22). **Facts** below trace to those sources; **Recommendations** are this guide's operational advice. Defaults are documented values as retrieved on that date, not a guarantee about your installed version, so re-check the Configuration and Security references after an upgrade.
 
-## Primary sources
+## Sources
 
-- [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration)
-- [Environment Variables Reference](https://hermes-agent.nousresearch.com/docs/reference/environment-variables)
-- [CLI Commands Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands)
-- [Managed Scope](https://hermes-agent.nousresearch.com/docs/user-guide/managed-scope)
-- [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security)
-- Full official documentation export: `https://hermes-agent.nousresearch.com/docs/llms-full.txt`
+| Source | What it supplies | Checked |
+| --- | --- | --- |
+| [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration) | The `~/.hermes/` tree, precedence, and every section quoted below | checked 2026-11-03 |
+| [Environment Variables Reference](https://hermes-agent.nousresearch.com/docs/reference/environment-variables) | Key-specific environment overrides | checked 2026-11-03 |
+| [CLI Commands Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) | `hermes config` subcommands and dot-escaped keys | checked 2026-11-03 |
+| [Managed Scope](https://hermes-agent.nousresearch.com/docs/user-guide/managed-scope) | Pinned administrator values and their precedence | checked 2026-11-03 |
+| [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security) | Approval modes, YOLO, allowlists, redaction | checked 2026-11-03 |
+| [Full documentation export](https://hermes-agent.nousresearch.com/docs/llms-full.txt) | Cross-checking defaults against every page at once | checked 2026-11-03 |
 
 ## Which file does what
 
@@ -91,7 +92,9 @@ mcp_servers:
 
 **Fact:** `hermes config set` routes recognized secrets and API keys to `.env` and everything else to `config.yaml`, so the caller does not choose the file.
 
-**Fact — limitation:** keys under `agent.reasoning_overrides` whose model names contain dots cannot be set through the dotted-key syntax. Edit the YAML directly for those.
+**Fact — dots inside key names:** when navigating an existing mapping, an existing literal key wins over splitting, so `hermes config set providers.p.models.grok-4.6.supports_vision true` updates the real `grok-4.6` entry. Creating a **new** dotted key needs a backslash escape (`'providers.p.models.grok-4\.7.context_length'`). An unescaped write that would shadow an existing dotted sibling fails instead of creating an entry the runtime never reads.
+
+**Fact:** `hermes config get` masks credential-shaped values (`api_key`, `*_TOKEN`, `*_SECRET`, `password`) because sessions' transcripts persist; `--raw` prints the real value. `hermes config set` refuses a known key written under the wrong prefix and names the intended one unless `--force` is given.
 
 **Fact:** `config check` reports missing or stale options; the docs do not claim it repairs anything. `config migrate` adds newly introduced options and scans enabled skills for declared-but-unset settings; an update runs it after dependency installation.
 
@@ -124,6 +127,9 @@ Related: top-level `providers` (`api`, `api_key`, `extra_headers`, `discover_mod
 | `timeout` | `300` seconds | No response means **denied** — fail-closed |
 | `cron_mode` | `deny` | `approve` auto-approves every dangerous command in cron context |
 | `single_query_mode` | `deny` | Same semantics for one-shot `hermes chat -q` |
+| `unattended_mode` | `deny` | Same semantics for webhook, `msgraph_webhook`, and `api_server` sessions, which have no human to answer `/approve` |
+| `discord_prompt_timeout` | `300` | Seconds Discord's approval, clarify, and update buttons stay clickable; minimum 30 |
+| `smart_policy` | unset | Extra instructions appended to the smart-approval reviewer's system prompt |
 | `deny` | No non-empty default | Case-insensitive whole-command fnmatch globs over normalized variants; evaluated **before** YOLO/off; mtime-reloaded without restart |
 | `denial_breaker_threshold` | `3` | `0` disables |
 | `destructive_slash_confirm` | Enabled | Native confirm dialog for `/clear`, `/new`, `/reset`, `/undo` |
@@ -141,7 +147,7 @@ Related: top-level `providers` (`api`, `api_key`, `extra_headers`, `discover_mod
 
 | Key | Documented default | Notes |
 | --- | --- | --- |
-| `backend` | `local` | `local`, `docker`, `ssh`, `modal`, `daytona`, `vercel_sandbox`, `singularity` |
+| `backend` | `local` | `local`, `docker`, `ssh`, `modal`, `daytona`, `vercel_sandbox`, or a plugin backend. Singularity/Apptainer moved out of core into a plugin |
 | `cwd` | `.` | Gateway and cron use it; the CLI uses its launch directory |
 | `timeout` | `180` | Seconds |
 | `home_mode` | `auto` | `auto`, `real`, `profile` |
@@ -152,6 +158,9 @@ Related: top-level `providers` (`api`, `api_key`, `extra_headers`, `discover_mod
 | `container_persistent` / `docker_persist_across_processes` / `docker_orphan_reaper` | `true` | |
 | `lifetime_seconds` | `300` | |
 | `vercel_runtime` | `node24` | Also `node22`, `python3.13` |
+| `temp_dir` | `""` | Empty honors `TMPDIR`, else `~/.hermes/cache/terminal`; idles 24 h are swept |
+| `sync_back_max_bytes` | `2147483648` | Remote backends refuse a larger state archive |
+| `modal_image` / `daytona_image` | `nousresearch/hermes-sandbox:desktop` | Sandbox image per cloud backend |
 
 **Fact:** `home_mode: auto` preserves the real OS `HOME` on host installs, so ordinary `git`, `ssh`, `gh`, `az`, `npm`, Claude Code, and Codex credentials stay visible to subprocesses. `home_mode: profile` points `HOME` at `{HERMES_HOME}/home` and exports `HERMES_REAL_HOME`, at the cost of hiding `~/.ssh`, `~/.gitconfig`, and cloud CLI authentication until they are initialized there.
 
@@ -163,10 +172,17 @@ Related: top-level `providers` (`api`, `api_key`, `extra_headers`, `discover_mod
 | --- | --- |
 | `skills.guard_agent_created` | `false` — the heuristic scanner is off |
 | `skills.write_approval` | `false` — skill writes are not staged for approval |
+| `skills.auto_load` | Empty — no skill is force-loaded at session start |
+| `skills.create_dir` | Unset — new agent-created skills go to the profile-local directory |
+| `skills.inline_shell` / `inline_shell_timeout` | `false` / `10` seconds per snippet |
+| `skills.tier1_advisory` | Enabled when the optional scanner binaries are on `PATH` |
+| `skills.ledger` / `ledger_max_bytes` | `true` / `5242880` |
 | `skills.disabled` / `skills.platform_disabled` / `skills.external_dirs` | SILENT |
 | `memory.memory_enabled` / `memory.user_profile_enabled` | `true` |
 | `memory.memory_char_limit` / `memory.user_char_limit` | `2200` / `1375` characters |
 | `memory.write_approval` | `false` |
+| `memory.prefetch_spill_enabled` | `false` — oversized provider recall stays intact |
+| `memory.provider` | Unset — built-in stores only |
 | `plugins.enabled` / `plugins.disabled` | Arbitrary plugins are opt-in; `disabled` always wins |
 
 **Fact:** plugin trust gates — `allow_tool_override`, `allow_gateway_injection`, `mcp_allowlist`, `llm.allow_provider_override`, `allow_model_override`, `allow_platform_actions`, and the related keys — all default to deny.
@@ -175,24 +191,31 @@ Related: top-level `providers` (`api`, `api_key`, `extra_headers`, `discover_mod
 
 **Fact:** tool enablement is stored as `platform_toolsets` (a map of platform to toolset list, written by `hermes tools`) plus `agent.disabled_toolsets`, which removes toolsets globally after platform resolution. Do not invent a `tools:` mapping.
 
-Related limits: `tool_output.max_bytes` `50000`, `tool_output.max_lines` `2000`, `tool_budget.mcp_result_size_chars` `50000`, `tool_loop_guardrails.warnings_enabled` `true`, `loop_caps.max_web_searches` and `max_subagents` `50`.
+Related limits: `tool_output.max_bytes` `50000`, `max_lines` `2000`, `max_line_length` `2000`; `file_read_max_chars` `100000`; `tool_budget.mcp_result_size_chars` `50000`; `tool_loop_guardrails.warnings_enabled` `true`, `hard_stop_enabled` `false`, `non_interactive_hard_stop_enabled` `true`; `loop_caps.max_web_searches` and `max_subagents` `50` per turn.
+
+**Fact — two different truncation strategies:** over-limit terminal output is cut to the first 40% and last 60% with an `[OUTPUT TRUNCATED]` notice, while an oversized *tool result* is spilled to `$HERMES_HOME/cache/spillover/` and replaced in context by a preview plus the file path. The generic spill threshold is 100,000 characters and `mcp_*` results spill at 50,000 by default, always capped at the generic threshold.
+
+**Fact — where the hard stops apply:** interactive CLI, TUI, Desktop, ACP, and `api_server` sessions only warn, because a person can intervene; unattended gateway and cron surfaces hard-stop by default through `non_interactive_hard_stop_enabled`. `hard_stop_enabled` widens hard stops to every platform. Hard stops catch unchanged replays, not iteration: a successful mutating call resets the streak, and distinct failing commands are diagnosis rather than a loop.
 
 ### Other frequently tuned sections
 
-`agent` (`api_max_retries: 3`, `stall_guards: true`, `clarify_timeout`; see the documented contradiction below) · `compression` (`enabled: true`, `threshold: 0.50`, `target_ratio: 0.20`, `protect_last_n: 20`) · `code_execution` (`mode: project`, `timeout: 300`, `max_tool_calls: 50`) · `display` (`tool_progress: all`, `language: en`) · `security` (`redact_secrets: true`, `tirith_enabled: true`) · `updates` (`pre_update_backup: quick`, `backup_keep: 5`) · `delegation` (`max_concurrent_children: 3`, `max_spawn_depth: 1`).
+`agent` (`api_max_retries: 3`, `stall_guards: true`, `clarify_timeout: 3600`) · `compression` (`enabled: true`, `threshold: 0.50`, `target_ratio: 0.20`, `tail_mode: lean`, `protect_last_n: 20`, `protect_first_n: 3`) · `code_execution` (`mode: project`, `timeout: 300`, `max_tool_calls: 50`) · `display` (`tool_progress: all`, `language: en`, `memory_notifications: on`) · `security` (`redact_secrets: true`, `website_blocklist.enabled: false`) · `updates` (`pre_update_backup: quick`, `backup_keep: 5`) · `delegation` (`max_concurrent_children: 3`, `max_spawn_depth: 1`, `oneshot_max_children: 2`) · `checkpoints` (`enabled: false`, `max_snapshots: 20`) · `curator` (`enabled: true`, `interval_hours: 168`, `stale_after_days: 14`, `archive_after_days: 30`, `consolidate: false`).
 
-**Fact:** there is **no documented top-level `database:` section**. `state.db` is runtime storage, not a configuration section.
+**Fact — `tirith_*` is gone.** Earlier releases bundled a command scanner under `security.tirith_enabled`; it was removed and upgrading drops the key with nothing enabled in its place. Content-level command checks are documented separately.
 
-## Documented contradictions
+**Fact — `database:` exists.** It controls how `state.db` opens: `journal_mode` (`wal` default, `delete` for network mounts), an optional `synchronous` durability floor, and optional `wal_autocheckpoint` / `journal_size_limit` pragmas. An existing WAL database is never live-downgraded; `hermes sessions set-journal-mode delete` converts one after every process stops.
 
-These are inconsistencies inside the official documentation itself. Preserve them rather than picking a side silently.
+**Fact — `runtime:` exists.** `nofile_soft_limit` (default `4096`, clamped to the OS hard limit and never lowered) and `malloc_arena_max` (default `4` on glibc) tune long-running server processes. `0`, `false`, or `null` disables each.
 
-| Topic | Conflict | Use |
+## Contradictions that were reconciled
+
+An earlier revision of this guide tracked three inconsistent pairs in the official documentation. All three now read consistently, so do not reintroduce the older readings:
+
+| Topic | Once inconsistent | Current documented position |
 | --- | --- | --- |
-| `context_file_max_chars` | The settings section says `null` means a dynamic cap (floor 20K, ceiling 500K); later prose says "default 20,000" | The dedicated settings section; treat the prose as stale |
-| `gateway.streaming.enabled` | A YAML sample shows `true` while its own comment and surrounding prose say the master switch defaults to `false` | `false`; the sample is illustrative |
-| `agent.stall_guards` | Prose says the default is true while a code block shows how to set false | Not a real conflict — the block is an opt-out example |
-| `agent.clarify_timeout` | The dedicated settings material says `3600` seconds; the Discord and Telegram platform pages say `600` seconds | Use the dedicated settings material; treat platform prose as stale until upstream reconciles it |
+| `context_file_max_chars` | `null` dynamic cap versus a "default 20,000" sentence | `null` scales with the model window, floor 20,000 and ceiling 500,000 characters |
+| `gateway.streaming.enabled` | A sample showed `true` beside prose saying `false` | The master switch is `false`; Telegram streams and Discord does not once it is on |
+| `agent.clarify_timeout` | The settings material said `3600`, the Discord and Telegram pages said `600` | `3600` seconds, one value for the CLI modal, the TUI/Desktop card, and the gateway |
 
 ## Secrets and credentials
 
@@ -234,6 +257,7 @@ These are inconsistencies inside the official documentation itself. Preserve the
 | A `${VAR}` reference appears literally | The variable is undefined | Check the warning in the log; define it in `.env` or a secret source |
 | A new `.env` key is invisible to a running session | The process has not re-read `.env` | Run `/reload`, or restart the process |
 | An API key seems ignored | A saved model/provider selection outranks normal environment resolution | Inspect `hermes config show`, rerun `hermes model` |
+| `config get` shows `sk-o...7890` | Credential-shaped values are masked because session transcripts persist | Add `--raw`, or set `security.redact_secrets: false` |
 | Options disappeared after an update | New schema options are not yet present | `hermes config check`, then `hermes config migrate` |
 | Managed policy seems inactive | The managed file is malformed and was ignored | It is logged loudly; verify with `hermes doctor` |
 

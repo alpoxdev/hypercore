@@ -19,11 +19,13 @@
 | **지속** | 다음 달에도 참인가? | 스프린트 메모, 현재 티켓, 진행 중인 마이그레이션 상태 |
 | **권고 적합** | 산문이 올바른 강제 수단인가? | *매번* 일어나야 하는 것 — 그것은 hook, CI 검사, lint 규칙, schema다 |
 
-Anthropic은 두 번째 관문을 삭제 테스트로 표현한다:
+Anthropic은 두 번째 관문을 받아들이는 규칙과 쳐내는 규칙으로 표현한다.
 
-> "For each line, ask: 'Would removing this cause Claude to make mistakes?' If not, cut it."
+> "Add to it when: Claude makes the same mistake a second time"
 
-파괴적으로 적용한다. 이 테스트의 기본 결론은 삭제다.
+> "the file works best when it only holds what Claude couldn't work out from the code itself"
+
+파괴적으로 적용한다. 이 테스트의 기본 결론은 삭제이며, 현재 문서는 그 판단을 기계에도 맡긴다: "`/doctor` suggests cuts for anything Claude can already work out from the code."
 
 ---
 
@@ -31,12 +33,12 @@ Anthropic은 두 번째 관문을 삭제 테스트로 표현한다:
 
 토큰당 가치 순.
 
-1. **gotcha와 비자명한 제약** — 사람이 데인 것들. 가치가 가장 높은 범주이며, 현재 Anthropic 지침은 파일 내용의 대부분을 여기에 쓰라고 말한다.
+1. **gotcha와 비자명한 제약** — 사람이 데인 것들. 가치가 가장 높은 범주이며, Anthropic 자신의 지침도 그렇게 말한다: "spend most of the tokens on gotchas inside of the codebase".
 2. **검증된 명령** — install, dev, test, lint, typecheck, build. 정확하고 복사 가능하며 작업 디렉터리를 명시한다. 실행해보지 않은 명령은 절대 쓰지 않는다.
 3. **기본값과 다른 프로젝트 고유 관례** — 프레임워크 기본값과 일치한다면 잡음이다.
 4. **코드가 스스로 알리지 않는 아키텍처와 경계** — 모듈 소유권, 무엇이 무엇을 import하면 안 되는지, 손으로 고치면 안 되는 생성 경로.
 5. **테스트·검증 요구사항** — 어떤 러너를 쓰는지, 변경이 완료로 간주되려면 무엇이 통과해야 하는지.
-6. **보안·안전 제약** — credential 취급, 네트워크 경계, destructive/production 게이트. 에이전트는 이를 추론할 수 없고 추측한다. 기술적 연구에 따르면 실제 파일의 약 14.5%만 보안 내용을 포함하며, 이것이 가장 흔한 위험 누락이다.
+6. **보안·안전 제약** — credential 취급, 네트워크 경계, destructive/production 게이트. 에이전트는 이를 추론할 수 없고 추측한다. 기술적 연구에 따르면 실제 파일의 약 14.8%만 보안 내용을 포함하며, 이것이 가장 흔한 위험 누락이다.
 7. **간단한 프로젝트 목적 서술** — 한 문단, 방향을 잡을 정도. README가 아니다.
 8. **로딩 맵** — 인라인 대신 더 깊은 로컬 문서로 링크.
 
@@ -104,7 +106,7 @@ GitHub 문서는 이 중 셋을 피할 것으로 명시한다:
 
 ## 6. 최신 모델일수록 규칙은 적게
 
-Claude 5 세대에 대한 현재 Anthropic 지침은 과도한 제약을 경고하며, 경직된 규칙보다 모델의 판단 여지를 넓히라고 권한다. 또한 표면 간 반복 자체를 실패 모드로 지목한다. 같은 지시를 시스템 프롬프트, skill, instruction 파일에 되풀이하면 강화가 아니라 충돌이 생긴다.
+현재 Anthropic 지침은 과도한 제약을 경고하며, 경직된 규칙보다 모델의 판단 여지를 넓히라고 권한다: "Then: Give Claude rules Now: Let Claude use judgement". 그 근거로 제시한 수치도 크다: "We removed over 80% of Claude Code's system prompt for models like Claude Opus 5 and Claude Fable 5 with no measurable loss on our coding evaluations." 같은 글은 표면 간 반복을 실패 모드로 지목하고, instruction 파일이 "a central repository for every known practice that you might run into"가 되지 말아야 한다고 경고한다.
 
 작성 측면의 두 가지 귀결:
 
@@ -131,12 +133,12 @@ Claude 5 세대에 대한 현재 Anthropic 지침은 과도한 제약을 경고�
 
 | 출처 | URL | 확인일 |
 |---|---|---|
-| Anthropic — Claude Code best practices | <https://code.claude.com/docs/en/best-practices> | 확인 2026-09-19 |
-| Anthropic — effective context engineering | <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> | 확인 2026-09-19 |
-| Claude Code memory 문서 | <https://code.claude.com/docs/en/memory> | 확인 2026-09-19 |
-| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 확인 2026-09-19 |
-| New rules of context engineering (Claude 5) | <https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models> | 확인 2026-09-19 |
-| GitHub Copilot response customization | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 확인 2026-09-19 |
+| Anthropic — Claude Code best practices | <https://code.claude.com/docs/en/best-practices> | 확인 2026-11-03 |
+| Anthropic — effective context engineering | <https://www.anthropic.com/research/effective-context-engineering-for-ai-agents> | 확인 2026-11-03 |
+| Claude Code memory 문서 | <https://code.claude.com/docs/en/memory> | 확인 2026-11-03 |
+| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 확인 2026-11-03 |
+| New rules of context engineering (Claude 5) | <https://claude.dev/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models/> | 확인 2026-11-03 |
+| GitHub Copilot custom instructions | <https://docs.github.com/en/copilot/concepts/prompting-and-context/custom-instructions> | 확인 2026-11-03 |
 
 ## 함께 읽을 문서
 

@@ -43,6 +43,14 @@ Warmup, repeat, aggregation, judging 방식을 정하기 전에 profile을 선�
 
 Noisy claim은 raw valid observation을 보존하고 method에 맞는 stability/uncertainty를 보고한다. Statistical significance만으로 keep하지 않는다. Universal nonzero threshold도 잘못이다. Task-specific effect, tie, 또는 exact monotonic rule을 선언한다.
 
+### 후보당 비용 고정
+
+후보당 측정 예산은 scheduler가 아니라 metric 정의에 속한다. 고정한 upstream training loop는 wall-clock training 예산을 5분으로 두고 startup과 compilation을 그 예산에서 제외한다. 그래야 후보 둘을 비교할 수 있다. RE-Bench는 같은 agent와 전문가 비교가 2시간 예산과 32시간 예산 사이에서 뒤집힌다는 점을 보여준다.
+
+- 첫 실행 전에 예산을 선언하고 비교 집합 전체에서 고정한다.
+- 일찍 끝난 후보와 timeout된 후보의 처리 규칙을 미리 선언한다. 후보에 맞춰 측정 창을 바꾸면 estimand가 바뀐다.
+- Frontier 값마다 실제로 든 비용을 함께 기록한다. 더 작은 예산으로 측정했기 때문에 이긴 후보는 다른 metric에서 이긴 것이다.
+
 ## 3. Adaptive optimization and multiple objectives
 
 하나의 benchmark에서 winner를 반복 선택하면 개별 estimate가 정밀해도 evaluator에 overfit할 수 있다.
@@ -59,6 +67,17 @@ Multi-objective comparator 하나를 미리 선언한다.
 - **Pareto**: declared selection rule 아래 non-dominated candidate를 보존한다.
 
 Comparator가 없는 mixed lower/higher metric은 metric이 아니다.
+
+### 복잡도를 선언된 secondary criterion으로 두기
+
+유지 비용은 실제 목표이지만 benchmark 하나로는 거의 잡히지 않는다. 고정한 upstream program file은 이를 명시한다. 코드를 삭제하고 같거나 나은 결과를 얻으면 분명한 keep이고, 작은 metric 이득을 위해 지저분한 코드를 더하면 대개 keep할 이유가 없으며, 이득이 거의 없는데 코드가 훨씬 단순해졌다면 keep할 가치가 있다. 이 판단을 diff를 본 뒤의 즉흥 판단이 아니라 미리 선언한 규칙으로 옮긴다.
+
+- 복잡도 측정값을 정한다(변경 line 수, 새 dependency, 새 configuration surface, 삭제한 코드).
+- 복잡도가 결정하는 tie band를 정의한다. Band 밖에서는 metric이 결정한다.
+- 복잡도는 guard를 뒤집지 못하고, metric에서 진 후보를 구제하지도 못한다고 명시한다.
+- Baseline과 candidate에 같은 방식으로 측정해야 한다. 그러지 않으면 tie band가 의미를 잃는다.
+
+Metric에서 진 “더 단순한” 후보는 tie가 아니라 discard다. 이 기준은 metric이 이미 tie로 선언한 경우만 가른다.
 
 ## 4. Metric and guard result channels
 
@@ -101,6 +120,14 @@ Mandatory guard는 optimization 전 baseline과 keep 전 candidate에서 실행�
 
 Deleted/skipped test, changed fixture/workload, sample-count drift, verifier tampering, retry laundering을 탐지한다. Silent retry로 failure를 pass로 바꾸지 않는다.
 
+Verifier 게임은 가정이 아니라 측정된 행동이다. METR은 최근 frontier model이 test나 scoring code를 수정해 점수를 올리려 시도하고 그것이 종종 성공했다고 보고하며, HCAST와 RE-Bench에서 o3의 과제 시도 가운데 1~2%에 reward hacking 시도가 포함됐다고 추정한다. OpenAI는 chain-of-thought monitoring이 행동과 출력만 보는 것보다 이를 잘 잡아내지만, 관찰된 추론을 직접 벌하면 그 행동 상당수가 억제되면서 의도를 감추는 쪽으로 학습한다고 보고한다.
+
+여기서 설계 결론이 셋 나온다.
+
+- Guard 범위를 후보 위에서 계산한다(test 수, fixture와 evaluator digest, skipped test 목록). Metric이 올라도 범위가 줄면 guard는 fail이다.
+- Monitor는 탐지 보조 수단일 뿐 acceptance 통제가 아니다. Monitor를 볼 수 있는 optimizer는 monitor에 맞춰 최적화할 수 있다.
+- Guard surface identity를 frontier evidence에 기록한다. 이후 실행이 guard가 움직이지 않았음을 증명할 수 있어야 한다.
+
 ## 6. Subjective goals
 
 Subjective quality에 invented scalar를 억지로 붙이지 않는다. Representative item과 anchor, weight, critical veto를 가진 locked rubric을 사용한다.
@@ -118,4 +145,20 @@ Subjective quality에 invented scalar를 억지로 붙이지 않는다. Represen
 
 “같은 candidate가 3회 연속 승리” 같은 streak rule은 삭제한다. Convergence는 defined window에서 predeclared practically meaningful validation improvement가 더 없고 reliability control이 계속 통과하는 상태다.
 
-이 계약의 주요 methodological reference는 [Google Benchmark](https://google.github.io/benchmark/user_guide.html), [Go benchstat](https://pkg.go.dev/golang.org/x/perf/cmd/benchstat), [NIST randomized block designs](https://www.itl.nist.gov/div898/handbook/pri/section3/pri332.htm), [OpenAI evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices), [MT-Bench judge-bias study](https://proceedings.neurips.cc/paper_files/paper/2023/hash/91f18a1287b398d378ef22505bf41832-Abstract-Datasets_and_Benchmarks.html)다.
+## Sources
+
+> 확인 2026-11-03.
+
+| 주장 | 출처 | Grade |
+|---|---|---|
+| Repetition, 반복 실행에서 오는 statistical stability, mean·표준편차 집계, benchmark 순서 random interleaving | <https://google.github.io/benchmark/user_guide.html> | PRIMARY |
+| 반복 측정의 statistical summary와 A/B 비교 | <https://pkg.go.dev/golang.org/x/perf/cmd/benchstat> | PRIMARY |
+| Nuisance factor 효과를 제거하는 blocking, randomized block 비교의 근거 | <https://www.itl.nist.gov/div898/handbook/pri/section3/pri332.htm> | PRIMARY |
+| Typical·edge·adversarial case로 eval set을 구성하고 automated regression score를 쓰는 지침 | <https://developers.openai.com/api/docs/guides/evaluation-best-practices> | VENDOR |
+| LLM judge의 position·verbosity bias와 순서 counterbalancing 필요성 | <https://proceedings.neurips.cc/paper_files/paper/2023/hash/91f18a1287b398d378ef22505bf41832-Abstract-Datasets_and_Benchmarks.html> | PAPER |
+| Frontier model이 점수를 올리려 test나 scoring code를 수정한 사례 | <https://metr.org/blog/2025-06-05-recent-reward-hacking/> | PRIMARY |
+| HCAST와 RE-Bench에서 o3 과제 시도의 1~2%에 reward hacking 시도 포함 | <https://metr.org/evaluations/openai-o3-report/> | PRIMARY |
+| CoT monitoring이 reward hacking을 잡고, 추론을 벌하면 의도가 숨는다 | <https://arxiv.org/abs/2503.11926> | PAPER |
+| Startup·compilation을 제외한 고정 5분 wall-clock training 예산과 명시적 simplicity criterion | <https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117> | PRIMARY (repository) |
+| Agent와 전문가 비교가 2시간과 32시간 예산 사이에서 뒤집힘 | <https://arxiv.org/abs/2411.15114> | PAPER |
+| Development set 최적화와 함께 held-out split을 보고 | <https://arxiv.org/abs/2507.19457> | PAPER |

@@ -21,13 +21,13 @@ Write/delete 전에 real path와 symlink를 resolve한다. Ownership 밖 target�
 
 ## 2. Git isolation facts and policy
 
-- Linked worktree는 working file, index, `HEAD`가 분리되지만 대부분의 ref, 기본 repository config, hook, remote, object database를 공유한다. 유용한 isolation이지만 security boundary가 아니다.
+- Git 문서는 linked worktree를 “linked to the current repository, sharing everything except per-worktree files such as `HEAD`, `index`, etc.”라고 설명한다. 실제로는 ref, 기본 repository config, hook, remote, object database를 공유한다. 유용한 isolation이지만 security boundary가 아니다.
 - Retained mutating work에는 unique run-owned branch/ref를 사용하고 other-worktree branch safeguard를 우회하지 않는다.
 - Detached `HEAD`는 read-only inspection 또는 intentionally disposable experiment에 허용된다. Retained state가 unreachable해지기 전에 run-owned named ref 또는 immutable content snapshot으로 anchor하고 검증한다.
 - Shared ref, common config, hook, remote, stash, maintenance state는 명시적으로 scope에 포함되고 별도 checkpoint가 없으면 수정하지 않는다.
 - Commit은 index를 기록하지만 whole workspace 전체를 기록하지는 않는다. Plain patch도 staged, untracked, ignored, binary, mode, symlink, submodule, external state를 빠뜨릴 수 있다. Checkpoint coverage를 선언한다.
 
-공식 Git semantics: [`git-worktree`](https://git-scm.com/docs/git-worktree), [`git-reset`](https://git-scm.com/docs/git-reset), [`git-apply`](https://git-scm.com/docs/git-apply), [`git-checkout`](https://git-scm.com/docs/git-checkout#_detached_head).
+공식 Git semantics, 확인 2026-11-03: [`git-worktree`](https://git-scm.com/docs/git-worktree), [`git-reset`](https://git-scm.com/docs/git-reset), [`git-apply`](https://git-scm.com/docs/git-apply), [`git-checkout`](https://git-scm.com/docs/git-checkout#_detached_head).
 
 ## 3. Checkpoint and rollback
 
@@ -42,6 +42,8 @@ Checkpoint는 다음을 식별한다.
 Rollback은 run-owned candidate path/resource/ref만 recorded pre-iteration value로 복원하는 작업이다. **현재 값이 expected post-mutation state와 같을 때만** 실행하며 다르면 conflict로 중단한다.
 
 Pre-existing/user-owned work를 자동으로 stash, clean, reset, restore, revert, commit, delete, overwrite하지 않는다. `reset --hard`, broad restore/checkout, `clean`, history-changing recovery는 applicable authorization 아래 explicitly owned disposable state에서만 유효할 수 있다. Command name 자체가 안전성을 만들지 않는다.
+
+Upstream이 진 후보를 branch 되감기로 버리는 관행은 이 규칙의 예외가 아니라 사례다. 그 되감기가 안전한 이유는 branch가 그 실행을 위해 만들어졌고 사용자 작업이 없기 때문이다. 같은 단계를 공유 branch나 변경이 남은 tree에 복사하면 discard가 데이터 손실이 된다.
 
 Restoration 뒤 frontier identity, preserved user-state fingerprint, candidate diff 부재, resource cleanup을 검증한다. Mismatch는 `rollback-error`이며 keep/resume를 막는다.
 
@@ -59,6 +61,25 @@ Approval은 action, target, environment, argument, time-specific하다. Retry, c
 Network를 read/write만으로 분류하지 않는다. Outbound read request도 repository 또는 secret data를 전송할 수 있다. Destination, method/protocol, data class, read/write intent, ambient credential 사용 여부를 선언한다. `curl | sh`를 실행하지 말고 fetch, verify, inspect, execute를 별도 승인 단계로 나눈다.
 
 Secret을 argv, prompt, log, artifact, patch, handoff, URL, raw environment dump에 넣지 않는다. Credential source class와 redaction status만 기록하고 값은 기록하지 않는다.
+
+### Hook과 runtime gate는 경계가 아니다
+
+Agent harness에는 위험한 행동을 막는 hook, extension event, command filter가 붙기도 한다. Upstream hook reference는 이를 security sandbox도, host permission의 대체물도 아닌 defense in depth로 설명하고, crash한 hook이 차단하지 않고 성공으로 종료하며 진단만 남기는 fail-open 설계를 문서화한다. 결론은 두 가지다.
+
+- Fail open하는 hook은 authorization 판단을 강제할 수 없다. Hook이 깨지면 action은 그대로 진행된다고 가정한다.
+- Hook 범위는 runtime마다 다르므로 같은 실행이 어디서 도는지에 따라 gate가 있기도 없기도 하다. 권한 확인은 runtime이 아니라 task procedure에 있어야 한다.
+
+Hook은 사고를 줄이는 데 쓴다. 어떤 action이 허용되는지에 대한 판단은 loop 계약, 위 authorization matrix, matrix가 요구하는 사람 승인에 남긴다.
+
+### Loop가 자신의 harness를 수정할 수 있을 때
+
+자기 수정 agent 연구처럼 loop가 자신의 scaffolding을 편집하면 evaluator와 안전 검사가 후보 surface 안으로 들어온다. 이를 허용한다면 다음을 지킨다.
+
+- Evaluator, mandatory guard, evidence log를 변경 가능 집합 밖에 둔다.
+- Harness 변경은 metric loop의 한 iteration이 아니라 사람이 승인하는 별도 변경으로 versioning하고 검토한다.
+- 후보가 수정했을 수 있는 harness로 그 후보를 평가하지 않는다.
+
+Harness를 약화시켜 자기 점수를 올린 iteration은 개선이 아니다. 숫자만 좋아진 guard failure다.
 
 ## 5. Locks, deadlines, and lifecycle
 
@@ -156,3 +177,16 @@ Mutation 전에:
 10. frontier guard를 다시 실행하고 evidence가 stale, noisy, incompatible하면 remeasure한다.
 
 Prior iteration이 finalized된 뒤에만 계속한다. Full SLSA provenance, workflow replay history, exhaustive host inventory, product-specific session state는 이 minimum runtime-neutral contract의 의도적인 범위 밖이다.
+
+## Sources
+
+> 확인 2026-11-03.
+
+| 주장 | 출처 | Grade |
+|---|---|---|
+| Linked worktree는 `HEAD`, `index` 같은 per-worktree file만 빼고 모두 공유한다 | <https://git-scm.com/docs/git-worktree> | PRIMARY |
+| `git reset --hard`의 의미와 checkout의 detached `HEAD` 동작 | <https://git-scm.com/docs/git-reset> | PRIMARY |
+| `git apply`가 working tree 또는 index에 적용되는 범위와 제외되는 상태 | <https://git-scm.com/docs/git-apply> | PRIMARY |
+| Hook guardrail이 sandbox가 아닌 defense in depth이며 fail open으로 동작 | <https://github.com/uditgoenka/autoresearch/blob/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa/guide/hooks.md> | PRIMARY (repository) |
+| Run-owned branch를 되감아 진 후보를 버리는 절차 | <https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117> | PRIMARY (repository) |
+| Benchmark로 검증하면서 자신의 scaffolding을 수정하는 loop | <https://arxiv.org/abs/2505.22954> | PAPER |

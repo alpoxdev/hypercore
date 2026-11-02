@@ -13,7 +13,7 @@
 `AGENTS.md`는 널리 채택되었고, Claude Code는 v2.1.277부터 그것을 직접 읽는다. 따라서 `AGENTS.md`만 둔 저장소가 더 이상 Claude에게 보이지 않는 것은 아니다. 질문은 두 가지 좁은 이유로 남는다.
 
 - 기본 **Project instructions** 설정에서 작업 디렉터리나 그 위에 `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md` 중 하나가 있으면 Claude는 `AGENTS.md` 대신 `CLAUDE.md` 파일을 읽는다.
-- 일부 세션은 `AGENTS.md`를 아예 읽을 수 없다. v2.1.277 이전 버전, 기능 플래그를 가져오지 않는 세션(Bedrock 등 서드파티 프로바이더, telemetry 비활성화), 업그레이드 뒤 첫 세션, `disableAllHooks`나 `allowManagedHooksOnly`가 설정된 세션, 내장 `agents-md` 플러그인을 끈 세션이다.
+- 일부 세션은 `AGENTS.md`를 아예 읽을 수 없다. v2.1.277 이전 버전, `/plugin`으로 내장 리더 플러그인을 끈 세션, 그리고 v2.1.276 이하에서 업그레이드한 직후의 첫 세션인 경우가 그렇다. 프로바이더·telemetry 관련 조건은 과거 사실이다. "Before v2.1.281, some sessions, such as those on Amazon Bedrock or with telemetry disabled, read CLAUDE.md files only. On those versions, update Claude Code."
 
 그런 경우를 위한 문서화된 대체 경로는 import이며, 두 파일을 함께 두는 저장소는 여전히 둘이 갈라질 위험을 진다. 두 실패 모드 모두 전략을 의식적으로 고르는 것보다 나쁘다. 전체 동작은 [`discovery-and-precedence.ko.md`](discovery-and-precedence.ko.md) §2에 있다.
 
@@ -35,9 +35,9 @@ E는 유지보수 부채다. 모든 공유 규칙이 두 집을 갖게 되고, �
 
 ### 이 저장소
 
-`hypercore`는 **D**를 쓴다. `CLAUDE.md`는 `@AGENTS.md`로 시작하는 얇은 adapter이며, 정본 계약은 그 import를 통해 로드되고 그 아래에 Claude 전용 규칙만 덧붙인다. 이 선택의 상충은 의도적이며 이해할 가치가 있다. import는 계약 로드를 보장하지만 매 세션 비용을 내고, 산문 포인터는 앞단 비용이 없지만 조언에 그쳐 에이전트가 정본 파일을 읽지 않고 진행할 수 있다.
+`hypercore`는 현재 **A**다. `AGENTS.md`가 추적되고 `CLAUDE.md`는 없다(gitignore 대상이며 2026-11-03 기준 부재). 그래서 Claude Code는 정본 파일을 자체적으로 읽고, 나란히 유지할 사본이 없다.
 
-두 번째 차이가 더 중요하다. `AGENTS.md`는 version-controlled이고 `CLAUDE.md`는 gitignore 대상이므로, `CLAUDE.md`는 공유 산출물이 아니라 *로컬 clone adapter*다. 그래서 "공유 계약은 `AGENTS.md`에 정본으로 남는다"는 규칙이 단순한 스타일 문제가 아니다. `CLAUDE.md`에만 쓴 내용은 다른 사람에게 존재하지 않으며 리뷰될 수도 없다.
+실제로 Claude 전용 규칙이 생기면 선택지는 **D**이지 E가 아니다. `@AGENTS.md`로 시작하고 그 import 아래에 그 규칙만 덧붙이는 `CLAUDE.md`다. 선택을 규정하는 사실은 둘이다. import는 계약 로드를 보장하지만 매 세션 비용을 내고, 산문 포인터는 앞단 비용이 없지만 조언에 그쳐 에이전트가 정본 파일을 읽지 않고 진행할 수 있다. 그리고 이 저장소에서 `CLAUDE.md`는 gitignore 대상이고 `AGENTS.md`는 version-controlled이므로, `CLAUDE.md`는 공유 산출물이 아니라 *로컬 clone adapter*가 된다. 그래서 "공유 계약은 `AGENTS.md`에 정본으로 남는다"는 규칙은 스타일 선호가 아니라 정확성 규칙이다. `CLAUDE.md`에만 쓴 내용은 다른 사람에게 존재하지 않으며 리뷰될 수도 없다.
 
 ---
 
@@ -89,9 +89,9 @@ adapter는 그보다 훨씬 작아야 한다. 보통 stub 하나에 짧은 런�
 
 Anthropic이 밝힌 성장 시 탈출구는 더 긴 파일이 아니다:
 
-> "Keep CLAUDE.md under 200 lines. Move reference material to skills, which load on-demand."
+> "Keep CLAUDE.md under 200 lines. Move reference material to skills, which load on demand."
 
-또한 200줄은 절단이 아니라 권고다. `CLAUDE.md`는 "are loaded in full regardless of length". 초과해도 내용이 눈에 띄게 잘리는 것이 아니라 준수율이 조용히 떨어지며, 그래서 아무 경고도 뜨지 않는다.
+200줄은 절단 기준이 아니라 권고다. 실제 한도는 훨씬 높고 이분법적이다. 시작 시 로드되는 파일은 "as long as the file is 4 MiB or smaller"이면 전부 읽히고, "Claude Code skips a file over 4 MiB and loads none of it"이다. 따라서 200줄을 넘기면 내용이 눈에 띄게 잘리는 것이 아니라 준수율이 조용히 떨어지며, 그래서 아무 경고도 뜨지 않는다. 체크인된 파일이라면 `/doctor`가 줄일 곳을 제안한다.
 
 ---
 
@@ -124,11 +124,11 @@ Anthropic이 밝힌 성장 시 탈출구는 더 긴 파일이 아니다:
 
 | 출처 | URL | 확인일 |
 |---|---|---|
-| Claude Code memory | <https://code.claude.com/docs/en/memory> | 확인 2026-09-19 |
-| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 확인 2026-09-19 |
-| Claude 5 context engineering | <https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models> | 확인 2026-09-19 |
-| AGENTS.md 표준 | <https://agents.md/> | 확인 2026-09-19 |
-| GitHub Copilot response customization | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 확인 2026-09-19 |
+| Claude Code memory | <https://code.claude.com/docs/en/memory> | 확인 2026-11-03 |
+| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 확인 2026-11-03 |
+| Claude 5 context engineering | <https://claude.dev/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models/> | 확인 2026-11-03 |
+| AGENTS.md 표준 | <https://agents.md/> | 확인 2026-11-03 |
+| GitHub Copilot custom instructions | <https://docs.github.com/en/copilot/concepts/prompting-and-context/custom-instructions> | 확인 2026-11-03 |
 
 ## 함께 읽을 문서
 

@@ -1,9 +1,17 @@
 # Hermes Agent Skill Authoring
 
-> Korean: [SKILL_AUTHORING.ko.md](SKILL_AUTHORING.ko.md) · Skills use and lifecycle: [SKILLS.md](SKILLS.md) · Research date: **2026-08-20**
-> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
+> Korean: [SKILL_AUTHORING.ko.md](SKILL_AUTHORING.ko.md) · Skills use and lifecycle: [SKILLS.md](SKILLS.md) · Curator detail: [references/curator-lifecycle.md](references/curator-lifecycle.md) · Research date: **2026-11-03**
 
-This companion covers authoring, structure, validation, and publication. **Verified** statements are drawn from the official [Skills guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills), [Creating Skills guide](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills), and [NousResearch/hermes-agent source](https://github.com/NousResearch/hermes-agent). **Recommendation** marks guidance rather than an upstream contract.
+This companion covers authoring, structure, validation, and publication. **Verified** statements are drawn from the official [Skills guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills), [Creating Skills guide](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills), and [NousResearch/hermes-agent source](https://github.com/NousResearch/hermes-agent), anchored to Hermes Agent **v0.22.5** (commit `bf0203a794a`, released 2026-10-22). **Recommendation** marks guidance rather than an upstream contract.
+
+## Sources
+
+| Source | What it supplies | Checked |
+| --- | --- | --- |
+| [Creating Skills](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills) | Frontmatter fields, credential files, template tokens, inline shell, blueprints, publishing | checked 2026-11-03 |
+| [Skills System](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) | `/learn` standards, media delivery, tap layout, bundles | checked 2026-11-03 |
+| [Curator](https://hermes-agent.nousresearch.com/docs/user-guide/features/curator) | What happens to an authored skill after it is created | checked 2026-11-03 |
+| [Agent Skills specification](https://agentskills.io/specification) | The portable contract the frontmatter extends | checked 2026-11-03 |
 
 ## Canonical layout and frontmatter
 
@@ -71,7 +79,7 @@ metadata:
 
 `requires_toolsets`/`requires_tools` hide the skill if **any** required capability is unavailable. `fallback_for_toolsets`/`fallback_for_tools` hide it if **any** named capability is available. Use `requires_*` for workflows that genuinely need a capability and `fallback_for_*` for an alternative that should appear only when the primary capability is absent.
 
-`required_environment_variables` entries accept `name` (required), `prompt`, `help`, and `required_for`. Missing variables do not hide discovery. Local CLI setup is requested only when loading; messaging surfaces direct users to local `hermes setup` or `~/.hermes/.env`. Set declared variables are passed into `terminal` and `execute_code` sandboxes without exposing their raw values to the model. Use `metadata.hermes.config` for non-secret preferences: values live at `skills.config` in `config.yaml`, are prompted by `hermes config migrate`, displayed by `hermes config show`, and injected when the skill loads. Use `required_credential_files` for file credentials relative to `~/.hermes/`; existing files are mounted/synced to supported remote sandboxes.
+`required_environment_variables` entries accept `name` (required), `prompt`, `help`, and `required_for`. Missing variables do not hide discovery. Local CLI setup is requested only when loading; messaging surfaces direct users to local `hermes setup` or `~/.hermes/.env`. Set declared variables are passed into `terminal` and `execute_code` sandboxes without exposing their raw values to the model. Use `metadata.hermes.config` for non-secret preferences: values live at `skills.config` in `config.yaml`, are prompted by `hermes config migrate`, displayed by `hermes config show`, and injected when the skill loads. Use `required_credential_files` for file credentials relative to `~/.hermes/`. Each entry takes `path` and an optional `description`; a missing file raises `setup_needed`, and an existing one is mounted read-only into Docker, synced into Modal at creation and before each command, and needs no handling on the local backend. Use `required_environment_variables` for string keys and `required_credential_files` for OAuth token files, client secrets, service-account JSON, and certificates.
 
 A `metadata.hermes.blueprint` marks a runnable automation suggestion. Installing it does **not** schedule anything; users explicitly accept or dismiss it through `/suggestions`.
 
@@ -82,7 +90,19 @@ Template variables in the body are substituted by default:
 | `${HERMES_SKILL_DIR}` | absolute skill directory |
 | `${HERMES_SESSION_ID}` | active session ID, or left unchanged without a session |
 
-Set `skills.template_vars: false` to disable this substitution. Inline shell ``!`command` `` is disabled by default; enabling `skills.inline_shell: true` executes it on the host while loading a skill. Output is capped and failures are marked, but this is still host command execution.
+Set `skills.template_vars: false` to disable this substitution.
+
+Inline shell snippets (``!`cmd` ``) are **off** by default because any snippet in a `SKILL.md` runs on the host without approval. Enabling them executes each snippet with the skill directory as its working directory, caps stdout at 4,000 characters, and marks a timeout or non-zero exit with a short `[inline-shell error: …]` marker instead of breaking the load:
+
+```yaml
+skills:
+  inline_shell: true
+  inline_shell_timeout: 10   # seconds per snippet
+```
+
+**Fact — trust scoping:** community hub installs never auto-execute snippets even with the flag on. The hub's install scan blocks a community skill carrying this DSL on a caution or dangerous verdict, a `--force` install does not re-arm what the gate refused, and a skills tree whose `.hub/lock.json` is unreadable expands nothing until it is repaired. Bundled, trusted, and your own skills expand as before.
+
+**Fact — media delivery:** when a response contains a bare absolute path to a media file, the gateway strips the path and delivers the file natively; `[[audio_as_voice]]` promotes audio to a voice bubble. Emit `[[as_document]]` (usually as the last line) to deliver every media path in that response as an intact file attachment rather than a recompressed preview, which matters for screenshots and charts with small text. The directive is stripped before delivery and applies to the whole response.
 
 **Recommendation:** Use `required_environment_variables` only for secrets and `config` only for non-secret settings. Do not enable inline shell for community content. Prefer scripts with explicit inputs to dynamic shell interpolation.
 
@@ -175,6 +195,7 @@ This example intentionally has no token, inline shell, or publish operation. In 
 6. Declare secret and non-secret setup separately; never embed values in frontmatter, examples, or scripts.
 7. Invoke it with a harmless representative prompt, inspect actual tool use and output, then test missing configuration, incompatible platform, and unavailable required toolset.
 8. Review every support file as code and publish only the files the `SKILL.md` references.
+9. Decide its maintenance posture before you rely on it in a routine: pin or lock it if the curator or the agent must not archive or rewrite it, and remember the curator only manages skills the background review created, so a hand-written or `/learn` skill is already out of its reach.
 
 ## Publishing a skill tap (verified)
 

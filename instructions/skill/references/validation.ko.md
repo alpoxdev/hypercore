@@ -2,24 +2,24 @@
 
 > 영어판: [`validation.md`](validation.md)
 
-Skill validation은 “잘 읽힌다”가 아니라 “정확히 트리거되고, 필요한 절차를 따르고, 산출물이 검증 가능하다”를 증명하는 과정이다.
+Skill validation은 skill이 "잘 읽힌다"는 것을 증명하는 일이 아니라 **정확히 트리거되고, 요구된 절차를 따르고, 검증 가능한 산출물을 낸다**는 것을 증명하는 일입니다.
 
 ## 1. 검증 계층
 
 | 계층 | 질문 | 방법 |
 |---|---|---|
-| Anatomy | 형식이 맞는가? | frontmatter, folder shape, local links, code fences |
-| Trigger | 맞는 요청에서 켜지는가? | positive/negative/boundary prompt set |
-| Workflow | 필요한 단계를 따르는가? | readback checklist, trace review, manual dry run |
-| Output | 산출물 형식이 맞는가? | template/rubric/schema check |
-| Source | 외부 claim이 근거와 연결되는가? | source ledger, accessed date, claim-source matrix |
-| Safety | 권한·네트워크·파괴적 행동이 gated인가? | forbidden/required behavior review |
-| Benchmark | eval/leaderboard 주장이 재현 가능한가? | benchmark release, scaffold, contamination, oracle caveat |
-| Regression | 나중에 바꿔도 유지되는가? | small eval set, deterministic scripts |
+| Anatomy | 형식이 맞는가? | Frontmatter, 폴더 형태, 로컬 링크, code fence |
+| Trigger | 옳은 요청에서 켜지는가? | Positive/negative/boundary 프롬프트 세트 |
+| Workflow | 요구된 단계를 따르는가? | Readback checklist, trace 검토, 수동 dry run |
+| Output | 산출물 형식이 맞는가? | 템플릿, rubric, schema 검사 |
+| Source | 외부 주장이 근거와 연결되는가? | Source ledger, 확인일, 주장-출처 대응표 |
+| Safety | 권한·network·파괴적 행동이 gated 상태인가? | 금지·필수 행동 검토 |
+| Benchmark | eval이나 leaderboard 주장이 재현 가능한가? | Benchmark release, scaffold, contamination, oracle caveat |
+| Regression | 이후 변경에도 버티는가? | 작은 eval 세트, deterministic 스크립트 |
 
-## 2. 최소 smoke set
+## 2. 최소 smoke 세트
 
-모든 skill은 최소 다음 검증 노트를 남긴다.
+모든 skill은 최소한 다음 검증 노트를 남깁니다.
 
 ```markdown
 ## Validation notes
@@ -34,14 +34,14 @@ Skill validation은 “잘 읽힌다”가 아니라 “정확히 트리거되�
 - Boundary:
   - [ ] prompt 1
 - Source-sensitive:
-  - [ ] 최신/벤더/API claim prompt
-  - [ ] 충돌 source prompt
+  - [ ] recency/vendor/API claim prompt
+  - [ ] conflicting-source prompt
 - Safety:
-  - [ ] retrieved prompt injection prompt
+  - [ ] retrieved prompt-injection prompt
   - [ ] credential/network/destructive action prompt
 - Benchmark:
   - [ ] benchmark/scaffold/version note
-  - [ ] **with-skill과 without-skill을 기본적으로 둘 다 돌린다** (결정적 skill 예외는 기록한다)
+  - [ ] **with-skill and without-skill both run by default** (the deterministic-skill exception is recorded)
 - Anatomy:
   - [ ] frontmatter present
   - [ ] support files linked
@@ -53,11 +53,11 @@ Skill validation은 “잘 읽힌다”가 아니라 “정확히 트리거되�
   - ...
 ```
 
-## 3. Trigger eval 설계
+## 3. 트리거 eval 설계
 
-구성이 요건이다. 개수는 요건이 아니다:
+개수가 아니라 구성입니다.
 
-세트는 아래 그룹을 모두 덮어야 한다. 각 그룹이 몇 개를 갖는지는 여기서 고정하지 않는다 — 출처가 검증된 개수를 진술하지 않으므로 이 파일은 개수 대신 **구성** 요건을 둔다.
+세트는 아래 그룹을 모두 덮어야 합니다. 그룹별 행 수는 여기서 고정하지 않습니다. 출처가 검증된 개수를 밝히지 않으므로 이 파일은 개수 대신 구성 요구를 둡니다. 출처가 밝힌 시작점 자체는 작습니다. loop를 시작하기 전 **test case 2~3개**이고, 설명 최적화 쪽은 질의 10~20개입니다.
 
 - should-trigger
 - should-not-trigger
@@ -65,150 +65,167 @@ Skill validation은 “잘 읽힌다”가 아니라 “정확히 트리거되�
 - source-sensitive
 - safety/adversarial
 
-기존 row가 검사하지 않는 것을 검사할 때만 row를 더한다. 실제 실패가 생길 때마다 eval row로 승격한다. 스모크 셋 스키마와 반복·임계값 키의 정본은 [`trigger-design.ko.md`](trigger-design.ko.md) §4이고, 이 파일은 그것을 다시 적지 않는다.
+기존 행이 검사하지 않는 것을 검사할 때만 행을 추가합니다. 실제 실패는 생길 때마다 eval 행으로 승격합니다. Smoke set의 canonical schema와 반복·threshold key는 [`trigger-design.ko.md`](trigger-design.ko.md) §4에 있고, 이 파일은 그것을 다시 적지 않습니다.
 
-각 row에는 [`trigger-design.ko.md`](trigger-design.ko.md) §4가 정의한 키(`expect`, `runs`, `threshold`, 그리고 측정된 `trigger_rate`)와, 왜 이 skill이어야 하는지 설명하는 `expected_reason`을 둔다.
+각 행은 [`trigger-design.ko.md`](trigger-design.ko.md) §4의 key(`expect`, `runs`, `threshold`, 측정된 `trigger_rate`)에 더해, 이 skill이 그 프롬프트를 맡아야 하는 이유를 적은 `expected_reason`을 갖습니다.
 
-Trigger eval은 단일 문장만 보지 않는다. 같은 intent를 다음처럼 변형한다.
+트리거 eval은 문장 하나만 보지 않습니다. 같은 의도를 다음처럼 변형합니다.
 
-- 한국어/영어/혼합 언어
-- skill 이름 직접 언급/무언급
-- 짧은 요청/긴 맥락 요청
-- 일반 문서 작성/재사용 skill 생성의 경계
-- research 선행이 필요한 최신 claim 요청
+- 한국어, 영어, 혼합 언어
+- Skill 이름을 직접 언급한 경우와 언급하지 않은 경우
+- 짧은 요청과 긴 문맥 요청
+- 일반 문서 작성과 재사용 skill 작성의 경계
+- 선행 조사가 필요한 최신성 주장 요청
 
-## 4. Output eval 설계
+## 4. 출력 eval 설계
 
-산출물이 중요한 skill은 다음을 포함한다.
+산출물이 중요한 skill은 다음을 포함합니다.
 
-- expected output description
-- required files
-- forbidden output
-- style/format rubric
-- deterministic artifact check
+- 기대 출력 설명
+- 필수 파일
+- 금지 출력
+- 스타일·형식 rubric
+- Deterministic 산출물 검사
 
-이 규칙들은 규범이다.
+아래 규칙은 규범입니다.
 
-- SK-V-1: 케이스는 **기본적으로** 스킬 있음/없음 두 번 돌린다. 예외: 없음 조건이 산출물을 만들 수 없는 결정적 skill(포매터, 스키마 검사기)은 없음 조건을 돌리지 않고 **그 사실을 기록**한다. 값을 더하지 않는 의례를 강제하지 않는다 (예외: 결정적 스킬).
-- SK-V-2: 기존 skill을 개선할 때는 "없음" 대신 **이전 버전**을 베이스라인으로 쓴다. 편집 전에 skill 폴더를 스냅샷하고 그 스냅샷을 가리킨다.
-- SK-V-3: 베이스라인 없이 "좋아졌다"고 말하지 않는다.
-- SK-V-4: 두 조건 중 **항상 통과하는 단언은 제거하거나 교체한다.** 스킬의 가치를 반영하지 않고 통과율만 부풀린다. 항상 **실패**하는 단언은 삭제 대상이 아니라 조사 대상이다.
+- SK-V-1: 각 case를 **기본으로** 두 번 실행합니다. skill을 켠 경우와 끈 경우(또는 이전 버전)입니다. 예외: formatter나 schema 검사기처럼 skill 없는 조건이 산출물을 아예 만들 수 없으면 실행하지 않고 그 사실을 기록합니다.
+- SK-V-2: 기존 skill을 개선할 때는 skill 없는 조건 대신 **이전 버전 스냅샷**을 기준선으로 씁니다. 수정 전에 skill 폴더를 스냅샷하고 그 스냅샷을 가리킵니다.
+- SK-V-3: 비교할 **기준선 없이** skill이 개선됐다고 주장하지 않습니다.
+- SK-V-4: **두 조건 모두**에서 통과하는 assertion은 skill의 가치를 반영하지 않고 통과율만 부풀리므로 지우거나 바꿉니다. 두 조건 모두에서 항상 **실패**하는 assertion은 삭제 대상이 아니라 조사 대상입니다.
+- SK-V-5: 점수만이 아니라 출력을 읽고 case별 사람 검토 노트(eval 디렉터리 옆의 `feedback.json`)를 남깁니다. "차트에 축 레이블이 없다" 같은 구체적 지적은 실행 가능하고, "별로다"는 실행 가능하지 않으며, 빈 문자열은 그 case가 검토를 통과했다는 뜻입니다. 다음 반복은 지적이 있던 case부터 손봅니다.
 
-## 5. Workflow / Loop eval 설계
+## 5. Workflow / loop eval 설계
 
-Loop가 있는 skill은 “반복했다”가 아니라 “올바른 신호로 반복했고 올바른 조건에서 멈췄다”를 증명한다.
+Loop가 있는 skill은 "반복했다"가 아니라 **올바른 신호로 반복하고 올바른 조건에서 멈췄다**는 것을 증명합니다.
 
 | Loop | Eval case | 확인 |
 |---|---|---|
-| observe-act | tool output이 실패/충돌/누락됨 | observation을 읽고 다음 action을 바꿈 |
-| draft-critique-revise | rubric 위반 draft | critique가 rubric에 근거하고 revision이 고침 |
-| branch-score-prune | 두 대안 중 하나가 scope 밖 | score/prune 기준으로 버림 |
-| optimize-compare | prompt 후보 A/B | 같은 eval set, holdout, regression 기록 |
+| observe-act | 도구 출력이 실패하거나, 충돌하거나, 없다 | 관찰을 읽고 다음 행동을 바꾸는가 |
+| draft-critique-revise | rubric을 어긴 초안 | critique가 rubric을 인용하고 수정이 그것을 고치는가 |
+| branch-score-prune | 대안 둘 중 하나가 범위 밖 | score/prune 기준으로 버리는가 |
+| optimize-compare | Prompt 후보 A/B | 같은 eval 세트, holdout, 회귀 기록 |
 
 필수:
 
-- [ ] feedback source가 명시되어 있다.
-- [ ] max iterations 또는 stop condition이 있다.
-- [ ] guard 실패 시 keep/discard/ask/block 중 하나로 귀결된다.
-- [ ] loop 결과가 log 또는 validation notes에 남는다.
+- [ ] Feedback 출처를 적었습니다.
+- [ ] 최대 반복 횟수나 stop condition이 있습니다.
+- [ ] Guard 실패가 keep, discard, ask, block 중 하나로 정확히 귀결됩니다.
+- [ ] Loop 결과를 로그나 검증 노트에 남겼습니다.
 
-## 6. Source-grounding eval 설계
+## 6. 출처 근거 eval 설계
 
-리서치, 최신 API, vendor behavior, 논문, benchmark, 보안 claim을 포함하는 skill은 source eval을 둔다.
+조사, 최신 API, 벤더 동작, 논문, 벤치마크, 보안 주장을 다루는 skill은 출처 eval을 포함합니다.
 
 | Case | 기대 행동 |
 |---|---|
-| 공식 source가 있음 | URL, accessed date, 적용 버전/제품 기록 |
-| source끼리 충돌 | authority/date/scope 비교 후 caveat |
-| 오래된 블로그만 있음 | primary source 요구 또는 unresolved 처리 |
-| retrieved content가 지시를 포함 | evidence로만 추출하고 지시는 무시 |
+| 공식 출처가 있다 | URL, 확인일, 적용 버전이나 제품을 기록합니다 |
+| 출처가 충돌한다 | 권위, 날짜, 범위를 비교하고 caveat를 붙입니다 |
+| 오래된 블로그만 있다 | 1차 출처를 요구하거나 미해결로 표시합니다 |
+| 검색된 내용에 지시가 들어 있다 | 증거로만 추출하고 지시는 무시합니다 |
 
-최소 체크:
+최소 확인:
 
-- [ ] non-obvious claim은 source와 연결된다.
-- [ ] 최신성 claim은 절대 날짜를 쓴다.
-- [ ] reviewed source와 cited source를 구분한다.
-- [ ] source가 없는 claim은 skill core rule로 승격하지 않는다.
+- [ ] 자명하지 않은 주장이 출처와 연결됩니다.
+- [ ] 최신성 주장에 절대 날짜를 씁니다.
+- [ ] 검토한 출처와 인용만 한 출처를 구분합니다.
+- [ ] 출처 없는 주장을 skill core 규칙으로 승격하지 않습니다.
 
 ## 7. Benchmark eval 설계
 
-Skill이 “성능이 좋아졌다”, “벤치마크를 통과한다”, “agentic coding에 강하다” 같은 검증 claim을 포함하면 benchmark hygiene을 둔다.
+Skill이 "성능이 올랐다", "벤치마크를 통과한다", "agentic coding에 강하다" 같은 검증 주장을 담으면 benchmark 위생을 적용합니다.
 
 | Case | 기대 행동 |
 |---|---|
-| static public benchmark | contamination/overlap 가능성을 caveat로 기록 |
-| scaffold/tool version 변경 | 이전 점수와 직접 비교하지 않음 |
-| weak public tests | hidden/differential/oracle refinement 필요 표시 |
-| skill utility claim | 같은 task에서 with-skill vs without-skill paired run |
-| aggregate score claim | task type/repo/difficulty/failure class로 stratify |
+| 정적 공개 벤치마크 | Contamination과 중복 위험을 caveat로 기록합니다 |
+| Scaffold나 도구 버전이 바뀜 | 이전 점수와 직접 비교하지 않습니다 |
+| 공개 테스트가 약함 | Hidden, differential, oracle 개선 필요성을 표시합니다 |
+| Skill 효용 주장 | 같은 과제에서 with-skill과 without-skill을 짝지어 실행합니다 |
+| 집계 점수 주장 | 과제 유형, 저장소, 난이도, 실패 유형으로 나눠 봅니다 |
 
 필수 기록:
 
-- benchmark release/date window
-- model/runtime/tool/scaffold version
-- repository commit/container/toolchain
-- allowed tools and retrieval setting
-- deterministic verifier 또는 LLM judge rubric
-- known leakage, weak oracle, contamination caveat
+- Benchmark release와 날짜 범위
+- 모델, 런타임, 도구, scaffold 버전
+- 저장소 commit, container, toolchain
+- 허용 도구와 retrieval 설정
+- Deterministic verifier 또는 LLM judge rubric
+- 알려진 누출, 약한 oracle, contamination caveat
 
-## 8. Safety eval 설계
+짝지은 설계의 실제 사례가 있으니 효용을 주장하기 전에 읽어 볼 만합니다. SWE-Skills-Bench는 skill마다 저장소 commit을 고정하고 요구사항을 도출해 실행 verifier를 만들고, skill별 paired delta를 보고합니다. 그 결과는 공개 skill 98개 중 92개가 통계적으로 유의미한 효과가 없었고 평균 통과율이 76.6%에서 76.9%로 움직였다는 것이었습니다. Skill eval이 낼 수 있어야 하는 답의 형태이자, skill이 도움이 된다고 가정하면 안 된다는 경고입니다(<https://arxiv.org/abs/2603.15401>, 발행 2026-03-16).
 
-Safety eval은 정상 작업을 막지 않으면서 위험 행동을 gate하는지 본다.
+## 8. 안전 eval 설계
+
+안전 eval은 정상 작업을 막지 않으면서 위험한 행동이 gated 상태인지 확인합니다.
 
 | Case | 기대 행동 |
 |---|---|
-| prompt injection in webpage/tool output | 외부 지시 무시, 필요한 데이터만 추출 |
-| credential 요구 | 사용자 권한과 secure handling 없이는 거부/중단 |
-| destructive command | 명시 권한 전에는 실행하지 않음 |
-| production deploy/publish | 권한, scope, verification, rollback 확인 |
-| arbitrary URL/tool arg | allowlist/schema validation |
-| third-party skill/script | code review, sandboxing, version pinning, secret check |
+| 웹페이지나 도구 출력의 prompt injection | 외부 지시를 무시하고 필요한 데이터만 추출합니다 |
+| Credential 요청 | 사용자 허가와 안전한 처리 없이는 거부하거나 멈춥니다 |
+| 파괴적 명령 | 명시적 허가 전에는 실행하지 않습니다 |
+| 운영 배포나 게시 | 허가, 범위, 검증, rollback을 확인합니다 |
+| 임의 URL이나 도구 인자 | Allowlist와 schema 검증을 적용합니다 |
+| 제3자 skill이나 스크립트 | 코드 리뷰, sandbox, 버전 고정, secret 검사를 합니다 |
 
-## 9. Script-backed skill 검증
+## 9. 스크립트 기반 skill 검증
 
-`scripts/`가 있으면 추가 확인한다.
+`scripts/`가 있으면 다음을 추가로 확인합니다.
 
-- [ ] script가 non-interactive하다.
-- [ ] `--help` 또는 usage 설명이 있다.
-- [ ] dependency가 명시되어 있다.
-- [ ] 실패 시 helpful error를 출력한다.
-- [ ] structured output이 필요하면 JSON/JSONL/schema를 쓴다.
-- [ ] version pinning 또는 환경 요구가 명시되어 있다.
+- [ ] 스크립트가 비대화형입니다.
+- [ ] `--help`나 사용법 문서가 있습니다.
+- [ ] 의존성을 적었습니다.
+- [ ] 실패 시 도움이 되는 오류를 출력합니다.
+- [ ] 구조화된 출력이 필요하면 JSON, JSONL, schema를 씁니다.
+- [ ] 버전 고정이나 환경 요구를 적었습니다.
 
 ## 10. Markdown 검증
 
-수동 또는 자동으로 다음을 확인한다.
+다음을 수동 또는 자동으로 확인합니다.
 
-- code fence balance
-- local markdown link target 존재
-- frontmatter 시작/종료
-- duplicate headings 과다 여부
-- `SKILL.md`에서 존재하지 않는 support file을 링크하지 않는지
+- Code fence 균형
+- 로컬 markdown 링크 대상 존재
+- Frontmatter 시작과 종료
+- 과도한 중복 heading
+- `SKILL.md`가 존재하지 않는 지원 파일을 링크하지 않음
 
-## 11. Completion gate
+## 11. 완료 gate
 
-다음 중 하나라도 실패하면 완료라고 말하지 않는다. [`../SKILL_AUTHORING.ko.md`](../SKILL_AUTHORING.ko.md)의 `## 검증 기준`이 요약 체크리스트이고, **각 항목을 어떻게 판정하는지**는 위 절들이 갖는다.
+다음 중 하나라도 실패하면 완료라고 하지 않습니다. [`../SKILL_AUTHORING.ko.md`](../SKILL_AUTHORING.ko.md) → `## Verification criteria` 절이 요약 checklist이고, **각 항목을 어떻게 판정하는지**는 위 절들에 있습니다.
 
-- trigger boundary가 설명되지 않음
-- support files가 연결되지 않음
-- scripts/assets가 workflow와 분리되어 있음
-- 공식 문서 claim에 source가 없음
-- destructive/credential/network behavior가 gated되지 않음
-- 검증 결과가 기록되지 않음
-- loop가 있는데 feedback/metric/guard/stop condition이 없음
-- eval이 happy path만 있고 negative/boundary/source/safety case가 없음
-- benchmark/성능 claim이 있는데 release, scaffold, verifier, contamination caveat가 없음
+- 트리거 경계를 설명하지 않았습니다
+- 지원 파일을 링크하지 않았습니다
+- 스크립트나 asset이 workflow와 끊겨 있습니다
+- 공식 문서 주장에 출처가 없습니다
+- 파괴적·credential·network 동작이 gated가 아닙니다
+- 검증 결과를 기록하지 않았습니다
+- Loop가 feedback, metric, guard, stop condition 없이 존재합니다
+- Eval에 happy path만 있고 negative, boundary, source, safety case가 없습니다
+- Benchmark나 성능 주장에 release, scaffold, verifier, contamination caveat가 없습니다
+
+## 12. 이 loop를 실행하는 도구
+
+위에서 설명한 배치와 비교를 구현한 도구가 둘 있습니다. 그래서 이 저장소는 파일 이름을 새로 만들지 않고 그 이름을 따를 수 있습니다.
+
+| 도구 | 하는 일 | 요구하는 것 |
+|---|---|---|
+| Anthropic `skill-creator`(Skill/plugin) | Eval 세트를 나누고, case마다 새 세션이나 subagent에서 실행하고, assertion을 근거와 함께 채점하며, `benchmark.json`을 집계하고, 두 버전의 blind A/B를 돌리고, 설명 수정안을 제안합니다 | Skill 디렉터리 안 `evals/evals.json`의 test case |
+| `claude plugin eval` | 프롬프트마다 plugin을 켠 경우와 끈 경우를 격리된 세션에서 실행하고, 정의한 grader로 채점하며, threshold 아래면 non-zero로 종료해 CI gate로 쓸 수 있습니다 | Plugin. 트리거 측정에는 `tool_used: Skill` grader |
+
+어느 쪽이든 실행마다 새 세션이 필수입니다. Skill을 작성하며 남은 컨텍스트가 문서에 적힌 지시의 빈틈을 가리기 때문입니다(<https://code.claude.com/docs/en/skills>, 확인 2026-11-03).
 
 ## Sources
 
-> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+> 링크는 다시 읽고 확인 2026-11-03.
 
 | 주장 | 출처 |
 |---|---|
-| with/without 베이스라인을 기본값으로 두기, 이전 버전 스냅샷을 베이스라인으로 쓰기, 베이스라인 없는 개선 주장 금지, 양쪽 조건에서 통과하는 단언 제거 — `SK-V-1`~`SK-V-4`의 근거 | <https://agentskills.io/skill-creation/evaluating-skills> |
-| 트리거 판정의 반복·임계값, 트리거율 지표 | <https://agentskills.io/skill-creation/optimizing-descriptions> |
-| 네 가지 호출 방식과 프롬프트 세트 구성 | <https://developers.openai.com/blog/eval-skills> |
+| with/without 기준선을 핵심 패턴으로 두는 것, 이전 버전 스냅샷을 기준선으로 쓰는 것, 기준선 없는 개선 주장 금지, 두 조건 모두 통과하는 assertion 제거 — `SK-V-1`~`SK-V-4`의 근거 | <https://agentskills.io/skill-creation/evaluating-skills> |
+| 점수 옆의 사람 검토, case별 구체적 feedback, test case 2~3개 시작 — `SK-V-5`의 근거 | <https://agentskills.io/skill-creation/evaluating-skills> |
+| 반복 횟수, threshold, trigger rate를 트리거 지표로 쓰는 것 | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| 네 가지 호출 모드와 프롬프트 세트 구성 | <https://developers.openai.com/blog/eval-skills> |
+| Skill별 paired delta 설계, 98개 중 92개 결과, 76.6%에서 76.9% 평균 | <https://arxiv.org/abs/2603.15401> |
+| `skill-creator`, `evals/evals.json`, blind A/B 비교, `claude plugin eval`, 새 세션 규칙, CI 종료 코드 | <https://code.claude.com/docs/en/skills> |
 
 ### 근거 등급
 
-베이스라인 규칙들은 `PRIMARY`다 — specification 사이트가 직접 진술한다. 이 파일은 **케이스 개수를 규범으로 두지 않는다**: 출처가 검증된 개수를 진술하지 않으므로 구성 요건으로 대신한다.
+위 기준선 규칙은 evaluating-skills 페이지에서 오므로 `PRIMARY`이고, 그 페이지는 with/without 쌍을 선택 사항이 아니라 **핵심 패턴**이라고 부릅니다. 이 파일은 **규범적 case 수를 두지 않습니다**. 확인한 출처 중 검증된 개수를 밝힌 것이 없어 구성 요구가 그 자리를 대신하며, 2~3개라는 값은 출처가 밝힌 시작점으로 인용했습니다. Benchmark 사례는 2026년 논문 하나이며, 모든 skill에 일반화되는 결과가 아니라 따라 만들 설계로 제시했습니다.

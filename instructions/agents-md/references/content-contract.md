@@ -19,11 +19,13 @@ Every candidate line must pass all four gates. One failure means it does not bel
 | **Durable** | Will it still be true next month? | Sprint notes, current ticket, in-flight migration state |
 | **Advisory-appropriate** | Is prose the right enforcement mechanism? | Anything that must happen *every* time — that is a hook, CI check, lint rule, or schema |
 
-Anthropic states the second gate as a deletion test:
+Anthropic states the second gate as an admission rule plus a pruning rule:
 
-> "For each line, ask: 'Would removing this cause Claude to make mistakes?' If not, cut it."
+> "Add to it when: Claude makes the same mistake a second time"
 
-Apply it destructively. The default outcome of the test is deletion.
+> "the file works best when it only holds what Claude couldn't work out from the code itself"
+
+Apply it destructively. The default outcome of the test is deletion, and the current docs even automate the judgment: "`/doctor` suggests cuts for anything Claude can already work out from the code."
 
 ---
 
@@ -31,12 +33,12 @@ Apply it destructively. The default outcome of the test is deletion.
 
 Ordered roughly by value per token.
 
-1. **Gotchas and non-obvious constraints** — the things that burned a human. This is the single highest-value category, and current Anthropic guidance says most of the file's content should be spent here.
+1. **Gotchas and non-obvious constraints** — the things that burned a human. This is the single highest-value category, and Anthropic's own guidance says so: "spend most of the tokens on gotchas inside of the codebase".
 2. **Verified commands** — install, dev, test, lint, typecheck, build. Exact, copy-pasteable, with the working directory stated. Never a command you did not run.
 3. **Project-specific conventions that differ from defaults** — if it matches the framework default, it is noise.
 4. **Architecture and boundaries the code does not announce** — module ownership, what may not import what, generated paths that must not be hand-edited.
 5. **Testing and verification requirements** — which runner, what must pass before a change is considered done.
-6. **Security and safety constraints** — credential handling, network boundaries, destructive/production gates. Agents cannot infer these and will guess. Descriptive study data shows only ~14.5% of real files include security content, which makes this the most common dangerous omission.
+6. **Security and safety constraints** — credential handling, network boundaries, destructive/production gates. Agents cannot infer these and will guess. Descriptive study data shows only ~14.8% of real files include security content, which makes this the most common dangerous omission.
 7. **A brief statement of project purpose** — one paragraph, enough to orient. Not a README.
 8. **A loading map** — links to deeper local docs instead of inlining them.
 
@@ -104,7 +106,7 @@ The test for correct altitude: **a competent new contributor could act on it wit
 
 ## 6. Newer models need fewer rules
 
-Current Anthropic guidance for the Claude 5 generation warns against over-constraining and recommends giving models more room for judgment rather than rigid rules. It also names repetition across surfaces as a failure mode: the same instruction restated in a system prompt, a skill, and an instruction file creates conflicts rather than reinforcement.
+Current Anthropic guidance warns against over-constraining and recommends giving models room for judgment rather than rigid rules: "Then: Give Claude rules Now: Let Claude use judgement". The stated evidence is large: "We removed over 80% of Claude Code's system prompt for models like Claude Opus 5 and Claude Fable 5 with no measurable loss on our coding evaluations." The same post names repetition across surfaces as a failure mode, and warns that an instruction file should not become "a central repository for every known practice that you might run into".
 
 Two consequences for authoring:
 
@@ -131,12 +133,12 @@ Two consequences for authoring:
 
 | Source | URL | Checked |
 |---|---|---|
-| Anthropic — Claude Code best practices | <https://code.claude.com/docs/en/best-practices> | 2026-09-19 |
-| Anthropic — effective context engineering | <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> | 2026-09-19 |
-| Claude Code memory documentation | <https://code.claude.com/docs/en/memory> | 2026-09-19 |
-| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 2026-09-19 |
-| New rules of context engineering (Claude 5) | <https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models> | 2026-09-19 |
-| GitHub Copilot response customization | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 2026-09-19 |
+| Anthropic — Claude Code best practices | <https://code.claude.com/docs/en/best-practices> | 2026-11-03 |
+| Anthropic — effective context engineering | <https://www.anthropic.com/research/effective-context-engineering-for-ai-agents> | 2026-11-03 |
+| Claude Code memory documentation | <https://code.claude.com/docs/en/memory> | 2026-11-03 |
+| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 2026-11-03 |
+| New rules of context engineering (Claude 5) | <https://claude.dev/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models/> | 2026-11-03 |
+| GitHub Copilot custom instructions | <https://docs.github.com/en/copilot/concepts/prompting-and-context/custom-instructions> | 2026-11-03 |
 
 ## Related documents
 

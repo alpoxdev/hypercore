@@ -100,6 +100,26 @@ diff, 추적되지 않은 파일의 내용을 묶고, 심볼릭 링크 대상은
 **투영 실패가 압축 자체를 중단시켜서는 안 된다** — 복구 장치의 실패 모드가, 그것이 막으려는
 실패보다 나쁠 수는 없다.
 
+### 리셋은 압축이 아니다
+
+창 전체를 넘기는 방법은 두 가지이고, 각각 다른 증거를 요구한다.
+
+| | 압축 | 리셋 |
+|---|---|---|
+| 일어나는 일 | 창을 제자리에서 요약하고 대화를 이어 간다 | 창을 비우고 인계 산출물에서 새 에이전트를 시작한다 |
+| 계약을 나르는 것 | 요약 | 인계 산출물과 durable 상태 |
+| 실패 모드 | 요약이 대화는 남기고 계약을 잃는다 | 인계가 불완전해 새 세션이 목표 없이 시작한다 |
+| 동작했다는 증거 | 복구된 투영이 압축 전 계약과 일치한다 | 새 세션의 첫 행동이 기록된 다음 행동과 일치한다 |
+
+Anthropic은 두 번째를 쓴다고 보고한다. "Context resets—clearing the context window entirely and
+starting a fresh agent, combined with a structured handoff that carries the previous agent's state
+and the next steps—addresses both these issues." 같은 출처는 리셋이 영구 설비가 아니라 삭제 조건을
+가진 부품인 이유도 밝힌다. 후속 모델에서 "we found that the behavior was gone. The resets had become
+dead weight"였다([harness-anatomy.ko.md](harness-anatomy.ko.md), HE-A-2).
+
+이식 가능한 귀결은 이렇다. HE-L-1의 보존 목록은 **두 방식 모두**를 위해 정의된다. 압축만 덮는 복구
+설계는 워크플로가 리셋으로 바뀌는 순간 조용히 실패한다. 리셋에는 퇴화할 요약이 없기 때문이다.
+
 ### 반복을 유계로 만든다 — 제거한다고 주장하지 않는다
 
 같은 다음 행동으로 되돌아오는 복구는 정체다. 시도마다 투영을 지문으로 찍고, 변화 없는 복구가
@@ -114,11 +134,15 @@ diff, 추적되지 않은 파일의 내용을 묶고, 심볼릭 링크 대상은
 
 ## Sources
 
-> 확인 2026-09-20.
+> 확인 2026-11-03. 저장소 예시 두 개의 주소는 그날 다시 해석했고, 각 행의 주장은 행을 처음 추가할 때
+> 읽었으며 표시한 커밋에 고정되어 있다.
 
 | 주장 | 출처 | Grade |
 |---|---|---|
-| 장기 실행을 위한 압축·구조화 노트·서브에이전트 구조, 재현율 우선 압축 튜닝 | <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents> | VENDOR |
+| 장기 실행을 위한 압축·구조화 노트·서브에이전트 구조, 재현율 우선 압축 튜닝 | <https://www.anthropic.com/research/effective-context-engineering-for-ai-agents> (`/engineering/` 경로는 이제 이 주소로 리다이렉트된다) | VENDOR |
 | 읽기 전용 복구 투영, realpath 제한, 해시 검증, 유계 정체 카운터 (구현 예) | <https://github.com/Yeachan-Heo/gajae-code/tree/07f59defbc691064a126d72e391e46ccd331f970> | REPO |
 | 해석된 증거 경로, 증거 README 4절, 격리 입증, `SKIP` 처리 (구현 예) | <https://github.com/code-yeongyu/oh-my-openagent/tree/496dcce68d62f223c37895e3792f6d5f65920769> | REPO |
 | 배치 평가와 집계 통과율 관행 | <https://developers.googleblog.com/the-anatomy-of-harness-engineering-how-to-evaluate-iterate-and-guard-ai-coding-agents/> | VENDOR |
+| 압축의 대안으로서 컨텍스트 리셋과 구조화된 인계, 일하는 자와 심판의 분리 | <https://www.anthropic.com/research/harness-design-long-running-apps> | VENDOR |
+| 초기화 세션과 증분 세션, 지속 산출물(커밋, 진행 파일) | <https://www.anthropic.com/research/effective-harnesses-for-long-running-agents> | VENDOR |
+| 모델 교체 후 dead weight가 된 하네스 부품, 하네스 가정을 계속 의심하라는 지시 | <https://www.anthropic.com/research/managed-agents> | VENDOR |

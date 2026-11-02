@@ -50,9 +50,34 @@ Mode: [read-only | edit-own-files | verify-only]
 Ownership: [files it may modify, or files it must not]
 Allowed tools: [capability-based, e.g. repo search, official docs, tests]
 Forbidden: [destructive actions, external side effects, unrelated refactors, reverting another agent's changes]
+Inherited context: [decisions already made, constraints already discovered, and their reasons]
 Output: [summary, evidence files/links, changed files, verification results, blockers]
+Returns: [summary plus artifact paths; never the full transcript]
 Stop condition: [done, blocked, time budget, or source floor]
 ```
+
+`Inherited context` is the field that fails most often. Copying the task text is not enough, because the parent's earlier tool calls carried implicit decisions; a worker that only sees the sentence will re-decide them differently. `Returns` keeps the parent's context growth reasonable: the worker writes the long material to a file and passes the path.
+
+## Context isolation economics
+
+A subagent buys a second context window. It also buys a second bill, and a second decision-maker. Both costs are real and quantified.
+
+| Cost | Evidence |
+|---|---|
+| Tokens | Anthropic reports agents typically use "about 4× more tokens than chat interactions, and multi-agent systems use about 15× more tokens than chats" (2025-06-13) |
+| Benefit ceiling | In the same analysis, token usage alone explained 80% of performance variance on BrowseComp, and a lead-plus-subagent research system beat a single agent by 90.2% on an internal eval |
+| Coordination | The lead agent could not steer running subagents, subagents could not coordinate with each other, and "the entire system can be blocked while waiting for a single subagent to finish searching" |
+| Consistency | Cognition's opposing principle: "Actions carry implicit decisions, and conflicting decisions carry bad results." Parallel writers that cannot see each other's actions produce incompatible halves (2025-06-12) |
+
+The vendor numbers are self-reported and measured on different tasks, so use them to set expectations rather than to justify a default. The decision rule that survives both positions:
+
+1. **Isolate investigation, not decisions.** Breadth-first search, independent review lenses, and verbose triage merge cleanly as text. A decision that must stay globally consistent does not.
+2. **Isolate what the parent does not need to read.** A subagent returns its final message; intermediate tool calls and results stay inside it, so the parent grows by a summary rather than by a transcript. That is the whole gain.
+3. **Never isolate two writers of the same artifact** without a declared merge order or a single owner.
+4. **Budget the 15×.** If the same result is reachable by one agent reading three files, the fan-out is a loss even when each subagent is fast.
+5. **State the fix direction in the handoff.** "The constraint you found is wrong" is cheaper than letting the parent re-derive the constraint from a summary that lacks it.
+
+For runtimes, isolation is implemented differently: a fork or fresh subagent context, a per-agent context branch, a sandbox that returns only values, or a remote branch. Details are in [`runtime-profiles.md`](runtime-profiles.md) and [`context-management.md`](context-management.md) §5.
 
 ## Runtime spawn map
 
@@ -122,7 +147,7 @@ Include the following assertions in a trace-based eval.
 
 ## Sources
 
-> Links checked 2026-07-29; MCP was re-verified on 2026-09-19 against the `2026-07-28` revision. Cursor's Background Agents were renamed Cloud Agents.
+> Links re-checked 2026-11-03, except MCP, which was re-verified on 2026-09-19 against the `2026-07-28` revision. Cursor's Background Agents were renamed Cloud Agents. The isolation-economics figures were read on 2026-11-03 from Anthropic's multi-agent research post (2025-06-13, revised 2026-10-09) and Cognition's "Don't Build Multi-Agents" (2025-06-12).
 
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
 - [Claude Code agent teams](https://code.claude.com/docs/en/agent-teams)
@@ -134,3 +159,14 @@ Include the following assertions in a trace-based eval.
 - [MCP tools specification](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
 - [MCP prompts specification](https://modelcontextprotocol.io/specification/2026-07-28/server/prompts)
 - [OpenAI agent builder safety](https://developers.openai.com/api/docs/guides/agent-builder-safety)
+- [Anthropic, How we built our multi-agent research system](https://www.anthropic.com/research/multi-agent-research-system)
+- [Cognition, Don't Build Multi-Agents](https://cognition.com/blog/dont-build-multi-agents)
+- [Claude Agent SDK subagents](https://code.claude.com/docs/en/agent-sdk/subagents)
+
+## Related documents
+
+- [`../CONTEXT_ENGINEERING.md`](../CONTEXT_ENGINEERING.md) — the contract a leader writes and a worker receives
+- [`context-management.md`](context-management.md) — compaction, clearing, and the per-runtime context parameters that isolation depends on
+- [`../../loop-engineering/LOOP_ENGINEERING.md`](../../loop-engineering/LOOP_ENGINEERING.md) — fan-out inside a loop iteration. A loop that spawns workers is a leader under this document, and the loop's stop condition does not transfer to its children.
+- [`../../graph-engineering/GRAPH_ENGINEERING.md`](../../graph-engineering/GRAPH_ENGINEERING.md) — fan-out and fan-in edges, join semantics, and back-edge bounds belong to the graph; this document supplies the per-worker ownership, isolation, and integration contract those nodes execute.
+- [`../../harness-engineering/HARNESS_ENGINEERING.md`](../../harness-engineering/HARNESS_ENGINEERING.md) — traces, gates, and evals that prove a delegated run actually finished

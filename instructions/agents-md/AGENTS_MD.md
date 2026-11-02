@@ -4,7 +4,7 @@
 
 This is the base document to read when creating, refactoring, or reviewing a repository's agent instruction files. Its purpose is to make `AGENTS.md` and `CLAUDE.md` a **small, evidenced, portable contract** rather than a growing pile of advice.
 
-The executable procedure lives in the `agent-md-maker` skill. This document is the source-grounded knowledge that procedure rests on.
+The executable procedure lives in the `agents-md-maker` skill. This document is the source-grounded knowledge that procedure rests on.
 
 ---
 
@@ -18,17 +18,18 @@ The official framing:
 
 > "README.md files are for humans: quick starts, project descriptions, and contribution guidelines. AGENTS.md complements this by containing the extra, sometimes detailed context coding agents need: build steps, tests, and conventions that might clutter a README or aren't relevant to human contributors."
 
-The format imposes nothing else — "AGENTS.md is just standard Markdown. Use any headings you like." The discipline has to come from the author.
+The format imposes nothing else — "AGENTS.md is just standard Markdown. Use any headings you like." The discipline has to come from the author. Adoption is now wide enough that the format itself is settled: the site reports it is "used by over 60k open-source projects" and "stewarded by the Agentic AI Foundation under the Linux Foundation".
 
 ---
 
-## The five facts that should change how you write
+## The six facts that should change how you write
 
-1. **A bad file is worse than no file.** Measured across 138 AGENTbench and 300 SWE-bench Lite tasks: "Context files tend to reduce task success rates compared to providing no repository context, while also increasing inference cost by over 20%." Only developer-written, minimal files showed a gain (~4%); LLM-generated comprehensive files showed a loss.
-2. **The reliable benefit is cost, not correctness.** A paired study over 124 PRs found ~28.6% lower median runtime and ~16.6% fewer output tokens with a root `AGENTS.md` — while explicitly excluding correctness from scope.
-3. **"Closest file wins" is mostly false.** Codex concatenates root-to-leaf, Claude Code concatenates "rather than overriding each other", Cursor combines with parents. Only Copilot matches the simple reading. Nested files must be correct under both semantics.
-4. **Claude Code reads `AGENTS.md` directly from v2.1.277 on.** A repository shipping only `AGENTS.md` gives Claude Code its instructions with no `CLAUDE.md`, no import, and no setting. Two conditions still matter: a `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` at or above the working directory suppresses `AGENTS.md` under the default **Project instructions** setting, and sessions where `AGENTS.md` support is unavailable read `CLAUDE.md` only ([`references/discovery-and-precedence.md`](references/discovery-and-precedence.md) §2 lists all four conditions).
-5. **Size is a hard limit in one runtime.** Codex "stops adding files once the combined size reaches the limit defined by `project_doc_max_bytes` (32 KiB by default)" — root-to-leaf, so a bloated root file can silently starve the nested file that actually governs the code being edited.
+1. **A file buys cost, not correctness.** Across 138 CTXbench instances and SWE-bench Lite: "providing context files does not generally improve task success rates, while increasing inference cost by over 20% on average." LLM-generated files moved resolution by -0.5%/-2% and developer-written files by +2.4% — neither statistically significant — while cost rose 20% and 23%.
+2. **The reliable benefit is cost.** A paired study over 124 PRs found ~28.6% lower median runtime and ~16.6% fewer output tokens with a root `AGENTS.md`, while explicitly excluding correctness from scope.
+3. **Stale content outranks the code.** When a file contradicts the repository, 90.1% of agents followed the file. One sentence stating that the code wins moved code-following from 4.2% to 91.4% and the test pass rate from 89.4% to 100%. Write that sentence.
+4. **"Closest file wins" is mostly false.** Codex concatenates root-to-leaf, Claude Code concatenates "rather than overriding each other", Cursor combines with parents. Copilot documents nearest-wins, but only for Copilot Chat on GitHub.com; its own docs say most other surfaces "combine applicable instruction files". Nested files must be correct under both semantics.
+5. **Claude Code reads `AGENTS.md` directly from v2.1.277 on.** A repository shipping only `AGENTS.md` gives Claude Code its instructions with no `CLAUDE.md`, no import, and no setting. Two conditions still matter: a `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` at or above the working directory suppresses `AGENTS.md` under the default **Project instructions** setting, and sessions that cannot read `AGENTS.md` (below v2.1.277, reader plugin disabled) read `CLAUDE.md` only ([`references/discovery-and-precedence.md`](references/discovery-and-precedence.md) §2).
+6. **Size is a hard limit in one runtime.** Codex "stops adding files once the combined size reaches the limit defined by `project_doc_max_bytes` (32 KiB by default)" — root-to-leaf, so a bloated root file can silently starve the nested file that actually governs the code being edited.
 
 Detail and citations: [`references/evidence-and-evaluation.md`](references/evidence-and-evaluation.md) and [`references/discovery-and-precedence.md`](references/discovery-and-precedence.md).
 
@@ -36,7 +37,7 @@ Detail and citations: [`references/evidence-and-evaluation.md`](references/evide
 
 ## Base principles
 
-1. **Earn every line.** "For each line, ask: 'Would removing this cause Claude to make mistakes?' If not, cut it." Deletion is the default outcome of the test.
+1. **Earn every line, then re-earn it.** Anthropic's admission rule is "Add to it when: Claude makes the same mistake a second time", and its pruning rule is that the file "works best when it only holds what Claude couldn't work out from the code itself". Deletion is the default outcome, and unpruned files grow about five instructions per commit.
 2. **Non-obvious over complete.** The file's job is what the agent would get *wrong*, not what is *true*. Anything discoverable from the repository is context cost with no signal.
 3. **Right altitude.** Between brittle hardcoded logic and vague guidance. Specific enough to guide, flexible enough to survive an unforeseen case.
 4. **Prose is advisory.** Anything that must happen every time belongs in a hook, CI check, lint rule, or schema — not a sentence asking for it.
@@ -54,12 +55,12 @@ Ordered by value per token:
 
 | Priority | Content | Note |
 |---|---|---|
-| 1 | Gotchas and non-obvious constraints | Highest value; current Anthropic guidance says most of the file belongs here |
+| 1 | Gotchas and non-obvious constraints | Highest value; Anthropic's guidance says to "spend most of the tokens on gotchas inside of the codebase" |
 | 2 | Verified commands | Exact, copy-pasteable, working directory stated |
 | 3 | Conventions that differ from defaults | Matching a framework default means it is noise |
 | 4 | Architecture boundaries the code does not announce | Ownership, forbidden imports, generated paths |
 | 5 | Testing and verification requirements | What must pass before a change is done |
-| 6 | Security and safety constraints | Agents cannot infer these; only ~14.5% of real files include them |
+| 6 | Security and safety constraints | Agents cannot infer these; only ~14.8% of real files include them |
 | 7 | One-paragraph project purpose | Orientation, not a README |
 | 8 | Loading map | Links to deeper docs instead of inlining them |
 
@@ -140,8 +141,10 @@ The adapter contains only what is false or absent for other runtimes. It never r
 - [ ] Each rule has exactly one canonical home; root and nested files do not repeat.
 - [ ] Nested files are self-contained deltas correct under both merge and nearest-wins semantics.
 - [ ] If Claude Code is a target, the repository either relies on its native `AGENTS.md` reading (v2.1.277+, with no counting `CLAUDE.md` or `CLAUDE.local.md` at or above the working directory) or ships a `CLAUDE.md` that imports or symlinks to `AGENTS.md`.
-- [ ] `@path` imports stay within four hops and resolve relative to the importing file.
-- [ ] Root file is small enough to leave budget for nested files under a 32 KiB combined cap.
+- [ ] One line states that the code wins when it disagrees with this file.
+- [ ] `@path` imports stay within four hops, resolve relative to the importing file, and are not accidentally inside quotes or code spans.
+- [ ] Root file is small enough to leave budget for nested files under a 32 KiB combined cap, and no launch-time file approaches 4 MiB.
+- [ ] No `AGENTS.override.md` left behind in the repository root or `~/.codex` silently replacing the file you edited.
 - [ ] No secrets, response-style preferences, or temporary task notes.
 - [ ] Recency and vendor claims carry a source URL and a verification date.
 
@@ -152,6 +155,26 @@ The adapter contains only what is false or absent for other runtimes. It never r
 This area's facts are vendor behavior and move quarterly. Re-verify [`references/discovery-and-precedence.md`](references/discovery-and-precedence.md) first — filenames, size caps, and precedence order are the fields most likely to have changed.
 
 Treat a significant instruction change as an experiment, not an improvement: add a rule only after an observed repeated failure, compare with and without on representative tasks, track success *and* cost, and delete anything with no measurable effect.
+
+Prune on a schedule, not only when adding. Measured repositories accumulated "+4.9 net instructions every commit" and more than tripled each file over its lifetime, because appending is cheap and deleting safely is not. A quarterly read-through that deletes anything already visible in the code is the counter-measure, and `/doctor` in Claude Code proposes those cuts for a checked-in `CLAUDE.md`.
+
+---
+
+## Sources
+
+| Source | URL | Checked |
+|---|---|---|
+| AGENTS.md standard | <https://agents.md/> | 2026-11-03 |
+| Claude Code memory | <https://code.claude.com/docs/en/memory> | 2026-11-03 |
+| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 2026-11-03 |
+| Claude Code best practices | <https://code.claude.com/docs/en/best-practices> | 2026-11-03 |
+| New rules of context engineering (Claude 5) | <https://claude.dev/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models/> | 2026-11-03 |
+| OpenAI Codex AGENTS.md | <https://learn.chatgpt.com/docs/agent-configuration/agents-md> | 2026-11-03 |
+| GitHub Copilot custom instructions | <https://docs.github.com/en/copilot/concepts/prompting-and-context/custom-instructions> | 2026-11-03 |
+| Cursor rules | <https://cursor.com/en-US/docs/rules> | 2026-11-03 |
+| Evaluating AGENTS.md (CTXbench, v3) | <https://arxiv.org/html/2602.11988v3> | 2026-11-03 |
+| Impact of AGENTS.md on Efficiency | <https://arxiv.org/html/2601.20404v2> | 2026-11-03 |
+| Stale instruction files override the code | <https://arxiv.org/abs/2610.30571> | 2026-11-03 |
 
 ---
 

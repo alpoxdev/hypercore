@@ -12,6 +12,8 @@ A good `description` contains three things.
 2. The situation in which it should be used
 3. The boundary to exclude, or the important keywords
 
+Write it in the third person. The description is injected into a system prompt, and a shifting point of view ("I can help you...", "You can use this to...") causes discovery problems; the source's own examples are "Extract text and tables from PDF files" style statements (<https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices>, checked 2026-11-03).
+
 Weak example:
 
 ```yaml
@@ -27,10 +29,10 @@ description: Use this skill when the user asks to create or refactor a reusable 
 ## 2. Authoring pattern
 
 - Start with "Use this skill when...".
-- Lead with user intent. Write the outcome the user wants rather than the internal implementation.
-- Put the key keywords near the front. Assume the description may be truncated in a long skill list.
+- Lead with the desired outcome. Write the result the user wants rather than the internal implementation.
+- Put the key keywords in the first sentence. Every runtime may shorten or drop the tail of a long description — see §7 — so the trigger cannot depend on the closing clause.
 - Do not pack too many jobs into one description.
-- Include a short negative boundary.
+- Include a short negative boundary. A description that says only when to fire gives the selector no way back.
 
 ## 3. Trigger example set
 
@@ -41,7 +43,7 @@ Build trigger examples along **two orthogonal axes**. One is "should it activate
 | Activation | positive / negative / boundary | Whether the description responds only to the right requests |
 | Invocation mode | explicit / implicit / contextual / negative control | Whether it matches without the name, and does not misfire |
 
-The invocation-mode axis comes from OpenAI's skill eval guide (<https://developers.openai.com/blog/eval-skills>, checked 2026-09-19), whose targeted prompt set distinguishes four invocation cases: **explicit invocation**, **implicit invocation**, **contextual invocation**, and **negative control**. This repository generalizes them into the axis below.
+The invocation-mode axis comes from OpenAI's skill eval guidance (<https://developers.openai.com/blog/eval-skills>, checked 2026-11-03), whose targeted prompt set distinguishes four invocation cases: **explicit invocation**, **implicit invocation**, **contextual invocation**, and **negative control**.
 
 | Invocation mode | Meaning | Example |
 |---|---|---|
@@ -134,37 +136,55 @@ In a trigger eval, do not look only at prompt wording; also record the companion
 | Long description | Only the front survives in the skill list and the core is lost | Compress the key trigger into the first sentence |
 | Missing safety gate | Once active, the skill takes external side effects for granted | State gated actions in the description or routing rule |
 | Missing prior research | A recency claim is baked straight into the skill | Require a sourcing stage for source-sensitive triggers |
+| Manual-only workflow | An automatic trigger causes damage the user did not intend | Mark it manual (`disable-model-invocation` in Claude Code, `allow_implicit_invocation: false` in Codex) |
 
 ## 6. Completion criteria
 
 - [ ] The first sentence of the description reads as a trigger.
+- [ ] The description is written in the third person and names both what it does and when to use it.
 - [ ] Positive, negative, and boundary examples exist (activation axis).
 - [ ] Explicit, implicit, contextual, and negative-control examples exist (invocation-mode axis).
 - [ ] The difference from similar skills is stated.
 - [ ] A should-trigger and should-not-trigger smoke set exists.
 - [ ] Boundaries exist for companion workflows such as research, safety, deploy, and commit.
+- [ ] The description fits the tightest runtime limit the skill will be installed in.
 
-## 7. Description optimization
+## 7. What actually reaches the model
+
+A description is not delivered verbatim. Each runtime budgets the listing and then cuts.
+
+| Runtime | Limit that binds | Cut behaviour |
+|---|---|---|
+| Agent Skills spec | `description` 1-1024 characters | Not defined; the field is validated, not trimmed |
+| Claude Code | `description` + `when_to_use` capped at 1,536 characters per entry; listing scaled to 1% of the context window | Descriptions are dropped starting with the least-invoked skills; every name survives |
+| Codex | Listing at 2% of context or 8,000 characters; `skills.max_context_tokens` up to 10,000 tokens | Descriptions are shortened first, and some skills may be omitted from the list with a warning |
+
+The consequence for design is the same in every runtime: the first sentence has to carry the trigger on its own, and a skill that is technically installed may still be invisible.
+
+## 8. Description optimization
 
 Writing a description once is not the whole job; repeated edits overfit the examples they were tuned on. These rules are normative.
 
-- SK-O-1: Split the query set into **train and validation**. Improve against train; **select** by validation pass rate.
+- SK-O-1: Split the query set into **train and validation**. Improve against train; **select** by validation pass rate. The source's split is about 60% train and 40% validation, shuffled, held fixed across iterations, with both sets keeping the positive/negative mix.
 - SK-O-2: **The best description may not be the last one.** When a later iteration scores lower on validation, keep the earlier iteration.
 - SK-O-3: Descriptions grow while you optimize. Re-check the **1024-character limit** on every edit.
 - SK-O-4: When fine-tuning stops helping, **change the structure** — a different framing or a different sentence shape, not another adjective.
 
-A run that reports only its final validation score is not evidence of improvement. Report the train and validation numbers for each iteration so the selection is visible.
+A run that reports only its final validation score is not evidence of improvement. Report the train and validation numbers for each iteration so the selection is visible. The source adds two practical bounds: about 20 queries total (8-10 should-trigger, 8-10 should-not), and "five iterations is usually enough" before re-testing on 5-10 fresh queries.
 
 ## Sources
 
-> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+> Links re-read and re-checked 2026-11-03.
 
 | Claim | Source |
 |---|---|
-| The four invocation modes (explicit, implicit, contextual, negative control) and the 10-20 prompt starting set | <https://developers.openai.com/blog/eval-skills> |
-| Trigger rate as the metric, 3 runs, the 0.5 default threshold, the train/validation split, "the best may not be the last", the 1024-character re-check, and the structural-change fallback behind `SK-O-1` to `SK-O-4` | <https://agentskills.io/skill-creation/optimizing-descriptions> |
-| The 1024-character `description` limit | <https://agentskills.io/specification> |
+| Third-person description, the what-and-when requirement, and the naming guidance | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices> |
+| The four invocation modes and the 10-20 prompt starting set | <https://developers.openai.com/blog/eval-skills> |
+| Trigger rate as the metric, 3 runs, the 0.5 default threshold, the ~60/40 train-validation split, "the best may not be the last", the 1024-character re-check, the five-iteration guidance, and the fresh-query check behind `SK-O-1` to `SK-O-4` | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| The 1-1024 character `description` range | <https://agentskills.io/specification> |
+| The 1,536-character entry cap and the least-invoked-first drop order | <https://code.claude.com/docs/en/skills> |
+| The 2%-of-context / 8,000-character listing budget and the shorten-then-omit behaviour | <https://learn.chatgpt.com/docs/build-skills> |
 
 ### Evidence grade
 
-The optimization rules above are `PRIMARY` — the specification site states them directly. The 10-20 prompt figure is quoted as a starting point that source recommends, not as a validated optimum. The case count in §4 is deliberately not fixed: the source does not state one, so this file states a **composition** requirement instead — each case must probe something the others do not.
+The optimization rules are `PRIMARY` — the specification site states them directly. The 10-20 prompt figure and the 60/40 split are quoted as the source's recommendations, not validated optima. The listing behaviour in §7 is `VENDOR`: each runtime describes its own truncation, and they differ in a way that matters (Claude Code drops whole descriptions, Codex also drops skills). The case count in §4 is deliberately not fixed: the source states no validated count, so this file requires a **composition** instead — each case must probe something the others do not.

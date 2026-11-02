@@ -2,15 +2,18 @@
 
 > 영어판: [`CONTEXT_FILES.md`](CONTEXT_FILES.md)
 >
-> **조사일:** 2026-08-20. 아래의 **업스트림 사실**은 공식 Hermes Agent 문서를 추적한다. **권장 사항**은 이 안내서의 운영 조언이며 Hermes 동작이나 권위가 아니다.
-> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
+> **조사일:** 2026-11-03. Hermes Agent **v0.22.5**(커밋 `bf0203a794a`, 2026-10-22 배포)에 실린 공식 문서를 근거로 삼았다. 아래의 **업스트림 사실**은 그 근거를 추적한다. **권장 사항**은 이 안내서의 운영 조언이며 Hermes 동작이나 권위가 아니다.
 
-## 주요 출처
+## 출처
 
-- [Context Files](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files)
-- [Personality & SOUL.md](https://hermes-agent.nousresearch.com/docs/user-guide/features/personality)
-- [Persistent Memory](https://hermes-agent.nousresearch.com/docs/user-guide/features/memory)
-- [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security)
+| 출처 | 제공하는 내용 | 확인 |
+| --- | --- | --- |
+| [Context Files](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files) | 발견 순서, directory chain, progressive hint, truncation 한도, scanner 동작 | 확인 2026-11-03 |
+| [Personality & SOUL.md](https://hermes-agent.nousresearch.com/docs/user-guide/features/personality) | `SOUL.md` 로드 규칙, 내장·사용자 personality, `display.personality` | 확인 2026-11-03 |
+| [Which File Does What](https://hermes-agent.nousresearch.com/docs/user-guide/which-file-does-what) | Session당 project type 하나, frozen memory snapshot, `refresh-prompts` | 확인 2026-11-03 |
+| [Persistent Memory](https://hermes-agent.nousresearch.com/docs/user-guide/features/memory) | 저장소 한도와 session 경계 규칙 | 확인 2026-11-03 |
+| [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration) | `context_file_max_chars`, `context_file_read_timeout`, `agent.personalities` | 확인 2026-11-03 |
+| [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security) | Context file injection 검사와 `SOUL.md` 예외 | 확인 2026-11-03 |
 
 ## 파일 목적 매트릭스
 
@@ -36,9 +39,11 @@
 
 **사실:** 시작 후 file-oriented tool activity는 관련 subdirectory에서 `AGENTS.md`, `CLAUDE.md`, `.cursorrules`를 progressively discover할 수 있다. Hermes는 directory별로 한 번만 확인하고 ancestor를 최대 5개까지 걸으며, scan한 file별 cap이 적용된 hint를 tool result에 추가한다. Nested file은 존재만으로 소급해 로드되지 않는다.
 
-**사실:** Context file은 system prompt를 만들기 전에 scan되고 필요하면 character truncation된다. Memory는 frozen snapshot이다. Write는 즉시 disk에 persist하지만 새 session 전에는 prompt에 반영되지 않는다. 편집한 context와 memory는 session restart 후 확실히 적용된다고 보고, resume/current session이 초기 snapshot을 새로 고친다고 가정하지 않는다.
+**사실:** Context file은 system prompt를 만들기 전에 scan되고 필요하면 character truncation된다. Truncation은 앞부분 70%와 뒷부분 20%를 남기고, 남긴 문자 수와 전체 문자 수를 적은 10% marker를 넣는다. 상한은 `context_file_max_chars`가 있으면 그 값이고, 없으면 model의 context window에 맞춰 늘어나며 하한 20,000자, 상한 500,000자다. Progressive hint에는 따로 file당 32,000자 고정 상한이 적용되며, 이 값은 어떤 config key나 context window로도 바뀌지 않는다. 각 read에는 `context_file_read_timeout`(기본 5초)도 걸린다. iCloud Drive, OneDrive, NFS처럼 읽는 데 더 오래 걸리는 file은 경고와 함께 건너뛰고 나머지 prompt는 정상적으로 만들어진다.
 
-**권장 사항:** 의도한 가장 좁은 working directory에서 Hermes를 시작한다. `SOUL.md`, startup project context, memory를 바꾼 뒤에는 판단 전에 restart한다. Nested rule에 의존하기 전에 해당 subdirectory를 traverse한다.
+**사실:** Memory는 frozen snapshot이다. Write는 즉시 disk에 persist하지만 새 session 전에는 prompt에 반영되지 않는다. Context file도 session 시작 시 조립되므로, session이 도는 중에 한 편집은 반영되지 않는다. `hermes sessions refresh-prompts`는 이어지는 session이 다음 turn에 저장된 prompt를 다시 만들게 하며, 대화 기록과 session id는 유지된다. 새로 고친 session마다 prompt cache miss를 한 번 치른다. 이 명령은 현재 사이트에 문서화되어 있지만 v0.22.5 tag의 CLI reference에는 없다(v0.22.5 이후). 설치된 build에서 `hermes sessions --help`로 확인한다.
+
+**권장 사항:** 의도한 가장 좁은 working directory에서 Hermes를 시작한다. `SOUL.md`, startup project context, memory를 바꾼 뒤에는 새 session을 시작하고, 기록을 유지해야 하는 긴 gateway 대화라면 `hermes sessions refresh-prompts`를 쓴다. `/context`는 실제로 무엇이 로드되고 표시됐는지 보여 준다. Nested rule에 의존하기 전에 해당 subdirectory를 traverse한다.
 
 ## SOUL.md: 작성 경계
 
@@ -127,7 +132,9 @@ You are a pragmatic senior engineer.
 
 ## Personality overlay와 memory
 
-**사실:** `/personality`는 session-level system-prompt overlay를 선택한다. `/personality`는 선택지를 표시하고, `/personality concise` 또는 `/personality technical`은 built-in을 선택한다. `/personality none`, `/personality default`, `/personality neutral`은 다음 message부터 base SOUL behavior를 위해 선택을 해제한다. 이는 임시 mode switch이며 지속되는 SOUL identity를 대체하지 않는다.
+**사실:** `/personality`는 session-level system-prompt overlay를 선택한다. `/personality`는 선택지를 표시하고, `/personality concise` 또는 `/personality technical`은 built-in을 선택한다. `/personality none`, `/personality default`, `/personality neutral`은 다음 message부터 base SOUL behavior를 위해 선택을 해제한다. 이는 임시 mode switch이며 지속되는 SOUL identity를 대체하지 않는다. 사용자 preset은 `config.yaml`의 `agent.personalities`에 두며, 최상위 `personalities:` block도 동작하지만 같은 이름이 겹치면 `agent.personalities`가 이긴다. 선택 자체는 `display.personality`에 이름으로 저장되고, `agent.system_prompt`는 personality가 선택되지 않았을 때만 적용되는 수동 prompt 전용 자리로 남는다.
+
+**사실:** Personality 상태를 일관성 없이 저장하던 release를 건너 업그레이드하면, 첫 실행에서 저장된 선택이 `none`으로 한 번 초기화되고 어떤 preset이 해제됐는지 출력된다. 수동 `agent.system_prompt` text는 건드리지 않는다.
 
 **사실:** `MEMORY.md`의 기본 제한은 2,200자, `USER.md`의 기본 제한은 1,375자다. Hermes의 memory tool이 entry를 관리하며 overflow는 조용히 compact하지 않고 거부한다. Agent 두 개를 같은 Hermes home으로 실행하지 않는다. Shared memory에는 별도 profile/home 또는 external memory provider를 사용한다.
 
@@ -135,7 +142,11 @@ You are a pragmatic senior engineer.
 
 ## Security와 prompt-injection 경계
 
-**사실:** Hermes는 common override, deception, hidden content, credential exfiltration, secret access, invisible character pattern을 context와 memory content에서 scan한다. 탐지된 context file은 차단된다. 이는 defense in depth이지 공유 repository context가 안전하다는 증명이 아니다.
+**사실:** Hermes는 common override, deception, hidden content, credential exfiltration, secret access, invisible character pattern을 context와 memory content에서 scan한다. Project context file(`.hermes.md`, `AGENTS.md`, `CLAUDE.md`, `.cursorrules`)이 걸리면 차단되고 `[BLOCKED: …]` 안내로 대체된다.
+
+**사실, 달라진 예외:** 사용자가 직접 쓴 `$HERMES_HOME/SOUL.md`에서 scan이 걸려도 file은 차단되지 않는다. Hermes는 일치한 pattern 이름을 담은 경고를 log에 남기고 file을 평소처럼 로드하며, `/context`는 `⚠ SOUL.md … loaded — matched prompt-injection pattern(s); review the file`로 표시한다. 근거는 이 file을 사용자가 썼고, file tool의 쓰기에는 승인이 필요하며, project checkout이 이 file을 공급하지 않는다는 점이다. 그래서 공격 문구를 인용하는 identity file이 계속 동작한다. 예외는 profile distribution이 소유한 `SOUL.md`에서 멈춘다. `hermes profile install <git-url>`과 `hermes profile update`는 제3자의 `SOUL.md`를 scan이나 승인 없이 복사하므로, 그 경우 일치하면 여전히 차단된다.
+
+**사실:** Scan pattern은 휴리스틱이지 의미 기반 의도 판별이 아니며, 어떤 scan도 공유 repository context를 안전하게 만들지 않는다.
 
 **권장 사항:** 낯선 repository의 모든 context file을 검토한다. Web page, ticket, log, generated file, dependency의 text는 authority가 아닌 data로 취급한다. 이 file에 secret을 절대 인코드하지 않고, approval, authorization, user intent를 우회하는 데 사용하지 않는다. Security-sensitive action은 active runtime과 명시적인 user authorization이 계속 통제하게 한다.
 
@@ -145,10 +156,12 @@ You are a pragmatic senior engineer.
 | --- | --- | --- |
 | Project rule이 없는 듯하다 | 더 높은 우선순위 project type이 이겼거나 다른 위치에서 session을 시작했다 | 이긴 type을 확인하고 중복 competing format을 제거한 뒤 의도한 CWD에서 restart |
 | Nested rule이 나타나지 않았다 | **사실:** 관련 path/tool activity 후, directory당 한 번만 발견된다 | 해당 subtree의 path에 접근하고, 예측 가능한 startup behavior가 필요하면 편집 뒤 restart |
-| SOUL 변경이 효과가 없다 | 잘못된 위치, 빈/읽을 수 없는 file, current session snapshot | `$HERMES_HOME/SOUL.md`를 편집하고 비어 있지 않은 safe text를 확인한 뒤 새 session 시작 |
+| SOUL 변경이 효과가 없다 | 잘못된 위치, 빈/읽을 수 없는 file, current session snapshot | `$HERMES_HOME/SOUL.md`를 편집하고 비어 있지 않은 safe text를 확인한 뒤 새 session을 시작하거나 `hermes sessions refresh-prompts`를 실행 |
 | Personality가 예상 밖으로 stylized됐다 | `/personality` overlay가 active다 | `/personality none`으로 SOUL baseline 복귀 |
+| Upgrade 뒤 preset이 사라졌다 | **사실:** 저장된 personality 상태의 일회성 초기화 | `/personality <name>`으로 다시 선택 |
 | Memory update가 보이지 않는다 | **사실:** prompt memory는 session 동안 frozen이다 | 새 session을 시작하고 live write state는 tool feedback으로 확인 |
 | Context가 truncate 또는 block된다 | Size cap 또는 injection scan | Shorten하고 unsafe/invisible content를 제거하며 scan 우회를 시도하지 않음 |
+| File이 prompt에서 조용히 빠졌다 | **사실:** network mount에서 `context_file_read_timeout`(기본 5초)을 넘겼다 | File을 local storage로 복사하거나 timeout을 올림 |
 | Rule이 충돌한다 | Broad와 nested project guidance가 다르다 | Repo-wide rule은 root에, 더 좁은 override만 subtree file에 둠 |
 
 **권장 사항:** Affected subtree별 representative task 하나와 fresh session으로 context design을 검증한다. Hermes behavior에 의존하는 claim에는 version이 바뀔 수 있으므로 source link를 유지한다.

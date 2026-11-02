@@ -50,9 +50,34 @@ Mode: [read-only | edit-own-files | verify-only]
 Ownership: [수정 가능 파일 또는 금지 파일]
 Allowed tools: [repo search, official docs, tests 등 capability 기준]
 Forbidden: [destructive, external side effect, unrelated refactor, 다른 에이전트 변경 되돌리기]
+Inherited context: [이미 내린 결정, 이미 확인한 제약과 그 이유]
 Output: [요약, 근거 파일/링크, 변경 파일, 검증 결과, blocker]
+Returns: [요약과 산출물 경로. 트랜스크립트 전체는 돌려주지 않는다]
 Stop condition: [완료/차단/시간/소스 바닥값]
 ```
+
+가장 자주 빠지는 항목이 `Inherited context`다. 작업 문구만 복사하면 부족하다. 부모가 앞서 한 도구 호출이 암묵적 결정을 담고 있어서, 문장만 받은 작업자는 그 결정을 다르게 다시 내린다. `Returns`는 부모 컨텍스트의 증가를 억제한다. 긴 자료는 작업자가 파일로 쓰고 경로만 넘긴다.
+
+## Context Isolation Economics
+
+서브에이전트는 컨텍스트 창을 하나 더 얻는 대가로 계산서를 하나 더 받고, 결정권자도 하나 더 만든다. 두 비용 모두 실재하고 수치가 있다.
+
+| 비용 | 근거 |
+|---|---|
+| 토큰 | Anthropic은 에이전트가 채팅의 “약 4배”, 멀티 에이전트 시스템이 채팅의 “약 15배” 토큰을 쓴다고 보고한다(2025-06-13) |
+| 이득의 상한 | 같은 분석에서 BrowseComp 성능 분산의 80%가 토큰 사용량만으로 설명됐고, 리드 에이전트와 서브에이전트 조합은 내부 평가에서 단일 에이전트를 90.2% 앞섰다 |
+| 조정 | 리드 에이전트가 실행 중인 서브에이전트를 조종할 수 없고, 서브에이전트끼리 협의할 수 없으며, “서브에이전트 하나가 검색을 마칠 때까지 전체 시스템이 막힐 수 있다” |
+| 일관성 | Cognition의 반대 원칙은 “행동은 암묵적 결정을 동반하고, 상충하는 결정은 나쁜 결과를 낳는다”이다. 서로의 행동을 볼 수 없는 병렬 작성자는 양립하지 않는 반쪽을 만든다(2025-06-12) |
+
+벤더 수치는 자체 보고이고 측정 과제도 서로 다르다. 기본값을 정당화하는 근거가 아니라 기대치를 잡는 데 쓴다. 두 입장을 모두 통과하는 판단 규칙은 이렇다.
+
+1. **조사는 격리하고 결정은 격리하지 않는다.** 폭넓은 탐색, 서로 다른 검토 관점, 장황한 분류는 글로 합쳐도 깨끗하다. 전체에서 일관돼야 하는 결정은 그렇지 않다.
+2. **부모가 읽을 필요가 없는 것을 격리한다.** 서브에이전트는 최종 메시지만 돌려주고 중간 도구 호출과 결과는 안에 남는다. 부모는 트랜스크립트가 아니라 요약만큼만 커진다. 이득은 전부 여기서 나온다.
+3. **같은 산출물을 쓰는 두 작성자를 격리하지 않는다.** 병합 순서를 선언했거나 소유자가 하나일 때만 나눈다.
+4. **15배를 예산에 넣는다.** 한 에이전트가 파일 세 개를 읽으면 되는 일이라면, 각 서브에이전트가 빨라도 분산은 손해다.
+5. **인계에 수정 방향을 적는다.** “찾은 제약이 틀렸다”를 적어 보내는 편이, 그것이 빠진 요약을 받은 부모가 제약을 다시 유도하는 편보다 싸다.
+
+런타임마다 구현은 다르다. 포크 또는 새 서브에이전트 컨텍스트, 에이전트별 컨텍스트 브랜치, 값만 돌려주는 샌드박스, 원격 브랜치 중 하나를 쓴다. 세부는 [`runtime-profiles.ko.md`](runtime-profiles.ko.md)와 [`context-management.ko.md`](context-management.ko.md) 5절에 있다.
 
 ## Runtime Spawn Map
 
@@ -122,7 +147,7 @@ Trace 기반 eval에는 아래 assertion을 둔다.
 
 ## Sources
 
-> 링크 확인 2026-07-29. MCP는 2026-09-19에 `2026-07-28` revision 기준으로 재확인했다. Cursor의 Background Agents는 Cloud Agents로 개명됐다.
+> 링크는 2026-11-03에 다시 확인했다. MCP만 2026-09-19에 `2026-07-28` revision 기준으로 재확인했다. Cursor의 Background Agents는 Cloud Agents로 개명됐다. Context Isolation Economics의 수치는 2026-11-03에 Anthropic 멀티 에이전트 리서치 글(2025-06-13 발행, 2026-10-09 갱신)과 Cognition의 “Don't Build Multi-Agents”(2025-06-12)에서 읽었다.
 
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
 - [Claude Code agent teams](https://code.claude.com/docs/en/agent-teams)
@@ -134,3 +159,14 @@ Trace 기반 eval에는 아래 assertion을 둔다.
 - [MCP tools specification](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
 - [MCP prompts specification](https://modelcontextprotocol.io/specification/2026-07-28/server/prompts)
 - [OpenAI agent builder safety](https://developers.openai.com/api/docs/guides/agent-builder-safety)
+- [Anthropic, How we built our multi-agent research system](https://www.anthropic.com/research/multi-agent-research-system)
+- [Cognition, Don't Build Multi-Agents](https://cognition.com/blog/dont-build-multi-agents)
+- [Claude Agent SDK subagents](https://code.claude.com/docs/en/agent-sdk/subagents)
+
+## 함께 읽을 문서
+
+- [`../CONTEXT_ENGINEERING.ko.md`](../CONTEXT_ENGINEERING.ko.md) — 리더가 쓰고 작업자가 받는 계약
+- [`context-management.ko.md`](context-management.ko.md) — 격리가 의존하는 압축·비우기와 런타임별 컨텍스트 파라미터
+- [`../../loop-engineering/LOOP_ENGINEERING.ko.md`](../../loop-engineering/LOOP_ENGINEERING.ko.md) — 루프 한 회차 안의 분산. 작업자를 띄우는 루프는 이 문서 기준의 리더이고, 루프의 중단 조건은 자식에게 넘어가지 않는다.
+- [`../../graph-engineering/GRAPH_ENGINEERING.ko.md`](../../graph-engineering/GRAPH_ENGINEERING.ko.md) — 분산·수렴 엣지, 결합 방식, 되돌아가는 엣지의 한도는 그래프가 정한다. 이 문서는 그 노드가 실행할 작업자별 소유권·격리·통합 계약을 공급한다.
+- [`../../harness-engineering/HARNESS_ENGINEERING.ko.md`](../../harness-engineering/HARNESS_ENGINEERING.ko.md) — 위임 실행이 실제로 끝났음을 증명하는 trace·gate·eval

@@ -20,7 +20,7 @@ Resource placement is the rule set that gives each file in a skill folder an exa
 | Safety boundary | `rules/safety.md` or `references/safety.md` | Tool, network, credential, and destructive gates |
 | Output templates | `assets/` | Copy-or-fill targets |
 | Automated verification | `scripts/` | Guarantees determinism and repeatability |
-| UI/runtime metadata | `agents/` | Platform-specific display and dependency information |
+| Runtime metadata | `agents/` | Platform-specific display, invocation policy, and dependencies |
 
 ## 2. Rules vs references
 
@@ -60,10 +60,10 @@ Required script documentation:
 ```markdown
 ## Available scripts
 
-- `scripts/validate-skill.mjs`
+- `scripts/validate-skill.sh`
   - Purpose: validate frontmatter, local links, code fences, and support file references.
-  - Usage: `node scripts/validate-skill.mjs skills/my-skill`
-  - Requires: Node.js 20+
+  - Usage: `bash scripts/validate-skill.sh skills/my-skill`
+  - Requires: bash 3.2+ and jq
   - Output: JSON summary plus non-zero exit on failure.
 ```
 
@@ -128,6 +128,12 @@ references/
 - When a deterministic runner exists, put it in `scripts/run-evals.*` and document its dependencies and expected output.
 - When an eval case requires an external source, link the source URL, accessed date, and freshness caveat inside the case or in the source ledger.
 
+### Compatibility with the packaged tooling
+
+`assets/evals/` is **this repository's** convention, chosen because the existing skills already use it, and no packaged tool reads it. Anthropic's `skill-creator` reads `evals/evals.json` at the skill root, whose entries carry prompts, input files, expected behavior, and assertions. Claude Code's `claude plugin eval` uses its own case format, and the vendor states that the two formats "aren't interchangeable".
+
+So the rule is: keep `assets/evals/` as the place a human or this repository's runner reads, and if a skill is also meant to be evaluated by one of those tools, add that tool's own case file **and** keep it in sync with `assets/evals/` — or generate it from `assets/evals/` in `scripts/`. A half-migrated pair is worse than one canonical set.
+
 ### Where execution results go
 
 The fixtures above are inputs. The **results** of running them live outside the skill folder, because a shipped skill should not carry its own run history and because every other execution in this repository already writes there.
@@ -135,6 +141,7 @@ The fixtures above are inputs. The **results** of running them live outside the 
 ```text
 .omo/evidence/<skill>/iteration-N/
 ├── benchmark.json
+├── feedback.json
 └── eval-<case>/
     ├── with_skill/
     │   ├── outputs/
@@ -146,12 +153,16 @@ The fixtures above are inputs. The **results** of running them live outside the 
         └── grading.json
 ```
 
+When the baseline is a previous version rather than "no skill", replace `without_skill/` with `old_skill/` and keep the snapshot the run pointed at.
+
 This repository already had two competing placements for eval material; adding a third would leave no single answer. The layout above was chosen over the alternative of a workspace beside the skill folder, because the sibling-workspace form has no precedent here and the evidence directory does. The trade-off is real: results do not travel with a distributed skill, so a reader outside this repository cannot see them.
 
 - SK-E-1: Keep execution results **outside the skill folder**, under the evidence path shown above. A shipped skill does not carry its own run history.
 - SK-E-2: Every run leaves `timing.json` (tokens and wall time) and `grading.json` (per-assertion pass/fail **plus the evidence string**). A `passed: true` with no evidence string is not evidence.
 - SK-E-3: Run each execution in an **independent session**. Reusing one session lets the earlier run's context contaminate the next.
 - SK-E-4: Check mechanical assertions (valid JSON, row counts, file existence) with a **script**, not an LLM judge. Reserve the judge for what a script cannot decide.
+- SK-E-5: Human review lives in `feedback.json` beside the eval directories, keyed by eval id: a specific complaint string per case, an empty string when the case passed review. It is written by the reviewer, never generated from the grades.
+- SK-E-6: When comparing versions, keep the previous version as `old_skill/` inside the iteration directory and record which snapshot commit or copy it came from, so the comparison can be repeated.
 
 ## 7. Forbidden patterns
 
@@ -162,6 +173,7 @@ This repository already had two competing placements for eval material; adding a
 - Copying long passages of official documentation verbatim
 - Leaving eval fixtures as a prose checklist so they cannot be re-run
 - Writing the safety boundary only as a final-answer tone rule without connecting it to a tool gate
+- Keeping two eval sets that have drifted apart
 
 ## 8. Completion criteria
 
@@ -170,17 +182,20 @@ This repository already had two competing placements for eval material; adding a
 - [ ] Scripts and assets have usage and validation.
 - [ ] Provider-sensitive content is isolated in references.
 - [ ] Prompt templates, eval fixtures, source ledgers, and safety notes each sit in the correct place among prose, reference, asset, and script.
+- [ ] If the skill is evaluated by `skill-creator` or `claude plugin eval`, that tool's own case file exists and matches the fixtures the runner reads.
 - [ ] Content that loads into every session keeps volatile values (dates, versions, counts, machine paths) out of its loaded head — see [`../../cache/CACHE.md`](../../cache/CACHE.md).
-- [ ] Eval execution results are written outside the skill folder, with per-run timing and grading records.
+- [ ] Eval execution results are written outside the skill folder, with per-run timing, grading, and human feedback records.
 
 ## Sources
 
-> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+> Links re-read and re-checked 2026-11-03.
 
 | Claim | Source |
 |---|---|
-| Execution results kept outside the skill folder, per-run `timing.json` and `grading.json` with evidence strings, independent sessions per run, and mechanical assertions checked by script — the basis of `SK-E-1` to `SK-E-4` | <https://agentskills.io/skill-creation/evaluating-skills> |
+| Execution results kept outside the skill directory, per-run `timing.json` and `grading.json` with evidence, independent sessions per run, mechanical assertions checked by script, the `with_skill`/`without_skill`/`old_skill` naming, and `feedback.json` — the basis of `SK-E-1` to `SK-E-6` | <https://agentskills.io/skill-creation/evaluating-skills> |
+| `evals/evals.json` as the hand-authored `skill-creator` input, and `claude plugin eval` using a different, non-interchangeable format | <https://code.claude.com/docs/en/skills> |
+| Scripts should be self-contained or document dependencies, include helpful error messages, and handle edge cases | <https://agentskills.io/specification> |
 
 ### Evidence grade
 
-The placement and cost-recording rules above are `PRIMARY` — the specification site states them directly. The specific directory layout is a **repository decision**, not a sourced one: the delta flagged it as an unresolved conflict and this file records the choice and its trade-off.
+The placement and cost-recording rules are `PRIMARY` — the specification site states them. The specific directory layout (`.omo/evidence/...`) is a **repository decision**, not a sourced one: the source uses a sibling `<name>-workspace/iteration-N/` directory instead, and this file records both the choice and its trade-off. `SK-E-5` and `SK-E-6` extend the source's `feedback.json` and `old_skill/` conventions into a placement rule; the filenames come from the source, the location from this repository.

@@ -4,7 +4,7 @@
 
 저장소의 에이전트 instruction 파일을 만들거나, 리팩터링하거나, 리뷰할 때 읽는 베이스 문서다. 목적은 `AGENTS.md`와 `CLAUDE.md`를 조언 더미가 아니라 **작고, 근거 있고, 이식 가능한 계약**으로 만드는 것이다.
 
-실행 절차는 `agent-md-maker` 스킬에 있다. 이 문서는 그 절차가 딛고 선 출처 기반 지식이다.
+실행 절차는 `agents-md-maker` 스킬에 있다. 이 문서는 그 절차가 딛고 선 출처 기반 지식이다.
 
 ---
 
@@ -18,17 +18,18 @@ instruction 파일은 **에이전트가 task가 무엇인지 알기 전에** 주
 
 > "README.md files are for humans: quick starts, project descriptions, and contribution guidelines. AGENTS.md complements this by containing the extra, sometimes detailed context coding agents need: build steps, tests, and conventions that might clutter a README or aren't relevant to human contributors."
 
-포맷은 그 외에 아무것도 강제하지 않는다 — "AGENTS.md is just standard Markdown. Use any headings you like." 규율은 저자가 만들어야 한다.
+포맷은 그 외에 아무것도 강제하지 않는다 — "AGENTS.md is just standard Markdown. Use any headings you like." 규율은 저자가 만들어야 한다. 채택 폭은 이미 포맷 자체를 기정사실로 만들었다. 사이트는 이 파일이 "used by over 60k open-source projects"이며 "stewarded by the Agentic AI Foundation under the Linux Foundation"라고 밝힌다.
 
 ---
 
-## 작성법을 바꿔야 할 다섯 가지 사실
+## 작성법을 바꿔야 할 여섯 가지 사실
 
-1. **나쁜 파일은 없느니만 못하다.** AGENTbench 138개와 SWE-bench Lite 300개 task에서 측정: "Context files tend to reduce task success rates compared to providing no repository context, while also increasing inference cost by over 20%." 성능이 오른 것은 개발자가 쓴 최소 파일(약 +4%)뿐이고, LLM이 생성한 포괄적 파일은 손실을 보였다.
-2. **믿을 만한 이득은 정확성이 아니라 비용이다.** PR 124개 대응 연구에서 루트 `AGENTS.md`가 있을 때 중앙값 실행 시간 약 28.6%, 출력 토큰 약 16.6% 감소 — 다만 정확성은 명시적으로 범위 밖이었다.
-3. **"가장 가까운 파일이 이긴다"는 대체로 사실이 아니다.** Codex는 루트→말단으로 concatenate하고, Claude Code는 "rather than overriding each other" concatenate하며, Cursor는 부모와 결합한다. 단순 해석과 일치하는 것은 Copilot뿐이다. 중첩 파일은 두 방식 모두에서 옳아야 한다.
-4. **Claude Code는 v2.1.277부터 `AGENTS.md`를 직접 읽는다.** `AGENTS.md`만 둔 저장소도 `CLAUDE.md`나 import, 설정 없이 Claude Code에 지시를 전달한다. 다만 두 가지 조건은 여전히 중요하다. 작업 디렉토리나 그 위에 `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md` 중 하나가 있으면 기본 **Project instructions** 설정에서 `AGENTS.md`가 억제되고, `AGENTS.md` 지원이 불가능한 세션은 `CLAUDE.md`만 읽는다(네 가지 조건 전체는 [`references/discovery-and-precedence.ko.md`](references/discovery-and-precedence.ko.md) §2에 있다).
-5. **한 런타임에서는 크기가 하드 리밋이다.** Codex는 "stops adding files once the combined size reaches the limit defined by `project_doc_max_bytes` (32 KiB by default)" — 루트→말단 순서이므로, 비대한 루트 파일이 정작 지금 수정 중인 코드를 관장하는 중첩 파일을 조용히 굶길 수 있다.
+1. **파일이 사는 것은 정확성이 아니라 비용이다.** CTXbench 138개 instance와 SWE-bench Lite에서 "providing context files does not generally improve task success rates, while increasing inference cost by over 20% on average." LLM 생성 파일은 해결률을 -0.5%/-2%, 개발자 작성 파일은 +2.4% 움직였고 둘 다 통계적으로 유의미하지 않았다. 반면 비용은 20%, 23% 늘었다.
+2. **믿을 만한 이득은 비용이다.** PR 124개 대응 연구에서 루트 `AGENTS.md`가 있을 때 중앙값 실행 시간 약 28.6%, 출력 토큰 약 16.6% 감소 — 다만 정확성은 명시적으로 범위 밖이었다.
+3. **낡은 내용은 코드보다 우선한다.** 파일이 저장소와 모순될 때 에이전트 선택의 90.1%가 파일을 따랐다. 코드가 이긴다는 한 문장을 넣자 코드를 따르는 비율이 4.2%에서 91.4%, 테스트 통과율이 89.4%에서 100%가 되었다. 그 문장을 쓴다.
+4. **"가장 가까운 파일이 이긴다"는 대체로 사실이 아니다.** Codex는 루트→말단으로 concatenate하고, Claude Code는 "rather than overriding each other" concatenate하며, Cursor는 부모와 결합한다. Copilot은 nearest-wins를 문서화했지만 GitHub.com의 Copilot Chat에 한정되며, 자사 문서가 대부분의 다른 surface는 "combine applicable instruction files"라고 밝힌다. 중첩 파일은 두 방식 모두에서 옳아야 한다.
+5. **Claude Code는 v2.1.277부터 `AGENTS.md`를 직접 읽는다.** `AGENTS.md`만 둔 저장소도 `CLAUDE.md`나 import, 설정 없이 Claude Code에 지시를 전달한다. 다만 두 가지 조건은 여전히 중요하다. 작업 디렉토리나 그 위에 `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md` 중 하나가 있으면 기본 **Project instructions** 설정에서 `AGENTS.md`가 억제되고, `AGENTS.md`를 읽을 수 없는 세션(v2.1.277 이전, 리더 플러그인 비활성)은 `CLAUDE.md`만 읽는다([`references/discovery-and-precedence.ko.md`](references/discovery-and-precedence.ko.md) §2).
+6. **한 런타임에서는 크기가 하드 리밋이다.** Codex는 "stops adding files once the combined size reaches the limit defined by `project_doc_max_bytes` (32 KiB by default)" — 루트→말단 순서이므로, 비대한 루트 파일이 정작 지금 수정 중인 코드를 관장하는 중첩 파일을 조용히 굶길 수 있다.
 
 세부와 인용: [`references/evidence-and-evaluation.ko.md`](references/evidence-and-evaluation.ko.md), [`references/discovery-and-precedence.ko.md`](references/discovery-and-precedence.ko.md).
 
@@ -36,7 +37,7 @@ instruction 파일은 **에이전트가 task가 무엇인지 알기 전에** 주
 
 ## 기본 원칙
 
-1. **모든 줄이 자격을 얻어야 한다.** "For each line, ask: 'Would removing this cause Claude to make mistakes?' If not, cut it." 이 테스트의 기본 결론은 삭제다.
+1. **모든 줄이 자격을 얻고, 다시 얻어야 한다.** Anthropic의 받아들이는 규칙은 "Add to it when: Claude makes the same mistake a second time"이고, 쳐내는 규칙은 파일이 "works best when it only holds what Claude couldn't work out from the code itself"라는 것이다. 기본 결론은 삭제이며, 정리하지 않은 파일은 커밋당 약 다섯 개 instruction씩 자란다.
 2. **완전함보다 비자명함.** 파일의 임무는 에이전트가 *틀릴* 것이지 *참인* 것이 아니다. 저장소에서 발견 가능한 것은 신호 없는 context 비용이다.
 3. **올바른 고도.** 취약한 하드코딩 로직과 모호한 지침 사이. 행동을 이끌 만큼 구체적이되, 예상 못한 경우에서 살아남을 만큼 유연하게.
 4. **산문은 권고다.** 매번 반드시 일어나야 하는 것은 그것을 요청하는 문장이 아니라 hook, CI 검사, lint 규칙, schema에 속한다.
@@ -54,12 +55,12 @@ instruction 파일은 **에이전트가 task가 무엇인지 알기 전에** 주
 
 | 우선순위 | 내용 | 비고 |
 |---|---|---|
-| 1 | gotcha와 비자명한 제약 | 최고 가치. 현재 Anthropic 지침은 파일 대부분을 여기 쓰라고 한다 |
+| 1 | gotcha와 비자명한 제약 | 최고 가치. Anthropic 지침도 "spend most of the tokens on gotchas inside of the codebase"라고 말한다 |
 | 2 | 검증된 명령 | 정확하고 복사 가능하며 작업 디렉터리 명시 |
 | 3 | 기본값과 다른 관례 | 프레임워크 기본값과 같다면 잡음이다 |
 | 4 | 코드가 스스로 알리지 않는 아키텍처 경계 | 소유권, 금지된 import, 생성 경로 |
 | 5 | 테스트·검증 요구사항 | 변경이 완료되려면 무엇이 통과해야 하는가 |
-| 6 | 보안·안전 제약 | 에이전트가 추론할 수 없음. 실제 파일의 약 14.5%만 포함 |
+| 6 | 보안·안전 제약 | 에이전트가 추론할 수 없음. 실제 파일의 약 14.8%만 포함 |
 | 7 | 한 문단짜리 프로젝트 목적 | 방향 제시일 뿐 README가 아님 |
 | 8 | 로딩 맵 | 인라인 대신 더 깊은 문서로 링크 |
 
@@ -140,8 +141,10 @@ adapter에는 다른 런타임에서 거짓이거나 없는 내용만 담는다.
 - [ ] 규칙마다 정본 위치가 하나이며, 루트와 중첩 파일이 반복되지 않는다.
 - [ ] 중첩 파일이 merge와 nearest-wins 양쪽에서 옳은 자기 완결적 delta다.
 - [ ] Claude Code가 대상이면 저장소가 자체 `AGENTS.md` 읽기(v2.1.277+, 작업 디렉토리나 그 위에 판정에 포함되는 `CLAUDE.md`·`CLAUDE.local.md` 없음)에 기대거나, `AGENTS.md`를 import 또는 심볼릭 링크하는 `CLAUDE.md`를 함께 제공한다.
-- [ ] `@path` import가 4 hop 이내이며 import한 파일 기준 상대 경로로 해석된다.
-- [ ] 32 KiB 합산 상한에서 중첩 파일 몫이 남을 만큼 루트 파일이 작다.
+- [ ] 이 파일이 코드와 어긋날 때 코드가 이긴다는 문장이 한 줄 있다.
+- [ ] `@path` import가 4 hop 이내이고, import한 파일 기준 상대 경로로 해석되며, 실수로 따옴표나 코드 span 안에 들어가지 않았다.
+- [ ] 32 KiB 합산 상한에서 중첩 파일 몫이 남을 만큼 루트 파일이 작고, 시작 시 로드되는 어떤 파일도 4 MiB에 근접하지 않는다.
+- [ ] 저장소 루트나 `~/.codex`에 남은 `AGENTS.override.md`가 고친 파일을 조용히 대체하고 있지 않다.
 - [ ] 비밀값, 응답 스타일 선호, 임시 task 메모가 없다.
 - [ ] 최신성·벤더 주장에 source URL과 확인 날짜가 있다.
 
@@ -152,6 +155,26 @@ adapter에는 다른 런타임에서 거짓이거나 없는 내용만 담는다.
 이 영역의 사실은 벤더 동작이며 분기 단위로 바뀐다. [`references/discovery-and-precedence.ko.md`](references/discovery-and-precedence.ko.md)를 먼저 재검증한다. 파일명, 크기 상한, 우선순위 순서가 가장 바뀌기 쉬운 항목이다.
 
 중요한 instruction 변경은 개선이 아니라 실험으로 다룬다. 관찰된 반복 실패 이후에만 규칙을 추가하고, 대표 task에서 있을 때와 없을 때를 비교하며, 성공률*과* 비용을 함께 추적하고, 측정 가능한 효과가 없으면 지운다.
+
+정리는 추가할 때만이 아니라 일정에 따라 한다. 측정된 저장소들은 "+4.9 net instructions every commit"을 쌓아 파일 수명 동안 세 배 이상으로 키웠다. 덧붙이는 일은 싸고 안전하게 지우는 일은 비싸기 때문이다. 분기에 한 번 파일을 처음부터 다시 읽으며 코드에 이미 보이는 내용을 지우는 것이 그 대응이고, Claude Code의 `/doctor`가 체크인된 `CLAUDE.md`에 대해 그 삭제 후보를 제안한다.
+
+---
+
+## 출처
+
+| 출처 | URL | 확인일 |
+|---|---|---|
+| AGENTS.md 표준 | <https://agents.md/> | 확인 2026-11-03 |
+| Claude Code memory | <https://code.claude.com/docs/en/memory> | 확인 2026-11-03 |
+| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 확인 2026-11-03 |
+| Claude Code best practices | <https://code.claude.com/docs/en/best-practices> | 확인 2026-11-03 |
+| New rules of context engineering (Claude 5) | <https://claude.dev/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models/> | 확인 2026-11-03 |
+| OpenAI Codex AGENTS.md | <https://learn.chatgpt.com/docs/agent-configuration/agents-md> | 확인 2026-11-03 |
+| GitHub Copilot custom instructions | <https://docs.github.com/en/copilot/concepts/prompting-and-context/custom-instructions> | 확인 2026-11-03 |
+| Cursor rules | <https://cursor.com/en-US/docs/rules> | 확인 2026-11-03 |
+| Evaluating AGENTS.md (CTXbench, v3) | <https://arxiv.org/html/2602.11988v3> | 확인 2026-11-03 |
+| Impact of AGENTS.md on Efficiency | <https://arxiv.org/html/2601.20404v2> | 확인 2026-11-03 |
+| Stale instruction files override the code | <https://arxiv.org/abs/2610.30571> | 확인 2026-11-03 |
 
 ---
 

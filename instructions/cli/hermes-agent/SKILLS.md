@@ -1,9 +1,18 @@
 # Hermes Agent Skills
 
-> Korean: [SKILLS.ko.md](SKILLS.ko.md) · Authoring: [SKILL_AUTHORING.md](SKILL_AUTHORING.md) · Runtime overview: [README.md](README.md) · Research date: **2026-08-20**
-> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
+> Korean: [SKILLS.ko.md](SKILLS.ko.md) · Authoring: [SKILL_AUTHORING.md](SKILL_AUTHORING.md) · Curator detail: [references/curator-lifecycle.md](references/curator-lifecycle.md) · Runtime overview: [README.md](README.md) · Research date: **2026-11-03**
 
-This is a practical reference for Hermes Agent skills. **Verified** statements and commands below are drawn from the official [Skills guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills), [Creating Skills guide](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills), and the [NousResearch/hermes-agent source](https://github.com/NousResearch/hermes-agent). Product behavior can change; consult `hermes skills --help` on the installed version before automation. Sections marked **Recommendation** are authoring or operational advice, not an upstream contract.
+This is a practical reference for Hermes Agent skills. **Verified** statements and commands below are drawn from the official [Skills guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills), the [Curator guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/curator), the [Creating Skills guide](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills), and the [NousResearch/hermes-agent source](https://github.com/NousResearch/hermes-agent). The facts are anchored to Hermes Agent **v0.22.5** (commit `bf0203a794a`, released 2026-10-22). Product behavior can change; consult `hermes skills --help` on the installed version before automation. Sections marked **Recommendation** are authoring or operational advice, not an upstream contract.
+
+## Sources
+
+| Source | What it supplies | Checked |
+| --- | --- | --- |
+| [Skills System](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) | Loading levels, locations and precedence, bundles, hub, reset, opt-out | checked 2026-11-03 |
+| [Curator](https://hermes-agent.nousresearch.com/docs/user-guide/features/curator) | Background lifecycle, pin, lock, ledger, backups, adoption | checked 2026-11-03 |
+| [Creating Skills](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills) | Frontmatter, inline shell, template tokens, taps, publishing | checked 2026-11-03 |
+| [CLI Commands Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) | `hermes skills`, `hermes bundles`, `hermes curator` | checked 2026-11-03 |
+| [Agent Skills specification](https://agentskills.io/specification) | Portable `SKILL.md` contract | checked 2026-11-03 |
 
 ## Model: procedures loaded on demand
 
@@ -19,6 +28,8 @@ Hermes uses progressive disclosure:
 
 Thus a concise description makes a skill discoverable, while detailed edge cases belong in referenced files. Installed skills are available as slash commands and can also be found through normal conversation when the `skills` toolset is enabled.
 
+**Fact:** the skill list is part of the system prompt and stays fixed so the provider cache keeps working. A skill installed, created, or removed while a conversation is open (hub install, another terminal, a plugin, the curator, or the agent itself) is announced to the agent in the next message by a one-time note naming the added and removed skills, and the system prompt itself picks the change up at the next compaction. `/reload-skills` still refreshes the `/slash` commands.
+
 **Recommendation:** Put the common, safe path in `SKILL.md`; put long APIs, vendor tables, and exceptional procedures in `references/`. Do not put credentials, unreviewed instructions, or a whole source corpus into the initial file.
 
 ## Discovery, locations, and trust
@@ -27,12 +38,15 @@ Thus a concise description makes a skill discoverable, while detailed edge cases
 
 | Tier | Location | Notes |
 |---|---|---|
-| Project (highest) | `<project-root>/.hermes/skills/` | Hermes-native project skills |
+| Project (highest) | `<project-root>/.hermes/skills/` | Hermes-native project skills, tagged `[project]` in the index |
 | Project (highest) | `<project-root>/.agents/skills/` | cross-tool convention |
 | Profile/local | `~/.hermes/skills/` | primary source of truth; bundled, hub, and agent-created skills live here |
+| Creation redirect | each `skills.create_dir` value | where `skill_manage` create writes when configured |
 | External (lowest) | each `skills.external_dirs` entry | scanned alongside local skills |
 
-The project root is the closest ancestor containing `.git`; worktrees and submodules count. A local skill shadows an external skill of the same name; a project skill shadows both. New agent-created skills go to `~/.hermes/skills/`; existing external skills may be edited in place if writable. Project directories are repo-owned: the curator does not modify them.
+The project root is the closest ancestor containing `.git`; worktrees and submodules count. The full precedence order is `project → local → skills.create_dir → external_dirs`, and every surface — index, `skills_list`, `hermes skills list`, `skill_view`, slash commands, `-s` preload, cron — resolves a name the same way. New agent-created skills go to `~/.hermes/skills/` unless `skills.create_dir` moves them; existing external skills may be edited in place if writable. Project and external directories are shared or repo-owned: the curator never modifies project skills.
+
+**Fact:** two *different* skills that share a name inside one directory are never guessed between. Both appear under their relative path and a bare load fails with `Ambiguous skill name …: use one of a/one, b/two`. Identical copies resolve to the shallowest path, and a shadowed copy is logged as shadowed.
 
 Configure additional directories in `~/.hermes/config.yaml`:
 
@@ -83,6 +97,20 @@ The skills toolset also permits conversational discovery:
 hermes chat --toolsets skills -q "What skills do you have?"
 hermes chat --toolsets skills -q "Show me the axolotl skill"
 ```
+
+### Auto-loaded and redirected skills (verified)
+
+`skills.auto_load` pins skills so they are fully loaded at the start of every new session on every surface, resolved once when the system prompt is first built:
+
+```yaml
+skills:
+  auto_load:
+    - my-workflow
+    - github-pr-workflow
+  create_dir: /opt/brain/skills   # optional: where new agent-created skills go
+```
+
+Missing or disabled auto-load entries warn and are skipped, and `--ignore-rules` / `HERMES_IGNORE_RULES=1` suppresses the list. `create_dir` also rewrites the agent-facing instructions that name the creation path, so the agent is told where to write; bundled sync, the hub, and the curator keep operating on the profile-local directory.
 
 ### Bundles (verified)
 
@@ -177,6 +205,9 @@ hermes skills update
 hermes skills update react
 hermes skills update react --force
 hermes skills audit
+hermes skills list-modified          # local edits that diverge from the installed hash
+hermes skills diff <name>            # show that divergence before deciding
+hermes skills snapshot export setup.json   # portable record of installed skill config
 hermes skills uninstall k8s
 hermes skills reset google-workspace
 hermes skills reset google-workspace --restore
@@ -195,13 +226,34 @@ hermes skills opt-out --remove
 hermes skills opt-in --sync
 ```
 
-`opt-out` stops future bundled seeding without touching files. `--remove` confirms and deletes only unmodified bundled skills; user edits, hub skills, and authored skills remain. `opt-in --sync` removes the `.no-bundled-skills` marker and seeds now. At initial installation, `--no-skills` and `hermes profile create research --no-skills` are the corresponding blank-profile options.
+`opt-out` stops future bundled seeding without touching files. `--remove` confirms and deletes only unmodified bundled skills; user edits, hub skills, and authored skills remain. `opt-in --sync` removes the `.no-bundled-skills` marker and seeds now.
+
+**Fact — blank-profile paths differ:** the installer has **no** `--no-skills` flag. Its setup stage asks whether to seed the bundled catalog when you pick the Blank Slate setup, and answering no writes the opt-out marker; non-interactive installs seed the catalog, so run `hermes skills opt-out` afterwards. `hermes profile create research --no-skills` is the profile-create-time option, and `opt-out` / `opt-in --sync` toggle an existing profile.
+
+### Background maintenance: the curator (verified)
+
+**Fact:** the curator is an inactivity-triggered maintenance pass over **agent-created** skills only. It runs on CLI session start, during gateway housekeeping, and on the `hermes serve` maintenance timer once `curator.interval_hours` (default 7 days) and `curator.min_idle_hours` (default 2) have both elapsed. On a fresh install the first observation only seeds `last_run_at`, deferring the first real pass by one full interval.
+
+**Fact:** a run has two phases. Deterministic transitions mark skills unused for `stale_after_days` (14) as `stale` and archive those unused for `archive_after_days` (30) into `~/.hermes/skills/.archive/`; the LLM consolidation pass that builds umbrella skills is **off** by default (`curator.consolidate`). Pinned skills and skills referenced by any cron job, including paused jobs, are skipped. The curator never auto-deletes: the worst outcome is a recoverable archive.
+
+```bash
+hermes curator status          # last run, counts, pinned and locked lists
+hermes curator run --dry-run   # report without mutating anything
+hermes curator pin <skill>     # never auto-transition or delete
+hermes curator lock <skill>    # the agent may not change it at all
+```
+
+**Fact:** pinning protects against curator archival and the agent's `skill_manage delete` while still allowing content edits; locking refuses every agent write, including `skill_manage`, `write_file`/`patch` inside the skill directory, and terminal writes, but the agent can still read and run the skill, and your own edits always work. Foreground `/learn` and `skill_manage` creates are recorded as `created_by: learn` and are deliberately left alone; `hermes curator adopt <skill>` hands an unmanaged skill over. Details, including the audit ledger and rollback, are in [references/curator-lifecycle.md](references/curator-lifecycle.md).
 
 The same hub operations are available in chat, for example `/skills browse`, `/skills inspect …`, `/skills install …`, `/skills check`, `/skills update`, `/skills reset …`, and `/skills list`.
 
 ### Security and publishing (verified + recommendation)
 
-Hermes scans hub installs for prompt injection, exfiltration, destructive commands, supply-chain signals, and related threats. `inspect` exposes upstream metadata when available. Trust levels are `builtin`, `official`, `trusted`, and `community`. `--force` may override caution/warn policy blocks but **never** a `dangerous` verdict. Official optional skills are built-in trusted; new taps are community by default. `audit` is a rescan, not proof that code is safe.
+Hermes scans hub installs for prompt injection, exfiltration, destructive commands, supply-chain signals, and related threats. `inspect` exposes upstream metadata when available: repo URL, the skills.sh detail page, the install command, weekly installs, upstream audit statuses, and well-known endpoints.
+
+**Fact — second-opinion scan:** Hermes can also run NVIDIA SkillEvaluator Tier 1 checks on every hub install: deterministic and keyless PII detection, Unicode smuggling, script lint, license compliance, and a static scan through SkillSpector. It is advisory only — findings print with file and line before the install confirmation and the install continues. The optional binaries are installed separately, and `skills.tier1_advisory: false` turns it off; without the binary the scan is silently skipped.
+
+**Fact — hub sources:** beyond `official`, `skills-sh`, `well-known`, `url`, and `github`, Hermes integrates `clawhub`, `lobehub`, and `browse-sh` identifiers. Unfiltered searches answer from a cached central index and fall back to the live registries for at most 8 seconds, so a skill published minutes ago can still appear. Trust levels are `builtin`, `official`, `trusted`, and `community`. `--force` may override caution/warn policy blocks but **never** a `dangerous` verdict. Official optional skills are built-in trusted; new taps are community by default. `audit` is a rescan, not proof that code is safe.
 
 **Recommendation:** Inspect every third-party `SKILL.md`, every referenced script, and every URL before install; pin/review the GitHub revision through your organization’s process where that matters. Treat a scanner pass, trusted registry label, and a GitHub token as different things. Never put credentials in a tap, and do not publish instructions that cause irreversible actions without an explicit user confirmation step. Review updates before `--force`; it deliberately replaces local edits.
 
@@ -211,7 +263,7 @@ GitHub-backed hub activity may hit unauthenticated limits (60 requests/hour); th
 
 | Symptom | Verified cause / action |
 |---|---|
-| Skill does not appear | Check platform restriction, `requires_*`/`fallback_for_*`, duplicate higher-precedence name, project trust, and quarantine. |
+| Skill does not appear | Check platform restriction, `requires_*`/`fallback_for_*`, duplicate higher-precedence name, project trust, quarantine, and curator archival (`hermes curator status`, `list-archived`). |
 | Project skills were found but not loaded | Run `hermes skills trust` at the project root, or pass the project path. |
 | External skill is unexpectedly edited | External directories are writable discovery locations; protect them with filesystem permissions. |
 | URL install cannot name the skill | Add `name:` frontmatter or supply `--name`; noninteractive surfaces cannot prompt. |
@@ -221,10 +273,6 @@ GitHub-backed hub activity may hit unauthenticated limits (60 requests/hour); th
 | Hub requests are rate-limited | Configure `GITHUB_TOKEN` in the local secret setup, then retry later. |
 | A secret is requested in a chat gateway | Do not send it in chat; use local `hermes setup` or `~/.hermes/.env` as Hermes directs. |
 
-## Primary sources
+## Where the code lives
 
-- Nous Research, [Skills System](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills)
-- Nous Research, [Creating Skills](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills)
-- Nous Research, [Hermes Agent source: skills CLI](https://github.com/NousResearch/hermes-agent/tree/main/hermes_cli/subcommands)
-- Nous Research, [Hermes Agent source: bundled skills](https://github.com/NousResearch/hermes-agent/tree/main/skills)
-- [Agent Skills specification](https://agentskills.io/specification)
+- [Skills CLI subcommands](https://github.com/NousResearch/hermes-agent/tree/main/hermes_cli/subcommands) and [bundled skills](https://github.com/NousResearch/hermes-agent/tree/main/skills) in the upstream repository. Pin the revision you are reading: paths move between releases.

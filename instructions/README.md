@@ -17,6 +17,10 @@ This folder is the LLM working-instruction layer for this project. Its purpose i
 | Skill Prompt/Loop/Eval | [`skill/references/prompt-loop-eval.md`](skill/references/prompt-loop-eval.md) | Design a skill as a small iterable, verifiable program rather than a single prompt |
 | Autoresearch | [`autoresearch/AUTORESEARCH.md`](autoresearch/AUTORESEARCH.md) | Design an autonomous iteration harness with goal, scope, metric, verification, guard, log, and rollback |
 | Harness Engineering | [`harness-engineering/HARNESS_ENGINEERING.md`](harness-engineering/HARNESS_ENGINEERING.md) | Manage prompts, agents, and tool use as a testable harness |
+| Loop Engineering | [`loop-engineering/LOOP_ENGINEERING.md`](loop-engineering/LOOP_ENGINEERING.md) | Design autonomous agent loops — trigger, work source, state, maker/checker split, verifiable stop condition, budget — one level above the harness |
+| Graph Engineering | [`graph-engineering/GRAPH_ENGINEERING.md`](graph-engineering/GRAPH_ENGINEERING.md) | Design multi-step and multi-agent work as a graph of nodes, edges, and state — and know when not to |
+| Harness Anatomy | [`harness-engineering/references/harness-anatomy.md`](harness-engineering/references/harness-anatomy.md) | The parts a harness is made of and when a harness component has gone stale |
+| Context Management | [`context-engineering/references/context-management.md`](context-engineering/references/context-management.md) | Write, select, compress, and isolate context over a long run; per-runtime compaction and memory surfaces |
 | Harness Measurement | [`harness-engineering/references/measurement.md`](harness-engineering/references/measurement.md) | Derivation for the repetition, aggregation, and context-variable rules: `pass^k`, sample size, behavioral vs end-to-end evals |
 | Harness Evidence & Recovery | [`harness-engineering/references/evidence-and-recovery.md`](harness-engineering/references/evidence-and-recovery.md) | Working shape of the evidence, verification-cost-reduction, and long-horizon recovery rules |
 | Harness Agent Security | [`harness-engineering/references/agent-security.md`](harness-engineering/references/agent-security.md) | The OWASP agentic threat enumeration behind the minimum security assertions |
@@ -37,8 +41,8 @@ bun run --cwd scripts lint:sh        # static analysis of the checker itself (ne
 
 The `lint:sh` task runs [ShellCheck](https://www.shellcheck.net/) over `scripts/check-sources.sh`. It is a separate opt-in task because ShellCheck is a system tool rather than a dependency of this repository; `bash-language-server` is declared in `scripts/package.json` for editor diagnostics.
 
-- Last full sweep: **2026-07-29**. Targeted re-verification of the AGENTS.md discovery/precedence area, the CLI runtime profiles, the skill and context-engineering references, the harness-engineering source table, the Hermes Agent guides, and the new caching area: **2026-09-19**. Next full re-verification: **2026-10-29**.
-- Harness-engineering strengthening re-verification: the new `harness-engineering/references/measurement.md`, `harness-engineering/references/evidence-and-recovery.md`, and `harness-engineering/references/agent-security.md` sources were checked on **2026-09-20**.
+- Last full sweep: **2026-11-03**. Every area was re-verified against current first-party sources through the Aside browser, outdated claims were removed or corrected, and two new areas — `loop-engineering/` and `graph-engineering/` — were added. Per-claim checked dates live in each document; a row that could not be re-read keeps its older date. Next full re-verification: **2027-02-03**.
+- Previous sweeps: full sweep 2026-07-29; targeted re-verification 2026-09-19 and 2026-09-20.
 - The link check reads inline citations only: it skips fenced code blocks and documentation example URLs on the RFC 2606 reserved domains (`example.com`, `example.net`, `example.org`, `*.example`) and loopback addresses (`localhost`, `127/8`, `[::1]`), and reports how many it skipped — including the URLs inside code blocks that it did not check, so nothing is dropped silently. Every other URL must resolve without a redirect.
 - Keep the quarterly re-verification cadence as project policy: vendor documentation changes on its own schedule, and this cadence is our chosen review interval rather than a vendor guarantee. arXiv and standards documents decay differently, so a URL check is enough for those.
 - `.hyper/` is covered by `.gitignore`. Research reports under it are a **local re-verification cache** and do not exist in another clone. Shareable evidence is always the URL inside the document.
@@ -64,6 +68,8 @@ The `lint:sh` task runs [ShellCheck](https://www.shellcheck.net/) over `scripts/
 @instructions/skill/references/prompt-loop-eval.md
 @instructions/autoresearch/AUTORESEARCH.md
 @instructions/harness-engineering/HARNESS_ENGINEERING.md
+@instructions/loop-engineering/LOOP_ENGINEERING.md
+@instructions/graph-engineering/GRAPH_ENGINEERING.md
 @instructions/sourcing/reliable-search.md
 @instructions/validation/index.md
 ```
@@ -79,5 +85,7 @@ When creating, refactoring, or reviewing a repository's `AGENTS.md` or `CLAUDE.m
 When creating a new skill or refactoring `skills/*`, read [`skill/SKILL_AUTHORING.md`](skill/SKILL_AUTHORING.md), and add [`skill/references/prompt-loop-eval.md`](skill/references/prompt-loop-eval.md) when prompt/loop/eval design is needed. Read the anatomy, trigger, progressive disclosure, resource placement, and validation documents under `skill/references/` as required.
 
 When designing autoresearch-style iterative improvement, metric optimization, or an autonomous debug/fix/learn/reason loop, read [`autoresearch/AUTORESEARCH.md`](autoresearch/AUTORESEARCH.md), then read further under `autoresearch/references/` according to the metric, verify, guard, log, and rollback criteria you need.
+
+When designing any autonomous agent loop — goal-based, scheduled, or event-driven work that repeats until a stop condition holds — read [`loop-engineering/LOOP_ENGINEERING.md`](loop-engineering/LOOP_ENGINEERING.md); autoresearch is one specialized, metric-driven loop inside that area. When work is decomposed into nodes and edges with shared state, checkpoints, or fan-out/fan-in across agents, read [`graph-engineering/GRAPH_ENGINEERING.md`](graph-engineering/GRAPH_ENGINEERING.md).
 
 For work where research, recency, and source traceability matter, read [`sourcing/reliable-search.md`](sourcing/reliable-search.md) first, then `sourcing/references/` when a source ledger, citation, or freshness handling is required. For work where completion claims, evals, and agent/tool verification matter, read [`validation/index.md`](validation/index.md) together with `validation/references/`.

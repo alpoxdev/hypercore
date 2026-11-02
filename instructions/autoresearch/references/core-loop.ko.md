@@ -39,6 +39,7 @@ CandidateSnapshot: "content-addressed-id"
 - “Atomic”은 파일, command, commit 하나가 아니라 falsifiable hypothesis 하나를 뜻한다.
 - Verify 전에 모든 changed path가 owned, in-scope, hypothesis-attributable인지 확인한다.
 - 기존 사용자 변경과 concurrent user change는 사용자 소유다. Owned path가 기대한 post-mutation state와 달라지면 덮어쓰지 말고 중단한다.
+- Candidate는 metric procedure, mandatory guard, evidence log를 수정할 수 없다. Loop가 자신의 harness를 수정하도록 설계됐다면 그 변경은 metric loop 밖의 별도 사람 승인 변경이다. [`safety-and-observability.ko.md`](safety-and-observability.ko.md) §4를 따른다.
 - Crash 뒤 candidate fix는 새 iteration이다. 단, 같은 candidate/environment로 수행하는 사전 정의된 infrastructure-only retry는 예외다.
 - Commit은 commit이 명시적으로 승인되고 user history와 분리됐을 때만 candidate snapshot으로 사용할 수 있다. 그렇지 않으면 coverage를 선언한 content snapshot 또는 patch package를 사용한다.
 
@@ -95,6 +96,7 @@ Exit code, metric parse, guard failure, timeout, signal, infrastructure failure�
 - defined cadence와 acceptance rule을 사용하는 accepted frontier value의 plateau
 - repeated invalid-run 또는 infrastructure-failure limit
 - in-scope falsifiable hypothesis가 남지 않음
+- candidate의 guard 범위가 frontier보다 좁음. 실행된 test 수가 줄거나 evaluator digest가 바뀐 경우다
 - Verify 또는 Guard를 더는 신뢰할 수 없음
 - scope, ownership, authorization, safety boundary를 넘어야 함
 - user interrupt
@@ -131,3 +133,12 @@ run_id iteration hypothesis_id frontier_id candidate_id outcome metric_summary g
 Exact command, exit code, signal, timeout, duration은 process procedure에서 필요하고 material할 때 기록한다. Human, model, rubric, API, panel judge는 typed procedure outcome을 사용한다. Full environment나 secret을 저장하지 않고 allowlisted outcome-affecting input과 redacted identity만 기록한다.
 
 Resumable handoff는 schema/generation, run/workspace identity, immutable frontier, explicit candidate state, cursor, effective config, relevant environment, metric/guard evidence, artifact, ownership, cleanup, rollback, redaction status, mandatory resume check를 묶는다. 빠진 state를 추론하지 않는다.
+
+## Sources
+
+> 확인 2026-11-03.
+
+| 주장 | 출처 | Grade |
+|---|---|---|
+| Evaluator를 수정 대상 file 밖에 read-only로 두고, 후보당 예산을 고정하고, `keep`/`discard`/`crash` 행을 기록 | <https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117> | PRIMARY (repository) |
+| Frontier model이 test나 scoring code를 고쳐 점수를 올린 사례와, 그래서 guard 범위를 후보마다 계산해야 하는 이유 | <https://metr.org/blog/2025-06-05-recent-reward-hacking/> | PRIMARY |

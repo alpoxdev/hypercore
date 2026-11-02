@@ -39,6 +39,7 @@ Rules:
 - “Atomic” means one falsifiable hypothesis, not one file, command, or commit.
 - Before Verify, assert that every changed path is owned, in scope, and attributable to the hypothesis.
 - Pre-existing and concurrent user changes remain user-owned. If an owned path diverges from the expected post-mutation state, stop instead of overwriting it.
+- The candidate may not modify the metric procedure, the mandatory guards, or the evidence log. When the loop is designed to modify its own harness, that change is a separate human-approved change outside the metric loop; see [`safety-and-observability.md`](safety-and-observability.md) §4.
 - Candidate fixes after a crash are new iterations unless the retry is a predeclared infrastructure-only retry of the identical candidate and environment.
 - A commit may be a candidate snapshot only when commits are explicitly authorized and isolated from user history. Otherwise use a coverage-declared content snapshot or patch package.
 
@@ -95,6 +96,7 @@ Predeclare applicable stop rules:
 - plateau over accepted frontier values using a defined cadence and acceptance rule
 - repeated invalid-run or infrastructure-failure limit
 - no in-scope falsifiable hypothesis remains
+- guard coverage on the candidate is narrower than on the frontier, such as fewer executed tests or a changed evaluator digest
 - Verify or Guard is no longer trustworthy
 - scope, ownership, authorization, or safety boundary would be crossed
 - user interrupt
@@ -131,3 +133,12 @@ run_id iteration hypothesis_id frontier_id candidate_id outcome metric_summary g
 Exact commands, exit codes, signals, timeouts, and durations are required for process procedures when material. Human, model, rubric, API, and panel judges use typed procedure outcomes instead. Never persist full environments or secrets; record only allowlisted outcome-affecting inputs and redacted identities.
 
 A resumable handoff binds schema/generation, run and workspace identity, immutable frontier, explicit candidate state, cursor, effective config, relevant environment, metric/guard evidence, artifacts, ownership, cleanup, rollback, redaction status, and mandatory resume checks. Missing state is not inferred.
+
+## Sources
+
+> Checked 2026-11-03.
+
+| Claim | Source | Grade |
+|---|---|---|
+| Evaluator held read-only outside the editable file, fixed per-candidate budget, `keep`/`discard`/`crash` log rows | <https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117> | PRIMARY (repository) |
+| Frontier models raising scores by editing tests or scoring code, which is why guard coverage is computed per candidate | <https://metr.org/blog/2025-06-05-recent-reward-hacking/> | PRIMARY |

@@ -1,122 +1,100 @@
-# Hermes Agent 확장 및 운영 지도
+# Hermes Agent 확장과 운영 지도
 
-> 영어 원문: [EXTENSIONS.md](EXTENSIONS.md)  
-> 함께 읽을 문서: [개요 및 런타임 사용](README.ko.md), [설정](CONFIGURATION.ko.md), [Discord](DISCORD.ko.md), [메시징 게이트웨이](MESSAGING.ko.md), [스킬](SKILLS.ko.md), [네이티브 플러그인](PLUGINS.ko.md)
-> **조사 기준일:** 2026-08-24. 아래의 주장과 예시는 공식 Hermes 문서 및 공식 [NousResearch/hermes-agent 저장소](https://github.com/NousResearch/hermes-agent)로 제한한다.
-> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
+> English version: [EXTENSIONS.md](EXTENSIONS.md)
+> 함께 읽을 문서: [개요](README.ko.md), [설정](CONFIGURATION.ko.md), [Discord](DISCORD.ko.md), [messaging gateway](MESSAGING.ko.md), [skill](SKILLS.ko.md), [플러그인](PLUGINS.ko.md), [hook](HOOK.ko.md)
+> **조사일:** 2026-11-03. Hermes Agent **v0.22.5**(커밋 `bf0203a794a` 측정치)에 포함된 문서와 v0.22.0 릴리스 노트를 근거로 삼았습니다. 모든 서술은 이 공식 출처 범위를 넘지 않습니다. 라이브 문서 사이트는 tag보다 먼저 배포되므로, 사이트에서만 확인한 내용은 v0.22.5 동작으로 적지 않고 확인일과 함께 적었으며, 버전에 민감한 이름은 설치된 CLI의 `--help`로 다시 확인해야 합니다.
 
-Hermes 확장은 신뢰 경계를 넘는다. MCP는 로컬 프로그램을 실행하거나 원격 서비스에 호출할 수 있고, 메시징 게이트웨이는 다른 플랫폼의 메시지를 받으며, 도구 제공자는 입력과 자격 증명을 받는다. 활성화는 단순 UI 기능 추가가 아니라 능력 부여로 취급한다. 무엇이든 켜기 전에 소스, 범위, 전송 방식, 자격 증명 흐름을 점검한다.
+Hermes의 확장은 신뢰 경계를 넘습니다. MCP server는 로컬 프로그램을 실행하거나 원격 서비스를 호출하고, messaging gateway는 다른 platform에서 온 message를 받으며, tool provider는 입력과 자격 증명을 받습니다. 확장을 켜는 일은 UI 기능을 더하는 일이 아니라 capability를 주는 일로 다룹니다.
+
+| 출처 | 제공하는 내용 | 확인 |
+| --- | --- | --- |
+| [MCP](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp) | server 종류, catalog, 필터링, 보안 | 확인 2026-11-03 |
+| [플러그인](https://hermes-agent.nousresearch.com/docs/user-guide/features/plugins) | catalog, 보안 검사, isolation | 확인 2026-11-03 |
+| [Messaging Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/messaging) | gateway 수명 주기와 전달 | 확인 2026-11-03 |
+| [Multiplexing gateway](https://hermes-agent.nousresearch.com/docs/developer-guide/multiplexing-gateway) | 모든 profile을 하나의 프로세스로 | 확인 2026-11-03 |
+| [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security) | approval 구조와 신뢰 경계 | 확인 2026-11-03 |
+| [v0.22.0 릴리스 노트](https://github.com/NousResearch/hermes-agent/releases/tag/v0.22.0) | Connectors, plugin isolation, catalog 규모 | 확인 2026-11-03 |
 
 ## 확장 표면 선택
 
-| 필요 | 우선 표면 | 운영 경계 |
+| 필요한 것 | 주된 표면 | 운영 경계 |
 | --- | --- | --- |
-| 기존 외부 도구, 데이터베이스, 내부 API | MCP | 서버 코드와 그 자격 증명이 Hermes에 제공된다. |
-| Hermes 네이티브 동작 | 일반 플러그인/제공자 설정 | 제공자는 작업 내용을 자기 서비스로 전송한다. |
-| Telegram, Discord, Slack, WhatsApp, Signal, Email 채팅 | 메시징 게이트웨이 | 플랫폼 신원/페어링 및 신뢰할 수 없는 인바운드 텍스트. |
-| 수명주기 이벤트 반응 또는 로컬 정책 강제 | Hooks / shell hooks | 훅 코드는 설정된 프로세스 권한으로 실행된다. |
-| 음성 입출력 | STT / TTS 제공자 | 클라우드 기반이면 오디오와 텍스트가 호스트 밖으로 나간다. |
-| GUI 또는 로컬 제어면 | Desktop / dashboard | 바인딩과 접근 제어가 운영자를 결정한다. |
+| 이미 있는 외부 도구, database, 내부 API | MCP(`mcp_servers`) | server 코드와 그 자격 증명이 Hermes에서 쓸 수 있게 됩니다. |
+| Linear, Notion 같은 hosted 앱 도구 | Nous tool gateway를 통한 Connector | 로그인 신원과 앱 자체의 권한 범위가 접근을 결정합니다. |
+| Hermes 자체 동작 확장 | native 플러그인 또는 provider 설정 | 기본은 프로세스 안 실행이며, provider는 작업 내용을 자기 서비스로 보냅니다. |
+| Telegram, Discord, Slack, WhatsApp, Signal, Email에서 대화 | messaging gateway | platform 신원, pairing, 신뢰하지 않는 입력 문장입니다. |
+| lifecycle event 처리나 로컬 정책 강제 | hook, shell hook, plugin hook | hook 코드가 설정된 프로세스 권한으로 실행됩니다. |
+| 음성 입력과 출력 | STT/TTS provider | cloud 기반이면 음성과 텍스트가 host를 떠납니다. |
+| GUI나 로컬 제어 화면 | Desktop 앱 또는 dashboard | bind와 접근 제어가 누가 조작할 수 있는지를 정합니다. |
 
-네이티브 플러그인 안내서를 MCP 대용으로 쓰거나 MCP 카탈로그 항목이 샌드박스라고 가정하지 않는다. 외부 MCP 서버는 [MCP](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp), 네이티브 플러그인 작성은 [Plugins](PLUGINS.ko.md)를 사용한다.
+native 플러그인 안내를 MCP의 대체로 쓰지 않고, catalog 등재 항목이 sandbox라고 가정하지 않습니다.
 
-## MCP: 구성, 제한, 운영
+## MCP: 설정, 제한, 운영
 
-MCP 지원은 Hermes에 포함되어 있다. 시작 시 Hermes는 `mcp_servers`의 도구를 발견하여 등록하며, 지원 서버는 리소스와 프롬프트 래퍼도 제공할 수 있다. 전송 방식은 둘이다.
-
-- **stdio** — Hermes가 로컬 하위 프로세스를 시작하고 stdin/stdout으로 통신한다. 로컬 설치 서버와 로컬 리소스에 적합하지만 명령과 부트스트랩 체인을 신뢰해야 한다.
-- **HTTP** — Hermes가 원격 MCP 엔드포인트에 직접 연결한다. 호스팅/조직 엔드포인트에 사용하며 URL, 인증 방식, 서비스 권한을 각각 검증한다.
-
-문서화된 최소 stdio 구성은 다음과 같다.
+**사실:** Hermes는 로컬 stdio server와 원격 HTTP server를 하나의 `mcp_servers`에 함께 설정하고, Nous가 검토해 catalog에 올린 server는 설치 전까지 비활성으로 둡니다. catalog 설치 card는 Desktop, TUI, CLI에 모두 나타나며 모든 설정 항목을 한 번에 보여 주고 secret은 가립니다. server가 token을 받아들인 뒤에만 설정과 token을 함께 저장하고, Hermes가 임의로 browser를 열지 않습니다.
 
 ```yaml
 mcp_servers:
   filesystem:
     command: "npx"
     args: ["-y", "@modelcontextprotocol/server-filesystem", "/home/user/projects"]
-```
-
-구성 뒤 채팅을 시작한다.
-
-```bash
-hermes chat
-```
-
-정적 토큰 HTTP 서버는 `url`과 `headers`를 쓴다. 실제 토큰은 버전 관리 YAML이 아니라 환경 변수 또는 Hermes `.env`에 둔다.
-
-```yaml
-mcp_servers:
   remote_api:
     url: "https://mcp.example.com/mcp"
     headers:
       Authorization: "Bearer ${MCP_TOKEN}"
 ```
 
-호스팅 OAuth MCP에서 `auth: oauth`는 검색, PKCE, 토큰 교환/갱신, step-up 인증을 Hermes가 처리하게 한다. 적용되는 경우 문서화된 흐름에는 `hermes mcp login <name>`이 포함된다. OAuth 토큰은 `~/.hermes/mcp-tokens/<server>.json`에 `0600` 권한으로 캐시된다. 헤드리스 호스트에서는 문서의 paste-back 리디렉션 흐름, SSH 포워딩, 또는 신중히 구성한 프록시 콜백을 사용한다. 콜백 엔드포인트를 함부로 노출하지 않는다.
+**사실:** `${VAR}`와 `${env:VAR}`는 `~/.hermes/.env`를 포함한 환경에서 연결 시점에 해석됩니다. 정의되지 않은 변수는 문자 그대로 남고 경고를 기록합니다. stdio server는 걸러진 환경을 받으므로 넘길 변수는 명시해야 합니다. OAuth server는 discovery, PKCE, refresh, step-up 인증을 처리하고 token은 server별로 제한된 권한의 파일에 저장됩니다. 화면이 없는 host에서는 `hermes mcp login <server>`로 다시 인가합니다.
 
-### 카탈로그와 수명주기
+**사실:** 필터 우선순위는 deny 목록, allow 목록, `mcp_servers.<name>.tools`의 glob pattern 순서입니다. utility tool은 따로 걸러지고, tool이 모두 걸러진 server는 조용히 사라지지 않고 보고됩니다.
 
-Nous 검토 카탈로그는 opt-in이며 커뮤니티 마켓플레이스가 아니다. 카탈로그 MCP는 설치될 때까지 비활성이다. 다음 명령은 대화형 사용, 목록, 설치를 구분한다.
+**사실:** `lazy: true`인 server는 디스크의 schema cache로 등록하고 첫 호출 때 프로세스를 띄웁니다. `notifications/tools/list_changed`가 오면 registry를 자동으로 갱신하고, 나머지는 `/reload-mcp`로 다시 확인합니다. 실행 중인 gateway는 `config.yaml`을 지켜보다가 바뀐 항목을 약 1분 안에 연결하거나 정리합니다.
 
-```bash
-hermes mcp
-hermes mcp catalog
-hermes mcp install n8n
-hermes mcp configure linear
-```
+**권고:** 필요한 tool만 고르고, 특히 파괴적이거나 관리자 권한을 쓰는 동작은 뺍니다. 설치 전에 catalog manifest의 source, bootstrap 명령, transport, endpoint, 인증을 검토합니다. catalog 검토는 근거일 뿐이고 사용자의 공급망 검토를 대신하지 않습니다.
 
-설치는 저장소를 clone하고 패키지 설치 같은 manifest bootstrap 명령을 실행한 뒤 MCP 서버를 실행할 수 있다. 설치 전 카탈로그 manifest의 `source`, `install.bootstrap`, 전송 명령/인수, 엔드포인트, 인증, 도구 목록을 검토한다. 카탈로그 검토는 유용한 근거이지만 자체 공급망 검토를 대체하지 **않는다**. MCP는 자동 업데이트되지 않으므로 변경된 manifest를 검토한 후 `hermes mcp install <name>`을 다시 실행한다.
+## Hosted Connectors
 
-설치/구성 시 Hermes는 `mcp_servers.<name>.tools.include`를 기록할 수 있다. 필요한 도구만 선택하고, 특히 파괴적/관리 작업은 제외한다. 서버 probe가 실패해도 설치는 완료될 수 있으므로 연결 또는 OAuth를 고친 뒤 `hermes mcp configure <name>`을 다시 실행한다. MCP 연결 필드의 `${VAR}`는 연결 시 환경( `~/.hermes/.env` 포함)에서 해결되며 Cursor 형식 `${env:VAR}`도 허용된다. 정의되지 않은 변수는 리터럴로 남고 경고를 기록한다.
+**사실:** Connector는 Nous tool gateway를 통해 hosted 앱에서 agent가 동작하게 합니다. 앱을 처음 쓰면 무료 connectors 전용 신원이 만들어지므로 시작에 Nous 계정이 필요하지 않습니다. 같은 앱의 계정을 이름을 붙여 여러 개 연결할 수 있고 `/connectors`나 `hermes connectors`로 관리합니다. Desktop의 **Connectors** 페이지는 hosted 앱과 로컬 MCP server를 한 목록에 보여 주며 기존 MCP tab을 대체했습니다.
 
-**MCP 문제 해결:** stdio는 서버 명령/인수와 패키지 설치를, HTTP는 엔드포인트 도달성, OAuth 로그인/콜백 경로, 필요한 제공자 로그인을 확인한다. 그 다음 활성 도구 집합을 줄이고 재연결한다. 바뀐 MCP 스키마는 모델 프롬프트 캐시를 무효화할 수 있으므로 기본적으로 Hermes는 `/reload-mcp` 전에 묻는다(`approvals.mcp_reload_confirm: true`). 임의 클라이언트 스키마를 복사하지 말고 지원 필드는 [MCP 구성 참조](https://hermes-agent.nousresearch.com/docs/reference/mcp-config-reference)를 따른다.
+**권고:** `tools.connectors.enabled: false`로 connector를 끄고 `nous.guest: false`로 guest 신원을 막을 수 있습니다. MCP server와 같은 수준으로 자격 증명과 권한 범위를 검토합니다. Connector는 별도 sandbox가 아니라 사용자의 앱 권한을 사용합니다.
 
-## 제공자 지도: 무엇을 확장하며 데이터는 어디로 가는가
+## Provider 지도: 무엇을 확장하고 데이터가 어디로 가는가
 
-Hermes는 모든 통합을 하나의 플러그인으로 취급하지 않고 AI 모델 제공자와 보조 제공자를 지원한다. 최신 제공자 ID, 모델명, 자격 증명은 공식 [provider guide](https://hermes-agent.nousresearch.com/docs/integrations/providers)가 기준이다. [Tool Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/features/tool-gateway)는 Nous Portal을 통해 웹 검색, 이미지 생성, TTS, 클라우드 브라우저 백엔드를 제공할 수 있으며, 개별 백엔드는 자체 자격 증명도 사용할 수 있다.
+현재 provider ID, model 이름, 자격 증명의 기준은 공식 [provider 안내](https://hermes-agent.nousresearch.com/docs/integrations/providers)입니다. [Tool Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/features/tool-gateway)는 Nous Portal을 통해 web search, image 생성, TTS, cloud browser backend를 제공할 수 있고, 개별 backend는 자체 자격 증명을 쓸 수도 있습니다. model provider는 이제 저장소 밖 플러그인으로 설치하고 `hermes auth`로 인증할 수 있습니다.
 
-| 능력 | 결정할 것 | 데이터/자격 증명 경계 |
+| Capability | 정할 것 | 데이터와 자격 증명 경계 |
 | --- | --- | --- |
-| 모델 | 제공자, 모델, 폴백, 엔드포인트 | 프롬프트, 도구 스키마, 모델에 보이는 컨텍스트가 선택한 모델 제공자로 간다. |
-| 메모리/컨텍스트 | 영구 메모리, 세션, 스킬, 프로젝트 컨텍스트의 적절성 | 로컬 Hermes 상태는 선택한 Hermes home에 남는다. 가져온/신뢰할 수 없는 텍스트는 모델에 영향을 줄 수 있으므로 “컨텍스트 안”을 “신뢰됨”과 동일시하지 않는다. |
-| 웹 검색 | 검색 백엔드와 질의/데이터 처리 | 질의와 검색 콘텐츠가 검색 제공자에게 전달된다. 웹 콘텐츠는 신뢰할 수 없는 입력이다. |
-| 브라우저 | 로컬/클라우드 백엔드와 인증 브라우징 정책 | 클라우드 브라우저/제공자는 탐색과 페이지 데이터를 받을 수 있다. 브라우저 세션/쿠키는 고가치 자격 증명이다. |
-| 이미지/비디오 | 생성/분석 제공자와 보존 정책 | 프롬프트와 미디어가 제공자로 간다. 허가 없이 사적 미디어를 올리지 않는다. |
-| 시크릿 | `.env`, OAuth 자격 증명, 외부 주입 메커니즘 | 필요한 구성 요소에만 주입한다. 프롬프트, 커밋된 YAML, 넓은 하위 프로세스 환경에 넣지 않는다. |
-| TTS/STT | 음성/전사 백엔드와 동의 | 클라우드 제공자에서는 음성 오디오와 전사/텍스트가 기기를 떠날 수 있다. |
+| Model | provider, model, fallback, endpoint | prompt, tool schema, 모델이 보는 문맥이 선택한 provider로 갑니다. |
+| Memory/context | 지속 기억과 프로젝트 문맥을 쓸지 | 로컬 상태는 Hermes home에 남고, 가져온 텍스트가 그 자체로 신뢰받지는 않습니다. |
+| Web search | backend와 query 처리 | query와 검색 결과가 해당 provider로 가고, web 내용은 신뢰하지 않는 입력입니다. |
+| Browser | 로컬 또는 cloud backend, 인증 browsing 정책 | cloud browser는 탐색과 page 데이터를 받습니다. session cookie는 가치가 높은 자격 증명입니다. |
+| Image/video | 생성 또는 분석 provider와 보존 정책 | prompt와 media가 해당 provider로 갑니다. |
+| Secret | `.env`, OAuth, 외부 주입 | 필요한 구성 요소에만 주입하고 prompt나 저장소에 커밋한 YAML에는 넣지 않습니다. |
+| TTS/STT | 음성 backend와 동의 | cloud backend는 음성과 전사문을 받습니다. |
 
-`hermes setup --portal`은 Nous 모델 제공자와 네 가지 Tool Gateway 도구를 위한 문서화된 단일 OAuth 설정이며, `hermes portal info`는 연결 상태를 보고한다. 이는 편의 경계이지 모든 백엔드에 모든 시크릿을 줄 이유가 아니다. BYOK는 백엔드별로 가능하다. Portal 이외 제공자는 공식 Hermes 통합 페이지를 따르고 API 키는 `.env`에 둔다.
+## Messaging gateway와 adapter
 
-## 메시징 게이트웨이와 어댑터
+**사실:** 이제 한 machine에 하나의 gateway 프로세스가 기본으로 모든 profile을 맡습니다(`gateway.multiplex_profiles`, 기본 `true`). 각 profile은 자기 자격 증명, allowlist, session, cron job을 그대로 유지합니다. `hermes update`가 profile별 설치를 옮기고, `hermes gateway migrate --multiplex`로 직접 할 수 있으며, webhook platform은 profile마다 `/p/<profile>/`로 라우팅합니다. `gateway.standalone: true`는 임시 opt-out입니다. profile을 만들면 재시작 없이 그 profile의 bot이 살아납니다.
 
-게이트웨이는 Telegram, Discord, Slack, WhatsApp, Signal, Email의 통합 경계다. 공통 service lifecycle, authorization, session scope, durable delivery semantics, adapter 차이는 [메시징 게이트웨이](MESSAGING.ko.md)를, Developer Portal 설정, intent, 초대, Discord access policy, slash command, voice/media는 [Discord 설정](DISCORD.ko.md)을 읽는다. 문서화된 진입점은 다음이다.
+**사실:** `platforms.<name>.enabled: false`는 `.env`에 자격 증명이 남아 있어도 우선합니다. 키를 아예 두지 않으면 자격 증명이 있을 때 켜지는 기존 동작을 유지합니다. 인가, session 범위, 전달 규칙, adapter 차이는 [messaging gateway](MESSAGING.ko.md)에서, Developer Portal과 접근 정책은 [Discord 설정](DISCORD.ko.md)에서 다룹니다.
 
 ```bash
 hermes gateway setup
+hermes gateway install
 hermes gateway start
 ```
 
-선택한 어댑터에 대해 setup을 실행하고 플랫폼별 [Messaging Gateway 안내서](https://hermes-agent.nousresearch.com/docs/user-guide/messaging)를 따른다. 봇 토큰 이름이나 webhook 명령을 추측하지 않는다. 게이트웨이는 동일한 에이전트 능력을 원격 채팅으로 연결할 수 있으므로 모든 인바운드 메시지, 첨부물, URL, 인용 지시는 인증된 플랫폼 사용자가 권한을 받기 전까지 신뢰할 수 없다.
+**권고:** bot token은 `.env`에 두고, pairing이나 allowlist로 대화할 수 있는 사람을 제한하며, 운영에는 별도 신원을 씁니다. chat에서의 위험 명령 approval은 올바르게 pairing된 대화에서만 의미가 있습니다. adapter가 있다는 이유로 headless 자동 승인을 켜지 않습니다.
 
-플랫폼 봇 토큰은 `.env`에 보관하고, 문서화된 pairing/allowlist 제어로 게이트웨이 대화자를 제한하며, 프로덕션 시스템에는 별도 신원/계정을 쓴다. 게이트웨이는 채팅에서 위험 명령 승인을 지원하지만 `yes` 또는 `approve` 응답은 올바르게 페어링된 대화에서만 의미가 있다. 메시징 어댑터가 있다고 무인 자동 승인을 켜지 않는다.
+## Hook과 shell hook
 
-## Hooks와 shell hooks
+**사실:** gateway hook, plugin hook, shell hook, outbound webhook 네 system은 등록 방식과 범위, 권한이 다릅니다. shell hook은 이제 Desktop, TUI, dashboard chat에서도 실행되고, 최초 동의는 `(event, command)` 쌍마다 저장됩니다. plugin callback은 `plugins.hook_callback_timeout`(기본 30초)의 제한을 받고, 시간을 넘긴 `pre_tool_call`은 fail closed로 차단합니다.
 
-Hooks는 수명주기 동작을 확장하고 shell hooks는 특히 명령을 실행한다. 이벤트 이름, 스키마, timeout은 공식 [Hooks 안내서](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks)와 [shell hooks 참조](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks#shell-hooks)를 따른다. 훅 구성은 실행 코드처럼 취급한다.
+hook을 설정하기 전에 [Hook](HOOK.ko.md)을 읽습니다. hook 설정은 실행 코드로 다룹니다. script는 검토한 위치에 두고, 신뢰하지 않는 텍스트를 shell 문법에 넣지 않고, 실행 시간을 제한하며, secret을 남기지 않으면서 실패를 진단할 만큼 기록합니다. hook이 성공했다고 입력이 안전해지는 것은 아닙니다.
 
-1. 검토되고 접근 제어된 위치에 스크립트를 두고, 참조가 요구하면 절대/통제된 경로를 쓴다.
-2. 이벤트 payload를 검증하고 신뢰할 수 없는 메시지, 파일명, URL, 모델 출력을 셸 문법에 보간하지 않는다.
-3. 최소 권한, 좁은 환경 전달, 제한된 실행 시간, 멱등 작업을 사용한다.
-4. 시크릿이나 민감 payload 전체를 쓰지 않고도 장애를 진단할 로그를 남긴다.
-5. 프로덕션 게이트웨이 또는 cron 경로에 붙이기 전에 격리된 profile/backend에서 운영적으로 시험한다.
+## Dashboard, desktop, profile, 상태
 
-훅은 알림, 감사, 정책 검사, 로컬 오케스트레이션에 적합하지만 승인 시스템이나 컨테이너 격리를 대체하지 않는다. 훅 실행 성공은 입력의 안전성을 검증하지 않는다.
-
-## Dashboard, Desktop, profile, 상태
-
-Hermes Desktop과 dashboard는 구성 및 확장 표면을 노출하지만 근본 신뢰 모델을 바꾸지 않는다. Install/login을 클릭하기 전에 선택 MCP/제공자/어댑터를 점검하고 dashboard를 제어할 수 있는 기기/세션을 보호한다. Desktop MCP 뷰는 검토하도록 카탈로그 전송, 소스, 인증, 엔드포인트/명령, bootstrap, setup 세부사항을 제공한다.
-
-기본 Hermes home은 `~/.hermes/`이며 `config.yaml`, `.env`, `auth.json`, 메모리, 스킬, cron 작업, 세션, 로그, MCP 토큰을 담는다. `HERMES_HOME`은 profile 상태를 선택한다. 사용자, 환경, 위험 수준별로 profile을 분리한다. 파일 소유권, managed scope, 키별 환경변수/설정 우선순위 주의점, secret source, 복구는 [설정 파일](CONFIGURATION.ko.md)을 따른다. 문서화된 관리는 다음과 같다.
+**사실:** 기본 Hermes home은 `~/.hermes/`이고 `config.yaml`, `.env`, 인증 자료, 기억, skill, cron job, session, log, plugin 데이터, MCP token이 여기 있습니다. `HERMES_HOME`이 profile 상태를 고르고, multiplex gateway는 secret 범위를 지키면서 여러 profile을 한 프로세스에서 맡깁니다.
 
 ```bash
 hermes config
@@ -127,41 +105,33 @@ hermes config check
 hermes config migrate
 ```
 
-`hermes config set`은 API 키를 `.env`로, 비시크릿 값을 `config.yaml`로 보낸다. `config.yaml`은 `${VAR}` 및 `${env:VAR}` 치환을 지원한다. 외부 시크릿 시스템은 지원되지 않는 인라인 file/vault 참조 대신 시작 시 환경 값을 주입해야 한다.
+**사실:** `hermes config set`은 API key를 `.env`로, secret이 아닌 값은 `config.yaml`로 보냅니다. 외부 secret system은 지원하지 않는 inline vault 참조에 기대지 말고 시작 시 환경 값으로 주입합니다.
 
-Profile 격리는 일반 호스트 자격 증명을 자동 격리하지 **않는다**. 로컬 백엔드에서 `terminal.home_mode: auto`는 실제 OS `HOME`을 보존하므로 하위 프로세스가 일반 `ssh`, GitHub CLI, 클라우드, 패키지 관리자 자격 증명을 볼 수 있다. 별도 도구 home이 필요하면 `terminal.home_mode: profile`을 쓰고 필요한 자격 증명만 의도적으로 초기화한다. 신뢰할 수 없는 작업의 더 안전한 운영 기본값은 Docker, Modal, Daytona, Vercel Sandbox, Singularity 같은 격리 백엔드다. 호스트 mount 또는 전달 시크릿이 의도한 경계를 무너뜨릴 수 있으므로 mount, egress, 환경 전달을 확인한다.
+**사실:** profile 격리가 host의 일반 자격 증명까지 자동으로 격리하지는 않습니다. 로컬 backend에서 `terminal.home_mode: auto`는 실제 OS `HOME`을 유지하므로 하위 프로세스가 `ssh`, GitHub CLI, cloud, package manager 자격 증명을 볼 수 있습니다. 신뢰하지 않는 작업에는 Docker, Modal, Daytona, Vercel Sandbox, Singularity 같은 격리 backend가 더 안전한 기본값입니다. host mount 하나로 경계가 무너지므로 mount, egress, 환경 변수 전달을 확인합니다.
 
-## 보안 감사, 승인, 안전 운영
+## 설치 시점의 플러그인 신뢰
 
-확장을 활성화/변경하기 전 다음을 감사한다: 소스/릴리스와 설치 명령, 실행 위치, 도구 목록과 변경 범위, 자격 증명/OAuth scope, 도달 가능한 파일/네트워크/mount volume, 권한 있는 게이트웨이 사용자, 로그/보존, rollback/removal 경로. 제품 진단에는 `hermes doctor`, on-demand supply-chain audit에는 `hermes security audit`을 실행한다. 둘 다 실제 구성·manifest 검토, sandbox, 완전한 code audit을 대체하지 않는다.
+**사실:** 플러그인 코드 앞에는 서로 독립적인 세 가지 통제가 있습니다. 설치와 업데이트는 `safe`, `caution`, `dangerous` 판정을 내리는 정적 검사를 실행하고, `dangerous`는 `--force`로도 넘길 수 없습니다. `plugins.isolation: host`는 third-party 코드를 해당 profile의 secret만 가진 별도 프로세스로 옮깁니다. catalog는 항목을 검토한 커밋에 고정하지만 스스로 코드 감사가 아니라고 밝힙니다.
 
-Hermes 승인 모드는 `approvals.mode` 아래 `smart`(기본), `manual`, `off`다. Smart는 보조 LLM으로 위험을 평가하고 manual은 위험 명령을 묻고 off는 승인을 끄며 YOLO와 동등하다. 검토된 격리 자동화가 특별히 필요하지 않다면 `cron_mode: deny`와 `single_query_mode: deny`를 유지한다. 기본 승인 timeout은 fail-closed다.
+**권고:** 세 가지를 함께 씁니다. 검토한 source, 이해한 검사 판정, 온전히 신뢰하지 않는 코드에 대한 host isolation입니다. 어느 것도 코드를 읽는 일이나 capability 없는 설계를 대신하지 않습니다.
 
-`hermes --yolo`, `hermes chat --yolo`, `/yolo`, `HERMES_YOLO_MODE=1`은 현재 세션의 위험 명령 프롬프트를 우회하지만 항상 켜진 hardline blocklist는 우회하지 못한다. 이것은 “안전 모드”가 아니다. 실용적 안전 모드는 별도 profile, 게이트웨이 노출 없음, 최소 도구/MCP 집합, 프로덕션 자격 증명 없음, manual 승인, 격리 terminal backend다. 조직별 비가역 작업을 `approvals.deny`에 추가한다. 인용한 fnmatch 패턴은 host-reaching backend에서 YOLO/off 중에도 차단한다. Deny rule은 sandbox가 아니라 guardrail이다.
+## 보안 감사, approval, 안전한 운영
 
-영구 “always” 승인은 `config.yaml`의 `command_allowlist` 항목이 된다. 주기적으로 검토하고 제거한다. `hermes approvals suggest`는 기본적으로 read-only이고 `hermes approvals suggest --apply 1,3`는 allowlist를 바꾸므로 제안 패턴을 적용 전에 검토한다.
+확장을 켜거나 바꾸기 전에 source와 릴리스, 실행 위치, tool 목록과 변경 범위, 자격 증명과 OAuth scope, 접근 가능한 파일과 네트워크, 허용된 gateway 사용자, log 보존, 제거 방법을 확인합니다. `hermes doctor`는 제품 진단을, `hermes plugins validate`는 catalog 검사를 로컬에서 수행하고, 설치와 업데이트는 정적 보안 검사를 실행합니다. 어느 것도 설정과 코드 검토를 대신하지 않습니다.
 
-## 결정 매트릭스와 사고 분류
+approval mode는 `approvals.mode`에 있고 값은 `smart`(기본), `manual`, `off`입니다. 검토한 자동화가 필요하지 않다면 `cron_mode: deny`, `single_query_mode: deny`, `unattended_mode: deny`를 유지하고, 무인 programmatic 표면(webhook, msgraph webhook, API server)은 approval timeout을 기다리지 않고 즉시 차단한다는 점을 함께 기억하며, 위험 명령 guard stack은 host에 닿는 backend에서만 동작한다는 점도 함께 고려합니다. `hermes --yolo`, `hermes chat --yolo`, `/yolo`, `HERMES_YOLO_MODE=1`은 해당 session의 확인만 건너뛰고 항상 켜진 hardline 차단 목록은 그대로입니다. 영구 "always" 승인은 `command_allowlist` 항목이 되므로 주기적으로 확인합니다.
+
+## 판단 표와 사고 대응
 
 | 상황 | 선택 | 피하거나 먼저 확인할 것 |
 | --- | --- | --- |
-| 검토된 서드파티 통합 필요 | 최소 도구의 MCP 카탈로그 항목 | manifest/bootstrap 검토 전 설치. |
-| 사설/로컬 서비스 필요 | stdio MCP 또는 통제된 내부 HTTP MCP | 전체 host environment나 넓은 filesystem root 전달. |
-| SaaS OAuth 도구 필요 | `auth: oauth` HTTP MCP | 정적 토큰 우회나 노출된 callback. |
-| 메시징 제어 필요 | pairing/allowlist가 있는 gateway adapter | 어떤 채널 참여자든 운영자로 취급. |
-| 무인 자동화 필요 | 명시적 검토와 최소 권한 cron | 프로덕션 시크릿이 있는 호스트에서 `cron_mode: approve`. |
-| 신뢰할 수 없는 코드/콘텐츠 처리 | 분리 profile과 격리 backend | real HOME, host mount, 전달 자격 증명이 있는 local backend. |
-| 음성/미디어 필요 | 명시적 STT/TTS/미디어 제공자 | 동의 없이 민감 녹음/자산 전송. |
-| 변경 뒤 도구 실패 | config, 자격 증명, endpoint/process, 도구 필터 순으로 확인 | 맹목적으로 reload하거나 접근 범위를 넓힘. |
+| 검토된 제3자 연동이 필요 | tool을 최소로 고른 MCP catalog 항목 | manifest와 bootstrap을 보기 전 설치 |
+| hosted SaaS 앱이 필요 | 이름 붙인 계정의 Connector | connector 접근이 앱 권한보다 좁다고 가정 |
+| 사내 또는 로컬 서비스가 필요 | stdio MCP 또는 통제된 내부 HTTP MCP | host 환경 전체나 넓은 파일 시스템 root 전달 |
+| messaging 제어가 필요 | gateway adapter와 pairing 또는 allowlist | channel 참여자를 운영자로 취급 |
+| 무인 자동화가 필요 | 검토를 거친 cron과 최소 권한 | 운영 secret이 있는 host에서 `cron_mode: approve` |
+| 신뢰하지 않는 내용을 처리 | 별도 profile과 격리 backend | 실제 HOME, host mount, 전달된 자격 증명을 쓰는 로컬 backend |
+| 제3자 플러그인이 필요 | catalog 항목, 검사 판정, host isolation | catalog 등재를 코드 감사로 가정 |
+| 변경 뒤 tool이 실패 | 설정, 자격 증명, endpoint, 필터 순서로 확인 | 무작정 재로딩하거나 권한 넓히기 |
 
-사고 또는 자격 증명 노출 의심 시 영향을 받는 gateway/provider/MCP 연결을 중지하고, 발급자에서 자격 증명을 폐기/순환하며, 필요에 따라 영향 받은 `.env`/OAuth 구성과 영구 allowlist를 제거하고, 로그와 adapter 권한을 검사한 뒤 확장 구성과 scope를 검토한 후에만 다시 활성화한다. Hermes 로그는 시크릿을 마스킹하지만, 그것은 민감 입력을 기록해도 된다는 근거가 아니다.
-
-## 주요 출처
-
-- [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration)
-- [MCP](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp) 및 [MCP 구성 참조](https://hermes-agent.nousresearch.com/docs/reference/mcp-config-reference)
-- [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security)
-- [Messaging Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/messaging)
-- [AI Providers](https://hermes-agent.nousresearch.com/docs/integrations/providers) 및 [Tool Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/features/tool-gateway)
-- [Hooks](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks) 및 [shell hooks 참조](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks#shell-hooks)
-- [공식 저장소](https://github.com/NousResearch/hermes-agent) 및 [optional MCP manifest](https://github.com/NousResearch/hermes-agent/tree/main/optional-mcps)
+자격 증명 노출이 의심되면 영향받은 gateway, provider, MCP 연결을 멈추고, 발급처에서 자격 증명을 폐기하고 교체하며, 관련 `.env`나 OAuth 상태와 영구 allowlist를 정리합니다. log와 adapter 인가를 확인한 뒤 설정과 scope를 검토한 다음에만 다시 켭니다. log의 redaction은 민감한 입력을 기록해도 된다는 근거가 아닙니다.

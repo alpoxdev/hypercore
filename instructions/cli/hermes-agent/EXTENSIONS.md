@@ -1,122 +1,100 @@
 # Hermes Agent extensions and operations map
 
-> Korean translation: [EXTENSIONS.ko.md](EXTENSIONS.ko.md)  
-> Companion guides: [overview and runtime use](README.md), [configuration](CONFIGURATION.md), [Discord](DISCORD.md), [messaging gateway](MESSAGING.md), [skills](SKILLS.md), and [native plugins](PLUGINS.md)
-> **Research date:** 2026-08-24. Claims and examples below are limited to the official Hermes documentation and the official [NousResearch/hermes-agent repository](https://github.com/NousResearch/hermes-agent).
-> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
+> Korean translation: [EXTENSIONS.ko.md](EXTENSIONS.ko.md)
+> Companion guides: [overview](README.md), [configuration](CONFIGURATION.md), [Discord](DISCORD.md), [messaging gateway](MESSAGING.md), [skills](SKILLS.md), [plugins](PLUGINS.md), and [hooks](HOOK.md)
+> **Research date:** 2026-11-03, against the documentation shipped with Hermes Agent **v0.22.5** (measured at commit `bf0203a794a`) and the v0.22.0 release notes. Every claim is limited to those official sources. The live documentation site deploys ahead of the tag: anything observed only on the site is dated with its check date instead of being presented as v0.22.5 behavior, and version-sensitive names should be confirmed with `--help` on the installed CLI.
 
-Hermes extensions cross trust boundaries: an MCP can run a local program or call a remote service; a messaging gateway accepts messages from another platform; and a tool provider receives input and credentials. Treat enablement as granting capability, not merely adding a UI feature. Inspect source, scopes, transport, and credential flow before enabling anything.
+Hermes extensions cross trust boundaries: an MCP server can run a local program or call a remote service; a messaging gateway accepts messages from another platform; and a tool provider receives input and credentials. Treat enabling an extension as granting capability, not merely adding a UI feature.
+
+| Source | Supplies | Checked |
+| --- | --- | --- |
+| [MCP](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp) | Server kinds, catalog, filtering, security | 2026-11-03 |
+| [Plugins](https://hermes-agent.nousresearch.com/docs/user-guide/features/plugins) | Catalog, scanning, isolation | 2026-11-03 |
+| [Messaging Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/messaging) | Gateway lifecycle and delivery | 2026-11-03 |
+| [Multiplexing gateway](https://hermes-agent.nousresearch.com/docs/developer-guide/multiplexing-gateway) | One process for every profile | 2026-11-03 |
+| [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security) | Approval stack and trust boundaries | 2026-11-03 |
+| [v0.22.0 release notes](https://github.com/NousResearch/hermes-agent/releases/tag/v0.22.0) | Connectors, plugin isolation, catalog size | 2026-11-03 |
 
 ## Choose the extension surface
 
 | Need | Primary surface | Operational boundary |
 | --- | --- | --- |
-| Existing external tools, databases, or internal API | MCP | Server code and its credentials become available to Hermes. |
-| Hermes-native behavior | General plugin/provider configuration | Provider sends task content to its service. |
-| Chat from Telegram, Discord, Slack, WhatsApp, Signal, or Email | Messaging gateway | Platform identity/pairing and inbound untrusted text. |
-| React to lifecycle events or enforce local policy | Hooks / shell hooks | Hook code executes with its configured process privileges. |
-| Spoken input/output | STT / TTS provider | Audio and text leave the host when cloud-backed. |
-| GUI or local control plane | Desktop / dashboard | Bind and access controls determine who can operate it. |
+| Existing external tools, databases, or internal API | MCP (`mcp_servers`) | Server code and its credentials become available to Hermes. |
+| Hosted app tools such as Linear or Notion | Connectors through the Nous tool gateway | Sign-in identity and the app's own authorization scope govern access. |
+| Hermes-native behavior | Native plugin or provider configuration | In-process code by default; provider sends task content to its service. |
+| Chat from Telegram, Discord, Slack, WhatsApp, Signal, or Email | Messaging gateway | Platform identity, pairing, and untrusted inbound text. |
+| React to lifecycle events or enforce local policy | Hooks, shell hooks, plugin hooks | Hook code executes with its configured process privileges. |
+| Spoken input or output | STT/TTS provider | Audio and text leave the host when cloud-backed. |
+| GUI or local control plane | Desktop app or dashboard | Bind and access controls determine who can operate it. |
 
-Do not use a native plugin guide as an MCP substitute or assume that an MCP catalog entry is sandboxed. Use [MCP](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp) for an external MCP server and [Plugins](PLUGINS.md) for native-plugin authoring.
+Do not use a native plugin guide as an MCP substitute, and do not assume a catalog entry is sandboxed.
 
 ## MCP: configure, limit, and operate
 
-MCP support ships with Hermes. At startup Hermes discovers and registers tools from `mcp_servers`; supported servers may also contribute resource and prompt wrappers. There are two transports:
-
-- **stdio** — Hermes starts a local subprocess and communicates over stdin/stdout. This is appropriate for a locally installed server and local resources, but the command and bootstrap chain must be trusted.
-- **HTTP** — Hermes connects to a remote MCP endpoint. Use this for hosted or organization endpoints; verify the URL, authentication scheme, and service authorization separately.
-
-A documented minimal stdio configuration is:
+**Fact:** Hermes supports local stdio servers and remote HTTP servers in one `mcp_servers` block, plus a curated catalog of Nous-reviewed servers that are disabled until installed. The catalog install card appears in Desktop, the TUI, and the CLI, shows all setup fields at once with secrets masked, and saves configuration and tokens together only after the server accepts the token. Hermes never opens a browser on its own.
 
 ```yaml
 mcp_servers:
   filesystem:
     command: "npx"
     args: ["-y", "@modelcontextprotocol/server-filesystem", "/home/user/projects"]
-```
-
-Start a chat after configuring it:
-
-```bash
-hermes chat
-```
-
-A static-token HTTP server uses `url` and `headers`; keep the actual token in an environment variable or Hermes `.env`, not in version-controlled YAML:
-
-```yaml
-mcp_servers:
   remote_api:
     url: "https://mcp.example.com/mcp"
     headers:
       Authorization: "Bearer ${MCP_TOKEN}"
 ```
 
-For hosted OAuth MCPs, `auth: oauth` makes Hermes handle discovery, PKCE, token exchange, refresh, and step-up authentication. The documented workflow includes `hermes mcp login <name>` where applicable. OAuth tokens are cached at `~/.hermes/mcp-tokens/<server>.json` with mode `0600`; on a headless host use the documented paste-back redirect flow, SSH forwarding, or a deliberately configured proxied callback. Do not expose callback endpoints casually.
+**Fact:** `${VAR}` and `${env:VAR}` resolve at connect time from the environment, including `~/.hermes/.env`; an undefined variable stays literal and logs a warning. Stdio servers receive a filtered environment, so a variable must be passed explicitly. OAuth servers handle discovery, PKCE, refresh, and step-up authentication, and tokens are cached per server with restrictive permissions; on a headless host re-authorize with `hermes mcp login <server>`.
 
-### Catalog and lifecycle
+**Fact:** filtering precedence is deny-list, then allow-list, then glob patterns under `mcp_servers.<name>.tools`. Utility tools are filtered separately, and a server whose tools are all filtered out is reported rather than silently absent.
 
-The Nous-reviewed catalog is opt-in; it is not a community marketplace and catalog MCPs are disabled until installed. These documented commands distinguish interactive use, listing, and installation:
+**Fact:** a server with `lazy: true` registers from the on-disk schema cache and spawns on first use; `notifications/tools/list_changed` refreshes the registry automatically; `/reload-mcp` re-probes the rest. A running gateway watches `config.yaml` and connects or tears down changed entries within about a minute.
 
-```bash
-hermes mcp
-hermes mcp catalog
-hermes mcp install n8n
-hermes mcp configure linear
-```
+**Recommendation:** select only the tools you need, especially excluding destructive or administrative operations. Review the catalog manifest's source, bootstrap commands, transport, endpoint, and authentication before installing, and remember that catalog review is evidence, not your supply-chain review.
 
-Installation can clone a repository and run manifest bootstrap commands such as package installation, then run the MCP server. Review the catalog manifest’s `source`, `install.bootstrap`, transport command/arguments, endpoint, authentication, and tool list before installing. Catalog review is useful evidence, **not** a replacement for your own supply-chain review. MCPs never auto-update; rerun `hermes mcp install <name>` after reviewing a changed manifest.
+## Hosted connectors
 
-At install/configure time Hermes can write `mcp_servers.<name>.tools.include`; select only necessary tools, especially omit destructive or administrative operations. If the server cannot be probed, installation can still complete, so rerun `hermes mcp configure <name>` after connectivity or OAuth is fixed. `${VAR}` in MCP connection fields resolves at connect time from the environment (including `~/.hermes/.env`); Cursor-style `${env:VAR}` is accepted too. Undefined variables remain literal and log a warning.
+**Fact:** Connectors let the agent act in hosted apps through the Nous tool gateway. The first use of an app creates a free connectors-only identity, so no Nous account is required to start; several named accounts of one app can be connected and managed with `/connectors` or `hermes connectors`. The Desktop's **Connectors** page lists hosted apps and local MCP servers together and replaced the former MCP tab.
 
-**MCP troubleshooting:** verify server command/arguments and package installation for stdio; verify endpoint reachability, OAuth login/callback path, and required provider login for HTTP; then reduce the enabled tool set and reconnect. A changed MCP schema can invalidate model prompt caching, so Hermes asks before `/reload-mcp` by default (`approvals.mcp_reload_confirm: true`). Consult the [MCP configuration reference](https://hermes-agent.nousresearch.com/docs/reference/mcp-config-reference) for supported fields rather than copying an arbitrary client’s schema.
+**Recommendation:** `tools.connectors.enabled: false` turns connectors off, and `nous.guest: false` disables guest identities. Apply the same credential and scope review you apply to MCP servers; a connector uses your app authorization, not a separate sandbox.
 
 ## Provider map: what is extended and where data goes
 
-Hermes supports AI-model providers and auxiliary providers rather than treating all integrations as one plugin type. The official [provider guide](https://hermes-agent.nousresearch.com/docs/integrations/providers) is the authority for current provider IDs, model names, and credentials. The [Tool Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/features/tool-gateway) can provide web search, image generation, TTS, and cloud-browser backends through Nous Portal, while individual backends can also use their own credentials.
+The official [provider guide](https://hermes-agent.nousresearch.com/docs/integrations/providers) is the authority for current provider IDs, model names, and credentials. The [Tool Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/features/tool-gateway) can supply web search, image generation, TTS, and cloud-browser backends through Nous Portal, while individual backends can also use their own credentials. Model providers can now be installed as out-of-tree plugins and authenticated with `hermes auth`.
 
 | Capability | What to decide | Data/credential boundary |
 | --- | --- | --- |
-| Model | Provider, model, fallback and endpoint | Prompts, tool schemas, and model-visible context go to the selected model provider. |
-| Memory/context | Whether persistent memory, sessions, skills, and project context are appropriate | Local Hermes state persists under the selected Hermes home; imported/untrusted text can influence the model, so do not equate “in context” with “trusted.” |
-| Web search | Search backend and query/data handling | Queries and any retrieved content cross to the search provider; web content remains untrusted input. |
-| Browser | Local/cloud browser backend and authenticated browsing policy | A cloud browser/provider can receive navigation and page data; browser sessions/cookies are high-value credentials. |
-| Image/video | Generation or analysis provider and retention policy | Prompts and media cross to that provider; do not upload private media without authorization. |
-| Secrets | `.env`, OAuth credentials, or an external injection mechanism | Secrets must be injected only into the component that needs them; never put them in prompts, committed YAML, or broad subprocess environments. |
-| TTS/STT | Voice/transcription backend and consent | Spoken audio and transcript/text may leave the machine with cloud providers. |
-
-`hermes setup --portal` is the documented one-OAuth setup for a Nous model provider plus the four Tool Gateway tools; `hermes portal info` reports what is wired. This is a convenience boundary, not a reason to grant every backend every secret. Bring-your-own keys remain per backend. For any non-Portal provider, follow its official Hermes integration page and place API keys in `.env`.
+| Model | Provider, model, fallback, endpoint | Prompts, tool schemas, and model-visible context go to the selected provider. |
+| Memory/context | Whether persistent memory and project context are appropriate | Local state persists under the Hermes home; imported text is not thereby trusted. |
+| Web search | Backend and query handling | Queries and retrieved content cross to that provider; web content stays untrusted input. |
+| Browser | Local or cloud backend, authenticated browsing policy | A cloud browser receives navigation and page data; session cookies are high-value credentials. |
+| Image/video | Generation or analysis provider and retention | Prompts and media cross to that provider. |
+| Secrets | `.env`, OAuth, or external injection | Inject only into the component that needs the secret, never into prompts or committed YAML. |
+| TTS/STT | Voice backend and consent | Cloud backends receive audio and transcripts. |
 
 ## Messaging gateway and adapters
 
-The gateway is the integration boundary for Telegram, Discord, Slack, WhatsApp, Signal, and Email. Read [Messaging gateway](MESSAGING.md) for the shared service lifecycle, authorization, session scope, durable delivery semantics, and adapter differences. Read [Discord setup](DISCORD.md) for Developer Portal setup, intents, invitations, Discord access policy, slash commands, and voice/media. Its documented entry points are:
+**Fact:** a single gateway process per machine now serves every profile by default (`gateway.multiplex_profiles`, default `true`). Each served profile keeps its own credentials, allowlists, sessions, and cron jobs; `hermes update` migrates per-profile installs, `hermes gateway migrate --multiplex` does it by hand, webhook platforms route each profile at `/p/<profile>/`, and `gateway.standalone: true` is a temporary opt-out. Creating a profile makes its bots live without a restart.
+
+**Fact:** `platforms.<name>.enabled: false` is authoritative even when credentials remain in `.env`; omitting the key keeps the credentials-present behavior. Read [Messaging gateway](MESSAGING.md) for authorization, session scope, delivery semantics, and adapter differences, and [Discord setup](DISCORD.md) for Developer Portal and access-policy work.
 
 ```bash
 hermes gateway setup
+hermes gateway install
 hermes gateway start
 ```
 
-Run setup for the selected adapter and follow the platform-specific [Messaging Gateway guide](https://hermes-agent.nousresearch.com/docs/user-guide/messaging); do not invent bot-token names or webhook commands. A gateway can bridge the same agent capabilities to remote chat, so every inbound message, attachment, URL, and quoted instruction is untrusted until the authenticated platform user is authorized.
-
-Keep platform bot tokens in `.env`, restrict who may converse through the gateway using its documented pairing/allowlist controls, and use separate identities/accounts for production systems. The gateway supports dangerous-command approval in chat; a response such as `yes` or `approve` is meaningful only in the correctly paired conversation. Do not enable headless auto-approval merely because a messaging adapter is available.
+**Recommendation:** keep bot tokens in `.env`, restrict who may converse through pairing or allowlists, and use separate identities for production. Dangerous-command approval in chat is meaningful only in the correctly paired conversation; do not enable headless auto-approval because an adapter is available.
 
 ## Hooks and shell hooks
 
-Hooks extend lifecycle behavior; shell hooks specifically execute commands. Use the official [Hooks guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks) and [shell-hooks reference](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks#shell-hooks) for event names, schema, and timeout behavior. Treat hook configuration like executable code:
+**Fact:** the four hook systems — gateway hooks, plugin hooks, shell hooks, and outbound webhooks — differ in registration, scope, and authority. Shell hooks now also run in Desktop, TUI, and dashboard chat, and their first-use consent is stored per `(event, command)` pair. Plugin callbacks are bounded by `plugins.hook_callback_timeout` (default 30 s), and a timed-out `pre_tool_call` fails closed.
 
-1. Keep scripts in a reviewed, access-controlled location and use absolute/controlled paths where the reference requires them.
-2. Validate event payloads; do not interpolate untrusted message, filename, URL, or model output into shell syntax.
-3. Use least privilege, narrow environment passing, bounded runtime, and idempotent operations.
-4. Log enough to diagnose failures without writing secrets or whole sensitive payloads.
-5. Test operationally in an isolated profile/backend before attaching hooks to a production gateway or cron path.
-
-Hooks are suitable for notification, auditing, policy checks, and local orchestration—not a substitute for the approval system or container isolation. A successful hook run does not validate the safety of its input.
+Read [Hooks](HOOK.md) before configuring any of them. Treat hook configuration as executable code: keep scripts in a reviewed location, never interpolate untrusted text into shell syntax, bound runtime, and log enough to diagnose failure without recording secrets. A successful hook run does not validate the safety of its input.
 
 ## Dashboard, desktop, profiles, and state
 
-Hermes Desktop and the dashboard expose configuration and extension surfaces, but they do not change the underlying trust model. Inspect the selected MCP/provider/adapter before clicking install or login, and protect the device/session that can control the dashboard. The Desktop MCP view exposes catalog transport, source, auth, endpoint/command, bootstrap, and setup details specifically so they can be reviewed.
-
-The default Hermes home is `~/.hermes/`, containing `config.yaml`, `.env`, `auth.json`, memories, skills, cron jobs, sessions, logs, and MCP tokens. `HERMES_HOME` selects profile state; use distinct profiles for distinct users, environments, or risk levels. [Configuration files](CONFIGURATION.md) documents file ownership, managed scope, the key-specific environment/configuration precedence caveat, secret sources, and recovery. Manage values with the documented commands:
+**Fact:** the default Hermes home is `~/.hermes/`, holding `config.yaml`, `.env`, auth material, memories, skills, cron jobs, sessions, logs, plugin data, and MCP tokens. `HERMES_HOME` selects profile state; the multiplexed gateway serves several profiles from one process while keeping their secrets scoped.
 
 ```bash
 hermes config
@@ -127,41 +105,33 @@ hermes config check
 hermes config migrate
 ```
 
-`hermes config set` routes API keys to `.env` and non-secret values to `config.yaml`. `config.yaml` supports `${VAR}` and `${env:VAR}` substitution; external secret systems should inject environment values at startup rather than use unsupported inline file/vault references.
+**Fact:** `hermes config set` routes API keys to `.env` and non-secret values to `config.yaml`. External secret systems should inject environment values at startup rather than rely on unsupported inline vault references.
 
-Profile isolation does **not** automatically isolate ordinary host credentials. With a local backend, `terminal.home_mode: auto` preserves the real OS `HOME`, so subprocesses may see normal `ssh`, GitHub CLI, cloud, and package-manager credentials. Use `terminal.home_mode: profile` for a deliberately separate tool home and initialize only required credentials there. The safer operational default for untrusted work is an isolated backend such as Docker, Modal, Daytona, Vercel Sandbox, or Singularity; verify mounts, egress, and environment forwarding because a host mount or forwarded secret can defeat the intended boundary.
+**Fact:** profile isolation does not automatically isolate host credentials. With a local backend, `terminal.home_mode: auto` preserves the real OS `HOME`, so subprocesses can see ordinary `ssh`, GitHub CLI, cloud, and package-manager credentials. The safer default for untrusted work is an isolated backend such as Docker, Modal, Daytona, Vercel Sandbox, or Singularity; verify mounts, egress, and environment forwarding because a host mount defeats the boundary.
+
+## Plugin trust at install time
+
+**Fact:** three independent controls now sit in front of plugin code. Install and update run a static scan with `safe`, `caution`, and `dangerous` verdicts, where `dangerous` cannot be overridden by `--force`. `plugins.isolation: host` moves third-party code into a per-profile process with only that profile's secrets. The catalog pins entries to reviewed commits but explicitly is not a code audit.
+
+**Recommendation:** combine the three — reviewed sources, a scan verdict you understand, and host isolation for anything you do not fully trust. None of them replaces reading the code or a capability-free design.
 
 ## Security audit, approvals, and safe operation
 
-Before enabling or changing an extension, audit: source/release and install command; execution location; tool list and mutation scope; credentials and OAuth scopes; reachable files, network, and mounted volumes; authorized gateway users; logs/retention; and rollback/removal path. Run `hermes doctor` for product diagnostics and `hermes security audit` for its on-demand supply-chain audit; neither substitutes for reviewing the actual configuration and manifest values, sandboxing, or a complete code audit.
+Before enabling or changing an extension, audit the source and release, execution location, tool list and mutation scope, credentials and OAuth scopes, reachable files and network, authorized gateway users, log retention, and the removal path. `hermes doctor` gives product diagnostics, `hermes plugins validate` runs the catalog check locally, and install/update run a static security scan; none of them replaces reviewing the configuration or the code.
 
-Hermes approval modes are configured under `approvals.mode`: `smart` (default), `manual`, or `off`. Smart uses an auxiliary LLM for risk assessment; manual prompts for dangerous commands; off disables approval checks and is equivalent to YOLO. Keep `cron_mode: deny` and `single_query_mode: deny` unless a reviewed, isolated automation specifically needs otherwise. Approval timeout fails closed by default.
-
-`hermes --yolo`, `hermes chat --yolo`, `/yolo`, or `HERMES_YOLO_MODE=1` bypasses dangerous-command prompts for the current session, but not the always-on hardline blocklist. It is not “safe mode.” A practical safe mode is: a separate profile, no gateway exposure, minimum tool/MCP set, no production credentials, manual approvals, and an isolated terminal backend. Add organization-specific irreversible operations to `approvals.deny`; quoted fnmatch patterns block them even under YOLO/off on host-reaching backends. Deny rules are guardrails, not a sandbox.
-
-Permanent “always” approvals become `command_allowlist` entries in `config.yaml`; review and remove them periodically. `hermes approvals suggest` is read-only by default and `hermes approvals suggest --apply 1,3` changes the allowlist—review proposed patterns before applying.
+Approval modes live under `approvals.mode`: `smart` (default), `manual`, or `off`. Keep `cron_mode: deny`, `single_query_mode: deny`, and `unattended_mode: deny` unless reviewed automation needs otherwise, and remember that unattended programmatic surfaces (webhook, msgraph webhook, API server) block instantly instead of waiting out the approval timeout, and note that the dangerous-command guard stack runs only on host-reaching backends. `hermes --yolo`, `hermes chat --yolo`, `/yolo`, or `HERMES_YOLO_MODE=1` bypass prompts for the session but not the always-on hardline blocklist. Permanent "always" approvals become `command_allowlist` entries; review them periodically.
 
 ## Decision matrix and incident triage
 
 | Situation | Select | Avoid / check first |
 | --- | --- | --- |
 | Need a vetted third-party integration | MCP catalog entry with least tools | Installing before reviewing its manifest and bootstrap. |
-| Need a private/local service | stdio MCP or controlled internal HTTP MCP | Passing the full host environment or broad filesystem roots. |
-| Need SaaS OAuth tools | HTTP MCP with `auth: oauth` | Static-token workarounds or an exposed callback. |
-| Need messaging control | Gateway adapter plus pairing/allowlist | Treating any channel participant as an operator. |
-| Need unattended automation | Cron plus explicit review and least privilege | `cron_mode: approve` on a host with production secrets. |
-| Need to process untrusted code/content | Separate profile and isolated backend | Local backend with real HOME, host mounts, and forwarded credentials. |
-| Need voice/media | Explicit STT/TTS/media provider | Sending sensitive recordings/assets without consent. |
-| Tool fails after a change | Check config, credentials, endpoint/process, then tool filtering | Repeatedly reloading or broadening access blindly. |
+| Need a hosted SaaS app | Connector with a named account | Assuming connector access is scoped more narrowly than the app grant. |
+| Need a private or local service | stdio MCP or a controlled internal HTTP MCP | Passing the full host environment or broad filesystem roots. |
+| Need messaging control | Gateway adapter plus pairing or allowlist | Treating any channel participant as an operator. |
+| Need unattended automation | Cron with explicit review and least privilege | `cron_mode: approve` on a host with production secrets. |
+| Need to process untrusted content | Separate profile and isolated backend | Local backend with real HOME, host mounts, and forwarded credentials. |
+| Need a third-party plugin | Catalog entry, scan verdict, host isolation | Assuming catalog admission is a code audit. |
+| Tool fails after a change | Check config, credentials, endpoint, then filtering | Reloading or broadening access blindly. |
 
-For an incident or suspected credential exposure: stop the affected gateway/provider/MCP connection, revoke or rotate the credential at its issuer, remove the affected `.env`/OAuth configuration and persistent allowlists as appropriate, inspect logs and adapter authorization, then re-enable only after the extension configuration and scopes are reviewed. Hermes logs redact secrets, but redaction is not a justification for logging sensitive inputs.
-
-## Primary sources
-
-- [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration)
-- [MCP](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp) and [MCP config reference](https://hermes-agent.nousresearch.com/docs/reference/mcp-config-reference)
-- [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security)
-- [Messaging Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/messaging)
-- [AI Providers](https://hermes-agent.nousresearch.com/docs/integrations/providers) and [Tool Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/features/tool-gateway)
-- [Hooks](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks) and [shell hooks reference](https://hermes-agent.nousresearch.com/docs/user-guide/features/hooks#shell-hooks)
-- [Official repository](https://github.com/NousResearch/hermes-agent) and [optional MCP manifests](https://github.com/NousResearch/hermes-agent/tree/main/optional-mcps)
+For suspected credential exposure: stop the affected gateway, provider, or MCP connection, revoke and rotate the credential at its issuer, remove the affected `.env` or OAuth state and persistent allowlists, inspect logs and adapter authorization, and re-enable only after reviewing configuration and scopes. Redaction in logs is not a justification for logging sensitive input.

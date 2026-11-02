@@ -2,15 +2,18 @@
 
 > Korean version: [`KANBAN.ko.md`](KANBAN.ko.md)
 >
-> **Research date:** 2026-08-24, against Hermes Agent's official documentation only. **Facts** describe the documented Kanban behavior; **Recommendations** are operational advice. Commands, settings, defaults, and the dashboard surface are version-sensitive — confirm them with `hermes kanban --help` and the linked official references before automating.
-> **Re-verified:** 2026-09-19 — every cited source still resolves, and this guide's documented paths, defaults, and command/feature lists were sampled against the same official pages. The research date above remains the date of the full pass.
+> **Research date:** 2026-11-03, against the official documentation shipped in Hermes Agent **v0.22.5** (measured at commit `bf0203a794a`, released 2026-10-22). **Facts** describe the documented Kanban behavior; **Recommendations** are operational advice. Commands, settings, defaults, and the dashboard surface are version-sensitive, so confirm them with `hermes kanban --help` and the linked references before automating.
 
-## Primary sources
+## Sources
 
-- [Kanban — Multi-Agent](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban)
-- [Kanban Tutorial](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban-tutorial)
-- [Kanban worker lanes](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban-worker-lanes)
-- [CLI Commands Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands)
+| Source | What it supplies | Checked |
+| --- | --- | --- |
+| [Kanban — Multi-Agent](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban) | Board model, dispatcher, workspaces, CLI verbs, orchestration, dashboard, event reference | checked 2026-11-03 |
+| [Kanban Tutorial](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban-tutorial) | Worked stories for solo, fleet, role-pipeline, and retry setup | checked 2026-11-03 |
+| [Kanban worker lanes](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban-worker-lanes) | Claim TTL, `max_runtime_seconds`, stranded-task detection | checked 2026-11-03 |
+| [Kanban Multi-Gateway Deployment](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban-multi-gateway) | Single-dispatcher posture and profile-owned delivery | checked 2026-11-03 |
+| [CLI Commands Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) | `hermes kanban` command family | checked 2026-11-03 |
+| [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration) | `kanban.*` defaults, tool-loop guardrails, `hard_stop_enabled` | checked 2026-11-03 |
 
 ## What Kanban is
 
@@ -41,7 +44,7 @@
 
 ## Core model
 
-**Fact:** a task has a title, optional body, one assignee profile, optional tenant, optional idempotency key, optional priority/workspace/model/skills, links to parents or children, comments, runs, and events. The documented core lifecycle is `triage → todo → ready → running → review | blocked | done | archived`; the CLI also exposes `schedule` for time-delay/follow-up work.
+**Fact:** a task has a title, optional body, one assignee profile, optional tenant, optional idempotency key, optional priority/workspace/model/skills, links to parents or children, comments, runs, and events. The documented status set is `triage`, `todo`, `ready`, `running`, `blocked`, `review`, `done`, `archived`. There is no `scheduled` status: a start time is an attribute (`scheduled_at`) on a ready task, and the dispatcher skips it until that timestamp passes.
 
 | Concept | Meaning |
 | --- | --- |
@@ -82,9 +85,13 @@ kanban:
   dispatch_in_gateway: true       # default
   dispatch_interval_seconds: 60   # default
   review_dispatch: true           # default: assigned reviewer gets bundled sdlc-review
+  max_in_progress: 4              # optional cap on simultaneously running tasks
+  auto_promote_children: true     # default
 ```
 
-**Recommendation:** operate one dispatcher per database. Do not use the legacy standalone daemon as a second "backup" dispatcher.
+**Fact:** the concurrency and routing keys are `max_in_progress` and `max_in_progress_per_profile` (both unset by default, meaning unlimited), `dispatch_profiles` (a per-home claim allowlist for boards shared across Hermes homes; omitting the key allows any existing profile, while an empty or unreadable value claims nothing), `auto_promote_children` (default `true`), and `default_workdir` (a board-level working directory for new tasks).
+
+**Recommendation:** operate one dispatcher per database. Do not use the legacy standalone daemon (`hermes kanban daemon`, deprecated) as a second "backup" dispatcher.
 
 ## Boards and resolution
 
@@ -121,9 +128,15 @@ hermes kanban create "Test auth API" \
 
 **Fact:** `--idempotency-key` deduplicates automated creates: a later create with the same key returns the existing task instead of creating a duplicate.
 
-**Fact — documented conflict:** the feature guide documents `hermes kanban schedule <id> --at <ISO8601>` as setting a task's `scheduled_at` time, while the CLI reference describes `schedule <id> "<reason>"` as moving work to a `scheduled` status. Use the dedicated feature guide's `--at` form and confirm the installed signature with `hermes kanban --help`; do not automate an assumed `scheduled` status.
+**Fact — scheduled starts:** `hermes kanban schedule <id> --at <ISO8601>` sets or clears a task's `scheduled_at`, and `hermes kanban create … --scheduled-at <ISO8601>` sets it at creation. The dispatcher skips ready tasks whose start time is in the future and picks them up on the first tick after it. An earlier release documented `schedule <id> "<reason>"` as a status transition; current documentation has no `scheduled` status, so automate the `--at` form only.
 
-**Fact:** core human/automation operations include `list`, `show`, `assign`, `link`, `unlink`, `claim`, `comment`, `complete`, `block`, `request-review`, `request-changes`, `reopen-review`, `schedule`, `unblock`, `archive`, `tail`, `runs`, `dispatch`, `context`, `specify`, `decompose`, `gc`, and board commands. Use `hermes kanban --help` for the installed flag set.
+**Fact — PR completion contracts:** declare PR work at creation with `--completion-contract OWNER/REPO`, or pass an exact PR URL of the form `github.com/OWNER/REPO/pull/123` (with the `https://` scheme) for existing work; `kanban_create` accepts the same `completion_contract` field. `local-only` is the default for both existing and undeclared cards. A prose URL in the task body is not policy.
+
+**Fact:** core human/automation operations include `init`, `create`, `list`, `show`, `assign`, `reassign`, `edit`, `promote`, `link`, `unlink`, `claim`, `heartbeat`, `comment`, `complete`, `block`, `unblock`, `request-review`, `request-changes`, `reopen-review`, `schedule`, `archive`, `tail`, `watch`, `runs`, `assignees`, `log`, `stats`, `diagnostics`, `dispatch`, `context`, `specify`, `decompose`, `notify-subscribe`, `notify-list`, `notify-unsubscribe`, `gc`, and board commands. `complete`, `block`, `unblock`, `archive`, and `reopen-review` accept multiple ids as bulk verbs. `promote` moves `todo`/`blocked` tasks to `ready` as a recovery step. Use `hermes kanban --help` for the installed flag set.
+
+**Fact:** `--max-runtime 30m|2h|1d|<seconds>` sets a per-run wall-clock cap and `--max-retries N` overrides the failure circuit breaker per task. `hermes kanban dispatch --dry-run` explains why a ready card is not spawning, listing `Guarded (<reason>)`, `rate_limited`, `skipped_locked`, and `memory_pressure` entries; the respawn guard holds cards after an auth/quota/429 failure, after a recent success, or while a recent comment links an open PR. A handoff recorded after the PR comment, such as an operator reassignment, lifts the `active_pr` hold for the profile now named on the card.
+
+**Fact — multi-gateway posture:** only one gateway owns the dispatcher. The owning gateway keeps `kanban.dispatch_in_gateway: true` and every other profile gateway sets it to `false`; delivery is profile-owned. Two dispatchers against one database is unsupported.
 
 ## Workspace and attachments
 
@@ -197,7 +210,9 @@ metadata: changed_files, verification, dependencies, retry_notes, residual_risk
 
 **Fact:** Kanban's documented model is single-host and trusted-local-user. It is not a remote multi-tenant security service, a sandbox, or authorization for a worker to access every local directory, mounted credential, or remote backend resource.
 
-**Fact — approval caveat:** the official material documents no Kanban-specific approval gate and does not state how ordinary tool approvals behave inside a dispatcher-spawned non-interactive worker. For unattended gateway, cron, and Kanban workers, the docs recommend `hard_stop_enabled: true` because its default is `false`. Treat unrecorded approval behavior as unknown rather than assuming it auto-denies or auto-approves.
+**Fact — approval caveat:** the official material documents no Kanban-specific approval gate and does not state how ordinary tool approvals behave inside a dispatcher-spawned non-interactive worker. Treat unrecorded approval behavior as unknown rather than assuming it auto-denies or auto-approves.
+
+**Fact — the guardrail default that does cover workers:** `tool_loop_guardrails.non_interactive_hard_stop_enabled` is `true` by default, so unattended gateway/cron-style sessions hard-stop a repeated failing call while CLI, TUI, Desktop, ACP, and `api_server` sessions stay warning-only. `tool_loop_guardrails.hard_stop_enabled` is `false` by default and only widens hard stops to every platform. `approvals.cron_mode` and `approvals.unattended_mode` (both `deny` by default) decide what a headless run does when it hits a dangerous-command prompt.
 
 ## Operator checklist
 

@@ -12,6 +12,8 @@ Progressive disclosure is the core design principle for skills. If you assume th
 | Activation | The whole `SKILL.md` | Executing the core workflow and contract |
 | Execution | `references/`, `scripts/`, `assets/` | Using detailed knowledge and tools on demand |
 
+Anthropic's platform documentation gives the per-stage cost: metadata is always loaded at roughly **100 tokens per skill**, the body loads on trigger and should stay **under 5k tokens**, and bundled resources cost nothing until they are read. Scripts are the exception that proves the rule — the script's code never enters context, only its output (<https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview>, checked 2026-11-03).
+
 ## 2. What to keep in `SKILL.md`
 
 - Trigger and scope
@@ -21,6 +23,8 @@ Progressive disclosure is the core design principle for skills. If you assume th
 - Gotchas the executor must know
 - Navigation telling when to read support files
 - Validation and stop conditions
+
+Gotchas earn their place here specifically: they are environment facts that defy reasonable assumptions, and a separate reference file only helps if the agent recognizes the situation and reads it. If an agent would not know to look, the correction belongs in `SKILL.md` (<https://agentskills.io/skill-creation/best-practices>, checked 2026-11-03).
 
 ## 3. What to push down
 
@@ -34,7 +38,7 @@ Progressive disclosure is the core design principle for skills. If you assume th
 | Source ledger and vendor drift notes | `references/official/` or `references/sources.md` |
 | Prompt injection and side-effect safety notes | `rules/safety.md` or `references/safety.md` |
 | Schema and API detail | `references/*.md` |
-| Deterministic verification | `scripts/*.py`, `scripts/*.sh`, `scripts/*.mjs` |
+| Deterministic verification | `scripts/*.sh` |
 | Templates | `assets/*` |
 | Long example collections | `references/examples.md` or `assets/examples/*` |
 
@@ -54,8 +58,10 @@ Strong example:
 Read `references/official/openai.md` only when provider-specific Codex skill behavior changes the core rule.
 Read `references/prompt-loop-eval.md` before adding an iterative loop, prompt optimizer, or eval fixture.
 Read `rules/safety.md` before enabling network, credential, destructive, or production side effects.
-Run `scripts/validate-skill.mjs` when the skill includes scripts, generated assets, or eval fixtures.
+Run `scripts/validate-skill.sh` when the skill includes scripts, generated assets, or eval fixtures.
 ```
+
+The source states the same rule in the form of a condition, not a directory: "Read `references/api-errors.md` if the API returns a non-200 status code" is more useful than "see `references/` for details."
 
 ## 5. Context budget rules
 
@@ -82,16 +88,34 @@ The questions above ask whether content is *useful*. These decide whether it *ea
 
 - SK-D-1: For each instruction, ask **"if this were absent, would the agent get it wrong?"** If the answer is no, delete it. If you are not sure, test it rather than keeping it on suspicion.
 - SK-D-2: If a task succeeds without the skill, that skill may add no value. A skill that restates what the agent already does reliably is cost without benefit.
+- SK-D-3: A skill is not automatically worth keeping because it is well written. The 2026 SWE-Skills-Bench measurement found 92 of 98 public skills had no statistically significant effect, and that the harmful ones worked by anchoring the agent on their own template and overriding the task's explicit instructions — so "it always follows my skill" is not evidence of value.
+
+## 7. Listing budgets by runtime
+
+The listing is the scarce resource: metadata for every installed skill is charged on every turn, whether or not the skill is used.
+
+| Runtime | Listing budget | What happens on overflow |
+|---|---|---|
+| Agent Skills spec | Not specified — the client decides | Undefined |
+| Codex | 2% of the model context, or 8,000 characters when unknown; `skills.max_context_tokens` raises it to at most 10,000 tokens | Descriptions are shortened first; some skills may be omitted from the list with a warning |
+| Claude Code | 1% of the model context window; each entry's `description` + `when_to_use` capped at 1,536 characters | Descriptions are dropped starting with the least-invoked skills |
+| Anthropic API | At most 20 skills per request | Requests are rejected; consolidate skills or route between sets |
+
+Consequences for authoring: keep the trigger in the first sentence, assume the tail may never be seen, and watch the installed count as a budget rather than a free resource. Claude Code's `/skill-doctor` and `/doctor` report what each skill costs and which are never invoked (<https://code.claude.com/docs/en/skills>, checked 2026-11-03); Codex's `[[skills.config]]` disables a skill without deleting it.
 
 ## Sources
 
-> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+> Links re-read and re-checked 2026-11-03.
 
 | Claim | Source |
 |---|---|
-| The 500-line and 5,000-token progressive-disclosure budgets, and the removal test behind `SK-D-1` and `SK-D-2` | <https://agentskills.io/skill-creation/best-practices> |
-| The three-stage model (metadata, then full instructions, then referenced files) | <https://agentskills.io/specification> |
+| The 500-line and 5,000-token progressive-disclosure budgets, the removal question behind `SK-D-1` and `SK-D-2`, and the gotchas placement rule | <https://agentskills.io/skill-creation/best-practices> |
+| The three-stage model (metadata, then full instructions, then referenced files) and the one-level-deep file reference rule | <https://agentskills.io/specification> |
+| ~100 tokens of metadata per skill, the under-5k-token body, script output as the only context cost, and the 20-skills-per-request API limit | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| The 92-of-98 no-effect result and the template-anchoring failure mode behind `SK-D-3` | <https://arxiv.org/abs/2603.15401> |
+| The 2%-of-context / 8,000-character Codex listing budget, `skills.max_context_tokens`, and `[[skills.config]]` | <https://learn.chatgpt.com/docs/build-skills> |
+| The 1%-of-context Claude Code listing budget, the 1,536-character entry cap, the least-invoked-first drop order, and `/skill-doctor` | <https://code.claude.com/docs/en/skills> |
 
 ### Evidence grade
 
-This file is the **canonical** statement of the disclosure budgets; [`skill-anatomy.md`](skill-anatomy.md) points here rather than restating them. The 500-line and 5,000-token figures are `PRIMARY` — the specification site states them. The 300-line value is a repository gate, labelled as such.
+This file is the **canonical** statement of the disclosure budgets; [`skill-anatomy.md`](skill-anatomy.md) points here rather than restating them. The 500-line and 5,000-token figures are `PRIMARY` — the specification site states them. The 300-line value is a repository gate, labelled as such. `SK-D-3` rests on a single 2026 benchmark with its own statistical test, stated as one measurement rather than a law.

@@ -28,6 +28,8 @@ Instruction은 너무 낮으면 edge-case 덤프가 되고, 너무 높으면 실
 [통과/실패 기준]
 ```
 
+Anthropic도 같은 지점을 “골디락스 구간”이라고 부른다. 한쪽 끝은 프롬프트에 복잡하고 잘 부서지는 로직을 박아 넣는 방식이고, 다른 쪽 끝은 공유된 맥락이 있다고 잘못 가정하는 모호한 지침이다. 함께 제시하는 분량 기준은 “기대하는 동작을 온전히 규정하는 최소한의 정보”이며, 여기에 “최소가 반드시 짧다는 뜻은 아니다”라는 단서를 붙인다(확인 2026-11-03). 최소란 모든 문장이 신호를 담는다는 뜻이고, 문서가 짧다는 뜻이 아니다.
+
 ## 2. Context Is A Budget
 
 컨텍스트는 무제한 지식창고가 아니다. 읽히는 모든 문장은 다른 근거와 충돌하거나 중요한 정보를 밀어낼 수 있다.
@@ -39,6 +41,10 @@ Instruction은 너무 낮으면 edge-case 덤프가 되고, 너무 높으면 실
 | Compression | 표, checklist, examples로 압축 |
 | Separation | project rule / runtime quirk / task prompt 분리 |
 | Compaction safety | 긴 작업은 결정·검증·남은 일을 별도 파일에 기록 |
+
+이것은 가정이 아니라 측정 결과다. Chroma는 네 계열 모델 18종을 시험해, 작업 난이도를 고정한 상태에서도 입력 길이가 늘면 성능이 떨어진다는 사실을 확인했다. 주제가 인접한 방해 문서가 하나만 붙어도 정확도가 떨어졌고 네 개를 붙이면 하락이 더 커졌다. 또 문장 순서를 섞은 문서에서 정연하게 구성된 문서보다 성능이 좋았다. 관련성과 배치만으로는 긴 프롬프트를 구제하지 못한다는 뜻이다(2025-07-14). 실무적으로 읽으면 이렇다. 창을 키우면 자리가 늘 뿐 정확도가 늘지 않고, 신호가 약한 토큰 하나하나가 핵심 규칙에 쓸 주의를 잡아먹는다.
+
+이 예산을 실제로 쓰고 되찾는 수단은 [`context-management.ko.md`](context-management.ko.md)에 정리했다.
 
 ## 3. Explicit Contract
 
@@ -81,8 +87,18 @@ Define → Test → Diagnose → Patch → Re-run → Document
 | Evidence | 주장보다 근거 우선 |
 | Eval Loop | 개선은 테스트로 증명 |
 
+## Sources
+
+> 출처 확인 2026-11-03.
+
+| 주장 | 출처 | 발행·갱신 |
+|---|---|---|
+| Right Altitude 정의, “최소가 반드시 짧다는 뜻은 아니다”, 압축과 노트 필기의 근거 | <https://www.anthropic.com/research/effective-context-engineering-for-ai-agents> | 2025-09-29 발행, 2026-10-18 갱신 |
+| 난이도를 고정해도 입력 길이가 늘면 모델 18종의 성능이 떨어진다. 방해 문서는 하락을 키우고, 정연한 문서가 섞은 문서보다 나쁘다 | <https://www.trychroma.com/research/context-rot> | 2025-07-14 |
+| 압축·비우기·격리 수단과 벤더별 파라미터 | [`context-management.ko.md`](context-management.ko.md) | 2026-11-03 확인 |
+
 ## Related
 
 - [`prompt-authoring.ko.md`](prompt-authoring.ko.md): 역할 수행 프롬프트 작성 템플릿
-- 공식 출처는 [`../CONTEXT_ENGINEERING.ko.md`](../CONTEXT_ENGINEERING.ko.md#sources)의 Sources 표를 따른다 (확인 2026-07-29, 링크 사용 가능 여부는 2026-09-19에 재확인).
-- 로컬 재검증 캐시(미추적, `.gitignore` 대상): `.hyper/research/2026-06-02-official-llm-prompt-instructions-update.md`
+- [`context-management.ko.md`](context-management.ko.md): 예산을 쓰고 되찾는 기제
+- 공식 출처는 [`../CONTEXT_ENGINEERING.ko.md`](../CONTEXT_ENGINEERING.ko.md)의 Sources 표를 따른다(지시 표면은 2026-07-29 확인, 링크 사용 가능 여부는 2026-11-03 재확인).

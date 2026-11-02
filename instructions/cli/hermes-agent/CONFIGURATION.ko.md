@@ -2,16 +2,18 @@
 
 > 영어판: [`CONFIGURATION.md`](CONFIGURATION.md)
 >
-> **조사일:** 2026-08-24, 공식 문서만 근거로 삼았다. 아래 **사실**은 Hermes Agent 공식 문서에서 추적한 내용이고, **권고**는 이 문서의 운영 조언이다. 기본값은 해당 날짜에 확인한 문서상의 값이며 설치된 버전을 보장하지 않는다. 업그레이드 후에는 공식 Configuration·Security reference를 다시 확인한다.
-> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
+> **조사일:** 2026-11-03. Hermes Agent **v0.22.5**(커밋 `bf0203a794a`, 2026-10-22 배포)에 실린 공식 문서를 근거로 삼았다. 아래 **사실**은 그 근거를 추적하고, **권고**는 이 문서의 운영 조언이다. 기본값은 해당 날짜에 확인한 문서상의 값이며 설치된 버전을 보장하지 않으므로, 업그레이드 후에는 Configuration·Security reference를 다시 확인한다.
 
-## 1차 출처
+## 출처
 
-- [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration)
-- [Environment Variables Reference](https://hermes-agent.nousresearch.com/docs/reference/environment-variables)
-- [CLI Commands Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands)
-- [Managed Scope](https://hermes-agent.nousresearch.com/docs/user-guide/managed-scope)
-- [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security)
+| 출처 | 제공하는 내용 | 확인 |
+| --- | --- | --- |
+| [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration) | `~/.hermes/` tree, 우선순위, 아래에 인용한 모든 섹션 | 확인 2026-11-03 |
+| [Environment Variables Reference](https://hermes-agent.nousresearch.com/docs/reference/environment-variables) | Key별 환경 변수 override | 확인 2026-11-03 |
+| [CLI Commands Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) | `hermes config` 하위 명령과 점 escape key | 확인 2026-11-03 |
+| [Managed Scope](https://hermes-agent.nousresearch.com/docs/user-guide/managed-scope) | 관리자가 고정한 값과 그 우선순위 | 확인 2026-11-03 |
+| [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security) | Approval 모드, YOLO, allowlist, redaction | 확인 2026-11-03 |
+| [전체 문서 export](https://hermes-agent.nousresearch.com/docs/llms-full.txt) | 모든 page를 한 번에 대조할 때 | 확인 2026-11-03 |
 - 공식 문서 전문 export: `https://hermes-agent.nousresearch.com/docs/llms-full.txt`
 
 ## 어떤 파일이 무엇을 담는가
@@ -91,7 +93,9 @@ mcp_servers:
 
 **사실:** `hermes config set`은 인식된 secret과 API key를 `.env`로, 나머지를 `config.yaml`로 자동 배치한다. 호출자가 파일을 고르지 않는다.
 
-**사실 — 제약:** `agent.reasoning_overrides` 아래에서 model 이름에 점이 포함된 키는 점 표기 setter로 설정할 수 없다. 그 경우 YAML을 직접 편집한다.
+**사실 — key 이름 안의 점:** 기존 mapping을 따라갈 때는 점으로 쪼개기보다 이미 있는 literal key가 우선한다. 그래서 `hermes config set providers.p.models.grok-4.6.supports_vision true`는 실제 `grok-4.6` 항목을 고친다. **새** 점 포함 key를 만들 때는 backslash로 escape해야 한다(`'providers.p.models.grok-4\.7.context_length'`). 기존 점 포함 형제를 가리는 escape 없는 쓰기는 runtime이 읽지 않을 항목을 만드는 대신 오류로 끝난다.
+
+**사실:** `hermes config get`은 credential 형태 값(`api_key`, `*_TOKEN`, `*_SECRET`, `password`)을 session transcript가 남기 때문에 가린다. `--raw`가 실제 값을 출력한다. `hermes config set`은 알려진 key를 잘못된 prefix에 쓰려 하면 의도한 key를 알려 주고 거부하며, `--force`가 있어야 쓴다.
 
 **사실:** `config check`는 누락·노후 옵션을 보고할 뿐이며 문서는 복구 기능을 주장하지 않는다. `config migrate`는 새 옵션을 추가하고 활성 skill에서 선언됐지만 설정되지 않은 값을 찾는다. Update는 의존성 설치 후 이를 실행한다.
 
@@ -124,6 +128,9 @@ mcp_servers:
 | `timeout` | `300`초 | 무응답 시 **거부**. Fail-closed |
 | `cron_mode` | `deny` | `approve`는 cron 컨텍스트의 모든 위험 명령을 자동 승인 |
 | `single_query_mode` | `deny` | 일회성 `hermes chat -q`에도 동일 |
+| `unattended_mode` | `deny` | Webhook, `msgraph_webhook`, `api_server` session에도 동일. `/approve`에 답할 사람이 없는 표면이다 |
+| `discord_prompt_timeout` | `300` | Discord의 approval, clarify, update 버튼이 눌리는 시간(초), 최소 30 |
+| `smart_policy` | unset | Smart approval reviewer의 system prompt에 덧붙이는 추가 지시 |
 | `deny` | 비어 있지 않은 기본값 없음 | 정규화된 명령 전체에 대한 대소문자 무시 fnmatch glob. **YOLO/off보다 먼저** 평가되고 mtime 기반으로 재적재되어 재시작이 필요 없다 |
 | `denial_breaker_threshold` | `3` | `0`이면 비활성 |
 | `destructive_slash_confirm` | 활성 | `/clear`, `/new`, `/reset`, `/undo`에 네이티브 확인 대화상자 |
@@ -152,6 +159,9 @@ mcp_servers:
 | `container_persistent` / `docker_persist_across_processes` / `docker_orphan_reaper` | `true` | |
 | `lifetime_seconds` | `300` | |
 | `vercel_runtime` | `node24` | `node22`, `python3.13`도 가능 |
+| `temp_dir` | `""` | 비우면 `TMPDIR`, 아니면 `~/.hermes/cache/terminal`; 24시간 idle 항목은 정리됨 |
+| `sync_back_max_bytes` | `2147483648` | Remote backend가 이보다 큰 state archive를 거부 |
+| `modal_image` / `daytona_image` | `nousresearch/hermes-sandbox:desktop` | Cloud backend별 sandbox image |
 
 **사실:** `home_mode: auto`는 호스트 설치에서 실제 OS `HOME`을 유지하므로 평소의 `git`, `ssh`, `gh`, `az`, `npm`, Claude Code, Codex 자격증명이 하위 프로세스에 그대로 보인다. `home_mode: profile`은 `HOME`을 `{HERMES_HOME}/home`으로 돌리고 `HERMES_REAL_HOME`을 내보내지만, 그 대가로 `~/.ssh`, `~/.gitconfig`, 클라우드 CLI 인증이 거기서 초기화되기 전까지 보이지 않는다.
 
@@ -163,10 +173,17 @@ mcp_servers:
 | --- | --- |
 | `skills.guard_agent_created` | `false` — 휴리스틱 스캐너 꺼짐 |
 | `skills.write_approval` | `false` — skill 쓰기를 승인 대기로 두지 않음 |
+| `skills.auto_load` | 비어 있음 — session 시작 시 강제 로드하는 skill 없음 |
+| `skills.create_dir` | Unset — 새 에이전트 작성 skill은 profile 로컬 디렉터리로 |
+| `skills.inline_shell` / `inline_shell_timeout` | `false` / 조각당 `10`초 |
+| `skills.tier1_advisory` | 선택 scanner binary가 `PATH`에 있으면 활성 |
+| `skills.ledger` / `ledger_max_bytes` | `true` / `5242880` |
 | `skills.disabled` / `skills.platform_disabled` / `skills.external_dirs` | SILENT |
 | `memory.memory_enabled` / `memory.user_profile_enabled` | `true` |
 | `memory.memory_char_limit` / `memory.user_char_limit` | `2200` / `1375`자 |
 | `memory.write_approval` | `false` |
+| `memory.prefetch_spill_enabled` | `false` — 과대한 provider recall을 그대로 유지 |
+| `memory.provider` | Unset — 내장 store만 사용 |
 | `plugins.enabled` / `plugins.disabled` | 일반 plugin은 opt-in이며 `disabled`가 항상 우선 |
 
 **사실:** plugin 신뢰 게이트 — `allow_tool_override`, `allow_gateway_injection`, `mcp_allowlist`, `llm.allow_provider_override`, `allow_model_override`, `allow_platform_actions` 등 — 는 모두 거부가 기본이다.
@@ -175,24 +192,31 @@ mcp_servers:
 
 **사실:** tool 활성화는 `platform_toolsets`(플랫폼별 toolset 목록 맵, `hermes tools`가 기록)와 `agent.disabled_toolsets`(플랫폼 해석 이후 전역 제거)로 저장된다. `tools:` 매핑을 만들어내지 않는다.
 
-연관 한도: `tool_output.max_bytes` `50000`, `tool_output.max_lines` `2000`, `tool_budget.mcp_result_size_chars` `50000`, `tool_loop_guardrails.warnings_enabled` `true`, `loop_caps.max_web_searches`와 `max_subagents` `50`.
+연관 한도: `tool_output.max_bytes` `50000`, `max_lines` `2000`, `max_line_length` `2000`, `file_read_max_chars` `100000`, `tool_budget.mcp_result_size_chars` `50000`, `tool_loop_guardrails.warnings_enabled` `true`, `hard_stop_enabled` `false`, `non_interactive_hard_stop_enabled` `true`, 그리고 turn당 `loop_caps.max_web_searches`와 `max_subagents` `50`.
+
+**사실, truncation 전략은 두 가지다:** 한도를 넘은 terminal 출력은 앞 40%와 뒤 60%만 남기고 `[OUTPUT TRUNCATED]` 표시를 넣어 자른다. 반면 과대한 *tool result*는 `$HERMES_HOME/cache/spillover/`로 흘려보내고 문맥에는 미리보기와 file 경로를 남긴다. 일반 spill 한도는 100,000자이고 `mcp_*` 결과는 기본 50,000자로 흘리며, 항상 일반 한도가 상한이다.
+
+**사실, hard stop이 적용되는 곳:** 대화형 CLI, TUI, Desktop, ACP, `api_server` session은 사람이 개입할 수 있어 경고만 남긴다. Unattended gateway와 cron 표면은 `non_interactive_hard_stop_enabled`로 기본 hard stop을 쓴다. `hard_stop_enabled`는 hard stop을 모든 platform으로 넓힌다. Hard stop은 반복이 아니라 변화 없는 재생을 잡는다. 성공한 변경 호출은 streak을 초기화하고, 서로 다른 실패 명령은 진단이지 loop가 아니다.
 
 ### 그 밖에 자주 조정하는 섹션
 
-`agent`(`api_max_retries: 3`, `stall_guards: true`, `clarify_timeout`; 아래 문서 모순 참고) · `compression`(`enabled: true`, `threshold: 0.50`, `target_ratio: 0.20`, `protect_last_n: 20`) · `code_execution`(`mode: project`, `timeout: 300`, `max_tool_calls: 50`) · `display`(`tool_progress: all`, `language: en`) · `security`(`redact_secrets: true`, `tirith_enabled: true`) · `updates`(`pre_update_backup: quick`, `backup_keep: 5`) · `delegation`(`max_concurrent_children: 3`, `max_spawn_depth: 1`).
+`agent`(`api_max_retries: 3`, `stall_guards: true`, `clarify_timeout: 3600`) · `compression`(`enabled: true`, `threshold: 0.50`, `target_ratio: 0.20`, `tail_mode: lean`, `protect_last_n: 20`, `protect_first_n: 3`) · `code_execution`(`mode: project`, `timeout: 300`, `max_tool_calls: 50`) · `display`(`tool_progress: all`, `language: en`, `memory_notifications: on`) · `security`(`redact_secrets: true`, `website_blocklist.enabled: false`) · `updates`(`pre_update_backup: quick`, `backup_keep: 5`) · `delegation`(`max_concurrent_children: 3`, `max_spawn_depth: 1`, `oneshot_max_children: 2`) · `checkpoints`(`enabled: false`, `max_snapshots: 20`) · `curator`(`enabled: true`, `interval_hours: 168`, `stale_after_days: 14`, `archive_after_days: 30`, `consolidate: false`).
 
-**사실:** 문서화된 최상위 `database:` 섹션은 **없다**. `state.db`는 런타임 저장소이지 설정 섹션이 아니다.
+**사실, `tirith_*`는 사라졌다:** 이전 release는 `security.tirith_enabled` 아래 명령 scanner를 묶어 두었지만 제거되었고, 업그레이드하면 그 key가 빠지며 그 자리에 켜지는 것도 없다. Content 단위 명령 검사는 따로 문서화되어 있다.
 
-## 문서에 존재하는 모순
+**사실, `database:` 섹션은 있다:** `state.db`를 여는 방식을 정한다. `journal_mode`(기본 `wal`, network mount면 `delete`), 선택적 `synchronous` durability 하한, 선택적 `wal_autocheckpoint`와 `journal_size_limit` pragma다. 이미 WAL인 database를 실행 중에 내리지는 않으며, 모든 process를 멈춘 뒤 `hermes sessions set-journal-mode delete`로 변환한다.
 
-아래는 공식 문서 내부의 불일치다. 임의로 한쪽을 고르지 말고 그대로 보존한다.
+**사실, `runtime:` 섹션도 있다:** `nofile_soft_limit`(기본 `4096`, OS hard limit으로 clamp되고 이미 더 높은 process는 낮추지 않음)과 `malloc_arena_max`(glibc에서 기본 `4`)가 오래 도는 server process를 조정한다. `0`, `false`, `null`은 각각을 끈다.
 
-| 항목 | 충돌 내용 | 채택 |
+## 정리된 모순
+
+이전 revision은 공식 문서 안의 불일치 세 쌍을 추적했다. 지금은 셋 다 일관되게 읽히므로, 오래된 해석을 다시 들여오지 않는다.
+
+| 항목 | 한때 어긋났던 내용 | 현재 문서화된 입장 |
 | --- | --- | --- |
-| `context_file_max_chars` | 설정 절은 `null`이 동적 상한(하한 20K, 상한 500K)이라 하고, 뒤쪽 산문은 "기본 20,000"이라 한다 | 전용 설정 절. 산문은 오래된 서술로 본다 |
-| `gateway.streaming.enabled` | YAML 예시는 `true`인데 같은 예시의 주석과 주변 산문은 마스터 스위치 기본값이 `false`라 한다 | `false`. 예시는 예시일 뿐이다 |
-| `agent.stall_guards` | 산문은 기본 true, 코드 블록은 false 설정법을 보여준다 | 실제 모순 아님. 코드 블록은 opt-out 예시다 |
-| `agent.clarify_timeout` | 전용 settings 자료는 `3600`초, Discord·Telegram platform 페이지는 `600`초라고 한다 | 전용 settings 자료를 쓴다. Upstream이 정리할 때까지 platform 산문은 오래된 서술로 본다 |
+| `context_file_max_chars` | `null` 동적 상한과 "기본 20,000" 산문 | `null`은 model window에 맞춰 늘어나며 하한 20,000자, 상한 500,000자 |
+| `gateway.streaming.enabled` | 예시는 `true`, 산문은 `false` | 마스터 스위치는 `false`. 켜면 Telegram은 stream하고 Discord는 stream하지 않는다 |
+| `agent.clarify_timeout` | 설정 자료는 `3600`, Discord·Telegram page는 `600` | `3600`초. CLI modal, TUI/Desktop card, gateway에 같은 값 하나 |
 
 ## Secret과 자격증명
 
@@ -234,6 +258,7 @@ mcp_servers:
 | `${VAR}` 참조가 문자 그대로 보인다 | 변수가 정의되지 않았다 | 로그의 경고를 확인하고 `.env`나 secret source에 정의한다 |
 | 새 `.env` 키가 실행 중 session에 안 보인다 | 프로세스가 `.env`를 다시 읽지 않았다 | `/reload` 실행 또는 프로세스 재시작 |
 | API key가 무시되는 듯하다 | 저장된 model/provider 선택이 일반 환경 해석보다 우선한다 | `hermes config show` 확인 후 `hermes model` 재실행 |
+| `config get`이 `sk-o...7890`을 보여 준다 | Session transcript가 남으므로 credential 형태 값은 가려진다 | `--raw`를 붙이거나 `security.redact_secrets: false`로 둔다 |
 | Update 후 옵션이 사라졌다 | 새 schema 옵션이 아직 없다 | `hermes config check` 후 `hermes config migrate` |
 | Managed 정책이 적용되지 않는다 | Managed 파일 형식 오류로 무시됐다 | 크게 로깅된다. `hermes doctor`로 확인 |
 

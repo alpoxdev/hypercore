@@ -18,6 +18,8 @@ Two limits on that model:
 - **Explicit cache objects are provider-specific.** Google's explicit caching, for example, has you create a cache object and reference it by id instead of relying on prefix matching, so the rules below apply to it only loosely.
 - **Only the reused region matters.** A change does not necessarily invalidate what came before it.
 
+How much control you get over the boundary differs. Anthropic allows up to four breakpoints per request, placed automatically or explicitly. OpenAI lets a GPT-5.6-or-later request restrict caching to developer-marked breakpoints. Google's explicit caching replaces boundary choice with a cache object you create and reference. Where you cannot choose the boundary, the provider places it, and the stable-first rule has to carry the whole design.
+
 Minimum cacheable lengths, TTLs, and pricing differ per provider and model. The current numbers live in [`references/provider-cache-facts.md`](references/provider-cache-facts.md) rather than here, because they change faster than this contract.
 
 ## 2. Authoring rules for prompts
@@ -31,6 +33,7 @@ Minimum cacheable lengths, TTLs, and pricing differ per provider and model. The 
 | Stable tool surface | Adding, removing, reordering, or re-describing a tool invalidates the prefix for the whole session. Treat the tool list as a frozen contract within a run |
 | No mid-session rewrite | Do not re-inject updated state at the top of the context. Append the update as a later message instead |
 | One canonical block | Two near-identical system blocks are two different prefixes. Keep one home per rule and reference it |
+| Break at the end of the stable part | Place the cacheable boundary after the last block that is identical across requests. Where the provider bills writes, content after that boundary is processed at the normal input rate instead of being written to the cache |
 
 A useful test: if you diff the request for turn 1 and turn 5 of the same session, the only differences should be at the end.
 
@@ -53,6 +56,10 @@ When a runtime loads a skill's `SKILL.md` and a system-level skill list into eve
 - Reordering content that is otherwise identical.
 - TTL expiry between requests.
 - A different cache scope or routing key — a shared prefix is not automatically a shared cache.
+- A request setting that renders into the prompt: reasoning effort, thinking configuration, verbosity, speed, tool choice, or an output-schema change. Anthropic lists each of these against the cache level it invalidates.
+- A compaction or truncation pass that replaces earlier content. OpenAI documents compaction as preventing reuse from the first changed token onward.
+
+Some of these now have append-only alternatives, and they are the ones to prefer: an Anthropic mid-conversation `system` message adds an instruction without editing the top-level `system` field, and an OpenAI `configuration_update` item changes reasoning effort between responses without rewriting the prefix.
 
 ## 5. Harness-level reuse
 
@@ -69,9 +76,10 @@ A harness multiplies one prompt into many requests: workers, subagents, retries,
 ## 6. Measure, do not assume
 
 - Read cached-token counts from the response usage rather than inferring a hit. Provider field names differ; see the reference file.
-- On some providers a cache **write** costs more than an ordinary input token (OpenAI documents 1.25× from GPT-5.6 on). Writing a prefix once and reading it once is not automatically cheaper.
-- A minimum cacheable prefix length exists and varies by model. A short prompt may never cache at all.
+- A cache **write** costs more than an ordinary input token on every current model that bills it: Anthropic charges 1.25× for a 5-minute entry and 2× for a 1-hour entry, and OpenAI charges 1.25× for a 30-minute entry and 2.5× for a 12-hour one. Writing a prefix once and reading it once costs more than processing it once uncached; reuse pays from the second read.
+- A minimum cacheable prefix length exists and varies by model: 512 to 4,096 tokens on Anthropic, 1,024 visible tokens on current OpenAI models, 2,048 or 4,096 on Google models. A short prompt may never cache at all.
 - A resumed or continued session is not a guaranteed hit. Session continuity and cache reuse are different mechanisms.
+- Treat rate-limit effects as measured behavior. Providers document different interactions between cached tokens and limits, and a gateway can change the accounting.
 
 ## 7. Where caching must not decide the design
 
@@ -86,18 +94,19 @@ A harness multiplies one prompt into many requests: workers, subagents, retries,
 - [ ] Tool definitions do not change within a session.
 - [ ] A skill keeps its trigger wording and loaded head stable, with volatile values pushed to the bottom or a reference file.
 - [ ] Cache reuse was measured from usage fields, not assumed.
+- [ ] Where cache writes are billed, the cost is in the design: the prefix is expected to be read at least twice, or a single write is justified and recorded.
 - [ ] Any deliberate cache-hostile choice (a fresh nonce, per-request ordering) is intentional and documented.
 
 ## Sources
 
 | Source | URL | Checked |
 |---|---|---|
-| Anthropic — prompt caching | <https://platform.claude.com/docs/en/build-with-claude/prompt-caching> | 2026-09-19 |
-| OpenAI — prompt caching | <https://developers.openai.com/api/docs/guides/prompt-caching> | 2026-09-19 |
-| Google — context caching, generateContent API | <https://ai.google.dev/gemini-api/docs/generate-content/caching> | 2026-09-19 |
-| Google — context caching, Interactions API | <https://ai.google.dev/gemini-api/docs/caching> | 2026-09-19 |
-| Google — GenerateContent API reference | <https://ai.google.dev/api/generate-content> | 2026-09-19 |
-| Hermes Agent — extensions and MCP reload | [`../cli/hermes-agent/EXTENSIONS.md`](../cli/hermes-agent/EXTENSIONS.md) | 2026-09-19 |
+| Anthropic, prompt caching | <https://platform.claude.com/docs/en/build-with-claude/prompt-caching> | 2026-11-03 |
+| OpenAI, prompt caching | <https://developers.openai.com/api/docs/guides/prompt-caching> | 2026-11-03 |
+| Google, context caching on the generateContent API | <https://ai.google.dev/gemini-api/docs/generate-content/caching> | 2026-11-03 |
+| Google, implicit caching on the Interactions API | <https://ai.google.dev/gemini-api/docs/caching> | 2026-11-03 |
+| Google, GenerateContent API reference | <https://ai.google.dev/api/generate-content> | 2026-11-03 |
+| Hermes Agent, extensions and MCP reload | [`../cli/hermes-agent/EXTENSIONS.md`](../cli/hermes-agent/EXTENSIONS.md) | 2026-09-19 |
 
 ## Related documents
 

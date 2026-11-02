@@ -18,6 +18,8 @@
 - **명시적 캐시 객체는 프로바이더별 예외다.** 예를 들어 Google의 명시적 캐싱은 캐시 객체를 만들어 id로 참조하며 접두부 일치에 의존하지 않는다. 따라서 아래 규칙은 그 방식에 느슨하게만 적용된다.
 - **문제가 되는 것은 재사용 구간뿐이다.** 어떤 변경이 그 앞부분까지 반드시 무효화하는 것은 아니다.
 
+경계를 어디까지 고를 수 있는지는 프로바이더마다 다르다. Anthropic은 요청당 캐시 지점을 4개까지 허용하며 자동 또는 명시로 배치한다. OpenAI는 GPT-5.6 이후 요청에서 개발자가 표시한 지점에만 캐시를 쓰도록 제한할 수 있다. Google의 명시적 캐싱은 경계 선택 대신 만들고 참조하는 캐시 객체로 이를 대체한다. 경계를 고를 수 없으면 프로바이더가 경계를 정하므로, 안정적인 것을 앞에 두는 규칙이 설계 전체를 떠받쳐야 한다.
+
 최소 캐시 길이, TTL, 가격은 프로바이더와 모델마다 다르다. 최신 수치는 이 계약보다 빨리 바뀌므로 여기 두지 않고 [`references/provider-cache-facts.ko.md`](references/provider-cache-facts.ko.md)에 둔다.
 
 ## 2. 프롬프트 작성 규칙
@@ -31,6 +33,7 @@
 | 도구 표면 고정 | 도구를 추가·제거·재정렬하거나 설명을 바꾸면 세션 전체의 접두부가 무효가 된다. 한 실행 안에서는 도구 목록을 고정 계약으로 취급한다 |
 | 세션 중 재작성 금지 | context 맨 앞에 갱신된 상태를 다시 심지 않는다. 갱신은 뒤쪽 메시지로 덧붙인다 |
 | 정본 블록 하나 | 거의 같은 시스템 블록 두 개는 서로 다른 접두부 두 개다. 규칙마다 집을 하나만 두고 참조한다 |
+| 안정된 구간 끝에서 끊는다 | 요청마다 동일한 마지막 블록 뒤에 캐시 경계를 둔다. 쓰기 요금이 붙는 프로바이더에서는 그 경계 뒤 내용이 캐시에 쓰이지 않고 일반 입력 요율로 처리된다 |
 
 쓸 만한 검사: 같은 세션의 1턴과 5턴 요청을 diff했을 때, 차이가 끝부분에만 있어야 한다.
 
@@ -53,6 +56,10 @@
 - 내용이 같은데 순서만 바꾸는 것.
 - 요청 사이의 TTL 만료.
 - 다른 캐시 범위나 라우팅 키. 접두부를 공유한다고 캐시가 자동으로 공유되지는 않는다.
+- 프롬프트에 렌더링되는 요청 설정의 변경. 추론 노력도, thinking 설정, 상세도, 속도, 도구 선택, 출력 스키마 변경이 여기에 든다. Anthropic은 이 각각이 무효화하는 캐시 계층을 표로 적는다.
+- 앞선 내용을 대체하는 compaction이나 절단. OpenAI는 compaction이 처음 바뀐 토큰부터 재사용을 막는다고 적는다.
+
+이 가운데 일부에는 이제 덧붙이기 방식의 대안이 있고, 그쪽을 택한다. Anthropic의 대화 중간 `system` 메시지는 최상위 `system` 필드를 고치지 않고 지시를 더하며, OpenAI의 `configuration_update` 항목은 접두부를 다시 쓰지 않고 응답 사이에 추론 노력도를 바꾼다.
 
 ## 5. 하네스 수준 재사용
 
@@ -69,9 +76,10 @@
 ## 6. 가정하지 말고 측정한다
 
 - 적중 여부를 추론하지 말고 응답 usage의 캐시 토큰 수를 읽는다. 필드 이름은 프로바이더마다 다르며 참조 파일에 정리해 두었다.
-- 일부 프로바이더에서 캐시 **쓰기**는 일반 입력 토큰보다 비싸다(OpenAI는 GPT-5.6 이후 1.25배로 문서화한다). 접두부를 한 번 쓰고 한 번 읽는 것이 자동으로 더 싸지 않다.
-- 최소 캐시 길이가 존재하고 모델마다 다르다. 짧은 프롬프트는 아예 캐시되지 않을 수 있다.
+- 쓰기 요금이 붙는 현재 모델에서는 캐시 **쓰기**가 일반 입력 토큰보다 비싸다. Anthropic은 5분 항목에 1.25배, 1시간 항목에 2배를 받고, OpenAI는 30분 항목에 1.25배, 12시간 항목에 2.5배를 받는다. 접두부를 한 번 쓰고 한 번 읽는 비용은 캐시 없이 한 번 처리하는 비용보다 크며, 재사용은 두 번째 읽기부터 이득이 된다.
+- 최소 캐시 길이가 존재하고 모델마다 다르다. Anthropic은 512~4,096 토큰, 현재 OpenAI 모델은 보이는 토큰 1,024개, Google 모델은 2,048 또는 4,096개다. 짧은 프롬프트는 아예 캐시되지 않을 수 있다.
 - 세션 재개나 이어가기가 적중을 보장하지 않는다. 세션 연속성과 캐시 재사용은 다른 기제다.
+- 레이트 리밋 영향은 측정 대상 동작으로 다룬다. 프로바이더마다 캐시 토큰과 한도의 관계를 다르게 문서화하며, 게이트웨이가 계산을 바꿀 수 있다.
 
 ## 7. 캐싱이 설계를 결정하면 안 되는 곳
 
@@ -86,18 +94,19 @@
 - [ ] 한 세션 안에서 도구 정의가 바뀌지 않는다.
 - [ ] 스킬이 트리거 문구와 로드되는 머리를 안정적으로 유지하고, 변동값은 아래나 참조 파일로 밀어낸다.
 - [ ] 캐시 재사용을 가정하지 않고 usage 필드에서 측정했다.
+- [ ] 쓰기 요금이 붙는 캐시를 쓴다면 그 비용을 계산에 넣었다. 접두부를 두 번 이상 읽을 계획이 있거나, 한 번만 읽어도 쓰는 이유가 기록되어 있다.
 - [ ] 의도적으로 캐시에 불리한 선택(매 요청 새 nonce, 요청별 정렬)을 했다면 그 이유가 문서화되어 있다.
 
 ## 출처
 
 | 출처 | URL | 확인일 |
 |---|---|---|
-| Anthropic — prompt caching | <https://platform.claude.com/docs/en/build-with-claude/prompt-caching> | 확인 2026-09-19 |
-| OpenAI — prompt caching | <https://developers.openai.com/api/docs/guides/prompt-caching> | 확인 2026-09-19 |
-| Google — context caching, generateContent API | <https://ai.google.dev/gemini-api/docs/generate-content/caching> | 확인 2026-09-19 |
-| Google — context caching, Interactions API | <https://ai.google.dev/gemini-api/docs/caching> | 확인 2026-09-19 |
-| Google — GenerateContent API reference | <https://ai.google.dev/api/generate-content> | 확인 2026-09-19 |
-| Hermes Agent — 확장과 MCP 재로드 | [`../cli/hermes-agent/EXTENSIONS.ko.md`](../cli/hermes-agent/EXTENSIONS.ko.md) | 확인 2026-09-19 |
+| Anthropic, 프롬프트 캐싱 | <https://platform.claude.com/docs/en/build-with-claude/prompt-caching> | 확인 2026-11-03 |
+| OpenAI, 프롬프트 캐싱 | <https://developers.openai.com/api/docs/guides/prompt-caching> | 확인 2026-11-03 |
+| Google, generateContent API 컨텍스트 캐싱 | <https://ai.google.dev/gemini-api/docs/generate-content/caching> | 확인 2026-11-03 |
+| Google, Interactions API 암시적 캐싱 | <https://ai.google.dev/gemini-api/docs/caching> | 확인 2026-11-03 |
+| Google, GenerateContent API 참조 | <https://ai.google.dev/api/generate-content> | 확인 2026-11-03 |
+| Hermes Agent, 확장과 MCP 재로드 | [`../cli/hermes-agent/EXTENSIONS.ko.md`](../cli/hermes-agent/EXTENSIONS.ko.md) | 확인 2026-09-19 |
 
 ## 함께 읽을 문서
 

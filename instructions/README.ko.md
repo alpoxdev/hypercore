@@ -17,6 +17,10 @@
 | Skill Prompt/Loop/Eval | [`skill/references/prompt-loop-eval.ko.md`](skill/references/prompt-loop-eval.ko.md) | skill을 단일 프롬프트가 아니라 반복·검증 가능한 작은 프로그램으로 설계 |
 | Autoresearch | [`autoresearch/AUTORESEARCH.ko.md`](autoresearch/AUTORESEARCH.ko.md) | 목표·범위·측정·검증·가드·로그·rollback 기반 자율 반복 하네스 설계 |
 | Harness Engineering | [`harness-engineering/HARNESS_ENGINEERING.ko.md`](harness-engineering/HARNESS_ENGINEERING.ko.md) | 프롬프트, 에이전트, 도구 사용을 테스트 가능한 하네스로 관리 |
+| Loop Engineering | [`loop-engineering/LOOP_ENGINEERING.ko.md`](loop-engineering/LOOP_ENGINEERING.ko.md) | 하네스 한 층 위에서 자율 에이전트 루프를 설계한다. 트리거, 작업 출처, 상태, 작성자·검증자 분리, 검증 가능한 멈춤 조건, 예산을 다룬다 |
+| Graph Engineering | [`graph-engineering/GRAPH_ENGINEERING.ko.md`](graph-engineering/GRAPH_ENGINEERING.ko.md) | 다단계·다중 에이전트 작업을 노드, 간선, 상태로 이루어진 그래프로 설계하고, 그래프가 맞지 않는 경우를 가린다 |
+| Harness Anatomy | [`harness-engineering/references/harness-anatomy.ko.md`](harness-engineering/references/harness-anatomy.ko.md) | 하네스를 이루는 부품과 하네스 구성 요소가 낡았는지 판단하는 기준 |
+| Context Management | [`context-engineering/references/context-management.ko.md`](context-engineering/references/context-management.ko.md) | 긴 실행에서 문맥을 쓰고, 고르고, 압축하고, 격리하는 방법과 런타임별 압축·메모리 기능 |
 | Harness Measurement | [`harness-engineering/references/measurement.ko.md`](harness-engineering/references/measurement.ko.md) | 반복·집계·컨텍스트 변수 규칙의 유도: `pass^k`, 표본 크기, 행동 평가 vs 종단 벤치마크 |
 | Harness Evidence & Recovery | [`harness-engineering/references/evidence-and-recovery.ko.md`](harness-engineering/references/evidence-and-recovery.ko.md) | 증거·검증 비용 축소·장기 실행 복구 규칙의 작업 형태 |
 | Harness Agent Security | [`harness-engineering/references/agent-security.ko.md`](harness-engineering/references/agent-security.ko.md) | 최소 보안 단언 뒤의 OWASP 에이전트 위협 목록 |
@@ -37,8 +41,8 @@ bun run --cwd scripts lint:sh        # 검사기 자체의 정적 분석 (shellc
 
 `lint:sh`는 `scripts/check-sources.sh`에 [ShellCheck](https://www.shellcheck.net/)를 실행한다. ShellCheck는 이 저장소의 의존성이 아니라 시스템 도구이므로 별도 opt-in 작업으로 둔다. 편집기 진단용 `bash-language-server`는 `scripts/package.json`에 선언되어 있다.
 
-- 마지막 전수 확인: **2026-07-29**. AGENTS.md 탐색/우선순위 영역, CLI 런타임 프로필, skill·context-engineering 레퍼런스, harness-engineering 출처표, Hermes Agent 안내서, 신설 caching 영역의 부분 재검증: **2026-09-19**. 다음 전수 재검증: **2026-10-29**
-- harness-engineering 강화 재검증: 새 `harness-engineering/references/measurement.ko.md`, `harness-engineering/references/evidence-and-recovery.ko.md`, `harness-engineering/references/agent-security.ko.md`의 출처를 **2026-09-20**에 확인했다.
+- 마지막 전수 확인: **2026-11-03**. 모든 영역을 Aside 브라우저로 현재 1차 출처와 다시 대조했고, 낡은 주장은 지우거나 고쳤으며, 새 영역 `loop-engineering/`과 `graph-engineering/`을 추가했다. 주장별 확인일은 각 문서에 있고, 다시 읽지 못한 행은 이전 날짜를 그대로 둔다. 다음 전수 재검증: **2027-02-03**.
+- 이전 확인: 전수 확인 2026-07-29, 부분 재검증 2026-09-19와 2026-09-20.
 - 링크 검사는 인라인 인용만 읽는다. 코드 블록과 RFC 2606이 문서용으로 예약한 도메인(`example.com`, `example.net`, `example.org`, `*.example`), 루프백(`localhost`, `127/8`, `[::1]`)의 예시 URL은 제외하고, 제외한 개수를 보고한다. 검사하지 않은 코드 블록 안 URL도 함께 보고하므로 조용히 사라지는 항목이 없다. 나머지는 리다이렉트 없이 해석되어야 한다.
 - 분기 재검증 주기는 이 프로젝트의 정책으로 지킨다. 벤더 문서는 각자의 일정으로 바뀌며, 이 주기는 벤더 보장이 아니라 우리가 고른 검토 간격이다. arXiv·표준 문서는 부패 속도가 달라 URL 확인만으로 충분하다.
 - `.hyper/`는 `.gitignore` 대상이다. 그 아래 리서치 리포트는 **로컬 재검증 캐시**이며 다른 clone에는 없다. 공유 가능한 근거는 항상 문서 안의 URL이다.
@@ -64,6 +68,8 @@ bun run --cwd scripts lint:sh        # 검사기 자체의 정적 분석 (shellc
 @instructions/skill/references/prompt-loop-eval.ko.md
 @instructions/autoresearch/AUTORESEARCH.ko.md
 @instructions/harness-engineering/HARNESS_ENGINEERING.ko.md
+@instructions/loop-engineering/LOOP_ENGINEERING.ko.md
+@instructions/graph-engineering/GRAPH_ENGINEERING.ko.md
 @instructions/sourcing/reliable-search.ko.md
 @instructions/validation/index.ko.md
 ```
@@ -79,5 +85,7 @@ bun run --cwd scripts lint:sh        # 검사기 자체의 정적 분석 (shellc
 Skill을 새로 만들거나 `skills/*`를 refactor할 때는 [`skill/SKILL_AUTHORING.ko.md`](skill/SKILL_AUTHORING.ko.md)를 읽고, prompt/loop/eval 설계가 필요하면 [`skill/references/prompt-loop-eval.ko.md`](skill/references/prompt-loop-eval.ko.md)를 함께 읽는다. 필요에 따라 `skill/references/`의 anatomy, trigger, progressive disclosure, resource placement, validation 문서를 추가로 읽는다.
 
 Autoresearch-style 반복 개선, metric optimization, autonomous debug/fix/learn/reason loop를 설계할 때는 [`autoresearch/AUTORESEARCH.ko.md`](autoresearch/AUTORESEARCH.ko.md)를 읽고, metric/verify/guard/log/rollback 기준에 따라 `autoresearch/references/`를 추가로 읽는다.
+
+목표 기반, 예약 실행, 이벤트 기반처럼 멈춤 조건을 만족할 때까지 반복하는 자율 에이전트 루프를 설계할 때는 [`loop-engineering/LOOP_ENGINEERING.ko.md`](loop-engineering/LOOP_ENGINEERING.ko.md)를 읽는다. autoresearch는 이 영역 안의 지표 기반 특수 루프 하나다. 작업을 노드와 간선으로 나누고 공유 상태, 체크포인트, 에이전트 간 fan-out/fan-in을 다룰 때는 [`graph-engineering/GRAPH_ENGINEERING.ko.md`](graph-engineering/GRAPH_ENGINEERING.ko.md)를 읽는다.
 
 리서치·최신성·출처 추적이 중요한 작업은 [`sourcing/reliable-search.ko.md`](sourcing/reliable-search.ko.md)를 먼저 읽고, source ledger/citation/freshness가 필요하면 `sourcing/references/`를 추가로 읽는다. 완료 주장, eval, agent/tool 검증이 중요한 작업은 [`validation/index.ko.md`](validation/index.ko.md)와 `validation/references/`를 함께 읽는다.

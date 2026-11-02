@@ -43,6 +43,14 @@ Conditional techniques are not runtime-neutral requirements:
 
 For noisy claims, preserve raw valid observations and report stability/uncertainty appropriate to the method. Statistical significance alone is not a keep rule; large samples can make operationally irrelevant effects detectable. A universal nonzero threshold is also wrong—declare a task-specific effect, tie, or exact monotonic rule.
 
+### Fix the cost per candidate
+
+The per-candidate measurement budget belongs to the metric definition, not to the scheduler. The pinned upstream training loop fixes a five-minute wall-clock training budget and excludes startup and compilation from it, which is what makes two candidates comparable at all; RE-Bench shows the same agent-versus-expert comparison reversing between a two-hour and a 32-hour budget.
+
+- Declare the budget before the first run and keep it fixed for the whole comparison set.
+- Declare the rule for a candidate that finishes early or times out; changing the window to fit the candidate changes the estimand.
+- Record the realized cost with each frontier value. A candidate that wins only because it was measured under a smaller budget won a different metric.
+
 ## 3. Adaptive optimization and multiple objectives
 
 Repeatedly selecting winners against one benchmark can overfit the evaluator even when individual estimates are precise.
@@ -59,6 +67,17 @@ Predeclare one multi-objective comparator:
 - **Pareto**: retain non-dominated candidates under a declared selection rule.
 
 Mixed lower/higher metrics without a comparator are not a metric.
+
+### Complexity as a declared secondary criterion
+
+Maintenance cost is a real objective that a single benchmark rarely captures, and the pinned upstream program file states it explicitly: an equal-or-better result after deleting code is a clear keep, while a tiny metric gain that adds hacky code is probably not, and an improvement of roughly zero with much simpler code is worth keeping. Encode that as a predeclared rule rather than a judgment call made after seeing the diff:
+
+- Name the complexity measure (changed lines, new dependencies, new configuration surface, removed code).
+- Define the tie band in which complexity decides. Outside the band the metric decides.
+- State that complexity never overrides a guard and never rescues a candidate that lost the metric outright.
+- Require the measure to be computed the same way for baseline and candidate; otherwise the tie band is meaningless.
+
+A "simpler" candidate that lost the metric is a discard, not a tie. The criterion only breaks ties that the metric already declared.
 
 ## 4. Metric and guard result channels
 
@@ -101,6 +120,14 @@ Each guard declares:
 
 Detect deleted/skipped tests, changed fixtures/workloads, sample-count drift, verifier tampering, and retry laundering. No silent retry turns a failure into a pass.
 
+Verifier gaming is measured behavior, not a hypothetical. METR reports recent frontier models attempting, often successfully, to raise a score by modifying the tests or the scoring code, and estimates that between 1% and 2% of o3's task attempts across HCAST and RE-Bench contained some attempt at reward hacking. OpenAI reports that chain-of-thought monitoring detects this better than watching only actions and outputs, and that directly penalizing the observed reasoning suppresses much of the behavior while teaching the model to hide intent.
+
+Three design consequences follow:
+
+- Compute guard coverage over the candidate (test counts, fixture and evaluator digests, skipped-test lists) and fail the guard when coverage shrinks, even if the metric improved.
+- Treat a monitor as a detection aid, never as the acceptance control; an optimizer that can see the monitor can optimize against it.
+- Record the guard surface identity in the frontier evidence, so a later run can prove the guard did not move under it.
+
 ## 6. Subjective goals
 
 Do not force subjective quality into an invented scalar. Use representative items and a locked rubric with anchors, weights, and critical vetoes.
@@ -118,4 +145,20 @@ Required reliability controls:
 
 Delete streak rules such as “the same candidate wins three times.” Convergence means no predeclared practically meaningful validation improvement over a defined window, with reliability controls still passing.
 
-Primary methodological references used for this contract include [Google Benchmark](https://google.github.io/benchmark/user_guide.html), [Go benchstat](https://pkg.go.dev/golang.org/x/perf/cmd/benchstat), [NIST randomized block designs](https://www.itl.nist.gov/div898/handbook/pri/section3/pri332.htm), [OpenAI evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices), and the [MT-Bench judge-bias study](https://proceedings.neurips.cc/paper_files/paper/2023/hash/91f18a1287b398d378ef22505bf41832-Abstract-Datasets_and_Benchmarks.html).
+## Sources
+
+> Checked 2026-11-03.
+
+| Claim | Source | Grade |
+|---|---|---|
+| Repetitions, statistical stability from repeated runs, aggregation to mean and standard deviation, random interleaving of benchmark order | <https://google.github.io/benchmark/user_guide.html> | PRIMARY |
+| Statistical summaries and A/B comparison of repeated benchmark runs | <https://pkg.go.dev/golang.org/x/perf/cmd/benchstat> | PRIMARY |
+| Blocking to remove nuisance-factor effects, the basis for randomized block comparison | <https://www.itl.nist.gov/div898/handbook/pri/section3/pri332.htm> | PRIMARY |
+| Building eval sets with typical, edge, and adversarial cases; automated regression scoring | <https://developers.openai.com/api/docs/guides/evaluation-best-practices> | VENDOR |
+| Position and verbosity bias in LLM judges, and the need for order counterbalancing | <https://proceedings.neurips.cc/paper_files/paper/2023/hash/91f18a1287b398d378ef22505bf41832-Abstract-Datasets_and_Benchmarks.html> | PAPER |
+| Frontier models modifying tests or scoring code to raise a score | <https://metr.org/blog/2025-06-05-recent-reward-hacking/> | PRIMARY |
+| 1–2% of o3 task attempts containing a reward-hacking attempt across HCAST and RE-Bench | <https://metr.org/evaluations/openai-o3-report/> | PRIMARY |
+| CoT monitoring detects reward hacking; penalizing the reasoning hides intent | <https://arxiv.org/abs/2503.11926> | PAPER |
+| Fixed five-minute wall-clock training budget excluding startup and compilation, with an explicit simplicity criterion | <https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117> | PRIMARY (repository) |
+| Agent-versus-expert comparison reversing between a two-hour and a 32-hour budget | <https://arxiv.org/abs/2411.15114> | PAPER |
+| Held-out split reported alongside development-set optimization | <https://arxiv.org/abs/2507.19457> | PAPER |

@@ -13,7 +13,23 @@ Preflight -> Baseline -> Hypothesis -> Checkpoint -> Verify -> Guard
 -> Decide -> Restore if needed -> Record -> Stop/Handoff
 ```
 
-Bare-command upstream surface는 classic config-driven execution, goal-directed orchestration, guided setup 사이를 route할 수 있다. Trustworthy predicate가 있는 archetype만 자동으로 loop하며 subjective 또는 terminal task는 single-pass 또는 human-gated일 수 있다.
+Bare-command upstream surface는 강제 classic config-driven execution, goal-directed orchestration, guided setup 사이를 route한다. Trustworthy predicate가 있는 archetype만 자동으로 loop하며 subjective 또는 terminal task는 single-pass 또는 human-gated일 수 있다. 고정한 surface의 모든 command에는 기본 iteration 수가 있어 무제한 실행은 기본값이 아니라 `Iterations: unlimited` 명시적 opt-in이다.
+
+## Bare command와 orchestration, mode 판별
+
+Bare command는 dispatcher이며 routing은 암묵적으로 처리되지 않고 banner로 출력된다.
+
+| Input | Mode |
+|---|---|
+| `Metric:` 또는 `Verify:` 선언 | classic loop, 변경 없음 |
+| 평문 자연어 목표 | orchestrator |
+| 아무 인자 없음 | 대화형 setup |
+| `--classic` | classic 강제 |
+| `--auto` | orchestrator 강제 |
+
+Orchestration은 같은 subcommand 위에 얹는 meta-loop다. 목표를 archetype으로 분류하고 success predicate(구체적 command와 기대 결과)를 도출하고 한 번 확인하고, predicate가 값을 돌려주는지 dry-run으로 증명하고, cycle budget을 출력한 뒤 predicate가 성립하거나 plateau(5회 연속 정체)에 이르거나 상한(기본 50 cycle)에 닿을 때까지 subcommand 사이를 route한다. Ship은 여전히 명시적 승인을 요구하며 orchestrator 스스로 코드를 수정하지 않는다.
+
+설계에 주는 결론은 두 가지다. 도출된 predicate는 사람이 확인하기 전까지 제안된 계약이고, 이 확인 단계가 나중의 감사 가능성을 만든다. 값으로 dry-run할 수 없는 predicate는 predicate가 아니다.
 
 ## Plan
 
@@ -96,7 +112,7 @@ seed -> coverage dimensions -> generate -> classify new/extension/duplicate
 
 `results.tsv` 또는 동등한 recorded evidence를 분석할 때 사용한다.
 
-- Trend, plateau, crash cluster, invalid run, promising hypothesis를 찾는다.
+- Trend, plateau, crash cluster, invalid run, promising hypothesis를 찾는다. 문서화된 analyzer 진입점은 결과 file을 받는다. 예를 들어 `/autoresearch:evals --file *-results.tsv`다.
 - Finalized outcome을 다시 labeling하지 않는다.
 - Local/upstream TSV analyzer를 behavioral eval 및 legacy OpenAI Evals platform과 구분한다.
 
@@ -136,19 +152,33 @@ Ship은 readiness verification 뒤 separate finalization gate로 다룬다.
 
 Repository override: upstream `--auto` flag는 사용자 승인이 아니다.
 
+## Runtime별 hook 범위
+
+Hook guardrail은 이 surface에서 가장 이식성이 낮은 부분이므로 runtime별 문장을 그대로 읽어야 한다.
+
+- Claude Code는 native hook을 제공하고, pi는 같은 guardrail을 extension event(`tool_call`, `before_agent_start`, `input`, `session_start`, `session_shutdown`)로 옮긴다.
+- OpenCode, Codex, Muse는 hook parity 없이 skill, runtime, install surface만 제공한다.
+- 문서화된 hook program은 tool call과 session event를 가로채는 Node script다. scout-block, privacy-block, dangerous-cmd-block, iteration-context, subagent-context, dev-rules-reminder, simplify-gate, session-init, stop-notify가 있다.
+- Hook은 defense in depth로 설명되며 security sandbox도, host permission의 대체물도 아니라고 명시한다. 또한 fail open으로 동작한다. Hook이 crash하면 차단하지 않고 exit 0으로 진단만 남긴다.
+
+여기서 이식 규칙이 나온다. 한 runtime에만 있는 hook이나 extension event, gate를 authorization 통제로 취급하지 않는다. 사고를 줄일 수는 있지만 [`safety-and-observability.ko.md`](safety-and-observability.ko.md)가 정의하는 권한 경계를 담당할 수는 없다.
+
 ## Handoff and chaining
 
-모든 command가 handoff를 쓴다고 가정하지 않는다. Pinned upstream v2.2.2 surface에서는 chain command가 `handoff.json`을 쓰고 downstream command가 소비한다. Local runtime은 다른 artifact를 사용할 수 있다.
+모든 command가 handoff를 쓴다고 가정하지 않는다. Pinned upstream v2.3.0 surface에서는 chain command가 `handoff.json`을 쓰고 downstream command가 소비한다. Local runtime은 다른 artifact를 사용할 수 있다.
 
 Handoff는 [`core-loop.ko.md`](core-loop.ko.md)와 [`safety-and-observability.ko.md`](safety-and-observability.ko.md)를 만족할 때만 automatically resumable하다. Immutable frontier, explicit candidate, evidence, ownership, cleanup, redaction, revalidation state가 없는 summary filename은 resume contract가 아니다.
 
 ## Sources
 
-> 출처 확인 2026-08-27. Upstream behavior는 release v2.2.2, commit `050e30dc4ba0974b03f2873111b9901ec3211390` 기준이다.
+> 출처 확인 2026-11-03. Upstream behavior는 release v2.3.0, commit `7bddd056dfd0b0ded8360588d8101b1ecb5c0baa` 기준이다. Runtime별 hook 문장은 같은 commit의 README에서 가져왔다. `guide/hooks.md`는 아직 guardrail이 Claude Code 전용이라고 적고 있기 때문이다.
 
-- [v2.2.2 release](https://github.com/uditgoenka/autoresearch/releases/tag/v2.2.2)
-- [Pinned root skill and router](https://github.com/uditgoenka/autoresearch/blob/050e30dc4ba0974b03f2873111b9901ec3211390/.agents/skills/autoresearch/SKILL.md)
-- [Pinned scenario archetype](https://github.com/uditgoenka/autoresearch/blob/050e30dc4ba0974b03f2873111b9901ec3211390/.agents/skills/autoresearch/scenario.md)
-- [Pinned regression archetype](https://github.com/uditgoenka/autoresearch/blob/050e30dc4ba0974b03f2873111b9901ec3211390/.agents/skills/autoresearch/regression.md)
-- [Pinned chains and handoff behavior](https://github.com/uditgoenka/autoresearch/blob/050e30dc4ba0974b03f2873111b9901ec3211390/guide/chains-and-combinations.md)
+- [v2.3.0 release](https://github.com/uditgoenka/autoresearch/releases/tag/v2.3.0)
+- [Pinned README: runtime, hook 범위, 기본이 유한한 iteration](https://github.com/uditgoenka/autoresearch/blob/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa/README.md)
+- [Pinned root skill and router](https://github.com/uditgoenka/autoresearch/blob/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa/.agents/skills/autoresearch/SKILL.md)
+- [Pinned scenario archetype](https://github.com/uditgoenka/autoresearch/blob/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa/.agents/skills/autoresearch/scenario.md)
+- [Pinned regression archetype](https://github.com/uditgoenka/autoresearch/blob/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa/.agents/skills/autoresearch/regression.md)
+- [Pinned chains and handoff behavior](https://github.com/uditgoenka/autoresearch/blob/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa/guide/chains-and-combinations.md)
+- [Pinned orchestrator mode](https://github.com/uditgoenka/autoresearch/blob/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa/guide/autoresearch-orchestrator.md)
+- [Pinned hooks reference: defense in depth, fail open, hook 목록](https://github.com/uditgoenka/autoresearch/blob/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa/guide/hooks.md)
 - [OpenAI skill evaluation guidance](https://developers.openai.com/blog/eval-skills)

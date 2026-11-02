@@ -84,7 +84,9 @@ Bulk changes and "all X" requests follow this order.
 | Prompt or instruction change | Official source ledger, stale-source check, smoke eval, known-failure re-run, trace assertions |
 | Parallel or subagent workflow | Bounded spawn, ownership, no conflicting edits, parent integration and verification |
 | Agent or tool workflow | Tool-call name and args check, schema conformance, side-effect gate, trace-level validation |
-| Security or safety change | Adversarial and prompt-injection cases, permission boundary, output handling check |
+| Agent memory, notes, or retrieval-corpus change | Review of every write path, provenance fields on stored entries, and a replay of a later session reading the stored data |
+| Citation-producing or RAG feature | Each returned citation span checked against the sentence it supports, and the consulted-source list compared with the claims made |
+| Security or safety change | Adversarial and prompt-injection cases, permission boundary, output handling check, and a record of which defense layers exist and which do not |
 
 ---
 
@@ -99,6 +101,8 @@ Bulk changes and "all X" requests follow this order.
 | Vendor blogs and commentary | Medium | Supporting context; needs a bias caveat |
 | Search snippets and model summaries | Weak | Leads only. Never final evidence |
 
+A versioned standard counts as strong evidence only with its edition named and the artifact you read identified. "OWASP says", "NIST recommends", and "the paper shows" are all incomplete until the edition, version, or arXiv identifier is attached.
+
 For a critical claim, if you cannot find a supporting quote or citation, retract the claim or state a caveat.
 
 ---
@@ -112,6 +116,8 @@ After changing a prompt or instruction document, confirm the following before co
 - [ ] Reasoning-model instructions are expressed as demands for disclosable rationale and verification evidence, not for the verbatim hidden chain of thought.
 - [ ] At least a smoke eval or a document lint/source check was run. When `instructions/**` changed, run `bash scripts/check-sources.sh` to check moved links, date format, and document length (use `--strict` as a release gate).
 - [ ] If known failures or edge cases exist, at least one was re-run.
+- [ ] Non-deterministic behavior was measured over repeated trials, and a rate or variance is reported instead of a single run.
+- [ ] A model grader that decides the outcome was compared with human labels on a sample, or the result is reported as uncalibrated.
 - [ ] A new document is discoverable from the README or the loading map.
 - [ ] The `X.md` and `X.ko.md` pair carry the same contract.
 
@@ -186,3 +192,17 @@ Remaining risk:
 - [`../sourcing/references/retrieval-safety.md`](../sourcing/references/retrieval-safety.md)
 - [`references/evaluation-design.md`](references/evaluation-design.md)
 - [`references/agent-tool-validation.md`](references/agent-tool-validation.md)
+
+---
+
+## Sources
+
+| # | Source | Publisher | URL | Published/updated | Checked | Grade |
+|---:|---|---|---|---|---|---|
+| 1 | Demystifying evals for AI agents | Anthropic | <https://www.anthropic.com/research/demystifying-evals-for-ai-agents> | 2026-01-09 | checked 2026-11-03 | S |
+| 2 | Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations | Evan Miller, arXiv:2411.00640 | <https://arxiv.org/abs/2411.00640> | 2024-11-01 | checked 2026-11-03 | Paper |
+| 3 | Evaluation best practices | OpenAI | <https://developers.openai.com/api/docs/guides/evaluation-best-practices> | not stated | checked 2026-11-03 | S |
+| 4 | Agent Control Standard (ACS) | OWASP GenAI Security Project | <https://genai.owasp.org/resource/agent-control-standard-acs/> | 2026-09-01 | checked 2026-11-03 | S |
+| 5 | OWASP Top 10 for LLM Applications 2026 | OWASP GenAI Security Project | <https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/> | 2026-08-03 | checked 2026-11-03 | S |
+
+Sources 1–3 support the trial, grading, and reporting requirements in §7 and are expanded in [`references/evaluation-design.md`](references/evaluation-design.md). Sources 4–5 support the agent trace and layer-coverage requirements. The numbers those sources give are their own field reports and papers, not independent replications here; the OpenAI evaluation pages carry no publication or last-updated date, so they are cited with the date this repository checked them.

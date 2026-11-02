@@ -2,13 +2,13 @@
 
 > 영어판: [`SKILL_AUTHORING.md`](SKILL_AUTHORING.md)
 
-이 문서는 `skills/*`를 새로 만들거나 개선할 때 읽는 기본 문서다. 목적은 AI에게 반복 가능한 역할과 절차를 맡길 수 있도록, skill을 단순 프롬프트가 아니라 **트리거 가능한 실행 패키지**이자 **검증 가능한 작은 프로그램**으로 설계하게 하는 것이다.
+이 문서는 `skills/*`를 새로 만들거나 개선할 때 읽는 기본 문서입니다. 목적은 AI에게 반복 가능한 역할과 절차를 맡길 수 있도록, skill을 단순 프롬프트가 아니라 **트리거 가능한 실행 패키지**이자 **검증 가능한 작은 프로그램**으로 설계하게 하는 것입니다.
 
 ## 핵심 정의
 
-Skill은 특정 작업군을 안정적으로 수행하기 위한 폴더형 실행 계약이다. 최소 단위는 `SKILL.md`이며, 필요할 때 `rules/`, `references/`, `scripts/`, `assets/`, 런타임별 metadata를 함께 둔다.
+Skill은 특정 작업군을 안정적으로 수행하기 위한 폴더형 실행 계약입니다. 최소 단위는 `SKILL.md`이며, 필요할 때 `rules/`, `references/`, `scripts/`, `assets/`, 런타임별 metadata를 함께 둡니다.
 
-Skill은 다음을 동시에 만족해야 한다.
+Skill은 다음을 동시에 만족해야 합니다.
 
 | 축 | 질문 |
 |---|---|
@@ -24,55 +24,59 @@ Skill은 다음을 동시에 만족해야 한다.
 
 ## 공식 근거 요약
 
-> 아래 출처는 2026-07-29 확인 기준이며, 링크 사용 가능 여부는 2026-09-19에 재확인했다. OpenAI Codex skill 문서는 `developers.openai.com/codex/skills`에서 `learn.chatgpt.com/docs/build-skills`로 이전됐다.
+> 아래 출처는 2026-11-03에 모두 다시 읽었습니다. Agent Skills 문서 페이지에는 눈에 보이는 발행일이 없어, 페이지에 내장된 `dateModified` metadata가 있는 경우 함께 적었습니다. OpenAI Codex skill 문서는 `learn.chatgpt.com/docs/build-skills`에 있습니다. `developers.openai.com/codex/skills`는 이제 그 페이지로 308 redirect만 되므로, 인용하는 canonical URL은 전자입니다.
 
-- OpenAI Codex는 skill을 지시문, 리소스, 선택적 스크립트를 묶어 Codex가 workflow를 안정적으로 따르도록 하는 reusable authoring format으로 설명한다. 호출은 ChatGPT에서 `@skill-name`, Codex/IDE에서 `$skill-name` 또는 `/skills`다. 목록 단계에서는 name과 description만 로드되고 그 예산은 컨텍스트의 2% 또는 8,000자다. 설치형 배포에는 OpenAI가 plugins를 권한다. <https://learn.chatgpt.com/docs/build-skills>
-- **Codex 런타임 탐색 (2026-09-20 보고, `VENDOR`).** Codex는 고정된 우선순위 목록을 읽는 대신 현재 작업 디렉터리에서 저장소 루트까지 **모든 디렉터리**의 `.agents/skills`를 훑는다고 보고한다(`$CWD`, `$CWD/../`, `$REPO_ROOT`). 같은 `name`을 가진 두 skill은 **병합되지 않고** 둘 다 선택기에 나타날 수 있다고 보고한다. skill이 많으면 설명을 먼저 줄이고, 일부 skill을 **초기 목록에서 통째로 생략하고 경고를 띄울 수 있다**고 보고한다 — 설명이 잘리는 것만이 아니다. `allow_implicit_invocation`(기본 true)을 false로 두면 암시적 발화가 꺼지고 `$skill` 명시 호출만 동작한다. 이것들은 Codex의 동작이지 보편 규칙이 아니다 — 다른 런타임은 다를 수 있다. <https://learn.chatgpt.com/docs/build-skills>
-- OpenAI API Skills 문서는 skill을 open Agent Skills standard와 호환되는 versioned bundle로 설명하고, prompt injection과 exfiltration 리스크 때문에 skill을 privileged instruction/code처럼 다루라고 경고한다. <https://developers.openai.com/api/docs/guides/tools-skills>
-- OpenAI agent eval 문서는 agent workflow 검증을 trace grading에서 시작하고, 반복 가능성이 필요할 때 dataset/eval run으로 확장하라고 설명한다. <https://developers.openai.com/api/docs/guides/agent-evals>
-- Anthropic은 Agent Skills를 `SKILL.md`, scripts, resources가 담긴 폴더로 보고, metadata → full instructions → referenced files/scripts 순서의 progressive disclosure를 핵심 설계 원리로 설명한다. 신뢰할 수 있는 출처의 skill만 설치하고, 신뢰할 수 없는 skill은 번들 파일·의존성·외부 네트워크 연결까지 감사하라고 경고한다. (발행 2025-10-16) <https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills>
-- Anthropic의 prompt/eval 문서는 success criteria와 evaluation을 먼저 정의한 뒤 prompt를 개선하라고 권장한다. <https://platform.claude.com/docs/en/test-and-evaluate/develop-tests>
-- Agent Skills specification은 `name`, `description`을 필수 frontmatter로 두고 `license`, `compatibility`, `metadata`, `allowed-tools`(Experimental)를 선택 필드로, `scripts/`, `references/`, `assets/`를 선택 디렉터리로 정의한다. 길이 제한과 progressive disclosure 예산은 [`references/skill-anatomy.ko.md`](references/skill-anatomy.ko.md)를 따른다. <https://agentskills.io/specification>
-- ReAct, Self-Refine, Reflexion, Tree of Thoughts, OPRO, Promptbreeder, DSPy/MIPRO 계열 연구는 skill을 “한 번에 잘 쓰는 prompt”가 아니라 observe/critique/score/iterate 가능한 workflow로 설계해야 함을 뒷받침한다. 자세한 적용은 [`references/prompt-loop-eval.ko.md`](references/prompt-loop-eval.ko.md)를 따른다.
-- OpenAI의 skill eval 가이드는 skill 개선을 prompt 품질 개선처럼 다루며 **outcome(과제 완수), process(올바른 호출과 절차), style(관례·출력 형식 준수), efficiency(불필요한 명령·토큰 없이 완료)** 네 축을 작고 반복 가능한 eval로 확인하라고 권장한다. 데이터셋은 10-20개 프롬프트로 시작하고 explicit / implicit / contextual / negative control 네 범주를 담는다. <https://developers.openai.com/blog/eval-skills>
+- Agent Skills specification은 `name`(1~64자, 소문자 영숫자와 하이픈, 앞뒤 하이픈 없음, `--` 없음, 폴더 이름과 일치)과 `description`(1~1024자)만 필수로 둡니다. `license`, `compatibility`(1~500자), `metadata`, `allowed-tools`(Experimental)는 선택이고 `scripts/`, `references/`, `assets/`는 선택 디렉터리입니다. 페이지 metadata의 `dateModified`는 2026-08-04입니다. <https://agentskills.io/specification>
+- **Codex (2026-11-03 확인).** Skill은 지시문, 리소스, 선택적 스크립트를 묶은 단위입니다. 명시 호출은 ChatGPT에서 `@`, Codex CLI와 IDE 확장에서 `/skills` 또는 `$`이고, 암시 호출은 `description`과의 일치로 이뤄집니다. 초기 목록 예산은 **모델 컨텍스트의 2%, 컨텍스트 크기를 모를 때는 8,000자**이며 `skills.max_context_tokens`로 최대 10,000토큰까지 올릴 수 있습니다. Codex는 `$CWD`에서 저장소 루트까지의 `.agents/skills`, `$HOME/.agents/skills`, `/etc/codex/skills`, 번들 system skill을 읽고, 같은 `name`의 skill 두 개를 병합하지 않으며, symlink 폴더를 따라가고, `~/.codex/config.toml`의 `[[skills.config]]`로 특정 skill을 끕니다. `agents/openai.yaml`은 UI metadata, `policy.allow_implicit_invocation`, 도구 의존성을 담습니다. 배포는 plugins를 권합니다. <https://learn.chatgpt.com/docs/build-skills>
+- **Claude Code (2026-11-03 확인).** Skill은 `.claude/skills/`(enterprise, 개인 `~/.claude/skills/`, 프로젝트, 중첩, `--add-dir`, plugin, claude.ai 계정)에서 로드되고 `/skill-name`으로 호출합니다. 사용자 명령은 skill로 통합됐습니다. Frontmatter는 spec보다 많은 필드를 받고, 목록 예산은 **모델 컨텍스트의 1%**이며 항목마다 `description`과 `when_to_use`를 합친 길이가 **1,536자**로 제한됩니다. 목록이 예산을 넘으면 Claude Code는 호출 빈도가 낮은 skill부터 설명을 버립니다. <https://code.claude.com/docs/en/skills>
+- **Anthropic 플랫폼 (2026-11-03 확인).** Metadata는 skill마다 약 100토큰이 항상 로드되고, `SKILL.md` 본문은 트리거 시 로드되며 **5k 토큰 미만**을 권장합니다. 묶인 파일은 읽기 전까지 비용이 없습니다. `name`에는 XML 태그와 예약어 `anthropic`/`claude`를 쓸 수 없습니다. Skill은 파일시스템 sandbox에서 실행되고, API 요청 하나에는 **skill을 최대 20개**까지 붙일 수 있으며 sandbox에는 network가 없습니다. <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview>
+- **Anthropic enterprise 지침 (2026-11-03 확인).** Skill은 Git, Skills API, plugin, managed settings를 거쳐 운영에 들어갑니다. 운영 skill은 버전을 고정하고, 모든 업데이트를 보안 검토가 붙는 새 배포로 다루며, 이전 버전을 rollback용으로 남기고, 검토한 skill의 checksum을 배포 시점에 확인합니다. Custom skill은 표면(API, claude.ai, Claude Code) 사이에서 동기화되지 않습니다. <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise>
+- **Vercel `skills` CLI (2026-11-03 확인).** `npx skills`는 하나의 source 형식으로 대략 80개 coding agent에 skill을 설치·검색·업데이트·삭제합니다. README는 OpenCode, Claude Code, Codex, Cursor와 "75 more"를 듭니다. 프로젝트 설치는 각 agent의 프로젝트 디렉터리에 들어가고, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode 등 여러 agent가 `.agents/skills/`를 공통 프로젝트 경로로 씁니다. 공통 전역 경로는 `~/.agents/skills/`입니다. Node.js 22.20 이상이 필요하고 `npx skills init`으로 skill 뼈대를 만듭니다. <https://github.com/vercel-labs/skills>
+- **Skill의 효용은 가정하지 않습니다 (논문, 2026-03-16).** SWE-Skills-Bench는 공개 skill 98개를 저장소 commit을 고정한 과제와 실행 verifier로 측정했습니다. 98개 중 92개가 통계적으로 유의미한 효과를 내지 못했고, 평균 통과율은 76.6%에서 76.9%로만 움직였습니다. 도움이 된 skill은 agent가 빠뜨릴 절차를 제공했고(최대 +17.7점), 해로운 skill은 agent를 자기 템플릿에 고정시켜 과제의 명시 지시를 덮어썼습니다. <https://arxiv.org/abs/2603.15401>
+- OpenAI API Skills 문서는 skill을 open Agent Skills standard와 호환되는 versioned bundle로 설명하고, prompt injection과 exfiltration 리스크 때문에 skill을 privileged instruction이자 code로 다루라고 경고합니다. <https://developers.openai.com/api/docs/guides/tools-skills>
+- Anthropic 엔지니어링 노트(발행 2025-10-16)는 metadata → 전체 지시 → 참조 파일과 스크립트로 이어지는 progressive disclosure를 핵심 설계 원리로 꼽고, 신뢰할 수 있는 출처의 skill만 설치하며 신뢰할 수 없는 skill은 번들 파일, 의존성, 외부 network 연결까지 감사하라고 경고합니다. <https://www.anthropic.com/research/equipping-agents-for-the-real-world-with-agent-skills>
+- OpenAI의 skill eval 지침은 skill 개선을 prompt 품질 개선처럼 다루며, 작고 반복 가능한 eval로 네 축을 확인하라고 권합니다. 네 축은 **outcome(과제 완수), process(올바른 호출과 절차), style(관례와 출력 형식 준수), efficiency(불필요한 명령과 토큰 없이 완료)**입니다. 데이터셋은 explicit, implicit, contextual, negative control 범주에 걸쳐 10~20개 프롬프트로 시작합니다. <https://developers.openai.com/blog/eval-skills>
+- ReAct, Self-Refine, Reflexion, Tree of Thoughts, OPRO, Promptbreeder, DSPy/MIPRO 계열 연구는 skill을 "한 번에 잘 쓰는 prompt"가 아니라 observe/critique/score/iterate 가능한 workflow로 설계해야 함을 뒷받침합니다. 적용 방법은 [`references/prompt-loop-eval.ko.md`](references/prompt-loop-eval.ko.md)를 따릅니다.
 
 ## 이 저장소의 기본 원칙
 
-1. **로컬 우선**: 이 프로젝트에서 만드는 skill은 저장소 내부 `skills/`, `instructions/`, `scripts/`, `README.md`를 우선 근거로 삼는다.
-2. **트리거 우선**: `description`은 기능 소개가 아니라 “언제 써야 하는지”를 앞부분에 명확히 적는다.
-3. **계약 우선**: 페르소나보다 intent, scope, authority, evidence, output, verification, stop condition을 먼저 고정한다.
-4. **프로그램처럼 설계**: 입력, 읽을 자료, 작업 단계, 도구, 중간 산출, 최종 산출, 검증을 분리한다. “좋은 prompt”보다 “재실행 가능한 procedure”가 우선이다.
-5. **Loop는 조건부**: 반복 루프는 feedback, metric/rubric, guard, stop condition이 있을 때만 둔다. 무한 개선, 무제한 탐색, 자기 채점 단독 루프는 금지한다.
-6. **Progressive disclosure**: `SKILL.md`는 얇게 유지하고, 반복 정책은 `rules/`, 상세 지식은 `references/`, deterministic helper는 `scripts/`, 산출 템플릿과 eval fixture는 `assets/`로 내린다.
-7. **검증 내장**: trigger smoke test, workflow trace check, source grounding, safety case, local link/fence check, eval 또는 readback checklist를 skill 자체에 포함한다.
-8. **안전 경계**: network, credential, destructive action, production side effect, broad tool permission은 skill 안에서 명시적으로 gated 상태로 둔다.
-9. **한국어 산출 기본**: 이 저장소의 사용자-facing 산출물, 보고서, 검증 노트는 기본 한국어다. 단, machine-readable field와 공식 키는 원문을 보존한다.
-10. **취약도에 맞춘 구체성**: 지시의 구체성 수준을 과제의 취약도에 맞춘다. 깨지기 쉬운 단계는 엄격하게 쓰고, 에이전트 판단에 맡겨도 되는 부분은 열어 둔다. 앞의 원칙들이 "무엇을 어디에 두는가"라면 이것은 "얼마나 엄격하게 쓰는가"다.
-11. **자립이 기본**: 스킬은 자기 폴더만으로 온전하게 배포한다. 다른 스킬의 설치, 호출, 경로, 문서를 요구하지 않고, 바깥 내용이 꼭 필요하면 그 스킬의 `references/`에 로컬 스냅샷으로 가져온다. 경계는 이웃 스킬의 이름이 아니라 산출물의 형태로 서술한다. 예외는 사용자 지시뿐이고, 그 지시는 기록한다.
+1. **로컬 우선**: 이 프로젝트에서 만드는 skill은 저장소 내부 `skills/`, `instructions/`, `scripts/`, `README.md`를 우선 근거로 삼습니다.
+2. **트리거 우선**: `description`은 기능 소개가 아니라 "언제 써야 하는지"를 앞부분에 명확히 적습니다.
+3. **계약 우선**: 페르소나보다 intent, scope, authority, evidence, output, verification, stop condition을 먼저 고정합니다.
+4. **프로그램처럼 설계**: 입력, 읽을 자료, 작업 단계, 도구, 중간 산출, 최종 산출, 검증을 분리합니다. "좋은 prompt"보다 "재실행 가능한 procedure"가 우선입니다.
+5. **Loop는 조건부**: 반복 루프는 feedback, metric/rubric, guard, stop condition이 있을 때만 둡니다. 무한 개선, 무제한 탐색, 자기 채점 단독 루프는 금지합니다.
+6. **Progressive disclosure**: `SKILL.md`는 얇게 유지하고, 반복 정책은 `rules/`, 상세 지식은 `references/`, deterministic helper는 `scripts/`, 산출 템플릿과 eval fixture는 `assets/`로 내립니다.
+7. **검증 내장**: trigger smoke test, workflow trace check, source grounding, safety case, local link/fence check, eval 또는 readback checklist를 skill 자체에 포함합니다.
+8. **안전 경계**: network, credential, destructive action, production side effect, 넓은 tool 권한은 skill 안에서 명시적으로 gated 상태로 둡니다.
+9. **한국어 산출 기본**: 이 저장소의 사용자-facing 산출물, 보고서, 검증 노트는 기본 한국어입니다. 단, machine-readable field와 공식 키는 원문을 보존합니다.
+10. **취약도에 맞춘 구체성**: 지시의 구체성 수준을 과제가 얼마나 쉽게 깨지는지에 맞춥니다. 깨지기 쉬운 단계는 엄격하게 쓰고, agent 판단에 맡겨도 되는 부분은 열어 둡니다. 앞의 원칙들이 "무엇을 어디에 두는가"라면 이것은 "얼마나 엄격하게 쓰는가"입니다.
+11. **자립이 기본**: skill은 자기 폴더만으로 온전하게 배포합니다. 다른 skill의 설치, 호출, 경로, 문서를 요구하지 않고, 바깥 내용이 꼭 필요하면 그 skill의 `references/`에 로컬 스냅샷으로 가져옵니다. 예외는 사용자 지시뿐이고, 그 지시는 기록합니다.
+12. **이식 가능한 핵심, 기록하는 확장**: specification의 여섯 필드는 모든 런타임이 이해하는 부분입니다. 런타임 전용 필드를 더할 수는 있지만, 그 필드를 걷어내도 skill이 동작해야 하고, 필드를 쓰는 자리에서 어느 런타임의 필드인지 밝힙니다.
 
-위 원칙 중 규범 ID를 갖는 것들을 기계가 읽는 형식으로 적는다:
+위 원칙 중 규범 ID를 갖는 것들을 기계가 읽는 형식으로 적습니다:
 
-- SK-P-1: 취약도에 맞춘 구체성 — 지시의 구체성 수준은 과제가 얼마나 쉽게 깨지는지에 맞춰야 한다(원칙 10).
-- SK-P-2: 자립이 기본 — 스킬은 자기 폴더만으로 동작하고, 다른 스킬 참조는 사용자가 명시적으로 요청한 경우에만 존재하며 그 지시를 기록한다(원칙 11).
+- SK-P-1: 취약도에 맞춘 구체성 — 지시의 구체성 수준은 과제가 얼마나 쉽게 깨지는지에 맞춰야 합니다(원칙 10).
+- SK-P-2: 자립이 기본 — skill은 자기 폴더만으로 동작하고, 다른 skill 참조는 사용자가 명시적으로 요청한 경우에만 존재하며 그 지시를 기록합니다(원칙 11).
+- SK-P-3: 이식 가능한 핵심, 기록하는 확장 — 계약은 spec의 여섯 필드가 지고, 런타임 전용 frontmatter는 어느 런타임의 것인지 밝히며 없어도 동작해야 합니다(원칙 12).
 
 ## 기본 폴더 구조
 
 ```text
 skill-name/
-├── SKILL.md                 # 필수: metadata + 핵심 실행 계약
-├── SKILL.ko.md              # 권장: 한국어 mirror
-├── rules/                   # 반복 정책, workflow, 검증 기준
-├── references/              # 필요 시 로드하는 상세 지식/공식 문서 요약
-├── scripts/                 # 반복·결정성이 필요한 실행 helper
-├── assets/                  # 템플릿, 예시 산출물, static resources
-└── agents/                  # 런타임/UI metadata가 필요할 때만
+├── SKILL.md                 # Required: metadata + core execution contract
+├── SKILL.ko.md              # Recommended: Korean mirror
+├── rules/                   # Recurring policy, workflow, verification criteria
+├── references/              # Detailed knowledge and official doc summaries, loaded on demand
+├── scripts/                 # Execution helpers needing repeatability and determinism
+├── assets/                  # Templates, example artifacts, static resources
+└── agents/                  # Runtime metadata only: e.g. Codex agents/openai.yaml
 ```
 
-자세한 구조 규칙은 [`references/skill-anatomy.ko.md`](references/skill-anatomy.ko.md)를 읽는다.
+자세한 구조 규칙은 [`references/skill-anatomy.ko.md`](references/skill-anatomy.ko.md)를 읽습니다.
 
 ## 최소 `SKILL.md` 계약
 
-새 skill의 core 파일은 다음 항목을 빠짐없이 포함해야 한다.
+새 skill의 core 파일은 다음 항목을 빠짐없이 포함해야 합니다.
 
 ```markdown
 ---
@@ -126,118 +130,144 @@ Positive / Negative / Boundary examples
 
 | 단계 | 작업 | 완료 증거 |
 |---|---|---|
-| 0 | 이 산출물이 일반 문서인지 skill인지 판정 | “skill folder/refactor” scope 결정 |
-| 1 | 대상 작업군과 반복 실패를 수집 | 실제 사용자 문장, local docs, 기존 skill 관찰, known failure |
-| 2 | trigger 설계 | positive/negative/boundary 예시와 `description` 초안 |
-| 3 | prompt contract 작성 | intent/scope/authority/context/workflow/output/verification이 분리됨 |
-| 4 | loop 필요성 판정 | loop type, feedback source, guard, stop condition 또는 no-loop 사유 |
-| 5 | resource 분리 | rules/references/scripts/assets가 필요성과 로딩 조건을 가짐 |
-| 6 | 검증 설계 | trigger smoke set, workflow trace, source/safety cases, local links, script checks |
-| 7 | bilingual/mirror 정리 | 필요한 경우 `*.ko.md`와 구조 정렬 |
-| 8 | handoff | 변경 파일, 검증 결과, 남은 risk 기록 |
+| 0 | 산출물이 일반 문서인지 skill인지 결정 | "skill 폴더/리팩터" 범위 결정 |
+| 1 | 대상 작업군과 반복 실패를 수집 | 실제 사용자 문장, 로컬 문서, 기존 skill 관찰, 알려진 실패 |
+| 2 | 트리거 설계 | positive/negative/boundary 예시와 `description` 초안 |
+| 3 | Prompt 계약 작성 | intent, scope, authority, context, workflow, output, verification 분리 |
+| 4 | Loop 필요 여부 결정 | loop 유형, feedback 출처, guard, stop condition 또는 loop를 두지 않는 이유 |
+| 5 | 리소스 분할 | rules/references/scripts/assets마다 존재 이유와 로드 조건 |
+| 6 | 검증 설계 | trigger smoke set, workflow trace, source/safety case, 로컬 링크, 스크립트 검사 |
+| 7 | 이중 언어 정합 | 필요하면 `*.ko.md`와 구조 정렬 |
+| 8 | 인계 | 변경 파일, 검증 결과, 남은 위험 기록 |
 
-## Prompt / Loop / Eval 설계
+## Prompt / loop / eval 설계
 
-Skill 작성자는 먼저 “이 skill이 어떤 작은 프로그램인가”를 정한다.
+Skill 작성자는 먼저 "이 skill은 어떤 작은 프로그램인가"를 정합니다.
 
-| 질문 | 문서화 위치 | 기준 |
+| 질문 | 기록 위치 | 기준 |
 |---|---|---|
-| 입력은 무엇인가? | `SKILL.md` contract | 사용자 요청, 파일, source, tool output을 분리 |
-| 어떤 단계로 실행하는가? | `workflow` 또는 `rules/` | explore/plan/act/verify/report처럼 관찰 가능한 단계 |
-| 반복이 필요한가? | `Loop` contract 또는 `rules/loop.md` | feedback과 stop condition이 없으면 loop를 두지 않음 |
-| 외부 근거가 필요한가? | `Evidence`, `references/official/`, source ledger | 최신·벤더·보안 claim은 source와 접근일 기록 |
-| 어떻게 실패를 잡는가? | `validation`, `assets/evals/`, `scripts/` | trigger/workflow/output/safety regression case |
+| 입력은 무엇인가? | `SKILL.md` 계약 | 사용자 요청, 파일, 출처, 도구 출력을 구분 |
+| 어떤 단계로 실행되는가? | `workflow` 또는 `rules/` | explore/plan/act/verify/report처럼 관찰 가능한 단계 |
+| 반복이 필요한가? | `Loop` 계약 또는 `rules/loop.md` | feedback과 stop condition이 없으면 loop도 없다 |
+| 외부 근거가 필요한가? | `Evidence`, `references/official/`, source ledger | 최신성·벤더·보안 주장에는 출처와 확인 날짜를 기록 |
+| 실패는 어떻게 잡히는가? | `validation`, `assets/evals/`, `scripts/` | 트리거·workflow·출력·안전 회귀 case |
 
-Loop 선택은 [`references/prompt-loop-eval.ko.md`](references/prompt-loop-eval.ko.md)를 따른다. 요약하면:
+Loop 선택은 [`references/prompt-loop-eval.ko.md`](references/prompt-loop-eval.ko.md)를 따릅니다. 요약하면 다음과 같습니다.
 
-- 외부 상태를 읽고 행동해야 하면 ReAct형 `observe → act → observe → update` 루프를 쓴다.
-- 산출물을 rubric으로 고칠 수 있으면 Self-Refine형 `draft → critique → revise` 루프를 쓴다.
-- 반복 작업군의 실패 학습이 중요하면 Reflexion형 postmortem memory를 쓰되, 나쁜 feedback이 누적되지 않게 검증한다.
-- 대안 탐색이 필요하면 Tree-of-Thoughts형 branch/score/prune을 쓰되, branch 수와 evaluator를 고정한다.
-- prompt를 최적화하려면 OPRO/Promptbreeder/DSPy/MIPRO식 후보 비교를 사용하되, holdout과 regression set 없이 채택하지 않는다.
+- 외부 상태를 읽고 행동해야 하면 ReAct식 `observe -> act -> observe -> update` loop를 씁니다.
+- 산출물을 rubric에 맞춰 고칠 수 있으면 Self-Refine식 `draft -> critique -> revise` loop를 씁니다.
+- 작업군 전체에서 실패로 배우는 것이 중요하면 Reflexion식 사후 분석 기억을 쓰되, 나쁜 feedback이 쌓이지 않는지 확인합니다.
+- 대안 탐색이 필요하면 Tree-of-Thoughts식 branch/score/prune을 쓰되, branch 수와 evaluator를 고정합니다.
+- Prompt 최적화에는 OPRO/Promptbreeder/DSPy/MIPRO식 후보 비교를 쓰되, holdout과 회귀 세트 없이 채택하지 않습니다.
 
-## 언제 support file을 추가하는가
+## 지원 파일을 추가하는 기준
 
-| 위치 | 추가 기준 | 금지 기준 |
+| 위치 | 추가할 때 | 추가하지 말 때 |
 |---|---|---|
-| `rules/` | 여러 skill run에서 반복되는 정책·절차·검증 기준 | 한 번만 쓰는 설명, 공식문서 복붙 |
-| `references/` | 상세 API, 공식 문서 요약, edge case, long examples, source/safety notes | core trigger logic, 필수 stop condition |
-| `scripts/` | 매번 같은 파싱/검증/생성 로직을 안정적으로 실행해야 함 | agent가 한두 줄 명령으로 충분히 처리 가능 |
-| `assets/` | 템플릿, 스키마, 예시 산출물, eval fixture처럼 복사/채움 대상 | reasoning-only 설명 |
-| `agents/` | UI 카드, OpenAI/Vendor metadata, dependency hints가 필요 | core instruction 대체물 |
+| `rules/` | skill 실행마다 반복되는 정책, 절차, 검증 기준 | 일회성 설명, 공식 문서 붙여넣기 |
+| `references/` | 상세 API, 공식 문서 요약, edge case, 긴 예시, 출처·안전 노트 | 핵심 트리거 로직, 필수 stop condition |
+| `scripts/` | 같은 파싱·검증·생성 로직을 매번 안정적으로 실행해야 할 때 | agent가 명령 한두 개로 처리할 수 있을 때 |
+| `assets/` | 템플릿, schema, 예시 산출물, eval fixture처럼 복사하거나 채우는 대상 | 추론만으로 충분한 설명 |
+| `agents/` | Codex `agents/openai.yaml` 같은 런타임 metadata, UI 카드, 의존성 힌트 | 핵심 지시를 대신하려고 |
 
-자세한 배치 규칙은 [`references/resource-placement.ko.md`](references/resource-placement.ko.md)를 읽는다 — 그 파일이 배치 기준의 **정본**이고 이 절은 요약이다.
+[`references/resource-placement.ko.md`](references/resource-placement.ko.md)를 읽습니다. 배치 기준의 **canonical** 서술은 그 파일에 있고, 이 절은 요약입니다.
 
 ## Trigger 설계 규칙
 
-- `description` 첫 문장에 가장 중요한 사용 시점과 keyword를 넣는다.
-- “helps with X” 같은 일반 설명을 피하고, “Use when the user asks to...” 형태로 쓴다.
-- 실제 사용자 문장을 positive/negative/boundary로 나눈다.
-- should-trigger와 should-not-trigger를 모두 테스트한다.
-- 너무 넓은 skill은 false positive를 만들고, 너무 좁은 skill은 여러 skill이 동시에 로드되어 충돌할 수 있다.
+- `description` 첫 문장에 가장 중요한 사용 순간과 키워드를 둡니다.
+- "X를 도와준다" 같은 일반적인 설명을 피하고 "사용자가 ...를 요청할 때" 형태로 씁니다.
+- 3인칭으로 씁니다. 설명은 시스템 프롬프트에 주입되므로 "제가 도와드릴 수 있습니다"처럼 시점이 흔들리면 선택 정확도가 떨어집니다.
+- 실제 사용자 문장을 positive, negative, boundary case로 나눕니다.
+- should-trigger와 should-not-trigger를 모두 시험합니다.
+- 지나치게 넓은 skill은 오탐을 만들고, 지나치게 좁은 skill은 여러 skill이 한꺼번에 로드되어 충돌할 수 있습니다.
 
-자세한 규칙은 [`references/trigger-design.ko.md`](references/trigger-design.ko.md)를 읽는다 — 그 파일이 trigger 완료 기준의 **정본**이고 위 체크리스트는 그것을 다시 적지 않는다.
+[`references/trigger-design.ko.md`](references/trigger-design.ko.md)를 읽습니다. 트리거 완료 기준의 **canonical** 서술은 그 파일에 있고, 위 checklist는 그것을 다시 적지 않습니다.
 
 ## Progressive disclosure 규칙
 
-1. Discovery: skill 목록에는 `name`, `description`, path 정도만 들어간다고 가정한다.
-2. Activation: task가 맞을 때만 `SKILL.md` 전체가 들어간다고 가정한다.
-3. Execution: referenced files/scripts/assets는 명시된 조건에서만 읽거나 실행한다고 설계한다.
+1. Discovery: skill 목록에는 `name`, `description`, 경로만 실린다고 가정합니다.
+2. Activation: 과제가 맞을 때만 `SKILL.md` 전체가 로드된다고 가정합니다.
+3. Execution: 참조 파일, 스크립트, asset은 명시한 조건에서만 읽거나 실행되도록 설계합니다.
 
-즉, `SKILL.md`에는 항상 필요한 것만 둔다. 세부는 “언제 읽을지”와 함께 분리한다. 자세한 규칙은 [`references/progressive-disclosure.ko.md`](references/progressive-disclosure.ko.md)를 읽는다.
+요약하면 항상 필요한 자료만 `SKILL.md`에 둡니다. 세부 내용은 "언제 읽는지"와 함께 분리합니다. 자세한 규칙은 [`references/progressive-disclosure.ko.md`](references/progressive-disclosure.ko.md)를 읽습니다.
+
+## 패키지를 바꾸는 런타임 차이
+
+폴더 형식은 공유되지만 주변 장치는 공유되지 않습니다. Skill이 이식 가능하다고 말하기 전에 다음을 확인합니다.
+
+| 런타임 | 탐색 | 패키지를 바꾸는 것 |
+|---|---|---|
+| Agent Skills spec | client가 결정 | Frontmatter 여섯 필드만 정의되고, 나머지는 동작이 정의되지 않음 |
+| Claude Code | enterprise, 개인, 프로젝트, 중첩, 추가 디렉터리, plugin 단계의 `.claude/skills/` | 추가 frontmatter가 여럿 있고 목록 예산이 컨텍스트 1%임. claude.ai 업로드와 Skills API는 비-spec 필드를 hard error로 거부 |
+| Codex | CWD에서 저장소 루트까지의 `.agents/skills`, `$HOME/.agents/skills`, `/etc/codex/skills`, 번들 | UI·호출 정책·도구 의존성을 담는 `agents/openai.yaml`, 활성화를 다루는 `[[skills.config]]`와 `[skills.bundled]` |
+| Vercel `npx skills` | 각 agent의 디렉터리에 쓰고, 다수가 `.agents/skills/`를 공유 | 파일 자체는 그대로이고 설치 경로만 agent마다 다름 |
+
+필드 전체 목록, 목록 예산, 탐색 순서는 [`references/skill-anatomy.ko.md`](references/skill-anatomy.ko.md) §2와 [`references/progressive-disclosure.ko.md`](references/progressive-disclosure.ko.md) §7에 있습니다. 이 표는 배포 전에 그 차이를 알아차리게 하려고 둡니다.
+
+결론은 두 가지입니다. 트리거와 workflow는 spec의 여섯 필드만으로 읽히게 유지하고(SK-P-3), 런타임별 지시에는 어느 런타임의 것인지 밝혀 다른 client의 독자가 해당되지 않음을 알 수 있게 합니다.
 
 ## Judgement Rules
 
-확률적 검사가 어떻게 게이트가 되는지. 이 규칙들은 규범이고, `references/` 파일들이 이를 적용한다.
+확률적 검사를 어떻게 gate로 바꾸는지 정합니다. 아래 규칙은 규범이며 `references/` 파일이 이를 적용합니다.
 
-- SK-J-1: trigger 판정을 **단일 실행으로 선언하지 않는다.** 쿼리마다 여러 번 돌려 **트리거율**을 계산한다.
-- SK-J-2: 시작 반복 횟수는 **쿼리당 3회**다.
-- SK-J-3: should-trigger 쿼리는 트리거율이 임계값 **위**면 통과하고, should-not-trigger 쿼리는 **아래**면 통과한다. 기본 임계값은 **0.5**다.
-- SK-J-4: 케이스 수와 반복 횟수를 **함께** 기록한다 — 예: 20 쿼리 x 3회 = 60 호출. 반복 횟수 없는 트리거율은 해석할 수 없다.
-- SK-J-5: 트리거율은 반복 횟수에 따라 달라지므로, 다른 반복 횟수로 낸 결과는 이전 결과와 직접 비교하지 않는다.
-- SK-J-6: 케이스별 통과/실패만 세지 않고 **트리거율 분포**를 남긴다. 임계값 근처에 몰린 쿼리가 불안정한 지점이다.
+- SK-J-1: 한 번의 실행으로 트리거 판정을 선언하지 않습니다. 질의마다 여러 번 실행해 **trigger rate**를 계산합니다.
+- SK-J-2: 시작 반복 횟수는 질의당 **3회**입니다.
+- SK-J-3: should-trigger 질의는 trigger rate가 threshold보다 **높을 때** 통과하고, should-not-trigger 질의는 **낮을 때** 통과합니다. 기본 threshold는 **0.5**입니다.
+- SK-J-4: case 수와 반복 횟수를 **함께** 기록합니다. 예를 들어 질의 20개 x 3회 = 60회 호출입니다. 반복 횟수가 빠진 비율은 해석할 수 없습니다.
+- SK-J-5: trigger rate는 반복 횟수에 의존하므로, 다른 반복 횟수에서 나온 결과를 이전 결과와 직접 비교하지 않습니다.
+- SK-J-6: case별 통과/실패만 기록하지 않습니다. trigger rate의 **분포**를 남깁니다. threshold 근처에 몰린 질의가 불안정 지점입니다.
 
-`SK-J-2`·`SK-J-3`의 값은 출처가 진술한 것이고, 출처는 이를 합리적인 시작점·합리적인 기본값이라고 부른다 — 검증된 최적값이 아니다. 케이스 파일은 자기 `runs`와 `threshold`를 상속하지 않고 명시한다. 그 숫자가 쓰이는 자리에서 보이게 하기 위해서다.
+`SK-J-2`와 `SK-J-3`의 값은 출처가 직접 밝힌 값이며, 출처도 이를 합리적인 시작점과 합리적인 기본값이라고 부를 뿐 검증된 최적값이라고 하지 않습니다. case 파일은 기본값을 상속하지 않고 자기 `runs`와 `threshold`를 적어, 쓰이는 자리에서 숫자가 보이게 합니다.
 
 ## 검증 기준
 
-완료 전 최소 확인:
+완료 전 최소 확인 항목입니다.
 
-- [ ] `name`은 kebab-case이며 폴더명과 일치한다.
-- [ ] `description`은 무엇을 하는지와 언제 쓰는지를 모두 포함한다.
-- [ ] trigger 예시가 positive, negative, boundary를 포괄한다. 케이스 개수는 여기서 고정하지 않는다 — 세트 구성은 [`references/validation.ko.md`](references/validation.ko.md)가, 케이스 판정 방식은 [`references/trigger-design.ko.md`](references/trigger-design.ko.md)가 맡는다.
-- [ ] `instruction_contract`에 intent/scope/authority/evidence/tools/loop/output/verification/stop condition이 있다.
-- [ ] loop가 있으면 feedback source, metric/rubric, guard, stop condition이 있다.
-- [ ] 최신·벤더·논문·보안 claim에는 source URL과 접근일 또는 snapshot date가 있다.
-- [ ] prompt injection, credential, destructive/network/production side effect boundary가 있다.
-- [ ] support files는 `SKILL.md`에서 상대경로로 직접 참조된다.
-- [ ] scripts가 있으면 dependency, usage, expected output, failure handling이 적혀 있다.
-- [ ] local markdown links와 code fence가 깨지지 않는다.
-- [ ] 검증 결과와 남은 risk가 handoff에 남는다.
+- [ ] `name`이 kebab-case이고 폴더 이름과 일치합니다.
+- [ ] `description`이 무엇을 하는지와 언제 쓰는지를 모두 담습니다.
+- [ ] 트리거 예시가 positive, negative, boundary를 모두 덮습니다. case 수는 여기서 고정하지 않습니다. 세트 구성은 [`references/validation.ko.md`](references/validation.ko.md)가, case 판정 방식은 [`references/trigger-design.ko.md`](references/trigger-design.ko.md)가 소유합니다.
+- [ ] `instruction_contract`에 intent, scope, authority, evidence, tools, loop, output, verification, stop condition이 있습니다.
+- [ ] Loop가 있으면 feedback 출처, metric/rubric, guard, stop condition이 있습니다.
+- [ ] 최신성·벤더·논문·보안 주장에 출처 URL과 확인일 또는 스냅샷 날짜가 있습니다.
+- [ ] prompt injection, credential, destructive/network/production side effect 경계가 있습니다.
+- [ ] 지원 파일을 `SKILL.md`에서 상대 경로로 직접 참조합니다.
+- [ ] 스크립트가 있으면 의존성, 사용법, 기대 출력, 실패 처리를 문서화했습니다.
+- [ ] 런타임 전용 frontmatter에 런타임을 밝혔고 그것이 없어도 동작합니다(SK-P-3).
+- [ ] 로컬 markdown 링크와 code fence가 깨지지 않았습니다.
+- [ ] 검증 결과와 남은 위험을 인계 기록에 남겼습니다.
 
-자세한 검증 루프는 [`references/validation.ko.md`](references/validation.ko.md)를 읽는다. 위 기준은 **무엇이 성립해야 하는지**의 정본이고, 각 항목을 **어떻게 검사하는지**는 그 파일이 갖는다.
+자세한 검증 loop는 [`references/validation.ko.md`](references/validation.ko.md)를 읽습니다. 이 기준은 *무엇이* 성립해야 하는지의 canonical 서술이고, 각 항목을 어떻게 확인하는지는 그 파일에 있습니다.
 
-## 함께 읽을 문서
+## 관련 문서
 
-- [`../context-engineering/CONTEXT_ENGINEERING.ko.md`](../context-engineering/CONTEXT_ENGINEERING.ko.md)
-- [`../context-engineering/references/prompt-authoring.ko.md`](../context-engineering/references/prompt-authoring.ko.md)
+- [`../context-engineering/CONTEXT_ENGINEERING.md`](../context-engineering/CONTEXT_ENGINEERING.md)
+- [`../context-engineering/references/prompt-authoring.md`](../context-engineering/references/prompt-authoring.md)
 - [`references/prompt-loop-eval.ko.md`](references/prompt-loop-eval.ko.md)
-- [`../harness-engineering/HARNESS_ENGINEERING.ko.md`](../harness-engineering/HARNESS_ENGINEERING.ko.md)
-- [`../sourcing/reliable-search.ko.md`](../sourcing/reliable-search.ko.md)
-- [`../sourcing/references/retrieval-safety.ko.md`](../sourcing/references/retrieval-safety.ko.md)
-- [`../validation/index.ko.md`](../validation/index.ko.md)
+- [`../harness-engineering/HARNESS_ENGINEERING.md`](../harness-engineering/HARNESS_ENGINEERING.md)
+- [`../sourcing/reliable-search.md`](../sourcing/reliable-search.md)
+- [`../sourcing/references/retrieval-safety.md`](../sourcing/references/retrieval-safety.md)
+- [`../validation/index.md`](../validation/index.md)
 
 ## Sources
 
-> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+> 아래 링크는 모두 다시 읽고 확인 2026-11-03. 출처가 발행일을 밝히는 경우 함께 적었습니다.
 
 | 주장 | 출처 |
 |---|---|
-| `name` 문자 규칙, frontmatter 필드 표, 3단계 점진공개 모델 | <https://agentskills.io/specification> |
-| "취약도에 구체성을 맞춘다" — 원칙 10의 근거 | <https://agentskills.io/skill-creation/best-practices> |
-| **트리거율** 지표, 시작 반복 횟수 **3회**, 기본 임계값 **0.5**, `SK-J-2`·`SK-J-3` 뒤의 "합리적인 시작점·기본값" hedge | <https://agentskills.io/skill-creation/optimizing-descriptions> |
-| 컨텍스트 2% / 8,000자 목록 예산, Codex의 저장소 순회 탐색, 같은 `name` 비병합, 경고를 동반한 목록 생략, `allow_implicit_invocation`, `/skills` 호출 형식, plugins 권고 | <https://learn.chatgpt.com/docs/build-skills> |
+| `name`과 `description` 제약, 선택 필드, 3단계 progressive disclosure 예산 | <https://agentskills.io/specification> |
+| "취약도에 맞춘 구체성"과 원칙 10의 삭제 판단 질문 | <https://agentskills.io/skill-creation/best-practices> |
+| **trigger rate**, **3회**, **0.5** threshold, 그리고 `SK-J-2`·`SK-J-3`의 "합리적인 시작점/기본값" 단서 | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| with/without 기준선을 핵심 eval 패턴으로 두는 것, 실행별 비용 기록 | <https://agentskills.io/skill-creation/evaluating-skills> |
+| 컨텍스트 2%/8,000자 목록 예산, `skills.max_context_tokens`, `.agents/skills` 탐색, user/admin/system 범위, 같은 `name` 비병합, symlink 추적, `[[skills.config]]`, `agents/openai.yaml`, `/skills`·`$` 호출, plugin 권장 | <https://learn.chatgpt.com/docs/build-skills> |
+| skill 위치, `/skill-name` 호출, 통합된 command 형식, 컨텍스트 1% 목록 예산, 항목당 1,536자 제한, Claude Code frontmatter 확장 목록 | <https://code.claude.com/docs/en/skills> |
+| 약 100토큰 metadata, 5k 토큰 본문 권장, 예약어, API 요청당 20개 제한 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| 버전 고정, 업데이트 시 재검토, rollback, checksum, 표면 간 비동기화 경고 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+| `npx skills` 명령 집합, 지원 agent 수, 공통 `.agents/skills/` 프로젝트 경로, Node 22.20 요구 | <https://github.com/vercel-labs/skills> |
+| 98개 중 92개 무효과, 76.6%에서 76.9%, 도움이 되는 skill과 해로운 skill의 실패 양상 | <https://arxiv.org/abs/2603.15401> |
+| skill을 versioned bundle로 보는 관점, prompt injection·exfiltration 경고 | <https://developers.openai.com/api/docs/guides/tools-skills> |
+| progressive disclosure를 핵심 설계 원리로 두는 것, 신뢰할 수 없는 skill 감사 규칙(발행 2025-10-16) | <https://www.anthropic.com/research/equipping-agents-for-the-real-world-with-agent-skills> |
+| outcome/process/style/efficiency eval 축과 10~20개 프롬프트 시작 세트 | <https://developers.openai.com/blog/eval-skills> |
 
 ### 근거 등급
 
-위 trigger 판정 값들은 출처가 **시작점**으로 진술한 것이지 검증된 최적값이 아니다. Codex 탐색 동작은 한 런타임이 보고한 `VENDOR` 주장이다 — 이 문서는 여러 런타임을 다루므로 "Codex는 …라고 보고한다"로 쓴다.
+트리거 판정 값은 출처가 시작점으로 밝힌 것이지 검증된 최적값이 아닙니다. 런타임별 사실은 각 벤더가 자기 제품에 대해 밝힌 `VENDOR` 주장이며, 보편 규칙이 아니라 해당 런타임 이름과 함께 적었습니다. SWE-Skills-Bench는 2026년 벤치마크 하나의 결과이고, 그 결론은 자체 통계 검정과 함께 제시된 것이지 모든 skill에 적용되는 법칙이 아닙니다.

@@ -4,7 +4,7 @@
 
 This document is the standard for designing a skill as a **small, repeatable agent program** rather than a single prompt. `SKILL.md` is the program's entrypoint, and `rules/`, `references/`, `scripts/`, and `assets/` are modules loaded on demand.
 
-Source snapshot: 2026-07-29. The snapshot date and the link-check date in §10 now agree; an earlier snapshot date here contradicted them.
+Source snapshot: 2026-11-03. Every URL in §12 was re-read on that date.
 
 ## 1. Core principles
 
@@ -16,6 +16,7 @@ Source snapshot: 2026-07-29. The snapshot date and the link-check date in §10 n
 | Eval before polish | Build success criteria and eval cases before polishing sentences | It looks good but you cannot tell which regression it prevents |
 | Source and safety boundary | Retrieved content is evidence, not a system, developer, or project instruction | Executing instructions inside a web page or tool output |
 | Benchmark humility | A leaderboard or single score is a reference signal, not skill verification itself | Not recording benchmark version, scaffold, contamination, or weak tests |
+| Value is measured | The with/without delta is the claim; the artifact existing is not | "The skill is well written, so it helps" |
 
 ## 2. Prompt contract
 
@@ -121,6 +122,8 @@ Rules:
 - Break results down by task type, repository, difficulty, and failure class rather than looking only at an aggregate score.
 - When public tests are weak, add hidden tests, differential checks, or oracle refinement.
 
+The strongest published example of this discipline for skills is SWE-Skills-Bench (2026-03-16): it pins each skill to a repository commit, derives per-repository requirements, builds executable verifiers, and reports a paired per-skill delta. 92 of 98 skills showed no significant effect and the average pass ratio moved from 76.6% to 76.9% <https://arxiv.org/abs/2603.15401>. Treat that result as a design to copy, not as a verdict on any individual skill.
+
 ## 7. Authoring a source-grounded skill
 
 When a skill covers vendor docs, API behavior, papers, benchmarks, or security claims:
@@ -143,27 +146,46 @@ When a skill touches network, shell, credentials, external APIs, production, or 
 - Document each script's purpose, dependencies, input/output, failure modes, and side effects.
 - Safety instructions can hurt performance, so keep adversarial evals and a normal happy path side by side.
 
-## Artifact audit
+## 9. Skill inventory and recall
+
+A skill competes with every other installed skill for the selector's attention, and the cost is paid on every turn whether or not it is used.
+
+| Constraint | Number | Consequence for authoring |
+|---|---|---|
+| Metadata cost per skill | ~100 tokens, always loaded | Forty installed skills cost roughly 4,000 tokens before any work starts |
+| Codex listing | 2% of the model context, or 8,000 characters when unknown; raised to at most 10,000 tokens by `skills.max_context_tokens` | Descriptions shorten first; skills can be dropped from the list with a warning |
+| Claude Code listing | 1% of the model context; 1,536 characters per entry | Descriptions drop starting with the least-invoked skills |
+| Anthropic API | At most 20 skills per request | Consolidate, or route requests to different skill sets |
+
+Operational rules that follow:
+
+- Measure recall as the set grows; stop adding when selection accuracy degrades.
+- Consolidate narrow skills into a broader one only when the consolidated skill's evals match the originals.
+- Disable rather than delete a skill you are not ready to remove (`[[skills.config]]` in Codex, `skillOverrides` in Claude Code), and check the usage report before deciding.
+
+## 10. Artifact audit
 
 The rules above test what a skill **receives** — does it resist an injected instruction. These test what a skill **is**: does the artifact itself carry something it should not. A skill is distributed code plus instructions, so audit it before shipping.
 
-Five categories, with the severity the cited source assigns. This list is not "all of skill security"; it is the set of artifact-level checks that source names.
+Seven categories, with the severity the cited source assigns. This list is not "all of skill security"; it is the set of artifact-level checks that source names.
 
 | Category | What to look at | Severity as assigned by the source |
 |---|---|---|
-| Data-exfiltration pattern | Instructions that read sensitive data and then write, send, or encode it outward | — |
+| Code execution | Scripts in the skill directory (`*.py`, `*.sh`, `*.js`) | High: scripts run with full environment access |
+| Instruction manipulation | Directives to ignore safety rules, hide actions, or alter behaviour conditionally | High: can bypass security controls |
 | MCP server reference | References shaped like `ServerName:tool_name` | High |
-| Network access | URLs, API endpoints, `fetch`, `curl`, `requests` | High |
-| Hardcoded credentials | Keys, tokens, and passwords inside skill files or scripts | High |
+| Network access | URLs, API endpoints, `fetch`, `curl`, `requests` | High: potential data-exfiltration vector |
+| Hardcoded credentials | Keys, tokens, and passwords inside skill files or scripts | High: secrets exposed in Git history and the context window |
 | Filesystem scope | Paths outside the skill directory, broad globs, `../` | Medium |
+| Tool calls | Instructions directing the agent to use bash, file operations, or other tools | Medium: review what operations are performed |
 
-- SK-A-1: Audit a skill against the five categories above before distributing it, and record the result.
+- SK-A-1: Audit a skill against the seven categories above before distributing it, and record the result.
 - SK-A-2: Do not distribute a skill from an untrusted source without a full audit.
 - SK-A-3: Pin a skill to a version, and re-review it when the version changes.
 
-These are `VENDOR` claims: the severity labels come from the cited source, not from a controlled study in this repository. Treat an audit as a checklist that catches known artifact-level problems, not as a proof of safety.
+These are `VENDOR` claims: the severity labels come from the cited source, not from a controlled study in this repository. Treat an audit as a checklist that catches known artifact-level problems, not as a proof of safety. Automated content scanning exists for some enterprise surfaces, but the source states it does not cover Skills API uploads — which is exactly the path this repository uses.
 
-## 9. Authoring loop
+## 11. Authoring loop
 
 ```text
 Collect failures -> Draft contract -> Build eval set -> Run baseline/readback -> Patch smallest surface -> Re-run -> Record decision
@@ -179,32 +201,39 @@ Collect failures -> Draft contract -> Build eval set -> Run baseline/readback ->
 | Re-run | Check the same eval set plus new failure cases |
 | Record | Reason for the change, pass/fail, remaining risk |
 
-## 10. Sources
+This authoring loop is a human-supervised turn-based loop. When the loop runs unattended — on a schedule, against a goal condition, or with a separate checker — design it with [`../../loop-engineering/LOOP_ENGINEERING.md`](../../loop-engineering/LOOP_ENGINEERING.md).
 
-> Links checked 2026-07-29; link resolution re-checked 2026-09-20. OpenAI Codex documentation moved from `developers.openai.com/codex/*` to `learn.chatgpt.com/docs/*`.
+## 12. Sources
 
-The list below is the URL set this file cites. The table after it maps the claims this file makes to the specific source that carries each one. **The URLs were not re-fetched in the run that added this table**; only link resolution was re-checked.
+> Links re-read and re-checked 2026-11-03. OpenAI Codex documentation lives at `learn.chatgpt.com/docs/*`; the Anthropic engineering note now redirects to `/research/`, and the canonical URL below is the redirect target.
 
 | Claim | Source |
 |---|---|
 | With/without baseline as the core pattern (the evaluating-skills page names it the core pattern, not an option) | <https://agentskills.io/skill-creation/evaluating-skills> |
 | Case-set composition, and the absence of a stated case count | <https://agentskills.io/skill-creation/optimizing-descriptions> |
-| The five artifact-audit categories and their severity labels | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
-| Treating third-party skills as subjects of code review, and version pinning with re-review | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+| The seven artifact-audit categories and their severity labels | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+| Treating third-party skills as subjects of code review, version pinning with re-review, and the scan coverage gap | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+| ~100 tokens of metadata per skill and the 20-skills-per-request API limit | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| The Codex listing budget, `skills.max_context_tokens`, and `[[skills.config]]` | <https://learn.chatgpt.com/docs/build-skills> |
+| The Claude Code listing budget, the 1,536-character entry cap, least-invoked-first dropping, and `skillOverrides` | <https://code.claude.com/docs/en/skills> |
+| The paired per-skill delta design and the 92-of-98 result | <https://arxiv.org/abs/2603.15401> |
 
 ### Cited URLs
 
 - OpenAI Codex Agent Skills: <https://learn.chatgpt.com/docs/build-skills>
 - OpenAI API Skills: <https://developers.openai.com/api/docs/guides/tools-skills>
 - OpenAI agent evals: <https://developers.openai.com/api/docs/guides/agent-evals>
-- OpenAI prompt engineering: <https://developers.openai.com/api/docs/guides/prompt-engineering>
-- OpenAI agent safety: <https://developers.openai.com/api/docs/guides/agent-builder-safety>
-- OpenAI Codex approvals and security: <https://learn.chatgpt.com/docs/agent-approvals-security>
-- Anthropic Agent Skills engineering note: <https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills>
-- Anthropic prompt/eval docs: <https://platform.claude.com/docs/en/test-and-evaluate/develop-tests>
+- OpenAI skill eval guidance: <https://developers.openai.com/blog/eval-skills>
+- Anthropic Agent Skills engineering note: <https://www.anthropic.com/research/equipping-agents-for-the-real-world-with-agent-skills>
+- Anthropic Agent Skills overview: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview>
+- Anthropic skill authoring best practices: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices>
 - Anthropic Agent Skills enterprise security: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise>
+- Claude Code skills: <https://code.claude.com/docs/en/skills>
+- Anthropic prompt/eval docs: <https://platform.claude.com/docs/en/test-and-evaluate/develop-tests>
 - Agent Skills specification: <https://agentskills.io/specification>
 - Agent Skills best practices: <https://agentskills.io/skill-creation/best-practices>
+- Agent Skills, evaluating output quality: <https://agentskills.io/skill-creation/evaluating-skills>
+- Vercel `skills` CLI: <https://github.com/vercel-labs/skills>
 - ReAct: <https://arxiv.org/abs/2210.03629>
 - Reflexion: <https://arxiv.org/abs/2303.11366>
 - Self-Refine: <https://arxiv.org/abs/2303.17651>
@@ -216,7 +245,11 @@ The list below is the URL set this file cites. The table after it maps the claim
 - AI Agents That Matter: <https://arxiv.org/abs/2407.01502>
 - LiveCodeBench: <https://arxiv.org/abs/2403.07974>
 - LiveBench: <https://arxiv.org/abs/2406.19314>
-- OpenAI SWE-bench Verified: <https://openai.com/index/introducing-swe-bench-verified/>
+- SWE-bench Verified: <https://openai.com/index/introducing-swe-bench-verified/>
 - SWE-Skills-Bench: <https://arxiv.org/abs/2603.15401>
 - OWASP Top 10 for LLM Applications: <https://genai.owasp.org/llm-top-10/>
 - NIST AI Risk Management Framework: <https://www.nist.gov/itl/ai-risk-management-framework>
+
+### Evidence grade
+
+The 20-skill API limit and the listing budgets are `VENDOR` numbers tied to specific products and dates. The audit severities are the source's own labels. The 92-of-98 result is one 2026 benchmark with its own statistical test.

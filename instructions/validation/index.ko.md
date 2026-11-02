@@ -84,7 +84,9 @@ Claim → Risk → Evidence → Verification → Result → Caveat
 | prompt/instruction 변경 | 공식 source ledger, stale-source 확인, smoke eval, known-failure 재실행, trace assertion |
 | 병렬/subagent workflow | bounded spawn, ownership, no conflicting edits, parent integration/verification |
 | agent/tool workflow | tool-call name/args check, schema conformance, side-effect gate, trace-level validation |
-| 보안/안전 변경 | adversarial/prompt injection case, permission boundary, output handling check |
+| agent 메모리·노트·검색 코퍼스 변경 | 모든 쓰기 경로 검토, 저장 항목의 provenance 필드, 이후 세션이 그 데이터를 읽는 재현 실행 |
+| citation 생성·RAG 기능 | 반환된 인용 구간이 그 문장을 뒷받침하는지 확인, consulted source 목록과 실제 claim 비교 |
+| 보안/안전 변경 | adversarial/prompt injection case, permission boundary, output handling check, 어떤 방어 층이 있고 없는지 기록 |
 
 ---
 
@@ -101,6 +103,8 @@ Claim → Risk → Evidence → Verification → Result → Caveat
 
 critical claim은 supporting quote/citation을 찾지 못하면 claim을 retract하거나 caveat를 명시한다.
 
+버전이 있는 표준은 에디션을 밝히고 실제로 읽은 자료를 특정해야 강한 근거로 인정한다. “OWASP에 따르면”, “NIST가 권고한다”, “논문이 보여준다”는 에디션, 버전, arXiv 식별자가 붙기 전까지 불완전한 인용이다.
+
 ---
 
 ## 7. Prompt / Instruction Validation
@@ -112,6 +116,8 @@ Prompt나 instruction 문서를 변경했다면 완료 전 아래를 확인한�
 - [ ] reasoning 모델 지시는 숨은 chain-of-thought 원문 요구가 아니라 공개 가능한 근거·검증 증거 요구로 표현된다.
 - [ ] 최소 smoke eval 또는 문서 lint/source-check를 실행했다. `instructions/**`를 바꿨다면 `bash scripts/check-sources.sh`로 링크 이전·확인일 형식·문서 길이를 검사한다(릴리스 게이트는 `--strict`).
 - [ ] known-failure나 edge case가 있으면 최소 1개 이상 재실행했다.
+- [ ] 비결정적 동작을 반복 trial로 측정했고, 한 번의 실행 대신 성공률이나 분산을 보고했다.
+- [ ] 결과를 결정한 모델 grader를 표본에서 사람 라벨과 비교했거나, 보정하지 않았다고 표시했다.
 - [ ] 새 문서가 README 또는 loading map에서 발견 가능하다.
 - [ ] `X.md`와 `X.ko.md` 쌍이 동일한 계약을 담는다.
 
@@ -186,3 +192,17 @@ agent/tool workflow 검증은 [`references/agent-tool-validation.ko.md`](referen
 - [`../sourcing/references/retrieval-safety.ko.md`](../sourcing/references/retrieval-safety.ko.md)
 - [`references/evaluation-design.ko.md`](references/evaluation-design.ko.md)
 - [`references/agent-tool-validation.ko.md`](references/agent-tool-validation.ko.md)
+
+---
+
+## 출처
+
+| # | 출처 | 발행 | URL | 발행·갱신일 | 확인일 | 등급 |
+|---:|---|---|---|---|---|---|
+| 1 | Demystifying evals for AI agents | Anthropic | <https://www.anthropic.com/research/demystifying-evals-for-ai-agents> | 2026-01-09 | 확인 2026-11-03 | S |
+| 2 | Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations | Evan Miller, arXiv:2411.00640 | <https://arxiv.org/abs/2411.00640> | 2024-11-01 | 확인 2026-11-03 | 논문 |
+| 3 | Evaluation best practices | OpenAI | <https://developers.openai.com/api/docs/guides/evaluation-best-practices> | 표기 없음 | 확인 2026-11-03 | S |
+| 4 | Agent Control Standard (ACS) | OWASP GenAI Security Project | <https://genai.owasp.org/resource/agent-control-standard-acs/> | 2026-09-01 | 확인 2026-11-03 | S |
+| 5 | OWASP Top 10 for LLM Applications 2026 | OWASP GenAI Security Project | <https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/> | 2026-08-03 | 확인 2026-11-03 | S |
+
+출처 1~3은 §7의 trial, 채점, 보고 요구를 뒷받침하며 [`references/evaluation-design.ko.md`](references/evaluation-design.ko.md)에서 더 자세히 다룬다. 출처 4~5는 agent trace와 방어 층 기록 요구를 뒷받침한다. 이 출처들이 제시한 수치는 각자의 현장 보고와 논문이며 이 문서에서 독립 재현한 값이 아니다. OpenAI 평가 문서는 발행일이나 갱신일을 표시하지 않으므로 이 저장소가 확인한 날짜로 인용한다.

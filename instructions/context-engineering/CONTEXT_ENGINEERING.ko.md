@@ -8,6 +8,8 @@ Codex, Claude Code, Cursor, GitHub Copilot 등 여러 에이전트 런타임이 
 
 Context engineering은 “좋은 문장으로 프롬프트를 꾸미는 일”이 아니라, 모델이 작업을 수행할 때 받는 **목표, 범위, 근거, 도구, 제약, 검증 기준**을 실행 가능한 시스템으로 설계하는 일이다. 역할 프롬프트도 마찬가지로 페르소나 선언이 아니라, 역할이 책임져야 할 성공 기준과 검증 가능한 행동 계약이어야 한다.
 
+Anthropic은 이를 “추론 중에 최적의 토큰 집합을 선별하고 유지하는 전략의 모음”이라고 정의하고, “프롬프트 엔지니어링의 자연스러운 다음 단계”라고 부른다(2025-09-29 발행, 2026-10-18 갱신, 확인 2026-11-03). 분량 기준은 “기대하는 동작을 온전히 규정하는 최소한의 정보”이며, “최소가 반드시 짧다는 뜻은 아니다”라는 단서가 붙는다. Chroma는 그 경험적 근거를 제공한다. 네 계열 모델 18종에서 작업 난이도를 고정해도 입력 길이가 늘면 성능이 떨어졌다. 컨텍스트 크기는 비용 변수이면서 품질 변수다([`references/core-principles.ko.md`](references/core-principles.ko.md) 2절).
+
 ## Core Contract
 
 | 섹션 | 반드시 적을 것 | 피할 것 |
@@ -20,6 +22,27 @@ Context engineering은 “좋은 문장으로 프롬프트를 꾸미는 일”�
 | Output | 산출물 형식, 파일 위치, 언어/톤, 완료 기준 | “좋게 정리” 같은 모호한 완료 조건 |
 | Verification | 테스트/eval/리뷰/source-check 기준 | 검증 없는 완료 선언 |
 | Iteration | prompt 버전, 실패 사례, 변경 이유 | 좋아 보이는 문장 다듬기만 반복 |
+
+## Context Lifecycle
+
+계약은 한 턴을 지배한다. 긴 작업에는 LangChain이 이름 붙인 네 가지 수단이 함께 필요하다. write, select, compress, isolate다(확인 2026-11-03). 실행이 나빠지는데 모델 탓이 아닐 때 이 목록으로 점검한다.
+
+| 수단 | 하는 일 | 구체적 방법 | 빠뜨리면 |
+|---|---|---|---|
+| Write | 상태를 창 밖으로 옮겨 잘림을 견디게 한다 | 노트, 스펙 파일, 할 일 목록, 외부 메모리 디렉터리, 산출물 경로 | 창이 잘리는 순간 계획이 사라진다 |
+| Select | 이번 단계에 필요한 것만 들인다 | 필요할 때 읽는 참조, 좁은 도구 집합, 표적 검색 | 신호가 약한 토큰이 중요했던 규칙을 밀어낸다 |
+| Compress | 뜻은 남기고 토큰은 줄인다 | 서버 측 압축, 요약 인계, 도구 결과 비우기 | 비용과 지연이 오르고 정확도는 떨어진다 |
+| Isolate | 작업자나 샌드박스별로 나눈다 | 자체 창을 가진 서브에이전트가 요약만 반환, 샌드박스가 결과만 반환 | 한 작업자의 장황한 출력이 이후 모든 판단을 오염시킨다 |
+
+런타임과 무관하게 지키는 규칙:
+
+1. **요약보다 이동이 먼저다.** 다시 만들 수 있는 것(도구 출력, 파일 덤프)은 비우거나 옮기고, 다시 만들 수 없는 것만 요약한다.
+2. **권위 있는 계획은 창 밖에 둔다.** 그리고 압축이 끝날 때마다 다시 읽는다. 계획의 요약은 계획이 아니다.
+3. **인계는 요약과 경로다.** 트랜스크립트가 아니다. 받는 쪽이 근거를 다시 열 수 있어야 한다.
+4. **발동 지점을 기록한다.** 무엇이 임계값을 넘었고, 무엇이 버려졌고, 무엇을 다시 읽어야 했는지 남긴다. 그래야 잃은 사실과 틀린 사실을 구분할 수 있다.
+5. **이력 재작성보다 도구 결과 비우기를 먼저 한다.** 가장 가벼운 압축이고, 어떤 도구가 실행됐는지 기록은 남는다.
+
+벤더별 파라미터와 임계값, 모델 제외 조건은 [`references/context-management.ko.md`](references/context-management.ko.md)에 있다. 지시문 쪽 대응물(안정적인 캐시 접두부와 변동 꼬리)은 [`../cache/CACHE.ko.md`](../cache/CACHE.ko.md)에 있다.
 
 ## Runtime-Neutral Pattern
 
@@ -36,7 +59,7 @@ Context engineering은 “좋은 문장으로 프롬프트를 꾸미는 일”�
 </task_contract>
 ```
 
-XML 태그는 Claude 계열에서 특히 유용하지만, 핵심은 XML 자체가 아니라 **구획 분리**다. Codex/AGENTS.md, Cursor Rules, Copilot instructions에서는 Markdown heading과 표로 같은 구조를 표현해도 된다.
+XML 태그는 Claude 계열의 문서화된 기본값으로 남아 있다. 현행 지침은 XML 태그가 “복잡한 프롬프트를 모호함 없이 해석하도록” 돕는다고 적고(확인 2026-11-03), 에이전트 지침은 프롬프트를 XML 태그나 Markdown 헤더로 구획하도록 권하면서 다만 “모델이 더 유능해지면서 형식의 정확한 모양은 점점 덜 중요해질 것”이라고 덧붙인다. 핵심은 XML 자체가 아니라 **구획 분리**다. Codex/AGENTS.md, Cursor Rules, Copilot instructions에서는 Markdown heading과 표로 같은 구조를 표현해도 된다.
 
 
 ## Prompt Authoring Contract
@@ -90,30 +113,41 @@ XML 태그는 Claude 계열에서 특히 유용하지만, 핵심은 XML 자체�
 | 역할 수행 프롬프트 템플릿 | [`references/prompt-authoring.ko.md`](references/prompt-authoring.ko.md) |
 | 추론, few-shot, structured output, tool-use 기법 | [`references/techniques.ko.md`](references/techniques.ko.md) |
 | 추상화 수준과 컨텍스트 예산 | [`references/core-principles.ko.md`](references/core-principles.ko.md) |
+| 압축, 도구 결과 비우기, 메모리, 런타임별 컨텍스트 파라미터 | [`references/context-management.ko.md`](references/context-management.ko.md) |
 | 병렬 작업/서브에이전트 위임 | [`references/parallel-workflows.ko.md`](references/parallel-workflows.ko.md) |
 | prompt/eval 하네스 | [`../harness-engineering/HARNESS_ENGINEERING.ko.md`](../harness-engineering/HARNESS_ENGINEERING.ko.md) |
+| 반복 실행, 중단 조건, 예산, 에스컬레이션 | [`../loop-engineering/LOOP_ENGINEERING.ko.md`](../loop-engineering/LOOP_ENGINEERING.ko.md) |
+| 분산·수렴 구조, 결합 방식, 영속 그래프 상태 | [`../graph-engineering/GRAPH_ENGINEERING.ko.md`](../graph-engineering/GRAPH_ENGINEERING.ko.md) |
 
 ## Sources
 
-> 링크 확인 2026-07-29. 링크 사용 가능 여부는 2026-09-19에 재확인했다. 다음 재검증 2026-10-29.
+> 2026-11-03 표기가 붙은 주장은 그날 다시 읽었다. 더 이른 확인 날짜가 남은 행은 이번 개정에서 다시 읽지 않았으므로, 새 날짜를 물려주지 않고 원래 날짜를 유지한다.
 
-| 주장 | 출처 |
-|---|---|
-| Codex instruction aggregation과 AGENTS.md 동작 | <https://learn.chatgpt.com/docs/agent-configuration/agents-md> |
-| AGENTS.md 포맷과 nesting 우선순위(“가장 가까운 파일이 이김, 사용자 채팅 지시가 최상위”). Linux Foundation 산하 Agentic AI Foundation이 관리 | <https://agents.md/> |
-| Anthropic prompt engineering과 XML 태그로 프롬프트 구조화 | <https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices> |
-| Claude Code subagents / agent teams | <https://code.claude.com/docs/en/sub-agents>, <https://code.claude.com/docs/en/agent-teams> |
-| Google Gemini prompt design strategies | <https://ai.google.dev/gemini-api/docs/prompting-strategies> |
-| Cursor Rules(Always Apply / Apply Intelligently / Apply to Specific Files / Apply Manually)와 AGENTS.md 중첩 지원 | <https://cursor.com/docs/rules> |
-| GitHub Copilot repository / path-specific(`applyTo`) / agent instructions와 우선순위(personal > repository > organization) | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> |
-| MCP 보안 원칙과 prompt/tool 경계. tool annotation은 신뢰할 수 있는 서버가 아니면 untrusted로 간주해야 한다(MUST) | <https://modelcontextprotocol.io/specification/2026-07-28> |
-| MCP `2026-07-28` breaking change(stateless 전환, `server/discover`, MRTR, Roots·Sampling·Logging deprecation) | <https://modelcontextprotocol.io/specification/2026-07-28/changelog> |
-| OpenAI evaluation 지침. Evals 플랫폼은 **폐기 예정**(2026-10-31 read-only, 2026-11-30 종료, 후속은 Datasets)이고 agent-evals 지침은 현재 유효하다 | <https://developers.openai.com/api/docs/guides/evals>, <https://developers.openai.com/api/docs/guides/agent-evals> |
-| Anthropic 성공 기준 정의와 eval 구축 | <https://platform.claude.com/docs/en/test-and-evaluate/develop-tests> |
-| Google Vertex Gen AI evaluation adaptive rubrics | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/evaluation-overview> |
-| LangSmith evaluation datasets/evaluators | <https://docs.langchain.com/langsmith/evaluation> |
-| Promptfoo LLM-as-a-judge / red teaming | <https://www.promptfoo.dev/docs/guides/llm-as-a-judge/>, <https://www.promptfoo.dev/docs/red-team/> |
+| 주장 | 출처 | 확인 |
+|---|---|---|
+| “최적의 토큰 집합을 선별하고 유지하는” 컨텍스트 엔지니어링 정의, 최소 집합 기준, right altitude, 압축, 노트 필기, 서브에이전트 압축 | <https://www.anthropic.com/research/effective-context-engineering-for-ai-agents> | 2026-11-03(2025-09-29 발행, 2026-10-18 갱신) |
+| XML 태그, 긴 문서 먼저, 질의는 마지막, Claude 4.6 이후 프리필 미지원 | <https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices> | 2026-11-03 |
+| 컨텍스트 편집과 도구 결과 비우기 파라미터 | <https://platform.claude.com/docs/en/build-with-claude/context-editing> | 2026-11-03 |
+| 압축 방식과 모델 제외 조건 | <https://platform.claude.com/docs/en/build-with-claude/compaction> | 2026-11-03 |
+| `context_management`·`compact_threshold` 기반 압축 | <https://developers.openai.com/api/docs/guides/compaction> | 2026-11-03 |
+| 6단계 지시 위계, 신뢰할 수 없는 데이터는 “기본 권한이 없다” | <https://model-spec.openai.com/2026-10-29.html> | 2026-11-03 |
+| 입력 길이가 늘면 모델 18종의 성능이 떨어지고, 방해 문서는 하락을 키운다 | <https://www.trychroma.com/research/context-rot> | 2026-11-03(2025-07-14 발행) |
+| 네 가지 수단: write, select, compress, isolate | <https://www.langchain.com/blog/context-engineering-for-agents> | 2026-11-03(2025-07-02 발행) |
+| 멀티 에이전트 토큰 배수와 공유 컨텍스트의 한계 | <https://www.anthropic.com/research/multi-agent-research-system> | 2026-11-03(2025-06-13 발행) |
+| Codex instruction 집계와 AGENTS.md 동작 | <https://learn.chatgpt.com/docs/agent-configuration/agents-md> | 2026-07-29 |
+| AGENTS.md 포맷과 중첩 우선순위(“가장 가까운 파일이 이김, 사용자 채팅 지시가 최상위”). Linux Foundation 산하 Agentic AI Foundation이 관리 | <https://agents.md/> | 2026-07-29 |
+| Claude Code subagents / agent teams | <https://code.claude.com/docs/en/sub-agents>, <https://code.claude.com/docs/en/agent-teams> | 2026-07-29 |
+| Google 프롬프트 설계 전략(맥락 먼저, 지시 마지막, few-shot) | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/prompts/prompt-design-strategies?hl=en> | 2026-11-03(2026-10-30 갱신) |
+| Cursor Rules(Always Apply / Apply Intelligently / Apply to Specific Files / Apply Manually), 중첩 `AGENTS.md`, Memories 기능은 문서에 없음 | <https://cursor.com/docs/rules> | 2026-11-03 |
+| GitHub Copilot repository / path-specific(`applyTo`) / agent instructions와 우선순위(personal > repository > organization) | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> | 2026-07-29 |
+| MCP 보안 원칙과 prompt/tool 경계. tool annotation은 신뢰할 수 있는 서버가 아니면 untrusted로 간주해야 한다(MUST) | <https://modelcontextprotocol.io/specification/2026-07-28> | 2026-09-19 |
+| MCP `2026-07-28` breaking change(stateless 전환, `server/discover`, MRTR, Roots·Sampling·Logging deprecation) | <https://modelcontextprotocol.io/specification/2026-07-28/changelog> | 2026-09-19 |
+| OpenAI evaluation 지침. Evals 플랫폼은 **폐기 예정**(2026-10-31 read-only, 2026-11-30 종료, 후속은 Datasets)이고 agent-evals 지침은 현재 유효하다 | <https://developers.openai.com/api/docs/guides/evals>, <https://developers.openai.com/api/docs/guides/agent-evals> | 2026-07-29 |
+| Anthropic 성공 기준 정의와 eval 구축 | <https://platform.claude.com/docs/en/test-and-evaluate/develop-tests> | 2026-07-29 |
+| Google Vertex Gen AI evaluation adaptive rubrics | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/evaluation-overview?hl=en> | 2026-07-29 |
+| LangSmith evaluation datasets/evaluators | <https://docs.langchain.com/langsmith/evaluation> | 2026-07-29 |
+| Promptfoo LLM-as-a-judge / red teaming | <https://www.promptfoo.dev/docs/guides/llm-as-a-judge/>, <https://www.promptfoo.dev/docs/red-team/> | 2026-07-29 |
 
-**미확인**: 이전 판이 근거로 들었던 Cursor “Memories” 기능은 2026-07-29 기준 현행 Rules 문서에서 확인되지 않았다. 별도 문서에 존재할 수 있으므로 “없음”이 아니라 **미확인**으로 남긴다. 이 문서는 Memories를 근거로 어떤 주장도 하지 않는다.
+**정정**: 이전 판은 `ai.google.dev/gemini-api/docs/prompting-strategies`를 인용하고 Cursor의 “Memories”를 instruction 표면으로 적었다. Gemini API 문서는 세션 없이 요청하면 인증 엔드포인트로 넘어가므로 Cloud 쪽 프롬프트 설계 문서를 인용한다. Cursor Rules 문서에는 Memories 기능이 없으므로 런타임 프로필에서도 그 주장을 뺐다.
 
 로컬 재검증 캐시(미추적): `.hyper/research/2026-06-02-official-llm-prompt-instructions-update.md`, `.hyper/research/2026-07-29-instructions-base-source-refresh.md`. `.hyper/`는 `.gitignore` 대상이라 다른 clone에는 없다. 위 URL이 근거이며 캐시 경로가 이를 대체하지 않는다.

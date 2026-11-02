@@ -1,9 +1,18 @@
 # Hermes Agent 스킬
 
-> English: [SKILLS.md](SKILLS.md) · 작성: [SKILL_AUTHORING.ko.md](SKILL_AUTHORING.ko.md) · 런타임 개요: [README.ko.md](README.ko.md) · 조사일: **2026-08-20**
-> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
+> English: [SKILLS.md](SKILLS.md) · 작성: [SKILL_AUTHORING.ko.md](SKILL_AUTHORING.ko.md) · Curator 세부: [references/curator-lifecycle.ko.md](references/curator-lifecycle.ko.md) · 런타임 개요: [README.ko.md](README.ko.md) · 조사일: **2026-11-03**
 
-이 문서는 Hermes Agent 스킬의 실무 참고서다. 아래의 **확인됨** 문장과 명령은 공식 [Skills guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills), [Creating Skills guide](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills), [NousResearch/hermes-agent 소스](https://github.com/NousResearch/hermes-agent)를 근거로 한다. 제품 동작은 바뀔 수 있으므로 자동화하기 전 설치한 버전의 `hermes skills --help`를 확인한다. **권장 사항** 표시는 업스트림 계약이 아닌 작성·운영 조언이다.
+이 문서는 Hermes Agent 스킬의 실무 참고서다. 아래의 **확인됨** 문장과 명령은 공식 [Skills guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills), [Curator guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/curator), [Creating Skills guide](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills), [NousResearch/hermes-agent 소스](https://github.com/NousResearch/hermes-agent)를 근거로 한다. 사실은 Hermes Agent **v0.22.5**(커밋 `bf0203a794a`, 2026-10-22 배포)에 맞춘다. 제품 동작은 바뀔 수 있으므로 자동화하기 전 설치한 버전의 `hermes skills --help`를 확인한다. **권장 사항** 표시는 업스트림 계약이 아닌 작성·운영 조언이다.
+
+## 출처
+
+| 출처 | 제공하는 내용 | 확인 |
+| --- | --- | --- |
+| [Skills System](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) | 로드 단계, 위치와 우선순위, bundle, hub, reset, opt-out | 확인 2026-11-03 |
+| [Curator](https://hermes-agent.nousresearch.com/docs/user-guide/features/curator) | Background lifecycle, pin, lock, ledger, backup, adopt | 확인 2026-11-03 |
+| [Creating Skills](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills) | Frontmatter, inline shell, template token, tap, publish | 확인 2026-11-03 |
+| [CLI Commands Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) | `hermes skills`, `hermes bundles`, `hermes curator` | 확인 2026-11-03 |
+| [Agent Skills specification](https://agentskills.io/specification) | 이식 가능한 `SKILL.md` 계약 | 확인 2026-11-03 |
 
 ## 모델: 필요할 때 로드하는 절차
 
@@ -19,6 +28,8 @@ Hermes는 점진적 공개를 사용한다.
 
 따라서 짧은 설명은 발견성을 만들고, 자세한 예외 처리는 참조 파일에 둔다. 설치된 스킬은 슬래시 명령으로 쓸 수 있으며 `skills` 도구셋을 켠 일반 대화에서도 발견할 수 있다.
 
+**사실:** 스킬 목록은 system prompt의 일부이고 provider cache를 지키기 위해 고정된다. 대화가 열려 있는 동안 스킬이 설치·생성·제거되면(hub 설치, 다른 terminal, plugin, curator, agent 자신) 다음 message에 추가·제거된 스킬 이름을 담은 1회성 안내가 붙고, system prompt 자체는 다음 compaction 때 반영한다. `/reload-skills`는 여전히 `/slash` 명령을 새로 고친다.
+
 **권장 사항:** 흔하고 안전한 경로는 `SKILL.md`에, 긴 API·공급자 표·예외 절차는 `references/`에 둔다. 자격 증명, 검토하지 않은 지침, 전체 원문 코퍼스를 최초 파일에 넣지 않는다.
 
 ## 발견, 위치, 신뢰
@@ -27,12 +38,15 @@ Hermes는 점진적 공개를 사용한다.
 
 | 계층 | 위치 | 비고 |
 |---|---|---|
-| 프로젝트(최고) | `<project-root>/.hermes/skills/` | Hermes 네이티브 프로젝트 스킬 |
+| 프로젝트(최고) | `<project-root>/.hermes/skills/` | Hermes 네이티브 프로젝트 스킬, 인덱스에 `[project]` 표시 |
 | 프로젝트(최고) | `<project-root>/.agents/skills/` | 도구 간 공통 규약 |
 | 프로필/로컬 | `~/.hermes/skills/` | 기본 원본; 번들·허브·에이전트 작성 스킬 위치 |
+| 생성 위치 변경 | 각 `skills.create_dir` 값 | 설정 시 `skill_manage` create가 쓰는 위치 |
 | 외부(최저) | 각 `skills.external_dirs` 항목 | 로컬과 함께 검색 |
 
-프로젝트 루트는 `.git`가 있는 가장 가까운 상위 디렉터리이며 worktree와 submodule도 포함한다. 로컬 스킬은 같은 이름의 외부 스킬을, 프로젝트 스킬은 둘 모두를 가린다. 새 에이전트 작성 스킬은 `~/.hermes/skills/`에, 기존 외부 스킬은 쓰기 가능하면 제자리에서 수정될 수 있다. 프로젝트 디렉터리는 저장소 소유이므로 curator가 수정하지 않는다.
+프로젝트 루트는 `.git`가 있는 가장 가까운 상위 디렉터리이며 worktree와 submodule도 포함한다. 전체 우선순위는 `project → local → skills.create_dir → external_dirs`이고, 인덱스, `skills_list`, `hermes skills list`, `skill_view`, 슬래시 명령, `-s` preload, cron이 모두 같은 방식으로 이름을 해석한다. 새 에이전트 작성 스킬은 `skills.create_dir`이 옮기지 않는 한 `~/.hermes/skills/`에, 기존 외부 스킬은 쓰기 가능하면 제자리에서 수정될 수 있다. 프로젝트 디렉터리는 저장소 소유이고 외부 디렉터리는 공유 자원이므로 curator는 프로젝트 스킬을 수정하지 않는다.
+
+**사실:** 같은 디렉터리 안에서 이름만 같은 서로 다른 스킬은 임의로 고르지 않는다. 둘 다 상대 경로로 표시되고, 이름만으로 로드하면 `Ambiguous skill name …: use one of a/one, b/two` 오류가 난다. 동일한 사본은 가장 얕은 경로로 해석되고, 가려진 사본은 shadowed로 기록된다.
 
 `~/.hermes/config.yaml`에 추가 디렉터리를 설정한다.
 
@@ -83,6 +97,20 @@ hermes skills untrust
 hermes chat --toolsets skills -q "What skills do you have?"
 hermes chat --toolsets skills -q "Show me the axolotl skill"
 ```
+
+### 자동 로드와 생성 위치 변경(확인됨)
+
+`skills.auto_load`는 모든 표면에서 새 session 시작 시 skill을 완전히 로드하도록 고정한다. System prompt를 처음 만들 때 한 번 해석한다.
+
+```yaml
+skills:
+  auto_load:
+    - my-workflow
+    - github-pr-workflow
+  create_dir: /opt/brain/skills   # 선택: 새 에이전트 작성 skill 위치
+```
+
+없거나 비활성인 auto-load 항목은 경고 후 건너뛰고, `--ignore-rules` 또는 `HERMES_IGNORE_RULES=1`이 목록을 막는다. `create_dir`은 생성 경로를 적은 agent용 지침까지 다시 렌더링하므로 agent는 어디에 써야 하는지 안내받는다. 번들 sync, hub, curator는 계속 profile 로컬 디렉터리에서 동작한다.
 
 ### 번들(확인됨)
 
@@ -177,6 +205,9 @@ hermes skills update
 hermes skills update react
 hermes skills update react --force
 hermes skills audit
+hermes skills list-modified          # 설치 당시 hash와 달라진 로컬 편집
+hermes skills diff <name>            # 판단 전에 그 차이를 확인
+hermes skills snapshot export setup.json   # 설치된 skill 구성의 이식 가능한 기록
 hermes skills uninstall k8s
 hermes skills reset google-workspace
 hermes skills reset google-workspace --restore
@@ -195,13 +226,34 @@ hermes skills opt-out --remove
 hermes skills opt-in --sync
 ```
 
-`opt-out`은 파일을 건드리지 않고 미래의 번들 seeding을 막는다. `--remove`은 확인 후 수정되지 않은 번들 스킬만 삭제하고 사용자 편집·허브·작성 스킬은 남긴다. `opt-in --sync`는 `.no-bundled-skills` marker를 지우고 즉시 seed한다. 최초 설치에서는 `--no-skills`와 `hermes profile create research --no-skills`가 같은 빈 프로필 선택지다.
+`opt-out`은 파일을 건드리지 않고 미래의 번들 seeding을 막는다. `--remove`은 확인 후 수정되지 않은 번들 스킬만 삭제하고 사용자 편집·허브·작성 스킬은 남긴다. `opt-in --sync`는 `.no-bundled-skills` marker를 지우고 즉시 seed한다.
+
+**사실, 빈 profile 경로는 서로 다르다:** installer에는 `--no-skills` flag가 **없다**. Setup 단계에서 Blank Slate를 고르면 번들 catalog를 seed할지 묻고, 아니라고 답하면 위의 opt-out marker를 쓴다. 비대화형 설치는 catalog를 seed하므로 이후 `hermes skills opt-out`을 실행해야 한다. `hermes profile create research --no-skills`는 profile 생성 시점의 선택지이고, `opt-out`과 `opt-in --sync`는 이미 있는 profile을 전환한다.
+
+### Background 유지보수: curator(확인됨)
+
+**사실:** Curator는 **agent-created** skill만 대상으로 하는, idle 상태에서 깨어나는 유지보수 pass다. `curator.interval_hours`(기본 7일)와 `curator.min_idle_hours`(기본 2시간)가 모두 지나면 CLI session 시작, gateway housekeeping, `hermes serve` 유지보수 timer에서 실행한다. 새 설치에서는 첫 관찰이 `last_run_at`만 채우고 실제 첫 pass를 한 주기 뒤로 미룬다.
+
+**사실:** Run은 두 단계다. 결정적 전환은 `stale_after_days`(14) 동안 쓰지 않은 skill을 `stale`로, `archive_after_days`(30) 동안 쓰지 않은 skill을 `~/.hermes/skills/.archive/`로 옮긴다. Umbrella skill을 만드는 LLM consolidation pass는 기본으로 꺼져 있다(`curator.consolidate`). Pinned skill과 일시 중지된 job을 포함해 어떤 cron job이 참조하는 skill은 건너뛴다. Curator는 자동 삭제하지 않으므로 최악의 결과도 복구 가능한 archive다.
+
+```bash
+hermes curator status          # 마지막 run, 개수, pinned·locked 목록
+hermes curator run --dry-run   # 아무것도 바꾸지 않고 보고만
+hermes curator pin <skill>     # auto-transition과 삭제 금지
+hermes curator lock <skill>    # agent가 아예 바꿀 수 없음
+```
+
+**사실:** Pin은 curator 보관과 agent의 `skill_manage delete`를 막으면서 내용 편집은 허용한다. Lock은 `skill_manage`, skill directory 안의 `write_file`/`patch`, terminal 쓰기를 포함한 agent의 모든 쓰기를 거부하지만, skill 읽기와 script 실행은 되고 사용자 편집은 늘 동작한다. Foreground `/learn`과 `skill_manage` 생성은 `created_by: learn`으로 기록되어 의도적으로 손대지 않으며, `hermes curator adopt <skill>`이 관리 밖 skill을 넘겨받는다. Audit ledger와 rollback을 포함한 세부는 [references/curator-lifecycle.ko.md](references/curator-lifecycle.ko.md)에 있다.
 
 동일한 허브 작업은 채팅에서도 가능하다. 예: `/skills browse`, `/skills inspect …`, `/skills install …`, `/skills check`, `/skills update`, `/skills reset …`, `/skills list`.
 
 ### 보안과 게시(확인됨 + 권장 사항)
 
-Hermes는 허브 설치에서 프롬프트 주입, 데이터 유출, 파괴적 명령, 공급망 신호 등을 스캔한다. `inspect`는 가능하면 업스트림 메타데이터를 보인다. 신뢰 수준은 `builtin`, `official`, `trusted`, `community`다. `--force`는 caution/warn 정책 차단은 재정의할 수 있지만 **절대** `dangerous` 판정을 재정의하지 못한다. 공식 선택 스킬은 내장 신뢰이고 새 탭은 기본 community다. `audit` 재스캔은 안전 증명이 아니다.
+Hermes는 허브 설치에서 프롬프트 주입, 데이터 유출, 파괴적 명령, 공급망 신호 등을 스캔한다. `inspect`는 가능하면 업스트림 메타데이터, 즉 repo URL, skills.sh 상세 페이지, 설치 명령, 주간 설치 수, 업스트림 audit 상태, well-known endpoint를 보인다. 신뢰 수준은 `builtin`, `official`, `trusted`, `community`다. `--force`는 caution/warn 정책 차단은 재정의할 수 있지만 **절대** `dangerous` 판정을 재정의하지 못한다. 공식 선택 스킬은 내장 신뢰이고 새 탭은 기본 community다. `audit` 재스캔은 안전 증명이 아니다.
+
+**사실, 두 번째 의견 스캔:** Hermes는 NVIDIA SkillEvaluator Tier 1 검사를 hub 설치마다 추가로 돌릴 수 있다. 결정적이고 key가 필요 없으며, PII 탐지, Unicode smuggling, script lint, license 준수, SkillSpector를 통한 정적 검사를 한다. 이 검사는 **advisory**여서 결과를 file과 line으로 설치 확인 전에 출력하고 설치는 그대로 진행한다. 선택 binary를 따로 설치해야 하고, `skills.tier1_advisory: false`로 끄며, binary가 없으면 조용히 건너뛴다.
+
+**사실, hub 소스:** `official`, `skills-sh`, `well-known`, `url`, `github` 외에 `clawhub`, `lobehub`, `browse-sh` 식별자도 다룬다. 필터 없는 검색은 cache된 중앙 index로 답하고, 최대 8초 동안 실제 registry에 fallback하므로 몇 분 전에 게시된 skill도 나타날 수 있다.
 
 **권장 사항:** 설치 전 모든 타사 `SKILL.md`, 참조 스크립트, URL을 검사한다. 중요한 경우 조직 절차에 따라 GitHub revision을 고정/검토한다. 스캐너 통과, trusted registry 표지, GitHub 토큰은 서로 다른 보장이다. 탭에 자격 증명을 넣지 않고, 명시적 사용자 확인 없이 되돌릴 수 없는 작업을 실행하도록 하는 지침을 게시하지 않는다. `--force`는 의도적으로 로컬 편집을 대체하므로 업데이트 전에 검토한다.
 
@@ -211,7 +263,7 @@ GitHub 기반 허브 작업은 미인증 60 requests/hour 제한에 닿을 수 �
 
 | 증상 | 확인된 원인 / 조치 |
 |---|---|
-| 스킬이 보이지 않음 | 플랫폼 제한, `requires_*`/`fallback_for_*`, 더 높은 우선순위의 같은 이름, 프로젝트 신뢰, 격리를 확인한다. |
+| 스킬이 보이지 않음 | 플랫폼 제한, `requires_*`/`fallback_for_*`, 더 높은 우선순위의 같은 이름, 프로젝트 신뢰, 격리, curator 보관(`hermes curator status`, `list-archived`)을 확인한다. |
 | 프로젝트 스킬이 발견됐지만 로드되지 않음 | 프로젝트 루트에서 `hermes skills trust`를 실행하거나 프로젝트 경로를 전달한다. |
 | 외부 스킬이 뜻밖에 편집됨 | 외부 디렉터리는 쓰기 가능한 발견 위치다. 파일 시스템 권한으로 보호한다. |
 | URL 설치가 스킬 이름을 정하지 못함 | `name:` 프런트매터를 추가하거나 `--name`을 준다. 비대화형 표면은 물을 수 없다. |
@@ -221,10 +273,6 @@ GitHub 기반 허브 작업은 미인증 60 requests/hour 제한에 닿을 수 �
 | 허브 요청이 rate limit됨 | 로컬 비밀 설정에 `GITHUB_TOKEN`을 구성하고 나중에 재시도한다. |
 | 채팅 gateway에서 비밀을 요청함 | 채팅으로 보내지 말고 Hermes가 안내하는 로컬 `hermes setup` 또는 `~/.hermes/.env`를 쓴다. |
 
-## 1차 출처
+## 코드 위치
 
-- Nous Research, [Skills System](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills)
-- Nous Research, [Creating Skills](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills)
-- Nous Research, [Hermes Agent source: skills CLI](https://github.com/NousResearch/hermes-agent/tree/main/hermes_cli/subcommands)
-- Nous Research, [Hermes Agent source: bundled skills](https://github.com/NousResearch/hermes-agent/tree/main/skills)
-- [Agent Skills specification](https://agentskills.io/specification)
+- 업스트림 repository의 [skills CLI 하위 명령](https://github.com/NousResearch/hermes-agent/tree/main/hermes_cli/subcommands)과 [bundled skill](https://github.com/NousResearch/hermes-agent/tree/main/skills). 읽는 revision을 pin한다. 경로는 release마다 옮겨진다.

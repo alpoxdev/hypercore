@@ -21,13 +21,13 @@ Resolve real paths and symlinks before writes/deletes. A target outside ownershi
 
 ## 2. Git isolation facts and policy
 
-- A linked worktree has separate working files, index, and `HEAD`, but shares most refs, repository config by default, hooks, remotes, and the object database. It is useful isolation, not a security boundary.
+- A linked worktree is "linked to the current repository, sharing everything except per-worktree files such as `HEAD`, `index`, etc." In practice that means shared refs, default repository configuration, hooks, remotes, and the object database. It is useful isolation, not a security boundary.
 - Use a unique run-owned branch/ref for retained mutating work and never bypass other-worktree branch safeguards.
 - Detached `HEAD` is allowed for read-only inspection or intentionally disposable experiments. Before retained state can become unreachable, anchor and verify a run-owned named ref or immutable content snapshot.
 - Do not edit shared refs, common config, hooks, remotes, stash, or maintenance state unless explicitly in scope and separately checkpointed.
 - A commit records the index, not the whole workspace. A plain patch may omit staged, untracked, ignored, binary, mode, symlink, submodule, or external state. Checkpoint coverage must be declared.
 
-Official Git semantics: [`git-worktree`](https://git-scm.com/docs/git-worktree), [`git-reset`](https://git-scm.com/docs/git-reset), [`git-apply`](https://git-scm.com/docs/git-apply), and [`git-checkout`](https://git-scm.com/docs/git-checkout#_detached_head).
+Official Git semantics, checked 2026-11-03: [`git-worktree`](https://git-scm.com/docs/git-worktree), [`git-reset`](https://git-scm.com/docs/git-reset), [`git-apply`](https://git-scm.com/docs/git-apply), and [`git-checkout`](https://git-scm.com/docs/git-checkout#_detached_head).
 
 ## 3. Checkpoint and rollback
 
@@ -42,6 +42,8 @@ A checkpoint identifies:
 Rollback means restoring only run-owned candidate paths/resources/refs to recorded pre-iteration values **if their current values still match the expected post-mutation state**. Otherwise stop on conflict.
 
 Never automatically stash, clean, reset, restore, revert, commit, delete, or overwrite pre-existing/user-owned work. `reset --hard`, broad restore/checkout, `clean`, or history-changing recovery may be valid only in an explicitly owned disposable state under the applicable authorization; the command name alone never makes it safe.
+
+The upstream practice of discarding a losing candidate with a branch rewind is a valid instance of this rule, not an exception to it: the rewind is safe because the branch was created for the run and contains no user work. Copying that step into a shared branch or a dirty tree converts a discard into data loss.
 
 After restoration, verify the frontier identity, preserved user-state fingerprint, absence of candidate diff, and resource cleanup. Mismatch is `rollback-error` and blocks keep/resume.
 
@@ -59,6 +61,25 @@ Approval is action-, target-, environment-, argument-, and time-specific. It doe
 Network is not classified only as read/write. An outbound read request can transmit repository or secret data. Declare destination, method/protocol, data class, read/write intent, and whether ambient credentials may be used. Never execute `curl | sh`; fetch, verify, inspect, then execute as separate approved steps.
 
 Do not place secrets in argv, prompts, logs, artifacts, patches, handoffs, URLs, or raw environment dumps. Persist credential source class and redaction status, never values.
+
+### Hooks and runtime gates are not the boundary
+
+An agent harness may ship hooks, extension events, or command filters that block dangerous actions. The upstream hook reference describes them as defense in depth rather than a security sandbox or a substitute for host permissions, and documents a fail-open design in which a crashing hook exits successfully and only emits a diagnostic. Two consequences:
+
+- A hook that fails open cannot enforce an authorization decision; assume the action proceeds when the hook breaks.
+- Hook coverage differs per runtime, so the same run can be gated or ungated depending on where it executes. The authority check must live in the task procedure, not only in the runtime.
+
+Use hooks to reduce accidents. Keep the decision about whether an action is permitted in the loop contract, the authorization matrix above, and the human approval that the matrix requires.
+
+### When the loop may modify its own harness
+
+A loop that edits its own scaffolding, as in self-modifying agent research, moves the evaluator and the safety checks into the candidate surface. If you allow that, then:
+
+- keep the evaluator, mandatory guards, and evidence log outside the mutable set;
+- version and review the harness change as a separate, human-approved change, not as an iteration of the metric loop;
+- refuse to evaluate a candidate using a harness the candidate could have modified.
+
+An iteration that improves its own score by weakening the harness is not an improvement; it is a guard failure with a better number.
 
 ## 5. Locks, deadlines, and lifecycle
 
@@ -156,3 +177,16 @@ Before mutation:
 10. rerun the frontier guard and remeasure when evidence is stale, noisy, or incompatible.
 
 Continue only after the prior iteration is finalized. Full SLSA provenance, workflow replay history, exhaustive host inventory, and product-specific session state are intentionally outside this minimum runtime-neutral contract.
+
+## Sources
+
+> Checked 2026-11-03.
+
+| Claim | Source | Grade |
+|---|---|---|
+| A linked worktree shares everything except per-worktree files such as `HEAD` and `index` | <https://git-scm.com/docs/git-worktree> | PRIMARY |
+| `git reset --hard` semantics and the detached-`HEAD` behavior of checkout | <https://git-scm.com/docs/git-reset> | PRIMARY |
+| Applicability of `git apply` to the working tree or index, and its excluded state | <https://git-scm.com/docs/git-apply> | PRIMARY |
+| Hook guardrails described as defense in depth, not a sandbox, with fail-open behavior | <https://github.com/uditgoenka/autoresearch/blob/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa/guide/hooks.md> | PRIMARY (repository) |
+| Discarding a losing candidate by rewinding a run-owned branch | <https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117> | PRIMARY (repository) |
+| A loop that modifies its own scaffolding while being validated on benchmarks | <https://arxiv.org/abs/2505.22954> | PAPER |

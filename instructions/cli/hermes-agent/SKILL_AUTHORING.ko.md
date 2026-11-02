@@ -1,9 +1,17 @@
 # Hermes Agent 스킬 작성
 
-> English: [SKILL_AUTHORING.md](SKILL_AUTHORING.md) · 스킬 사용과 수명주기: [SKILLS.ko.md](SKILLS.ko.md) · 조사일: **2026-08-20**
-> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
+> English: [SKILL_AUTHORING.md](SKILL_AUTHORING.md) · 스킬 사용과 수명주기: [SKILLS.ko.md](SKILLS.ko.md) · Curator 세부: [references/curator-lifecycle.ko.md](references/curator-lifecycle.ko.md) · 조사일: **2026-11-03**
 
-이 동반 문서는 작성, 구조, 검증, 게시를 다룬다. **확인됨** 문장은 공식 [Skills guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills), [Creating Skills guide](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills), [NousResearch/hermes-agent 소스](https://github.com/NousResearch/hermes-agent)를 근거로 한다. **권장 사항**은 업스트림 계약이 아닌 지침을 표시한다.
+이 동반 문서는 작성, 구조, 검증, 게시를 다룬다. **확인됨** 문장은 공식 [Skills guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills), [Creating Skills guide](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills), [NousResearch/hermes-agent 소스](https://github.com/NousResearch/hermes-agent)를 근거로 하며, Hermes Agent **v0.22.5**(커밋 `bf0203a794a`, 2026-10-22 배포)에 맞춘다. **권장 사항**은 업스트림 계약이 아닌 지침을 표시한다.
+
+## 출처
+
+| 출처 | 제공하는 내용 | 확인 |
+| --- | --- | --- |
+| [Creating Skills](https://hermes-agent.nousresearch.com/docs/developer-guide/creating-skills) | Frontmatter field, credential file, template token, inline shell, blueprint, 게시 | 확인 2026-11-03 |
+| [Skills System](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) | `/learn` 작성 기준, media delivery, tap 배치, bundle | 확인 2026-11-03 |
+| [Curator](https://hermes-agent.nousresearch.com/docs/user-guide/features/curator) | 작성한 skill이 만든 뒤 겪는 수명주기 | 확인 2026-11-03 |
+| [Agent Skills specification](https://agentskills.io/specification) | Frontmatter가 확장하는 이식 계약 | 확인 2026-11-03 |
 
 ## 표준 레이아웃과 프런트매터
 
@@ -71,7 +79,7 @@ metadata:
 
 `requires_toolsets`/`requires_tools`는 필수 기능 중 **하나라도** 없으면 숨긴다. `fallback_for_toolsets`/`fallback_for_tools`는 명명한 기능 중 **하나라도** 있으면 숨긴다. 실제로 기능이 필요한 워크플로에는 `requires_*`, 주 기능이 없을 때만 보일 대안에는 `fallback_for_*`를 쓴다.
 
-`required_environment_variables` 항목은 필수 `name`과 `prompt`, `help`, `required_for`를 받을 수 있다. 값이 없어도 발견에서 숨기지 않는다. 로컬 CLI는 로드 시에만 설정을 요청하고 메시징 표면은 로컬 `hermes setup` 또는 `~/.hermes/.env`를 안내한다. 설정된 선언 변수는 원시 값을 모델에 노출하지 않고 `terminal` 및 `execute_code` 샌드박스에 전달된다. 비밀이 아닌 선호값에는 `metadata.hermes.config`를 쓴다. 값은 `config.yaml`의 `skills.config`에 저장되고 `hermes config migrate`가 묻고 `hermes config show`가 보이며 로드 시 주입된다. `~/.hermes/` 상대 파일 자격 증명에는 `required_credential_files`를 쓴다. 존재하는 파일은 지원되는 원격 샌드박스에 mount/sync된다.
+`required_environment_variables` 항목은 필수 `name`과 `prompt`, `help`, `required_for`를 받을 수 있다. 값이 없어도 발견에서 숨기지 않는다. 로컬 CLI는 로드 시에만 설정을 요청하고 메시징 표면은 로컬 `hermes setup` 또는 `~/.hermes/.env`를 안내한다. 설정된 선언 변수는 원시 값을 모델에 노출하지 않고 `terminal` 및 `execute_code` 샌드박스에 전달된다. 비밀이 아닌 선호값에는 `metadata.hermes.config`를 쓴다. 값은 `config.yaml`의 `skills.config`에 저장되고 `hermes config migrate`가 묻고 `hermes config show`가 보이며 로드 시 주입된다. `~/.hermes/` 상대 파일 자격 증명에는 `required_credential_files`를 쓴다. 각 항목은 `path`와 선택 `description`을 받고, file이 없으면 `setup_needed`를 올리며, 있으면 Docker에는 read-only로 mount하고 Modal에는 생성 시와 명령 실행 전마다 sync하고 local backend에서는 따로 처리할 것이 없다. 문자열 key에는 `required_environment_variables`를, OAuth token file·client secret·service account JSON·certificate에는 `required_credential_files`를 쓴다. 존재하는 파일은 지원되는 원격 샌드박스에 mount/sync된다.
 
 `metadata.hermes.blueprint`은 실행 가능한 자동화 제안을 표시한다. 설치해도 스케줄하지 않으며 사용자가 `/suggestions`에서 명시적으로 수락하거나 거부한다.
 
@@ -82,7 +90,19 @@ metadata:
 | `${HERMES_SKILL_DIR}` | 절대 스킬 디렉터리 |
 | `${HERMES_SESSION_ID}` | 활성 세션 ID, 세션이 없으면 변경하지 않음 |
 
-`skills.template_vars: false`로 치환을 끈다. 인라인 셸 ``!`command` ``은 기본으로 꺼져 있고 `skills.inline_shell: true`를 켜면 스킬 로드 중 호스트에서 실행한다. 출력 제한과 실패 표시는 있지만 호스트 명령 실행인 점은 변하지 않는다.
+`skills.template_vars: false`로 치환을 끈다.
+
+인라인 셸 조각(``!`cmd` ``)은 `SKILL.md`의 조각이 승인 없이 호스트에서 실행되므로 기본이 **꺼짐**이다. 켜면 각 조각을 skill 디렉터리를 작업 디렉터리로 실행하고, stdout을 4,000자로 제한하며, timeout이나 0이 아닌 종료는 `[inline-shell error: …]` 짧은 표시로 남기고 로드를 깨뜨리지 않는다.
+
+```yaml
+skills:
+  inline_shell: true
+  inline_shell_timeout: 10   # 조각당 초
+```
+
+**사실, 신뢰 범위:** community hub 설치는 flag를 켜도 조각을 자동 실행하지 않는다. Hub 설치 스캔이 caution이나 dangerous 판정으로 이 DSL을 담은 community skill을 막고, `--force` 설치는 gate가 거부한 것을 다시 무장하지 않으며, `.hub/lock.json`을 읽을 수 없는 skill tree는 고쳐질 때까지 아무것도 확장하지 않는다. Bundled, trusted, 사용자 자신의 skill은 이전처럼 확장한다.
+
+**사실, media 전달:** 응답에 미디어 file의 절대 경로가 그대로 들어 있으면 gateway가 경로를 걷어 내고 file을 native로 전달하며, `[[audio_as_voice]]`는 audio를 voice 말풍선으로 올린다. `[[as_document]]`를 (보통 마지막 줄에) 넣으면 그 응답의 모든 media 경로를 다시 압축한 미리보기 대신 원본 file 첨부로 전달한다. 작은 글씨의 screenshot이나 chart에서 중요하다. 지시문은 전달 전에 제거되고 응답 전체에 적용된다.
 
 **권장 사항:** 비밀에는 `required_environment_variables`만, 비밀이 아닌 설정에는 `config`만 쓴다. 커뮤니티 콘텐츠에 인라인 셸을 켜지 않는다. 동적 셸 보간보다 명시 입력을 받는 스크립트를 선호한다.
 
@@ -175,6 +195,7 @@ print(subprocess.check_output(["git", "log", "--format=%H%x09%s", sys.argv[1]], 
 6. 비밀과 비밀 아닌 설정을 분리 선언하며 값은 프런트매터, 예제, 스크립트에 절대 넣지 않는다.
 7. 무해한 대표 프롬프트로 호출하고 실제 도구 사용과 출력을 본 뒤, 누락 설정·호환 안 되는 플랫폼·필수 도구셋 부재를 시험한다.
 8. 모든 보조 파일을 코드처럼 검토하고 `SKILL.md`가 참조하는 파일만 게시한다.
+9. Routine에서 의존하기 전에 유지보수 자세를 정한다. Curator나 agent가 보관·재작성하면 안 되는 skill은 pin하거나 lock한다. Curator는 background review가 만든 skill만 관리하므로 손으로 쓴 skill과 `/learn` 결과는 이미 그 범위 밖이다.
 
 ## 스킬 탭 게시(확인됨)
 

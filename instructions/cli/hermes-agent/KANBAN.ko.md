@@ -2,15 +2,18 @@
 
 > 영어판: [`KANBAN.md`](KANBAN.md)
 >
-> **조사일:** 2026-08-24, Hermes Agent 공식 문서만 근거로 삼았다. 아래 **사실**은 문서화된 Kanban 동작이고, **권고**는 운영 조언이다. 명령, 설정, 기본값, dashboard surface는 버전에 따라 달라질 수 있으므로 자동화 전에는 `hermes kanban --help`와 연결된 공식 reference를 확인한다.
-> **재검증:** 2026-09-19 — 인용한 출처가 모두 그대로 해석되며, 이 문서가 적은 경로·기본값·명령·기능 목록을 같은 공식 페이지와 표본 대조했다. 위 조사일은 전수 조사 시점으로 유지한다.
+> **조사일:** 2026-11-03. Hermes Agent **v0.22.5**(커밋 `bf0203a794a`, 2026-10-22 배포)에 실린 공식 문서를 근거로 삼았다. 아래 **사실**은 문서화된 Kanban 동작이고, **권고**는 운영 조언이다. 명령, 설정, 기본값, dashboard surface는 버전에 따라 달라질 수 있으므로 자동화 전에는 `hermes kanban --help`와 연결된 공식 reference를 확인한다.
 
-## 1차 출처
+## 출처
 
-- [Kanban — Multi-Agent](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban)
-- [Kanban Tutorial](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban-tutorial)
-- [Kanban worker lanes](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban-worker-lanes)
-- [CLI Commands Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands)
+| 출처 | 제공하는 내용 | 확인 |
+| --- | --- | --- |
+| [Kanban — Multi-Agent](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban) | Board 모델, dispatcher, workspace, CLI 동사, orchestration, dashboard, event reference | 확인 2026-11-03 |
+| [Kanban Tutorial](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban-tutorial) | Solo, fleet, role pipeline, retry 구성의 실제 예 | 확인 2026-11-03 |
+| [Kanban worker lanes](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban-worker-lanes) | Claim TTL, `max_runtime_seconds`, stranded task 탐지 | 확인 2026-11-03 |
+| [Kanban Multi-Gateway Deployment](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban-multi-gateway) | 단일 dispatcher 자세와 profile별 delivery | 확인 2026-11-03 |
+| [CLI Commands Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) | `hermes kanban` 명령 계열 | 확인 2026-11-03 |
+| [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration) | `kanban.*` 기본값, tool-loop guardrail, `hard_stop_enabled` | 확인 2026-11-03 |
 
 ## Kanban이란 무엇인가
 
@@ -41,7 +44,7 @@
 
 ## 핵심 모델
 
-**사실:** Task는 title, 선택 body, assignee profile 하나, 선택 tenant, 선택 idempotency key, 선택 priority/workspace/model/skills, parent/child link, comment, run, event를 가진다. 문서화된 핵심 lifecycle은 `triage → todo → ready → running → review | blocked | done | archived`이고 CLI는 시간 지연/follow-up용 `schedule`도 제공한다.
+**사실:** Task는 title, 선택 body, assignee profile 하나, 선택 tenant, 선택 idempotency key, 선택 priority/workspace/model/skills, parent/child link, comment, run, event를 가진다. 문서화된 status 집합은 `triage`, `todo`, `ready`, `running`, `blocked`, `review`, `done`, `archived`다. `scheduled` status는 없다. 시작 시각은 ready task의 속성(`scheduled_at`)이고 dispatcher는 그 시각이 지날 때까지 그 task를 건너뛴다.
 
 | 개념 | 의미 |
 | --- | --- |
@@ -82,9 +85,13 @@ kanban:
   dispatch_in_gateway: true       # 기본값
   dispatch_interval_seconds: 60   # 기본값
   review_dispatch: true           # 기본값: 배정 reviewer가 bundled sdlc-review를 사용
+  max_in_progress: 4              # 선택: 동시에 running인 task 상한
+  auto_promote_children: true     # 기본값
 ```
 
-**권고:** Database마다 dispatcher는 하나만 운영한다. Legacy standalone daemon을 두 번째 "backup" dispatcher로 쓰지 않는다.
+**사실:** 동시성과 routing을 정하는 key는 `max_in_progress`와 `max_in_progress_per_profile`(둘 다 기본 unset, 즉 무제한), `dispatch_profiles`(여러 Hermes home이 공유하는 board의 home별 claim 허용 목록. Key를 빼면 기존 profile 아무나 허용하고, 빈 값이나 읽을 수 없는 값은 아무것도 claim하지 않는다), `auto_promote_children`(기본 `true`), `default_workdir`(새 task에 적용할 board 단위 작업 directory)다.
+
+**권고:** Database마다 dispatcher는 하나만 운영한다. Legacy standalone daemon(`hermes kanban daemon`, deprecated)을 두 번째 "backup" dispatcher로 쓰지 않는다.
 
 ## Board와 resolution
 
@@ -121,9 +128,15 @@ hermes kanban create "Test auth API" \
 
 **사실:** `--idempotency-key`는 automation create를 deduplicate한다. 같은 key로 다시 생성하면 duplicate 대신 기존 task를 반환한다.
 
-**사실 — 문서화된 충돌:** Feature guide는 `hermes kanban schedule <id> --at <ISO8601>`를 task의 `scheduled_at` 시간을 설정하는 명령으로 문서화하지만, CLI reference는 `schedule <id> "<reason>"`가 작업을 `scheduled` status로 옮긴다고 설명한다. 전용 feature guide의 `--at` 형식을 사용하고 설치 버전의 signature는 `hermes kanban --help`로 확인한다. 추정한 `scheduled` status를 자동화하지 않는다.
+**사실 — 예약 시작:** `hermes kanban schedule <id> --at <ISO8601>`는 task의 `scheduled_at`을 설정하거나 해제하고, `hermes kanban create … --scheduled-at <ISO8601>`는 생성 시점에 정한다. Dispatcher는 시작 시각이 미래인 ready task를 건너뛰고 그 시각 이후 첫 tick에 집어 간다. 이전 release는 `schedule <id> "<reason>"`을 status 전환으로 문서화했지만, 현재 문서에는 `scheduled` status가 없으므로 `--at` 형식만 자동화한다.
 
-**사실:** 사람/automation의 핵심 operation에는 `list`, `show`, `assign`, `link`, `unlink`, `claim`, `comment`, `complete`, `block`, `request-review`, `request-changes`, `reopen-review`, `schedule`, `unblock`, `archive`, `tail`, `runs`, `dispatch`, `context`, `specify`, `decompose`, `gc`, board 명령이 있다. 설치된 flag는 `hermes kanban --help`로 확인한다.
+**사실 — PR 완료 계약:** 생성 시 `--completion-contract OWNER/REPO`로 PR 작업을 선언하거나, 이미 있는 작업이면 `github.com/OWNER/REPO/pull/123` 형태(`https://` scheme 포함)의 정확한 PR URL을 넘긴다. `kanban_create`도 같은 `completion_contract` field를 받는다. 기존 card와 선언하지 않은 card의 기본값은 `local-only`다. Task body에 적은 산문 URL은 정책이 아니다.
+
+**사실:** 사람/automation의 핵심 operation에는 `init`, `create`, `list`, `show`, `assign`, `reassign`, `edit`, `promote`, `link`, `unlink`, `claim`, `heartbeat`, `comment`, `complete`, `block`, `unblock`, `request-review`, `request-changes`, `reopen-review`, `schedule`, `archive`, `tail`, `watch`, `runs`, `assignees`, `log`, `stats`, `diagnostics`, `dispatch`, `context`, `specify`, `decompose`, `notify-subscribe`, `notify-list`, `notify-unsubscribe`, `gc`, board 명령이 있다. `complete`, `block`, `unblock`, `archive`, `reopen-review`는 id를 여러 개 받는 bulk 동사다. `promote`는 `todo`/`blocked` task를 `ready`로 올리는 복구 동작이다. 설치된 flag는 `hermes kanban --help`로 확인한다.
+
+**사실:** `--max-runtime 30m|2h|1d|<seconds>`는 run당 wall-clock 상한을, `--max-retries N`은 task별 failure circuit breaker를 덮어쓴다. `hermes kanban dispatch --dry-run`은 ready card가 왜 spawn되지 않는지 `Guarded (<reason>)`, `rate_limited`, `skipped_locked`, `memory_pressure` 항목으로 알려 준다. Respawn guard는 auth/quota/429 실패 뒤, 최근 성공 뒤, 최근 comment가 열린 PR을 가리킬 때 card를 붙잡는다. PR comment 뒤에 기록된 handoff, 예를 들어 운영자의 재배정은 그 card에 적힌 profile에 대해 `active_pr` hold를 푼다.
+
+**사실 — multi-gateway 자세:** Dispatcher를 소유하는 gateway는 하나다. 소유 gateway는 `kanban.dispatch_in_gateway: true`를 유지하고 나머지 profile gateway는 `false`로 둔다. Delivery는 profile이 소유한다. 하나의 database에 dispatcher 두 개를 붙이는 구성은 지원되지 않는다.
 
 ## Workspace와 attachment
 
@@ -197,7 +210,9 @@ metadata: changed_files, verification, dependencies, retry_notes, residual_risk
 
 **사실:** Kanban의 문서화된 모델은 single-host trusted-local-user다. Remote multi-tenant security service, sandbox, worker가 모든 local directory·mounted credential·remote backend resource에 접근할 수 있는 권한이 아니다.
 
-**사실 — approval 주의:** 공식 자료는 Kanban 전용 approval gate를 문서화하지 않으며 dispatcher가 spawn한 non-interactive worker 안에서 일반 tool approval이 어떻게 동작하는지도 말하지 않는다. Unattended gateway, cron, Kanban worker에는 기본값 `false`인 `hard_stop_enabled: true`를 권장한다. 기록되지 않은 approval 동작을 auto-deny 또는 auto-approve라고 가정하지 않는다.
+**사실 — approval 주의:** 공식 자료는 Kanban 전용 approval gate를 문서화하지 않으며 dispatcher가 spawn한 non-interactive worker 안에서 일반 tool approval이 어떻게 동작하는지도 말하지 않는다. 기록되지 않은 approval 동작을 auto-deny 또는 auto-approve라고 가정하지 않는다.
+
+**사실 — worker에 실제로 적용되는 guardrail 기본값:** `tool_loop_guardrails.non_interactive_hard_stop_enabled`는 기본 `true`라서 unattended gateway/cron 계열 session은 같은 실패 호출이 반복되면 hard stop으로 끊고, CLI, TUI, Desktop, ACP, `api_server` session은 경고만 남긴다. `tool_loop_guardrails.hard_stop_enabled`는 기본 `false`이며 모든 platform으로 hard stop을 넓히는 용도다. `approvals.cron_mode`와 `approvals.unattended_mode`(둘 다 기본 `deny`)는 headless run이 위험 명령 prompt를 만났을 때 무엇을 할지 정한다.
 
 ## 운영자 체크리스트
 

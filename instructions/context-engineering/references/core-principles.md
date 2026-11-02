@@ -28,6 +28,8 @@ An instruction that sits too low becomes an edge-case dump; one that sits too hi
 [pass/fail criteria]
 ```
 
+Anthropic describes the same target as the "Goldilocks zone" between hardcoded brittle logic and vague guidance that "falsely assumes shared context," and pairs it with a sizing rule: aim for "the minimal set of information that fully outlines your expected behavior," noting that "minimal does not necessarily mean short" (checked 2026-11-03). Minimal means every sentence carries a signal, not that the document is short.
+
 ## 2. Context is a budget
 
 Context is not an unlimited knowledge store. Every sentence that gets read can conflict with other evidence or push out something important.
@@ -39,6 +41,10 @@ Context is not an unlimited knowledge store. Every sentence that gets read can c
 | Compression | Compress into tables, checklists, and examples |
 | Separation | Separate project rule, runtime quirk, and task prompt |
 | Compaction safety | For long work, record decisions, verification, and remaining tasks in a separate file |
+
+This is measured, not assumed. Chroma tested 18 models from four families and found that performance degrades as input length grows even when task difficulty is held constant. Adding a single topically related distractor already hurt accuracy, and adding four compounded it; models performed better on shuffled haystacks than on coherently structured ones, so relevance and ordering do not rescue a long prompt (2025-07-14). The practical reading: a longer window buys room, not accuracy, and every low-signal token spends attention that the load-bearing rule needed.
+
+The levers that act on this budget — clear, summarize, move out, isolate — are specified in [`context-management.md`](context-management.md).
 
 ## 3. Explicit contract
 
@@ -81,8 +87,18 @@ Define -> Test -> Diagnose -> Patch -> Re-run -> Document
 | Evidence | Evidence before assertion |
 | Eval loop | Prove improvement with tests |
 
+## Sources
+
+> Sources checked 2026-11-03.
+
+| Claim | Source | Published / updated |
+|---|---|---|
+| Right-altitude definition, "minimal does not necessarily mean short", compaction and note-taking rationale | <https://www.anthropic.com/research/effective-context-engineering-for-ai-agents> | 2025-09-29, revised 2026-10-18 |
+| Input length degrades performance across 18 models with difficulty held constant; distractors compound; coherent haystacks score worse than shuffled ones | <https://www.trychroma.com/research/context-rot> | 2025-07-14 |
+| Compaction, clearing, and isolation levers with per-vendor parameters | [`context-management.md`](context-management.md) | checked 2026-11-03 |
+
 ## Related
 
 - [`prompt-authoring.md`](prompt-authoring.md): the role prompt authoring template
-- Official sources follow the Sources table in [`../CONTEXT_ENGINEERING.md`](../CONTEXT_ENGINEERING.md) (checked 2026-07-29; link resolution re-checked 2026-09-19).
-- Local re-verification cache (untracked, covered by `.gitignore`): `.hyper/research/2026-06-02-official-llm-prompt-instructions-update.md`
+- [`context-management.md`](context-management.md): the mechanisms that spend or reclaim the budget
+- Official sources follow the Sources table in [`../CONTEXT_ENGINEERING.md`](../CONTEXT_ENGINEERING.md) (checked 2026-07-29 for instruction surfaces; link resolution re-checked 2026-11-03).

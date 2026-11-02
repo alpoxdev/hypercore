@@ -23,17 +23,19 @@ One iteration tests one falsifiable hypothesis. A hypothesis may touch several f
 
 ## Evidence snapshot
 
-> Sources checked 2026-08-27. Upstream behavior is pinned to the revisions below; floating repository pages are discovery aids, not evidence of a stable interface.
+> Sources checked 2026-11-03. Upstream behavior is pinned to the revisions below; floating repository pages are discovery aids, not evidence of a stable interface.
 
-- [Karpathy `autoresearch` at `228791f`](https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117) demonstrates a narrow research loop: the agent edits only `train.py`, trains for a fixed five-minute **training** budget excluding startup and compilation, minimizes `val_bpb`, and logs keep/discard/crash outcomes. Its approximately 12 experiments/hour and 100 overnight are estimates, not throughput guarantees. Results are platform-specific.
-- [`uditgoenka/autoresearch` v2.2.2 at `050e30d`](https://github.com/uditgoenka/autoresearch/tree/050e30dc4ba0974b03f2873111b9901ec3211390) exposes 14 commands. Its nine named Claude Code hook programs cover defense-in-depth safety, context, lifecycle, quality, and notification; Codex and OpenCode do not have hook parity. Chain commands write `handoff.json`; iteration analysis uses `*-results.tsv`.
-- [OpenAI skill evaluation guidance](https://developers.openai.com/blog/eval-skills) distinguishes outcome, process, style, and efficiency. These are evaluation dimensions, not a mandatory scalar score or a contract for the unrelated legacy OpenAI Evals platform.
+- [Karpathy `autoresearch` at `228791f`](https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117), still the latest commit (2026-03-26), demonstrates a narrow research loop: the agent edits only `train.py`, trains for a fixed five-minute wall-clock **training** budget excluding startup and compilation, minimizes `val_bpb`, and logs `keep`/`discard`/`crash` rows to `results.tsv`. `prepare.py` stays read-only and holds the evaluation, so the evaluator sits outside the writable surface. Its approximately 12 experiments/hour and 100 overnight are estimates, and it states that results are not comparable across compute platforms.
+- [`uditgoenka/autoresearch` v2.3.0 at `7bddd05`](https://github.com/uditgoenka/autoresearch/tree/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa) (released 2026-10-31) exposes 14 commands and is bounded by default: every command has a default iteration count, and `Iterations: unlimited` is opt-in. Hook guardrails ship for Claude Code (native hooks) and pi (extension events); OpenCode, Codex, and Muse ship the skill, runtime, and install surface without hook parity. Chain commands write `handoff.json`; iteration analysis reads `*-results.tsv`.
+- [OpenAI skill evaluation guidance](https://developers.openai.com/blog/eval-skills), titled “Testing Agent Skills Systematically with Evals”, separates outcome, process, style, and efficiency goals and advises keeping the check list small and must-pass. These are evaluation dimensions, not a mandatory scalar score or a contract for the unrelated legacy OpenAI Evals platform.
 
 Runtime invocation syntax is not portable:
 
 - Claude Code: `/autoresearch` and `/autoresearch:<name>`
 - OpenCode: `/autoresearch_<name>`
 - Codex: `$autoresearch <subcommand>`, for example `$autoresearch debug`
+- pi: prompt templates with underscore names, `/autoresearch_debug`
+- Muse: a keyword subcommand, `autoresearch debug`
 
 These upstream interfaces are evidence and examples. Repository authority, safety rules, and explicit user instructions remain controlling.
 
@@ -74,6 +76,17 @@ SideEffects: "local-only"
 
 Do not copy this measurement profile mechanically. Exact deterministic checks, cold-start measurements, noisy performance benchmarks, stochastic model runs, and subjective judges need different protocols. See [`references/config-and-metrics.md`](references/config-and-metrics.md).
 
+## Prior art, 2024-2026
+
+Published systems run this loop at larger search width rather than with a different shape. AlphaEvolve keeps a database of scored programs behind one or more automated evaluators; ShinkaEvolve keeps an archive and makes sample efficiency its central claim; the Darwin Gödel Machine mutates the agent's own scaffolding and validates each change on coding benchmarks. Research benchmarks normalize by budget, not by score: RE-Bench reverses its agent-versus-expert ranking between a two-hour and a 32-hour budget, so a score without its time and compute budget is not a measurement. None of these provide peer-reviewed evidence of unattended, production-scale discovery. Numbers, grades, and the limits of each claim are in [`references/prior-art-and-benchmarks.md`](references/prior-art-and-benchmarks.md).
+
+## Upstream defaults this standard does not adopt
+
+- The upstream program file tells the agent never to stop and never to ask whether to continue: the loop runs until a human interrupts it. That is defensible for a disposable branch with a human-owned harness, and it is not a project default. This standard requires a stop predicate and a budget before the first run.
+- The same file discards a losing candidate by rewinding the branch with `git reset`. That is safe only because the branch was created for the run. In a shared workspace the equivalent command destroys user work, so restoration stays compare-before-restore over owned paths.
+- Upstream describes its hooks as defense in depth and not a security sandbox. Local hook or extension coverage is never an authorization boundary.
+- An upstream `--auto` mode that skips its own checklist still does not approve actions this project gates; see the authorization matrix in [`references/safety-and-observability.md`](references/safety-and-observability.md).
+
 ## Command-family interpretation
 
 The command family is a set of reusable loop archetypes, not one universal command namespace:
@@ -81,9 +94,12 @@ The command family is a set of reusable loop archetypes, not one universal comma
 - Plan, Debug, Fix, Reason, Probe, Learn, Predict, Improve
 - Scenario discovery and saturation
 - Iteration analytics over recorded results
+- Behavioral evals over artifacts and agent traces
 - Regression verification and security review
 - Ship readiness and separately approved finalization
-- Bare-command routing between classic, orchestrated, and guided setup modes
+- Bare-command routing among classic, goal-directed orchestration, and guided setup modes
+
+Two properties of the current upstream surface matter for design: every command carries a default iteration count, so an unbounded run is an explicit opt-in rather than the default, and the bare command can classify a plain-language goal, derive a success predicate, confirm it once, and then loop across subcommands without manual chaining.
 
 See [`references/command-family.md`](references/command-family.md). Scenario discovery does not prove implementation coverage; retained scenarios must become project-owned tests or acceptance checks.
 
@@ -96,6 +112,8 @@ See [`references/command-family.md`](references/command-family.md). Scenario dis
 - Detached `HEAD` is valid for read-only or intentionally disposable work. Retained state needs a verified run-owned ref or immutable snapshot.
 - Irreversible external actions do not belong inside the iterative loop. Move an exact approved action to a separate finalization gate with target verification and post-checks.
 - A metric improvement never compensates for a failed, unavailable, or malformed mandatory guard.
+- A frontier model can raise a score by editing the tests or the scoring code; a rising metric with shrinking guard coverage is a tampering signal, not progress ([METR, 2025-06-05](https://metr.org/blog/2025-06-05-recent-reward-hacking/), checked 2026-11-03).
+- When the loop is allowed to modify its own harness, the evaluator, guards, and log must stay outside the mutable set, and the mutation surface must be reviewable by a human.
 
 See [`references/safety-and-observability.md`](references/safety-and-observability.md).
 
@@ -105,9 +123,12 @@ See [`references/safety-and-observability.md`](references/safety-and-observabili
 - [`references/config-and-metrics.md`](references/config-and-metrics.md)
 - [`references/command-family.md`](references/command-family.md)
 - [`references/safety-and-observability.md`](references/safety-and-observability.md)
+- [`references/prior-art-and-benchmarks.md`](references/prior-art-and-benchmarks.md)
 - [`../context-engineering/CONTEXT_ENGINEERING.md`](../context-engineering/CONTEXT_ENGINEERING.md)
 - [`../harness-engineering/HARNESS_ENGINEERING.md`](../harness-engineering/HARNESS_ENGINEERING.md)
+- [`../loop-engineering/LOOP_ENGINEERING.md`](../loop-engineering/LOOP_ENGINEERING.md) — general loop design one level above this metric-driven loop: loop types, stop conditions, cost, runtime primitives
 - [`../validation/index.md`](../validation/index.md)
 - [`../sourcing/reliable-search.md`](../sourcing/reliable-search.md)
+- Repository implementation of this contract: [`../../skills/autoresearch-skill/SKILL.md`](../../skills/autoresearch-skill/SKILL.md)
 
 Local research artifacts may exist in ignored runtime directories, but this document does not claim a specific cache path is ignored or portable. The pinned URLs and repository evidence above are the source record.

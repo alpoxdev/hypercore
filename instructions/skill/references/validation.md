@@ -57,7 +57,7 @@ Every skill leaves at least the following validation note.
 
 Composition, not counts:
 
-The set must cover each of these groups. How many rows each one gets is not fixed here — the source does not state a validated count, so this file states a composition requirement instead.
+The set must cover each of these groups. How many rows each one gets is not fixed here — the source does not state a validated count, so this file states a composition requirement instead. The source's own starting point is small: **2-3 test cases** before the loop begins, and 10-20 queries on the description-optimization side.
 
 - should-trigger
 - should-not-trigger
@@ -89,10 +89,11 @@ A skill whose artifact matters includes the following.
 
 These rules are normative.
 
-- SK-V-1: Run each case **by default** twice — once with the skill and once without it (or against a previous version). Exception: when the no-skill condition cannot produce the artifact at all — a deterministic skill such as a formatter or a schema checker — do not run it; record that fact instead. Do not force a ritual that adds no value (exception: deterministic skill).
+- SK-V-1: Run each case **by default** twice — once with the skill and once without it (or against a previous version). Exception: when the no-skill condition cannot produce the artifact at all — a deterministic skill such as a formatter or a schema checker — do not run it; record that fact instead.
 - SK-V-2: When improving an existing skill, use a **snapshot of the previous version** as the baseline instead of the no-skill condition. Snapshot the skill folder before editing and point at that snapshot.
 - SK-V-3: Do not claim the skill improved **without a baseline** to compare against.
 - SK-V-4: Remove or replace any assertion that passes in **both** conditions — it does not reflect the skill's value and only inflates the pass rate. An assertion that always **fails** in both conditions is a subject for investigation, not deletion.
+- SK-V-5: Read the outputs, not only the grades, and record a per-case human note (`feedback.json` beside the eval directories). A specific complaint ("the chart has no axis labels") is actionable; "looks bad" is not; an empty string means the case passed review. The next iteration works from the complained-about cases.
 
 ## 5. Workflow / loop eval design
 
@@ -151,6 +152,8 @@ Required records:
 - Deterministic verifier or LLM judge rubric
 - Known leakage, weak oracle, and contamination caveats
 
+A worked example of the paired design exists and is worth reading before making a utility claim: SWE-Skills-Bench pins each skill to a repository commit, derives requirements, builds executable verifiers, and reports a per-skill paired delta. Its result — 92 of 98 skills with no statistically significant effect, and an average pass ratio moving from 76.6% to 76.9% — is the kind of answer a skill eval should be able to produce, and it is a warning against assuming a skill helps (<https://arxiv.org/abs/2603.15401>, published 2026-03-16).
+
 ## 8. Safety eval design
 
 A safety eval checks that risky actions are gated without blocking normal work.
@@ -199,16 +202,30 @@ Do not call it complete if any of the following fails. [`../SKILL_AUTHORING.md`]
 - The eval has only happy paths and no negative, boundary, source, or safety cases
 - A benchmark or performance claim lacks release, scaffold, verifier, and contamination caveats
 
+## 12. Tooling that runs this loop
+
+Two tools implement the layout and comparisons described above, which is why the repository can adopt the file names rather than inventing them.
+
+| Tool | What it does | What it requires |
+|---|---|---|
+| Anthropic `skill-creator` (Skill / plugin) | Splits the eval set, runs each case in a fresh session or subagent, grades assertions with evidence, aggregates `benchmark.json`, runs a blind A/B between two versions, and proposes description edits | Test cases in `evals/evals.json` inside the skill directory |
+| `claude plugin eval` | Runs each prompt with and without the plugin in isolated sessions, scores with graders you define, and exits non-zero below a threshold so CI can gate on it | A plugin; `tool_used: Skill` graders to measure triggering |
+
+Either way, a fresh session per run is mandatory: leftover context from authoring the skill masks gaps in the written instructions (<https://code.claude.com/docs/en/skills>, checked 2026-11-03).
+
 ## Sources
 
-> Links checked 2026-07-29; link resolution re-checked 2026-09-20. Next re-verification 2026-10-29.
+> Links re-read and re-checked 2026-11-03.
 
 | Claim | Source |
 |---|---|
 | The with/without baseline as the core pattern, using a previous-version snapshot as the baseline, not claiming improvement without a baseline, and removing assertions that pass in both conditions — the basis of `SK-V-1` to `SK-V-4` | <https://agentskills.io/skill-creation/evaluating-skills> |
+| Human review beside the grades, specific per-case feedback, and the 2-3 case starting point — the basis of `SK-V-5` | <https://agentskills.io/skill-creation/evaluating-skills> |
 | Repetition count, threshold, and trigger rate as the trigger metric | <https://agentskills.io/skill-creation/optimizing-descriptions> |
 | The four invocation modes and the prompt-set composition | <https://developers.openai.com/blog/eval-skills> |
+| The paired per-skill delta design, the 92-of-98 result, and the 76.6% to 76.9% average | <https://arxiv.org/abs/2603.15401> |
+| `skill-creator`, `evals/evals.json`, blind A/B comparison, `claude plugin eval`, the fresh-session rule, and the CI exit code | <https://code.claude.com/docs/en/skills> |
 
 ### Evidence grade
 
-The baseline rules above are `PRIMARY` and come from the evaluating-skills page, which names the with/without pair as the **core pattern** rather than an option. This file deliberately states **no normative case count**: no source consulted states a validated one, so a composition requirement takes its place.
+The baseline rules above are `PRIMARY` and come from the evaluating-skills page, which names the with/without pair as the **core pattern** rather than an option. This file deliberately states **no normative case count**: no source consulted states a validated one, so a composition requirement takes its place; the 2-3 figure is quoted as the source's own starting point. The benchmark example is a single 2026 paper, presented as a design to copy rather than as a result that generalizes to every skill.

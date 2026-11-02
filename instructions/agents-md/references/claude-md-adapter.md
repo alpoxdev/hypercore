@@ -13,7 +13,7 @@ The default answer is **one canonical `AGENTS.md`, and a `CLAUDE.md` only for a 
 `AGENTS.md` has broad adoption, and Claude Code reads it directly from v2.1.277 on, so a repository that ships only `AGENTS.md` is no longer invisible to Claude. The question survives for two narrower reasons:
 
 - Under the default **Project instructions** setting, a `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` at or above the working directory makes Claude read the `CLAUDE.md` files instead of `AGENTS.md`.
-- Some sessions cannot read `AGENTS.md` at all: a version before v2.1.277, a session that does not fetch feature flags (Bedrock and other third-party providers, telemetry disabled), the first session after an upgrade, or a session with `disableAllHooks` or `allowManagedHooksOnly` set, or with the built-in `agents-md` plugin disabled.
+- Some sessions cannot read `AGENTS.md` at all: a version before v2.1.277, a session where the built-in reader plugin was disabled with `/plugin`, or occasionally the first session after upgrading from v2.1.276 or earlier. The old provider and telemetry caveat is historical — "Before v2.1.281, some sessions, such as those on Amazon Bedrock or with telemetry disabled, read CLAUDE.md files only. On those versions, update Claude Code."
 
 For those cases the documented fallback is the import, and a repository that ships both files still risks the two drifting apart. Both failure modes are worse than picking a strategy deliberately. See [`discovery-and-precedence.md`](discovery-and-precedence.md) §2 for the full behavior.
 
@@ -35,9 +35,9 @@ Strategy E is a maintenance liability. Every shared rule now has two homes and n
 
 ### This repository
 
-`hypercore` uses **D**: `CLAUDE.md` is a thin adapter that starts with `@AGENTS.md`, so the canonical contract loads through the import, and it adds only Claude-specific rules below it. The tradeoff is deliberate and worth understanding — the import guarantees the contract is loaded but pays for it every session, where a prose pointer would cost nothing up front while remaining advisory, so the agent might proceed without reading the canonical file.
+`hypercore` currently runs **A**: `AGENTS.md` is tracked, and no `CLAUDE.md` exists (it is gitignored, and absent as of 2026-11-03), so Claude Code reads the canonical file natively with nothing to maintain in parallel.
 
-The second variation matters more: `AGENTS.md` is version-controlled while `CLAUDE.md` is gitignored, so `CLAUDE.md` is a *local clone adapter* rather than a shared artifact. That makes "shared contract stays canonical in `AGENTS.md`" not merely stylistic — anything written only into `CLAUDE.md` does not exist for anyone else, and cannot be reviewed.
+If a genuinely Claude-only rule appears, the move is **D**, not E: a `CLAUDE.md` that starts with `@AGENTS.md` and adds only that rule below the import. Two facts shape the choice. The import guarantees the contract loads but pays for it every session, where a prose pointer costs nothing up front yet stays advisory, so the agent may proceed without reading the canonical file. And because `CLAUDE.md` is gitignored here while `AGENTS.md` is version-controlled, `CLAUDE.md` would be a *local clone adapter*, not a shared artifact — which makes "shared contract stays canonical in `AGENTS.md`" a correctness rule, not a style preference: anything written only into `CLAUDE.md` does not exist for anyone else and cannot be reviewed.
 
 ---
 
@@ -89,9 +89,9 @@ An adapter should be far under that — typically a stub plus a short runtime se
 
 Anthropic's stated escape hatch for growth is not a longer file:
 
-> "Keep CLAUDE.md under 200 lines. Move reference material to skills, which load on-demand."
+> "Keep CLAUDE.md under 200 lines. Move reference material to skills, which load on demand."
 
-Note also that the 200-line figure is guidance, not truncation — `CLAUDE.md` files "are loaded in full regardless of length". Exceeding it costs adherence silently rather than dropping content visibly, which is why nothing warns you.
+The 200-line figure is guidance, not truncation. The actual limit is much higher and binary: a file that loads at launch is read whole "as long as the file is 4 MiB or smaller", and "Claude Code skips a file over 4 MiB and loads none of it". Exceeding 200 lines therefore costs adherence silently rather than dropping content visibly, which is why nothing warns you; `/doctor` will propose cuts for a checked-in file.
 
 ---
 
@@ -124,11 +124,11 @@ Separately, Claude Code maintains automatic per-project memory at `~/.claude/pro
 
 | Source | URL | Checked |
 |---|---|---|
-| Claude Code memory | <https://code.claude.com/docs/en/memory> | 2026-09-19 |
-| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 2026-09-19 |
-| Claude 5 context engineering | <https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models> | 2026-09-19 |
-| AGENTS.md standard | <https://agents.md/> | 2026-09-19 |
-| GitHub Copilot response customization | <https://docs.github.com/en/copilot/concepts/prompting/response-customization> | 2026-09-19 |
+| Claude Code memory | <https://code.claude.com/docs/en/memory> | 2026-11-03 |
+| Claude Code features overview | <https://code.claude.com/docs/en/features-overview> | 2026-11-03 |
+| Claude 5 context engineering | <https://claude.dev/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models/> | 2026-11-03 |
+| AGENTS.md standard | <https://agents.md/> | 2026-11-03 |
+| GitHub Copilot custom instructions | <https://docs.github.com/en/copilot/concepts/prompting-and-context/custom-instructions> | 2026-11-03 |
 
 ## Related documents
 
