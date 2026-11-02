@@ -220,7 +220,7 @@ baseline 계획이 명시된 뒤에는:
 
 `SKILL.md`는 trigger, 맡은 일, mutation discipline, stop condition에 집중합니다. Schema, prompt pack, upstream note, artifact detail, 긴 review, raw eval output, narrative analysis는 직접 연결된 support file 또는 `details/`에 둡니다.
 
-`dashboard.html`과 `results.js`는 `scripts/render-dashboard.mjs`로 생성하며, generated dashboard output은 직접 편집하지 않습니다. 사람이 읽는 run description, score rationale, changelog note, dashboard text는 사용자가 다른 언어를 요청하지 않는 한 한국어로 유지합니다.
+`dashboard.html`과 `results.js`는 `bash scripts/render-dashboard.sh <artifact-dir>`로 생성하며, generated dashboard output은 직접 편집하지 않습니다. 사람이 읽는 run description, score rationale, changelog note, dashboard text는 사용자가 다른 언어를 요청하지 않는 한 한국어로 유지합니다.
 
 대상 스킬 구조가 약하면 새 장치 추가보다 duplication 삭제, trigger 정리, reusable policy의 `rules/` 이동, detailed knowledge의 `references/` 이동을 우선합니다.
 

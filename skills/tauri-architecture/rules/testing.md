@@ -75,7 +75,7 @@ bash scripts/check-sources.sh --offline
 bun run --cwd scripts verify
 ```
 
-The repository's skill-corpus validator is the structural gate; it is a repository-maintenance command, so this file names it instead of embedding a sibling skill's path: `validate-skills-corpus.mjs --root skills --only tauri-architecture --json`. The JSONL parse is a fixture-integrity gate, not behavioral execution. This package has no package-specific behavior runner; inspect the stable positive, negative, boundary, missing-context, unsafe-action, source-guard, and regression cases in the fixture instead of claiming they executed. Do not invent a validator or treat fixture presence as proof of behavior.
+The repository's skill-corpus validator is the structural gate; it is a repository-maintenance command, so this file names it instead of embedding a sibling skill's path: `validate-skills-corpus.sh --root skills --only tauri-architecture --json`. The JSONL parse is a fixture-integrity gate, not behavioral execution. This package has no package-specific behavior runner; inspect the stable positive, negative, boundary, missing-context, unsafe-action, source-guard, and regression cases in the fixture instead of claiming they executed. Do not invent a validator or treat fixture presence as proof of behavior.
 
 ## Readback Checklist
 

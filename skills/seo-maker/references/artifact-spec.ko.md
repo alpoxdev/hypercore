@@ -29,7 +29,8 @@ SEO 감사 실행의 결과 워크스페이스를 만들거나 검토할 때 이
 정식 생성 자산:
 
 - template: `skills/seo-maker/assets/dashboard-template.html`
-- renderer: `skills/seo-maker/scripts/render-dashboard.mjs`
+- renderer: `skills/seo-maker/scripts/render-dashboard.sh`
+- renderer runtime: bash 3.2+와 `jq`
 
 ## `results.json`
 
@@ -243,7 +244,7 @@ SEO 감사 실행의 결과 워크스페이스를 만들거나 검토할 때 이
 window.__SEO_RESULTS__ = { /* results.json과 동일한 내용 */ };
 ```
 
-`render-dashboard.mjs`가 `dashboard.html`과 같은 `results.json` payload에서 이 파일을 생성한다. 손으로 유지하는 파일이 아니므로 `results.json`이 바뀌면 렌더러를 다시 실행한다. 손으로 고친 내용은 덮어써진다.
+`render-dashboard.sh`가 `dashboard.html`과 같은 `results.json` payload에서 이 파일을 생성한다. 손으로 유지하는 파일이 아니므로 `results.json`이 바뀌면 렌더러를 다시 실행한다. 손으로 고친 내용은 덮어써진다.
 
 ## `dashboard.html`
 
@@ -302,7 +303,7 @@ Canonical 단계 순서: `scope` → `measurement` → `technical` → `platform
 3. 각 phase 완료 시 `results.json`에 findings를 추가한다.
 4. 모든 phase 완료 후 `status`를 `complete`로 설정하고 `overall_grade`를 계산한다.
 4-1. Optimize mode에서는 `score_history`, `best_run`, `validator`를 채우고 최고 점수 또는 plateau 근거를 기록한다.
-5. `render-dashboard.mjs`를 실행해 `dashboard.html`과 `results.js`를 생성한다.
+5. `bash scripts/render-dashboard.sh <artifact-dir>`를 실행해 `dashboard.html`과 `results.js`를 생성한다.
 6. `report.md`와 `sources.md`도 작성한다.
 7. 런타임이 안전하면 `dashboard.html`을 브라우저에서 연다.
 
@@ -335,7 +336,7 @@ overall_score = Σ(category_score × category_weight) / Σ(category_weight)
 ### 렌더 순서
 
 ```bash
-skills/seo-maker/scripts/render-dashboard.mjs .hyper/seo-maker/my-site
+bash skills/seo-maker/scripts/render-dashboard.sh .hyper/seo-maker/my-site
 open .hyper/seo-maker/my-site/dashboard.html
 ```
 

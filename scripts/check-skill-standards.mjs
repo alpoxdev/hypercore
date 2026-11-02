@@ -14,8 +14,8 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const validatorPath = join(repoRoot, "skills/skill-maker/scripts/validate-skill-maker.mjs");
-const nodeBinary = "node";
+const validatorPath = join(repoRoot, "skills/skill-maker/scripts/validate-skill-maker.sh");
+const bashBinary = "bash";
 const MAX_BUFFER = 64 * 1024 * 1024;
 const DEFAULT_ROOT = "skills";
 const DEFAULT_BASELINE = "scripts/fixtures/skill-standards/baseline.json";
@@ -129,7 +129,7 @@ function listSkills(root) {
 function runValidator(skillDir) {
   let stdout = "";
   try {
-    stdout = execFileSync(nodeBinary, [validatorPath, "--root", skillDir, "--require-self-containment", "--json"], {
+    stdout = execFileSync(bashBinary, [validatorPath, "--root", skillDir, "--require-self-containment", "--json"], {
       cwd: repoRoot,
       encoding: "utf8",
       maxBuffer: MAX_BUFFER,

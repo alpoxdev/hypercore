@@ -1,6 +1,6 @@
 # [이니셔티브 이름] 기획 다이어그램
 
-> 시각 기획 맵의 canonical source입니다. `diagram.data.json`과 동기화하고 `scripts/render-planning-map.mjs`로 `diagram.svg`를 렌더링합니다.
+> 시각 기획 맵의 canonical source입니다. `diagram.data.json`과 동기화하고 `bash scripts/render-planning-map.sh`로 `diagram.svg`를 렌더링합니다.
 
 ## 패키지 링크
 

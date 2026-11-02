@@ -15,7 +15,7 @@ Korean mirror: [`AGENTS.ko.md`](AGENTS.ko.md).
 
 ## Project Map
 
-- `skills/`: single source of truth for distributed skills. Each `SKILL.md` is the canonical English contract and `SKILL.ko.md` is its Korean translation.
+- `skills/`: single source of truth for distributed skills. Each `SKILL.md` is the canonical English contract and `SKILL.ko.md` is its Korean translation. Bundled skill scripts are bash (bash 3.2+, POSIX tools, `jq` for JSON) and run as `bash <script>`.
 - `instructions/`: shared context, harness, sourcing, validation, CLI, and skill-authoring guidance. Markdown is maintained as English/Korean pairs.
 - `scripts/`: Bun-based skill validators, source checks, tests, and fixtures.
 - `cli/`: pnpm workspace for `@kood/*` CLI packages.
@@ -34,6 +34,7 @@ Read only the guidance needed for the current task. Do not load both language ve
 - For completion evidence and risk-matched checks, read [`instructions/validation/index.md`](instructions/validation/index.md).
 - For runtime-specific behavior, read [`instructions/cli/README.md`](instructions/cli/README.md) and only the applicable runtime profile.
 - For context, delegation, or harness behavior, use the applicable documents under `instructions/context-engineering/` and `instructions/harness-engineering/`.
+- For autonomous agent loops (goal-, time-, or event-driven repetition with stop conditions), read [`instructions/loop-engineering/LOOP_ENGINEERING.md`](instructions/loop-engineering/LOOP_ENGINEERING.md); for graph-structured multi-step or multi-agent workflows, read [`instructions/graph-engineering/GRAPH_ENGINEERING.md`](instructions/graph-engineering/GRAPH_ENGINEERING.md).
 
 Keep essential scope, authority, safety, and completion rules in this file. Link specialized procedures instead of growing the always-loaded contract.
 
@@ -55,7 +56,7 @@ Run commands from the repository root unless stated otherwise.
 
 ```bash
 bun run --cwd scripts verify
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json
+bash skills/skill-tester/scripts/validate-skills-corpus.sh --root skills --only <skill-name> --json
 bash scripts/check-sources.sh --offline
 pnpm -C cli build
 pnpm -C cli test

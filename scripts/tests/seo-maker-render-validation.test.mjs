@@ -3,7 +3,7 @@
 /**
  * seo-maker dashboard renderer structure gate (plan todo 6).
  *
- * `render-dashboard.mjs` reads an untrusted `results.json`, so it must reject a
+ * `render-dashboard.sh` reads an untrusted `results.json`, so it must reject a
  * structurally invalid payload through its existing `fail()` path (exit 1)
  * before it writes anything, and it must leave a previously rendered output
  * pair byte-identical when it does. Unknown extra keys stay allowed (K9).
@@ -23,7 +23,7 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const rendererPath = process.env.SEO_MAKER_RENDER_DASHBOARD
   ? resolve(process.env.SEO_MAKER_RENDER_DASHBOARD)
-  : join(root, "skills/seo-maker/scripts/render-dashboard.mjs");
+  : join(root, "skills/seo-maker/scripts/render-dashboard.sh");
 const templatePath = join(root, "skills/seo-maker/assets/dashboard-template.html");
 
 const PRIOR_DASHBOARD = "prior dashboard\n";
@@ -128,7 +128,7 @@ function sha256(text) {
  */
 function runRenderer(dir) {
   const result = Bun.spawnSync({
-    cmd: [process.execPath, rendererPath, dir],
+    cmd: ["bash", rendererPath, dir],
     env: { ...process.env, NO_COLOR: "1" },
     stdout: "pipe",
     stderr: "pipe",

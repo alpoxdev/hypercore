@@ -56,7 +56,7 @@ When official Vite/TanStack Router guidance and Hypercore conventions differ, en
 | Tools | Use local search/read/edit/validation commands; use current official docs when API drift matters; gate broad route migrations, credential access, SSR adoption, and production side effects. |
 | Loop | No optimization loop. After an architecture pass, allow at most two verify-repair iterations against the touched-surface checks in `rules/validation.md`; keep a change only when it stays inside the touched scope and passes those checks, and stop when the Step 5 checklist passes or a blocker is reported. |
 | Output | Korean architecture decision or review with rule classifications, changed files if any, validation evidence, remaining risks, and official-doc ambiguity notes. |
-| Verification | Run `rules/validation.md` checks relevant to touched surfaces and `scripts/validate-vite-architecture-skill.mjs` when this skill folder changes. |
+| Verification | Run `rules/validation.md` checks relevant to touched surfaces and `bash scripts/validate-vite-architecture-skill.sh` when this skill folder changes. |
 | Stop condition | Stop after project mode is known, applicable safety gates pass, Hypercore conventions are applied or explicitly deferred, validation evidence is recorded, and unresolved API drift is dated and sourced. |
 
 </instruction_contract>
@@ -112,7 +112,7 @@ Boundary examples:
 1. Read `architecture-rules.md` before code changes or architecture findings.
 2. Read the topic rule file that matches the touched surface: `rules/routes.md`, `rules/services.md`, `rules/hooks.md`, `rules/execution-model.md`, `rules/platform.md`, `rules/conventions.md`, or `rules/validation.md`.
 3. Read the directly linked official current-docs reference only when Vite, TanStack Router, plugin, env, route tree, search, or loader behavior may be API-drift sensitive.
-4. Run `scripts/validate-vite-architecture-skill.mjs` after editing this skill folder.
+4. Run `bash scripts/validate-vite-architecture-skill.sh` after editing this skill folder.
 
 </support_file_read_order>
 

@@ -36,10 +36,10 @@ path written.
 file or ask before replacing it. This holds for every mode, including `template` and `code`, where the
 destination is the most likely to already exist.
 
-**Two ways to verify a request.** The offline checker at `../scripts/check-jev-request.mjs` is the
-default, and it needs Bun. When Bun is not available, run the request validity checklist in
-[`./question-design.md`](./question-design.md) by hand instead, and say in the handoff that the check
-was manual.
+**Two ways to verify a request.** The offline checker at `../scripts/check-jev-request.sh` is the
+default, and it needs bash 3.2 or newer with jq. When bash or jq is not available, run the request
+validity checklist in [`./question-design.md`](./question-design.md) by hand instead, and say in the
+handoff that the check was manual.
 
 **Stopping.** A mode stops when its artifact exists, its verification has run, and its own stop
 condition below holds. The fit gate, a missing input only the user can supply, and an unverified route
@@ -99,8 +99,8 @@ and `boolean` on the AI SDK route.
    what `true` and `false` each mean.
 4. Point at state fields by name in backticks, using the field names settled in `design`.
 5. Assemble the questions into a request file with a sample state so it can be checked.
-6. Run the offline checker on the assembled file for the route in play. When Bun is unavailable, run
-   the checklist in [`./question-design.md`](./question-design.md) by hand and say so.
+6. Run the offline checker on the assembled file for the route in play. When bash or jq is
+   unavailable, run the checklist in [`./question-design.md`](./question-design.md) by hand and say so.
 7. Write `questions.md`: the choice behind each question, the source file the snapshot's values came
    from, and the snapshot date, with the note to re-check it before the first live call.
 
@@ -144,9 +144,9 @@ code. The one exception is the single named endpoint and model constants describ
    environment by name at call time, send one state with all questions in one request, and never print,
    log, or write the key.
 5. **Request check with the offline checker.** Assemble the same questions into a request file and run
-   `bun scripts/check-jev-request.mjs --route <route> <file>`, run from the skill folder, where `--route` is one of `direct`,
+   `bash scripts/check-jev-request.sh --route <route> <file>`, run from the skill folder, where `--route` is one of `direct`,
    `bai`, or `aisdk`. Exit 0 is required before the caller is handed over; exit 1 names the field to
-   fix. When Bun is unavailable, run the checklist in [`./question-design.md`](./question-design.md) by
+   fix. When bash or jq is unavailable, run the checklist in [`./question-design.md`](./question-design.md) by
    hand and say so.
 6. **Response validation.** The caller checks every answer before acting on it: every question id sent
    is present in the response, the answer type matches the question type sent, a `choice` answer is one
@@ -170,9 +170,9 @@ code. The one exception is the single named endpoint and model constants describ
 constants file and `request.json` carry the same model id and must be kept in step. Report all three
 paths and the checker exit code.
 
-**Verification.** The checker exits 0 for the route, or the manual checklist cleared every line when Bun
-is unavailable; the caller compiles in the target language, and the response validation from step 6 is
-present in the file rather than promised in a comment.
+**Verification.** The checker exits 0 for the route, or the manual checklist cleared every line when
+bash or jq is unavailable; the caller compiles in the target language, and the response validation
+from step 6 is present in the file rather than promised in a comment.
 
 **Stop when** the constants file and the caller exist, the checker passed for the route in play, and
 the live call is left to the user with the consent step stated.
@@ -318,14 +318,14 @@ no live call was made.
 | Claim | Source |
 | --- | --- |
 | The mode set, the per-mode signals, and the fit gate that runs first | [`../rules/modes-and-routing.md`](../rules/modes-and-routing.md) |
-| The shape of a question, the `what`/`not_for`/`examples` criteria, and the manual checklist used when Bun is missing | [`./question-design.md`](./question-design.md) |
+| The shape of a question, the `what`/`not_for`/`examples` criteria, and the manual checklist used when bash or jq is missing | [`./question-design.md`](./question-design.md) |
 | The route order, the key handling rule, and the routes that carry no verified contract | [`./providers.md`](./providers.md) |
 | The output path default and the no-overwrite rule | repository policy |
 | The question types and the answer fields validated after a call | <https://docs.typesafe.ai/api> |
 | The limits that disqualify a call from a judgment model, used by `design` and `audit` | <https://docs.typesafe.ai/model-jaggedness/jev-1.13> |
 | The confidence ranges and the review path behind the confidence-gated branch | <https://docs.typesafe.ai/confidence> |
 | The single-constants-file habit and the warning that a stale copy makes an agent invent fields | <https://docs.typesafe.ai/agent-skill.md> |
-| The offline checker's flags, exit codes, and route names | `../scripts/check-jev-request.mjs` |
+| The offline checker's flags, exit codes, and route names | `../scripts/check-jev-request.sh` |
 
 ### Evidence grade
 

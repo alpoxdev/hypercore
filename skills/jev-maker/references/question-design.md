@@ -205,14 +205,14 @@ levels. It can decide whether a value clears a threshold, but not rebuild the va
 
 ## Request validity checklist
 
-Run this list by hand when the offline checker cannot run, for example where Bun is not installed
-or the checker has been removed. It mirrors the checks in `../scripts/check-jev-request.mjs` one
-for one, including the error codes that script prints.
+Run this list by hand when the offline checker cannot run, for example where bash or jq is not
+installed or the checker has been removed. It mirrors the checks in `../scripts/check-jev-request.sh`
+one for one, including the error codes that script prints.
 
 **The document**
 
 1. The file is valid JSON. Otherwise `INVALID_JSON`, or `INPUT_TOO_DEEP` when the document nests
-deeper than the engine stack can read.
+deeper than the checker's parser can read.
 2. The root is a JSON object, not an array or a scalar. Otherwise `ROOT_NOT_OBJECT`.
 3. `state` is present and is a string, an object, or an array. `null`, numbers, and booleans are
    rejected. Otherwise `STATE_MISSING` or `STATE_TYPE`.
@@ -267,11 +267,11 @@ length-divided-by-four estimate puts the state plus the longest question over th
 `MODEL_UNVERIFIED` for a direct-route alias outside the known list.
 
 **Exit codes.** 0 when there are no errors, 1 when there is at least one error including an
-unparsable file or a document nested past the engine stack, and 2 for a usage problem (no file
+unparsable file or a document nested past the checker's parser depth limit, and 2 for a usage problem (no file
 argument, an unreadable file, or an unknown route). Run it from the skill folder as:
 
 ```bash
-bun scripts/check-jev-request.mjs --route direct path/to/request.json
+bash scripts/check-jev-request.sh --route direct path/to/request.json
 ```
 
 Treat a green run as a check on shape only. A well-formed request can still be a bad question, and
@@ -292,7 +292,7 @@ which of those two you have shows up only against labeled data.
 | English as the primary training language and the caution on other languages, including CJK | <https://docs.typesafe.ai/models> |
 | The cookbook inventory used to name the recipes in the sibling patterns file | <https://docs.typesafe.ai/llms.txt> |
 
-The checklist mirrors the local checker at `../scripts/check-jev-request.mjs` in this package, read
+The checklist mirrors the local checker at `../scripts/check-jev-request.sh` in this package, read
 on 2026-10-01.
 
 ### Evidence grade

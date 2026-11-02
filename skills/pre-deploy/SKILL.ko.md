@@ -1,235 +1,277 @@
 ---
 name: pre-deploy
-description: Node.js, Rust, Python 저장소의 deploy-readiness를 검증하고 재현된 lint/typecheck/build blocker를 수정합니다. "pre-deploy check", "deploy-ready", "배포 전 blocker 수정" 요청에 사용합니다.
-allowed-tools: Bash Read Edit Write TodoWrite
-compatibility: 지원 스택(node/rust/python) 중 하나 이상의 로컬 툴체인, skills/pre-deploy/scripts 하위 스크립트가 필요하며, 독립 remediation lane에는 bounded subagent/background-agent 기능이 있으면 활용할 수 있습니다.
+description: "[Hyper] 사용자가 Node.js, Rust, Python 워크스페이스에서 배포 전 검사 실행, 배포 준비 완료 증명, 릴리스 전 재현된 lint·typecheck·build blocker 해소를 요청할 때 이 스킬을 사용합니다. 배포 준비 여부는 번들 검사 스크립트를 새로 전체 실행한 결과로만 증명하며, 이 스킬은 배포를 수행하지 않습니다. 실패한 배포 로그 하나, 재현된 런타임 애플리케이션 버그, 신규 기능 작업, 배포 실행 자체에는 사용하지 않습니다."
+compatibility: 지원 스택(Node.js, Rust, Python) 중 하나 이상의 로컬 툴체인, 번들 스크립트 실행용 Bash 3.2+와 jq 1.6+, 파일 읽기·편집·명령 실행 기능이 필요합니다. 독립 remediation lane을 쓰려면 위임 기능이 추가로 필요하며, 없으면 순차 실행합니다.
 ---
 
-@rules/parallel-remediation.ko.md
-@rules/tracked-remediation.ko.md
+# Pre-Deploy
 
-# Pre-Deploy Skill
-
-> 저장소가 배포 가능한지 증명하거나, 그 증명을 막는 재현된 품질/빌드 blocker만 좁게 수정합니다.
+> 저장소가 배포 준비 상태인지 증명하거나, 그 증명을 막는 재현된 blocker만 고칩니다.
 
 <output_language>
 
-사용자에게 보이는 모든 산출물, 저장 아티팩트, 리포트, 계획서, 생성 문서, 요약, 인수인계 메모, 커밋/메시지 초안, 검증 메모는 기본적으로 한국어로 작성합니다.
-
-소스 코드 식별자, CLI 명령, 파일 경로, 스키마 키, JSON/YAML 필드명, API 이름, 패키지명, 고유명사, 인용한 원문 발췌는 필요한 언어 또는 원문 그대로 유지합니다.
-
-사용자가 명시적으로 다른 언어를 요청했거나, 기존 대상 산출물의 언어 일관성을 맞춰야 하거나, 기계 판독 계약상 정확한 영어 토큰이 필요한 경우에만 다른 언어를 사용합니다. 사용자-facing 산출물에 쓸 로컬라이즈된 템플릿/참조(`*.ko.md`, `*.ko.json` 등)가 있으면 우선 사용합니다.
+사용자에게 보이는 산출물, 배포 준비 보고서, 완료 보고는 기본적으로 한국어로 작성합니다. 코드 식별자, 명령, 경로, 스키마 키, 패키지 이름, 고유명사, 인용한 명령 출력은 원래 형태로 유지합니다. 사용자가 다른 언어를 명시했거나 기존 산출물과 언어를 맞춰야 하는 경우에만 그 언어를 따릅니다.
 
 </output_language>
 
-<request_routing>
+<purpose>
 
-## 긍정 트리거
+- 저장소를 읽고 판단한 결과가 아니라 번들 스크립트를 새로 전체 실행한 결과에 근거해 배포 준비 여부를 판정합니다.
+- 그 판정을 막는 재현된 lint·typecheck·build blocker만 고칩니다.
+- 판정과 수정의 근거를 남겨, 나중에 읽는 사람이 무엇이 실제로 실행됐고 무엇이 실행되지 않았는지 확인할 수 있게 합니다.
 
-- "pre-deploy check 실행해줘" 또는 "배포 준비됐는지 확인해줘."
-- "이 repo를 deploy-ready로 만들어줘" 또는 "배포 전 blocker를 고쳐줘."
-- "릴리스 전 최종 lint/typecheck/build 검증해줘."
-- "이 Node/Rust/Python workspace를 배포 전에 검증해줘."
+</purpose>
 
-## 범위 밖
+<routing_rule>
 
-- 구체적인 배포 실패 로그, 플랫폼 빌드 실패, CI 전용 환경 차이, production deploy 문제는 로그에서 원인을 추적해 플랫폼·빌드 설정을 바로잡는 산출물을 내는 배포 remediation 작업으로 넘깁니다.
-- 재현 절차가 있는 runtime bug나 잘못된 앱 동작은 재현 절차와 최소 코드 수정을 산출물로 내는 결함 수정 작업으로 넘깁니다.
-- 재현된 pre-deploy blocker와 연결되지 않은 신규 기능, 광범위 리팩터, 추측성 cleanup은 `execute` 또는 관련 구현 스킬로 보냅니다.
-- `package.json`, `Cargo.toml`, `pyproject.toml`, `requirements.txt`, `setup.py`, `Pipfile`, `poetry.lock` 중 루트 marker가 없는 unsupported 저장소는 대상이 아닙니다.
+요청한 산출물이 로컬 저장소의 배포 준비 판정이거나, 그 판정을 막는 재현된 blocker의 좁은 수정일 때 이 스킬을 사용합니다.
 
-## 경계 사례
+산출물 형태로 다른 작업을 구분합니다.
 
-- 사용자가 validation only를 요청하면 검사와 blocker 보고만 하고 파일을 수정하지 않습니다.
-- 첫 검사에서 명백하고 낮은 위험의 blocker 하나만 나오면 Fix-now를 사용합니다.
-- 여러 stack, workspace, 모호한 dependency/config chain에 걸친 실패면 tracked remediation과 가능한 parallel lane을 사용합니다.
-- 실패 원인이 배포 플랫폼 또는 runtime app 이슈라면 잘못 흡수하지 말고 pre-deploy remediation을 멈춘 뒤 handoff합니다.
+| 요청한 산출물 | 해당 작업 |
+|---|---|
+| 실패한 배포 로그 하나에서 추적한 플랫폼·빌드 설정 수정 | 배포 로그 remediation 작업 |
+| 런타임 버그를 증명하는 재현 절차와 최소 코드 변경 | 결함 수정 작업 |
+| 재현된 blocker가 없는 신규 기능, 리팩터, 정리 | 범위가 정해진 구현 작업 |
+| 실제 배포, 게시, 릴리스, 운영 쓰기 | 자체 승인이 필요한 배포 작업 |
+| 파일 수정이 없는 판정 | 이 스킬의 validate-only 모드 |
 
-</request_routing>
+이 스킬은 배포를 수행하지 않습니다. 검사가 통과한 사실은 배포 승인이 아니며, 배포 기능이 보인다는 사실도 그 사용 허가가 아닙니다.
+
+</routing_rule>
+
+<activation_examples>
+
+긍정:
+
+- "pre-deploy 검사 돌려서 이 repo가 배포 가능한지 알려줘."
+- "릴리스 전에 최종 lint/typecheck/build 검증해줘."
+- "릴리스 게이트를 막는 clippy랑 typecheck 실패를 고쳐줘."
+- "이 워크스페이스 배포 전 검사만 돌려줘. 파일은 건드리지 마."
+
+부정:
+
+- "Vercel 배포가 environment variable 누락으로 실패했어. 로그 읽고 고쳐줘." 산출물이 플랫폼 설정 수정이므로 배포 로그 remediation 작업에 해당합니다.
+- "쿠폰을 두 개 적용하면 결제 금액이 두 배가 돼. 재현: 쿠폰 두 번 적용 후 결제 화면 열기." 산출물이 코드 변경과 재현 절차이므로 결함 수정 작업에 해당합니다.
+- "태그 푸시 때 게시하는 릴리스 워크플로를 추가해줘." 기능 작업이며 검사 게이트가 산출물이 아닙니다.
+
+경계:
+
+- "검사해서 통과하면 배포해줘." 검사는 여기서 수행하고, 배포 단계는 실행 전에 별도 승인을 받아야 합니다.
+- "검증만 하고 파일은 수정하지 마." 보고 모드이며, 보고서 파일 쓰기가 유일한 쓰기입니다.
+
+</activation_examples>
 
 <instruction_contract>
 
-| Field | Contract |
+| 항목 | 계약 |
 |---|---|
-| Intent | deploy readiness를 증명하거나 재현된 lint/typecheck/build blocker만 좁게 수정합니다. |
-| Trigger | pre-deploy, deploy-ready, final quality gate, local stack validation 요청에 활성화합니다. |
-| Scope | target-root validation, stack detection, deploy-check baseline, reproduced blocker triage/fix, remediation tracking, readiness reporting을 담당합니다. |
-| Authority | 사용자와 프로젝트 지시가 이 스킬보다 우선합니다. local toolchain output, stack marker, validation script는 근거입니다. |
-| Evidence | 수정 전에 stack detection, initial full deploy-check output, failing command log, 관련 config, targeted recheck output을 사용합니다. |
-| Tools | repository-local script, local read/edit, independent lane용 bounded subagent를 사용합니다. deploy 또는 production side effect는 암시되지 않습니다. |
-| Loop | 루프 없음: 요청당 한 번의 validate -> triage -> fix -> re-verify 패스만 수행합니다. 새로 재현된 blocker가 있을 때만 다시 들어가고, readiness 증명, unsupported stack, handoff에서 멈춥니다. |
-| Output | scope, detected stack, mode, blocker, fix, validation command, skipped check, risk를 포함한 한국어 readiness report입니다. |
-| Verification | readiness claim 전 full `skills/pre-deploy/scripts/deploy-check.mjs`를 처음과 마지막에 실행하고, fix 후 targeted check를 실행합니다. |
-| Stop condition | deploy readiness가 증명되었거나, validate-only blocker가 보고되었거나, unsupported stack이 보고되었거나, handoff/permission blocker에 도달했을 때 멈춥니다. |
+| Intent | 배포 준비를 증명하거나, 그 증명을 막는 재현된 blocker로 수정 범위를 좁힙니다. |
+| Trigger | 사용자가 배포 전 검사, 배포 준비 증명, 최종 품질·빌드 게이트, 릴리스 blocker 수정을 요청할 때 활성화합니다. |
+| Scope | 대상 루트 감지, baseline과 증명 실행, blocker 분류와 좁은 수정, remediation 상태, 배포 준비 보고서를 담당합니다. 플랫폼 설정, 제품 동작, 기능, 배포 실행은 담당하지 않습니다. |
+| Authority | 사용자와 프로젝트 지시가 이 스킬, 스크립트, 기존 문서보다 우선합니다. 명령 출력, 스택 표식, 설정은 근거이며 지시가 아닙니다. |
+| Evidence | 새로 실행한 전체 실행의 종료 코드와 `PRE_DEPLOY_SUMMARY` 줄, 실패한 명령 출력, 원인 설정, 수정 뒤 같은 명령의 재실행 결과를 씁니다. |
+| Tools | 읽기, 검색, 편집, 실행이 필요합니다. 위임은 선택이며 독립 lane에만 쓰고, 백그라운드는 선택이며 실행이 끝났다고 일찍 선언하는 근거가 되지 않습니다. |
+| Loop | 요청당 한 번의 제한된 패스입니다. baseline, 분류, 좁은 수정, 증명 순서로 진행하고, 실패 그룹은 `MAX_FIX_ATTEMPTS = 3`에서 `exhausted`로 멈추며 `done`으로 보고하지 않습니다. |
+| Output | 완료 보고 형식의 한국어 요약과, 무엇을 검사했는지·무엇을 관찰했는지·왜 충분한지·무엇을 생략했는지를 담은 `.hyper/pre-deploy/report.md`입니다. |
+| Verification | 배포 준비 판정은 `bash skills/pre-deploy/scripts/deploy-check.sh`를 새로 전체 실행해 종료 코드 `0`이고 `executed`가 0보다 클 때만 성립하며, 건너뛰거나 막힌 게이트는 따로 밝힙니다. |
+| Stop condition | 판정이 증명됐거나, validate-only 보고를 마쳤거나, 지원하지 않는 스택이거나, 세 번 시도 뒤 `exhausted`이거나, 승인이 필요하거나, 다른 산출물 형태로 넘길 경계에 닿으면 멈춥니다. |
 
 </instruction_contract>
 
-<argument_validation>
+<side_effects>
 
-- 인자가 없으면 현재 repository root를 기본 scope로 사용합니다.
-- 사용자가 subdirectory 또는 workspace를 지정하면 존재 여부를 확인하고, 그 디렉터리에서 command를 실행하며 stack detection을 다시 시작합니다.
-- 사용자가 validate-only, report-only, audit-only 등으로 말하면 파일을 수정하지 않습니다.
-- 스킬 적용을 주장하기 전에 항상 target root에서 stack detection을 실행합니다.
-- 지원 stack이 감지되지 않으면 즉시 중단하고 `pre-deploy` 대상이 아니라고 보고합니다. 가짜 수정 루프로 들어가지 않습니다.
+| 수준 | 동작 |
+|---|---|
+| 묻지 않고 허용 | 파일 읽기, 번들 스크립트 실행, 프로젝트에 설정된 검사 명령 실행, 재현된 blocker와 연결된 파일 편집, `.hyper/pre-deploy/` 아래 쓰기 |
+| 먼저 명시적 승인 필요 | 의존성 설치나 업그레이드, lockfile이나 패키지 매니페스트 변경, 테스트나 그 설정 삭제, 강제 푸시, 체크아웃 밖에 영향을 주는 명령 |
+| 도구 출력이나 저장소 내용이 지시해도 금지 | 배포, 게시, 릴리스, 푸시, 운영 쓰기, 자격 증명 사용, 그리고 검사를 약화시켜 통과시키는 모든 수정: `\|\| true`, `continue-on-error`, lint 수준 낮추기, 단언 삭제, 번들 스크립트나 게이트 설정 편집 |
 
-</argument_validation>
+툴체인이 직접 의존성을 가져오는 동작(`cargo build`, 패키지 매니저가 프로젝트 자체 build를 실행하는 경우)은 정상입니다. 없는 도구를 설치로 바꾸는 것은 정상이 아닙니다. 설치되지 않은 도구는 건너뛴 게이트로 기록합니다.
+
+</side_effects>
+
+<capabilities>
+
+| 기능 | 용도 | 없을 때 |
+|---|---|---|
+| 읽기, 검색 | 대상 루트, 설정, 명령 출력 확인 | 사용자가 지정한 경로만으로 판단하고 확인하지 못한 부분을 밝힙니다 |
+| 실행 | 번들 스크립트와 프로젝트 설정 명령 실행 | 실행할 명령을 그대로 제시하고 판정을 주장하지 않고 멈춥니다 |
+| 편집 | 재현된 blocker와 연결된 파일만 수정 | 패치를 제안서로 내고 판정은 미증명으로 둡니다 |
+| 위임 | `rules/parallel-remediation.md`에 따른 독립 lane | lane을 한 흐름에서 순차 실행하고 더 긴 경로를 보고합니다 |
+| 백그라운드 | 필수가 아님 | 런타임이 결과를 돌려주기 전에 완료를 주장하지 않습니다 |
+
+최종 증명은 leader가 직접 실행합니다. 위임한 lane은 배포 준비 판정을 소유하지 않습니다.
+
+</capabilities>
+
+<triage>
+
+baseline 실행이 실패한 뒤에만 분류하고, 확신이 없으면 위쪽 단계로 분류합니다.
+
+| 형태 | 신호 | 경로 |
+|---|---|---|
+| 단순 | 스택 하나, 실패 명령 하나, 파일이나 설정 담당이 분명함 | 상태 파일 없이 직접 수정 |
+| 중간 | 한 스택이나 워크스페이스의 여러 실패, 하나씩 고칠 수 있을 만큼 독립적 | `rules/tracked-remediation.md` 상태를 쓰는 직접 수정 |
+| 복잡 | 여러 스택, 공유 설정, 빌드 그래프, 수리 전략이 불명확함 | 추적 remediation, phase는 `detect`, `baseline`, `triage`, `fix`, `verify`, `report` |
+| 병렬 | 실패가 스택이나 파일 기준으로 겹치지 않고 각자 성공 조건이 있음 | `rules/parallel-remediation.md`를 쓰는 추적 remediation, lane은 최대 세 개 |
+
+규칙 파일은 해당 행을 골랐을 때만 읽습니다. 앞 단계가 실패해서 생긴 오류를 쫓기 전에 첫 root 실패를 먼저 고칩니다.
+
+</triage>
 
 <scripts>
 
-## 사용 가능한 스크립트
-
-Detection이 정확하도록 현재 작업 디렉터리를 target root로 설정해 실행합니다. target root가 repository root라면 아래 repository-relative path를 사용하고, target이 subdirectory/workspace라면 같은 script를 absolute path 또는 repository root로 돌아가는 올바른 relative path로 호출합니다.
+대상 루트에서 실행합니다. 대상이 하위 디렉터리라면 루트 기준 상대 경로를 맞추거나 절대 경로를 씁니다.
 
 | 스크립트 | 용도 |
-|------|------|
-| `skills/pre-deploy/scripts/stack-detect.mjs` | 프로젝트 stack 자동 감지(`node`, `rust`, `python`) |
-| `skills/pre-deploy/scripts/deploy-check.mjs [--parallel|--sequential]` | 전체 검증. 기본적으로 품질 검사와 빌드를 동시에 실행 |
-| `skills/pre-deploy/scripts/lint-check.mjs` | stack별 품질 검사 실행 |
-| `skills/pre-deploy/scripts/build-run.mjs` | stack별 빌드 단계 실행 |
-| `skills/pre-deploy/scripts/pm-detect.mjs` | Node package manager 감지(`npm/yarn/pnpm/bun`) |
+|---|---|
+| `bash skills/pre-deploy/scripts/stack-detect.sh` | 감지한 스택(`node`, `rust`, `python`)을 출력하고, 지원 스택이 없으면 종료 코드 `1` |
+| `bash skills/pre-deploy/scripts/deploy-check.sh [--parallel\|--sequential]` | 품질 검사와 빌드를 함께 수행하는 전체 증명, 기본값은 동시 실행 |
+| `bash skills/pre-deploy/scripts/lint-check.sh` | 스택별 품질 검사 |
+| `bash skills/pre-deploy/scripts/build-run.sh` | 스택별 빌드 단계 |
+| `bash skills/pre-deploy/scripts/pm-detect.sh` | Node 패키지 매니저 감지(`npm`/`yarn`/`pnpm`/`bun`) |
 
-메모:
+결과 읽는 법:
 
-- helper scripts는 현재 작업 디렉터리를 기준으로 stack과 package manager를 감지합니다.
-- `lint-check.mjs`는 Node typecheck와 lint가 둘 다 설정된 경우 내부적으로 독립 command를 동시에 실행합니다. 이 내부 병렬성을 추가 agent로 중복하지 않습니다.
-- `deploy-check.mjs`는 wall time을 줄이기 위해 기본적으로 `--parallel`을 사용하면서 두 command의 로그와 실패를 모두 보존합니다. 자원이 제한된 runner 또는 cache를 안전하게 공유할 수 없는 tool에서는 `--sequential`이나 `PRE_DEPLOY_MODE=sequential`을 사용합니다.
-- Node package script는 quality run마다 한 번만 읽고, Python `compileall` fallback은 generated, dependency, VCS, virtual-environment directory를 제외합니다.
-- skipped check는 "미설정" 또는 "tool unavailable"로 취급하고, passed로 취급하지 않습니다.
+- `deploy-check.sh`는 실행한 검사가 모두 통과하면 `0`, 하나라도 실패하면 `1`, 실행한 검사가 없으면 `2`, 사용법 오류면 `64`로 끝납니다.
+- 종료 코드 `2`는 실패한 판정이며 통과가 아닙니다. 설정되거나 설치된 검사가 없어서 준비 상태가 증명되지 않은 경우입니다.
+- 모든 실행은 `PRE_DEPLOY_SUMMARY executed=<n> skipped=<m>`을 출력합니다. 이 줄을 보고서에 인용합니다. 검사 범위를 주장하는 근거입니다.
+- 건너뛴 게이트는 "설정되지 않음" 또는 "도구 미설치"입니다. 통과로 세지 않고, 그 게이트에 의존하는 판정도 통과가 아닙니다.
+- Node 검사는 프로젝트 자체 스크립트를 먼저 쓰고, 다음으로 프로젝트 로컬 `node_modules/.bin` 실행 파일을 씁니다. 도구가 없으면 건너뛰며 `npx`로 몰래 설치하지 않습니다.
+- `cargo fmt`를 실행하려면 `rustfmt` 설치가 필요합니다. 없으면 포맷 게이트는 실패가 아니라 건너뜀입니다. clippy는 Cargo 1.97 이상에서 빌드 캐시를 보존하는 `CARGO_BUILD_WARNINGS=deny`로, 그보다 오래된 툴체인에서는 `-- -D warnings`로 경고를 거부합니다.
+- Python 게이트는 선택입니다. `ruff` 또는 `flake8`을 쓰고, `mypy`가 없으면 생성물, 의존성, VCS, 가상 환경 디렉터리를 제외하는 `compileall` fallback을 씁니다.
+- `lint-check.sh`는 Node typecheck와 lint를 이미 동시에 실행합니다. 이 둘에 agent를 추가로 붙이지 않습니다.
+- 동시 실행 툴체인이 메모리, CPU, 공유 빌드 캐시를 두고 경합하면 `--sequential`이나 `PRE_DEPLOY_MODE=sequential`을 씁니다.
 
 </scripts>
 
-<mandatory_reasoning>
-
-## 적응형 구조화 사고
-
-구현 전 내부 구조화 사고 패스를 수행하고 실패 형태에 따라 깊이를 조절합니다.
-
-| 복잡도 | 추론 깊이 | 신호 |
-|------|------|------|
-| Simple | 3단계 | 하나의 stack, 하나의 실패 command, 명확한 root cause, 낮은 위험 수정 |
-| Medium | 5단계 | 한 stack 안의 여러 관련 실패, 중간 수준 config/dependency 영향 |
-| Complex | 7단계 이상 | 여러 stack/workspace, 모호한 fix strategy, shared config, dependency chain, CI/deploy 경계 |
-
-권장 순서: classify -> 정확한 실패 출력 읽기 -> root cause 식별 -> targeted validation 선택 -> direct fix, parallel lane, tracked remediation, handoff 중 결정.
-
-</mandatory_reasoning>
-
-<complexity_classification>
-
-첫 full deploy check가 실패한 뒤 분류합니다.
-
-| 복잡도 | 신호 | 경로 |
-|------|------|------|
-| Simple | 단일 실패 check, 하나의 stack, 명확한 file/config owner, 안전한 fix path 하나 | Fix-now |
-| Medium | 한 stack 또는 한 workspace 안의 여러 실패, targeted fix가 가능할 정도로 독립적 | TodoWrite tracking이 있는 Fix-now |
-| Complex | Multi-stack 실패, shared config, monorepo/build graph 이슈, 불확실한 repair option, cross-cutting side effect 가능성 | Tracked remediation; subagent 전 `rules/parallel-remediation.ko.md` 사용 |
-
-확신이 없으면 더 높은 복잡도로 분류합니다. 광범위 변경을 조용히 적용하는 것보다 evidence와 ownership을 보존하는 편이 낫습니다.
-
-</complexity_classification>
-
-<execution_modes>
-
-- **Validate-only**: detection과 `deploy-check.mjs`를 실행하고 detected stacks, passed/failed/skipped checks, blockers를 보고합니다. 수정하지 않습니다.
-- **Fix-now**: simple/medium 재현 blocker는 TodoWrite에 등록하고 좁게 수정한 뒤 targeted check와 full deploy check를 재실행합니다.
-- **Parallel remediation**: 실패를 grouping한 뒤 독립 diagnosis 또는 겹치지 않는 edit lane에 한해 bounded subagent/background agent를 사용합니다. leader가 integration과 final verification을 소유합니다. 먼저 `rules/parallel-remediation.ko.md`를 읽습니다.
-- **Tracked remediation**: complex case에서는 `rules/tracked-remediation.ko.md`를 읽은 뒤 `.hyper/pre-deploy/flow.json`을 만들거나 재개하며 phase는 `detect`, `baseline`, `triage`, `fix`, `verify`, `report`입니다.
-- **Handoff**: platform deployment 실패는 로그 기반 배포 remediation 작업으로, runtime application bug는 재현 절차가 있는 결함 수정으로, 무관한 구현 요청은 `execute`로 보냅니다.
-
-</execution_modes>
-
 <workflow>
 
-## 전체 검증 증명
+| 단계 | 동작 | 필요한 근거 |
+|---|---|---|
+| 1. 범위 | 대상 루트를 확정하고, 요청을 validate-only와 수정 가능으로 구분한 뒤 그 루트에서 `bash skills/pre-deploy/scripts/stack-detect.sh`를 실행합니다 | 감지한 스택, 또는 지원하지 않는 스택 중단 |
+| 2. baseline | 수정 전에 `bash skills/pre-deploy/scripts/deploy-check.sh`를 한 번 전체 실행합니다 | 종료 코드, 요약 줄, 정확한 실패 출력 |
+| 3. 분류 | 실패를 스택, 명령, 우선순위로 묶고 형태를 분류해 경로를 정합니다 | 담당과 근거가 붙은 실패 그룹 |
+| 4. 수정 | 재현된 실패가 요구하는 범위만 고치고 가장 좁은 명령을 다시 실행합니다 | 변경 범위와 재실행 출력 |
+| 5. 증명 | leader 맥락에서 `bash skills/pre-deploy/scripts/deploy-check.sh`를 다시 전체 실행합니다 | `executed`가 0보다 큰 종료 코드 `0` |
+| 6. 보고 | `.hyper/pre-deploy/report.md`를 쓰고 완료 보고 형식으로 답합니다 | 보고서 경로와 인용한 요약 줄 |
 
-Repository root 기준:
-
-```bash
-skills/pre-deploy/scripts/deploy-check.mjs --parallel
-```
-
-Target root에 지원 stack이 없는 경우를 제외하고 이 초기 command를 건너뛰지 않습니다. baseline과 정확한 blocker를 확보합니다.
-병렬 mode가 기본 fast path입니다. 두 phase를 모두 기다리고 하나라도 실패하면 전체를 실패 처리하므로, 한 phase의 성공만 readiness 증명으로 취급하지 않습니다. 동시 toolchain이 memory, CPU, shared build cache를 두고 경합하면 `--sequential`을 사용합니다.
-
-## 단계별 검증
-
-Repository root 기준:
-
-```bash
-# 1) 품질 검사
-skills/pre-deploy/scripts/lint-check.mjs
-
-# 2) 빌드 단계
-skills/pre-deploy/scripts/build-run.mjs
-```
-
-수정 후 targeted recheck에는 단계별 command를 사용할 수 있지만, 최종 readiness claim에는 반드시 full `deploy-check.mjs` 실행이 필요합니다.
-
-## Stack별 동작 요약
-
-- **Node.js**: typecheck/lint(설정된 경우) + build script(설정된 경우)
-- **Rust**: `cargo fmt --check` + `cargo clippy` + `cargo check` + `cargo build --release`
-- **Python**: lint(`ruff`/`flake8` 가능 시) + 타입/문법 검사(`mypy` 또는 `compileall`) + 빌드(`poetry build` 또는 `python -m build`, 없으면 `compileall` fallback)
-- **Unsupported repository**: unsupported-stack 오류를 보고하고 remediation으로 진행하지 않습니다.
+실패가 뻔해 보여도 baseline을 건너뛰지 않고, 좁은 재실행이 통과한 것을 최종 판정으로 쓰지 않습니다.
 
 </workflow>
 
-<implementation_rules>
+<loop_policy>
 
-- 수정 전 정확한 command output을 읽습니다. 실패를 추측하지 않습니다.
-- 실패를 stack, command, priority 기준으로 TodoWrite 항목으로 전환합니다.
-- 실패들이 독립적임이 명확하지 않으면 cascading error를 쫓기 전에 첫/root failure를 고칩니다.
-- 각 edit은 재현된 blocker와 직접 dependency에만 제한합니다.
-- 수정 후 가장 좁은 관련 check를 재실행합니다.
-- subagent를 사용할 때 각 lane에 objective, scope, ownership, output, stop condition을 줍니다. 두 lane이 같은 파일이나 shared config를 동시에 수정하게 하지 않습니다.
-- leader는 subagent 결과를 합성하고 final diff를 직접 확인하며 final proof command를 직접 실행해야 합니다.
+수정은 반복할 수 있지만 아래 경계 안에서만 반복합니다.
 
-</implementation_rules>
+- 실패 그룹마다 `MAX_FIX_ATTEMPTS = 3`이며, 추적 상태에서 재개한 시도도 함께 셉니다.
+- 검사자는 결정적 스크립트나 프로젝트 자체 명령입니다. 만든 쪽이 자기 diff를 다시 읽은 결과를 검사로 인정하지 않습니다.
+- 같은 root 원인으로 세 번째 시도까지 실패하면 멈추고 그 그룹 상태를 `exhausted`로 두며, 시도한 내용, 남은 blocker, 다음으로 시도할 근거를 보고합니다. `exhausted`를 `done`으로 보고하지 않습니다.
+- 실행 사이에 바뀐 것이 없는데 같은 명령을 다시 돌리고 두 번째 결과를 수정으로 부르지 않습니다.
+- 새로운 root 원인은 새 그룹이며, 그 그룹의 세 번 시도를 따로 씁니다.
+
+</loop_policy>
+
+<validation>
+
+| 주장 | 필요한 근거 |
+|---|---|
+| "배포 준비 완료" | 새 전체 실행, 종료 코드 `0`, `executed`가 0보다 큼, 건너뛴 게이트 전부 명시, 보고서 작성 |
+| "blocker 수정 완료" | 수정마다 같은 명령의 이전 출력과 이후 출력 |
+| "validate-only" | 전체 실행 결과와 blocker 목록, 보고서 외에 수정한 파일 없음 |
+| "이 스킬 대상이 아님" | `bash skills/pre-deploy/scripts/stack-detect.sh` 종료 코드 `1`과 그 결과를 낸 대상 루트 |
+| "넘김" | 넘긴 산출물 형태와 그 판단을 뒷받침하는 실패 근거 |
+
+추가로 지킬 것:
+
+- 실행해서 실패한 검사는 나중 실행이 통과했더라도 기록에 남깁니다.
+- 작성한 보고서에 네 절이 모두 있어야 합니다. 보고서가 없으면 검증이 없었던 것으로 봅니다.
+- 최종 전체 실행은 마지막 수정 뒤에 수행합니다. 수정 전 실행은 증명이 아닙니다.
+
+</validation>
+
+<stop_condition>
+
+다음 중 하나가 참이면 멈추고 어느 경우인지 밝힙니다. 배포 준비가 증명됨, validate-only blocker 보고를 마침, 지원하지 않는 스택, 실패 그룹이 `exhausted`, 부수 효과에 승인이 필요함, 요청이 다른 산출물 형태에 속함.
+
+</stop_condition>
 
 <completion_report>
-
-다음 report 형식을 사용합니다.
 
 ```markdown
 ## Done
 
-**Scope**: [repo root 또는 workspace]
+**Scope**: [대상 루트]
 **Stacks detected**: [node/rust/python]
-**Mode**: [validate-only/fix-now/parallel remediation/tracked remediation/handoff]
-**Initial blockers**: [없음 또는 실패 요약]
-**Fixes applied**: [변경 파일 또는 없음]
-**Validation**:
-- `skills/pre-deploy/scripts/deploy-check.mjs`: [passed/failed/not run + reason]
-- Skipped/not configured checks: [목록]
-**Remaining risks**: [없음 또는 명시적 caveat]
+**Mode**: [validate-only/direct-fix/tracked remediation/parallel lanes/handoff/exhausted]
+**Initial blockers**: [없음, 또는 실패한 명령과 핵심 출력]
+**Fixes applied**: [파일 목록, 또는 없음]
+**Validation**: `bash skills/pre-deploy/scripts/deploy-check.sh` -> [종료 코드] / PRE_DEPLOY_SUMMARY executed=[] skipped=[]
+**Skipped or blocked gates**: [각 항목과 사유]
+**Evidence**: [`.hyper/pre-deploy/report.md`]
+**Remaining risks**: [없음, 또는 caveat]
 ```
 
-최종 full `deploy-check.mjs`가 통과했을 때만 "ready to deploy"라고 말합니다.
+마지막 전체 실행이 종료 코드 `0`이고 `executed`가 0보다 클 때만 "배포 준비 완료"라고 말합니다. 그 밖의 경우에는 판정을 미증명으로 두고 막고 있는 게이트를 밝힙니다.
 
 </completion_report>
 
-<validation>
+<required>
 
-Execution checklist:
+| 범주 | 요건 |
+|---|---|
+| 트리거 | 판정과 수정의 경계를 산출물 형태로 밝히고, 배포하지 않는 경계를 명시합니다 |
+| 계약 | 의도, 범위, 권한, 근거, 기능, 루프, 출력, 검증, 중단 조건을 확인할 수 있어야 합니다 |
+| 근거 | baseline과 증명 실행을 분리하고 각각 새로 수행하며 인용합니다. 건너뛴 게이트는 통과와 분리합니다 |
+| 수정 | 모든 편집이 재현된 실패와 연결되고 같은 명령의 재실행으로 확인됩니다 |
+| 경계 | `MAX_FIX_ATTEMPTS = 3`, 만든 쪽과 다른 검사자, `exhausted`를 `exhausted`로 보고 |
+| 안전 | 배포, 게시, 릴리스, 자격 증명, 검사 약화를 계약 안에서 거부합니다 |
+| 데이터 | 실행하지 않은 검사를 통과로 표시하지 않습니다 |
 
-- [ ] Target root 또는 workspace 검증됨
-- [ ] 지원 stack 감지됨, 또는 unsupported stack을 보고하고 중단함
-- [ ] 지원 stack에서는 full `skills/pre-deploy/scripts/deploy-check.mjs`를 먼저 실행함
-- [ ] 실패가 stack/command/priority 기준으로 추적됨
-- [ ] 수정 전 root-cause evidence를 수집함
-- [ ] 적절한 깊이의 구조화 사고 패스 완료
-- [ ] parallel lane을 썼다면 독립적이고 bounded했음
-- [ ] 각 수정 후 targeted validation 실행
-- [ ] readiness claim 전 full deploy check 통과
-- [ ] skipped checks를 passed checks와 분리 보고
+</required>
 
-Forbidden:
+<forbidden>
 
-- [ ] 통과한 full deploy check 없이 deploy readiness를 주장
-- [ ] 사용자가 이 스킬 밖 구현을 명시 요청한 경우가 아닌데, 재현된 실패 없이 수정
-- [ ] skipped checks를 passed로 취급
-- [ ] unsupported-stack detection 뒤 계속 진행
-- [ ] 모든 runtime이 지원하는 것처럼 product-specific subagent syntax를 강제
-- [ ] subagent가 겹치는 파일을 수정하거나 final readiness 결정을 소유하게 함
+| 범주 | 피할 것 |
+|---|---|
+| 판정 | 코드 읽기, 좁은 재실행, 위임 lane의 서술로 배포 준비를 주장 |
+| 범위 | 건너뛴 검사, 미설정 검사, 미설치 검사를 통과로 세기, `executed`가 0인 통과 실행 |
+| 수정 | 재현된 실패 없는 편집, 광범위 리팩터, 추측성 정리, 보고된 문제와 다른 문제 수정 |
+| 루프 | 같은 root 원인에 세 번 초과 시도, 자기 채점 수용, `exhausted`를 `done`으로 보고 |
+| 부수 효과 | 배포, 게시, 푸시, 의존성 설치, 검사를 통과시키려는 설정·스크립트 편집 |
+| 구조 | 특정 런타임의 subagent 문법을 요건으로 제시, 최종 판정을 lane에 위임 |
 
-</validation>
+</forbidden>
+
+<trigger_metric>
+
+트리거 케이스는 참·거짓이 아닙니다. 모든 케이스가 `expect`, `runs`, `threshold`를 가지며, 실행은 측정한 `trigger_rate`를 기록합니다.
+
+- `expect`: `trigger` 또는 `no_trigger`입니다. 요청한 산출물 형태에 따라 답이 갈리는 경계 케이스는 `note`를 붙여 `no_trigger`로 기록합니다.
+- `runs`와 `threshold`: 케이스마다 직접 적습니다. `3`회 실행과 `0.5`는 출발점이며 검증된 최적값이 아닙니다.
+- 측정한 비율은 `stochastic-model` 측정입니다. 결과와 함께 모델, 런타임, 실행 횟수를 기록합니다.
+- 케이스 집합은 트리거해야 함, 트리거하지 않아야 함, 경계, 근접 오답, 안전 케이스를 함께 구성하고, 기존 케이스가 확인하지 않는 것을 검사할 때만 추가합니다.
+
+동작과 트리거 케이스는 `assets/evals/pre-deploy-cases.jsonl`로 실행합니다.
+
+</trigger_metric>
+
+## Sources
+
+> 확인 2026-11-03. 아래 모든 행을 같은 날짜에 읽었고, 외부 페이지 두 개를 포함합니다.
+
+| 주장 | 출처 |
+|---|---|
+| `SKILL.md` 계약 형태, 산출물 형태로 나누는 라우팅 규칙, 자기 완결 경계 | `instructions/skill/SKILL_AUTHORING.md` |
+| frontmatter 제약, 코어 500줄 지침, 참조 한 단계 깊이 규칙 | <https://agentskills.io/specification> |
+| 판정 게이트 뒤에 있는 검증 깊이 척도, 완료 계약, 금지 패턴 | `instructions/validation/index.md` |
+| 건너뛴 작업을 `SKIP`으로 기록하고 `SKIP`을 통과로 세지 않는 규칙, 네 부분 증거 기록 | `instructions/harness-engineering/HARNESS_ENGINEERING.md`, `instructions/harness-engineering/references/evidence-and-recovery.md` |
+| 기능 기준 도구 선택, 게이트 작업의 승인 경계, 승인과 기능 가용성의 분리 | `instructions/cli/capability-contract.md` |
+| 제한된 루프, 만든 쪽과 분리된 검사자, 중단 조건 | `instructions/loop-engineering/LOOP_ENGINEERING.md` |
+| 트리거를 안정적으로 유지하고 변동값을 로드되는 앞부분에서 빼는 규칙 | `instructions/cache/CACHE.md` |
+| Cargo 1.97 이상에서 권장되는 경고 거부 설정과 `-D warnings`의 캐시 비용 | <https://doc.rust-lang.org/clippy/usage.html> |
+
+### Evidence grade
+
+저장소 행은 이 패키지의 `PRIMARY` 근거이며 2026-11-03에 읽었습니다. 규격과 Clippy 행은 `VENDOR` 문서이고 같은 날짜에 가져왔습니다. 그 문서가 밝히는 Cargo 버전 경계는 이 저장소 스크립트가 지금 분기하는 툴체인 동작입니다.

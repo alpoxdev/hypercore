@@ -6,7 +6,11 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, 
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { expect, test } from "bun:test";
+import { expect, setDefaultTimeout, test } from "bun:test";
+
+// The gate spawns the bash skill-maker validator (jq/awk subprocesses, ~1-2 s per skill), so the
+// 5 s Bun default is too tight for tests that run it several times.
+setDefaultTimeout(120_000);
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const gatePath = join(root, "scripts/check-skill-standards.mjs");
@@ -212,4 +216,4 @@ test("resolves the default paths from the repository root, not the working direc
   } finally {
     rmSync(workspace, { recursive: true, force: true });
   }
-}, 30000);
+}, 180_000);

@@ -1,6 +1,6 @@
 # [Initiative Name] Planning Diagram
 
-> Canonical source for the visual planning map. Keep this in sync with `diagram.data.json`; render `diagram.svg` with `scripts/render-planning-map.mjs`.
+> Canonical source for the visual planning map. Keep this in sync with `diagram.data.json`; render `diagram.svg` with `bash scripts/render-planning-map.sh`.
 
 ## Package Links
 

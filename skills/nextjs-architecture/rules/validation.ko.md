@@ -35,7 +35,7 @@ rg -n 'DAL|DTO|server-only service|provider|authorization' skills/nextjs-archite
 rg -n 'client orchestration|hooks|server/data layers|Drizzle schema|private env' skills/nextjs-architecture/rules/hooks.md skills/nextjs-architecture/rules/hooks.ko.md
 rg -n 'Drizzle schema|drizzle.config.ts|generate|migrate|prepared statements|validation integrations|RQB' skills/nextjs-architecture/rules/db.md skills/nextjs-architecture/rules/db.ko.md
 rg -n 'Deprecated feature-folder guidance is absent|src/services|src/modules|src/db|direct leaf|current-docs-2026-06-02|Korean parity|source-only|no adapter' skills/nextjs-architecture/rules/validation.md skills/nextjs-architecture/rules/validation.ko.md
-node skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.mjs
+bash skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh
 ```
 
 Must pass:

@@ -30,7 +30,7 @@ wc -l skills/vite-architecture/SKILL.md skills/vite-architecture/SKILL.ko.md
 rg -n 'instruction_contract|activation_examples|routing_rule|rules/validation|current-docs-2026-06-02' skills/vite-architecture/SKILL.md skills/vite-architecture/SKILL.ko.md
 rg -n 'checked_at|/websites/vite_dev|/tanstack/router|VITE_|loadEnv|tanstackRouter|routeTree.gen|validateSearch|zodValidator' skills/vite-architecture/references/official
 rg -n 'src/lib|src/services|direct leaf|repo-local convention|not official Vite|not official.*TanStack Router' skills/vite-architecture/architecture-rules.md skills/vite-architecture/rules/services.md skills/vite-architecture/rules/validation.md
-node skills/vite-architecture/scripts/validate-vite-architecture-skill.mjs
+bash skills/vite-architecture/scripts/validate-vite-architecture-skill.sh
 ```
 
 Must pass:

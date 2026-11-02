@@ -17,7 +17,7 @@ Do not spawn agents for a single obvious one-file or one-group commit; coordinat
 
 | Lane | Responsibility | Inputs | Output | Edit/stage/commit? |
 |------|------|------|------|------|
-| Repo Mapper | Map repositories/worktree roots, staged/unstaged/untracked files, and ownership boundaries | `git-maker-fast.mjs inspect` output, `git diff --name-only` | repo/file map, linked-worktree context, and ambiguity list | no |
+| Repo Mapper | Map repositories/worktree roots, staged/unstaged/untracked files, and ownership boundaries | `git-maker-fast.sh inspect` output, `git diff --name-only` | repo/file map, linked-worktree context, and ambiguity list | no |
 | Grouping Critic | Propose logical commit groups and flag unrelated files or secrets | status, file list, diff summaries | group plan with confidence and exclusions | no |
 | Message Drafter | Draft Korean-language Conventional Commit subjects/bodies | group plan and diff summaries | message candidates with rationale | no |
 | Safety Verifier | Check secrets, destructive operations, protected branch, detached HEAD, upstream/push risk | status, branch/upstream output, script diff | pass/block report | no |
@@ -43,12 +43,12 @@ Do not spawn agents for a single obvious one-file or one-group commit; coordinat
 1. Main integrator runs:
 
    ```bash
-   scripts/git-maker-fast.mjs inspect . --jobs 4
+   scripts/git-maker-fast.sh inspect . --jobs 4
    ```
 
 2. If complex, spawn independent read-only lanes with the same inspect output.
 3. Integrate lane outputs into one final commit plan.
-4. Stage and commit each group sequentially with `scripts/git-commit.mjs`.
+4. Stage and commit each group sequentially with `scripts/git-commit.sh`.
 5. Push only after every commit succeeds, preferably with explicit repo paths from preflight.
 
 

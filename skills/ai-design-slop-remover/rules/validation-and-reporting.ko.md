@@ -2,12 +2,12 @@
 
 ## 검증 순서
 
-1. 같은 대상에 `detect-slop.mjs`를 다시 실행하고 rule ID, severity count, engine/evidence field, 사용한 baseline delta를 비교한다.
+1. 같은 대상에 `detect-slop.sh`를 다시 실행하고 rule ID, severity count, engine/evidence field, 사용한 baseline delta를 비교한다.
 2. 변경 파일을 포함하는 가장 작은 project build, typecheck, lint, test를 실행한다. 실패를 억제하지 말고 확인한다.
 3. 렌더링이 가능하면 대표 desktop·mobile 폭과 관련 interaction·async state를 확인한다.
 4. 변경과 관련된 keyboard focus, semantics, 측정 가능한 contrast, reduced motion, responsive overflow를 확인한다.
 5. 직접 영향받은 동작을 실행하고 copy, route, form contract, state transition, analytics hook을 보존한다.
-6. 저장 리포트를 `validate-report.mjs`로 검증하고 residual risk를 기록한다.
+6. 저장 리포트를 `validate-report.sh`로 검증하고 residual risk를 기록한다.
 
 ## Claim 규칙
 

@@ -63,7 +63,7 @@
       "status": "pending | in_progress | completed",
       "branches_written": ["prd", "feature_spec", "user_flow", "wireframe", "open_questions"],
       "rendered": false,
-      "renderer": "scripts/render-planning-map.mjs"
+      "renderer": "scripts/render-planning-map.sh"
     },
     "feature_spec": {
       "status": "pending | in_progress | completed",
@@ -86,7 +86,7 @@
     "preview": {
       "status": "pending | in_progress | completed",
       "built": false,
-      "builder": "scripts/build-preview.mjs"
+      "builder": "scripts/build-preview.sh"
     },
     "validate": {
       "status": "pending | in_progress | completed | failed",

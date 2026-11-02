@@ -1,7 +1,7 @@
 ---
 name: skill-tester
 description: "Use this skill when the user asks to test, validate, regression-check, or safely repair an existing Codex/agent skill's trigger, workflow, resources, or evaluation coverage. Do not use it to create a new skill, QA an application, or run open-ended skill optimization."
-compatibility: Requires local read and search capabilities. Edit and execute capabilities enable target-owned repairs and deterministic checks; without them, report an explicit caveat or block rather than claiming those steps ran.
+compatibility: Requires local read and search capabilities. Edit and execute capabilities enable target-owned repairs and deterministic checks; without them, report an explicit caveat or block rather than claiming those steps ran. The bundled validators run with bash 3.2+ and jq.
 ---
 
 @rules/test-matrix.md
@@ -94,8 +94,8 @@ Load support files only for their stated purpose:
 - Read [rules/skill-maker-handoff.md](rules/skill-maker-handoff.md) when findings require a broad skill structure refactor; use its packet to hand work to the skill-authoring workflow, then recheck the returned target with the unchanged cases.
 - Read [rules/evidence-reporting.md](rules/evidence-reporting.md) before declaring a verdict or handing work off.
 - Use [references/prompt-pack-template.md](references/prompt-pack-template.md) only when the user asks for a reusable test pack; use its Korean sibling by default for Korean artifacts.
-- Run `node skills/skill-tester/scripts/validate-skill-tester.mjs --root skills/skill-tester --evals skills/skill-tester/assets/evals/skill-tester-cases.jsonl --json` when this package changes.
-- Run `node skills/skill-tester/scripts/validate-skill.mjs <target-skill>` for a quick target check and `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json` for repository-skill structure.
+- Run `bash skills/skill-tester/scripts/validate-skill-tester.sh --root skills/skill-tester --evals skills/skill-tester/assets/evals/skill-tester-cases.jsonl --json` when this package changes.
+- Run `bash skills/skill-tester/scripts/validate-skill.sh <target-skill>` for a quick target check and `bash skills/skill-tester/scripts/validate-skills-corpus.sh --root skills --only <skill-name> --json` for repository-skill structure.
 
 The core owns trigger, authority, repair boundary, loop, and stop logic. Rules own recurring decisions; the template is an output resource; `assets/evals/skill-tester-cases.jsonl` is the machine-readable regression fixture; scripts are deterministic, local-only validators.
 

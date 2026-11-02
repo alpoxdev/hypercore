@@ -69,7 +69,7 @@ If the natural draft reads like a command, rewrite it to the result now present 
 |------|------|
 | Commit first | All commit groups must succeed before any push. |
 | No confirmation | Do not ask whether to push after successful commits; push automatically. |
-| Explicit repos | Prefer passing the repo list from `scripts/git-maker-fast.mjs inspect` into `scripts/git-maker-fast.mjs push` to avoid duplicate discovery. |
+| Explicit repos | Prefer passing the repo list from `scripts/git-maker-fast.sh inspect` into `scripts/git-maker-fast.sh push` to avoid duplicate discovery. |
 | Worktrees | Linked worktrees are valid push targets when on a named branch; pass their checkout root paths, not `.git/worktrees/...` or the common git dir. |
 | Upstream | If no upstream exists, push with `-u origin <branch>`. |
 | Safety | Never force push to `main` or `master`. Never push from detached HEAD. |

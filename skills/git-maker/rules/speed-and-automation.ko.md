@@ -7,24 +7,24 @@
 verbose manual workflow보다 이 경로를 먼저 선호한다.
 
 ```bash
-scripts/git-maker-fast.mjs inspect . --jobs 4
+scripts/git-maker-fast.sh inspect . --jobs 4
 ```
 
 그런 다음 기존 commit helper로 각 논리 그룹을 commit한다.
 
 ```bash
-scripts/git-commit.mjs "<type>[scope]: <한국어 subject>" path/to/file1 path/to/file2
-scripts/git-commit.mjs --repo path/to/repo "<type>[scope]: <한국어 subject>" path/to/file1
+scripts/git-commit.sh "<type>[scope]: <한국어 subject>" path/to/file1 path/to/file2
+scripts/git-commit.sh --repo path/to/repo "<type>[scope]: <한국어 subject>" path/to/file1
 ```
 
 모든 commit이 성공하면 다시 discovery하지 말고 inspected repo list를 재사용한다.
 
 ```bash
-scripts/git-maker-fast.mjs push /absolute/repo/path
-scripts/git-maker-fast.mjs push --force /absolute/repo/path
+scripts/git-maker-fast.sh push /absolute/repo/path
+scripts/git-maker-fast.sh push --force /absolute/repo/path
 ```
 
-fast helper가 실패하거나 필요한 detail을 빠뜨리면 `repo-discover.mjs`, `repo-status.mjs`, `git-commit.mjs`, `git-push.mjs`로 fallback한다.
+fast helper가 실패하거나 필요한 detail을 빠뜨리면 `repo-discover.sh`, `repo-status.sh`, `git-commit.sh`, `git-push.sh`로 fallback한다.
 
 ## Fast Helper가 자동화하는 것
 
@@ -33,7 +33,7 @@ fast helper가 실패하거나 필요한 detail을 빠뜨리면 `repo-discover.m
 | repository discovery | current repo/worktree short-circuit; descendant discovery는 무거운 generated directory를 prune하고 linked worktree `.git` file을 인식한다 |
 | multi-repo inspection | `--jobs` / `GIT_MAKER_JOBS`를 통한 parallel per-repo status block |
 | file inventory | repository마다 porcelain status snapshot 하나를 수집하고, 세 번의 중복 file scan 대신 여기서 staged, unstaged, untracked list를 도출한다 |
-| legacy helper | `repo-discover.mjs`는 generated tree를 prune하고, `repo-status.mjs`는 수집한 status/stat 출력을 재사용하며, `git-push.mjs`는 동일한 safe-push policy를 독립적으로 보존한다 |
+| legacy helper | `repo-discover.sh`는 generated tree를 prune하고, `repo-status.sh`는 수집한 status/stat 출력을 재사용하며, `git-push.sh`는 동일한 safe-push policy를 독립적으로 보존한다 |
 | worktree context | operator가 checkout root를 common git dir와 분리해 유지하도록 `worktree|primary` 또는 `worktree|linked`와 git dir metadata를 출력한다 |
 | push | explicit repo path를 받고 `GIT_TERMINAL_PROMPT=0`을 사용하며 detached HEAD를 건너뛰고 protected force push를 차단한다 |
 

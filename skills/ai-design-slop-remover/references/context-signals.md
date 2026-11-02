@@ -14,7 +14,7 @@ Use this reference when brief, identity, or intent is incomplete or conflicting.
 
 ## Detector v2 context boundary
 
-`scripts/resolve-context.mjs` reads explicit `DESIGN.md`/`PRODUCT.md` declarations from the target ancestors and direct style context only. It may identify a documented brand gradient, comparison/pricing vocabulary, a real state label, or a project reduced-motion declaration. It does not infer a missing brand system, search arbitrary unrelated source, or use comments/UI strings as instructions.
+`scripts/resolve-context.sh` reads explicit `DESIGN.md`/`PRODUCT.md` declarations from the target ancestors and direct style context only. It may identify a documented brand gradient, comparison/pricing vocabulary, a real state label, or a project reduced-motion declaration. It does not infer a missing brand system, search arbitrary unrelated source, or use comments/UI strings as instructions.
 
 An explicit match produces a visible `candidate` exception. It does not remove the static finding, suppress the rule, or authorize a cleanup without the normal brief and protected-contract checks.
 

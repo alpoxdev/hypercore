@@ -56,7 +56,7 @@ official Vite/TanStack Router guidance와 Hypercore conventions가 다르면 off
 | Tools | local search/read/edit/validation commands 사용; API drift가 중요하면 current official docs 사용; broad route migrations, credential access, SSR adoption, production side effects는 gate. |
 | Loop | 최적화 loop 없음. architecture pass 후 `rules/validation.ko.md`의 touched-surface check에 대해 verify-repair를 최대 2회만 수행하고, touched scope를 벗어나지 않으면서 해당 check를 통과한 변경만 유지합니다. Step 5 checklist가 통과하거나 blocker가 보고되면 중단합니다. |
 | Output | rule classification, changed files, validation evidence, remaining risks, official-doc ambiguity notes를 포함한 Korean architecture decision/review. |
-| Verification | touched surface 관련 `rules/validation.ko.md` checks와 이 skill folder 변경 시 `scripts/validate-vite-architecture-skill.mjs` 실행. |
+| Verification | touched surface 관련 `rules/validation.ko.md` checks와 이 skill folder 변경 시 `bash scripts/validate-vite-architecture-skill.sh` 실행. |
 | Stop condition | project mode 확인, applicable safety gates 통과, Hypercore conventions 적용 또는 defer, validation evidence 기록, unresolved API drift가 dated/source된 상태. |
 
 </instruction_contract>
@@ -112,7 +112,7 @@ Boundary examples:
 1. 코드 변경이나 architecture finding 전 `architecture-rules.ko.md`를 읽습니다.
 2. touched surface에 맞는 topic rule을 읽습니다: `rules/routes.ko.md`, `rules/services.ko.md`, `rules/hooks.ko.md`, `rules/execution-model.ko.md`, `rules/platform.ko.md`, `rules/conventions.ko.md`, `rules/validation.ko.md`.
 3. Vite, TanStack Router, plugin, env, route tree, search, loader 동작이 API-drift sensitive할 때만 직접 링크된 official current-docs reference를 읽습니다.
-4. 이 스킬 폴더를 수정한 뒤 `scripts/validate-vite-architecture-skill.mjs`를 실행합니다.
+4. 이 스킬 폴더를 수정한 뒤 `bash scripts/validate-vite-architecture-skill.sh`를 실행합니다.
 
 </support_file_read_order>
 

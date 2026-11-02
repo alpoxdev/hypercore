@@ -49,8 +49,8 @@ Do not force long content into `results.json`; place it under `details/` as Mark
 Canonical generated assets:
 
 - template: `skills/autoresearch-skill/assets/dashboard-template.html`
-- renderer: `skills/autoresearch-skill/scripts/render-dashboard.mjs`
-- renderer runtime: the Bun JSON runtime
+- renderer: `skills/autoresearch-skill/scripts/render-dashboard.sh`
+- renderer runtime: bash 3.2+ with `jq`
 
 ## Baseline snapshot
 
@@ -268,7 +268,7 @@ Required behavior:
 Lifecycle rules:
 
 - Render `dashboard.html` from `skills/autoresearch-skill/assets/dashboard-template.html`
-- Use `skills/autoresearch-skill/scripts/render-dashboard.mjs <artifact-dir>` as the default renderer
+- Use `bash skills/autoresearch-skill/scripts/render-dashboard.sh <artifact-dir>` as the default renderer
 - After creating `dashboard.html`, open it immediately if the runtime makes that safe
 - After each experiment, update `results.tsv` and `results.json`
 - Keep `score-explanation.md` and `final-report.md` current for completed runs, unless the same score explanation is fully represented in `results.json.score_explanation`
@@ -298,7 +298,7 @@ Recommended principles:
 - Keep core metrics and status in `results.json`.
 - Put long human-readable explanations in `details/` or standard log files.
 - Keep `dashboard-template.html` as a presentation template only; do not hardcode per-run content into it.
-- Rerun `scripts/render-dashboard.mjs <artifact-dir>` to synchronize `dashboard.html` and `results.js`.
+- Rerun `bash scripts/render-dashboard.sh <artifact-dir>` to synchronize `dashboard.html` and `results.js`.
 
 Recommended browser-safety pattern:
 
@@ -309,7 +309,7 @@ Recommended browser-safety pattern:
 Recommended render order:
 
 ```bash
-skills/autoresearch-skill/scripts/render-dashboard.mjs .hyper/autoresearch-skill/my-skill
+bash skills/autoresearch-skill/scripts/render-dashboard.sh .hyper/autoresearch-skill/my-skill
 open .hyper/autoresearch-skill/my-skill/dashboard.html
 ```
 

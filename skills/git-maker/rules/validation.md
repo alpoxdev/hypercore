@@ -18,8 +18,8 @@ Run these checks before declaring `git-maker` changes complete or before reporti
 
 ## Runtime Checks
 
-- `node --check scripts/git-maker-fast.mjs` passes from the skill root, or `node --check skills/git-maker/scripts/git-maker-fast.mjs` passes from the repository root.
-- `scripts/git-maker-fast.mjs inspect . --jobs 2` emits `repos|begin`, `repo-status|begin`, and file inventory blocks.
+- `bash -n scripts/git-maker-fast.sh` passes from the skill root, or `bash -n skills/git-maker/scripts/git-maker-fast.sh` passes from the repository root.
+- `scripts/git-maker-fast.sh inspect . --jobs 2` emits `repos|begin`, `repo-status|begin`, and file inventory blocks.
 - A local linked-worktree fixture, when practical, shows `worktree|linked` and a `repo|...` path at the linked checkout root.
 - Push helper is not tested against a real remote unless the user asked to push; use local fixtures when validating behavior.
 - Commit phase still uses targeted staging and one logical change per commit.

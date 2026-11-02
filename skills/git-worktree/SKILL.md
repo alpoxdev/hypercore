@@ -111,7 +111,7 @@ Boundary request:
 
 1. Read `rules/worktree-lifecycle.md` for command patterns, safety checks, removal, pruning, repair, and context-move rules.
 2. Read `references/source-survey.md` only when the rationale, upstream behavior, or source comparison matters.
-3. Use the deterministic validator `scripts/validate-git-worktree-skill.mjs` after editing this skill folder.
+3. Use the deterministic validator `scripts/validate-git-worktree-skill.sh` after editing this skill folder.
 
 </support_file_read_order>
 
@@ -171,7 +171,7 @@ Boundary request:
 Deterministic regression command:
 
 ```bash
-bun skills/git-worktree/scripts/validate-git-worktree-skill.mjs
+bash skills/git-worktree/scripts/validate-git-worktree-skill.sh
 ```
 
 Trigger checks:

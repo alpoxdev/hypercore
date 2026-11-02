@@ -3,7 +3,7 @@ name: git-maker
 description: "Use this skill when the user asks to commit and push together, save and push changes, run `/git-maker`, select current-session or all changes, or propagate newly created commits to `&&`-separated branches. It supports linked Git worktrees, automatic push, and intent-preserving conflict resolution."
 license: MIT
 allowed-tools: Bash
-compatibility: Requires Bash and scripts under skills/git-maker/scripts.
+compatibility: Requires Bash 3.2+ (macOS or Linux), git, and the standard POSIX utilities used by the scripts (find, sort, mktemp); scripts live under skills/git-maker/scripts.
 ---
 
 # Git Maker Skill
@@ -87,12 +87,12 @@ Boundary trigger:
 
 | Script | Purpose |
 |------|------|
-| `scripts/git-maker-fast.mjs inspect [start_dir] [--jobs N]` | Fast preflight: pruned repo discovery, parallel repo status, file inventory |
-| `scripts/git-maker-fast.mjs push [--force] [repo...]` | Push explicit repos without rediscovering; non-interactive; protected force-push guard |
-| `scripts/git-commit.mjs [--repo path] "msg" [files...]` | Commit staged or selected files in one repository |
-| `scripts/git-push.mjs [--force]` | Legacy/discovered safe push fallback |
-| `scripts/repo-discover.mjs [start_dir]` | Legacy repo discovery fallback |
-| `scripts/repo-status.mjs [repo]` | Legacy status fallback |
+| `scripts/git-maker-fast.sh inspect [start_dir] [--jobs N]` | Fast preflight: pruned repo discovery, parallel repo status, file inventory |
+| `scripts/git-maker-fast.sh push [--force] [repo...]` | Push explicit repos without rediscovering; non-interactive; protected force-push guard |
+| `scripts/git-commit.sh [--repo path] "msg" [files...]` | Commit staged or selected files in one repository |
+| `scripts/git-push.sh [--force]` | Legacy/discovered safe push fallback |
+| `scripts/repo-discover.sh [start_dir]` | Legacy repo discovery fallback |
+| `scripts/repo-status.sh [repo]` | Legacy status fallback |
 
 </scripts>
 
@@ -140,15 +140,15 @@ Treat shell-style separators as invocation syntax even when the request is plain
 
 ## Phase 1. Fast preflight
 
-Run `scripts/git-maker-fast.mjs inspect . --jobs 4` first. Use its repo, worktree, staged/unstaged/untracked, and file inventory output to determine scope and logical groups. If it fails or lacks detail, use `scripts/repo-discover.mjs` and `scripts/repo-status.mjs`.
+Run `scripts/git-maker-fast.sh inspect . --jobs 4` first. Use its repo, worktree, staged/unstaged/untracked, and file inventory output to determine scope and logical groups. If it fails or lacks detail, use `scripts/repo-discover.sh` and `scripts/repo-status.sh`.
 
 ## Phase 2. Group and commit
 
 Partition selected changes into one logical change per commit, use targeted staging, and commit sequentially per repository:
 
 ```bash
-scripts/git-commit.mjs "<type>[scope]: <Korean subject>" path/to/file1 path/to/file2
-scripts/git-commit.mjs --repo path/to/repo "<type>[scope]: <Korean subject>" path/to/file1
+scripts/git-commit.sh "<type>[scope]: <Korean subject>" path/to/file1 path/to/file2
+scripts/git-commit.sh --repo path/to/repo "<type>[scope]: <Korean subject>" path/to/file1
 ```
 
 Use Korean neutral result-summary subjects after the Conventional Commit type/scope. Never include secrets or unrelated changes, bypass hooks, or push after a failed commit. Follow `rules/commit-and-push-policy.md`.
@@ -158,11 +158,11 @@ Use Korean neutral result-summary subjects after the Conventional Commit type/sc
 After every intended commit succeeds, push without confirmation. Prefer the preflight repo list:
 
 ```bash
-scripts/git-maker-fast.mjs push /absolute/repo/path
-scripts/git-maker-fast.mjs push --force /absolute/repo/path
+scripts/git-maker-fast.sh push /absolute/repo/path
+scripts/git-maker-fast.sh push --force /absolute/repo/path
 ```
 
-Use `scripts/git-push.mjs [--force]` only as fallback.
+Use `scripts/git-push.sh [--force]` only as fallback.
 
 ## Phase 4. Propagate to requested branches
 
@@ -199,7 +199,7 @@ Report:
 | Conflict ownership | Resolve conflicts autonomously when intent is recoverable; ask only at a material product/architecture decision boundary. |
 | Safety | Never force push to `main` or `master`; never push from detached HEAD. |
 | Upstream | If no upstream exists, push with `-u origin <branch>`. |
-| Reuse preflight | Prefer `git-maker-fast.mjs push [repo...]` to avoid duplicate discovery. |
+| Reuse preflight | Prefer `git-maker-fast.sh push [repo...]` to avoid duplicate discovery. |
 | Worktrees | Linked worktrees are supported; use checkout root paths, not the common git dir. |
 | Agent boundaries | Subagents may review and propose, but the main integrator owns staging, commit, and push. |
 | Validation | Run `rules/validation.md` checks before final reporting. |

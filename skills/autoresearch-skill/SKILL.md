@@ -216,7 +216,7 @@ After the baseline plan is explicit:
 
 Keep `SKILL.md` focused on trigger, owned work, mutation discipline, and stop conditions. Put schemas, prompt packs, upstream notes, artifact details, long reviews, raw eval output, and narrative analysis in directly linked support files or `details/`.
 
-Render `dashboard.html` and `results.js` with `scripts/render-dashboard.mjs`; do not hand-edit generated dashboard output. Keep human-readable run descriptions, score rationale, changelog notes, and dashboard text in Korean unless the user requests another language.
+Render `dashboard.html` and `results.js` with `bash scripts/render-dashboard.sh <artifact-dir>`; do not hand-edit generated dashboard output. Keep human-readable run descriptions, score rationale, changelog notes, and dashboard text in Korean unless the user requests another language.
 
 When skill structure is weak, prefer deleting duplication, tightening triggers, moving reusable policy to `rules/`, and moving detailed knowledge to `references/` before adding new machinery.
 

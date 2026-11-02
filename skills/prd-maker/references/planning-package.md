@@ -149,7 +149,7 @@ Recommended sections:
 - Node inventory table
 - Branch notes for PRD, feature spec, user flow, wireframe, and open questions
 - `diagram.data.json` node data for deterministic rendering
-- Render notes: create `diagram.svg` with `scripts/render-planning-map.mjs`
+- Render notes: create `diagram.svg` with `bash scripts/render-planning-map.sh`
 
 Preferred shape:
 
@@ -183,7 +183,7 @@ Keep node labels short enough to scan. Put longer explanation below the diagram,
 
 ## `preview.html`
 
-Purpose: provide a local browser viewer for the package. It is generated from `assets/preview.template.html` by `scripts/build-preview.mjs`; do not hand-edit generated previews unless the user explicitly asks.
+Purpose: provide a local browser viewer for the package. It is generated from `assets/preview.template.html` by `bash scripts/build-preview.sh`; do not hand-edit generated previews unless the user explicitly asks.
 
 Preview rules:
 

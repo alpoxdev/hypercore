@@ -1,8 +1,8 @@
 ---
 name: version-update
-description: node/rust/python 프로젝트의 semantic version을 일관되게 갱신하고, 이 스킬의 Bun MJS helper로 요청된 commit과 push를 직접 수행하는 스킬입니다.
+description: node/rust/python 프로젝트의 semantic version을 일관되게 갱신하고, 이 스킬의 bash helper로 요청된 commit과 push를 직접 수행하는 스킬입니다.
 allowed-tools: Bash Read Edit
-compatibility: Bun, Git 저장소, `skills/version-update/scripts` 하위 MJS 스크립트가 필요합니다.
+compatibility: Bash 3.2+와 Git 저장소, `skills/version-update/scripts` 하위 bash 스크립트가 필요합니다.
 ---
 
 # Version Update Skill
@@ -35,8 +35,8 @@ compatibility: Bun, Git 저장소, `skills/version-update/scripts` 하위 MJS �
 | Trigger | version bump/set 요청, 특히 version update와 optional commit 요청에 활성화합니다. |
 | Scope | stack detection, version-file discovery, target-version calculation, version application, diff review, 요청된 git operation을 담당합니다. |
 | Authority | 사용자와 프로젝트 지시가 이 스킬보다 우선합니다. discovered version file, semver rule, script output, diff는 근거입니다. |
-| Evidence | git write 전에 Bun MJS helper, target argument parsing, `git diff`를 사용합니다. |
-| Tools | `bun scripts/*.mjs` helper와 local file edit를 사용합니다. 요청된 경우에만 이 스킬의 직접 git helper를 사용합니다. |
+| Evidence | git write 전에 bash helper, target argument parsing, `git diff`를 사용합니다. |
+| Tools | `bash scripts/*.sh` helper와 local file edit를 사용합니다. 요청된 경우에만 이 스킬의 직접 git helper를 사용합니다. |
 | Loop | 루프 없음. 요청당 한 번만 수행합니다: 스택 감지, 버전 파일 탐색, 현재 버전 확인, 목표 버전 계산, 반영, diff 검토 후 멈춥니다. 사용자가 다시 버전 변경을 요청할 때만 재실행합니다. |
 | Output | current version, target version, changed file, commit/push status, caveat에 대한 한국어 report입니다. |
 | Verification | 의도한 모든 version file이 일관되게 변경되었는지 확인하고, diff를 검토하며, 요청된 경우에만 optional git step을 수행합니다. |
@@ -73,21 +73,21 @@ compatibility: Bun, Git 저장소, `skills/version-update/scripts` 하위 MJS �
 
 | 스크립트 | 용도 |
 |------|------|
-| `bun scripts/stack-detect.mjs` | 스택 감지(`node`, `rust`, `python`) |
-| `bun scripts/version-find.mjs [--plain]` | 버전 관련 파일 탐색 |
-| `bun scripts/version-current.mjs [file]` | 현재 버전 추출 (`file|version`) |
-| `bun scripts/version-bump.mjs <current> <type>` | 다음 버전 계산 |
-| `bun scripts/version-apply.mjs <new> [files...]` | 탐색/지정 파일에 버전 일괄 반영 |
-| `bun scripts/git-commit.mjs "msg" [files]` | 지정한 version-update 파일을 직접 커밋 |
-| `bun scripts/git-push.mjs` | 명시적인 사용자 요청 후 직접 푸시 |
+| `bash scripts/stack-detect.sh` | 스택 감지(`node`, `rust`, `python`) |
+| `bash scripts/version-find.sh [--plain]` | 버전 관련 파일 탐색 |
+| `bash scripts/version-current.sh [file]` | 현재 버전 추출 (`file|version`) |
+| `bash scripts/version-bump.sh <current> <type>` | 다음 버전 계산 |
+| `bash scripts/version-apply.sh <new> [files...]` | 탐색/지정 파일에 버전 일괄 반영 |
+| `bash scripts/git-commit.sh "msg" [files]` | 지정한 version-update 파일을 직접 커밋 |
+| `bash scripts/git-push.sh` | 명시적인 사용자 요청 후 직접 푸시 |
 
 </scripts>
 
 <git_integration>
 
 - 사용자가 버전만 바꾸라고 했다면 diff 확인까지만 하고 커밋/푸시는 하지 않는다.
-- 커밋을 요청한 경우 사용자가 다른 메시지를 요청하지 않았다면 `version-update` 로 실제 변경된 파일만 지정하여 `bun scripts/git-commit.mjs "chore: bump version to x.y.z" [files...]` 를 실행한다.
-- 푸시를 요청한 경우 커밋 성공 후 사용자가 명시적으로 푸시를 요청했을 때만 `bun scripts/git-push.mjs` 를 실행한다.
+- 커밋을 요청한 경우 사용자가 다른 메시지를 요청하지 않았다면 `version-update` 로 실제 변경된 파일만 지정하여 `bash scripts/git-commit.sh "chore: bump version to x.y.z" [files...]` 를 실행한다.
+- 푸시를 요청한 경우 커밋 성공 후 사용자가 명시적으로 푸시를 요청했을 때만 `bash scripts/git-push.sh` 를 실행한다.
 - Git 쓰기 작업은 순차 실행한다.
 
 </git_integration>
@@ -109,31 +109,31 @@ compatibility: Bun, Git 저장소, `skills/version-update/scripts` 하위 MJS �
 
 ```bash
 # 1) 스택 감지
-bun scripts/stack-detect.mjs
+bash scripts/stack-detect.sh
 
 # 2) 버전 파일 탐색
-bun scripts/version-find.mjs
+bash scripts/version-find.sh
 
 # 3) 현재 버전 확인
-bun scripts/version-current.mjs
+bash scripts/version-current.sh
 # 출력: <file>|<version>
 
 # 4) 새 버전 계산
-bun scripts/version-bump.mjs 1.2.3 +minor
+bash scripts/version-bump.sh 1.2.3 +minor
 # -> 1.3.0
 
 # 5) 버전 일괄 반영
-bun scripts/version-apply.mjs 1.3.0
+bash scripts/version-apply.sh 1.3.0
 
 # 6) 최종 diff와 변경 파일 확인
 git diff --stat
 git diff
 
 # 7) (선택) 명시적으로 요청된 경우에만 커밋
-bun scripts/git-commit.mjs "chore: bump version to 1.3.0" package.json
+bash scripts/git-commit.sh "chore: bump version to 1.3.0" package.json
 
 # 8) (선택) 명시적으로 요청된 경우에만 푸시
-bun scripts/git-push.mjs
+bash scripts/git-push.sh
 ```
 
 </workflow>
@@ -153,12 +153,12 @@ bun scripts/git-push.mjs
 | 분류 | 필수 |
 |------|------|
 | Input | ARGUMENT를 bump 규칙 또는 semver로 파싱 |
-| Discovery | 업데이트 전 `bun scripts/version-find.mjs` 실행 |
-| Current state | 목표 버전 계산 전에 `bun scripts/version-current.mjs` 로 현재 버전 확인 |
+| Discovery | 업데이트 전 `bash scripts/version-find.sh` 실행 |
+| Current state | 목표 버전 계산 전에 `bash scripts/version-current.sh` 로 현재 버전 확인 |
 | Consistency | 탐색된 버전 파일을 모두 동기화 |
 | Git scope | version-update 파일 집합만 커밋 |
 | Safety | 사용자가 다르게 요청하지 않으면 커밋 메시지 규칙(`chore: bump version to x.y.z`) 준수 |
-| Git | 요청된 Git 쓰기에는 `bun scripts/git-commit.mjs`, `bun scripts/git-push.mjs` 만 순차적으로 사용 |
+| Git | 요청된 Git 쓰기에는 `bash scripts/git-commit.sh`, `bash scripts/git-push.sh` 만 순차적으로 사용 |
 
 </required>
 
@@ -198,12 +198,12 @@ Trigger 체크:
 
 실행 체크리스트:
 
-- [ ] `bun scripts/version-current.mjs`로 현재 버전 확인
-- [ ] `bun scripts/version-bump.mjs` 또는 직접 semver 검증 완료
-- [ ] `bun scripts/version-apply.mjs`로 대상 파일 업데이트
+- [ ] `bash scripts/version-current.sh`로 현재 버전 확인
+- [ ] `bash scripts/version-bump.sh` 또는 직접 semver 검증 완료
+- [ ] `bash scripts/version-apply.sh`로 대상 파일 업데이트
 - [ ] `git diff`로 변경 검토
-- [ ] 요청된 커밋은 `bun scripts/git-commit.mjs` 로 version-update 파일만 사용
-- [ ] 요청된 푸시는 커밋 성공 후 `bun scripts/git-push.mjs` 로 실행
+- [ ] 요청된 커밋은 `bash scripts/git-commit.sh` 로 version-update 파일만 사용
+- [ ] 요청된 푸시는 커밋 성공 후 `bash scripts/git-push.sh` 로 실행
 
 금지:
 

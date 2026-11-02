@@ -3,7 +3,7 @@
 /**
  * seo-maker bilingual structural-tag parity (plan todo 13).
  *
- * `validate-skill.mjs` compares the structural tag sequence of `SKILL.md` and
+ * `validate-skill.sh` compares the structural tag sequence of `SKILL.md` and
  * `SKILL.ko.md` and reports `BILINGUAL_TAG_DRIFT` when they differ. Two empty tag
  * lists compare equal, so this test pins the contract from both sides: the shipped
  * skill must validate with `ok === true` and two identical, non-empty tag
@@ -20,12 +20,12 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const validatorPath = join(root, "skills/skill-tester/scripts/validate-skill.mjs");
+const validatorPath = join(root, "skills/skill-tester/scripts/validate-skill.sh");
 const skillPath = join(root, "skills/seo-maker");
 
 /**
  * Whole lines that are a single structural tag, lowercased - the same extraction
- * `validate-skill.mjs` performs for its core-parity check.
+ * `validate-skill.sh` performs for its core-parity check.
  * @param {string} text
  * @returns {string[]}
  */
@@ -39,7 +39,7 @@ function structuralTags(text) {
  */
 function validate(target) {
   const result = Bun.spawnSync({
-    cmd: [process.execPath, validatorPath, target, "--json"],
+    cmd: ["bash", validatorPath, target, "--json"],
     cwd: root,
     stdout: "pipe",
     stderr: "pipe",

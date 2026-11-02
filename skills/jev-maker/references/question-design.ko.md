@@ -196,13 +196,13 @@ state는 들어온 언어 그대로 두세요. 판단 대상이 되는 내용을
 
 ## 요청 유효성 점검표
 
-Bun이 없거나 검사기를 지운 환경처럼 오프라인 검사기를 돌릴 수 없을 때 사람이 직접 확인하는
-목록입니다. `../scripts/check-jev-request.mjs`의 검사를 하나씩 그대로 옮겼고, 그 스크립트가
+bash나 jq가 없거나 검사기를 지운 환경처럼 오프라인 검사기를 돌릴 수 없을 때 사람이 직접 확인하는
+목록입니다. `../scripts/check-jev-request.sh`의 검사를 하나씩 그대로 옮겼고, 그 스크립트가
 출력하는 오류 코드도 함께 적었습니다.
 
 **문서 전체**
 
-1. 파일이 올바른 JSON입니다. 아니면 `INVALID_JSON`, 문서가 엔진 스택이 읽을 수 있는 깊이보다
+1. 파일이 올바른 JSON입니다. 아니면 `INVALID_JSON`, 문서가 검사기의 파서가 읽을 수 있는 깊이보다
    깊게 중첩되면 `INPUT_TOO_DEEP`.
 2. 뿌리가 JSON 객체입니다. 배열이나 스칼라가 아닙니다. 아니면 `ROOT_NOT_OBJECT`.
 3. `state`가 있고 문자열, 객체, 배열 가운데 하나입니다. `null`, 숫자, 불리언은 거부됩니다.
@@ -257,12 +257,12 @@ criteria의 값과 score 단계에서 `null` 설명을 막는 것도 검사기 �
 API 예산 위로 밀어 올릴 때 `STATE_LARGE`, 직접 경로의 별칭이 알려진 목록 밖일 때
 `MODEL_UNVERIFIED`.
 
-**종료 코드.** 오류가 없으면 0, 읽을 수 없는 파일이나 엔진 스택을 넘겨 중첩된 문서까지 포함해
+**종료 코드.** 오류가 없으면 0, 읽을 수 없는 파일이나 검사기 파서의 깊이 한계를 넘은 문서까지 포함해
 오류가 하나라도 있으면 1, 사용법 문제(파일 인자 없음, 읽을 수 없는 파일, 알 수 없는 경로)면
 2입니다. 실행은 스킬 폴더에서 이렇게 합니다.
 
 ```bash
-bun scripts/check-jev-request.mjs --route direct path/to/request.json
+bash scripts/check-jev-request.sh --route direct path/to/request.json
 ```
 
 초록불은 모양만 본 결과로 받아들이세요. 형식이 맞는 요청도 나쁜 질문일 수 있고, 둘 가운데
@@ -283,7 +283,7 @@ bun scripts/check-jev-request.mjs --route direct path/to/request.json
 | 영어가 주 훈련 언어이고 CJK를 포함한 다른 언어에는 주의가 필요하다는 설명 | <https://docs.typesafe.ai/models> |
 | 옆의 패턴 파일에 적은 레시피 이름을 확인한 쿡북 목록 | <https://docs.typesafe.ai/llms.txt> |
 
-점검표는 이 패키지의 `../scripts/check-jev-request.mjs`를 2026-10-01에 읽고 옮겼습니다.
+점검표는 이 패키지의 `../scripts/check-jev-request.sh`를 2026-10-01에 읽고 옮겼습니다.
 
 ### Evidence grade
 

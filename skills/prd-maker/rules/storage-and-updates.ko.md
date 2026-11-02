@@ -50,8 +50,8 @@
 - `wireframe.md`: 저충실도 화면 목록, 상태 변형, 레이아웃 블록, 컴포넌트 메모
 - `diagram.md`: 시각 기획 맵 설명과 Mermaid/text 원본
 - `diagram.data.json`: 결정적 SVG 렌더링을 위한 노드 데이터
-- `diagram.svg`: `scripts/render-planning-map.mjs`가 생성하는 카드/커넥터형 시각 맵
-- `preview.html`: `assets/preview.template.html`에서 `scripts/build-preview.mjs`로 생성하는 로컬 브라우저 뷰어
+- `diagram.svg`: `bash scripts/render-planning-map.sh`가 생성하는 카드/커넥터형 시각 맵
+- `preview.html`: `assets/preview.template.html`에서 `bash scripts/build-preview.sh`로 생성하는 로컬 브라우저 뷰어
 - `sources.md`: 제공 맥락, 조사 쿼리, 출처 메모, 근거 공백
 - `flow.json`: 복잡 패키지만 사용하는 단계 상태
 
@@ -65,8 +65,8 @@
 - 각 마크다운 파일은 대응하는 template asset에서 만들고, `diagram.data.json`은 JSON 템플릿에서 만듭니다.
 - 미지수는 조용히 생략하지 말고 명시적 가정 또는 오픈 질문으로 채웁니다.
 - PRD → 기능명세서 → 유저플로우 → 와이어프레임 → 다이어그램/미리보기 체인 순서로 작성합니다.
-- `scripts/render-planning-map.mjs`로 `diagram.data.json`에서 `diagram.svg`를 렌더링합니다.
-- 패키지 콘텐츠 작성 후 `scripts/build-preview.mjs`로 `preview.html`을 빌드합니다.
+- `bash scripts/render-planning-map.sh`로 `diagram.data.json`에서 `diagram.svg`를 렌더링합니다.
+- 패키지 콘텐츠 작성 후 `bash scripts/build-preview.sh`로 `preview.html`을 빌드합니다.
 - 복잡 패키지라면 `references/flow-schema.md`에서 `flow.json`을 초기화합니다.
 
 ## 5. 갱신 흐름

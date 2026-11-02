@@ -33,9 +33,10 @@
 **확인 없이 덮어쓰지 않습니다.** 이미 있는 파일은 먼저 읽고, 옆 파일로 쓰거나 바꿔도 되는지 물은
 뒤에 씁니다. `template`과 `code`는 파일이 이미 있을 가능성이 가장 큰 모드이므로 특히 지킵니다.
 
-**요청을 검증하는 두 가지 길.** 기본은 `../scripts/check-jev-request.mjs` 검사기를 돌리는 것이고
-Bun이 필요합니다. Bun이 없으면 [`./question-design.md`](./question-design.md)의 요청 유효성
-점검표를 사람이 직접 돌리고, 마지막 보고에 수동 점검이었다고 밝힙니다.
+**요청을 검증하는 두 가지 길.** 기본은 `../scripts/check-jev-request.sh` 검사기를 돌리는 것이고
+bash 3.2 이상과 jq가 필요합니다. 둘 가운데 하나라도 없으면
+[`./question-design.md`](./question-design.md)의 요청 유효성 점검표를 사람이 직접 돌리고,
+마지막 보고에 수동 점검이었다고 밝힙니다.
 
 **멈춤.** 산출물이 있고 검증까지 돌았으며 아래 모드별 멈춤 조건이 성립하면 멈춥니다. 적합성 관문,
 사용자만 줄 수 있는 입력의 부재, 검증되지 않은 경로는 그보다 먼저 멈춥니다.
@@ -92,7 +93,7 @@ Bun이 필요합니다. Bun이 없으면 [`./question-design.md`](./question-des
    뜻하는지 적습니다.
 4. `design`에서 정한 필드 이름을 백틱으로 감싸 state 안에서 가리킵니다.
 5. 질문 묶음을 예시 state와 함께 요청 파일로 묶습니다.
-6. 쓰려는 경로에 맞춰 검사기를 돌립니다. Bun이 없으면
+6. 쓰려는 경로에 맞춰 검사기를 돌립니다. bash나 jq가 없으면
    [`./question-design.md`](./question-design.md)의 점검표를 사람이 돌리고 그 사실을 밝힙니다.
 7. `questions.md`를 씁니다. 질문마다 그 선택을 뒷받침하는 이유, 스냅샷 값이 온 출처 파일,
    스냅샷 날짜, 그리고 첫 실호출 전에 다시 확인하라는 안내를 적습니다.
@@ -135,9 +136,9 @@ Python입니다. 두 파일이 모두 있으면 TypeScript입니다. 경로는
    읽고, 하나의 state와 모든 질문을 요청 하나로 보내고, 키를 출력하거나 로그에 남기거나 파일에
    쓰지 않습니다.
 5. **검사기로 요청 확인.** 같은 질문을 요청 파일로 묶어
-   `bun scripts/check-jev-request.mjs --route <route> <file>`을 스킬 폴더에서 돌립니다. `--route` 값은
+   `bash scripts/check-jev-request.sh --route <route> <file>`을 스킬 폴더에서 돌립니다. `--route` 값은
    `direct`, `bai`, `aisdk` 셋입니다. 종료 코드 0을 확인한 뒤에 호출 코드를 넘깁니다. 종료 코드
-   1이면 고칠 필드를 알려 줍니다. Bun이 없으면
+   1이면 고칠 필드를 알려 줍니다. bash나 jq가 없으면
    [`./question-design.md`](./question-design.md)의 점검표를 사람이 돌리고 그 사실을 밝힙니다.
 6. **응답 검증.** 호출부는 답을 쓰기 전에 모든 항목을 확인합니다. 보낸 질문 아이디가 응답에 모두
    있고, 답의 유형이 보낸 질문 유형과 맞고, `choice` 답이 기준 키 가운데 하나이고, `score` 답이 단계
@@ -156,7 +157,7 @@ Python입니다. 두 파일이 모두 있으면 TypeScript입니다. 경로는
 호출 파일, 5단계에서 만드는 `request.json`을 씁니다. 상수 파일과 `request.json`은 같은 모델
 아이디를 담고, 두 값을 나란히 유지해야 합니다. 세 경로와 검사기 종료 코드를 보고합니다.
 
-**검증.** 검사기가 그 경로에서 0으로 끝나거나, Bun이 없을 때는 수동 점검표를 모든 줄 통과했고,
+**검증.** 검사기가 그 경로에서 0으로 끝나거나, bash나 jq가 없을 때는 수동 점검표를 모든 줄 통과했고,
 호출 파일이 대상 언어로 컴파일되고, 6단계 응답 검증이 주석의 약속이 아니라 파일 안에 들어 있습니다.
 
 **멈춤.** 상수 파일과 호출 파일이 있고 검사기가 통과했고, 실호출은 동의 절차와 함께 사용자에게
@@ -292,14 +293,14 @@ route", "connect it", "setup", "environment"입니다.
 | 주장 | 출처 |
 | --- | --- |
 | 모드 일곱 개, 모드별 신호, 가장 먼저 도는 적합성 관문 | [`../rules/modes-and-routing.md`](../rules/modes-and-routing.md) |
-| 질문의 모양, `what`/`not_for`/`examples` 기준, Bun이 없을 때 쓰는 수동 점검표 | [`./question-design.md`](./question-design.md) |
+| 질문의 모양, `what`/`not_for`/`examples` 기준, bash나 jq가 없을 때 쓰는 수동 점검표 | [`./question-design.md`](./question-design.md) |
 | 경로 선택 순서, 키 취급 규칙, 검증된 계약이 없는 경로 | [`./providers.md`](./providers.md) |
 | 산출물 기본 경로와 확인 없는 덮어쓰기 금지 | 저장소 정책 |
 | 호출 뒤에 검증하는 질문 유형과 답 필드 | <https://docs.typesafe.ai/api> |
 | `design`과 `audit`이 쓰는, 판단 모델에 맞지 않는 일의 목록 | <https://docs.typesafe.ai/model-jaggedness/jev-1.13> |
 | 신뢰도 구간과 신뢰도 분기 뒤의 검토 경로 | <https://docs.typesafe.ai/confidence> |
 | 상수를 한 파일에 모으라는 지침, 오래된 사본이 필드를 지어내게 한다는 경고 | <https://docs.typesafe.ai/agent-skill.md> |
-| 검사기의 플래그와 종료 코드, 경로 이름 | `../scripts/check-jev-request.mjs` |
+| 검사기의 플래그와 종료 코드, 경로 이름 | `../scripts/check-jev-request.sh` |
 
 ### Evidence grade
 

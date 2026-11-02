@@ -19,7 +19,7 @@ compatibility: 로컬 파일 검색/수정 도구와 경쟁사/SERP/AI 인용 �
 | 범위 | 대상 분류, 측정 방법 선택, 온페이지·기술·콘텐츠·Core Web Vitals·AEO·GEO·LLMO 평가, 점수 산정, 발견 사항, 개선안, 리포트 워크스페이스를 담당한다. 감사 대상 밖의 구현, 릴리스 게이트, 페이지·제품 디자인, 대상 사이트나 콘텐츠 집합이 없는 광범위한 시장 조사는 담당하지 않는다. |
 | 권한 | 시스템/하네스와 사용자 지시 > 감사 대상 자체 파일과 라이브 관측 > 공식 플랫폼 문서 > 이 스킬 > 휴리스틱 선호. 도구·lab·synthetic·heuristic 관측은 공식 요구사항으로 승격하지 않는다. |
 | 근거 | 점수를 매기기 전에 대상 자체 파일, 렌더된 페이지, 라이브 응답을 읽고, 모든 critical·warning 발견 사항에 명령 출력·URL·파일 경로·probe 결과를 붙인다. 확인할 수 없는 점검은 `unknown`, 해당 없는 점검은 `not-applicable`로 기록하고, 점수·순위·포함·인용을 지어내지 않는다. |
-| 도구 | 사용 가능한 읽기/검색/브라우저 도구를 쓰고, 대시보드는 `scripts/render-dashboard.mjs <artifact-dir>`로 렌더한다. 웹 검색, 브라우저 점검, 필드 Core Web Vitals, Search Console, AI 인용 probe는 실제로 사용 가능할 때만 쓰고, 없으면 능력 한계와 더 낮은 등급의 대체 방법을 밝힌다. |
+| 도구 | 사용 가능한 읽기/검색/브라우저 도구를 쓰고, 대시보드는 `bash scripts/render-dashboard.sh <artifact-dir>`로 렌더한다. 웹 검색, 브라우저 점검, 필드 Core Web Vitals, Search Console, AI 인용 probe는 실제로 사용 가능할 때만 쓰고, 없으면 능력 한계와 더 낮은 등급의 대체 방법을 밝힌다. |
 | 루프 | optimize 모드 전용으로 `audit -> 수정 또는 개선안 -> re-audit`을 유한하게 반복하며 기본 예산은 3회다. 피드백은 비교 가능한 재감사 증거, 지표는 `unknown`·`not-applicable` 카테고리를 제외한 100점 점수, 가드는 비교 가능한 카테고리 회귀 없음과 증거 등급 승격 없음, 중단은 목표 달성·예산 소진·정체·가드 실패·외부 자격 증명이나 사업 판단이 필요한 시점이다. |
 | 출력 | `.hyper/seo-maker/[slug]/`에 `results.json`, `results.js`, `dashboard.html`, `report.md`, `sources.md`, complex·optimize 모드의 `flow.json`을 둔다. simple 모드는 `report.md`와 `sources.md`가 최소다. `sources.md`는 URL, 날짜, 적용 주장, 증거 등급, 한계를 적는 출처 원장이다. |
 | 검증 | 완료 시 `rules/validation.md`를 적용한다. 모든 critical·warning 발견 사항에 증거가 있고, 점수는 관측 증거에서 나오며 `unknown`·`not-applicable`을 명시적으로 처리하고, optimize 모드는 기준선·평가자·예산·가드·폐기한 반복·중단 사유·비교 가능한 최고 검증 결과를 기록한다. 패키지 변경 시에는 집중 코퍼스 검증기, 저장소 표준 게이트, 패키지 테스트를 함께 실행한다. |
@@ -53,7 +53,7 @@ compatibility: 로컬 파일 검색/수정 도구와 경쟁사/SERP/AI 인용 �
 
 SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`를 사용한다.
 
-경쟁사/시장 조사처럼 SEO 산출물이 아닌 일반 리서치면 `research`를 사용한다.
+경쟁사/시장 조사처럼 SEO 산출물이 아닌 일반 리서치면 출처 기반 리서치 workflow로 보낸다.
 
 결과물이 제품 요구사항 문서(PRD)면 이 스킬의 산출물이 아니다.
 
@@ -85,7 +85,7 @@ SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`�
 부정 요청:
 
 - "랜딩 페이지 디자인해줘." → `designer` 사용
-- "경쟁사 시장조사 해줘." → `research` 사용
+- "경쟁사 시장조사 해줘." → 출처 기반 리서치 workflow로 보냄
 - "배포 전 체크리스트 확인해줘." → 배포 게이트 판정이며 검색 가시성 감사가 아니다
 
 경계 요청:
@@ -93,7 +93,7 @@ SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`�
 - "이 페이지 성능 최적화해줘."
   검색 가시성이 중심이면 `seo-maker`를 쓰고, 순수 로딩 성능이면 다른 도구로 보낸다.
 - "AI 검색 트렌드 조사해줘."
-  실무 최적화 리포트가 목표일 때만 `seo-maker`를 쓰고, 일반 조사면 `research`로 보낸다.
+  실무 최적화 리포트가 목표일 때만 `seo-maker`를 쓰고, 일반 조사면 출처 기반 리서치 workflow로 보낸다.
 
 </activation_examples>
 
@@ -191,7 +191,7 @@ Complexity: [simple/complex] — [한 줄 이유]
 - `sources.md`는 source ledger다. 각 external 또는 official source-sensitive claim에 URL, accessed 또는 published date, applicable claim, evidence class, scope/availability limitation을 기록한다.
 - `flow.json`은 complex 경로에서 단계 상태를 추적한다.
 - 폴더가 아직 없으면 기본적으로 [assets/report.template.ko.md](assets/report.template.ko.md)로 report를 만든다. 영어가 명시적으로 필요할 때만 [assets/report.template.md](assets/report.template.md)를 사용한다.
-- `results.json`이 확정되면 `scripts/render-dashboard.mjs <artifact-dir>`로 dashboard를 렌더한다.
+- `results.json`이 확정되면 `bash scripts/render-dashboard.sh <artifact-dir>`로 dashboard를 렌더한다.
 
 
 complex 또는 optimize 모드에서는 `flow.json`은 정본 순서대로 단계를 추적한다: `scope` → `measurement` → `technical` → `platform_policy` → `onpage` → `content` → `aeo` → `geo` → `report`.

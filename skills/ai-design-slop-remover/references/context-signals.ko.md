@@ -16,7 +16,7 @@ Brief, identity, intent가 불완전하거나 충돌할 때 이 문서를 사용
 
 ## Detector v2 context 경계
 
-`scripts/resolve-context.mjs`는 target ancestor와 direct style context의 명시 `DESIGN.md`/`PRODUCT.md` 선언만 읽는다. 문서화된 brand gradient, comparison/pricing vocabulary, 실제 state label, project reduced-motion 선언을 식별할 수 있다. 없는 brand system을 추론하거나, 관련 없는 arbitrary source를 검색하거나, comment/UI string을 instruction으로 사용하지 않는다.
+`scripts/resolve-context.sh`는 target ancestor와 direct style context의 명시 `DESIGN.md`/`PRODUCT.md` 선언만 읽는다. 문서화된 brand gradient, comparison/pricing vocabulary, 실제 state label, project reduced-motion 선언을 식별할 수 있다. 없는 brand system을 추론하거나, 관련 없는 arbitrary source를 검색하거나, comment/UI string을 instruction으로 사용하지 않는다.
 
 명시 match는 보이는 `candidate` exception을 만든다. 정적 finding을 제거하거나 rule을 suppress하거나, 일반 brief/protected-contract 확인 없이 cleanup을 허가하지 않는다.
 

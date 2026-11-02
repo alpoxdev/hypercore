@@ -6,7 +6,7 @@ browser capability가 있거나 사용자가 rendered-evidence JSON handoff를 �
 
 - rendered evidence를 얻기 위해 Playwright, Axe, browser, dependency를 설치하지 않는다.
 - 유효한 handoff가 없으면 `static_only` 또는 `unavailable`을 보고한다. visual hierarchy, actual contrast, keyboard, accessibility, behavior pass를 주장하지 않는다.
-- handoff를 인용하기 전 `scripts/collect-rendered-evidence.mjs --input <capture.json>`로 검증한다.
+- handoff를 인용하기 전 `scripts/collect-rendered-evidence.sh --input <capture.json>`로 검증한다.
 
 ## 최소 증거
 

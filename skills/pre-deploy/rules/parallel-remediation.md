@@ -1,49 +1,51 @@
 # Parallel Remediation
 
-**Purpose**: Use subagents/background agents only when they reduce pre-deploy wall-clock time without hiding integration risk.
+**Purpose**: Use delegated lanes only when they shorten pre-deploy wall time without hiding integration risk.
 
-## When to use parallel lanes
+**Read when**: triage marked two or more failures as disjoint by stack or file, and the delegation capability exists. Otherwise run the same work sequentially and skip this file.
 
-Use parallel lanes after the initial full `skills/pre-deploy/scripts/deploy-check.mjs` captures failures and the leader has grouped them.
+## When a lane is justified
 
-Spawn or hand off only when at least one condition is true:
+Spawn or hand off only when at least one condition holds:
 
 - failures are independent by stack (`node`, `rust`, `python`)
-- one lane is read-only diagnosis while the leader continues another non-overlapping fix
-- edit ownership can be split by disjoint files or directories
-- a long log, dependency chain, or test output can be isolated from the main context
+- one lane is read-only diagnosis while the leader continues a non-overlapping fix
+- edit ownership splits cleanly by file or directory
+- a long log or dependency chain can be isolated from the main context
 
 Do not spawn when:
 
 - the next leader step is blocked on that exact result
-- two lanes would touch the same file, lockfile, package manifest, build config, or shared CI/deploy config
-- the task lacks a concrete success condition
-- external, credential-gated, destructive, or production side effects are required
-- the failure is simple enough that coordination overhead is larger than the fix
+- two lanes would touch the same file, lockfile, manifest, build config, or shared CI/deploy config
+- the work has no concrete success condition
+- the work needs an external, credential-gated, destructive, or production side effect
+- coordination costs more than the fix
+
+At most three lanes run at once, and each lane inherits its failure group's `MAX_FIX_ATTEMPTS` bound from `rules/tracked-remediation.md`.
 
 ## Leader contract
 
-Before delegation, the leader must define:
+Before delegation, define:
 
-1. Objective: one sentence describing the lane result.
+1. Objective: one sentence naming the lane result.
 2. Scope: stack, command, files, and target root.
-3. Ownership: read-only or exact writable file set.
-4. Forbidden actions: destructive commands, external side effects, unrelated refactors, and editing outside ownership.
-5. Output: files inspected/changed, evidence, command output, validation result, blockers.
+3. Ownership: read-only, or the exact writable file set.
+4. Forbidden actions: destructive commands, external side effects, unrelated refactors, edits outside ownership.
+5. Output: files inspected or changed, command output, validation result, blockers.
 6. Stop condition: complete, blocked, no reproducible failure, or ownership conflict.
 
 During delegation:
 
-- Continue non-overlapping work instead of idly waiting when safe.
-- Do not let subagents edit overlapping files or shared config concurrently.
-- Require escalation for lockfiles, package manifests, build config, CI/deploy config, or scope expansion.
+- Continue non-overlapping work instead of waiting idle.
+- Keep concurrent writers off the same file.
+- Require escalation for a lockfile, manifest, build config, or CI/deploy config.
 
 After delegation:
 
 - Compare lane findings for conflicts, duplicate fixes, and missing checks.
-- Inspect all changed files before final validation.
-- Run final `skills/pre-deploy/scripts/deploy-check.mjs` directly in the leader context.
-- Report subagent usage and any unverified lane output as caveats.
+- Inspect every changed file before the proof run.
+- Run the final `bash skills/pre-deploy/scripts/deploy-check.sh` in the leader context.
+- Report the lanes used and mark any unverified lane output as a caveat.
 
 ## Lane templates
 
@@ -55,7 +57,7 @@ Scope: [target root], [stack], [failing command/output].
 Mode: read-only.
 Ownership: no file edits.
 Forbidden: destructive commands, external side effects, unrelated refactors, editing files.
-Output: root-cause hypothesis, evidence files/commands, recommended targeted check, blockers.
+Output: root-cause hypothesis, evidence files and commands, recommended targeted check, blockers.
 Stop condition: root cause identified, no reproducible cause found, or scope conflict.
 ```
 
@@ -66,30 +68,37 @@ Objective: Fix the reproduced [stack] blocker without touching other lanes.
 Scope: [target root], [stack], [failing command/output].
 Mode: edit-own-files.
 Ownership: may edit only [file or directory list].
-Forbidden: editing shared configs/lockfiles/package manifests unless listed in Ownership; destructive commands; external side effects; unrelated cleanup.
+Forbidden: editing shared configs, lockfiles, or manifests unless listed in Ownership; destructive commands; external side effects; unrelated cleanup.
 Output: changed files, rationale, targeted validation command and result, remaining blockers.
-Stop condition: targeted check passes, blocked, ownership conflict, or broader fix required.
+Stop condition: targeted check passes, blocked, ownership conflict, or a broader fix is required.
 ```
 
-## Suggested lane split
+## Lane split
 
-| Failure shape | Safe lane split |
-|------|------|
-| Node + Rust + Python failures | one lane per stack, no shared config edits |
-| Node typecheck + Node lint | usually do not split; `lint-check.mjs` already runs them concurrently |
-| Tooling/script failure + application failure | read-only tooling lane plus one application-fix lane |
-| Lockfile/package manager issue | keep in leader or one single owner lane only |
-| Shared build config failure | keep in leader unless ownership can be made exclusive |
+| Failure shape | Safe split |
+|---|---|
+| Node, Rust, and Python failures | One lane per stack, with no shared config edits |
+| Node typecheck and Node lint | Do not split; `lint-check.sh` already runs both concurrently |
+| Tooling failure plus application failure | One read-only tooling lane and one application fix lane |
+| Lockfile or package manager issue | Leader only, or one exclusive owner |
+| Shared build config failure | Leader only unless ownership can be made exclusive |
 
 ## Validation assertions
 
-- [ ] Each lane had objective, scope, ownership, output, and stop condition
-- [ ] Parallel lanes were independent or explicitly sequenced
-- [ ] Writable lanes had non-overlapping ownership
-- [ ] The leader integrated findings instead of pasting them through
-- [ ] The leader ran or read final verification directly
-- [ ] Final readiness was not delegated to a subagent
+- [ ] Each lane received an objective, scope, ownership, output, and stop condition.
+- [ ] Lanes were independent, or the sequencing was explicit.
+- [ ] Writable lanes had non-overlapping ownership.
+- [ ] No lane exceeded the attempt bound for its failure group.
+- [ ] The leader integrated findings instead of forwarding them unchanged.
+- [ ] The leader ran the final proof directly.
+- [ ] Readiness was not delegated to a lane.
 
 ## Sources
 
-> No external sources were used. This rule states this package's own workflow, and its script paths were checked 2026-09-22.
+> Checked 2026-11-03. This rule states this package's own workflow; its script paths were re-read on that date.
+
+| Claim | Source |
+|---|---|
+| Delegation carries objective, scope, ownership, output, and stop condition, with no overlapping writers | `instructions/validation/index.md` |
+| The parent integrates the lane results and runs the final verification itself | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
+| Delegation is a capability, and gated side effects still need approval | `instructions/cli/capability-contract.md` |

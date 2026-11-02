@@ -1,7 +1,7 @@
 {
   "scripts": [
     {
-      "path": "skills/ai-design-slop-remover/scripts/analyze-structure.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/analyze-structure.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "analyze-structure",
@@ -22,7 +22,7 @@
       "behaviorContractId": "ai-design-slop-remover--analyze-structure"
     },
     {
-      "path": "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "collect-rendered-evidence",
@@ -43,7 +43,7 @@
       "behaviorContractId": "ai-design-slop-remover--collect-rendered-evidence"
     },
     {
-      "path": "skills/ai-design-slop-remover/scripts/detect-slop.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/detect-slop.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "detect-slop",
@@ -64,7 +64,7 @@
       "behaviorContractId": "ai-design-slop-remover--detect-slop"
     },
     {
-      "path": "skills/ai-design-slop-remover/scripts/engine-css.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/engine-css.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "slop-engine-css",
@@ -85,7 +85,7 @@
       "behaviorContractId": "ai-design-slop-remover--engine-css"
     },
     {
-      "path": "skills/ai-design-slop-remover/scripts/engine-markup.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/engine-markup.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "slop-engine-markup",
@@ -106,7 +106,7 @@
       "behaviorContractId": "ai-design-slop-remover--engine-markup"
     },
     {
-      "path": "skills/ai-design-slop-remover/scripts/engine-text.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/engine-text.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "slop-engine-text",
@@ -127,7 +127,7 @@
       "behaviorContractId": "ai-design-slop-remover--engine-text"
     },
     {
-      "path": "skills/ai-design-slop-remover/scripts/resolve-context.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/resolve-context.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "resolve-context",
@@ -148,7 +148,7 @@
       "behaviorContractId": "ai-design-slop-remover--resolve-context"
     },
     {
-      "path": "skills/ai-design-slop-remover/scripts/rule-registry.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/rule-registry.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "slop-rule-registry",
@@ -169,7 +169,7 @@
       "behaviorContractId": "ai-design-slop-remover--rule-registry"
     },
     {
-      "path": "skills/ai-design-slop-remover/scripts/rule-shared.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/rule-shared.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "slop-rule-shared",
@@ -190,7 +190,7 @@
       "behaviorContractId": "ai-design-slop-remover--rule-shared"
     },
     {
-      "path": "skills/ai-design-slop-remover/scripts/run-contract-evals.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/run-contract-evals.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "run-contract-evals",
@@ -211,7 +211,7 @@
       "behaviorContractId": "ai-design-slop-remover--run-contract-evals"
     },
     {
-      "path": "skills/ai-design-slop-remover/scripts/run-detector-evals.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/run-detector-evals.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "run-detector-evals",
@@ -232,7 +232,7 @@
       "behaviorContractId": "ai-design-slop-remover--run-detector-evals"
     },
     {
-      "path": "skills/ai-design-slop-remover/scripts/validate-report.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/validate-report.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "validate-report",
@@ -253,7 +253,7 @@
       "behaviorContractId": "ai-design-slop-remover--validate-report"
     },
     {
-      "path": "skills/ai-design-slop-remover/scripts/validate-waivers.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/validate-waivers.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "usage": "validate-waivers",
@@ -274,7 +274,7 @@
       "behaviorContractId": "ai-design-slop-remover--validate-waivers"
     },
     {
-      "path": "skills/autoresearch-skill/scripts/render-dashboard.mjs",
+      "path": "skills/autoresearch-skill/scripts/render-dashboard.sh",
       "family": "autoresearch-skill",
       "legacyOrigin": "former-sh",
       "usage": "render-dashboard",
@@ -287,7 +287,7 @@
       "behaviorContractId": "autoresearch-skill--render-dashboard"
     },
     {
-      "path": "skills/git-maker/scripts/git-commit.mjs",
+      "path": "skills/git-maker/scripts/git-commit.sh",
       "family": "git-maker",
       "legacyOrigin": "former-sh",
       "usage": "commit-files",
@@ -300,7 +300,7 @@
       "behaviorContractId": "git-maker--git-commit"
     },
     {
-      "path": "skills/git-maker/scripts/git-maker-fast.mjs",
+      "path": "skills/git-maker/scripts/git-maker-fast.sh",
       "family": "git-maker",
       "legacyOrigin": "former-sh",
       "usage": "commit-files",
@@ -313,7 +313,7 @@
       "behaviorContractId": "git-maker--git-maker-fast"
     },
     {
-      "path": "skills/git-maker/scripts/git-push.mjs",
+      "path": "skills/git-maker/scripts/git-push.sh",
       "family": "git-maker",
       "legacyOrigin": "former-sh",
       "usage": "push-commit",
@@ -326,7 +326,7 @@
       "behaviorContractId": "git-maker--git-push"
     },
     {
-      "path": "skills/git-maker/scripts/repo-discover.mjs",
+      "path": "skills/git-maker/scripts/repo-discover.sh",
       "family": "git-maker",
       "legacyOrigin": "former-sh",
       "usage": "inspect-repository",
@@ -339,7 +339,7 @@
       "behaviorContractId": "git-maker--repo-discover"
     },
     {
-      "path": "skills/git-maker/scripts/repo-status.mjs",
+      "path": "skills/git-maker/scripts/repo-status.sh",
       "family": "git-maker",
       "legacyOrigin": "former-sh",
       "usage": "inspect-repository",
@@ -352,7 +352,7 @@
       "behaviorContractId": "git-maker--repo-status"
     },
     {
-      "path": "skills/git-worktree/scripts/validate-git-worktree-skill.mjs",
+      "path": "skills/git-worktree/scripts/validate-git-worktree-skill.sh",
       "family": "git-worktree",
       "legacyOrigin": "former-py",
       "usage": "validate-skill",
@@ -365,52 +365,7 @@
       "behaviorContractId": "git-worktree--validate-git-worktree-skill"
     },
     {
-      "path": "skills/hermes-agent-maker/scripts/generate.mjs",
-      "family": "hermes-agent-maker",
-      "legacyOrigin": "authored-mjs",
-      "usage": "generate-artifact",
-      "behavior": "hermes-artifact-generation",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hermes-agent-maker/scripts/generate.mjs",
-          "absent": true
-        }
-      },
-      "behaviorContractId": "hermes-agent-maker--generate"
-    },
-    {
-      "path": "skills/hermes-agent-maker/scripts/validate-hermes-agent-maker.mjs",
-      "family": "hermes-agent-maker",
-      "legacyOrigin": "authored-mjs",
-      "usage": "validate-skill",
-      "behavior": "skill-validation",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hermes-agent-maker/scripts/validate-hermes-agent-maker.mjs",
-          "absent": true
-        }
-      },
-      "behaviorContractId": "hermes-agent-maker--validate-hermes-agent-maker"
-    },
-    {
-      "path": "skills/hermes-agent-maker/scripts/validate-portable-v1-output.mjs",
-      "family": "hermes-agent-maker",
-      "legacyOrigin": "authored-mjs",
-      "usage": "validate-portable-output",
-      "behavior": "portable-output-validation",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hermes-agent-maker/scripts/validate-portable-v1-output.mjs",
-          "absent": true
-        }
-      },
-      "behaviorContractId": "hermes-agent-maker--validate-portable-v1-output"
-    },
-    {
-      "path": "skills/image-maker/scripts/validate-image-maker.mjs",
+      "path": "skills/image-maker/scripts/validate-image-maker.sh",
       "family": "image-maker",
       "legacyOrigin": "retained-mjs",
       "usage": "validate-skill",
@@ -423,7 +378,7 @@
       "behaviorContractId": "image-maker--validate-image-maker"
     },
     {
-      "path": "skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.mjs",
+      "path": "skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh",
       "family": "nextjs-architecture",
       "legacyOrigin": "retained-mjs",
       "usage": "validate-skill",
@@ -436,52 +391,7 @@
       "behaviorContractId": "nextjs-architecture--validate-nextjs-architecture-skill"
     },
     {
-      "path": "skills/orca-orchestration/scripts/check-runtime-capabilities.mjs",
-      "family": "orca-orchestration",
-      "legacyOrigin": "authored-mjs",
-      "usage": "check-runtime-capabilities",
-      "behavior": "runtime-capability-check",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/orca-orchestration/scripts/check-runtime-capabilities.mjs",
-          "absent": true
-        }
-      },
-      "behaviorContractId": "orca-orchestration--check-runtime-capabilities"
-    },
-    {
-      "path": "skills/orca-orchestration/scripts/validate-orca-orchestration.mjs",
-      "family": "orca-orchestration",
-      "legacyOrigin": "authored-mjs",
-      "usage": "validate-skill",
-      "behavior": "skill-validation",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/orca-orchestration/scripts/validate-orca-orchestration.mjs",
-          "absent": true
-        }
-      },
-      "behaviorContractId": "orca-orchestration--validate-orca-orchestration"
-    },
-    {
-      "path": "skills/orca-orchestration/scripts/verify-orca-orchestration.mjs",
-      "family": "orca-orchestration",
-      "legacyOrigin": "authored-mjs",
-      "usage": "verify-skill",
-      "behavior": "skill-verification",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/orca-orchestration/scripts/verify-orca-orchestration.mjs",
-          "absent": true
-        }
-      },
-      "behaviorContractId": "orca-orchestration--verify-orca-orchestration"
-    },
-    {
-      "path": "skills/prd-maker/scripts/build-preview.mjs",
+      "path": "skills/prd-maker/scripts/build-preview.sh",
       "family": "prd-maker",
       "legacyOrigin": "retained-mjs",
       "usage": "build-preview",
@@ -494,7 +404,7 @@
       "behaviorContractId": "prd-maker--build-preview"
     },
     {
-      "path": "skills/prd-maker/scripts/render-planning-map.mjs",
+      "path": "skills/prd-maker/scripts/render-planning-map.sh",
       "family": "prd-maker",
       "legacyOrigin": "retained-mjs",
       "usage": "render-planning-map",
@@ -507,7 +417,7 @@
       "behaviorContractId": "prd-maker--render-planning-map"
     },
     {
-      "path": "skills/pre-deploy/scripts/build-run.mjs",
+      "path": "skills/pre-deploy/scripts/build-run.sh",
       "family": "pre-deploy",
       "legacyOrigin": "former-sh",
       "usage": "run-build",
@@ -520,7 +430,7 @@
       "behaviorContractId": "pre-deploy--build-run"
     },
     {
-      "path": "skills/pre-deploy/scripts/deploy-check.mjs",
+      "path": "skills/pre-deploy/scripts/deploy-check.sh",
       "family": "pre-deploy",
       "legacyOrigin": "former-sh",
       "usage": "check-deployment",
@@ -533,7 +443,7 @@
       "behaviorContractId": "pre-deploy--deploy-check"
     },
     {
-      "path": "skills/pre-deploy/scripts/lint-check.mjs",
+      "path": "skills/pre-deploy/scripts/lint-check.sh",
       "family": "pre-deploy",
       "legacyOrigin": "former-sh",
       "usage": "check-lint",
@@ -546,7 +456,7 @@
       "behaviorContractId": "pre-deploy--lint-check"
     },
     {
-      "path": "skills/pre-deploy/scripts/pm-detect.mjs",
+      "path": "skills/pre-deploy/scripts/pm-detect.sh",
       "family": "pre-deploy",
       "legacyOrigin": "former-sh",
       "usage": "detect-package-manager",
@@ -559,7 +469,7 @@
       "behaviorContractId": "pre-deploy--pm-detect"
     },
     {
-      "path": "skills/pre-deploy/scripts/stack-detect.mjs",
+      "path": "skills/pre-deploy/scripts/stack-detect.sh",
       "family": "pre-deploy",
       "legacyOrigin": "former-sh",
       "usage": "detect-stack",
@@ -572,7 +482,7 @@
       "behaviorContractId": "pre-deploy--stack-detect"
     },
     {
-      "path": "skills/prompt-maker/scripts/validate-prompt-maker.mjs",
+      "path": "skills/prompt-maker/scripts/validate-prompt-maker.sh",
       "family": "prompt-maker",
       "legacyOrigin": "retained-mjs",
       "usage": "validate-skill",
@@ -585,7 +495,7 @@
       "behaviorContractId": "prompt-maker--validate-prompt-maker"
     },
     {
-      "path": "skills/seo-maker/scripts/render-dashboard.mjs",
+      "path": "skills/seo-maker/scripts/render-dashboard.sh",
       "family": "seo-maker",
       "legacyOrigin": "former-sh",
       "usage": "render-dashboard",
@@ -598,7 +508,7 @@
       "behaviorContractId": "seo-maker--render-dashboard"
     },
     {
-      "path": "skills/skill-maker/scripts/validate-skill-maker.mjs",
+      "path": "skills/skill-maker/scripts/validate-skill-maker.sh",
       "family": "skill-maker",
       "legacyOrigin": "retained-mjs",
       "usage": "validate-skill",
@@ -611,7 +521,7 @@
       "behaviorContractId": "skill-maker--validate-skill-maker"
     },
     {
-      "path": "skills/skill-tester/scripts/validate-skill.mjs",
+      "path": "skills/skill-tester/scripts/validate-skill.sh",
       "family": "skill-tester",
       "legacyOrigin": "retained-mjs",
       "usage": "validate-skill",
@@ -624,7 +534,7 @@
       "behaviorContractId": "skill-tester--validate-skill"
     },
     {
-      "path": "skills/skill-tester/scripts/validate-skills-corpus.mjs",
+      "path": "skills/skill-tester/scripts/validate-skills-corpus.sh",
       "family": "skill-tester",
       "legacyOrigin": "retained-mjs",
       "usage": "validate-skill-corpus",
@@ -637,7 +547,7 @@
       "behaviorContractId": "skill-tester--validate-skills-corpus"
     },
     {
-      "path": "skills/skill-tester/scripts/validate-skill-tester.mjs",
+      "path": "skills/skill-tester/scripts/validate-skill-tester.sh",
       "family": "skill-tester",
       "legacyOrigin": "authored-mjs",
       "usage": "validate-skill",
@@ -658,7 +568,7 @@
       "behaviorContractId": "skill-tester--validate-skill-tester"
     },
     {
-      "path": "skills/version-update/scripts/git-commit.mjs",
+      "path": "skills/version-update/scripts/git-commit.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "usage": "commit-files",
@@ -671,7 +581,7 @@
       "behaviorContractId": "version-update--git-commit"
     },
     {
-      "path": "skills/version-update/scripts/git-push.mjs",
+      "path": "skills/version-update/scripts/git-push.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "usage": "push-commit",
@@ -684,7 +594,7 @@
       "behaviorContractId": "version-update--git-push"
     },
     {
-      "path": "skills/version-update/scripts/stack-detect.mjs",
+      "path": "skills/version-update/scripts/stack-detect.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "usage": "detect-stack",
@@ -697,7 +607,7 @@
       "behaviorContractId": "version-update--stack-detect"
     },
     {
-      "path": "skills/version-update/scripts/version-apply.mjs",
+      "path": "skills/version-update/scripts/version-apply.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "usage": "apply-version",
@@ -710,7 +620,7 @@
       "behaviorContractId": "version-update--version-apply"
     },
     {
-      "path": "skills/version-update/scripts/version-bump.mjs",
+      "path": "skills/version-update/scripts/version-bump.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "usage": "calculate-version",
@@ -723,7 +633,7 @@
       "behaviorContractId": "version-update--version-bump"
     },
     {
-      "path": "skills/version-update/scripts/version-current.mjs",
+      "path": "skills/version-update/scripts/version-current.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "usage": "read-version",
@@ -736,7 +646,7 @@
       "behaviorContractId": "version-update--version-current"
     },
     {
-      "path": "skills/version-update/scripts/version-find.mjs",
+      "path": "skills/version-update/scripts/version-find.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "usage": "discover-version",
@@ -749,7 +659,7 @@
       "behaviorContractId": "version-update--version-find"
     },
     {
-      "path": "skills/vite-architecture/scripts/validate-vite-architecture-skill.mjs",
+      "path": "skills/vite-architecture/scripts/validate-vite-architecture-skill.sh",
       "family": "vite-architecture",
       "legacyOrigin": "retained-mjs",
       "usage": "validate-skill",
@@ -762,22 +672,7 @@
       "behaviorContractId": "vite-architecture--validate-vite-architecture-skill"
     },
     {
-      "path": "skills/eli5/scripts/render-explanation.mjs",
-      "family": "eli5",
-      "legacyOrigin": "authored-mjs",
-      "usage": "render-explanation-view",
-      "behavior": "explanation-view-render",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/eli5/scripts/render-explanation.mjs",
-          "absent": true
-        }
-      },
-      "behaviorContractId": "eli5--render-explanation"
-    },
-    {
-      "path": "skills/jev-maker/scripts/check-jev-request.mjs",
+      "path": "skills/jev-maker/scripts/check-jev-request.sh",
       "family": "jev-maker",
       "legacyOrigin": "authored-mjs",
       "usage": "check-jev-request",
@@ -866,43 +761,43 @@
         "legacyPath": "skills/version-update/scripts/stack-detect.sh",
         "sha256": "0f22f0bd18052be6d6acbfa6092f7ca8cf59e638f2105aca3f315717724a8326",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/stack-detect.mjs"
+        "finalPath": "skills/version-update/scripts/stack-detect.sh"
       },
       {
         "legacyPath": "skills/version-update/scripts/version-find.sh",
         "sha256": "ba09fed01b10cf7bf8cf91e7b4e493d0709fc15c6f5c85bab25d401b75143d00",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/version-find.mjs"
+        "finalPath": "skills/version-update/scripts/version-find.sh"
       },
       {
         "legacyPath": "skills/version-update/scripts/version-current.sh",
         "sha256": "1a6e4daf89c4e3e294ead2d74eb192c39e5caf923109d14229271926100eb576",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/version-current.mjs"
+        "finalPath": "skills/version-update/scripts/version-current.sh"
       },
       {
         "legacyPath": "skills/version-update/scripts/version-bump.sh",
         "sha256": "18bf6f2c6913be903092bb30db85aa1624f68281d05230de7cc3027161f01c00",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/version-bump.mjs"
+        "finalPath": "skills/version-update/scripts/version-bump.sh"
       },
       {
         "legacyPath": "skills/version-update/scripts/version-apply.sh",
         "sha256": "2b5aa40c43d37661e7974569dbe9c9475cf76e2ce4768eb99ebba900f8695d8e",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/version-apply.mjs"
+        "finalPath": "skills/version-update/scripts/version-apply.sh"
       },
       {
         "legacyPath": "skills/version-update/scripts/git-commit.sh",
         "sha256": "317493004cb98e16fb752bd7e1c6e3f1503f73cc632883fd509d7774d2889ae6",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/git-commit.mjs"
+        "finalPath": "skills/version-update/scripts/git-commit.sh"
       },
       {
         "legacyPath": "skills/version-update/scripts/git-push.sh",
         "sha256": "87de1d571b5722bd93dcd1bab84b6d2e82de2aabe2c39ef7e56d07f65cf6b132",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/git-push.mjs"
+        "finalPath": "skills/version-update/scripts/git-push.sh"
       }
     ],
     "documents": {
@@ -915,8 +810,8 @@
         "scripts/git-push.sh"
       ],
       "finalCommands": [
-        "bun scripts/git-commit.mjs",
-        "bun scripts/git-push.mjs"
+        "bash scripts/git-commit.sh",
+        "bash scripts/git-push.sh"
       ],
       "hashStrategy": "sha256 of detector-absent direct-SH correction-baseline document bytes captured before the V port",
       "directShBaseline": [
@@ -942,13 +837,13 @@
     },
     "callerEdge": {
       "legacy": "skills/version-update/scripts/version-apply.sh -> version-find.sh",
-      "final": "skills/version-update/scripts/version-apply.mjs -> version-find.mjs",
+      "final": "skills/version-update/scripts/version-apply.sh -> version-find.sh",
       "restoreFixture": {
         "id": "version-update--version-apply--caller-restoration",
         "legacyCaller": "skills/version-update/scripts/version-apply.sh",
         "legacyCallee": "skills/version-update/scripts/version-find.sh",
-        "finalCaller": "skills/version-update/scripts/version-apply.mjs",
-        "finalCallee": "skills/version-update/scripts/version-find.mjs",
+        "finalCaller": "skills/version-update/scripts/version-apply.sh",
+        "finalCallee": "skills/version-update/scripts/version-find.sh",
         "legacyCallerSha256": "2b5aa40c43d37661e7974569dbe9c9475cf76e2ce4768eb99ebba900f8695d8e"
       }
     },
@@ -961,5 +856,17 @@
     ]
   },
   "behaviorContractsPath": "scripts/fixtures/skill-script-parity/behavior/contracts.json",
-  "legacyPreimageBase": "990359457e2ccbf2bd4bb65065037d456c5940bc"
+  "legacyPreimageBase": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+  "portPreimage": {
+    "baselineRef": "fc4910a1b16ff439e274891f4cce1375599be3af",
+    "model": "historical-origin-records",
+    "portedTo": "bash",
+    "note": "The 44 skill scripts were ported from Bun MJS to bash at the same paths with a .sh extension. legacyOrigin and sourcePreimage remain historical origin records for the earlier .cjs/.sh/.py migrations, because the pre-port bytes are no longer the working tree. The MJS bytes at baselineRef are not hashed: four scripts (pre-deploy build-run, deploy-check, lint-check; skill-maker validate-skill-maker) carried uncommitted edits when the port started, so the HEAD blobs are not the final pre-port bytes.",
+    "workingTreeEdited": [
+      "skills/pre-deploy/scripts/build-run.mjs",
+      "skills/pre-deploy/scripts/deploy-check.mjs",
+      "skills/pre-deploy/scripts/lint-check.mjs",
+      "skills/skill-maker/scripts/validate-skill-maker.mjs"
+    ]
+  }
 }

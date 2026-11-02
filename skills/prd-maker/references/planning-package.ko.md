@@ -149,7 +149,7 @@ PRD → 기능명세서 → 유저플로우 → 저충실도 와이어프레임 
 - 노드 목록 표
 - PRD, 기능 명세, 유저 플로우, 와이어프레임, 오픈 질문 가지 메모
 - 결정적 렌더링을 위한 `diagram.data.json` 노드 데이터
-- 렌더 메모: `scripts/render-planning-map.mjs`로 `diagram.svg`를 만듭니다
+- 렌더 메모: `bash scripts/render-planning-map.sh`로 `diagram.svg`를 만듭니다
 
 권장 형태:
 
@@ -183,7 +183,7 @@ mindmap
 
 ## `preview.html`
 
-목적: 패키지를 로컬 브라우저에서 볼 수 있는 뷰어를 제공합니다. `assets/preview.template.html`에서 `scripts/build-preview.mjs`로 생성하며, 사용자가 명시하지 않는 한 생성된 preview를 직접 고치지 않습니다.
+목적: 패키지를 로컬 브라우저에서 볼 수 있는 뷰어를 제공합니다. `assets/preview.template.html`에서 `bash scripts/build-preview.sh`로 생성하며, 사용자가 명시하지 않는 한 생성된 preview를 직접 고치지 않습니다.
 
 미리보기 규칙:
 

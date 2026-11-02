@@ -36,7 +36,7 @@ metadata:
 
 ## Available scripts
 
-- \`scripts/example.mjs\` - Describe what it does.
+- \`scripts/example.sh\` - Describe what it does.
 
 ## Workflow
 
@@ -45,22 +45,18 @@ metadata:
 3. Return structured output (JSON/CSV/TSV) whenever possible.
 TEMPLATE
 
-cat > "$skill_dir/scripts/example.mjs" <<'TEMPLATE'
-#!/usr/bin/env bun
-// @ts-check
+cat > "$skill_dir/scripts/example.sh" <<'TEMPLATE'
+#!/usr/bin/env bash
+set -euo pipefail
 
-/**
- * Runs the example command.
- *
- * @returns {void}
- */
-function main() {
-  console.log('{"status":"ok"}');
+# Prints one JSON status line.
+main() {
+  printf '%s\n' '{"status":"ok"}'
 }
 
-main();
+main "$@"
 TEMPLATE
 
-chmod +x "$skill_dir/scripts/example.mjs"
+chmod +x "$skill_dir/scripts/example.sh"
 
 echo "Created skill at: $skill_dir"

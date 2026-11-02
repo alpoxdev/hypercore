@@ -29,7 +29,8 @@ Create this directory at the repository root, not inside the skill folder.
 Canonical generated assets:
 
 - template: `skills/seo-maker/assets/dashboard-template.html`
-- renderer: `skills/seo-maker/scripts/render-dashboard.mjs`
+- renderer: `skills/seo-maker/scripts/render-dashboard.sh`
+- renderer runtime: bash 3.2+ with `jq`
 
 ## `results.json`
 
@@ -243,7 +244,7 @@ Fallback for browsers where `fetch` does not work when opened via `file://`:
 window.__SEO_RESULTS__ = { /* same content as results.json */ };
 ```
 
-`render-dashboard.mjs` writes this file from the same parsed `results.json` payload as `dashboard.html`, so it is generated output rather than a hand-maintained file. Re-run the renderer after `results.json` changes; hand edits are overwritten.
+`render-dashboard.sh` writes this file from the same parsed `results.json` payload as `dashboard.html`, so it is generated output rather than a hand-maintained file. Re-run the renderer after `results.json` changes; hand edits are overwritten.
 
 ## `dashboard.html`
 
@@ -302,7 +303,7 @@ Canonical phase order: `scope` → `measurement` → `technical` → `platform_p
 3. Add findings to `results.json` as each phase completes.
 4. After all phases finish, set `status` to `complete` and calculate `overall_grade`.
 4-1. In Optimize mode, populate `score_history`, `best_run`, and `validator`, then record the evidence for the highest score or plateau.
-5. Run `render-dashboard.mjs` to generate `dashboard.html` and `results.js`.
+5. Run `bash scripts/render-dashboard.sh <artifact-dir>` to generate `dashboard.html` and `results.js`.
 6. Write `report.md` and `sources.md` as well.
 7. Open `dashboard.html` in a browser if the runtime is safe.
 
@@ -335,7 +336,7 @@ Apply the thresholds below to the weighted score.
 ### Render Order
 
 ```bash
-skills/seo-maker/scripts/render-dashboard.mjs .hyper/seo-maker/my-site
+bash skills/seo-maker/scripts/render-dashboard.sh .hyper/seo-maker/my-site
 open .hyper/seo-maker/my-site/dashboard.html
 ```
 

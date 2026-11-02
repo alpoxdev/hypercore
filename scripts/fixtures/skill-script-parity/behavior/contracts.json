@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 51,
+    "expectedRows": 44,
     "legacyOriginCounts": {
       "former-sh": 19,
       "former-py": 1,
       "retained-mjs": 9,
-      "authored-mjs": 22
+      "authored-mjs": 15
     },
     "requiredDimensions": [
       "stdout",
@@ -24,12 +24,12 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 153
+    "expectedFixtures": 132
   },
   "rows": [
     {
       "id": "ai-design-slop-remover--analyze-structure",
-      "path": "skills/ai-design-slop-remover/scripts/analyze-structure.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/analyze-structure.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -59,9 +59,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/analyze-structure.mjs"
+              "skills/ai-design-slop-remover/scripts/analyze-structure.sh"
             ]
           },
           "input": {
@@ -113,9 +113,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/analyze-structure.mjs"
+              "skills/ai-design-slop-remover/scripts/analyze-structure.sh"
             ]
           },
           "input": {
@@ -167,9 +167,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/analyze-structure.mjs"
+              "skills/ai-design-slop-remover/scripts/analyze-structure.sh"
             ]
           },
           "input": {
@@ -242,7 +242,7 @@
     },
     {
       "id": "ai-design-slop-remover--collect-rendered-evidence",
-      "path": "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -272,9 +272,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs"
+              "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.sh"
             ]
           },
           "input": {
@@ -326,9 +326,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs"
+              "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.sh"
             ]
           },
           "input": {
@@ -382,9 +382,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs"
+              "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.sh"
             ]
           },
           "input": {
@@ -437,7 +437,7 @@
     },
     {
       "id": "ai-design-slop-remover--detect-slop",
-      "path": "skills/ai-design-slop-remover/scripts/detect-slop.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/detect-slop.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -467,9 +467,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/detect-slop.mjs"
+              "skills/ai-design-slop-remover/scripts/detect-slop.sh"
             ]
           },
           "input": {
@@ -521,9 +521,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/detect-slop.mjs"
+              "skills/ai-design-slop-remover/scripts/detect-slop.sh"
             ]
           },
           "input": {
@@ -575,9 +575,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/detect-slop.mjs"
+              "skills/ai-design-slop-remover/scripts/detect-slop.sh"
             ]
           },
           "input": {
@@ -646,7 +646,7 @@
     },
     {
       "id": "ai-design-slop-remover--engine-css",
-      "path": "skills/ai-design-slop-remover/scripts/engine-css.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/engine-css.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -676,9 +676,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-css.mjs"
+              "skills/ai-design-slop-remover/scripts/engine-css.sh"
             ]
           },
           "input": {
@@ -722,9 +722,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-css.mjs"
+              "skills/ai-design-slop-remover/scripts/engine-css.sh"
             ]
           },
           "input": {
@@ -786,9 +786,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-css.mjs"
+              "skills/ai-design-slop-remover/scripts/engine-css.sh"
             ]
           },
           "input": {
@@ -847,7 +847,7 @@
     },
     {
       "id": "ai-design-slop-remover--engine-markup",
-      "path": "skills/ai-design-slop-remover/scripts/engine-markup.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/engine-markup.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -877,9 +877,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-markup.mjs"
+              "skills/ai-design-slop-remover/scripts/engine-markup.sh"
             ]
           },
           "input": {
@@ -923,9 +923,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-markup.mjs"
+              "skills/ai-design-slop-remover/scripts/engine-markup.sh"
             ]
           },
           "input": {
@@ -987,9 +987,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-markup.mjs"
+              "skills/ai-design-slop-remover/scripts/engine-markup.sh"
             ]
           },
           "input": {
@@ -1048,7 +1048,7 @@
     },
     {
       "id": "ai-design-slop-remover--engine-text",
-      "path": "skills/ai-design-slop-remover/scripts/engine-text.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/engine-text.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -1078,9 +1078,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-text.mjs"
+              "skills/ai-design-slop-remover/scripts/engine-text.sh"
             ]
           },
           "input": {
@@ -1124,9 +1124,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-text.mjs"
+              "skills/ai-design-slop-remover/scripts/engine-text.sh"
             ]
           },
           "input": {
@@ -1188,9 +1188,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-text.mjs"
+              "skills/ai-design-slop-remover/scripts/engine-text.sh"
             ]
           },
           "input": {
@@ -1249,7 +1249,7 @@
     },
     {
       "id": "ai-design-slop-remover--resolve-context",
-      "path": "skills/ai-design-slop-remover/scripts/resolve-context.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/resolve-context.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -1279,9 +1279,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/resolve-context.mjs"
+              "skills/ai-design-slop-remover/scripts/resolve-context.sh"
             ]
           },
           "input": {
@@ -1325,9 +1325,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/resolve-context.mjs"
+              "skills/ai-design-slop-remover/scripts/resolve-context.sh"
             ]
           },
           "input": {
@@ -1389,9 +1389,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/resolve-context.mjs"
+              "skills/ai-design-slop-remover/scripts/resolve-context.sh"
             ]
           },
           "input": {
@@ -1450,7 +1450,7 @@
     },
     {
       "id": "ai-design-slop-remover--rule-registry",
-      "path": "skills/ai-design-slop-remover/scripts/rule-registry.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/rule-registry.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -1480,9 +1480,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/rule-registry.mjs"
+              "skills/ai-design-slop-remover/scripts/rule-registry.sh"
             ]
           },
           "input": {
@@ -1526,9 +1526,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/rule-registry.mjs"
+              "skills/ai-design-slop-remover/scripts/rule-registry.sh"
             ]
           },
           "input": {
@@ -1590,9 +1590,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/rule-registry.mjs"
+              "skills/ai-design-slop-remover/scripts/rule-registry.sh"
             ]
           },
           "input": {
@@ -1651,7 +1651,7 @@
     },
     {
       "id": "ai-design-slop-remover--rule-shared",
-      "path": "skills/ai-design-slop-remover/scripts/rule-shared.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/rule-shared.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -1681,9 +1681,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/rule-shared.mjs"
+              "skills/ai-design-slop-remover/scripts/rule-shared.sh"
             ]
           },
           "input": {
@@ -1727,9 +1727,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/rule-shared.mjs"
+              "skills/ai-design-slop-remover/scripts/rule-shared.sh"
             ]
           },
           "input": {
@@ -1791,9 +1791,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/rule-shared.mjs"
+              "skills/ai-design-slop-remover/scripts/rule-shared.sh"
             ]
           },
           "input": {
@@ -1852,7 +1852,7 @@
     },
     {
       "id": "ai-design-slop-remover--run-contract-evals",
-      "path": "skills/ai-design-slop-remover/scripts/run-contract-evals.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/run-contract-evals.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -1882,9 +1882,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/run-contract-evals.mjs"
+              "skills/ai-design-slop-remover/scripts/run-contract-evals.sh"
             ]
           },
           "input": {
@@ -1907,8 +1907,8 @@
                 "text": "# AI Design Slop 정리 결과\n\n## 처리 요약\n- Detector: v2\n- 실행한 engine: text | context\n- Baseline delta: 미사용\n- Generic-output risk: low\n- 렌더링 검증: static_only\n- 최종 상태: pass\n\n## Brief inference\n- 확인됨\n\n## 발견 사항\n- 없음\n\n## 적용한 변경\n- 없음\n\n## 검증\n- Detector/baseline: pass\n\n## 남은 위험\n- 없음\n"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/validate-report.mjs",
-                "text": "#!/usr/bin/env bun\nconsole.log(JSON.stringify({ ok: true }));\n"
+                "path": "skills/ai-design-slop-remover/scripts/validate-report.sh",
+                "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"ok\":true}'\n"
               }
             ]
           },
@@ -1932,15 +1932,15 @@
                 "sha256": "005f78aecf2fa7795767c0808c5bb33a79f75ae2a8dcc0a464025d6e7fcd4865"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/validate-report.mjs",
-                "bytes": 62,
-                "sha256": "1ee96b7a3eacd8a5f73a7783a76d2ecf01204bb6aa6059f6465172dc453d207f"
+                "path": "skills/ai-design-slop-remover/scripts/validate-report.sh",
+                "bytes": 48,
+                "sha256": "d1f983f2d4728fb3564260395cbe69c13625dca5c6f11125488d719ef815c87b"
               }
             ],
             "modes": {
               "report.md": "644",
               "cases.jsonl": "644",
-              "skills/ai-design-slop-remover/scripts/validate-report.mjs": "644"
+              "skills/ai-design-slop-remover/scripts/validate-report.sh": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -1956,9 +1956,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/run-contract-evals.mjs"
+              "skills/ai-design-slop-remover/scripts/run-contract-evals.sh"
             ]
           },
           "input": {
@@ -2012,9 +2012,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/run-contract-evals.mjs"
+              "skills/ai-design-slop-remover/scripts/run-contract-evals.sh"
             ]
           },
           "input": {
@@ -2037,8 +2037,8 @@
                 "text": "# AI Design Slop 정리 결과\n\n## 처리 요약\n- Detector: v2\n- 실행한 engine: text | context\n- Baseline delta: 미사용\n- Generic-output risk: low\n- 렌더링 검증: static_only\n- 최종 상태: pass\n\n## Brief inference\n- 확인됨\n\n## 발견 사항\n- 없음\n\n## 적용한 변경\n- 없음\n\n## 검증\n- Detector/baseline: pass\n\n## 남은 위험\n- 없음\n"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/validate-report.mjs",
-                "text": "#!/usr/bin/env bun\nconsole.log(JSON.stringify({ ok: true }));\n"
+                "path": "skills/ai-design-slop-remover/scripts/validate-report.sh",
+                "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"ok\":true}'\n"
               }
             ]
           },
@@ -2062,15 +2062,15 @@
                 "sha256": "005f78aecf2fa7795767c0808c5bb33a79f75ae2a8dcc0a464025d6e7fcd4865"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/validate-report.mjs",
-                "bytes": 62,
-                "sha256": "1ee96b7a3eacd8a5f73a7783a76d2ecf01204bb6aa6059f6465172dc453d207f"
+                "path": "skills/ai-design-slop-remover/scripts/validate-report.sh",
+                "bytes": 48,
+                "sha256": "d1f983f2d4728fb3564260395cbe69c13625dca5c6f11125488d719ef815c87b"
               }
             ],
             "modes": {
               "report.md": "644",
               "cases.jsonl": "644",
-              "skills/ai-design-slop-remover/scripts/validate-report.mjs": "644"
+              "skills/ai-design-slop-remover/scripts/validate-report.sh": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -2087,7 +2087,7 @@
     },
     {
       "id": "ai-design-slop-remover--run-detector-evals",
-      "path": "skills/ai-design-slop-remover/scripts/run-detector-evals.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/run-detector-evals.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -2117,9 +2117,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/run-detector-evals.mjs"
+              "skills/ai-design-slop-remover/scripts/run-detector-evals.sh"
             ]
           },
           "input": {
@@ -2142,8 +2142,8 @@
                 "text": "<div class=\"panel\" style=\"transition: all 150ms\"></div>\n"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/detect-slop.mjs",
-                "text": "#!/usr/bin/env bun\nconsole.log(JSON.stringify({ detectorVersion: 2, findings: [{ id: \"copy.cliche\", exceptionStatus: \"not-checked\" }], summary: { P0: 0, P1: 0, P2: 0, P3: 1 } }));\n"
+                "path": "skills/ai-design-slop-remover/scripts/detect-slop.sh",
+                "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"detectorVersion\":2,\"findings\":[{\"id\":\"copy.cliche\",\"exceptionStatus\":\"not-checked\"}],\"summary\":{\"P0\":0,\"P1\":0,\"P2\":0,\"P3\":1}}'\n"
               }
             ]
           },
@@ -2167,15 +2167,15 @@
                 "sha256": "dba76d031b3ccf0b0d9e65c4a13474478cdb2727d2594ef7bcd5aa99b574ef8e"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/detect-slop.mjs",
-                "bytes": 180,
-                "sha256": "ab7c462b84ddd8fd2a5a5c424f38cb1eedc69c7a3ded93ed83c3c403c9f9f485"
+                "path": "skills/ai-design-slop-remover/scripts/detect-slop.sh",
+                "bytes": 164,
+                "sha256": "51b25b6532e460e00dd4e023bd3618cf1e99be1ebef50faf0734c52d1fe4dcb4"
               }
             ],
             "modes": {
               "cases.jsonl": "644",
               "site/page.html": "644",
-              "skills/ai-design-slop-remover/scripts/detect-slop.mjs": "644"
+              "skills/ai-design-slop-remover/scripts/detect-slop.sh": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -2191,9 +2191,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/run-detector-evals.mjs"
+              "skills/ai-design-slop-remover/scripts/run-detector-evals.sh"
             ]
           },
           "input": {
@@ -2247,9 +2247,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/run-detector-evals.mjs"
+              "skills/ai-design-slop-remover/scripts/run-detector-evals.sh"
             ]
           },
           "input": {
@@ -2272,8 +2272,8 @@
                 "text": "<div class=\"panel\" style=\"transition: all 150ms\"></div>\n"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/detect-slop.mjs",
-                "text": "#!/usr/bin/env bun\nconsole.log(JSON.stringify({ detectorVersion: 2, findings: [{ id: \"copy.cliche\", exceptionStatus: \"not-checked\" }], summary: { P0: 0, P1: 0, P2: 0, P3: 1 } }));\n"
+                "path": "skills/ai-design-slop-remover/scripts/detect-slop.sh",
+                "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"detectorVersion\":2,\"findings\":[{\"id\":\"copy.cliche\",\"exceptionStatus\":\"not-checked\"}],\"summary\":{\"P0\":0,\"P1\":0,\"P2\":0,\"P3\":1}}'\n"
               }
             ]
           },
@@ -2297,15 +2297,15 @@
                 "sha256": "dba76d031b3ccf0b0d9e65c4a13474478cdb2727d2594ef7bcd5aa99b574ef8e"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/detect-slop.mjs",
-                "bytes": 180,
-                "sha256": "ab7c462b84ddd8fd2a5a5c424f38cb1eedc69c7a3ded93ed83c3c403c9f9f485"
+                "path": "skills/ai-design-slop-remover/scripts/detect-slop.sh",
+                "bytes": 164,
+                "sha256": "51b25b6532e460e00dd4e023bd3618cf1e99be1ebef50faf0734c52d1fe4dcb4"
               }
             ],
             "modes": {
               "cases.jsonl": "644",
               "site/page.html": "644",
-              "skills/ai-design-slop-remover/scripts/detect-slop.mjs": "644"
+              "skills/ai-design-slop-remover/scripts/detect-slop.sh": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -2322,7 +2322,7 @@
     },
     {
       "id": "ai-design-slop-remover--validate-report",
-      "path": "skills/ai-design-slop-remover/scripts/validate-report.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/validate-report.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -2352,9 +2352,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/validate-report.mjs"
+              "skills/ai-design-slop-remover/scripts/validate-report.sh"
             ]
           },
           "input": {
@@ -2406,9 +2406,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/validate-report.mjs"
+              "skills/ai-design-slop-remover/scripts/validate-report.sh"
             ]
           },
           "input": {
@@ -2460,9 +2460,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/validate-report.mjs"
+              "skills/ai-design-slop-remover/scripts/validate-report.sh"
             ]
           },
           "input": {
@@ -2507,7 +2507,7 @@
     },
     {
       "id": "ai-design-slop-remover--validate-waivers",
-      "path": "skills/ai-design-slop-remover/scripts/validate-waivers.mjs",
+      "path": "skills/ai-design-slop-remover/scripts/validate-waivers.sh",
       "family": "ai-design-slop-remover",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -2537,9 +2537,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/validate-waivers.mjs"
+              "skills/ai-design-slop-remover/scripts/validate-waivers.sh"
             ]
           },
           "input": {
@@ -2591,9 +2591,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/validate-waivers.mjs"
+              "skills/ai-design-slop-remover/scripts/validate-waivers.sh"
             ]
           },
           "input": {
@@ -2647,9 +2647,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/validate-waivers.mjs"
+              "skills/ai-design-slop-remover/scripts/validate-waivers.sh"
             ]
           },
           "input": {
@@ -2702,7 +2702,7 @@
     },
     {
       "id": "autoresearch-skill--render-dashboard",
-      "path": "skills/autoresearch-skill/scripts/render-dashboard.mjs",
+      "path": "skills/autoresearch-skill/scripts/render-dashboard.sh",
       "family": "autoresearch-skill",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -2714,9 +2714,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/autoresearch-skill/scripts/render-dashboard.mjs"
+              "skills/autoresearch-skill/scripts/render-dashboard.sh"
             ]
           },
           "input": {
@@ -2764,9 +2764,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/autoresearch-skill/scripts/render-dashboard.mjs"
+              "skills/autoresearch-skill/scripts/render-dashboard.sh"
             ]
           },
           "input": {
@@ -2789,7 +2789,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "results.json JSON 파싱에 실패했습니다: JSON Parse error: Expected '}'\n"
+              "equals": "results.json JSON 파싱에 실패했습니다: invalid JSON\n"
             },
             "exit": 1,
             "files": [
@@ -2814,9 +2814,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/autoresearch-skill/scripts/render-dashboard.mjs"
+              "skills/autoresearch-skill/scripts/render-dashboard.sh"
             ]
           },
           "input": {
@@ -2875,7 +2875,7 @@
     },
     {
       "id": "git-maker--git-commit",
-      "path": "skills/git-maker/scripts/git-commit.mjs",
+      "path": "skills/git-maker/scripts/git-commit.sh",
       "family": "git-maker",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -2887,9 +2887,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-commit.mjs"
+              "skills/git-maker/scripts/git-commit.sh"
             ]
           },
           "input": {
@@ -2944,9 +2944,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-commit.mjs"
+              "skills/git-maker/scripts/git-commit.sh"
             ]
           },
           "input": {
@@ -2968,7 +2968,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "Usage: <repo>/skills/git-maker/scripts/git-commit.mjs [--repo path] \"commit message\" [files...]\n"
+              "equals": "Usage: <repo>/skills/git-maker/scripts/git-commit.sh [--repo path] \"commit message\" [files...]\n"
             },
             "exit": 1,
             "files": [
@@ -2997,9 +2997,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-commit.mjs"
+              "skills/git-maker/scripts/git-commit.sh"
             ]
           },
           "input": {
@@ -3067,7 +3067,7 @@
     },
     {
       "id": "git-maker--git-maker-fast",
-      "path": "skills/git-maker/scripts/git-maker-fast.mjs",
+      "path": "skills/git-maker/scripts/git-maker-fast.sh",
       "family": "git-maker",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -3079,9 +3079,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-maker-fast.mjs"
+              "skills/git-maker/scripts/git-maker-fast.sh"
             ]
           },
           "input": {
@@ -3138,9 +3138,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-maker-fast.mjs"
+              "skills/git-maker/scripts/git-maker-fast.sh"
             ]
           },
           "input": {
@@ -3164,7 +3164,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "Usage:\n  git-maker-fast.mjs inspect [start_dir] [--jobs N]\n  git-maker-fast.mjs push [--force] [repo...]\n"
+              "equals": "Usage:\n  git-maker-fast.sh inspect [start_dir] [--jobs N]\n  git-maker-fast.sh push [--force] [repo...]\n"
             },
             "exit": 1,
             "files": [
@@ -3195,9 +3195,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-maker-fast.mjs"
+              "skills/git-maker/scripts/git-maker-fast.sh"
             ]
           },
           "input": {
@@ -3265,7 +3265,7 @@
     },
     {
       "id": "git-maker--git-push",
-      "path": "skills/git-maker/scripts/git-push.mjs",
+      "path": "skills/git-maker/scripts/git-push.sh",
       "family": "git-maker",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -3277,9 +3277,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-push.mjs"
+              "skills/git-maker/scripts/git-push.sh"
             ]
           },
           "input": {
@@ -3330,9 +3330,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-push.mjs"
+              "skills/git-maker/scripts/git-push.sh"
             ]
           },
           "input": {
@@ -3356,7 +3356,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "Usage: <repo>/skills/git-maker/scripts/git-push.mjs [--force] [repo...]\n"
+              "equals": "Usage: <repo>/skills/git-maker/scripts/git-push.sh [--force] [repo...]\n"
             },
             "exit": 1,
             "files": [
@@ -3387,9 +3387,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-push.mjs"
+              "skills/git-maker/scripts/git-push.sh"
             ]
           },
           "input": {
@@ -3413,7 +3413,7 @@
               "equals": "\nDone: 0 pushed, 0 skipped, 1 failed\n"
             },
             "stderr": {
-              "equals": "[missing] Failed: ENOENT: no such file or directory, posix_spawn 'git'\n"
+              "equals": "[missing] Failed: ENOENT: no such file or directory, chdir 'missing'\n"
             },
             "exit": 1,
             "files": [
@@ -3455,7 +3455,7 @@
     },
     {
       "id": "git-maker--repo-discover",
-      "path": "skills/git-maker/scripts/repo-discover.mjs",
+      "path": "skills/git-maker/scripts/repo-discover.sh",
       "family": "git-maker",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -3467,9 +3467,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/repo-discover.mjs"
+              "skills/git-maker/scripts/repo-discover.sh"
             ]
           },
           "input": {
@@ -3524,9 +3524,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/repo-discover.mjs"
+              "skills/git-maker/scripts/repo-discover.sh"
             ]
           },
           "input": {
@@ -3581,9 +3581,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/repo-discover.mjs"
+              "skills/git-maker/scripts/repo-discover.sh"
             ]
           },
           "input": {
@@ -3649,7 +3649,7 @@
     },
     {
       "id": "git-maker--repo-status",
-      "path": "skills/git-maker/scripts/repo-status.mjs",
+      "path": "skills/git-maker/scripts/repo-status.sh",
       "family": "git-maker",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -3661,9 +3661,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/repo-status.mjs"
+              "skills/git-maker/scripts/repo-status.sh"
             ]
           },
           "input": {
@@ -3718,9 +3718,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/repo-status.mjs"
+              "skills/git-maker/scripts/repo-status.sh"
             ]
           },
           "input": {
@@ -3775,9 +3775,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/repo-status.mjs"
+              "skills/git-maker/scripts/repo-status.sh"
             ]
           },
           "input": {
@@ -3843,7 +3843,7 @@
     },
     {
       "id": "git-worktree--validate-git-worktree-skill",
-      "path": "skills/git-worktree/scripts/validate-git-worktree-skill.mjs",
+      "path": "skills/git-worktree/scripts/validate-git-worktree-skill.sh",
       "family": "git-worktree",
       "legacyOrigin": "former-py",
       "sourcePreimage": {
@@ -3855,9 +3855,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-worktree/scripts/validate-git-worktree-skill.mjs"
+              "skills/git-worktree/scripts/validate-git-worktree-skill.sh"
             ]
           },
           "input": {
@@ -3888,9 +3888,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-worktree/scripts/validate-git-worktree-skill.mjs"
+              "skills/git-worktree/scripts/validate-git-worktree-skill.sh"
             ]
           },
           "input": {
@@ -3927,9 +3927,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/git-worktree/scripts/validate-git-worktree-skill.mjs"
+              "skills/git-worktree/scripts/validate-git-worktree-skill.sh"
             ]
           },
           "input": {
@@ -3989,534 +3989,8 @@
       }
     },
     {
-      "id": "hermes-agent-maker--generate",
-      "path": "skills/hermes-agent-maker/scripts/generate.mjs",
-      "family": "hermes-agent-maker",
-      "legacyOrigin": "authored-mjs",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hermes-agent-maker/scripts/generate.mjs",
-          "absent": true
-        }
-      },
-      "dimensions": {
-        "stdout": true,
-        "stderr": true,
-        "exit": true,
-        "files": true,
-        "modes": true,
-        "cwd": true,
-        "env": true,
-        "argv": true
-      },
-      "fixtures": {
-        "happy": {
-          "scenario": "happy",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/hermes-agent-maker/scripts/generate.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--manifest",
-              "spec.json",
-              "--workspace",
-              "."
-            ],
-            "files": [
-              {
-                "path": "spec.json",
-                "text": "{\"kind\":\"skill\",\"summary\":\"Create a reviewed fixture skill\",\"target\":\"fixture-skill\",\"name\":\"fixture-skill\",\"mode\":\"preview\",\"template_version\":\"1.0.0\"}"
-              }
-            ]
-          },
-          "expected": {
-            "stdout": {
-              "contains": [
-                "\"kind\":\"skill\"",
-                "\"target_identity\":\"fixture-skill\"",
-                "\"receipt_kind\":\"preview\"",
-                "\"artifact_id\""
-              ]
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 0,
-            "files": [
-              {
-                "path": "spec.json",
-                "bytes": 152,
-                "sha256": "5c90cba8d0910e93539bda04003721a3c87cca3348241929f728e2453d318e3f"
-              }
-            ],
-            "modes": {
-              "spec.json": "644"
-            },
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--manifest",
-              "spec.json",
-              "--workspace",
-              "."
-            ]
-          }
-        },
-        "malformed": {
-          "scenario": "malformed",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/hermes-agent-maker/scripts/generate.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--manifest",
-              "missing.json",
-              "--workspace",
-              "."
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": ""
-            },
-            "stderr": {
-              "equals": "{\"error\":\"E_JSON\"}\n"
-            },
-            "exit": 1,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--manifest",
-              "missing.json",
-              "--workspace",
-              "."
-            ]
-          }
-        },
-        "familyEdge": {
-          "scenario": "familyEdge",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/hermes-agent-maker/scripts/generate.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--manifest",
-              "spec.json",
-              "--workspace",
-              "."
-            ],
-            "files": [
-              {
-                "path": "spec.json",
-                "text": "{\"kind\":\"skill\",\"summary\":\"Create a reviewed fixture skill\",\"target\":\"fixture-skill\",\"name\":\"fixture-skill\",\"mode\":\"apply\",\"template_version\":\"1.0.0\",\"approved_change_set\":{}}"
-              }
-            ]
-          },
-          "expected": {
-            "stdout": {
-              "equals": ""
-            },
-            "stderr": {
-              "equals": "{\"error\":\"E_SPEC\"}\n"
-            },
-            "exit": 1,
-            "files": [
-              {
-                "path": "spec.json",
-                "bytes": 175,
-                "sha256": "017f5420877d3d9a869352f7880a33a016a4878fae497b792f55035f29d0f084"
-              }
-            ],
-            "modes": {
-              "spec.json": "644"
-            },
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--manifest",
-              "spec.json",
-              "--workspace",
-              "."
-            ]
-          }
-        }
-      }
-    },
-    {
-      "id": "hermes-agent-maker--validate-hermes-agent-maker",
-      "path": "skills/hermes-agent-maker/scripts/validate-hermes-agent-maker.mjs",
-      "family": "hermes-agent-maker",
-      "legacyOrigin": "authored-mjs",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hermes-agent-maker/scripts/validate-hermes-agent-maker.mjs",
-          "absent": true
-        }
-      },
-      "dimensions": {
-        "stdout": true,
-        "stderr": true,
-        "exit": true,
-        "files": true,
-        "modes": true,
-        "cwd": true,
-        "env": true,
-        "argv": true
-      },
-      "fixtures": {
-        "happy": {
-          "scenario": "happy",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/hermes-agent-maker/scripts/validate-hermes-agent-maker.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--help"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": "Usage: node skills/hermes-agent-maker/scripts/validate-hermes-agent-maker.mjs --root <dir> [--json]\n\nAsserts six self-consistency invariants over the hermes-agent-maker package,\nderiving every expected value from the live package sources at runtime.\n\n  (a) rules/routing.md required-field list matches the manifest schema\n  (b) every emitted E_* code is documented in references/error-codes.md\n  (c) every support file is named in SKILL.md\n  (d) every assets/examples/spec-*.json validates against the manifest schema\n  (e) every eval row carries an invocationMode and all four modes occur\n  (f) every *.md has a *.ko.md sibling\n\nOptions:\n  --root <dir>   Skill package root. Defaults to skills/hermes-agent-maker.\n  --json         Emit structured JSON.\n  --help         Show this help.\n\n"
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 0,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--help"
-            ]
-          }
-        },
-        "malformed": {
-          "scenario": "malformed",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/hermes-agent-maker/scripts/validate-hermes-agent-maker.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--wat"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": "{\n  \"ok\": false,\n  \"routingSchemaParity\": null,\n  \"errorCodeCoverage\": null,\n  \"supportFileReachability\": null,\n  \"exampleSpecs\": null,\n  \"evalInvocationModes\": null,\n  \"bilingualPairs\": null,\n  \"errors\": [\n    {\n      \"code\": \"ARG_UNKNOWN\",\n      \"message\": \"Unknown argument: --wat. Use --root <dir> [--json].\"\n    }\n  ]\n}\n"
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 2,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--wat"
-            ]
-          }
-        },
-        "familyEdge": {
-          "scenario": "familyEdge",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/hermes-agent-maker/scripts/validate-hermes-agent-maker.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root",
-              "missing",
-              "--json"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": "{\n  \"ok\": false,\n  \"routingSchemaParity\": null,\n  \"errorCodeCoverage\": null,\n  \"supportFileReachability\": null,\n  \"exampleSpecs\": null,\n  \"evalInvocationModes\": null,\n  \"bilingualPairs\": null,\n  \"errors\": [\n    {\n      \"code\": \"ROOT_MISSING\",\n      \"message\": \"Root directory is missing: missing. Pass --root <package dir>.\",\n      \"path\": \"missing\"\n    }\n  ]\n}\n"
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 1,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root",
-              "missing",
-              "--json"
-            ]
-          }
-        }
-      }
-    },
-    {
-      "id": "hermes-agent-maker--validate-portable-v1-output",
-      "path": "skills/hermes-agent-maker/scripts/validate-portable-v1-output.mjs",
-      "family": "hermes-agent-maker",
-      "legacyOrigin": "authored-mjs",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hermes-agent-maker/scripts/validate-portable-v1-output.mjs",
-          "absent": true
-        }
-      },
-      "dimensions": {
-        "stdout": true,
-        "stderr": true,
-        "exit": true,
-        "files": true,
-        "modes": true,
-        "cwd": true,
-        "env": true,
-        "argv": true
-      },
-      "fixtures": {
-        "happy": {
-          "scenario": "happy",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/hermes-agent-maker/scripts/validate-portable-v1-output.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root",
-              "."
-            ],
-            "files": [
-              {
-                "path": "plugin.json",
-                "text": "{\"$schema\":\"https://agentplugins.dev/schemas/v1.0.0/plugin.schema.json\",\"name\":\"fixture-plugin\",\"version\":\"1.0.0\",\"description\":\"Fixture plugin\",\"components\":{\"skills\":[\"skills/fixture\"]}}"
-              },
-              {
-                "path": "skills/fixture/SKILL.md",
-                "text": "---\nname: fixture\ndescription: Fixture portable skill.\n---\n\n# Fixture\n"
-              }
-            ]
-          },
-          "expected": {
-            "stdout": {
-              "contains": [
-                "\"valid\":true",
-                "\"profile\":\"agent-plugins-v1.0.0+hermes\""
-              ]
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 0,
-            "files": [
-              {
-                "path": "plugin.json",
-                "bytes": 188,
-                "sha256": "2ce941b4feb0a94b5d41a369d6cd1dd278a0487a00f895bd44155977bf6c778f"
-              },
-              {
-                "path": "skills/fixture/SKILL.md",
-                "bytes": 70,
-                "sha256": "a89ed62f04afb69e05f7abfe5f7bdfb885b1d591a8f98853d2152cb7af87e80e"
-              }
-            ],
-            "modes": {
-              "plugin.json": "644",
-              "skills/fixture/SKILL.md": "644"
-            },
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root",
-              "."
-            ]
-          }
-        },
-        "malformed": {
-          "scenario": "malformed",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/hermes-agent-maker/scripts/validate-portable-v1-output.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root",
-              "."
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": ""
-            },
-            "stderr": {
-              "equals": "{\"error\":\"E_REFERENCE\"}\n"
-            },
-            "exit": 1,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root",
-              "."
-            ]
-          }
-        },
-        "familyEdge": {
-          "scenario": "familyEdge",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/hermes-agent-maker/scripts/validate-portable-v1-output.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root",
-              "."
-            ],
-            "files": [
-              {
-                "path": "plugin.json",
-                "text": "{\"$schema\":\"https://agentplugins.dev/schemas/v1.0.0/plugin.schema.json\",\"name\":\"fixture-plugin\",\"version\":\"1.0.0\",\"description\":\"Fixture plugin\",\"components\":{\"skills\":[\"skills/fixture\"],\"mcp\":[\"mcp/fixture.json\"]}}"
-              },
-              {
-                "path": "skills/fixture/SKILL.md",
-                "text": "---\nname: fixture\ndescription: Fixture portable skill.\n---\n\n# Fixture\n"
-              },
-              {
-                "path": "mcp/fixture.json",
-                "text": "{\"$schema\":\"https://agentplugins.dev/schemas/v1.0.0/mcp.schema.json\",\"servers\":{\"fixture\":{\"transport\":\"sse\",\"url\":\"http://127.0.0.1:3000\"}},\"version\":\"1.0.0\"}"
-              }
-            ]
-          },
-          "expected": {
-            "stdout": {
-              "equals": ""
-            },
-            "stderr": {
-              "equals": "{\"error\":\"E_HERMES_SUBSET\"}\n"
-            },
-            "exit": 1,
-            "files": [
-              {
-                "path": "plugin.json",
-                "bytes": 215,
-                "sha256": "897492ad8f81b4dc60cc25351556a0249cb5e39aee35a1f95ebc764899411264"
-              },
-              {
-                "path": "skills/fixture/SKILL.md",
-                "bytes": 70,
-                "sha256": "a89ed62f04afb69e05f7abfe5f7bdfb885b1d591a8f98853d2152cb7af87e80e"
-              },
-              {
-                "path": "mcp/fixture.json",
-                "bytes": 159,
-                "sha256": "aaae11b9d009d4e17665e40ff635a5e0b5d6e0311a7bd45be69fd0d02a86b131"
-              }
-            ],
-            "modes": {
-              "plugin.json": "644",
-              "skills/fixture/SKILL.md": "644",
-              "mcp/fixture.json": "644"
-            },
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root",
-              "."
-            ]
-          }
-        }
-      }
-    },
-    {
       "id": "image-maker--validate-image-maker",
-      "path": "skills/image-maker/scripts/validate-image-maker.mjs",
+      "path": "skills/image-maker/scripts/validate-image-maker.sh",
       "family": "image-maker",
       "legacyOrigin": "retained-mjs",
       "sourcePreimage": {
@@ -4528,9 +4002,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/image-maker/scripts/validate-image-maker.mjs"
+              "skills/image-maker/scripts/validate-image-maker.sh"
             ]
           },
           "input": {
@@ -4561,9 +4035,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/image-maker/scripts/validate-image-maker.mjs"
+              "skills/image-maker/scripts/validate-image-maker.sh"
             ]
           },
           "input": {
@@ -4600,9 +4074,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/image-maker/scripts/validate-image-maker.mjs"
+              "skills/image-maker/scripts/validate-image-maker.sh"
             ]
           },
           "input": {
@@ -4663,7 +4137,7 @@
     },
     {
       "id": "nextjs-architecture--validate-nextjs-architecture-skill",
-      "path": "skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.mjs",
+      "path": "skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh",
       "family": "nextjs-architecture",
       "legacyOrigin": "retained-mjs",
       "sourcePreimage": {
@@ -4675,9 +4149,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.mjs"
+              "skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh"
             ]
           },
           "input": {
@@ -5031,9 +4505,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.mjs"
+              "skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh"
             ]
           },
           "input": {
@@ -5393,9 +4867,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.mjs"
+              "skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh"
             ]
           },
           "input": {
@@ -5766,7 +5240,7 @@
     },
     {
       "id": "prd-maker--build-preview",
-      "path": "skills/prd-maker/scripts/build-preview.mjs",
+      "path": "skills/prd-maker/scripts/build-preview.sh",
       "family": "prd-maker",
       "legacyOrigin": "retained-mjs",
       "sourcePreimage": {
@@ -5778,9 +5252,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/prd-maker/scripts/build-preview.mjs"
+              "skills/prd-maker/scripts/build-preview.sh"
             ]
           },
           "input": {
@@ -5834,9 +5308,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/prd-maker/scripts/build-preview.mjs"
+              "skills/prd-maker/scripts/build-preview.sh"
             ]
           },
           "input": {
@@ -5890,9 +5364,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/prd-maker/scripts/build-preview.mjs"
+              "skills/prd-maker/scripts/build-preview.sh"
             ]
           },
           "input": {
@@ -5957,7 +5431,7 @@
     },
     {
       "id": "prd-maker--render-planning-map",
-      "path": "skills/prd-maker/scripts/render-planning-map.mjs",
+      "path": "skills/prd-maker/scripts/render-planning-map.sh",
       "family": "prd-maker",
       "legacyOrigin": "retained-mjs",
       "sourcePreimage": {
@@ -5969,9 +5443,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/prd-maker/scripts/render-planning-map.mjs"
+              "skills/prd-maker/scripts/render-planning-map.sh"
             ]
           },
           "input": {
@@ -6027,9 +5501,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/prd-maker/scripts/render-planning-map.mjs"
+              "skills/prd-maker/scripts/render-planning-map.sh"
             ]
           },
           "input": {
@@ -6054,7 +5528,7 @@
             },
             "stderr": {
               "contains": [
-                "SyntaxError: JSON Parse error: Expected '}'"
+                "render-planning-map: invalid JSON in diagram.data.json"
               ]
             },
             "exit": 1,
@@ -6081,9 +5555,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/prd-maker/scripts/render-planning-map.mjs"
+              "skills/prd-maker/scripts/render-planning-map.sh"
             ]
           },
           "input": {
@@ -6150,7 +5624,7 @@
     },
     {
       "id": "pre-deploy--build-run",
-      "path": "skills/pre-deploy/scripts/build-run.mjs",
+      "path": "skills/pre-deploy/scripts/build-run.sh",
       "family": "pre-deploy",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -6162,9 +5636,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/build-run.mjs"
+              "skills/pre-deploy/scripts/build-run.sh"
             ]
           },
           "input": {
@@ -6182,7 +5656,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "==========================================\n  Pre-Deploy Build Phase\n==========================================\n\n=== [node] Build ===\n[node] No build script found in package.json. Skipping.\n\n==========================================\n  ✓ Build phase completed\n==========================================\n"
+              "equals": "==========================================\n  Pre-Deploy Build Phase\n==========================================\n\n=== [node] Build ===\n[node] No build script found in package.json. Skipping.\n\n==========================================\n  - No build executed (skipped is not passed)\n==========================================\nPRE_DEPLOY_SUMMARY executed=0 skipped=1\n"
             },
             "stderr": {
               "equals": ""
@@ -6208,9 +5682,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/build-run.mjs"
+              "skills/pre-deploy/scripts/build-run.sh"
             ]
           },
           "input": {
@@ -6231,7 +5705,7 @@
               "equals": "==========================================\n  Pre-Deploy Build Phase\n==========================================\n\n=== [node] Build ===\n"
             },
             "stderr": {
-              "equals": "Error: Unable to read or parse package.json: JSON Parse error: Expected '}'\n1 | {bad\n     ^\nerror: Expected string but found \"bad\"\n    at <cwd>/package.json:<line>:<column>\n"
+              "equals": "Error: Unable to read or parse package.json: invalid JSON\n"
             },
             "exit": 1,
             "files": [
@@ -6254,9 +5728,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/build-run.mjs"
+              "skills/pre-deploy/scripts/build-run.sh"
             ]
           },
           "input": {
@@ -6311,7 +5785,7 @@
     },
     {
       "id": "pre-deploy--deploy-check",
-      "path": "skills/pre-deploy/scripts/deploy-check.mjs",
+      "path": "skills/pre-deploy/scripts/deploy-check.sh",
       "family": "pre-deploy",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -6323,9 +5797,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/deploy-check.mjs"
+              "skills/pre-deploy/scripts/deploy-check.sh"
             ]
           },
           "input": {
@@ -6360,9 +5834,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/deploy-check.mjs"
+              "skills/pre-deploy/scripts/deploy-check.sh"
             ]
           },
           "input": {
@@ -6382,7 +5856,7 @@
             "stderr": {
               "equals": "Error: unknown argument: --wat\n"
             },
-            "exit": 2,
+            "exit": 64,
             "files": [],
             "modes": {},
             "cwd": "isolated-temp-tree",
@@ -6397,9 +5871,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/deploy-check.mjs"
+              "skills/pre-deploy/scripts/deploy-check.sh"
             ]
           },
           "input": {
@@ -6445,7 +5919,7 @@
     },
     {
       "id": "pre-deploy--lint-check",
-      "path": "skills/pre-deploy/scripts/lint-check.mjs",
+      "path": "skills/pre-deploy/scripts/lint-check.sh",
       "family": "pre-deploy",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -6457,9 +5931,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/lint-check.mjs"
+              "skills/pre-deploy/scripts/lint-check.sh"
             ]
           },
           "input": {
@@ -6477,7 +5951,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "==========================================\n  Pre-Deploy Quality Checks\n==========================================\n\n=== [node] Running checks ===\n[node] No typecheck/lint configuration found. Skipping.\n\n==========================================\n  ✓ All quality checks passed\n==========================================\n"
+              "equals": "==========================================\n  Pre-Deploy Quality Checks\n==========================================\n\n=== [node] Running checks ===\n\n--- [node] Typecheck ---\n(skipped: no typecheck script and no tsconfig.json)\n\n--- [node] Lint ---\n(skipped: no lint script and no ESLint config)\n\n==========================================\n  - No quality check executed (skipped is not passed)\n==========================================\nPRE_DEPLOY_SUMMARY executed=0 skipped=2\n"
             },
             "stderr": {
               "equals": ""
@@ -6503,9 +5977,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/lint-check.mjs"
+              "skills/pre-deploy/scripts/lint-check.sh"
             ]
           },
           "input": {
@@ -6523,10 +5997,10 @@
           },
           "expected": {
             "stdout": {
-              "equals": "==========================================\n  Pre-Deploy Quality Checks\n==========================================\n\n==========================================\n  ✗ Quality checks failed\n==========================================\n"
+              "equals": "==========================================\n  Pre-Deploy Quality Checks\n==========================================\n\n==========================================\n  ✗ Quality checks failed\n==========================================\nPRE_DEPLOY_SUMMARY executed=0 skipped=0\n"
             },
             "stderr": {
-              "equals": "Error: Unable to read or parse package.json: JSON Parse error: Expected '}'\n1 | {bad\n     ^\nerror: Expected string but found \"bad\"\n    at <cwd>/package.json:<line>:<column>\n"
+              "equals": "Error: Unable to read or parse package.json: invalid JSON\n"
             },
             "exit": 1,
             "files": [
@@ -6549,9 +6023,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/lint-check.mjs"
+              "skills/pre-deploy/scripts/lint-check.sh"
             ]
           },
           "input": {
@@ -6569,7 +6043,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "==========================================\n  Pre-Deploy Quality Checks\n==========================================\n\n==========================================\n  ✗ Quality checks failed\n==========================================\n"
+              "equals": "==========================================\n  Pre-Deploy Quality Checks\n==========================================\n\n==========================================\n  ✗ Quality checks failed\n==========================================\nPRE_DEPLOY_SUMMARY executed=0 skipped=0\n"
             },
             "stderr": {
               "equals": "Error: Invalid package.json: expected scripts to be an object\n"
@@ -6606,7 +6080,7 @@
     },
     {
       "id": "pre-deploy--pm-detect",
-      "path": "skills/pre-deploy/scripts/pm-detect.mjs",
+      "path": "skills/pre-deploy/scripts/pm-detect.sh",
       "family": "pre-deploy",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -6618,9 +6092,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/pm-detect.mjs"
+              "skills/pre-deploy/scripts/pm-detect.sh"
             ]
           },
           "input": {
@@ -6664,9 +6138,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/pm-detect.mjs"
+              "skills/pre-deploy/scripts/pm-detect.sh"
             ]
           },
           "input": {
@@ -6687,7 +6161,7 @@
               "equals": "npm\n"
             },
             "stderr": {
-              "equals": "Warning: No lock file found, defaulting to npm\n1 | {bad\n     ^\nerror: Expected string but found \"bad\"\n    at <cwd>/package.json:<line>:<column>\n"
+              "equals": "Warning: No lock file found, defaulting to npm\n"
             },
             "exit": 0,
             "files": [
@@ -6710,9 +6184,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/pm-detect.mjs"
+              "skills/pre-deploy/scripts/pm-detect.sh"
             ]
           },
           "input": {
@@ -6767,7 +6241,7 @@
     },
     {
       "id": "pre-deploy--stack-detect",
-      "path": "skills/pre-deploy/scripts/stack-detect.mjs",
+      "path": "skills/pre-deploy/scripts/stack-detect.sh",
       "family": "pre-deploy",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -6779,9 +6253,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/stack-detect.mjs"
+              "skills/pre-deploy/scripts/stack-detect.sh"
             ]
           },
           "input": {
@@ -6825,9 +6299,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/stack-detect.mjs"
+              "skills/pre-deploy/scripts/stack-detect.sh"
             ]
           },
           "input": {
@@ -6848,7 +6322,7 @@
               "equals": "node\n"
             },
             "stderr": {
-              "equals": "1 | {bad\n     ^\nerror: Expected string but found \"bad\"\n    at <cwd>/package.json:<line>:<column>\n"
+              "equals": ""
             },
             "exit": 0,
             "files": [
@@ -6871,9 +6345,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/stack-detect.mjs"
+              "skills/pre-deploy/scripts/stack-detect.sh"
             ]
           },
           "input": {
@@ -6928,7 +6402,7 @@
     },
     {
       "id": "prompt-maker--validate-prompt-maker",
-      "path": "skills/prompt-maker/scripts/validate-prompt-maker.mjs",
+      "path": "skills/prompt-maker/scripts/validate-prompt-maker.sh",
       "family": "prompt-maker",
       "legacyOrigin": "retained-mjs",
       "sourcePreimage": {
@@ -6940,9 +6414,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/prompt-maker/scripts/validate-prompt-maker.mjs"
+              "skills/prompt-maker/scripts/validate-prompt-maker.sh"
             ]
           },
           "input": {
@@ -7226,9 +6700,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/prompt-maker/scripts/validate-prompt-maker.mjs"
+              "skills/prompt-maker/scripts/validate-prompt-maker.sh"
             ]
           },
           "input": {
@@ -7512,9 +6986,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/prompt-maker/scripts/validate-prompt-maker.mjs"
+              "skills/prompt-maker/scripts/validate-prompt-maker.sh"
             ]
           },
           "input": {
@@ -7638,7 +7112,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "FAIL prompt-maker validation (9 errors)\nEVAL_CASE_INVALID: Eval case line 1 is not valid JSON: JSON Parse error: Expected '}'\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: positive\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: negative\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: boundary\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: source\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: safety\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: schema\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: regression\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: adversarial\n"
+              "equals": "FAIL prompt-maker validation (9 errors)\nEVAL_CASE_INVALID: Eval case line 1 is not valid JSON: invalid JSON syntax\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: positive\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: negative\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: boundary\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: source\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: safety\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: schema\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: regression\nEVAL_CATEGORY_FLOOR: Expected at least 1 eval case(s) for category: adversarial\n"
             },
             "exit": 1,
             "files": [
@@ -7825,7 +7299,7 @@
     },
     {
       "id": "seo-maker--render-dashboard",
-      "path": "skills/seo-maker/scripts/render-dashboard.mjs",
+      "path": "skills/seo-maker/scripts/render-dashboard.sh",
       "family": "seo-maker",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -7837,9 +7311,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/seo-maker/scripts/render-dashboard.mjs"
+              "skills/seo-maker/scripts/render-dashboard.sh"
             ]
           },
           "input": {
@@ -7899,9 +7373,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/seo-maker/scripts/render-dashboard.mjs"
+              "skills/seo-maker/scripts/render-dashboard.sh"
             ]
           },
           "input": {
@@ -7924,7 +7398,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "results.json JSON 파싱에 실패했습니다: JSON Parse error: Expected '}'\n"
+              "equals": "results.json JSON 파싱에 실패했습니다: invalid JSON\n"
             },
             "exit": 1,
             "files": [
@@ -7949,9 +7423,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/seo-maker/scripts/render-dashboard.mjs"
+              "skills/seo-maker/scripts/render-dashboard.sh"
             ]
           },
           "input": {
@@ -8010,7 +7484,7 @@
     },
     {
       "id": "skill-maker--validate-skill-maker",
-      "path": "skills/skill-maker/scripts/validate-skill-maker.mjs",
+      "path": "skills/skill-maker/scripts/validate-skill-maker.sh",
       "family": "skill-maker",
       "legacyOrigin": "retained-mjs",
       "sourcePreimage": {
@@ -8022,9 +7496,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/skill-maker/scripts/validate-skill-maker.mjs"
+              "skills/skill-maker/scripts/validate-skill-maker.sh"
             ]
           },
           "input": {
@@ -8308,9 +7782,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/skill-maker/scripts/validate-skill-maker.mjs"
+              "skills/skill-maker/scripts/validate-skill-maker.sh"
             ]
           },
           "input": {
@@ -8594,9 +8068,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/skill-maker/scripts/validate-skill-maker.mjs"
+              "skills/skill-maker/scripts/validate-skill-maker.sh"
             ]
           },
           "input": {
@@ -8720,7 +8194,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "skill-maker validation failed\nEVAL_CASE_INVALID: EVAL_CASE_INVALID: Eval case line 1 is not valid JSON: JSON Parse error: Expected '}'\nEVAL_DIMENSION_COUNT: Expected at least 3 category case(s) for positive\nEVAL_DIMENSION_COUNT: Expected at least 2 category case(s) for negative\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for boundary\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for workflow\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for source\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for safety\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for adversarial\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for regression\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for coexistence\nEVAL_DIMENSION_COUNT: Expected at least 1 language case(s) for en\nEVAL_DIMENSION_COUNT: Expected at least 1 language case(s) for ko\nEVAL_DIMENSION_COUNT: Expected at least 1 language case(s) for mixed\n"
+              "equals": "skill-maker validation failed\nEVAL_CASE_INVALID: EVAL_CASE_INVALID: Eval case line 1 is not valid JSON: invalid JSON\nEVAL_DIMENSION_COUNT: Expected at least 3 category case(s) for positive\nEVAL_DIMENSION_COUNT: Expected at least 2 category case(s) for negative\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for boundary\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for workflow\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for source\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for safety\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for adversarial\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for regression\nEVAL_DIMENSION_COUNT: Expected at least 1 category case(s) for coexistence\nEVAL_DIMENSION_COUNT: Expected at least 1 language case(s) for en\nEVAL_DIMENSION_COUNT: Expected at least 1 language case(s) for ko\nEVAL_DIMENSION_COUNT: Expected at least 1 language case(s) for mixed\n"
             },
             "exit": 1,
             "files": [
@@ -8907,7 +8381,7 @@
     },
     {
       "id": "skill-tester--validate-skill",
-      "path": "skills/skill-tester/scripts/validate-skill.mjs",
+      "path": "skills/skill-tester/scripts/validate-skill.sh",
       "family": "skill-tester",
       "legacyOrigin": "retained-mjs",
       "sourcePreimage": {
@@ -8919,9 +8393,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/skill-tester/scripts/validate-skill.mjs"
+              "skills/skill-tester/scripts/validate-skill.sh"
             ]
           },
           "input": {
@@ -8937,7 +8411,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "Usage: node scripts/validate-skill.mjs <skill-folder>\n"
+              "equals": "Usage: bash scripts/validate-skill.sh <skill-folder>\n"
             },
             "exit": 2,
             "files": [],
@@ -8952,9 +8426,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/skill-tester/scripts/validate-skill.mjs"
+              "skills/skill-tester/scripts/validate-skill.sh"
             ]
           },
           "input": {
@@ -8991,9 +8465,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/skill-tester/scripts/validate-skill.mjs"
+              "skills/skill-tester/scripts/validate-skill.sh"
             ]
           },
           "input": {
@@ -9054,7 +8528,7 @@
     },
     {
       "id": "skill-tester--validate-skills-corpus",
-      "path": "skills/skill-tester/scripts/validate-skills-corpus.mjs",
+      "path": "skills/skill-tester/scripts/validate-skills-corpus.sh",
       "family": "skill-tester",
       "legacyOrigin": "retained-mjs",
       "sourcePreimage": {
@@ -9066,9 +8540,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/skill-tester/scripts/validate-skills-corpus.mjs"
+              "skills/skill-tester/scripts/validate-skills-corpus.sh"
             ]
           },
           "input": {
@@ -9099,9 +8573,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/skill-tester/scripts/validate-skills-corpus.mjs"
+              "skills/skill-tester/scripts/validate-skills-corpus.sh"
             ]
           },
           "input": {
@@ -9138,9 +8612,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/skill-tester/scripts/validate-skills-corpus.mjs"
+              "skills/skill-tester/scripts/validate-skills-corpus.sh"
             ]
           },
           "input": {
@@ -9201,7 +8675,7 @@
     },
     {
       "id": "skill-tester--validate-skill-tester",
-      "path": "skills/skill-tester/scripts/validate-skill-tester.mjs",
+      "path": "skills/skill-tester/scripts/validate-skill-tester.sh",
       "family": "skill-tester",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -9221,9 +8695,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/skill-tester/scripts/validate-skill-tester.mjs"
+              "skills/skill-tester/scripts/validate-skill-tester.sh"
             ]
           },
           "input": {
@@ -9238,7 +8712,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "Usage: node skills/skill-tester/scripts/validate-skill-tester.mjs [--root <skill-dir>] [--evals <jsonl>] [--json]\n\nValidates the skill-tester core, local markdown resources, and machine-readable regression fixture with Node built-ins only.\n"
+              "equals": "Usage: bash skills/skill-tester/scripts/validate-skill-tester.sh [--root <skill-dir>] [--evals <jsonl>] [--json]\n\nValidates the skill-tester core, local markdown resources, and machine-readable regression fixture with bash and jq.\n"
             },
             "stderr": {
               "equals": ""
@@ -9258,9 +8732,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/skill-tester/scripts/validate-skill-tester.mjs"
+              "skills/skill-tester/scripts/validate-skill-tester.sh"
             ]
           },
           "input": {
@@ -9295,9 +8769,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/skill-tester/scripts/validate-skill-tester.mjs"
+              "skills/skill-tester/scripts/validate-skill-tester.sh"
             ]
           },
           "input": {
@@ -9321,7 +8795,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "{\n  \"ok\": false,\n  \"root\": \"skills/skill-tester\",\n  \"core\": null,\n  \"markdown\": null,\n  \"evals\": {\n    \"total\": 0,\n    \"count\": {},\n    \"languages\": {},\n    \"ok\": false\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROOT_MISSING\",\n      \"message\": \"Skill root is not a directory: skills/skill-tester\",\n      \"path\": \"skills/skill-tester\"\n    },\n    {\n      \"code\": \"EVAL_JSON_INVALID\",\n      \"message\": \"Eval row is not valid JSON: JSON Parse error: Expected '}'\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"line\": 1\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 3 positive case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 2 negative case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 2 boundary case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 2 edge case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 1 workflow case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 1 adversarial case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 1 regression case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_LANGUAGE_FLOOR\",\n      \"message\": \"Expected at least 1 en case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_LANGUAGE_FLOOR\",\n      \"message\": \"Expected at least 1 ko case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_LANGUAGE_FLOOR\",\n      \"message\": \"Expected at least 1 mixed case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    }\n  ]\n}\n"
+              "equals": "{\n  \"ok\": false,\n  \"root\": \"skills/skill-tester\",\n  \"core\": null,\n  \"markdown\": null,\n  \"evals\": {\n    \"total\": 0,\n    \"count\": {},\n    \"languages\": {},\n    \"ok\": false\n  },\n  \"errors\": [\n    {\n      \"code\": \"ROOT_MISSING\",\n      \"message\": \"Skill root is not a directory: skills/skill-tester\",\n      \"path\": \"skills/skill-tester\"\n    },\n    {\n      \"code\": \"EVAL_JSON_INVALID\",\n      \"message\": \"Eval row is not valid JSON: invalid JSON\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"line\": 1\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 3 positive case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 2 negative case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 2 boundary case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 2 edge case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 1 workflow case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 1 adversarial case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_CATEGORY_FLOOR\",\n      \"message\": \"Expected at least 1 regression case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_LANGUAGE_FLOOR\",\n      \"message\": \"Expected at least 1 en case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_LANGUAGE_FLOOR\",\n      \"message\": \"Expected at least 1 ko case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    },\n    {\n      \"code\": \"EVAL_LANGUAGE_FLOOR\",\n      \"message\": \"Expected at least 1 mixed case(s).\",\n      \"path\": \"<cwd>/evals.jsonl\",\n      \"actual\": 0\n    }\n  ]\n}\n"
             },
             "stderr": {
               "equals": ""
@@ -9364,7 +8838,7 @@
     },
     {
       "id": "version-update--git-commit",
-      "path": "skills/version-update/scripts/git-commit.mjs",
+      "path": "skills/version-update/scripts/git-commit.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -9376,9 +8850,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/git-commit.mjs"
+              "skills/version-update/scripts/git-commit.sh"
             ]
           },
           "input": {
@@ -9433,9 +8907,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/git-commit.mjs"
+              "skills/version-update/scripts/git-commit.sh"
             ]
           },
           "input": {
@@ -9457,7 +8931,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "Usage: <repo>/skills/version-update/scripts/git-commit.mjs \"commit message\" [files...]\n"
+              "equals": "Usage: <repo>/skills/version-update/scripts/git-commit.sh \"commit message\" [files...]\n"
             },
             "exit": 1,
             "files": [
@@ -9486,9 +8960,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/git-commit.mjs"
+              "skills/version-update/scripts/git-commit.sh"
             ]
           },
           "input": {
@@ -9556,7 +9030,7 @@
     },
     {
       "id": "version-update--git-push",
-      "path": "skills/version-update/scripts/git-push.mjs",
+      "path": "skills/version-update/scripts/git-push.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -9568,9 +9042,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/git-push.mjs"
+              "skills/version-update/scripts/git-push.sh"
             ]
           },
           "input": {
@@ -9621,9 +9095,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/git-push.mjs"
+              "skills/version-update/scripts/git-push.sh"
             ]
           },
           "input": {
@@ -9647,7 +9121,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "Usage: <repo>/skills/version-update/scripts/git-push.mjs [--force]\n"
+              "equals": "Usage: <repo>/skills/version-update/scripts/git-push.sh [--force]\n"
             },
             "exit": 2,
             "files": [
@@ -9678,9 +9152,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/git-push.mjs"
+              "skills/version-update/scripts/git-push.sh"
             ]
           },
           "input": {
@@ -9704,7 +9178,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "Usage: <repo>/skills/version-update/scripts/git-push.mjs [--force]\n"
+              "equals": "Usage: <repo>/skills/version-update/scripts/git-push.sh [--force]\n"
             },
             "exit": 2,
             "files": [
@@ -9746,7 +9220,7 @@
     },
     {
       "id": "version-update--stack-detect",
-      "path": "skills/version-update/scripts/stack-detect.mjs",
+      "path": "skills/version-update/scripts/stack-detect.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -9758,9 +9232,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/stack-detect.mjs"
+              "skills/version-update/scripts/stack-detect.sh"
             ]
           },
           "input": {
@@ -9791,9 +9265,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/stack-detect.mjs"
+              "skills/version-update/scripts/stack-detect.sh"
             ]
           },
           "input": {
@@ -9828,9 +9302,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/stack-detect.mjs"
+              "skills/version-update/scripts/stack-detect.sh"
             ]
           },
           "input": {
@@ -9876,7 +9350,7 @@
     },
     {
       "id": "version-update--version-apply",
-      "path": "skills/version-update/scripts/version-apply.mjs",
+      "path": "skills/version-update/scripts/version-apply.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -9888,9 +9362,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/version-apply.mjs"
+              "skills/version-update/scripts/version-apply.sh"
             ]
           },
           "input": {
@@ -9915,9 +9389,7 @@
             },
             "stderr": {
               "contains": [
-                "148 |   if (!existsSync(file)) throw new Error(`Error: Version file not found: ${file}`);",
-                "151 |   if (!update) throw new Error(`Error: Unsupported version file: ${file}`);",
-                "error: Error: Unsupported version file: VERSION"
+                "Error: Unsupported version file: VERSION"
               ]
             },
             "exit": 1,
@@ -9944,9 +9416,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/version-apply.mjs"
+              "skills/version-update/scripts/version-apply.sh"
             ]
           },
           "input": {
@@ -9971,9 +9443,7 @@
             },
             "stderr": {
               "contains": [
-                "Error: Invalid version format: 01.2.3 (expected x.y.z)",
-                "30 |   console.error(`Error: Invalid version format: ${newVersion} (expected x.y.z)`);",
-                "error: Invalid version"
+                "Error: Invalid version format: 01.2.3 (expected x.y.z)"
               ]
             },
             "exit": 1,
@@ -10000,9 +9470,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/version-apply.mjs"
+              "skills/version-update/scripts/version-apply.sh"
             ]
           },
           "input": {
@@ -10026,9 +9496,7 @@
             },
             "stderr": {
               "contains": [
-                "Error: No version files found",
-                "58 |   console.error(\"Error: No version files found\");",
-                "error: No version files found"
+                "Error: No version files found"
               ]
             },
             "exit": 1,
@@ -10065,7 +9533,7 @@
     },
     {
       "id": "version-update--version-bump",
-      "path": "skills/version-update/scripts/version-bump.mjs",
+      "path": "skills/version-update/scripts/version-bump.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -10077,9 +9545,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/version-bump.mjs"
+              "skills/version-update/scripts/version-bump.sh"
             ]
           },
           "input": {
@@ -10116,9 +9584,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/version-bump.mjs"
+              "skills/version-update/scripts/version-bump.sh"
             ]
           },
           "input": {
@@ -10155,9 +9623,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/version-bump.mjs"
+              "skills/version-update/scripts/version-bump.sh"
             ]
           },
           "input": {
@@ -10205,7 +9673,7 @@
     },
     {
       "id": "version-update--version-current",
-      "path": "skills/version-update/scripts/version-current.mjs",
+      "path": "skills/version-update/scripts/version-current.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -10217,9 +9685,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/version-current.mjs"
+              "skills/version-update/scripts/version-current.sh"
             ]
           },
           "input": {
@@ -10263,9 +9731,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/version-current.mjs"
+              "skills/version-update/scripts/version-current.sh"
             ]
           },
           "input": {
@@ -10286,7 +9754,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "Error: Could not parse semantic version (x.y.z) from package.json\n1 | {bad\n     ^\nerror: Expected string but found \"bad\"\n    at <cwd>/package.json:<line>:<column>\n"
+              "equals": "Error: Could not parse semantic version (x.y.z) from package.json\n"
             },
             "exit": 1,
             "files": [
@@ -10309,9 +9777,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/version-current.mjs"
+              "skills/version-update/scripts/version-current.sh"
             ]
           },
           "input": {
@@ -10366,7 +9834,7 @@
     },
     {
       "id": "version-update--version-find",
-      "path": "skills/version-update/scripts/version-find.mjs",
+      "path": "skills/version-update/scripts/version-find.sh",
       "family": "version-update",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
@@ -10378,9 +9846,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/version-find.mjs"
+              "skills/version-update/scripts/version-find.sh"
             ]
           },
           "input": {
@@ -10424,9 +9892,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/version-find.mjs"
+              "skills/version-update/scripts/version-find.sh"
             ]
           },
           "input": {
@@ -10447,7 +9915,7 @@
               "equals": "=== Searching version files ===\n\n=== Node version files ===\npackage.json\n\n=== Rust version files ===\n(none found)\n\n=== Python version files ===\n(none found)\n\n=== Code files with inline version patterns ===\n(none found)\n\n=== All version files ===\npackage.json\n"
             },
             "stderr": {
-              "equals": "1 | {bad\n     ^\nerror: Expected string but found \"bad\"\n    at <cwd>/package.json:<line>:<column>\n"
+              "equals": ""
             },
             "exit": 0,
             "files": [
@@ -10470,9 +9938,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/version-update/scripts/version-find.mjs"
+              "skills/version-update/scripts/version-find.sh"
             ]
           },
           "input": {
@@ -10537,7 +10005,7 @@
     },
     {
       "id": "vite-architecture--validate-vite-architecture-skill",
-      "path": "skills/vite-architecture/scripts/validate-vite-architecture-skill.mjs",
+      "path": "skills/vite-architecture/scripts/validate-vite-architecture-skill.sh",
       "family": "vite-architecture",
       "legacyOrigin": "retained-mjs",
       "sourcePreimage": {
@@ -10549,9 +10017,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/vite-architecture/scripts/validate-vite-architecture-skill.mjs"
+              "skills/vite-architecture/scripts/validate-vite-architecture-skill.sh"
             ]
           },
           "input": {
@@ -10785,9 +10253,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/vite-architecture/scripts/validate-vite-architecture-skill.mjs"
+              "skills/vite-architecture/scripts/validate-vite-architecture-skill.sh"
             ]
           },
           "input": {
@@ -11027,9 +10495,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/vite-architecture/scripts/validate-vite-architecture-skill.mjs"
+              "skills/vite-architecture/scripts/validate-vite-architecture-skill.sh"
             ]
           },
           "input": {
@@ -11279,612 +10747,8 @@
       }
     },
     {
-      "id": "orca-orchestration--check-runtime-capabilities",
-      "path": "skills/orca-orchestration/scripts/check-runtime-capabilities.mjs",
-      "family": "orca-orchestration",
-      "legacyOrigin": "authored-mjs",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/orca-orchestration/scripts/check-runtime-capabilities.mjs",
-          "absent": true
-        }
-      },
-      "dimensions": {
-        "stdout": true,
-        "stderr": true,
-        "exit": true,
-        "files": true,
-        "modes": true,
-        "cwd": true,
-        "env": true,
-        "argv": true
-      },
-      "fixtures": {
-        "happy": {
-          "scenario": "happy",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/orca-orchestration/scripts/check-runtime-capabilities.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--help"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": "Usage: bun scripts/check-runtime-capabilities.mjs [--check-orca-status] [--json]\n\nRuns bounded read-only version/help probes for Orca, OMO, and GJC. It never runs auth\ncommands, prints credentials, creates terminals, or sends prompts. --check-orca-status adds\nan informational live runtime readiness probe that becomes required when explicitly selected.\n"
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 0,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--help"
-            ]
-          }
-        },
-        "malformed": {
-          "scenario": "malformed",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/orca-orchestration/scripts/check-runtime-capabilities.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--bogus"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": ""
-            },
-            "stderr": {
-              "equals": "Unknown argument: --bogus\n"
-            },
-            "exit": 2,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--bogus"
-            ]
-          }
-        },
-        "familyEdge": {
-          "scenario": "familyEdge",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/orca-orchestration/scripts/check-runtime-capabilities.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "-h"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": "Usage: bun scripts/check-runtime-capabilities.mjs [--check-orca-status] [--json]\n\nRuns bounded read-only version/help probes for Orca, OMO, and GJC. It never runs auth\ncommands, prints credentials, creates terminals, or sends prompts. --check-orca-status adds\nan informational live runtime readiness probe that becomes required when explicitly selected.\n"
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 0,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "-h"
-            ]
-          }
-        }
-      }
-    },
-    {
-      "id": "orca-orchestration--validate-orca-orchestration",
-      "path": "skills/orca-orchestration/scripts/validate-orca-orchestration.mjs",
-      "family": "orca-orchestration",
-      "legacyOrigin": "authored-mjs",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/orca-orchestration/scripts/validate-orca-orchestration.mjs",
-          "absent": true
-        }
-      },
-      "dimensions": {
-        "stdout": true,
-        "stderr": true,
-        "exit": true,
-        "files": true,
-        "modes": true,
-        "cwd": true,
-        "env": true,
-        "argv": true
-      },
-      "fixtures": {
-        "happy": {
-          "scenario": "happy",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/orca-orchestration/scripts/validate-orca-orchestration.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--help"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": "Usage: bun scripts/validate-orca-orchestration.mjs [--root <path>] [--evals <path>] [--json]\n\nValidates the orca-orchestration package contract, bilingual resources, links, source dates,\nand JSONL eval fixture. Empty fixtures are rejected with the single diagnostic evals_empty.\n"
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 0,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--help"
-            ]
-          }
-        },
-        "malformed": {
-          "scenario": "malformed",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/orca-orchestration/scripts/validate-orca-orchestration.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--bogus"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": ""
-            },
-            "stderr": {
-              "equals": "Unknown argument: --bogus\n"
-            },
-            "exit": 2,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--bogus"
-            ]
-          }
-        },
-        "familyEdge": {
-          "scenario": "familyEdge",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/orca-orchestration/scripts/validate-orca-orchestration.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": ""
-            },
-            "stderr": {
-              "equals": "--root requires a value\n"
-            },
-            "exit": 2,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root"
-            ]
-          }
-        }
-      }
-    },
-    {
-      "id": "orca-orchestration--verify-orca-orchestration",
-      "path": "skills/orca-orchestration/scripts/verify-orca-orchestration.mjs",
-      "family": "orca-orchestration",
-      "legacyOrigin": "authored-mjs",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/orca-orchestration/scripts/verify-orca-orchestration.mjs",
-          "absent": true
-        }
-      },
-      "dimensions": {
-        "stdout": true,
-        "stderr": true,
-        "exit": true,
-        "files": true,
-        "modes": true,
-        "cwd": true,
-        "env": true,
-        "argv": true
-      },
-      "fixtures": {
-        "happy": {
-          "scenario": "happy",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/orca-orchestration/scripts/verify-orca-orchestration.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--help"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": "Usage: bun scripts/verify-orca-orchestration.mjs [--root <path>] [--runtime] [--json]\n\nRuns the package validator happy path and an isolated empty-fixture rejection. --runtime adds\nthe read-only capability checker plus Orca status. Child stdout is captured so --json emits\none aggregate document.\n"
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 0,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--help"
-            ]
-          }
-        },
-        "malformed": {
-          "scenario": "malformed",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/orca-orchestration/scripts/verify-orca-orchestration.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--bogus"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": ""
-            },
-            "stderr": {
-              "equals": "Unknown argument: --bogus\n"
-            },
-            "exit": 2,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--bogus"
-            ]
-          }
-        },
-        "familyEdge": {
-          "scenario": "familyEdge",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/orca-orchestration/scripts/verify-orca-orchestration.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": ""
-            },
-            "stderr": {
-              "equals": "--root requires a value\n"
-            },
-            "exit": 2,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root"
-            ]
-          }
-        }
-      }
-    },
-    {
-      "id": "eli5--render-explanation",
-      "path": "skills/eli5/scripts/render-explanation.mjs",
-      "family": "eli5",
-      "legacyOrigin": "authored-mjs",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/eli5/scripts/render-explanation.mjs",
-          "absent": true
-        }
-      },
-      "dimensions": {
-        "stdout": "eli5--render-explanation--stdout",
-        "stderr": "eli5--render-explanation--stderr",
-        "exit": "eli5--render-explanation--exit",
-        "files": "eli5--render-explanation--files",
-        "modes": "eli5--render-explanation--modes",
-        "cwd": "eli5--render-explanation--cwd",
-        "env": "eli5--render-explanation--env",
-        "argv": "eli5--render-explanation--argv"
-      },
-      "fixtures": {
-        "happy": {
-          "scenario": "happy",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/eli5/scripts/render-explanation.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "artifact"
-            ],
-            "files": [
-              {
-                "path": "artifact/explanation.json",
-                "text": "{\"title\":\"<b>캐시</b> & \\\"따옴표\\\" </script>\",\"summary\":\"자주 쓰는 값을 가까이에 두고 다시 계산하지 않는 것\",\"language\":\"ko\",\"layers\":[{\"id\":\"gist\",\"label\":\"한 줄 정의\",\"body\":\"캐시는 자주 쓰는 값을 빠르게 꺼낼 수 있는 곳에 잠시 두는 장치다.\"},{\"id\":\"boundary\",\"label\":\"한계\",\"body\":\"원본이 바뀌면 오래된 값을 돌려줄 수 있다.\"}],\"mechanism\":[{\"actor\":\"클라이언트\",\"action\":\"값을 요청한다\",\"effect\":\"캐시가 먼저 응답한다\"}],\"analogy\":{\"text\":\"책상 위에 두는 메모\",\"limit\":\"메모는 저절로 갱신되지 않는다\"},\"terms\":[{\"term\":\"캐시\",\"plain\":\"빠른 임시 저장소\"}],\"cautions\":[\"캐시된 값이 최신이 아닐 수 있다\"],\"sources\":[]}"
-              }
-            ]
-          },
-          "expected": {
-            "stdout": {
-              "equals": "{\"status\":\"ok\",\"layers\":2,\"steps\":1,\"terms\":1,\"cautions\":1}\n"
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 0,
-            "files": [
-              {
-                "path": "artifact/explanation.json",
-                "bytes": 755,
-                "sha256": "141f63e2ab7940348cc8b7d3b583d6a0297f39401e27b753ccc400a7618f218c"
-              },
-              {
-                "path": "artifact/explanation.html",
-                "bytes": 11615,
-                "sha256": "2639218de6c1fffd0ba4e0ac6b094dd7b9f78af7f10bab732f631aae6cf61131"
-              }
-            ],
-            "modes": {
-              "artifact/explanation.json": "644",
-              "artifact/explanation.html": "644"
-            },
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "artifact"
-            ]
-          }
-        },
-        "malformed": {
-          "scenario": "malformed",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/eli5/scripts/render-explanation.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "artifact"
-            ],
-            "files": [
-              {
-                "path": "artifact/explanation.json",
-                "text": "{broken"
-              }
-            ]
-          },
-          "expected": {
-            "stdout": {
-              "equals": ""
-            },
-            "stderr": {
-              "contains": [
-                "explanation.json JSON 파싱에 실패했습니다"
-              ]
-            },
-            "exit": 1,
-            "files": [
-              {
-                "path": "artifact/explanation.json",
-                "bytes": 7,
-                "sha256": "be302461cda285db3ed2d45fb767b23e08ca8808b35a638009937df22b332d73"
-              }
-            ],
-            "modes": {
-              "artifact/explanation.json": "644"
-            },
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "artifact"
-            ]
-          }
-        },
-        "familyEdge": {
-          "scenario": "familyEdge",
-          "command": {
-            "executable": "bun",
-            "arguments": [
-              "skills/eli5/scripts/render-explanation.mjs"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "artifact"
-            ],
-            "files": [
-              {
-                "path": "artifact/explanation.json",
-                "text": "{\"title\":\"레이어 없음\",\"summary\":\"스키마 위반 픽스처\"}"
-              },
-              {
-                "path": "artifact/explanation.html",
-                "text": "prior view\n",
-                "mode": "640"
-              }
-            ]
-          },
-          "expected": {
-            "stdout": {
-              "equals": ""
-            },
-            "stderr": {
-              "contains": [
-                "explanation.json 스키마 위반: layers"
-              ]
-            },
-            "exit": 1,
-            "files": [
-              {
-                "path": "artifact/explanation.json",
-                "bytes": 67,
-                "sha256": "ef30423efa0fe642bc3f76d48f71dbfc923c8477e796ee0453d384ec62548564"
-              },
-              {
-                "path": "artifact/explanation.html",
-                "bytes": 11,
-                "sha256": "3b33ca7d62e8bc2604e646cf6a7b067ef9fecc40c25542d0e8921971ba61770a"
-              }
-            ],
-            "modes": {
-              "artifact/explanation.json": "644",
-              "artifact/explanation.html": "640"
-            },
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "artifact"
-            ]
-          }
-        }
-      }
-    },
-    {
       "id": "jev-maker--check-jev-request",
-      "path": "skills/jev-maker/scripts/check-jev-request.mjs",
+      "path": "skills/jev-maker/scripts/check-jev-request.sh",
       "family": "jev-maker",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
@@ -11908,9 +10772,9 @@
         "happy": {
           "scenario": "happy",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/jev-maker/scripts/check-jev-request.mjs"
+              "skills/jev-maker/scripts/check-jev-request.sh"
             ]
           },
           "input": {
@@ -11958,9 +10822,9 @@
         "malformed": {
           "scenario": "malformed",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/jev-maker/scripts/check-jev-request.mjs"
+              "skills/jev-maker/scripts/check-jev-request.sh"
             ]
           },
           "input": {
@@ -12008,9 +10872,9 @@
         "familyEdge": {
           "scenario": "familyEdge",
           "command": {
-            "executable": "bun",
+            "executable": "bash",
             "arguments": [
-              "skills/jev-maker/scripts/check-jev-request.mjs"
+              "skills/jev-maker/scripts/check-jev-request.sh"
             ]
           },
           "input": {
@@ -12069,43 +10933,43 @@
         "legacyPath": "skills/version-update/scripts/stack-detect.sh",
         "sha256": "0f22f0bd18052be6d6acbfa6092f7ca8cf59e638f2105aca3f315717724a8326",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/stack-detect.mjs"
+        "finalPath": "skills/version-update/scripts/stack-detect.sh"
       },
       {
         "legacyPath": "skills/version-update/scripts/version-find.sh",
         "sha256": "ba09fed01b10cf7bf8cf91e7b4e493d0709fc15c6f5c85bab25d401b75143d00",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/version-find.mjs"
+        "finalPath": "skills/version-update/scripts/version-find.sh"
       },
       {
         "legacyPath": "skills/version-update/scripts/version-current.sh",
         "sha256": "1a6e4daf89c4e3e294ead2d74eb192c39e5caf923109d14229271926100eb576",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/version-current.mjs"
+        "finalPath": "skills/version-update/scripts/version-current.sh"
       },
       {
         "legacyPath": "skills/version-update/scripts/version-bump.sh",
         "sha256": "18bf6f2c6913be903092bb30db85aa1624f68281d05230de7cc3027161f01c00",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/version-bump.mjs"
+        "finalPath": "skills/version-update/scripts/version-bump.sh"
       },
       {
         "legacyPath": "skills/version-update/scripts/version-apply.sh",
         "sha256": "2b5aa40c43d37661e7974569dbe9c9475cf76e2ce4768eb99ebba900f8695d8e",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/version-apply.mjs"
+        "finalPath": "skills/version-update/scripts/version-apply.sh"
       },
       {
         "legacyPath": "skills/version-update/scripts/git-commit.sh",
         "sha256": "317493004cb98e16fb752bd7e1c6e3f1503f73cc632883fd509d7774d2889ae6",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/git-commit.mjs"
+        "finalPath": "skills/version-update/scripts/git-commit.sh"
       },
       {
         "legacyPath": "skills/version-update/scripts/git-push.sh",
         "sha256": "87de1d571b5722bd93dcd1bab84b6d2e82de2aabe2c39ef7e56d07f65cf6b132",
         "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/git-push.mjs"
+        "finalPath": "skills/version-update/scripts/git-push.sh"
       }
     ],
     "pairedDirectShDocuments": [
@@ -12132,8 +10996,8 @@
       "id": "version-update--version-apply--caller-restoration",
       "legacyCaller": "skills/version-update/scripts/version-apply.sh",
       "legacyCallee": "skills/version-update/scripts/version-find.sh",
-      "finalCaller": "skills/version-update/scripts/version-apply.mjs",
-      "finalCallee": "skills/version-update/scripts/version-find.mjs",
+      "finalCaller": "skills/version-update/scripts/version-apply.sh",
+      "finalCallee": "skills/version-update/scripts/version-find.sh",
       "legacyCallerSha256": "2b5aa40c43d37661e7974569dbe9c9475cf76e2ce4768eb99ebba900f8695d8e"
     },
     "restoreReapplyFixture": {

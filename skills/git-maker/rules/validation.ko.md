@@ -18,8 +18,8 @@
 
 ## 런타임 체크
 
-- Skill root에서는 `node --check scripts/git-maker-fast.mjs`, repository root에서는 `node --check skills/git-maker/scripts/git-maker-fast.mjs`가 통과한다.
-- `scripts/git-maker-fast.mjs inspect . --jobs 2`가 `repos|begin`, `repo-status|begin`, file inventory block을 출력한다.
+- Skill root에서는 `bash -n scripts/git-maker-fast.sh`, repository root에서는 `bash -n skills/git-maker/scripts/git-maker-fast.sh`가 통과한다.
+- `scripts/git-maker-fast.sh inspect . --jobs 2`가 `repos|begin`, `repo-status|begin`, file inventory block을 출력한다.
 - 가능하면 local linked-worktree fixture가 `worktree|linked`와 linked checkout root의 `repo|...` path를 보여준다.
 - 사용자가 push를 요청하지 않는 한 push helper는 실제 remote에 대해 테스트하지 않는다. behavior validation에는 local fixture를 사용한다.
 - Commit phase는 여전히 targeted staging과 commit당 하나의 logical change를 사용한다.

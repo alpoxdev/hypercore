@@ -62,7 +62,7 @@ Do not use this skill for generic React architecture, Remix/TanStack Start proje
 | Tools | Use local search/read/edit/validation commands; use current official docs when API drift matters; gate destructive migrations, credentials, production side effects, and broad codemods. |
 | Loop | None. This skill runs a single enforcement pass per request and re-enters only when the user asks for another pass. |
 | Output | Korean architecture decision or review with rule classifications, changed files if any, validation evidence, remaining risks, and dated official-doc ambiguity notes. |
-| Verification | Run `rules/validation.md` checks relevant to touched surfaces and `scripts/validate-nextjs-architecture-skill.mjs` when this skill folder changes. |
+| Verification | Run `rules/validation.md` checks relevant to touched surfaces and `bash scripts/validate-nextjs-architecture-skill.sh` when this skill folder changes. |
 | Stop condition | Stop after project mode is known, applicable safety gates pass, local conventions are applied or deferred, validation evidence is recorded, and unresolved API drift is dated and sourced. |
 
 </instruction_contract>
@@ -259,7 +259,7 @@ Run the smallest project-specific checks that prove the claim, then report evide
 For this skill folder itself, run:
 
 ```bash
-node skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.mjs
+bash skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh
 ```
 
 ## Stop Condition

@@ -19,7 +19,7 @@ compatibility: Works best with live web access, browser inspection, local source
 | Scope | Owns target classification, measurement-method selection, on-page/technical/content/Core Web Vitals/AEO/GEO/LLMO assessment, scoring, findings, recommendations, and the report workspace. Does not own implementation outside the audited target, release gating, page or product design, or broad market research that has no target site or content set. |
 | Authority | System/harness and user instructions > the audited target's own files and live observations > official platform documentation > this skill > heuristic preference. A tool, lab, synthetic, or heuristic observation is never promoted to an official requirement. |
 | Evidence | Read the target's own files, rendered pages, and live responses before scoring, and cite the command, URL, file path, or probe result behind every critical and warning finding. Record unavailable checks as `unknown` and irrelevant checks as `not-applicable`; never invent a score, a ranking, an inclusion, or a citation. |
-| Tools | Use available read/search/browser tools, and render the dashboard with `scripts/render-dashboard.mjs <artifact-dir>`. Web search, browser inspection, field Core Web Vitals, Search Console, or an AI citation probe are used only when actually available; when one is missing, state the capability limit and fall back to the strongest lower-grade method. |
+| Tools | Use available read/search/browser tools, and render the dashboard with `bash scripts/render-dashboard.sh <artifact-dir>`. Web search, browser inspection, field Core Web Vitals, Search Console, or an AI citation probe are used only when actually available; when one is missing, state the capability limit and fall back to the strongest lower-grade method. |
 | Loop | Optimize mode only: a bounded `audit -> fix or recommendation -> re-audit` cycle, default budget three iterations. Feedback = comparable re-audit evidence; metric = the 100-point score with `unknown` and `not-applicable` categories excluded; guard = no comparable-category regression and no evidence-grade promotion; stop = target reached, budget spent, plateau, guard failure, or work that needs external credentials or a business decision. |
 | Output | `.hyper/seo-maker/[slug]/` holding `results.json`, `results.js`, `dashboard.html`, `report.md`, `sources.md`, and `flow.json` for complex or optimize mode; simple mode keeps `report.md` and `sources.md` as the minimum. `sources.md` is a source ledger of URL, date, applicable claim, evidence class, and limitation. |
 | Verification | Apply `rules/validation.md` at completion: every critical or warning finding carries evidence, scores derive from observed evidence with `unknown` and `not-applicable` handled explicitly, and optimize mode records baseline, evaluator, budget, guards, discarded iterations, stop reason, and the best comparable verified result. Package changes additionally run the focused corpus validator, the repository standard gate, and the package tests. |
@@ -57,10 +57,10 @@ Use `seo-maker` when the main outcome is an SEO/AEO/GEO/LLMO audit, optimization
 Route neighboring work elsewhere:
 
 - Page or product UI design: use `designer` or the relevant frontend design skill.
-- Competitor or market research without site audit: use `research`.
+- Competitor or market research without site audit: route to the source-backed research workflow.
 - Release-gate checks whose only output is a go/no-go deployment verdict rather than a search-visibility audit: not this skill's output.
 - Pure performance engineering without search context: use the relevant performance or optimization workflow.
-- Broad AI search trend research without a target site or content set: use `research`.
+- Broad AI search trend research without a target site or content set: route to the source-backed research workflow.
 
 </routing_rule>
 
@@ -82,7 +82,7 @@ Positive examples:
 Negative examples:
 
 - "Design this landing page." -> use `designer`.
-- "Research competitor market positioning." -> use `research`.
+- "Research competitor market positioning." -> route to the source-backed research workflow.
 - "Check the release checklist before deploying." -> a deployment gate verdict, not a search-visibility audit.
 
 Boundary examples:
@@ -191,7 +191,7 @@ Render order:
 3. Render `dashboard.html` from the current results.
 4. Write `report.md` and `sources.md` with links or file references. `sources.md` is a source ledger: for every external or official claim, record its URL, accessed or published date, applicable claim, evidence class, and any scope/availability limitation.
 
-When `results.json` is finalized, render the dashboard with `scripts/render-dashboard.mjs <artifact-dir>`.
+When `results.json` is finalized, render the dashboard with `bash scripts/render-dashboard.sh <artifact-dir>`.
 
 For complex or optimize mode, `flow.json` tracks phases in order: `scope` → `measurement` → `technical` → `platform_policy` → `onpage` → `content` → `aeo` → `geo` → `report`.
 

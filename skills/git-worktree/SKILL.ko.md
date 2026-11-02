@@ -110,7 +110,7 @@ compatibility: '`git worktree`를 지원하는 Git이 필요합니다. 에디터
 
 1. 명령 패턴, 안전 점검, 삭제, prune, repair, context 이동 규칙은 `rules/worktree-lifecycle.md`를 읽습니다.
 2. 근거, upstream behavior, source comparison이 필요할 때만 `references/source-survey.md`를 읽습니다.
-3. 이 스킬 폴더를 수정한 뒤에는 결정적 validator인 `scripts/validate-git-worktree-skill.mjs`를 실행합니다.
+3. 이 스킬 폴더를 수정한 뒤에는 결정적 validator인 `scripts/validate-git-worktree-skill.sh`를 실행합니다.
 
 </support_file_read_order>
 
@@ -170,7 +170,7 @@ compatibility: '`git worktree`를 지원하는 Git이 필요합니다. 에디터
 결정적 회귀 검증 명령:
 
 ```bash
-bun skills/git-worktree/scripts/validate-git-worktree-skill.mjs
+bash skills/git-worktree/scripts/validate-git-worktree-skill.sh
 ```
 
 - [ ] 긍정/부정/경계 예시가 올바르게 라우팅됩니다.

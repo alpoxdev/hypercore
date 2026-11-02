@@ -17,7 +17,7 @@
 
 | 레인 | 책임 | 입력 | 출력 | 편집/스테이징/커밋? |
 |------|------|------|------|------|
-| Repo Mapper | 저장소/worktree 루트, staged/unstaged/untracked 파일, 소유 경계를 매핑한다 | `git-maker-fast.mjs inspect` 출력, `git diff --name-only` | 저장소/파일 맵, linked-worktree 맥락, 모호성 목록 | 아니오 |
+| Repo Mapper | 저장소/worktree 루트, staged/unstaged/untracked 파일, 소유 경계를 매핑한다 | `git-maker-fast.sh inspect` 출력, `git diff --name-only` | 저장소/파일 맵, linked-worktree 맥락, 모호성 목록 | 아니오 |
 | Grouping Critic | 논리적 커밋 그룹을 제안하고 무관한 파일이나 비밀을 표시한다 | status, 파일 목록, diff 요약 | 신뢰도와 제외 항목을 포함한 그룹 계획 | 아니오 |
 | Message Drafter | 한국어 Conventional Commit 제목/본문을 작성한다 | 그룹 계획과 diff 요약 | 근거가 있는 메시지 후보 | 아니오 |
 | Safety Verifier | 비밀, 파괴적 작업, 보호 브랜치, detached HEAD, upstream/push 위험을 확인한다 | status, branch/upstream 출력, 스크립트 diff | 통과/차단 보고서 | 아니오 |
@@ -43,12 +43,12 @@
 1. Main integrator가 실행한다.
 
    ```bash
-   scripts/git-maker-fast.mjs inspect . --jobs 4
+   scripts/git-maker-fast.sh inspect . --jobs 4
    ```
 
 2. 복잡하면 같은 inspect 출력을 사용해 독립 읽기 전용 레인을 실행한다.
 3. 레인 출력을 하나의 최종 커밋 계획으로 통합한다.
-4. `scripts/git-commit.mjs`로 각 그룹을 순차적으로 stage하고 commit한다.
+4. `scripts/git-commit.sh`로 각 그룹을 순차적으로 stage하고 commit한다.
 5. 모든 커밋이 성공한 뒤에만 push하며, 가능하면 preflight의 명시적 repo path를 사용한다.
 
 

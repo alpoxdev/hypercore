@@ -6,7 +6,7 @@ Read this rule only when browser capability exists or a user supplies a rendered
 
 - Do not install Playwright, Axe, a browser, or dependencies to obtain rendered evidence.
 - Without a valid handoff, report `static_only` or `unavailable`; do not claim visual hierarchy, actual contrast, keyboard, accessibility, or behavior passed.
-- Validate a handoff with `scripts/collect-rendered-evidence.mjs --input <capture.json>` before citing it.
+- Validate a handoff with `scripts/collect-rendered-evidence.sh --input <capture.json>` before citing it.
 
 ## Evidence minimum
 

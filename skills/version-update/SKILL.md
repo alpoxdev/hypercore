@@ -1,8 +1,8 @@
 ---
 name: version-update
-description: "[Hyper] Update semantic versions across node/rust/python projects, keep discovered version files synchronized, and use this skill's Bun MJS helpers for optional commits and pushes."
+description: "[Hyper] Update semantic versions across node/rust/python projects, keep discovered version files synchronized, and use this skill's bash helpers for optional commits and pushes."
 allowed-tools: Bash Read Edit
-compatibility: Requires Bun, a git repository, and MJS scripts under skills/version-update/scripts.
+compatibility: Requires Bash 3.2+, a git repository, and the bash scripts under skills/version-update/scripts.
 ---
 
 # Version Update Skill
@@ -35,8 +35,8 @@ Use a different language only when the user explicitly requests it, an existing 
 | Trigger | Activate on version bump/set requests, especially when the user asks to update versions and optionally commit them. |
 | Scope | Own stack detection, version-file discovery, target-version calculation, version application, diff review, and requested git operations. |
 | Authority | User and project instructions outrank this skill; discovered version files, semver rules, script output, and diffs are evidence. |
-| Evidence | Use Bun MJS helpers, target argument parsing, and `git diff` before git writes. |
-| Tools | Use `bun scripts/*.mjs` helpers and local file edits; use this skill's direct git helpers only when requested. |
+| Evidence | Use the bash helpers, target argument parsing, and `git diff` before git writes. |
+| Tools | Use `bash scripts/*.sh` helpers and local file edits; use this skill's direct git helpers only when requested. |
 | Loop | None. One pass per request: detect the stack, discover the version files, read the current version, compute the target, apply it, review the diff, then stop. Re-invoke only when the user asks for another version change. |
 | Output | Korean report of current version, target version, changed files, commit/push status, and caveats. |
 | Verification | Confirm all intended version files changed consistently, review diff, and execute optional git steps only when requested. |
@@ -73,21 +73,21 @@ Use a different language only when the user explicitly requests it, an existing 
 
 | Script | Purpose |
 |------|------|
-| `bun scripts/stack-detect.mjs` | Detect stacks (`node`, `rust`, `python`) |
-| `bun scripts/version-find.mjs [--plain]` | Discover version-bearing files |
-| `bun scripts/version-current.mjs [file]` | Extract current semver (`file|version`) |
-| `bun scripts/version-bump.mjs <current> <type>` | Calculate next semver |
-| `bun scripts/version-apply.mjs <new> [files...]` | Apply version to discovered/selected files |
-| `bun scripts/git-commit.mjs "msg" [files]` | Directly commit the specified version-update files |
-| `bun scripts/git-push.mjs` | Directly push after an explicit user request |
+| `bash scripts/stack-detect.sh` | Detect stacks (`node`, `rust`, `python`) |
+| `bash scripts/version-find.sh [--plain]` | Discover version-bearing files |
+| `bash scripts/version-current.sh [file]` | Extract current semver (`file|version`) |
+| `bash scripts/version-bump.sh <current> <type>` | Calculate next semver |
+| `bash scripts/version-apply.sh <new> [files...]` | Apply version to discovered/selected files |
+| `bash scripts/git-commit.sh "msg" [files]` | Directly commit the specified version-update files |
+| `bash scripts/git-push.sh` | Directly push after an explicit user request |
 
 </scripts>
 
 <git_integration>
 
 - If the user asked for version-only work, stop after the version files and diff review. Do not commit or push.
-- For a requested commit, run `bun scripts/git-commit.mjs "chore: bump version to x.y.z" [files...]` with only the files changed by `version-update`, unless the user requested a different message.
-- For a requested push, run `bun scripts/git-push.mjs` only after the commit succeeds and the user explicitly requested push.
+- For a requested commit, run `bash scripts/git-commit.sh "chore: bump version to x.y.z" [files...]` with only the files changed by `version-update`, unless the user requested a different message.
+- For a requested push, run `bash scripts/git-push.sh` only after the commit succeeds and the user explicitly requested push.
 - Keep git write operations sequential.
 
 </git_integration>
@@ -109,31 +109,31 @@ Use a different language only when the user explicitly requests it, an existing 
 
 ```bash
 # 1) detect stack(s)
-bun scripts/stack-detect.mjs
+bash scripts/stack-detect.sh
 
 # 2) find version-bearing files
-bun scripts/version-find.mjs
+bash scripts/version-find.sh
 
 # 3) read current version
-bun scripts/version-current.mjs
+bash scripts/version-current.sh
 # output: <file>|<version>
 
 # 4) compute next version
-bun scripts/version-bump.mjs 1.2.3 +minor
+bash scripts/version-bump.sh 1.2.3 +minor
 # -> 1.3.0
 
 # 5) apply to all discovered files (or selected files)
-bun scripts/version-apply.mjs 1.3.0
+bash scripts/version-apply.sh 1.3.0
 
 # 6) review the final diff and changed file list
 git diff --stat
 git diff
 
 # 7) optional commit only when explicitly requested
-bun scripts/git-commit.mjs "chore: bump version to 1.3.0" package.json
+bash scripts/git-commit.sh "chore: bump version to 1.3.0" package.json
 
 # 8) optional push only when explicitly requested
-bun scripts/git-push.mjs
+bash scripts/git-push.sh
 ```
 
 </workflow>
@@ -153,12 +153,12 @@ bun scripts/git-push.mjs
 | Category | Required |
 |------|------|
 | Input | Parse ARGUMENT as bump rule or explicit semver |
-| Discovery | Run `bun scripts/version-find.mjs` before applying updates |
-| Current state | Read the current version with `bun scripts/version-current.mjs` before computing the target version |
+| Discovery | Run `bash scripts/version-find.sh` before applying updates |
+| Current state | Read the current version with `bash scripts/version-current.sh` before computing the target version |
 | Consistency | Keep all discovered version files synchronized |
 | Git scope | Commit only the version-update file set |
 | Safety | Use conventional commit message (`chore: bump version to x.y.z`) unless the user requests otherwise |
-| Git | Use `bun scripts/git-commit.mjs` and `bun scripts/git-push.mjs` only for requested git writes, sequentially |
+| Git | Use `bash scripts/git-commit.sh` and `bash scripts/git-push.sh` only for requested git writes, sequentially |
 
 </required>
 
@@ -198,12 +198,12 @@ Trigger checks:
 
 Execution checklist:
 
-- [ ] Current version identified with `bun scripts/version-current.mjs`
-- [ ] Target version computed via `bun scripts/version-bump.mjs` (or explicit semver validated)
-- [ ] `bun scripts/version-apply.mjs` updated all intended files
+- [ ] Current version identified with `bash scripts/version-current.sh`
+- [ ] Target version computed via `bash scripts/version-bump.sh` (or explicit semver validated)
+- [ ] `bash scripts/version-apply.sh` updated all intended files
 - [ ] `git diff` reviewed
-- [ ] Requested commit used `bun scripts/git-commit.mjs` with only the version-update files
-- [ ] Requested push used `bun scripts/git-push.mjs` only after a successful commit
+- [ ] Requested commit used `bash scripts/git-commit.sh` with only the version-update files
+- [ ] Requested push used `bash scripts/git-push.sh` only after a successful commit
 
 Forbidden:
 

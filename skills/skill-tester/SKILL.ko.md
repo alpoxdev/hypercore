@@ -1,7 +1,7 @@
 ---
 name: skill-tester
 description: "기존 Codex/agent 스킬의 트리거, 워크플로, 리소스, 평가 커버리지를 테스트·검증·회귀 점검하거나 안전하게 고쳐 달라는 요청에 사용합니다. 새 스킬 생성, 애플리케이션 QA, 끝없는 스킬 최적화에는 사용하지 마세요."
-compatibility: 로컬 read·search 기능이 필요합니다. edit·execute 기능이 있으면 대상 소유 수정과 결정적 검사가 가능하며, 없으면 실행했다고 주장하지 않고 명시적 주의사항 또는 차단 상태를 보고합니다.
+compatibility: 로컬 read·search 기능이 필요합니다. edit·execute 기능이 있으면 대상 소유 수정과 결정적 검사가 가능하며, 없으면 실행했다고 주장하지 않고 명시적 주의사항 또는 차단 상태를 보고합니다. 포함된 validator는 bash 3.2+와 jq로 실행합니다.
 ---
 
 @rules/test-matrix.md
@@ -94,8 +94,8 @@ Boundary requests:
 - 발견사항이 넓은 스킬 구조 리팩터링을 요구할 때는 [rules/skill-maker-handoff.md](rules/skill-maker-handoff.md)를 읽는다. 이 패킷으로 스킬 저작 워크플로에 넘긴 뒤, 바꾸지 않은 케이스로 반환된 대상을 다시 검증한다.
 - verdict를 선언하거나 handoff하기 전에는 [rules/evidence-reporting.md](rules/evidence-reporting.md)를 읽는다.
 - 재사용 테스트 팩을 요청했을 때만 [references/prompt-pack-template.md](references/prompt-pack-template.md)를 읽고, 한국어 산출물에는 한국어 sibling을 기본으로 사용한다.
-- 이 패키지를 변경하면 `node skills/skill-tester/scripts/validate-skill-tester.mjs --root skills/skill-tester --evals skills/skill-tester/assets/evals/skill-tester-cases.jsonl --json`을 실행한다.
-- 빠른 대상 검사는 `node skills/skill-tester/scripts/validate-skill.mjs <target-skill>`, 저장소 스킬 구조 검사는 `node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json`을 실행한다.
+- 이 패키지를 변경하면 `bash skills/skill-tester/scripts/validate-skill-tester.sh --root skills/skill-tester --evals skills/skill-tester/assets/evals/skill-tester-cases.jsonl --json`을 실행한다.
+- 빠른 대상 검사는 `bash skills/skill-tester/scripts/validate-skill.sh <target-skill>`, 저장소 스킬 구조 검사는 `bash skills/skill-tester/scripts/validate-skills-corpus.sh --root skills --only <skill-name> --json`을 실행한다.
 
 핵심 파일은 trigger, authority, repair boundary, loop, stop logic을 소유한다. rules는 반복 판단을, template은 출력 리소스를, `assets/evals/skill-tester-cases.jsonl`은 기계 판독 회귀 fixture를, scripts는 결정적이고 로컬 전용인 validator를 소유한다.
 

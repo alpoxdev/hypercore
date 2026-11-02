@@ -49,8 +49,8 @@
 정식 생성 자산:
 
 - template: `skills/autoresearch-skill/assets/dashboard-template.html`
-- renderer: `skills/autoresearch-skill/scripts/render-dashboard.mjs`
-- renderer runtime: Bun JSON 런타임
+- renderer: `skills/autoresearch-skill/scripts/render-dashboard.sh`
+- renderer runtime: bash 3.2+와 `jq`
 
 ## Baseline snapshot
 
@@ -268,7 +268,7 @@ Process completion, metric validity/value, 각 mandatory Guard, cleanup, rollbac
 생명주기 규칙:
 
 - `skills/autoresearch-skill/assets/dashboard-template.html`에서 `dashboard.html`을 렌더한다
-- 기본 렌더러는 `skills/autoresearch-skill/scripts/render-dashboard.mjs <artifact-dir>`를 사용한다
+- 기본 렌더러는 `bash skills/autoresearch-skill/scripts/render-dashboard.sh <artifact-dir>`를 사용한다
 - `dashboard.html`을 만든 뒤, 런타임이 안전하면 즉시 연다
 - 매 실험 뒤 `results.tsv`와 `results.json`을 업데이트한다
 - 완료 실행에는 `score-explanation.md`와 `final-report.md`를 최신 상태로 둔다. 단, 동일한 점수 설명이 `results.json.score_explanation`에 충분히 담겼으면 대체 가능하다
@@ -298,7 +298,7 @@ details/
 - 핵심 지표와 상태는 `results.json`에 둔다.
 - 사람이 읽을 긴 설명은 `details/` 또는 표준 로그 파일에 둔다.
 - `dashboard-template.html`은 presentation template으로만 유지하고 실행별 내용을 직접 하드코딩하지 않는다.
-- `scripts/render-dashboard.mjs <artifact-dir>`를 다시 실행해 `dashboard.html`과 `results.js`를 동기화한다.
+- `bash scripts/render-dashboard.sh <artifact-dir>`를 다시 실행해 `dashboard.html`과 `results.js`를 동기화한다.
 
 권장 브라우저 안전 패턴:
 
@@ -309,7 +309,7 @@ details/
 권장 렌더 순서:
 
 ```bash
-skills/autoresearch-skill/scripts/render-dashboard.mjs .hyper/autoresearch-skill/my-skill
+bash skills/autoresearch-skill/scripts/render-dashboard.sh .hyper/autoresearch-skill/my-skill
 open .hyper/autoresearch-skill/my-skill/dashboard.html
 ```
 

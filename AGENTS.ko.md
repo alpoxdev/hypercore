@@ -13,7 +13,7 @@
 
 ## 프로젝트 구조
 
-- `skills/`: 배포되는 skill의 단일 원본입니다. 각 `SKILL.md`가 영어 정본 계약이고 `SKILL.ko.md`가 한국어 번역입니다.
+- `skills/`: 배포되는 skill의 단일 원본입니다. 각 `SKILL.md`가 영어 정본 계약이고 `SKILL.ko.md`가 한국어 번역입니다. skill에 포함되는 script는 bash(bash 3.2+, POSIX 도구, JSON은 `jq`)이며 `bash <script>`로 실행합니다.
 - `instructions/`: context, harness, sourcing, validation, CLI, skill authoring의 공유 지침입니다. Markdown은 영어/한국어 쌍으로 관리합니다.
 - `scripts/`: Bun 기반 skill validator, source check, test, fixture입니다.
 - `cli/`: `@kood/*` CLI package를 위한 pnpm workspace입니다.
@@ -32,6 +32,7 @@
 - 완료 근거와 risk-matched check에는 [`instructions/validation/index.ko.md`](instructions/validation/index.ko.md)를 읽습니다.
 - runtime-specific behavior에는 [`instructions/cli/README.ko.md`](instructions/cli/README.ko.md)와 적용되는 runtime profile만 읽습니다.
 - context, delegation, harness behavior에는 `instructions/context-engineering/`와 `instructions/harness-engineering/` 아래의 적용 가능한 문서를 사용합니다.
+- 멈춤 조건을 가진 자율 에이전트 루프(목표·시간·이벤트 기반 반복)에는 [`instructions/loop-engineering/LOOP_ENGINEERING.ko.md`](instructions/loop-engineering/LOOP_ENGINEERING.ko.md)를, 그래프로 구성한 다단계·다중 에이전트 workflow에는 [`instructions/graph-engineering/GRAPH_ENGINEERING.ko.md`](instructions/graph-engineering/GRAPH_ENGINEERING.ko.md)를 읽습니다.
 
 필수 scope, authority, safety, completion rule은 이 파일의 영어 정본인 `AGENTS.md`에 유지합니다. 항상 로드되는 계약을 키우지 말고 전문 절차를 링크합니다.
 
@@ -53,7 +54,7 @@
 
 ```bash
 bun run --cwd scripts verify
-node skills/skill-tester/scripts/validate-skills-corpus.mjs --root skills --only <skill-name> --json
+bash skills/skill-tester/scripts/validate-skills-corpus.sh --root skills --only <skill-name> --json
 bash scripts/check-sources.sh --offline
 pnpm -C cli build
 pnpm -C cli test

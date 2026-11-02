@@ -10,7 +10,7 @@
  * probe run.
  *
  * Three seams are used:
- *   1. `render-gate` — `skills/seo-maker/scripts/render-dashboard.mjs` run as a
+ *   1. `render-gate` — `skills/seo-maker/scripts/render-dashboard.sh` run as a
  *      subprocess against a temp dir holding the case's payload. The actual value
  *      is the exit code plus the artifacts it wrote: `rendered:<category
  *      statuses>:<finding count>` read back out of the `results.js` it produced,
@@ -48,7 +48,7 @@ const EVAL_DIR = "skills/seo-maker/assets/evals";
 const EN_NAME = "seo-maker-cases.jsonl";
 const KO_NAME = "seo-maker-cases.ko.jsonl";
 const corpusDir = process.env.SEO_MAKER_EVAL_DIR ? resolve(process.env.SEO_MAKER_EVAL_DIR) : join(root, EVAL_DIR);
-const RENDERER = join(root, "skills/seo-maker/scripts/render-dashboard.mjs");
+const RENDERER = join(root, "skills/seo-maker/scripts/render-dashboard.sh");
 const TEMPLATE = join(root, "skills/seo-maker/assets/dashboard-template.html");
 const RESULTS_JS_PREFIX = "window.__SEO_RESULTS__ = ";
 
@@ -158,7 +158,7 @@ function renderGate(payload) {
   try {
     writeFileSync(join(dir, "results.json"), `${JSON.stringify(payload, null, 2)}\n`);
     const run = Bun.spawnSync({
-      cmd: [process.execPath, RENDERER, dir],
+      cmd: ["bash", RENDERER, dir],
       env: { ...process.env, NO_COLOR: "1" },
       stdout: "pipe",
       stderr: "pipe",
