@@ -8,12 +8,14 @@
        `highlight-box` (center-aligned body rhythm; the highlight-box one-cell-table conversion is
        a Naver editor observation). An inblog post uses the inblog profile: `inblog-paragraph`,
        `inblog-headings` (H2/H3/H4), `inblog-inline` (strong, em, u, s, inline code, link),
-       `inblog-highlight` (mark, span color), `inblog-code-block`, `inblog-callout`,
-       `inblog-bookmark`, and `inblog-link-button` — left-aligned natural paragraphs, no forced
-       breaks, no duplicate H1, matching the inblog TipTap block schema. Shared on
-       both: `inline-styles`, `lists`, `link`, `table`, `merged-table`, `quote-divider`, `spacer`,
-       `image`, `image-slot`, `generated-image-slot`. Never force the Naver center-aligned rhythm
-       or its one-cell-table conversion onto an inblog post. -->
+       `inblog-highlight` (mark, span color), and `inblog-code-block`: left-aligned natural
+       paragraphs, no forced breaks, no duplicate H1, matching the inblog TipTap block schema.
+       Shared on both: `inline-styles`, `lists`, `link`, `table`, `merged-table`, `quote-divider`,
+       `spacer`, `image`, `image-slot`, `generated-image-slot`. Never force the Naver
+       center-aligned rhythm or its one-cell-table conversion onto an inblog post.
+       Insert with the / command in the inblog editor: callOut, bookmark, and linkButton stay
+       flattened after pasting (measured 2026-11-03 on the rich paste path), so the
+       `inblog-callout`, `inblog-bookmark`, and `inblog-link-button` templates are removed. -->
   <template id="paragraph">
     <!-- Rhythm contract: short manual line breaks (12-25 chars/line), 1-3 sentence blocks,
          center-aligned body, line-height:1.8 (paste-verified), block spacing via the spacer template. -->
@@ -37,42 +39,28 @@
     <p style="text-align:left;line-height:1.7;">핵심 어구는 <strong>굵게</strong> 정도로만 강조합니다.</p>
   </template>
   <template id="inblog-headings">
-    <!-- inblog: the Title field is the H1, so the body starts at H2 and never repeats the title. -->
+    <!-- paste-verified 2026-11-03 (rich). inblog: the Title field is the H1, so the body starts at
+         H2 and never repeats the title. -->
     <h2 style="text-align:left;">소제목</h2>
     <h3 style="text-align:left;">세부 소제목</h3>
     <h4 style="text-align:left;">소제목보다 작은 항목</h4>
   </template>
   <template id="inblog-inline">
-    <!-- inblog inline marks: strong, em, u, s, code, and a[href] paste as ordinary editable text.
-         Supplied or verified HTTPS URLs only; never script or data URLs. -->
+    <!-- paste-verified 2026-11-03 (rich). inblog inline marks: strong, em, u, s, code, and a[href]
+         paste as ordinary editable text. Supplied or verified HTTPS URLs only; never script or
+         data URLs. -->
     <p style="text-align:left;line-height:1.7;"><strong>굵게</strong> <em>기울임</em> <u>밑줄</u> <s>취소선</s> <code>const title</code> 표시와 <a href="https://inblog.ai/docs/write-contents/creating-content">inblog 콘텐츠 만들기 안내</a> 링크를 한 문단에 함께 씁니다.</p>
   </template>
   <template id="inblog-highlight">
-    <!-- inblog highlight: <mark> keeps the highlight, span color takes a 6-digit hex. -->
+    <!-- paste-verified 2026-11-03 (rich). inblog highlight: <mark> keeps the highlight, span color
+         takes a 6-digit hex. -->
     <p style="text-align:left;line-height:1.7;">꼭 기억할 문장은 <mark>형광펜으로 표시</mark>하고, 짚고 갈 어구는 <span style="color:#173f8a;">글자색으로 구분</span>합니다.</p>
   </template>
   <template id="inblog-code-block">
-    <!-- inblog code block: <pre><code class="language-*">; the language class selects highlighting. -->
+    <!-- paste-verified 2026-11-03 (rich). inblog code block: <pre><code class="language-*">; the
+         language class selects highlighting. -->
     <pre><code class="language-javascript">const title = 'inblog 글쓰기';
 console.log(title);</code></pre>
-  </template>
-  <template id="inblog-callout">
-    <!-- inblog callout block: one paragraph inside, emoji set by data-emoji. -->
-    <div data-type="callOut" data-emoji="💡">
-      <p style="text-align:left;line-height:1.7;">먼저 붙여넣기 결과를 확인하고, 서식이 빠지면 `/` 명령으로 같은 블록을 직접 삽입합니다.</p>
-    </div>
-  </template>
-  <template id="inblog-bookmark">
-    <!-- inblog bookmark block: the editor turns the link into a URL preview card. -->
-    <div data-type="bookmark">
-      <a href="https://inblog.ai/docs/write-contents/creating-content">inblog 도움말: 콘텐츠 만들기</a>
-    </div>
-  </template>
-  <template id="inblog-link-button">
-    <!-- inblog CTA button block: one link per block; the editor also exposes `+ Add CTA button`. -->
-    <div data-type="linkButton">
-      <a href="https://inblog.ai/docs/write-contents/creating-content">가이드에서 자세히 보기</a>
-    </div>
   </template>
   <template id="alignment">
     <p style="text-align:left;">왼쪽 정렬 — 표·목록·캡션용</p>
