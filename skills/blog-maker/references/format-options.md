@@ -22,9 +22,9 @@ Body layout and paste behavior differ by platform. This file carries the **Naver
 | Platform | Layout and paste contract |
 |---|---|
 | `naver` | The Naver editor observations in the table below; body paragraphs center-aligned with the 12-25-character line rhythm (the body rhythm contract in [`../rules/post-workflow.md`](../rules/post-workflow.md) §3). |
-| `inblog` | Read [`inblog-format.md`](inblog-format.md): left-aligned natural paragraphs, `h2`/`h3` subheadings, no duplicate H1, and the HTML embed block route. |
+| `inblog` | Read [`inblog-format.md`](inblog-format.md): left-aligned natural paragraphs, `h2`/`h3` subheadings, no duplicate H1. The body route is the rich paste: `서식 콘텐츠 복사`, then `Ctrl+V` / `⌘V` into the normal editor body (measured 2026-11-03; all 16 formatting rows and the paragraph link arrived as editable blocks). If the browser blocks the automatic copy, the shell leaves the body selected and the user presses `Ctrl+C` / `⌘C`. Markdown paste is not a route: the measured build kept 4 of 16 formatting rows and left headings, lists, quotes, dividers, tables, fences, and Markdown links as literal text. `HTML 소스 복사` copies tags as text, so it is not a body route either; the HTML embed block is for third-party embeds only. |
 
-The rows below are paste observations from the Naver editor, recorded in this package's own editor sessions. They are the delivery contract for a **Naver** post; the same behavior is not verified for inblog, so these rows are never presented as an inblog guarantee.
+The rows below are paste observations from the Naver editor, recorded in this package's own editor sessions. They are the delivery contract for a **Naver** post, and they are never presented as an inblog guarantee: inblog paste results have their own measured table in [`inblog-format.md`](inblog-format.md) §5.
 
 | Feature | Reported result | Delivery rule |
 |---|---|---|
@@ -49,6 +49,8 @@ Grades above: the Preserved/Not preserved/Removed rows carry live editor paste e
 
 Use the user's recommended subset: `p`, `br`, `h2`, `h3`, `strong`, `em`, `u`, `span`, `ul`, `ol`, `li`, `blockquote`, `hr`, `table`, `thead`, `tbody`, `tr`, `th`, `td`, `img`, `a`. Prefer inline styles and simple sibling blocks over deeply nested structures.
 
+The inblog subset is that list plus `h4`, `s`, `code`, `mark`, a `span` carrying an inline text color, and `pre`/`code` with a `language-*` class; the 2026-11-03 rich paste turned every one of them into an editable block, and an external HTTPS `img` arrived as an image block ([`inblog-format.md`](inblog-format.md) §5). A callout, bookmark, or link button is not part of the pasted body on inblog; insert those with the editor's `/` command.
+
 Paragraph defaults follow the body rhythm contract in [`../rules/post-workflow.md`](../rules/post-workflow.md) §3, which is platform-conditional. On Naver: `line-height:1.8` inline on every paragraph and body paragraphs center-aligned. On inblog: left-aligned natural paragraphs with no forced line breaks ([`inblog-format.md`](inblog-format.md)). Tables, lists, and captions stay left-aligned on both, with blank-paragraph spacers between blocks (not `margin`). The subset remains a recommendation: exact heading sizes were not individually reported as tested.
 
 Escape text and attribute values; exclude scripts, event handlers, and executable URL schemes. Use valid table spans and consistent cell counts. Apply the prose ornament budget; supported styling is not a quota to fill.
@@ -59,7 +61,7 @@ Public HTTPS image URLs require supplied or verified sources. Local images need 
 
 Body paste does not populate title, category, tags, visibility, comments, likes, scheduling, or publication. Keep those fields in the handoff, never imply body HTML sets them.
 
-Video, stickers, files, schedules, equations, places/maps, books, 글감, external-content components, and source-code components remain manual editor actions unless separately requested and supported. User-recommended automation is not authorization to add it here.
+On Naver, video, stickers, files, schedules, equations, places/maps, books, 글감, external-content components, and source-code components remain manual editor actions unless separately requested and supported. On inblog, a callout, bookmark, or link button comes from the editor's `/` command, and a third-party embed goes in the HTML embed block; the code block and an external HTTPS image arrive from the pasted body ([`inblog-format.md`](inblog-format.md) §5). User-recommended automation is not authorization to add it here.
 
 Before publication, the user checks the rendered body or editor DOM for missing/duplicated blocks, links, table spans, image placement, and title/tag separation. Publication remains the user's action.
 
