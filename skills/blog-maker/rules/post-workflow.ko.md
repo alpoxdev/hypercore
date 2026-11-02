@@ -93,7 +93,7 @@
 
 ### 본문 리듬 계약 (네이버)
 
-네이버에서 두 출력 형태(HTML과 plain)가 같은 줄 리듬을 따릅니다. 이 계약은 참고 블로그 2건의 실측(`.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md`, PostView DOM 분석)과 에디터 붙여넣기 실측(`.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt`)에서 뽑았습니다. 이 리듬은 **네이버의 것**입니다. 문단 정렬과 12~25자 명시적 줄바꿈은 네이버 에디터 관찰값입니다. inblog 글은 이 리듬을 쓰지 않고, 강제 줄바꿈 없는 왼쪽 정렬 자연 문단과 `h2`/`h3` 소제목을 씁니다([`../references/inblog-format.ko.md`](../references/inblog-format.ko.md)).
+네이버에서 두 출력 형태(HTML과 plain)가 같은 줄 리듬을 따릅니다. 이 계약은 참고 블로그 2건의 실측(`.omo/evidence/naver-blog-maker-line-rhythm/ref-blog-visual-observation.md`, PostView DOM 분석)과 에디터 붙여넣기 실측(`.omo/evidence/naver-blog-maker-line-rhythm/probe-dom.txt`)에서 뽑았습니다. 이 리듬은 **네이버의 것**입니다. 문단 정렬과 12~25자 명시적 줄바꿈은 네이버 에디터 관찰값입니다. inblog 글은 이 리듬을 쓰지 않고, 강제 줄바꿈 없는 왼쪽 정렬 자연 문단과 `h2`~`h4` 소제목을 씁니다([`../references/inblog-format.ko.md`](../references/inblog-format.ko.md)).
 
 - 텍스트 블록은 1~5줄이고 각 줄은 12~25자를 명시적 줄바꿈으로 끊습니다. 긴 문장 한 개를 그대로 두어 래핑하게 두지 않습니다.
 - 문단 블록은 1~3문장입니다. plain 전달은 블록 사이에 빈 줄을 넣습니다. 본문 HTML은 빈 문단 스페이서(`<p style="line-height:1.8;">&nbsp;</p>`, 붙여넣기 생존 실측)로 분리하고, `p`의 `margin`은 붙여넣기에서 사라지므로 간격 수단으로 쓰지 않습니다.
