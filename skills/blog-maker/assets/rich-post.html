@@ -18,6 +18,7 @@
        Nothing here is reactive beyond this CSS switch; there is no library. */
     .inblog-only { display: none; }
     body[data-platform="inblog"] .inblog-only { display: block; }
+    body[data-platform="inblog"] button.inblog-only { display: inline-block; }
     body[data-platform="inblog"] .naver-only { display: none; }
     @media (max-width: 600px) { body { margin: 16px auto; padding: 0 12px; } #sample { padding: 16px; } }
   </style>
@@ -40,6 +41,7 @@
     <p class="paste-note naver-only">제목·카테고리·태그는 네이버에서 따로 입력하세요. 아래 버튼은 본문만 복사합니다. 붙여넣기는 Ctrl+V / ⌘V를 씁니다.</p>
     <p class="paste-note inblog-only">Title·Description·Slug·Category는 inblog에서 따로 입력하세요. 아래 버튼은 본문만 복사하고 본문은 H2부터 시작합니다. 렌더링된 본문을 서식 그대로 inblog에 붙여 넣는 것은 확인되지 않았습니다. 확인된 경로는 에디터의 HTML 임베드 블록에 HTML 소스를 넣는 것이고, 일반 편집 블록이 필요하면 HTML을 Markdown으로 바꿔 붙여 넣는 보조 경로를 씁니다. 붙여넣기는 Ctrl+V / ⌘V를 씁니다.</p>
     <button id="copyRich" type="button">서식 콘텐츠 복사</button>
+    <button id="copyMarkdown" type="button" class="inblog-only">Markdown 복사</button>
     <button id="copySource" type="button">HTML 소스 복사</button>
     <p id="status" role="status" aria-live="polite"></p>
   </header>
@@ -58,6 +60,292 @@
   <script>
     const statusEl = document.getElementById('status');
     const sampleEl = document.getElementById('sample');
+
+    // DOM -> Markdown for the inblog path. The result is plain text; no HTML is emitted.
+    // Rules: p=paragraph + blank line, br=line break, h2/h3/h4=##/###/####,
+    // strong|b=**, em|i=*, s|del=~~, inline code=`code`, a[href]=[text](href) only for
+    // http(s)/mailto, ul/ol/li=2-space nesting, blockquote="> ", hr=---, table=GFM with
+    // merged cells collapsed into their first cell, pre>code=```lang, https img=![alt](src),
+    // u/mark/span=text only, div[data-type="callOut"]="> emoji content".
+    function toMarkdown(root) {
+      if (!root) return '';
+
+      const BLOCK_TAGS = new Set([
+        'p', 'div', 'section', 'article', 'header', 'footer', 'main', 'figure', 'figcaption',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'hr', 'table', 'pre',
+      ]);
+      const HEADINGS = { h1: '#', h2: '##', h3: '###', h4: '####', h5: '#####', h6: '######' };
+
+      const collapse = (value) => String(value == null ? '' : value).replace(/\s+/g, ' ');
+
+      const safeHref = (value) => {
+        const href = String(value == null ? '' : value).trim();
+        if (/^https?:\/\/[^\s]+$/i.test(href) || /^mailto:[^\s]+$/i.test(href)) return href;
+        return '';
+      };
+
+      const safeImageSrc = (value) => {
+        const src = String(value == null ? '' : value).trim();
+        return /^https:\/\/[^\s]+$/i.test(src) ? src : '';
+      };
+
+      const codeSpan = (text) => {
+        const value = collapse(text).trim();
+        if (!value) return '';
+        let fence = '`';
+        while (value.includes(fence)) fence += '`';
+        const pad = value.startsWith('`') || value.endsWith('`') ? ' ' : '';
+        return fence + pad + value + pad + fence;
+      };
+
+      function inlineElement(el, depth) {
+        const tag = el.tagName.toLowerCase();
+        switch (tag) {
+          case 'br':
+            return '\n';
+          case 'strong':
+          case 'b': {
+            const text = inline(el, depth).trim();
+            return text ? '**' + text + '**' : '';
+          }
+          case 'em':
+          case 'i': {
+            const text = inline(el, depth).trim();
+            return text ? '*' + text + '*' : '';
+          }
+          case 's':
+          case 'del': {
+            const text = inline(el, depth).trim();
+            return text ? '~~' + text + '~~' : '';
+          }
+          case 'code':
+            return codeSpan(el.textContent);
+          case 'a': {
+            const text = inline(el, depth).trim();
+            const href = safeHref(el.getAttribute('href'));
+            return href && text ? '[' + text + '](' + href + ')' : text;
+          }
+          case 'img': {
+            const src = safeImageSrc(el.getAttribute('src'));
+            return src ? '![' + collapse(el.getAttribute('alt')).trim() + '](' + src + ')' : '';
+          }
+          default:
+            return inline(el, depth);
+        }
+      }
+
+      function inline(node, depth) {
+        let out = '';
+        Array.from(node.childNodes).forEach((child) => {
+          if (child.nodeType === 3) {
+            out += collapse(child.nodeValue);
+            return;
+          }
+          if (child.nodeType !== 1) return;
+          out += inlineElement(child, depth);
+        });
+        return out;
+      }
+
+      function renderPre(el) {
+        const code = el.querySelector('code');
+        const source = (code || el).textContent.replace(/\n$/, '');
+        if (!source.trim()) return '';
+        const className = code ? code.getAttribute('class') || '' : '';
+        const match = className.match(/language-([A-Za-z0-9_+#.-]+)/);
+        const language = match ? match[1] : '';
+        return '```' + language + '\n' + source + '\n```';
+      }
+
+      function renderTable(table, depth) {
+        const rows = Array.from(table.rows);
+        if (!rows.length) return '';
+        const grid = [];
+        const pending = new Map();
+        rows.forEach((row) => {
+          const cells = [];
+          let col = 0;
+          const takePending = () => {
+            while (pending.has(col)) {
+              cells.push('');
+              const remaining = pending.get(col) - 1;
+              if (remaining > 0) pending.set(col, remaining);
+              else pending.delete(col);
+              col += 1;
+            }
+          };
+          Array.from(row.cells).forEach((cell) => {
+            takePending();
+            const text = inline(cell, depth)
+              .replace(/\n+/g, ' ')
+              .replace(/\|/g, '\\|')
+              .trim();
+            const colspan = Math.max(1, cell.colSpan || 1);
+            const rowspan = Math.max(1, cell.rowSpan || 1);
+            cells.push(text);
+            if (rowspan > 1) {
+              for (let i = 0; i < colspan; i += 1) pending.set(col + i, rowspan - 1);
+            }
+            for (let i = 1; i < colspan; i += 1) cells.push('');
+            col += colspan;
+          });
+          takePending();
+          grid.push(cells);
+        });
+        const width = grid.reduce((max, row) => Math.max(max, row.length), 0);
+        if (!width) return '';
+        const format = (row) =>
+          '| ' + row.concat(Array(width - row.length).fill('')).join(' | ') + ' |';
+        return [format(grid[0]), '| ' + Array(width).fill('---').join(' | ') + ' |']
+          .concat(grid.slice(1).map(format))
+          .join('\n');
+      }
+
+      function renderCallout(el, depth) {
+        const emoji = collapse(el.getAttribute('data-emoji')).trim();
+        const inner = blocksOf(el, depth);
+        if (!inner) return emoji ? '> ' + emoji : '';
+        const lines = inner.split('\n');
+        const quoted = lines.map((line) => (line ? '> ' + line : '>'));
+        quoted[0] = '> ' + (emoji ? emoji + ' ' : '') + lines[0];
+        return quoted.join('\n');
+      }
+
+      function renderList(list, depth) {
+        const ordered = list.tagName.toLowerCase() === 'ol';
+        const indent = '  '.repeat(depth);
+        const start = ordered ? Number.parseInt(list.getAttribute('start'), 10) : 1;
+        let counter = Number.isFinite(start) && start > 0 ? start : 1;
+        const lines = [];
+
+        Array.from(list.children).forEach((li) => {
+          if (li.tagName.toLowerCase() !== 'li') return;
+          const marker = ordered ? counter + '. ' : '- ';
+          counter += 1;
+
+          const segments = [];
+          let text = '';
+          const pushText = () => {
+            if (text.trim()) segments.push({ text: text.trim() });
+            text = '';
+          };
+          Array.from(li.childNodes).forEach((node) => {
+            if (node.nodeType === 3) {
+              text += collapse(node.nodeValue);
+              return;
+            }
+            if (node.nodeType !== 1) return;
+            const tag = node.tagName.toLowerCase();
+            if (tag === 'ul' || tag === 'ol') {
+              pushText();
+              segments.push({ raw: renderList(node, depth + 1) });
+              return;
+            }
+            if (tag === 'p') {
+              const paragraph = inline(node, depth + 1).trim();
+              text += (text ? '\n\n' : '') + paragraph;
+              return;
+            }
+            if (tag === 'pre' || tag === 'blockquote' || tag === 'table' || tag === 'hr' || tag === 'div') {
+              pushText();
+              const block = renderBlock(node, depth + 1);
+              if (block) segments.push({ block });
+              return;
+            }
+            text += inlineElement(node, depth + 1);
+          });
+          pushText();
+
+          if (!segments.length) {
+            lines.push((indent + marker).trimEnd());
+            return;
+          }
+
+          let placedMarker = false;
+          segments.forEach((segment) => {
+            if (segment.raw) {
+              if (!placedMarker) {
+                lines.push((indent + marker).trimEnd());
+                placedMarker = true;
+              }
+              lines.push(segment.raw);
+              return;
+            }
+            if (segment.block) {
+              if (!placedMarker) {
+                lines.push((indent + marker).trimEnd());
+                placedMarker = true;
+              }
+              const pad = indent + '  ';
+              segment.block.split('\n').forEach((line) => lines.push(line ? pad + line : ''));
+              return;
+            }
+            const parts = segment.text.split('\n');
+            if (!placedMarker) {
+              const first = parts.shift();
+              lines.push((indent + marker + first).trimEnd());
+              placedMarker = true;
+            }
+            const pad = indent + '  ';
+            parts.forEach((line) => lines.push(line ? (pad + line).trimEnd() : ''));
+          });
+        });
+
+        return lines.join('\n');
+      }
+
+      function renderBlock(el, depth) {
+        const tag = el.tagName.toLowerCase();
+        if (HEADINGS[tag]) {
+          const text = inline(el, depth).replace(/\n+/g, ' ').trim();
+          return text ? HEADINGS[tag] + ' ' + text : '';
+        }
+        if (tag === 'p') return inline(el, depth).trim();
+        if (tag === 'ul' || tag === 'ol') return renderList(el, depth);
+        if (tag === 'blockquote') {
+          const inner = blocksOf(el, depth);
+          if (!inner) return '';
+          return inner
+            .split('\n')
+            .map((line) => (line ? '> ' + line : '>'))
+            .join('\n');
+        }
+        if (tag === 'hr') return '---';
+        if (tag === 'pre') return renderPre(el);
+        if (tag === 'table') return renderTable(el, depth);
+        if (tag === 'div' && el.getAttribute('data-type') === 'callOut') return renderCallout(el, depth);
+        return blocksOf(el, depth);
+      }
+
+      function blocksOf(container, depth) {
+        const blocks = [];
+        let buffer = '';
+        const flush = () => {
+          const text = buffer.replace(/[ \t]+\n/g, '\n').trim();
+          if (text) blocks.push(text);
+          buffer = '';
+        };
+        Array.from(container.childNodes).forEach((child) => {
+          if (child.nodeType === 3) {
+            buffer += collapse(child.nodeValue);
+            return;
+          }
+          if (child.nodeType !== 1) return;
+          const tag = child.tagName.toLowerCase();
+          if (BLOCK_TAGS.has(tag)) {
+            flush();
+            const block = renderBlock(child, depth);
+            if (block) blocks.push(block);
+            return;
+          }
+          buffer += inlineElement(child, depth);
+        });
+        flush();
+        return blocks.join('\n\n');
+      }
+
+      return blocksOf(root, 0).replace(/\n{3,}/g, '\n\n').trim();
+    }
 
     document.getElementById('copyRich').addEventListener('click', () => {
       const range = document.createRange();
@@ -88,6 +376,26 @@
         statusEl.textContent = error && error.name === 'NotAllowedError'
           ? 'HTML 소스 복사 권한이 거부됐습니다. 이 버튼은 서식을 복사하지 않으며, 서식 콘텐츠 복사 버튼을 사용하세요.'
           : 'HTML 소스 복사 실패. 서식 콘텐츠 복사 버튼을 사용하세요.';
+      }
+    });
+
+    document.getElementById('copyMarkdown').addEventListener('click', async () => {
+      if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+        statusEl.textContent = '이 브라우저에서는 Markdown 복사를 쓸 수 없습니다. 서식 콘텐츠 복사 버튼을 쓰세요.';
+        return;
+      }
+      const markdown = toMarkdown(sampleEl);
+      if (!markdown) {
+        statusEl.textContent = 'Markdown으로 복사할 본문이 없습니다.';
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(markdown);
+        statusEl.textContent = 'Markdown 복사 완료. inblog 본문에 붙여넣으세요.';
+      } catch (error) {
+        statusEl.textContent = error && error.name === 'NotAllowedError'
+          ? 'Markdown 복사 권한이 거부됐습니다. 서식 콘텐츠 복사 버튼을 쓰세요.'
+          : 'Markdown 복사 실패. 서식 콘텐츠 복사 버튼을 쓰세요.';
       }
     });
   </script>
