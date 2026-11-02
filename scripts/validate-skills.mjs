@@ -195,7 +195,7 @@ const expectedMetadata = new Map([
   ["skills/pre-deploy/scripts/pm-detect.sh", ["detect-package-manager", "package-manager-detection"]],
   ["skills/pre-deploy/scripts/stack-detect.sh", ["detect-stack", "stack-detection"]],
   ["skills/prompt-maker/scripts/validate-prompt-maker.sh", ["validate-skill", "skill-validation"]],
-  ["skills/seo-maker/scripts/render-dashboard.sh", ["render-dashboard", "render-dashboard"]],
+  ["skills/hyper-seo/scripts/render-dashboard.sh", ["render-dashboard", "render-dashboard"]],
   ["skills/skill-maker/scripts/validate-skill-maker.sh", ["validate-skill", "skill-validation"]],
   ["skills/skill-tester/scripts/validate-skill.sh", ["validate-skill", "skill-validation"]],
   ["skills/skill-tester/scripts/validate-skills-corpus.sh", ["validate-skill-corpus", "skills-corpus-validation"]],

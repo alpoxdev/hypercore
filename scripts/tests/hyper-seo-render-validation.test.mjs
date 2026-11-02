@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // @ts-check
 /**
- * seo-maker dashboard renderer structure gate (plan todo 6).
+ * hyper-seo dashboard renderer structure gate (plan todo 6).
  *
  * `render-dashboard.sh` reads an untrusted `results.json`, so it must reject a
  * structurally invalid payload through its existing `fail()` path (exit 1)
@@ -10,7 +10,7 @@
  *
  * Every case builds its artifact directory with `mkdtemp`, seeds the payload,
  * and runs the shipped renderer as a subprocess; the repository tree is never
- * written to. `SEO_MAKER_RENDER_DASHBOARD` points the run at a mutated copy of
+ * written to. `HYPER_SEO_RENDER_DASHBOARD` points the run at a mutated copy of
  * the renderer so a negative control can target it without touching the repo.
  */
 import { expect, test } from "bun:test";
@@ -21,10 +21,10 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const rendererPath = process.env.SEO_MAKER_RENDER_DASHBOARD
-  ? resolve(process.env.SEO_MAKER_RENDER_DASHBOARD)
-  : join(root, "skills/seo-maker/scripts/render-dashboard.sh");
-const templatePath = join(root, "skills/seo-maker/assets/dashboard-template.html");
+const rendererPath = process.env.HYPER_SEO_RENDER_DASHBOARD
+  ? resolve(process.env.HYPER_SEO_RENDER_DASHBOARD)
+  : join(root, "skills/hyper-seo/scripts/render-dashboard.sh");
+const templatePath = join(root, "skills/hyper-seo/assets/dashboard-template.html");
 
 const PRIOR_DASHBOARD = "prior dashboard\n";
 const PRIOR_RESULTS_JS = "prior results\n";
@@ -83,7 +83,7 @@ const VALID_RESULTS = {
       critical_count: 1,
       decision: "baseline",
       evidence: "Initial audit before optimization changes",
-      evaluator_version: "seo-maker-evaluator/1",
+      evaluator_version: "hyper-seo-evaluator/1",
       weights: CANONICAL_WEIGHTS,
     },
     {
@@ -94,7 +94,7 @@ const VALID_RESULTS = {
       decision: "kept",
       changed: "Removed robots.txt block for /blog/",
       evidence: "Re-audit confirmed indexability restored",
-      evaluator_version: "seo-maker-evaluator/1",
+      evaluator_version: "hyper-seo-evaluator/1",
       weights: CANONICAL_WEIGHTS,
     },
   ],
@@ -146,7 +146,7 @@ function runRenderer(dir) {
  * @param {{ withPriorOutputs?: boolean }} [options]
  */
 function makeArtifactDir(results, options = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "seo-maker-render-validation-"));
+  const dir = mkdtempSync(join(tmpdir(), "hyper-seo-render-validation-"));
   writeFileSync(join(dir, "results.json"), `${JSON.stringify(results, null, 2)}\n`);
   if (options.withPriorOutputs !== false) {
     writeFileSync(join(dir, "dashboard.html"), PRIOR_DASHBOARD, { mode: PRIOR_DASHBOARD_MODE });
@@ -289,9 +289,9 @@ const REJECTED = [
   { name: "a score_history entry without evaluator_version", mutate: (value) => { delete value.score_history[1].evaluator_version; }, reason: "score_history[1].evaluator_version" },
   { name: "an empty evaluator_version", mutate: (value) => { value.score_history[1].evaluator_version = "  "; }, reason: "score_history[1].evaluator_version" },
   { name: "a weight change without a reset event", mutate: (value) => { value.score_history[1].weights = [25, 20, 15, 10, 10, 10, 10]; }, reason: "score_history[1]" },
-  { name: "an evaluator change without a reset event", mutate: (value) => { value.score_history[1].evaluator_version = "seo-maker-evaluator/2"; }, reason: "score_history[1]" },
+  { name: "an evaluator change without a reset event", mutate: (value) => { value.score_history[1].evaluator_version = "hyper-seo-evaluator/2"; }, reason: "score_history[1]" },
   { name: "a best_run pointing at a discarded iteration", mutate: (value) => { value.score_history[1].decision = "discarded"; }, reason: "best_run" },
-  { name: "a best_run below the highest kept score", mutate: (value) => { value.score_history.push({ iteration: 2, score: 85, grade: "B", decision: "kept", evidence: "Later re-audit", evaluator_version: "seo-maker-evaluator/1", weights: CANONICAL_WEIGHTS }); }, reason: "best_run" },
+  { name: "a best_run below the highest kept score", mutate: (value) => { value.score_history.push({ iteration: 2, score: 85, grade: "B", decision: "kept", evidence: "Later re-audit", evaluator_version: "hyper-seo-evaluator/1", weights: CANONICAL_WEIGHTS }); }, reason: "best_run" },
   { name: "a best_run iteration missing from score_history", mutate: (value) => { value.best_run.iteration = 9; }, reason: "best_run.iteration" },
   { name: "a best_run without score_history", mutate: (value) => { delete value.score_history; }, reason: "score_history" },
 ];
@@ -320,7 +320,7 @@ for (const testCase of REJECTED) {
 }
 
 test("rejects a malformed payload without creating outputs", () => {
-  const dir = mkdtempSync(join(tmpdir(), "seo-maker-render-validation-"));
+  const dir = mkdtempSync(join(tmpdir(), "hyper-seo-render-validation-"));
   try {
     writeFileSync(join(dir, "results.json"), "{broken");
     const result = runRenderer(dir);
@@ -340,7 +340,7 @@ test("a reset event makes a changed evaluator definition acceptable", () => {
       grade: "B",
       decision: "reset",
       evidence: "Weights changed, new baseline started",
-      evaluator_version: "seo-maker-evaluator/2",
+      evaluator_version: "hyper-seo-evaluator/2",
       weights: [25, 20, 15, 10, 10, 10, 10],
     });
   });

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // @ts-check
 /**
- * Behavioral eval runner for the seo-maker corpus.
+ * Behavioral eval runner for the hyper-seo corpus.
  *
  * Every case carries a machine-readable `probe` that names a real seam in this
  * repository, and the runner computes an `actual` value by calling that seam and
@@ -10,7 +10,7 @@
  * probe run.
  *
  * Three seams are used:
- *   1. `render-gate` — `skills/seo-maker/scripts/render-dashboard.sh` run as a
+ *   1. `render-gate` — `skills/hyper-seo/scripts/render-dashboard.sh` run as a
  *      subprocess against a temp dir holding the case's payload. The actual value
  *      is the exit code plus the artifacts it wrote: `rendered:<category
  *      statuses>:<finding count>` read back out of the `results.js` it produced,
@@ -18,7 +18,7 @@
  *   2. `render-page` — the shipped `assets/dashboard-template.html` rendered over
  *      `file://` in Bun.WebView, observed for external-string escaping and for
  *      the chart-absent guard.
- *   3. `doc-query` — the shared parser `scripts/tests/seo-maker-doc-contracts.mjs`
+ *   3. `doc-query` — the shared parser `scripts/tests/hyper-seo-doc-contracts.mjs`
  *      run over the real rule documents, so a translated checklist that drops a
  *      target condition or admits a third-party ranking claim is reported.
  *
@@ -26,7 +26,7 @@
  * `probe.kind === "none"`, and the runner asserts that exact set rather than
  * letting an unevaluated case look evaluated.
  *
- * `SEO_MAKER_EVAL_DIR` points the corpus read at a directory holding both JSONL
+ * `HYPER_SEO_EVAL_DIR` points the corpus read at a directory holding both JSONL
  * files, which is how the negative control below and an external flip check
  * evaluate a `mkdtemp` copy instead of mutating the repository. Documents and
  * scripts always come from the repository itself.
@@ -41,15 +41,15 @@ import {
   heuristicItemIndices,
   rankingAlgorithmIds,
   readDoc,
-} from "./seo-maker-doc-contracts.mjs";
+} from "./hyper-seo-doc-contracts.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const EVAL_DIR = "skills/seo-maker/assets/evals";
-const EN_NAME = "seo-maker-cases.jsonl";
-const KO_NAME = "seo-maker-cases.ko.jsonl";
-const corpusDir = process.env.SEO_MAKER_EVAL_DIR ? resolve(process.env.SEO_MAKER_EVAL_DIR) : join(root, EVAL_DIR);
-const RENDERER = join(root, "skills/seo-maker/scripts/render-dashboard.sh");
-const TEMPLATE = join(root, "skills/seo-maker/assets/dashboard-template.html");
+const EVAL_DIR = "skills/hyper-seo/assets/evals";
+const EN_NAME = "hyper-seo-cases.jsonl";
+const KO_NAME = "hyper-seo-cases.ko.jsonl";
+const corpusDir = process.env.HYPER_SEO_EVAL_DIR ? resolve(process.env.HYPER_SEO_EVAL_DIR) : join(root, EVAL_DIR);
+const RENDERER = join(root, "skills/hyper-seo/scripts/render-dashboard.sh");
+const TEMPLATE = join(root, "skills/hyper-seo/assets/dashboard-template.html");
 const RESULTS_JS_PREFIX = "window.__SEO_RESULTS__ = ";
 
 /** Literal markup carried by the escaping case's payload. */
@@ -63,6 +63,7 @@ const NO_SEAM_IDS = [
   "seo-non-seo-negative",
   "seo-policy-bulk-generation",
   "seo-policy-expired-domain",
+  "seo-site-setup-positive",
 ];
 
 const REQUIRED_CATEGORIES = ["positive", "negative", "boundary", "adversarial"];
@@ -95,6 +96,7 @@ const REQUIRED_AXES = {
   "commerce-only stays conditional": "seo-commerce-only-negative",
   "Naver and Bing stay conditional": "seo-platform-conditional-negative",
   "non-SEO request does not trigger": "seo-non-seo-negative",
+  "new site setup plan": "seo-site-setup-positive",
 };
 
 /**
@@ -154,7 +156,7 @@ function rejectedField(stderr) {
  * @returns {string} actual verdict
  */
 function renderGate(payload) {
-  const dir = mkdtempSync(join(tmpdir(), "seo-maker-eval-render-"));
+  const dir = mkdtempSync(join(tmpdir(), "hyper-seo-eval-render-"));
   try {
     writeFileSync(join(dir, "results.json"), `${JSON.stringify(payload, null, 2)}\n`);
     const run = Bun.spawnSync({
@@ -221,10 +223,10 @@ async function renderPage(probe) {
     // Fail loudly rather than skip: skipping would let the escaping and chart-absent
     // cases pass unevaluated, which is the exact defect this file was rewritten to
     // close. The message names the environment so the red suite is not misread as a
-    // seo-maker defect.
-    throw new Error("Bun.WebView is unavailable in this environment, so the render-page eval cases cannot be evaluated here. This is an environment limitation, not a seo-maker defect.");
+    // hyper-seo defect.
+    throw new Error("Bun.WebView is unavailable in this environment, so the render-page eval cases cannot be evaluated here. This is an environment limitation, not a hyper-seo defect.");
   }
-  const dir = mkdtempSync(join(tmpdir(), "seo-maker-eval-page-"));
+  const dir = mkdtempSync(join(tmpdir(), "hyper-seo-eval-page-"));
   try {
     let html = readFileSync(TEMPLATE, "utf8");
     if (probe.dropChartScript) {
@@ -339,7 +341,7 @@ async function evaluateCorpus(dir) {
 
 // ------------------------------------------------------- corpus structure
 
-describe("seo-maker eval corpus", () => {
+describe("hyper-seo eval corpus", () => {
   const en = readCorpus(corpusDir, EN_NAME);
   const ko = readCorpus(corpusDir, KO_NAME);
 
@@ -463,15 +465,15 @@ describe("seo-maker eval corpus", () => {
 
 // ------------------------------------------------------------ probe runner
 
-describe("seo-maker eval runner", () => {
+describe("hyper-seo eval runner", () => {
   test(
     "every machine-checked case matches an actual value computed from a real system call",
     async () => {
       const run = await evaluateCorpus(corpusDir);
-      // Non-vacuity: 20 cases are machine-checked, 8 are marked seam-free, 28 total.
+      // Non-vacuity: 20 cases are machine-checked, 10 are marked seam-free, 30 total.
       expect(run.evaluatedIds.length).toBe(20);
-      expect(run.noneIds.length).toBe(8);
-      expect(run.results.length).toBe(28);
+      expect(run.noneIds.length).toBe(10);
+      expect(run.results.length).toBe(30);
       expect(
         run.mismatches.map(
           (mismatch) => `${mismatch.id} (${mismatch.kind}): expected ${show(mismatch.expected)} actual ${show(mismatch.actual)}`,
@@ -485,7 +487,7 @@ describe("seo-maker eval runner", () => {
     "flipping one expected verdict in a temp corpus copy is reported as a mismatch",
     async () => {
       const flippedId = "seo-missing-evidence-grade-en";
-      const dir = mkdtempSync(join(tmpdir(), "seo-maker-eval-flip-"));
+      const dir = mkdtempSync(join(tmpdir(), "hyper-seo-eval-flip-"));
       try {
         for (const name of [EN_NAME, KO_NAME]) writeFileSync(join(dir, name), readFileSync(join(corpusDir, name)));
 

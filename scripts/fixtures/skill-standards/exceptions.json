@@ -12,13 +12,13 @@
   "hyper-plan|CROSS_SKILL_REFERENCE": "User-directed exception (2026-11-03): hyper-plan continues into hyper-execute automatically unless the user opts out, so it names hyper-execute in its handoff rule, contract, Sources, and eval routes.",
   "hyper-plan|FRONTMATTER_TRIGGER": "The [Hyper] prefix marker is kept by user decision and the trigger clause is present in the first sentence of the description.",
   "hyper-research|FRONTMATTER_TRIGGER": "The [Hyper] prefix marker is kept by user decision and the trigger clause is present in the first sentence of the description.",
+  "hyper-seo|FRONTMATTER_TRIGGER": "The [Hyper] prefix marker is kept by user decision and the trigger clause is present in the first sentence of the description.",
   "korean-writer|FRONTMATTER_TRIGGER": "The [Hyper] prefix marker is kept by user decision and the trigger clause is present in the first sentence of the description.",
   "nextjs-architecture|FRONTMATTER_TRIGGER": "The [Hyper] prefix marker is kept by user decision and the trigger clause is present in the first sentence of the description.",
   "prd-maker|FRONTMATTER_TRIGGER": "The [Hyper] prefix marker is kept by user decision and the trigger clause is present in the first sentence of the description.",
   "pre-deploy|FRONTMATTER_TRIGGER": "The [Hyper] prefix marker is kept by user decision and the trigger clause is present in the first sentence of the description.",
   "prompt-maker|FRONTMATTER_TRIGGER": "The [Hyper] prefix marker is kept by user decision and the trigger clause is present in the first sentence of the description.",
   "readme-maker|FRONTMATTER_TRIGGER": "The [Hyper] prefix marker is kept by user decision and the trigger clause is present in the first sentence of the description.",
-  "seo-maker|FRONTMATTER_TRIGGER": "The [Hyper] prefix marker is kept by user decision and the trigger clause is present in the first sentence of the description.",
   "tone-manner-maker|FRONTMATTER_TRIGGER": "The [Hyper] prefix marker is kept by user decision and the trigger clause is present in the first sentence of the description.",
   "version-update|FRONTMATTER_TRIGGER": "The [Hyper] prefix marker is kept by user decision and the trigger clause is present in the first sentence of the description."
 }

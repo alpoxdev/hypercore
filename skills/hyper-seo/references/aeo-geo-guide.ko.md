@@ -1,7 +1,7 @@
 # AEO/GEO/LLMO 전략 가이드
 
 **목적**: AEO/GEO 단계에서 사용하는 AI 검색 최적화 레퍼런스.
-**최종 확인**: 2026-09-21, Google Search Central, OpenAI crawler docs, web.dev, arXiv GEO research, llms.txt proposal, Search Console 생성 AI 포함 제어·성과 보고서 문서 기준.
+**최종 확인**: 2026-11-03, Google Search Central(AI 기능, 생성형 AI 최적화 가이드, 문서 업데이트 기록), OpenAI·Anthropic·Perplexity 크롤러 문서, Bing Webmaster 블로그, arXiv GEO·인용 연구, llms.txt 제안과 요청 측정 연구, Search Console 생성 AI 포함 제어·성과 보고서 문서 기준.
 
 ## 목차
 
@@ -37,10 +37,12 @@
 
 ## 공식 주의사항
 
-- Google은 AI Overviews와 AI Mode가 Search와 동일한 기본 SEO 관행을 사용한다고 설명한다. 포함을 위한 추가 기술 요구사항, 특별한 schema.org 타입 또는 특별한 schema.org 마크업, AI 텍스트 파일은 없다.
-- Google AI 기능에서 지원 링크로 표시되려면 페이지가 여전히 색인 가능하고 snippet 대상이어야 한다.
-- OpenAI는 ChatGPT Search 포함용 `OAI-SearchBot`, model training용 `GPTBot`, user-triggered fetch용 `ChatGPT-User`를 분리한다. Robots behavior와 purpose가 다르므로 독립적으로 감사한다.
-- `llms.txt`는 informal proposal이자 optional machine-readable content map이며, 2026-07-28 기준 W3C/IETF standard, ranking factor, 주요 provider의 guaranteed fetch contract가 아니다.
+- Google은 AI Overviews와 AI Mode가 Search와 동일한 기본 SEO 관행을 사용한다고 설명한다. 포함을 위한 추가 기술 요구사항, 특별한 schema.org 타입 또는 특별한 schema.org 마크업, AI 텍스트 파일은 없다. 생성형 AI 최적화 가이드는 생성형 AI 검색 최적화가 "is optimizing for the search experience, and thus still SEO"라고 밝히고, 콘텐츠 "chunking", `llms.txt`, 진정성 없는 언급 같은 전술은 무시해도 된다고 한다.
+- Google AI 기능에서 지원 링크로 표시되려면 페이지가 여전히 색인 가능하고 snippet 대상이어야 하며, 속성이 Search Console 생성 AI 설정에 포함되어 있어야 한다.
+- `nosnippet`과 `max-snippet`은 Google AI Overviews와 AI Mode가 직접 입력으로 쓸 수 있는 페이지 내용의 양도 제한한다.
+- Google 스팸 정책은 생성형 AI 응답을 조작하려는 시도에도 적용된다(2026-05-15 명시).
+- OpenAI, Anthropic, Perplexity는 각각 검색·인용용 크롤러, 학습용 크롤러, 사용자 요청 fetcher를 분리한다. 학습용 크롤러를 막아도 그 업체의 답변에서 빠지지 않고, 검색용 크롤러를 막으면 빠진다. 토큰마다 독립적으로 감사한다.
+- `llms.txt`는 informal proposal이자 optional machine-readable content map이며, W3C/IETF standard, ranking factor, 주요 provider의 guaranteed fetch contract가 아니다. Google은 Search가 이 파일을 무시한다고 밝혔고, 2026년 로그 연구에서는 공개된 파일의 97%가 요청을 한 번도 받지 않았다.
 
 ## 용어
 
@@ -57,7 +59,7 @@
 |------|-----|-----|-----|
 | **목표** | 크롤링 가능성, 색인 가능성, 랭킹, 검색 노출, CTR | 직접 답변/snippet/음성 스타일 추출 | AI 답변 인용, 브랜드 언급, 출처 선택 |
 | **최선의 증거** | Search Console, crawl/index 상태, field CWV, structured data 검증 | snippet controls, 보이는 Q&A/answer blocks, FAQ/QAPage 유효성 | query/prompt probes, 인용 빈도, 공식 crawler 접근, 출처 다양성 |
-| **위험** | 랭킹/색인 보장은 없음 | FAQ rich result는 사이트 유형에 따라 제한됨 | 블랙박스 시스템은 달라지므로 결과에 신뢰도 표시가 필요함 |
+| **위험** | 랭킹/색인 보장은 없음 | Google FAQ rich result는 2026-05-07부터 표시되지 않음 | 블랙박스 시스템은 달라지므로 결과에 신뢰도 표시가 필요함 |
 
 ## AEO 전략
 
@@ -71,13 +73,13 @@
 ### FAQ 및 Q&A(`official` + `heuristic`)
 
 - 페이지가 실제로 공통 질문에 답할 때 보이는 FAQ 콘텐츠를 사용한다.
-- Google rich result에서 FAQPage eligibility는 제한적이며, `FAQPage` eligibility는 잘 알려진 권위 있는 정부 또는 건강 중심 사이트로 제한된다. 일반 사이트에서도 FAQ 콘텐츠는 사용자와 답변 추출에 도움이 될 수 있지만 Google FAQ rich result를 약속하지 않는다.
+- Google FAQ rich result는 2026-05-07부터 Google 검색에 표시되지 않는다. FAQ 콘텐츠는 사용자와 답변 추출에 도움이 될 수 있지만 Google FAQ rich result를 약속하지 않는다.
 - 사용자가 하나의 질문에 여러 답변을 제출할 수 있으면 `FAQPage` 대신 `QAPage`를 사용한다.
 - 구조화 데이터는 보이는 콘텐츠와 일치해야 하며 숨겨졌거나 무관하거나 오해를 부르는 정보를 마크업하지 않아야 한다.
 
 ## GEO 전략
 
-GEO는 experimental하다. 2023 GEO paper의 gain은 해당 benchmark/setup에만 해당하므로 “up to 40%” 결과를 live engine이나 client site에 일반화하지 않는다. Field evidence 또는 repeatable citation probe를 우선하고 나머지는 heuristic으로 표시한다.
+GEO는 experimental하다. 2023 GEO paper의 gain은 해당 benchmark/setup에만 해당하므로 “up to 40%” 결과를 live engine이나 client site에 일반화하지 않는다. 이후 증거는 대부분의 페이지 단위 전술에 반대 방향을 가리킨다. 2025년 벤치마크에서는 대화형 SEO 기법 대부분이 효과가 없거나 해로웠고 전통 SEO는 여전히 효과가 있었다. 2026년 ChatGPT 인용 468,037건 연구에서는 엔진 자체 검색이 사이트를 가져왔는지가 인용 변동의 약 32%를, 페이지 속성은 2.8%를 설명했고, FAQ 블록과 구조화 데이터는 같은 사이트 안 비교에서 견고한 효과가 없었다. Field evidence 또는 repeatable citation probe를 우선하고 나머지는 heuristic으로 표시한다.
 
 ### GEO CORE 프레임워크(`heuristic`)
 이는 local audit mnemonic이며 official platform framework나 validated ranking model이 아니다.
@@ -114,9 +116,9 @@ Coverage experiment가 유용하면 아래 category에서 proportionate subquery
 
 - 엔진, 날짜, 지역/언어, 프롬프트 텍스트, 표본 크기
 - 인용 URL, 브랜드 언급, sentiment, 경쟁사 share of voice
-- 반복 실행 변동성과 신뢰도
+- 반복 실행 변동성과 신뢰도. 인용은 매일 크게 바뀐다(2026년 연구에서 다음날 50-83%가 사라지고 약 75%가 20일 안에 돌아옴). 그러므로 한 번의 관찰이 아니라 고정 기간의 인용 빈도(예: 7-30일 중 인용된 날의 비율)로 보고한다.
 
-Probe를 사용할 수 없으면 신호가 있는 것처럼 꾸미지 말고 prompt pack을 `not-run`으로 저장한다.
+Probe를 사용할 수 없으면 신호가 있는 것처럼 꾸미지 말고 prompt pack을 `not-run`으로 저장한다. Google 순위로 ChatGPT 인용을 추정하지 않는다. 겹치는 부분이 일부뿐이고 엔진의 검색 방식이 다르다.
 
 ## 플랫폼 정책 매트릭스
 
@@ -126,8 +128,11 @@ Probe를 사용할 수 없으면 신호가 있는 것처럼 꾸미지 말고 pro
 | Google-Extended | 일반 Search 크롤링 외 Google AI 제품/학습 제어 | Search visibility 결정과 분리 |
 | OAI-SearchBot | ChatGPT Search 포함 | ChatGPT Search visibility를 원하면 허용 |
 | GPTBot | OpenAI 모델 학습 | OAI-SearchBot과 독립적으로 허용 또는 차단 가능 |
-| ChatGPT-User | 사용자 트리거 fetch | 일반 자동 search crawler가 아니므로 별도 문서화 |
-| PerplexityBot / ClaudeBot | 현재 문서화되었거나 직접 관측된 경우의 AI retrieval/crawling | Rule 권장 전 current official policy를 다시 확인하고 그렇지 않으면 `unknown` 기록 |
+| ChatGPT-User | 사용자 트리거 fetch | 일반 자동 search crawler가 아니고 robots.txt가 적용되지 않을 수 있으므로 별도 문서화 |
+| Claude-SearchBot / ClaudeBot / Claude-User | Anthropic 검색 색인 / 모델 학습 / 사용자 트리거 fetch | Claude 검색 노출을 원하면 Claude-SearchBot을 허용하고, ClaudeBot은 별도의 학습 결정으로 다룸 |
+| PerplexityBot / Perplexity-User | Perplexity 검색 결과(모델 학습 아님) / 사용자 트리거 fetch | Perplexity 노출을 원하면 PerplexityBot을 허용함. Perplexity-User는 대체로 robots.txt를 따르지 않음 |
+| Applebot-Extended / Meta-ExternalAgent / CCBot | 학습 용도 제어(Applebot-Extended는 크롤하지 않는 용도 토큰) | 학습 결정임. Meta AI 인용용 크롤러는 별도의 Meta-WebIndexer |
+| CDN·WAF 봇 규칙 | 엣지 단계의 허용, 차단, 과금 결정 | AI 크롤러를 기본 차단하는 CDN 설정은 robots.txt 의도를 무력화할 수 있으므로 엣지를 따로 확인 |
 
 ## Search Console 생성 AI 포함 제어(`official`)
 
@@ -191,9 +196,10 @@ Search Console 생성 AI 성과 보고서가 보고하는 것은 노출 수이�
 
 규칙:
 
-- 누락된 `llms.txt`를 기본적으로 critical로 표시하지 않는다.
-- Maintained content map에 명확한 user/retrieval value가 있을 때만 docs site, developer tool, API reference, content-heavy product에서 고려한다.
+- 누락된 `llms.txt`를 기본적으로 critical로 표시하지 않고, 존재 여부를 랭킹이나 인용 요인으로 점수화하지 않는다.
+- Maintained content map이 코딩 에이전트에 명확한 user/retrieval value를 줄 때만 docs site, developer tool, API reference, content-heavy product에서 고려한다.
 - canonical URL 및 sitemap 우선순위와 일치시킨다.
+- 효과를 주장하기 전에 서버 로그를 확인한다. 공개된 파일 대부분은 한 번도 요청되지 않는다.
 
 ## 측정 KPI
 
@@ -202,9 +208,10 @@ Search Console 생성 AI 성과 보고서가 보고하는 것은 노출 수이�
 | AI Citation Frequency | 대상 URL이 AI 답변에 인용되는 빈도 | Synthetic probes 또는 AI visibility tools |
 | Brand Mention Rate | 브랜드/엔터티가 언급되는 빈도 | Synthetic probes, AI referrals, third-party tools |
 | Share of Voice | 경쟁사 대비 인용/언급 점유율 | 경쟁사를 포함한 반복 프롬프트 세트 |
-| AI Overview Inclusion | Google AI 기능이 사이트 링크를 포함하는지 여부 | Search Console/Web 성과와 수동 SERP 증거 |
+| AI Overview Inclusion | Google AI 기능이 사이트 링크를 포함하는지 여부 | Search Console 생성 AI 성과 보고서와 수동 SERP 증거 |
+| Bing AI Citations | Copilot과 Bing AI 답변의 인용 수, 인용된 페이지, grounding 질의 | Bing Webmaster Tools AI Performance와 Citation Share(preview) |
 | Citation Sentiment | 긍정/중립/부정 프레이밍 | 수동 또는 도구 보조 검토 |
-| AI-referred Conversion | AI/search referrer에서 온 전환 | Analytics/server logs |
+| AI-referred Conversion | AI/search referrer에서 온 전환 | AI assistant용 분석 맞춤 채널과 서버 로그. AI 앱 유입은 direct로 잡히는 경우가 많음 |
 
 ## 실무 최적화 순서
 
@@ -212,7 +219,7 @@ Search Console 생성 AI 성과 보고서가 보고하는 것은 노출 수이�
 2. 보이는 콘텐츠 품질, 신뢰 신호, 구조화 데이터 일치성을 검증한다.
 3. 사람에게 유용한 곳에 answer blocks와 Q&A 콘텐츠를 추가한다.
 4. 출처, 원본 데이터, 명확한 엔터티를 갖춘 인용 가능한 섹션을 만든다.
-5. OAI-SearchBot과 GPTBot 분리를 포함해 플랫폼 crawler 정책을 감사한다.
+5. OAI-SearchBot·GPTBot, Claude-SearchBot·ClaudeBot처럼 검색용과 학습용을 나눠 플랫폼 crawler 정책을 감사하고, CDN·WAF 층도 확인한다.
 6. 콘텐츠 맵을 위해 선택적으로 `llms.txt`를 추가한다.
 7. 접근 권한이 허용되면 query fan-out과 citation probes를 실행한 뒤 `score_history`와 `best_run`으로 반복 개선한다.
 
@@ -226,10 +233,19 @@ Search Console 생성 AI 성과 보고서가 보고하는 것은 노출 수이�
 | https://arxiv.org/abs/2311.09735 | 2026-07-28 | GEO research의 origin과 benchmark scope | 2023 benchmark result는 live-engine guarantee가 아님 |
 | https://support.google.com/webmasters/answer/16908024 | 2026-09-21 | Search Console 생성 AI 포함 제어와 속성별 상태 | 설정 감사는 순위·트래픽 보장이 아니고 읽지 못한 설정은 `unknown`으로 남김 |
 | https://support.google.com/webmasters/answer/16984139 | 2026-09-21 | 생성 AI 성과 보고서의 차원, Pacific Time 날짜, 내보내기 주의 | 노출 수는 인용 측정이 아니고 내보낸 `0`은 미설정 값일 수 있음 |
+| https://developers.google.com/search/docs/fundamentals/ai-optimization-guide | 2026-11-03 | 생성형 AI 최적화는 여전히 SEO, chunking과 llms.txt는 무시 가능, 포함 설정이 전제 | Google surface에만 해당 |
+| https://developers.google.com/search/updates | 2026-11-03 | 스팸 정책이 생성형 AI 응답에 적용됨(2026-05-15) | 변경 기록 문구가 짧음 |
+| https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler | 2026-11-03 | ClaudeBot, Claude-SearchBot, Claude-User의 목적 | Bot string과 policy는 변할 수 있음 |
+| https://docs.perplexity.ai/guides/bots | 2026-11-03 | PerplexityBot은 모델 학습에 쓰이지 않음, Perplexity-User는 대체로 robots.txt를 따르지 않음 | 업체 진술 |
+| https://blogs.bing.com/webmaster/2026/2/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview/ | 2026-11-03 | Bing AI Performance 인용 보고서 | Public preview |
+| https://arxiv.org/abs/2506.11097 | 2026-11-03 | 대화형 SEO 기법 대부분은 효과가 없고 전통 SEO는 효과가 있음 | 벤치마크 환경 |
+| https://arxiv.org/abs/2610.15033 | 2026-11-03 | ChatGPT 인용 변동의 약 32%는 검색 노출, 2.8%는 페이지 속성이 설명 | 프리프린트, 두 시장 |
+| https://ahrefs.com/blog/how-stable-are-ai-citations/ | 2026-11-03 | 다음날 인용의 50-83%가 사라지고 약 75%가 20일 안에 돌아옴 | 업체 연구 |
+| https://ahrefs.com/blog/llmstxt-study/ | 2026-11-03 | 2026-05에 공개된 llms.txt 파일의 97%가 요청을 받지 않음 | 업체 연구 |
 
 ## Sources
 
-> 새 외부 출처는 사용하지 않았다. 내용 확인 2026-09-22. 아래 출처의 마지막 열람일은 위 원장에 기록된 날짜와 같다.
+> 내용 확인 2026-11-03. 아래 출처의 마지막 열람일은 위 원장에 기록된 날짜와 같다.
 
 | 주장 | 출처 |
 |---|---|
@@ -239,3 +255,9 @@ Search Console 생성 AI 성과 보고서가 보고하는 것은 노출 수이�
 | GEO CORE 프레임워크가 요약하는 GEO 연구의 출처와 벤치마크 범위 | <https://arxiv.org/abs/2311.09735>, 2026-07-28 확인 |
 | Search Console 생성 AI 포함 제어와 속성별 상태 | <https://support.google.com/webmasters/answer/16908024>, 2026-09-21 확인 |
 | 생성 AI 성과 보고서의 차원, Pacific Time 날짜, 내보내기 주의 | <https://support.google.com/webmasters/answer/16984139>, 2026-09-21 확인 |
+| 생성형 AI 최적화 입장, 무시해도 되는 전술, 포함 전제 조건 | <https://developers.google.com/search/docs/fundamentals/ai-optimization-guide>, 2026-11-03 확인 |
+| 생성형 AI 응답에 적용되는 스팸 정책 | <https://developers.google.com/search/updates>, 2026-11-03 확인 |
+| Anthropic·Perplexity 크롤러 목적 구분 | <https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler>, <https://docs.perplexity.ai/guides/bots>, 2026-11-03 확인 |
+| Bing AI 인용 보고서 | <https://blogs.bing.com/webmaster/2026/2/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview/>, 2026-11-03 확인 |
+| 2023 논문 이후의 GEO·인용 증거 | <https://arxiv.org/abs/2506.11097>, <https://arxiv.org/abs/2610.15033>, 2026-11-03 확인 |
+| 인용 변동성과 llms.txt 요청 비율 | <https://ahrefs.com/blog/how-stable-are-ai-citations/>, <https://ahrefs.com/blog/llmstxt-study/>, 2026-11-03 확인 |

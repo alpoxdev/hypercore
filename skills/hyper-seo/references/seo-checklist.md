@@ -246,7 +246,7 @@
 ### AI Crawler Access
 
 - [ ] `llms.txt` is checked as an optional content map, and a missing file is not treated as critical by default
-- [ ] `robots.txt` is checked for purpose-specific blocks for OAI-SearchBot (search), GPTBot (training), ChatGPT-User (user fetch), ClaudeBot/PerplexityBot, and similar crawlers
+- [ ] `robots.txt` is checked for purpose-specific groups: search crawlers (OAI-SearchBot, Claude-SearchBot, PerplexityBot) separately from training crawlers (GPTBot, ClaudeBot, Google-Extended, Applebot-Extended, Meta-ExternalAgent, CCBot) and user-triggered fetchers (ChatGPT-User, Claude-User, Perplexity-User), and CDN or WAF bot rules are checked as a separate layer that can override robots.txt intent
 - [ ] Important content is accessible without JavaScript rendering
 
 ## Sources

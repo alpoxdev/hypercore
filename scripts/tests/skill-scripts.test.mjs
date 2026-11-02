@@ -636,7 +636,7 @@ test("autoresearch dashboard accepts typed non-happy outcomes", () => {
   }
 });
 /**
- * Messages the seo-maker structure gate prints when it rejects a payload. The atomic-write
+ * Messages the hyper-seo structure gate prints when it rejects a payload. The atomic-write
  * fixtures must not contain any of them: an exit code of 1 produced by validation would
  * leave both prior outputs untouched for the wrong reason and read as a passing atomicity
  * check. Only the injected write or rename failure may end the run.
@@ -657,9 +657,9 @@ for (const renderer of [
     results: { skill_name: "fixture", status: "running", current_experiment: 0, baseline_score: 1, best_score: 1, metric_direction: "higher_is_better", last_statuses: [], best_experiment: 0, experiments: [] },
   },
   {
-    name: "seo-maker",
-    scriptPath: join(root, "skills/seo-maker/scripts/render-dashboard.sh"),
-    templatePath: join(root, "skills/seo-maker/assets/dashboard-template.html"),
+    name: "hyper-seo",
+    scriptPath: join(root, "skills/hyper-seo/scripts/render-dashboard.sh"),
+    templatePath: join(root, "skills/hyper-seo/assets/dashboard-template.html"),
     results: {
       project_name: "fixture",
       status: "running",
@@ -672,7 +672,7 @@ for (const renderer of [
   const failureSeams = (name) => [
     {
       failure: "second-write",
-      source: name === "seo-maker"
+      source: name === "hyper-seo"
         ? "  if ! printf 'window.__SEO_RESULTS__ = %s;\\n' \"$results_json\" | write_temp_stream \"$RESULTS_JS_TEMP\" \"$RESULTS_MODE\"; then"
         : "  if ! printf 'window.__AUTORESEARCH_RESULTS__ = %s;\\nwindow.__AUTORESEARCH_DETAILS__ = %s;\\n' \"$results_json\" \"$details_json\" | write_temp_stream \"$RESULTS_JS_TEMP\" \"$RESULTS_MODE\"; then",
       replacement: "  if ! (printf 'forced second write\\n' >&2; false); then",

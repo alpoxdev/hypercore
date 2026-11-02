@@ -1,7 +1,7 @@
 // @ts-check
 
 /**
- * Shared document-contract parser for the seo-maker rule docs.
+ * Shared document-contract parser for the hyper-seo rule docs.
  *
  * Importable from tests and plain scripts alike; it never registers a test.
  * Every helper takes a repository root path and defaults to this repository, so a
@@ -19,16 +19,16 @@ import { fileURLToPath } from "node:url";
 
 export const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
-export const VALIDATION_EN = "skills/seo-maker/rules/validation.md";
-export const VALIDATION_KO = "skills/seo-maker/rules/validation.ko.md";
-export const WORKFLOW_EN = "skills/seo-maker/rules/seo-workflow.md";
-export const WORKFLOW_KO = "skills/seo-maker/rules/seo-workflow.ko.md";
-export const REPORT_TEMPLATE_EN = "skills/seo-maker/assets/report.template.md";
-export const REPORT_TEMPLATE_KO = "skills/seo-maker/assets/report.template.ko.md";
-export const CHECKLIST_EN = "skills/seo-maker/references/seo-checklist.md";
-export const CHECKLIST_KO = "skills/seo-maker/references/seo-checklist.ko.md";
-export const AEO_GEO_EN = "skills/seo-maker/references/aeo-geo-guide.md";
-export const AEO_GEO_KO = "skills/seo-maker/references/aeo-geo-guide.ko.md";
+export const VALIDATION_EN = "skills/hyper-seo/rules/validation.md";
+export const VALIDATION_KO = "skills/hyper-seo/rules/validation.ko.md";
+export const WORKFLOW_EN = "skills/hyper-seo/rules/seo-workflow.md";
+export const WORKFLOW_KO = "skills/hyper-seo/rules/seo-workflow.ko.md";
+export const REPORT_TEMPLATE_EN = "skills/hyper-seo/assets/report.template.md";
+export const REPORT_TEMPLATE_KO = "skills/hyper-seo/assets/report.template.ko.md";
+export const CHECKLIST_EN = "skills/hyper-seo/references/seo-checklist.md";
+export const CHECKLIST_KO = "skills/hyper-seo/references/seo-checklist.ko.md";
+export const AEO_GEO_EN = "skills/hyper-seo/references/aeo-geo-guide.md";
+export const AEO_GEO_KO = "skills/hyper-seo/references/aeo-geo-guide.ko.md";
 
 /**
  * Marker appended to checklist items whose fixed number is a heuristic, not an
@@ -253,7 +253,7 @@ export function compareChecklistFiles(enMarkdown, koMarkdown) {
  * @returns {{ root: string, cleanup: () => void }} temp root holding the copied file
  */
 export function tempCopy(relPath) {
-  const root = mkdtempSync(join(tmpdir(), "seo-maker-doc-contracts-"));
+  const root = mkdtempSync(join(tmpdir(), "hyper-seo-doc-contracts-"));
   const target = join(root, relPath);
   mkdirSync(dirname(target), { recursive: true });
   cpSync(join(REPO_ROOT, relPath), target);

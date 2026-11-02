@@ -1,13 +1,13 @@
 ---
-name: seo-maker
-description: SEO/AEO/GEO 통합 분석 및 최적화 리포트를 생성한다. 전통 SEO(온페이지, 기술, 콘텐츠, Core Web Vitals)에 더해 AEO(Answer Engine Optimization), GEO(Generative Engine Optimization), LLMO(LLM Optimization)까지 점검하고 개선안을 `.hyper/seo-maker/[slug]/`에 저장한다. "SEO 분석", "AEO 최적화", "GEO 점검", "AI 검색 최적화", "검색엔진 최적화", "메타태그 점검", "SEO 감사", "AI 인용 최적화", "최고 점수까지 반복", "SEO 점수 만점까지 수정" 요청 시 사용.
+name: hyper-seo
+description: SEO/AEO/GEO 통합 분석과 최적화 리포트, 새 사이트 출시 세팅 계획을 만든다. 전통 SEO(온페이지, 기술, 콘텐츠, Core Web Vitals)에 더해 AEO(Answer Engine Optimization), GEO(Generative Engine Optimization), LLMO(LLM Optimization), AI 크롤러 정책까지 점검하고 결과를 `.hyper/seo/[slug]/`에 저장한다. "SEO 분석", "AEO 최적화", "GEO 점검", "AI 검색 최적화", "검색엔진 최적화", "메타태그 점검", "SEO 감사", "AI 인용 최적화", "홈페이지 SEO 세팅", "새 사이트 출시 전 검색 설정", "최고 점수까지 반복", "SEO 점수 만점까지 수정" 요청 시 사용.
 compatibility: 로컬 파일 검색/수정 도구와 경쟁사/SERP/AI 인용 분석용 라이브 웹 검색을 함께 쓸 때 가장 잘 동작한다.
 ---
 
 @rules/seo-workflow.md
 @rules/validation.md
 
-# SEO Maker
+# Hyper SEO
 
 > 프로젝트의 SEO/AEO/GEO 상태를 분석하고, 전통 검색엔진과 AI 검색엔진 모두에 대한 최적화 리포트를 산출한다.
 
@@ -15,13 +15,13 @@ compatibility: 로컬 파일 검색/수정 도구와 경쟁사/SERP/AI 인용 �
 
 | 필드 | 계약 |
 |---|---|
-| 의도 | 이름이 지정된 대상에 대해 증거 등급이 매겨진 SEO/AEO/GEO/LLMO 감사와 우선순위화된 실행 가능 개선안 리포트를 만들고, 사용자가 도달 가능한 최고 점수를 요청하면 유한 예산의 점수 개선 루프를 돌린다. |
-| 범위 | 대상 분류, 측정 방법 선택, 온페이지·기술·콘텐츠·Core Web Vitals·AEO·GEO·LLMO 평가, 점수 산정, 발견 사항, 개선안, 리포트 워크스페이스를 담당한다. 감사 대상 밖의 구현, 릴리스 게이트, 페이지·제품 디자인, 대상 사이트나 콘텐츠 집합이 없는 광범위한 시장 조사는 담당하지 않는다. |
+| 의도 | 이름이 지정된 대상에 대해 증거 등급이 매겨진 SEO/AEO/GEO/LLMO 감사와 우선순위화된 실행 가능 개선안 리포트를 만들고, 사이트나 홈페이지를 기획·출시할 때는 단계별 세팅 계획을 만들며, 사용자가 도달 가능한 최고 점수를 요청하면 유한 예산의 점수 개선 루프를 돌린다. |
+| 범위 | 대상 분류, 측정 방법 선택, 온페이지·기술·콘텐츠·Core Web Vitals·AEO·GEO·LLMO 평가, 새 사이트 세팅 계획, 점수 산정, 발견 사항, 개선안, 리포트 워크스페이스를 담당한다. 감사 대상 밖의 구현, 릴리스 게이트, 페이지·제품 디자인, 허락받지 않은 소유자 자격 증명 기반 계정 작업, 대상 사이트나 콘텐츠 집합이 없는 광범위한 시장 조사는 담당하지 않는다. |
 | 권한 | 시스템/하네스와 사용자 지시 > 감사 대상 자체 파일과 라이브 관측 > 공식 플랫폼 문서 > 이 스킬 > 휴리스틱 선호. 도구·lab·synthetic·heuristic 관측은 공식 요구사항으로 승격하지 않는다. |
 | 근거 | 점수를 매기기 전에 대상 자체 파일, 렌더된 페이지, 라이브 응답을 읽고, 모든 critical·warning 발견 사항에 명령 출력·URL·파일 경로·probe 결과를 붙인다. 확인할 수 없는 점검은 `unknown`, 해당 없는 점검은 `not-applicable`로 기록하고, 점수·순위·포함·인용을 지어내지 않는다. |
 | 도구 | 사용 가능한 읽기/검색/브라우저 도구를 쓰고, 대시보드는 `bash scripts/render-dashboard.sh <artifact-dir>`로 렌더한다. 웹 검색, 브라우저 점검, 필드 Core Web Vitals, Search Console, AI 인용 probe는 실제로 사용 가능할 때만 쓰고, 없으면 능력 한계와 더 낮은 등급의 대체 방법을 밝힌다. |
 | 루프 | optimize 모드 전용으로 `audit -> 수정 또는 개선안 -> re-audit`을 유한하게 반복하며 기본 예산은 3회다. 피드백은 비교 가능한 재감사 증거, 지표는 `unknown`·`not-applicable` 카테고리를 제외한 100점 점수, 가드는 비교 가능한 카테고리 회귀 없음과 증거 등급 승격 없음, 중단은 목표 달성·예산 소진·정체·가드 실패·외부 자격 증명이나 사업 판단이 필요한 시점이다. |
-| 출력 | `.hyper/seo-maker/[slug]/`에 `results.json`, `results.js`, `dashboard.html`, `report.md`, `sources.md`, complex·optimize 모드의 `flow.json`을 둔다. simple 모드는 `report.md`와 `sources.md`가 최소다. `sources.md`는 URL, 날짜, 적용 주장, 증거 등급, 한계를 적는 출처 원장이다. |
+| 출력 | `.hyper/seo/[slug]/`에 `results.json`, `results.js`, `dashboard.html`, `report.md`, `sources.md`, complex·optimize 모드의 `flow.json`을 둔다. simple·setup 모드는 `report.md`와 `sources.md`가 최소다. `sources.md`는 URL, 날짜, 적용 주장, 증거 등급, 한계를 적는 출처 원장이다. |
 | 검증 | 완료 시 `rules/validation.md`를 적용한다. 모든 critical·warning 발견 사항에 증거가 있고, 점수는 관측 증거에서 나오며 `unknown`·`not-applicable`을 명시적으로 처리하고, optimize 모드는 기준선·평가자·예산·가드·폐기한 반복·중단 사유·비교 가능한 최고 검증 결과를 기록한다. 패키지 변경 시에는 집중 코퍼스 검증기, 저장소 표준 게이트, 패키지 테스트를 함께 실행한다. |
 | 중단 조건 | 요청된 감사나 리포트가 등급이 매겨진 증거와 미해결 critical 공백 없이 끝났을 때, 또는 optimize 모드가 목표·예산·정체·가드·외부 의존에 도달했을 때 중단한다. 증거가 뒷받침하지 않는 순위·AI 기능 포함·인용을 주장하며 중단하지 않는다. |
 
@@ -43,7 +43,8 @@ compatibility: 로컬 파일 검색/수정 도구와 경쟁사/SERP/AI 인용 �
 - 온페이지 SEO, 기술 SEO, 콘텐츠 SEO, Core Web Vitals를 종합 점검한다.
 - AEO(Answer Engine Optimization) — Featured Snippet, 음성 검색, AI 직접 답변 선택 최적화를 점검한다.
 - GEO(Generative Engine Optimization) — AI 생성 응답에서의 인용 가능성을 점검한다.
-- 우선순위가 매겨진 개선안 리포트를 `.hyper/seo-maker/[slug]/`에 저장한다.
+- 우선순위가 매겨진 개선안 리포트를 `.hyper/seo/[slug]/`에 저장한다.
+- 새 사이트나 홈페이지 출시를 단계별(기획, 출시 전 빌드 점검, 등록, 첫 30일)로 계획해 검색엔진과 AI 답변 엔진이 크롤·색인·인용할 수 있게 한다.
 - 기존 리포트를 업데이트하여 SEO 개선 이력을 추적한다.
 - 사용자가 최고 점수/만점/무한 반복을 요청하면 유한한 예산과 중단 게이트가 있는 최적화 과정으로 audit → fix recommendation/application → re-audit를 수행하고, 비교 가능한 최고 검증 결과만 유지한다. 순위, AI 기능 포함, 인용을 보장하지 않는다.
 
@@ -51,7 +52,7 @@ compatibility: 로컬 파일 검색/수정 도구와 경쟁사/SERP/AI 인용 �
 
 <routing_rule>
 
-SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`를 사용한다.
+SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `hyper-seo`를 사용한다.
 
 경쟁사/시장 조사처럼 SEO 산출물이 아닌 일반 리서치면 출처 기반 리서치 workflow로 보낸다.
 
@@ -59,7 +60,7 @@ SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`�
 
 배포 전 검증이 목적이면 산출물이 배포 게이트 판정이므로 이 스킬이 소유하지 않는다.
 
-다음 경우에는 `seo-maker`를 사용하지 않는다:
+다음 경우에는 `hyper-seo`를 사용하지 않는다:
 
 - 순수한 웹 성능 최적화만 원하고 SEO 초점이 없을 때
 - SEO 분석 없이 콘텐츠 작성만 원할 때
@@ -81,6 +82,7 @@ SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`�
 - "AEO/GEO 관점에서 사이트 분석해줘."
 - "SEO 점수 최고 점수 나올 때까지 계속 반복해서 고쳐줘."
 - "검색 최적화 점수가 만점에 가까워질 때까지 audit하고 수정하고 재검증해줘."
+- "다음 달에 새 홈페이지를 오픈하는데, 오픈 전에 SEO·GEO·AI 크롤러 설정을 잡아줘."
 
 부정 요청:
 
@@ -91,9 +93,11 @@ SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`�
 경계 요청:
 
 - "이 페이지 성능 최적화해줘."
-  검색 가시성이 중심이면 `seo-maker`를 쓰고, 순수 로딩 성능이면 다른 도구로 보낸다.
+  검색 가시성이 중심이면 `hyper-seo`를 쓰고, 순수 로딩 성능이면 다른 도구로 보낸다.
 - "AI 검색 트렌드 조사해줘."
-  실무 최적화 리포트가 목표일 때만 `seo-maker`를 쓰고, 일반 조사면 출처 기반 리서치 workflow로 보낸다.
+  실무 최적화 리포트가 목표일 때만 `hyper-seo`를 쓰고, 일반 조사면 출처 기반 리서치 workflow로 보낸다.
+- "새 홈페이지 만들어줘."
+  검색 가시성 세팅 계획이나 점검일 때만 `hyper-seo`를 쓴다. 페이지 제작 자체는 이 스킬의 산출물이 아니다.
 
 </activation_examples>
 
@@ -109,13 +113,14 @@ SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`�
 | 최고 점수/만점 목표로 반복 개선 | optimize |
 | AI 검색 인용 최적화 (AEO/GEO) 분석 | create |
 | 기존 리포트에 AEO/GEO 분석 추가 | update |
+| 검색엔진·AI 답변 엔진을 위한 새 사이트·홈페이지 기획 또는 출시 세팅 | setup |
 
 </trigger_conditions>
 
 <supported_targets>
 
 - HTML 페이지, Next.js/React 컴포넌트의 메타태그 및 SEO 요소
-- `robots.txt`, `sitemap.xml`, `llms.txt`, canonical 태그, 구조화 데이터
+- `robots.txt`, `sitemap.xml`, `llms.txt`, canonical 태그, 구조화 데이터, 업체별 AI 크롤러 그룹(검색용·학습용·사용자 요청 토큰)과 CDN·WAF 봇 규칙
 - Core Web Vitals (LCP, INP, CLS) 관련 코드
 - `<head>` 영역의 title, meta description, Open Graph, Twitter Card
 - heading 계층 구조 (`h1`-`h6`)
@@ -126,7 +131,7 @@ SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`�
 - LLMO 요소 — AI 크롤러 접근성, 콘텐츠 신선도, 선택적 `llms.txt`. `llms.txt`는 표준이나 랭킹/인용 요건이 아닌 선택적 제안이다.
 - Naver 검색 surface — target set이 Naver 검색 surface를 포함할 때만 점검한다. `Yeti` 크롤러 접근, 서치어드바이저 소유확인, RSS·사이트맵 소유확인 도메인 일치, `og:image` 조건, `nosourceinfo` 범위.
 - Bing surface — target set이 Bing surface를 포함할 때만 점검한다. IndexNow 변경 알림(수신 코드는 색인·인용 증거가 아님), 키 파일 소유 증명, POST당 제출 상한, Bing 사이트맵 필드 처리.
-- Platform policy — Googlebot, Google-Extended, OAI-SearchBot, GPTBot, ChatGPT-User를 목적별로 별도 점검하고 하나의 bot rule을 다른 bot에 적용하지 않는다. Naver surface에서는 `Yeti` 접근, 서치어드바이저 소유확인, 피드 소유 도메인 일치, `og:image` 조건, `nosourceinfo` 범위를 점검하고, `nosnippet`·`Google-Extended`·FAQPage 리치 결과·`llms.txt` 같은 Google 전용 지시자를 Naver로 전이하지 않는다.
+- Platform policy — Googlebot, Google-Extended, OAI-SearchBot, GPTBot, ChatGPT-User, Claude-SearchBot, ClaudeBot, PerplexityBot 등 검색용·학습용·사용자 요청 토큰을 목적별로 별도 점검하고 하나의 bot rule을 다른 bot에 적용하지 않는다. CDN·WAF 봇 규칙과 Search Console 생성형 AI 설정은 별도 층으로 본다. Naver surface에서는 `Yeti` 접근, 서치어드바이저 소유확인, 피드 소유 도메인 일치, `og:image` 조건, `nosourceinfo` 범위를 점검하고, `nosnippet`·`Google-Extended`·FAQPage 리치 결과·`llms.txt` 같은 Google 전용 지시자를 Naver로 전이하지 않는다.
 - Google AI 기능 — 일반 SEO 기본 원칙과 관련 있는 index/snippet eligibility를 점검한다. 특별 AI schema나 text file을 요구하지 않으며, 적격한 indexed/snippet-eligible 페이지도 포함이 보장되지는 않는다.
 
 </supported_targets>
@@ -146,6 +151,7 @@ SEO 분석, 감사, 최적화 리포트가 주된 산출물일 때 `seo-maker`�
 
 ```text
 Complexity: [simple/complex] — [한 줄 이유]
+Mode: [create/update/optimize/setup]
 ```
 
 애매하면 complex로 분류한다.
@@ -175,7 +181,7 @@ Complexity: [simple/complex] — [한 줄 이유]
 기본 출력 형태:
 
 ```text
-.hyper/seo-maker/[slug]/
+.hyper/seo/[slug]/
 ├── dashboard.html      # 브라우저에서 열 수 있는 대시보드
 ├── results.json        # 구조화된 감사 결과 (JSON)
 ├── results.js          # file:// 브라우저 폴백용
@@ -223,15 +229,16 @@ complex로 분류되면 `flow.json`을 쓰고 각 단계가 진행될 때마다 
 
 다음 순서로 읽는다:
 
-1. 코어 `SKILL.md`로 현재 작업이 SEO/AEO/GEO 분석 또는 감사인지 확정한다.
+1. 코어 `SKILL.md`로 현재 작업이 SEO/AEO/GEO 분석·감사, 세팅 계획, 점수 반복 중 무엇인지 확정한다.
 2. [rules/seo-workflow.md](rules/seo-workflow.md)로 단계별 실행 방식을 확인한다.
 3. [references/seo-fundamentals.md](references/seo-fundamentals.md)로 E-E-A-T, Core Web Vitals, 랭킹 요소, entity SEO, schema markup 기준을 확인한다.
 4. [references/aeo-geo-guide.md](references/aeo-geo-guide.md)로 AEO/GEO/LLMO 전략, GEO CORE 프레임워크, 플랫폼별 벤치마크, `llms.txt` 가이드를 확인한다.
 5. [references/seo-checklist.md](references/seo-checklist.md)로 실무 감사 체크리스트를 확인한다.
-6. [references/artifact-spec.md](references/artifact-spec.md)로 `results.json` 스키마, dashboard lifecycle, workspace 구조를 확인한다.
-7. 새 report를 만들 때는 기본적으로 [assets/report.template.ko.md](assets/report.template.ko.md)를 읽고, 영어가 명시적으로 필요할 때만 [assets/report.template.md](assets/report.template.md)를 읽는다.
-8. dashboard를 렌더할 때는 [assets/dashboard-template.html](assets/dashboard-template.html)을 읽는다.
-9. 완료 선언 전에는 [rules/validation.md](rules/validation.md)를 읽는다.
+6. setup 모드에서는 [references/site-setup.md](references/site-setup.md)로 출시 단계, 크롤러 정책 템플릿, 세팅 완료 기준을 확인한다.
+7. [references/artifact-spec.md](references/artifact-spec.md)로 `results.json` 스키마, dashboard lifecycle, workspace 구조를 확인한다.
+8. 새 report를 만들 때는 기본적으로 [assets/report.template.ko.md](assets/report.template.ko.md)를 읽고, 영어가 명시적으로 필요할 때만 [assets/report.template.md](assets/report.template.md)를 읽는다.
+9. dashboard를 렌더할 때는 [assets/dashboard-template.html](assets/dashboard-template.html)을 읽는다.
+10. 완료 선언 전에는 [rules/validation.md](rules/validation.md)를 읽는다.
 
 </support_file_read_order>
 
@@ -243,7 +250,7 @@ complex로 분류되면 `flow.json`을 쓰고 각 단계가 진행될 때마다 
 |-------|------|--------|
 | 0 | SEO 산출물 여부 확인, `create`/`update`/`optimize` 선택, simple 분류 | Mode + complexity |
 | 1 | 대상 파일에서 SEO 요소 스캔 | Raw findings |
-| 2 | `.hyper/seo-maker/[slug]/` 생성 또는 탐색 | Storage target |
+| 2 | `.hyper/seo/[slug]/` 생성 또는 탐색 | Storage target |
 | 3 | 결과와 권장 조치가 담긴 `report.md` 작성 | SEO report |
 | 4 | 완결성 검증 | Finalized report |
 
@@ -252,7 +259,7 @@ complex로 분류되면 `flow.json`을 쓰고 각 단계가 진행될 때마다 
 | Phase | Task | Output |
 |-------|------|--------|
 | 0 | SEO 산출물 여부 확인, `create`/`update`/`optimize` 선택, complex 분류 | Mode + complexity |
-| 1 | `.hyper/seo-maker/[slug]/` 생성 또는 탐색, `flow.json`에 `scope: in_progress` 기록 | Storage + flow |
+| 1 | `.hyper/seo/[slug]/` 생성 또는 탐색, `flow.json`에 `scope: in_progress` 기록 | Storage + flow |
 | 2 | 감사 범위 정의 → `scope: completed` 업데이트 | Scope definition |
 | 3 | Measurement setup → `measurement: completed` | Evidence channels + confidence limits |
 | 4 | 기술 SEO 분석 → `technical: completed` | Technical findings |
@@ -328,6 +335,6 @@ complex로 분류되면 `flow.json`을 쓰고 각 단계가 진행될 때마다 
 
 완료를 선언하기 전에 [rules/validation.md](rules/validation.md)를 적용한다. 모든 critical·warning finding에 evidence가 있고, recommendation은 engineer·marketer·content owner가 실행할 수 있을 만큼 구체적이며, score는 `unknown`·`not-applicable`을 명시적으로 처리한 observed evidence에서 도출하고 assumption이나 heuristic official failure에서 도출하지 않는다. Google AI 기능은 일반 SEO 기본 원칙으로 설명하고, FAQPage 권장은 Google rich-result eligibility와 answer-friendly visible FAQ content를 구분한다. `sources.md`는 URL, date, applicable claim, evidence class, limitation을 담은 source ledger여야 하며, optimize 모드는 baseline, evaluator, finite budget, guard, 변경/권장 조치, re-audit evidence, discarded iteration, stop reason, best comparable verified result를 기록한다.
 
-함께 지킨다: 시작 전 complexity(simple/complex) 분류, 모든 report를 `.hyper/seo-maker/[slug]/`에 저장, slug는 가능하면 ASCII kebab-case, complex 경로에서 `flow.json` 유지, 사용자가 전통 SEO만 요청한 경우가 아니면 AEO·GEO 단계 포함, E-E-A-T와 Core Web Vitals 기준은 [references/seo-fundamentals.md](references/seo-fundamentals.md), AI 검색 준비도는 [references/aeo-geo-guide.md](references/aeo-geo-guide.md)를 따른다. 남아 있어야 할 `.hyper/seo-maker/[slug]/` 산출물은 `<artifact_contract>`에 있다.
+함께 지킨다: 시작 전 complexity(simple/complex) 분류, 모든 report를 `.hyper/seo/[slug]/`에 저장, slug는 가능하면 ASCII kebab-case, complex 경로에서 `flow.json` 유지, 사용자가 전통 SEO만 요청한 경우가 아니면 AEO·GEO 단계 포함, E-E-A-T와 Core Web Vitals 기준은 [references/seo-fundamentals.md](references/seo-fundamentals.md), AI 검색 준비도는 [references/aeo-geo-guide.md](references/aeo-geo-guide.md)를 따른다. 남아 있어야 할 `.hyper/seo/[slug]/` 산출물은 `<artifact_contract>`에 있다.
 
 </validation>

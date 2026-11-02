@@ -18,7 +18,7 @@
 - [ ] Target page(s)를 완전히 스캔함
 - [ ] 최소 하나의 category(Technical, On-Page, Content)를 분석함
 - [ ] `sources.md`가 사용한 모든 external/official claim과 절대 accessed date를 기록함
-- [ ] `report.md`가 `.hyper/seo-maker/[slug]/`에 저장됨
+- [ ] `report.md`가 `.hyper/seo/[slug]/`에 저장됨
 
 ### Complex audit
 
@@ -32,7 +32,7 @@
 - [ ] AEO: visible Q&A/answer blocks, Featured Snippet readiness, FAQPage/QAPage eligibility caveats 확인
 - [ ] GEO: GEO CORE, citation readiness, entity authority, topic-appropriate freshness, optional llms.txt, query fan-out/citation probe status 확인
 - [ ] `sources.md`가 사용한 evidence와 references를 기록함
-- [ ] `report.md`가 `.hyper/seo-maker/[slug]/`에 저장됨
+- [ ] `report.md`가 `.hyper/seo/[slug]/`에 저장됨
 - [ ] `dashboard.html`가 확정된 `results.json`에서 렌더링되고 category scores, findings, `overall_grade`가 동일함
 - [ ] `results.js`가 `dashboard.html` 옆에 생성되어 `file://` browser가 server 없이 같은 results를 읽을 수 있음
 - [ ] `dashboard.html`가 수집한 page/finding 문자열을 markup이 아니라 text로 렌더링함
@@ -40,6 +40,14 @@
 - [ ] 선택 모듈 dimension(platform, commerce, i18n)은 target이 범위 밖이면 `not-applicable`, 접근할 수 없으면 `unknown`으로 표시함
 - [ ] 요청된 모든 URL/file을 inventory했거나 제외/접근 불가 target을 나열함
 - [ ] 해당 없는 dimension은 `not-applicable`, 측정하지 못한 dimension은 `unknown`으로 표시하고 조용히 scoring하지 않음
+
+### Setup mode
+
+- [ ] `report.md`가 세팅 계획이며 `references/site-setup.md`의 네 단계를 따르고, 모든 항목이 `done`, 담당자가 정해진 `planned`, `not-applicable`, 부족한 접근 권한을 적은 `unknown` 중 하나임
+- [ ] `served HTML` 기준으로 페이지 템플릿마다 본문, title, canonical, 구조화 데이터를 확인했거나 그 점검을 `unknown`으로 기록함
+- [ ] `robots.txt` 정책이 범위 안의 검색용·학습용·사용자 요청 토큰마다 명시적 결정을 기록하고 CDN·WAF 층도 함께 기록함
+- [ ] `credentials`가 필요한 단계(콘솔 등록, DNS 레코드, 키 파일, IndexNow, 네이버 소유확인)를 정확한 값과 함께 나열하고, 허락이 없으면 소유자에게 맡김
+- [ ] `sources.md`가 사용한 모든 공식 주장을 절대 날짜의 접근일과 함께 기록하고, 어떤 항목도 색인·순위·리치 결과·AI 인용을 약속하지 않음
 
 ## Optimize Mode Checks
 

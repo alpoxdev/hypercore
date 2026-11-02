@@ -495,8 +495,8 @@
       "behaviorContractId": "prompt-maker--validate-prompt-maker"
     },
     {
-      "path": "skills/seo-maker/scripts/render-dashboard.sh",
-      "family": "seo-maker",
+      "path": "skills/hyper-seo/scripts/render-dashboard.sh",
+      "family": "hyper-seo",
       "legacyOrigin": "former-sh",
       "usage": "render-dashboard",
       "behavior": "render-dashboard",
@@ -505,7 +505,7 @@
         "sha256": "87c5f07128478a3c16d5fb3b90bc4bfd4da8ea0ecc720af39de144b2b63c82ec",
         "gitMode": "100755"
       },
-      "behaviorContractId": "seo-maker--render-dashboard"
+      "behaviorContractId": "hyper-seo--render-dashboard"
     },
     {
       "path": "skills/skill-maker/scripts/validate-skill-maker.sh",

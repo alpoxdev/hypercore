@@ -56,7 +56,9 @@ Tools: 파일 스캔에는 `Glob`, `Grep`, `Read`. 가능한 경우 live URL 분
 - Googlebot 및 indexing/snippets용 standard robots directives
 - 관련 있을 때 Google AI training/product controls용 Google-Extended
 - ChatGPT Search inclusion용 OAI-SearchBot, OpenAI training용 GPTBot, user-triggered fetches용 ChatGPT-User. 목적이 다르므로 각각 별도로 감사하며 하나의 rule이 다른 bot에 적용된다고 추론하지 않는다.
-- robots.txt 또는 server rules에 언급된 PerplexityBot, ClaudeBot 및 기타 AI crawlers
+- Claude-SearchBot(검색), ClaudeBot(학습), Claude-User(사용자 요청 fetch), PerplexityBot(검색, 학습 아님)과 Perplexity-User(사용자 요청 fetch), 학습 제어용 Applebot-Extended·Meta-ExternalAgent·CCBot. 학습 차단이 검색 차단을 뜻하지 않으므로 토큰마다 따로 감사한다.
+- CDN·WAF 봇 규칙은 별도 층으로 본다. AI 크롤러를 기본 차단하는 엣지 설정은 robots.txt 허용을 무력화할 수 있으므로 robots.txt만 읽고 접근 가능하다고 판단하지 않는다.
+- Google AI 기능이 범위에 있으면 Search Console 생성형 AI 설정(포함, 제외, 상속)을 확인한다. 노출의 전제 조건이지 순위 신호가 아니며, 설정을 읽을 수 없으면 `unknown`으로 기록한다.
 - `nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`, canonical, X-Robots-Tag effects
 - `llms.txt`는 optional proposal/content map이며 표준 또는 ranking/citation requirement가 아님
 - Google AI 기능은 일반 SEO 기본 원칙을 사용한다. 관련 indexability와 snippet eligibility를 점검하되 special AI schema나 text file을 요구하지 않으며, eligibility가 inclusion을 보장하지는 않는다.
@@ -105,6 +107,7 @@ Tools: Pattern matching에는 `Grep`(`<title>`, `<meta`, `<h1>`, `alt=`), page c
 - E-E-A-T signals — 관련 있을 때 experience, expertise, authoritativeness, trustworthiness
 - Keyword placement — forced repetition이 아닌 page intent와 자연스러운 alignment
 - Keyword and entity usage — 유용한 곳에 자연스럽게 배치하며 stuffing 또는 fixed-density target을 사용하지 않음
+- Search intent fit — 라이브 검색이 가능하면 페이지 목차를 상위 결과 형태, 연관 검색어와 질문, 비교 대상, 검색자가 다음으로 궁금해하는 질문과 비교한다. 빠진 하위 주제는 `heuristic` 콘텐츠 finding이며 공식 실패가 아니다.
 - Content depth — user intent와 page type에 충분한 coverage; word count는 minimum requirement가 아닌 heuristic observation
 - Readability — intended audience와 format에 맞는 structure와 language
 - Freshness — 주제의 time sensitivity에 맞는 dates와 updates
@@ -196,6 +199,14 @@ Evidence와 raw data는 `sources.md`에 source ledger로 쓴다. 각 official �
 - Report에 dated changelog entry append
 - Superseded되지 않은 prior findings 보존
 
+### Setup mode
+
+- 기획·제작·개편 중인 사이트나 홈페이지에서 점수가 아니라 세팅 계획이나 출시 체크리스트가 요청된 산출물일 때 쓴다.
+- `references/site-setup.md`의 단계를 순서대로 따른다. 빌드 전 기획, 출시 전 빌드 점검, 출시일 등록, 첫 30일 순서다.
+- `report.md`는 세팅 계획으로, `sources.md`는 원장으로 쓴다. 이미 만든 결과물의 점수형 감사도 함께 요청받았을 때만 `results.json`과 dashboard를 추가한다.
+- 모든 항목을 `done`, 담당자가 정해진 `planned`, `not-applicable`, 부족한 접근 권한을 적은 `unknown` 중 하나로 기록한다.
+- 콘솔 등록, DNS 레코드, 키 파일, 제출 작업은 정확한 값까지 준비하되, 사용자가 자격 증명 사용을 허락하지 않으면 사이트 소유자에게 맡긴다.
+
 ## Research Rule
 
 - Audit에 live SERP data, competitor analysis, current ranking info가 필요하면 specific queries로 web searches를 실행한다.
@@ -204,6 +215,6 @@ Evidence와 raw data는 `sources.md`에 source ledger로 쓴다. 각 official �
 
 ## Sources
 
-> 외부 출처 없음. 내용 확인 2026-09-22.
+> 외부 출처 없음. 내용 확인 2026-11-03.
 
 이 파일은 이 패키지 자체의 실행 단계, 증거 등급 분류, 리포트 순서를 적는다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.

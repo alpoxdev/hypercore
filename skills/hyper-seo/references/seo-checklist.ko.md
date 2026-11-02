@@ -246,11 +246,11 @@
 ### AI Crawler Access
 
 - [ ] `llms.txt`를 optional content map으로 확인하고 missing file을 기본 critical로 처리하지 않음
-- [ ] `robots.txt`에서 OAI-SearchBot(search), GPTBot(training), ChatGPT-User(user fetch), ClaudeBot/PerplexityBot 등 crawler별 목적 기반 차단 여부 확인
+- [ ] `robots.txt`에서 검색용 크롤러(OAI-SearchBot, Claude-SearchBot, PerplexityBot), 학습용 크롤러(GPTBot, ClaudeBot, Google-Extended, Applebot-Extended, Meta-ExternalAgent, CCBot), 사용자 요청 fetcher(ChatGPT-User, Claude-User, Perplexity-User)를 목적별 그룹으로 나눠 확인하고, robots.txt 의도를 무력화할 수 있는 CDN·WAF 봇 규칙을 별도 층으로 확인
 - [ ] Important content가 JavaScript rendering 없이 접근 가능
 
 ## Sources
 
-> 외부 출처 없음. 내용 확인 2026-09-22.
+> 외부 출처 없음. 내용 확인 2026-11-03.
 
 이 체크리스트는 `references/seo-fundamentals.ko.md`와 `references/aeo-geo-guide.ko.md`가 서술한 기준을 이 패키지 자체의 스캔 순서로 배열한 것이다. 외부 출처는 그 두 파일의 원장에 있으므로 여기서 새 주장을 하지 않는다.

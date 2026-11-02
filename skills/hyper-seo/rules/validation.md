@@ -18,7 +18,7 @@
 - [ ] Target page(s) fully scanned
 - [ ] At least one category (Technical, On-Page, or Content) analyzed
 - [ ] `sources.md` records every external or official claim used, with an absolute accessed date
-- [ ] `report.md` saved to `.hyper/seo-maker/[slug]/`
+- [ ] `report.md` saved to `.hyper/seo/[slug]/`
 
 ### Complex audit
 
@@ -32,7 +32,7 @@
 - [ ] AEO: visible Q&A/answer blocks, Featured Snippet readiness, and FAQPage/QAPage eligibility caveats checked
 - [ ] GEO: GEO CORE, citation readiness, entity authority, topic-appropriate freshness, optional llms.txt, query fan-out/citation probe status checked
 - [ ] `sources.md` captures evidence and references used
-- [ ] `report.md` saved to `.hyper/seo-maker/[slug]/`
+- [ ] `report.md` saved to `.hyper/seo/[slug]/`
 - [ ] `dashboard.html` is rendered from the finalized `results.json` and carries the same category scores, findings, and `overall_grade`
 - [ ] `results.js` is generated next to `dashboard.html` so a `file://` browser loads the same results without a server
 - [ ] `dashboard.html` renders collected page and finding strings as text, never as markup
@@ -40,6 +40,14 @@
 - [ ] Optional module dimensions (platform, commerce, i18n) are `not-applicable` when the target is out of scope and `unknown` when access is unavailable
 - [ ] Every requested URL/file was inventoried, or exclusions and inaccessible targets are listed
 - [ ] Non-applicable dimensions are marked `not-applicable`; unmeasured dimensions are `unknown`, never silently scored
+
+### Setup mode
+
+- [ ] `report.md` is the setup plan and follows the four phases in `references/site-setup.md`; every item is `done`, `planned` with an owner, `not-applicable`, or `unknown` with the missing access named
+- [ ] `served HTML` of each page template is checked for primary content, title, canonical, and structured data, or the check is recorded as `unknown`
+- [ ] `robots.txt` policy records an explicit decision for each search, training, and user-fetch token in scope, plus the CDN or WAF layer
+- [ ] `credentials` steps (console registration, DNS records, key files, IndexNow, Naver verification) are listed with exact values and left to the owner unless permission was given
+- [ ] `sources.md` records every official claim used, with an absolute accessed date, and no item promises indexing, ranking, rich results, or AI citation
 
 ## Optimize Mode Checks
 

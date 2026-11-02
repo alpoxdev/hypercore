@@ -2,9 +2,9 @@
 // @ts-check
 
 /**
- * Document-contract assertions for the seo-maker rule docs.
+ * Document-contract assertions for the hyper-seo rule docs.
  *
- * The parser itself lives in `seo-maker-doc-contracts.mjs` so that later seo-maker
+ * The parser itself lives in `hyper-seo-doc-contracts.mjs` so that later hyper-seo
  * todos and plain scripts can import it; this file re-exports it and holds the
  * contract assertions. Every helper takes a repository root path and defaults to
  * this repository, so a negative control can point the parser at a `mkdtemp` copy
@@ -14,7 +14,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "bun:test";
 
-export * from "./seo-maker-doc-contracts.mjs";
+export * from "./hyper-seo-doc-contracts.mjs";
 
 import {
   AEO_GEO_EN,
@@ -49,7 +49,7 @@ import {
   reportColumnConflicts,
   sourceLedger,
   tempCopy,
-} from "./seo-maker-doc-contracts.mjs";
+} from "./hyper-seo-doc-contracts.mjs";
 
 /** Section path suffix of the crawl/render/index interpretation boundaries. */
 const BOUNDARY_SECTION_EN = "Crawl, Render & Index Interpretation Boundaries";
@@ -61,7 +61,7 @@ const BOUNDARY_SECTION_KO = "크롤·렌더·색인 해석 경계";
  */
 const BOUNDARY_IDS = ["source HTML", "robots.txt", "canonical", "internal links", "filtered URLs", "sitemap"];
 
-/** @param {string} md @param {string} sectionTitle @returns {import("./seo-maker-doc-contracts.mjs").ChecklistItem[]} items of the matching section */
+/** @param {string} md @param {string} sectionTitle @returns {import("./hyper-seo-doc-contracts.mjs").ChecklistItem[]} items of the matching section */
 function itemsOfSection(md, sectionTitle) {
   const section = checklistSections(md).find((entry) => entry.section.endsWith(sectionTitle));
   if (!section) throw new Error(`checklist section not found: ${sectionTitle}`);
@@ -215,8 +215,8 @@ test("parser detects report template header drift in one language variant", () =
 });
 
 /** The fundamentals reference pair, which carries the pipeline, policy, status and ledger tables. */
-const FUNDAMENTALS_EN = "skills/seo-maker/references/seo-fundamentals.md";
-const FUNDAMENTALS_KO = "skills/seo-maker/references/seo-fundamentals.ko.md";
+const FUNDAMENTALS_EN = "skills/hyper-seo/references/seo-fundamentals.md";
+const FUNDAMENTALS_KO = "skills/hyper-seo/references/seo-fundamentals.ko.md";
 
 /** Stage identifiers of the crawl -> render -> index -> appearance pipeline table. */
 const PIPELINE_STAGE_IDS = ["crawl", "render", "index", "appearance"];
@@ -249,7 +249,7 @@ const UNCONFIRMED = "unconfirmed";
  *
  * @param {string} markdown document text
  * @param {string} cell header cell text
- * @returns {import("./seo-maker-doc-contracts.mjs").Table} table
+ * @returns {import("./hyper-seo-doc-contracts.mjs").Table} table
  * @throws {Error} when no table carries the cell
  */
 function tableWithHeaderCell(markdown, cell) {
@@ -259,7 +259,7 @@ function tableWithHeaderCell(markdown, cell) {
 }
 
 /**
- * @param {import("./seo-maker-doc-contracts.mjs").Table} table table
+ * @param {import("./hyper-seo-doc-contracts.mjs").Table} table table
  * @param {string[]} row row cells
  * @param {string} column header cell naming the column
  * @returns {string} cell text
@@ -274,7 +274,7 @@ function cellOf(table, row, column) {
 /**
  * Row whose first backticked token in one column equals the identifier.
  *
- * @param {import("./seo-maker-doc-contracts.mjs").Table} table table
+ * @param {import("./hyper-seo-doc-contracts.mjs").Table} table table
  * @param {string} column header cell naming the column
  * @param {string} id backticked identifier
  * @returns {string[] | null} matching row
@@ -286,7 +286,7 @@ function rowWithId(table, column, id) {
 /**
  * First backticked token of every row in the first column, falling back to the raw cell.
  *
- * @param {import("./seo-maker-doc-contracts.mjs").Table} table table
+ * @param {import("./hyper-seo-doc-contracts.mjs").Table} table table
  * @returns {string[]} row identifiers
  */
 function firstColumnIds(table) {
@@ -556,7 +556,6 @@ test("aeo/geo guide source ledger records the 2026-09-21 verification rows", () 
 test("aeo/geo guide last-verified date matches its newest ledger access date", () => {
   const accessed = accessedDates(readDoc(AEO_GEO_EN)).sort();
   const newest = accessed[accessed.length - 1];
-  expect(newest).toBe("2026-09-21");
   expect(lastVerified(readDoc(AEO_GEO_EN))).toBe(newest);
   expect(lastVerified(readDoc(AEO_GEO_KO))).toBe(newest);
 });

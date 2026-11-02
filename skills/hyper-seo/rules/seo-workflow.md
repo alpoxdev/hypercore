@@ -56,7 +56,9 @@ Inspect crawler and AI/search visibility controls separately by platform:
 - Googlebot and standard robots directives for indexing and snippets
 - Google-Extended for Google AI training/product controls where relevant
 - OAI-SearchBot for ChatGPT Search inclusion, GPTBot for OpenAI training, and ChatGPT-User for user-triggered fetches; audit each separately because a rule for one does not imply a rule for another
-- PerplexityBot, ClaudeBot, and other AI crawlers when robots.txt or server rules mention them
+- Claude-SearchBot (search), ClaudeBot (training), and Claude-User (user fetch); PerplexityBot (search, not training) and Perplexity-User (user fetch); and Applebot-Extended, Meta-ExternalAgent, and CCBot as training controls — each audited as its own token, because a training block does not imply a search block
+- CDN or WAF bot rules as a separate layer: an edge default that blocks AI crawlers can override a robots.txt allow, so a robots.txt reading alone is not evidence of access
+- The Search Console generative AI setting (include, exclude, or inherit) when Google AI features are in scope; it is a precondition for display, not a ranking signal, and an unreadable setting is `unknown`
 - `nosnippet`, `data-nosnippet`, `max-snippet`, `noindex`, canonical, and X-Robots-Tag effects
 - `llms.txt` only as an optional proposal/content map, not a standard or ranking/citation requirement
 - Google AI features using ordinary SEO fundamentals: assess relevant indexability and snippet eligibility, without prescribing special AI schema or text files; eligibility does not guarantee inclusion
@@ -105,6 +107,7 @@ Evaluate for:
 - E-E-A-T signals — experience, expertise, authoritativeness, trustworthiness where relevant
 - Keyword placement — natural alignment with the page's intent, not forced repetition
 - Keyword and entity usage — natural placement where useful without stuffing or fixed-density targets
+- Search intent fit — when live search is available, compare the page outline with the result formats on top, related searches and questions, comparison targets, and the next question searchers ask; a missing subtopic is a `heuristic` content finding, never an official failure
 - Content depth — sufficient coverage for the user intent and page type; word count is a heuristic observation, not a minimum requirement
 - Readability — structure and language appropriate to the intended audience and format
 - Freshness — dates and updates appropriate to the topic's time sensitivity
@@ -196,6 +199,14 @@ Write evidence and raw data to `sources.md` as a source ledger. For each officia
 - Append dated changelog entry to report
 - Preserve prior findings unless superseded
 
+### Setup mode
+
+- Use for a site or homepage that is being planned, built, or rebuilt, when the requested output is a setup plan or launch checklist rather than a score.
+- Follow `references/site-setup.md` phases in order: plan before build, build checks before launch, launch-day registration, first 30 days.
+- Write `report.md` as the setup plan and `sources.md` as the ledger; add `results.json` and the dashboard only when the user also asks for a scored audit of an existing build.
+- Record every item as `done`, `planned` with an owner, `not-applicable`, or `unknown` with the missing access named.
+- Prepare console registration, DNS records, key files, and submissions with exact values, but leave them to the site owner unless the user gives permission to act with their credentials.
+
 ## Research Rule
 
 - If the audit needs live SERP data, competitor analysis, or current ranking info, run web searches with specific queries.
@@ -204,6 +215,6 @@ Write evidence and raw data to `sources.md` as a source ledger. For each officia
 
 ## Sources
 
-> No external sources; content checked 2026-09-22.
+> No external sources; content checked 2026-11-03.
 
 This file states this package's own execution phases, evidence grading, and reporting order. It makes no external claim, so no external source is cited.

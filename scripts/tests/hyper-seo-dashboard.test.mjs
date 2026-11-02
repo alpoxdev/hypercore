@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // @ts-check
 /**
- * seo-maker dashboard contract (plan todo 5).
+ * hyper-seo dashboard contract (plan todo 5).
  *
  * The dashboard renders an untrusted results payload, so it must treat every
  * external string as text, keep its severity counters consistent with the total,
@@ -15,7 +15,7 @@
  *   2. Bun.WebView scenarios that drive the real template over file://, including
  *      a rendered-attribute scan that an element-only check would miss.
  *
- * The template under test is the shipped asset unless SEO_MAKER_DASHBOARD_TEMPLATE
+ * The template under test is the shipped asset unless HYPER_SEO_DASHBOARD_TEMPLATE
  * names another path (the negative control uses that to point at a mutated temp
  * copy). Every scenario copies the template into a fresh temp dir first, so no
  * repository file is ever written to.
@@ -27,9 +27,9 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const templatePath = process.env.SEO_MAKER_DASHBOARD_TEMPLATE
-  ? resolve(process.env.SEO_MAKER_DASHBOARD_TEMPLATE)
-  : join(root, "skills/seo-maker/assets/dashboard-template.html");
+const templatePath = process.env.HYPER_SEO_DASHBOARD_TEMPLATE
+  ? resolve(process.env.HYPER_SEO_DASHBOARD_TEMPLATE)
+  : join(root, "skills/hyper-seo/assets/dashboard-template.html");
 const templateSource = readFileSync(templatePath, "utf8");
 const hasWebView = typeof Bun.WebView === "function";
 
@@ -296,7 +296,7 @@ test("source gate: no unescaped interpolation reaches an HTML or class sink", ()
  * @param {{ results?: any, withResults?: boolean, dropChartScript?: boolean }} options
  */
 function makeFixture(options) {
-  const dir = mkdtempSync(join(tmpdir(), "seo-maker-dashboard-"));
+  const dir = mkdtempSync(join(tmpdir(), "hyper-seo-dashboard-"));
   let html = templateSource;
   if (options.dropChartScript) {
     const stripped = html.replace(/\s*<script src="[^"]*chart\.js"><\/script>/, "");

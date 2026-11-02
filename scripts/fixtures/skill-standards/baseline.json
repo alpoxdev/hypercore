@@ -40,6 +40,9 @@
     "hyper-research": {
       "FRONTMATTER_TRIGGER": 1
     },
+    "hyper-seo": {
+      "FRONTMATTER_TRIGGER": 1
+    },
     "image-maker": {},
     "instagram-card-maker": {},
     "jev-maker": {},
@@ -60,9 +63,6 @@
       "FRONTMATTER_TRIGGER": 1
     },
     "readme-maker": {
-      "FRONTMATTER_TRIGGER": 1
-    },
-    "seo-maker": {
       "FRONTMATTER_TRIGGER": 1
     },
     "skill-maker": {},

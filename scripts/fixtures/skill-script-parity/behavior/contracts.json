@@ -7298,9 +7298,9 @@
       }
     },
     {
-      "id": "seo-maker--render-dashboard",
-      "path": "skills/seo-maker/scripts/render-dashboard.sh",
-      "family": "seo-maker",
+      "id": "hyper-seo--render-dashboard",
+      "path": "skills/hyper-seo/scripts/render-dashboard.sh",
+      "family": "hyper-seo",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
         "path": "skills/seo-maker/scripts/render-dashboard.sh",
@@ -7313,7 +7313,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/seo-maker/scripts/render-dashboard.sh"
+              "skills/hyper-seo/scripts/render-dashboard.sh"
             ]
           },
           "input": {
@@ -7375,7 +7375,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/seo-maker/scripts/render-dashboard.sh"
+              "skills/hyper-seo/scripts/render-dashboard.sh"
             ]
           },
           "input": {
@@ -7425,7 +7425,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/seo-maker/scripts/render-dashboard.sh"
+              "skills/hyper-seo/scripts/render-dashboard.sh"
             ]
           },
           "input": {
@@ -7472,14 +7472,14 @@
         }
       },
       "dimensions": {
-        "stdout": "seo-maker--render-dashboard--stdout",
-        "stderr": "seo-maker--render-dashboard--stderr",
-        "exit": "seo-maker--render-dashboard--exit",
-        "files": "seo-maker--render-dashboard--files",
-        "modes": "seo-maker--render-dashboard--modes",
-        "cwd": "seo-maker--render-dashboard--cwd",
-        "env": "seo-maker--render-dashboard--env",
-        "argv": "seo-maker--render-dashboard--argv"
+        "stdout": "hyper-seo--render-dashboard--stdout",
+        "stderr": "hyper-seo--render-dashboard--stderr",
+        "exit": "hyper-seo--render-dashboard--exit",
+        "files": "hyper-seo--render-dashboard--files",
+        "modes": "hyper-seo--render-dashboard--modes",
+        "cwd": "hyper-seo--render-dashboard--cwd",
+        "env": "hyper-seo--render-dashboard--env",
+        "argv": "hyper-seo--render-dashboard--argv"
       }
     },
     {

@@ -15,7 +15,7 @@ Use this reference when creating or reviewing the result workspace for an SEO au
 ## Workspace Shape
 
 ```text
-.hyper/seo-maker/[slug]/
+.hyper/seo/[slug]/
 ├── dashboard.html       # browser-openable dashboard
 ├── results.json         # structured audit results
 ├── results.js           # fallback for file:// browsers
@@ -28,8 +28,8 @@ Create this directory at the repository root, not inside the skill folder.
 
 Canonical generated assets:
 
-- template: `skills/seo-maker/assets/dashboard-template.html`
-- renderer: `skills/seo-maker/scripts/render-dashboard.sh`
+- template: `skills/hyper-seo/assets/dashboard-template.html`
+- renderer: `skills/hyper-seo/scripts/render-dashboard.sh`
 - renderer runtime: bash 3.2+ with `jq`
 
 ## `results.json`
@@ -248,7 +248,7 @@ window.__SEO_RESULTS__ = { /* same content as results.json */ };
 
 ## `dashboard.html`
 
-Copy it from `skills/seo-maker/assets/dashboard-template.html`.
+Copy it from `skills/hyper-seo/assets/dashboard-template.html`.
 
 Required behavior:
 
@@ -298,7 +298,7 @@ Canonical phase order: `scope` → `measurement` → `technical` → `platform_p
 
 ## Lifecycle Rules
 
-1. Create `.hyper/seo-maker/[slug]/` when the audit starts.
+1. Create `.hyper/seo/[slug]/` when the audit starts.
 2. Set `status` in `results.json` to `running`.
 3. Add findings to `results.json` as each phase completes.
 4. After all phases finish, set `status` to `complete` and calculate `overall_grade`.
@@ -336,8 +336,8 @@ Apply the thresholds below to the weighted score.
 ### Render Order
 
 ```bash
-bash skills/seo-maker/scripts/render-dashboard.sh .hyper/seo-maker/my-site
-open .hyper/seo-maker/my-site/dashboard.html
+bash skills/hyper-seo/scripts/render-dashboard.sh .hyper/seo/my-site
+open .hyper/seo/my-site/dashboard.html
 ```
 
 ## Sources

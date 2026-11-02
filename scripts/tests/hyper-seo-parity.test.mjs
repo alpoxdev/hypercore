@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // @ts-check
 /**
- * seo-maker bilingual structural-tag parity (plan todo 13).
+ * hyper-seo bilingual structural-tag parity (plan todo 13).
  *
  * `validate-skill.sh` compares the structural tag sequence of `SKILL.md` and
  * `SKILL.ko.md` and reports `BILINGUAL_TAG_DRIFT` when they differ. Two empty tag
@@ -21,7 +21,7 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const validatorPath = join(root, "skills/skill-tester/scripts/validate-skill.sh");
-const skillPath = join(root, "skills/seo-maker");
+const skillPath = join(root, "skills/hyper-seo");
 
 /**
  * Whole lines that are a single structural tag, lowercased - the same extraction
@@ -51,7 +51,7 @@ function validate(target) {
   };
 }
 
-test("seo-maker SKILL.md and SKILL.ko.md carry the same non-empty structural tags", () => {
+test("hyper-seo SKILL.md and SKILL.ko.md carry the same non-empty structural tags", () => {
   const { exitCode, report } = validate(skillPath);
   expect(report.ok).toBe(true);
   expect(report.failures).toEqual([]);
@@ -65,9 +65,9 @@ test("seo-maker SKILL.md and SKILL.ko.md carry the same non-empty structural tag
 });
 
 test("removing one structural tag from a temp copy fails with BILINGUAL_TAG_DRIFT", () => {
-  const copyRoot = mkdtempSync(join(tmpdir(), "seo-maker-parity-"));
+  const copyRoot = mkdtempSync(join(tmpdir(), "hyper-seo-parity-"));
   try {
-    const copy = join(copyRoot, "seo-maker");
+    const copy = join(copyRoot, "hyper-seo");
     cpSync(skillPath, copy, { recursive: true });
     expect(validate(copy).report.ok).toBe(true);
 

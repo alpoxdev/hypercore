@@ -1,13 +1,13 @@
 ---
-name: seo-maker
-description: "[Hyper] Create integrated SEO, AEO, GEO, and LLMO audits and optimization reports. Use for on-page, technical, content, Core Web Vitals, answer-engine, generative-engine, AI search visibility, metadata, citation readiness, or score-improvement loops saved under `.hyper/seo-maker/[slug]/`."
+name: hyper-seo
+description: "[Hyper] Create integrated SEO, AEO, GEO, and LLMO audits, optimization reports, and new-site launch setup plans. Use for on-page, technical, content, Core Web Vitals, answer-engine, generative-engine, AI search visibility, AI crawler policy, metadata, citation readiness, new homepage setup, or score-improvement loops saved under `.hyper/seo/[slug]/`."
 compatibility: Works best with live web access, browser inspection, local source search, Lighthouse or Core Web Vitals data when available, and read/write access for report artifacts.
 ---
 
 @rules/seo-workflow.md
 @rules/validation.md
 
-# SEO Maker
+# Hyper SEO
 
 > Audit and improve a project's search visibility across traditional search engines and AI answer engines.
 
@@ -15,13 +15,13 @@ compatibility: Works best with live web access, browser inspection, local source
 
 | Field | Contract |
 |---|---|
-| Intent | Produce an evidence-graded SEO/AEO/GEO/LLMO audit and a prioritized, actionable optimization report for a named target, and drive a bounded score-improvement loop when the user asks for the best achievable score. |
-| Scope | Owns target classification, measurement-method selection, on-page/technical/content/Core Web Vitals/AEO/GEO/LLMO assessment, scoring, findings, recommendations, and the report workspace. Does not own implementation outside the audited target, release gating, page or product design, or broad market research that has no target site or content set. |
+| Intent | Produce an evidence-graded SEO/AEO/GEO/LLMO audit and a prioritized, actionable optimization report for a named target, produce a phased setup plan when a site or homepage is being planned or launched, and drive a bounded score-improvement loop when the user asks for the best achievable score. |
+| Scope | Owns target classification, measurement-method selection, on-page/technical/content/Core Web Vitals/AEO/GEO/LLMO assessment, new-site setup planning, scoring, findings, recommendations, and the report workspace. Does not own implementation outside the audited target, release gating, page or product design, account actions that need the owner's credentials unless permitted, or broad market research that has no target site or content set. |
 | Authority | System/harness and user instructions > the audited target's own files and live observations > official platform documentation > this skill > heuristic preference. A tool, lab, synthetic, or heuristic observation is never promoted to an official requirement. |
 | Evidence | Read the target's own files, rendered pages, and live responses before scoring, and cite the command, URL, file path, or probe result behind every critical and warning finding. Record unavailable checks as `unknown` and irrelevant checks as `not-applicable`; never invent a score, a ranking, an inclusion, or a citation. |
 | Tools | Use available read/search/browser tools, and render the dashboard with `bash scripts/render-dashboard.sh <artifact-dir>`. Web search, browser inspection, field Core Web Vitals, Search Console, or an AI citation probe are used only when actually available; when one is missing, state the capability limit and fall back to the strongest lower-grade method. |
 | Loop | Optimize mode only: a bounded `audit -> fix or recommendation -> re-audit` cycle, default budget three iterations. Feedback = comparable re-audit evidence; metric = the 100-point score with `unknown` and `not-applicable` categories excluded; guard = no comparable-category regression and no evidence-grade promotion; stop = target reached, budget spent, plateau, guard failure, or work that needs external credentials or a business decision. |
-| Output | `.hyper/seo-maker/[slug]/` holding `results.json`, `results.js`, `dashboard.html`, `report.md`, `sources.md`, and `flow.json` for complex or optimize mode; simple mode keeps `report.md` and `sources.md` as the minimum. `sources.md` is a source ledger of URL, date, applicable claim, evidence class, and limitation. |
+| Output | `.hyper/seo/[slug]/` holding `results.json`, `results.js`, `dashboard.html`, `report.md`, `sources.md`, and `flow.json` for complex or optimize mode; simple and setup modes keep `report.md` and `sources.md` as the minimum. `sources.md` is a source ledger of URL, date, applicable claim, evidence class, and limitation. |
 | Verification | Apply `rules/validation.md` at completion: every critical or warning finding carries evidence, scores derive from observed evidence with `unknown` and `not-applicable` handled explicitly, and optimize mode records baseline, evaluator, budget, guards, discarded iterations, stop reason, and the best comparable verified result. Package changes additionally run the focused corpus validator, the repository standard gate, and the package tests. |
 | Stop condition | Stop when the requested audit or report is complete with graded evidence and no unresolved critical gap, or when optimize mode reaches its target, budget, plateau, guard, or an external dependency. Never stop by asserting a ranking, AI-feature inclusion, or citation the evidence does not support. |
 
@@ -44,7 +44,8 @@ Use a different language only when the user explicitly requests it, an existing 
 - Evaluate AEO readiness for featured snippets, voice search, and direct-answer surfaces.
 - Evaluate GEO readiness for citation likelihood in generative AI responses.
 - Evaluate LLMO readiness for AI crawler access, freshness, and model-readable context.
-- Save prioritized recommendations and evidence under `.hyper/seo-maker/[slug]/`.
+- Save prioritized recommendations and evidence under `.hyper/seo/[slug]/`.
+- Plan a new site or homepage launch in phases (plan, build checks, registration, first 30 days) so search engines and AI answer engines can crawl, index, and cite it.
 - Update existing reports so SEO improvement history remains traceable.
 - If the user asks for highest score, max score, maximum score, perfect score, or continuous improvement, run an audit to fix/recommendation to re-audit loop and keep the best result.
 
@@ -52,7 +53,7 @@ Use a different language only when the user explicitly requests it, an existing 
 
 <routing_rule>
 
-Use `seo-maker` when the main outcome is an SEO/AEO/GEO/LLMO audit, optimization report, or evidence-backed search visibility improvement plan.
+Use `hyper-seo` when the main outcome is an SEO/AEO/GEO/LLMO audit, optimization report, or evidence-backed search visibility improvement plan.
 
 Route neighboring work elsewhere:
 
@@ -78,6 +79,7 @@ Positive examples:
 - "Analyze this site from AEO and GEO perspectives."
 - "Keep iterating fixes until the SEO score is as high as possible."
 - "Audit, fix, and re-verify until the search optimization score is close to perfect."
+- "We are launching a new homepage next month; set up SEO, GEO, and AI crawler settings before launch."
 
 Negative examples:
 
@@ -88,9 +90,11 @@ Negative examples:
 Boundary examples:
 
 - "Optimize this page's performance."
-  Use `seo-maker` only when performance is evaluated through SEO/Core Web Vitals impact.
+  Use `hyper-seo` only when performance is evaluated through SEO/Core Web Vitals impact.
 - "Research AI search trends."
-  Use `seo-maker` only when the output is tied to a target site, page, or content inventory.
+  Use `hyper-seo` only when the output is tied to a target site, page, or content inventory.
+- "Build our new homepage."
+  Use `hyper-seo` only for the search-visibility setup plan or checks; building the pages is not this skill's output.
 
 </activation_examples>
 
@@ -106,13 +110,14 @@ Boundary examples:
 | Iterative improvement toward best or perfect score | optimize |
 | AEO/GEO citation readiness analysis | create |
 | Add AEO/GEO analysis to an existing report | update |
+| Plan or launch a new site or homepage for search and AI answer engines | setup |
 
 </trigger_conditions>
 
 <supported_targets>
 
 - Metadata and SEO elements in HTML pages and Next.js/React components.
-- `robots.txt`, `sitemap.xml`, `llms.txt`, canonical tags, and structured data.
+- `robots.txt`, `sitemap.xml`, `llms.txt`, canonical tags, structured data, and per-vendor AI crawler groups (search, training, and user-fetch tokens) plus CDN or WAF bot rules.
 - Core Web Vitals signals such as LCP, INP, and CLS.
 - `<head>` elements including title, meta description, Open Graph, and Twitter Card.
 - Heading hierarchy from `h1` through `h6`.
@@ -137,7 +142,7 @@ Before starting, record:
 
 ```text
 Complexity: [simple/complex] — [one-line reason]
-Mode: [create/update/optimize]
+Mode: [create/update/optimize/setup]
 Target: [site/page/project path]
 Proof surface: [commands, browser checks, web sources, or local files]
 ```
@@ -164,12 +169,12 @@ When live browsing, Search Console, field data, AI probes, or a named tool is un
 
 <artifact_contract>
 
-Create or update `.hyper/seo-maker/[slug]/`.
+Create or update `.hyper/seo/[slug]/`.
 
 Expected files:
 
 ```text
-.hyper/seo-maker/[slug]/
+.hyper/seo/[slug]/
 ├── dashboard.html      # Browser-readable dashboard
 ├── results.json        # Structured audit results
 ├── results.js          # File URL fallback for browser rendering
@@ -201,15 +206,16 @@ For complex or optimize mode, `flow.json` tracks phases in order: `scope` → `m
 
 Read in this order:
 
-1. Core `SKILL.md` to confirm the task is an SEO/AEO/GEO audit, optimization report, or score loop.
+1. Core `SKILL.md` to confirm the task is an SEO/AEO/GEO audit, optimization report, setup plan, or score loop.
 2. [rules/seo-workflow.md](rules/seo-workflow.md) for the execution phases.
 3. [references/seo-fundamentals.md](references/seo-fundamentals.md) for E-E-A-T, Core Web Vitals, ranking factors, entity SEO, and schema markup criteria.
 4. [references/aeo-geo-guide.md](references/aeo-geo-guide.md) for AEO/GEO/LLMO strategy, the GEO CORE framework, platform benchmarks, and `llms.txt` guidance.
 5. [references/seo-checklist.md](references/seo-checklist.md) for the practical audit checklist.
-6. [references/artifact-spec.md](references/artifact-spec.md) for `results.json`, dashboard lifecycle, and workspace schema.
-7. For new reports, read [assets/report.template.ko.md](assets/report.template.ko.md) by default; read [assets/report.template.md](assets/report.template.md) only when English is explicitly required.
-8. When rendering a dashboard, read [assets/dashboard-template.html](assets/dashboard-template.html).
-9. Before completion, read [rules/validation.md](rules/validation.md).
+6. In setup mode, [references/site-setup.md](references/site-setup.md) for the launch phases, the crawler policy template, and setup completion criteria.
+7. [references/artifact-spec.md](references/artifact-spec.md) for `results.json`, dashboard lifecycle, and workspace schema.
+8. For new reports, read [assets/report.template.ko.md](assets/report.template.ko.md) by default; read [assets/report.template.md](assets/report.template.md) only when English is explicitly required.
+9. When rendering a dashboard, read [assets/dashboard-template.html](assets/dashboard-template.html).
+10. Before completion, read [rules/validation.md](rules/validation.md).
 
 </support_file_read_order>
 
@@ -223,7 +229,7 @@ Read in this order:
 | 3 | Audit technical SEO, platform policy, AEO, GEO, LLMO, Core Web Vitals, and structured data | Structured findings |
 | 4 | Separate official requirements from field/tool/lab/synthetic/heuristic findings | Evidence-graded findings |
 | 5 | Prioritize issues by impact, confidence, effort, and source tier | Recommendation set |
-| 6 | Write artifacts and dashboard | `.hyper/seo-maker/[slug]/` |
+| 6 | Write artifacts and dashboard | `.hyper/seo/[slug]/` |
 | 7 | If optimize mode, apply or recommend fixes and re-audit | Best verified result |
 | 8 | Summarize score, wins, confidence limits, risks, and next actions | Final report |
 
@@ -231,7 +237,7 @@ Read in this order:
 
 <audit_dimensions>
 
-Audit these dimensions when relevant to the target: technical SEO (crawlability, indexability, canonicalization, sitemap, robots directives, response status, redirects, duplicate pages); platform policy (Googlebot, Google-Extended, OAI-SearchBot, GPTBot, and ChatGPT-User as separate controls, snippet controls and X-Robots-Tag, plus the target-gated Naver and Bing/IndexNow modules); on-page SEO (title, description, heading hierarchy, keyword alignment, URL readability, internal links); content SEO (intent match, depth, topical coverage, freshness, uniqueness, readability); Core Web Vitals (LCP, INP, CLS, render-blocking resources, image sizing, interaction latency); structured data (JSON-LD validity, Schema.org fit, visible-content parity, entity identifiers, breadcrumbs, FAQ, product, article, and organization markup); AEO (visible answer blocks, Q&A structure, snippet-ready summaries, voice-search phrasing, direct-answer clarity); GEO (citable claims, statistics with sources, entity authority, author and brand trust signals, safely quotable content); and LLMO (optional `llms.txt`, AI crawler access, clean markdown or semantic HTML, clear entity relationships, fresh canonical content).
+Audit these dimensions when relevant to the target: technical SEO (crawlability, indexability, canonicalization, sitemap, robots directives, response status, redirects, duplicate pages); platform policy (Googlebot, Google-Extended, OAI-SearchBot, GPTBot, ChatGPT-User, Claude-SearchBot, ClaudeBot, PerplexityBot, and the other search, training, and user-fetch tokens as separate controls, CDN or WAF bot rules, the Search Console generative AI setting, snippet controls and X-Robots-Tag, plus the target-gated Naver and Bing/IndexNow modules); on-page SEO (title, description, heading hierarchy, keyword alignment, URL readability, internal links); content SEO (intent match, depth, topical coverage, freshness, uniqueness, readability); Core Web Vitals (LCP, INP, CLS, render-blocking resources, image sizing, interaction latency); structured data (JSON-LD validity, Schema.org fit, visible-content parity, entity identifiers, breadcrumbs, FAQ, product, article, and organization markup); AEO (visible answer blocks, Q&A structure, snippet-ready summaries, voice-search phrasing, direct-answer clarity); GEO (citable claims, statistics with sources, entity authority, author and brand trust signals, safely quotable content); and LLMO (optional `llms.txt`, AI crawler access, clean markdown or semantic HTML, clear entity relationships, fresh canonical content).
 
 Per-dimension criteria and the conditional platform modules live in [rules/seo-workflow.md](rules/seo-workflow.md) phases 3-8, [references/seo-checklist.md](references/seo-checklist.md), [references/seo-fundamentals.md](references/seo-fundamentals.md), and [references/aeo-geo-guide.md](references/aeo-geo-guide.md).
 
@@ -275,6 +281,6 @@ Never fake a perfect score or promise a ranking, AI-feature inclusion, or a cita
 
 <validation>
 
-Apply [rules/validation.md](rules/validation.md) before declaring an audit complete. It requires evidence on every critical and warning finding; recommendations specific enough for an engineer, marketer, or content owner to act on; scores derived from observed evidence with `unknown` and `not-applicable` handled explicitly rather than assumed; Google AI features described through ordinary SEO fundamentals, with FAQPage recommendations that separate Google rich-result eligibility from answer-friendly visible FAQ content; a `sources.md` source ledger carrying URL, date, applicable claim, evidence class, and limitations; and, in optimize mode, the recorded baseline, evaluator, finite budget, guards, changes and recommendations, re-audit evidence, discarded iterations, stop reason, and best comparable verified result. The `.hyper/seo-maker/[slug]/` artifacts that must exist are listed in `<artifact_contract>`.
+Apply [rules/validation.md](rules/validation.md) before declaring an audit complete. It requires evidence on every critical and warning finding; recommendations specific enough for an engineer, marketer, or content owner to act on; scores derived from observed evidence with `unknown` and `not-applicable` handled explicitly rather than assumed; Google AI features described through ordinary SEO fundamentals, with FAQPage recommendations that separate Google rich-result eligibility from answer-friendly visible FAQ content; a `sources.md` source ledger carrying URL, date, applicable claim, evidence class, and limitations; and, in optimize mode, the recorded baseline, evaluator, finite budget, guards, changes and recommendations, re-audit evidence, discarded iterations, stop reason, and best comparable verified result. The `.hyper/seo/[slug]/` artifacts that must exist are listed in `<artifact_contract>`.
 
 </validation>

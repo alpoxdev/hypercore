@@ -3,14 +3,14 @@
 
 /**
  * Score, status, flow, and optimization-history contract assertions for the
- * seo-maker artifact spec.
+ * hyper-seo artifact spec.
  *
  * The score contract is recomputed from the documents instead of trusted: the
  * weights are parsed out of the `<scoring>` block in `SKILL.md`, the category
  * example is parsed out of `artifact-spec.md`, and the weighted score and grade
  * are recalculated and compared with the grade the document prints.
  *
- * `SEO_MAKER_DOC_ROOT` points every contract read at a copied tree, which is how
+ * `HYPER_SEO_DOC_ROOT` points every contract read at a copied tree, which is how
  * the QA negative control reverts the documented grade without mutating the
  * repository. The mutation-based negative cases below copy one file into a
  * `mkdtemp` root through the shared parser and never touch the working tree.
@@ -19,17 +19,17 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "bun:test";
 
-import { REPO_ROOT, parseDoc, readDoc, tempCopy } from "./seo-maker-doc-contracts.mjs";
+import { REPO_ROOT, parseDoc, readDoc, tempCopy } from "./hyper-seo-doc-contracts.mjs";
 
-export const ARTIFACT_SPEC_EN = "skills/seo-maker/references/artifact-spec.md";
-export const ARTIFACT_SPEC_KO = "skills/seo-maker/references/artifact-spec.ko.md";
-export const SKILL_EN = "skills/seo-maker/SKILL.md";
+export const ARTIFACT_SPEC_EN = "skills/hyper-seo/references/artifact-spec.md";
+export const ARTIFACT_SPEC_KO = "skills/hyper-seo/references/artifact-spec.ko.md";
+export const SKILL_EN = "skills/hyper-seo/SKILL.md";
 
 const RESULTS_SECTION = "`results.json`";
 const FLOW_SECTION = "`flow.json`";
 
 /** Document root for every contract read; the QA negative control overrides it. */
-export const DOC_ROOT = process.env.SEO_MAKER_DOC_ROOT ?? REPO_ROOT;
+export const DOC_ROOT = process.env.HYPER_SEO_DOC_ROOT ?? REPO_ROOT;
 
 const CATEGORY_STATUSES = ["measured", "unknown", "not-applicable"];
 const CONFIDENCES = ["high", "medium", "low"];
