@@ -93,7 +93,7 @@ Run or manually inspect at least these behaviors for new files:
 - **Progressive disclosure**: an overlong root is reduced by admission-test deletion first, then same-scope conditional detail is split into directly linked adjacent `rules/*.md`; arbitrary rule files are never assumed to auto-load.
 - **Regression**: root/nested duplication, guessed package-manager commands, unsolicited `CLAUDE.md` creation, parent-negating nested phrasing, unbounded root growth, vague “see rules/” navigation, essential contract hidden in rule files, and rule-directory collisions remain absent.
 
-Use `assets/evals/agent-md-maker-cases.jsonl` as this skill package's reusable baseline.
+Use `assets/evals/agents-md-maker-cases.jsonl` as this skill package's reusable baseline.
 
 ## 7. Bounded Repair Loop
 
@@ -133,14 +133,14 @@ Do not claim that a generated command works merely because it exists in `AGENTS.
 When this skill package itself changes, run from the repository root:
 
 ```bash
-node scripts/check-skill-standards.mjs --skill agent-md-maker --json
+node scripts/check-skill-standards.mjs --skill agents-md-maker --json
 ```
 
-Also run the repository's skill corpus validator against this package (`--root skills --only agent-md-maker --json`).
+Also run the repository's skill corpus validator against this package (`--root skills --only agents-md-maker --json`).
 
 Additionally:
 
-- parse every line of `assets/evals/agent-md-maker-cases.jsonl` as JSON
+- parse every line of `assets/evals/agents-md-maker-cases.jsonl` as JSON
 - confirm unique ids and positive, negative, boundary, workflow-failure, adversarial, safety, bilingual, and regression coverage
 - confirm English/Korean Markdown pairs exist and preserve equivalent modal strength
 - confirm every generated `rules/*.md` has one responsibility, a direct conditional link, no core-contract leakage, and the required semantically aligned Korean mirror

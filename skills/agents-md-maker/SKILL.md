@@ -1,5 +1,5 @@
 ---
-name: agent-md-maker
+name: agents-md-maker
 description: "[Hyper] Use this skill when the user asks to create or refactor a repository AGENTS.md, split an overlong AGENTS.md into directly linked adjacent rules files, add scoped nested AGENTS.md files, or coordinate AGENTS.md with an explicitly requested CLAUDE.md companion. Ground every rule and command in the actual project. Do not use for README files, general documentation, standalone prompts, or unrelated runtime configuration."
 compatibility: Works best with repository-scoped read, search, edit, and command-execution capabilities for project discovery and local validation.
 ---
@@ -41,14 +41,14 @@ Preserve code identifiers, commands, paths, schema keys, package names, environm
 
 <routing_rule>
 
-Use `agent-md-maker` when the primary output is `AGENTS.md`, a nested `AGENTS.md`, or an `AGENTS.md`-anchored `CLAUDE.md` companion.
+Use `agents-md-maker` when the primary output is `AGENTS.md`, a nested `AGENTS.md`, or an `AGENTS.md`-anchored `CLAUDE.md` companion.
 
 Use neighboring workflows instead when:
 
 - the primary output is `README.md`: route to the README-writing workflow
 - the output is a general guide, runbook, instruction base, or runtime rule pack not anchored in `AGENTS.md`: route to the general documentation workflow
 - the output is a reusable skill folder: route to the reusable-skill authoring workflow
-- current provider behavior must be researched before authoring: use `research` first, then return here
+- current provider behavior must be researched before authoring: route to the source-backed research workflow first, then return here
 - the user wants only a standalone prompt: route to the standalone-prompt workflow
 
 Do not create `CLAUDE.md`, nested instructions, or runtime-specific files merely because they might be useful. They require an explicit request or repository evidence that makes them part of the target contract.
@@ -130,7 +130,7 @@ Boundary examples:
 3. Read `rules/rule-file-splitting.md` when `AGENTS.md` is long, the user requests a `rules/` split, or detailed same-scope policy should load conditionally.
 4. Read `rules/validation.md` before editing and again before completion to define and execute the risk-matched gate.
 5. Read `instructions/agents-md/AGENTS_MD.md` from the repository root when a rule needs justification, a vendor claim must be re-verified, or the target runtime is not covered by `rules/instruction-design.md`. Load `instructions/agents-md/references/` only for the specific concern — `discovery-and-precedence.md` for loading mechanics, `content-contract.md` for admission decisions, `claude-md-adapter.md` for two-file coordination, `evidence-and-evaluation.md` for what is measured versus prescribed.
-6. Use `assets/evals/agent-md-maker-cases.jsonl` when changing this skill's trigger, routing, workflow, or safety behavior; preserve existing cases and add observed failures as regressions.
+6. Use `assets/evals/agents-md-maker-cases.jsonl` when changing this skill's trigger, routing, workflow, or safety behavior; preserve existing cases and add observed failures as regressions.
 
 </support_file_read_order>
 
@@ -210,9 +210,9 @@ Must-pass gates:
 For this repository skill package, run from the repository root:
 
 ```bash
-node scripts/check-skill-standards.mjs --skill agent-md-maker --json
+node scripts/check-skill-standards.mjs --skill agents-md-maker --json
 ```
 
-Also run the repository's skill corpus validator against this package (`--root skills --only agent-md-maker --json`), and parse `assets/evals/agent-md-maker-cases.jsonl` as JSONL and inspect its trigger/routing/safety coverage when this skill changes materially.
+Also run the repository's skill corpus validator against this package (`--root skills --only agents-md-maker --json`), and parse `assets/evals/agents-md-maker-cases.jsonl` as JSONL and inspect its trigger/routing/safety coverage when this skill changes materially.
 
 </validation>

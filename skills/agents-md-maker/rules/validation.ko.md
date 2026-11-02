@@ -93,7 +93,7 @@ Critical criterion은 project specificity, scope, authority, safety, command/pat
 - **Progressive disclosure**: 지나치게 긴 root는 admission-test 삭제를 먼저 적용한 뒤 같은 범위의 조건부 세부 내용을 직접 링크된 인접 `rules/*.md`로 분리한다. 임의의 규칙 파일이 자동 로드된다고 가정하지 않는다.
 - **Regression**: root/nested duplication, 추측한 package-manager command, 요청하지 않은 `CLAUDE.md` 생성, 부모를 부정하는 nested 표현, 무제한 root 증가, 모호한 “rules/ 참고” 안내, 규칙 파일에 숨긴 필수 계약, 규칙 디렉터리 충돌이 없다.
 
-이 skill package의 재사용 baseline으로 `assets/evals/agent-md-maker-cases.jsonl`을 사용한다.
+이 skill package의 재사용 baseline으로 `assets/evals/agents-md-maker-cases.jsonl`을 사용한다.
 
 ## 7. 제한된 수정 Loop
 
@@ -133,14 +133,14 @@ Claim -> Risk -> Evidence -> Verification -> Result -> Caveat
 이 skill package 자체를 변경할 때는 저장소 루트에서 다음을 실행한다.
 
 ```bash
-node scripts/check-skill-standards.mjs --skill agent-md-maker --json
+node scripts/check-skill-standards.mjs --skill agents-md-maker --json
 ```
 
-저장소의 skill corpus validator도 이 package에 대해 실행한다(`--root skills --only agent-md-maker --json`).
+저장소의 skill corpus validator도 이 package에 대해 실행한다(`--root skills --only agents-md-maker --json`).
 
 추가로:
 
-- `assets/evals/agent-md-maker-cases.jsonl`의 모든 line을 JSON으로 parse
+- `assets/evals/agents-md-maker-cases.jsonl`의 모든 line을 JSON으로 parse
 - unique id와 positive, negative, boundary, workflow-failure, adversarial, safety, bilingual, regression coverage 확인
 - 영어/한국어 Markdown pair가 존재하고 equivalent modal strength를 유지하는지 확인
 - 생성한 모든 `rules/*.md`에 하나의 책임, 직접적인 조건부 링크, core 계약 누락 없음, 의미상 정렬된 필수 한국어 미러가 있는지 확인
