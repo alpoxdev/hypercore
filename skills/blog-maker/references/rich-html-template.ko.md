@@ -12,7 +12,7 @@ rich 결과물을 만들 때마다 읽습니다. [`../assets/rich-post.html`](..
    - 네이버: `#post-title`, `#post-category`, `#post-tags`.
    - inblog: `#post-title`(H1 항목), `#post-description`, 선택 항목 `#post-meta-title`·`#post-meta-description`, `#post-slug`, `#post-category-inblog`. 지원되지 않는 메타데이터 필드를 본문에 넣지 않습니다.
 4. `#sample`의 자식만 완성된 글로 교체합니다. 블록 모음에서 알맞은 `template`의 **내용만** 복사합니다. `template` 래퍼, 예제 문구, 안 쓰는 예시는 넣지 않습니다.
-5. 플랫폼에 맞는 블록 프로필을 씁니다. 네이버는 가운데 정렬 리듬 블록을 씁니다. inblog는 `inblog-paragraph`와 `inblog-headings`를 씁니다. 왼쪽 정렬 자연 문단, `h2`/`h3`, 강제 줄바꿈 없음, H1 중복 없음입니다.
+5. 플랫폼에 맞는 블록 프로필을 씁니다. 네이버는 가운데 정렬 리듬 블록을 씁니다. inblog는 `inblog-paragraph`, `inblog-headings`(`h2`~`h4`), `inblog-inline`(굵게, 기울임, 밑줄, 취소선, 인라인 코드, 링크), `inblog-highlight`(`mark`, 글자색), `inblog-code-block`을 씁니다. 왼쪽 정렬 자연 문단, 강제 줄바꿈 없음, H1 중복 없음입니다.
 6. 복사할 콘텐츠의 스타일은 인라인으로 둡니다. 표 셀마다 테두리와 여백이 필요합니다. 페이지 스타일시트에만 있는 클래스는 본문 HTML과 함께 전달되지 않습니다.
 7. 이미지와 링크에는 제공받거나 확인한 실제 HTTPS 주소를 씁니다. 이미지 주소가 없으면 빈 `img`, 예제 URL, Base64 대신 실제·생성 이미지 마커를 둡니다. 생성 JSON과 발행 메모는 `#sample` 밖의 `#author-notes`에 넣습니다.
 8. 출력 틀의 버튼과 스크립트를 유지합니다. 본문에는 스크립트, 이벤트 핸들러, 실행 가능한 URL이 없어야 합니다. 복사용 스크립트는 본문 밖에 두고 복사 선택 범위에 넣지 않습니다.
@@ -27,7 +27,11 @@ rich 결과물을 만들 때마다 읽습니다. [`../assets/rich-post.html`](..
 | `headings` | `h2` / `h3` 소제목. 제목 입력란과는 다름 | 네이버 |
 | `alignment` | 왼쪽·가운데·오른쪽 정렬 문단(가운데가 네이버 본문 기본값) | 네이버 |
 | `inblog-paragraph` | 왼쪽 정렬 자연 문단, 강제 줄바꿈 없음, 가운데 정렬 없음 | inblog |
-| `inblog-headings` | `h2` / `h3` 소제목. Title 필드가 H1이므로 본문은 H2부터 시작 | inblog |
+| `inblog-headings` | `h2`, `h3`, `h4` 소제목. Title 필드가 H1이므로 본문은 H2부터 시작 | inblog |
+| `inblog-inline` | 문장 속 `strong`, `em`, `u`, `s`, 인라인 `code`, `a href` | inblog |
+| `inblog-highlight` | `mark` 형광펜과 `span style="color:#hex"` 글자색. 둘 다 에디터 마크로 들어감 | inblog |
+| `inblog-code-block` | `pre > code.language-*`. 에디터가 클래스에서 언어를 읽음 | inblog |
+| 없음(에디터 `/` 명령) | 콜아웃, 북마크, 링크 버튼은 템플릿이 없습니다. 붙여넣기로 생기지 않습니다 | inblog |
 | `inline-styles` | 굵기, 기울임, 밑줄, 글자·배경색, 글자 크기 | 공통 |
 | `quote-divider` | 인용구와 구분선 마크업 | 공통 |
 | `lists` | 순서 있는·없는 목록 | 공통 |
@@ -38,7 +42,7 @@ rich 결과물을 만들 때마다 읽습니다. [`../assets/rich-post.html`](..
 | `image-slot` | 없는 실제 자료 | 공통 |
 | `generated-image-slot` | JSON 프롬프트와 연결할 설명 그림 자리 | 공통 |
 
-취소선, 네이버 소스코드 컴포넌트는 제공된 샘플에서도 보장되지 않습니다. 정상 기능인 것처럼 기본 블록에 넣지 않습니다. 강조 박스는 `highlight-box` 블록이 담당하고(네이버 에디터에서 1칸 표 컴포넌트로 변환, 실측), 문단 간격은 `spacer` 블록이 담당합니다. 네이버의 가운데 정렬 리듬과 그 1칸 표 변환은 네이버 에디터 관찰값이며, inblog 글에 강제하지 않습니다.
+네이버에서는 취소선과 소스코드 컴포넌트를 제공된 샘플로도 보장하지 않으므로 에디터에서 직접 적용하고 기본 네이버 블록에 정상 기능으로 넣지 않습니다. inblog에서는 취소선과 코드 블록이 붙여넣기로 들어오므로 `inblog-inline`과 `inblog-code-block` 블록을 쓰고 [`inblog-format.ko.md`](inblog-format.ko.md) §5의 관찰표를 따릅니다. 강조 박스는 `highlight-box` 블록이 담당하고(네이버 에디터에서 1칸 표 컴포넌트로 변환, 실측), 문단 간격은 `spacer` 블록이 담당합니다. 콜아웃, 북마크, 링크 버튼은 inblog 붙여넣기로 생기지 않으므로 에디터의 `/` 명령으로 직접 삽입합니다. 네이버의 가운데 정렬 리듬과 그 1칸 표 변환은 네이버 에디터 관찰값이며, inblog 글에 강제하지 않습니다.
 
 ## 3. 복사 계약
 
@@ -51,7 +55,7 @@ rich 결과물을 만들 때마다 읽습니다. [`../assets/rich-post.html`](..
 플랫폼 붙여넣기 안내는 본문과 분리되며 틀의 `data-platform`이 보여줍니다.
 
 - 네이버: 제목, 카테고리, 태그는 에디터에서 입력하고 본문은 Ctrl+V / ⌘V로 붙여 넣습니다. 붙여넣기 동작 표는 네이버 에디터 관찰값입니다([`format-options.ko.md`](format-options.ko.md) §2).
-- inblog: 제목, 설명, 선택 메타 항목, 슬러그, 카테고리는 에디터에서 입력합니다. 렌더링된 본문을 서식 있는 `text/html`로 inblog에 붙여 넣는 것은 **검증하지 않았습니다.** 확인된 경로는 에디터의 HTML 임베드 블록에 HTML 소스를 넣는 것이고, 같은 내용을 일반 에디터 블록으로 바꾸는 것은 별도의 선택 경로입니다(HTML을 Markdown으로 변환한 뒤 붙여 넣기). 서식 붙여넣기에서 CSS, 표, 이미지가 살아남는다고 약속하지 않습니다([`inblog-format.ko.md`](inblog-format.ko.md)).
+- inblog: 제목, 설명, 선택 메타 항목, 슬러그, 카테고리는 에디터에서 입력합니다. **본문 경로는 서식 붙여넣기입니다.** **서식 콘텐츠 복사**를 누르면 렌더링된 본문이 `text/html`로 클립보드에 올라가고, 일반 편집 본문에 `Ctrl+V` / `⌘V`로 붙여 넣습니다. 2026-11-03 실측에서 서식 16행과 문단 속 링크가 모두 편집 가능한 블록으로 들어갔습니다. 브라우저가 자동 복사를 막으면 처리기가 본문을 선택한 상태로 두고 `Ctrl+C` / `⌘C` 수동 복사를 안내합니다. 일어나지 않은 복사를 성공으로 표시하지 않습니다. Markdown 붙여넣기는 전달 경로가 아닙니다. 실측한 빌드는 서식 16행 가운데 4행만 유지했고 소제목, 목록, 인용, 구분선, 표, 코드 펜스, Markdown 링크를 글자로 남겼습니다. **HTML 소스 복사**는 마크업을 plain 텍스트로 복사하며 본문 경로가 되지 않습니다. HTML 임베드 블록은 외부 임베드 전용(지도, 영상, 위젯)이며 본문을 넣지 않습니다([`inblog-format.ko.md`](inblog-format.ko.md) §1, §5).
 
 ChatGPT 미리보기가 스크립트를 막으면 완성된 HTML 파일을 내려받아 브라우저에서 열도록 안내합니다. 파일 전달이 불가능하면 저장할 수 있는 완전한 HTML 문서를 제공하고 코드 펜스 복사 버튼은 서식 복사가 아니라고 알립니다. rich 요청을 말없이 plain 초안으로 바꾸지 않습니다.
 
@@ -64,12 +68,14 @@ ChatGPT 미리보기가 스크립트를 막으면 완성된 HTML 파일을 내�
 - 서식 버튼을 눌러 `#sample`만 선택되는지 확인합니다. 제목·태그·버튼·프롬프트가 섞이지 않아야 하고 상태 문구는 실제 복사 결과와 일치해야 합니다.
 - 복사 차단 경로를 따로 확인합니다. `execCommand`가 false를 반환하는 경우와 예외를 던지는 경우를 각각 유도하고, 수동 안내가 나오고 본문 선택이 유지되는지 확인합니다.
 - 소스 버튼의 성공과 권한 거부 상태를 확인합니다. 서식 복사라고 주장하지 않아야 합니다.
+- `data-platform="inblog"`로 파일을 엽니다. Markdown 복사 버튼이 없어야 하고(Markdown 붙여넣기가 서식 16행 가운데 4행만 유지해 2026-11-03에 제거), 버튼은 `서식 콘텐츠 복사`와 `HTML 소스 복사`이며, 붙여넣기 안내가 서식 경로와 `Ctrl+C` / `⌘C` 수동 대체를 적어야 합니다. 이어서 **서식 콘텐츠 복사**를 누르고 별도 편집 영역에 실제로 붙여 넣어 `a[href]`가 1개 이상 남고 안내가 말한 서식이 함께 남는지 확인합니다.
+- 네이버 분기를 그대로 확인합니다. `data-platform="naver"`이면 버튼과 붙여넣기 안내가 네이버 것이고 Markdown 버튼이 나타나지 않으며 본문이 가운데 정렬 리듬을 유지해야 합니다.
 - 네이버·inblog 실제 에디터 붙여넣기는 사용자가 확인합니다. 템플릿 조립에 로그인·업로드·발행은 포함되지 않습니다.
 
 유지보수: rich 복사 처리 계약(선택 범위, 복사 API, 정직한 상태 문구, 소스 버튼 분리)은 [`../assets/evals/blog-maker-cases.jsonl`](../assets/evals/blog-maker-cases.jsonl)의 회귀 케이스에 있다. 셸을 바꾼 뒤 에이전트가 이 케이스를 읽어 셸을 정적으로 재판정하고, §4의 브라우저 클립보드 실측이 살아있는 검증으로 남는다. 이 검증은 실행형 테스트 파일이 필요 없으므로 패키지가 파일 실행 불가 런타임(ChatGPT 웹)과 코딩 에이전트 모두에서 같은 방식으로 유지된다.
 
 ## Sources
 
-> 외부 출처 없음. 내용 확인 2026-10-15 (네이버 붙여넣기 표는 2026-09-21 에디터 세션에서 나옴).
+> 외부 출처 없음. 내용 확인 2026-10-15, inblog 붙여넣기 사실 확인 2026-11-03 (네이버 붙여넣기 표는 2026-09-21 에디터 세션에서 나옴).
 
-붙여넣기 동작 주장은 이 저장소가 직접 측정한 에디터 세션 결과이며 [`../rules/post-workflow.ko.md`](../rules/post-workflow.ko.md) §3에 기록했습니다. 복사 처리 계약은 셸 자체([`../assets/rich-post.html`](../assets/rich-post.html))로 검증하고 회귀 케이스는 [`../assets/evals/blog-maker-cases.jsonl`](../assets/evals/blog-maker-cases.jsonl)에 있습니다. inblog의 HTML 임베드 경로와 미검증 서식 붙여넣기 한계는 [`inblog-format.ko.md`](inblog-format.ko.md)와 그 출처 원장에서 옵니다.
+붙여넣기 동작 주장은 이 저장소가 직접 측정한 에디터 세션 결과이며 [`../rules/post-workflow.ko.md`](../rules/post-workflow.ko.md) §3에 기록했습니다. 복사 처리 계약은 셸 자체([`../assets/rich-post.html`](../assets/rich-post.html))로 검증하고 회귀 케이스는 [`../assets/evals/blog-maker-cases.jsonl`](../assets/evals/blog-maker-cases.jsonl)에 있습니다. inblog 본문 경로는 2026-11-03 실측한 서식 붙여넣기이고(서식 16행과 문단 속 링크가 모두 편집 가능한 블록으로 들어감), Markdown 한계와 HTML 소스 주의, 외부 임베드 전용 HTML 임베드 블록은 [`inblog-format.ko.md`](inblog-format.ko.md) §1·§5와 그 출처 원장에서 옵니다.
