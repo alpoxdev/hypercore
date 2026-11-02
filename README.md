@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 40개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 33개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -97,15 +97,16 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 ```text
 /git-maker            # 변경 사항을 그룹별로 커밋하고 푸시까지 한 번에
 /readme-maker         # 코드를 읽고 프로젝트의 실제 모양에 맞는 README 생성/리팩터
-/agent-md-maker        # 저장소를 읽고 프로젝트 전용 AGENTS.md + AGENTS.ko.md 생성/리팩터
-/research "<주제>"    # 출처가 있는 다중 소스 리서치 보고서
+/agents-md-maker        # 저장소를 읽고 프로젝트 전용 AGENTS.md + AGENTS.ko.md 생성/리팩터
+/hyper-research "<주제>"  # 출처가 있는 다중 소스 리서치 보고서
+/hyper-plan "<작업>"    # 결정이 끝난 작업 계획을 쓰고 기본으로 hyper-execute까지 이어서 실행
+/hyper-execute <slug>  # .hyper/plans 계획을 웨이브별 worktree에서 검증하며 실행
+/hyper-mass "<작업>"    # 의존성이 있는 하위 작업을 단계별 DAG로 병렬 실행
 /prd-maker "<아이디어>"  # 다이어그램·플로우·와이어프레임을 포함한 기획 패키지
 /pre-deploy           # 배포 전 lint/타입/빌드 게이트
-/eli5 "<주제>"        # 독자 수준에 맞추되 정확성과 주의점을 보존한 설명
-/eli5 "<주제>" html   # 같은 설명을 구조 뷰(HTML)로, pdf를 붙이면 인쇄용 PDF까지
 ```
 
-자연어로도 트리거됩니다 — 예: "이 프로젝트 README 다시 써줘" → `readme-maker`, "이 저장소에 맞는 AGENTS.md 만들어줘" → `agent-md-maker`, "방금 변경 사항 커밋하고 푸시" → `git-maker`.
+자연어로도 트리거됩니다 — 예: "이 프로젝트 README 다시 써줘" → `readme-maker`, "이 저장소에 맞는 AGENTS.md 만들어줘" → `agents-md-maker`, "방금 변경 사항 커밋하고 푸시" → `git-maker`.
 
 ## 스킬 카탈로그
 
@@ -119,11 +120,9 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `skill-tester` | 스킬 트리거/동작을 시나리오 기반으로 검증 | All |
 | `autoresearch-skill` | 반복 실행과 이진 eval 기반으로 기존 스킬을 자동 최적화 | All |
 | `readme-maker` | 코드베이스 분석 기반 README 생성 및 리팩터링 | All |
-| `agent-md-maker` | 저장소 근거 기반 `AGENTS.md`(영어) + `AGENTS.ko.md`(한국어 미러) 생성·리팩터링, 대상 런타임에 맞춘 `CLAUDE.md` 조정 | All |
+| `agents-md-maker` | 저장소 근거 기반 `AGENTS.md`(영어) + `AGENTS.ko.md`(한국어 미러) 생성·리팩터링, 대상 런타임에 맞춘 `CLAUDE.md` 조정 | All |
 | `docs-maker` | AI가 읽기 좋은 구조화된 문서/룰 팩 생성 | All |
-| `hermes-agent-maker` | Hermes Agent 산출물(skill, native/portable plugin, `SOUL.md`, `AGENTS.md`, USER/MEMORY draft) 생성 | Bun 또는 Node.js |
 | `prd-maker` | 증거 기반 Living PRD + 다이어그램·플로우·와이어프레임 생성 | All |
-| `design-md-maker` | 프로젝트별 `DESIGN.md` 디자인 시스템 문서 생성 및 갱신 | All |
 | `prompt-maker` | 재사용 가능한 프롬프트·역할 프롬프트·프롬프트 템플릿/팩·프롬프트 eval 픽스처 생성 및 리팩터링 | All |
 
 ### 아키텍처 가드
@@ -134,7 +133,6 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `hono-architecture` | Hono 아키텍처 규칙 적용 | All |
 | `expo-architecture` | React Native + Expo + TypeScript Android/iOS 아키텍처 규칙 적용 | All |
 | `tanstack-start-architecture` | TanStack Start 아키텍처 규칙 적용 | All |
-| `tanstack-start-security` | TanStack Start 인증/세션/보안 규칙 적용 | All |
 | `vite-architecture` | Vite + TanStack Router 아키텍처 규칙 적용 | All |
 | `tauri-architecture` | Tauri 2 + Vite + React + TanStack Router/Query 데스크톱 아키텍처 규칙 적용 | All |
 
@@ -152,15 +150,21 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 |------|------|------|
 | `git-maker` | 커밋과 푸시를 한 번에 (worktree 인지) | All |
 | `git-worktree` | Git worktree 생성/진입/정리, 병렬 에이전트 워크스페이스 관리 | All |
-| `git-issue` | GitHub issue 생성/재개와 matching branch 세션 전환 | All |
+
+### 계획 · 실행 오케스트레이션
+
+| 스킬 | 설명 | 호환 |
+|------|------|------|
+| `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
+| `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git |
+| `hyper-mass` | 의존 순서가 있는 하위 작업을 그래프로 정의해 단계별 병렬 실행, 재시도·수정·재개 지원 | All |
 
 ### 리서치 · 디버깅 · QA
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `research` | 다중 소스, 출처 추적 가능한 마크다운 리서치 보고서 | All |
+| `hyper-research` | 질문을 축으로 나눠 확장 웨이브로 수렴시키고, 고위험 주장을 게이트로 검증한 다중 출처 마크다운 리서치 보고서 | All |
 | `client-feedback` | 고객사 피드백을 코드 영향·선택지·리스크로 해석하고 확인 후 구현 | All |
-| `bug-fix` | 버그 분석 → 수리 옵션 제시 → 검증된 구현 | All |
 | `ai-design-slop-remover` | 기존 UI의 브랜드·기능을 보존하며 AI형 generic 디자인 패턴을 감사·제거·검증 | Node.js 18+; browser optional |
 
 ### 콘텐츠 · SEO
@@ -174,29 +178,14 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `image-maker` | 관찰된 이미지 기능으로 이미지를 생성하고, 미지원 환경에서는 실행 가능한 프롬프트를 안전하게 저장 | Capability-based |
 | `instagram-card-maker` | 브랜드·글감 조사 후 흐름에 맞는 카드뉴스 제작. 편집 가능한 HTML, 같은 비율의 이미지 여러 장, 한국어 캡션과 대체 텍스트 전달 | All (이미지 출력은 브라우저 필요) |
 
-### 실행 보조
-
-| 스킬 | 설명 | 호환 |
-|------|------|------|
-| `execute` | 난이도 적응형 사고 깊이로 즉시 작업 수행 | All |
-| `adhd-explainer` | 답을 파묻지 않는 ADHD 친화적 출력 — 행동 우선, 번호 단계, 진행 상태 재고지, 발송 전 게이트 | All |
-| `eli5` | 독자의 목표·사전 지식에 맞춰 정확성, 비유 한계, 핵심 주의점을 보존한 쉬운 설명. 요청 시 같은 설명을 `md`·`html`·`pdf` 산출물과 구조 뷰로도 출력 | All (HTML/PDF 산출물은 `bun` 또는 Node.js 18+ 필요, PDF는 Chromium 계열 브라우저 추가) |
-
-### 에이전트 조정
-
-| 스킬 | 설명 | 호환 |
-|------|------|------|
-| `orca-orchestration` | Orca Run·Task·Dispatch 기반 감독형 멀티 에이전트 조정과 native/custom worker 수명주기 관리 | Orca CLI/runtime, Bun 1.3+ |
-
 ### 도메인 도구
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `color-cli` | `@kood/color-cli` 기반 hex / rgb / oklch 색상 변환 | All |
 | `naver-api` | Naver API HUB 검색·DataLab 검색어 트렌드·쇼핑인사이트 조회와 CLI 초기 설정·자격 증명 검증 | Node.js 20+; network; Naver API HUB credentials |
-| `jev-maker` | TypeSafe Jev(System One) 판단 모델용 질문, 호출 코드, 템플릿, 평가 세트 생성과 코드 감사, 연결 설정 | Bun (선택); 네트워크와 API 키는 승인된 실호출에만 |
+| `jev-maker` | TypeSafe Jev(System One) 판단 모델용 질문, 호출 코드, 템플릿, 평가 세트 생성과 코드 감사, 연결 설정 | bash 3.2+ · jq (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 40개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 33개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
 
@@ -246,10 +235,10 @@ lint, typecheck, build, test 같은 프로젝트 게이트를 재현하고, 실�
 hypercore/
 ├── cli/                   # @kood/* 도구 모노레포 (pnpm workspace)
 │   └── packages/
-│       └── color/         # @kood/color-cli — color-cli 스킬이 호출
+│       └── color/         # @kood/color-cli — hex / rgb / oklch 색상 변환 CLI
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/sourcing/validation)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
-└── skills/                # 40개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 33개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:
@@ -285,6 +274,8 @@ skills/<name>/
 |---|---|---|
 | Context Engineering | [`instructions/context-engineering/`](instructions/context-engineering/) | 프롬프트·컨텍스트·도구 지시를 런타임 중립으로 설계 |
 | Harness Engineering | [`instructions/harness-engineering/`](instructions/harness-engineering/) | 프롬프트·에이전트·도구 사용을 테스트 가능한 하네스로 관리 |
+| Loop Engineering | [`instructions/loop-engineering/`](instructions/loop-engineering/) | 멈춤 조건이 있는 자율 에이전트 루프(목표·시간·이벤트 기반) 설계 |
+| Graph Engineering | [`instructions/graph-engineering/`](instructions/graph-engineering/) | 다단계·다중 에이전트 작업을 노드·간선·상태의 그래프로 설계 |
 | Sourcing | [`instructions/sourcing/`](instructions/sourcing/) | 자료 조사·검색·출처 검증 기준 |
 | Validation | [`instructions/validation/`](instructions/validation/) | 작업 완료 전 검증 기준 |
 
