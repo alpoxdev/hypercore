@@ -128,7 +128,7 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 - 제목의 약속을 첫 3~5문장에 넣습니다. 모든 섹션에 확인 가능한 상황이나 출처가 있고 최소 한 섹션이 아쉬운 점을 말합니다.
 - 목표 검색어는 제목에 한 번, 본문에서는 문장이 필요로 하는 자리에만. 횟수나 밀도 목표 없음.
 - 협찬, 자사, 제휴 관계는 첫 단락에서 쉬운 말로 공개합니다.
-- 전환형 브랜드 사실은 원문 그대로 넣고 독자의 다음 결정으로 표현한 행동 유도 정확히 하나로 끝냅니다.
+- 전환형 브랜드 사실은 원문 그대로 넣고 독자의 다음 결정으로 표현한 행동 유도 정확히 하나로 끝냅니다. inblog에서는 그 행동 유도를 `+ Add CTA button` 하나로 한 번만 설정합니다(문구 30자 이내 권장, 대상 URL, 색상). 본문에는 두 번째 행동 유도를 두지 않습니다.
 - 사용자가 규칙을 물을 때마다 수치 기준은 기본값으로, 속설은 속설로 표시합니다.
 - 초안을 쓰는 동안 `rules/human-prose.ko.md`를 적용하고 어미는 글 전체에 하나로 유지합니다.
 - 의도가 필요로 하면 해결 계층을 두고, 모든 수치를 `quantitative_authority` 역할의 출처에 귀속시킵니다. 리뷰·블로그·카페 글은 숫자의 단독 근거가 아닙니다.
@@ -180,7 +180,7 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 3. 제목 후보 3개, 첫 화면의 답, 근거 섹션 3~6개, 해결 계층, 한계, 마무리를 씁니다. 어미 하나를 유지하고 빈말·반복·과장을 줄입니다. 경험·가격·자격을 지어내지 않으며 상업 관계는 서두에 밝히고 전환형 행동 유도는 하나만 둡니다. 기존 글 수정은 사실·어미·마커·구조를 보존합니다.
 4. 커버와 각 설명 지점에 실제 자료 [이미지: 대상 | 캡션] 또는 [이미지 생성: 설명 그림 | 캡션 | 프롬프트 #n]을 둡니다. 짧은 문단 사이에 비교·과정·원리 그림을 배치하되 수량을 맞추려고 채우지 않습니다. 생성 그림은 설명 그림으로 표시하며 현장·인증·결과의 증거로 쓰지 않습니다.
 5. 생성 마커마다 JSON 하나를 본문 밖에 제공합니다. 항상 넣는 필드는 id, section_role, template, use, hierarchy(first, second, background), subject, composition, style, must_include, must_exclude, inspection_checks, aspect, caption_note, prompt입니다. 의미가 있을 때만 넣는 필드는 scene, lighting, color(dominant, support, accent, contrast), material_and_rendering, text(string, role, placement, reading_order, priority, scale, contrast, clearance), series_invariants, reference(role: inspiration 또는 edit_source), assumptions입니다. 적용되지 않는 필드는 아예 없어야 하며 null, "N/A", 자리표시자로 채우지 않습니다. section_role과 template은 짝으로 정해집니다. cover(cover-key-visual), first-screen(first-screen-key-takeaway), mechanism(mechanism-cutaway 또는 mechanism-flow), comparison(comparison-table, comparison-split, before-after-schematic 중 하나), process(process-flow), cost(cost-breakdown), checklist(checklist-card), caution(failure-caution), data(data-chart), timeline(timeline), route(route-schematic), scale(scale-dimension), closing(closing-next-step), concept(concept-mood). template은 그 역할의 괄호 안에서 고르고, `references/image-prompt-templates.ko.md`를 읽을 수 없을 때도 이 짝을 그대로 씁니다. text[].string은 text[] 안에서 정확히 한 번 나타나고 prompt가 그 모두를 byte 단위로 그대로 담습니다. 진짜 시리즈의 공통 조건은 그 시리즈의 모든 객체에 반복합니다. prompt는 구조 필드에서만 파생하고 그 밖의 사실을 더하지 않습니다. 실제 생성 완료라고 말하지 않습니다.
-6. 기본은 본문 HTML입니다: 별도 제목·태그와 단순 인라인 스타일 본문 HTML을 제공합니다. plain(명시 요청 시에만)은 제목·본문·해시태그를 text 펜스 하나에 둡니다. p/h2/h3/strong/u/span/목록/blockquote/hr/표/a와 실제 HTTPS img만 사용합니다. data:image, 스크립트, 이벤트 핸들러는 제외합니다. 파일 기능이 없으면 HTML 소스로 전달하고 렌더링된 내용을 text/html로 복사해야 서식이 유지된다고 알립니다. 취소선·소스코드·특수 컴포넌트는 수동 편집 사항입니다. 폴백에서도 줄 리듬을 유지합니다: 짧은 명시적 줄바꿈(12~25자), 1~3문장 블록, margin 대신 빈 문단 스페이서, HTML 문단의 `line-height:1.8` 인라인.
+6. 기본은 본문 HTML입니다: 별도 제목·태그와 단순 인라인 스타일 본문 HTML을 제공합니다. plain(명시 요청 시에만)은 제목·본문·해시태그를 text 펜스 하나에 둡니다. p/h2/h3/strong/u/span/목록/blockquote/hr/표/a와 실제 HTTPS img만 사용합니다. data:image, 스크립트, 이벤트 핸들러는 제외합니다. 파일 기능이 없으면 HTML 소스로 전달하고 렌더링된 내용을 text/html로 복사해야 서식이 유지된다고 알립니다. inblog에서는 렌더링된 본문을 `서식 콘텐츠 복사`로 복사하거나 본문을 선택한 채 Ctrl+C/⌘C를 눌러 일반 본문에 Ctrl+V/⌘V로 붙이며, 본문을 HTML 임베드 블록에 넣지 않습니다(외부 임베드 전용). Markdown 경로도 제시하지 않습니다. 실측에서 Markdown 붙여넣기는 굵게·기울임·취소선·인라인 코드만 유지했습니다. 취소선·소스코드·특수 컴포넌트는 네이버에서 수동 편집 사항이고, inblog는 [`references/inblog-format.ko.md`](references/inblog-format.ko.md)를 따릅니다(취소선과 코드 블록은 붙여넣기로 유지되고 callOut·bookmark·linkButton은 `/` 명령으로 넣습니다). 폴백에서도 줄 리듬을 유지합니다: 짧은 명시적 줄바꿈(12~25자), 1~3문장 블록, margin 대신 빈 문단 스페이서, HTML 문단의 `line-height:1.8` 인라인.
 7. 사실·공개 문장·링크·이미지/JSON 대응·전달 형태를 점검하고 최대 두 번 수정합니다. 읽지 못한 파일의 정밀 문장 점검은 통과했다고 주장하지 않습니다. 로그인·업로드·발행은 수행하지 않습니다.
 8. 보조 파일을 모두 읽지 못해도 의료 안전은 살아남습니다. `references/regulated-topic-research.ko.md`를 읽었는지와 무관하게 이 다섯 줄이 적용됩니다.
    - 의료 정량값은 같은 주장 범위를 가진 관할 1차 출처(허가사항, 제조사 라벨)로만 근거를 댑니다. peer-reviewed 리뷰는 맥락이며 숫자의 단독 근거가 아닙니다.
@@ -202,7 +202,7 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 - 주제가 의료이거나 정량적 안전·용량·간격·기간·자격·법적 한도 주장이 걸리면 [`references/regulated-topic-research.ko.md`](references/regulated-topic-research.ko.md)를 읽습니다.
 - 이미지를 배치할 때 [`rules/image-slots.ko.md`](rules/image-slots.ko.md)를 읽고, 생성 프롬프트를 작성할 때 [`references/image-prompt-templates.ko.md`](references/image-prompt-templates.ko.md)를 읽습니다.
 - 전달 전에 [`references/format-options.ko.md`](references/format-options.ko.md)를 읽습니다. 기본 본문 HTML, 제목·태그 분리, plain 예외, HTML 클립보드 조건을 따릅니다.
-- 판별된 플랫폼이 `inblog`이면 전달 전에 [`references/inblog-format.ko.md`](references/inblog-format.ko.md)를 읽습니다. 왼쪽 정렬 자연 문단, `h2`/`h3` 소제목, H1 중복 없음, 분리된 메타데이터, HTML 임베드 블록 경로.
+- 판별된 플랫폼이 `inblog`이면 전달 전에 [`references/inblog-format.ko.md`](references/inblog-format.ko.md)를 읽습니다. 왼쪽 정렬 자연 문단, `h2`/`h3` 소제목, H1 중복 없음, 분리된 메타데이터, 서식 복사 경로를 확인합니다. 렌더링된 본문을 `서식 콘텐츠 복사`로 복사해 inblog 일반 본문에 Ctrl+V/⌘V로 붙이고, 자동 복사가 막히면 선택된 본문에서 Ctrl+C/⌘C를 누릅니다. 본문은 HTML 임베드 블록에 넣지 않으며(외부 임베드 전용), Markdown 복사 경로는 없습니다.
 
 1. 시작 질문을 마친 뒤 매 실행마다 [`rules/post-workflow.ko.md`](rules/post-workflow.ko.md)를 읽습니다. 모드 결정, 접수, 구조 골격, 전달 순서.
 2. 브리프에 경험·출처·이미지가 없을 때(보통의 경우) [`rules/topic-research.ko.md`](rules/topic-research.ko.md)를 읽습니다. 리서치 절차, 경험 슬롯, 인라인 이미지 슬롯, 사실 묶음 형태.
