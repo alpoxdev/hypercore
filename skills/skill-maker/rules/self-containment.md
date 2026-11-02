@@ -12,7 +12,7 @@ A skill is a distribution unit. If it points at another skill - by name, by path
 
 ## 2. Detection Rules
 
-`skills/skill-maker/scripts/validate-skill-maker.mjs` carries `checkSelfContainment`, which scans a package's text files for:
+`skills/skill-maker/scripts/validate-skill-maker.sh` carries `checkSelfContainment`, which scans a package's text files for:
 
 - a hyphenated sibling skill name as a bare or backticked token, with boundaries that exclude longer identifiers, so an extended name is not misread as its prefix;
 - any sibling skill name in `$<name>` invocation form;
@@ -33,7 +33,7 @@ Sibling names come from the directories beside the package root; a directory cou
 | Claim | Source |
 |---|---|
 | The self-containment requirement, the output-shape boundary rule, and the user-instruction-only exception | user instruction, 2026-09-21 |
-| The detection rules, the `--require-self-containment` and `--allow` flags, and the sibling-name discovery | `skills/skill-maker/scripts/validate-skill-maker.mjs` |
+| The detection rules, the `--require-self-containment` and `--allow` flags, and the sibling-name discovery | `skills/skill-maker/scripts/validate-skill-maker.sh` |
 | One canonical home per rule and a lean core, which is why this rule lives in one file instead of being restated in the core | `rules/progressive-disclosure.md` |
 
 ### Evidence grade

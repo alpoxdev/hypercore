@@ -32,6 +32,13 @@
 - 배포되는 스킬 폴더 안에 둔 실행 결과 (`.omo/evidence/` 아래가 아니라)
 - 에이전트가 이미 안정적으로 하는 일을 다시 적는 스킬, 즉 이익 없는 비용
 - 편의를 위한 부여가 아니라 권한 경계로 제시한 `allowed-tools`
+- 계약의 일부를 표시 없이 떠안은 런타임 전용 frontmatter 필드(`disable-model-invocation`, `when_to_use`, `agents/openai.yaml`) 때문에 다른 런타임에서 스킬이 다르게 동작하는 것(SK-P-3)
+- 배포, 게시, 전송, 삭제 스킬을 자동 활성화에 열어 둔 경우
+- `SKILL.md`의 로드되는 앞부분에 있는 변동성 큰 날짜, 개수, 버전 고정값 때문에 갱신할 때마다 캐시된 재사용이 무효가 되는 것
+- `assets/evals/`와 패키징된 도구의 케이스 파일, 두 평가 집합이 서로 어긋난 것
+- 짝지은 기준선 없이 "스킬을 잘 썼으니 도움이 된다"고 유용성을 주장하는 것
+- 구체적이고 실행 가능한 불평 대신 "별로다"로 끝나는 사람 검토 기록
+- 숫자 상한, 독립 검사기, 선언된 결합 형태가 없는 무인 루프나 팬아웃
 
 ## 산출물 감사
 
@@ -52,7 +59,7 @@
 - SK-A-2: 신뢰할 수 없는 출처의 스킬은 전체 감사 없이 배포하지 않습니다.
 - SK-A-3: 스킬을 버전에 고정하고, 버전이 바뀌면 다시 검토합니다.
 
-**이 패키지는 자기 감사의 코드 실행 사례입니다.** `skills/skill-maker/scripts/validate-skill-maker.mjs`는
+**이 패키지는 자기 감사의 코드 실행 사례입니다.** `skills/skill-maker/scripts/validate-skill-maker.sh`는
 배포되는 스킬 디렉터리 안의 실행 코드이므로, 높음 등급의 코드 실행 행이 `skill-maker` 자신에게
 적용됩니다. 체크리스트로만이 아니라 대상으로서 감사합니다.
 
@@ -85,7 +92,7 @@
 
 ## Sources
 
-> 링크 확인 2026-09-20.
+> 확인 2026-11-03.
 
 | 주장 | 출처 |
 |---|---|
@@ -94,6 +101,11 @@
 | 스킬 폴더 밖에 두는 결과, 그 뒤에 있는 `.omo/evidence/` 안티패턴 | <https://agentskills.io/skill-creation/evaluating-skills> |
 | "에이전트가 이미 하는 일을 다시 적는" 안티패턴의 근거인 제거 시험 | <https://agentskills.io/skill-creation/best-practices> |
 | 경계가 아니라 허용적 부여로서의 `allowed-tools` | <https://code.claude.com/docs/en/skills> |
+| 수동 전용 스위치, 런타임 전용 확장 필드, 업로드 시 비명세 필드에 대한 하드 오류 | <https://code.claude.com/docs/en/skills> |
+| `feedback.json`에 케이스별 구체적 불평으로 남기는 사람 검토 | <https://agentskills.io/skill-creation/evaluating-skills> |
+| 공개 스킬 대부분이 유의미한 효과가 없다고 밝힌 짝지은 벤치마크 | <https://arxiv.org/abs/2603.15401> |
+| 로드되는 앞부분에서 빼는 변동성 값 | `instructions/cache/CACHE.md` §3 |
+| 바깥 루프 상한과 검사기 분리, 그래프 팬아웃 상한과 결합 형태 | `instructions/loop-engineering/LOOP_ENGINEERING.md`, `instructions/graph-engineering/GRAPH_ENGINEERING.md` |
 | 최적화 중 다시 확인해야 하는 설명 길이 한도 | <https://agentskills.io/specification> |
 
 ### 증거 등급

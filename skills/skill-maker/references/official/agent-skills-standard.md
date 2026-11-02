@@ -8,6 +8,7 @@
 - Evaluating Skill Output Quality
 - Optimizing Skill Descriptions
 - Using Scripts in Skills
+- Distribution Through the Skills CLI
 - Sources
 
 The open standard every reviewed runtime builds on. This snapshot is the `PRIMARY` source for
@@ -16,7 +17,7 @@ record what each vendor adds on top.
 
 ## Refresh Policy
 
-- last_verified_at: 2026-09-20
+- last_verified_at: 2026-11-03
 - refresh_when:
   - the specification changes a frontmatter constraint (name, description, compatibility, allowed-tools)
   - a progressive-disclosure budget changes (the listing-stage, instructions-stage, or line limits)
@@ -32,8 +33,8 @@ record what each vendor adds on top.
 ## Agent Skills Specification
 
 - source_url: https://agentskills.io/specification
-- last_verified_at: 2026-09-20
-- applies_to: frontmatter fields and their constraints, directory conventions, progressive disclosure, file-reference depth, the reference validator
+- last_verified_at: 2026-11-03
+- applies_to: frontmatter fields and their constraints, directory conventions, progressive disclosure, file-reference depth, the reference validator. The page carries no visible date; its embedded `dateModified` metadata reads 2026-08-04.
 - summary: A skill is a directory containing at minimum `SKILL.md`, with YAML frontmatter followed by
   Markdown body content. `name` and `description` are required; `license`, `compatibility`, `metadata`,
   and `allowed-tools` are optional. The body has no format restrictions. `scripts/`, `references/`, and
@@ -78,72 +79,98 @@ record what each vendor adds on top.
 ## Best Practices for Skill Creators
 
 - source_url: https://agentskills.io/skill-creation/best-practices
-- last_verified_at: 2026-09-20
-- applies_to: where a skill's content should come from, iterating against real execution, spending context wisely, description optimization, train/validation splits
+- last_verified_at: 2026-11-03
+- applies_to: where a skill's content should come from, iterating against real execution, spending context wisely, gotchas, read cues, defaults
 - summary: Skills should be grounded in real expertise rather than generated from general knowledge:
   extract from a hands-on task, or synthesize from existing project artifacts (internal docs, runbooks,
   API specifications, code-review comments, version-control history, real failure cases). Refine by
-  running the skill against real tasks and reading execution traces, not just final outputs. It states
-  the 500-line and 5,000-token budgets and recommends about 20 trigger queries split roughly 60/40 into
-  train and validation sets.
-- implication_for_skill_maker: require a named source of domain expertise before drafting a skill, and
-  require reading traces rather than outputs when a skill is refined.
+  running the skill against real tasks and reading execution traces, not just final outputs. For each
+  piece of content ask "Would the agent get this wrong without this instruction?" and cut it if not.
+  Match specificity to the fragility of the task, calibrating each part independently. Keep gotchas in
+  `SKILL.md` where the agent reads them before meeting the situation; write read cues as conditions
+  ("Read `references/api-errors.md` if the API returns a non-200 status code"). Provide defaults, not
+  menus. It states the 500-line and 5,000-token budgets.
+- implication_for_skill_maker: require a named source of domain expertise before drafting a skill,
+  require reading traces rather than outputs when a skill is refined, and keep gotchas in the core.
 
 ## Evaluating Skill Output Quality
 
 - source_url: https://agentskills.io/skill-creation/evaluating-skills
-- last_verified_at: 2026-09-20
-- applies_to: test-case design, the with-skill/without-skill pair, per-run timing and grading records, assertions
-- summary: A test case is a prompt plus a human-readable expected output plus optional input files.
-  The core pattern is to run each case twice - once with the skill and once without it, or against a
-  previous version - so the result has a baseline. Grading records PASS or FAIL **with evidence that
-  quotes or references the output**. Mechanical checks (valid JSON, row counts, file existence) belong
-  in a script; reserve judgement for what a script cannot decide. Start with 2-3 cases and expand.
-- implication_for_skill_maker: the paired run and the evidence string are the load-bearing parts; a
-  `passed: true` with no evidence string is not a record.
+- last_verified_at: 2026-11-03
+- applies_to: test-case design, the with-skill/without-skill pair, per-run timing and grading records, human review, assertions, the iteration workspace
+- summary: A test case is a prompt plus a human-readable expected output plus optional input files,
+  stored in `evals/evals.json` inside the skill directory. Run each case twice - once with the skill and
+  once without it, or against a previous version saved as `old_skill/` - in a clean context per run.
+  Results go in a workspace beside the skill, one `iteration-N/` directory per pass, with `timing.json`
+  (tokens and duration), `grading.json` (PASS or FAIL **with specific evidence**), and an aggregated
+  `benchmark.json`. Human review goes in `feedback.json`; "Empty feedback means the output looked fine".
+  Mechanical checks belong in a script. Remove or replace assertions that pass in both configurations.
+  Start with 2-3 cases. Stop when results satisfy, feedback is consistently empty, or iterations stop
+  improving meaningfully.
+- implication_for_skill_maker: the paired run, the evidence string, and the human feedback record are
+  the load-bearing parts; a `passed: true` with no evidence string is not a record. This repository keeps
+  the filenames but puts results under `.omo/evidence/` (`rules/resource-placement.md` §8).
 
 ## Optimizing Skill Descriptions
 
 - source_url: https://agentskills.io/skill-creation/optimizing-descriptions
-- last_verified_at: 2026-09-20
+- last_verified_at: 2026-11-03
 - applies_to: trigger rate as the metric, per-case runs and thresholds, train/validation selection, the description length limit
-- summary: Trigger behaviour is probabilistic, so a case carries its own repetition count and threshold
-  and the run records the resulting rate. Split the query set into train and validation, select by
-  validation performance, and remember that the best iteration may not be the last one. Descriptions
-  grow while being optimized, so re-check the length limit on every edit; when tuning stops helping,
-  change the structure rather than adding adjectives.
+- summary: Trigger behaviour is probabilistic: run each query multiple times ("3 is a reasonable
+  starting point") and pass a should-trigger query when its rate is above a threshold ("0.5 is a
+  reasonable default"). Aim for about 20 queries, 8-10 each way; near-misses are the most valuable
+  negatives. Split ~60/40 into train and validation, change the description only from train failures,
+  and select by validation pass rate - the best description may not be the last. Re-check the
+  1024-character limit on every edit. Five iterations is usually enough; then re-test on 5-10 fresh
+  queries. Use imperative phrasing ("Use this skill when...").
 - implication_for_skill_maker: a run that reports only its final score is not evidence of improvement;
   report the per-iteration train and validation numbers.
 
 ## Using Scripts in Skills
 
 - source_url: https://agentskills.io/skill-creation/using-scripts
-- last_verified_at: 2026-09-20
-- applies_to: when a skill should bundle executable code rather than prose, and how that code should be documented
-- summary: Executable code belongs in a skill when it provides deterministic behaviour, precise
-  processing, or an external-tool integration that prose cannot guarantee. Scripts should be
-  self-contained or document their dependencies, emit helpful errors, and handle edge cases; their code
-  never enters the context window, only their output does.
-- implication_for_skill_maker: a script is justified by determinism or an external integration, not by
-  convenience, and its output is what the reviewer reads.
+- last_verified_at: 2026-11-03
+- applies_to: how bundled code should be written and documented
+- summary: Scripts must be non-interactive - "a hard requirement of the agent execution environment" -
+  because a script that blocks on input hangs. `--help` is the primary way an agent learns the
+  interface. Write helpful error messages that say what went wrong, what was expected, and what to try;
+  reject ambiguous input with a clear error rather than guessing. Send structured data to stdout and
+  diagnostics to stderr, use distinct exit codes, prefer idempotent operations, and bound output size.
+  Paths in code blocks are relative to the skill root. Declare dependencies inline or state
+  prerequisites in `SKILL.md`. The specification's `scripts/` section adds that scripts should be
+  self-contained or document dependencies and handle edge cases gracefully.
+- implication_for_skill_maker: a script's interface is its `--help`, its exit codes, and its stdout;
+  those are what the reviewer reads and what the validator should exercise.
+
+## Distribution Through the Skills CLI
+
+- source_url: https://github.com/vercel-labs/skills
+- last_verified_at: 2026-11-03
+- applies_to: installing, updating, and removing skills in the shared format across agents
+- summary: `npx skills add`, `find`, `update`, `remove`, and `init` manage skills for OpenCode, Claude
+  Code, Codex, Cursor, "and 75 more" agents; it requires Node.js 22.20 or later. Many agents share
+  `.agents/skills/` as the project path and `~/.agents/skills/` as the global path; `-g`/`--global`
+  installs to the user directory. Duplicate handling differs from Codex: when two skills share a name,
+  the CLI keeps only the first one found.
+- implication_for_skill_maker: the install path differs per agent while the file does not, and
+  duplicate-name behaviour is runtime-specific, so never write one rule for both.
 
 ## Sources
 
-> Links checked 2026-09-20. Next re-verification: 2026-10-29, matching the cadence in `instructions/README.md`.
+> Checked 2026-11-03.
 
 | Claim | Source |
 |---|---|
-| The frontmatter field table and every constraint in it, the required/optional split, the directory conventions, the three-stage disclosure model, the 500-line guidance, and the one-level-deep file reference rule | <https://agentskills.io/specification> |
-| Grounding a skill in real expertise, refining it against real execution and traces, the 5,000-token budget, and the ~20-query train/validation split | <https://agentskills.io/skill-creation/best-practices> |
-| The test-case shape, the with-skill/without-skill pair, grading with an evidence string, and script-for-mechanical-checks | <https://agentskills.io/skill-creation/evaluating-skills> |
-| Trigger rate, per-case runs and threshold, train/validation selection, and the description length re-check | <https://agentskills.io/skill-creation/optimizing-descriptions> |
-| When to bundle executable code and what its documentation must state | <https://agentskills.io/skill-creation/using-scripts> |
-| The page inventory used to find the five pages above | <https://agentskills.io/llms.txt> |
+| The frontmatter field table and every constraint in it, the required/optional split, the directory conventions, the three-stage disclosure model, the 500-line guidance, the one-level-deep file reference rule, the `scripts/` self-containment and edge-case guidance, and the `dateModified` metadata | <https://agentskills.io/specification> |
+| Grounding a skill in real expertise, refining it against traces, the removal question, specificity matched to fragility, gotchas in `SKILL.md`, conditional read cues, defaults over menus, and the 5,000-token budget | <https://agentskills.io/skill-creation/best-practices> |
+| The test-case shape, `evals/evals.json`, the with-skill/without-skill or `old_skill/` pair, clean context per run, `timing.json`, `grading.json` with evidence, `benchmark.json`, `feedback.json`, the iteration workspace, the 2-3 case start, and the stop conditions | <https://agentskills.io/skill-creation/evaluating-skills> |
+| Trigger rate, 3 runs, the 0.5 threshold, the ~20-query set, the ~60/40 split, train-only feedback, "the best may not be the last", the 1024-character re-check, five iterations, and 5-10 fresh queries | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| Non-interactive scripts, `--help`, helpful errors, input rejection, stdout/stderr separation, exit codes, idempotency, output bounds, and skill-root-relative paths | <https://agentskills.io/skill-creation/using-scripts> |
+| The skills CLI command set, the agent count wording, the shared project and global paths, the Node.js 22.20 requirement, and first-found duplicate handling | <https://github.com/vercel-labs/skills> |
 
 ### Evidence grade
 
 `PRIMARY` - the specification page states the frontmatter constraints and the disclosure budgets
-directly. **Correction recorded for the base:** `instructions/skill/references/skill-anatomy.md` §2 says
-the `compatibility` lower bound of 1 "is not stated by any source consulted". The live specification page
-checked 2026-09-20 states "Must be 1-500 characters if provided". That base note is now outdated; the
-correction is recorded here rather than edited into `instructions/**`, which this plan keeps out of scope.
+directly. The skills CLI row is `VENDOR` - one tool's statement about its own behaviour. An earlier
+revision of this file attributed "handle edge cases" to the using-scripts page; the 2026-11-03 pass found
+that sentence on the specification page, and the attribution is corrected above.

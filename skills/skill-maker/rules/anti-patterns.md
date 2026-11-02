@@ -32,6 +32,13 @@
 - execution results kept inside the shipped skill folder instead of under `.omo/evidence/`
 - a skill that restates what the agent already does reliably, which is cost without benefit
 - `allowed-tools` presented as a permission boundary rather than a convenience grant
+- a runtime-only frontmatter field (`disable-model-invocation`, `when_to_use`, `agents/openai.yaml`) that carries part of the contract unlabelled, so the skill behaves differently on another runtime (SK-P-3)
+- a deploy, publish, send, or delete skill left open to automatic activation
+- volatile dates, counts, or version pins in the loaded head of `SKILL.md`, so every refresh invalidates cached reuse
+- two eval sets - `assets/evals/` and a packaged tool's case file - that have drifted apart
+- "the skill is well written, so it helps" offered as a utility claim without a paired baseline
+- human review recorded as "looks bad" instead of a specific, actionable complaint
+- an unattended loop or a fan-out with no numeric cap, no independent checker, or no declared join shape
 
 ## The Artifact Audit
 
@@ -51,7 +58,7 @@ These test what a skill **is**, not what it receives. A skill is distributed cod
 - SK-A-2: Do not distribute a skill from an untrusted source without a full audit.
 - SK-A-3: Pin a skill to a version, and re-review it when the version changes.
 
-**This package is a code-execution instance of its own audit.** `skills/skill-maker/scripts/validate-skill-maker.mjs` is executable code inside a distributed skill directory, so the High code-execution row applies to `skill-maker` itself. Audit it as a subject, not only as a checklist.
+**This package is a code-execution instance of its own audit.** `skills/skill-maker/scripts/validate-skill-maker.sh` is executable code inside a distributed skill directory, so the High code-execution row applies to `skill-maker` itself. Audit it as a subject, not only as a checklist.
 
 ## Red Flags
 
@@ -82,7 +89,7 @@ When one of these appears:
 
 ## Sources
 
-> Links checked 2026-09-20.
+> Checked 2026-11-03.
 
 | Claim | Source |
 |---|---|
@@ -91,6 +98,11 @@ When one of these appears:
 | Results kept outside the skill folder, behind the `.omo/evidence/` anti-pattern | <https://agentskills.io/skill-creation/evaluating-skills> |
 | The removal test behind the "restates what the agent already does" anti-pattern | <https://agentskills.io/skill-creation/best-practices> |
 | `allowed-tools` as a permissive grant rather than a boundary | <https://code.claude.com/docs/en/skills> |
+| Manual-only switches, runtime-only extension fields, and the hard error for non-spec fields on upload | <https://code.claude.com/docs/en/skills> |
+| Human review as a specific per-case complaint in `feedback.json` | <https://agentskills.io/skill-creation/evaluating-skills> |
+| The paired benchmark that found most public skills had no significant effect | <https://arxiv.org/abs/2603.15401> |
+| Volatile values out of the loaded head | `instructions/cache/CACHE.md` §3 |
+| Outer-loop caps and checker separation, and graph fan-out caps and join shape | `instructions/loop-engineering/LOOP_ENGINEERING.md`, `instructions/graph-engineering/GRAPH_ENGINEERING.md` |
 | The description length limit that must be re-checked while optimizing | <https://agentskills.io/specification> |
 
 ### Evidence grade

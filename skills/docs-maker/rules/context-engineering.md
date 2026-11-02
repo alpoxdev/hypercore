@@ -57,6 +57,8 @@ Treat tokens as a constrained resource:
 - Move deep detail into `rules/` or `references/`.
 - Load details just in time, not all at once.
 - Separate persistent guidance from per-run context and temporary notes.
+- Remember that a longer window buys room, not accuracy: across 18 models, accuracy fell as input length grew while task difficulty was held constant, and one topically related distractor started the decline. Relevance is not a defense either, because shuffled material scored better than coherently ordered material, so ordering does not rescue a long prompt.
+- Read "minimal" as every sentence carrying a signal, not as a short document. A short document that hedges carries the same cost with less value.
 
 ### 1.3 Explicit > Implicit
 
@@ -190,9 +192,34 @@ If output quality is insufficient, add context in this order:
 
 ## 4. State and Context Boundaries
 
-- Distinguish canonical rules from task state, progress notes, and temporary scratch context.
-- When documenting long-running harnesses, state what is persisted, what is compacted, and what can be safely dropped.
-- For long-context systems, document the preferred ordering of static instructions, reference material, and variable inputs.
+A document that covers a long-running run states four decisions, because a reader cannot infer them:
+
+| Decision | What the document states | Failure when absent |
+|---|---|---|
+| Where the plan lives | The file or board that holds the active plan, and the instruction to re-read it after every compaction | The plan lives only in the window and dies at the first summary |
+| What is clearable | Tool output and file dumps that may be dropped because their path or URL survives | A log dump crowds out the rule that mattered |
+| What is summarizable | History that may be replaced by a summary, and the fields that summary must carry | A constraint stated once disappears silently |
+| What must be written out | Decisions, unresolved risks, and the next action, moved to disk before any summary | "Move before summarizing" degrades into "summarize and hope" |
+
+The four levers behind those decisions are write, select, compress, and isolate. A document that names only "compaction" has named one of four, and usually the most expensive one.
+
+Three boundaries belong in the document explicitly:
+
+- **A stable prefix is not a stored prefix.** Instructions supplied for one turn do not carry into later turns when the runtime chains state by an id, and a compaction can drop the turn where a rule was first stated. Anything that must outlive a summary belongs in a file the runtime re-injects, not in a turn-one message.
+- **Clearing is cheaper than rewriting, and both need a log.** Prefer dropping a re-fetchable tool result over rewriting history, and record the trigger: what crossed the threshold, what was dropped, and what had to be re-read.
+- **Isolation is for investigation, not for decisions.** Parallel workers may share a question; they must not each settle a fact that has to stay consistent. A handoff carries the objective, the constraints discovered so far, the output schema, and the stop condition, plus paths to the evidence, not a transcript.
+
+A reset is not a compaction with a different name: it needs the same survive-list in an artifact a fresh session can read without the old transcript, or the design fails the moment the workflow resets instead of compacting.
+
+### 4.1 Cache-visible layout
+
+When the document prescribes a prompt layout, the layout is also a cache decision:
+
+- Put the boundary after the last block that is identical across requests. Content after it is processed normally instead of being written to the cache.
+- Expect the prefix to be read at least twice before caching pays: a cache write costs more than an ordinary input token on every current provider that bills it.
+- Freeze the tool list and the stable instructions within a session. Reordering, re-describing, or adding a tool invalidates the prefix for the rest of the run.
+- Watch settings that render into the prompt: reasoning effort, verbosity, tool choice, or an output-schema change can invalidate what looks unchanged.
+- Append instead of rewriting. Where a runtime offers an append-only way to change an instruction or a setting mid-session, prefer it to editing the assembled prefix.
 
 ## 5. Anti-Drift Maintenance
 
@@ -258,6 +285,12 @@ Ship only when all pass:
 
 ## Sources
 
-> No external sources were used. Content checked 2026-09-21.
+> Content checked 2026-11-03 against the repository instruction base; no external URL was opened for this file.
 
-This file is this package's own procedure text and cites no external source.
+| Claim | Source |
+|---|---|
+| The context lifecycle, the four levers, the compaction and clearing rules, and the per-runtime parameters | `instructions/context-engineering/CONTEXT_ENGINEERING.md`, `instructions/context-engineering/references/context-management.md` |
+| Degradation with input length across 18 models, and distractors compounding the loss | `instructions/context-engineering/references/core-principles.md` |
+| Cache boundary placement, write costs, and prefix-invalidating settings | `instructions/cache/CACHE.md` |
+
+This file is this package's own procedure text. The claims above are its primary evidence, and they are recorded in their own files rather than repeated here.

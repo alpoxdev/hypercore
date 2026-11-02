@@ -12,7 +12,7 @@
 
 ## 2. 검출 규칙
 
-`skills/skill-maker/scripts/validate-skill-maker.mjs`의 `checkSelfContainment`가 패키지 안 텍스트 파일을 훑어 다음을 찾습니다.
+`skills/skill-maker/scripts/validate-skill-maker.sh`의 `checkSelfContainment`가 패키지 안 텍스트 파일을 훑어 다음을 찾습니다.
 
 - 하이픈이 들어간 형제 스킬 이름이 맨이름이나 백틱 형태로 나오는 경우. 경계는 더 긴 식별자를 제외하도록 잡아서, 확장된 이름을 그 앞부분으로 잘못 읽지 않습니다.
 - 형제 스킬 이름이 `$<이름>` 호출 형태로 나오는 경우.
@@ -33,7 +33,7 @@
 | Claim | Source |
 |---|---|
 | The self-containment requirement, the output-shape boundary rule, and the user-instruction-only exception | user instruction, 2026-09-21 |
-| The detection rules, the `--require-self-containment` and `--allow` flags, and the sibling-name discovery | `skills/skill-maker/scripts/validate-skill-maker.mjs` |
+| The detection rules, the `--require-self-containment` and `--allow` flags, and the sibling-name discovery | `skills/skill-maker/scripts/validate-skill-maker.sh` |
 | One canonical home per rule and a lean core, which is why this rule lives in one file instead of being restated in the core | `rules/progressive-disclosure.md` |
 
 ### Evidence grade

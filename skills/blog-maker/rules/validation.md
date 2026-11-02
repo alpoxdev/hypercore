@@ -78,7 +78,7 @@
 - [ ] Every claim that names Naver behavior traces to an `official` row in `references/naver-algorithm-timeline.md`; observed and folklore items are labeled as such.
 - [ ] Local links resolve; code fences are balanced.
 - [ ] `assets/evals/blog-maker-cases.jsonl` covers positive, negative, boundary, regression, and adversarial cases and matches the current trigger and workflow: platform resolution (inblog explicit and URL-inferred, unknown and conflicting), the HTML default against an explicit plain request, the default-delivery-shape regression, and the no-Naver-rule-leakage and HTML-embed-versus-native-paste boundaries.
-- [ ] Repository maintenance only (not a runtime dependency): the corpus validator scoped to this package (`validate-skills-corpus.mjs --root skills --only blog-maker --json`) passes.
+- [ ] Repository maintenance only (not a runtime dependency): the corpus validator scoped to this package (`validate-skills-corpus.sh --root skills --only blog-maker --json`) passes.
 - [ ] `bun run --cwd scripts verify` passes.
 - [ ] When this change adds a skill, or changes a skill's name or catalog exposure, `README.md`'s skill count and catalog row are updated; otherwise confirm `README.md` is unchanged.
 

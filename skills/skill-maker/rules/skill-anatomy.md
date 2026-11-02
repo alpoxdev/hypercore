@@ -27,7 +27,7 @@ skill-name/
 | `references/` | Conditional | Official summaries, detailed knowledge, schemas, edge cases, long examples |
 | `scripts/` | Conditional | Deterministic helpers, validators, formatters, data transforms |
 | `assets/` | Conditional | Templates, fixtures, schemas, static output resources |
-| `agents/` | Conditional | Runtime/UI metadata only when a runtime consumes it |
+| `agents/` | Conditional | Runtime metadata only when a runtime consumes it - for example Codex `agents/openai.yaml` (UI text, invocation policy, tool dependencies) |
 
 ## 2. Frontmatter
 
@@ -45,6 +45,28 @@ Rules:
 - `description` is trigger guidance, not marketing copy, and states both what the skill does and when to use it.
 - `compatibility` is optional and mentions real runtime, network, package, tool, or permission constraints.
 - Implementation-specific fields such as tool allowlists are optional and must not replace the core instructions.
+
+## 2a. Portable Core, Documented Extensions
+
+The base states this as `SK-P-3` (Portable core, documented extensions): the six specification fields
+carry the contract, and any runtime-only frontmatter is labelled with its runtime and must not be
+load-bearing.
+
+In practice: a reader on another runtime must still be able to trigger and run the skill from the six
+spec fields and the body alone. When a runtime-only field is used, name its runtime where it appears, and
+restate anything it enforces (manual invocation, tool limits, path limits) in the skill's own contract.
+
+| Runtime | Extension | Effect |
+|---|---|---|
+| Claude Code | `when_to_use` | Appended to `description` in the listing; counts toward the 1,536-character entry cut |
+| Claude Code | `argument-hint`, `arguments` | Autocomplete hint and named `$name` substitution |
+| Claude Code | `disable-model-invocation`, `user-invocable` | Turns off automatic or manual invocation respectively |
+| Claude Code | `allowed-tools`, `disallowed-tools` | Adds or removes tools for the invoking turn only |
+| Claude Code | `model`, `effort`, `context`, `agent`, `background` | Model/effort override; `context: fork` runs the skill in a subagent |
+| Claude Code | `hooks`, `paths`, `shell` | Session hooks on invocation, path-glob activation limit, inline-shell choice |
+| Codex | `agents/openai.yaml` (a file, not frontmatter) | `interface` text and icons, `policy.allow_implicit_invocation`, `dependencies.tools` |
+
+The full field behaviour is in `references/official/anthropic.md` and `references/official/openai.md`.
 
 ## 3. Frontmatter Constraints
 
@@ -77,9 +99,10 @@ Claude adds constraints on top of the specification. A skill that violates these
 - Gerund-form names (verb + `-ing`) are the recommended convention. Noun phrases and action-oriented
   names are acceptable; vague names such as `helper`, `utils`, or `tools` are not.
 
-Also worth carrying: on the claude.ai upload, Skills API, and `package_skill.py` path, only the six
-standard fields are allowed and an extra field is a **hard error**, not a silently ignored key. So a skill
-that uses Claude Code extension fields is a Claude Code skill, not a portable one.
+Also worth carrying: on the claude.ai upload and Skills API path, only the six standard fields are
+allowed and an extra field is a **hard error**, not a silently ignored key. Claude Code itself ignores an
+unknown field without an error, so a skill can look fine locally and still fail to upload. A skill that
+relies on Claude Code extension fields is a Claude Code skill, not a portable one (SK-P-3).
 
 ## 5. What `allowed-tools` Actually Does
 
@@ -95,7 +118,7 @@ State this precisely in both directions, because both halves are easy to get wro
 The accurate conclusion is therefore neither "it has no effect" nor "it is a security control": it is a
 convenience grant, and side-effect gating must be stated in the skill's own contract.
 
-## 6. First-Line Rule, Listing Budget, and Discovery
+## 6. First-Line Rule and Discovery
 
 **The frontmatter is only read when the opening `---` is the file's first line.** Otherwise the whole
 file, `---` markers included, is treated as skill content, and the skill loses its discovery metadata
@@ -103,21 +126,21 @@ silently while still being loadable by name.
 
 This is already enforced by both repository gates, so it needs stating rather than new tooling:
 
-- `validate-skill-maker.mjs` resolves frontmatter with an anchor that requires `---` at the start of the
+- `validate-skill-maker.sh` resolves frontmatter with an anchor that requires `---` at the start of the
   file, so a blank first line makes the block unfindable and the gate reports `FRONTMATTER_NAME`,
   `FRONTMATTER_DESCRIPTION`, and `FRONTMATTER_TRIGGER`.
-- `validate-skills-corpus.mjs` reports `FRONTMATTER_MISSING`.
+- `validate-skills-corpus.sh` reports `FRONTMATTER_MISSING`.
 
-Listing budget:
+The listing budgets that decide whether a description is seen at all are stated once, in
+`rules/trigger-design.md` §6.
 
-| Runtime | Budget | Overflow behaviour |
-|---|---|---|
-| Codex | **2%** of the context window, or **8,000** characters when unknown | Descriptions are shortened first; some skills may then be omitted from the initial list with a warning |
-| Claude Code | 1% of the context window, per-entry text capped at 1,536 characters | Least-invoked skills lose their descriptions first |
+Two discovery facts differ by runtime and change how a package is shipped:
 
-**This repository is already over the Codex budget.** Measured 2026-09-20: 38 skills whose descriptions
-total **14,641** characters, and Codex emitted its shortening warning during that session. Growing a
-description needs a reason; the key trigger belongs in the first sentence.
+- Codex reads `.agents/skills` in every directory from the working directory up to the repository root,
+  plus user, admin, and bundled locations; two skills with the same `name` are **not merged** and both
+  can appear.
+- Claude Code keeps an invoked skill's body in context across later turns and does not re-read the
+  file, so an edit made mid-session is not seen until the skill is invoked again in a new session.
 
 ## 7. Minimum Core Contract
 
@@ -173,29 +196,25 @@ Keep headings, section order, links, and examples structurally aligned across th
 - [ ] References hold detail, not core trigger logic.
 - [ ] Scripts/assets exist only when justified and documented.
 - [ ] Optional metadata is intentionally present or intentionally omitted.
+- [ ] Every runtime-only field is labelled with its runtime, and the skill still reads and triggers correctly without it (SK-P-3).
 - [ ] `allowed-tools`, when used, is not presented as a safety boundary.
 
 ## Sources
 
-> Links checked 2026-09-20.
+> Checked 2026-11-03.
 
 | Claim | Source |
 |---|---|
-| The frontmatter field table and every constraint in it, the required/optional split, and the three-stage disclosure model | <https://agentskills.io/specification> |
+| The frontmatter field table and every constraint in it, and the required/optional split | <https://agentskills.io/specification> |
 | The XML-tag and reserved-word constraints on `name`, the XML-tag constraint on `description`, third-person descriptions, and the gerund naming convention | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices> |
-| The six standard frontmatter fields, the hard error for non-spec fields on the claude.ai/API path, the first-line rule, and the 1%/1,536-character listing budget | <https://code.claude.com/docs/en/skills> |
-| The Codex 2% / 8,000-character listing budget, shorten-then-omit, and the omission warning | <https://learn.chatgpt.com/docs/build-skills> |
+| The six standard fields, the Claude Code extension list, the hard error for non-spec fields on the upload/API path, Claude Code ignoring unknown fields, the first-line rule, and the in-context lifecycle of an invoked skill | <https://code.claude.com/docs/en/skills> |
+| `agents/openai.yaml`, the `.agents/skills` walk, and same-`name` non-merging | <https://learn.chatgpt.com/docs/build-skills> |
 | `allowed-tools` as a permissive grant for the invoking turn rather than a restrictive boundary | <https://code.claude.com/docs/en/skills> |
 | `allowed-tools` observed as parsed but not established as an enforceable permission boundary | `instructions/cli/jcode/README.md` |
-| The gate that already enforces the first-line rule | `skills/skill-maker/scripts/validate-skill-maker.mjs` |
-| The 38-skill / 14,641-character measurement | this repository, measured 2026-09-20 |
+| `SK-P-3` | `instructions/skill/SKILL_AUTHORING.md` |
+| The gate that already enforces the first-line rule | `skills/skill-maker/scripts/validate-skill-maker.sh` |
 
 ### Evidence grade
 
-The frontmatter constraints are `PRIMARY` - the specification states them. The Claude additions and the
-listing budgets are `VENDOR` - each vendor's statement about its own product. The 38-skill and
-14,641-character figures are measurements of this repository, not external claims.
-
-**Correction recorded for the base:** `instructions/skill/references/skill-anatomy.md` §2 says the
-`compatibility` lower bound of 1 "is not stated by any source consulted". The specification states it. That
-base note is outdated; it is recorded here rather than edited into `instructions/**`, which stays out of scope.
+The frontmatter constraints are `PRIMARY` - the specification states them. The Claude additions, the
+extension fields, and the discovery facts are `VENDOR` - each vendor's statement about its own product.

@@ -134,8 +134,24 @@ Do not document a subagent/background-agent workflow without objective, scope, o
 
 Do not claim a document is done without a readback, grep/link/fence check, source check, smoke eval, or explicit caveat that explains the skipped verification.
 
+## 8. Instruction Economy
+
+### Forbidden 21: lines added on speculation
+
+Do not add an instruction because it sounds prudent. A line with no observed failure behind it, and no fact the code cannot reveal, spends attention and moves nothing; the measured result of a fuller file is more cost without a resolution gain.
+
+### Forbidden 22: a document that outranks the code or the task
+
+Do not ship a document that describes a codebase without stating that the code wins on conflict, and do not let a document's template displace the explicit instruction in the current request. Agents follow a contradictory file far more often than they follow the repository, so the precedence sentence is a required line, not a courtesy.
+
 ## Sources
 
-> No external sources were used. Content checked 2026-09-21.
+> Content checked 2026-11-03 against the repository instruction base; no external URL was opened for this file.
 
-This file is this package's own procedure text and cites no external source.
+| Claim | Source |
+|---|---|
+| The admission test, the precedence line, and the measured cost of a fuller context file | `instructions/agents-md/AGENTS_MD.md` |
+| The harmful-skill failure mode behind Forbidden 22 | `instructions/skill/SKILL_AUTHORING.md` |
+| The retrieved-content authority boundary behind Forbidden 17 | `instructions/sourcing/reliable-search.md` |
+
+This file is this package's own procedure text. The claims above are its primary evidence and are recorded in their own files rather than repeated here.

@@ -28,7 +28,7 @@ compatibility: 파일 읽기와 편집 capability가 필요합니다. 출처 민
 | 요청 | 라우팅 |
 |---|---|
 | 재사용 가능한 스킬 폴더 생성/리팩토링 | 재사용 가능한 스킬 저작 workflow |
-| 문서 시스템을 바꾸지 않고 사실을 찾아 답변/리포트만 제공 | `research` 또는 관련 source workflow |
+| 문서 시스템을 바꾸지 않고 사실을 찾아 답변/리포트만 제공 | 출처 기반 리서치 workflow |
 | 제품 코드 구현, 디버깅, 리팩토링 | 관련 implementation workflow |
 | 문서가 부수 산출물인 제품/아키텍처 계획 | 관련 planning workflow |
 
@@ -48,7 +48,7 @@ Positive:
 Negative:
 
 - "데이터베이스 migration review용 Codex 스킬을 만들어줘." 주 산출물이 스킬 폴더이므로 재사용 가능한 스킬 저작 workflow로 라우팅합니다.
-- "현재 agent framework 시장을 조사해서 승자를 알려줘." Research를 사용합니다.
+- "현재 agent framework 시장을 조사해서 승자를 알려줘." 출처 기반 리서치 workflow로 라우팅합니다.
 - "깨진 TypeScript build를 고치고 README도 업데이트해줘." 문서는 부수적이므로 implementation workflow를 사용합니다.
 
 Boundary:
@@ -101,8 +101,10 @@ Boundary:
 현재 문서에 필요한 concern만 로드합니다.
 
 - 비단순 create/refactor 전 `rules/structured-reasoning.ko.md`를 읽습니다.
-- authority, context budget, prompt contract, runtime profile, delegation에는 `rules/context-engineering.ko.md`와 `instructions/context-engineering/CONTEXT_ENGINEERING.ko.md`를 읽습니다.
+- authority, context budget, prompt contract, runtime profile, delegation에는 `rules/context-engineering.ko.md`와 `instructions/context-engineering/CONTEXT_ENGINEERING.ko.md`를 읽습니다. 문서가 compaction, tool result 정리, memory, session handoff를 규정하면 `instructions/context-engineering/references/context-management.ko.md`를 더 읽습니다.
 - tool, side effect, state, safety gate, execution trajectory에는 `rules/harness-engineering.ko.md`와 `instructions/harness-engineering/HARNESS_ENGINEERING.ko.md`를 읽습니다.
+- 저장소 수준 지시 파일이나 코드베이스를 설명하는 문서에는 `instructions/agents-md/AGENTS_MD.ko.md`를 읽습니다. 이 문서가 한 줄의 편입 기준, 우선순위 문장, context file의 측정된 비용을 소유합니다.
+- 반복되거나 사람 없이 도는 workflow를 규정하는 문서에는 `instructions/loop-engineering/LOOP_ENGINEERING.ko.md`를, 여러 node로 이루어진 topology를 규정하는 문서에는 `instructions/graph-engineering/GRAPH_ENGINEERING.ko.md`를 읽습니다. 그 문서의 필수 구성 요소가 곧 대상 문서의 절 구성이며, 다른 구성으로 대체하지 않습니다.
 - 최신·논쟁·보안 민감·benchmark·비교·외부 검색 주장에는 `rules/sourcing.ko.md`와 `instructions/sourcing/reliable-search.ko.md`를 읽습니다.
 - risk depth, eval, trace assertion, reviewer gate, completion evidence에는 `rules/validation.ko.md`와 `instructions/validation/index.ko.md`를 읽습니다.
 - 객관적으로 점수화된 최적화에만 `instructions/autoresearch/`, cross-runtime 동작에만 `instructions/cli/`를 읽습니다.
@@ -125,6 +127,8 @@ Boundary:
 6. stop condition
 
 Self-grading만 사용하거나, baseline/eval set을 바꾸거나, "좋아질 때까지" 무제한 반복하거나, guard에 실패한 candidate를 수용하지 않습니다.
+
+이 개정 루프는 루프 계약이 아닙니다. 사람 없이 도는 루프를 규정하는 문서는 그 루프 자체의 구성 요소로 판정합니다. 트리거, 작업 출처, 행위자가 아닌 주체가 확인하는 정지 조건, 예산, 에스컬레이션, 디스크에 남는 상태 파일입니다. graph 문서는 node schema, 허용 edge, 라우팅 권한, 상태 병합 규칙, 상한, 내구성으로 판정합니다.
 
 </loop_policy>
 
@@ -168,6 +172,8 @@ Core exit gates:
 
 - 첫 화면에서 purpose와 route boundary가 분명함
 - intent, scope, authority, evidence, capability, loop, output, verification, stop 결정이 discoverable함
+- 모든 지시 줄이 줄 단위 제거 검사를 통과함. 관찰된 실패나 코드가 드러내지 못하는 제약으로 거슬러 올라가야 함
+- 코드베이스를 설명하는 문서는 어긋날 때 코드가 이긴다고 밝히고, 측정된 주장은 한 번의 실행이나 보정하지 않은 판정자가 아니라 선언한 실행 횟수와 구간으로 뒷받침함
 - core rule이 reference/local overlay에 중복되지 않음
 - current/provider-sensitive claim에 적절한 provenance와 미래가 아닌 날짜가 있음
 - capability 부재가 요청 결과를 조용히 축소하지 않음
@@ -190,7 +196,8 @@ Core exit gates:
 | 범위 | 편집 전에 소유 파일과 제외 파일, 산출물, 의도적 비목표를 명시한다 |
 | 계약 | 의도, 트리거, 범위, 권위, 근거, 역량, 루프, 출력, 검증, 정지 결정을 확인할 수 있어야 한다 |
 | 계층 | 정본 코어, 규칙, 참조, 출처 원장, 로컬 오버레이, 검증 산출물이 각각 하나의 정본 위치를 갖는다 |
-| 출처 | 최신·쟁점·보안·벤치마크·비교 주장에는 출처, 적용 날짜나 버전, 단서를 붙인다 |
+| 출처 | 최신·쟁점·보안·벤치마크·비교 주장에는 출처, 적용 날짜나 버전, 단서를 붙인다. 판(edition)이 있는 표준은 판을 밝히고, 각 주장은 실제로 연 산출물을 인용한다 |
+| 간결성 | 모든 지시 줄은 관찰된 반복 실패나 코드가 드러내지 못하는 제약으로 거슬러 올라간다. 추가한 줄은 막으려는 실패를 밝히고, 코드가 이미 보여 주는 줄은 일정에 따라 정리한다 |
 | 이식성 | 코어 동작은 역량 기준으로 쓰고, 역량이 없을 때의 폴백·건너뛰기·차단 경로를 명시한다 |
 | 실행 가능성 | 워크플로 단계를 관찰 가능하게 쓰고, 부작용 범위를 한정하며, 실패 처리를 명시한다 |
 | 유지보수성 | 점진적 공개를 지키고, 규칙을 중복하지 않으며, 영어·한국어 미러의 구조를 맞춘다 |
@@ -209,6 +216,7 @@ Core exit gates:
 | 루프 | 무한 반복, 자기 채점만 하는 수용, 기준선이나 평가 세트 변경, 가드 실패 결과 유지 |
 | 검증 | 산문 재읽기, 위임된 주장, 정상 경로만 보고 증거 대조 없이 완료 선언 |
 | 표류 | 실제 확인 날짜보다 미래인 출처 날짜, 다시 읽지 않은 자료에 갱신한 날짜 |
+| 비대와 잘못된 우선순위 | 근거 없이 덧붙인 지시 줄, 코드와 기본값이 이미 보여 주는 내용의 반복, 코드베이스를 설명하면서 두 내용이 어긋날 때 코드가 이긴다는 문장을 빼둔 문서 |
 | 이식성 | 역량 게이트 없는 공급자 명령 하드코딩, 요청된 결과를 조용히 바꾸는 폴백 발명 |
 | 안전 | 자격 증명, 네트워크, 배포, 게시, 파괴적 작업, 프로덕션 부작용에 대한 게이트 누락 |
 
@@ -229,14 +237,18 @@ Core exit gates:
 
 ## Sources
 
-> 링크 확인 2026-09-21 (저장소 로컬 행 기준, 외부 행은 안내 문서의 확인일을 따릅니다).
+> 확인 2026-11-03. 이 표의 모든 행을 같은 날짜에 읽었고, 규격 페이지를 포함합니다.
 
 | 주장 | 출처 |
 |---|---|
 | 이 코어가 드러내는 문서 계약 형태, 계층 분할, 완료 게이트 | `instructions/context-engineering/CONTEXT_ENGINEERING.md` |
+| context 생명주기 수단, compaction 후 남겨야 할 목록, runtime별 compaction·정리 파라미터 | `instructions/context-engineering/references/context-management.md` |
 | 하네스 계층, 추적 필드, 판정 규칙, 증거 규율 | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
 | 위험 깊이 척도, 금지 패턴, 완료 계약 | `instructions/validation/index.md` |
-| 출처 등급, 원장 필드, 검색 안전 경계 | `instructions/sourcing/reliable-search.md`, `instructions/sourcing/references/source-ledger.md` |
+| 검증 게이트 뒤에 있는 반복 실행, 구간, 판정자 보정 요건 | `instructions/validation/references/evaluation-design.md` |
+| 출처 등급, 원장 필드, 판 규칙, 검색 안전 경계 | `instructions/sourcing/reliable-search.md`, `instructions/sourcing/references/source-ledger.md` |
+| 편입 기준, 우선순위 문장, context file의 측정된 비용 | `instructions/agents-md/AGENTS_MD.md` |
+| 루프 문서의 필수 구성 요소와 graph 계약 필드 | `instructions/loop-engineering/LOOP_ENGINEERING.md`, `instructions/graph-engineering/GRAPH_ENGINEERING.md` |
 | 트리거 케이스 형태, 두 축, 설명 최적화 규칙 | `instructions/skill/references/trigger-design.md` |
 | 문서 대 스킬 경계와 지원 파일 기준 | `instructions/skill/SKILL_AUTHORING.md`, `instructions/skill/references/resource-placement.md` |
 | 단계별 공개 예산과 목록 단계 한도 | `instructions/skill/references/progressive-disclosure.md`, <https://agentskills.io/specification> |
@@ -244,4 +256,4 @@ Core exit gates:
 
 ### Evidence grade
 
-저장소 로컬 행은 2026-09-21에 전문을 읽었고 이 스킬의 `PRIMARY` 근거다. 규격 행이 유일한 외부 주장이며, 이번 변경에서 다시 가져오지 않았으므로 새 날짜 대신 안내 문서의 확인일을 그대로 쓴다.
+저장소 로컬 행은 2026-11-03에 읽었고 이 스킬의 `PRIMARY` 근거입니다. 규격 행이 유일한 외부 주장이며, 같은 날짜에 <https://agentskills.io/specification>에서 응답을 받았습니다.

@@ -14,6 +14,12 @@
 
 계층이 깊을수록 내용은 더 구체적이고 더 선택적이어야 합니다.
 
+단계마다 비용이 다릅니다. 메타데이터는 쓰이든 쓰이지 않든 설치된 스킬마다 약 100토큰씩 로드됩니다.
+본문은 활성화할 때 로드되며 5,000토큰 아래로 유지해야 합니다. 번들 파일은 읽기 전에는 비용이 없고,
+스크립트 코드는 컨텍스트에 들어가지 않으며 출력만 들어갑니다. 일부 런타임은 호출된 본문을 파일을
+다시 읽지 않고 이후 턴에도 컨텍스트에 남겨 두므로, 본문의 모든 줄이 되풀이되는 비용이고 가장 중요한
+지침은 앞부분에 두어야 합니다.
+
 ## 2. 컨텍스트 예산
 
 아래 두 수치는 **서로 다른 것**이며 그 차이가 중요합니다.
@@ -44,6 +50,8 @@
 - 직업, 트리거, 경계
 - 권위, 안전, 출력, 검증, 정지 조건 요약
 - 상위 수준 워크플로
+- 함정: 합리적 가정을 뒤집는 환경 사실. 에이전트가 그 상황을 만나기 전에 읽도록 핵심에 둡니다.
+  참조 파일은 에이전트가 열어야 할 줄 이미 알고 있을 때만 도움이 됩니다
 - 읽는 조건이 붙은 더 깊은 파일 안내
 
 밖으로 옮길 것:
@@ -73,6 +81,9 @@ Read `rules/validation-and-iteration.md` before declaring the skill complete.
 Run the target package's documented validator when present.
 A repository-maintenance gate stays in the repository's policy documents, not in the skill artifact (`rules/self-containment.md`, SK-S-1).
 ```
+
+읽는 조건은 디렉터리가 아니라 에이전트가 알아볼 수 있는 상황으로 씁니다. "`references/`를 보세요"보다
+"API가 200이 아닌 상태 코드를 반환하면 `references/api-errors.md`를 읽으세요"가 낫습니다.
 
 ## 5. 한 단계 깊이
 
@@ -115,17 +126,29 @@ A repository-maintenance gate stays in the repository's policy documents, not in
 
 - SK-D-1: 각 지침에 대해 **"이것이 없으면 에이전트가 틀릴까?"** 를 묻습니다. 답이 아니오면 삭제합니다. 확신이 없으면 미심쩍다는 이유로 남기지 말고 시험합니다.
 - SK-D-2: 스킬 없이도 작업이 성공한다면 그 스킬은 가치를 더하지 않을 수 있습니다. 에이전트가 이미 안정적으로 하는 일을 다시 적는 스킬은 이익 없는 비용입니다.
+- SK-D-3: 잘 썼다는 이유만으로 그 스킬을 유지할 가치가 생기지는 않습니다. 2026년 벤치마크에서 공개 스킬 98개 중 92개가 통계적으로 유의미한 효과가 없었고, 해로운 스킬은 자기 템플릿에 에이전트를 고정하고 과제의 명시 지시를 덮어쓰는 방식으로 작동했습니다. 그래서 "내 스킬은 항상 잘 따른다"는 가치의 증거가 아닙니다.
 
 낭독 질문 **과** 제거 시험을 함께 유지합니다. 둘은 다른 것을 묻습니다. 앞은 독자가 찾을 수 있는지를,
 뒤는 그 내용이 애초에 있어야 하는지를 묻습니다.
 
+## 9. 로드되는 앞부분을 안정적으로 유지
+
+런타임이 스킬 이름, 설명, 호출된 본문을 세션마다 다시 보내는 경우, 그 텍스트는 재사용되는 프롬프트
+접두사의 일부이고 이를 고치면 캐시된 재사용이 무효가 됩니다. 그러므로 길이뿐 아니라 **안정성**으로도
+나눕니다. 안정적인 계약 텍스트는 `SKILL.md`에, 빠르게 바뀌는 제공자 세부와 날짜, 개수, 버전 고정값은
+`references/`나 파일 아래쪽에 둡니다. 배치 규칙은 `rules/resource-placement.md` §8a에 있습니다.
+
 ## Sources
 
-> 링크 확인 2026-09-20.
+> 확인 2026-11-03.
 
 | 주장 | 출처 |
 |---|---|
-| 500줄·5,000토큰 점진적 공개 예산, `SK-D-1`과 `SK-D-2`의 근거인 제거 시험 | <https://agentskills.io/skill-creation/best-practices> |
+| 500줄·5,000토큰 점진적 공개 예산, `SK-D-1`과 `SK-D-2`의 근거인 제거 시험, 함정 배치 규칙, 조건부 읽기 안내 예시 | <https://agentskills.io/skill-creation/best-practices> |
+| 스킬당 약 100토큰의 메타데이터, 5k 토큰 미만 본문, 스크립트의 유일한 컨텍스트 비용인 스크립트 출력 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| 파일을 다시 읽지 않고 이후 턴에도 컨텍스트에 남는 호출된 스킬 본문 | <https://code.claude.com/docs/en/skills> |
+| `SK-D-3`의 근거인 98개 중 92개 무효과 결과와 템플릿 고정 실패 | <https://arxiv.org/abs/2603.15401> |
+| 안정성으로 나누기와 로드되는 앞부분 유지 | `instructions/cache/CACHE.md` §3 |
 | 세 단계 모델(메타데이터, 전체 지침, 참조 파일) | <https://agentskills.io/specification> |
 | 한 단계 깊이 참조 규칙과 그 이유인 부분 읽기 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices> |
 | 100줄을 넘는 참조 파일의 목차 규칙 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices> |

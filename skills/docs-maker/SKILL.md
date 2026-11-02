@@ -28,7 +28,7 @@ Route away when another outcome owns the request:
 | Request | Route |
 |---|---|
 | Create or refactor a reusable skill folder | the reusable-skill authoring workflow |
-| Find facts and return an answer/report without changing a documentation system | `research` or the applicable source workflow |
+| Find facts and return an answer/report without changing a documentation system | the source-backed research workflow |
 | Implement, debug, or refactor product code | the applicable implementation workflow |
 | Produce a product or architecture plan where docs are only a by-product | the applicable planning workflow |
 
@@ -48,7 +48,7 @@ Positive:
 Negative:
 
 - "Create a Codex skill for reviewing database migrations." The primary output is a skill folder, so route to the reusable-skill authoring workflow.
-- "Research the current agent framework market and tell me which one wins." Use research.
+- "Research the current agent framework market and tell me which one wins." Route to the source-backed research workflow.
 - "Fix the broken TypeScript build and update the README afterward." Use the implementation workflow; docs are secondary.
 
 Boundary:
@@ -101,8 +101,10 @@ Keep one canonical home per rule. Link support material directly from the file t
 Load only the concern needed for the current document:
 
 - Read `rules/structured-reasoning.md` before a non-trivial create/refactor.
-- Read `rules/context-engineering.md` and `instructions/context-engineering/CONTEXT_ENGINEERING.md` for authority, context budgets, prompt contracts, runtime profiles, or delegation.
+- Read `rules/context-engineering.md` and `instructions/context-engineering/CONTEXT_ENGINEERING.md` for authority, context budgets, prompt contracts, runtime profiles, or delegation. Add `instructions/context-engineering/references/context-management.md` when the document specifies compaction, tool-result clearing, memory, or a session handoff.
 - Read `rules/harness-engineering.md` and `instructions/harness-engineering/HARNESS_ENGINEERING.md` for tools, side effects, state, safety gates, or execution trajectories.
+- Read `instructions/agents-md/AGENTS_MD.md` when the artifact is a repository-level instruction file, or any document that describes a codebase. It owns the admission test for a line, the precedence line, and the measured cost of a context file.
+- Read `instructions/loop-engineering/LOOP_ENGINEERING.md` when the document specifies a repeated or unattended workflow, and `instructions/graph-engineering/GRAPH_ENGINEERING.md` when it specifies a multi-node topology. Their required parts are that document's section set; do not substitute a different one.
 - Read `rules/sourcing.md` and `instructions/sourcing/reliable-search.md` for current, contested, security-sensitive, benchmark, comparative, or externally retrieved claims.
 - Read `rules/validation.md` and `instructions/validation/index.md` for risk depth, evals, trace assertions, reviewer gates, or completion evidence.
 - Read `instructions/autoresearch/` only for objectively scored optimization and `instructions/cli/` only for cross-runtime behavior.
@@ -127,6 +129,8 @@ Default to no loop for deterministic document creation or refactoring with direc
 6. stop condition
 
 Never accept self-grading alone, an altered baseline/eval set, an unbounded "improve until good" loop, or a candidate that fails a guard.
+
+This revision loop is not the loop contract. A document that specifies an autonomous loop is judged by that loop's own parts: trigger, work source, stop condition checked by someone other than the actor, budget, escalation, and a durable state file. A graph document is judged by its node schemas, permitted edges, routing authority, state merge rules, bounds, and durability.
 
 </loop_policy>
 
@@ -170,6 +174,8 @@ Core exit gates:
 
 - the purpose and route boundary are obvious in the first screen
 - intent, scope, authority, evidence, capabilities, loop, output, verification, and stop decisions are discoverable
+- every instruction line passes the removal test at line level: it traces to an observed failure or to a constraint the code cannot reveal
+- a document that describes a codebase states that the code wins on conflict, and a measured claim rests on declared runs plus an interval rather than one run or an uncalibrated judge
 - core rules are not duplicated in references or local overlays
 - current/provider-sensitive claims have appropriate provenance and non-future dates
 - unavailable capabilities never silently reduce the requested outcome
@@ -192,7 +198,8 @@ Stop only when the requested document artifacts exist, critical risk-matched gat
 | Scope | Owned and excluded files, outputs, and intentional non-goals are named before editing |
 | Contract | Intent, trigger, scope, authority, evidence, capabilities, loop, output, verification, and stop decisions are discoverable |
 | Layering | Canonical core, rules, references, source ledger, local overlay, and validation artifacts each have one canonical home |
-| Sourcing | Current, contested, security, benchmark, or comparative claims carry provenance, an applicable date or version, and a caveat |
+| Sourcing | Current, contested, security, benchmark, or comparative claims carry provenance, an applicable date or version, and a caveat; a versioned standard carries its edition, and each claim cites the artifact that was opened |
+| Economy | Every instruction line traces to an observed repeated failure or to a constraint the code cannot reveal; an added line names the failure it prevents, and lines the code already shows are pruned on a schedule |
 | Portability | Core behavior is capability-based, with an explicit fallback, skip, or block path when a capability is unavailable |
 | Actionability | Workflow steps are observable, side effects are bounded, and failure handling is explicit |
 | Maintainability | Progressive disclosure holds, rules are not duplicated, and English/Korean mirrors stay structurally aligned |
@@ -211,6 +218,7 @@ Stop only when the requested document artifacts exist, critical risk-matched gat
 | Loops | Unbounded iteration, self-grading-only acceptance, a changed baseline or eval set, or keeping work after a failed guard |
 | Validation | Declaring completion from prose readback, delegated claims, or happy paths without inspecting claim-matched evidence |
 | Drift | Source dates later than the actual verification date, or a refreshed date on material that was not rechecked |
+| Bloat and false authority | Instruction lines added on speculation or restating what the code and defaults already show, and a document that describes a codebase without stating that the code wins when the two disagree |
 | Portability | Hard-coded provider commands without a capability gate, or an invented fallback that silently changes the requested outcome |
 | Safety | Ungated credential, network, publication, deployment, destructive, or production side effects |
 
@@ -231,14 +239,18 @@ Read `instructions/skill/references/trigger-design.md` for the full case shape, 
 
 ## Sources
 
-> Links checked 2026-09-21 for the repository-local rows; the external row carries the checked date recorded in `instructions/README.md` and was not re-fetched by this change.
+> Links re-checked 2026-11-03. Every row in this table was read on that date, including the specification page.
 
 | Claim | Source |
 |---|---|
 | The document contract shape, the layer split, and the completion gate this core exposes | `instructions/context-engineering/CONTEXT_ENGINEERING.md` |
+| The context lifecycle levers, the survive-list, and the per-runtime compaction and clearing parameters | `instructions/context-engineering/references/context-management.md` |
 | The harness layers, trace fields, judgement rules, and evidence discipline | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
 | The risk-depth scale, the forbidden patterns, and the completion contract | `instructions/validation/index.md` |
-| The source grades, ledger fields, and retrieval-safety boundary | `instructions/sourcing/reliable-search.md`, `instructions/sourcing/references/source-ledger.md` |
+| The trial, interval, and judge-calibration requirements behind the verification gates | `instructions/validation/references/evaluation-design.md` |
+| The source grades, ledger fields, edition rule, and retrieval-safety boundary | `instructions/sourcing/reliable-search.md`, `instructions/sourcing/references/source-ledger.md` |
+| The admission test, the precedence line, and the measured cost of a context file | `instructions/agents-md/AGENTS_MD.md` |
+| The required parts of a loop document and the graph contract fields | `instructions/loop-engineering/LOOP_ENGINEERING.md`, `instructions/graph-engineering/GRAPH_ENGINEERING.md` |
 | The trigger case shape, the two axes, and the description-optimization rules | `instructions/skill/references/trigger-design.md` |
 | The document-versus-skill boundary and the support-file criteria | `instructions/skill/SKILL_AUTHORING.md`, `instructions/skill/references/resource-placement.md` |
 | The staged disclosure budgets and the listing-stage limits | `instructions/skill/references/progressive-disclosure.md`, <https://agentskills.io/specification> |
@@ -246,4 +258,4 @@ Read `instructions/skill/references/trigger-design.md` for the full case shape, 
 
 ### Evidence grade
 
-The repository-local rows were read in full on 2026-09-21 and are `PRIMARY` for this skill. The specification row is the only external claim; it was not re-fetched here and therefore carries the instruction base's checked date rather than a new one.
+The repository-local rows were read on 2026-11-03 and are `PRIMARY` for this skill. The specification row is the only external claim; it was fetched the same day and answered from <https://agentskills.io/specification>.

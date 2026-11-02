@@ -2,27 +2,40 @@
 
 ## Draft
 
-1. prompt가 재사용될 것인지 확인한다.
-2. operator, target model 또는 agent, task class, side-effect boundary를 식별한다.
-3. prose를 다듬기 전에 prompt contract를 채운다.
-4. examples보다 먼저 variables와 context packet slots를 추가한다.
-5. style guidance보다 먼저 output schema를 정의한다.
-6. optimization claim보다 먼저 eval cases를 추가한다.
+1. prompt를 재사용할 것인지 확인합니다.
+2. operator, 대상 model 또는 agent, task class, side-effect 경계를 밝힙니다.
+3. 문장을 다듬기 전에 prompt contract를 채웁니다.
+4. 어느 규칙이 구속력 있고 어느 규칙이 advisory 기본값인지, untrusted material이 어디로 데이터로 들어오는지 선언합니다.
+5. example을 넣기 전에 variables와 context packet 자리를 만듭니다.
+6. 문체 지침보다 output schema를 먼저 정합니다. shape는 instruction, example, schema 가운데 하나로 표현하고 prefilled assistant turn으로 표현하지 않습니다.
+7. 계약은 stable prefix에 두고 날짜, 현재 작업, turn마다 바뀌는 값은 마지막에 붙이는 tail로 보냅니다.
+8. 최적화 주장보다 eval case를 먼저 넣고, case마다 실행 횟수와 집계 규칙을 함께 적습니다.
 
 ## Refactor
 
-1. 사용자가 behavior change를 요청하지 않았다면 현재 observable behavior를 보존한다.
-2. authority, scope, evidence, output requirements를 별도 section으로 나눈다.
-3. 중복되거나 장식적인 wording을 삭제한다.
-4. vague quality words를 success criteria와 verification checks로 바꾼다.
-5. 무엇이 왜 바뀌었는지 version note에 기록한다.
+1. 사용자가 동작 변경을 요청하지 않았으면 지금의 관찰 가능한 동작을 보존합니다.
+2. authority, scope, evidence, output 요구를 각각 다른 절로 나눕니다.
+3. 중복되거나 장식적인 문구를 지웁니다.
+4. 모호한 품질 표현을 success criteria와 verification check로 바꿉니다.
+5. 변동 값을 stable prefix 밖 tail로 옮기고, 규칙 하나에 정본 위치 하나만 둡니다.
+6. 무엇을 왜 바꿨는지 version note에 적습니다.
 
 ## Optimize
 
-baseline case를 기록하고, failures를 진단하고, 가장 작은 instruction surface를 patch하고, 같은 cases를 다시 실행한다. safety, source, schema constraints를 깨지 않으면서 target behavior를 개선하는 변경만 유지한다.
+baseline case를 기록하고, 실패를 진단하고, 가장 작은 instruction surface를 고치고, 같은 judge로 같은 case를 다시 실행합니다. 안전, 출처, schema, guard 범위를 깨지 않으면서 목표 동작이 개선될 때만 변경을 남깁니다. 결과에는 model과 runtime version, 실행 횟수, grader version, 비용 변화를 함께 기록합니다. candidate는 case, judge, metric, guard를 고칠 수 없고, 점수가 오르는데 guard 범위가 줄면 변조 신호입니다.
+
+## Version Note
+
+version note에는 version, 무엇을 바꿨는지, 왜 바꿨는지, 사용한 실행 횟수와 집계 방식, grader version, 남은 위험, 그리고 prompt 길이나 tool surface를 건드렸다면 비용 변화를 적습니다.
 
 ## Sources
 
-> 외부 출처 없음. 내용 확인 2026-09-21.
+> 확인 2026-11-03. 저장소 instruction base를 기준으로 확인했습니다.
 
-이 규칙 문서는 이 패키지 자체의 절차 문서이며 외부 출처를 인용하지 않습니다.
+| Claim | Source | Checked |
+|---|---|---|
+| 작성 순서, prompt 개선 루프, version note | `instructions/context-engineering/references/prompt-authoring.md` | 2026-11-03 |
+| stable prefix, 변동 tail, 캐시 경계 위치 | `instructions/cache/CACHE.md` | 2026-11-03 |
+| baseline, 같은 runner로 재실행, guard 무결성 | `instructions/harness-engineering/HARNESS_ENGINEERING.md`, `instructions/autoresearch/references/core-loop.md` | 2026-11-03 |
+
+이 문서는 외부 URL을 인용하지 않으며, 모든 규칙은 위 저장소 base를 다시 쓴 것입니다.

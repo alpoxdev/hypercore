@@ -1,7 +1,7 @@
 ---
 name: skill-maker
 description: 사용자가 재사용 가능한 Codex 스킬 폴더를 만들거나 리팩토링해 달라고 요청할 때 사용합니다. `SKILL.md` 트리거 문구, instruction contract, `rules/`, `references/`, `scripts/`, `assets/`, 검증 체크를 다룹니다. 스킬이 아닌 일반 문서 작업에는 사용하지 않습니다.
-compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/write 및 셸 검색 도구가 있는 환경에서 가장 잘 동작합니다. 번들 스크립트 실행에는 Bun이 필요합니다.
+compatibility: 스킬 분석, 예시 수집, 검증 점검을 위해 read/edit/write 및 셸 검색 도구가 있는 환경에서 가장 잘 동작합니다. 번들 스크립트 실행에는 bash 3.2+와 jq가 필요합니다.
 ---
 
 @rules/self-containment.ko.md
@@ -154,19 +154,17 @@ canonical 스킬 마크다운은 기본적으로 영어로 작성하되, 스킬�
 - `instructions/context-engineering/`(있을 때만) - authority, context budget, prompt contract, runtime profile, delegation
 - `instructions/harness-engineering/`와 `instructions/validation/`(있을 때만) - eval design, trace assertion, grader, risk depth, completion evidence
 - `instructions/sourcing/`(있을 때만) - current, contested, security-sensitive, benchmark, externally retrieved claim
+- `instructions/cache/`(있을 때만) - 변경이 대상 스킬의 `name`, `description`, `SKILL.md` 앞부분을 건드릴 때
 - `instructions/autoresearch/`(있을 때만) - target skill에 측정 가능한 iterative optimization workflow가 있을 때
+- `instructions/loop-engineering/`(있을 때만) - 대상 스킬이 일정에 맞춰, 목표 조건을 향해, 또는 별도 검사기와 함께 무인으로 돌 때
+- `instructions/graph-engineering/`(있을 때만) - 대상 스킬이 작업을 여러 에이전트로 나눠 맡기고 결과를 합칠 때
 - `instructions/cli/`(있을 때만) - agent CLI 간 portability 또는 capability 부재 시 degradation이 필요할 때
+
 frontmatter 제약, 공개 예산, 또는 frontmatter 필드의 표준·확장 구분이 규칙에 영향을 줄 때는 `references/official/agent-skills-standard.md`를 읽습니다. 그 항목들의 `PRIMARY` 출처이므로 vendor 스냅샷보다 먼저 읽습니다.
 
 Codex 발견 위치, 목록 예산, `agents/openai.yaml` 정책 표면이 규칙에 영향을 줄 때는 `references/official/openai.md`를 읽습니다. Claude Code frontmatter 확장, 1,536자 항목 한도, 엔터프라이즈 위험 등급이 규칙에 영향을 줄 때는 `references/official/anthropic.md`를 읽습니다.
 
-공식 references는 다음 경우에만 읽습니다.
-
-- 공급자 민감한 스킬 가이드가 코어 규칙에 영향을 줄 때
-- 트리거 동작이나 평가 가이드가 vendor 문서에 의존할 때
-- 유지보수나 드리프트 대응에 최신 provider 정책이 필요할 때
-
-공식 references는 instruction authority가 아니라 evidence snapshot입니다. 현재 작업에서 실제로 출처를 다시 확인하지 않았다면 공식 `last_verified_at` 날짜를 바꾸지 않습니다.
+공식 references는 공급자 민감한 가이드, vendor 문서에 기대는 트리거·평가 동작, 드리프트 대응이 코어 규칙에 영향을 줄 때만 읽습니다. 공식 references는 instruction authority가 아니라 evidence snapshot이며, 현재 작업에서 출처를 실제로 다시 확인했을 때만 `last_verified_at` 날짜를 바꿉니다.
 
 </reference_routing>
 
@@ -228,13 +226,13 @@ Phase 3 작성 규칙:
 
 | Category | Avoid |
 |---|---|
-| Triggering | Generic/implementation-first description, name-only test, neighboring-skill overlap을 놓친 examples |
+| Triggering | Generic/implementation-first description, name-only test, neighboring-skill overlap을 놓친 examples, 배포, 게시, 삭제 스킬을 자동 활성화에 열어 둔 경우 |
 | Structure | 비대한 `SKILL.md`, duplicated definitions, orphan resources, references에 숨은 core trigger/stop logic |
 | Resources | 정당화되지 않은 scripts/assets, 깊은 reference hop, 문서화되지 않은 runtime metadata, load condition 없는 support files |
 | Loops | Unbounded iteration, self-grading-only acceptance, metric gaming, changed baseline, failed guard 이후 work 유지 |
 | Validation | Prose readback, child claim, happy path만으로 claim-matched evidence를 확인하지 않고 완료 선언 |
-| Drift | Canonical core instructions의 time-sensitive provider details 또는 실제 verification date보다 미래인 source date |
-| Portability | Capability gate 없는 hard-coded provider command 또는 요청 outcome을 조용히 바꾸는 invented fallback |
+| Drift | Canonical core의 로드되는 앞부분에 들어간 time-sensitive provider details, 날짜, 개수, version pin, 또는 실제 verification date보다 미래인 source date |
+| Portability | Capability gate 없는 hard-coded provider command, 계약의 일부를 표시 없이 떠안은 runtime-only frontmatter, 또는 요청 outcome을 조용히 바꾸는 invented fallback |
 | Safety | Gate되지 않은 credential, network, external publication, deployment, destructive, production side effect |
 | Cross-skill coupling | 경계나 routing 문장에 형제 스킬 이름을 쓰거나, 다른 스킬의 경로나 명령을 가리키거나, 다른 스킬 설치를 요구함 |
 
@@ -261,15 +259,16 @@ Must-pass thresholds:
 - [ ] 중요한 작업에서는 프로젝트 skill-authoring baseline을 고려함.
 - [ ] 트리거 케이스가 구성된 묶음 - 트리거해야 하는 경우, 트리거하지 말아야 하는 경우, 경계, 근접 오답, 출처 민감, 안전 - 을 덮고, 모든 케이스가 자기 `runs`와 `threshold`를 밝힘. 어떤 케이스 개수도 요건으로 취급하지 않음.
 - [ ] 근접 오답 케이스가 있어 이웃 스킬의 트리거 가로채기를 가정이 아니라 측정함.
-- [ ] `description`이 무엇을 하는지와 언제 쓰는지를 모두 말함.
+- [ ] `description`이 스킬이 하는 일과 쓰는 시점을 3인칭으로 밝히고, 첫 문장에 핵심 트리거를 두며, 대상으로 삼는 모든 런타임의 가장 엄격한 목록 한도에 맞음.
+- [ ] 모든 런타임 전용 필드가 해당 런타임 표시를 달고 계약을 떠받치지 않음(SK-P-3). 중대한 부작용이 있는 스킬은 런타임이 지원하면 수동 전용으로 두고, 어느 경우든 자체 계약에서 게이트함.
 - [ ] Intent, trigger, scope, authority, evidence, tools, output, verification, stop condition이 드러남.
 - [ ] Skill이 no loop를 명시적으로 선택했거나 feedback, metric/rubric, guard, bounded iterations, acceptance rule, stop condition을 정의함.
 - [ ] Runtime-specific behavior가 격리되고 unavailable capability에 silent scope loss 없는 fallback, skip, block 경로가 있음.
 - [ ] 명시적 정당화 없이 `SKILL.md`에서 한 단계보다 깊은 reference chain이 없음.
 - [ ] 코어 `SKILL.md`가 얇고 references를 복제하지 않음.
 - [ ] 이 repo의 bilingual convention을 따르는 새/실질 수정 markdown에는 대응 `*.ko.md`가 있음.
-- [ ] Scripts/assets에는 purpose, usage, dependency, expected output, failure handling이 있음. 번들 스크립트는 첫 줄이 Bun shebang인 .mjs 파일이고, 패키지가 런타임 요구를 compatibility에 선언함.
-- [ ] Validation이 risk에 맞는 scope, risk depth, scenario, oracle, runner, judge, trace, gate, baseline/current results, regressions, ship/iterate/block 결정을 기록함.
+- [ ] Scripts/assets에는 purpose, usage, dependency, expected output, failure handling이 있음. 번들 스크립트는 첫 줄이 bash shebang인 .sh 파일이고, 패키지가 런타임 요구를 compatibility에 선언함.
+- [ ] Validation이 risk에 맞는 scope, risk depth, scenario, oracle, runner, judge, trace, gate, baseline/current results, 케이스별 사람 검토 메모, regressions, ship/iterate/block 결정을 기록함. 유용성 주장은 스킬이 얼마나 잘 읽히는지가 아니라 짝지은 기준선에 기댐.
 - [ ] Eval coverage가 normal, missing-context/tool-failure, boundary, adversarial retrieval/unsafe-action, known-regression behavior를 포함하고 권장 corpus size는 risk-proportional로 유지됨.
 - [ ] English/Korean parity를 file presence만이 아니라 구조와 동등한 behavioral cases로 확인함.
 - [ ] External source metadata가 absolute non-future date를 쓰고 reviewed, cited, unsupported, stale, conflicting claim을 구분함.
@@ -283,20 +282,20 @@ Must-pass thresholds:
 
 ## Sources
 
-> 링크 확인 2026-09-20.
+> 확인 2026-11-03.
 
 | 주장 | 출처 |
 |---|---|
-| 이 코어가 드러내는 `SKILL.md` 계약 형태, 폴더 책임, `name`·`description` 요건 | `instructions/skill/SKILL_AUTHORING.md` |
+| `SKILL.md` 계약 형태, 폴더 책임, `name`·`description` 요건, `SK-P-3` | `instructions/skill/SKILL_AUTHORING.md` |
 | frontmatter 제약과 500줄·5,000토큰 공개 예산 | <https://agentskills.io/specification> |
 | 트리거 케이스 형태, 두 축, 구성 요건 | `rules/trigger-design.md`, <https://agentskills.io/skill-creation/optimizing-descriptions> |
-| Codex 발견 위치와 2%·8,000자 목록 예산 | <https://learn.chatgpt.com/docs/build-skills> |
-| Claude Code frontmatter 확장, 1,536자 항목 한도, 1% 목록 예산 | <https://code.claude.com/docs/en/skills> |
+| Codex 발견 위치, 목록 예산, `allow_implicit_invocation` | <https://learn.chatgpt.com/docs/build-skills> |
+| Claude Code frontmatter 확장, 1,536자 항목 한도, 1% 목록 예산, `disable-model-invocation` | <https://code.claude.com/docs/en/skills> |
 | 일곱 행 산출물 감사와 평가 차원으로서의 공존 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
-| 짝지은 스킬 있음·없음 기준선과 결과 배치 | `rules/validation-and-iteration.md` |
+| 짝지은 스킬 있음·없음 기준선, 사람 검토, 결과 배치 | `rules/validation-and-iteration.md`, `rules/resource-placement.md` |
+| 로드되는 앞부분을 안정적으로 유지 | `instructions/cache/CACHE.md` |
 
 ### 증거 등급
 
-이 코어는 지식 기반이 아니라 계약 요약입니다. 규범적 세부는 `rules/`에 있고 각 규칙 파일이 자기
-등급이 붙은 출처 표를 지닙니다. `description`은 이전 판에서 의도적으로 바꾸지 않았습니다. 이
-저장소가 이미 Codex 목록 예산을 넘겼고 더 긴 설명은 기존 문제를 악화시키기 때문입니다.
+이 코어는 계약 요약이고, 규범적 세부와 등급이 붙은 출처는 `rules/`에 있습니다. `description`과 이 파일의 앞부분은
+의도적으로 바꾸지 않았습니다. 저장소의 설명을 모두 합치면 이미 Codex 대체 목록 예산을 넘고(`rules/trigger-design.md`), 앞부분을 그대로 두면 캐시된 재사용이 유지되기 때문입니다.

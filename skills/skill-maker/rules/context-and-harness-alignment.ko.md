@@ -64,7 +64,7 @@
 `skill-maker` 패키지 갱신에는 결정적 검증기와 JSONL 평가 픽스처를 씁니다.
 
 ```bash
-bun skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
+bash skills/skill-maker/scripts/validate-skill-maker.sh --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
 ```
 
 해피 패스와 함께 누락 컨텍스트·도구 실패 처리, 적대적 검색·위험 동작 거부, 알려진 회귀, 형식 불량
@@ -98,9 +98,11 @@ bun skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-make
 - HE-J-1: 비결정적 대상은 단일 실행으로 통과·실패를 판정하지 않습니다.
 - HE-J-2: 모든 케이스가 자기 `MIN_RUNS`와 집계 규칙을 선언합니다. 둘 다 없는 케이스는 게이트가 아닙니다.
 - HE-J-3: 한 실행의 판정이 아니라 묶음 전체의 집계 통과율로 게이팅합니다. 모든 게이트가 두 수치를 따로 선언합니다. 받아들일 회귀 크기인 **동등성 여유**와, 실행 횟수가 사 주는 구간 폭입니다. 동등성 여유 안의 변화는 막지 않습니다. 구간 폭만으로는 회귀를 무시할 근거가 되지 않습니다.
-- HE-J-4: 모든 결과와 함께 모델·런타임 버전, 케이스 집합 해시, 실행 횟수를 기록합니다. 이것이 없는 결과는 나중에 비교할 수 없습니다.
+- HE-J-4: 모든 결과와 함께 모델·런타임 버전, 케이스 집합 해시, **판단자 버전**, **벤치마크 버전**, 실행 횟수를 기록합니다. 이것이 없는 결과는 나중에 비교할 수 없습니다.
 - HE-J-5: `pass^k`(k회 모두 성공)를 `pass@k`(한 번이라도 성공)와 함께 보고합니다. 둘은 다른 질문에 답하며 신뢰성 주장은 앞쪽만입니다.
 - HE-J-6: 작은 표본의 차이는 게이트가 아닙니다. 목표 구간 폭과 실행 횟수를 함께 밝힙니다.
+- HE-J-7: 더한 컨텍스트는 개입입니다. 대상 평가 집합을 개선하기 전에는 영구 컨텍스트가 되지 않습니다. 그래서 새 지원 파일은 그 자리를 얻기 전까지 상시 로드 목록에 넣지 않고 읽기 조건과 함께 연결합니다.
+- HE-J-8: 벤치마크 점수는 버전, 판단자 버전, 자원 구성, 오염·결함 상태와 함께 기록합니다. 판단자와 자원 구성이 동등하다고 밝혀지기 전까지 한 자리 수 차이는 미해결로 둡니다.
 
 `MIN_RUNS`는 퍼짐을 보기 위한 하한이지 유의성 임계값이 아닙니다. 결정적 관측에는 한 번이면 충분하고,
 루브릭 채점 케이스에는 몇 번이, 신뢰성 주장에는 그보다 더 필요합니다. 이 저장소가 쓰는 수치와 그것이
@@ -171,8 +173,19 @@ stdout 값이 중단된 절차를 성공으로 만들지 않으며, 종료 코�
 | `edit` | 적용되었다고 주장하지 않고 패치나 정확한 제안을 제시합니다 |
 | `execute` | 실행되었다고 주장하지 않고 명령, 영향, 검증을 제시합니다 |
 | `delegate` | 제한된 순차 작업을 수행하고 부모 통합·검증을 보존합니다 |
+| `background` | 동기로 실행하고 지연을 보고합니다. 시작한 작업을 끝났다고 보고하지 않습니다 |
+| `loop` | 한 번 실행하거나 명령을 사용자에게 넘기고 멈춥니다. 루프에는 정지 조건과 반복 상한이 필요합니다 |
+| `schedule` | 만들지 않고, 정확한 일정을 적고 멈춥니다. 일정은 요청보다 오래 살아남으므로 먼저 명시적 승인이 필요합니다 |
 
-프로젝트 규칙이나 저위험 가역 기본값이 이미 답을 정하면 묻지 않습니다. 비밀 정보를 묻지 않습니다.
+프로젝트 규칙이나 저위험 가역 기본값이 이미 답을 정하면 묻지 않습니다. 비밀 정보를 묻지 않습니다. 질문이 정당할 때는 사용자 언어로 결정 하나씩 다음 형태로 묻습니다.
+
+```text
+[Decision] <what must be decided>
+[Impact] <what changes with the choice, or the risk>
+[Options] A: ... / B: ...
+```
+
+런타임의 전용 질문 도구는 현재 세션에 있는지 확인한 뒤에만 씁니다. 없으면 평문으로 묻고 답이 오기 전에 게이트 작업을 하지 않습니다.
 
 ## 10. 루프와 실패 정책
 
@@ -189,6 +202,12 @@ Feedback -> Metric/Rubric -> Guard -> Decision -> Stop
 
 주관적 목표에 스칼라 지표를 지어내지 않습니다. 앵커가 있는 루브릭, 블라인드 비교, 수렴 기준, 사람
 게이트를 대신 씁니다.
+
+위 규칙은 스킬 실행 **안쪽**의 루프를 규율합니다. 대상 스킬 자체가 무인으로 도는 경우(일정에 따라,
+목표 조건을 향해, 또는 별도 검사기와 함께)는 바깥 루프이며 더 많이 필요합니다. 정지 조건을 먼저 적고
+만든 주체가 아닌 것이 그것을 검사하게 하며, 수치 상한을 두고, 상태는 컨텍스트가 아니라 디스크에 두고,
+예산이 바닥나면 `done`이 아니라 `exhausted`로 보고합니다. 그런 스킬을 쓰기 전에
+`instructions/loop-engineering/LOOP_ENGINEERING.md`가 있으면 읽습니다.
 
 ## 11. 병렬·서브에이전트 스킬
 
@@ -207,6 +226,11 @@ Stop condition: [done, blocked, time/iteration budget]
 
 검증에는 제한된 스폰, 독립·순차 작업, 선언된 소유, 부모 통합, 부모 검증에 대한 추적 단언이
 포함되어야 합니다.
+
+위임이 결과를 합치는 팬아웃(여러 작업자의 결과를 병합)이면 결합의 출력 형태, 노드별·실행별 팬아웃
+상한, 빠진 가지의 의미(빠짐은 빈 값이 아닙니다)도 선언합니다. 그런 워크플로를 쓰기 전에
+`instructions/graph-engineering/GRAPH_ENGINEERING.md`가 있으면 읽고, 그 문서의 "그래프를 쓰지 말아야
+할 때" 점검을 먼저 봅니다. 제한된 단일 루프가 기본입니다.
 
 ## 12. 완료 보고
 
@@ -229,15 +253,17 @@ Caveats:
 
 ## Sources
 
-> 링크 확인 2026-09-20.
+> 확인 2026-11-03.
 
 | 주장 | 출처 |
 |---|---|
-| `HE-J-*` 판정 규칙, `pass@k`와 함께 쓰는 `pass^k`, 동등성 여유, 케이스 집합 해시 기록 - §5의 근거 | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
+| `HE-J-*` 판정 규칙, `pass@k`와 함께 쓰는 `pass^k`, 동등성 여유, 케이스 집합 해시·판단자 버전·벤치마크 버전 기록, 개입으로서의 추가 컨텍스트 - §5의 근거 | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
 | 유의성 임계값이 아니라 퍼짐을 보기 위한 하한으로서의 `MIN_RUNS` | `instructions/harness-engineering/references/measurement.md` |
 | 측정 프로필, 개발 지표·확인 집합 규칙, 가드 비보상 | `instructions/autoresearch/references/config-and-metrics.md` §2, §3, §4 |
 | 정형화된 절차 결과와 파싱 가능한 부분 출력의 진단 전용 규칙 | `instructions/autoresearch/references/safety-and-observability.md` §6 |
-| 역량·대체 계약 | `instructions/cli/capability-contract.md` |
+| 역량·대체 계약, `background`·`loop`·`schedule` 의무, `[Decision]`·`[Impact]`·`[Options]` 질문 형태 | `instructions/cli/capability-contract.md` |
+| 바깥 루프 요구 사항. 정지 조건 우선, 독립 검사기, 수치 상한, 디스크 상태, `done` 대신 `exhausted` | `instructions/loop-engineering/LOOP_ENGINEERING.md` |
+| 결합 형태, 노드별·실행별 팬아웃 상한, 빠짐은 빈 값이 아님, 그래프를 만들기 전 점검 | `instructions/graph-engineering/GRAPH_ENGINEERING.md` |
 | 설치 시점 신뢰 게이트와 기록되는 출처 | `instructions/cli/hermes-agent/SKILLS.md` |
 | 평가 게이트에서 참조하는 일곱 행 산출물 감사 | `instructions/skill/references/prompt-loop-eval.md`, <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
 

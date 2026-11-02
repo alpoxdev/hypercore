@@ -14,6 +14,12 @@ Design every skill as if agents load it in stages:
 
 The deeper the layer, the more specific and optional the content should become.
 
+The stages cost differently. Metadata is loaded for every installed skill at roughly 100 tokens each,
+whether or not it is used; the body loads on activation and should stay under 5,000 tokens; bundled
+files cost nothing until read, and a script's code never enters context - only its output does. Some
+runtimes also keep an invoked body in context across later turns without re-reading the file, so every
+line of the body is a recurring cost and the most important instruction belongs near the top.
+
 ## 2. Context Budgets
 
 The two figures below are **different things**, and the difference matters.
@@ -46,6 +52,9 @@ The core skill should contain:
 - job, trigger, and boundary
 - authority, safety, output, verification, and stop-condition summary
 - high-level workflow
+- gotchas: environment facts that defy reasonable assumptions. Keep them in the core, where the agent
+  reads them before meeting the situation; a reference file only helps if the agent already knows to
+  open it
 - pointers to deeper files with read conditions
 
 Move out:
@@ -75,6 +84,10 @@ Read `rules/validation-and-iteration.md` before declaring the skill complete.
 Run the target package's documented validator when present.
 A repository-maintenance gate stays in the repository's policy documents, not in the skill artifact (`rules/self-containment.md`, SK-S-1).
 ```
+
+State the read condition as a situation the agent can recognize, not as a directory: "Read
+`references/api-errors.md` if the API returns a non-200 status code" beats "see `references/` for
+details".
 
 ## 5. One Level Deep
 
@@ -116,17 +129,30 @@ The questions above ask whether content is *useful*. These decide whether it *ea
 
 - SK-D-1: For each instruction, ask **"if this were absent, would the agent get it wrong?"** If the answer is no, delete it. If you are not sure, test it rather than keeping it on suspicion.
 - SK-D-2: If a task succeeds without the skill, that skill may add no value. A skill that restates what the agent already does reliably is cost without benefit.
+- SK-D-3: A skill is not automatically worth keeping because it is well written. A 2026 benchmark found 92 of 98 public skills had no statistically significant effect, and that the harmful ones worked by anchoring the agent on their own template and overriding the task's explicit instructions - so "it always follows my skill" is not evidence of value.
 
 Keep the usefulness questions **and** the removal test. They answer different questions: the first asks
 whether a reader can find things, the second whether the thing should be there at all.
 
+## 9. Keep the Loaded Head Stable
+
+Where a runtime re-sends skill names, descriptions, or an invoked body every session, that text is part
+of a reused prompt prefix, and an edit to it invalidates the cached reuse. So split by **stability** as
+well as by length: stable contract text in `SKILL.md`, fast-moving provider detail, dates, counts, and
+version pins in `references/` or at the bottom of a file. The placement rules are in
+`rules/resource-placement.md` §8a.
+
 ## Sources
 
-> Links checked 2026-09-20.
+> Checked 2026-11-03.
 
 | Claim | Source |
 |---|---|
-| The 500-line and 5,000-token progressive-disclosure budgets, and the removal test behind `SK-D-1` and `SK-D-2` | <https://agentskills.io/skill-creation/best-practices> |
+| The 500-line and 5,000-token progressive-disclosure budgets, the removal test behind `SK-D-1` and `SK-D-2`, the gotchas placement rule, and the conditional read-cue example | <https://agentskills.io/skill-creation/best-practices> |
+| ~100 tokens of metadata per skill, the under-5k-token body, and script output as the only context cost of a script | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| An invoked skill's body kept in context across later turns without a re-read | <https://code.claude.com/docs/en/skills> |
+| The 92-of-98 no-effect result and the template-anchoring failure behind `SK-D-3` | <https://arxiv.org/abs/2603.15401> |
+| Splitting by stability and keeping the loaded head stable | `instructions/cache/CACHE.md` §3 |
 | The three-stage model (metadata, then full instructions, then referenced files) | <https://agentskills.io/specification> |
 | The one-level-deep reference rule and the partial-read reason for it | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices> |
 | The table-of-contents rule for reference files longer than 100 lines | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices> |

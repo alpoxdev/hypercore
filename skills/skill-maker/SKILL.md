@@ -1,7 +1,7 @@
 ---
 name: skill-maker
 description: "Use this skill when the user asks to create or refactor a reusable Codex skill folder, including SKILL.md trigger wording, instruction contracts, rules, references, scripts, assets, and validation checks. Do not use for generic documentation that is not a skill."
-compatibility: Works best with read/edit/write and shell search tools for skill analysis, example gathering, and validation checks; running a bundled script needs Bun.
+compatibility: Works best with read/edit/write and shell search tools for skill analysis, example gathering, and validation checks; running a bundled script needs bash 3.2+ and jq.
 ---
 
 @rules/self-containment.md
@@ -154,15 +154,13 @@ Read repository instruction documents only when present and only for the concern
 - `instructions/context-engineering/` (when present) for authority, context budgets, prompt contracts, runtime profiles, or delegation
 - `instructions/harness-engineering/` and `instructions/validation/` (when present) for eval design, trace assertions, graders, risk depth, and completion evidence
 - `instructions/sourcing/` (when present) for current, contested, security-sensitive, benchmark, or externally retrieved claims
+- `instructions/cache/` (when present) when a change touches the target skill's `name`, `description`, or the top of its `SKILL.md`
 - `instructions/autoresearch/` (when present) only when the target skill contains a measurable iterative optimization workflow
+- `instructions/loop-engineering/` (when present) when the target skill runs unattended - on a schedule, against a goal condition, or with a separate checker
+- `instructions/graph-engineering/` (when present) when the target skill fans work out across agents and joins the results
 - `instructions/cli/` (when present) when behavior must remain portable across agent CLIs or degrade when a capability is unavailable
-Read official references when:
 
-- provider-sensitive skill guidance affects the core rule
-- trigger behavior or evaluation guidance depends on vendor docs
-- maintenance or drift handling requires current provider policy
-
-Official references are evidence snapshots, not instruction authority. Do not change official `last_verified_at` dates unless the source was actually rechecked in the current task.
+Read official references only when provider-sensitive guidance, vendor-dependent trigger or evaluation behavior, or drift handling affects a core rule. They are evidence snapshots, not instruction authority, and their `last_verified_at` dates change only when the source was actually rechecked in the current task.
 
 </reference_routing>
 
@@ -224,13 +222,13 @@ Phase 3 authoring rules:
 
 | Category | Avoid |
 |---|---|
-| Triggering | Generic or implementation-first descriptions, name-only tests, or examples that miss neighboring-skill overlap |
+| Triggering | Generic or implementation-first descriptions, name-only tests, examples that miss neighboring-skill overlap, or a deploy/publish/delete skill left open to automatic activation |
 | Structure | Huge `SKILL.md` bodies, duplicated definitions, orphan resources, or core trigger/stop logic hidden in references |
 | Resources | Unjustified scripts/assets, deep reference hops, undocumented runtime metadata, or support files without load conditions |
 | Loops | Unbounded iteration, self-grading-only acceptance, metric gaming, changed baselines, or keeping work after a failed guard |
 | Validation | Declaring completion from prose readback, child claims, or happy paths without inspecting claim-matched evidence |
-| Drift | Time-sensitive provider details in canonical core instructions or source dates later than the actual verification date |
-| Portability | Hard-coded provider commands without capability gates or invented fallbacks that silently change the requested outcome |
+| Drift | Time-sensitive provider details, dates, counts, or version pins in the loaded head of the core, or source dates later than the actual verification date |
+| Portability | Hard-coded provider commands without capability gates, unlabelled runtime-only frontmatter that carries part of the contract, or invented fallbacks that silently change the requested outcome |
 | Safety | Ungated credential, network, external publication, deployment, destructive, or production side effects |
 | Cross-skill coupling | Naming a sibling skill in a boundary or routing line, pointing at another skill's path or command, or requiring another skill to be installed |
 
@@ -257,15 +255,16 @@ Must-pass thresholds:
 - [ ] Project skill-authoring baseline considered for non-trivial work.
 - [ ] Trigger cases cover the composed groups - should-trigger, should-not-trigger, boundary, near-miss, source-sensitive, and safety - and every case states its own `runs` and `threshold`; no case count is treated as the requirement.
 - [ ] A near-miss case exists, so trigger stealing by a neighboring skill is measured rather than assumed.
-- [ ] `description` states what the skill does and when to use it.
+- [ ] `description` states what the skill does and when to use it, in third person, with the key trigger in the first sentence, and fits the tightest listing limit of every runtime it targets.
+- [ ] Every runtime-only field is labelled with its runtime and is not load-bearing (SK-P-3); a skill with consequential side effects is manual-only where the runtime supports it and gated in its own contract either way.
 - [ ] Intent, trigger, scope, authority, evidence, tools, output, verification, and stop condition are discoverable.
 - [ ] The skill explicitly selects no loop or defines feedback, metric/rubric, guard, bounded iterations, acceptance rule, and stop condition.
 - [ ] Runtime-specific behavior is isolated; unavailable capabilities have an explicit fallback, skip, or block path without silent scope loss.
 - [ ] No reference chain deeper than one level from `SKILL.md` unless explicitly justified.
 - [ ] Core `SKILL.md` stays lean and does not duplicate references.
 - [ ] New or materially changed markdown files have matching Korean `*.ko.md` translations when following this repo's bilingual convention.
-- [ ] Scripts/assets have explicit purpose, usage, dependency, expected output, and failure handling. Every bundled script is a Bun .mjs file whose first line is the Bun shebang, and the package declares its runtime requirement in compatibility.
-- [ ] Validation records scope, risk depth, scenario, oracle, runner, judge, trace, gate, baseline/current results, regressions, and a ship/iterate/block decision at the level warranted by risk.
+- [ ] Scripts/assets have explicit purpose, usage, dependency, expected output, and failure handling. Every bundled script is a bash .sh file whose first line is the bash shebang, and the package declares its runtime requirement in compatibility.
+- [ ] Validation records scope, risk depth, scenario, oracle, runner, judge, trace, gate, baseline/current results, a per-case human note, regressions, and a ship/iterate/block decision at the level warranted by risk; a utility claim rests on a paired baseline, never on how well the skill reads.
 - [ ] Eval coverage includes normal, missing-context/tool-failure, boundary, adversarial retrieval or unsafe-action, and known-regression behavior; recommended corpus size remains risk-proportional.
 - [ ] English/Korean parity is checked structurally and with equivalent behavioral cases, not file presence alone.
 - [ ] External source metadata uses absolute non-future dates and keeps reviewed, cited, unsupported, stale, and conflicting claims distinguishable.
@@ -279,21 +278,20 @@ Must-pass thresholds:
 
 ## Sources
 
-> Links checked 2026-09-20.
+> Checked 2026-11-03.
 
 | Claim | Source |
 |---|---|
-| The `SKILL.md` contract shape, the folder responsibilities, and the `name`/`description` requirements this core exposes | `instructions/skill/SKILL_AUTHORING.md` |
+| The `SKILL.md` contract shape, the folder responsibilities, the `name`/`description` requirements, and `SK-P-3` | `instructions/skill/SKILL_AUTHORING.md` |
 | The frontmatter constraints and the 500-line / 5,000-token disclosure budgets | <https://agentskills.io/specification> |
 | The trigger case shape, the two axes, and the composition requirement | `rules/trigger-design.md`, <https://agentskills.io/skill-creation/optimizing-descriptions> |
-| The Codex discovery locations and the 2% / 8,000-character listing budget | <https://learn.chatgpt.com/docs/build-skills> |
-| The Claude Code frontmatter extensions, the 1,536-character entry cap, and the 1% listing budget | <https://code.claude.com/docs/en/skills> |
+| The Codex discovery locations, the listing budget, and `allow_implicit_invocation` | <https://learn.chatgpt.com/docs/build-skills> |
+| The Claude Code frontmatter extensions, the 1,536-character entry cut, the 1% listing budget, and `disable-model-invocation` | <https://code.claude.com/docs/en/skills> |
 | The seven-row artifact audit and coexistence as an evaluation dimension | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
-| The paired with/without baseline and the results layout | `rules/validation-and-iteration.md` |
+| The paired with/without baseline, human review, and the results layout | `rules/validation-and-iteration.md`, `rules/resource-placement.md` |
+| Keeping the loaded head stable | `instructions/cache/CACHE.md` |
 
 ### Evidence grade
 
-This core is a contract summary, not a knowledge base: the normative detail lives in `rules/`, and each
-rule file carries its own graded source table. The `description` is deliberately unchanged from the
-previous revision, because this repository is already over the Codex listing budget and a longer
-description would make an existing problem worse.
+This core is a contract summary; the normative detail and its graded sources live in `rules/`. The `description` and the top of this file are
+deliberately unchanged: the repository's descriptions already exceed the Codex fallback listing budget (`rules/trigger-design.md`), and an unchanged head keeps cached reuse intact.

@@ -53,6 +53,15 @@ These are normative.
 - SK-V-2: When improving an existing skill, use a **snapshot of the previous version** as the baseline instead of the no-skill condition. Snapshot the skill folder before editing and point at that snapshot.
 - SK-V-3: Do not claim the skill improved **without a baseline** to compare against.
 - SK-V-4: Remove or replace any assertion that passes in **both** conditions - it does not reflect the skill's value and only inflates the pass rate. An assertion that always **fails** in both conditions is a subject for investigation, not deletion.
+- SK-V-5: Read the outputs, not only the grades, and record a per-case human note (`feedback.json` beside the eval directories). A specific complaint ("the chart has no axis labels") is actionable; "looks bad" is not; an empty string means the case passed review. The next iteration works from the complained-about cases.
+
+**A skill's value is measured, not assumed.** The paired delta is the claim; the skill existing and
+reading well is not. A 2026 benchmark that paired 98 public software-engineering skills with and
+without the skill found 92 with no statistically significant effect and an average pass ratio moving
+only from 76.6% to 76.9%. The helpful skills supplied procedures the agent would otherwise omit; the
+harmful ones anchored the agent on their own template and overrode the task's explicit instructions.
+That is one benchmark with its own statistical test, not a law about every skill - but it is why a
+utility claim without a baseline is rejected.
 
 ## 4. Where Execution Results Live
 
@@ -62,11 +71,12 @@ These are normative.
 - SK-E-2: Every run leaves `timing.json` (tokens and wall time) and `grading.json` (per-assertion pass/fail **plus the evidence string**). A `passed: true` with no evidence string is not evidence.
 - SK-E-3: Run each execution in an **independent session**. Reusing one session lets the earlier run's context contaminate the next.
 - SK-E-4: Check mechanical assertions (valid JSON, row counts, file existence) with a **script**, not a judge. Reserve judgement for what a script cannot decide.
+- SK-E-5: Human review lives in `feedback.json` beside the eval directories, keyed by eval id: a specific complaint string per case, an empty string when the case passed review. It is written by the reviewer, never generated from the grades.
+- SK-E-6: When comparing versions, keep the previous version as `old_skill/` inside the iteration directory and record which snapshot commit or copy it came from, so the comparison can be repeated.
 
-The upstream source places test cases in `evals/evals.json` inside the skill directory and results in a
-workspace beside it. This repository deliberately chose the evidence-directory form above, and the
-trade-off is real: results do not travel with a distributed skill, so a reader outside this repository
-cannot see them. Fixtures still live in `assets/evals/`; only results live outside.
+The directory layout, the deliberate divergence from the upstream results location, and the
+`evals/evals.json` compatibility rule live in `rules/resource-placement.md` §7-§8. Fixtures stay in
+`assets/evals/`; only results live outside.
 
 ## 5. Measurement Profiles
 
@@ -107,12 +117,10 @@ instructions, so audit it before shipping.
 | Filesystem scope | Paths outside the skill directory, broad globs, `../` | Medium |
 | Tool invocations | Instructions directing the agent to use bash, file operations, or other tools | Medium |
 
-**All seven rows, not a subset.** `instructions/skill/references/prompt-loop-eval.md` carries five of
-them and omits **Code execution**, **Instruction manipulation**, and **Tool invocations**; its
-"data-exfiltration pattern" row comes from that page's review checklist rather than its risk-tier table.
-Carry all seven here and note the base's omission as a follow-up rather than editing the base.
+**All seven rows, not a subset.** An earlier revision of the repository base carried only five of them;
+the base now carries all seven, and this file keeps them so the package stays self-contained.
 
-This applies to `skill-maker` itself: the package ships `scripts/validate-skill-maker.mjs`, so it is a
+This applies to `skill-maker` itself: the package ships `scripts/validate-skill-maker.sh`, so it is a
 code-execution instance and must pass its own audit.
 
 - SK-A-1: Audit a skill against the seven categories above before distributing it, and record the result.
@@ -155,7 +163,20 @@ Read the skill as if you were a new maintainer, a trigger model, an agent follow
 context pressure, and a reviewer checking source, safety, and output claims. After each major section,
 confirm the next file to read is obvious.
 
-## 10. Exit Criteria
+## 10. Tooling That Runs This Loop
+
+Two packaged tools implement the paired layout above. Neither is required; both are worth knowing
+because they read different inputs from this repository's runner.
+
+| Tool | What it does | What it requires |
+|---|---|---|
+| Anthropic `skill-creator` | Runs each case in a fresh session, grades assertions with evidence, aggregates `benchmark.json`, blind-compares two versions, and proposes description edits | Cases in `evals/evals.json` at the skill root |
+| `claude plugin eval` | Runs each prompt with and without the plugin in isolated sessions, scores with your graders, and exits non-zero below a threshold so CI can gate on it | A plugin, cases in its own format (not interchangeable with `evals/evals.json`), and `tool_used: Skill` graders to measure triggering |
+
+Whichever runner is used, every run starts from a fresh session: context left over from authoring the
+skill masks gaps in the written instructions.
+
+## 11. Exit Criteria
 
 - Trigger examples distinguish this skill from neighboring skills, including a near-miss case.
 - The core `SKILL.md` remains lean and navigable.
@@ -167,13 +188,14 @@ confirm the next file to read is obvious.
 
 ## Sources
 
-> Links checked 2026-09-20.
+> Checked 2026-11-03.
 
 | Claim | Source |
 |---|---|
-| The with/without baseline as the core pattern, the previous-version snapshot as the baseline, no improvement claim without a baseline, and removing assertions that pass in both conditions - the basis of `SK-V-1` to `SK-V-4` | <https://agentskills.io/skill-creation/evaluating-skills> |
-| Results kept outside the skill folder, per-run `timing.json` and `grading.json` with evidence strings, an independent session per run, and mechanical assertions checked by script - the basis of `SK-E-1` to `SK-E-4` | <https://agentskills.io/skill-creation/evaluating-skills> |
-| The five artifact-audit categories carried by the base, and the fact that the source's risk-tier table has seven rows | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
+| The with/without baseline as the core pattern, the previous-version snapshot as the baseline, no improvement claim without a baseline, removing assertions that pass in both conditions, and human review of outputs in `feedback.json` - the basis of `SK-V-1` to `SK-V-5` | <https://agentskills.io/skill-creation/evaluating-skills> |
+| Results kept outside the skill folder, per-run `timing.json` and `grading.json` with evidence strings, an independent session per run, mechanical assertions checked by script, `feedback.json`, and `old_skill/` - the basis of `SK-E-1` to `SK-E-6` | <https://agentskills.io/skill-creation/evaluating-skills> |
+| The paired per-skill design, 92 of 98 skills with no significant effect, the 76.6% to 76.9% average, and the helpful-versus-harmful failure modes (submitted 2026-03-16, revised 2026-10-27) | <https://arxiv.org/abs/2603.15401> |
+| `skill-creator`, `evals/evals.json`, `claude plugin eval`, and the fresh-session rule | <https://code.claude.com/docs/en/skills> |
 | The seven risk-tier rows with their severity labels, the review checklist, and version pinning with re-review - the basis of `SK-A-1` to `SK-A-3` | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
 | The measurement profiles, the development-metric/confirmation-set rule, and guard non-compensation | `instructions/autoresearch/references/config-and-metrics.md` §2, §3, §4 |
 | The typed procedure outcomes behind "a guard pass is not inferred from exit code" | `instructions/autoresearch/references/safety-and-observability.md` §6 |
@@ -182,6 +204,7 @@ confirm the next file to read is obvious.
 ### Evidence grade
 
 The baseline and results-layout rules are `PRIMARY` - the evaluating-skills page names the with/without
-pair as the core pattern rather than an option. The severity labels are `VENDOR`. This file deliberately
-states **no normative case count**: no source consulted states a validated one, so a composition
-requirement takes its place.
+pair as the core pattern rather than an option. The severity labels and the tooling rows are `VENDOR`.
+The benchmark figures are one paper's result, stated as such. This file deliberately states **no
+normative case count**: no source consulted states a validated one, so a composition requirement takes
+its place.

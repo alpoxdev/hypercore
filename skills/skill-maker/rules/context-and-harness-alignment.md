@@ -62,7 +62,7 @@ A prose readback is useful, but it is not enough when the skill changes how agen
 For `skill-maker` package updates, use the deterministic validator and JSONL eval fixture:
 
 ```bash
-bun skills/skill-maker/scripts/validate-skill-maker.mjs --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
+bash skills/skill-maker/scripts/validate-skill-maker.sh --root skills/skill-maker --evals skills/skill-maker/assets/evals/skill-maker-cases.jsonl --json
 ```
 
 Pair the happy path with missing-context or tool-failure handling, adversarial retrieval/unsafe-action rejection, known regressions, malformed-input rejection, no stray docs, bilingual behavioral parity, and non-future official-source dates.
@@ -94,9 +94,11 @@ These are normative.
 - HE-J-1: A non-deterministic target is not judged pass or fail from a single run.
 - HE-J-2: Every case declares its `MIN_RUNS` and its aggregation rule. A case carrying neither is not a gate.
 - HE-J-3: Gate on the aggregate pass rate across a batch, not on one run's verdict. Every gate declares two separate numbers: its **equivalence margin** - how large a regression it is willing to accept - and the interval width its run count buys. A change inside the equivalence margin does not block. Interval width alone is a precision measure and never licenses ignoring a regression.
-- HE-J-4: Record the model and runtime version, the case-set hash, and the run count with every result. A result without them cannot be compared later.
+- HE-J-4: Record the model and runtime version, the case-set hash, the **grader version**, the **benchmark version**, and the run count with every result. A result without them cannot be compared later.
 - HE-J-5: Report `pass^k` (all k runs succeed) alongside `pass@k` (any run succeeds). They answer different questions, and only the first is a reliability claim.
 - HE-J-6: A small-sample difference is not a gate. State the target interval width and the run count together.
+- HE-J-7: Added context is an intervention. It does not become permanent context until it improves the target eval set - so a new support file is linked with a read condition rather than added to an always-loaded list until it has earned that place.
+- HE-J-8: A benchmark score is recorded with its version, grader version, resource configuration, and contamination and defect status. A single-digit difference stays unresolved until the grader and the resource configuration are shown to be equivalent.
 
 `MIN_RUNS` is a floor for seeing a spread, not a significance threshold: one run suffices for a
 deterministic observable, a handful for a rubric-scored case, and a reliability claim needs more. The
@@ -167,8 +169,19 @@ Capability availability never grants authorization. For each required capability
 | `edit` | Present a patch or exact proposal without claiming it was applied |
 | `execute` | Present the command, impact, and verification without claiming it ran |
 | `delegate` | Perform bounded sequential work; preserve parent integration and verification |
+| `background` | Run synchronously and report the delay; never report a launched job as finished |
+| `loop` | Run once, or hand the user the command and stop; a loop needs a stop condition and an iteration bound |
+| `schedule` | Do not create it; write the exact schedule and stop. A schedule outlives the request, so it needs explicit approval first |
 
-Do not ask when project rules or low-risk reversible defaults already determine the answer. Never ask for secrets.
+Do not ask when project rules or low-risk reversible defaults already determine the answer. Never ask for secrets. When a question is warranted, ask one decision at a time in the user's language, in this shape:
+
+```text
+[Decision] <what must be decided>
+[Impact] <what changes with the choice, or the risk>
+[Options] A: ... / B: ...
+```
+
+Use a runtime's native question tool only after confirming it exists in the current session; otherwise ask in plain text and do no gated work before the answer.
 
 ## 10. Loop and Failure Policy
 
@@ -181,6 +194,8 @@ Feedback -> Metric/Rubric -> Guard -> Decision -> Stop
 For optimization, additionally require Goal, Scope, Direction, Verify, and bounded Iterations. Keep only improvements that pass the independent guard; otherwise discard, ask, or block. Use stable baseline cases, record failures by root cause, patch the smallest instruction surface, rerun the same cases, and add every discovered failure as a regression.
 
 Never fabricate a scalar metric for a subjective goal. Use an anchored rubric, blind comparison, convergence criterion, or human gate instead.
+
+The rules above shape a loop **inside** one skill run. When the target skill itself runs unattended - on a schedule, against a goal condition, or with a separate checker - it is an outer loop and needs more: a stop condition written first and checked by something other than the maker, a numeric cap, state on disk rather than in context, and a report of `exhausted` rather than `done` when a budget runs out. Read `instructions/loop-engineering/LOOP_ENGINEERING.md` (when present) before writing such a skill.
 
 ## 11. Parallel or Subagent Skills
 
@@ -198,6 +213,8 @@ Stop condition: [done, blocked, time/iteration budget]
 ```
 
 Validation must include trace assertions for bounded spawn, independent or sequenced work, declared ownership, parent integration, and parent verification.
+
+When the delegation is fan-out with a join - several workers whose results are merged - also declare the join's output shape, a fan-out cap per node and per run, and what a missing branch means (missing is not empty). Read `instructions/graph-engineering/GRAPH_ENGINEERING.md` (when present) before writing such a workflow, and first check its "when not to use a graph" screen: a single bounded loop is the default.
 
 ## 12. Completion Report
 
@@ -220,15 +237,17 @@ Do not hide skipped verification; state the reason and the next-best check used.
 
 ## Sources
 
-> Links checked 2026-09-20.
+> Checked 2026-11-03.
 
 | Claim | Source |
 |---|---|
-| The `HE-J-*` judgement rules, `pass^k` alongside `pass@k`, the equivalence margin, and the case-set-hash record - the basis of §5 | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
+| The `HE-J-*` judgement rules, `pass^k` alongside `pass@k`, the equivalence margin, the case-set-hash, grader-version, and benchmark-version records, and added context as an intervention - the basis of §5 | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
 | `MIN_RUNS` as a floor for seeing a spread rather than a significance threshold | `instructions/harness-engineering/references/measurement.md` |
 | The measurement profiles, the development-metric/confirmation-set rule, and guard non-compensation | `instructions/autoresearch/references/config-and-metrics.md` §2, §3, §4 |
 | The typed procedure outcomes and the diagnostic-only rule for parseable partial output | `instructions/autoresearch/references/safety-and-observability.md` §6 |
-| The capability/fallback contract | `instructions/cli/capability-contract.md` |
+| The capability/fallback contract, the `background`/`loop`/`schedule` obligations, and the `[Decision]`/`[Impact]`/`[Options]` question shape | `instructions/cli/capability-contract.md` |
+| The outer-loop requirements: stop condition first, an independent checker, a numeric cap, state on disk, and `exhausted` rather than `done` | `instructions/loop-engineering/LOOP_ENGINEERING.md` |
+| The join shape, the per-node and per-run fan-out cap, missing-is-not-empty, and the screen before building a graph | `instructions/graph-engineering/GRAPH_ENGINEERING.md` |
 | Install-time trust gating and recorded provenance | `instructions/cli/hermes-agent/SKILLS.md` |
 | The seven-row artifact audit referenced from the eval gate | `instructions/skill/references/prompt-loop-eval.md`, <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
 

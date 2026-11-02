@@ -153,6 +153,7 @@ Before completion, read the updated canonical files as if you were a new maintai
 - the skill purpose is obvious within the first screen
 - the boundary between core rules and provider references is explicit
 - the validation path is discoverable without searching across unrelated files
+
 ## 5. Sourcing and Validation
 
 ### Required 21: Plan source-sensitive claims
@@ -171,8 +172,36 @@ Instruction and harness docs must say what proves completion: lint/test/build, s
 
 For "all" or bulk documentation changes, discover the full candidate set before editing and re-scan before completion.
 
+## 6. Instruction Economy and Precedence
+
+### Required 25: Admit a line only from an observed failure
+
+A line earns its place when the agent makes the same mistake a second time, or when the fact cannot be worked out from the code and the defaults. For every proposed line, ask whether removing it would cause the mistake it claims to prevent. If the answer is unknown, test it instead of keeping it.
+
+The measured baseline is why this is a rule. Across 138 CTXbench instances and SWE-bench Lite, providing context files "does not generally improve task success rates, while increasing inference cost by over 20% on average". Developer-written files moved resolution by +2.4% and LLM-generated files by -0.5% to -2%, neither statistically significant, while cost rose 20% and 23%. A document is not better because it is complete.
+
+The same test governs a whole file, not only a line. A new reference document is registered in the loading map and read on a condition; it does not join an always-loaded list until it has improved the target eval set and earned that cost.
+
+### Required 26: State that the code wins
+
+When an instruction file contradicted the repository, 90.1% of agents followed the file. One sentence saying that the code wins moved code-following from 4.2% to 91.4% and the test pass rate from 89.4% to 100%.
+
+Every document that describes a codebase carries that sentence, and every guide derived from one carries it too, because a stale line outranks the code that contradicts it.
+
+The same precedence runs downward as well: a document must not override the instruction the task itself gives. In a benchmark of 98 public skills, the harmful ones worked by anchoring the agent on their own template and overriding the task's explicit instructions, which is the shape to avoid when a document is loaded alongside a direct request.
+
+### Required 27: Prune on a schedule
+
+Unpruned instruction files accumulated about 4.9 net new instructions per commit and more than tripled over their lifetime, because appending is cheap and deleting safely is not. A refactor therefore schedules a read-through that deletes anything the code already shows, and each surviving line is recorded with the failure it prevents so the next reader can re-earn it rather than inherit it.
+
 ## Sources
 
-> No external sources were used. Content checked 2026-09-21.
+> Content checked 2026-11-03 against the repository instruction base; no external URL was opened for this file.
 
-This file is this package's own procedure text and cites no external source.
+| Claim | Source |
+|---|---|
+| The admission test, the precedence line, the pruning measurement, and the cost of a context file | `instructions/agents-md/AGENTS_MD.md`, `instructions/agents-md/references/evidence-and-evaluation.md` |
+| The measured skill-value benchmark behind Required 26's downward precedence | `instructions/skill/SKILL_AUTHORING.md` |
+| The document contract, layering, and verification fields used above | `instructions/context-engineering/CONTEXT_ENGINEERING.md`, `instructions/validation/index.md` |
+
+This file is this package's own procedure text. The claims above are its primary evidence and are recorded in their own files rather than repeated here.

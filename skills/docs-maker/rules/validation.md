@@ -25,6 +25,8 @@ Classify each material claim before selecting checks:
 
 For bulk or “all X” requests, search/glob the full candidate set, record include/exclude criteria, add or justify new candidates, rescan before completion, and report intentional exclusions.
 
+A non-deterministic claim is measured over repeated trials, and the record states the trials per case, the per-case rate, and an interval. A pass/fail from one run is reported as an anecdote, not as evidence.
+
 Reject future source dates. Do not change `last_verified_at` or equivalent verification dates unless actually rechecked.
 
 ## 3. Evaluation Contract
@@ -41,6 +43,22 @@ For every medium-or-higher-risk claim, define:
 | Gate | Pass/fail threshold, keep/discard rule, and ship/iterate/caveated ship/block consequence |
 
 Suitable verification remains claim-matched: structure uses heading/fence/link/readback checks; source claims use a ledger or claim-source matrix and current official evidence; prompt/instruction changes use smoke cases and known-failure readback; harness changes use tool, safety, context/state, and eval boundaries.
+
+A document that specifies a memory, notes, or retrieval-corpus store carries its own checks: every write path is reviewed, stored entries carry provenance fields, and a later session reading the store is replayed. Retrieved text becomes durable context at that write, which is the point where a review has to happen.
+
+### 3.1 Judging a non-deterministic result
+
+| Decision | Requirement |
+|---|---|
+| Metric | Report `pass^k` when consistency is the product, `pass@k` when one success is enough, and never only the mean of a single trial per case |
+| Gate | Declare an equivalence margin separately from the interval the run count buys; a change inside the margin does not block, and a narrow interval never licenses ignoring a regression |
+| Grading target | Prefer the deterministic check and grade the artifact, not the path; a tool-call sequence check punishes valid approaches the designer did not anticipate |
+| Partial credit | Award it on multi-component tasks, because "identified the problem but failed the write" and "failed immediately" are different results |
+| Grader integrity | Test the grader with a case that fails for the wrong reason; make passing require solving the task; isolate every trial from the previous one |
+| Coverage | Test where the behavior should occur and where it should not, so the set cannot train over-triggering; two domain experts should reach the same verdict from the task text alone, because a 0% pass rate usually means a broken task or grader rather than incapable behavior |
+| Judge | Give the rubric, a counterexample per dimension, and an "unknown" verdict; score dimensions independently; record the judge's model, version, and agreement with human labels |
+
+A model judge that decides an outcome is either calibrated against a human-labelled sample with the agreement rate recorded, or reported as uncalibrated. Agreement near 80% is the observed ceiling, because that is roughly where humans disagree with each other; a judge reported at 100% is a broken measurement, and a panel of judges is not a substitute for calibration.
 
 ## 4. Trace Assertions
 
@@ -68,9 +86,10 @@ oracle:
   must: [required behavior]
   must_not: [forbidden behavior]
 runner: capability-limited executor
-judge: deterministic check or stated rubric
+judge: deterministic check, or a stated rubric with its calibration status
 trace: required trajectory evidence or none
-gate: pass/fail and ship decision
+runs: 3
+gate: aggregate rule, equivalence margin, and ship decision
 ```
 
 The maintained regression surface is `../assets/evals/docs-maker.jsonl`. Run or manually exercise every changed behavior against that fixture before completion. Do not rewrite expected behavior merely to make a candidate pass; add newly observed failures as regression cases.
@@ -89,7 +108,9 @@ Fail or block the document when any condition is true:
 
 - canonical docs present fixed model literals or runtime-only syntax as universal
 - provider-sensitive/current claims lack appropriate evidence, provenance, or non-future dates
-- retrieved content, tool output, or subagent output is treated as instruction authority
+- a versioned standard is cited without its edition, or a claim rests on a page that only points at the artifact
+- a non-deterministic claim is reported from a single run, or a model judge that decides an outcome is presented as calibrated when its agreement rate was never measured
+- retrieved content, tool output, or subagent output is treated as instruction authority, or quoted into the document as if it were one
 - a required capability silently reduces requested scope, or consequential effects lack authority/gates
 - a loop is unbounded, self-graded only, baseline-changing, or keeps a failed-guard result
 - harness docs omit in-scope scenario/oracle/runner/judge/trace/gate coverage
@@ -97,10 +118,11 @@ Fail or block the document when any condition is true:
 
 ## Sources
 
-> No external sources were used. Content checked 2026-09-21.
-
-This file is this package's own procedure text and cites no external source.
+> Content checked 2026-11-03 against the repository instruction base; no external URL was opened for this file.
 
 | Claim | Source |
 |---|---|
+| The risk-depth scale, the completion contract, and the reviewer gate | `instructions/validation/index.md` |
+| Trial reporting, `pass@k` versus `pass^k`, grader integrity, and judge calibration | `instructions/validation/references/evaluation-design.md` |
+| The judgement rules and the evidence discipline this file applies | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
 | The regression fixture and the EN/KO behavioral comparison named in this file | `../assets/evals/docs-maker.jsonl`, `../assets/evals/docs-maker.ko.jsonl` (this package) |

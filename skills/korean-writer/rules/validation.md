@@ -60,8 +60,8 @@ Expect zero hits. Any hit is rewritten to follow the rule it violates. The Korea
 
 Any change to this skill's files runs all three gates, in order, from the repository root. All must exit 0.
 
-- the corpus validator scoped to this package: `validate-skills-corpus.mjs --root skills --only korean-writer --json`
-- the single-package validator run against this package folder: `validate-skill.mjs skills/korean-writer`
+- the corpus validator scoped to this package: `validate-skills-corpus.sh --root skills --only korean-writer --json`
+- the single-package validator run against this package folder: `validate-skill.sh skills/korean-writer`
 - the repository script gate: `bun run --cwd scripts verify`
 
 The repository's policy documents own these commands' locations and flags; this file names the gates a package change must pass.
