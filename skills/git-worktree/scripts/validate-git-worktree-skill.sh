@@ -100,8 +100,8 @@ add_check frontmatter_present "$p" "SKILL.md and SKILL.ko.md must retain parseab
 if [ "$core_lines" -lt 300 ]; then p=1; else p=0; fi
 add_check core_under_300_lines "$p" "SKILL.md has ${core_lines} lines; keep core instructions lean."
 
-if [ "$support_refs" = "rules,references" ]; then p=1; else p=0; fi
-add_check one_level_support_refs "$p" "Core skill should link only the direct rules and references files."
+if [ "$support_refs" = "rules" ] && contains_all "$core" "references/source-survey.md" "not loaded by default"; then p=1; else p=0; fi
+add_check one_level_support_refs "$p" "Core skill should import only the lifecycle rule and link the source survey on demand."
 
 if contains_all "$core" "이 worktree에서 어떤 작업을 할 예정인가요?" &&
   contains_all "$ko" "이 worktree에서 어떤 작업을 할 예정인가요?" &&

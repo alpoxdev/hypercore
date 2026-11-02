@@ -90,12 +90,10 @@ Git이 branch가 이미 다른 곳에서 checked out되었다고 보고하면 du
 
 ```bash
 git fetch --all --prune
-git switch --track -c <branch> origin/<branch>
-# or, from the main worktree:
-git worktree add -b <branch> <path> origin/<branch>
+git worktree add --track -b <branch> <path> origin/<branch>
 ```
 
-사용자의 current working tree를 방해하지 않는 command를 선호한다. `git switch`가 current worktree를 바꿀 수 있다면 대신 `git worktree add -b ... origin/...` form을 사용한다.
+현재 worktree를 바꾸지 않고 새 worktree 안에 local tracking branch를 만든다. 여기서 `git switch --track`은 사용자의 현재 worktree를 바꾸므로 쓰지 않는다.
 
 ### Detached review
 
@@ -147,10 +145,10 @@ Git registry와 per-worktree status를 모두 사용한다.
 ```bash
 git worktree list --porcelain
 git worktree list --verbose
-for p in $(git worktree list --porcelain | awk '/^worktree / {print substr($0, 10)}'); do
+git worktree list --porcelain | awk '/^worktree / {print substr($0, 10)}' | while IFS= read -r p; do
   printf '\n== %s ==\n' "$p"
-  git -C "$p" status --short --branch
- done
+  git -C "$p" status --short --branch || printf 'missing path (check the prunable annotation)\n'
+done
 ```
 
 다음을 보고한다.

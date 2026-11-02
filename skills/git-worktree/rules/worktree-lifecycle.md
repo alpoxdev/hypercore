@@ -90,12 +90,10 @@ If Git reports the branch is already checked out elsewhere, list the existing wo
 
 ```bash
 git fetch --all --prune
-git switch --track -c <branch> origin/<branch>
-# or, from the main worktree:
-git worktree add -b <branch> <path> origin/<branch>
+git worktree add --track -b <branch> <path> origin/<branch>
 ```
 
-Prefer commands that do not disturb the user’s current working tree. If using `git switch` would change the current worktree, use the `git worktree add -b ... origin/...` form instead.
+This creates the local tracking branch inside the new worktree without switching the current one. Do not use `git switch --track` here: it changes the user's current worktree.
 
 ### Detached review
 
@@ -147,10 +145,10 @@ Use both Git’s registry and per-worktree status:
 ```bash
 git worktree list --porcelain
 git worktree list --verbose
-for p in $(git worktree list --porcelain | awk '/^worktree / {print substr($0, 10)}'); do
+git worktree list --porcelain | awk '/^worktree / {print substr($0, 10)}' | while IFS= read -r p; do
   printf '\n== %s ==\n' "$p"
-  git -C "$p" status --short --branch
- done
+  git -C "$p" status --short --branch || printf 'missing path (check the prunable annotation)\n'
+done
 ```
 
 Report:
