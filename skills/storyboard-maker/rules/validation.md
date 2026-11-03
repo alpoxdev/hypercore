@@ -22,7 +22,7 @@ Read before delivery and whenever this package changes. This file owns the pre-d
 - [ ] Every embedded picture has `provenance` set honestly to `generated` or `supplied`, and no picture is described as a photograph, a film frame, or a production still.
 - [ ] Every picture was inspected beside the `renderGuideSvg()` guide and passed the inspection rows before embedding: shot size, angle, view, facing side, no letters or logos, and look consistency with `characters[].look` alone.
 - [ ] No reference image of any kind was attached to an image invocation: no rasterized guide, earlier panel, character sheet, style image, or external image.
-- [ ] image-maker's two-invocation limit was respected, and each stored prompt is the compiled string unchanged, with no edit between invocations.
+- [ ] At most two attempts were made per brief, each stored prompt is the compiled string unchanged with no edit between attempts, and every returned picture is saved under `images/` with its entry in `images/record.json`.
 - [ ] Every fallback panel is named by id in the hand-off, keeps its line art, and carries a `PROMPT SAVED` note with its `SH <id>` block in `shot-list.md`.
 - [ ] No generated panel holds a real person, a celebrity, or a recognizable likeness, and no external image entered the pipeline.
 - [ ] No network: no remote script, no remote `src` or `href`, no `fetch`, no `XMLHttpRequest`, and no web font file; every `image.src` is a `data:image/...` URI, never a URL or a file path.
@@ -79,7 +79,7 @@ Only when this package changes:
 
 - [ ] KO/EN parity holds for every Markdown pair: the same `##` sections in the same order, the same list items, and the same table rows.
 - [ ] The corpus validator passes for this package with `--only storyboard-maker --json` and reports `ok: true`.
-- [ ] The authoring validator passes with `--require-self-containment --allow image-maker` and this package's eval file as `--evals`, with no errors; the waiver is recorded in `scripts/fixtures/skill-standards/exceptions.json`.
+- [ ] The authoring validator passes with `--require-self-containment` and this package's eval file as `--evals`, with no errors and no waiver.
 - [ ] `bun run --cwd scripts verify` exits 0.
 - [ ] `README.md`'s skill count and catalog row are updated when this package is added or renamed.
 
@@ -92,5 +92,5 @@ Only when this package changes:
 | Every renderer error and warning code, its cause, and its suppression rule for this package | [`../references/output-contract.md`](../references/output-contract.md) §5 |
 | The front/back markers and the hidden-line rules that make the mannequin readable | [`../references/notation-and-drawing.md`](../references/notation-and-drawing.md) §9 |
 | The report is the authority, and a page in the error state renders no panel | [`../references/output-contract.md`](../references/output-contract.md) §4 |
-| The picture inspection rows, the image-maker delegation with no reference image, the honest provenance, and the fallback receipt for this package | [`../references/panel-art.md`](../references/panel-art.md) |
+| The picture inspection rows, the brief sent with no reference image, the honest provenance, and the fallback receipt for this package | [`../references/panel-art.md`](../references/panel-art.md) |
 | A4 landscape printing and panels that avoid page breaks use `@page` and `break-inside` | <https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@page> |

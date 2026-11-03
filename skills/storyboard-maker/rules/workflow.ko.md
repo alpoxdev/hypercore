@@ -90,18 +90,18 @@ JSON 텍스트의 모든 `</`를 `<\/`로 이스케이프해 넣은 객체가 �
 
 ## 8. 패널 그림
 
-패널 그림은 `image-maker` 스킬에 위임해 만듭니다. 먼저 [`../references/panel-art.ko.md`](../references/panel-art.ko.md)를 읽습니다. 그림체, 브리프, 검사 항목, 대체 규칙은 그 파일이 다룹니다. 능력 관찰, 패널별 호출 두 번 한도, 거절 처리, `.hyper/image-maker/<topic>/` 저장은 image-maker가 맡습니다.
+패널 그림은 이 패키지의 이미지 계약으로 만듭니다. 먼저 [`../references/image-generation.ko.md`](../references/image-generation.ko.md)를 읽습니다. 능력 관찰, 경로, 고정 브리프, 두 번 시도 한도, `images/` 아래 저장, 결과 상태는 그 파일이 다룹니다. 그림체, 검사 항목, 넣기, 대체 규칙은 [`../references/panel-art.ko.md`](../references/panel-art.ko.md)가 다룹니다.
 
 - `compilePanelPrompt(doc, sceneId, shotId)`를 호출해 문자열을 그대로 보관합니다. 사실 오류가 있는지 한 번 읽고 나면 고치지 않습니다.
 - `renderGuideSvg(doc, sceneId, shotId)`를 호출해 가이드를 보관하되, 스토리보드 쪽 용도로만 씁니다. 돌아온 그림을 검사할 때 구도 참고로 나란히 보고, 래스터화하거나 이미지 동작에 넘기지 않습니다.
-- 컴파일한 프롬프트만 브리프로 `image-maker`를 호출합니다. 참고 이미지는 어떤 것도 붙이지 않습니다. 가이드, 앞 패널, 캐릭터 시트, 그림체 이미지, 외부 이미지가 모두 해당합니다. 인물 일관성은 컴파일된 프롬프트 안의 고치지 않은 `characters[].look` 문구만으로 전달합니다.
+- 고정 첫 줄 하나만 앞에 두고, 컴파일한 프롬프트 전체를 브리프로 생성합니다. 참고 이미지는 어떤 것도 붙이지 않습니다. 가이드, 앞 패널, 캐릭터 시트, 그림체 이미지, 외부 이미지가 모두 해당합니다. 인물 일관성은 컴파일된 프롬프트 안의 고치지 않은 `characters[].look` 문구만으로 전달합니다.
 - 돌아온 그림마다 검사 표의 모든 항목을 봅니다. 샷 크기, 앵글, 뷰, 더치 기울기, 향한 쪽, 피사체 수, 글자, 외형, 구도, 프레임 장식입니다. 한 항목이라도 실패한 그림은 내장하지 않습니다.
 - 통과한 그림을 샷의 `shots[].image`에 넣습니다. `src`는 `data:image/png`, `data:image/jpeg`, `data:image/webp` URI이고, `provenance`는 `"generated"`, `prompt`는 컴파일한 문자열 그대로입니다. URL, 파일 경로, blob은 쓰지 않습니다.
-- `image-maker`가 설치되어 있지 않거나 `prompt_saved`나 `blocked`로 끝나면 선화를 두고 `image`를 비워 둡니다. 컴파일한 프롬프트를 `shot-list.md`에 `PROMPT SAVED` 메모와 표 뒤의 `SH <id>` 블록으로 쓰고, 대체한 패널을 전달 메시지에 id로 밝힙니다.
+- 쓸 수 있는 경로가 없거나 그림이 `prompt_saved`나 `blocked`로 끝나면 선화를 두고 `image`를 비워 둡니다. 컴파일한 프롬프트를 `shot-list.md`에 `PROMPT SAVED` 메모와 표 뒤의 `SH <id>` 블록으로 쓰고, 대체한 패널을 전달 메시지에 id로 밝힙니다.
 
 패널은 샷 순서로 처리하고 다음 패널을 시작하기 전에 검사합니다. 그래야 설계가 어긋난 것이 시퀀스 전체로 번지지 않습니다. 패널 단계가 끝나면 통과한 그림을 담은 문서를 `storyboard.json`에 다시 쓰고, 같은 `<\/` 이스케이프로 `index.html`에 다시 주입해 9~11단계가 같은 바이트를 읽고 전달하게 합니다.
 
-씬마다 위에서 내려다본 평면도 그림을 하나 둘 수 있습니다. `compileFloorPlanPrompt(doc, sceneId)`로 브리프를 만들어 같은 규칙으로 `image-maker`에 넘깁니다. 모든 소품과 인물이 기술 평면도와 같은 자리에 있는지, 글자가 없는지 확인한 뒤 `scenes[].planImage`에 저장합니다. 기술 평면도는 계속 그려지고 기준으로 남습니다.
+씬마다 위에서 내려다본 평면도 그림을 하나 둘 수 있습니다. `compileFloorPlanPrompt(doc, sceneId)`로 브리프를 만들어 같은 계약으로 생성합니다. 모든 소품과 인물이 기술 평면도와 같은 자리에 있는지, 글자가 없는지 확인한 뒤 `scenes[].planImage`에 저장합니다. 기술 평면도는 계속 그려지고 기준으로 남습니다. 평면도 그림이 대체되면 `planImage`를 비우고 브리프를 `shot-list.md`의 `PLAN <sceneId>` 블록에 저장합니다.
 
 ## 9. 브라우저에서 열고 보고서 읽기
 
@@ -125,7 +125,7 @@ JSON 텍스트의 모든 `</`를 `<\/`로 이스케이프해 넣은 객체가 �
 - 모든 경고를 검토합니다. 기하를 고칩니다. `AXIS_CROSSED`, `EYELINE_MISMATCH`, `SCREEN_DIRECTION_FLIP`은 대신 `method`, `intentional: true`, 효과를 밝히는 `reason`을 갖춘 `crossing`으로 기록해도 됩니다. `JUMP_CUT`, `PRIMARY_MOVE_OVERLOAD`, `WIDE_LENS_FACE`는 기록할 수 없으므로 반드시 고칩니다.
 - `HORIZON_OFFFRAME`은 앵글이 의도한 것이면 그대로 둡니다. 그 정보 항목이 기록입니다.
 - 한 회차는 수정 한 번, 재렌더링 한 번, 보고서 다시 읽기 한 번입니다. 최대 두 회차입니다. 두 회차 뒤에는 남은 경고 코드를 전달 메시지에 적고 전달합니다. 해결되지 않은 오류가 있으면 전달하지 않습니다. 보드가 좋아 보일 때까지 계속 고치지 않습니다.
-- 그림이 있는 샷의 `size`, 카메라 값, `move`, `subjects`를 바꾸는 수정을 한 뒤에는 그 샷에 대해 새로 컴파일한 프롬프트로 8단계를 다시 실행하되 image-maker의 호출 두 번 한도 안에서 하거나, `image`를 빼고 프롬프트를 대체 패널로 저장합니다. 그다음 문서를 다시 주입한 뒤 보고서를 다시 읽습니다.
+- 그림이 있는 샷의 `size`, 카메라 값, `move`, `subjects`를 바꾸는 수정을 한 뒤에는 그 샷에 대해 새로 컴파일한 프롬프트로 8단계를 다시 실행하되 새 브리프로서 두 번 시도 한도 안에서 하거나, `image`를 빼고 프롬프트를 대체 패널로 저장합니다. 그다음 문서를 다시 주입한 뒤 보고서를 다시 읽습니다.
 
 ## 11. 전달
 
@@ -135,7 +135,8 @@ JSON 텍스트의 모든 `</`를 `<\/`로 이스케이프해 넣은 객체가 �
 |---|---|
 | `index.html` | 문서를 넣은 스튜디오 사본 |
 | `storyboard.json` | 렌더링한 그대로의 문서 |
-| `shot-list.md` | [`../references/output-contract.ko.md`](../references/output-contract.ko.md) §3의 한국어 샷 표, 선화로 대체한 패널마다의 `SH <id>` 프롬프트 블록 |
+| `shot-list.md` | [`../references/output-contract.ko.md`](../references/output-contract.ko.md) §3의 한국어 샷 표, 선화로 대체한 패널마다의 `SH <id>` 프롬프트 블록과 대체한 평면도 그림마다의 `PLAN <sceneId>` 블록 |
+| `images/` | 돌려받은 그림 전부를 저장한 그대로, 그리고 브리프·경로·시도·다이제스트·검수 결과를 담은 `record.json`([`../references/image-generation.ko.md`](../references/image-generation.ko.md) §6). 그림을 생성했을 때만 있습니다 |
 | `manifest.json` | `getReport()` 객체 그대로 |
 
 폴더를 끝났다고 하기 전에 [`validation.ko.md`](validation.ko.md)를 실행합니다. 전달 메시지에는 폴더, 보고서 수치, 남은 경고나 의도적 위반을 적습니다.
@@ -150,5 +151,6 @@ JSON 텍스트의 모든 `</`를 `<\/`로 이스케이프해 넣은 객체가 �
 | 패널은 씬, 샷 크기, 카메라 노트, 액션, 선택적 대사, 전환으로 구성한다 | <https://storyboardart.org/storyboard-tutorials/storyboard-format-for-film/> |
 | A4 가로 인쇄는 `@page { size: A4 landscape; margin: … }`로 선언하고 패널은 쪽 나눔을 피한다 | <https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@page> |
 | 이 패키지의 입력 문서, 보고서 필드, 브라우저 없는 코어 실행 | [`../references/output-contract.ko.md`](../references/output-contract.ko.md) |
-| 이 패키지의 패널 이미지 가이드, 프롬프트, 생성 한도, 검사, 대체 | [`../references/panel-art.ko.md`](../references/panel-art.ko.md) |
+| 이 패키지의 패널 이미지 브리프, 검사, 대체 | [`../references/panel-art.ko.md`](../references/panel-art.ko.md) |
+| 이 패키지의 능력 관찰, 경로, 참고 이미지 없는 고정 브리프, 시도 한도, 저장 | [`../references/image-generation.ko.md`](../references/image-generation.ko.md) |
 | 이 패키지의 네 가지 선 넘기 방법과 기록된 위반 | [`continuity.ko.md`](continuity.ko.md) |

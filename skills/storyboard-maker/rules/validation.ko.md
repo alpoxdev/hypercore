@@ -22,7 +22,7 @@
 - [ ] 내장한 그림마다 `provenance`가 `generated` 또는 `supplied`로 정직하게 적혔고, 어떤 그림도 사진·영화 프레임·제작 스틸로 제시하지 않았습니다.
 - [ ] 모든 그림을 `renderGuideSvg()` 가이드와 나란히 검사했고, 내장 전에 샷 크기, 앵글, 뷰, 향한 쪽, 글자·로고 없음, `characters[].look`만과의 외형 일치 항목을 통과했습니다.
 - [ ] 이미지 호출에 참고 이미지를 하나도 붙이지 않았습니다. 래스터화한 가이드, 앞 패널, 캐릭터 시트, 그림체 이미지, 외부 이미지가 모두 없습니다.
-- [ ] image-maker의 호출 두 번 한도를 지켰고, 저장한 프롬프트는 컴파일된 문자열 그대로이며 호출 사이에 고치지 않았습니다.
+- [ ] 브리프마다 시도는 최대 두 번이었고, 저장한 프롬프트는 컴파일된 문자열 그대로이며 시도 사이에 고치지 않았고, 돌려받은 그림은 모두 `images/` 아래에 저장되어 `images/record.json`에 항목이 있습니다.
 - [ ] 대체한 패널은 모두 전달 메시지에 id로 밝혔고, 선화를 유지하며 `shot-list.md`에 `PROMPT SAVED` 메모와 `SH <id>` 블록을 남겼습니다.
 - [ ] 생성 패널에 실존 인물·연예인·알아볼 수 있는 얼굴이 없고, 외부 이미지가 파이프라인에 들어가지 않았습니다.
 - [ ] 네트워크가 없습니다. 원격 스크립트, 원격 `src`나 `href`, `fetch`, `XMLHttpRequest`, 웹 폰트 파일이 없고, 모든 `image.src`가 URL이나 파일 경로가 아닌 `data:image/...` URI입니다.
@@ -79,7 +79,7 @@
 
 - [ ] 모든 Markdown 쌍에서 한영 대응이 맞습니다. 같은 `##` 섹션이 같은 순서로 있고 목록 항목과 표 행도 같습니다.
 - [ ] 이 패키지의 코퍼스 검증기가 `--only storyboard-maker --json`으로 통과하고 `ok: true`를 보고합니다.
-- [ ] 저작 검증기가 `--require-self-containment --allow image-maker`와 이 패키지의 eval 파일을 `--evals`로 받아 오류 없이 통과하고, 면제가 `scripts/fixtures/skill-standards/exceptions.json`에 기록되어 있습니다.
+- [ ] 저작 검증기가 `--require-self-containment`와 이 패키지의 eval 파일을 `--evals`로 받아 오류와 면제 없이 통과합니다.
 - [ ] `bun run --cwd scripts verify`가 종료 코드 0으로 끝납니다.
 - [ ] 이 패키지를 추가하거나 이름을 바꿨으면 `README.md`의 스킬 개수와 카탈로그 행을 고칩니다.
 
@@ -92,5 +92,5 @@
 | 이 패키지의 렌더러 오류·경고 코드, 원인, 억제 규칙 | [`../references/output-contract.ko.md`](../references/output-contract.ko.md) §5 |
 | 인형을 읽히게 만드는 앞뒤 표식과 은선 제거 규칙 | [`../references/notation-and-drawing.ko.md`](../references/notation-and-drawing.ko.md) §9 |
 | 보고서가 기준이며 오류 상태의 페이지는 패널을 렌더링하지 않는다 | [`../references/output-contract.ko.md`](../references/output-contract.ko.md) §4 |
-| 이 패키지의 그림 검사 항목, 참고 이미지 없는 image-maker 위임, 정직한 출처 표시, 대체 기록 | [`../references/panel-art.ko.md`](../references/panel-art.ko.md) |
+| 이 패키지의 그림 검사 항목, 참고 이미지 없이 보낸 브리프, 정직한 출처 표시, 대체 기록 | [`../references/panel-art.ko.md`](../references/panel-art.ko.md) |
 | A4 가로 인쇄와 쪽 나눔 회피는 `@page`와 `break-inside`를 쓴다 | <https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@page> |

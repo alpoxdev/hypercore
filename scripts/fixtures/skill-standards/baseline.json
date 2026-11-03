@@ -67,9 +67,7 @@
     },
     "skill-maker": {},
     "skill-tester": {},
-    "storyboard-maker": {
-      "CROSS_SKILL_REFERENCE": 105
-    },
+    "storyboard-maker": {},
     "tanstack-start-architecture": {},
     "tauri-architecture": {},
     "tone-manner-maker": {
