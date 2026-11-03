@@ -90,18 +90,18 @@ Escape every `</` in the JSON text as `<\/` so the embedded object cannot close 
 
 ## 8. Panel images
 
-Turn a panel from line art into a picture by delegating the picture to the `image-maker` skill. Read [`../references/panel-art.md`](../references/panel-art.md) first; it owns the style, the brief, the inspection rows, and the fallback. `image-maker` owns capability observation, the two-invocation limit per panel, refusal handling, and persistence under `.hyper/image-maker/<topic>/`.
+Turn a panel from line art into a picture under this package's image contract. Read [`../references/image-generation.md`](../references/image-generation.md) first; it owns the capability observation, the route, the immutable brief, the two-attempt limit, persistence under `images/`, and the result states. [`../references/panel-art.md`](../references/panel-art.md) owns the style, the inspection rows, embedding, and the fallback.
 
 - Call `compilePanelPrompt(doc, sceneId, shotId)` and keep the exact string. Read it once for errors of fact, then treat it as immutable.
 - Call `renderGuideSvg(doc, sceneId, shotId)` and keep the guide for the storyboard side only: view it beside each returned picture during the inspection, as its composition reference. Do not rasterize it, and do not pass it to the image action.
-- Invoke `image-maker` with the compiled prompt as the whole brief. Attach no reference image of any kind: not the guide, not an earlier panel, not a character sheet, not a style image, not an external image. Character consistency comes from the unchanged `characters[].look` text inside the compiled prompt alone.
+- Generate with the compiled prompt as the whole brief, preceded only by the fixed opening line. Attach no reference image of any kind: not the guide, not an earlier panel, not a character sheet, not a style image, not an external image. Character consistency comes from the unchanged `characters[].look` text inside the compiled prompt alone.
 - Inspect every returned picture against every row of the inspection table: shot size, angle, view, dutch tilt, facing side, subject count, letters, look, composition, and frame furniture. A picture that fails any row is not embedded.
 - Embed an accepted picture on the shot as `shots[].image` with `src` a `data:image/png`, `data:image/jpeg`, or `data:image/webp` URI, `provenance: "generated"`, and `prompt` the exact compiled string. No URL, no file path, no blob.
-- When `image-maker` is not installed, or it ends in `prompt_saved` or `blocked`, keep the line art and leave `image` absent. Write the compiled prompt into `shot-list.md` as a `PROMPT SAVED` note with a `SH <id>` block after the table, and name the fallback panel by id in the hand-off.
+- When no route is available, or the picture ends in `prompt_saved` or `blocked`, keep the line art and leave `image` absent. Write the compiled prompt into `shot-list.md` as a `PROMPT SAVED` note with a `SH <id>` block after the table, and name the fallback panel by id in the hand-off.
 
 Process panels in shot order and inspect each before starting the next, so a design drift does not repeat down the sequence. When the panel pass ends, write the document with its accepted pictures back to `storyboard.json` and re-inject it into `index.html` with the same `<\/` escaping, so steps 9–11 read and deliver the same bytes.
 
-Each scene may also carry one overhead floor-plan picture. Compile its brief with `compileFloorPlanPrompt(doc, sceneId)`, hand it to `image-maker` under the same rules, check that every prop and character sits where the technical floor plan puts them and that the picture has no letters, then store it as `scenes[].planImage`. The technical floor plan is still drawn and stays the reference.
+Each scene may also carry one overhead floor-plan picture. Compile its brief with `compileFloorPlanPrompt(doc, sceneId)`, generate it under the same contract, check that every prop and character sits where the technical floor plan puts them and that the picture has no letters, then store it as `scenes[].planImage`. The technical floor plan is still drawn and stays the reference. When the plan picture falls back, leave `planImage` absent and save its brief in `shot-list.md` under a `PLAN <sceneId>` block.
 
 ## 9. Open in a browser and read the report
 
@@ -125,7 +125,7 @@ Errors are repaired, not explained away.
 - Review every warning: repair the geometry. For `AXIS_CROSSED`, `EYELINE_MISMATCH`, or `SCREEN_DIRECTION_FLIP` you may instead record a `crossing` with `method`, `intentional: true`, and a `reason` that names the effect; `JUMP_CUT`, `PRIMARY_MOVE_OVERLOAD`, and `WIDE_LENS_FACE` cannot be recorded and must be repaired.
 - Leave `HORIZON_OFFFRAME` alone when the angle intends it; the info entry is the record.
 - One round is one edit pass, one re-render, and one re-read of the report. At most two rounds. After the second, deliver with the remaining warning codes named in the hand-off message; an unresolved error stops delivery. Do not keep tuning until the board looks good.
-- After a repair that changes a pictured shot's `size`, camera values, `move`, or `subjects`, rerun step 8 for that shot with the rebuilt prompt, inside image-maker's two-invocation limit, or remove its `image` and save the prompt as a fallback panel; then re-inject the document before re-reading the report.
+- After a repair that changes a pictured shot's `size`, camera values, `move`, or `subjects`, rerun step 8 for that shot with the rebuilt prompt, as a new brief with its own two-attempt limit, or remove its `image` and save the prompt as a fallback panel; then re-inject the document before re-reading the report.
 
 ## 11. Deliver
 
@@ -135,7 +135,8 @@ Write the folder `.hyper/storyboard-maker/<slug>/`, where `<slug>` is a short ke
 |---|---|
 | `index.html` | the studio copy with the document embedded |
 | `storyboard.json` | the document exactly as rendered |
-| `shot-list.md` | the Korean shot table from [`../references/output-contract.md`](../references/output-contract.md) §3, with a `SH <id>` prompt block for each panel that fell back to line art |
+| `shot-list.md` | the Korean shot table from [`../references/output-contract.md`](../references/output-contract.md) §3, with a `SH <id>` prompt block for each panel that fell back to line art and a `PLAN <sceneId>` block for each floor-plan picture that fell back |
+| `images/` | every returned picture as saved, and `record.json` with the briefs, routes, attempts, digests, and inspection results ([`../references/image-generation.md`](../references/image-generation.md) §6); present only when a picture was generated |
 | `manifest.json` | the `getReport()` object, unchanged |
 
 Run [`validation.md`](validation.md) before the folder is called done. The hand-off message names the folder, the report counts, and every warning or intentional break that remains.
@@ -150,5 +151,6 @@ Run [`validation.md`](validation.md) before the folder is called done. The hand-
 | Panels are built from scene, shot size, camera note, action, optional dialogue, and transition | <https://storyboardart.org/storyboard-tutorials/storyboard-format-for-film/> |
 | An A4 landscape print is declared with `@page { size: A4 landscape; margin: … }` and panels avoid page breaks | <https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@page> |
 | The input document, report fields, and the browser-free core run for this package | [`../references/output-contract.md`](../references/output-contract.md) |
-| The panel-image brief, delegation to image-maker without reference images, inspection, and fallback for this package | [`../references/panel-art.md`](../references/panel-art.md) |
+| The panel-image brief, inspection, and fallback for this package | [`../references/panel-art.md`](../references/panel-art.md) |
+| The capability observation, route, immutable brief without reference images, attempt limit, and persistence for this package | [`../references/image-generation.md`](../references/image-generation.md) |
 | The four crossing methods and the recorded break for this package | [`continuity.md`](continuity.md) |
