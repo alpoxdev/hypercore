@@ -48,7 +48,7 @@ Keep the first screen operational. Omit empty headings and generic advice that d
 Size is not only a readability concern — in one runtime it silently drops content.
 
 - **Codex truncates.** It stops adding files once the combined size reaches `project_doc_max_bytes` (32 KiB by default), filling root-to-leaf. A bloated root file can therefore starve the nested file that actually governs the code being edited. Leave headroom for nested files.
-- **Claude Code does not trim instruction files.** It loads each launch file whole, but a file over 4 MiB is skipped and none of it loads; the documented target is under 200 lines because longer files reduce adherence rather than get truncated. Exceeding that target fails silently and invisibly.
+- **Claude Code does not trim launch-time instruction files.** It loads each launch file whole, but a file over 4 MiB is skipped and none of it loads. Subdirectory instruction files and path-scoped rules load on demand under their own smaller per-file limit, and a file over that limit reaches context only as its start. The documented target is under 200 lines because longer files reduce adherence rather than get truncated; going over the target raises a startup warning, not a cut.
 - **The escape hatch is not a longer file.** Move reference material into skills or linked documents that load on demand.
 
 Treat vendor numbers as runtime-specific defaults, not validated quality thresholds. The governing rule is relevance per line.

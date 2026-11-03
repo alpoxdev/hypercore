@@ -1,6 +1,7 @@
 ---
 name: vite-architecture
 description: "기존 Vite + TanStack Router 프로젝트 아키텍처를 리뷰하거나 변경할 때 사용합니다. 특히 routes, loaders, validateSearch, services, hooks, Vite/TanStack Router platform setup, src/lib 또는 src/services 같은 nested shared folders에 적용합니다. TanStack Start 또는 TanStack Router 없는 generic Vite app에는 사용하지 않습니다."
+compatibility: Vite 애플리케이션에서 저장소 검사, 공식 Vite·TanStack Router 문서 확인, 직접 코드 편집과 함께 사용할 때 가장 적합합니다. 번들 패키지 검증기는 bash 3.2+와 jq 1.6+가 필요합니다.
 ---
 
 @architecture-rules.ko.md

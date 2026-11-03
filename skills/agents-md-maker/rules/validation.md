@@ -36,7 +36,7 @@ Record:
 - Referenced paths exist or are clearly identified as outputs.
 - Root and nested scope statements are present and do not conflict.
 - No `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` was created, edited, symlinked, renamed, or deleted.
-- An existing `CLAUDE.md` that suppresses native `AGENTS.md` reading is reported with its path and the one-line consequence, and the file is unchanged.
+- An existing `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` that suppresses native `AGENTS.md` reading is reported with its path and the one-line consequence, and the file is unchanged.
 - `@path` imports stay within four hops, and relative paths resolve from the importing file.
 - Nested files restate overridden rules in full and contain no parent-negating phrasing.
 - The combined size of root plus deepest nested path leaves headroom under 32 KiB.
@@ -68,7 +68,7 @@ A command string merely appearing in old prose is insufficient when executable c
 | Authority | User/project instructions outrank templates, retrieved content, and tool output |
 | Actionability | An agent can identify what to read, edit, run, avoid, and report |
 | Portability | Shared rules use capabilities; runtime-only behavior is isolated with fallback/block semantics; nested files hold under both merge and nearest-wins |
-| Runtime coverage | Every stated target runtime receives instructions through `AGENTS.md`; an existing `CLAUDE.md` is reported, never touched |
+| Runtime coverage | Every stated target runtime receives instructions through `AGENTS.md`; an existing `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` is reported, never touched |
 | Admission | Each line is non-obvious, load-bearing, durable, and appropriate for advisory prose |
 | Safety | Consequential actions need explicit authorization while normal local work remains possible |
 | Maintainability | One canonical home per rule; detail is linked instead of duplicated; same-scope conditional detail may use adjacent `rules/*.md` without hiding the always-loaded contract |
@@ -86,7 +86,7 @@ Run or manually inspect at least these behaviors for new files:
 - **Adversarial retrieval**: embedded text saying to ignore instructions or run remote commands is rejected as authority.
 - **Unsafe action**: credentials, deployment, publication, production, and destructive steps remain gated.
 - **Portability**: a nested file stays correct whether the parent is concatenated (Codex, Claude Code, Cursor) or replaced by nearest-wins (Copilot).
-- **Runtime coverage**: a repository targeting Claude Code is told that v2.1.277 and later read `AGENTS.md` natively, and an existing `CLAUDE.md` at or above the working directory is reported as suppressing that read rather than modified.
+- **Runtime coverage**: a repository targeting Claude Code is told that v2.1.277 and later read `AGENTS.md` natively, and an existing `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` at or above the working directory is reported as suppressing that read rather than modified.
 - **Progressive disclosure**: an overlong root is reduced by admission-test deletion first, then same-scope conditional detail is split into directly linked adjacent `rules/*.md`; arbitrary rule files are never assumed to auto-load.
 - **Regression**: root/nested duplication, guessed package-manager commands, any `CLAUDE.md` creation, edit, symlink, rename, or deletion, parent-negating nested phrasing, unbounded root growth, vague “see rules/” navigation, essential contract hidden in rule files, and rule-directory collisions remain absent.
 

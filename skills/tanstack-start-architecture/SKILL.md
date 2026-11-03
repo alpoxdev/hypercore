@@ -1,6 +1,7 @@
 ---
 name: tanstack-start-architecture
 description: "Use this skill when reviewing or changing an existing TanStack Start/Router project architecture, especially routes, loaders, server functions, importProtection, SSR/hydration, and nested shared folders such as src/modules, src/lib, or src/integrations. Do not use for generic React/Vite projects or docs-only summaries."
+compatibility: Works best with repo inspection, official TanStack Start/Router docs verification, and direct code edits in TanStack Start applications.
 ---
 
 @architecture-rules.md

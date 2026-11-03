@@ -1,6 +1,7 @@
 ---
 name: tanstack-start-architecture
 description: 기존 TanStack Start/Router 프로젝트의 routes, loaders, server functions, importProtection, SSR/hydration, `src/modules`, `src/lib`, `src/integrations` 같은 nested shared folders 아키텍처를 리뷰하거나 변경할 때 사용합니다. 일반 React/Vite 프로젝트나 문서 요약 전용 요청에는 사용하지 않습니다.
+compatibility: TanStack Start 애플리케이션에서 저장소 검사, 공식 TanStack Start/Router 문서 확인, 직접 코드 편집과 함께 사용할 때 가장 적합합니다.
 ---
 
 @architecture-rules.ko.md

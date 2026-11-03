@@ -1,6 +1,7 @@
 ---
 name: vite-architecture
 description: "Use this skill when reviewing or changing an existing Vite + TanStack Router project architecture, especially routes, loaders, validateSearch, services, hooks, Vite/TanStack Router platform setup, and nested shared folders such as src/lib or src/services. Do not use for TanStack Start or generic Vite apps without TanStack Router."
+compatibility: Works best with repo inspection, official Vite and TanStack Router docs verification, and direct code edits in Vite applications. The bundled package validator needs bash 3.2+ and jq 1.6+.
 ---
 
 @architecture-rules.md
