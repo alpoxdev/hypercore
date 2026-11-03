@@ -108,7 +108,7 @@ references/
 - 변동(Drift) caveat
 - Core 규칙으로 승격된 요약
 
-`references/official/`는 **권장** 배치이지 필수 경로가 아니며, 이 저장소에는 아직 이 폴더를 쓰는 skill이 없습니다. 규칙이 요구하는 것은 provider 상세를 core 밖으로 두는 일입니다. 이 저장소 안 문서의 고정 스냅샷이면 폴더 이름을 `references/local/`로 씁니다. `skills/skill-maker/references/local/`이 이미 그 예입니다.
+`references/official/` 폴더 이름은 권장이지 필수 경로가 아니며, 이미 여러 skill이 이 폴더를 씁니다(예: `skills/skill-maker/references/official/`). 규칙이 요구하는 것은 provider 상세를 core 밖으로 두는 일입니다. 이 저장소 안 문서의 고정 스냅샷이면 폴더 이름을 `references/local/`로 씁니다. `skills/skill-maker/references/local/`이 이미 그 예입니다.
 
 ## 6. Eval 리소스 배치
 

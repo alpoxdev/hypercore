@@ -52,7 +52,7 @@ When a runtime loads a skill's `SKILL.md` and a system-level skill list into eve
 ## 4. What invalidates a cache
 
 - An edit to the system prompt, the skill text, or any earlier message.
-- A tool-list or tool-schema change, including an MCP server reconnect that alters the schema. Hermes Agent asks before `/reload-mcp` by default because a changed MCP schema invalidates model prompt caching (<https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp>).
+- A tool-list or tool-schema change, including an MCP server reconnect that alters the schema.
 - Reordering content that is otherwise identical.
 - TTL expiry between requests.
 - A different cache scope or routing key — a shared prefix is not automatically a shared cache.
@@ -103,10 +103,9 @@ A harness multiplies one prompt into many requests: workers, subagents, retries,
 |---|---|---|
 | Anthropic, prompt caching | <https://platform.claude.com/docs/en/build-with-claude/prompt-caching> | 2026-11-03 |
 | OpenAI, prompt caching | <https://developers.openai.com/api/docs/guides/prompt-caching> | 2026-11-03 |
-| Google, context caching on the generateContent API | <https://ai.google.dev/gemini-api/docs/generate-content/caching> | 2026-11-03 |
-| Google, implicit caching on the Interactions API | <https://ai.google.dev/gemini-api/docs/caching> | 2026-11-03 |
-| Google, GenerateContent API reference | <https://ai.google.dev/api/generate-content> | 2026-11-03 |
-| Hermes Agent, MCP and `/reload-mcp` | <https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp> | 2026-09-19 |
+| Google, context caching on the generateContent API | <https://aistudio.google.com/docs/caching?generate-content=true> | 2026-11-03 |
+| Google, implicit caching on the Interactions API | <https://aistudio.google.com/docs/caching> | 2026-11-03 |
+| Google, GenerateContent API reference | <https://aistudio.google.com/api-reference/generate-content> | 2026-11-03 |
 
 ## Related documents
 

@@ -35,7 +35,7 @@ E는 유지보수 부채다. 모든 공유 규칙이 두 집을 갖게 되고, �
 
 ### 이 저장소
 
-`hypercore`는 현재 **A**다. `.gitignore` 43–45행이 `# Local agent instructions` 아래 `CLAUDE.md`와 나란히 `AGENTS.md`를 적고 있지만, 그 무시 규칙보다 먼저 추가되었기 때문에 `AGENTS.md`는 추적된다. `git ls-files AGENTS.md`가 `AGENTS.md`를 출력하는 것으로 이를 확인했다. `CLAUDE.md`는 없다(gitignore 대상이고 추적되지 않으며 2026-11-03 기준 부재). 그래서 Claude Code는 정본 파일을 자체적으로 읽고, 나란히 유지할 사본이 없다.
+`hypercore`는 현재 **A**다. `.gitignore` 43–45행이 `# Local agent instructions` 아래 `CLAUDE.md`와 나란히 `AGENTS.md`를 적고 있지만 `AGENTS.md`는 추적된다. 이 무시 규칙은 `caeedae`(2026-06-09)에서 들어왔고 그 커밋이 `AGENTS.md`를 인덱스에서 지웠다. 이후 `c5ac09d`(2026-07-29)가 `AGENTS.md`를 명시적으로 다시 추가했고, 무시 규칙은 이미 추적 중인 파일을 추적 해제하지 않는다. `git ls-files AGENTS.md`가 `AGENTS.md`를 출력하고 `git log -- AGENTS.md`가 그 이력을 보여 준다. `CLAUDE.md`는 없다(gitignore 대상이고 추적되지 않으며 2026-11-03 기준 부재). 그래서 Claude Code는 정본 파일을 자체적으로 읽고, 나란히 유지할 사본이 없다.
 
 실제로 Claude 전용 규칙이 생기면 선택지는 **D**이지 E가 아니다. `@AGENTS.md`로 시작하고 그 import 아래에 그 규칙만 덧붙이는 `CLAUDE.md`다. 선택을 규정하는 사실은 둘이다. import는 계약 로드를 보장하지만 매 세션 비용을 내고, 산문 포인터는 앞단 비용이 없지만 조언에 그쳐 에이전트가 정본 파일을 읽지 않고 진행할 수 있다. 그리고 이 저장소에서 `CLAUDE.md`는 gitignore 대상이고 `AGENTS.md`는 version-controlled이므로, `CLAUDE.md`는 공유 산출물이 아니라 *로컬 clone adapter*가 된다. 그래서 "공유 계약은 `AGENTS.md`에 정본으로 남는다"는 규칙은 스타일 선호가 아니라 정확성 규칙이다. `CLAUDE.md`에만 쓴 내용은 다른 사람에게 존재하지 않으며 리뷰될 수도 없다.
 

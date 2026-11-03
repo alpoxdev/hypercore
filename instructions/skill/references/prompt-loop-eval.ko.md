@@ -34,7 +34,7 @@
 | Loop | Loop | 그대로 |
 | Output | Output | 그대로 |
 
-자기 블록이 없던 네 필드, 즉 Evidence, Tools, Verification, Stop condition이 가장 자주 비어 있으므로 Workflow에 접어 넣지 않고 아래에 따로 적습니다.
+Evidence는 Context 블록을 이어받습니다. 자기 블록이 없던 세 필드, 즉 Tools, Verification, Stop condition이 가장 자주 비어 있으므로 Workflow에 접어 넣지 않고 Evidence와 함께 아래에 따로 적습니다.
 
 ```markdown
 ## Intent

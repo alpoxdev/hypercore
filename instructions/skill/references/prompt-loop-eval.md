@@ -34,7 +34,7 @@ Source snapshot: 2026-11-03. Every URL in §12 was re-read on that date.
 | Loop | Loop | Unchanged |
 | Output | Output | Unchanged |
 
-The four fields that had no block of their own — Evidence, Tools, Verification, Stop condition — are the ones most often left blank, so they are written out below instead of being folded into Workflow.
+Evidence inherits the Context block. The three fields that had no block of their own — Tools, Verification, Stop condition — are the ones most often left blank, so they are written out below with Evidence instead of being folded into Workflow.
 
 ```markdown
 ## Intent

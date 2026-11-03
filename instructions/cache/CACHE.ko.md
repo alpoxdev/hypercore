@@ -52,7 +52,7 @@
 ## 4. 캐시를 무효화하는 것
 
 - 시스템 프롬프트, 스킬 텍스트, 또는 앞선 메시지의 수정.
-- 도구 목록이나 도구 스키마 변경. 스키마를 바꾸는 MCP 서버 재연결도 포함된다. Hermes Agent는 MCP 스키마 변경이 모델 프롬프트 캐싱을 무효화하기 때문에 기본적으로 `/reload-mcp` 전에 확인을 요청한다(<https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp>).
+- 도구 목록이나 도구 스키마 변경. 스키마를 바꾸는 MCP 서버 재연결도 포함된다.
 - 내용이 같은데 순서만 바꾸는 것.
 - 요청 사이의 TTL 만료.
 - 다른 캐시 범위나 라우팅 키. 접두부를 공유한다고 캐시가 자동으로 공유되지는 않는다.
@@ -103,10 +103,9 @@
 |---|---|---|
 | Anthropic, 프롬프트 캐싱 | <https://platform.claude.com/docs/en/build-with-claude/prompt-caching> | 확인 2026-11-03 |
 | OpenAI, 프롬프트 캐싱 | <https://developers.openai.com/api/docs/guides/prompt-caching> | 확인 2026-11-03 |
-| Google, generateContent API 컨텍스트 캐싱 | <https://ai.google.dev/gemini-api/docs/generate-content/caching> | 확인 2026-11-03 |
-| Google, Interactions API 암시적 캐싱 | <https://ai.google.dev/gemini-api/docs/caching> | 확인 2026-11-03 |
-| Google, GenerateContent API 참조 | <https://ai.google.dev/api/generate-content> | 확인 2026-11-03 |
-| Hermes Agent, MCP와 `/reload-mcp` | <https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp> | 확인 2026-09-19 |
+| Google, generateContent API 컨텍스트 캐싱 | <https://aistudio.google.com/docs/caching?generate-content=true> | 확인 2026-11-03 |
+| Google, Interactions API 암시적 캐싱 | <https://aistudio.google.com/docs/caching> | 확인 2026-11-03 |
+| Google, GenerateContent API 참조 | <https://aistudio.google.com/api-reference/generate-content> | 확인 2026-11-03 |
 
 ## 함께 읽을 문서
 

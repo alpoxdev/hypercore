@@ -30,7 +30,7 @@
 - skill 생성 또는 리팩터링에는 [`instructions/skill/SKILL_AUTHORING.ko.md`](instructions/skill/SKILL_AUTHORING.ko.md)와 `instructions/skill/references/` 아래에서 가장 작은 관련 파일을 읽습니다.
 - source-sensitive, current, comparative, security claim에는 [`instructions/sourcing/reliable-search.ko.md`](instructions/sourcing/reliable-search.ko.md)를 읽습니다.
 - 완료 근거와 risk-matched check에는 [`instructions/validation/index.ko.md`](instructions/validation/index.ko.md)를 읽습니다.
-- runtime-specific behavior에는 [`instructions/context-engineering/references/runtime-profiles.ko.md`](instructions/context-engineering/references/runtime-profiles.ko.md)와 적용되는 runtime profile만 읽습니다.
+- runtime-specific behavior에는 [`instructions/context-engineering/references/runtime-profiles.ko.md`](instructions/context-engineering/references/runtime-profiles.ko.md)를 읽고 사용 중인 runtime의 행만 적용합니다.
 - context, delegation, harness behavior에는 `instructions/context-engineering/`와 `instructions/harness-engineering/` 아래의 적용 가능한 문서를 사용합니다.
 - 멈춤 조건을 가진 자율 에이전트 루프(목표·시간·이벤트 기반 반복)에는 [`instructions/loop-engineering/LOOP_ENGINEERING.ko.md`](instructions/loop-engineering/LOOP_ENGINEERING.ko.md)를, 그래프로 구성한 다단계·다중 에이전트 workflow에는 [`instructions/graph-engineering/GRAPH_ENGINEERING.ko.md`](instructions/graph-engineering/GRAPH_ENGINEERING.ko.md)를 읽습니다.
 

@@ -43,7 +43,7 @@ Gotchas earn their place here specifically: they are environment facts that defy
 | Templates | `assets/*` |
 | Long example collections | `references/examples.md` or `assets/examples/*` |
 
-`references/official/` is a **recommendation**, not a required path, and no skill in this repository currently uses it. What the rule requires is that provider detail stays out of the core; the folder name is a convention. For a pinned snapshot of a document that lives in this repository, use `references/local/*.md` — that is the folder `skills/skill-maker` uses for its copies of the skill-authoring documents.
+`references/official/` is the conventional home for long official-documentation summaries and provider drift notes (for example `skills/skill-maker/references/official/` and `skills/docs-maker/references/official/`), but the folder name is a recommendation, not a required path. What the rule requires is that provider detail stays out of the core. For a pinned snapshot of a document that lives in this repository, use `references/local/*.md` — that is the folder `skills/skill-maker` uses for its summary of the skill-authoring documents.
 
 ## 4. Navigation sentences
 

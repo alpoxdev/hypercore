@@ -61,7 +61,7 @@ Source: <https://developers.openai.com/api/docs/guides/prompt-caching> (checked 
 
 ## 3. Google
 
-Sources: [Context caching, generateContent API](https://ai.google.dev/gemini-api/docs/generate-content/caching) and [implicit caching, Interactions API](https://ai.google.dev/gemini-api/docs/caching); both pages state "Last updated 2026-10-23" and were checked 2026-11-03. The `usage_metadata` field name was confirmed in the [GenerateContent API reference](https://ai.google.dev/api/generate-content) on the same date.
+Sources: [Context caching, generateContent API](https://aistudio.google.com/docs/caching?generate-content=true) and [implicit caching, Interactions API](https://aistudio.google.com/docs/caching); both pages state "Last updated 2026-10-23" and were checked 2026-11-03. The `usage_metadata` field name was confirmed in the [GenerateContent API reference](https://aistudio.google.com/api-reference/generate-content) on the same date. The pages moved from `ai.google.dev` to `aistudio.google.com` (301 redirects observed 2026-11-04); the implicit-caching facts below were re-read at the new address that day.
 
 | Fact | Value |
 |---|---|

@@ -43,7 +43,7 @@ Gotcha가 여기 들어오는 이유는 분명합니다. Gotcha는 합리적 가
 | 템플릿 | `assets/*` |
 | 긴 예시 모음 | `references/examples.md` 또는 `assets/examples/*` |
 
-`references/official/`는 **권장** 배치이지 필수 경로가 아니며, 이 저장소에는 아직 이 폴더를 쓰는 skill이 없습니다. 규칙이 요구하는 것은 provider 상세를 core 밖으로 두는 일이고, 폴더 이름은 관례입니다. 이 저장소 안에 있는 문서의 고정 스냅샷이면 `references/local/*.md`를 씁니다. `skills/skill-maker`가 skill 작성 문서 사본을 그 폴더에 둡니다.
+`references/official/`는 긴 공식 문서 요약과 provider 변동 기록을 두는 관례적 위치입니다(예: `skills/skill-maker/references/official/`, `skills/docs-maker/references/official/`). 다만 폴더 이름은 권장이지 필수 경로가 아닙니다. 규칙이 요구하는 것은 provider 상세를 core 밖으로 두는 일입니다. 이 저장소 안에 있는 문서의 고정 스냅샷이면 `references/local/*.md`를 씁니다. `skills/skill-maker`가 skill 작성 문서 요약을 그 폴더에 둡니다.
 
 ## 4. 안내 문장
 

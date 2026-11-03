@@ -61,7 +61,7 @@
 
 ## 3. Google
 
-출처: [Context caching, generateContent API](https://ai.google.dev/gemini-api/docs/generate-content/caching)와 [암시적 캐싱, Interactions API](https://ai.google.dev/gemini-api/docs/caching). 두 페이지 모두 "Last updated 2026-10-23"을 표시하며 확인일은 2026-11-03이다. `usage_metadata` 필드 이름은 같은 날 [GenerateContent API 참조](https://ai.google.dev/api/generate-content)에서 확인했다.
+출처: [Context caching, generateContent API](https://aistudio.google.com/docs/caching?generate-content=true)와 [암시적 캐싱, Interactions API](https://aistudio.google.com/docs/caching). 두 페이지 모두 "Last updated 2026-10-23"을 표시하며 확인일은 2026-11-03이다. `usage_metadata` 필드 이름은 같은 날 [GenerateContent API 참조](https://aistudio.google.com/api-reference/generate-content)에서 확인했다. 이 페이지들은 `ai.google.dev`에서 `aistudio.google.com`으로 옮겨졌고(2026-11-04에 301 리다이렉트 확인), 아래 암시적 캐싱 사실은 그날 새 주소에서 다시 읽었다.
 
 | 항목 | 값 |
 |---|---|
