@@ -50,7 +50,7 @@ Place every character and prop on a floor plan before choosing a camera.
 
 - Coordinates are metres on the scene floor: `x` runs to the scene's right, `z` away from the viewer, and the floor is `y = 0`.
 - Give every character `x`, `z`, `facingDeg` (`0` faces `+z`, positive turns toward `+x`), and a `pose` from `stand`, `walk`, `sit`, `reach`, `crouch`.
-- Give every prop `x`, `z`, `w`, `d`, `h`.
+- Give every prop `x`, `z`, `w`, `d`, `h`, and `y` whenever it does not stand on the floor. `y` is the base elevation in metres, so a cup resting on a table with `h: 0.75` gets `y: 0.75`; leave it out and the prop sits on the floor at `0`. A prop-focus shot frames the box from `y` to `y + h`, so this height decides whether an insert shows the object or only the tabletop under it.
 - Declare `scene.axis` as the two character ids that carry the exchange, or `null` when the scene has no line.
 - Check the floor plan before the panels: the camera side of the axis, the distance between the camera and each subject, and the direction each character faces. The floor plan drawn for each scene in `index.html` is this check.
 

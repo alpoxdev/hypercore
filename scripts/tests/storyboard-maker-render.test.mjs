@@ -179,6 +179,68 @@ test("a floor-level pitch fails while the same height fits and derives a negativ
   expect(layout.pitchDeg).toBeLessThan(0);
 });
 
+test("a POV camera closer than a lens can focus fails camera geometry", () => {
+  const doc = testDoc([baseShot({
+    size: "CU",
+    focus: "a",
+    camera: { yawDeg: 0, rollDeg: 0, focalMm: 50, pov: "a" }
+  })]);
+  const layout = core.layoutShot(doc, "s1", "10");
+  expect(layout).not.toBeNull();
+  expect(layout.distanceM).toBeLessThan(0.2);
+  expect(core.validate(doc).errors.map((e) => e.code)).toContain("CAMERA_GEOMETRY");
+});
+
+test("the floor-plan wedge spans the true half angle of the horizontal field of view", () => {
+  const svg = core.renderFloorPlanSvg(testDoc([baseShot()]), "s1");
+  const wedge = svg.match(/<path d="M([-\d.]+) ([-\d.]+) L([-\d.]+) ([-\d.]+) L([-\d.]+) ([-\d.]+) Z" fill="#c0392b" opacity="0.08"/);
+  expect(wedge).not.toBeNull();
+  const ox = Number(wedge[1]);
+  const oy = Number(wedge[2]);
+  const ax = Number(wedge[3]) - ox;
+  const ay = Number(wedge[4]) - oy;
+  const bx = Number(wedge[5]) - ox;
+  const by = Number(wedge[6]) - oy;
+  const cos = Math.min(1, Math.max(-1, (ax * bx + ay * by) / (Math.hypot(ax, ay) * Math.hypot(bx, by))));
+  const halfDeg = (Math.acos(cos) * 180) / Math.PI / 2;
+  near(halfDeg, 19.29, 0.1);
+});
+
+test("floor-plan labels clear each other and the character circles in the sample", () => {
+  const glyphWidth = (text) => {
+    let total = 0;
+    for (const ch of text) total += ch.charCodeAt(0) > 0x2e80 ? 17 : 9.4;
+    return Math.max(20, total);
+  };
+  /** @type {Array<{ text: string, x: number, y: number, w: number, h: number }>} */
+  const labels = [];
+  /** @type {Array<{ x: number, y: number }>} */
+  const circles = [];
+  for (const scene of sampleDoc.scenes) {
+    const svg = core.renderFloorPlanSvg(sampleDoc, scene.id);
+    for (const m of svg.matchAll(/<text class="hint-text" x="([-\d.]+)" y="([-\d.]+)" text-anchor="middle">([^<]*)<\/text>/g)) {
+      labels.push({ text: m[3], x: Number(m[1]), y: Number(m[2]), w: glyphWidth(m[3]), h: 19.1 });
+    }
+    for (const m of svg.matchAll(/<circle data-part="blocking" cx="([-\d.]+)" cy="([-\d.]+)" r="11"/g)) {
+      circles.push({ x: Number(m[1]), y: Number(m[2]) });
+    }
+  }
+  expect(labels.length).toBeGreaterThan(6);
+  expect(circles.length).toBeGreaterThan(0);
+  for (let i = 0; i < labels.length; i++) {
+    const a = labels[i];
+    for (let j = i + 1; j < labels.length; j++) {
+      const b = labels[j];
+      const overlap = Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
+      expect({ pair: [a.text, b.text], overlap }).toEqual({ pair: [a.text, b.text], overlap: false });
+    }
+    for (const c of circles) {
+      const overlap = Math.abs(a.x - c.x) < a.w / 2 + 11 && Math.abs(a.y - c.y) < a.h / 2 + 11;
+      expect({ text: a.text, overlap }).toEqual({ text: a.text, overlap: false });
+    }
+  }
+});
+
 test("the horizon is drawn only inside the vertical field of view and the ground disappears for a close-up", () => {
   const eye = testDoc([baseShot()]);
   expect(core.renderPanelSvg(eye, "s1", "10")).toContain('data-part="horizon"');
@@ -205,6 +267,16 @@ test("crossing the axis warns, and a recorded crossing suppresses it into intent
   const linted = core.lint(declared);
   expect(codeList(linted)).not.toContain("AXIS_CROSSED");
   expect(linted.intentional).toHaveLength(1);
+});
+
+test("a scene opener records its crossing even without a previous cut", () => {
+  const doc = testDoc([
+    baseShot({ id: "10", crossing: { method: "none", intentional: true, reason: "opener stays on the far side" } })
+  ]);
+  const linted = core.lint(doc);
+  expect(linted.warnings).toEqual([]);
+  expect(linted.intentional).toHaveLength(1);
+  expect(linted.intentional[0]).toMatchObject({ shot: "10", method: "none", intentional: true });
 });
 
 test("eyeline mismatch fires when two solo shots of the axis pair look the same way", () => {
@@ -253,6 +325,27 @@ test("more than one primary move in a shot warns", () => {
   expect(codeList(core.lint(single))).not.toContain("PRIMARY_MOVE_OVERLOAD");
 });
 
+/** @param {string} svg */
+function cameraArrowWidth(svg) {
+  const line = svg.match(/<line[^>]*stroke="#c0392b" stroke-width="([\d.]+)"/);
+  return line ? Number(line[1]) : NaN;
+}
+
+test("an omitted move primary draws the secondary arrow weight and never counts as primary", () => {
+  const omitted = testDoc([baseShot({
+    move: { type: "PAN L" },
+    subjectMoves: [{ character: "a", to: { x: 1.4, z: -0.8 }, label: "CROSS", primary: true }]
+  })]);
+  expect(core.validate(omitted).errors).toEqual([]);
+  expect(codeList(core.lint(omitted))).not.toContain("PRIMARY_MOVE_OVERLOAD");
+  expect(cameraArrowWidth(core.renderPanelSvg(omitted, "s1", "10"))).toBe(1.5);
+
+  const declared = clone(omitted);
+  declared.scenes[0].shots[0].move.primary = true;
+  expect(codeList(core.lint(declared))).toContain("PRIMARY_MOVE_OVERLOAD");
+  expect(cameraArrowWidth(core.renderPanelSvg(declared, "s1", "10"))).toBe(2.5);
+});
+
 test("a subject move is clipped into the frame and keeps its label", () => {
   const svg = core.renderPanelSvg(sampleDoc, "sc2", "50");
   const group = svg.match(/<g data-part="subject-move"[^>]*>([\s\S]*?)<\/g>/);
@@ -270,6 +363,7 @@ test("the over character draws an on-frame foreground shoulder for an OTS shot",
   const group = svg.match(/<g data-character="haneul"[^>]*>([\s\S]*?)<\/g>/);
   expect(group).not.toBeNull();
   expect(group[0]).toContain('data-part="foreground"');
+  expect(group[0]).toContain('fill="#e2e2e2"');
   expect((group[1].match(/<path/g) || []).length).toBeGreaterThanOrEqual(1);
   const points = drawnPoints(group[1]);
   expectInsidePanel(points, 1600, 900);
@@ -385,6 +479,11 @@ test("the asset carries no remote resources and ships A4 landscape print rules",
   expect(Number(labelSize[1])).toBeGreaterThanOrEqual(26);
 });
 
+test("the core carries no dead panel counter and no unused yaw translation table", () => {
+  expect(coreMatch[1]).not.toMatch(/\bYAW_KO\b/);
+  expect(coreMatch[1]).not.toMatch(/\btotalPanels\b/);
+});
+
 test("a push in draws the end frame and prints its label", () => {
   const doc = testDoc([baseShot({ move: { type: "PUSH IN", endSize: "CU", primary: true } })]);
   const svg = core.renderPanelSvg(doc, "s1", "10");
@@ -497,6 +596,14 @@ test("a panel picture, a style and a character look are optional and the picture
     mutate(copy);
     expect(core.validate(copy).errors.map((e) => e.code)).toContain(code);
   }
+});
+
+test("the panel renderer never emits a non-data image source on the direct path", () => {
+  const doc = testDoc([baseShot({ image: { src: "https://example.com/a.png", provenance: "supplied", prompt: "kept" } })]);
+  const svg = core.renderPanelSvg(doc, "s1", "10");
+  expect(svg).not.toContain("https://example.com");
+  expect(svg).not.toContain('data-part="panel-image"');
+  expect(svg).toContain('data-part="head"');
 });
 
 test("the panel prompt repeats deterministically and carries the computed framing without dialogue", () => {

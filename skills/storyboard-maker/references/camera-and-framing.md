@@ -186,7 +186,7 @@ The renderer warns with `WIDE_LENS_FACE` when `focalMm ≤ 18` meets `ECU` or `C
 Both shots derive the camera position from a character instead of from height and pitch.
 
 - **POV** (`camera.pov` = character id): the camera sits at that character's eye position and aims at the focus. The lens still sets the field of view; height, pitch, and distance are fixed by the body.
-- **OTS** (`size: "OTS"`, `camera.over` = character id): the camera sits behind and 0.35 m to the side of the `over` character's shoulder and frames the focus at `MCU`, with the near shoulder and the back of the head in the foreground. The 0.35 m offset is this package's default (**ASSUMED**); another implementation uses 0.5 m.
+- **OTS** (`size: "OTS"`, `camera.over` = character id): the camera sits behind and 0.35 m to the side of the `over` character's shoulder and frames the focus at `MCU`. The near character's shoulder fills the foreground, and the back of the head stays outside the frame. The 0.35 m offset is this package's default (**ASSUMED**); another implementation uses 0.5 m.
 
 Input rules for both:
 
@@ -223,7 +223,7 @@ Panel labels print the English name and the Korean term together, for example `L
 
 - `pitchDeg` and `heightM` together: `SCHEMA_CONFLICT`.
 - `pitchDeg`, `heightM`, or `distanceM` with `pov` or `OTS`: `SCHEMA_CONFLICT`.
-- `heightM` below 0.05 after derivation, or `|heightM − centre| > distance`: `CAMERA_GEOMETRY`.
+- `heightM` below `0.05` after derivation, `|heightM − centre| > distance`, a `pov` or `OTS` camera below `0.05` m, or a `pov` or `OTS` camera closer than `0.2` m to the focus: `CAMERA_GEOMETRY`.
 - A camera derived below the floor is not clamped to the floor. Clamping would change the angle the user asked for, so the shot fails and the value must be corrected.
 
 ## Sources
