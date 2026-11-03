@@ -267,7 +267,7 @@ Run `assets/evals/pre-deploy-cases.jsonl` as the behavioral and trigger set.
 | The frontmatter constraints, the 500-line core guidance, and the one-level-deep reference rule | <https://agentskills.io/specification> |
 | The verification-depth scale, the completion contract, and the forbidden patterns behind the verdict gates | `instructions/validation/index.md` |
 | Skipped work recorded as `SKIP`, a `SKIP` never counted as a pass, and the four-part evidence record | `instructions/harness-engineering/HARNESS_ENGINEERING.md`, `instructions/harness-engineering/references/evidence-and-recovery.md` |
-| Capability-based tools, the approval boundary for gated work, and approval being separate from capability | `instructions/cli/capability-contract.md` |
+| Capability-based tools, the approval boundary for gated work, and approval being separate from capability | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |
 | The bounded loop, the checker separated from the maker, and the stop condition | `instructions/loop-engineering/LOOP_ENGINEERING.md` |
 | Keeping the trigger stable and volatile values out of the loaded head | `instructions/cache/CACHE.md` |
 | Clippy's recommended warning-deny configuration on Cargo 1.97 and later, and the cache cost of `-D warnings` | <https://doc.rust-lang.org/clippy/usage.html> |

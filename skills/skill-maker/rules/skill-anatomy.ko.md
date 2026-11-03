@@ -209,7 +209,7 @@ Claude는 명세 위에 제약을 더합니다. 이것을 어긴 스킬은 Claud
 | 표준 여섯 필드, Claude Code 확장 목록, 업로드·API 경로에서 비표준 필드의 하드 오류, 알 수 없는 필드를 무시하는 Claude Code, 첫 줄 규칙, 호출된 스킬의 컨텍스트 수명 | <https://code.claude.com/docs/en/skills> |
 | `agents/openai.yaml`, `.agents/skills` 탐색, 같은 `name`을 합치지 않는 동작 | <https://learn.chatgpt.com/docs/build-skills> |
 | 제한적 경계가 아니라 호출 턴에 대한 허용적 부여로서의 `allowed-tools` | <https://code.claude.com/docs/en/skills> |
-| 파싱은 되지만 강제 가능한 권한 경계로 확립되지 않은 `allowed-tools` | `instructions/cli/jcode/README.md` |
+| 파싱은 되지만 강제 가능한 권한 경계로 확립되지 않은 `allowed-tools` | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/jcode/README.md> |
 | `SK-P-3` | `instructions/skill/SKILL_AUTHORING.md` |
 | 첫 줄 규칙을 이미 강제하는 게이트 | `skills/skill-maker/scripts/validate-skill-maker.sh` |
 

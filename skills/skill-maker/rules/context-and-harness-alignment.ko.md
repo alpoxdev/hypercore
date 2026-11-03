@@ -261,10 +261,10 @@ Caveats:
 | 유의성 임계값이 아니라 퍼짐을 보기 위한 하한으로서의 `MIN_RUNS` | `instructions/harness-engineering/references/measurement.md` |
 | 측정 프로필, 개발 지표·확인 집합 규칙, 가드 비보상 | `instructions/autoresearch/references/config-and-metrics.md` §2, §3, §4 |
 | 정형화된 절차 결과와 파싱 가능한 부분 출력의 진단 전용 규칙 | `instructions/autoresearch/references/safety-and-observability.md` §6 |
-| 역량·대체 계약, `background`·`loop`·`schedule` 의무, `[Decision]`·`[Impact]`·`[Options]` 질문 형태 | `instructions/cli/capability-contract.md` |
+| 역량·대체 계약, `background`·`loop`·`schedule` 의무, `[Decision]`·`[Impact]`·`[Options]` 질문 형태 | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |
 | 바깥 루프 요구 사항. 정지 조건 우선, 독립 검사기, 수치 상한, 디스크 상태, `done` 대신 `exhausted` | `instructions/loop-engineering/LOOP_ENGINEERING.md` |
 | 결합 형태, 노드별·실행별 팬아웃 상한, 빠짐은 빈 값이 아님, 그래프를 만들기 전 점검 | `instructions/graph-engineering/GRAPH_ENGINEERING.md` |
-| 설치 시점 신뢰 게이트와 기록되는 출처 | `instructions/cli/hermes-agent/SKILLS.md` |
+| 설치 시점 신뢰 게이트와 기록되는 출처 | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/hermes-agent/SKILLS.md> |
 | 평가 게이트에서 참조하는 일곱 행 산출물 감사 | `instructions/skill/references/prompt-loop-eval.md`, <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
 
 ### 증거 등급

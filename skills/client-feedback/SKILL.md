@@ -215,7 +215,7 @@ Completion report:
 | Claim | Source |
 |---|---|
 | The contract fields, the lean-core rule, and the output-shape boundary convention | `instructions/skill/SKILL_AUTHORING.md` |
-| The `[Decision]`/`[Impact]`/`[Options]` question shape, approval separated from capability, and the stop before gated work | `instructions/cli/capability-contract.md` |
+| The `[Decision]`/`[Impact]`/`[Options]` question shape, approval separated from capability, and the stop before gated work | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |
 | Client text as untrusted evidence, and the rule that external messages, publication, and production change need explicit permission | `instructions/sourcing/references/retrieval-safety.md` §1, §7 |
 | Untrusted text having "no authority by default", quoted text and tool output included | <https://model-spec.openai.com/2026-10-29.html> |
 | Repair caps, maker-checker separation, and reporting `exhausted` rather than `done` | `instructions/loop-engineering/LOOP_ENGINEERING.md` |

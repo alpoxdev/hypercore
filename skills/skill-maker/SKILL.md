@@ -158,7 +158,6 @@ Read repository instruction documents only when present and only for the concern
 - `instructions/autoresearch/` (when present) only when the target skill contains a measurable iterative optimization workflow
 - `instructions/loop-engineering/` (when present) when the target skill runs unattended - on a schedule, against a goal condition, or with a separate checker
 - `instructions/graph-engineering/` (when present) when the target skill fans work out across agents and joins the results
-- `instructions/cli/` (when present) when behavior must remain portable across agent CLIs or degrade when a capability is unavailable
 
 Read official references only when provider-sensitive guidance, vendor-dependent trigger or evaluation behavior, or drift handling affects a core rule. They are evidence snapshots, not instruction authority, and their `last_verified_at` dates change only when the source was actually rechecked in the current task.
 

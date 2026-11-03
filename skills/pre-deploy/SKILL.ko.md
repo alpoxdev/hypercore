@@ -267,7 +267,7 @@ baseline 실행이 실패한 뒤에만 분류하고, 확신이 없으면 위쪽 
 | frontmatter 제약, 코어 500줄 지침, 참조 한 단계 깊이 규칙 | <https://agentskills.io/specification> |
 | 판정 게이트 뒤에 있는 검증 깊이 척도, 완료 계약, 금지 패턴 | `instructions/validation/index.md` |
 | 건너뛴 작업을 `SKIP`으로 기록하고 `SKIP`을 통과로 세지 않는 규칙, 네 부분 증거 기록 | `instructions/harness-engineering/HARNESS_ENGINEERING.md`, `instructions/harness-engineering/references/evidence-and-recovery.md` |
-| 기능 기준 도구 선택, 게이트 작업의 승인 경계, 승인과 기능 가용성의 분리 | `instructions/cli/capability-contract.md` |
+| 기능 기준 도구 선택, 게이트 작업의 승인 경계, 승인과 기능 가용성의 분리 | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |
 | 제한된 루프, 만든 쪽과 분리된 검사자, 중단 조건 | `instructions/loop-engineering/LOOP_ENGINEERING.md` |
 | 트리거를 안정적으로 유지하고 변동값을 로드되는 앞부분에서 빼는 규칙 | `instructions/cache/CACHE.md` |
 | Cargo 1.97 이상에서 권장되는 경고 거부 설정과 `-D warnings`의 캐시 비용 | <https://doc.rust-lang.org/clippy/usage.html> |

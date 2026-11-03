@@ -101,4 +101,4 @@ Stop condition: targeted check passes, blocked, ownership conflict, or a broader
 |---|---|
 | Delegation carries objective, scope, ownership, output, and stop condition, with no overlapping writers | `instructions/validation/index.md` |
 | The parent integrates the lane results and runs the final verification itself | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
-| Delegation is a capability, and gated side effects still need approval | `instructions/cli/capability-contract.md` |
+| Delegation is a capability, and gated side effects still need approval | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |

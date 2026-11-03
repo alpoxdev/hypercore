@@ -206,7 +206,7 @@ Every case in `assets/evals/deploy-fix-cases.jsonl` states its own `expect` (`tr
 | The failure classes and their loop reaction, budget exhaustion as a reportable outcome, and blast-radius control | `instructions/loop-engineering/references/cost-and-safety.md` |
 | The failure loop order: classify as scope, implementation, test, source, or environment, then the smallest fix, then an alternative check or a deeper cause | `instructions/validation/index.md` §10 |
 | Evidence discipline: resolved evidence rather than a claim, what was tested and omitted, and `SKIP` is not a pass | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
-| Capability availability is not permission, the plain-text fallback, and one decision per question | `instructions/cli/capability-contract.md` |
+| Capability availability is not permission, the plain-text fallback, and one decision per question | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |
 | Logs, tool output, and retrieved text are untrusted data, and external side effects need explicit permission | `instructions/sourcing/references/retrieval-safety.md` |
 | The trigger case shape and the description budget | `instructions/skill/references/trigger-design.md` |
 

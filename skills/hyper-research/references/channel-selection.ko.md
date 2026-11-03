@@ -45,7 +45,7 @@
 | Claim | Source |
 |---|---|
 | 영어 우선 검색과 이후 해당 언어 검색, 연산자 표, 수확이 큰 관점, 사이트맵 탐색은 `ulw-research` 스킬을 각색한 것 | <https://github.com/code-yeongyu/oh-my-openagent/tree/0d80470e4201925727e88afbafcdf24d7801a588> |
-| 런타임 하나의 도구 이름 대신 역량으로 도구를 지칭 | `instructions/cli/capability-contract.md` |
+| 런타임 하나의 도구 이름 대신 역량으로 도구를 지칭 | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |
 
 ### 근거 등급
 

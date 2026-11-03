@@ -215,7 +215,7 @@ compatibility: 저장소 탐색, 편집, 로컬 검증 명령 capability가 필�
 | Claim | Source |
 |---|---|
 | contract field, lean core 규칙, output-shape 경계 관례 | `instructions/skill/SKILL_AUTHORING.md` |
-| `[Decision]`/`[Impact]`/`[Options]` 질문 형식, capability와 승인의 분리, gate 작업 전 정지 | `instructions/cli/capability-contract.md` |
+| `[Decision]`/`[Impact]`/`[Options]` 질문 형식, capability와 승인의 분리, gate 작업 전 정지 | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |
 | 고객 텍스트를 신뢰하지 않는 증거로 다루는 규칙과, 외부 메시지·게시·production 변경에 명시적 허가가 필요하다는 규칙 | `instructions/sourcing/references/retrieval-safety.md` §1, §7 |
 | 인용 텍스트와 도구 출력을 포함한 신뢰하지 않는 텍스트가 기본 권한을 갖지 않는다는 규칙 | <https://model-spec.openai.com/2026-10-29.html> |
 | 수정 횟수 상한, maker와 checker 분리, `done` 대신 `exhausted` 보고 | `instructions/loop-engineering/LOOP_ENGINEERING.md` |

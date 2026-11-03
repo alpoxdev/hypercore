@@ -107,7 +107,7 @@ Load only the concern needed for the current document:
 - Read `instructions/loop-engineering/LOOP_ENGINEERING.md` when the document specifies a repeated or unattended workflow, and `instructions/graph-engineering/GRAPH_ENGINEERING.md` when it specifies a multi-node topology. Their required parts are that document's section set; do not substitute a different one.
 - Read `rules/sourcing.md` and `instructions/sourcing/reliable-search.md` for current, contested, security-sensitive, benchmark, comparative, or externally retrieved claims.
 - Read `rules/validation.md` and `instructions/validation/index.md` for risk depth, evals, trace assertions, reviewer gates, or completion evidence.
-- Read `instructions/autoresearch/` only for objectively scored optimization and `instructions/cli/` only for cross-runtime behavior.
+- Read `instructions/autoresearch/` only for objectively scored optimization.
 - Read `instructions/skill/SKILL_AUTHORING.md` only for skill-authoring documents or the document-versus-skill boundary.
 - Before completion, read `rules/required-behaviors.md` and `rules/forbidden-patterns.md`.
 - Read `references/official/*.md` only when provider-sensitive evidence is in scope. Do not change `last_verified_at` unless the source was actually rechecked in this task.

@@ -45,7 +45,7 @@ Use this reference when choosing evidence channels and writing the query plan.
 | Claim | Source |
 |---|---|
 | English-first search with a later local-language sweep, the operator table, the high-yield angles, and sitemap discovery, adapted from the `ulw-research` skill | <https://github.com/code-yeongyu/oh-my-openagent/tree/0d80470e4201925727e88afbafcdf24d7801a588> |
-| Name tools by capability rather than one runtime's tool name | `instructions/cli/capability-contract.md` |
+| Name tools by capability rather than one runtime's tool name | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |
 
 ### Evidence grade
 

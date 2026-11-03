@@ -15,7 +15,6 @@
 - 컨텍스트 엔지니어링: `../../../../instructions/context-engineering/`
 - 하네스와 검증: `../../../../instructions/harness-engineering/`, `../../../../instructions/validation/`
 - 출처와 반복 최적화: `../../../../instructions/sourcing/`, `../../../../instructions/autoresearch/`
-- CLI 간 역량 안내: `../../../../instructions/cli/`
 
 ## 목차
 

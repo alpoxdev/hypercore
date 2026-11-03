@@ -230,8 +230,8 @@ references/
 | `skill-creator` 입력으로서의 `evals/evals.json`, 그리고 `claude plugin eval` 형식이 그것과 호환되지 않는 별도 형식이라는 점 | <https://code.claude.com/docs/en/skills> |
 | 로드되는 머리를 안정적으로 유지하고 변동성 있는 값을 그 밖으로 옮기기 | `instructions/cache/CACHE.md` §3 |
 | `references/official/` 관례와 파일별 내용 | `instructions/skill/references/resource-placement.md` §5 |
-| 프로젝트 스킬 신뢰 게이트, 스캔 격리, 기록되는 설치 출처 | `instructions/cli/hermes-agent/SKILLS.md` |
-| 읽기 전용으로 등록되고 이름 공간이 붙으며 설치 트리에 쓰지 않는 스킬 | `instructions/cli/hermes-agent/PLUGIN_AUTHORING.md` |
+| 프로젝트 스킬 신뢰 게이트, 스캔 격리, 기록되는 설치 출처 | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/hermes-agent/SKILLS.md> |
+| 읽기 전용으로 등록되고 이름 공간이 붙으며 설치 트리에 쓰지 않는 스킬 | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/hermes-agent/PLUGIN_AUTHORING.md> |
 | 스킬 디렉터리의 참조 검증기로서의 `skills-ref validate` | <https://agentskills.io/specification> |
 | Windows는 콘솔 응용 프로그램으로 Command Prompt와 Windows PowerShell을 씁니다. 이 문서가 지목하는 것은 그 둘이며 POSIX `sh`가 아님 | <https://support.microsoft.com/en-us/windows/apps/command-prompt-and-windows-powershell> |
 | 네이티브 Windows의 하네스는 Bash 도구로 Git for Windows를 쓰고 그것이 없으면 PowerShell로 폴백하므로, `sh` 스크립트가 아예 실행되지 않을 수 있음 | <https://code.claude.com/docs/en/setup> |

@@ -239,8 +239,8 @@ Where a skill came from is part of what it is.
 | `evals/evals.json` as the `skill-creator` input, and the `claude plugin eval` format being a different, non-interchangeable one | <https://code.claude.com/docs/en/skills> |
 | Keeping the loaded head stable and moving volatile values out of it | `instructions/cache/CACHE.md` §3 |
 | The `references/official/` convention and its per-file contents | `instructions/skill/references/resource-placement.md` §5 |
-| Project-skill trust gating, scan quarantine, and recorded install provenance | `instructions/cli/hermes-agent/SKILLS.md` |
-| Skills registered read-only, namespaced, and never written to in the install tree | `instructions/cli/hermes-agent/PLUGIN_AUTHORING.md` |
+| Project-skill trust gating, scan quarantine, and recorded install provenance | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/hermes-agent/SKILLS.md> |
+| Skills registered read-only, namespaced, and never written to in the install tree | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/hermes-agent/PLUGIN_AUTHORING.md> |
 | `skills-ref validate` as the reference validator for a skill directory | <https://agentskills.io/specification> |
 | Windows hosts Command Prompt and Windows PowerShell as its console applications; the page names those two, not a POSIX `sh` | <https://support.microsoft.com/en-us/windows/apps/command-prompt-and-windows-powershell> |
 | A harness on native Windows uses Git for Windows for its Bash tool and falls back to PowerShell when it is absent, so a `sh` script may not run at all | <https://code.claude.com/docs/en/setup> |

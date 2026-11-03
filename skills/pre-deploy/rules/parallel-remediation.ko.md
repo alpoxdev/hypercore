@@ -101,4 +101,4 @@ Stop condition: targeted check passes, blocked, ownership conflict, or a broader
 |---|---|
 | 위임에는 목표, 범위, 소유권, 출력, 중단 조건이 붙고 쓰기 주체가 겹치지 않는다 | `instructions/validation/index.md` |
 | 상위 agent가 lane 결과를 통합하고 최종 검증을 직접 실행한다 | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
-| 위임은 기능이며, 게이트된 부수 효과에는 여전히 승인이 필요하다 | `instructions/cli/capability-contract.md` |
+| 위임은 기능이며, 게이트된 부수 효과에는 여전히 승인이 필요하다 | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |

@@ -158,7 +158,6 @@ canonical 스킬 마크다운은 기본적으로 영어로 작성하되, 스킬�
 - `instructions/autoresearch/`(있을 때만) - target skill에 측정 가능한 iterative optimization workflow가 있을 때
 - `instructions/loop-engineering/`(있을 때만) - 대상 스킬이 일정에 맞춰, 목표 조건을 향해, 또는 별도 검사기와 함께 무인으로 돌 때
 - `instructions/graph-engineering/`(있을 때만) - 대상 스킬이 작업을 여러 에이전트로 나눠 맡기고 결과를 합칠 때
-- `instructions/cli/`(있을 때만) - agent CLI 간 portability 또는 capability 부재 시 degradation이 필요할 때
 
 frontmatter 제약, 공개 예산, 또는 frontmatter 필드의 표준·확장 구분이 규칙에 영향을 줄 때는 `references/official/agent-skills-standard.md`를 읽습니다. 그 항목들의 `PRIMARY` 출처이므로 vendor 스냅샷보다 먼저 읽습니다.
 

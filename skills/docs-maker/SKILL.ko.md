@@ -107,7 +107,7 @@ Boundary:
 - 반복되거나 사람 없이 도는 workflow를 규정하는 문서에는 `instructions/loop-engineering/LOOP_ENGINEERING.ko.md`를, 여러 node로 이루어진 topology를 규정하는 문서에는 `instructions/graph-engineering/GRAPH_ENGINEERING.ko.md`를 읽습니다. 그 문서의 필수 구성 요소가 곧 대상 문서의 절 구성이며, 다른 구성으로 대체하지 않습니다.
 - 최신·논쟁·보안 민감·benchmark·비교·외부 검색 주장에는 `rules/sourcing.ko.md`와 `instructions/sourcing/reliable-search.ko.md`를 읽습니다.
 - risk depth, eval, trace assertion, reviewer gate, completion evidence에는 `rules/validation.ko.md`와 `instructions/validation/index.ko.md`를 읽습니다.
-- 객관적으로 점수화된 최적화에만 `instructions/autoresearch/`, cross-runtime 동작에만 `instructions/cli/`를 읽습니다.
+- 객관적으로 점수화된 최적화에만 `instructions/autoresearch/`를 읽습니다.
 - skill-authoring 문서 또는 문서-스킬 경계에만 `instructions/skill/SKILL_AUTHORING.ko.md`를 읽습니다.
 - 완료 전 `rules/required-behaviors.ko.md`와 `rules/forbidden-patterns.ko.md`를 읽습니다.
 - provider-sensitive evidence가 범위에 있을 때만 `references/official/*.ko.md`를 읽습니다. 이번 작업에서 실제 출처를 다시 확인하지 않았다면 `last_verified_at`을 바꾸지 않습니다.

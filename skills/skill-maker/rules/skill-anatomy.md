@@ -210,7 +210,7 @@ Keep headings, section order, links, and examples structurally aligned across th
 | The six standard fields, the Claude Code extension list, the hard error for non-spec fields on the upload/API path, Claude Code ignoring unknown fields, the first-line rule, and the in-context lifecycle of an invoked skill | <https://code.claude.com/docs/en/skills> |
 | `agents/openai.yaml`, the `.agents/skills` walk, and same-`name` non-merging | <https://learn.chatgpt.com/docs/build-skills> |
 | `allowed-tools` as a permissive grant for the invoking turn rather than a restrictive boundary | <https://code.claude.com/docs/en/skills> |
-| `allowed-tools` observed as parsed but not established as an enforceable permission boundary | `instructions/cli/jcode/README.md` |
+| `allowed-tools` observed as parsed but not established as an enforceable permission boundary | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/jcode/README.md> |
 | `SK-P-3` | `instructions/skill/SKILL_AUTHORING.md` |
 | The gate that already enforces the first-line rule | `skills/skill-maker/scripts/validate-skill-maker.sh` |
 

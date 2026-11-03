@@ -15,7 +15,6 @@ Source provenance:
 - Context engineering: `../../../../instructions/context-engineering/`
 - Harness and validation: `../../../../instructions/harness-engineering/`, `../../../../instructions/validation/`
 - Sourcing and iterative optimization: `../../../../instructions/sourcing/`, `../../../../instructions/autoresearch/`
-- Cross-CLI capability guidance: `../../../../instructions/cli/`
 
 ## Contents
 

@@ -206,7 +206,7 @@ Remaining risk:
 | 실패 분류와 반복의 반응, 비용 소진을 보고 가능한 결과로 다루기, 영향 범위 통제 | `instructions/loop-engineering/references/cost-and-safety.md` |
 | 실패 반복의 순서. scope, implementation, test, source, environment로 분류한 뒤 가장 작은 수정, 그다음 대안 검사나 더 깊은 원인 | `instructions/validation/index.md` §10 |
 | 근거 규율. 주장이 아닌 확정된 근거, 검사한 것과 빠뜨린 것의 구분, `SKIP`은 통과가 아님 | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
-| capability 보유는 권한이 아님, 평문 대체 경로, 질문 하나에 결정 하나 | `instructions/cli/capability-contract.md` |
+| capability 보유는 권한이 아님, 평문 대체 경로, 질문 하나에 결정 하나 | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |
 | 로그와 tool output과 검색 텍스트는 신뢰할 수 없는 데이터이며 외부 부수 효과에는 명시적 허가가 필요함 | `instructions/sourcing/references/retrieval-safety.md` |
 | trigger 사례의 형태와 description 예산 | `instructions/skill/references/trigger-design.md` |
 

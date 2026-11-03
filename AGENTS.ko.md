@@ -30,7 +30,7 @@
 - skill 생성 또는 리팩터링에는 [`instructions/skill/SKILL_AUTHORING.ko.md`](instructions/skill/SKILL_AUTHORING.ko.md)와 `instructions/skill/references/` 아래에서 가장 작은 관련 파일을 읽습니다.
 - source-sensitive, current, comparative, security claim에는 [`instructions/sourcing/reliable-search.ko.md`](instructions/sourcing/reliable-search.ko.md)를 읽습니다.
 - 완료 근거와 risk-matched check에는 [`instructions/validation/index.ko.md`](instructions/validation/index.ko.md)를 읽습니다.
-- runtime-specific behavior에는 [`instructions/cli/README.ko.md`](instructions/cli/README.ko.md)와 적용되는 runtime profile만 읽습니다.
+- runtime-specific behavior에는 [`instructions/context-engineering/references/runtime-profiles.ko.md`](instructions/context-engineering/references/runtime-profiles.ko.md)와 적용되는 runtime profile만 읽습니다.
 - context, delegation, harness behavior에는 `instructions/context-engineering/`와 `instructions/harness-engineering/` 아래의 적용 가능한 문서를 사용합니다.
 - 멈춤 조건을 가진 자율 에이전트 루프(목표·시간·이벤트 기반 반복)에는 [`instructions/loop-engineering/LOOP_ENGINEERING.ko.md`](instructions/loop-engineering/LOOP_ENGINEERING.ko.md)를, 그래프로 구성한 다단계·다중 에이전트 workflow에는 [`instructions/graph-engineering/GRAPH_ENGINEERING.ko.md`](instructions/graph-engineering/GRAPH_ENGINEERING.ko.md)를 읽습니다.
 
@@ -91,7 +91,7 @@ pnpm -C cli format:check
 
 ## 런타임 조정
 
-- 공유 규칙은 capability 중심으로 작성하고 실제 runtime 차이는 `instructions/cli/` 아래의 적용 가능한 profile에 둡니다.
+- 공유 규칙은 capability 중심으로 작성하고 실제 runtime 차이는 runtime 전용 adapter(예: 로컬 `CLAUDE.md`)나 `instructions/context-engineering/references/runtime-profiles.ko.md`에 둡니다.
 - skill의 `compatibility` field는 실제 runtime 또는 dependency 제약을 설명합니다. 한 CLI의 동작을 모든 runtime에 일반화하지 않습니다.
 - `AGENTS.md`가 공유 정본 계약이고 `AGENTS.ko.md`는 사람이 읽기 위한 한국어 미러입니다.
 - 이 저장소에서 `CLAUDE.md`는 gitignore된 로컬 Claude Code adapter입니다. 반드시 공유 정본 계약을 로드하고 검증된 Claude 전용 차이만 담아야 하며, 다른 clone에도 공유된다고 가정하지 않습니다.

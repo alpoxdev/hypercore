@@ -245,10 +245,10 @@ Do not hide skipped verification; state the reason and the next-best check used.
 | `MIN_RUNS` as a floor for seeing a spread rather than a significance threshold | `instructions/harness-engineering/references/measurement.md` |
 | The measurement profiles, the development-metric/confirmation-set rule, and guard non-compensation | `instructions/autoresearch/references/config-and-metrics.md` §2, §3, §4 |
 | The typed procedure outcomes and the diagnostic-only rule for parseable partial output | `instructions/autoresearch/references/safety-and-observability.md` §6 |
-| The capability/fallback contract, the `background`/`loop`/`schedule` obligations, and the `[Decision]`/`[Impact]`/`[Options]` question shape | `instructions/cli/capability-contract.md` |
+| The capability/fallback contract, the `background`/`loop`/`schedule` obligations, and the `[Decision]`/`[Impact]`/`[Options]` question shape | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |
 | The outer-loop requirements: stop condition first, an independent checker, a numeric cap, state on disk, and `exhausted` rather than `done` | `instructions/loop-engineering/LOOP_ENGINEERING.md` |
 | The join shape, the per-node and per-run fan-out cap, missing-is-not-empty, and the screen before building a graph | `instructions/graph-engineering/GRAPH_ENGINEERING.md` |
-| Install-time trust gating and recorded provenance | `instructions/cli/hermes-agent/SKILLS.md` |
+| Install-time trust gating and recorded provenance | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/hermes-agent/SKILLS.md> |
 | The seven-row artifact audit referenced from the eval gate | `instructions/skill/references/prompt-loop-eval.md`, <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
 
 ### Evidence grade
