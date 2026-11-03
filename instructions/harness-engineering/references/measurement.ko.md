@@ -238,8 +238,8 @@ eval 셋이 조용히 죽지 않게 하는 실천이 둘 있다.
 ## 과제 길이 지평
 
 장기 실행 작업에서 재는 양은 에이전트가 50% 신뢰도로 완수하는 과제 길이다. 현재 공개된 추정은
-2023년 이후 배증 시간 130.8일[107, 161], 전 기간 196.5일이며, 출처는 자기 도구의 한계를 함께
-밝힌다. "Measurements above 16 hrs are unreliable with our current task suite."
+2023년 이후 배증 시간 130.8일[107, 161], 전 기간 196.5일이며, 프로젝트 대시보드는 그 도구의 한계를
+함께 밝힌다. "Measurements above 16 hrs are unreliable with our current task suite."
 
 숫자와 함께 **어느 표면에서 읽었는지**를 적는다. 공개 표와 대시보드 데이터 파일은 2023년 이후
 130.8일 대 약 128.7일, 전 기간 196.5일 대 약 187.8일로 최대 약 9일 차이가 난다. 데이터 파일이 16시간
@@ -266,7 +266,8 @@ eval 셋이 조용히 죽지 않게 하는 실천이 둘 있다.
 | 비슷한 정확도에서 비용이 거의 두 자릿수 배 차이 난다는 지적 | <https://arxiv.org/abs/2407.01502> | PRIMARY |
 | 정확도 대 비용 파레토 경계라는 리더보드 설계 | <https://arxiv.org/abs/2510.11977> | PRIMARY |
 | 네 차원 12개 신뢰도 지표, 능력 향상이 신뢰도 향상으로는 작게 이어진다는 발견 | <https://arxiv.org/abs/2602.16666> | PRIMARY |
-| 과제 길이 지평, 2023년 이후 130.8일, 16시간 신뢰 한계, 위계 부트스트랩 구간 | <https://metr.org/blog/2026-01-29-time-horizon-1-1/> | PRIMARY |
+| 과제 길이 지평, 2023년 이후 130.8일, 위계 부트스트랩 구간 | <https://metr.org/blog/2026-01-29-time-horizon-1-1/> | PRIMARY |
+| 대시보드 데이터 파일의 2023년 이후 128.7일·전 기간 187.8일 추정, "Measurements above 16 hrs are unreliable with our current task suite" 한계 | <https://metr.org/time-horizons/> | PRIMARY |
 | 지속적으로 판본이 올라가는 벤치마크로서 Terminal-Bench 4.0과 고정 타임아웃 | <https://www.tbench.ai/news/terminal-bench-4-0> | PRIMARY |
 | 입력 길이에 따른 성능 저하, 방해 문장 중첩, 초점/전체 프롬프트 비교 | <https://www.trychroma.com/research/context-rot> | STUDY |
 | 단일 실행 게이트 대신 배치 평가와 집계 통과율 관행 | <https://developers.googleblog.com/the-anatomy-of-harness-engineering-how-to-evaluate-iterate-and-guard-ai-coding-agents/> | VENDOR |

@@ -109,7 +109,7 @@ The measurement that makes the rule necessary, from a paired experiment on an ag
 | Model | Without harness | With harness | Overhead |
 |---|---|---|---|
 | Stronger model | 10/10 | 10/10 | ~10.5× tokens, ~3× time, ~7× cost |
-| Weaker model | 3/10 | 10/10 | same harness, same overhead |
+| Weaker model | 3/10 | 10/10 | ~3.9× tokens, ~2.2× time, ~3.2× cost |
 
 > "For GPT-6 Sol, the harness used about 10.5 times as many tokens, took nearly 3 times as long,
 > and cost about 7 times more, yet both conditions succeeded in all 10 runs."

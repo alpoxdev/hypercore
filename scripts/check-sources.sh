@@ -96,8 +96,11 @@ count_placeholders() {
 }
 
 is_real_date() {
-  date -j -f '%Y-%m-%d' "$1" '+%Y-%m-%d' >/dev/null 2>&1 && return 0
-  date -d "$1" '+%Y-%m-%d' >/dev/null 2>&1 && return 0
+  local out
+  # 정규화 값을 받아들이는 date 구현이 있으므로(2026-02-30 -> 2026-03-02)
+  # 출력이 입력과 같은지까지 확인한다.
+  out=$(date -j -f '%Y-%m-%d' "$1" '+%Y-%m-%d' 2>/dev/null) && [ "$out" = "$1" ] && return 0
+  out=$(date -d "$1" '+%Y-%m-%d' 2>/dev/null) && [ "$out" = "$1" ] && return 0
   return 1
 }
 
@@ -158,26 +161,33 @@ check_links() {
 # 검사 2 — 확인일 표기 (오프라인)
 #
 # 단순 존재 검사는 어떤 문자열로도 통과하므로 ISO 형식과 실재 날짜를 검증한다.
+# 한 줄에 표기가 둘 이상이면 표기마다 검사한다. 첫 값만 보면 뒤쪽 오류가 숨는다.
 # return 0 = 이상 없음 / 1 = 문제 발견
 # ---------------------------------------------------------------------------
 check_dates() {
   echo "== 검사 2: 확인일 형식 (${DOC_SCOPE}) =="
-  local bad=0 found=0 line file date_str
+  local bad=0 found=0 line file marks dates date_n bad_dates
   while IFS= read -r line; do
     [ -z "$line" ] && continue
     found=$((found + 1))
     file="${line%%:*}"
-    date_str=$(printf '%s' "$line" | grep -oE '[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}' | head -1)
-    if [ -z "$date_str" ]; then
+    # 표기 뒤 날짜를 엄격 형식(YYYY-MM-DD)으로만 뽑는다.
+    marks=$(printf '%s' "$line" | grep -oiE '(확인|checked)[[:space:]]+[0-9]' | grep -c .)
+    dates=$(printf '%s' "$line" | grep -oiE '(확인|checked)[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}' | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}')
+    date_n=$(printf '%s' "$dates" | grep -c .)
+    if [ "$date_n" -lt "$marks" ]; then
       printf '  BADFORM  %s\n           %s\n' "$file" "$(printf '%s' "$line" | cut -c1-110)"
       bad=$((bad + 1))
       continue
     fi
-    if ! is_real_date "$date_str"; then
-      printf '  BADDATE  %s  -> %s\n' "$file" "$date_str"
+    bad_dates=$(printf '%s\n' "$dates" | grep . | while IFS= read -r date_str; do
+      is_real_date "$date_str" || printf '%s ' "$date_str"
+    done)
+    if [ -n "$bad_dates" ]; then
+      printf '  BADDATE  %s  -> %s\n' "$file" "${bad_dates% }"
       bad=$((bad + 1))
     fi
-  done < <(grep -rniE '(확인|checked) [0-9]' "$DOC_SCOPE" 2>/dev/null)
+  done < <(grep -rniE '(확인|checked)[[:space:]]+[0-9]' "$DOC_SCOPE" 2>/dev/null)
 
   if [ "$found" -eq 0 ]; then
     echo "  FAIL - 확인일 표기(확인/checked)가 하나도 없습니다."
@@ -297,6 +307,46 @@ run_self_test() {
     echo "  PASS  대문자 표기 확인일의 정상 날짜를 오탐하지 않았습니다"
   else
     echo "  FAIL  대문자 표기 확인일의 정상 날짜를 오탐했습니다"; failures=$((failures + 1))
+  fi
+  DOC_SCOPE="instructions"
+  rm -f "$probe"
+
+  # (4d) 엄격 형식 — 한 자리 월·일(`2026-1-2`)은 ISO 8601 YYYY-MM-DD가 아니므로 검출해야 한다
+  printf '# selftest\n\n출처 (Checked 2026-1-2)\n' > "$probe"
+  DOC_SCOPE="$probe"
+  if check_dates >/dev/null 2>&1; then
+    echo "  FAIL  확인일 검사가 비ISO 날짜(2026-1-2)를 놓쳤습니다"; failures=$((failures + 1))
+  else
+    echo "  PASS  확인일 검사가 비ISO 날짜를 검출했습니다"
+  fi
+  DOC_SCOPE="instructions"
+  rm -f "$probe"
+
+  # (4e) 줄당 표기 여럿 — 첫 표기가 유효해도 뒤쪽 표기의 오류를 검출해야 한다
+  printf '# selftest\n\n출처 (Checked 2026-11-03; 확인 2026-13-45)\n' > "$probe"
+  DOC_SCOPE="$probe"
+  if check_dates >/dev/null 2>&1; then
+    echo "  FAIL  같은 줄의 두 번째 확인일 오류를 놓쳤습니다"; failures=$((failures + 1))
+  else
+    echo "  PASS  같은 줄의 두 번째 확인일 오류를 검출했습니다"
+  fi
+  # 두 표기가 모두 유효하면 오탐이 없어야 한다
+  printf '# selftest\n\n출처 (Checked 2026-11-03; 확인 2026-11-03)\n' > "$probe"
+  if check_dates >/dev/null 2>&1; then
+    echo "  PASS  유효한 확인일 두 개를 오탐하지 않았습니다"
+  else
+    echo "  FAIL  유효한 확인일 두 개를 오탐했습니다"; failures=$((failures + 1))
+  fi
+  DOC_SCOPE="instructions"
+  rm -f "$probe"
+
+  # (4f) 달력에 없는 날짜 — 형식은 맞아도 실재하지 않으므로 검출해야 한다
+  printf '# selftest\n\n출처 (확인 2026-02-30)\n' > "$probe"
+  DOC_SCOPE="$probe"
+  if check_dates >/dev/null 2>&1; then
+    echo "  FAIL  달력에 없는 날짜(2026-02-30)를 놓쳤습니다"; failures=$((failures + 1))
+  else
+    echo "  PASS  달력에 없는 날짜를 검출했습니다"
   fi
   DOC_SCOPE="instructions"
   rm -f "$probe"

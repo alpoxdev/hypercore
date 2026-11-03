@@ -50,7 +50,7 @@ Google Cloud의 표가 이 선택을 가장 깔끔하게 정리한다. 결정적
 | 모양 | 독립 분기로 나눈 뒤 join |
 | 라우팅 권한 | 분할은 코드, join 조건도 코드 |
 | 상태 | 분기마다 필드 하나, 또는 분기가 같은 필드에 덧붙인다면 선언된 reducer |
-| join | 선언된 형태. ADK의 `JoinNode`는 노드 이름을 키로 하는 사전을, `parallel_worker`는 입력 순서를 지킨 목록을 돌려준다 |
+| join | 선언된 형태. ADK의 `JoinNode`는 선행 노드 이름을 키로 하는 사전을 돌려주고, `parallel_worker=True`는 입력 항목마다 노드를 한 번 실행해 결과를 입력 순서대로 모은다 |
 | 실패 | 출력 없이 끝난 분기는 join에 그 분기의 값을 남기지 않고, 오류는 하류에서 드러난다 |
 | 평가 | 분기별 정확성, join 완전성, 전체 합의 |
 
@@ -155,8 +155,8 @@ Microsoft는 sub-workflow를 더 큰 그래프 안의 executor로 문서화하�
 |---|---|---|
 | 다섯 가지 워크플로 패턴, sectioning과 voting, "고정된 하위 작업으로 분해" | <https://www.anthropic.com/research/building-effective-agents> | 2024-12-19, 갱신 2026-10-09 |
 | 규모가 큰 orchestrator-worker, 위임 계약, subagent 50개, 노력 배분 | <https://www.anthropic.com/research/multi-agent-research-system> | 2025-06-13, 갱신 2026-10-09 |
-| `JoinNode`와 `parallel_worker`의 출력 형태, 하류에서 드러나는 join 실패 | <https://adk.dev/graphs/routes/> | 날짜 표기 없음 |
-| 결정적 라우터와 agent router, 엣지 목록, 동적 노드, 워크플로를 노드로 | <https://cloud.google.com/blog/topics/developers-practitioners/graph-workflows-in-adk-everything-you-need-to-know> | 2026-09-30 |
+| `JoinNode`의 출력 형태, 하류에서 드러나는 join 실패 | <https://adk.dev/graphs/routes/> | 날짜 표기 없음 |
+| 결정적 라우터와 agent router, 엣지 목록, 동적 노드, 워크플로를 노드로, 입력 순서대로 결과를 모으는 `parallel_worker=True` | <https://cloud.google.com/blog/topics/developers-practitioners/graph-workflows-in-adk-everything-you-need-to-know> | 2026-09-30 |
 | map-reduce용 `Send`, reducer, 노드당 라우팅 방식 하나 | <https://docs.langchain.com/oss/python/langgraph/graph-api> | 날짜 표기 없음 |
 | agents as tools와 handoff | <https://openai.github.io/openai-agents-python/multi_agent/> | 날짜 표기 없음 |
 | executor로서의 sub-workflow, 슈퍼스텝 실행 모델 | <https://learn.microsoft.com/en-us/agent-framework/concepts/workflows/> | 2026-10-22, 갱신 2026-10-28 |

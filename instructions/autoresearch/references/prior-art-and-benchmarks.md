@@ -42,7 +42,7 @@ The design lesson is not "run longer." It is that long autonomous runs are bound
 
 ## 4. Eval-driven optimization of instructions
 
-**GEPA** (2025-07, ICLR 2026 oral) treats a prompt or program as the candidate and trajectory feedback as the mutation signal, reporting a 10% average improvement over GRPO (up to 20%) with up to 35 times fewer rollouts, and reporting results on a held-out test split. The same contract applies when the artifact under optimization is an instruction file rather than code: the candidate is text, the compile error is an eval failure, and a held-out split is still required because the optimizer is directly fitting the development set.
+**GEPA** (2025-07, ICLR 2026 oral) treats a prompt or program as the candidate and trajectory feedback as the mutation signal, reporting across six tasks a 6% average improvement over GRPO (up to 20%) with up to 35 times fewer rollouts, and reporting results on a held-out test split. The same contract applies when the artifact under optimization is an instruction file rather than code: the candidate is text, the compile error is an eval failure, and a held-out split is still required because the optimizer is directly fitting the development set.
 
 ## 5. What this evidence does not support
 
@@ -77,7 +77,7 @@ The design lesson is not "run longer." It is that long autonomous runs are bound
 | End-to-end agentic research system, workshop-level acceptance | <https://arxiv.org/abs/2504.08066> | PAPER |
 | Up to 12-hour runs, ~200 rollouts, coherence limit | <https://arxiv.org/abs/2511.02824> | PAPER |
 | Multi-agent hypothesis tournament with in-vitro validation | <https://arxiv.org/abs/2502.18864> | PAPER |
-| Reflective prompt evolution, 10% average / up to 20% over GRPO with up to 35× fewer rollouts | <https://arxiv.org/abs/2507.19457> | PAPER (ICLR 2026 oral) |
+| Reflective prompt evolution, 6% average / up to 20% over GRPO across six tasks with up to 35× fewer rollouts (current abstract, checked 2026-11-04; v1 reported 10% across four tasks) | <https://arxiv.org/abs/2507.19457> | PAPER (ICLR 2026 oral) |
 | Single-GPU loop, fixed 5-minute budget, `val_bpb`, `results.tsv`, platform dependence, read-only `prepare.py` | <https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117> | PRIMARY (repository) |
 | Fourteen-command harness, hook coverage per runtime, bounded-by-default iterations | <https://github.com/uditgoenka/autoresearch/tree/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa> | PRIMARY (repository) |
 

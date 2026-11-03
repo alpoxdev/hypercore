@@ -137,7 +137,7 @@ XML 태그는 Claude 계열의 문서화된 기본값으로 남아 있다. 현�
 | Codex instruction 집계와 AGENTS.md 동작 | <https://learn.chatgpt.com/docs/agent-configuration/agents-md> | 2026-07-29 |
 | AGENTS.md 포맷과 중첩 우선순위(“가장 가까운 파일이 이김, 사용자 채팅 지시가 최상위”). Linux Foundation 산하 Agentic AI Foundation이 관리 | <https://agents.md/> | 2026-07-29 |
 | Claude Code subagents / agent teams | <https://code.claude.com/docs/en/sub-agents>, <https://code.claude.com/docs/en/agent-teams> | 2026-07-29 |
-| Google 프롬프트 설계 전략(맥락 먼저, 지시 마지막, few-shot) | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/prompts/prompt-design-strategies?hl=en> | 2026-11-03(2026-10-30 갱신) |
+| Google 프롬프트 설계 전략(맥락 먼저, 지시 마지막, few-shot) | <https://aistudio.google.com/docs/prompting-strategies> | 2026-11-04 |
 | Cursor Rules(Always Apply / Apply Intelligently / Apply to Specific Files / Apply Manually), 중첩 `AGENTS.md`, Memories 기능은 문서에 없음 | <https://cursor.com/docs/rules> | 2026-11-03 |
 | GitHub Copilot repository / path-specific(`applyTo`) / agent instructions와 우선순위(personal > repository > organization) | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> | 2026-07-29 |
 | MCP 보안 원칙과 prompt/tool 경계. tool annotation은 신뢰할 수 있는 서버가 아니면 untrusted로 간주해야 한다(MUST) | <https://modelcontextprotocol.io/specification/2026-07-28> | 2026-09-19 |
@@ -148,6 +148,6 @@ XML 태그는 Claude 계열의 문서화된 기본값으로 남아 있다. 현�
 | LangSmith evaluation datasets/evaluators | <https://docs.langchain.com/langsmith/evaluation> | 2026-07-29 |
 | Promptfoo LLM-as-a-judge / red teaming | <https://www.promptfoo.dev/docs/guides/llm-as-a-judge/>, <https://www.promptfoo.dev/docs/red-team/> | 2026-07-29 |
 
-**정정**: 이전 판은 `ai.google.dev/gemini-api/docs/prompting-strategies`를 인용하고 Cursor의 “Memories”를 instruction 표면으로 적었다. Gemini API 문서는 세션 없이 요청하면 인증 엔드포인트로 넘어가므로 Cloud 쪽 프롬프트 설계 문서를 인용한다. Cursor Rules 문서에는 Memories 기능이 없으므로 런타임 프로필에서도 그 주장을 뺐다.
+**정정**: 이전 판은 Cursor의 “Memories”를 instruction 표면으로 적었다. Cursor Rules 문서에는 그런 기능이 없으므로 런타임 프로필에서도 그 주장을 뺐다. Gemini API 프롬프트 안내는 이제 `aistudio.google.com/docs/prompting-strategies`에서 응답하며(`ai.google.dev` 경로가 그쪽으로 301 리다이렉트된다), 표에는 그 최종 URL을 적는다.
 
-로컬 재검증 노트는 미추적 `.hyper/research/`에 둔다. `.hyper/`는 `.gitignore` 대상이라 다른 clone에는 없다. 위 URL이 근거이며 로컬 노트가 이를 대체하지 않는다.
+로컬 재검증 노트는 `.hyper/research/` 아래 미추적 파일로 둔다. `.gitignore`가 저장소에서 빼므로 다른 clone에는 없다. 반면 `.hyper/`에는 추적 중인 파일도 있어 디렉터리 자체는 clone에 존재한다. 위 URL이 근거이며 로컬 노트가 이를 대체하지 않는다.

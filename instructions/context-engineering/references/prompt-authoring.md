@@ -195,7 +195,7 @@ Draft -> Smoke eval -> Failure diagnosis -> Small patch -> Re-run -> Version not
 
 ## 9. Sources
 
-> Sources checked 2026-11-03. OpenAI documentation lives under `developers.openai.com/api` (the `platform.openai.com` paths redirect), and Google Cloud prompt documentation lives under the Gemini Enterprise Agent Platform path. The `ai.google.dev` Gemini API pages now redirect through an auth endpoint when fetched without a session, so the Cloud mirror is cited instead.
+> Sources checked 2026-11-03 unless a row gives a later date. OpenAI documentation lives under `developers.openai.com/api` (the `platform.openai.com` paths redirect), and Google Cloud prompt documentation lives under the Gemini Enterprise Agent Platform path. Google's Gemini API prompting guide now answers at `aistudio.google.com/docs/prompting-strategies` (the `ai.google.dev` path 301-redirects there), so the table cites that final URL.
 
 | Claim | Source | Published / updated |
 |---|---|---|
@@ -208,14 +208,14 @@ Draft -> Smoke eval -> Failure diagnosis -> Small patch -> Re-run -> Version not
 | Prompt engineering overview | <https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview> | undated page, checked 2026-11-03 |
 | Success criteria and eval construction | <https://platform.claude.com/docs/en/test-and-evaluate/develop-tests> | undated page, checked 2026-11-03 |
 | Prompt-leak reduction | <https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-prompt-leak> | undated page, checked 2026-11-03 |
-| Prompt design strategies: context first, instructions last, transition phrase, few-shot advice | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/prompts/prompt-design-strategies?hl=en> | updated 2026-10-30 |
+| Prompt design strategies: context first, instructions last, transition phrase, few-shot advice | <https://aistudio.google.com/docs/prompting-strategies> | checked 2026-11-04 |
 | Prompt optimizer | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/prompts/prompt-optimizer?hl=en> | undated page, checked 2026-11-03 |
 | Mistral prompting | <https://docs.mistral.ai/inference/prompting> | undated page, checked 2026-11-03 |
-| Azure OpenAI prompt engineering techniques | <https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/prompt-engineering> | undated page, checked 2026-11-03 |
+| Microsoft Foundry prompt engineering techniques | <https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/prompt-engineering> | undated page, checked 2026-11-04 |
 
 Two vendor facts changed the advice in this document and are worth restating here. First, do not architect around OpenAI's reusable prompt objects: the API surface is being retired on 2026-11-30. Second, do not architect around prefilled assistant turns: current Claude models reject them on the last assistant turn with a 400 error.
 
-Local re-verification notes live in untracked `.hyper/research/`. `.hyper/` is covered by `.gitignore` and does not exist in another clone. The URLs above are this document's evidence; local notes are supplementary and do not substitute for them.
+Local re-verification notes live in untracked files under `.hyper/research/`; `.gitignore` keeps them out of the repository, so they are absent from another clone. `.hyper/` also contains tracked files, so the directory itself is present in any clone. The URLs above are this document's evidence; local notes are supplementary and do not substitute for them.
 
 ## Related documents
 

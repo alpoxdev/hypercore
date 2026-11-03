@@ -195,7 +195,7 @@ Draft → Smoke eval → Failure diagnosis → Small patch → Re-run → Versio
 
 ## 9. Sources
 
-> 출처 확인 2026-11-03. OpenAI 문서는 `developers.openai.com/api` 아래에 있고(`platform.openai.com` 경로는 이쪽으로 넘어간다), Google Cloud 프롬프트 문서는 Gemini Enterprise Agent Platform 경로에 있다. `ai.google.dev`의 Gemini API 문서는 세션 없이 요청하면 인증 엔드포인트로 넘어가므로 Cloud 쪽 문서를 인용한다.
+> 출처 확인 2026-11-03(행에 더 늦은 날짜가 있으면 그 날짜). OpenAI 문서는 `developers.openai.com/api` 아래에 있고(`platform.openai.com` 경로는 이쪽으로 넘어간다), Google Cloud 프롬프트 문서는 Gemini Enterprise Agent Platform 경로에 있다. Google의 Gemini API 프롬프트 안내는 이제 `aistudio.google.com/docs/prompting-strategies`에서 응답하며(`ai.google.dev` 경로가 그쪽으로 301 리다이렉트된다), 표에는 그 최종 URL을 적는다.
 
 | 주장 | 출처 | 발행·갱신 |
 |---|---|---|
@@ -208,14 +208,14 @@ Draft → Smoke eval → Failure diagnosis → Small patch → Re-run → Versio
 | 프롬프트 엔지니어링 개요 | <https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview> | 날짜 표기 없음, 2026-11-03 확인 |
 | 성공 기준 정의와 평가 구축 | <https://platform.claude.com/docs/en/test-and-evaluate/develop-tests> | 날짜 표기 없음, 2026-11-03 확인 |
 | 프롬프트 유출 완화 | <https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-prompt-leak> | 날짜 표기 없음, 2026-11-03 확인 |
-| 프롬프트 설계 전략. 맥락 먼저, 지시 마지막, 전환 문구, few-shot 지침 | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/prompts/prompt-design-strategies?hl=en> | 2026-10-30 갱신 |
+| 프롬프트 설계 전략. 맥락 먼저, 지시 마지막, 전환 문구, few-shot 지침 | <https://aistudio.google.com/docs/prompting-strategies> | 2026-11-04 확인 |
 | 프롬프트 최적화 도구 | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/prompts/prompt-optimizer?hl=en> | 날짜 표기 없음, 2026-11-03 확인 |
 | Mistral 프롬프팅 | <https://docs.mistral.ai/inference/prompting> | 날짜 표기 없음, 2026-11-03 확인 |
-| Azure OpenAI 프롬프트 엔지니어링 기법 | <https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/prompt-engineering> | 날짜 표기 없음, 2026-11-03 확인 |
+| Microsoft Foundry 프롬프트 엔지니어링 기법 | <https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/prompt-engineering> | 날짜 표기 없음, 2026-11-04 확인 |
 
 이 문서의 조언을 바꾼 벤더 사실이 둘이다. 첫째, OpenAI의 재사용 프롬프트 객체를 전제로 설계하지 않는다. 해당 API는 2026-11-30 종료된다. 둘째, assistant 턴 프리필을 전제로 설계하지 않는다. 현재 Claude 모델은 마지막 assistant 턴의 프리필을 400 오류로 거절한다.
 
-로컬 재검증 노트는 미추적 `.hyper/research/`에 둔다. `.hyper/`는 `.gitignore` 대상이므로 다른 clone에서는 존재하지 않는다. 위 URL이 이 문서의 근거이며, 로컬 노트는 보조 자료일 뿐 근거를 대체하지 않는다.
+로컬 재검증 노트는 `.hyper/research/` 아래 미추적 파일로 둔다. `.gitignore`가 저장소에서 빼므로 다른 clone에는 없다. 반면 `.hyper/`에는 추적 중인 파일도 있어 디렉터리 자체는 clone에 존재한다. 위 URL이 이 문서의 근거이며, 로컬 노트는 보조 자료일 뿐 근거를 대체하지 않는다.
 
 ## 함께 읽을 문서
 

@@ -59,7 +59,7 @@ Success criteria -> Test set -> Grader/rubric -> Baseline -> Change -> Re-run ->
 - **균형.** 동작해야 할 경우와 하지 말아야 할 경우를 함께 넣는다. “검색해야 할 때 검색하는가”만 보는 세트는 과잉 검색을 훈련시킨다.
 - **모호함 없음.** 도메인 전문가 둘이 같은 pass/fail 판정에 도달해야 하고, 올바른 agent는 task 문장만으로 통과할 수 있어야 한다. 여러 trial에서 pass율이 0%라면 보통 무능한 동작이 아니라 깨진 task나 grader를 뜻한다.
 
-공개 benchmark는 로컬 동작을 증명하는 도구가 아니라 난이도를 맞추는 참고 자료다. Terminal-Bench 2.0은 선별한 89개 task에서 frontier 모델과 agent가 65% 미만이라고 보고하고, SWE-bench Verified는 1년 사이 80%를 넘어 포화에 가까워졌다. 모든 케이스가 통과하는 세트는 이름이 무엇이든 더 이상 정보를 주지 않는다.
+공개 benchmark는 로컬 동작을 증명하는 도구가 아니라 난이도를 맞추는 참고 자료다. Terminal-Bench 2.0은 선별한 89개 task에서 frontier 모델과 agent가 65% 미만이라고 보고하고, SWE-bench Verified는 공식 leaderboard 최고 점수가 79.2%(2025-12-05, leaderboard 확인 2026-11-04)로 포화에 가까워지고 있다. 모든 케이스가 통과하는 세트는 이름이 무엇이든 더 이상 정보를 주지 않는다.
 
 ---
 
@@ -203,6 +203,6 @@ smoke eval은 바꾸는 instruction 원문에 돌린다. 바꿔 쓴 요약본에
 | 9 | JudgeBench: A Benchmark for Evaluating LLM-based Judges | Tan 외, arXiv:2410.12784 | <https://arxiv.org/abs/2410.12784> | 2024-10-16 | 확인 2026-11-03 | S |
 | 10 | Judging the Judges: Confidence and Disagreement in Rubrics as Rewards | Liu 외, arXiv:2610.21179 | <https://arxiv.org/abs/2610.21179> | 2026-10-15 | 확인 2026-11-03 | S |
 | 11 | Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces | Merrill 외, arXiv:2601.11868 | <https://arxiv.org/abs/2601.11868> | 2026-01-17 | 확인 2026-11-03 | S |
-| 12 | Introducing SWE-bench Verified | OpenAI | <https://openai.com/index/introducing-swe-bench-verified/> | 2024-08-13, 2025-02-24 갱신 | 확인 2026-11-03 | S |
+| 12 | Introducing SWE-bench Verified; SWE-bench Verified leaderboard | OpenAI; SWE-bench 관리자 | <https://openai.com/index/introducing-swe-bench-verified/>, <https://www.swebench.com/> | 2024-08-13, 2025-02-24 갱신; leaderboard는 수시 갱신 | 확인 2026-11-03; leaderboard 확인 2026-11-04 | S |
 
 42%에서 95%로의 benchmark 사례와 20~50 task 시작점은 Anthropic이 보고한 자체 경험이다. §4.1의 약 80% 수치는 Zheng 외가 보고한 judge와 사람 선호의 일치율이며(출처 7), Anthropic의 결과가 아니다. 세 가지 모두 방법론이 밝혀진 단일 출처 근거로 다루고, 독립 측정으로 다루지 않는다. 통계 권고는 같은 연구소 소속 저자의 논문에서 나왔으므로, 이 원장에서는 둘 다 단일 기관 근거로 표시한다.

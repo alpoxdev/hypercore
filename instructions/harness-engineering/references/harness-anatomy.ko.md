@@ -101,7 +101,7 @@ in a good AGENTS.md should be traceable back to a specific thing that went wrong
 | 모델 | 하네스 없음 | 하네스 있음 | 부담 |
 |---|---|---|---|
 | 더 강한 모델 | 10/10 | 10/10 | 토큰 약 10.5배, 시간 약 3배, 비용 약 7배 |
-| 더 약한 모델 | 3/10 | 10/10 | 같은 하네스, 같은 부담 |
+| 더 약한 모델 | 3/10 | 10/10 | 토큰 약 3.9배, 시간 약 2.2배, 비용 약 3.2배 |
 
 > "For GPT-6 Sol, the harness used about 10.5 times as many tokens, took nearly 3 times as long,
 > and cost about 7 times more, yet both conditions succeeded in all 10 runs."

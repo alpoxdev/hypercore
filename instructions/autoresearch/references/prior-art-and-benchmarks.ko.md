@@ -42,7 +42,7 @@ MLE-bench는 외부 보정의 한계도 보여준다. Benchmark 자체가 공개
 
 ## 4. 지시문의 eval 기반 최적화
 
-**GEPA**(2025-07, ICLR 2026 oral)는 prompt나 program을 후보로 두고 trajectory feedback을 mutation 신호로 쓴다. GRPO 대비 평균 10%, 최대 20% 개선을 최대 35배 적은 rollout으로 보고하며, held-out test split 결과도 함께 보고한다. 최적화 대상이 코드가 아니라 지시문 파일일 때도 계약은 같다. 후보는 텍스트이고, 컴파일 오류 자리에 eval 실패가 오며, optimizer가 development set에 직접 맞추므로 held-out split은 여전히 필요하다.
+**GEPA**(2025-07, ICLR 2026 oral)는 prompt나 program을 후보로 두고 trajectory feedback을 mutation 신호로 쓴다. 과제 6개에서 GRPO 대비 평균 6%, 최대 20% 개선을 최대 35배 적은 rollout으로 보고하며, held-out test split 결과도 함께 보고한다. 최적화 대상이 코드가 아니라 지시문 파일일 때도 계약은 같다. 후보는 텍스트이고, 컴파일 오류 자리에 eval 실패가 오며, optimizer가 development set에 직접 맞추므로 held-out split은 여전히 필요하다.
 
 ## 5. 이 근거가 뒷받침하지 않는 것
 
@@ -77,7 +77,7 @@ MLE-bench는 외부 보정의 한계도 보여준다. Benchmark 자체가 공개
 | End-to-end agentic 연구 시스템, workshop 수준 채택 | <https://arxiv.org/abs/2504.08066> | PAPER |
 | 최대 12시간 실행, rollout 약 200회, 일관성 한계 | <https://arxiv.org/abs/2511.02824> | PAPER |
 | in-vitro 검증을 포함한 multi-agent 가설 tournament | <https://arxiv.org/abs/2502.18864> | PAPER |
-| 반성적 prompt evolution, GRPO 대비 평균 10%·최대 20%, rollout 최대 35배 절감 | <https://arxiv.org/abs/2507.19457> | PAPER (ICLR 2026 oral) |
+| 반성적 prompt evolution, 과제 6개에서 GRPO 대비 평균 6%·최대 20%, rollout 최대 35배 절감(현재 초록, 확인 2026-11-04. v1은 과제 4개에서 10%로 보고) | <https://arxiv.org/abs/2507.19457> | PAPER (ICLR 2026 oral) |
 | Single-GPU loop, 고정 5분 예산, `val_bpb`, `results.tsv`, platform 의존, `prepare.py` read-only | <https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117> | PRIMARY (repository) |
 | Command 14개 harness, runtime별 hook 범위, 기본이 유한 iteration | <https://github.com/uditgoenka/autoresearch/tree/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa> | PRIMARY (repository) |
 

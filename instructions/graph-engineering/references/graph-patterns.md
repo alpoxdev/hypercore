@@ -50,7 +50,7 @@ Create a new branch only when it has a distinct prompt, toolset, or eval. A bran
 | Shape | Split into independent branches, then join |
 | Routing authority | Code for the split; code for the join condition |
 | State | One field per branch, or a declared reducer if branches append to one field |
-| Join | Declared shape: ADK's `JoinNode` returns a dict keyed by node name; `parallel_worker` returns a list in input order |
+| Join | Declared shape: ADK's `JoinNode` returns a dict keyed by predecessor node name; `parallel_worker=True` runs a node per input item and collects the results in input order |
 | Failure | A branch that finishes without output leaves the join with no value, and the error surfaces downstream |
 | Evaluate | Branch-level correctness, join completeness, and end-to-end agreement |
 
@@ -155,8 +155,8 @@ Most production systems are combinations: a P2 router at the front, P3 inside a 
 |---|---|---|
 | Five workflow patterns, sectioning vs voting, "decomposed into fixed subtasks" | <https://www.anthropic.com/research/building-effective-agents> | 2024-12-19, updated 2026-10-09 |
 | Orchestrator-worker at scale, delegation contract, fifty subagents, effort scaling | <https://www.anthropic.com/research/multi-agent-research-system> | 2025-06-13, updated 2026-10-09 |
-| `JoinNode` and `parallel_worker` output shapes, join failure surfacing downstream | <https://adk.dev/graphs/routes/> | no date shown |
-| Deterministic vs agent router, edge lists, dynamic nodes, workflow as a node | <https://cloud.google.com/blog/topics/developers-practitioners/graph-workflows-in-adk-everything-you-need-to-know> | 2026-09-30 |
+| `JoinNode` output shape and join failure surfacing downstream | <https://adk.dev/graphs/routes/> | no date shown |
+| Deterministic vs agent router, edge lists, dynamic nodes, workflow as a node, `parallel_worker=True` collecting per-item results in input order | <https://cloud.google.com/blog/topics/developers-practitioners/graph-workflows-in-adk-everything-you-need-to-know> | 2026-09-30 |
 | `Send` for map-reduce, reducers, one routing mechanism per node | <https://docs.langchain.com/oss/python/langgraph/graph-api> | no date shown |
 | Agents as tools vs handoffs | <https://openai.github.io/openai-agents-python/multi_agent/> | no date shown |
 | Sub-workflows as executors; superstep execution model | <https://learn.microsoft.com/en-us/agent-framework/concepts/workflows/> | 2026-10-22, updated 2026-10-28 |

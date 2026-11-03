@@ -136,7 +136,7 @@ Write a role prompt in the following order. Follow [`references/prompt-authoring
 | Codex instruction aggregation and AGENTS.md behavior | <https://learn.chatgpt.com/docs/agent-configuration/agents-md> | 2026-07-29 |
 | AGENTS.md format and nesting precedence ("the closest file wins; an explicit user chat prompt overrides everything"). Stewarded by the Agentic AI Foundation under the Linux Foundation | <https://agents.md/> | 2026-07-29 |
 | Claude Code subagents / agent teams | <https://code.claude.com/docs/en/sub-agents>, <https://code.claude.com/docs/en/agent-teams> | 2026-07-29 |
-| Google prompt design strategies (context first, instructions last, few-shot) | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/prompts/prompt-design-strategies?hl=en> | 2026-11-03 (updated 2026-10-30) |
+| Google prompt design strategies (context first, instructions last, few-shot) | <https://aistudio.google.com/docs/prompting-strategies> | 2026-11-04 |
 | Cursor Rules (Always Apply / Apply Intelligently / Apply to Specific Files / Apply Manually), nested `AGENTS.md`, no documented Memories feature | <https://cursor.com/docs/rules> | 2026-11-03 |
 | GitHub Copilot repository / path-specific (`applyTo`) / agent instructions and precedence (personal > repository > organization) | <https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions> | 2026-07-29 |
 | MCP security principles and the prompt/tool boundary. Clients **MUST** treat tool annotations as untrusted unless they come from a trusted server | <https://modelcontextprotocol.io/specification/2026-07-28> | 2026-09-19 |
@@ -147,6 +147,6 @@ Write a role prompt in the following order. Follow [`references/prompt-authoring
 | LangSmith evaluation datasets/evaluators | <https://docs.langchain.com/langsmith/evaluation> | 2026-07-29 |
 | Promptfoo LLM-as-a-judge / red teaming | <https://www.promptfoo.dev/docs/guides/llm-as-a-judge/>, <https://www.promptfoo.dev/docs/red-team/> | 2026-07-29 |
 
-**Corrected**: an earlier revision of this table cited `ai.google.dev/gemini-api/docs/prompting-strategies` and listed Cursor "Memories" as an instruction surface. The Gemini API page now redirects through an auth endpoint when fetched without a session, so the Cloud prompt-design page is cited instead; the Cursor Rules page documents no Memories feature, so the runtime profile no longer claims one.
+**Corrected**: an earlier revision listed Cursor "Memories" as an instruction surface; the Cursor Rules page documents no such feature, so the runtime profile no longer claims one. The Gemini API prompting guide now answers at `aistudio.google.com/docs/prompting-strategies` (the `ai.google.dev` path 301-redirects there), so the table cites that final URL.
 
-Local re-verification notes live in untracked `.hyper/research/`. `.hyper/` is covered by `.gitignore` and does not exist in another clone. The URLs above are the evidence; local notes do not substitute for them.
+Local re-verification notes live in untracked files under `.hyper/research/`; `.gitignore` keeps them out of the repository, so they are absent from another clone. `.hyper/` also contains tracked files, so the directory itself is present in any clone. The URLs above are the evidence; local notes do not substitute for them.

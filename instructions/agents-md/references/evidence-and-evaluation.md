@@ -116,9 +116,9 @@ This measures **what developers write, not what works**. Read it as a warning in
 
 Two mechanics behind the Anthropic number are worth internalizing, because they explain *why* a cap exists at all:
 
-Claude Code reads `CLAUDE.md` files at the start of every session: those at or above the working directory load at launch, and those in subdirectories load when Claude first reads or edits a file there.
+Claude Code loads the `CLAUDE.md` files in the working directory and every directory above it at the start of every session; files in subdirectories load the first time Claude reads, writes, or edits another file in that subdirectory.
 
-The cost is paid **every session, before any work happens**, whether or not the content turns out to be relevant. That is what distinguishes an instruction file from documentation the agent reads on demand — and it is why "move reference material to skills, which load on demand" is the recommended escape hatch rather than a longer file. The measured growth numbers above are the counter-argument to "a few extra lines won't hurt": they are how the file ends up tripled.
+For the files that load at launch, that cost is paid **every session, before any work happens**, whether or not the content turns out to be relevant. That is what distinguishes an instruction file from documentation the agent reads on demand — and it is why "move reference material to skills, which load on demand" is the recommended escape hatch rather than a longer file. The measured growth numbers above are the counter-argument to "a few extra lines won't hurt": they are how the file ends up tripled.
 
 Treat every number above as a vendor heuristic tied to its own runtime, never as a validated quality threshold. The defensible rule is **relevance per line**, not a line count. Anthropic's current framing is an admission rule plus a pruning rule, not a budget:
 

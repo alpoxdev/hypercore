@@ -185,7 +185,7 @@ Continue only after the prior iteration is finalized. Full SLSA provenance, work
 | Claim | Source | Grade |
 |---|---|---|
 | A linked worktree shares everything except per-worktree files such as `HEAD` and `index` | <https://git-scm.com/docs/git-worktree> | PRIMARY |
-| `git reset --hard` semantics and the detached-`HEAD` behavior of checkout | <https://git-scm.com/docs/git-reset> | PRIMARY |
+| `git reset --hard` semantics and the detached-`HEAD` behavior of checkout | <https://git-scm.com/docs/git-reset>, <https://git-scm.com/docs/git-checkout#_detached_head> | PRIMARY |
 | Applicability of `git apply` to the working tree or index, and its excluded state | <https://git-scm.com/docs/git-apply> | PRIMARY |
 | Hook guardrails described as defense in depth, not a sandbox, with fail-open behavior | <https://github.com/uditgoenka/autoresearch/blob/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa/guide/hooks.md> | PRIMARY (repository) |
 | Discarding a losing candidate by rewinding a run-owned branch | <https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117> | PRIMARY (repository) |

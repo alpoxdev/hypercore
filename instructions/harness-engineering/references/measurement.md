@@ -256,8 +256,8 @@ intervention, and it does not become permanent context until it improves the tar
 
 For long-horizon work the measured quantity is the task length an agent completes with 50%
 reliability. The current published estimate puts the post-2023 doubling time at 130.8 days
-[107, 161], with an all-period figure of 196.5 days — and the source states the limits of its own
-instrument: "Measurements above 16 hrs are unreliable with our current task suite."
+[107, 161], with an all-period figure of 196.5 days — and the project dashboard names the limit of
+that instrument: "Measurements above 16 hrs are unreliable with our current task suite."
 
 Quote the surface as well as the number. The published table and the dashboard's data file differ
 by up to about nine days (130.8 versus ~128.7 post-2023; 196.5 versus ~187.8 all-period) because the
@@ -284,7 +284,8 @@ data file excludes points above the 16-hour reliability bound.
 | Cost differing by almost two orders of magnitude at similar accuracy | <https://arxiv.org/abs/2407.01502> | PRIMARY |
 | Accuracy-versus-cost Pareto frontiers as a leaderboard design | <https://arxiv.org/abs/2510.11977> | PRIMARY |
 | Twelve reliability metrics over four dimensions, and capability gains yielding only small reliability gains | <https://arxiv.org/abs/2602.16666> | PRIMARY |
-| Task-length horizon, the 130.8-day post-2023 doubling estimate, the 16-hour reliability bound, and hierarchical-bootstrap intervals | <https://metr.org/blog/2026-01-29-time-horizon-1-1/> | PRIMARY |
+| Task-length horizon, the 130.8-day post-2023 doubling estimate, and hierarchical-bootstrap intervals | <https://metr.org/blog/2026-01-29-time-horizon-1-1/> | PRIMARY |
+| Dashboard data file: 128.7-day post-2023 and 187.8-day all-period estimates, and the "Measurements above 16 hrs are unreliable with our current task suite" limit | <https://metr.org/time-horizons/> | PRIMARY |
 | Terminal-Bench 4.0 as a continuously versioned benchmark with a flat timeout | <https://www.tbench.ai/news/terminal-bench-4-0> | PRIMARY |
 | Input-length degradation, distractor compounding, and focused-vs-full prompt comparison | <https://www.trychroma.com/research/context-rot> | STUDY |
 | Batch evaluation and aggregate pass-rate practice instead of single-run gating | <https://developers.googleblog.com/the-anatomy-of-harness-engineering-how-to-evaluate-iterate-and-guard-ai-coding-agents/> | VENDOR |

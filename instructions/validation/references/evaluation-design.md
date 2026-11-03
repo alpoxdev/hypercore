@@ -59,7 +59,7 @@ Two properties of the set matter as much as its size.
 - **Balance.** Test where the behavior should occur and where it should not. A suite that only checks "searched when it should" trains over-triggering.
 - **Unambiguity.** Two domain experts should reach the same pass/fail verdict, and a correct agent should be able to pass from the task text alone. A 0% pass rate across many trials usually indicates a broken task or grader rather than incapable behavior.
 
-Public suites are useful for calibrating difficulty, not for proving local behavior. Terminal-Bench 2.0 reports frontier agents and harnesses below 65% on 89 curated tasks, while SWE-bench Verified has risen into the 80%+ range within a year and is nearing saturation. A suite whose cases are all passing has stopped informing you, whatever its name is on a leaderboard.
+Public suites are useful for calibrating difficulty, not for proving local behavior. Terminal-Bench 2.0 reports frontier agents and harnesses below 65% on 89 curated tasks, while the best SWE-bench Verified result on the official leaderboard is 79.2% (2025-12-05; leaderboard checked 2026-11-04), so that suite is nearing saturation. A suite whose cases are all passing has stopped informing you, whatever its name is on a leaderboard.
 
 ---
 
@@ -203,6 +203,6 @@ Conditions for shipping:
 | 9 | JudgeBench: A Benchmark for Evaluating LLM-based Judges | Tan et al., arXiv:2410.12784 | <https://arxiv.org/abs/2410.12784> | 2024-10-16 | checked 2026-11-03 | S |
 | 10 | Judging the Judges: Confidence and Disagreement in Rubrics as Rewards | Liu et al., arXiv:2610.21179 | <https://arxiv.org/abs/2610.21179> | 2026-10-15 | checked 2026-11-03 | S |
 | 11 | Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces | Merrill et al., arXiv:2601.11868 | <https://arxiv.org/abs/2601.11868> | 2026-01-17 | checked 2026-11-03 | S |
-| 12 | Introducing SWE-bench Verified | OpenAI | <https://openai.com/index/introducing-swe-bench-verified/> | 2024-08-13, updated 2025-02-24 | checked 2026-11-03 | S |
+| 12 | Introducing SWE-bench Verified; SWE-bench Verified leaderboard | OpenAI; SWE-bench maintainers | <https://openai.com/index/introducing-swe-bench-verified/>, <https://www.swebench.com/> | 2024-08-13, updated 2025-02-24; leaderboard live | checked 2026-11-03; leaderboard checked 2026-11-04 | S |
 
 The 42%-to-95% benchmark case and the 20–50 task starting point are Anthropic's own reported experience. The ~80% figure in §4.1 is Zheng et al.'s reported judge agreement with human preference (source 7), not an Anthropic result. Treat all three as single-source evidence with a stated methodology, not as independent measurements. The statistics recommendations come from a paper written by an author affiliated with the same lab, so both are marked as single-organization evidence in this ledger.

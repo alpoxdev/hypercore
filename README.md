@@ -82,7 +82,7 @@ Codex는 universal agent이므로 project에서는 `<cwd>/.agents/skills`, globa
 
 ### 소스에서 직접 사용
 
-레포를 클론해 그대로 가져다 써도 됩니다 (CI나 CLI 빌드/실행에는 별도 의존성이 필요하지 않습니다 — 스킬은 모두 마크다운입니다):
+레포를 클론해 그대로 가져다 써도 됩니다 (스킬은 마크다운 문서와 bash 스크립트로 이루어져 있어 빌드 단계가 없습니다):
 
 ```bash
 git clone https://github.com/alpoxdev/hypercore.git
@@ -165,7 +165,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 |------|------|------|
 | `hyper-research` | 질문을 축으로 나눠 확장 웨이브로 수렴시키고, 고위험 주장을 게이트로 검증한 다중 출처 마크다운 리서치 보고서 | All |
 | `client-feedback` | 고객사 피드백을 코드 영향·선택지·리스크로 해석하고 확인 후 구현 | All |
-| `ai-design-slop-remover` | 기존 UI의 브랜드·기능을 보존하며 AI형 generic 디자인 패턴을 감사·제거·검증 | Node.js 18+; browser optional |
+| `ai-design-slop-remover` | 기존 UI의 브랜드·기능을 보존하며 AI형 generic 디자인 패턴을 감사·제거·검증 | Bash 3.2+ & jq 1.6+; browser optional |
 
 ### 콘텐츠 · SEO
 
@@ -293,10 +293,10 @@ skills/<name>/
 
 ## 개발
 
-CLI 패키지(`cli/`)만 빌드/테스트가 필요합니다. 스킬은 모두 마크다운이므로 빌드 단계가 없습니다.
+빌드와 테스트가 필요한 것은 CLI 패키지(`cli/`)와 `scripts/` 검증(`bun run --cwd scripts verify`)입니다. 스킬은 마크다운 문서와 bash 스크립트로 이루어져 빌드 단계가 없습니다.
 
 ```bash
-pnpm install            # cli/ 워크스페이스 의존성 설치
+pnpm -C cli install     # cli/ 워크스페이스 의존성 설치
 pnpm -C cli build       # 모든 cli 패키지 빌드 (현재: @kood/color-cli, @kood/naver-api-cli)
 pnpm -C cli test        # 모든 cli 패키지 테스트
 pnpm -C cli lint        # oxlint

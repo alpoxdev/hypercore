@@ -50,7 +50,7 @@
 
 최근 벤더 지침은 여기로 수렴한다. OpenAI는 reasoning 모델에 “think step by step”을 지시하면 “성능이 좋아지지 않고 때로는 나빠질 수 있다”고 적는다. 현재 세대 지침은 대신 지속성을 요구한다. “행동 쪽으로 기울여 사용자가 의도한 작업을 끝까지 완수하라”고 하고, 확인 질문을 하기 전에 “맥락상 이미 허가된 작업”을 먼저 끝내라고 한다(확인 2026-11-03). Anthropic이 쓰는 수단은 구획 구조와 명시적 성공 기준이지 특정 문구가 아니다. 추론 제어는 목표, 제약, 검증으로 쓰고 effort 설정은 런타임에 맡긴다.
 
-분량은 문장보다 파라미터로 먼저 정한다. OpenAI는 `text.verbosity`(`low` / `medium` / `high`)를 두고 “간결함과 완전함의 균형을 잡는 주된 수단”이라고 부른다. 이전 모델에서 쓰던 “간결하게” 같은 광범위한 지시가 모델을 올린 뒤에도 유효한지 확인하라는 이전 안내도 함께 둔다. 길이는 파라미터로 정하고, 지시문은 모양(구조, 순서, 무엇을 빼는지)에 쓴다.
+분량은 문장보다 파라미터로 먼저 정한다. OpenAI는 `text.verbosity`(`low` / `medium` / `high`)로 요청별 기본 상세 수준을 정하게 하고, 마이그레이션 안내에서는 “Be concise”, “Keep it short” 같은 광범위한 분량 지시가 모델을 올린 뒤에는 더는 유용하지 않을 수 있다고 본다. 이런 지시는 애플리케이션에 필요한 출력을 안정적으로 낼 때만 남긴다. 길이는 파라미터로 정하고, 지시문은 모양(구조, 순서, 무엇을 빼는지)에 쓴다.
 
 | 필요 | 지시 |
 |---|---|
@@ -107,12 +107,12 @@ Instruction 변경은 코드처럼 diff와 regression risk를 본다.
 
 ## Sources
 
-> 출처 확인 2026-11-03.
+> 출처 확인 2026-11-03(행에 더 늦은 날짜가 있으면 그 날짜).
 
 | 주장 | 출처 | 발행·갱신 |
 |---|---|---|
 | reasoning 모델에 chain-of-thought 지시를 피한다. “think step by step”은 성능을 해칠 수 있다 | <https://developers.openai.com/api/docs/guides/reasoning-best-practices> | 날짜 표기 없음, 2026-11-03 확인 |
-| 지속성·“행동 우선” 지침, 간결성의 주된 수단은 `text.verbosity` | <https://developers.openai.com/api/docs/guides/latest-model> | 날짜 표기 없음, 2026-11-03 확인 |
+| 지속성·“행동 우선” 지침, 요청별 기본 상세 수준을 정하는 `text.verbosity` | <https://developers.openai.com/api/docs/guides/latest-model> | 날짜 표기 없음, 2026-11-04 확인 |
 | 긴 문서를 먼저, 질의를 끝에. 최대 30퍼센트 개선 | <https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices> | 날짜 표기 없음, 2026-11-03 확인 |
-| 맥락 먼저, 지시 마지막, 전환 문구 | <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/prompts/prompt-design-strategies?hl=en> | 2026-10-30 갱신 |
+| 맥락 먼저, 지시 마지막, 전환 문구 | <https://aistudio.google.com/docs/prompting-strategies> | 2026-11-04 확인 |
 | 섞은 문서가 정연한 문서보다 낫다. 순서보다 선택이 먼저다 | <https://www.trychroma.com/research/context-rot> | 2025-07-14 |

@@ -10,7 +10,7 @@ Status and limits below were read on 2026-11-03. Vendor features move faster tha
 
 | Capability | Claude Code | Codex | LangChain |
 |---|---|---|---|
-| Repeat until a condition holds | `/goal`, session-scoped, model-evaluated | `/goal`, a persisted objective | `create_agent` plus middleware |
+| Repeat until a condition holds | `/goal`, session-scoped, model-evaluated | No direct equivalent; `/goal` only persists an objective (see below) | `create_agent` plus middleware |
 | Repeat on an interval | `/loop` (local), cloud scheduled tasks | Automations with a time schedule | Deployment cron |
 | Start on an external event | Scheduled tasks: API and GitHub triggers | Automations: Gmail, Slack, GitHub events | Deployment webhooks, channels |
 | Independent check | Stop hook with a prompt type; `/goal` evaluator | Not a documented evaluator feature | `RubricMiddleware`, `after_agent` hook, or a deterministic grader |
@@ -20,7 +20,7 @@ Status and limits below were read on 2026-11-03. Vendor features move faster tha
 | Observability | `/usage`, `/workflows`, transcript verdicts | Run history and results inbox | Traces in the platform |
 | Unattended permission model | Permission modes, sandbox, hooks | Sandbox policy plus approval policy | Your deployment |
 
-Two rows in that matrix are "your design" for every runtime. State and caps are not features you install; they are parts you add, which is why the root contract treats them as required parts rather than as vendor capabilities.
+Only the Persistent state row is "your design" for every runtime: state is not a feature you install but a part you add, which is why the root contract treats it as a required part rather than as a vendor capability. Caps are only partly vendor-supplied. The Hard caps row records where each runtime draws its own outer limit, and the loop's own caps (iterations, tokens, wall clock, kill path) are the part you add on top.
 
 ## Claude Code
 
@@ -73,7 +73,7 @@ The framework's own framing is that the verification layer "increases latency an
 | Automatic retries before pausing | 3 | Claude Code `/goal` |
 | Check-in interval for background work | 30 minutes, doubling to 1 hour then 2 hours; at most 3 idle check-ins per goal | Claude Code `/goal` |
 
-Read these as design constraints, not trivia. A loop that schedules 200 runs an hour will be silently capped; a `/loop` task that must survive a laptop closing will not; a fan-out of 2,000 items will be rejected, and the correct design is to chunk the work rather than to raise the cap.
+Read these as design constraints, not trivia. A loop that schedules 200 runs an hour will be silently capped; a `/loop` task that must survive a laptop closing will not; a fan-out of 5,000 items will be rejected, and the correct design is to chunk the work rather than to raise the cap.
 
 ## Portability rules
 

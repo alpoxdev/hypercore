@@ -53,7 +53,7 @@ The `lint:sh` task runs [ShellCheck](https://www.shellcheck.net/) over `scripts/
 - Previous sweeps: full sweep 2026-07-29; targeted re-verification 2026-09-19 and 2026-09-20.
 - The link check reads inline citations only: it skips fenced code blocks and documentation example URLs on the RFC 2606 reserved domains (`example.com`, `example.net`, `example.org`, `*.example`) and loopback addresses (`localhost`, `127/8`, `[::1]`), and reports how many it skipped — including the URLs inside code blocks that it did not check, so nothing is dropped silently. Every other URL must resolve without a redirect.
 - Keep the quarterly re-verification cadence as project policy: vendor documentation changes on its own schedule, and this cadence is our chosen review interval rather than a vendor guarantee. arXiv and standards documents decay differently, so a URL check is enough for those.
-- `.hyper/` is covered by `.gitignore`. Research reports under it are a **local re-verification cache** and do not exist in another clone. Shareable evidence is always the URL inside the document.
+- `.hyper/` is covered by `.gitignore`, so untracked research reports under `.hyper/research/` are a **local re-verification cache** and do not exist in another clone. `.hyper/` also contains tracked files, so the directory itself is present in any clone. Shareable evidence is always the URL inside the document.
 
 ## Authoring principles
 

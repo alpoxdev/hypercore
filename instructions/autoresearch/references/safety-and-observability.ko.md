@@ -185,7 +185,7 @@ Prior iteration이 finalized된 뒤에만 계속한다. Full SLSA provenance, wo
 | 주장 | 출처 | Grade |
 |---|---|---|
 | Linked worktree는 `HEAD`, `index` 같은 per-worktree file만 빼고 모두 공유한다 | <https://git-scm.com/docs/git-worktree> | PRIMARY |
-| `git reset --hard`의 의미와 checkout의 detached `HEAD` 동작 | <https://git-scm.com/docs/git-reset> | PRIMARY |
+| `git reset --hard`의 의미와 checkout의 detached `HEAD` 동작 | <https://git-scm.com/docs/git-reset>, <https://git-scm.com/docs/git-checkout#_detached_head> | PRIMARY |
 | `git apply`가 working tree 또는 index에 적용되는 범위와 제외되는 상태 | <https://git-scm.com/docs/git-apply> | PRIMARY |
 | Hook guardrail이 sandbox가 아닌 defense in depth이며 fail open으로 동작 | <https://github.com/uditgoenka/autoresearch/blob/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa/guide/hooks.md> | PRIMARY (repository) |
 | Run-owned branch를 되감아 진 후보를 버리는 절차 | <https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117> | PRIMARY (repository) |

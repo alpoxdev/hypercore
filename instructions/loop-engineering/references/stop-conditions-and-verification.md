@@ -45,7 +45,7 @@ The third row is the vendor's own example shape, chosen because the agent can ru
 | Deterministic oracle | Whatever the oracle measures | Cheapest | A test, schema, exit code, or count can express the end state |
 | Human | Everything, with judgment | Most expensive | The condition is product-level, or the cost of a wrong verdict is high |
 
-The no-tools checker is the most underrated placement. Its blindness is the feature: it cannot be talked into a conclusion by a repository it does not read, and it cannot be gamed by a plausible-looking summary, because the summary is all it has. The limitation is symmetric — anything the agent does not print does not exist for the checker, so the condition must be written so the agent's own output proves it. That constraint is stated outright in the runtime docs: the evaluator "doesn't run commands or read files independently" (checked 2026-11-03).
+The no-tools checker is the most underrated placement. Its blindness cuts both ways. Repository state cannot talk it into a verdict, because it never reads the repository, but a plausible-looking summary can, because the summary is all it has. That second half is the plausible-pass failure mode in the table below, and it is why the condition has to make the agent's own output prove success rather than assert it. The limitation is symmetric — anything the agent does not print does not exist for the checker. That constraint is stated outright in the runtime docs: the evaluator "doesn't run commands or read files independently" (checked 2026-11-03).
 
 ## The verdict machine
 

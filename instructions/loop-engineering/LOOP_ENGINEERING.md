@@ -93,7 +93,7 @@ Order matters. Steps 2 and 3 decide whether anything after them can work.
 - LE-S-6: No progress is a stop. Repeated iterations with no state change or no tool use end the loop and hand control back.
 - LE-S-7: Budget exhaustion is a stop with a cause, never a success. Report `exhausted`, not `done`.
 
-The vendor implementation shows the shape: after each turn a separate small model, which "doesn't run commands or read files independently", returns "Not yet met", "Met", or "Impossible" with a short reason, and the loop stops itself after several turns "without making progress (no tool use for several turns in a row)" (Claude Code `/goal` docs, checked 2026-11-03). That design is a constraint worth copying: a checker with no tools cannot be gamed by a plausible-looking claim, but it also cannot verify anything the maker did not print.
+The vendor implementation shows the shape: after each turn a separate small model, which "doesn't run commands or read files independently", returns "Not yet met", "Met", or "Impossible" with a short reason, and the loop stops itself after several turns "without making progress (no tool use for several turns in a row)" (Claude Code `/goal` docs, checked 2026-11-03). That design is a constraint worth copying: a checker with no tools cannot be fooled by repository state it never reads, but it can be fooled by a plausible-looking claim, and it cannot verify anything the maker did not print.
 
 The condition-authoring rules, the verdict state machine, the failure taxonomy (retry, pause, clear), and the failure modes of weak verifiers are in [`references/stop-conditions-and-verification.md`](references/stop-conditions-and-verification.md).
 
