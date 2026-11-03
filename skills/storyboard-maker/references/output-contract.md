@@ -242,6 +242,7 @@ camera = target + d * (sin(yaw) * cos(pitch), sin(pitch), cos(yaw) * cos(pitch))
 - `pov`: the camera sits at that character's eye point (`0.94 × heightM`) and looks at the focus framing centre. `pitchDeg`, `heightM`, and `distanceM` are forbidden and are returned as computed values.
 - `OTS`: the camera sits `0.35` m behind the `over` character's shoulder and frames the focus as `MCU` whatever `size` says. The lateral offset shrinks so the shoulder stays in frame: `lateral = min(0.35, 0.115 * over.heightM + 0.80 * 0.35 * tanH)` with `tanH = tan(vfovDeg / 2) * aspect`. A fixed `0.35` m lateral offset would push the near shoulder out of frame and lose the over-the-shoulder cue. `pitchDeg`, `heightM`, and `distanceM` are forbidden here too.
 - `pov` together with `size: "OTS"` is a `SCHEMA_CONFLICT`.
+- The computed body position must be usable: a `pov` or `OTS` camera that resolves below `0.05` m, or closer than `0.2` m to the focus, fails with `CAMERA_GEOMETRY`.
 
 ### 2.6 Horizon and ground visibility
 
@@ -346,7 +347,7 @@ Every panel `<svg>` tags what it drew, so a check can assert the drawing without
 | `compilePanelPrompt` | `compilePanelPrompt(doc, sceneId, shotId)` | one English prompt string, or `""` when the ids do not resolve |
 | `renderGuideSvg` | `renderGuideSvg(doc, sceneId, shotId)` | one grey guide `<svg>` string, or `""` when the ids do not resolve |
 | `renderFloorPlanSvg` | `renderFloorPlanSvg(doc, sceneId)` | one `<svg>` string, or `""` when the scene does not resolve |
-| `render` | `render(doc)` | the full gallery HTML string (no `<html>` wrapper), or `""` when any error stands |
+| `render` | `render(doc)` | the board markup as one HTML string (scene sections, pages, panels, floor plans; no `<html>` wrapper), or `""` when `validate()` returns any error. It never returns the report: read `errors` from `validate()` and `warnings`, `info`, and `intentional` from `lint()`. |
 | `vfovDeg` | `vfovDeg(focalMm, aspect, sensorLongMm)` | the vertical field of view in degrees |
 
 An `Issue` is `{ "code": string, "message": string, "path": string }`, where `path` is a dotted/indexed location such as `scenes[0].shots[2].camera.focalMm`. An `IntentionalEntry` is `{ "shot": string, "method": string, "intentional": boolean, "reason": string }`.
@@ -393,6 +394,8 @@ Input and computed values are separate:
 | `getReport()` | `{ errors, warnings, info, intentional, panels, scenes }` | Reads the current state without re-rendering. |
 | `render()` | the report object | Re-renders the current document, used by the editor button. |
 
+`window.storyboardStudio.render()` is the page wrapper, not core `render(doc)`: the markup goes into the page and the call returns the report object.
+
 On load, a non-empty `storyboard-doc` element is rendered immediately. An empty element switches the page to a JSON paste editor with a render button. Any error resolves to zero panels, a `#status[data-error="true"]` state, and the error list; warnings never block rendering and appear as panel badges plus a summary above the board.
 
 ## 5. Codes and suppression
@@ -408,7 +411,7 @@ Errors stop the build: no panel is rendered while one stands.
 | `SCHEMA_DUPLICATE` | A character id, scene id, prop id, or shot id repeats inside its scope. |
 | `SCHEMA_REFERENCE` | `focus`, a `subjects` entry, `blocking.character`, `axis`, `subjectMoves.character`, `pov`, or `over` names an id that does not exist. |
 | `SCHEMA_CONFLICT` | `pitchDeg` and `heightM` together; `pov` with `pitchDeg`, `heightM`, or `distanceM`; `OTS` with any of those three; `pov` with `size: "OTS"`. |
-| `CAMERA_GEOMETRY` | `heightM` is farther from the framing centre than `d`, or a derived height falls below `0.05` m. |
+| `CAMERA_GEOMETRY` | `heightM` is farther from the framing centre than `d`; a height derived from `pitchDeg` falls below `0.05` m; a `pov` or `OTS` camera resolves below `0.05` m; or a `pov` or `OTS` camera resolves closer than `0.2` m to the focus. |
 
 Warnings never block and are printed as badges on the affected panel.
 
@@ -429,12 +432,13 @@ Suppression is per cut and only applies to the three line-related warnings. `cro
 
 ## 6. Running the core without a browser
 
-Extract the core script and call it with any Node-compatible JavaScript runtime, with no browser. The paths below are relative to the repository root, and both commands read the document this skill delivered.
+Extract the core script and call it with any Node-compatible JavaScript runtime, with no browser. Both commands resolve the renderer from the installed skill directory, the folder that holds `SKILL.md`, so no repository checkout is involved: set `SKILL_DIR` to that folder and run the command from the project folder, where `.hyper/storyboard-maker/<slug>/` holds the delivered document. Without `SKILL_DIR` the asset is read from the current directory instead.
 
 ```bash
-node -e '
-const fs = require("fs"), vm = require("vm");
-const html = fs.readFileSync("skills/storyboard-maker/assets/storyboard-studio.html", "utf8");
+SKILL_DIR=/path/to/installed/storyboard-maker node -e '
+const fs = require("fs"), path = require("path"), vm = require("vm");
+const dir = process.env.SKILL_DIR || ".";
+const html = fs.readFileSync(path.join(dir, "assets/storyboard-studio.html"), "utf8");
 const m = html.match(/<script[^>]*id="storyboard-core"[^>]*>([\s\S]*?)<\/script>/);
 if (!m) throw new Error("storyboard-core script not found");
 const ctx = vm.createContext({});
@@ -449,8 +453,10 @@ console.log("svg elements:", (core.render(doc).match(/<svg/g) || []).length);
 `bun -e` does the same without `vm`:
 
 ```bash
-bun -e '
-const html = await Bun.file("skills/storyboard-maker/assets/storyboard-studio.html").text();
+SKILL_DIR=/path/to/installed/storyboard-maker bun -e '
+const path = require("path");
+const dir = process.env.SKILL_DIR || ".";
+const html = await Bun.file(path.join(dir, "assets/storyboard-studio.html")).text();
 const src = html.match(/<script[^>]*id="storyboard-core"[^>]*>([\s\S]*?)<\/script>/)[1];
 const core = new Function(src + "\nreturn StoryboardCore;")();
 const doc = JSON.parse(await Bun.file(".hyper/storyboard-maker/my-film/storyboard.json").text());
@@ -458,7 +464,7 @@ console.log(JSON.stringify({ errors: core.validate(doc).errors, warnings: core.l
 '
 ```
 
-Both print the report as JSON and exit non-zero only on a thrown exception, not on a document with errors — read `errors` and `warnings` from the output. Point the reader at the delivered `storyboard.json`, not at `index.html`, because the injected copy carries the `<\/` escapes.
+Both print the report as JSON and exit non-zero only on a thrown exception, not on a document with errors — read `errors` and `warnings` from the output. `render()` returns empty markup while an error stands, so a zero SVG count means the document has errors, not that the renderer is missing. Point the reader at the delivered `storyboard.json`, not at `index.html`, because the injected copy carries the `<\/` escapes.
 
 ## Sources
 

@@ -242,6 +242,7 @@ camera = target + d * (sin(yaw) * cos(pitch), sin(pitch), cos(yaw) * cos(pitch))
 - `pov`: 카메라가 그 인물의 눈 위치(`0.94 × heightM`)에 서서 초점 프레이밍 중심을 봅니다. `pitchDeg`, `heightM`, `distanceM`은 쓸 수 없고 계산값으로만 돌려줍니다.
 - `OTS`: 카메라가 `over` 인물의 어깨 뒤로 `0.35`m 서고, `size`와 상관없이 초점을 `MCU`로 프레이밍합니다. 옆 오프셋은 어깨가 프레임에 남도록 줄이며, `lateral = min(0.35, 0.115 * over.heightM + 0.80 * 0.35 * tanH)`이고 `tanH = tan(vfovDeg / 2) * aspect`입니다. 옆으로 `0.35`m를 고정하면 가까운 쪽 어깨가 프레임 밖으로 잘려 OTS의 어깨 단서가 사라집니다. 여기서도 `pitchDeg`, `heightM`, `distanceM`을 쓸 수 없습니다.
 - `pov`와 `size: "OTS"`를 함께 쓰면 `SCHEMA_CONFLICT`입니다.
+- 계산된 몸 위치는 쓸 수 있어야 합니다. `pov`·`OTS` 카메라가 `0.05`m 아래로 계산되거나 초점 대상에 `0.2`m보다 가깝게 계산되면 `CAMERA_GEOMETRY`로 실패합니다.
 
 ### 2.6 지평선과 바닥 가시성
 
@@ -346,7 +347,7 @@ manifest.json     # 이 빌드의 getReport()
 | `compilePanelPrompt` | `compilePanelPrompt(doc, sceneId, shotId)` | 영어 프롬프트 문자열 하나, id를 찾지 못하면 `""` |
 | `renderGuideSvg` | `renderGuideSvg(doc, sceneId, shotId)` | 회색 구도 가이드 `<svg>` 문자열 하나, id를 찾지 못하면 `""` |
 | `renderFloorPlanSvg` | `renderFloorPlanSvg(doc, sceneId)` | `<svg>` 문자열 하나, 씬을 찾지 못하면 `""` |
-| `render` | `render(doc)` | 갤러리 HTML 문자열 전체(`<html>` 래퍼 없음), 오류가 하나라도 남아 있으면 `""` |
+| `render` | `render(doc)` | 보드 마크업을 HTML 문자열 하나로(씬 섹션·페이지·패널·평면도, `<html>` 래퍼 없음) 돌려주고, `validate()`가 오류를 하나라도 돌려주면 `""`입니다. 보고서는 돌려주지 않으므로 `errors`는 `validate()`에서, `warnings`·`info`·`intentional`은 `lint()`에서 읽습니다. |
 | `vfovDeg` | `vfovDeg(focalMm, aspect, sensorLongMm)` | 세로 화각(도) |
 
 `Issue`는 `{ "code": string, "message": string, "path": string }`이고, `path`는 `scenes[0].shots[2].camera.focalMm` 같은 점·색인 위치입니다. `IntentionalEntry`는 `{ "shot": string, "method": string, "intentional": boolean, "reason": string }`입니다.
@@ -393,6 +394,8 @@ manifest.json     # 이 빌드의 getReport()
 | `getReport()` | `{ errors, warnings, info, intentional, panels, scenes }` | 다시 렌더하지 않고 현재 상태를 읽습니다. |
 | `render()` | 보고서 객체 | 현재 문서를 다시 렌더합니다. 편집기 버튼이 씁니다. |
 
+`window.storyboardStudio.render()`는 코어 `render(doc)`가 아니라 페이지 껍데기입니다. 마크업은 페이지에 들어가고 호출은 보고서 객체를 돌려줍니다.
+
 로드할 때 `storyboard-doc` 요소가 비어 있지 않으면 바로 렌더합니다. 비어 있으면 JSON 붙여넣기 편집기와 렌더 버튼으로 바뀝니다. 오류가 있으면 패널은 0개, `#status[data-error="true"]` 상태, 오류 목록이 됩니다. 경고는 렌더를 막지 않고 패널 배지와 보드 위 요약으로 표시됩니다.
 
 ## 5. 코드와 억제
@@ -408,7 +411,7 @@ manifest.json     # 이 빌드의 getReport()
 | `SCHEMA_DUPLICATE` | 인물 id, 씬 id, 소품 id, 샷 id가 자기 범위 안에서 겹칩니다. |
 | `SCHEMA_REFERENCE` | `focus`, `subjects` 항목, `blocking.character`, `axis`, `subjectMoves.character`, `pov`, `over`가 없는 id를 가리킵니다. |
 | `SCHEMA_CONFLICT` | `pitchDeg`와 `heightM`을 함께 씁니다. `pov`와 `pitchDeg`·`heightM`·`distanceM`을 함께 씁니다. `OTS`와 그 세 값을 함께 씁니다. `pov`와 `size: "OTS"`를 함께 씁니다. |
-| `CAMERA_GEOMETRY` | `heightM`이 프레이밍 중심에서 `d`보다 멉니다. 또는 유도한 높이가 `0.05`m 아래입니다. |
+| `CAMERA_GEOMETRY` | `heightM`이 프레이밍 중심에서 `d`보다 멉니다. 또는 `pitchDeg`에서 유도한 높이가 `0.05`m 아래입니다. 또는 `pov`·`OTS` 카메라의 계산된 높이가 `0.05`m 아래입니다. 또는 `pov`·`OTS` 카메라가 초점 대상에 `0.2`m보다 가깝습니다. |
 
 경고는 렌더를 막지 않고 해당 패널의 배지로 인쇄됩니다.
 
@@ -429,12 +432,13 @@ manifest.json     # 이 빌드의 getReport()
 
 ## 6. 브라우저 없이 코어 실행
 
-코어 스크립트를 꺼내 Node와 호환되는 자바스크립트 런타임으로 호출하면 브라우저가 필요 없습니다. 아래 경로는 저장소 루트 기준이고, 두 명령 모두 이 스킬이 전달한 문서를 읽습니다.
+코어 스크립트를 꺼내 Node와 호환되는 자바스크립트 런타임으로 호출하면 브라우저가 필요 없습니다. 두 명령 모두 설치된 스킬 디렉터리, 곧 `SKILL.md`가 있는 폴더에서 렌더러를 찾으므로 저장소 체크아웃이 필요 없습니다. `SKILL_DIR`을 그 폴더로 지정하고 `.hyper/storyboard-maker/<slug>/`에 문서를 전달한 프로젝트 폴더에서 명령을 실행합니다. `SKILL_DIR`을 빼면 자산을 현재 디렉터리에서 대신 읽습니다.
 
 ```bash
-node -e '
-const fs = require("fs"), vm = require("vm");
-const html = fs.readFileSync("skills/storyboard-maker/assets/storyboard-studio.html", "utf8");
+SKILL_DIR=/path/to/installed/storyboard-maker node -e '
+const fs = require("fs"), path = require("path"), vm = require("vm");
+const dir = process.env.SKILL_DIR || ".";
+const html = fs.readFileSync(path.join(dir, "assets/storyboard-studio.html"), "utf8");
 const m = html.match(/<script[^>]*id="storyboard-core"[^>]*>([\s\S]*?)<\/script>/);
 if (!m) throw new Error("storyboard-core script not found");
 const ctx = vm.createContext({});
@@ -449,8 +453,10 @@ console.log("svg elements:", (core.render(doc).match(/<svg/g) || []).length);
 `bun -e`는 `vm` 없이 같은 일을 합니다.
 
 ```bash
-bun -e '
-const html = await Bun.file("skills/storyboard-maker/assets/storyboard-studio.html").text();
+SKILL_DIR=/path/to/installed/storyboard-maker bun -e '
+const path = require("path");
+const dir = process.env.SKILL_DIR || ".";
+const html = await Bun.file(path.join(dir, "assets/storyboard-studio.html")).text();
 const src = html.match(/<script[^>]*id="storyboard-core"[^>]*>([\s\S]*?)<\/script>/)[1];
 const core = new Function(src + "\nreturn StoryboardCore;")();
 const doc = JSON.parse(await Bun.file(".hyper/storyboard-maker/my-film/storyboard.json").text());
@@ -458,7 +464,7 @@ console.log(JSON.stringify({ errors: core.validate(doc).errors, warnings: core.l
 '
 ```
 
-두 명령 모두 보고서를 JSON으로 인쇄하고, 예외가 던져질 때만 0이 아닌 코드로 끝납니다. 오류가 있는 문서도 예외가 아니므로 출력의 `errors`와 `warnings`를 읽습니다. 읽는 대상은 전달한 `storyboard.json`이지 `index.html`이 아닙니다. 주입한 사본에는 `<\/` 이스케이프가 들어 있기 때문입니다.
+두 명령 모두 보고서를 JSON으로 인쇄하고, 예외가 던져질 때만 0이 아닌 코드로 끝납니다. 오류가 있는 문서도 예외가 아니므로 출력의 `errors`와 `warnings`를 읽습니다. `render()`는 오류가 남아 있는 동안 빈 마크업을 돌려주므로, SVG 개수가 0이면 렌더러가 없는 것이 아니라 문서에 오류가 있는 것입니다. 읽는 대상은 전달한 `storyboard.json`이지 `index.html`이 아닙니다. 주입한 사본에는 `<\/` 이스케이프가 들어 있기 때문입니다.
 
 ## Sources
 

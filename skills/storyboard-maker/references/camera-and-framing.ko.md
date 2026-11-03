@@ -186,7 +186,7 @@ horizonOffset = tan(pitch) / tan(vfov / 2)
 두 샷 모두 높이와 피치가 아니라 인물에서 카메라 위치를 끌어옵니다.
 
 - **POV** (`camera.pov` = 인물 id): 카메라가 그 인물의 눈 위치에 있고 초점을 바라봅니다. 화각은 렌즈가 정하고, 높이·피치·거리는 몸이 정합니다.
-- **OTS** (`size: "OTS"`, `camera.over` = 인물 id): 카메라가 `over` 인물 어깨 뒤, 옆으로 0.35 m 떨어진 곳에 있고 초점 인물을 `MCU`로 담습니다. 가까운 어깨와 뒤통수가 전경에 놓입니다. 0.35 m는 이 패키지의 기본값(**ASSUMED**)이며, 다른 구현은 0.5 m를 씁니다.
+- **OTS** (`size: "OTS"`, `camera.over` = 인물 id): 카메라가 `over` 인물 어깨 뒤, 옆으로 0.35 m 떨어진 곳에 있고 초점 인물을 `MCU`로 담습니다. 가까운 인물의 어깨가 전경을 채우고, 뒤통수는 프레임 밖에 남습니다. 0.35 m는 이 패키지의 기본값(**ASSUMED**)이며, 다른 구현은 0.5 m를 씁니다.
 
 두 샷의 입력 규칙입니다.
 
@@ -223,7 +223,7 @@ horizonOffset = tan(pitch) / tan(vfov / 2)
 
 - `pitchDeg`와 `heightM`을 함께 주면 `SCHEMA_CONFLICT`입니다.
 - `pov`나 `OTS`에 `pitchDeg`, `heightM`, `distanceM`을 함께 주면 `SCHEMA_CONFLICT`입니다.
-- 계산된 `heightM`이 0.05보다 낮거나 `|heightM − 중심| > 거리`이면 `CAMERA_GEOMETRY`입니다.
+- 계산된 `heightM`이 0.05보다 낮거나 `|heightM − 중심| > 거리`이면, 또는 `pov`·`OTS` 카메라가 0.05 m 아래이거나 초점 대상에 0.2 m보다 가까우면 `CAMERA_GEOMETRY`입니다.
 - 바닥 아래로 계산된 카메라를 바닥 높이로 끌어올리지 않습니다. 그러면 사용자가 요청한 각도가 달라지므로, 샷을 실패로 두고 값을 고치게 합니다.
 
 ## Sources

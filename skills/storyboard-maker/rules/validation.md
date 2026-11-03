@@ -44,7 +44,7 @@ Errors stop the build and leave zero panels. Each one names a `path`; fix that p
 | `SCHEMA_DUPLICATE` | Rename one of the repeated ids inside its scope. |
 | `SCHEMA_REFERENCE` | Point the field at an existing character or prop id. |
 | `SCHEMA_CONFLICT` | Remove one of the over-determining inputs: `pitchDeg` against `heightM`, or a fixed value on a `pov` or `OTS` shot. |
-| `CAMERA_GEOMETRY` | Move the camera into reach: pick a `heightM` within the framing distance, or a pitch whose derived height stays above the floor. |
+| `CAMERA_GEOMETRY` | Move the camera into reach: pick a `heightM` within the framing distance, or a pitch whose derived height stays above the floor. On a `pov` or `OTS` shot, move its owner or the `over` character so the camera sits more than `0.2` m from the focus, and give the character who sets the eye height a realistic `heightM` so the camera stays above the floor. |
 
 Warnings never block. A line-related warning is repaired or recorded with `crossing`; the other three are repaired only.
 
