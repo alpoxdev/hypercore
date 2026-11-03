@@ -197,14 +197,14 @@ Conditions for shipping:
 | 1 | Demystifying evals for AI agents | Anthropic | <https://www.anthropic.com/research/demystifying-evals-for-ai-agents> | 2026-01-09 | checked 2026-11-03 | S |
 | 2 | Evaluation best practices | OpenAI | <https://developers.openai.com/api/docs/guides/evaluation-best-practices> | not stated | checked 2026-11-03 | S |
 | 3 | Deprecations, entry for the Evals platform (2026-06-03) | OpenAI | <https://developers.openai.com/api/docs/deprecations> | 2026-06-03 announcement | checked 2026-11-03 | S |
-| 4 | Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations | Evan Miller, arXiv:2411.00640 | <https://arxiv.org/abs/2411.00640> | 2024-11-01 | checked 2026-11-03 | Paper |
-| 5 | τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains, pass^k definition | Yao et al., arXiv:2406.12045 | <https://arxiv.org/abs/2406.12045> | 2024-06-17 | checked 2026-11-03 | Paper |
-| 6 | τ²-bench: Evaluating Conversational Agents in a Dual-Control Environment | Barres et al., arXiv:2506.07982 | <https://arxiv.org/abs/2506.07982> | 2025-06-09 | checked 2026-11-03 | Paper |
-| 7 | Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena | Zheng et al., arXiv:2306.05685 | <https://arxiv.org/abs/2306.05685> | 2023-06-09 | checked 2026-11-03 | Paper |
-| 8 | Judging the Judges: A Systematic Study of Position Bias in LLM-as-a-Judge | Shi et al., arXiv:2406.07791 | <https://arxiv.org/abs/2406.07791> | 2024-06-12 | checked 2026-11-03 | Paper |
-| 9 | JudgeBench: A Benchmark for Evaluating LLM-based Judges | Tan et al., arXiv:2410.12784 | <https://arxiv.org/abs/2410.12784> | 2024-10-16 | checked 2026-11-03 | Paper |
-| 10 | Judging the Judges: Confidence and Disagreement in Rubrics as Rewards | Liu et al., arXiv:2610.21179 | <https://arxiv.org/abs/2610.21179> | 2026-10-15 | checked 2026-11-03 | Paper |
-| 11 | Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces | Merrill et al., arXiv:2601.11868 | <https://arxiv.org/abs/2601.11868> | 2026-01-17 | checked 2026-11-03 | Paper |
+| 4 | Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations | Evan Miller, arXiv:2411.00640 | <https://arxiv.org/abs/2411.00640> | 2024-11-01 | checked 2026-11-03 | S |
+| 5 | τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains, pass^k definition | Yao et al., arXiv:2406.12045 | <https://arxiv.org/abs/2406.12045> | 2024-06-17 | checked 2026-11-03 | S |
+| 6 | τ²-bench: Evaluating Conversational Agents in a Dual-Control Environment | Barres et al., arXiv:2506.07982 | <https://arxiv.org/abs/2506.07982> | 2025-06-09 | checked 2026-11-03 | S |
+| 7 | Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena | Zheng et al., arXiv:2306.05685 | <https://arxiv.org/abs/2306.05685> | 2023-06-09 | checked 2026-11-03 | S |
+| 8 | Judging the Judges: A Systematic Study of Position Bias in LLM-as-a-Judge | Shi et al., arXiv:2406.07791 | <https://arxiv.org/abs/2406.07791> | 2024-06-12 | checked 2026-11-03 | S |
+| 9 | JudgeBench: A Benchmark for Evaluating LLM-based Judges | Tan et al., arXiv:2410.12784 | <https://arxiv.org/abs/2410.12784> | 2024-10-16 | checked 2026-11-03 | S |
+| 10 | Judging the Judges: Confidence and Disagreement in Rubrics as Rewards | Liu et al., arXiv:2610.21179 | <https://arxiv.org/abs/2610.21179> | 2026-10-15 | checked 2026-11-03 | S |
+| 11 | Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces | Merrill et al., arXiv:2601.11868 | <https://arxiv.org/abs/2601.11868> | 2026-01-17 | checked 2026-11-03 | S |
 | 12 | Introducing SWE-bench Verified | OpenAI | <https://openai.com/index/introducing-swe-bench-verified/> | 2024-08-13, updated 2025-02-24 | checked 2026-11-03 | S |
 
 The 80% figure, the 42%-to-95% benchmark case, and the 20–50 task starting point are Anthropic's own reported experience; treat them as practitioner evidence with a stated methodology, not as independent measurements. The statistics recommendations come from a paper written by an author affiliated with the same lab, so both are marked as single-organization evidence in this ledger.

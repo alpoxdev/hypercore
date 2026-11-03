@@ -56,8 +56,10 @@ A check that returns a boolean loses the information the next iteration needs. R
 | Not yet met | The condition does not hold, and the reason names what is missing | Continue, passing the reason into the next turn |
 | Met | The condition holds | Clear the loop and record an achieved entry |
 | Impossible | The condition cannot be satisfied | Clear the loop and record a failed entry with the reason |
-| Not evaluated | Background work is still running, so the turn is not a complete unit | Defer evaluation to the next completed turn |
-| No progress | Several turns with no tool use or no state change | Stop, warn, return control with the loop still set |
+| Not evaluated — repository extension | Background work is still running, so the turn is not a complete unit | Defer evaluation to the next completed turn |
+| No progress — repository extension | Several turns with no tool use or no state change | Stop, warn, return control with the loop still set |
+
+`Not yet met`, `Met`, and `Impossible` are the three verdicts the vendor evaluator returns. `Not evaluated` and `No progress` are this repository's extension: they report the runner's state rather than the condition, and they exist so the two problems named below have a reportable value. Read them as local vocabulary, not as something the vendor promises.
 
 Three details make this machine work, and each is easy to drop when reimplementing it. `Impossible` must exist, or the loop burns its budget proving an impossibility. `Not evaluated` must exist, or a loop containing a long subagent task is judged on an incomplete turn. `No progress` must exist, or a model that keeps answering the checker without acting spins forever.
 

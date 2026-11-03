@@ -51,7 +51,7 @@ No single control carries the defense. The sources below describe the same stack
 
 Assume some payloads land. The design question is what a landed payload can reach, which the source/sink framing answers: an attacker needs a **source** (a way to influence the model) and a **sink** (a capability that is dangerous in the wrong context). Enumerate your sources and sinks, then remove or gate each sink. A useful test: ask what a human assistant in the same role would need permission for, and require the same.
 
-System-level designs can move the boundary further than prompting. Extracting control and data flow from the trusted request, then attaching capability policies to tool calls, has been published as a way to keep untrusted data out of program flow; the evaluated system solved 77% of AgentDojo tasks with provable security against 84% for an undefended baseline. The cost is real, which is why this is a design choice and not a default.
+System-level designs can move the boundary further than prompting. Extracting control and data flow from the trusted request, then attaching capability policies to tool calls, has been published as a way to keep untrusted data out of program flow; the evaluated system solved 77% of AgentDojo tasks with provable security against 84% for an undefended baseline. The cost is real, which is why this is a design choice and not a default. Both percentages are the paper's reported results, not measurements reproduced here.
 
 ---
 
@@ -155,6 +155,6 @@ Even with permission, act on the **user request** and **project instructions** â
 | 11 | Safety best practices (adversarial testing, input constraints) | OpenAI | <https://developers.openai.com/api/docs/guides/safety-best-practices> | not stated | checked 2026-11-03 | S |
 | 12 | Mitigating prompt injection attacks with a layered defense strategy | Google Security Blog | <https://blog.google/security/mitigating-prompt-injection-attacks/> | 2025-06-13 | checked 2026-11-03 | S |
 | 13 | Google Workspace's continuous approach to mitigating indirect prompt injections | Google Security Blog | <https://blog.google/security/google-workspaces-continuous-approach-to-mitigating-indirect-prompt-injections/> | 2026-04-02 | checked 2026-11-03 | S |
-| 14 | Defeating prompt injections by design (CaMeL) | Debenedetti et al., arXiv:2503.18813 | <https://arxiv.org/abs/2503.18813> | 2025-03-24 | checked 2026-11-03 | Paper |
+| 14 | Defeating prompt injections by design (CaMeL) | Debenedetti et al., arXiv:2503.18813 | <https://arxiv.org/abs/2503.18813> | 2025-03-24 | checked 2026-11-03 | S |
 
 The NIST AI 600-1 PDF is served from `nvlpubs.nist.gov`, which answers `HEAD` with 404; cite the NIST publication page instead so the repository link check resolves.

@@ -1,6 +1,8 @@
 # Skill Authoring
 
 > Korean version: [`SKILL_AUTHORING.ko.md`](SKILL_AUTHORING.ko.md)
+>
+> Pinned snapshot: `skills/skill-maker/references/local/instructions-skill-authoring.md` copies this document so that skill stays self-contained. Refresh that copy deliberately when this file changes; nothing syncs it automatically.
 
 This is the base document to read when creating or improving `skills/*`. Its purpose is to let you hand an AI a repeatable role and procedure by designing a skill as a **triggerable execution package** and a **verifiable small program**, not a plain prompt.
 
@@ -76,7 +78,7 @@ Read [`references/skill-anatomy.md`](references/skill-anatomy.md) for detailed s
 
 ## Minimum `SKILL.md` contract
 
-The core file of a new skill must include every item below.
+The core file of a new skill must include every item below. The nine `instruction_contract` fields are the canonical set; any other document that sketches a prompt contract maps onto them rather than restating a shorter list.
 
 ```markdown
 ---
@@ -133,7 +135,7 @@ Positive / Negative / Boundary examples
 | 0 | Decide whether the artifact is a general document or a skill | A "skill folder/refactor" scope decision |
 | 1 | Collect the target task class and recurring failures | Real user sentences, local docs, observations of existing skills, known failures |
 | 2 | Design the trigger | Positive/negative/boundary examples and a `description` draft |
-| 3 | Write the prompt contract | Intent, scope, authority, context, workflow, output, and verification are separated |
+| 3 | Write the prompt contract | The nine contract fields — intent, scope, authority, evidence, tools, loop, output, verification, and stop condition — are separated |
 | 4 | Decide whether a loop is needed | Loop type, feedback source, guard, stop condition — or the reason for no loop |
 | 5 | Split resources | rules/references/scripts/assets each have a justification and a load condition |
 | 6 | Design verification | Trigger smoke set, workflow trace, source/safety cases, local links, script checks |
@@ -149,7 +151,7 @@ A skill author first decides "what small program is this skill?"
 | What are the inputs? | `SKILL.md` contract | Separate user request, files, sources, and tool output |
 | Through which stages does it run? | `workflow` or `rules/` | Observable stages such as explore/plan/act/verify/report |
 | Is iteration needed? | `Loop` contract or `rules/loop.md` | No loop without feedback and a stop condition |
-| Is external evidence needed? | `Evidence`, `references/official/`, source ledger | Record source and accessed date for recency, vendor, and security claims |
+| Is external evidence needed? | `Evidence`, source ledger, `references/official/` (recommended) or `references/local/` for pinned repository snapshots | Record source and accessed date for recency, vendor, and security claims |
 | How are failures caught? | `validation`, `assets/evals/`, `scripts/` | Trigger, workflow, output, and safety regression cases |
 
 Follow [`references/prompt-loop-eval.md`](references/prompt-loop-eval.md) for loop selection. In summary:

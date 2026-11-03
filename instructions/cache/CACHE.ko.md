@@ -52,11 +52,11 @@
 ## 4. 캐시를 무효화하는 것
 
 - 시스템 프롬프트, 스킬 텍스트, 또는 앞선 메시지의 수정.
-- 도구 목록이나 도구 스키마 변경. 스키마를 바꾸는 MCP 서버 재연결도 포함된다. 이 저장소는 이미 그 결과를 기록해 두었다. Hermes Agent는 MCP 스키마 변경이 모델 프롬프트 캐싱을 무효화하기 때문에 기본적으로 `/reload-mcp` 전에 확인을 요청한다([`../cli/hermes-agent/EXTENSIONS.ko.md`](../cli/hermes-agent/EXTENSIONS.ko.md)).
+- 도구 목록이나 도구 스키마 변경. 스키마를 바꾸는 MCP 서버 재연결도 포함된다. Hermes Agent는 MCP 스키마 변경이 모델 프롬프트 캐싱을 무효화하기 때문에 기본적으로 `/reload-mcp` 전에 확인을 요청한다(<https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp>).
 - 내용이 같은데 순서만 바꾸는 것.
 - 요청 사이의 TTL 만료.
 - 다른 캐시 범위나 라우팅 키. 접두부를 공유한다고 캐시가 자동으로 공유되지는 않는다.
-- 프롬프트에 렌더링되는 요청 설정의 변경. 추론 노력도, thinking 설정, 상세도, 속도, 도구 선택, 출력 스키마 변경이 여기에 든다. Anthropic은 이 각각이 무효화하는 캐시 계층을 표로 적는다.
+- 프롬프트에 렌더링되는 요청 설정의 변경. Anthropic은 thinking 설정과 `output_config.effort`, OpenAI는 `model`, `tools`, `parallel_tool_calls`, `text.format`, `reasoning.effort`, `text.verbosity`가 여기에 든다. Anthropic은 각각이 무효화하는 캐시 계층을 표로 적고, OpenAI는 접두부를 다시 쓰는 설정을 적는다.
 - 앞선 내용을 대체하는 compaction이나 절단. OpenAI는 compaction이 처음 바뀐 토큰부터 재사용을 막는다고 적는다.
 
 이 가운데 일부에는 이제 덧붙이기 방식의 대안이 있고, 그쪽을 택한다. Anthropic의 대화 중간 `system` 메시지는 최상위 `system` 필드를 고치지 않고 지시를 더하며, OpenAI의 `configuration_update` 항목은 접두부를 다시 쓰지 않고 응답 사이에 추론 노력도를 바꾼다.
@@ -76,7 +76,7 @@
 ## 6. 가정하지 말고 측정한다
 
 - 적중 여부를 추론하지 말고 응답 usage의 캐시 토큰 수를 읽는다. 필드 이름은 프로바이더마다 다르며 참조 파일에 정리해 두었다.
-- 쓰기 요금이 붙는 현재 모델에서는 캐시 **쓰기**가 일반 입력 토큰보다 비싸다. Anthropic은 5분 항목에 1.25배, 1시간 항목에 2배를 받고, OpenAI는 30분 항목에 1.25배, 12시간 항목에 2.5배를 받는다. 접두부를 한 번 쓰고 한 번 읽는 비용은 캐시 없이 한 번 처리하는 비용보다 크며, 재사용은 두 번째 읽기부터 이득이 된다.
+- 쓰기 요금이 붙는 현재 모델에서는 캐시 **쓰기**가 일반 입력 토큰보다 비싸다. Anthropic은 5분 항목에 1.25배, 1시간 항목에 2배를 받고, OpenAI는 GPT-5.6 이후에서 기본 수명 30분인 30분 항목에 1.25배, 12시간 항목에 2.5배를 받는다. 이전 모델은 별도 쓰기 요금이 없고 Zero Data Retention을 쓰지 않으면 `24h` 보존이, 쓰면 `in_memory`가 기본이다. Google은 쓰기 배수가 없고, 캐시된 입력에 할인 요율을 적용하는 한편 TTL 동안 캐시한 토큰 수에 보관 요금을 받는다. 접두부를 한 번 쓰고 한 번 읽는 비용은 캐시 없이 한 번 처리하는 비용보다 크며, 재사용은 두 번째 읽기부터 이득이 된다.
 - 최소 캐시 길이가 존재하고 모델마다 다르다. Anthropic은 512~4,096 토큰, 현재 OpenAI 모델은 보이는 토큰 1,024개, Google 모델은 2,048 또는 4,096개다. 짧은 프롬프트는 아예 캐시되지 않을 수 있다.
 - 세션 재개나 이어가기가 적중을 보장하지 않는다. 세션 연속성과 캐시 재사용은 다른 기제다.
 - 레이트 리밋 영향은 측정 대상 동작으로 다룬다. 프로바이더마다 캐시 토큰과 한도의 관계를 다르게 문서화하며, 게이트웨이가 계산을 바꿀 수 있다.
@@ -106,7 +106,7 @@
 | Google, generateContent API 컨텍스트 캐싱 | <https://ai.google.dev/gemini-api/docs/generate-content/caching> | 확인 2026-11-03 |
 | Google, Interactions API 암시적 캐싱 | <https://ai.google.dev/gemini-api/docs/caching> | 확인 2026-11-03 |
 | Google, GenerateContent API 참조 | <https://ai.google.dev/api/generate-content> | 확인 2026-11-03 |
-| Hermes Agent, 확장과 MCP 재로드 | [`../cli/hermes-agent/EXTENSIONS.ko.md`](../cli/hermes-agent/EXTENSIONS.ko.md) | 확인 2026-09-19 |
+| Hermes Agent, MCP와 `/reload-mcp` | <https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp> | 확인 2026-09-19 |
 
 ## 함께 읽을 문서
 

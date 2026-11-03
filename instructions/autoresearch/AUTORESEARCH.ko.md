@@ -50,7 +50,7 @@ Runtime별 invocation syntax는 이식 가능하지 않다.
 7. **Decide**: 설정 profile에 따라 keep, tie, discard, inconclusive/error를 판정한다.
 8. **Restore**: keep이 아니면 소유한 candidate 상태만 복원하고 restoration receipt를 검증한다.
 9. **Record**: outcome, evidence identity, cleanup, frontier state를 atomic하게 저장한다.
-10. **Stop or continue**: goal predicate, budget, plateau/failure rule, 사용자 interrupt, safety gate를 강제한다.
+10. **Stop or continue**: goal predicate, budget, plateau/failure rule, 사용자 interrupt, safety gate를 강제한다. 기본 flat-cycle 횟수와 cycle ceiling은 [`references/command-family.ko.md`](references/command-family.ko.md)에 있다.
 
 상세 executable contract는 [`references/core-loop.ko.md`](references/core-loop.ko.md)에 있다.
 
@@ -70,8 +70,8 @@ Verify: "node scripts/measure-query.mjs --json"
 Guard: "npm test && npm run typecheck"
 Budget:
   MaxIterations: 12
-Artifacts: "autoresearch/query-latency-{run_id}/"
-SideEffects: "local-only"
+Evidence: "autoresearch/query-latency-{run_id}/"
+Authorization: "local-only; no external actions"
 ```
 
 이 measurement profile을 기계적으로 복사하지 않는다. Exact deterministic check, cold-start measurement, noisy performance benchmark, stochastic model run, subjective judge는 서로 다른 protocol이 필요하다. [`references/config-and-metrics.ko.md`](references/config-and-metrics.ko.md)를 따른다.

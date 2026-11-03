@@ -93,7 +93,7 @@ Predeclare applicable stop rules:
 - goal predicate satisfied
 - maximum iterations
 - maximum wall time, cost, or resource budget
-- plateau over accepted frontier values using a defined cadence and acceptance rule
+- plateau over accepted frontier values using a defined cadence and acceptance rule; the default flat-cycle count and cycle ceiling are in [`command-family.md`](command-family.md)
 - repeated invalid-run or infrastructure-failure limit
 - no in-scope falsifiable hypothesis remains
 - guard coverage on the candidate is narrower than on the frontier, such as fewer executed tests or a changed evaluator digest

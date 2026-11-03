@@ -261,7 +261,7 @@ No reviewed source documents a general `CLAUDE.md` → `AGENTS.md` migration rec
 - [ ] Nested files are self-contained deltas, correct whether or not the parent is loaded.
 - [ ] Overrides restate the correct rule in full instead of negating the parent.
 - [ ] Every nested file names the subtree it governs.
-- [ ] If Claude Code is a target, the repository either relies on its native `AGENTS.md` reading (v2.1.277+ or later, and no `CLAUDE.md` or `CLAUDE.local.md` at or above the working directory) or ships a `CLAUDE.md` that imports or symlinks to `AGENTS.md`, because sessions below v2.1.281, or with the built-in reader disabled, load `CLAUDE.md` only.
+- [ ] If Claude Code is a target, the repository either relies on its native `AGENTS.md` reading (v2.1.277+ or later, and no `CLAUDE.md` or `CLAUDE.local.md` at or above the working directory) or ships a `CLAUDE.md` that imports or symlinks to `AGENTS.md`, because sessions that cannot read `AGENTS.md` — a version before v2.1.277, the built-in reader disabled, or in some cases the first session after upgrading — load `CLAUDE.md` only, and the fix for an older install is an upgrade rather than a workaround.
 - [ ] `CLAUDE.local.md` is not committed to a repository that relies on `AGENTS.md`, since it suppresses `AGENTS.md` under the default setting.
 - [ ] `@path` imports stay within four hops, use paths relative to the importing file, and are not wrapped in quotes or code spans by accident.
 - [ ] No launch-time instruction file approaches 4 MiB, where Claude Code skips it entirely.
@@ -294,4 +294,4 @@ No reviewed source documents a general `CLAUDE.md` → `AGENTS.md` migration rec
 - [`../AGENTS_MD.md`](../AGENTS_MD.md)
 - [`claude-md-adapter.md`](claude-md-adapter.md)
 - [`content-contract.md`](content-contract.md)
-- [`../../cli/README.md`](../../cli/README.md)
+- [`../../context-engineering/references/runtime-profiles.md`](../../context-engineering/references/runtime-profiles.md)

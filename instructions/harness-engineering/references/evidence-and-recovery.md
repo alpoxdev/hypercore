@@ -148,6 +148,8 @@ digest algorithm.
 > Checked 2026-11-03. The two repository examples were re-resolved on that date; their claims were
 > read when the rows were first added and are pinned to the commits shown.
 
+**Grade vocabulary.** One closed set for every source table in this directory; see [`../HARNESS_ENGINEERING.md`](../HARNESS_ENGINEERING.md) under `## Sources`.
+
 | Claim | Source | Grade |
 |---|---|---|
 | Context engineering for long-horizon work: compaction, structured note-taking, sub-agent architectures, and recall-first compaction tuning | <https://www.anthropic.com/research/effective-context-engineering-for-ai-agents> (the `/engineering/` path now redirects here) | VENDOR |

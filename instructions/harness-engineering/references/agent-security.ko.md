@@ -113,8 +113,7 @@ OWASP는 위험을 열거한다. 2026년 벤더 하네스 문헌은 그 목록�
 
 > 확인 2026-11-03.
 
-**등급 어휘.** `PRIMARY` = 주장을 진술한 문서. `SECONDARY` = 다른 문서의 요약. `VENDOR` = 1차
-제품·벤더 문서. `REPO` = 근거로 쓰는 코드 저장소.
+**등급 어휘.** 이 디렉터리의 모든 출처 표가 쓰는 하나의 닫힌 집합이다. [`../HARNESS_ENGINEERING.ko.md`](../HARNESS_ENGINEERING.ko.md)의 `## Sources`를 본다.
 
 | 주장 | 출처 | Grade |
 |---|---|---|

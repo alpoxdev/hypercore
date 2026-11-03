@@ -52,11 +52,11 @@ When a runtime loads a skill's `SKILL.md` and a system-level skill list into eve
 ## 4. What invalidates a cache
 
 - An edit to the system prompt, the skill text, or any earlier message.
-- A tool-list or tool-schema change, including an MCP server reconnect that alters the schema. This repository already records the consequence: Hermes Agent asks before `/reload-mcp` by default because a changed MCP schema invalidates model prompt caching ([`../cli/hermes-agent/EXTENSIONS.md`](../cli/hermes-agent/EXTENSIONS.md)).
+- A tool-list or tool-schema change, including an MCP server reconnect that alters the schema. Hermes Agent asks before `/reload-mcp` by default because a changed MCP schema invalidates model prompt caching (<https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp>).
 - Reordering content that is otherwise identical.
 - TTL expiry between requests.
 - A different cache scope or routing key — a shared prefix is not automatically a shared cache.
-- A request setting that renders into the prompt: reasoning effort, thinking configuration, verbosity, speed, tool choice, or an output-schema change. Anthropic lists each of these against the cache level it invalidates.
+- A request setting that renders into the prompt: on Anthropic the thinking configuration and `output_config.effort`; on OpenAI `model`, `tools`, `parallel_tool_calls`, `text.format`, `reasoning.effort`, and `text.verbosity`. Anthropic lists each against the cache level it invalidates, and OpenAI lists the settings that rewrite the prefix.
 - A compaction or truncation pass that replaces earlier content. OpenAI documents compaction as preventing reuse from the first changed token onward.
 
 Some of these now have append-only alternatives, and they are the ones to prefer: an Anthropic mid-conversation `system` message adds an instruction without editing the top-level `system` field, and an OpenAI `configuration_update` item changes reasoning effort between responses without rewriting the prefix.
@@ -76,7 +76,7 @@ A harness multiplies one prompt into many requests: workers, subagents, retries,
 ## 6. Measure, do not assume
 
 - Read cached-token counts from the response usage rather than inferring a hit. Provider field names differ; see the reference file.
-- A cache **write** costs more than an ordinary input token on every current model that bills it: Anthropic charges 1.25× for a 5-minute entry and 2× for a 1-hour entry, and OpenAI charges 1.25× for a 30-minute entry and 2.5× for a 12-hour one. Writing a prefix once and reading it once costs more than processing it once uncached; reuse pays from the second read.
+- A cache **write** costs more than an ordinary input token on every current model that bills it: Anthropic charges 1.25× for a 5-minute entry and 2× for a 1-hour entry, and OpenAI charges 1.25× for a 30-minute entry and 2.5× for a 12-hour one on GPT-5.6 and later, whose default lifetime is 30 minutes; earlier models add no separate write charge and default to `24h` retention, or `in_memory` under Zero Data Retention. Google has no write multiplier: it bills cached input at a reduced rate plus a storage charge for the cached token count over the TTL. Writing a prefix once and reading it once costs more than processing it once uncached; reuse pays from the second read.
 - A minimum cacheable prefix length exists and varies by model: 512 to 4,096 tokens on Anthropic, 1,024 visible tokens on current OpenAI models, 2,048 or 4,096 on Google models. A short prompt may never cache at all.
 - A resumed or continued session is not a guaranteed hit. Session continuity and cache reuse are different mechanisms.
 - Treat rate-limit effects as measured behavior. Providers document different interactions between cached tokens and limits, and a gateway can change the accounting.
@@ -106,7 +106,7 @@ A harness multiplies one prompt into many requests: workers, subagents, retries,
 | Google, context caching on the generateContent API | <https://ai.google.dev/gemini-api/docs/generate-content/caching> | 2026-11-03 |
 | Google, implicit caching on the Interactions API | <https://ai.google.dev/gemini-api/docs/caching> | 2026-11-03 |
 | Google, GenerateContent API reference | <https://ai.google.dev/api/generate-content> | 2026-11-03 |
-| Hermes Agent, extensions and MCP reload | [`../cli/hermes-agent/EXTENSIONS.md`](../cli/hermes-agent/EXTENSIONS.md) | 2026-09-19 |
+| Hermes Agent, MCP and `/reload-mcp` | <https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp> | 2026-09-19 |
 
 ## Related documents
 

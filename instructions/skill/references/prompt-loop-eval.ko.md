@@ -20,7 +20,21 @@
 
 ## 2. Prompt 계약
 
-Skill prompt는 아래 계약을 채워야 합니다.
+[`../SKILL_AUTHORING.ko.md`](../SKILL_AUTHORING.ko.md) → `## 최소 SKILL.md 계약`이 canonical 정의입니다. `instruction_contract`는 Intent, Scope, Authority, Evidence, Tools, Loop, Output, Verification, Stop condition 아홉 필드를 그대로 갖습니다. 아래 계약은 그 아홉을 모두 채우고, 앞선 7블록 개요가 어디로 갔는지 기록합니다. 어느 형태로 쓴 skill이든 같은 checklist를 통과합니다.
+
+| 앞선 블록(7) | Canonical 필드(9) | 옮겨 가는 것 |
+|---|---|---|
+| Intent | Intent | 그대로 |
+| Scope | Scope | 그대로 |
+| Authority | Authority | 그대로 |
+| Context | Evidence | 필수 파일, 출처, 날짜, 버전, 빠진 정보 처리는 근거에 관한 질문 |
+| Workflow | Tools | 단계 순서는 `<workflow>`에 남고, `Tools`가 단계마다 쓸 수 있는 도구와 경계를 적음 |
+| Workflow | Verification | 블록의 `Verification` 줄이 독립 필드가 됨 |
+| Workflow | Stop condition | 완료, 중단, 사용자 질문 조건이 독립 필드가 됨 |
+| Loop | Loop | 그대로 |
+| Output | Output | 그대로 |
+
+자기 블록이 없던 네 필드, 즉 Evidence, Tools, Verification, Stop condition이 가장 자주 비어 있으므로 Workflow에 접어 넣지 않고 아래에 따로 적습니다.
 
 ```markdown
 ## Intent
@@ -36,14 +50,13 @@ Skill prompt는 아래 계약을 채워야 합니다.
 - Priority:
 - Handling of retrieved/tool content:
 
-## Context
+## Evidence
 - Required files, sources, dates, versions:
 - Handling of missing information:
 
-## Workflow
-- Step 1:
-- Step 2:
-- Verification:
+## Tools
+- Tools each stage may use, and the boundary on each:
+- Handling of tool-output failure:
 
 ## Loop
 - Type: none | observe-act | draft-critique-revise | branch-score-prune | optimize-compare
@@ -56,6 +69,15 @@ Skill prompt는 아래 계약을 채워야 합니다.
 - Format:
 - Storage location:
 - Required/forbidden fields:
+
+## Verification
+- Checks that decide pass or fail:
+- Evidence each check leaves:
+
+## Stop condition
+- Complete when:
+- Abort when:
+- Ask the user when:
 ```
 
 ## 3. Loop 패턴 선택
@@ -128,7 +150,7 @@ Agentic, coding, 도구 사용 skill을 검증할 때 공개 benchmark 점수만
 
 Skill이 벤더 문서, API 동작, 논문, benchmark, 보안 주장을 다루면 다음을 따릅니다.
 
-- 출처 URL, 확인일, 적용 버전이나 제품을 `references/official/` 또는 별도 reference에 기록합니다.
+- 출처 URL, 확인일, 적용 버전이나 제품을 `references/official/`(권장 배치이지 필수 경로가 아님), 별도 reference, 또는 이 저장소 문서의 고정 스냅샷이면 `references/local/`에 기록합니다.
 - Core 규칙만 `SKILL.md`에 두고 긴 출처 요약은 references로 나눕니다.
 - 최신성 주장에는 절대 날짜를 씁니다.
 - 공식 문서가 충돌하면 적용 런타임·모델·제품과 날짜를 비교합니다.

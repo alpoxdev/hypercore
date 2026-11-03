@@ -106,7 +106,7 @@ Bedrock's own page states the operating rule this repository's contract already 
 | Minimum length | 512–4,096 by model | 1,024 visible tokens on current models | 2,048 or 4,096 by model |
 | Write cost | 1.25× (5m), 2× (1h) | 1.25× (30m), 2.5× (12h) | Storage charge by TTL, plus the cached-token rate |
 | Read cost | 0.1×, with 0.025×/0.05× exceptions | 0.1×, with 0.05× on two models | Reduced cached-token rate |
-| Default lifetime | 5 minutes, refreshed on use | 30 minutes | 1 hour |
+| Default lifetime | 5 minutes, refreshed on use | 30 minutes on GPT-5.6 and later; earlier models default to `24h` retention without Zero Data Retention and `in_memory` with it | 1 hour |
 | Breakpoint control | Up to 4, automatic or explicit | Up to 4 writes, implicit or explicit on GPT-5.6+ | Explicit cache object only |
 | Pre-warm | `max_tokens: 0` | `prewarm: true` | Create the cache object first |
 

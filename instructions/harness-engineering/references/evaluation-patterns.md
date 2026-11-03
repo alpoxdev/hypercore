@@ -144,6 +144,8 @@ on the answer.
 
 > Checked 2026-11-03.
 
+**Grade vocabulary.** One closed set for every source table in this directory; see [`../HARNESS_ENGINEERING.md`](../HARNESS_ENGINEERING.md) under `## Sources`.
+
 | Claim | Source | Grade |
 |---|---|---|
 | Isolated per-dimension judges, the "Unknown" escape hatch, partial credit, and grading the outcome rather than the path | <https://www.anthropic.com/research/demystifying-evals-for-ai-agents> | VENDOR |

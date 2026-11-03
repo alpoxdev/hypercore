@@ -45,7 +45,7 @@ Note that three of the four cheaper alternatives are loop-level or context-level
 
 ## The cost model
 
-Anthropic's measured multipliers are the only concrete cost numbers in the cited set, and they are worth carrying into the decision.
+Anthropic's measured multipliers are the only token multipliers in the cited set, and they are worth carrying into the decision. They are not the only cost numbers: LangChain reports cost per correct answer (−58%) and index compilation cost in dollars ([`graph-as-context.md`](graph-as-context.md) §What the evidence actually shows).
 
 | Configuration | Tokens relative to a chat interaction | Source |
 |---|---|---|

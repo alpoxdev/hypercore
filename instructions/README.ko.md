@@ -9,7 +9,6 @@
 | 영역 | 파일 | 목적 |
 |---|---|---|
 | Context Engineering | [`context-engineering/CONTEXT_ENGINEERING.ko.md`](context-engineering/CONTEXT_ENGINEERING.ko.md) | 프롬프트/컨텍스트/도구 지시를 런타임 중립적으로 설계 |
-| CLI Runtime Profiles | [`cli/README.ko.md`](cli/README.ko.md) | skill이 Claude Code, Codex, GJC, Hermes Agent, JCode, OMO, OpenClaw, OpenCode의 질문·승인·도구 기능을 안전하게 선택 |
 | Prompt Authoring | [`context-engineering/references/prompt-authoring.ko.md`](context-engineering/references/prompt-authoring.ko.md) | 역할 수행 프롬프트를 실행 계약으로 작성하는 실전 템플릿 |
 | Prompt & Skill Caching | [`cache/CACHE.ko.md`](cache/CACHE.ko.md) | 프롬프트·스킬의 재사용 접두부를 안정적으로 유지해 프로바이더 프롬프트 캐시가 재사용하게 한다 |
 | AGENTS.md / CLAUDE.md | [`agents-md/AGENTS_MD.ko.md`](agents-md/AGENTS_MD.ko.md) | 저장소 에이전트 instruction 파일을 작고 근거 있고 이식 가능한 계약으로 작성 |
@@ -21,15 +20,24 @@
 | Graph Engineering | [`graph-engineering/GRAPH_ENGINEERING.ko.md`](graph-engineering/GRAPH_ENGINEERING.ko.md) | 다단계·다중 에이전트 작업을 노드, 간선, 상태로 이루어진 그래프로 설계하고, 그래프가 맞지 않는 경우를 가린다 |
 | Harness Anatomy | [`harness-engineering/references/harness-anatomy.ko.md`](harness-engineering/references/harness-anatomy.ko.md) | 하네스를 이루는 부품과 하네스 구성 요소가 낡았는지 판단하는 기준 |
 | Context Management | [`context-engineering/references/context-management.ko.md`](context-engineering/references/context-management.ko.md) | 긴 실행에서 문맥을 쓰고, 고르고, 압축하고, 격리하는 방법과 런타임별 압축·메모리 기능 |
+| Context Core Principles | [`context-engineering/references/core-principles.ko.md`](context-engineering/references/core-principles.ko.md) | instruction을 쓰기 전에 정할 고도, 구체성, 우선순위 규칙 |
+| Context Techniques | [`context-engineering/references/techniques.ko.md`](context-engineering/references/techniques.ko.md) | 복잡한 작업을 실행 가능한 단계로 쪼개는 분해법과 그 밖의 반복 기법 |
+| Runtime Profiles | [`context-engineering/references/runtime-profiles.ko.md`](context-engineering/references/runtime-profiles.ko.md) | 공유 문서에서 빼 둔 런타임별 instruction 표면, 우선순위, 기능 차이 |
+| Parallel Workflows | [`context-engineering/references/parallel-workflows.ko.md`](context-engineering/references/parallel-workflows.ko.md) | 병렬 작업과 서브에이전트의 독립성, 소유권, 격리, 통합, 검증 기준 |
 | Harness Measurement | [`harness-engineering/references/measurement.ko.md`](harness-engineering/references/measurement.ko.md) | 반복·집계·컨텍스트 변수 규칙의 유도: `pass^k`, 표본 크기, 행동 평가 vs 종단 벤치마크 |
+| Harness Evaluation Patterns | [`harness-engineering/references/evaluation-patterns.ko.md`](harness-engineering/references/evaluation-patterns.ko.md) | 에이전트 출력을 검사하는 결정적 단언과 그 밖의 eval 패턴 |
 | Harness Evidence & Recovery | [`harness-engineering/references/evidence-and-recovery.ko.md`](harness-engineering/references/evidence-and-recovery.ko.md) | 증거·검증 비용 축소·장기 실행 복구 규칙의 작업 형태 |
 | Harness Agent Security | [`harness-engineering/references/agent-security.ko.md`](harness-engineering/references/agent-security.ko.md) | 최소 보안 단언 뒤의 OWASP 에이전트 위협 목록 |
+| Graph Framework Mapping | [`graph-engineering/references/framework-mapping.ko.md`](graph-engineering/references/framework-mapping.ko.md) | 다섯 런타임이 부르는 그래프 기본 요소를 문서에 적힌 범위에서 맞춘 번역표 |
+| Graph as Context | [`graph-engineering/references/graph-as-context.ko.md`](graph-engineering/references/graph-as-context.ko.md) | 다음 실행을 정하는 그래프와 분리해, 콘텐츠 위에 만들어 문맥으로 읽는 그래프 |
+| Graph Patterns | [`graph-engineering/references/graph-patterns.ko.md`](graph-engineering/references/graph-patterns.ko.md) | 반복되는 그래프 토폴로지와 각 패턴이 상태·엣지에 요구하는 것, 평가 방법 |
+| When Not to Use Graphs | [`graph-engineering/references/when-not-to-use-graphs.ko.md`](graph-engineering/references/when-not-to-use-graphs.ko.md) | 그래프를 만들기 전에 통과할 판별 질문, 비용 모델, 더 값싼 대안 |
 | Sourcing | [`sourcing/reliable-search.ko.md`](sourcing/reliable-search.ko.md) | 자료조사·검색·출처 검증 기준 |
 | Validation | [`validation/index.ko.md`](validation/index.ko.md) | 작업 완료 전 검증 기준 |
 
 ## 출처 관리
 
-외부 출처는 **URL과 확인일을 인라인으로** 적는다. `Sources` 섹션이 있는 문서는 그곳에, 없으면 claim 옆에 적는다. 예외는 저장소 유지보수 원장 하나뿐이며(예: [`cli/sources.md`](cli/sources.md)), [`sourcing/reliable-search.ko.md`](sourcing/reliable-search.ko.md) §7에서 정의한다. 나머지 claim을 근거 옆에 두는 편이 중앙화보다 비용이 작다.
+외부 출처는 **URL과 확인일을 인라인으로** 적는다. `Sources` 섹션이 있는 문서는 그곳에, 없으면 claim 옆에 적는다. 저장소 유지보수 원장도 예외도 두지 않는다. claim을 인용에서 떼어 두면 둘이 어긋나고, 독자는 그 claim이 아직 유효한지 가릴 수 없다. 인용·등급·최신성 규칙은 [`sourcing/reliable-search.ko.md`](sourcing/reliable-search.ko.md)에 있다.
 
 ```bash
 bash scripts/check-sources.sh             # 확인일 형식·문서 길이 strict, 링크 advisory
@@ -80,7 +88,7 @@ bun run --cwd scripts lint:sh        # 검사기 자체의 정적 분석 (shellc
 
 프롬프트, 시스템 메시지, 도구 설명, 스킬의 로드되는 텍스트를 쓰거나 고칠 때는 [`cache/CACHE.ko.md`](cache/CACHE.ko.md)를 읽어 재사용 접두부를 안정적으로 유지한다. 프로바이더별 임계값은 [`cache/references/provider-cache-facts.ko.md`](cache/references/provider-cache-facts.ko.md)에 있다.
 
-작업이 특정 런타임에 묶이면 [`context-engineering/references/runtime-profiles.ko.md`](context-engineering/references/runtime-profiles.ko.md)를 추가로 읽는다. 병렬 작업, subagent, background agent, agent team을 사용할 때는 [`context-engineering/references/parallel-workflows.ko.md`](context-engineering/references/parallel-workflows.ko.md)를 함께 읽는다. CLI별 질문·승인·도구 기능을 skill에서 사용하려면 [`cli/README.ko.md`](cli/README.ko.md)와 해당 하위 런타임 프로필을 함께 읽는다.
+작업이 특정 런타임에 묶이면 [`context-engineering/references/runtime-profiles.ko.md`](context-engineering/references/runtime-profiles.ko.md)를 추가로 읽는다. 병렬 작업, subagent, background agent, agent team을 사용할 때는 [`context-engineering/references/parallel-workflows.ko.md`](context-engineering/references/parallel-workflows.ko.md)를 함께 읽는다.
 
 Skill을 새로 만들거나 `skills/*`를 refactor할 때는 [`skill/SKILL_AUTHORING.ko.md`](skill/SKILL_AUTHORING.ko.md)를 읽고, prompt/loop/eval 설계가 필요하면 [`skill/references/prompt-loop-eval.ko.md`](skill/references/prompt-loop-eval.ko.md)를 함께 읽는다. 필요에 따라 `skill/references/`의 anatomy, trigger, progressive disclosure, resource placement, validation 문서를 추가로 읽는다.
 

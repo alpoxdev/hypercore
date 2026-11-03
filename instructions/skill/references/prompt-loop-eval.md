@@ -20,7 +20,21 @@ Source snapshot: 2026-11-03. Every URL in §12 was re-read on that date.
 
 ## 2. Prompt contract
 
-A skill prompt must fill in the contract below.
+[`../SKILL_AUTHORING.md`](../SKILL_AUTHORING.md) → `## Minimum SKILL.md contract` is the canonical definition: `instruction_contract` carries exactly nine fields — Intent, Scope, Authority, Evidence, Tools, Loop, Output, Verification, Stop condition. The contract below fills all nine and records where the earlier seven-block sketch went, so a skill written from either shape passes the same checklist.
+
+| Earlier block (7) | Canonical field (9) | What moves |
+|---|---|---|
+| Intent | Intent | Unchanged |
+| Scope | Scope | Unchanged |
+| Authority | Authority | Unchanged |
+| Context | Evidence | Required files, sources, dates, versions, and missing-information handling are evidence questions |
+| Workflow | Tools | The ordered stages stay in `<workflow>`; `Tools` names the tool each stage may use and its boundary |
+| Workflow | Verification | The block's `Verification` line becomes its own field |
+| Workflow | Stop condition | Completion, abort, and ask-the-user conditions become their own field |
+| Loop | Loop | Unchanged |
+| Output | Output | Unchanged |
+
+The four fields that had no block of their own — Evidence, Tools, Verification, Stop condition — are the ones most often left blank, so they are written out below instead of being folded into Workflow.
 
 ```markdown
 ## Intent
@@ -36,14 +50,13 @@ A skill prompt must fill in the contract below.
 - Priority:
 - Handling of retrieved/tool content:
 
-## Context
+## Evidence
 - Required files, sources, dates, versions:
 - Handling of missing information:
 
-## Workflow
-- Step 1:
-- Step 2:
-- Verification:
+## Tools
+- Tools each stage may use, and the boundary on each:
+- Handling of tool-output failure:
 
 ## Loop
 - Type: none | observe-act | draft-critique-revise | branch-score-prune | optimize-compare
@@ -56,6 +69,15 @@ A skill prompt must fill in the contract below.
 - Format:
 - Storage location:
 - Required/forbidden fields:
+
+## Verification
+- Checks that decide pass or fail:
+- Evidence each check leaves:
+
+## Stop condition
+- Complete when:
+- Abort when:
+- Ask the user when:
 ```
 
 ## 3. Choosing a loop pattern
@@ -128,7 +150,7 @@ The strongest published example of this discipline for skills is SWE-Skills-Benc
 
 When a skill covers vendor docs, API behavior, papers, benchmarks, or security claims:
 
-- Record the source URL, accessed date, and applicable version or product in `references/official/` or a separate reference.
+- Record the source URL, accessed date, and applicable version or product in `references/official/` (a recommended layout, not a required path), in a separate reference, or in `references/local/` when the evidence is a pinned snapshot of this repository's own documents.
 - Keep only core rules in `SKILL.md` and split long source summaries into references.
 - Use absolute dates for recency claims.
 - When official documents conflict, compare the applicable runtime, model, or product and the dates.

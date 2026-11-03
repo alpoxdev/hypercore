@@ -52,7 +52,7 @@ The invocation-mode axis comes from OpenAI's skill eval guidance (<https://devel
 | contextual | A real work sentence mixed with domain context | `Make this migration review procedure run identically every time` |
 | negative control | A similar request that must not activate | `Clean up this runbook so it reads better` |
 
-Start the dataset at 10-20 prompts, and keep it alive by adding every failure you meet as a regression case.
+Start the dataset at 10-20 prompts, and keep it alive by adding every failure you meet as a regression case. Those 10-20 prompts are **trigger queries**, the starting count from OpenAI's skill eval guidance, and they measure something different from the **2-3 test cases** in [`validation.md`](validation.md) §3: a trigger query asks only whether the skill activates and is judged by trigger rate, while a behavior case grades the artifact the skill produces. Neither number replaces the other.
 
 The positive/negative/boundary sets below are the **activation axis**. Every new or heavily refactored skill keeps examples.
 

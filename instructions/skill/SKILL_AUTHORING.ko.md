@@ -1,6 +1,8 @@
 # Skill Authoring
 
 > 영어판: [`SKILL_AUTHORING.md`](SKILL_AUTHORING.md)
+>
+> 고정 스냅샷: `skills/skill-maker/references/local/instructions-skill-authoring.ko.md`가 이 문서를 복사해 두어 그 skill이 자립할 수 있게 합니다. 이 파일이 바뀌면 그 사본을 의도적으로 갱신합니다. 자동으로 동기화되지 않습니다.
 
 이 문서는 `skills/*`를 새로 만들거나 개선할 때 읽는 기본 문서입니다. 목적은 AI에게 반복 가능한 역할과 절차를 맡길 수 있도록, skill을 단순 프롬프트가 아니라 **트리거 가능한 실행 패키지**이자 **검증 가능한 작은 프로그램**으로 설계하게 하는 것입니다.
 
@@ -76,7 +78,7 @@ skill-name/
 
 ## 최소 `SKILL.md` 계약
 
-새 skill의 core 파일은 다음 항목을 빠짐없이 포함해야 합니다.
+새 skill의 core 파일은 다음 항목을 빠짐없이 포함해야 합니다. `instruction_contract`의 아홉 필드가 canonical 세트이고, prompt 계약을 개략적으로 적은 다른 문서는 더 짧은 목록을 다시 적지 않고 이 필드로 대응시킵니다.
 
 ```markdown
 ---
@@ -133,7 +135,7 @@ Positive / Negative / Boundary examples
 | 0 | 산출물이 일반 문서인지 skill인지 결정 | "skill 폴더/리팩터" 범위 결정 |
 | 1 | 대상 작업군과 반복 실패를 수집 | 실제 사용자 문장, 로컬 문서, 기존 skill 관찰, 알려진 실패 |
 | 2 | 트리거 설계 | positive/negative/boundary 예시와 `description` 초안 |
-| 3 | Prompt 계약 작성 | intent, scope, authority, context, workflow, output, verification 분리 |
+| 3 | Prompt 계약 작성 | 계약의 아홉 필드, 즉 intent, scope, authority, evidence, tools, loop, output, verification, stop condition을 분리 |
 | 4 | Loop 필요 여부 결정 | loop 유형, feedback 출처, guard, stop condition 또는 loop를 두지 않는 이유 |
 | 5 | 리소스 분할 | rules/references/scripts/assets마다 존재 이유와 로드 조건 |
 | 6 | 검증 설계 | trigger smoke set, workflow trace, source/safety case, 로컬 링크, 스크립트 검사 |
@@ -149,7 +151,7 @@ Skill 작성자는 먼저 "이 skill은 어떤 작은 프로그램인가"를 정
 | 입력은 무엇인가? | `SKILL.md` 계약 | 사용자 요청, 파일, 출처, 도구 출력을 구분 |
 | 어떤 단계로 실행되는가? | `workflow` 또는 `rules/` | explore/plan/act/verify/report처럼 관찰 가능한 단계 |
 | 반복이 필요한가? | `Loop` 계약 또는 `rules/loop.md` | feedback과 stop condition이 없으면 loop도 없다 |
-| 외부 근거가 필요한가? | `Evidence`, `references/official/`, source ledger | 최신성·벤더·보안 주장에는 출처와 확인 날짜를 기록 |
+| 외부 근거가 필요한가? | `Evidence`, source ledger, `references/official/`(권장) 또는 저장소 스냅샷용 `references/local/` | 최신성·벤더·보안 주장에는 출처와 확인 날짜를 기록 |
 | 실패는 어떻게 잡히는가? | `validation`, `assets/evals/`, `scripts/` | 트리거·workflow·출력·안전 회귀 case |
 
 Loop 선택은 [`references/prompt-loop-eval.ko.md`](references/prompt-loop-eval.ko.md)를 따릅니다. 요약하면 다음과 같습니다.

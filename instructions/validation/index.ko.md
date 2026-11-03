@@ -200,7 +200,7 @@ agent/tool workflow 검증은 [`references/agent-tool-validation.ko.md`](referen
 | # | 출처 | 발행 | URL | 발행·갱신일 | 확인일 | 등급 |
 |---:|---|---|---|---|---|---|
 | 1 | Demystifying evals for AI agents | Anthropic | <https://www.anthropic.com/research/demystifying-evals-for-ai-agents> | 2026-01-09 | 확인 2026-11-03 | S |
-| 2 | Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations | Evan Miller, arXiv:2411.00640 | <https://arxiv.org/abs/2411.00640> | 2024-11-01 | 확인 2026-11-03 | 논문 |
+| 2 | Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations | Evan Miller, arXiv:2411.00640 | <https://arxiv.org/abs/2411.00640> | 2024-11-01 | 확인 2026-11-03 | S |
 | 3 | Evaluation best practices | OpenAI | <https://developers.openai.com/api/docs/guides/evaluation-best-practices> | 표기 없음 | 확인 2026-11-03 | S |
 | 4 | Agent Control Standard (ACS) | OWASP GenAI Security Project | <https://genai.owasp.org/resource/agent-control-standard-acs/> | 2026-09-01 | 확인 2026-11-03 | S |
 | 5 | OWASP Top 10 for LLM Applications 2026 | OWASP GenAI Security Project | <https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/> | 2026-08-03 | 확인 2026-11-03 | S |

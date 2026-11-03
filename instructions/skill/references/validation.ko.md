@@ -57,7 +57,9 @@ Skill validation은 skill이 "잘 읽힌다"는 것을 증명하는 일이 아�
 
 개수가 아니라 구성입니다.
 
-세트는 아래 그룹을 모두 덮어야 합니다. 그룹별 행 수는 여기서 고정하지 않습니다. 출처가 검증된 개수를 밝히지 않으므로 이 파일은 개수 대신 구성 요구를 둡니다. 출처가 밝힌 시작점 자체는 작습니다. loop를 시작하기 전 **test case 2~3개**이고, 설명 최적화 쪽은 질의 10~20개입니다.
+세트는 아래 그룹을 모두 덮어야 합니다. 그룹별 행 수는 여기서 고정하지 않습니다. 출처가 검증된 개수를 밝히지 않으므로 이 파일은 개수 대신 구성 요구를 둡니다.
+
+이 작업에는 두 수치가 돌아다니고, 둘은 다른 것을 측정합니다. evaluating-skills 페이지의 시작점은 **test case 2~3개**이고, 이는 행동 eval case입니다. Case마다 산출물을 만들어 assertion 단위로 채점합니다(§4). [`trigger-design.ko.md`](trigger-design.ko.md) §3의 **프롬프트 10~20개**는 OpenAI skill eval 지침에서 온 수치로 **트리거 질의**를 셉니다. 트리거 질의는 skill이 켜지는지만 묻고 trigger rate로 판정합니다(`SK-J-1`~`SK-J-6`). 행동 case는 산출물을 채점하고, 트리거 질의는 선택을 채점합니다. 어느 수치도 다른 수치를 대체하지 않으며, 이 파일의 case 수 목표도 아닙니다.
 
 - should-trigger
 - should-not-trigger
@@ -222,7 +224,7 @@ Skill이 "성능이 올랐다", "벤치마크를 통과한다", "agentic coding�
 | with/without 기준선을 핵심 패턴으로 두는 것, 이전 버전 스냅샷을 기준선으로 쓰는 것, 기준선 없는 개선 주장 금지, 두 조건 모두 통과하는 assertion 제거 — `SK-V-1`~`SK-V-4`의 근거 | <https://agentskills.io/skill-creation/evaluating-skills> |
 | 점수 옆의 사람 검토, case별 구체적 feedback, test case 2~3개 시작 — `SK-V-5`의 근거 | <https://agentskills.io/skill-creation/evaluating-skills> |
 | 반복 횟수, threshold, trigger rate를 트리거 지표로 쓰는 것 | <https://agentskills.io/skill-creation/optimizing-descriptions> |
-| 네 가지 호출 모드와 프롬프트 세트 구성 | <https://developers.openai.com/blog/eval-skills> |
+| 네 가지 호출 모드, 프롬프트 세트 구성, 트리거 질의 10~20개 수치 | <https://developers.openai.com/blog/eval-skills> |
 | Skill별 paired delta 설계, 98개 중 92개 결과, 76.6%에서 76.9% 평균 | <https://arxiv.org/abs/2603.15401> |
 | `skill-creator`, `evals/evals.json`, blind A/B 비교, `claude plugin eval`, 새 세션 규칙, CI 종료 코드 | <https://code.claude.com/docs/en/skills> |
 

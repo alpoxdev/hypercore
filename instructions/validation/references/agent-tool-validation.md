@@ -63,7 +63,7 @@ Read the trace when a case fails. A failure you cannot explain from the trace is
 
 ## 4. Runtime control
 
-Documented policy that is not enforced at the call site is a suggestion. Three properties make a control real, and they are the ones to check before trusting an agent to run unattended.
+Documented policy that is not enforced at the call site is a suggestion. Four properties make a control real, and they are the ones to check before trusting an agent to run unattended.
 
 | Property | Test |
 |---|---|

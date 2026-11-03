@@ -137,6 +137,8 @@ dead weight"였다([harness-anatomy.ko.md](harness-anatomy.ko.md), HE-A-2).
 > 확인 2026-11-03. 저장소 예시 두 개의 주소는 그날 다시 해석했고, 각 행의 주장은 행을 처음 추가할 때
 > 읽었으며 표시한 커밋에 고정되어 있다.
 
+**등급 어휘.** 이 디렉터리의 모든 출처 표가 쓰는 하나의 닫힌 집합이다. [`../HARNESS_ENGINEERING.ko.md`](../HARNESS_ENGINEERING.ko.md)의 `## Sources`를 본다.
+
 | 주장 | 출처 | Grade |
 |---|---|---|
 | 장기 실행을 위한 압축·구조화 노트·서브에이전트 구조, 재현율 우선 압축 튜닝 | <https://www.anthropic.com/research/effective-context-engineering-for-ai-agents> (`/engineering/` 경로는 이제 이 주소로 리다이렉트된다) | VENDOR |

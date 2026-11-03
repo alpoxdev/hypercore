@@ -44,7 +44,7 @@ Context is not an unlimited knowledge store. Every sentence that gets read can c
 
 This is measured, not assumed. Chroma tested 18 models from four families and found that performance degrades as input length grows even when task difficulty is held constant. Adding a single topically related distractor already hurt accuracy, and adding four compounded it; models performed better on shuffled haystacks than on coherently structured ones, so relevance and ordering do not rescue a long prompt (2025-07-14). The practical reading: a longer window buys room, not accuracy, and every low-signal token spends attention that the load-bearing rule needed.
 
-The levers that act on this budget — clear, summarize, move out, isolate — are specified in [`context-management.md`](context-management.md).
+The levers that act on this budget — write, select, compress, isolate — are specified in [`context-management.md`](context-management.md).
 
 ## 3. Explicit contract
 

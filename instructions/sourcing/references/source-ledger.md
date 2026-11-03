@@ -37,7 +37,7 @@
 | `Accessed/retrieved` | The date the researcher accessed it, the fetch timestamp, or a tool-provided `retrieved_at` |
 | `Version/freshness` | API mode, tool version, release tag, standard edition, `page_age`, cache caveat |
 | `Channel` | web, official docs, GitHub, local repo, paper, standard |
-| `Grade` | S/A/B/C |
+| `Grade` | S/A/B/C, or `S (repo)` for an internal repository standard |
 | `Role` | lead, primary-evidence, supporting, conflict, rejected |
 | `Relevant claim` | One sentence naming the claim this source supports or refutes |
 | `Used?` | Whether it was cited in the final answer |
@@ -160,7 +160,7 @@ When a subagent, browser agent, or tool collects sources, the parent writes the 
 
 | # | Source | Publisher | URL | Published/updated | Checked | Grade |
 |---:|---|---|---|---|---|---|
-| 1 | Reliable Search Guide, §5–§7 (grades, citations, ledger schema) | This repository | [`../reliable-search.md`](../reliable-search.md) | repository HEAD | checked 2026-11-03 | Internal standard |
+| 1 | Reliable Search Guide, §5–§7 (grades, citations, ledger schema) | This repository | [`../reliable-search.md`](../reliable-search.md) | repository HEAD | checked 2026-11-03 | S (repo) |
 | 2 | OWASP Top 10 for LLM Applications 2026 (edition-in-title practice) | OWASP GenAI Security Project | <https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/> | 2026-08-03 | checked 2026-11-03 | S |
 | 3 | LLM01: Prompt Injection page still serving the 2025 body | OWASP GenAI Security Project | <https://genai.owasp.org/llmrisk/llm01-prompt-injection/> | body labelled LLM01:2025 | checked 2026-11-03 | S |
 | 4 | Artificial Intelligence Risk Management Framework: Generative AI Profile (NIST AI 600-1), landing page with publication and update dates | NIST | <https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence> | 2024-07-26; page updated 2026-04-08 | checked 2026-11-03 | S |

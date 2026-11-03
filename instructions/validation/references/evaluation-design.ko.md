@@ -197,14 +197,14 @@ smoke eval은 바꾸는 instruction 원문에 돌린다. 바꿔 쓴 요약본에
 | 1 | Demystifying evals for AI agents | Anthropic | <https://www.anthropic.com/research/demystifying-evals-for-ai-agents> | 2026-01-09 | 확인 2026-11-03 | S |
 | 2 | Evaluation best practices | OpenAI | <https://developers.openai.com/api/docs/guides/evaluation-best-practices> | 표기 없음 | 확인 2026-11-03 | S |
 | 3 | Deprecations, Evals 플랫폼 항목(2026-06-03) | OpenAI | <https://developers.openai.com/api/docs/deprecations> | 2026-06-03 공지 | 확인 2026-11-03 | S |
-| 4 | Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations | Evan Miller, arXiv:2411.00640 | <https://arxiv.org/abs/2411.00640> | 2024-11-01 | 확인 2026-11-03 | 논문 |
-| 5 | τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains, pass^k 정의 | Yao 외, arXiv:2406.12045 | <https://arxiv.org/abs/2406.12045> | 2024-06-17 | 확인 2026-11-03 | 논문 |
-| 6 | τ²-bench: Evaluating Conversational Agents in a Dual-Control Environment | Barres 외, arXiv:2506.07982 | <https://arxiv.org/abs/2506.07982> | 2025-06-09 | 확인 2026-11-03 | 논문 |
-| 7 | Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena | Zheng 외, arXiv:2306.05685 | <https://arxiv.org/abs/2306.05685> | 2023-06-09 | 확인 2026-11-03 | 논문 |
-| 8 | Judging the Judges: A Systematic Study of Position Bias in LLM-as-a-Judge | Shi 외, arXiv:2406.07791 | <https://arxiv.org/abs/2406.07791> | 2024-06-12 | 확인 2026-11-03 | 논문 |
-| 9 | JudgeBench: A Benchmark for Evaluating LLM-based Judges | Tan 외, arXiv:2410.12784 | <https://arxiv.org/abs/2410.12784> | 2024-10-16 | 확인 2026-11-03 | 논문 |
-| 10 | Judging the Judges: Confidence and Disagreement in Rubrics as Rewards | Liu 외, arXiv:2610.21179 | <https://arxiv.org/abs/2610.21179> | 2026-10-15 | 확인 2026-11-03 | 논문 |
-| 11 | Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces | Merrill 외, arXiv:2601.11868 | <https://arxiv.org/abs/2601.11868> | 2026-01-17 | 확인 2026-11-03 | 논문 |
+| 4 | Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations | Evan Miller, arXiv:2411.00640 | <https://arxiv.org/abs/2411.00640> | 2024-11-01 | 확인 2026-11-03 | S |
+| 5 | τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains, pass^k 정의 | Yao 외, arXiv:2406.12045 | <https://arxiv.org/abs/2406.12045> | 2024-06-17 | 확인 2026-11-03 | S |
+| 6 | τ²-bench: Evaluating Conversational Agents in a Dual-Control Environment | Barres 외, arXiv:2506.07982 | <https://arxiv.org/abs/2506.07982> | 2025-06-09 | 확인 2026-11-03 | S |
+| 7 | Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena | Zheng 외, arXiv:2306.05685 | <https://arxiv.org/abs/2306.05685> | 2023-06-09 | 확인 2026-11-03 | S |
+| 8 | Judging the Judges: A Systematic Study of Position Bias in LLM-as-a-Judge | Shi 외, arXiv:2406.07791 | <https://arxiv.org/abs/2406.07791> | 2024-06-12 | 확인 2026-11-03 | S |
+| 9 | JudgeBench: A Benchmark for Evaluating LLM-based Judges | Tan 외, arXiv:2410.12784 | <https://arxiv.org/abs/2410.12784> | 2024-10-16 | 확인 2026-11-03 | S |
+| 10 | Judging the Judges: Confidence and Disagreement in Rubrics as Rewards | Liu 외, arXiv:2610.21179 | <https://arxiv.org/abs/2610.21179> | 2026-10-15 | 확인 2026-11-03 | S |
+| 11 | Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces | Merrill 외, arXiv:2601.11868 | <https://arxiv.org/abs/2601.11868> | 2026-01-17 | 확인 2026-11-03 | S |
 | 12 | Introducing SWE-bench Verified | OpenAI | <https://openai.com/index/introducing-swe-bench-verified/> | 2024-08-13, 2025-02-24 갱신 | 확인 2026-11-03 | S |
 
 80% 일치, 42%에서 95%로의 benchmark 사례, 20~50 task 시작점은 Anthropic이 보고한 자체 경험이다. 방법론이 밝혀진 실무자 근거로 다루고, 독립 측정으로 다루지 않는다. 통계 권고는 같은 연구소 소속 저자의 논문에서 나왔으므로, 이 원장에서는 둘 다 단일 기관 근거로 표시한다.

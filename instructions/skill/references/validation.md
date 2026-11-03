@@ -57,7 +57,9 @@ Every skill leaves at least the following validation note.
 
 Composition, not counts:
 
-The set must cover each of these groups. How many rows each one gets is not fixed here — the source does not state a validated count, so this file states a composition requirement instead. The source's own starting point is small: **2-3 test cases** before the loop begins, and 10-20 queries on the description-optimization side.
+The set must cover each of these groups. How many rows each one gets is not fixed here — the source does not state a validated count, so this file states a composition requirement instead.
+
+Two numbers circulate for this work and they measure different things. The evaluating-skills page's starting point is **2-3 test cases**, which are behavior eval cases: each one produces an artifact and is graded per assertion (§4). The **10-20 prompts** in [`trigger-design.md`](trigger-design.md) §3 come from OpenAI's skill eval guidance and count **trigger queries**, which ask only whether the skill activates and are judged by trigger rate (`SK-J-1` to `SK-J-6`). A behavior case grades the artifact; a trigger query grades the selection. Neither number replaces the other, and neither is a case-count target for this file.
 
 - should-trigger
 - should-not-trigger
@@ -222,7 +224,7 @@ Either way, a fresh session per run is mandatory: leftover context from authorin
 | The with/without baseline as the core pattern, using a previous-version snapshot as the baseline, not claiming improvement without a baseline, and removing assertions that pass in both conditions — the basis of `SK-V-1` to `SK-V-4` | <https://agentskills.io/skill-creation/evaluating-skills> |
 | Human review beside the grades, specific per-case feedback, and the 2-3 case starting point — the basis of `SK-V-5` | <https://agentskills.io/skill-creation/evaluating-skills> |
 | Repetition count, threshold, and trigger rate as the trigger metric | <https://agentskills.io/skill-creation/optimizing-descriptions> |
-| The four invocation modes and the prompt-set composition | <https://developers.openai.com/blog/eval-skills> |
+| The four invocation modes, the prompt-set composition, and the 10-20 trigger-query count | <https://developers.openai.com/blog/eval-skills> |
 | The paired per-skill delta design, the 92-of-98 result, and the 76.6% to 76.9% average | <https://arxiv.org/abs/2603.15401> |
 | `skill-creator`, `evals/evals.json`, blind A/B comparison, `claude plugin eval`, the fresh-session rule, and the CI exit code | <https://code.claude.com/docs/en/skills> |
 

@@ -67,6 +67,8 @@ Two axes are enough to describe every loop in current use: **what triggers an it
 
 The vendor names in that table are one vendor's taxonomy — the Claude Code team's — and the article states the axes it sorts by: "how they are triggered", "how they are stopped", "what primitive is used", and which task suits each (checked 2026-11-03). Use the axes, not the names: another runtime may ship the same axis crossing under different words, or none of the primitives at all. [`references/loop-types.md`](references/loop-types.md) works through each combination, the stacked-loop patterns, and the failure mode specific to each type.
 
+Two rows carry a caution the names hide. The turn-based row stops on "the model judges the task complete", which is exactly the self-graded stop LE-S-1 forbids, and [`references/loop-types.md`](references/loop-types.md) rates that stop class "Lowest — self-graded" in its Axis 2 table; read the row as a description of what a runtime does by default, not as a pattern to copy. The time-based row also lumps together two primitives with different lifetimes: `/loop` fires only while the local session is open and idle and its recurring tasks expire after 7 days, while cloud `/schedule` is a research preview whose behavior, limits, and API surface may change. [`references/runtime-primitives.md`](references/runtime-primitives.md) gives the details.
+
 ## Design procedure
 
 Order matters. Steps 2 and 3 decide whether anything after them can work.

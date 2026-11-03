@@ -67,6 +67,8 @@
 
 표의 벤더 명칭은 한 벤더의 분류다. Claude Code 팀의 글이고, 그 글은 자기 정렬 기준을 밝힌다. "어떻게 트리거되는가", "어떻게 멈추는가", "어떤 프리미티브를 쓰는가", "어떤 작업에 맞는가"다(2026-11-03 확인). 이름이 아니라 축을 쓴다. 다른 런타임은 같은 축 조합을 다른 이름으로 제공할 수도 있고, 프리미티브를 아예 제공하지 않을 수도 있다. 각 조합의 동작, 루프를 겹치는 패턴, 유형별 실패 모드는 [`references/loop-types.ko.md`](references/loop-types.ko.md)에서 다룬다.
 
+두 행에는 이름이 가리는 주의가 붙는다. 턴 기반 행은 "모델이 작업이 끝났다고 판단"에서 멈추는데, 그것이 바로 LE-S-1이 금지하는 자기 채점 정지다. [`references/loop-types.ko.md`](references/loop-types.ko.md)는 그 정지 유형을 2축 표에서 "Lowest — self-graded"로 평가한다. 이 행은 런타임이 기본으로 하는 일을 적은 것이지 베낄 패턴이 아니다. 시간 기반 행은 수명이 다른 두 프리미티브를 함께 묶는다. `/loop`는 로컬 세션이 열려 있고 유휴일 때만 발화하며 반복 작업은 7일 뒤 만료된다. 클라우드 `/schedule`은 리서치 프리뷰여서 동작과 한도, API 표면이 바뀔 수 있다. 자세한 내용은 [`references/runtime-primitives.ko.md`](references/runtime-primitives.ko.md)에 있다.
+
 ## Design procedure
 
 순서가 중요하다. 2단계와 3단계가 그 뒤의 모든 단계가 성립할지를 결정한다.

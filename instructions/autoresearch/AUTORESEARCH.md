@@ -50,7 +50,7 @@ These upstream interfaces are evidence and examples. Repository authority, safet
 7. **Decide**: keep, tie, discard, or mark inconclusive/error using the configured profile.
 8. **Restore**: on non-keep, restore only owned candidate state and verify the restoration receipt.
 9. **Record**: atomically persist the outcome, evidence identities, cleanup, and frontier state.
-10. **Stop or continue**: enforce the goal predicate, budget, plateau/failure rules, user interrupt, and safety gates.
+10. **Stop or continue**: enforce the goal predicate, budget, plateau/failure rules, user interrupt, and safety gates. The default flat-cycle count and cycle ceiling are in [`references/command-family.md`](references/command-family.md).
 
 The detailed executable contract is in [`references/core-loop.md`](references/core-loop.md).
 
@@ -70,8 +70,8 @@ Verify: "node scripts/measure-query.mjs --json"
 Guard: "npm test && npm run typecheck"
 Budget:
   MaxIterations: 12
-Artifacts: "autoresearch/query-latency-{run_id}/"
-SideEffects: "local-only"
+Evidence: "autoresearch/query-latency-{run_id}/"
+Authorization: "local-only; no external actions"
 ```
 
 Do not copy this measurement profile mechanically. Exact deterministic checks, cold-start measurements, noisy performance benchmarks, stochastic model runs, and subjective judges need different protocols. See [`references/config-and-metrics.md`](references/config-and-metrics.md).

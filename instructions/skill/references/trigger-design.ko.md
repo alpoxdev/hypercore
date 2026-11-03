@@ -52,7 +52,7 @@ Invocation mode 축은 OpenAI skill eval 지침에서 왔습니다(<https://deve
 | contextual | 실제 업무 문장에 도메인 맥락이 섞임 | `Make this migration review procedure run identically every time` |
 | negative control | 비슷하지만 켜지면 안 되는 요청 | `Clean up this runbook so it reads better` |
 
-데이터셋은 10~20개 프롬프트로 시작하고, 만나는 실패를 회귀 case로 계속 추가해 살아 있게 유지합니다.
+데이터셋은 10~20개 프롬프트로 시작하고, 만나는 실패를 회귀 case로 계속 추가해 살아 있게 유지합니다. 이 10~20개는 OpenAI skill eval 지침이 밝힌 시작 수치인 **트리거 질의**이고, [`validation.ko.md`](validation.ko.md) §3의 **test case 2~3개**와는 다른 것을 측정합니다. 트리거 질의는 skill이 켜지는지만 묻고 trigger rate로 판정하며, 행동 case는 skill이 만든 산출물을 채점합니다. 어느 수치도 다른 수치를 대체하지 않습니다.
 
 아래 positive/negative/boundary 세트는 **activation 축**입니다. 새로 만들거나 크게 고친 skill은 예시를 남깁니다.
 

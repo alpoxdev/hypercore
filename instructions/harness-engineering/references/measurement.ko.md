@@ -248,6 +248,8 @@ eval 셋이 조용히 죽지 않게 하는 실천이 둘 있다.
 
 > 확인 2026-11-03.
 
+**등급 어휘.** 이 디렉터리의 모든 출처 표가 쓰는 하나의 닫힌 집합이다. [`../HARNESS_ENGINEERING.ko.md`](../HARNESS_ENGINEERING.ko.md)의 `## Sources`를 본다.
+
 | 주장 | 출처 | Grade |
 |---|---|---|
 | `pass^k` 정의, `pass^8 <25%` retail 수치, 불일관성 발견 | <https://arxiv.org/abs/2406.12045> | PRIMARY |
@@ -267,8 +269,9 @@ eval 셋이 조용히 죽지 않게 하는 실천이 둘 있다.
 | 입력 길이에 따른 성능 저하, 방해 문장 중첩, 초점/전체 프롬프트 비교 | <https://www.trychroma.com/research/context-rot> | STUDY |
 | 단일 실행 게이트 대신 배치 평가와 집계 통과율 관행 | <https://developers.googleblog.com/the-anatomy-of-harness-engineering-how-to-evaluate-iterate-and-guard-ai-coding-agents/> | VENDOR |
 
-`pass^k = p^k`와 위 표본 크기 산식은 이 저장소에서 계산했다. 근거:
-`.omo/ulw-research/20260919-173136-harness-engineering/verification/passk_sim.py`.
+`pass^k`와 위 표본 크기 산식은 이 저장소에서 계산했고, 둘 다 이 문서 안에 그대로 들어 있다. 두 지표를
+구분하는 절의 `DERIVED` 문단과 "차이를 판정하려면 몇 회가 필요한가" 절의 Wald 구간 식이 그것이다.
+별도 스크립트는 두지 않는다.
 
 이전 판은 현재 추정보다 앞선 2025-03-19 METR 글을 인용했고, `pass^8`을 벤치마크가 보고하는 깊이로
 제시했다. 둘 다 위에서 고쳤다.

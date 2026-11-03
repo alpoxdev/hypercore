@@ -267,6 +267,8 @@ file excludes points above the 16-hour reliability bound.
 
 > Checked 2026-11-03.
 
+**Grade vocabulary.** One closed set for every source table in this directory; see [`../HARNESS_ENGINEERING.md`](../HARNESS_ENGINEERING.md) under `## Sources`.
+
 | Claim | Source | Grade |
 |---|---|---|
 | `pass^k` definition, the `pass^8 < 25%` retail figure, and the inconsistency finding | <https://arxiv.org/abs/2406.12045> | PRIMARY |
@@ -286,8 +288,9 @@ file excludes points above the 16-hour reliability bound.
 | Input-length degradation, distractor compounding, and focused-vs-full prompt comparison | <https://www.trychroma.com/research/context-rot> | STUDY |
 | Batch evaluation and aggregate pass-rate practice instead of single-run gating | <https://developers.googleblog.com/the-anatomy-of-harness-engineering-how-to-evaluate-iterate-and-guard-ai-coding-agents/> | VENDOR |
 
-`pass^k = p^k` and the sample-size formula above were computed in this repository; see
-`.omo/ulw-research/20260919-173136-harness-engineering/verification/passk_sim.py`.
+`pass^k = p^k` and the sample-size formula above were computed in this repository, and both are
+reproduced inline here: the `DERIVED` paragraph under `## pass^k is not pass@k` and the
+Wald-interval expression under `## How many runs to judge a difference`. No separate script is kept.
 
 An earlier revision cited the 2025-03-19 METR post, which predates the current estimate, and
 presented `pass^8` as the depth the benchmark reports. Both are corrected above.

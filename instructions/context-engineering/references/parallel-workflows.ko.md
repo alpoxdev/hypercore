@@ -147,21 +147,23 @@ Trace 기반 eval에는 아래 assertion을 둔다.
 
 ## Sources
 
-> 링크는 2026-11-03에 다시 확인했다. MCP만 2026-09-19에 `2026-07-28` revision 기준으로 재확인했다. Cursor의 Background Agents는 Cloud Agents로 개명됐다. Context Isolation Economics의 수치는 2026-11-03에 Anthropic 멀티 에이전트 리서치 글(2025-06-13 발행, 2026-10-09 갱신)과 Cognition의 “Don't Build Multi-Agents”(2025-06-12)에서 읽었다.
+> 출처는 2026-11-03에 확인했고, MCP 문서만 `2026-07-28` revision 기준으로 2026-09-19에 재확인했다. Cursor의 Background Agents는 Cloud Agents로 개명됐다.
 
-- [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
-- [Claude Code agent teams](https://code.claude.com/docs/en/agent-teams)
-- [OpenAI Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)
-- [OpenAI Codex CLI](https://learn.chatgpt.com/docs/codex/cli)
-- [Cursor Cloud Agents (구 Background Agents)](https://cursor.com/docs/cloud-agent)
-- [Cursor 2.4 subagents changelog](https://cursor.com/changelog/2-4)
-- [Cursor Rules](https://cursor.com/docs/rules)
-- [MCP tools specification](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
-- [MCP prompts specification](https://modelcontextprotocol.io/specification/2026-07-28/server/prompts)
-- [OpenAI agent builder safety](https://developers.openai.com/api/docs/guides/agent-builder-safety)
-- [Anthropic, How we built our multi-agent research system](https://www.anthropic.com/research/multi-agent-research-system)
-- [Cognition, Don't Build Multi-Agents](https://cognition.com/blog/dont-build-multi-agents)
-- [Claude Agent SDK subagents](https://code.claude.com/docs/en/agent-sdk/subagents)
+| 주장 | 출처 | 발행·갱신 |
+|---|---|---|
+| 서브에이전트 문맥 격리, `isolation: worktree`, 프로젝트 `.claude/agents/*.md` | <https://code.claude.com/docs/en/sub-agents> | 날짜 표기 없음, 2026-11-03 확인 |
+| agent teams는 별도 세션으로 돌며 아직 실험 단계 | <https://code.claude.com/docs/en/agent-teams> | 날짜 표기 없음, 2026-11-03 확인 |
+| Codex 네이티브 서브에이전트, fork된 문맥 또는 별도 스레드, 설정으로 제한되는 동시성 | <https://learn.chatgpt.com/docs/agent-configuration/subagents> | 날짜 표기 없음, 2026-11-03 확인 |
+| `spawn_agent`, `send_input`, `wait_agent`, `close_agent` 호출 표면 | <https://learn.chatgpt.com/docs/codex/cli> | 날짜 표기 없음, 2026-11-03 확인 |
+| cloud agent는 원격 격리 머신과 브랜치에서 돌고, GitHub 권한·인터넷 접근·자동 명령 실행이 경계를 넓힌다 | <https://cursor.com/docs/cloud-agent> | 날짜 표기 없음, 2026-11-03 확인 |
+| 2.4 릴리스의 에디터·CLI 서브에이전트 | <https://cursor.com/changelog/2-4> | Cursor 2.4 릴리스 항목, 2026-11-03 확인 |
+| `.cursor/rules`와 `.cursor/environment.json` 설정 표면 | <https://cursor.com/docs/rules> | 날짜 표기 없음, 2026-11-03 확인 |
+| 신뢰하는 서버가 아니면 도구 annotation을 신뢰하지 않는다. `server/discover`, 요청별 `_meta`, `resultType: "input_required"` | <https://modelcontextprotocol.io/specification/2026-07-28/server/tools> | 2026-07-28 revision, 2026-09-19 확인 |
+| prompt 기능과 input-required(MRTR) 흐름 | <https://modelcontextprotocol.io/specification/2026-07-28/server/prompts> | 2026-07-28 revision, 2026-09-19 확인 |
+| 도구 결과와 리소스 내용은 신뢰하지 않는 증거다 | <https://developers.openai.com/api/docs/guides/agent-builder-safety> | 날짜 표기 없음, 2026-11-03 확인 |
+| 약 4배·약 15배 토큰 배수, BrowseComp 분산의 80%, 내부 eval 90.2% 개선, 조정 실패 | <https://www.anthropic.com/research/multi-agent-research-system> | 2025-06-13 발행, 2026-10-09 갱신 |
+| "Actions carry implicit decisions", 단일 스레드 권고 | <https://cognition.com/blog/dont-build-multi-agents> | 2025-06-12 |
+| SDK 서브에이전트는 자기 문맥 창에서 요약만 반환한다 | <https://code.claude.com/docs/en/agent-sdk/subagents> | 날짜 표기 없음, 2026-11-03 확인 |
 
 ## 함께 읽을 문서
 

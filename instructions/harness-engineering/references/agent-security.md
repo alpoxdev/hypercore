@@ -116,9 +116,8 @@ names only obliquely.
 
 > Checked 2026-11-03.
 
-**Grade vocabulary.** `PRIMARY` = the document that states the claim. `SECONDARY` = a summary of
-another document. `VENDOR` = a first-party product or vendor article. `REPO` = a code repository
-used as evidence.
+**Grade vocabulary.** One closed set for every source table in this directory; see
+[`../HARNESS_ENGINEERING.md`](../HARNESS_ENGINEERING.md) under `## Sources`.
 
 | Claim | Source | Grade |
 |---|---|---|

@@ -42,7 +42,7 @@ Detail and citations: [`references/evidence-and-evaluation.md`](references/evide
 3. **Right altitude.** Between brittle hardcoded logic and vague guidance. Specific enough to guide, flexible enough to survive an unforeseen case.
 4. **Prose is advisory.** Anything that must happen every time belongs in a hook, CI check, lint rule, or schema — not a sentence asking for it.
 5. **One canonical home per rule.** Repetition across root, nested, and runtime files produces conflict, not emphasis.
-6. **Portable by default.** Write runtime-neutral rules; isolate real per-CLI differences into the adapter or a profile under [`../cli/`](../cli/README.md).
+6. **Portable by default.** Write runtime-neutral rules; isolate real per-CLI differences into the adapter or a runtime profile in [`../context-engineering/references/runtime-profiles.md`](../context-engineering/references/runtime-profiles.md).
 7. **Progressive disclosure.** Keep the always-loaded file thin; move specialized procedure into skills and linked documents that load on demand.
 8. **Evidence or omission.** Every command, path, and architectural claim traces to an inspected file. Never write a command you did not run.
 9. **Capability is not authorization.** Credentials, network, publication, deployment, destructive actions, and production writes stay explicitly gated.
@@ -186,5 +186,5 @@ Prune on a schedule, not only when adding. Measured repositories accumulated "+4
 - [`references/evidence-and-evaluation.md`](references/evidence-and-evaluation.md)
 - [`../context-engineering/CONTEXT_ENGINEERING.md`](../context-engineering/CONTEXT_ENGINEERING.md)
 - [`../context-engineering/references/prompt-authoring.md`](../context-engineering/references/prompt-authoring.md)
-- [`../cli/README.md`](../cli/README.md)
+- [`../context-engineering/references/runtime-profiles.md`](../context-engineering/references/runtime-profiles.md)
 - [`../validation/index.md`](../validation/index.md)

@@ -164,9 +164,8 @@ the agent judging it proves to be a strong lever", which is the evidence behind 
 
 > Checked 2026-11-03.
 
-**Grade vocabulary.** `PRIMARY` = a paper or standard that states the claim. `VENDOR` = a first-party
-vendor document or engineering post. `PRACTITIONER` = an individual engineer or consultancy writing
-from their own practice, not a vendor's product claim.
+**Grade vocabulary.** One closed set for every source table in this directory; see
+[`../HARNESS_ENGINEERING.md`](../HARNESS_ENGINEERING.md) under `## Sources`.
 
 | Claim | Source | Grade |
 |---|---|---|

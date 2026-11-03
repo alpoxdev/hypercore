@@ -51,7 +51,7 @@
 
 일부 payload는 통과한다고 가정한다. 설계 질문은 통과한 payload가 무엇에 닿을 수 있는가이며, source/sink 구도가 이 질문에 답한다. 공격자에게는 **source**(모델에 영향을 주는 경로)와 **sink**(문맥이 틀리면 위험해지는 능력)가 모두 필요하다. source와 sink를 나열하고 sink마다 제거하거나 게이트를 세운다. 쓸 만한 검사는 이것이다. 같은 역할의 사람 조수라면 무엇에 승인을 요구할지 묻고, 같은 승인을 요구한다.
 
-시스템 수준 설계는 prompting보다 경계를 더 밀어낼 수 있다. 신뢰하는 요청에서 제어 흐름과 데이터 흐름을 분리해 뽑아내고 tool 호출에 capability 정책을 붙이는 방식이 공개되어 있으며, 그 평가에서 해당 시스템은 AgentDojo task의 77%를 보장된 보안으로 해결했고 방어하지 않은 기준선은 84%였다. 비용이 실제로 발생하므로 이것은 기본값이 아니라 설계 선택이다.
+시스템 수준 설계는 prompting보다 경계를 더 밀어낼 수 있다. 신뢰하는 요청에서 제어 흐름과 데이터 흐름을 분리해 뽑아내고 tool 호출에 capability 정책을 붙이는 방식이 공개되어 있으며, 그 평가에서 해당 시스템은 AgentDojo task의 77%를 보장된 보안으로 해결했고 방어하지 않은 기준선은 84%였다. 비용이 실제로 발생하므로 이것은 기본값이 아니라 설계 선택이다. 두 수치는 논문이 보고한 결과이며 여기서 재현한 값이 아니다.
 
 ---
 
@@ -155,6 +155,6 @@ OWASP의 agent 위협 모델은 메모리 오염, agent 사이 통신 오염, �
 | 11 | Safety best practices (적대적 테스트, 입력 제약) | OpenAI | <https://developers.openai.com/api/docs/guides/safety-best-practices> | 표기 없음 | 확인 2026-11-03 | S |
 | 12 | Mitigating prompt injection attacks with a layered defense strategy | Google Security Blog | <https://blog.google/security/mitigating-prompt-injection-attacks/> | 2025-06-13 | 확인 2026-11-03 | S |
 | 13 | Google Workspace의 indirect prompt injection 지속 대응 | Google Security Blog | <https://blog.google/security/google-workspaces-continuous-approach-to-mitigating-indirect-prompt-injections/> | 2026-04-02 | 확인 2026-11-03 | S |
-| 14 | Defeating prompt injections by design (CaMeL) | Debenedetti 외, arXiv:2503.18813 | <https://arxiv.org/abs/2503.18813> | 2025-03-24 | 확인 2026-11-03 | 논문 |
+| 14 | Defeating prompt injections by design (CaMeL) | Debenedetti 외, arXiv:2503.18813 | <https://arxiv.org/abs/2503.18813> | 2025-03-24 | 확인 2026-11-03 | S |
 
 NIST AI 600-1 PDF는 `nvlpubs.nist.gov`가 `HEAD` 요청에 404를 돌려준다. 저장소 링크 검사가 풀리도록 NIST 발행 페이지를 인용한다.

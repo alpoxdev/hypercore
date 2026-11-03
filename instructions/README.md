@@ -9,7 +9,6 @@ This folder is the LLM working-instruction layer for this project. Its purpose i
 | Area | File | Purpose |
 |---|---|---|
 | Context Engineering | [`context-engineering/CONTEXT_ENGINEERING.md`](context-engineering/CONTEXT_ENGINEERING.md) | Design prompt, context, and tool instructions in a runtime-neutral way |
-| CLI Runtime Profiles | [`cli/README.md`](cli/README.md) | Let a skill safely select question, approval, and tool capabilities across Claude Code, Codex, GJC, Hermes Agent, JCode, OMO, OpenClaw, and OpenCode |
 | Prompt Authoring | [`context-engineering/references/prompt-authoring.md`](context-engineering/references/prompt-authoring.md) | Practical template for writing a role prompt as an execution contract |
 | Prompt & Skill Caching | [`cache/CACHE.md`](cache/CACHE.md) | Keep the reusable prefix of a prompt or skill stable so provider prompt caching can serve it |
 | AGENTS.md / CLAUDE.md | [`agents-md/AGENTS_MD.md`](agents-md/AGENTS_MD.md) | Author repository agent instruction files as a small, evidenced, portable contract |
@@ -21,15 +20,24 @@ This folder is the LLM working-instruction layer for this project. Its purpose i
 | Graph Engineering | [`graph-engineering/GRAPH_ENGINEERING.md`](graph-engineering/GRAPH_ENGINEERING.md) | Design multi-step and multi-agent work as a graph of nodes, edges, and state — and know when not to |
 | Harness Anatomy | [`harness-engineering/references/harness-anatomy.md`](harness-engineering/references/harness-anatomy.md) | The parts a harness is made of and when a harness component has gone stale |
 | Context Management | [`context-engineering/references/context-management.md`](context-engineering/references/context-management.md) | Write, select, compress, and isolate context over a long run; per-runtime compaction and memory surfaces |
+| Context Core Principles | [`context-engineering/references/core-principles.md`](context-engineering/references/core-principles.md) | The altitude, specificity, and priority rules an instruction should carry before it is written |
+| Context Techniques | [`context-engineering/references/techniques.md`](context-engineering/references/techniques.md) | Decomposition and the other recurring techniques that turn complex work into executable steps |
+| Runtime Profiles | [`context-engineering/references/runtime-profiles.md`](context-engineering/references/runtime-profiles.md) | Per-runtime instruction surfaces, precedence, and capability differences kept out of shared text |
+| Parallel Workflows | [`context-engineering/references/parallel-workflows.md`](context-engineering/references/parallel-workflows.md) | Independence, ownership, isolation, integration, and verification rules for parallel work and subagents |
 | Harness Measurement | [`harness-engineering/references/measurement.md`](harness-engineering/references/measurement.md) | Derivation for the repetition, aggregation, and context-variable rules: `pass^k`, sample size, behavioral vs end-to-end evals |
+| Harness Evaluation Patterns | [`harness-engineering/references/evaluation-patterns.md`](harness-engineering/references/evaluation-patterns.md) | Deterministic assertions and the other eval patterns for checking agent output |
 | Harness Evidence & Recovery | [`harness-engineering/references/evidence-and-recovery.md`](harness-engineering/references/evidence-and-recovery.md) | Working shape of the evidence, verification-cost-reduction, and long-horizon recovery rules |
 | Harness Agent Security | [`harness-engineering/references/agent-security.md`](harness-engineering/references/agent-security.md) | The OWASP agentic threat enumeration behind the minimum security assertions |
+| Graph Framework Mapping | [`graph-engineering/references/framework-mapping.md`](graph-engineering/references/framework-mapping.md) | Translate graph primitives across five runtimes using only what their documentation states |
+| Graph as Context | [`graph-engineering/references/graph-as-context.md`](graph-engineering/references/graph-as-context.md) | Build a content graph read as context, separate from the graph that decides what runs next |
+| Graph Patterns | [`graph-engineering/references/graph-patterns.md`](graph-engineering/references/graph-patterns.md) | Recurring graph topologies, what each demands of state and edges, and how each is evaluated |
+| When Not to Use Graphs | [`graph-engineering/references/when-not-to-use-graphs.md`](graph-engineering/references/when-not-to-use-graphs.md) | Screening questions, cost model, and cheaper alternative to settle before building a graph |
 | Sourcing | [`sourcing/reliable-search.md`](sourcing/reliable-search.md) | Standards for research, search, and source verification |
 | Validation | [`validation/index.md`](validation/index.md) | Standards to satisfy before claiming a task is complete |
 
 ## Source management
 
-External sources are cited **inline with the URL and the date it was checked** — in a `Sources` section where a document has one, and next to the claim otherwise. A repository-maintenance ledger such as [`cli/sources.md`](cli/sources.md) is the one allowed exception, defined in [`sourcing/reliable-search.md`](sourcing/reliable-search.md) §7; keeping every other claim next to its evidence costs less than centralizing it.
+External sources are cited **inline with the URL and the date it was checked** — in a `Sources` section where a document has one, and next to the claim otherwise. There is no repository-maintenance ledger and no exception: a claim kept away from its citation drifts out of sync with it, and a reader cannot tell whether it still holds. [`sourcing/reliable-search.md`](sourcing/reliable-search.md) carries the citation, grading, and freshness rules.
 
 ```bash
 bash scripts/check-sources.sh             # date format + document length strict, links advisory
@@ -78,7 +86,7 @@ Load the `.ko.md` counterpart instead when the working language is Korean. Do no
 
 When you author or revise a prompt, a system message, a tool description, or a skill's loaded text, read [`cache/CACHE.md`](cache/CACHE.md) so the reusable prefix stays stable; its per-provider thresholds are in [`cache/references/provider-cache-facts.md`](cache/references/provider-cache-facts.md).
 
-When work is bound to a specific runtime, also read [`context-engineering/references/runtime-profiles.md`](context-engineering/references/runtime-profiles.md). When using parallel work, subagents, background agents, or agent teams, also read [`context-engineering/references/parallel-workflows.md`](context-engineering/references/parallel-workflows.md). To use per-CLI question, approval, and tool capabilities inside a skill, read [`cli/README.md`](cli/README.md) together with the relevant runtime profile.
+When work is bound to a specific runtime, also read [`context-engineering/references/runtime-profiles.md`](context-engineering/references/runtime-profiles.md). When using parallel work, subagents, background agents, or agent teams, also read [`context-engineering/references/parallel-workflows.md`](context-engineering/references/parallel-workflows.md).
 
 When creating, refactoring, or reviewing a repository's `AGENTS.md` or `CLAUDE.md`, read [`agents-md/AGENTS_MD.md`](agents-md/AGENTS_MD.md), then the documents under `agents-md/references/` as needed — `discovery-and-precedence.md` for runtime loading behavior, `content-contract.md` for what earns a line, `claude-md-adapter.md` for coordinating the two files, and `evidence-and-evaluation.md` for what is actually measured.
 

@@ -147,21 +147,23 @@ Include the following assertions in a trace-based eval.
 
 ## Sources
 
-> Links re-checked 2026-11-03, except MCP, which was re-verified on 2026-09-19 against the `2026-07-28` revision. Cursor's Background Agents were renamed Cloud Agents. The isolation-economics figures were read on 2026-11-03 from Anthropic's multi-agent research post (2025-06-13, revised 2026-10-09) and Cognition's "Don't Build Multi-Agents" (2025-06-12).
+> Sources checked 2026-11-03; the MCP pages were re-verified 2026-09-19 against the `2026-07-28` revision. Cursor's Background Agents were renamed Cloud Agents.
 
-- [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
-- [Claude Code agent teams](https://code.claude.com/docs/en/agent-teams)
-- [OpenAI Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)
-- [OpenAI Codex CLI](https://learn.chatgpt.com/docs/codex/cli)
-- [Cursor Cloud Agents (formerly Background Agents)](https://cursor.com/docs/cloud-agent)
-- [Cursor 2.4 subagents changelog](https://cursor.com/changelog/2-4)
-- [Cursor Rules](https://cursor.com/docs/rules)
-- [MCP tools specification](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)
-- [MCP prompts specification](https://modelcontextprotocol.io/specification/2026-07-28/server/prompts)
-- [OpenAI agent builder safety](https://developers.openai.com/api/docs/guides/agent-builder-safety)
-- [Anthropic, How we built our multi-agent research system](https://www.anthropic.com/research/multi-agent-research-system)
-- [Cognition, Don't Build Multi-Agents](https://cognition.com/blog/dont-build-multi-agents)
-- [Claude Agent SDK subagents](https://code.claude.com/docs/en/agent-sdk/subagents)
+| Claim | Source | Published / updated |
+|---|---|---|
+| Subagent context isolation, `isolation: worktree`, project `.claude/agents/*.md` | <https://code.claude.com/docs/en/sub-agents> | undated page, checked 2026-11-03 |
+| Agent teams run as separate sessions and remain experimental | <https://code.claude.com/docs/en/agent-teams> | undated page, checked 2026-11-03 |
+| Codex native subagents, forked context or separate thread, config-limited concurrency | <https://learn.chatgpt.com/docs/agent-configuration/subagents> | undated page, checked 2026-11-03 |
+| `spawn_agent`, `send_input`, `wait_agent`, `close_agent` invocation surface | <https://learn.chatgpt.com/docs/codex/cli> | undated page, checked 2026-11-03 |
+| Cloud agents run on a remote isolated machine and branch; GitHub permissions, internet access, and automatic command execution widen the boundary | <https://cursor.com/docs/cloud-agent> | undated page, checked 2026-11-03 |
+| Editor and CLI subagents in the 2.4 release | <https://cursor.com/changelog/2-4> | Cursor 2.4 release entry, checked 2026-11-03 |
+| `.cursor/rules` and `.cursor/environment.json` configuration surfaces | <https://cursor.com/docs/rules> | undated page, checked 2026-11-03 |
+| Tool annotations untrusted unless the server is trusted; `server/discover`, per-request `_meta`, `resultType: "input_required"` | <https://modelcontextprotocol.io/specification/2026-07-28/server/tools> | 2026-07-28 revision, checked 2026-09-19 |
+| Prompt capability and the input-required (MRTR) flow | <https://modelcontextprotocol.io/specification/2026-07-28/server/prompts> | 2026-07-28 revision, checked 2026-09-19 |
+| Tool results and resource content are untrusted evidence | <https://developers.openai.com/api/docs/guides/agent-builder-safety> | undated page, checked 2026-11-03 |
+| ~4x and ~15x token multipliers, 80% of BrowseComp variance, 90.2% internal gain, coordination failures | <https://www.anthropic.com/research/multi-agent-research-system> | 2025-06-13, revised 2026-10-09 |
+| "Actions carry implicit decisions"; single-threaded recommendation | <https://cognition.com/blog/dont-build-multi-agents> | 2025-06-12 |
+| SDK subagents return a summary from their own context window | <https://code.claude.com/docs/en/agent-sdk/subagents> | undated page, checked 2026-11-03 |
 
 ## Related documents
 

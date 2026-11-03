@@ -45,7 +45,7 @@
 
 ## The cost model
 
-Anthropic이 측정한 배수가 인용 자료 중 유일하게 구체적인 비용 수치이며, 결정에 들고 갈 가치가 있다.
+Anthropic이 측정한 배수는 인용 자료 중 유일한 토큰 배수이며, 결정에 들고 갈 가치가 있다. 다만 유일한 비용 수치는 아니다. LangChain은 정답당 비용(−58%)과 색인 구축 비용을 달러로 보고한다([`graph-as-context.ko.md`](graph-as-context.ko.md)의 “What the evidence actually shows” 절).
 
 | 구성 | 채팅 상호작용 대비 토큰 | 출처 |
 |---|---|---|

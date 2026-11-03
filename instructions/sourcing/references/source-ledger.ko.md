@@ -37,7 +37,7 @@
 | `Accessed/retrieved` | 조사자가 접근한 날짜, fetch timestamp, tool-provided `retrieved_at` |
 | `Version/freshness` | API mode, tool version, release tag, 표준 에디션, `page_age`, cache caveat |
 | `Channel` | web, official docs, GitHub, local repo, paper, standard |
-| `Grade` | S/A/B/C |
+| `Grade` | S/A/B/C, 저장소 내부 표준이면 `S (repo)` |
 | `Role` | lead, primary-evidence, supporting, conflict, rejected |
 | `Relevant claim` | 이 출처가 지지/반박하는 claim 한 문장 |
 | `Used?` | 최종 답변에 citation으로 사용했는지 |
@@ -160,7 +160,7 @@ subagent, 브라우저 agent, tool이 출처를 모았을 때 원장은 상위 a
 
 | # | 출처 | 발행 | URL | 발행·갱신일 | 확인일 | 등급 |
 |---:|---|---|---|---|---|---|
-| 1 | Reliable Search Guide §5~§7(등급, 인용, 원장 스키마) | 이 저장소 | [`../reliable-search.ko.md`](../reliable-search.ko.md) | 저장소 HEAD | 확인 2026-11-03 | 내부 표준 |
+| 1 | Reliable Search Guide §5~§7(등급, 인용, 원장 스키마) | 이 저장소 | [`../reliable-search.ko.md`](../reliable-search.ko.md) | 저장소 HEAD | 확인 2026-11-03 | S (repo) |
 | 2 | OWASP Top 10 for LLM Applications 2026(제목에 에디션 표기 관행) | OWASP GenAI Security Project | <https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/> | 2026-08-03 | 확인 2026-11-03 | S |
 | 3 | LLM01: Prompt Injection 페이지가 2025 본문을 제공 중 | OWASP GenAI Security Project | <https://genai.owasp.org/llmrisk/llm01-prompt-injection/> | 본문 표기 LLM01:2025 | 확인 2026-11-03 | S |
 | 4 | Generative AI Profile, NIST AI 600-1(발행일과 페이지 갱신일이 있는 랜딩 페이지) | NIST | <https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence> | 2024-07-26, 페이지 갱신 2026-04-08 | 확인 2026-11-03 | S |

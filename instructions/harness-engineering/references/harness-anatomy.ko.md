@@ -152,8 +152,7 @@ the agent judging it proves to be a strong lever"이며, 이것이 HE-R-4의 근
 
 > 확인 2026-11-03.
 
-**등급 어휘.** `PRIMARY` = 주장을 진술한 논문·표준. `VENDOR` = 1차 벤더 문서나 엔지니어링 글.
-`PRACTITIONER` = 제품 주장이 아니라 자기 실천에서 쓴 개인 엔지니어·컨설팅 글.
+**등급 어휘.** 이 디렉터리의 모든 출처 표가 쓰는 하나의 닫힌 집합이다. [`../HARNESS_ENGINEERING.ko.md`](../HARNESS_ENGINEERING.ko.md)의 `## Sources`를 본다.
 
 | 주장 | 출처 | Grade |
 |---|---|---|

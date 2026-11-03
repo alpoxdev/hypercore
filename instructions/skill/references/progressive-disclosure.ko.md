@@ -36,11 +36,14 @@ Gotcha가 여기 들어오는 이유는 분명합니다. Gotcha는 합리적 가
 | 상세 loop 규칙과 실패 복구 순서 | `rules/loop.md` |
 | Eval case, fixture, 기대 출력 | `assets/evals/` 또는 `references/eval-cases.md` |
 | Source ledger와 벤더 변동 기록 | `references/official/` 또는 `references/sources.md` |
+| 이 저장소 문서의 고정 스냅샷 | `references/local/*.md` |
 | Prompt injection·부작용 안전 노트 | `rules/safety.md` 또는 `references/safety.md` |
 | Schema와 API 상세 | `references/*.md` |
 | Deterministic 검증 | `scripts/*.sh` |
 | 템플릿 | `assets/*` |
 | 긴 예시 모음 | `references/examples.md` 또는 `assets/examples/*` |
+
+`references/official/`는 **권장** 배치이지 필수 경로가 아니며, 이 저장소에는 아직 이 폴더를 쓰는 skill이 없습니다. 규칙이 요구하는 것은 provider 상세를 core 밖으로 두는 일이고, 폴더 이름은 관례입니다. 이 저장소 안에 있는 문서의 고정 스냅샷이면 `references/local/*.md`를 씁니다. `skills/skill-maker`가 skill 작성 문서 사본을 그 폴더에 둡니다.
 
 ## 4. 안내 문장
 
@@ -65,7 +68,7 @@ Run `scripts/validate-skill.sh` when the skill includes scripts, generated asset
 
 ## 5. 컨텍스트 예산 규칙
 
-- Core `SKILL.md`는 500줄 이내로 유지합니다. 이 한도는 이 저장소가 아니라 specification에서 온 값입니다. 이 저장소는 **추가로** 300줄 gate를 둡니다(`scripts/check-sources.sh`, `MAX_LINES=300`). 300은 **이 저장소가 고른 기본값**이지 출처가 밝힌 수치가 아닙니다. 둘은 다릅니다. 500은 출처가 밝힌 값이고 300은 이 저장소가 검사하는 값입니다.
+- Core `SKILL.md`는 500줄 이내로 유지합니다. 이 한도는 이 저장소가 아니라 agentskills.io best-practices 지침에서 온 값입니다. 이 저장소는 **추가로** 300줄 gate를 둡니다(`scripts/check-sources.sh`, `MAX_LINES=300`). 300은 **이 저장소가 고른 기본값**이지 출처가 밝힌 수치가 아닙니다. 둘은 다릅니다. 500은 best-practices 페이지가 밝힌 값이고 300은 이 저장소가 검사하는 값입니다.
 - `references/` 파일은 하나가 주제 하나에 집중하게 합니다.
 - 깊은 참조 사슬을 만들지 않습니다.
 - 지원 파일을 만들었으면 `SKILL.md`에서 직접 참조합니다.
@@ -118,4 +121,4 @@ Run `scripts/validate-skill.sh` when the skill includes scripts, generated asset
 
 ### 근거 등급
 
-이 파일은 disclosure 예산의 **canonical** 서술입니다. [`skill-anatomy.ko.md`](skill-anatomy.ko.md)는 수치를 다시 적지 않고 이 파일을 가리킵니다. 500줄·5,000토큰 값은 specification 사이트가 밝히므로 `PRIMARY`입니다. 300줄은 이 저장소의 gate이며 그렇게 표시했습니다. `SK-D-3`은 자체 통계 검정을 갖춘 2026년 벤치마크 하나의 결과에 근거하며, 법칙이 아니라 한 번의 측정으로 적었습니다.
+이 파일은 disclosure 예산의 **canonical** 서술입니다. [`skill-anatomy.ko.md`](skill-anatomy.ko.md)는 수치를 다시 적지 않고 이 파일을 가리킵니다. 500줄·5,000토큰 값은 agentskills.io best-practices 페이지가 밝히므로 `PRIMARY`입니다. 300줄은 이 저장소의 gate이며 그렇게 표시했습니다. `SK-D-3`은 자체 통계 검정을 갖춘 2026년 벤치마크 하나의 결과에 근거하며, 법칙이 아니라 한 번의 측정으로 적었습니다.

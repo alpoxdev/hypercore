@@ -263,7 +263,7 @@ opencode 규칙이 중요한 패턴이다. 같은 디렉터리에서 `AGENTS.md`
 - [ ] 중첩 파일이 부모 로드 여부와 무관하게 옳은 자기 완결적 delta다.
 - [ ] override가 부모를 부정하지 않고 올바른 규칙을 온전히 다시 진술한다.
 - [ ] 모든 중첩 파일이 관장하는 하위 트리를 명시한다.
-- [ ] Claude Code가 대상이면 저장소가 자체 `AGENTS.md` 읽기(v2.1.277 이상, 작업 디렉터리나 그 위에 `CLAUDE.md`·`CLAUDE.local.md` 없음)에 기대거나, `AGENTS.md`를 import 또는 심볼릭 링크하는 `CLAUDE.md`를 함께 제공한다. v2.1.281 이전 세션과 내장 리더를 끈 세션은 `CLAUDE.md`만 읽기 때문이다.
+- [ ] Claude Code가 대상이면 저장소가 자체 `AGENTS.md` 읽기(v2.1.277 이상, 작업 디렉터리나 그 위에 `CLAUDE.md`·`CLAUDE.local.md` 없음)에 기대거나, `AGENTS.md`를 import 또는 심볼릭 링크하는 `CLAUDE.md`를 함께 제공한다. `AGENTS.md`를 읽지 못하는 세션(v2.1.277 이전 버전, 내장 리더를 끈 경우, 업그레이드 직후 첫 세션인 경우가 있음)은 `CLAUDE.md`만 읽기 때문이며, 구버전 설치의 해법은 우회책이 아니라 업그레이드다.
 - [ ] `AGENTS.md`를 쓰는 저장소에 `CLAUDE.local.md`를 커밋하지 않는다. 기본 설정에서 `AGENTS.md`를 억제하기 때문이다.
 - [ ] `@path` import가 4 hop 이내이고, import한 파일 기준 상대 경로를 쓰며, 실수로 따옴표나 코드 span에 싸이지 않았다.
 - [ ] 시작 시 로드되는 instruction 파일이 4 MiB에 근접하지 않는다. Claude Code는 그 크기를 넘으면 파일을 통째로 건너뛴다.
@@ -296,4 +296,4 @@ opencode 규칙이 중요한 패턴이다. 같은 디렉터리에서 `AGENTS.md`
 - [`../AGENTS_MD.ko.md`](../AGENTS_MD.ko.md)
 - [`claude-md-adapter.ko.md`](claude-md-adapter.ko.md)
 - [`content-contract.ko.md`](content-contract.ko.md)
-- [`../../cli/README.ko.md`](../../cli/README.ko.md)
+- [`../../context-engineering/references/runtime-profiles.ko.md`](../../context-engineering/references/runtime-profiles.ko.md)

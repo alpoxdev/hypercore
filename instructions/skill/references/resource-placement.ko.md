@@ -108,6 +108,8 @@ references/
 - 변동(Drift) caveat
 - Core 규칙으로 승격된 요약
 
+`references/official/`는 **권장** 배치이지 필수 경로가 아니며, 이 저장소에는 아직 이 폴더를 쓰는 skill이 없습니다. 규칙이 요구하는 것은 provider 상세를 core 밖으로 두는 일입니다. 이 저장소 안 문서의 고정 스냅샷이면 폴더 이름을 `references/local/`로 씁니다. `skills/skill-maker/references/local/`이 이미 그 예입니다.
+
 ## 6. Eval 리소스 배치
 
 Eval 자료를 "읽는 설명"과 "실행하거나 비교하는 fixture"로 나눕니다.
@@ -140,18 +142,34 @@ references/
 
 ```text
 .omo/evidence/<skill>/iteration-N/
-├── benchmark.json
-├── feedback.json
+├── grading.json          # 필수 — SK-E-2
+├── timing.json           # 필수 — SK-E-2
+├── feedback.json         # 사람 검토가 있으면 필수 — SK-E-5
+├── run-notes.json        # 선택 — runner, 모델, 기준선 caveat
+├── trajectory.md         # 선택 — 실행 readback 추적
+├── benchmark.json        # 선택 — benchmark 주장이 있을 때만
 └── eval-<case>/
-    ├── with_skill/
+    ├── with_skill/       # SK-V-1 쌍 — 기준선을 돌리면 필수
     │   ├── outputs/
     │   ├── timing.json
     │   └── grading.json
-    └── without_skill/
+    └── without_skill/    # 기준선이 이전 버전이면 old_skill/
         ├── outputs/
         ├── timing.json
         └── grading.json
 ```
+
+| 파일 또는 디렉터리 | 상태 | 근거 |
+|---|---|---|
+| `grading.json` | 모든 실행에 필수 | SK-E-2 — assertion별 통과/실패와 근거 문자열 |
+| `timing.json` | 모든 실행에 필수 | SK-E-2 — 토큰과 wall time |
+| `feedback.json` | 사람 검토가 있으면 필수 | SK-E-5 |
+| `eval-<case>/with_skill/`과 `eval-<case>/without_skill/`(또는 `old_skill/`) | 기준선 쌍을 돌릴 때 필수이며, deterministic skill 예외는 그 사실을 기록합니다 | SK-V-1, SK-E-6 |
+| `benchmark.json` | 선택 — benchmark나 leaderboard 주장이 있을 때만 | [`validation.ko.md`](validation.ko.md) §7 |
+| `run-notes.json` | 선택 — iteration의 runner, 모델, 기준선 caveat | 이 저장소의 관행 |
+| `trajectory.md` | 선택 — 실행이 읽고 한 일을 readback용으로 기록 | 이 저장소의 관행 |
+
+선택 파일은 진단용입니다. `run-notes.json`이나 `trajectory.md`를 빼면 나중에 읽는 사람이 원할 맥락이 줄지만, `grading.json`과 `timing.json`, 기준선 쌍을 빼면 그 실행은 근거로 읽을 수 없습니다. 집계는 허용합니다. 하나의 점수 map을 내는 runner는 `.omo/evidence/hyper-mass/iteration-1/grading.json`처럼 eval id를 key로 `grading.json`을 iteration root에 둘 수 있습니다. Case별 assertion은 근거 문자열을 그대로 가져야 합니다.
 
 기준선이 "skill 없음"이 아니라 이전 버전이면 `without_skill/` 대신 `old_skill/`을 두고, 실행이 가리킨 스냅샷을 유지합니다.
 

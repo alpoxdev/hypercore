@@ -36,11 +36,14 @@ Gotchas earn their place here specifically: they are environment facts that defy
 | Detailed loop rules and failure-recovery order | `rules/loop.md` |
 | Eval cases, fixtures, expected output | `assets/evals/` or `references/eval-cases.md` |
 | Source ledger and vendor drift notes | `references/official/` or `references/sources.md` |
+| Pinned snapshots of this repository's own documents | `references/local/*.md` |
 | Prompt injection and side-effect safety notes | `rules/safety.md` or `references/safety.md` |
 | Schema and API detail | `references/*.md` |
 | Deterministic verification | `scripts/*.sh` |
 | Templates | `assets/*` |
 | Long example collections | `references/examples.md` or `assets/examples/*` |
+
+`references/official/` is a **recommendation**, not a required path, and no skill in this repository currently uses it. What the rule requires is that provider detail stays out of the core; the folder name is a convention. For a pinned snapshot of a document that lives in this repository, use `references/local/*.md` — that is the folder `skills/skill-maker` uses for its copies of the skill-authoring documents.
 
 ## 4. Navigation sentences
 
@@ -65,7 +68,7 @@ The source states the same rule in the form of a condition, not a directory: "Re
 
 ## 5. Context budget rules
 
-- Keep the core `SKILL.md` within 500 lines — that limit comes from the specification, not from this repository. This repository **additionally** enforces a 300-line gate (`scripts/check-sources.sh`, `MAX_LINES=300`); treat 300 as **this repository's chosen default**, not as a sourced figure. The two are different: 500 is what the source states, 300 is what this repository checks.
+- Keep the core `SKILL.md` within 500 lines — that limit comes from the agentskills.io best-practices guidance, not from this repository. This repository **additionally** enforces a 300-line gate (`scripts/check-sources.sh`, `MAX_LINES=300`); treat 300 as **this repository's chosen default**, not as a sourced figure. The two are different: 500 is what the best-practices page states, 300 is what this repository checks.
 - Keep each `references/` file focused on one topic.
 - Do not build deep reference chains.
 - If you created a support file, reference it directly from `SKILL.md`.
@@ -118,4 +121,4 @@ Consequences for authoring: keep the trigger in the first sentence, assume the t
 
 ### Evidence grade
 
-This file is the **canonical** statement of the disclosure budgets; [`skill-anatomy.md`](skill-anatomy.md) points here rather than restating them. The 500-line and 5,000-token figures are `PRIMARY` — the specification site states them. The 300-line value is a repository gate, labelled as such. `SK-D-3` rests on a single 2026 benchmark with its own statistical test, stated as one measurement rather than a law.
+This file is the **canonical** statement of the disclosure budgets; [`skill-anatomy.md`](skill-anatomy.md) points here rather than restating them. The 500-line and 5,000-token figures are `PRIMARY` — the agentskills.io best-practices page states them. The 300-line value is a repository gate, labelled as such. `SK-D-3` rests on a single 2026 benchmark with its own statistical test, stated as one measurement rather than a law.

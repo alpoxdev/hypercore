@@ -82,7 +82,7 @@
 
 ---
 
-## 3. 기술적 근거 (D)
+## 3. 서술적 근거 (D)
 
 *Agent READMEs: An Empirical Study of Context Files for Agentic Coding* — 저장소 1,925곳의 context 파일 2,303개, Claude Code·OpenAI Codex·GitHub Copilot 파일을 포함. 가장 흔한 내용(파일 비율):
 

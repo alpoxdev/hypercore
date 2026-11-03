@@ -108,6 +108,8 @@ Each file includes:
 - Drift caveats
 - The summary that was promoted into a core rule
 
+`references/official/` is a **recommendation**, not a required path, and no skill in this repository uses it today. The rule that matters is that provider detail is separated from the core. When the evidence is a pinned snapshot of this repository's own documents, name the folder `references/local/`; `skills/skill-maker/references/local/` is the existing example.
+
 ## 6. Placing eval resources
 
 Split eval material into "explanations you read" and "fixtures you run or compare."
@@ -140,18 +142,34 @@ The fixtures above are inputs. The **results** of running them live outside the 
 
 ```text
 .omo/evidence/<skill>/iteration-N/
-├── benchmark.json
-├── feedback.json
+├── grading.json          # required — SK-E-2
+├── timing.json           # required — SK-E-2
+├── feedback.json         # required once a human reviews — SK-E-5
+├── run-notes.json        # optional — runner, model, baseline caveats
+├── trajectory.md         # optional — readback trace of the run
+├── benchmark.json        # optional — only with a benchmark claim
 └── eval-<case>/
-    ├── with_skill/
+    ├── with_skill/       # SK-V-1 pair — required whenever the baseline runs
     │   ├── outputs/
     │   ├── timing.json
     │   └── grading.json
-    └── without_skill/
+    └── without_skill/    # or old_skill/ when the baseline is a previous version
         ├── outputs/
         ├── timing.json
         └── grading.json
 ```
+
+| File or directory | Status | Basis |
+|---|---|---|
+| `grading.json` | Required for every run | SK-E-2 — per-assertion pass/fail plus the evidence string |
+| `timing.json` | Required for every run | SK-E-2 — tokens and wall time |
+| `feedback.json` | Required once a human review happens | SK-E-5 |
+| `eval-<case>/with_skill/` and `eval-<case>/without_skill/` (or `old_skill/`) | Required whenever the paired baseline runs; the deterministic-skill exception is recorded instead | SK-V-1, SK-E-6 |
+| `benchmark.json` | Optional — only when the run makes a benchmark or leaderboard claim | [`validation.md`](validation.md) §7 |
+| `run-notes.json` | Optional — runner, model, and baseline caveats for the iteration | This repository's practice |
+| `trajectory.md` | Optional — what the run read and did, kept for readback | This repository's practice |
+
+The optional files are diagnostic. A run that omits `run-notes.json` or `trajectory.md` loses context a later reader wants, but a run that omits `grading.json`, `timing.json`, or the paired baseline cannot be read as evidence at all. Aggregating is allowed: a runner that emits one grade map may keep `grading.json` at the iteration root keyed by eval id, as `.omo/evidence/hyper-mass/iteration-1/grading.json` does, as long as every case's assertions still carry their evidence string.
 
 When the baseline is a previous version rather than "no skill", replace `without_skill/` with `old_skill/` and keep the snapshot the run pointed at.
 

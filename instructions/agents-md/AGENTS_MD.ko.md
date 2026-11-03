@@ -42,7 +42,7 @@ instruction 파일은 **에이전트가 task가 무엇인지 알기 전에** 주
 3. **올바른 고도.** 취약한 하드코딩 로직과 모호한 지침 사이. 행동을 이끌 만큼 구체적이되, 예상 못한 경우에서 살아남을 만큼 유연하게.
 4. **산문은 권고다.** 매번 반드시 일어나야 하는 것은 그것을 요청하는 문장이 아니라 hook, CI 검사, lint 규칙, schema에 속한다.
 5. **규칙마다 정본 위치는 하나.** 루트·중첩·런타임 파일에 걸친 반복은 강조가 아니라 충돌을 만든다.
-6. **기본은 이식 가능하게.** 런타임 중립 규칙으로 쓰고, 실제 CLI 차이는 adapter나 [`../cli/`](../cli/README.ko.md) profile로 분리한다.
+6. **기본은 이식 가능하게.** 런타임 중립 규칙으로 쓰고, 실제 CLI 차이는 adapter나 [`../context-engineering/references/runtime-profiles.ko.md`](../context-engineering/references/runtime-profiles.ko.md)의 런타임 profile로 분리한다.
 7. **Progressive disclosure.** 항상 로드되는 파일은 얇게 두고, 전문 절차는 필요할 때 로드되는 skill과 링크 문서로 옮긴다.
 8. **근거 아니면 생략.** 모든 명령·경로·아키텍처 주장은 조사한 파일로 추적된다. 실행하지 않은 명령은 쓰지 않는다.
 9. **capability는 승인이 아니다.** credential, 네트워크, publish, deploy, destructive action, production write는 명시적으로 게이트를 유지한다.
@@ -186,5 +186,5 @@ adapter에는 다른 런타임에서 거짓이거나 없는 내용만 담는다.
 - [`references/evidence-and-evaluation.ko.md`](references/evidence-and-evaluation.ko.md)
 - [`../context-engineering/CONTEXT_ENGINEERING.ko.md`](../context-engineering/CONTEXT_ENGINEERING.ko.md)
 - [`../context-engineering/references/prompt-authoring.ko.md`](../context-engineering/references/prompt-authoring.ko.md)
-- [`../cli/README.ko.md`](../cli/README.ko.md)
+- [`../context-engineering/references/runtime-profiles.ko.md`](../context-engineering/references/runtime-profiles.ko.md)
 - [`../validation/index.ko.md`](../validation/index.ko.md)

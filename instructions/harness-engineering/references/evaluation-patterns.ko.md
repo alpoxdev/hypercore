@@ -130,6 +130,8 @@ bash skills/skill-tester/scripts/validate-skills-corpus.sh --root skills --json
 
 > 확인 2026-11-03.
 
+**등급 어휘.** 이 디렉터리의 모든 출처 표가 쓰는 하나의 닫힌 집합이다. [`../HARNESS_ENGINEERING.ko.md`](../HARNESS_ENGINEERING.ko.md)의 `## Sources`를 본다.
+
 | 주장 | 출처 | Grade |
 |---|---|---|
 | 차원별 독립 심판, "Unknown" 도피구, 부분 점수, 경로가 아니라 결과 채점 | <https://www.anthropic.com/research/demystifying-evals-for-ai-agents> | VENDOR |

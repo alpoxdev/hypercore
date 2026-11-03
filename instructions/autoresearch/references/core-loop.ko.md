@@ -93,7 +93,7 @@ Exit code, metric parse, guard failure, timeout, signal, infrastructure failure�
 - goal predicate satisfied
 - maximum iterations
 - maximum wall time, cost, or resource budget
-- defined cadence와 acceptance rule을 사용하는 accepted frontier value의 plateau
+- defined cadence와 acceptance rule을 사용하는 accepted frontier value의 plateau. 기본 flat-cycle 횟수와 cycle ceiling은 [`command-family.ko.md`](command-family.ko.md)에 있다
 - repeated invalid-run 또는 infrastructure-failure limit
 - in-scope falsifiable hypothesis가 남지 않음
 - candidate의 guard 범위가 frontier보다 좁음. 실행된 test 수가 줄거나 evaluator digest가 바뀐 경우다
