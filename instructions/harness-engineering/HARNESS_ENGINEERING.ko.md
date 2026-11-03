@@ -132,7 +132,7 @@ HE-J-4에 채점기 항목이 붙고 HE-J-8이 생긴 이유는 측정된 잡음
 - HE-E-5: 격리는 주장하지 않고 입증한다. 건드리지 않은 실제 상태의 전후 증거, 변경된 경로 목록, 격리 디렉터리 경로다.
 - HE-E-6: 실행하지 못한 실행은 `SKIP`으로 기록한다. `SKIP`은 통과가 아니다. 하네스 결함으로 중단된 시행은 분모에서 빼고 오류 시행으로 보고하며, 실패로 평균에 넣지 않는다.
 
-각 규칙의 작업 형태와, 어느 부분이 이식 가능한 원리이고 어느 부분이 한 저장소의 구현인지는 [`references/evidence-and-recovery.ko.md`](references/evidence-and-recovery.ko.md)의 Evidence discipline에 있다.
+각 규칙의 작업 형태와, 어느 부분이 이식 가능한 원리이고 어느 부분이 한 저장소의 구현인지는 [`references/evidence-and-recovery.ko.md`](references/evidence-and-recovery.ko.md)의 증거 규율에 있다.
 
 ## Reducing Verification Cost
 
@@ -141,7 +141,7 @@ HE-J-4에 채점기 항목이 붙고 HE-J-8이 생긴 이유는 측정된 잡음
 - HE-C-3: 최소 한 개의 레인은 절대 생략하지 않는다. 실제 표면에 대한 대상 검증이 모든 경계에서 돈다.
 - HE-C-4: 재실행 회피에는 검증된 소스 기준 해시가 필요하다. 없거나 검증되지 않은 해시는 fail-closed다.
 
-축소 증명을 필드별로 보여 준 예는 [`references/evidence-and-recovery.ko.md`](references/evidence-and-recovery.ko.md)의 Reducing verification cost에 있다.
+축소 증명을 필드별로 보여 준 예는 [`references/evidence-and-recovery.ko.md`](references/evidence-and-recovery.ko.md)의 검증 비용 축소에 있다.
 
 ## Long-Horizon Recovery
 
@@ -153,7 +153,7 @@ HE-J-4에 채점기 항목이 붙고 HE-J-8이 생긴 이유는 측정된 잡음
 - HE-L-4: 압축 프롬프트는 재현율 우선으로 튜닝한다. 트레이스에서 잡아내는 것을 최대화한 뒤 정밀도를 올린다.
 - HE-L-5: 리셋은 보존 목록을 옛 대화록 없이 읽을 수 있는 인계 산출물로 나른다. 압축만 덮는 복구 설계는 워크플로가 리셋으로 바뀌는 순간 조용히 실패한다.
 
-이것은 반복을 **유계로 만든다.** 제거한다고 주장하지 않는다. 투영·정체 카운터·보존 목록·인계는 [`references/evidence-and-recovery.ko.md`](references/evidence-and-recovery.ko.md)의 Long-horizon recovery에 있다.
+이것은 반복을 **유계로 만든다.** 제거한다고 주장하지 않는다. 투영·정체 카운터·보존 목록·인계는 [`references/evidence-and-recovery.ko.md`](references/evidence-and-recovery.ko.md)의 장기 실행 복구에 있다.
 
 ## Prompt/Instruction Change Loop
 

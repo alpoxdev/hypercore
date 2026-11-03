@@ -42,7 +42,7 @@ Ordered roughly by value per token.
 7. **A brief statement of project purpose** — one paragraph, enough to orient. Not a README.
 8. **A loading map** — links to deeper local docs instead of inlining them.
 
-Anthropic's own include-list matches this shape: non-default code-style rules, testing instructions and preferred runners, repository etiquette, project-specific architecture, environment quirks, and common gotchas.
+Anthropic's current guidance names four things to include: how to confirm work in the repository (the exact test, typecheck, and lint commands), places where the code misleads, decisions that are not in the repo, and anything already corrected twice.
 
 ---
 

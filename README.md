@@ -97,7 +97,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 ```text
 /git-maker            # 변경 사항을 그룹별로 커밋하고 푸시까지 한 번에
 /readme-maker         # 코드를 읽고 프로젝트의 실제 모양에 맞는 README 생성/리팩터
-/agents-md-maker        # 저장소를 읽고 프로젝트 전용 AGENTS.md + AGENTS.ko.md 생성/리팩터
+/agents-md-maker        # 저장소를 읽고 프로젝트 전용 AGENTS.md + AGENTS.ko.md 생성/리팩터 (CLAUDE.md는 만들지 않음)
 /hyper-research "<주제>"  # 출처가 있는 다중 소스 리서치 보고서
 /hyper-plan "<작업>"    # 결정이 끝난 작업 계획을 쓰고 기본으로 hyper-execute까지 이어서 실행
 /hyper-execute <slug>  # .hyper/plans 계획을 웨이브별 worktree에서 검증하며 실행
@@ -120,7 +120,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `skill-tester` | 스킬 트리거/동작을 시나리오 기반으로 검증 | All |
 | `autoresearch-skill` | 반복 실행과 이진 eval 기반으로 기존 스킬을 자동 최적화 | All |
 | `readme-maker` | 코드베이스 분석 기반 README 생성 및 리팩터링 | All |
-| `agents-md-maker` | 저장소 근거 기반 `AGENTS.md`(영어) + `AGENTS.ko.md`(한국어 미러) 생성·리팩터링, 대상 런타임에 맞춘 `CLAUDE.md` 조정 | All |
+| `agents-md-maker` | 저장소 근거 기반 `AGENTS.md`(영어) + `AGENTS.ko.md`(한국어 미러) 생성·리팩터링. `CLAUDE.md`는 만들지 않으며, 기존 파일이 `AGENTS.md` 직접 읽기를 막으면 경로만 보고 | All |
 | `docs-maker` | AI가 읽기 좋은 구조화된 문서/룰 팩 생성 | All |
 | `prd-maker` | 증거 기반 Living PRD + 다이어그램·플로우·와이어프레임 생성 | All |
 | `prompt-maker` | 재사용 가능한 프롬프트·역할 프롬프트·프롬프트 템플릿/팩·프롬프트 eval 픽스처 생성 및 리팩터링 | All |
@@ -142,7 +142,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 |------|------|------|
 | `pre-deploy` | 배포 전 lint/타입/빌드 검증 | All |
 | `deploy-fix` | 빌드/CI/배포 장애 진단 및 수정 | All |
-| `version-update` | 시맨틱 버전 업데이트 및 릴리스 | All |
+| `version-update` | node/rust/python 시맨틱 버전 업데이트와 버전 파일 동기화, 선택적 커밋·푸시 | All |
 
 ### Git 워크플로
 
