@@ -382,7 +382,7 @@ manifest.json     # 이 빌드의 getReport()
 
 `compilePanelPrompt()`는 패널을 그리는 것과 같은 투영을 읽으므로 프롬프트와 패널이 어긋나지 않습니다. 문자열에는 차례로 샷 크기의 영어 이름, 초점이 인물일 때 yaw 시점(`front view, subject faces the camera`, `three-quarter view`, `profile view (side view)`, `three-quarter back view, face mostly hidden`, `back view, subject's face not visible` 중 하나이며 3/4과 프로필에는 `, subject facing screen-left` 또는 `, subject facing screen-right`가 붙습니다), 앵글 이름과 피치 절댓값(예: `low angle 12°`), 렌즈 밀리미터, 카메라 높이 이름과 미터, `rollDeg`가 0이 아니면 `dutch angle, horizon tilted 8° to the right`(또는 `to the left`, 양수 롤은 그려지는 지평선을 오른쪽으로 기울입니다), 인물이 둘 이상 프레임에 들면 각 인물의 `look`과 함께 `N characters in frame`(한 명이면 `Characters:`), 적힌 그대로의 액션, 중심이 프레임 안에 투영되는 소품, 마지막으로 `doc.style`이 들어갑니다. 소품 초점에는 시점·방향 문구가 없습니다. 대사는 절대 옮기지 않고, 글자는 보드에서 붙이므로 그림 안에 글자·숫자·캡션·말풍선을 그리지 말라는 문구로 끝납니다. 같은 문서는 같은 문자열을 냅니다.
 
-`renderGuideSvg()`는 이미지 생성기에 주는 회색조 구도 참고 그림을 돌려줍니다. 같은 카메라 투영에 인형, 바닥 격자, 지평선만 있고 화살표·라벨·소품·메모는 없습니다. `viewBox`는 기본 `16:9`에서 `0 0 1600 900`이고 그 밖의 화면비에서는 문서의 화면비를 따릅니다. 생성기가 참고 이미지를 받으면 프롬프트와 함께 넣습니다.
+`renderGuideSvg()`는 검사자에게 주는 회색조 구도 참고 그림을 돌려줍니다. 같은 카메라 투영에 인형, 바닥 격자, 지평선만 있고 화살표·라벨·소품·메모는 없습니다. `viewBox`는 기본 `16:9`에서 `0 0 1600 900`이고 그 밖의 화면비에서는 문서의 화면비를 따릅니다. 검사할 때 돌아온 그림과 나란히 보고, 패널 그림은 참고 이미지 없이 생성하므로 래스터화하거나 첨부하지 않습니다.
 
 `image`, `image.src`, `image.provenance`, `image.prompt`, `style`, `characters[].look`은 입력 전용이며 어떤 함수도 계산하지 않습니다. `compilePanelPrompt()`와 `renderGuideSvg()`의 출력은 파생값이며 문서에 다시 쓰지 않습니다.
 
