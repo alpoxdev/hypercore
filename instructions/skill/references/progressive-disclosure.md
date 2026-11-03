@@ -68,7 +68,7 @@ The source states the same rule in the form of a condition, not a directory: "Re
 
 ## 5. Context budget rules
 
-- Keep the core `SKILL.md` within 500 lines — that limit comes from the agentskills.io best-practices guidance, not from this repository. This repository **additionally** enforces a 300-line gate (`scripts/check-sources.sh`, `MAX_LINES=300`); treat 300 as **this repository's chosen default**, not as a sourced figure. The two are different: 500 is what the best-practices page states, 300 is what this repository checks.
+- Keep the core `SKILL.md` within 500 lines — that limit comes from the agentskills.io best-practices guidance, not from this repository. This repository **additionally** enforces a 300-line gate on documents under `instructions/` (`scripts/check-sources.sh`, `MAX_LINES=300`, `DOC_SCOPE="instructions"`); that gate does not cover `SKILL.md` under `skills/`, so the 500-line guidance remains the `SKILL.md` budget. Treat 300 as **this repository's chosen default**, not as a sourced figure: 500 is what the best-practices page states, 300 is what this repository checks.
 - Keep each `references/` file focused on one topic.
 - Do not build deep reference chains.
 - If you created a support file, reference it directly from `SKILL.md`.
@@ -114,11 +114,12 @@ Consequences for authoring: keep the trigger in the first sentence, assume the t
 |---|---|
 | The 500-line and 5,000-token progressive-disclosure budgets, the removal question behind `SK-D-1` and `SK-D-2`, and the gotchas placement rule | <https://agentskills.io/skill-creation/best-practices> |
 | The three-stage model (metadata, then full instructions, then referenced files) and the one-level-deep file reference rule | <https://agentskills.io/specification> |
-| ~100 tokens of metadata per skill, the under-5k-token body, script output as the only context cost, and the 20-skills-per-request API limit | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| ~100 tokens of metadata per skill, the under-5k-token body, and script output as the only context cost | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| The 20-skills-per-request API limit | <https://platform.claude.com/docs/en/build-with-claude/skills-guide> |
 | The 92-of-98 no-effect result and the template-anchoring failure mode behind `SK-D-3` | <https://arxiv.org/abs/2603.15401> |
 | The 2%-of-context / 8,000-character Codex listing budget, `skills.max_context_tokens`, and `[[skills.config]]` | <https://learn.chatgpt.com/docs/build-skills> |
 | The 1%-of-context Claude Code listing budget, the 1,536-character entry cap, the least-invoked-first drop order, and `/skill-doctor` | <https://code.claude.com/docs/en/skills> |
 
 ### Evidence grade
 
-This file is the **canonical** statement of the disclosure budgets; [`skill-anatomy.md`](skill-anatomy.md) points here rather than restating them. The 500-line and 5,000-token figures are `PRIMARY` — the agentskills.io best-practices page states them. The 300-line value is a repository gate, labelled as such. `SK-D-3` rests on a single 2026 benchmark with its own statistical test, stated as one measurement rather than a law.
+This file is the **canonical** statement of the disclosure budgets; [`skill-anatomy.md`](skill-anatomy.md) points here rather than restating them. The 500-line and 5,000-token figures are `PRIMARY` — the agentskills.io best-practices page states them. The 300-line value is a repository gate on `instructions/`, labelled as such. `SK-D-3` rests on a single 2026 benchmark with its own statistical test, stated as one measurement rather than a law.

@@ -72,9 +72,17 @@ trace는 증거이므로 필드를 즉석에서 정하지 않고 고정한다. �
 ## Minimum Eval Case Format
 
 ```yaml
-id: unique-case-id intent: 사용자가 달성하려는 일 context: files: [] sources: [] input: | 사용자 요청 원문 expected: must:
+id: unique-case-id
+intent: 사용자가 달성하려는 일
+context:
+  files: []
+  sources: []
+input: |
+  사용자 요청 원문
+expected:
+  must:
     - 반드시 해야 할 행동
-must_not:
+  must_not:
     - 하면 안 되는 행동
 metrics:
   - instruction_following
@@ -227,7 +235,7 @@ HE-J-4에 채점기 항목이 붙고 HE-J-8이 생긴 이유는 측정된 잡음
 
 | Frequency | Eval set | Judgement rule |
 |---|---|---|
-| Every instruction change | smoke eval: 작고 빠른 세트 (흔히 인용되는 5-20은 미검증 — `## Prompt / Role Instruction Smoke Eval` 참조) | 배치의 집계 통과율. 단일 실행 판정 금지 (HE-J-1, HE-J-3) |
+| Every instruction change | smoke eval: 작고 빠른 세트 (흔히 인용되는 3-5는 미검증 — `## Prompt / Role Instruction Smoke Eval` 참조) | 배치의 집계 통과율. 단일 실행 판정 금지 (HE-J-1, HE-J-3) |
 | Every model/runtime change | regression eval: known failures + representative workflows | 기록된 기준선과 비교하되 모델·런타임 버전과 케이스 집합 해시를 함께 남긴다 (HE-J-4) |
 | Before release | full eval: quality + safety + cost/latency | 비결정적 케이스에 `pass^k`를 `pass@k`와 함께 보고한다 (HE-J-5) |
 | After incident | add reproduction case permanently | 새 케이스가 자기 `MIN_RUNS`와 집계 규칙을 선언한다 (HE-J-2) |

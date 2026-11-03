@@ -16,7 +16,7 @@ Korean mirror: [`AGENTS.ko.md`](AGENTS.ko.md).
 ## Project Map
 
 - `skills/`: single source of truth for distributed skills. Each `SKILL.md` is the canonical English contract and `SKILL.ko.md` is its Korean translation. Bundled skill scripts are bash (bash 3.2+, POSIX tools, `jq` for JSON) and run as `bash <script>`.
-- `instructions/`: shared context, harness, sourcing, validation, CLI, and skill-authoring guidance. Markdown is maintained as English/Korean pairs.
+- `instructions/`: shared context, harness, sourcing, validation, and skill-authoring guidance. Markdown is maintained as English/Korean pairs.
 - `scripts/`: Bun-based skill validators, source checks, tests, and fixtures.
 - `cli/`: pnpm workspace for `@kood/*` CLI packages.
 - `assets/`: repository-level static assets used by project documentation.
@@ -96,15 +96,12 @@ Completion requires the requested artifacts to exist, critical checks to pass, a
 - Write shared rules in capability terms and keep real runtime differences in the runtime-specific adapter (such as the local `CLAUDE.md`) or in `instructions/context-engineering/references/runtime-profiles.md`.
 - A skill's `compatibility` field describes actual runtime or dependency constraints; do not generalize one CLI's behavior to every runtime.
 - `AGENTS.md` is the shared canonical contract. `AGENTS.ko.md` is its human-readable Korean mirror.
-- `CLAUDE.md` is a gitignored local Claude Code adapter in this repository. It must load this canonical contract and contain only verified Claude-specific differences; never assume it is shared with other clones.
+- `CLAUDE.md`, if present, is a gitignored local Claude Code adapter in this repository. It must load this canonical contract and contain only verified Claude-specific differences; never assume it is shared with other clones.
 
 
 ## Claude Code runtime notes (migrated from the former local CLAUDE.md adapter)
 
-# CLAUDE.md
-
-
-This file is the gitignored local Claude Code adapter for the current clone. `AGENTS.md` is the canonical shared contract; this adapter adds only verified Claude-specific behavior and never weakens or duplicates it.
+This section records the notes of the former local `CLAUDE.md` adapter, which this repository's `.gitignore` kept out of version control. `AGENTS.md` is the canonical shared contract and the only tracked home for these rules; the Claude-specific items below add only verified behavior and never weaken or duplicate the rest of this file.
 
 ## Claude Code Rules
 
@@ -116,4 +113,4 @@ This file is the gitignored local Claude Code adapter for the current clone. `AG
 
 ## Local-Only Status
 
-`CLAUDE.md` is ignored by this repository's `.gitignore`, so changes to this adapter are local to the current clone unless the repository convention is explicitly changed. Do not report it as shared or version-controlled.
+The former `CLAUDE.md` was ignored by this repository's `.gitignore`, so a refreshed local adapter copy stays local to the current clone unless the repository convention is explicitly changed. Do not report that copy as shared or version-controlled; the rules in this section are tracked here in `AGENTS.md`.

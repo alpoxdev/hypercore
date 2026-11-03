@@ -139,7 +139,7 @@
 | 인지적 위임 | 이해한 작업에서 사고를 피하려고 루프를 쓴다 | 자기 것이 아닌 결정을 위임하게 된다 | LE-P-8 |
 | 미세 작업마다 루프 | 편집 한 번에 오케스트레이션 층을 씌운다 | 작업보다 간접비가 커진다 | Taxonomy, 1단계 |
 
-마지막 세 가지는 도구 고장이 아니라 루프의 특징적인 인간 비용으로 실무 문헌과 학술 문헌에 이름이 붙은 항목이다. "이해 부채"는 저장소에 존재하는 것과 개발자가 이해하는 것 사이의 격차로, "인지적 위임"은 "이해한 작업에서 더 빨리 움직이기 위해서가 아니라 생각을 피하려고" 루프를 쓰는 것으로 정의된다(arXiv 2608.21884가 Osmani와 Greyling을 정리한 부분, 2026-11-03 확인). 둘 다 프롬프트를 잘 써서 해결되지 않는다.
+이해 부채와 인지적 위임은 도구 고장이 아니라 루프의 특징적인 인간 비용으로 실무 문헌과 학술 문헌에 이름이 붙은 항목이다. "이해 부채"는 저장소에 존재하는 것과 개발자가 이해하는 것 사이의 격차로, "인지적 위임"은 "이해한 작업에서 더 빨리 움직이기 위해서가 아니라 생각을 피하려고" 루프를 쓰는 것으로 정의된다(arXiv 2608.21884가 Osmani와 Greyling을 정리한 부분, 2026-11-03 확인). 둘 다 프롬프트를 잘 써서 해결되지 않는다.
 
 ## Where it sits
 
@@ -178,9 +178,10 @@
 | 워크트리 격리: 무엇을 분리하고 무엇을 공유하는지 | <https://code.claude.com/docs/en/worktrees> | 2026-11-03 확인 |
 | 예약 작업 사용량 보고, 실행당 토큰, 문서화된 지출 범위 | <https://code.claude.com/docs/en/costs> | 2026-11-03 확인 |
 | Codex 예약 작업: 이벤트와 시간 트리거, 결과 인박스, 사람 없는 실행 기본값 | <https://learn.chatgpt.com/docs/automations> | 2026-11-03 확인 |
-| Codex 목표: 유지되는 목적, 수정·일시정지·재개·해제, 4,000자 상한, 접근 권한 확대 없음 | <https://learn.chatgpt.com/docs/codex/cli> | 2026-11-03 확인 |
+| Codex `/goal`: 유지되는 목적, 수정·일시정지·재개·해제, 4,000자 상한 | <https://learn.chatgpt.com/docs/developer-commands> | 2026-11-03 확인 |
+| 목표를 시작해도 샌드박스와 승인 정책은 그대로다 | <https://learn.chatgpt.com/docs/long-running-work> | 2026-11-03 확인 |
 | 사람 없는 실행을 위한 샌드박스와 승인 모드 | <https://learn.chatgpt.com/docs/agent-approvals-security> | 2026-11-03 확인 |
 
-출처 관리에 두 가지 메모를 붙인다. 벤더 글의 원래 `/blog/` 주소는 이제 308을 돌려주므로 정본인 `/resources/articles/` 형태로 인용했다. LangChain 글의 `blog.langchain.com` 호스트는 301을 돌려주므로 최종 호스트로 인용했다. Codex 문서는 `developers.openai.com/codex/…`에서 `learn.chatgpt.com/docs/…`로 옮겨졌으므로 전자 대신 후자를 인용했다.
+출처 관리에 세 가지 메모를 붙인다. 벤더 글의 원래 `/blog/` 주소는 이제 308을 돌려주므로 정본인 `/resources/articles/` 형태로 인용했다. LangChain 글의 `blog.langchain.com` 호스트는 301을 돌려주므로 최종 호스트로 인용했다. Codex 문서는 `developers.openai.com/codex/…`에서 `learn.chatgpt.com/docs/…`로 옮겨졌으므로 전자 대신 후자를 인용했다.
 
 [`references/loop-types.ko.md`](references/loop-types.ko.md) · [`references/stop-conditions-and-verification.ko.md`](references/stop-conditions-and-verification.ko.md) · [`references/cost-and-safety.ko.md`](references/cost-and-safety.ko.md) · [`references/runtime-primitives.ko.md`](references/runtime-primitives.ko.md)

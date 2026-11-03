@@ -231,7 +231,7 @@ A parallel-implementation eval includes at least one "same-file conflict" case a
 
 | Frequency | Eval set | Judgement rule |
 |---|---|---|
-| Every instruction change | smoke eval: a small fast set (the widely quoted 5-20 is unvalidated — see `## Prompt / Role Instruction Smoke Eval`) | aggregate pass rate over the batch; no single-run verdict (HE-J-1, HE-J-3) |
+| Every instruction change | smoke eval: a small fast set (the widely quoted 3-5 is unvalidated — see `## Prompt / Role Instruction Smoke Eval`) | aggregate pass rate over the batch; no single-run verdict (HE-J-1, HE-J-3) |
 | Every model/runtime change | regression eval: known failures + representative workflows | compare against the recorded baseline with model/runtime version and case-set hash (HE-J-4) |
 | Before release | full eval: quality + safety + cost/latency | report `pass^k` alongside `pass@k` for non-deterministic cases (HE-J-5) |
 | After incident | add reproduction case permanently | the new case declares its `MIN_RUNS` and aggregation rule (HE-J-2) |

@@ -49,11 +49,9 @@ Write the pass threshold per criterion and per risk level; aggregate scores hide
 | regression | Preserve existing behavior |
 | negative | What must not be answered; handling of unknowns and caveats |
 
-Minimum recommendation:
+These are starting points, not floors. No cited source validates a case count for an instruction-only or prompt change, so this repository sets no minimum: declare the run count and interval width per case and follow `## Judgement Rules` in `instructions/harness-engineering/HARNESS_ENGINEERING.md`.
 
-- Instruction-only change: 3–5 cases.
-- Standard skill or prompt change: 8–15 cases.
-- Agent, tool, or multi-turn workflow: start at **20–50 tasks drawn from real failures**, then grow the suite as effect sizes shrink.
+- Agent, tool, or multi-turn workflow: Anthropic reports **20–50 tasks drawn from real failures** as a starting point, then grow the suite as effect sizes shrink.
 - High-risk agent/tool workflow: the above plus targeted adversarial cases.
 
 Two properties of the set matter as much as its size.
@@ -207,4 +205,4 @@ Conditions for shipping:
 | 11 | Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces | Merrill et al., arXiv:2601.11868 | <https://arxiv.org/abs/2601.11868> | 2026-01-17 | checked 2026-11-03 | S |
 | 12 | Introducing SWE-bench Verified | OpenAI | <https://openai.com/index/introducing-swe-bench-verified/> | 2024-08-13, updated 2025-02-24 | checked 2026-11-03 | S |
 
-The 80% figure, the 42%-to-95% benchmark case, and the 20–50 task starting point are Anthropic's own reported experience; treat them as practitioner evidence with a stated methodology, not as independent measurements. The statistics recommendations come from a paper written by an author affiliated with the same lab, so both are marked as single-organization evidence in this ledger.
+The 42%-to-95% benchmark case and the 20–50 task starting point are Anthropic's own reported experience. The ~80% figure in §4.1 is Zheng et al.'s reported judge agreement with human preference (source 7), not an Anthropic result. Treat all three as single-source evidence with a stated methodology, not as independent measurements. The statistics recommendations come from a paper written by an author affiliated with the same lab, so both are marked as single-organization evidence in this ledger.

@@ -103,7 +103,8 @@
 | 정지 훅의 프롬프트 유형, 백그라운드 모델, 타임아웃 | <https://code.claude.com/docs/en/hooks> | 2026-11-03 확인 |
 | 워크트리 격리 범위 | <https://code.claude.com/docs/en/worktrees> | 2026-11-03 확인 |
 | 사용량·비용 보고 | <https://code.claude.com/docs/en/costs> | 2026-11-03 확인 |
-| Codex `/goal` 목적, 수정·일시정지·재개·해제, 4,000자 상한, 접근 권한 확대 없음 | <https://learn.chatgpt.com/docs/codex/cli> | 2026-11-03 확인 |
+| Codex `/goal` 목적, 수정·일시정지·재개·해제, 4,000자 상한 | <https://learn.chatgpt.com/docs/developer-commands> | 2026-11-03 확인 |
+| 목표를 시작해도 샌드박스와 승인 정책은 그대로다 | <https://learn.chatgpt.com/docs/long-running-work> | 2026-11-03 확인 |
 | Codex 자동화: 트리거, 인박스, 클라이언트 제공 범위, 반복 규칙 | <https://learn.chatgpt.com/docs/automations> | 2026-11-03 확인 |
 | 샌드박스·승인 정책. `untrusted` 미지원 | <https://learn.chatgpt.com/docs/agent-approvals-security> | 2026-11-03 확인 |
 | 크레딧 과금 | <https://learn.chatgpt.com/docs/pricing> | 2026-11-03 확인 |

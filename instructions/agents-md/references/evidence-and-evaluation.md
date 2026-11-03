@@ -116,7 +116,7 @@ This measures **what developers write, not what works**. Read it as a warning in
 
 Two mechanics behind the Anthropic number are worth internalizing, because they explain *why* a cap exists at all:
 
-> "CLAUDE.md files are loaded into the context window at the start of every session, consuming tokens alongside your conversation."
+Claude Code reads `CLAUDE.md` files at the start of every session: those at or above the working directory load at launch, and those in subdirectories load when Claude first reads or edits a file there.
 
 The cost is paid **every session, before any work happens**, whether or not the content turns out to be relevant. That is what distinguishes an instruction file from documentation the agent reads on demand — and it is why "move reference material to skills, which load on demand" is the recommended escape hatch rather than a longer file. The measured growth numbers above are the counter-argument to "a few extra lines won't hurt": they are how the file ends up tripled.
 

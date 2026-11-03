@@ -97,7 +97,7 @@
 | 3 | 어떤 자료를 믿어야 하는가? | 공식 문서, repo evidence, 사용자 제공 자료, 날짜를 명시한다 |
 | 4 | 어떤 작업 흐름이 안전한가? | 탐색→계획→실행→검증→보고처럼 관찰 가능한 단계로 쓴다 |
 | 5 | 어떤 출력이면 성공인가? | schema, table, markdown section, 파일 경로를 고정한다 |
-| 6 | 어떻게 회귀를 잡을 것인가? | 최소 3-5개 smoke eval 또는 failure examples를 둔다 |
+| 6 | 어떻게 회귀를 잡을 것인가? | failure examples로 smoke 세트를 만들고, 케이스 수와 케이스당 실행 횟수를 선언한다(고정 최소는 없다. [`HARNESS_ENGINEERING.md`](../../harness-engineering/HARNESS_ENGINEERING.md) `## Prompt / Role Instruction Smoke Eval` 참고) |
 
 ## 4. 좋은 예시 / 나쁜 예시
 
@@ -180,7 +180,7 @@ Draft → Smoke eval → Failure diagnosis → Small patch → Re-run → Versio
 | 단계 | 해야 할 일 |
 |---|---|
 | Draft | Prompt Contract를 채운다 |
-| Smoke eval | 정상/엣지/악성/누락 컨텍스트 케이스를 최소 3-5개 실행한다 |
+| Smoke eval | 선언한 smoke 세트를 정상/엣지/악성/누락 컨텍스트 케이스에 실행하되, 케이스당 실행 횟수는 선언한 값으로 한다(고정 최소는 없다) |
 | Diagnose | 실패를 instruction 부족, context 부족, output schema 문제, model mismatch로 분류한다 |
 | Patch | 가장 작은 문서 표면만 수정한다 |
 | Re-run | 같은 eval을 다시 돌려 회귀를 확인한다 |
@@ -215,7 +215,7 @@ Draft → Smoke eval → Failure diagnosis → Small patch → Re-run → Versio
 
 이 문서의 조언을 바꾼 벤더 사실이 둘이다. 첫째, OpenAI의 재사용 프롬프트 객체를 전제로 설계하지 않는다. 해당 API는 2026-11-30 종료된다. 둘째, assistant 턴 프리필을 전제로 설계하지 않는다. 현재 Claude 모델은 마지막 assistant 턴의 프리필을 400 오류로 거절한다.
 
-로컬 재검증 캐시(미추적): `.hyper/research/2026-06-02-official-llm-prompt-instructions-update.md`, `.hyper/research/2026-07-29-instructions-base-source-refresh.md`. `.hyper/`는 `.gitignore` 대상이므로 다른 clone에서는 존재하지 않는다. 위 URL이 이 문서의 근거이며, 캐시 경로는 보조 자료일 뿐 근거를 대체하지 않는다.
+로컬 재검증 노트는 미추적 `.hyper/research/`에 둔다. `.hyper/`는 `.gitignore` 대상이므로 다른 clone에서는 존재하지 않는다. 위 URL이 이 문서의 근거이며, 로컬 노트는 보조 자료일 뿐 근거를 대체하지 않는다.
 
 ## 함께 읽을 문서
 

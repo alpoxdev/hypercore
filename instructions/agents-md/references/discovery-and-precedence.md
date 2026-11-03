@@ -19,7 +19,7 @@ The `AGENTS.md` site states the rule simply: "Place another AGENTS.md inside eac
 | Runtime | Actual combining behavior |
 |---|---|
 | **OpenAI Codex** | Concatenates root-to-leaf; closer files override "because they appear later in the combined prompt" |
-| **Claude Code** | "All discovered files are concatenated into context rather than overriding each other". Which files are *discovered* depends on the **Project instructions** setting: `AGENTS.md` is read only while no `CLAUDE.md` or `CLAUDE.local.md` exists at or above the working directory (§2) |
+| **Claude Code** | "All discovered files are concatenated into context rather than overriding each other". Which files are *discovered* depends on the **Project instructions** setting: under the default `claude-md-or-agents-md`, `AGENTS.md` is read only while no `CLAUDE.md` or `CLAUDE.local.md` exists at or above the working directory, and `claude-md-and-agents-md` reads both (§2) |
 | **Cursor** | "Instructions from nested `AGENTS.md` files are combined with parent directories, with more specific instructions taking precedence" |
 | **GitHub Copilot** | On GitHub.com Copilot Chat: "the nearest `AGENTS.md` file in the directory tree will take precedence". Copilot's own docs caution that this is surface-specific: "Most surfaces and clients, including Copilot CLI, Visual Studio Code and Visual Studio, combine applicable instruction files without defining a general precedence order" |
 
@@ -68,7 +68,7 @@ The same value can be set in a settings file under the built-in plugin that read
 }
 ```
 
-The plugin ID is `cc-plugin-agents-md@builtin`; before v2.1.285 it was `agents-md@builtin`, and entries under the old ID are ignored. Claude Code **ignores this key in project and local settings files.** Use `~/.claude/settings.json`, a `--settings` file, or managed settings.
+The plugin ID is `cc-plugin-agents-md@builtin`; before v2.1.285 it was `agents-md@builtin`. A version before v2.1.285 ignores an entry under the new `cc-plugin-agents-md@builtin` ID, so put `agents-md@builtin` in a settings file that earlier versions also read; v2.1.285 and later reads an entry under either ID. Claude Code **ignores this key in project and local settings files.** Use `~/.claude/settings.json`, a `--settings` file, or managed settings.
 
 ### When AGENTS.md support is unavailable
 
@@ -211,7 +211,7 @@ One caveat on the widely repeated "2 pages" figure: it appears only inside GitHu
 
 ## 5. Cursor, Gemini CLI, and the newer adopters
 
-**Cursor** (<https://cursor.com/en-US/docs/rules>, checked 2026-11-03) lists `AGENTS.md` as one of four rule types — "Agent instructions in markdown format. Simple alternative to `.cursor/rules`" — and supports it "in the project root and subdirectories", where "Instructions from nested `AGENTS.md` files are combined with parent directories, with more specific instructions taking precedence". `.cursor/rules/*.mdc` remains the richer mechanism, and a plain `.md` file placed there is ignored because it lacks the frontmatter (`description`, `globs`, `alwaysApply`); Cursor's own advice for plain Markdown is to use `AGENTS.md` instead. Cursor also reads `CLAUDE.md` "the same way it reads `AGENTS.md`". Its size heuristic for rules generally is unchanged: "Keep rules under 500 lines."
+**Cursor** (<https://cursor.com/en-US/docs/rules>, checked 2026-11-03) lists `AGENTS.md` as one of four rule types — "Agent instructions in markdown format. Simple alternative to `.cursor/rules`" — and supports it "in the project root and subdirectories", where "Instructions from nested `AGENTS.md` files are combined with parent directories, with more specific instructions taking precedence". `.cursor/rules/*.mdc` remains the richer mechanism, and a plain `.md` file placed there is ignored because it lacks the frontmatter (`description`, `globs`, `alwaysApply`); Cursor's own advice for plain Markdown is to use `AGENTS.md` instead. Its size heuristic for rules generally is unchanged: "Keep rules under 500 lines."
 
 **Gemini CLI** (<https://geminicli.com/docs/cli/gemini-md/>, page last updated 2026-06-18, checked 2026-11-03) keeps `GEMINI.md` as the default name and `context.fileName` as the setting that lets a project point at `AGENTS.md` instead — support is opt-in, not automatic. Loading is layered rather than nearest-wins: the CLI "loads various context files from several locations, concatenates the contents of all found files, and sends them to the model with every prompt" — global `~/.gemini/GEMINI.md`, then workspace directories and their parents, then just-in-time files scanned when a tool touches a directory. `@file.md` imports work with relative and absolute paths.
 

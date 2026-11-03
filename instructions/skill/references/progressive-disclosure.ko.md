@@ -68,7 +68,7 @@ Run `scripts/validate-skill.sh` when the skill includes scripts, generated asset
 
 ## 5. 컨텍스트 예산 규칙
 
-- Core `SKILL.md`는 500줄 이내로 유지합니다. 이 한도는 이 저장소가 아니라 agentskills.io best-practices 지침에서 온 값입니다. 이 저장소는 **추가로** 300줄 gate를 둡니다(`scripts/check-sources.sh`, `MAX_LINES=300`). 300은 **이 저장소가 고른 기본값**이지 출처가 밝힌 수치가 아닙니다. 둘은 다릅니다. 500은 best-practices 페이지가 밝힌 값이고 300은 이 저장소가 검사하는 값입니다.
+- Core `SKILL.md`는 500줄 이내로 유지합니다. 이 한도는 이 저장소가 아니라 agentskills.io best-practices 지침에서 온 값입니다. 이 저장소는 **추가로** `instructions/` 아래 문서에만 300줄 gate를 둡니다(`scripts/check-sources.sh`, `MAX_LINES=300`, `DOC_SCOPE="instructions"`). 이 gate는 `skills/`의 `SKILL.md`를 검사하지 않으므로, `SKILL.md`에는 500줄 지침이 그대로 적용됩니다. 300은 **이 저장소가 고른 기본값**이지 출처가 밝힌 수치가 아닙니다. 500은 best-practices 페이지가 밝힌 값이고 300은 이 저장소가 검사하는 값입니다.
 - `references/` 파일은 하나가 주제 하나에 집중하게 합니다.
 - 깊은 참조 사슬을 만들지 않습니다.
 - 지원 파일을 만들었으면 `SKILL.md`에서 직접 참조합니다.
@@ -114,11 +114,12 @@ Run `scripts/validate-skill.sh` when the skill includes scripts, generated asset
 |---|---|
 | 500줄·5,000토큰 disclosure 예산, `SK-D-1`·`SK-D-2`의 삭제 판단 질문, gotcha 배치 규칙 | <https://agentskills.io/skill-creation/best-practices> |
 | 3단계 모델(metadata → 전체 지시 → 참조 파일), 참조 한 단계 깊이 규칙 | <https://agentskills.io/specification> |
-| Skill당 metadata 약 100토큰, 5k 토큰 미만 본문, 스크립트 출력만 컨텍스트에 들어가는 점, 요청당 20개 제한 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| Skill당 metadata 약 100토큰, 5k 토큰 미만 본문, 스크립트 출력만 컨텍스트에 들어가는 점 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| API 요청당 20개 제한 | <https://platform.claude.com/docs/en/build-with-claude/skills-guide> |
 | 98개 중 92개 무효과 결과와 `SK-D-3`의 템플릿 고정 실패 양상 | <https://arxiv.org/abs/2603.15401> |
 | Codex 컨텍스트 2%/8,000자 목록 예산, `skills.max_context_tokens`, `[[skills.config]]` | <https://learn.chatgpt.com/docs/build-skills> |
 | Claude Code 컨텍스트 1% 목록 예산, 항목당 1,536자 제한, 호출 빈도 낮은 순서로 버리는 동작, `/skill-doctor` | <https://code.claude.com/docs/en/skills> |
 
 ### 근거 등급
 
-이 파일은 disclosure 예산의 **canonical** 서술입니다. [`skill-anatomy.ko.md`](skill-anatomy.ko.md)는 수치를 다시 적지 않고 이 파일을 가리킵니다. 500줄·5,000토큰 값은 agentskills.io best-practices 페이지가 밝히므로 `PRIMARY`입니다. 300줄은 이 저장소의 gate이며 그렇게 표시했습니다. `SK-D-3`은 자체 통계 검정을 갖춘 2026년 벤치마크 하나의 결과에 근거하며, 법칙이 아니라 한 번의 측정으로 적었습니다.
+이 파일은 disclosure 예산의 **canonical** 서술입니다. [`skill-anatomy.ko.md`](skill-anatomy.ko.md)는 수치를 다시 적지 않고 이 파일을 가리킵니다. 500줄·5,000토큰 값은 agentskills.io best-practices 페이지가 밝히므로 `PRIMARY`입니다. 300줄은 `instructions/`에 걸린 이 저장소의 gate이며 그렇게 표시했습니다. `SK-D-3`은 자체 통계 검정을 갖춘 2026년 벤치마크 하나의 결과에 근거하며, 법칙이 아니라 한 번의 측정으로 적었습니다.

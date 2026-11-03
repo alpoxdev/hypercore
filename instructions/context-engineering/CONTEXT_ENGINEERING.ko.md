@@ -150,4 +150,4 @@ XML 태그는 Claude 계열의 문서화된 기본값으로 남아 있다. 현�
 
 **정정**: 이전 판은 `ai.google.dev/gemini-api/docs/prompting-strategies`를 인용하고 Cursor의 “Memories”를 instruction 표면으로 적었다. Gemini API 문서는 세션 없이 요청하면 인증 엔드포인트로 넘어가므로 Cloud 쪽 프롬프트 설계 문서를 인용한다. Cursor Rules 문서에는 Memories 기능이 없으므로 런타임 프로필에서도 그 주장을 뺐다.
 
-로컬 재검증 캐시(미추적): `.hyper/research/2026-06-02-official-llm-prompt-instructions-update.md`, `.hyper/research/2026-07-29-instructions-base-source-refresh.md`. `.hyper/`는 `.gitignore` 대상이라 다른 clone에는 없다. 위 URL이 근거이며 캐시 경로가 이를 대체하지 않는다.
+로컬 재검증 노트는 미추적 `.hyper/research/`에 둔다. `.hyper/`는 `.gitignore` 대상이라 다른 clone에는 없다. 위 URL이 근거이며 로컬 노트가 이를 대체하지 않는다.

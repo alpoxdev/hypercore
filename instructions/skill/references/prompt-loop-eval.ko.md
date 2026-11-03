@@ -235,7 +235,8 @@ Collect failures -> Draft contract -> Build eval set -> Run baseline/readback ->
 | Case 세트 구성과 검증된 case 수가 없다는 점 | <https://agentskills.io/skill-creation/optimizing-descriptions> |
 | 일곱 산출물 감사 범주와 심각도 표시 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
 | 제3자 skill을 코드 리뷰 대상으로 보는 것, 버전 고정과 재검토, 검사 범위의 빈틈 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
-| Skill당 metadata 약 100토큰, API 요청당 20개 제한 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| Skill당 metadata 약 100토큰 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| API 요청당 20개 제한 | <https://platform.claude.com/docs/en/build-with-claude/skills-guide> |
 | Codex 목록 예산, `skills.max_context_tokens`, `[[skills.config]]` | <https://learn.chatgpt.com/docs/build-skills> |
 | Claude Code 목록 예산, 항목당 1,536자 제한, 호출 빈도 낮은 순서로 버리는 동작, `skillOverrides` | <https://code.claude.com/docs/en/skills> |
 | Skill별 paired delta 설계와 98개 중 92개 결과 | <https://arxiv.org/abs/2603.15401> |
@@ -248,6 +249,7 @@ Collect failures -> Draft contract -> Build eval set -> Run baseline/readback ->
 - OpenAI skill eval 지침: <https://developers.openai.com/blog/eval-skills>
 - Anthropic Agent Skills 엔지니어링 노트: <https://www.anthropic.com/research/equipping-agents-for-the-real-world-with-agent-skills>
 - Anthropic Agent Skills overview: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview>
+- Anthropic Agent Skills API 안내: <https://platform.claude.com/docs/en/build-with-claude/skills-guide>
 - Anthropic skill 작성 best practices: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices>
 - Anthropic Agent Skills enterprise 보안: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise>
 - Claude Code skills: <https://code.claude.com/docs/en/skills>

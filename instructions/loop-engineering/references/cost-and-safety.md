@@ -135,7 +135,7 @@ The first three are named in the practitioner literature and summarized in the l
 | Credit-based billing and per-task credit ranges | <https://learn.chatgpt.com/docs/pricing> | checked 2026-11-03 |
 | Scheduled tasks: event and time triggers, default sandbox, approval policy when unattended, worktree accumulation | <https://learn.chatgpt.com/docs/automations> | checked 2026-11-03 |
 | Sandbox and approval policies; `untrusted` unsupported | <https://learn.chatgpt.com/docs/agent-approvals-security> | checked 2026-11-03 |
-| Goal keeps the same sandbox and approval policy | <https://learn.chatgpt.com/docs/codex/cli> | checked 2026-11-03 |
+| Goal keeps the same sandbox and approval policy | <https://learn.chatgpt.com/docs/long-running-work> | checked 2026-11-03 |
 | 19% slowdown against a believed 20% speedup | <https://arxiv.org/abs/2507.09089> | 2025-07-12, checked 2026-11-03 |
 | Comprehension debt, cognitive surrender, intent debt, rubber-stamp review, cost-log quality | <https://arxiv.org/abs/2608.21884> | 2026-08-22, rev. 2026-10-22, checked 2026-11-03 |
 | Token-cost caution and the practitioner framing of loop engineering | <https://addyosmani.com/blog/loop-engineering/> | 2026-06-07, checked 2026-11-03 |

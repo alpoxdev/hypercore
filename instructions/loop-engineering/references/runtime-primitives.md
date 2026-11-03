@@ -103,7 +103,8 @@ Read these as design constraints, not trivia. A loop that schedules 200 runs an 
 | Stop hook prompt type, background model, timeout | <https://code.claude.com/docs/en/hooks> | checked 2026-11-03 |
 | Worktree isolation scope | <https://code.claude.com/docs/en/worktrees> | checked 2026-11-03 |
 | Usage and cost reporting | <https://code.claude.com/docs/en/costs> | checked 2026-11-03 |
-| Codex `/goal` objective, edit/pause/resume/clear, 4,000-character cap, no broader access | <https://learn.chatgpt.com/docs/codex/cli> | checked 2026-11-03 |
+| Codex `/goal` objective, edit/pause/resume/clear, 4,000-character cap | <https://learn.chatgpt.com/docs/developer-commands> | checked 2026-11-03 |
+| Starting a goal keeps the same sandbox and approval policy | <https://learn.chatgpt.com/docs/long-running-work> | checked 2026-11-03 |
 | Codex automations: triggers, inbox, client availability, recurrence rules | <https://learn.chatgpt.com/docs/automations> | checked 2026-11-03 |
 | Sandbox and approval policies; `untrusted` unsupported | <https://learn.chatgpt.com/docs/agent-approvals-security> | checked 2026-11-03 |
 | Credit billing | <https://learn.chatgpt.com/docs/pricing> | checked 2026-11-03 |

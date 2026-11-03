@@ -149,4 +149,4 @@ Write a role prompt in the following order. Follow [`references/prompt-authoring
 
 **Corrected**: an earlier revision of this table cited `ai.google.dev/gemini-api/docs/prompting-strategies` and listed Cursor "Memories" as an instruction surface. The Gemini API page now redirects through an auth endpoint when fetched without a session, so the Cloud prompt-design page is cited instead; the Cursor Rules page documents no Memories feature, so the runtime profile no longer claims one.
 
-Local re-verification cache (untracked): `.hyper/research/2026-06-02-official-llm-prompt-instructions-update.md`, `.hyper/research/2026-07-29-instructions-base-source-refresh.md`. `.hyper/` is covered by `.gitignore` and does not exist in another clone. The URLs above are the evidence; the cache paths do not substitute for them.
+Local re-verification notes live in untracked `.hyper/research/`. `.hyper/` is covered by `.gitignore` and does not exist in another clone. The URLs above are the evidence; local notes do not substitute for them.

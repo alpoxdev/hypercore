@@ -49,11 +49,9 @@ Success criteria -> Test set -> Grader/rubric -> Baseline -> Change -> Re-run ->
 | regression | 기존 동작 보존 |
 | negative | 답하지 말아야 할 것, 모름과 caveat 처리 |
 
-최소 권장:
+케이스 수는 하한이 아니라 출발점이다. instruction만 바꾸거나 prompt를 바꾸는 경우의 케이스 수를 검증한 출처가 없으므로 이 저장소는 최소 케이스 수를 두지 않는다. 케이스마다 실행 횟수와 신뢰구간 폭을 선언하고 `instructions/harness-engineering/HARNESS_ENGINEERING.ko.md`의 `## Judgement Rules`를 따른다.
 
-- instruction만 바꾸는 변경: 3~5 케이스.
-- 표준적인 skill/prompt 변경: 8~15 케이스.
-- agent, tool, 다중 턴 workflow: 실제 실패에서 뽑은 **20~50 task**로 시작하고, 효과 크기가 줄어들면 세트를 키운다.
+- agent, tool, 다중 턴 workflow: Anthropic은 실제 실패에서 뽑은 **20~50 task**를 출발점으로 보고한다. 그 뒤 효과 크기가 줄어들면 세트를 키운다.
 - 위험이 높은 agent/tool workflow: 위에 더해 겨냥한 adversarial 케이스.
 
 세트의 크기만큼 중요한 두 가지 성질이 있다.
@@ -207,4 +205,4 @@ smoke eval은 바꾸는 instruction 원문에 돌린다. 바꿔 쓴 요약본에
 | 11 | Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces | Merrill 외, arXiv:2601.11868 | <https://arxiv.org/abs/2601.11868> | 2026-01-17 | 확인 2026-11-03 | S |
 | 12 | Introducing SWE-bench Verified | OpenAI | <https://openai.com/index/introducing-swe-bench-verified/> | 2024-08-13, 2025-02-24 갱신 | 확인 2026-11-03 | S |
 
-80% 일치, 42%에서 95%로의 benchmark 사례, 20~50 task 시작점은 Anthropic이 보고한 자체 경험이다. 방법론이 밝혀진 실무자 근거로 다루고, 독립 측정으로 다루지 않는다. 통계 권고는 같은 연구소 소속 저자의 논문에서 나왔으므로, 이 원장에서는 둘 다 단일 기관 근거로 표시한다.
+42%에서 95%로의 benchmark 사례와 20~50 task 시작점은 Anthropic이 보고한 자체 경험이다. §4.1의 약 80% 수치는 Zheng 외가 보고한 judge와 사람 선호의 일치율이며(출처 7), Anthropic의 결과가 아니다. 세 가지 모두 방법론이 밝혀진 단일 출처 근거로 다루고, 독립 측정으로 다루지 않는다. 통계 권고는 같은 연구소 소속 저자의 논문에서 나왔으므로, 이 원장에서는 둘 다 단일 기관 근거로 표시한다.

@@ -3,7 +3,7 @@
 #
 # 검사 항목
 #   1. link   (네트워크) 인용 URL이 이전(3xx)되지 않았는가. 예시 URL과 코드 블록 안의 URL은 제외한다
-#   2. date   (오프라인) `확인 YYYY-MM-DD` 표기가 실재하는 ISO 날짜인가
+#   2. date   (오프라인) `Checked YYYY-MM-DD` / `확인 YYYY-MM-DD` 표기가 실재하는 ISO 날짜인가
 #   3. lines  (오프라인) 문서가 300줄 이내인가
 #
 # 기본 동작
@@ -177,7 +177,7 @@ check_dates() {
       printf '  BADDATE  %s  -> %s\n' "$file" "$date_str"
       bad=$((bad + 1))
     fi
-  done < <(grep -rnE '(확인|checked) [0-9]' "$DOC_SCOPE" 2>/dev/null)
+  done < <(grep -rniE '(확인|checked) [0-9]' "$DOC_SCOPE" 2>/dev/null)
 
   if [ "$found" -eq 0 ]; then
     echo "  FAIL - 확인일 표기(확인/checked)가 하나도 없습니다."
@@ -283,6 +283,24 @@ run_self_test() {
   DOC_SCOPE="instructions"
   rm -f "$probe"
 
+  # (4c) 대문자 표기 — 문서는 `Checked`로 적으므로 검사가 대소문자를 구분하면 안 된다
+  printf '# selftest\n\n출처 (Checked 2026-13-45)\n' > "$probe"
+  DOC_SCOPE="$probe"
+  if check_dates >/dev/null 2>&1; then
+    echo "  FAIL  대문자 표기 확인일의 잘못된 날짜를 놓쳤습니다"; failures=$((failures + 1))
+  else
+    echo "  PASS  대문자 표기 확인일의 잘못된 날짜를 검출했습니다"
+  fi
+  # 대문자 정상 날짜도 오탐 없이 통과해야 한다
+  printf '# selftest\n\n출처 (Checked 2026-07-29)\n' > "$probe"
+  if check_dates >/dev/null 2>&1; then
+    echo "  PASS  대문자 표기 확인일의 정상 날짜를 오탐하지 않았습니다"
+  else
+    echo "  FAIL  대문자 표기 확인일의 정상 날짜를 오탐했습니다"; failures=$((failures + 1))
+  fi
+  DOC_SCOPE="instructions"
+  rm -f "$probe"
+
   echo
 
   # (5) 예시 URL 제외 — 예시만 있으면 실패하지 않아야 한다
@@ -350,7 +368,7 @@ run_self_test() {
 
   echo
   if [ "$failures" -eq 0 ]; then
-    echo "self-test 통과 - 10개 케이스 모두 기대대로 동작합니다."
+    echo "self-test 통과 - 모든 케이스가 기대대로 동작합니다."
     return 0
   fi
   echo "self-test 실패 - ${failures}개 케이스가 기대와 다릅니다."

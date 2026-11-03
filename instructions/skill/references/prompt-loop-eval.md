@@ -235,7 +235,8 @@ This authoring loop is a human-supervised turn-based loop. When the loop runs un
 | Case-set composition, and the absence of a stated case count | <https://agentskills.io/skill-creation/optimizing-descriptions> |
 | The seven artifact-audit categories and their severity labels | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
 | Treating third-party skills as subjects of code review, version pinning with re-review, and the scan coverage gap | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
-| ~100 tokens of metadata per skill and the 20-skills-per-request API limit | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| ~100 tokens of metadata per skill | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| The 20-skills-per-request API limit | <https://platform.claude.com/docs/en/build-with-claude/skills-guide> |
 | The Codex listing budget, `skills.max_context_tokens`, and `[[skills.config]]` | <https://learn.chatgpt.com/docs/build-skills> |
 | The Claude Code listing budget, the 1,536-character entry cap, least-invoked-first dropping, and `skillOverrides` | <https://code.claude.com/docs/en/skills> |
 | The paired per-skill delta design and the 92-of-98 result | <https://arxiv.org/abs/2603.15401> |
@@ -248,6 +249,7 @@ This authoring loop is a human-supervised turn-based loop. When the loop runs un
 - OpenAI skill eval guidance: <https://developers.openai.com/blog/eval-skills>
 - Anthropic Agent Skills engineering note: <https://www.anthropic.com/research/equipping-agents-for-the-real-world-with-agent-skills>
 - Anthropic Agent Skills overview: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview>
+- Anthropic Agent Skills API guide: <https://platform.claude.com/docs/en/build-with-claude/skills-guide>
 - Anthropic skill authoring best practices: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices>
 - Anthropic Agent Skills enterprise security: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise>
 - Claude Code skills: <https://code.claude.com/docs/en/skills>

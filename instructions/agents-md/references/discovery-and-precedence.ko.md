@@ -19,7 +19,7 @@
 | 런타임 | 실제 결합 동작 |
 |---|---|
 | **OpenAI Codex** | 루트→말단 concatenate. 더 가까운 파일이 "because they appear later in the combined prompt" override |
-| **Claude Code** | "All discovered files are concatenated into context rather than overriding each other". 어떤 파일을 *탐색*하는지는 **Project instructions** 설정에 달려 있고, `AGENTS.md`는 작업 디렉터리나 그 위에 `CLAUDE.md` 또는 `CLAUDE.local.md`가 없을 때만 읽힌다(§2) |
+| **Claude Code** | "All discovered files are concatenated into context rather than overriding each other". 어떤 파일을 *탐색*하는지는 **Project instructions** 설정에 달려 있다. 기본값 `claude-md-or-agents-md`에서는 작업 디렉터리나 그 위에 `CLAUDE.md`나 `CLAUDE.local.md`가 없을 때만 `AGENTS.md`를 읽고, `claude-md-and-agents-md`에서는 둘 다 읽는다(§2) |
 | **Cursor** | "Instructions from nested `AGENTS.md` files are combined with parent directories, with more specific instructions taking precedence" |
 | **GitHub Copilot** | GitHub.com의 Copilot Chat에서는 "the nearest `AGENTS.md` file in the directory tree will take precedence". 다만 Copilot 문서 스스로 이 판정이 surface에 국한된다고 밝힌다: "Most surfaces and clients, including Copilot CLI, Visual Studio Code and Visual Studio, combine applicable instruction files without defining a general precedence order" |
 
@@ -68,7 +68,7 @@
 }
 ```
 
-플러그인 ID는 `cc-plugin-agents-md@builtin`이며, v2.1.285 이전에는 `agents-md@builtin`이었다. 옛 ID로 적은 항목은 무시된다. Claude Code는 **프로젝트·로컬 설정 파일에서는 이 키를 무시한다.** `~/.claude/settings.json`, `--settings` 파일, 또는 managed settings를 쓴다.
+플러그인 ID는 `cc-plugin-agents-md@builtin`이며, v2.1.285 이전에는 `agents-md@builtin`이었다. v2.1.285 이전 버전은 새 `cc-plugin-agents-md@builtin` 항목을 무시하므로 이전 버전도 읽는 설정 파일에는 `agents-md@builtin`을 쓴다. v2.1.285 이후 버전은 두 ID의 항목을 모두 읽는다. Claude Code는 **프로젝트·로컬 설정 파일에서는 이 키를 무시한다.** `~/.claude/settings.json`, `--settings` 파일, 또는 managed settings를 쓴다.
 
 ### AGENTS.md 지원이 없는 세션
 
@@ -213,7 +213,7 @@ Copilot에는 다른 도구에 없는 기능도 있다. `.github/instructions/*.
 
 ## 5. Cursor, Gemini CLI, 새로 합류한 런타임
 
-**Cursor** (<https://cursor.com/en-US/docs/rules>, 확인 2026-11-03)는 `AGENTS.md`를 네 가지 규칙 유형 중 하나로 나열하며 "Agent instructions in markdown format. Simple alternative to `.cursor/rules`"라고 설명한다. 지원 위치는 "in the project root and subdirectories"이고, 중첩 파일은 "Instructions from nested `AGENTS.md` files are combined with parent directories, with more specific instructions taking precedence"로 결합된다. `.cursor/rules/*.mdc`는 여전히 더 풍부한 수단이며, 그 디렉터리에 둔 일반 `.md` 파일은 frontmatter(`description`, `globs`, `alwaysApply`)가 없어 무시된다. Cursor 자신도 일반 Markdown에는 `AGENTS.md`를 쓰라고 안내한다. Cursor는 `CLAUDE.md`도 "the same way it reads `AGENTS.md`"로 읽는다. 규칙 전반의 크기 휴리스틱은 그대로다: "Keep rules under 500 lines."
+**Cursor** (<https://cursor.com/en-US/docs/rules>, 확인 2026-11-03)는 `AGENTS.md`를 네 가지 규칙 유형 중 하나로 나열하며 "Agent instructions in markdown format. Simple alternative to `.cursor/rules`"라고 설명한다. 지원 위치는 "in the project root and subdirectories"이고, 중첩 파일은 "Instructions from nested `AGENTS.md` files are combined with parent directories, with more specific instructions taking precedence"로 결합된다. `.cursor/rules/*.mdc`는 여전히 더 풍부한 수단이며, 그 디렉터리에 둔 일반 `.md` 파일은 frontmatter(`description`, `globs`, `alwaysApply`)가 없어 무시된다. Cursor 자신도 일반 Markdown에는 `AGENTS.md`를 쓰라고 안내한다. 규칙 전반의 크기 휴리스틱은 그대로다: "Keep rules under 500 lines."
 
 **Gemini CLI** (<https://geminicli.com/docs/cli/gemini-md/>, 문서 최종 수정 2026-06-18, 확인 2026-11-03)는 `GEMINI.md`를 기본 이름으로 두고, 프로젝트가 `AGENTS.md`를 가리키게 하는 설정으로 `context.fileName`을 둔다. 즉 지원은 자동이 아니라 opt-in이다. 로딩은 nearest-wins가 아니라 층으로 쌓인다. CLI는 "loads various context files from several locations, concatenates the contents of all found files, and sends them to the model with every prompt"이며, 순서는 전역 `~/.gemini/GEMINI.md`, 작업공간 디렉터리와 그 상위, 그리고 도구가 디렉터리에 접근할 때 스캔하는 just-in-time 파일이다. `@file.md` import는 상대·절대 경로를 모두 지원한다.
 

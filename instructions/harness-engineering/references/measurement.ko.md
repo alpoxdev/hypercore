@@ -50,10 +50,10 @@ in retail)"이라고 보고한다. 위 표의 0.80 행은 16.78%로 그 보고 �
 - **그 수치 뒤의 과제 집합이 바뀌었다.** 2026년에 retail과 airline 영역을 감사해 다시 썼다. "We
   audited and fixed 50+ tasks across the airline and retail domains in τ-bench"이며, airline 27개,
   retail 26개다.
-- **보고 깊이가 바뀌었다.** τ²-bench는 "each task … four times, maintaining a consistent LLM
-  temperature of 0"로 실행하므로 리더보드는 `pass^1`과 `pass^4`를 보고한다. 현재 배포판은 실린
-  벤치마크를 1회로 채점하고 `pass^k`를 "the share of tasks passed in all k trials"로 정의한다.
-  여덟 번은 이 저장소가 고른 깊이이지, 벤치마크가 지금 배포하는 깊이가 아니다.
+- **보고 깊이가 바뀌었다.** 1.x 제출 안내는 "at least 4 trials per domain for statistical reliability"를
+  권했고 v1.0.1 재채점 표는 `pass^4`를 보고한다. 현재 배포판은 실린 벤치마크를 1회로 채점하고
+  `pass^k`를 "the share of tasks passed in all k trials"로 정의한다. 여덟 번은 이 저장소가 고른
+  깊이이지, 벤치마크가 지금 배포하는 깊이가 아니다.
 
 실무적 결과는 그대로다. `pass@k`만 보고하면 불일관성이 숨는다. 8회 독립 시행이 전부 성공하는 것이
 신뢰도 주장이다. `pass^k`는 k가 커질수록 떨어지고 `pass@k`는 1을 향해 오르는 지표다.
@@ -111,10 +111,11 @@ start"다.
 
 - **자원 구성을 선언한다.** CPU·GPU 할당, 타임아웃, 동시성을 적지 않은 결과는 다른 구성으로 낸
   이후 결과와 비교할 수 없다.
-- **하네스 결함을 따로 회계한다.** 이 문제를 가장 정밀하게 다루는 벤치마크는 그런 실행을 분모에서
-  뺀다. "Calls that ended in an infrastructure error are the exception: they are harness faults, so
-  they are excluded from the denominator and reported as `error_trials`." HE-E-6과 같은 규율이다.
-  오류는 실패로 평균에 넣지 않고 기록하며, 통과로 세지도 않는다.
+- **하네스 결함을 따로 회계한다.** v1.0.1 재채점은 자기 관례를 밝힌다. `pass^k`를 "counting
+  infrastructure-error simulations as failed trials (the leaderboard convention)"로 다시 계산하므로,
+  하네스 결함이 지표에서 조용히 사라지지 않고 드러난다. HE-E-6은 다르게 정한다. 하네스 결함으로
+  중단된 시행은 분모에서 빼고 오류 시행으로 보고한다. 어느 쪽이든 처리를 기록에 선언하고 암묵적으로
+  두지 않는다.
 
 ### 채점기
 
@@ -241,7 +242,7 @@ eval 셋이 조용히 죽지 않게 하는 실천이 둘 있다.
 밝힌다. "Measurements above 16 hrs are unreliable with our current task suite."
 
 숫자와 함께 **어느 표면에서 읽었는지**를 적는다. 공개 표와 대시보드 데이터 파일은 2023년 이후
-130.8일 대 약 128.7일, 전 기간 196.5일 대 약 187.8일로 며칠 차이가 난다. 데이터 파일이 16시간
+130.8일 대 약 128.7일, 전 기간 196.5일 대 약 187.8일로 최대 약 9일 차이가 난다. 데이터 파일이 16시간
 신뢰 한계를 넘는 점을 제외하기 때문이다.
 
 ## Sources
@@ -254,7 +255,8 @@ eval 셋이 조용히 죽지 않게 하는 실천이 둘 있다.
 |---|---|---|
 | `pass^k` 정의, `pass^8 <25%` retail 수치, 불일관성 발견 | <https://arxiv.org/abs/2406.12045> | PRIMARY |
 | retail·airline 과제 감사("50+ tasks", airline 27개 / retail 26개) | <https://taubench.com/blog/tau3-task-fixes.html> | PRIMARY |
-| 과제당 4회 실행, `pass^4` 보고 깊이, `error_trials` 회계, "Scores are not comparable with 1.x" | <https://github.com/sierra-research/tau2-bench/releases/tag/v2.0.0> | PRIMARY |
+| "Scores are not comparable with 1.x". 채점 변경으로 버전 간 비교가 무효다 | <https://github.com/sierra-research/tau2-bench/releases/tag/v2.0.0> | PRIMARY |
+| 시행 깊이: 1.x 안내의 도메인당 최소 4회 실행 권고, 실린 벤치마크의 1회 채점, `pass^k` 정의 | <https://github.com/sierra-research/tau2-bench/blob/v1.0.1/docs/leaderboard-submission.md>, <https://github.com/sierra-research/tau2-bench/blob/v2.0.0/docs/glossary.md> | PRIMARY |
 | 바뀌지 않은 궤적을 다시 채점해 pass^1이 최대 약 9점 오른 사례 | <https://github.com/sierra-research/tau2-bench/releases/tag/v1.0.1> | PRIMARY |
 | 벤치마크 저자들의 반복 실행 신뢰도 프레이밍 | <https://sierra.ai/blog/tau-bench-shaping-development-evaluation-agents> | VENDOR |
 | 인프라 잡음: Terminal-Bench 2.0에서 6%p, SWE-bench에서 1.54%p, "3%p 미만은 회의적으로" 규칙 | <https://www.anthropic.com/research/infrastructure-noise> | VENDOR |

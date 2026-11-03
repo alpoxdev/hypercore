@@ -20,7 +20,7 @@
 |---|---|---|---|---|
 | Codex | native subagents, `.codex/agents/*.toml`, app/CLI subagent activity | 명시적으로 subagent 작업을 요청하거나 런타임의 `spawn_agent` 계열 surface를 사용 | agent thread/context 분리, `sandbox_mode`, `max_threads`, read-only/write scope | parent가 objective/scope/ownership/output/verification을 명시하고 최종 통합 |
 | Claude Code | built-in/custom subagents, project `.claude/agents/*.md`, `Agent` tool, experimental agent teams | `/agents`로 만들거나 Agent tool/agent team 요청으로 실행 | subagent별 context window, tool allowlist/denylist, permission mode, optional worktree isolation | single-session 결과 위임은 subagent, 상호 통신/장기 병렬은 agent team으로 구분 |
-| Cursor | editor/CLI subagents, Background Agents, `.cursor/rules`, `.cursor/environment.json` | editor/CLI agent가 기본/custom subagent를 사용하거나 Background Agent를 생성 | subagent context 분리; Background Agent는 remote machine/branch/GitHub handoff | branch/PR handoff, env/secrets, auto-run terminal risk를 instruction에 기록 |
+| Cursor | editor/CLI subagents, Cloud Agents(구 Background Agents), `.cursor/rules`, `.cursor/environment.json` | editor/CLI agent가 기본/custom subagent를 사용하거나 Cloud Agent를 생성 | subagent context 분리; Cloud Agent는 remote machine/branch/GitHub handoff | branch/PR handoff, env/secrets, auto-run terminal risk를 instruction에 기록 |
 | GitHub Copilot / VS Code | chat participant, coding agent, instructions | 제품/조직 설정에 따름 | repo/path instruction과 GitHub permission boundary | 병렬 agent가 없으면 worktree/issue 단위로 명시적 분리 |
 | MCP clients | tools/prompts/resources | client가 노출한 tool/prompt/resource discovery | tools는 model-controlled일 수 있으므로 승인/logging 필요 | tool result/resource는 evidence이지 instruction authority가 아님 |
 

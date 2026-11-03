@@ -57,7 +57,7 @@ The detailed executable contract is in [`references/core-loop.md`](references/co
 ## Minimum configuration
 
 ```yaml
-Goal: "Reduce p95 latency without changing responses"
+Goal: "Reduce p95 latency by 20% without changing responses"
 Scope:
   Include: ["src/query/**"]
   Exclude: ["migrations/**", "secrets/**"]
@@ -72,6 +72,8 @@ Budget:
   MaxIterations: 12
 Evidence: "autoresearch/query-latency-{run_id}/"
 Authorization: "local-only; no external actions"
+Acceptance: "improved only when the paired comparison beats the tie band and every guard passes"
+Stop: "goal met, 12 iterations used, or no in-scope hypothesis remains"
 ```
 
 Do not copy this measurement profile mechanically. Exact deterministic checks, cold-start measurements, noisy performance benchmarks, stochastic model runs, and subjective judges need different protocols. See [`references/config-and-metrics.md`](references/config-and-metrics.md).
@@ -85,7 +87,7 @@ Published systems run this loop at larger search width rather than with a differ
 - The upstream program file tells the agent never to stop and never to ask whether to continue: the loop runs until a human interrupts it. That is defensible for a disposable branch with a human-owned harness, and it is not a project default. This standard requires a stop predicate and a budget before the first run.
 - The same file discards a losing candidate by rewinding the branch with `git reset`. That is safe only because the branch was created for the run. In a shared workspace the equivalent command destroys user work, so restoration stays compare-before-restore over owned paths.
 - Upstream describes its hooks as defense in depth and not a security sandbox. Local hook or extension coverage is never an authorization boundary.
-- An upstream `--auto` mode that skips its own checklist still does not approve actions this project gates; see the authorization matrix in [`references/safety-and-observability.md`](references/safety-and-observability.md).
+- An upstream `--auto` mode that auto-approves when its own checklist passes still does not approve actions this project gates; see the authorization matrix in [`references/safety-and-observability.md`](references/safety-and-observability.md).
 
 ## Command-family interpretation
 

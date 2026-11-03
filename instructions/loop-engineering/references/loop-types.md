@@ -28,7 +28,7 @@ Source basis: the four-type taxonomy and its stated sorting criteria are the Cla
 | Budget exhausted | The counter | Certain | A stop, not a success |
 | Human cancel | The operator | Certain | Depends on the pause path working |
 
-Ordering the last two columns by trust is the point: an independent model is better than self-judgement, and a deterministic oracle is better than both. The Claude Code team states the same preference from the other direction, calling deterministic criteria "so effective" for goal-based loops because the agent no longer decides what "good enough" means (checked 2026-11-03).
+Ordering the `Trust level` column by trust is the point: an independent model is better than self-judgement, and a deterministic oracle is better than both. The Claude Code team states the same preference from the other direction, calling deterministic criteria "so effective" for goal-based loops because the agent no longer decides what "good enough" means (checked 2026-11-03).
 
 ## The four named types
 

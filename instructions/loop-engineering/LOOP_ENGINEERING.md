@@ -139,7 +139,7 @@ Observed spend is the only spend you can budget against. One runtime's usage vie
 | Cognitive surrender | Loops used to avoid thinking about understood work | Decisions get delegated to something that cannot own them | LE-P-8 |
 | Loop per microtask | An orchestration layer wrapped around a single edit | Overhead exceeds the work | Taxonomy, step 1 |
 
-The last three are named in the practitioner and academic literature as the characteristic human costs of loops, not as tool failures. "Comprehension debt" is defined there as the gap between what exists in a repository and what the developer understands; "cognitive surrender" as using loops "to avoid thinking rather than to move faster on understood work" (arXiv 2608.21884 summarising Osmani and Greyling, checked 2026-11-03). Neither is fixed by a better prompt.
+Comprehension debt and cognitive surrender are named in the practitioner and academic literature as the characteristic human costs of loops, not as tool failures. "Comprehension debt" is defined there as the gap between what exists in a repository and what the developer understands; "cognitive surrender" as using loops "to avoid thinking rather than to move faster on understood work" (arXiv 2608.21884 summarising Osmani and Greyling, checked 2026-11-03). Neither is fixed by a better prompt.
 
 ## Where it sits
 
@@ -178,9 +178,10 @@ The last three are named in the practitioner and academic literature as the char
 | Worktree isolation: what it separates and what it shares | <https://code.claude.com/docs/en/worktrees> | checked 2026-11-03 |
 | Usage reporting for scheduled tasks, per-run tokens, documented spend ranges | <https://code.claude.com/docs/en/costs> | checked 2026-11-03 |
 | Codex scheduled tasks: event and time triggers, results inbox, unattended defaults | <https://learn.chatgpt.com/docs/automations> | checked 2026-11-03 |
-| Codex goal: persisted objective, edit/pause/resume/clear, 4,000-character cap, no broader access | <https://learn.chatgpt.com/docs/codex/cli> | checked 2026-11-03 |
+| Codex `/goal`: persisted objective, edit/pause/resume/clear, 4,000-character cap | <https://learn.chatgpt.com/docs/developer-commands> | checked 2026-11-03 |
+| Starting a goal keeps the same sandbox and approval policy | <https://learn.chatgpt.com/docs/long-running-work> | checked 2026-11-03 |
 | Sandbox and approval modes for unattended runs | <https://learn.chatgpt.com/docs/agent-approvals-security> | checked 2026-11-03 |
 
-Two source-hygiene notes. The vendor article's original `/blog/` URL now answers 308 and the canonical path is the `/resources/articles/` form cited above; the LangChain post's `blog.langchain.com` host answers 301 and is cited at its final host. Codex documentation moved from `developers.openai.com/codex/…` to `learn.chatgpt.com/docs/…`, so the latter is cited throughout.
+Three source-hygiene notes. The vendor article's original `/blog/` URL now answers 308 and the canonical path is the `/resources/articles/` form cited above; the LangChain post's `blog.langchain.com` host answers 301 and is cited at its final host. Codex documentation moved from `developers.openai.com/codex/…` to `learn.chatgpt.com/docs/…`, so the latter is cited throughout.
 
 [`references/loop-types.md`](references/loop-types.md) · [`references/stop-conditions-and-verification.md`](references/stop-conditions-and-verification.md) · [`references/cost-and-safety.md`](references/cost-and-safety.md) · [`references/runtime-primitives.md`](references/runtime-primitives.md)

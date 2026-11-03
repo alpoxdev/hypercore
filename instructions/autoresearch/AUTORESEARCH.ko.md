@@ -57,7 +57,7 @@ Runtime별 invocation syntax는 이식 가능하지 않다.
 ## 최소 설정
 
 ```yaml
-Goal: "Reduce p95 latency without changing responses"
+Goal: "Reduce p95 latency by 20% without changing responses"
 Scope:
   Include: ["src/query/**"]
   Exclude: ["migrations/**", "secrets/**"]
@@ -72,6 +72,8 @@ Budget:
   MaxIterations: 12
 Evidence: "autoresearch/query-latency-{run_id}/"
 Authorization: "local-only; no external actions"
+Acceptance: "improved only when the paired comparison beats the tie band and every guard passes"
+Stop: "goal met, 12 iterations used, or no in-scope hypothesis remains"
 ```
 
 이 measurement profile을 기계적으로 복사하지 않는다. Exact deterministic check, cold-start measurement, noisy performance benchmark, stochastic model run, subjective judge는 서로 다른 protocol이 필요하다. [`references/config-and-metrics.ko.md`](references/config-and-metrics.ko.md)를 따른다.
@@ -85,7 +87,7 @@ Authorization: "local-only; no external actions"
 - Upstream program file은 agent에게 멈추지 말고 계속할지 묻지도 말라고 지시한다. Loop는 사람이 중단할 때까지 돈다. 일회용 branch와 사람이 소유한 harness에서는 방어할 수 있는 지침이지만 프로젝트 기본값은 아니다. 이 표준은 첫 실행 전에 stop predicate와 budget을 요구한다.
 - 같은 file은 진 후보를 branch를 `git reset`으로 되돌려 버린다. 이는 그 branch가 실행을 위해 만들어졌기 때문에 안전하다. 공유 workspace에서 같은 명령은 사용자 작업을 파괴하므로, 복구는 소유 path에 대한 compare-before-restore로 남긴다.
 - Upstream은 자체 hook을 defense in depth라 부르고 security sandbox가 아니라고 밝힌다. 로컬 hook이나 extension 적용 범위는 결코 authorization 경계가 아니다.
-- 자체 checklist를 건너뛰는 upstream `--auto` mode도 이 프로젝트가 gate로 막는 행동을 승인하지 않는다. [`references/safety-and-observability.ko.md`](references/safety-and-observability.ko.md)의 authorization matrix를 따른다.
+- 자체 checklist를 통과하면 자동 승인하는 upstream `--auto` mode도 이 프로젝트가 gate로 막는 행동을 승인하지 않는다. [`references/safety-and-observability.ko.md`](references/safety-and-observability.ko.md)의 authorization matrix를 따른다.
 
 ## Command family 해석
 

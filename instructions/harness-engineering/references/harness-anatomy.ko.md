@@ -34,7 +34,7 @@ can't access in-context while running effectively doesn't exist."이다. 위키�
 |---|---|---|---|
 | 지시 계층 | 목표·범위·형식에 관해 모델이 듣는 것 | 에이전트가 엉뚱한 목표를 자신 있게 최적화한다 | smoke eval, `## Prompt / Role Instruction Smoke Eval` |
 | 도구 표면 | 어떤 행동이 있고 어떤 스키마와 부작용을 갖는지 | 엉뚱한 도구로 즉흥 처리하거나 게이트를 우회한다 | trace assertion, `must_call` / `must_not_call` |
-| 컨텍스트 관리자 | 무엇이 언제 어느 경로로 창에 들어가는지(선로드, 검색, 압축) | 창이 차면서 회수율이 떨어지는 컨텍스트 부패 | [`measurement.md`](measurement.md)의 컨텍스트 변수 |
+| 컨텍스트 관리자 | 무엇이 언제 어느 경로로 창에 들어가는지(선로드, 검색, 압축) | 창이 차면서 회수율이 떨어지는 컨텍스트 부패 | [`measurement.ko.md`](measurement.ko.md)의 컨텍스트 변수 |
 | 실행 경계 | 모델이 쓴 코드와 명령이 실제로 도는 장소 | 잘못된 단계가 프로덕션이나 자격증명에 닿는다 | 격리 증거, HE-E-5 |
 | 검증기·센서 | 에이전트가 틀렸다는 사실을 행동 가능한 형태로 알려 주는 것 | 스스로를 긍정 평가하고 일찍 멈춘다 | HE-R-4, red-team 케이스 |
 | trace·모니터 | 무엇을 어떤 순서로 어떤 인자로 시도했는지 | 실패가 보이지 않고 최종 답만 검토된다 | `## Trace Fields` |

@@ -135,7 +135,7 @@ Codex는 같은 두 층을 다른 이름으로 노출한다. 샌드박스 정책
 | 크레딧 기반 과금과 작업당 크레딧 범위 | <https://learn.chatgpt.com/docs/pricing> | 2026-11-03 확인 |
 | 예약 작업: 이벤트·시간 트리거, 기본 샌드박스, 사람 없는 실행의 승인 정책, 워크트리 누적 | <https://learn.chatgpt.com/docs/automations> | 2026-11-03 확인 |
 | 샌드박스·승인 정책. `untrusted` 미지원 | <https://learn.chatgpt.com/docs/agent-approvals-security> | 2026-11-03 확인 |
-| 목표는 같은 샌드박스와 승인 정책을 유지한다 | <https://learn.chatgpt.com/docs/codex/cli> | 2026-11-03 확인 |
+| 목표는 같은 샌드박스와 승인 정책을 유지한다 | <https://learn.chatgpt.com/docs/long-running-work> | 2026-11-03 확인 |
 | 20% 빨라졌다고 믿은 상태에서 19% 느려짐 | <https://arxiv.org/abs/2507.09089> | 2025-07-12, 2026-11-03 확인 |
 | 이해 부채, 인지적 위임, 의도 부채, 도장 찍기 리뷰, 비용 로그 품질 | <https://arxiv.org/abs/2608.21884> | 2026-08-22, 2026-10-22 개정, 2026-11-03 확인 |
 | 토큰 비용 경고와 루프 엔지니어링의 실무적 정의 | <https://addyosmani.com/blog/loop-engineering/> | 2026-06-07, 2026-11-03 확인 |

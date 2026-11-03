@@ -244,7 +244,8 @@ lint, typecheck, build, test 같은 프로젝트 게이트를 재현하고, 실�
 hypercore/
 ├── cli/                   # @kood/* 도구 모노레포 (pnpm workspace)
 │   └── packages/
-│       └── color/         # @kood/color-cli — hex / rgb / oklch 색상 변환 CLI
+│       ├── color/         # @kood/color-cli — hex / rgb / oklch 색상 변환 CLI
+│       └── naver-api/     # @kood/naver-api-cli — Naver API HUB 검색·DataLab·쇼핑인사이트 CLI
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/sourcing/validation)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
 └── skills/                # 34개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
@@ -296,9 +297,9 @@ CLI 패키지(`cli/`)만 빌드/테스트가 필요합니다. 스킬은 모두 �
 
 ```bash
 pnpm install            # cli/ 워크스페이스 의존성 설치
-pnpm -C cli build       # 모든 cli 패키지 빌드 (현재: @kood/color-cli)
+pnpm -C cli build       # 모든 cli 패키지 빌드 (현재: @kood/color-cli, @kood/naver-api-cli)
 pnpm -C cli test        # 모든 cli 패키지 테스트
-pnpm -C cli lint        # ESLint 9
+pnpm -C cli lint        # oxlint
 pnpm -C cli format      # Prettier
 ```
 

@@ -26,7 +26,7 @@ Two consequences for a design standard:
 | Benchmark | Scale | Scoring | Headline result at publication |
 |---|---|---|---|
 | MLE-bench (OpenAI, 2024-10) | 75 Kaggle ML-engineering competitions | medal thresholds calibrated against human leaderboards | o1-preview with AIDE scaffolding reached at least bronze-medal level in 16.9% of competitions |
-| RE-Bench (METR, 2024-11) | 7 open-ended ML research-engineering environments, 71 eight-hour attempts by 61 human experts | normalized score, human baseline | best agents scored about 4× human experts at a 2-hour budget; humans narrowly exceeded the best agent at 32 hours |
+| RE-Bench (METR, 2024-11) | 7 open-ended ML research-engineering environments, 71 eight-hour attempts by 61 human experts | normalized score, human baseline | best agents scored about 4× human experts at a 2-hour budget; humans narrowly exceeded the best agent at an 8-hour budget and reached about 2× the best agent's score at 32 total hours |
 
 RE-Bench is the clearest published demonstration that an agent ranking is a function of the time budget: the same comparison reverses between 2 hours and 32 hours. A benchmark score without its budget triple (agent, time, compute) is not a measurement. Apply the same rule inside a project loop: the per-candidate measurement budget belongs to the metric definition, not to the scheduler, because changing it silently invalidates every stored frontier value.
 
@@ -73,7 +73,7 @@ The design lesson is not "run longer." It is that long autonomous runs are bound
 | Self-modifying agent, SWE-bench 20.0% → 50.0%, Polyglot 14.2% → 30.7% | <https://arxiv.org/abs/2505.22954> | PAPER (ICLR 2026) |
 | Open-source AlphaEvolve-style implementation using MAP-Elites and islands | <https://github.com/algorithmicsuperintelligence/openevolve> | PRACTITIONER |
 | 75 Kaggle competitions, 16.9% bronze-medal level for o1-preview with AIDE | <https://arxiv.org/abs/2410.07095> | PAPER |
-| 7 environments, 71 eight-hour expert attempts, 4× at two hours, human crossover at 32 hours | <https://arxiv.org/abs/2411.15114> | PAPER |
+| 7 environments, 71 eight-hour expert attempts, 4× at two hours, humans narrowly ahead at eight hours and about 2× at 32 hours | <https://arxiv.org/abs/2411.15114> | PAPER |
 | End-to-end agentic research system, workshop-level acceptance | <https://arxiv.org/abs/2504.08066> | PAPER |
 | Up to 12-hour runs, ~200 rollouts, coherence limit | <https://arxiv.org/abs/2511.02824> | PAPER |
 | Multi-agent hypothesis tournament with in-vitro validation | <https://arxiv.org/abs/2502.18864> | PAPER |

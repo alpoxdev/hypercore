@@ -262,7 +262,8 @@ Loop 선택은 [`references/prompt-loop-eval.ko.md`](references/prompt-loop-eval
 | with/without 기준선을 핵심 eval 패턴으로 두는 것, 실행별 비용 기록 | <https://agentskills.io/skill-creation/evaluating-skills> |
 | 컨텍스트 2%/8,000자 목록 예산, `skills.max_context_tokens`, `.agents/skills` 탐색, user/admin/system 범위, 같은 `name` 비병합, symlink 추적, `[[skills.config]]`, `agents/openai.yaml`, `/skills`·`$` 호출, plugin 권장 | <https://learn.chatgpt.com/docs/build-skills> |
 | skill 위치, `/skill-name` 호출, 통합된 command 형식, 컨텍스트 1% 목록 예산, 항목당 1,536자 제한, Claude Code frontmatter 확장 목록 | <https://code.claude.com/docs/en/skills> |
-| 약 100토큰 metadata, 5k 토큰 본문 권장, 예약어, API 요청당 20개 제한 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| 약 100토큰 metadata, 5k 토큰 본문 권장, 예약어 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| API 요청당 20개 제한 | <https://platform.claude.com/docs/en/build-with-claude/skills-guide> |
 | 버전 고정, 업데이트 시 재검토, rollback, checksum, 표면 간 비동기화 경고 | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
 | `npx skills` 명령 집합, 지원 agent 수, 공통 `.agents/skills/` 프로젝트 경로, Node 22.20 요구 | <https://github.com/vercel-labs/skills> |
 | 98개 중 92개 무효과, 76.6%에서 76.9%, 도움이 되는 skill과 해로운 skill의 실패 양상 | <https://arxiv.org/abs/2603.15401> |

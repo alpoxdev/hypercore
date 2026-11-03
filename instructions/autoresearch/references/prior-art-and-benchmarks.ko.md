@@ -26,7 +26,7 @@
 | Benchmark | Scale | Scoring | 발표 시점 대표 결과 |
 |---|---|---|---|
 | MLE-bench (OpenAI, 2024-10) | Kaggle ML 엔지니어링 대회 75개 | 사람 leaderboard로 보정한 medal 기준 | o1-preview와 AIDE scaffolding 조합이 대회의 16.9%에서 최소 bronze medal 수준에 도달 |
-| RE-Bench (METR, 2024-11) | 공개형 ML 연구 엔지니어링 환경 7개, 사람 전문가 61명의 8시간 시도 71회 | 정규화 점수, 사람 baseline | 2시간 예산에서 최고 agent가 사람 전문가의 약 4배 점수, 32시간에서는 사람이 최고 agent를 근소하게 앞섬 |
+| RE-Bench (METR, 2024-11) | 공개형 ML 연구 엔지니어링 환경 7개, 사람 전문가 61명의 8시간 시도 71회 | 정규화 점수, 사람 baseline | 2시간 예산에서 최고 agent가 사람 전문가의 약 4배 점수, 8시간에서는 사람이 최고 agent를 근소하게 앞서고 총 32시간에서는 사람이 최고 agent의 약 2배 점수 |
 
 RE-Bench는 agent 순위가 시간 예산의 함수라는 점을 공개적으로 보여준 가장 분명한 사례다. 같은 비교가 2시간과 32시간 사이에서 뒤집힌다. 예산 세 요소(agent, 시간, 연산)를 함께 적지 않은 benchmark 점수는 측정이 아니다. 프로젝트 loop 안에서도 규칙은 같다. 후보당 측정 예산은 scheduler가 아니라 metric 정의에 속한다. 이 값을 조용히 바꾸면 저장된 모든 frontier 값의 비교 가능성이 무효가 된다.
 
@@ -73,7 +73,7 @@ MLE-bench는 외부 보정의 한계도 보여준다. Benchmark 자체가 공개
 | 자기 수정 agent, SWE-bench 20.0% → 50.0%, Polyglot 14.2% → 30.7% | <https://arxiv.org/abs/2505.22954> | PAPER (ICLR 2026) |
 | MAP-Elites와 island를 쓰는 AlphaEvolve 계열 open source 구현 | <https://github.com/algorithmicsuperintelligence/openevolve> | PRACTITIONER |
 | Kaggle 대회 75개, o1-preview와 AIDE의 16.9% bronze medal 수준 | <https://arxiv.org/abs/2410.07095> | PAPER |
-| 환경 7개, 전문가 8시간 시도 71회, 2시간에서 4배, 32시간에서 사람이 역전 | <https://arxiv.org/abs/2411.15114> | PAPER |
+| 환경 7개, 전문가 8시간 시도 71회, 2시간에서 4배, 8시간에서 사람이 근소하게 앞서고 32시간에서 사람이 약 2배 | <https://arxiv.org/abs/2411.15114> | PAPER |
 | End-to-end agentic 연구 시스템, workshop 수준 채택 | <https://arxiv.org/abs/2504.08066> | PAPER |
 | 최대 12시간 실행, rollout 약 200회, 일관성 한계 | <https://arxiv.org/abs/2511.02824> | PAPER |
 | in-vitro 검증을 포함한 multi-agent 가설 tournament | <https://arxiv.org/abs/2502.18864> | PAPER |

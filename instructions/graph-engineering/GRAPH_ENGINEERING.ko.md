@@ -6,7 +6,7 @@
 
 ## Why
 
-이름은 새롭고 대상은 오래되었다. LangChain의 회고는 이 표현이 2026년 7월 어느 주말, 게시물 하나에서 시작되었다고 기록하고, 같은 채널에서 나온 prompt engineering, context engineering, harness engineering, loop engineering 옆에 놓는다([LangChain, 2026-07-22](https://www.langchain.com/blog/3-years-of-graph-engineering-with-langgraph)). Google Cloud는 열 주 뒤에 두 번째 정의를 냈고([Google Cloud, 2026-09-30](https://cloud.google.com/blog/topics/developers-practitioners/graph-workflows-in-adk-everything-you-need-to-know)), 저자 35명의 프리프린트는 그보다 앞선 8월에 이미 이 개념을 하나의 패러다임으로 정식화했다([arXiv 2608.21156](https://arxiv.org/abs/2608.21156)). 세 자료 모두 실천 자체는 이름보다 앞선다고 말한다. 상태 기계, DAG, 워크플로 엔진은 수십 년 동안 같은 방식으로 일을 모델링해 왔고, Anthropic은 2024년 12월에 반복되는 모양들을 이미 이름 붙였다([Anthropic, 2024-12-19](https://www.anthropic.com/research/building-effective-agents)).
+이름은 새롭고 대상은 오래되었다. LangChain의 회고는 이 표현이 2026년 7월 어느 주말, 게시물 하나에서 시작되었다고 기록하고, 같은 채널에서 나온 prompt engineering, context engineering, harness engineering, loop engineering 옆에 놓는다([LangChain, 2026-07-22](https://www.langchain.com/blog/3-years-of-graph-engineering-with-langgraph)). Google Cloud는 열 주 뒤에 자체 정의를 냈고([Google Cloud, 2026-09-30](https://cloud.google.com/blog/topics/developers-practitioners/graph-workflows-in-adk-everything-you-need-to-know)), 저자 35명의 프리프린트는 그보다 앞선 8월에 이미 이 개념을 하나의 패러다임으로 정식화했다([arXiv 2608.21156](https://arxiv.org/abs/2608.21156)). 세 자료 모두 실천 자체는 이름보다 앞선다고 말한다. 상태 기계, DAG, 워크플로 엔진은 수십 년 동안 같은 방식으로 일을 모델링해 왔고, Anthropic은 2024년 12월에 반복되는 모양들을 이미 이름 붙였다([Anthropic, 2024-12-19](https://www.anthropic.com/research/building-effective-agents)).
 
 그래도 이 이름이 자리를 얻는 이유는, 그동안 암묵적으로 남아 있던 결정을 이름으로 드러내기 때문이다. **에이전트 시스템의 어느 부분까지 모델이 결정하게 두고, 어느 부분은 반드시 코드여야 하는가.** 시스템이 루프 하나를 넘어서면 프롬프트 문구와 루프 조정은 더 큰 구조 안의 국소 결정이 되고, 그 구조는 자기 기준으로 설계해야 한다([PuppyGraph, 2026-08-24](https://www.puppygraph.com/learn/graph-engineering)).
 
@@ -14,7 +14,7 @@
 
 **GE-1.** 그래프 엔지니어링은 에이전트 시스템을 노드로 분해하고, 노드를 엣지로 연결하고, 엣지를 따라 이동하는 상태를 규정하는 설계 작업이다. 각 단계에서 코드와 모델과 사람 중 누가 다음 실행을 결정하는지도 여기에서 정한다.
 
-이 문장은 2026년의 정의 세 가지를 이 저장소에서 종합한 것이지, 어느 하나를 그대로 인용한 것이 아니다. Google Cloud는 이 분야를 "작업을 노드로 나누고, 엣지로 연결하고, 코드와 모델과 사람 중 누가 다음 단계를 통제하는지 정하는 일"로 정의한다. PuppyGraph는 "에이전트 시스템이 실행하는 그래프, 즉 일을 하는 노드, 노드 사이로 작업을 보내는 엣지, 그 엣지를 따라 이동하는 공유 상태를 설계하는 실천"으로 정의한다. 첫 번째는 라우팅 권한을 다루고 상태를 빼놓으며, 두 번째는 상태를 다루고 라우팅 권한을 빼놓는다. 둘 다 필요하다.
+이 문장은 2026년의 정의 두 가지를 이 저장소에서 종합한 것이지, 어느 하나를 그대로 인용한 것이 아니다. Google Cloud는 이 분야를 "작업을 노드로 나누고, 엣지로 연결하고, 코드와 모델과 사람 중 누가 다음 단계를 통제하는지 정하는 일"로 정의한다. PuppyGraph는 "에이전트 시스템이 실행하는 그래프, 즉 일을 하는 노드, 노드 사이로 작업을 보내는 엣지, 그 엣지를 따라 이동하는 공유 상태를 설계하는 실천"으로 정의한다. 첫 번째는 라우팅 권한을 다루고 상태를 빼놓으며, 두 번째는 상태를 다루고 라우팅 권한을 빼놓는다. 둘 다 필요하다.
 
 **GE-2.** 그래프는 그림이 아니라 계약이다. 실제로 배포되는 산출물은 노드의 입력·출력 스키마, 허용된 엣지 집합, 필드마다 병합 규칙을 붙인 상태 스키마다. 그림은 그 계약을 그린 것이며, 스키마 없는 다이어그램은 의도의 기록일 뿐이다.
 

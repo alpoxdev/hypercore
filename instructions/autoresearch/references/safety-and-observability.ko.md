@@ -24,7 +24,7 @@ Write/delete 전에 real path와 symlink를 resolve한다. Ownership 밖 target�
 - Git 문서는 linked worktree를 “linked to the current repository, sharing everything except per-worktree files such as `HEAD`, `index`, etc.”라고 설명한다. 실제로는 ref, 기본 repository config, hook, remote, object database를 공유한다. 유용한 isolation이지만 security boundary가 아니다.
 - Retained mutating work에는 unique run-owned branch/ref를 사용하고 other-worktree branch safeguard를 우회하지 않는다.
 - Detached `HEAD`는 read-only inspection 또는 intentionally disposable experiment에 허용된다. Retained state가 unreachable해지기 전에 run-owned named ref 또는 immutable content snapshot으로 anchor하고 검증한다.
-- Shared ref, common config, hook, remote, stash, maintenance state는 명시적으로 scope에 포함되고 별도 checkpoint가 없으면 수정하지 않는다.
+- Shared ref, common config, hook, remote, stash, maintenance state는 명시적으로 scope에 포함되고 별도로 checkpoint된 경우가 아니면 수정하지 않는다.
 - Commit은 index를 기록하지만 whole workspace 전체를 기록하지는 않는다. Plain patch도 staged, untracked, ignored, binary, mode, symlink, submodule, external state를 빠뜨릴 수 있다. Checkpoint coverage를 선언한다.
 
 공식 Git semantics, 확인 2026-11-03: [`git-worktree`](https://git-scm.com/docs/git-worktree), [`git-reset`](https://git-scm.com/docs/git-reset), [`git-apply`](https://git-scm.com/docs/git-apply), [`git-checkout`](https://git-scm.com/docs/git-checkout#_detached_head).

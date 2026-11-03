@@ -262,7 +262,8 @@ Read [`references/validation.md`](references/validation.md) for the detailed ver
 | With/without baseline as the core eval pattern, and the per-run cost record | <https://agentskills.io/skill-creation/evaluating-skills> |
 | The 2%-of-context / 8,000-character listing budget, `skills.max_context_tokens`, the `.agents/skills` walk, the user/admin/system scopes, non-merging of same-`name` skills, symlink following, `[[skills.config]]`, `agents/openai.yaml`, `/skills` and `$` invocation, and the plugin recommendation | <https://learn.chatgpt.com/docs/build-skills> |
 | Skill locations, `/skill-name` invocation, the merged command format, the 1%-of-context listing budget, the 1,536-character per-entry cap, and the Claude Code frontmatter extension list | <https://code.claude.com/docs/en/skills> |
-| ~100-token metadata, the 5k-token body guidance, the reserved name words, and the 20-skills-per-request API limit | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| ~100-token metadata, the 5k-token body guidance, and the reserved name words | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |
+| The 20-skills-per-request API limit | <https://platform.claude.com/docs/en/build-with-claude/skills-guide> |
 | Version pinning, re-review on update, rollback, checksums, and the no-cross-surface-sync warning | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
 | The `npx skills` command set, the supported-agent count, the shared `.agents/skills/` project path, and the Node 22.20 requirement | <https://github.com/vercel-labs/skills> |
 | The 92-of-98 no-effect result, the 76.6% to 76.9% average, and the helpful-versus-harmful skill failure modes | <https://arxiv.org/abs/2603.15401> |

@@ -62,7 +62,7 @@ The portability cost is real: claude.ai uploads and the Skills API **reject** an
 
 ### Progressive disclosure budgets
 
-The budget figures are **not restated here**. [`progressive-disclosure.md`](progressive-disclosure.md) §5 is the canonical statement of the stage budgets and the 500-line / 5,000-token limits; read it there. This section owns only what is specific to frontmatter and file layout:
+The stage budgets are in §1, the `SKILL.md` line limit and the repository gate are in §5, and the runtime listing budgets are in §7 of [`progressive-disclosure.md`](progressive-disclosure.md). This section repeats only what frontmatter and file layout need:
 
 - **Codex** caps the initial list at 2% of the model context, or 8,000 characters when the context window is unknown, and `skills.max_context_tokens` raises the cap up to 10,000 tokens. When many skills are installed, Codex shortens descriptions first and **may omit some skills from the initial list entirely**, with a warning (<https://learn.chatgpt.com/docs/build-skills>, checked 2026-11-03). Put the key trigger up front.
 - **Claude Code** scales the listing to 1% of the model's context window, caps each entry's combined `description` + `when_to_use` at 1,536 characters, and drops descriptions starting with the least-invoked skills when the listing overflows. `skillListingBudgetFraction`, `SLASH_COMMAND_TOOL_CHAR_BUDGET`, and `skillListingMaxDescChars` change those budgets (<https://code.claude.com/docs/en/skills>, checked 2026-11-03).

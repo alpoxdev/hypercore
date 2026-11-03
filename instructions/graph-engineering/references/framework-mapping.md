@@ -56,7 +56,7 @@ Do not carry these between runtimes as if they were concepts:
 - **The state model.** A reducer map, a run-scoped state object, and script variables solve the same problem with different guarantees about ordering and durability.
 - **Resume behavior.** LangGraph's node restarts; ADK's dynamic nodes replay completed child calls. A design that assumes one behaves incorrectly on the other.
 - **Whether the graph is the product.** Anthropic publishes patterns without a runtime; Claude Code ships a script runtime; Microsoft ships a workflow runtime with visualization; LangGraph and ADK ship graph builders.
-- **Version surfaces.** ADK states that starting in 2.0 for Python and Go, template workflow agents are superseded by graph-based and dynamic workflows. Microsoft's functional workflow API is labeled experimental in Python. Pinning a version is part of citing a behavior.
+- **Version surfaces.** ADK supports graph-based workflows from 2.0 in Python, TypeScript, and Go ([ADK routes](https://adk.dev/graphs/routes/)). Microsoft's functional workflow API is labeled experimental in Python. Pinning a version is part of citing a behavior.
 
 ## Feature claims worth re-checking before a decision
 
@@ -79,7 +79,7 @@ Do not carry these between runtimes as if they were concepts:
 | Executors, edges, events, state, graph vs functional APIs, superstep checkpoints, `RequestInfoExecutor` | <https://learn.microsoft.com/en-us/agent-framework/concepts/workflows/> | 2026-10-22, updated 2026-10-28 |
 | Checkpoint contents including pending requests; restore re-emits requests | <https://learn.microsoft.com/en-us/agent-framework/workflows/checkpoints> | updated 2026-11-01 |
 | Node kinds, edges array, route values, `DEFAULT_ROUTE`, `JoinNode` | <https://adk.dev/graphs/routes/> | no date shown |
-| `RequestInput`, `rerun_on_resume`, `ctx.resume_inputs`, template agents superseded in 2.0 | <https://cloud.google.com/blog/topics/developers-practitioners/graph-workflows-in-adk-everything-you-need-to-know> | 2026-09-30 |
+| `RequestInput`, `rerun_on_resume`, `ctx.resume_inputs` | <https://cloud.google.com/blog/topics/developers-practitioners/graph-workflows-in-adk-everything-you-need-to-know> | 2026-09-30 |
 | Agents as tools vs handoffs, orchestration via LLM vs via code | <https://openai.github.io/openai-agents-python/multi_agent/> | no date shown |
 | Dynamic workflow as a JS script, resumable, progress view | <https://code.claude.com/docs/en/workflows> | no date shown |
 | Five workflow patterns named before the term existed | <https://www.anthropic.com/research/building-effective-agents> | 2024-12-19, updated 2026-10-09 |

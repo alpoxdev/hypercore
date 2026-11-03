@@ -185,10 +185,12 @@ Recommended locations:
 
 ```text
 .hyper/research/[NN].slug.md                 # Final report
-.hyper/research/cache/[slug]/sources.md      # Optional: source notes for long work
-.hyper/research/cache/[slug]/queries.md      # Optional: query log for long work
-.hyper/research/cache/[slug]/findings.md     # Optional: interim findings for long work
+.hyper/research/[NN].slug/sources.md         # Optional: source ledger for long work
+.hyper/research/[NN].slug/queries.md         # Optional: query log for long work
+.hyper/research/[NN].slug/claims.md          # Optional: interim findings for long work
 ```
+
+`skills/hyper-research/references/journal-format.md` defines this layout; follow it when the journal already exists.
 
 Minimum source ledger fields:
 

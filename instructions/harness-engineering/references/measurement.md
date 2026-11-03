@@ -55,10 +55,10 @@ inside that reported band. Two caveats attach to quoting it:
 - **The task set behind the number changed.** The retail and airline domains were audited and
   rewritten in 2026: "We audited and fixed 50+ tasks across the airline and retail domains in
   τ-bench" (27 airline, 26 retail).
-- **The reported depth moved.** τ²-bench runs "each task … four times, maintaining a consistent LLM
-  temperature of 0", so its leaderboards report `pass^1` and `pass^4`; the current release scores
-  the shipped benchmarks at one trial and defines `pass^k` as "the share of tasks passed in all k
-  trials". Eight is a depth this repository chose, not the depth the benchmark now publishes.
+- **The reported depth moved.** The 1.x submission guide preferred "at least 4 trials per domain for
+  statistical reliability" and the v1.0.1 re-grade table reports `pass^4`; the current release
+  scores the shipped benchmarks at one trial and defines `pass^k` as "the share of tasks passed in
+  all k trials". Eight is a depth this repository chose, not the depth the benchmark now publishes.
 
 The practical consequence is unchanged: reporting only `pass@k` hides inconsistency. Eight
 independent trials that all succeed is the reliability claim; `pass^k` is the metric that falls as
@@ -120,11 +120,11 @@ Two rules follow, and both belong in the eval record rather than in a footnote:
 
 - **Declare the resource configuration.** A result without CPU/GPU allocation, timeouts, and
   concurrency cannot be compared with a later result that used different ones.
-- **Account for harness faults separately.** The benchmark that quotes itself most precisely on this
-  excludes them from the denominator: "Calls that ended in an infrastructure error are the
-  exception: they are harness faults, so they are excluded from the denominator and reported as
-  `error_trials`." That is the same discipline as HE-E-6 — an error is recorded, not averaged in as
-  a failure, and never counted as a pass.
+- **Account for harness faults separately.** The v1.0.1 re-grade states its convention: `pass^k` is
+  recomputed "counting infrastructure-error simulations as failed trials (the leaderboard
+  convention)", so a harness fault is visible in the metric rather than silently dropped. HE-E-6
+  makes a different call — harness-fault trials leave the denominator and are reported as error
+  trials — but both declare the treatment in the record instead of leaving it implicit.
 
 ### Grader
 
@@ -260,8 +260,8 @@ reliability. The current published estimate puts the post-2023 doubling time at 
 instrument: "Measurements above 16 hrs are unreliable with our current task suite."
 
 Quote the surface as well as the number. The published table and the dashboard's data file differ
-by a couple of days (130.8 versus ~128.7 post-2023; 196.5 versus ~187.8 all-period) because the data
-file excludes points above the 16-hour reliability bound.
+by up to about nine days (130.8 versus ~128.7 post-2023; 196.5 versus ~187.8 all-period) because the
+data file excludes points above the 16-hour reliability bound.
 
 ## Sources
 
@@ -273,7 +273,8 @@ file excludes points above the 16-hour reliability bound.
 |---|---|---|
 | `pass^k` definition, the `pass^8 < 25%` retail figure, and the inconsistency finding | <https://arxiv.org/abs/2406.12045> | PRIMARY |
 | Retail and airline task audit ("50+ tasks", 27 airline / 26 retail) | <https://taubench.com/blog/tau3-task-fixes.html> | PRIMARY |
-| Four trials per task, `pass^4` reporting depth, `error_trials` accounting, and "Scores are not comparable with 1.x" | <https://github.com/sierra-research/tau2-bench/releases/tag/v2.0.0> | PRIMARY |
+| "Scores are not comparable with 1.x" — the grading change invalidates version comparison | <https://github.com/sierra-research/tau2-bench/releases/tag/v2.0.0> | PRIMARY |
+| Trial depth: the 1.x guide's preference for at least four trials per domain, one-trial scoring of the shipped benchmarks, and the `pass^k` definition | <https://github.com/sierra-research/tau2-bench/blob/v1.0.1/docs/leaderboard-submission.md>, <https://github.com/sierra-research/tau2-bench/blob/v2.0.0/docs/glossary.md> | PRIMARY |
 | Re-grading moving `pass^1` by up to ~9 points on unchanged trajectories | <https://github.com/sierra-research/tau2-bench/releases/tag/v1.0.1> | PRIMARY |
 | Benchmark authors' framing of reliability over repeated trials | <https://sierra.ai/blog/tau-bench-shaping-development-evaluation-agents> | VENDOR |
 | Infrastructure noise: 6pp on Terminal-Bench 2.0, 1.54pp on SWE-bench, and the "below 3 percentage points" rule | <https://www.anthropic.com/research/infrastructure-noise> | VENDOR |

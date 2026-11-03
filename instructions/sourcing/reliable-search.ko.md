@@ -185,10 +185,12 @@ WebSearch({ query: `Korea SaaS market trends as of ${runtime.currentDate}` })
 
 ```text
 .hyper/research/[NN].slug.md                 # 최종 리포트
-.hyper/research/cache/[slug]/sources.md      # 선택: 긴 작업의 소스 메모
-.hyper/research/cache/[slug]/queries.md      # 선택: 긴 작업의 쿼리 로그
-.hyper/research/cache/[slug]/findings.md     # 선택: 긴 작업의 중간 발견
+.hyper/research/[NN].slug/sources.md         # 선택: 긴 작업의 소스 원장
+.hyper/research/[NN].slug/queries.md         # 선택: 긴 작업의 쿼리 로그
+.hyper/research/[NN].slug/claims.md          # 선택: 긴 작업의 중간 발견
 ```
+
+이 배치는 `skills/hyper-research/references/journal-format.md`가 정의한다. journal이 이미 있으면 그 파일을 따른다.
 
 소스 레저 최소 필드:
 

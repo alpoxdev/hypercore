@@ -56,7 +56,7 @@ Microsoft가 스스로 정리한 맞바꿈도 기억할 만하다. 함수형 API
 - **상태 모델.** reducer 사전, 실행 범위 상태 객체, 스크립트 변수는 같은 문제를 풀지만 정렬과 지속성에 대한 보장이 다르다.
 - **재개 동작.** LangGraph의 노드는 다시 시작하고, ADK의 동적 노드는 완료된 자식 호출을 재생한다. 한쪽을 전제로 한 설계는 다른 쪽에서 틀린다.
 - **그래프가 제품인지 여부.** Anthropic은 런타임 없이 패턴을 공개하고, Claude Code는 스크립트 런타임을, Microsoft는 시각화가 붙은 워크플로 런타임을, LangGraph와 ADK는 그래프 빌더를 제공한다.
-- **버전 표면.** ADK는 Python과 Go의 2.0부터 template workflow agent가 그래프 기반·동적 워크플로로 대체되었다고 밝힌다. Microsoft의 함수형 워크플로 API는 Python에서 실험 단계로 표시된다. 동작을 인용할 때는 버전을 고정하는 것이 인용의 일부다.
+- **버전 표면.** ADK는 2.0부터 Python, TypeScript, Go에서 그래프 기반 워크플로를 지원한다([ADK routes](https://adk.dev/graphs/routes/)). Microsoft의 함수형 워크플로 API는 Python에서 실험 단계로 표시된다. 동작을 인용할 때는 버전을 고정하는 것이 인용의 일부다.
 
 ## Feature claims worth re-checking before a decision
 
@@ -79,7 +79,7 @@ Microsoft가 스스로 정리한 맞바꿈도 기억할 만하다. 함수형 API
 | executor, 엣지, 이벤트, 상태, 그래프 API와 함수형 API, 슈퍼스텝 체크포인트, `RequestInfoExecutor` | <https://learn.microsoft.com/en-us/agent-framework/concepts/workflows/> | 2026-10-22, 갱신 2026-10-28 |
 | 대기 요청을 포함한 체크포인트 내용, 복원 시 요청 재발행 | <https://learn.microsoft.com/en-us/agent-framework/workflows/checkpoints> | 갱신 2026-11-01 |
 | 노드 종류, edges 배열, 경로 값, `DEFAULT_ROUTE`, `JoinNode` | <https://adk.dev/graphs/routes/> | 날짜 표기 없음 |
-| `RequestInput`, `rerun_on_resume`, `ctx.resume_inputs`, 2.0에서 template agent 대체 | <https://cloud.google.com/blog/topics/developers-practitioners/graph-workflows-in-adk-everything-you-need-to-know> | 2026-09-30 |
+| `RequestInput`, `rerun_on_resume`, `ctx.resume_inputs` | <https://cloud.google.com/blog/topics/developers-practitioners/graph-workflows-in-adk-everything-you-need-to-know> | 2026-09-30 |
 | agents as tools와 handoff, LLM 오케스트레이션과 코드 오케스트레이션 | <https://openai.github.io/openai-agents-python/multi_agent/> | 날짜 표기 없음 |
 | JS 스크립트로서의 동적 워크플로, 재개 가능, 진행 보기 | <https://code.claude.com/docs/en/workflows> | 날짜 표기 없음 |
 | 용어가 생기기 전에 이름 붙은 다섯 워크플로 패턴 | <https://www.anthropic.com/research/building-effective-agents> | 2024-12-19, 갱신 2026-10-09 |

@@ -97,7 +97,7 @@ Two rules keep the split honest:
 | 3 | Which material should be trusted? | Name official docs, repo evidence, user-supplied material, and dates |
 | 4 | Which workflow is safe? | Write observable stages such as explore -> plan -> execute -> verify -> report |
 | 5 | Which output means success? | Fix the schema, table, markdown section, or file path |
-| 6 | How will regressions be caught? | Keep at least 3-5 smoke evals or failure examples |
+| 6 | How will regressions be caught? | Keep failure examples as a smoke set, and declare its case count and per-case run count (no fixed minimum; see [`HARNESS_ENGINEERING.md`](../../harness-engineering/HARNESS_ENGINEERING.md) `## Prompt / Role Instruction Smoke Eval`) |
 
 ## 4. Good and bad examples
 
@@ -180,7 +180,7 @@ Draft -> Smoke eval -> Failure diagnosis -> Small patch -> Re-run -> Version not
 | Stage | What to do |
 |---|---|
 | Draft | Fill in the Prompt Contract |
-| Smoke eval | Run at least 3-5 normal, edge, adversarial, and missing-context cases |
+| Smoke eval | Run the declared smoke set over normal, edge, adversarial, and missing-context cases, at the per-case run count you declared (no fixed minimum) |
 | Diagnose | Classify failures as insufficient instruction, insufficient context, output schema problem, or model mismatch |
 | Patch | Modify the smallest document surface |
 | Re-run | Run the same eval again to check for regression |
@@ -215,7 +215,7 @@ Draft -> Smoke eval -> Failure diagnosis -> Small patch -> Re-run -> Version not
 
 Two vendor facts changed the advice in this document and are worth restating here. First, do not architect around OpenAI's reusable prompt objects: the API surface is being retired on 2026-11-30. Second, do not architect around prefilled assistant turns: current Claude models reject them on the last assistant turn with a 400 error.
 
-Local re-verification cache (untracked): `.hyper/research/2026-06-02-official-llm-prompt-instructions-update.md`, `.hyper/research/2026-07-29-instructions-base-source-refresh.md`. `.hyper/` is covered by `.gitignore` and does not exist in another clone. The URLs above are this document's evidence; the cache paths are supplementary and do not substitute for them.
+Local re-verification notes live in untracked `.hyper/research/`. `.hyper/` is covered by `.gitignore` and does not exist in another clone. The URLs above are this document's evidence; local notes are supplementary and do not substitute for them.
 
 ## Related documents
 

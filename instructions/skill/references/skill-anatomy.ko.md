@@ -62,7 +62,7 @@ Agent Skills specification 기준입니다(<https://agentskills.io/specification
 
 ### Progressive disclosure 예산
 
-예산 수치는 **여기서 다시 적지 않습니다**. 단계별 예산과 500줄·5,000토큰 한도의 canonical 서술은 [`progressive-disclosure.ko.md`](progressive-disclosure.ko.md) §5에 있습니다. 이 절은 frontmatter와 파일 배치에 특유한 부분만 다룹니다.
+단계별 예산은 [`progressive-disclosure.ko.md`](progressive-disclosure.ko.md) §1, `SKILL.md` 줄 수 한도와 저장소 gate는 §5, 런타임별 목록 예산은 §7에 있습니다. 이 절은 frontmatter와 파일 배치에 필요한 부분만 다시 적습니다.
 
 - **Codex**는 초기 목록을 모델 컨텍스트의 2%, 컨텍스트 크기를 모를 때는 8,000자로 제한하고, `skills.max_context_tokens`로 최대 10,000토큰까지 올릴 수 있습니다. skill이 많으면 설명을 먼저 줄이고, **일부 skill을 초기 목록에서 통째로 생략하며 경고를 띄울 수 있습니다**(<https://learn.chatgpt.com/docs/build-skills>, 확인 2026-11-03). 핵심 트리거를 앞에 둡니다.
 - **Claude Code**는 목록을 모델 컨텍스트의 1%로 잡고, 항목마다 `description`과 `when_to_use`를 합친 길이를 1,536자로 제한하며, 목록이 넘치면 호출 빈도가 낮은 skill부터 설명을 버립니다. `skillListingBudgetFraction`, `SLASH_COMMAND_TOOL_CHAR_BUDGET`, `skillListingMaxDescChars`가 이 예산을 바꿉니다(<https://code.claude.com/docs/en/skills>, 확인 2026-11-03).

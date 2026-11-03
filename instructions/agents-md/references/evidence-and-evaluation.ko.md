@@ -116,7 +116,7 @@
 
 Anthropic 숫자의 배경 동작은 *왜 상한이 존재하는가*를 설명하므로 체화할 가치가 있다.
 
-> "CLAUDE.md files are loaded into the context window at the start of every session, consuming tokens alongside your conversation."
+Claude Code는 세션을 시작할 때마다 `CLAUDE.md` 파일을 읽는다. 작업 디렉터리나 그 위에 있는 파일은 시작할 때 로드되고, 하위 디렉터리에 있는 파일은 Claude가 그곳의 파일을 처음 읽거나 고칠 때 로드된다.
 
 비용은 **매 세션, 작업 시작 전에** 지불되며, 그 내용이 실제로 관련 있든 없든 마찬가지다. 이것이 instruction 파일을 에이전트가 필요할 때 읽는 문서와 구분하는 지점이고, 더 긴 파일 대신 "move reference material to skills, which load on demand"가 권장 탈출구인 이유다. 위의 측정된 증가 수치는 "몇 줄 더는 괜찮다"에 대한 반론이다. 파일이 세 배가 되는 경로가 정확히 그 몇 줄이다.
 
