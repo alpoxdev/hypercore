@@ -61,7 +61,7 @@ npx skills find hypercore --owner alpoxdev
 npx skills init my-skill
 ```
 
-`update`와 `remove`는 원격 source 정보가 기록된 lock에 의존합니다. 로컬 경로 복사나 기존 plugin 설치에는 이 provenance가 없으므로, 아래처럼 원격 source로 다시 설치해야 합니다.
+`update`는 원격 source 정보가 기록된 lock에 의존합니다. 로컬 경로로 설치한 항목은 lock에 `sourceType: local`로 남아 `update`가 건너뛰고, 기존 plugin 설치나 수동 복사에는 lock 항목 자체가 없으므로, `update`로 관리하려면 아래처럼 원격 source로 다시 설치해야 합니다. `remove`는 lock이 없어도 설치 디렉터리를 찾아 지웁니다(2026-11-04 `vercel-labs/skills` 소스 기준).
 
 ### 기존 plugin 또는 lock 없는 설치 마이그레이션
 

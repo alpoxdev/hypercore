@@ -70,7 +70,7 @@ harnessing." 하네스는 이식 가능한 산출물이 아니다. 특정 실패
 > and those assumptions are worth stress testing, both because they may be incorrect, and because
 > they can quickly go stale as models improve."
 
-한 달 뒤 Anthropic은 구체적인 사례를 보고했다. 한 모델에서 필요했던 컨텍스트 리셋 부품이 후속
+약 2주 뒤 Anthropic은 구체적인 사례를 보고했다. 한 모델에서 필요했던 컨텍스트 리셋 부품이 후속
 모델에서는 "dead weight"가 되었다. 그 부품이 보상하던 행동이 사라졌는데 부품은 남아 토큰을 쓰고
 개선을 가렸다.
 

@@ -157,4 +157,4 @@ OWASP의 agent 위협 모델은 메모리 오염, agent 사이 통신 오염, �
 | 13 | Google Workspace의 indirect prompt injection 지속 대응 | Google Security Blog | <https://blog.google/security/google-workspaces-continuous-approach-to-mitigating-indirect-prompt-injections/> | 2026-04-02 | 확인 2026-11-03 | S |
 | 14 | Defeating prompt injections by design (CaMeL) | Debenedetti 외, arXiv:2503.18813 | <https://arxiv.org/abs/2503.18813> | 2025-03-24 | 확인 2026-11-03 | S |
 
-NIST AI 600-1 PDF는 `nvlpubs.nist.gov`가 `HEAD` 요청에 404를 돌려준다. 저장소 링크 검사가 풀리도록 NIST 발행 페이지를 인용한다.
+`nvlpubs.nist.gov`는 NIST AI 600-1 PDF에 `HEAD` 요청으로 404를, `GET` 요청으로 200을 돌려준다(확인 2026-11-04). 저장소 링크 검사는 HEAD가 `400`·`404`·`405`·`501`이면 본문을 저장하지 않는 GET으로 한 번 더 요청해 그 결과로 판정하므로 PDF 주소를 그대로 인용해도 통과한다. 검사를 피하려고 인용을 돌리지 말고 주장을 담은 페이지를 고른다.

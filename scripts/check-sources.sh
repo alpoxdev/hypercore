@@ -2,7 +2,8 @@
 # check-sources.sh — instructions/ 문서의 출처 무결성 검사
 #
 # 검사 항목
-#   1. link   (네트워크) 인용 URL이 이전(3xx)되지 않았는가. 예시 URL과 코드 블록 안의 URL은 제외한다
+#   1. link   (네트워크) 인용 URL이 이전(3xx)되지 않았는가. HEAD를 거부하는 서버는 GET으로 재확인한다.
+#             예시 URL과 코드 블록 안의 URL은 제외한다
 #   2. date   (오프라인) `Checked YYYY-MM-DD` / `확인 YYYY-MM-DD` 표기가 실재하는 ISO 날짜인가
 #   3. lines  (오프라인) 문서가 300줄 이내인가
 #
@@ -35,7 +36,7 @@ for arg in "$@"; do
     --strict)    STRICT=1 ;;
     --offline)   OFFLINE=1 ;;
     --self-test) SELF_TEST=1 ;;
-    -h|--help)   sed -n '2,26p' "$0"; exit 0 ;;
+    -h|--help)   sed -n '2,21p' "$0"; exit 0 ;;
     *) echo "unknown option: $arg" >&2; exit 2 ;;
   esac
 done
@@ -112,8 +113,41 @@ is_real_date() {
 # TLS 지문을 바꿔 접근하면 정상 페이지다. dead로 분류하면 오탐이 된다.
 # 405는 HEAD 미지원 서버다.
 #
+# 일부 서버는 HEAD를 아예 거부한다. nvlpubs.nist.gov는 HEAD에 404, GET에 200을
+# 돌려준다(2026-11-04 실측). HEAD 결과만 믿으면 살아 있는 링크를 죽었다고 보고하고,
+# 그 오탐을 피하려고 인용을 다른 페이지로 바꾸는 일이 생긴다. 그래서 HEAD가
+# 400/404/405/501이면 본문을 저장하지 않는 GET(-o /dev/null)으로 한 번 더 확인하고
+# GET 결과로 판정한다. 재확인은 URL당 1회다.
+#
 # return 0 = 이상 없음 / 1 = 문제 발견
 # ---------------------------------------------------------------------------
+
+# 한 URL의 상태를 확인하고 결과를 전역 변수에 남긴다.
+#   RESOLVED_CODE     상태 코드 (curl과 같은 규칙으로 000은 실패)
+#   RESOLVED_METHOD   head | get — 판정에 쓴 요청
+#   RESOLVED_REDIRECT GET으로 확인했을 때 3xx의 즉시 목적지(Location)
+resolve_url() {
+  RESOLVED_METHOD="head"
+  RESOLVED_REDIRECT=""
+  RESOLVED_CODE=$(curl -sI -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" "$1" 2>/dev/null)
+  case "$RESOLVED_CODE" in
+    400|404|405|501)
+      RESOLVED_METHOD="get"
+      # -L을 주지 않으므로 즉시 응답의 상태 코드와 Location을 함께 받는다.
+      read -r RESOLVED_CODE RESOLVED_REDIRECT <<< "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' --max-time "$TIMEOUT" "$1" 2>/dev/null)"
+      ;;
+  esac
+}
+
+# 3xx를 따라간 최종 주소. 판정에 쓴 메서드를 그대로 쓴다(HEAD를 거부하는 서버는 GET으로 따라간다).
+final_url() {
+  if [ "$1" = get ]; then
+    curl -s -o /dev/null -w '%{url_effective}' -L --max-time "$TIMEOUT" "$2" 2>/dev/null
+  else
+    curl -sI -o /dev/null -w '%{url_effective}' -L --max-time "$TIMEOUT" "$2" 2>/dev/null
+  fi
+}
+
 check_links() {
   echo "== 검사 1: 링크 이전 여부 (${LINK_SCOPE}) =="
   local moved=0 total=0 url code final placeholders
@@ -133,18 +167,28 @@ check_links() {
   while IFS= read -r url; do
     [ -z "$url" ] && continue
     total=$((total + 1))
-    code=$(curl -sI -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" "$url" 2>/dev/null)
+    resolve_url "$url"
+    code="$RESOLVED_CODE"
     case "$code" in
-      200|403|405|429) ;;
+      200|403|405|429)
+        # HEAD를 거부한 서버를 GET으로 통과시킨 사실은 숨기지 않고 한 줄 남긴다.
+        if [ "$RESOLVED_METHOD" = get ]; then
+          printf '  GETOK    %s  (HEAD는 거부, GET %s)\n' "$url" "$code"
+        fi ;;
       3??)
-        final=$(curl -sI -o /dev/null -w '%{url_effective}' -L --max-time "$TIMEOUT" "$url" 2>/dev/null)
+        final=$(final_url "$RESOLVED_METHOD" "$url")
+        [ -n "$final" ] || final="$RESOLVED_REDIRECT"
         printf '  MOVED    %s  %s\n           -> %s\n' "$code" "$url" "$final"
         moved=$((moved + 1)) ;;
       000)
         printf '  DEAD     ---  %s  (타임아웃 또는 DNS 실패)\n' "$url"
         moved=$((moved + 1)) ;;
       *)
-        printf '  STATUS   %s  %s\n' "$code" "$url"
+        if [ "$RESOLVED_METHOD" = get ]; then
+          printf '  STATUS   %s  %s  (HEAD는 거부, GET도 같은 상태)\n' "$code" "$url"
+        else
+          printf '  STATUS   %s  %s\n' "$code" "$url"
+        fi
         moved=$((moved + 1)) ;;
     esac
   done < <(collect_urls "$LINK_SCOPE")
@@ -445,6 +489,53 @@ run_self_test() {
   else
     echo "  PASS  대문자 URL 스킴도 검출했습니다"
   fi
+  LINK_SCOPE="instructions"
+  rm -f "$probe"
+
+  echo
+
+  # (9) HEAD 거부 서버 fallback — 네트워크 없이 curl을 스텁으로 바꿔 증명한다.
+  # 이 서버는 HEAD에 404, GET에 200을 돌려준다(nvlpubs.nist.gov와 같은 동작).
+  # GET 재확인이 없으면 살아 있는 링크를 죽었다고 보고한다.
+  curl() {
+    local arg url head=0
+    for arg in "$@"; do
+      case "$arg" in
+        -I|-sI) head=1 ;;
+      esac
+    done
+    url="${!#}"
+    if [ "$head" -eq 1 ]; then
+      printf '404'
+    else
+      case "$url" in
+        */dead-head*) printf '404 ' ;;
+        *) printf '200 ' ;;
+      esac
+    fi
+  }
+  printf '# selftest\n\nhttps://head-refused.test/nist-publication\n' > "$probe"
+  LINK_SCOPE="$probe"
+  out=$(check_links 2>&1 || true)
+  if check_links >/dev/null 2>&1; then
+    echo "  PASS  HEAD 404 + GET 200 링크를 GET 재확인으로 통과시켰습니다"
+  else
+    echo "  FAIL  HEAD 404 + GET 200 링크를 죽은 링크로 오탐했습니다"; failures=$((failures + 1))
+  fi
+  if printf '%s' "$out" | grep -q '^  GETOK' && printf '%s' "$out" | grep -q 'nist-publication'; then
+    echo "  PASS  HEAD 거부 링크를 GET으로 재확인했음을 보고했습니다"
+  else
+    echo "  FAIL  GET 재확인 경로가 실행되지 않았습니다"; failures=$((failures + 1))
+  fi
+
+  # (10) 재확인은 봐주기가 아니다 — HEAD와 GET이 모두 404면 계속 실패여야 한다
+  printf '# selftest\n\nhttps://head-refused.test/dead-head\n' > "$probe"
+  if check_links >/dev/null 2>&1; then
+    echo "  FAIL  GET으로도 404인 링크를 통과시켰습니다"; failures=$((failures + 1))
+  else
+    echo "  PASS  GET 재확인 결과가 여전히 404면 실패로 판정했습니다"
+  fi
+  unset -f curl
   LINK_SCOPE="instructions"
   rm -f "$probe"
 

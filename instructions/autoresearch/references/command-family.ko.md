@@ -13,7 +13,7 @@ Preflight -> Baseline -> Hypothesis -> Checkpoint -> Verify -> Guard
 -> Decide -> Restore if needed -> Record -> Stop/Handoff
 ```
 
-Bare-command upstream surface는 강제 classic config-driven execution, goal-directed orchestration, guided setup 사이를 route한다. Trustworthy predicate가 있는 archetype만 자동으로 loop하며 subjective 또는 terminal task는 single-pass 또는 human-gated일 수 있다. 고정한 surface의 모든 command에는 기본 iteration 수가 있어 무제한 실행은 기본값이 아니라 `Iterations: unlimited` 명시적 opt-in이다.
+Bare-command upstream surface는 강제 classic config-driven execution, goal-directed orchestration, guided setup 사이를 route한다. Trustworthy predicate가 있는 archetype만 자동으로 loop하며 subjective 또는 terminal task는 single-pass 또는 human-gated일 수 있다. 고정한 surface의 loop하는 모든 command에는 기본 iteration 수가 있어 무제한 실행은 기본값이 아니라 `Iterations: unlimited` 명시적 opt-in이다.
 
 ## Bare command와 orchestration, mode 판별
 

@@ -77,7 +77,7 @@ Every component encodes a bet about what the model cannot do unaided, and models
 > and those assumptions are worth stress testing, both because they may be incorrect, and because
 > they can quickly go stale as models improve."
 
-Anthropic reported the concrete case a month later: a context-reset component that had been
+Anthropic reported the concrete case about two weeks later: a context-reset component that had been
 necessary on one model "had become dead weight" on its successor — the behavior it was compensating
 for was gone, and the component remained, costing tokens and hiding the improvement.
 

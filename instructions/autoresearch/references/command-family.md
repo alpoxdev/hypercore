@@ -13,7 +13,7 @@ Preflight -> Baseline -> Hypothesis -> Checkpoint -> Verify -> Guard
 -> Decide -> Restore if needed -> Record -> Stop/Handoff
 ```
 
-The bare-command upstream surface routes among forced classic config-driven execution, goal-directed orchestration, and guided setup. Only archetypes with a trustworthy predicate loop automatically; subjective or terminal tasks may be single-pass or human-gated. Every command in the pinned surface also carries a default iteration count, so an unbounded run is an explicit `Iterations: unlimited` opt-in rather than the default.
+The bare-command upstream surface routes among forced classic config-driven execution, goal-directed orchestration, and guided setup. Only archetypes with a trustworthy predicate loop automatically; subjective or terminal tasks may be single-pass or human-gated. Every looping command in the pinned surface also carries a default iteration count, so an unbounded run is an explicit `Iterations: unlimited` opt-in rather than the default.
 
 ## Bare command, orchestration, and mode detection
 

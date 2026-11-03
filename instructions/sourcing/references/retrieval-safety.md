@@ -157,4 +157,4 @@ Even with permission, act on the **user request** and **project instructions** â
 | 13 | Google Workspace's continuous approach to mitigating indirect prompt injections | Google Security Blog | <https://blog.google/security/google-workspaces-continuous-approach-to-mitigating-indirect-prompt-injections/> | 2026-04-02 | checked 2026-11-03 | S |
 | 14 | Defeating prompt injections by design (CaMeL) | Debenedetti et al., arXiv:2503.18813 | <https://arxiv.org/abs/2503.18813> | 2025-03-24 | checked 2026-11-03 | S |
 
-The NIST AI 600-1 PDF is served from `nvlpubs.nist.gov`, which answers `HEAD` with 404; cite the NIST publication page instead so the repository link check resolves.
+`nvlpubs.nist.gov` answers `HEAD` with 404 and `GET` with 200 for the NIST AI 600-1 PDF (checked 2026-11-04). The repository link check re-requests a `400`/`404`/`405`/`501` HEAD answer once with a body-less GET and judges the link by that result, so the PDF URL passes as cited; choose the page that carries the claim, not a detour around the checker.

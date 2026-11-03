@@ -26,7 +26,7 @@ Autoresearch는 각 시도를 비교할 수 있고, 소유한 상태 안에서 �
 > 출처 확인 2026-11-03. Upstream behavior는 아래 revision에 고정했다. Floating repository page는 탐색에는 쓸 수 있지만 stable interface의 근거가 아니다.
 
 - [Karpathy `autoresearch` at `228791f`](https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117)의 최신 commit은 여전히 이 병합(2026-03-26)이다. 이 실험은 좁은 연구 loop를 보여준다. Agent는 `train.py`만 수정하고, startup/compilation을 제외한 고정 5분 wall-clock **training** budget으로 `val_bpb`를 낮추며, `keep`/`discard`/`crash` 행을 `results.tsv`에 기록한다. `prepare.py`는 read-only로 남아 평가를 담당하므로 evaluator는 수정 가능 범위 밖에 있다. 시간당 약 12회와 overnight 약 100회는 추정치이고, 연산 platform이 다르면 결과를 비교할 수 없다고 밝힌다.
-- [`uditgoenka/autoresearch` v2.3.0 at `7bddd05`](https://github.com/uditgoenka/autoresearch/tree/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa)(2026-10-31 release)는 command 14개를 제공하며 기본값이 유한하다. 모든 command에 기본 iteration 수가 있고 `Iterations: unlimited`는 opt-in이다. Hook guardrail은 Claude Code(native hooks)와 pi(extension events)에 제공되고, OpenCode, Codex, Muse는 hook parity 없이 skill, runtime, install surface만 제공한다. Chain command는 `handoff.json`을 쓰고 iteration 분석은 `*-results.tsv`를 읽는다.
+- [`uditgoenka/autoresearch` v2.3.0 at `7bddd05`](https://github.com/uditgoenka/autoresearch/tree/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa)(2026-10-31 release)는 command 14개를 제공하며 기본값이 유한하다. loop하는 모든 command에 기본 iteration 수가 있고 `Iterations: unlimited`는 opt-in이다. Hook guardrail은 Claude Code(native hooks)와 pi(extension events)에 제공되고, OpenCode, Codex, Muse는 hook parity 없이 skill, runtime, install surface만 제공한다. Chain command는 `handoff.json`을 쓰고 iteration 분석은 `*-results.tsv`를 읽는다.
 - [OpenAI skill evaluation guidance](https://developers.openai.com/blog/eval-skills)의 제목은 “Testing Agent Skills Systematically with Evals”이며 outcome, process, style, efficiency 목표를 구분하고 check 목록을 작고 must-pass로 유지하라고 조언한다. 이는 평가 축이지 mandatory scalar score가 아니며, 별개의 legacy OpenAI Evals platform 계약도 아니다.
 
 Runtime별 invocation syntax는 이식 가능하지 않다.
@@ -101,7 +101,7 @@ Command family는 하나의 universal command namespace가 아니라 재사용 �
 - Ship readiness and separately approved finalization
 - Bare-command routing among classic, goal-directed orchestration, and guided setup modes
 
-현재 upstream surface에서 설계에 중요한 속성은 두 가지다. 모든 command에 기본 iteration 수가 있어 무제한 실행은 기본값이 아니라 명시적 opt-in이고, bare command는 평문 목표를 분류해 success predicate를 도출하고 한 번 확인한 뒤 subcommand를 넘나들며 수동 chaining 없이 loop를 돌 수 있다.
+현재 upstream surface에서 설계에 중요한 속성은 두 가지다. loop하는 모든 command에 기본 iteration 수가 있어 무제한 실행은 기본값이 아니라 명시적 opt-in이고, bare command는 평문 목표를 분류해 success predicate를 도출하고 한 번 확인한 뒤 subcommand를 넘나들며 수동 chaining 없이 loop를 돌 수 있다.
 
 [`references/command-family.ko.md`](references/command-family.ko.md)를 참고한다. Scenario discovery는 구현 coverage를 증명하지 않는다. Retained scenario는 project-owned test나 acceptance check로 바꿔야 한다.
 

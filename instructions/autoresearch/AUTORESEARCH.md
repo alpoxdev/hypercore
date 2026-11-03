@@ -26,7 +26,7 @@ One iteration tests one falsifiable hypothesis. A hypothesis may touch several f
 > Sources checked 2026-11-03. Upstream behavior is pinned to the revisions below; floating repository pages are discovery aids, not evidence of a stable interface.
 
 - [Karpathy `autoresearch` at `228791f`](https://github.com/karpathy/autoresearch/tree/228791fb499afffb54b46200aca536f79142f117), still the latest commit (2026-03-26), demonstrates a narrow research loop: the agent edits only `train.py`, trains for a fixed five-minute wall-clock **training** budget excluding startup and compilation, minimizes `val_bpb`, and logs `keep`/`discard`/`crash` rows to `results.tsv`. `prepare.py` stays read-only and holds the evaluation, so the evaluator sits outside the writable surface. Its approximately 12 experiments/hour and 100 overnight are estimates, and it states that results are not comparable across compute platforms.
-- [`uditgoenka/autoresearch` v2.3.0 at `7bddd05`](https://github.com/uditgoenka/autoresearch/tree/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa) (released 2026-10-31) exposes 14 commands and is bounded by default: every command has a default iteration count, and `Iterations: unlimited` is opt-in. Hook guardrails ship for Claude Code (native hooks) and pi (extension events); OpenCode, Codex, and Muse ship the skill, runtime, and install surface without hook parity. Chain commands write `handoff.json`; iteration analysis reads `*-results.tsv`.
+- [`uditgoenka/autoresearch` v2.3.0 at `7bddd05`](https://github.com/uditgoenka/autoresearch/tree/7bddd056dfd0b0ded8360588d8101b1ecb5c0baa) (released 2026-10-31) exposes 14 commands and is bounded by default: every looping command has a default iteration count, and `Iterations: unlimited` is opt-in. Hook guardrails ship for Claude Code (native hooks) and pi (extension events); OpenCode, Codex, and Muse ship the skill, runtime, and install surface without hook parity. Chain commands write `handoff.json`; iteration analysis reads `*-results.tsv`.
 - [OpenAI skill evaluation guidance](https://developers.openai.com/blog/eval-skills), titled “Testing Agent Skills Systematically with Evals”, separates outcome, process, style, and efficiency goals and advises keeping the check list small and must-pass. These are evaluation dimensions, not a mandatory scalar score or a contract for the unrelated legacy OpenAI Evals platform.
 
 Runtime invocation syntax is not portable:
@@ -101,7 +101,7 @@ The command family is a set of reusable loop archetypes, not one universal comma
 - Ship readiness and separately approved finalization
 - Bare-command routing among classic, goal-directed orchestration, and guided setup modes
 
-Two properties of the current upstream surface matter for design: every command carries a default iteration count, so an unbounded run is an explicit opt-in rather than the default, and the bare command can classify a plain-language goal, derive a success predicate, confirm it once, and then loop across subcommands without manual chaining.
+Two properties of the current upstream surface matter for design: every looping command carries a default iteration count, so an unbounded run is an explicit opt-in rather than the default, and the bare command can classify a plain-language goal, derive a success predicate, confirm it once, and then loop across subcommands without manual chaining.
 
 See [`references/command-family.md`](references/command-family.md). Scenario discovery does not prove implementation coverage; retained scenarios must become project-owned tests or acceptance checks.
 
