@@ -6,7 +6,7 @@
 
 ## Why
 
-이름은 새롭고 대상은 오래되었다. LangChain의 회고는 이 표현이 2026년 7월 어느 주말, 게시물 하나에서 시작되었다고 기록하고, 같은 채널에서 나온 prompt engineering, context engineering, harness engineering, loop engineering 옆에 놓는다([LangChain, 2026-07-22](https://www.langchain.com/blog/3-years-of-graph-engineering-with-langgraph)). Google Cloud는 열 주 뒤에 자체 정의를 냈고([Google Cloud, 2026-09-30](https://cloud.google.com/blog/topics/developers-practitioners/graph-workflows-in-adk-everything-you-need-to-know)), 저자 35명의 프리프린트는 그보다 앞선 8월에 이미 이 개념을 하나의 패러다임으로 정식화했다([arXiv 2608.21156](https://arxiv.org/abs/2608.21156)). 세 자료 모두 실천 자체는 이름보다 앞선다고 말한다. 상태 기계, DAG, 워크플로 엔진은 수십 년 동안 같은 방식으로 일을 모델링해 왔고, Anthropic은 2024년 12월에 반복되는 모양들을 이미 이름 붙였다([Anthropic, 2024-12-19](https://www.anthropic.com/research/building-effective-agents)).
+이름은 새롭고 대상은 오래되었다. LangChain의 회고는 이 표현이 2026년 7월 어느 주말, 게시물 하나에서 시작되었다고 기록하고, 같은 채널에서 나온 prompt engineering, context engineering, harness engineering, loop engineering 옆에 놓는다([LangChain, 2026-07-22](https://www.langchain.com/blog/3-years-of-graph-engineering-with-langgraph)). Google Cloud는 열 주 뒤에 자체 정의를 냈고([Google Cloud, 2026-09-30](https://cloud.google.com/blog/topics/developers-practitioners/graph-workflows-in-adk-everything-you-need-to-know)), 저자 35명의 프리프린트는 그보다 앞선 8월에 이미 이 개념을 하나의 패러다임으로 정식화했다([arXiv 2608.21156](https://arxiv.org/abs/2608.21156)). LangChain은 실천 자체가 이름보다 앞선다고 말한다. 상태 기계, DAG, 워크플로 엔진은 수십 년 동안 같은 방식으로 일을 모델링해 왔고, Anthropic은 2024년 12월에 반복되는 모양들을 이미 이름 붙였다([Anthropic, 2024-12-19](https://www.anthropic.com/research/building-effective-agents)).
 
 그래도 이 이름이 자리를 얻는 이유는, 그동안 암묵적으로 남아 있던 결정을 이름으로 드러내기 때문이다. **에이전트 시스템의 어느 부분까지 모델이 결정하게 두고, 어느 부분은 반드시 코드여야 하는가.** 시스템이 루프 하나를 넘어서면 프롬프트 문구와 루프 조정은 더 큰 구조 안의 국소 결정이 되고, 그 구조는 자기 기준으로 설계해야 한다([PuppyGraph, 2026-08-24](https://www.puppygraph.com/learn/graph-engineering)).
 
@@ -20,7 +20,7 @@
 
 ## Three senses of the term
 
-이 표현은 서로 다른 세 대상을 가리킨다. 셋을 섞으면 검토가 불가능한 시스템이 된다. 한 문서에서는 "다음에 무엇이 도는가"를 뜻하던 단어가 다른 문서에서는 "모델이 무엇을 읽었는가"를 뜻하게 되기 때문이다.
+이 표현은 서로 다른 세 갈래로 쓰인다. 셋을 섞으면 검토가 불가능한 시스템이 된다. 한 문서에서는 "다음에 무엇이 도는가"를 뜻하던 단어가 다른 문서에서는 "모델이 무엇을 읽었는가"를 뜻하게 되기 때문이다.
 
 | 갈래 | 대상 | 수명 | 이렇게 부르는 쪽 | 이 문서에서의 지위 |
 |---|---|---|---|---|

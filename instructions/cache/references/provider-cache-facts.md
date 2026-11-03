@@ -82,17 +82,17 @@ The same pages document two hit-rate practices that shape authoring: place large
 
 ## 4. Amazon Bedrock (a gateway in front of the same models)
 
-Source: <https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html> (checked 2026-11-03)
+Source: <https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html> (checked 2026-11-04)
 
 | Fact | Value |
 |---|---|
 | Modes | **Implicit** caching attempts reuse on its own and is best effort. **Explicit** caching marks prefix boundaries with model-specific cache controls |
 | Minimum length | Minimums currently range from 512 to 4,096 tokens per cache checkpoint, depending on the model, and apply cumulatively to the entire prefix before each checkpoint. A checkpoint under the minimum does not fail the request; the prefix is simply not cached |
 | Breakpoints | Up to 4 cache checkpoints or writes per request on the Claude models in the support table |
-| TTL | 5 minutes or 1 hour, model dependent; Claude 3.7 Sonnet and Claude 3.5 Sonnet v2 support 5 minutes only. The TTL resets with each successful cache hit. Set `"ttl": "1h"` in the `cachePoint` object on the Converse API, or in `cache_control` on InvokeModel for Claude. Sending `ttl` to a model that supports only 5 minutes can return a `ValidationException` |
+| TTL | 5 minutes or 1 hour, model dependent; current Claude rows list both, while the Amazon Nova rows list 5 minutes only. The TTL resets with each successful cache hit. Set `"ttl": "1h"` in the `cachePoint` object on the Converse API, or in `cache_control` on InvokeModel for Claude. Sending `ttl` to a model that supports only 5 minutes can return a `ValidationException` |
 | Billing | Cached reads bill at the model's cache-read rate, uncached input at the standard rate, and writes may bill above the standard input rate depending on the model |
 | Observation | `cacheReadInputTokens`, `cacheWriteInputTokens`, and `cacheDetails` (the TTL of the written tokens). When caching is on, `inputTokens` covers only tokens that were neither read from nor written to the cache, so total input is `inputTokens + cacheReadInputTokens + cacheWriteInputTokens` |
-| Model coverage | Claude models support both modes, and the page also lists OpenAI models with a 30-minute TTL and a 1.25× write rate on current rows. Implicit caching on Bedrock looks back about 20 content blocks from the breakpoint |
+| Model coverage | Claude models support Explicit Prompt Caching only: a request without cache controls is not cached. Nova models offer Implicit caching for all text prompts, and OpenAI models on the page support Implicit caching, with GPT-5.6 and later adding Explicit; their TTL is 30 minutes and writes bill at 1.25×. The roughly 20-content-block lookback applies to Claude's cache checkpoints |
 
 Bedrock's own page states the operating rule this repository's contract already relies on: keep static content at the beginning of the prompt and dynamic content at the end. It also states that a supported model does not guarantee a hit, so read the usage fields rather than inferring reuse.
 

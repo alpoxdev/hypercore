@@ -78,7 +78,7 @@ Read these as design constraints, not trivia. A loop that schedules 200 runs an 
 ## Portability rules
 
 1. **Capability first, syntax second.** Write the loop as trigger → work source → check → caps → escalation, then map each part onto the runtime. A loop that exists only as one vendor's syntax cannot be moved.
-2. **Never assume the same name means the same behavior.** Two runtimes both ship `/goal`; one evaluates the condition after every turn, the other persists an objective. The difference decides whether the loop can stop by itself.
+2. **Never assume the same name means the same behavior.** Two runtimes both ship `/goal`, but the same name hides different stop machinery: Claude Code re-checks the condition after every turn with a separate evaluator, while Codex treats the objective itself as the completion criteria and documents no separate evaluator. Port the objective, not the stop accounting.
 3. **Check the status label.** A research-preview feature has no stable API contract, and a loop built on it inherits that instability. Record the label next to the loop definition.
 4. **Record the limits you relied on.** If a loop depends on 16 concurrent agents or a 30-minute check-in, note the number and the date in the loop definition, so a vendor change surfaces as a review item instead of as an incident.
 5. **Local and cloud are different loops.** A local interval loop stops when the machine sleeps; a cloud scheduled task keeps running and keeps billing. Choose by what the work depends on, and say which one the loop is.
@@ -104,7 +104,7 @@ Read these as design constraints, not trivia. A loop that schedules 200 runs an 
 | Worktree isolation scope | <https://code.claude.com/docs/en/worktrees> | checked 2026-11-03 |
 | Usage and cost reporting | <https://code.claude.com/docs/en/costs> | checked 2026-11-03 |
 | Codex `/goal` objective, edit/pause/resume/clear, 4,000-character cap | <https://learn.chatgpt.com/docs/developer-commands> | checked 2026-11-03 |
-| Starting a goal keeps the same sandbox and approval policy | <https://learn.chatgpt.com/docs/long-running-work> | checked 2026-11-03 |
+| Goal mode: the goal text is the first prompt and the completion criteria; starting a goal keeps the same sandbox and approval policy | <https://learn.chatgpt.com/docs/long-running-work> | checked 2026-11-04 |
 | Codex automations: triggers, inbox, client availability, recurrence rules | <https://learn.chatgpt.com/docs/automations> | checked 2026-11-03 |
 | Sandbox and approval policies; `untrusted` unsupported | <https://learn.chatgpt.com/docs/agent-approvals-security> | checked 2026-11-03 |
 | Credit billing | <https://learn.chatgpt.com/docs/pricing> | checked 2026-11-03 |
