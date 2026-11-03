@@ -162,7 +162,7 @@ the agent judging it proves to be a strong lever"이며, 이것이 HE-R-4의 근
 | "Agent = Model + Harness"와 부품 분류 | <https://www.vtrivedy.com/posts/the-anatomy-of-an-agent-harness> (2026-03-10) | PRACTITIONER |
 | "A raw model is not an agent…", 래칫, 강제로서의 훅, "success is silent", 일하는 자와 심판의 분리 | <https://addyosmani.com/blog/agent-harness-engineering/> (2026-04-19) | PRACTITIONER |
 | 가이드 대 센서, LLM이 소비하기 좋은 센서 출력, "not every codebase is equally amenable" | <https://martinfowler.com/articles/harness-engineering.html> (2026-04-02) | PRACTITIONER |
-| 하네스 비용 짝 비교: 10회 실행, 인수 검사 178개, 토큰 10.5배·시간 3배·비용 7배, 모델별 격차 | <https://martinfowler.com/articles/are-harnesses-worth-the-cost.html> (2026-10-13) | PRACTITIONER |
+| 하네스 비용 짝 비교: 10회 실행, 인수 검사 178개, 더 강한 모델 토큰 10.5배·시간 3배·비용 7배, 모델별 격차 | <https://martinfowler.com/articles/are-harnesses-worth-the-cost.html> (2026-10-13) | PRACTITIONER |
 | "anytime you find an agent makes a mistake…"와 에이전트에게 틀렸다고 알려 주는 빠른 도구 | <https://mitchellh.com/writing/my-ai-adoption-journey> (2026-02-05) | PRACTITIONER |
 | 초기화 에이전트와 증분 세션, 서술적 커밋, 진행 파일 | <https://www.anthropic.com/research/effective-harnesses-for-long-running-agents> (2025-11-26) | VENDOR |
 | "every component in a harness encodes an assumption…", 리셋과 구조화된 인계, 일하는 자와 심판의 분리, 20분·9달러 대 6시간·200달러 | <https://www.anthropic.com/research/harness-design-long-running-apps> (2026-03-24) | VENDOR |

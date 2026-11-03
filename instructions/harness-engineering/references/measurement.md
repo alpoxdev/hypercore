@@ -165,9 +165,10 @@ leaderboard built on accuracy-versus-cost Pareto frontiers reports dollar and to
 publishes dollars per submission next to the score.
 
 The harness has a cost axis too, and it can be measured per model. A paired experiment on a coding
-task found the same harness cost about 10.5× the tokens, ~3× the time, and ~7× the money while
-changing nothing for the stronger model and moving the weaker one from 3/10 to 10/10 (the table and
-its source are in [`harness-anatomy.md`](harness-anatomy.md), HE-A-4).
+task found the harness cost about 10.5× the tokens, ~3× the time, and ~7× the money on the stronger
+model and changed nothing there, while on the weaker model it cost ~3.9× the tokens, ~2.2× the time,
+and ~3.2× the cost and moved that model from 3/10 to 10/10 (the table and its source are in
+[`harness-anatomy.md`](harness-anatomy.md), HE-A-4).
 
 So the metric set in the main document treats cost/latency as a peer of quality, not as a tiebreak.
 A harness or prompt change that buys 1 point for 10× tokens has to say so in those terms.
@@ -260,8 +261,7 @@ reliability. The current published estimate puts the post-2023 doubling time at 
 that instrument: "Measurements above 16 hrs are unreliable with our current task suite."
 
 Quote the surface as well as the number. The published table and the dashboard's data file differ
-by up to about nine days (130.8 versus ~128.7 post-2023; 196.5 versus ~187.8 all-period) because the
-data file excludes points above the 16-hour reliability bound.
+by up to about nine days (130.8 versus ~128.7 post-2023; 196.5 versus ~187.8 all-period).
 
 ## Sources
 

@@ -52,7 +52,7 @@ Nine parts. The first eight are the building blocks the literature review found 
 | LE-P-8 | Escalation | Named points where the loop asks a human: ambiguous requirements, blocked progress, a check it cannot run. | The loop invents product decisions. |
 | LE-P-9 | Provenance and cost record | Every iteration records what it changed and what it cost. | Nobody can attribute an outcome or a bill. |
 
-LE-P-4 is the part that practice most often skips. The mining study searched committed files and commit histories for `STATE.md`, `LOOP.md`, plan and progress files, and its table records 2 candidate state files detected and 0 confirmed across 36,487 repositories (checked 2026-11-03). Write the state file anyway: the study's annotation pass found state persisted in 35 of the 256 repositories it inspected by hand, so the practice exists — it just is not committed where a scanner can see it. A loop whose state exists only in a context window is not resumable.
+LE-P-4 is the part that practice most often skips. The mining study searched committed files and commit histories for `STATE.md`, `LOOP.md`, plan and progress files, and its table records 2 repositories with candidate state files and 0 confirmed across 36,487 repositories (checked 2026-11-03). Write the state file anyway: the study's annotation pass found state persisted in 35 of the 256 repositories it inspected by hand, so the practice exists — it just is not committed where a scanner can see it. A loop whose state exists only in a context window is not resumable.
 
 ## Taxonomy
 
@@ -137,7 +137,7 @@ Observed spend is the only spend you can budget against. One runtime's usage vie
 | Rubber-stamp review | Loops outpace human review capacity | The human gate stops being a gate | LE-A-6 |
 | Comprehension debt | Code exists that no human understands | Velocity outruns understanding; defects become unattributable | LE-P-9, LE-O-3 |
 | Cognitive surrender | Loops used to avoid thinking about understood work | Decisions get delegated to something that cannot own them | LE-P-8 |
-| Loop per microtask | An orchestration layer wrapped around a single edit | Overhead exceeds the work | Taxonomy, step 1 |
+| Loop per microtask | An orchestration layer wrapped around a single edit | Overhead exceeds the work | Design procedure, step 1 |
 
 Comprehension debt and cognitive surrender are named in the practitioner and academic literature as the characteristic human costs of loops, not as tool failures. "Comprehension debt" is defined there as the gap between what exists in a repository and what the developer understands; "cognitive surrender" as using loops "to avoid thinking rather than to move faster on understood work" (arXiv 2608.21884 summarising Osmani and Greyling, checked 2026-11-03). Neither is fixed by a better prompt.
 

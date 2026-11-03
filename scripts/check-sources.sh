@@ -166,27 +166,39 @@ check_links() {
 # ---------------------------------------------------------------------------
 check_dates() {
   echo "== 검사 2: 확인일 형식 (${DOC_SCOPE}) =="
-  local bad=0 found=0 line file marks dates date_n bad_dates
+  local bad=0 found=0 line file marks tokens token_n token bad_form bad_date
   while IFS= read -r line; do
     [ -z "$line" ] && continue
     found=$((found + 1))
     file="${line%%:*}"
-    # 표기 뒤 날짜를 엄격 형식(YYYY-MM-DD)으로만 뽑는다.
+    # 표기 뒤 토큰을 통째로 뽑아 끝의 문장부호만 떼어 낸다. 접두사 10자만 보면
+    # `2026-11-031`·`2026-11-03abc`·`2026-11-03-`가 전부 통과한다.
     marks=$(printf '%s' "$line" | grep -oiE '(확인|checked)[[:space:]]+[0-9]' | grep -c .)
-    dates=$(printf '%s' "$line" | grep -oiE '(확인|checked)[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}' | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}')
-    date_n=$(printf '%s' "$dates" | grep -c .)
-    if [ "$date_n" -lt "$marks" ]; then
+    tokens=$(printf '%s' "$line" | grep -oiE '(확인|checked)[[:space:]]+[0-9][^[:space:]]*' \
+      | sed -E 's/.*[[:space:]]//; s/[.,;)]+$//')
+    token_n=$(printf '%s' "$tokens" | grep -c .)
+    if [ "$token_n" -lt "$marks" ]; then
       printf '  BADFORM  %s\n           %s\n' "$file" "$(printf '%s' "$line" | cut -c1-110)"
       bad=$((bad + 1))
       continue
     fi
-    bad_dates=$(printf '%s\n' "$dates" | grep . | while IFS= read -r date_str; do
-      is_real_date "$date_str" || printf '%s ' "$date_str"
-    done)
-    if [ -n "$bad_dates" ]; then
-      printf '  BADDATE  %s  -> %s\n' "$file" "${bad_dates% }"
+    bad_form=""
+    bad_date=""
+    while IFS= read -r token; do
+      [ -z "$token" ] && continue
+      # 날짜 뒤에는 구분자만 올 수 있다. ASCII 문자·숫자·하이픈이 붙으면 형식 오류다
+      # (한국어 조사는 붙여 쓰므로 `2026-11-03에`처럼 비ASCII가 붙는 것은 허용한다).
+      if ! printf '%s' "$token" | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}[^0-9A-Za-z_-]*$'; then
+        bad_form="$bad_form $token"
+      elif ! is_real_date "${token:0:10}"; then
+        bad_date="$bad_date $token"
+      fi
+    done <<< "$tokens"
+    if [ -n "$bad_form$bad_date" ]; then
       bad=$((bad + 1))
     fi
+    [ -n "$bad_form" ] && printf '  BADFORM  %s  ->%s\n' "$file" "$bad_form"
+    [ -n "$bad_date" ] && printf '  BADDATE  %s  ->%s\n' "$file" "$bad_date"
   done < <(grep -rniE '(확인|checked)[[:space:]]+[0-9]' "$DOC_SCOPE" 2>/dev/null)
 
   if [ "$found" -eq 0 ]; then
@@ -347,6 +359,26 @@ run_self_test() {
     echo "  FAIL  달력에 없는 날짜(2026-02-30)를 놓쳤습니다"; failures=$((failures + 1))
   else
     echo "  PASS  달력에 없는 날짜를 검출했습니다"
+  fi
+  DOC_SCOPE="instructions"
+  rm -f "$probe"
+
+  # (4g) 날짜 뒤에 문자가 붙은 표기 — 접두사 10자만 맞으면 통과시키면 안 된다
+  for bad_mark in 'Checked 2026-11-031' '확인 2026-11-03abc' 'Checked 2026-11-03-'; do
+    printf '# selftest\n\n출처 (%s)\n' "$bad_mark" > "$probe"
+    DOC_SCOPE="$probe"
+    if check_dates >/dev/null 2>&1; then
+      echo "  FAIL  날짜 뒤 문자가 붙은 표기($bad_mark)를 놓쳤습니다"; failures=$((failures + 1))
+    else
+      echo "  PASS  날짜 뒤 문자가 붙은 표기($bad_mark)를 검출했습니다"
+    fi
+  done
+  # 문장부호가 붙은 정상 표기는 계속 통과해야 한다
+  printf '# selftest\n\n출처 (Checked 2026-11-03).\n' > "$probe"
+  if check_dates >/dev/null 2>&1; then
+    echo "  PASS  문장부호가 붙은 정상 표기를 오탐하지 않았습니다"
+  else
+    echo "  FAIL  문장부호가 붙은 정상 표기를 오탐했습니다"; failures=$((failures + 1))
   fi
   DOC_SCOPE="instructions"
   rm -f "$probe"

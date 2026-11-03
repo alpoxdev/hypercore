@@ -6,7 +6,7 @@ The third sense of "graph": a graph built over content and read as context, not 
 
 ## Why this is separated
 
-Three different artifacts are called a graph in 2026 writing, and two of them share only a word.
+Two different artifacts are called a graph in 2026 writing, and they share only a word.
 
 | | Execution graph | Context graph |
 |---|---|---|

@@ -122,4 +122,4 @@ Run `scripts/validate-skill.sh` when the skill includes scripts, generated asset
 
 ### 근거 등급
 
-이 파일은 disclosure 예산의 **canonical** 서술입니다. [`skill-anatomy.ko.md`](skill-anatomy.ko.md)는 수치를 다시 적지 않고 이 파일을 가리킵니다. 500줄·5,000토큰 값은 agentskills.io best-practices 페이지가 밝히므로 `PRIMARY`입니다. 300줄은 `instructions/`에 걸린 이 저장소의 gate이며 그렇게 표시했습니다. `SK-D-3`은 자체 통계 검정을 갖춘 2026년 벤치마크 하나의 결과에 근거하며, 법칙이 아니라 한 번의 측정으로 적었습니다.
+이 파일은 disclosure 예산의 **canonical** 서술입니다. [`skill-anatomy.ko.md`](skill-anatomy.ko.md)는 단계별 예산과 500줄 한도는 이 파일을 가리키고, frontmatter와 파일 배치에 필요한 목록 수치만 다시 적습니다. 500줄·5,000토큰 값은 agentskills.io best-practices 페이지가 밝히므로 `PRIMARY`입니다. 300줄은 `instructions/`에 걸린 이 저장소의 gate이며 그렇게 표시했습니다. `SK-D-3`은 자체 통계 검정을 갖춘 2026년 벤치마크 하나의 결과에 근거하며, 법칙이 아니라 한 번의 측정으로 적었습니다.

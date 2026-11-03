@@ -137,5 +137,5 @@ bash skills/skill-tester/scripts/validate-skills-corpus.sh --root skills --json
 | 차원별 독립 심판, "Unknown" 도피구, 부분 점수, 경로가 아니라 결과 채점 | <https://www.anthropic.com/research/demystifying-evals-for-ai-agents> | VENDOR |
 | 스킬·지시 eval의 outcome / process / style / efficiency 분해와 스킬 하나에 10–20개 프롬프트 | <https://developers.openai.com/blog/eval-skills> | VENDOR |
 | 평가 인지: 모델이 벤치마크를 특정하고 정답 키를 찾아낸 사례 | <https://www.anthropic.com/research/eval-awareness-browsecomp> | VENDOR |
-| 분모에서 빠지고 따로 보고되는 오류 시행 | <https://github.com/sierra-research/tau2-bench/releases/tag/v2.0.0> | PRIMARY |
+| 리더보드 관례에 따라 인프라 오류 시행을 실패 시행으로 계산 | <https://github.com/sierra-research/tau2-bench/releases/tag/v1.0.1> | PRIMARY |
 | 동일 조건 실행 사이의 점수 이동을 만드는 인프라 분산 | <https://www.anthropic.com/research/infrastructure-noise> | VENDOR |

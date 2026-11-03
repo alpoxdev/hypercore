@@ -122,4 +122,4 @@ Consequences for authoring: keep the trigger in the first sentence, assume the t
 
 ### Evidence grade
 
-This file is the **canonical** statement of the disclosure budgets; [`skill-anatomy.md`](skill-anatomy.md) points here rather than restating them. The 500-line and 5,000-token figures are `PRIMARY` — the agentskills.io best-practices page states them. The 300-line value is a repository gate on `instructions/`, labelled as such. `SK-D-3` rests on a single 2026 benchmark with its own statistical test, stated as one measurement rather than a law.
+This file is the **canonical** statement of the disclosure budgets; [`skill-anatomy.md`](skill-anatomy.md) points here for the stage budgets and the 500-line limit, and repeats only the listing figures that frontmatter and file layout need. The 500-line and 5,000-token figures are `PRIMARY` — the agentskills.io best-practices page states them. The 300-line value is a repository gate on `instructions/`, labelled as such. `SK-D-3` rests on a single 2026 benchmark with its own statistical test, stated as one measurement rather than a law.

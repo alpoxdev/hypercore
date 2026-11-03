@@ -205,7 +205,7 @@ Seven categories, with the severity the cited source assigns. This list is not "
 - SK-A-2: Do not distribute a skill from an untrusted source without a full audit.
 - SK-A-3: Pin a skill to a version, and re-review it when the version changes.
 
-These are `VENDOR` claims: the severity labels come from the cited source, not from a controlled study in this repository. Treat an audit as a checklist that catches known artifact-level problems, not as a proof of safety. Automated content scanning exists for some enterprise surfaces, but the source states it does not cover Skills API uploads — which is exactly the path this repository uses.
+These are `VENDOR` claims: the severity labels come from the cited source, not from a controlled study in this repository. Treat an audit as a checklist that catches known artifact-level problems, not as a proof of safety. Automated content scanning exists for some enterprise surfaces, but the source states it does not cover Skills API uploads, so an API deployment cannot rely on that scan.
 
 ## 11. Authoring loop
 
@@ -232,7 +232,7 @@ This authoring loop is a human-supervised turn-based loop. When the loop runs un
 | Claim | Source |
 |---|---|
 | With/without baseline as the core pattern (the evaluating-skills page names it the core pattern, not an option) | <https://agentskills.io/skill-creation/evaluating-skills> |
-| Case-set composition, and the absence of a stated case count | <https://agentskills.io/skill-creation/optimizing-descriptions> |
+| Case-set composition, and the absence of a validated case count | <https://agentskills.io/skill-creation/optimizing-descriptions> |
 | The seven artifact-audit categories and their severity labels | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
 | Treating third-party skills as subjects of code review, version pinning with re-review, and the scan coverage gap | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise> |
 | ~100 tokens of metadata per skill | <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview> |

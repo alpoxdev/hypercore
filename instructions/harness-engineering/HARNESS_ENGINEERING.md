@@ -38,7 +38,7 @@ Every component encodes a bet about what the model cannot do unaided, and models
 - HE-A-4: Harness cost is measured, never assumed. Each component reports the token, wall-time, and cost delta it imposes, and results are reported per model, because the same component can be decisive on one model and worthless on another.
 - HE-A-5: The space of useful harnesses moves rather than closes. A harness review is a standing activity, not a one-time migration.
 
-The measured case behind HE-A-4 is a paired experiment on a coding task: the same harness cost about 10.5× the tokens, ~3× the time, and ~7× the money, changed nothing for the stronger model, and moved the weaker one from 3/10 to 10/10. See [`references/harness-anatomy.md`](references/harness-anatomy.md) under "The staleness rule".
+The measured case behind HE-A-4 is a paired experiment on a coding task: for the stronger model the harness cost about 10.5× the tokens, ~3× the time, and ~7× the money and changed nothing; for the weaker model it cost ~3.9× the tokens, ~2.2× the time, and ~3.2× the cost and moved it from 3/10 to 10/10. See [`references/harness-anatomy.md`](references/harness-anatomy.md) under "The staleness rule".
 
 ## Trace Fields
 

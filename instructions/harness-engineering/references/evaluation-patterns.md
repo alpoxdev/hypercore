@@ -151,5 +151,5 @@ on the answer.
 | Isolated per-dimension judges, the "Unknown" escape hatch, partial credit, and grading the outcome rather than the path | <https://www.anthropic.com/research/demystifying-evals-for-ai-agents> | VENDOR |
 | The outcome / process / style / efficiency decomposition for skill and instruction evals | <https://developers.openai.com/blog/eval-skills> | VENDOR |
 | Eval awareness: a model identifying the benchmark and locating its answer key | <https://www.anthropic.com/research/eval-awareness-browsecomp> | VENDOR |
-| Error trials excluded from the denominator and reported separately | <https://github.com/sierra-research/tau2-bench/releases/tag/v2.0.0> | PRIMARY |
+| Infrastructure-error simulations counted as failed trials under the leaderboard convention | <https://github.com/sierra-research/tau2-bench/releases/tag/v1.0.1> | PRIMARY |
 | Infrastructure variance as a source of score movement between identical runs | <https://www.anthropic.com/research/infrastructure-noise> | VENDOR |

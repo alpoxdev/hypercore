@@ -192,7 +192,7 @@ Skill이 "성능이 올랐다", "벤치마크를 통과한다", "agentic coding�
 
 ## 11. 완료 gate
 
-다음 중 하나라도 실패하면 완료라고 하지 않습니다. [`../SKILL_AUTHORING.ko.md`](../SKILL_AUTHORING.ko.md) → `## Verification criteria` 절이 요약 checklist이고, **각 항목을 어떻게 판정하는지**는 위 절들에 있습니다.
+다음 중 하나라도 실패하면 완료라고 하지 않습니다. [`../SKILL_AUTHORING.ko.md`](../SKILL_AUTHORING.ko.md) → `## 검증 기준` 절이 요약 checklist이고, **각 항목을 어떻게 판정하는지**는 위 절들에 있습니다.
 
 - 트리거 경계를 설명하지 않았습니다
 - 지원 파일을 링크하지 않았습니다

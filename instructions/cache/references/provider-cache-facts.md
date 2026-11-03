@@ -110,7 +110,7 @@ Bedrock's own page states the operating rule this repository's contract already 
 | Breakpoint control | Up to 4, automatic or explicit | Up to 4 writes, implicit or explicit on GPT-5.6+ | Explicit cache object only |
 | Pre-warm | `max_tokens: 0` | `prewarm: true` | Create the cache object first |
 
-A cache write is never free on a current model. Writing a prefix once and reading it once costs more than processing it once uncached on both Anthropic (1.25× + 0.1×) and OpenAI (1.25× + 0.1×); reuse pays off from the second read onward, which is why the contract asks for measurement instead of assumption.
+A cache write is not free on Anthropic or OpenAI: on current models, writing a prefix once and reading it once costs more than processing it once uncached (1.25× + 0.1× at the default TTL on both), so reuse pays off from the second read onward, which is why the contract asks for measurement instead of assumption. Google has no write multiplier; it bills cached input at a reduced rate plus storage for the TTL.
 
 ---
 

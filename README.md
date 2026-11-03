@@ -82,7 +82,7 @@ Codex는 universal agent이므로 project에서는 `<cwd>/.agents/skills`, globa
 
 ### 소스에서 직접 사용
 
-레포를 클론해 그대로 가져다 써도 됩니다 (스킬은 마크다운 문서와 bash 스크립트로 이루어져 있어 빌드 단계가 없습니다):
+레포를 클론해 그대로 가져다 써도 됩니다 (스킬에는 빌드 단계가 없습니다. 마크다운 문서와 bash 스크립트, 그리고 HTML·CSS·JSON 같은 정적 asset과 eval fixture를 그대로 씁니다):
 
 ```bash
 git clone https://github.com/alpoxdev/hypercore.git
@@ -242,11 +242,12 @@ lint, typecheck, build, test 같은 프로젝트 게이트를 재현하고, 실�
 
 ```text
 hypercore/
+├── assets/                # README 이미지 등 저장소 수준 정적 asset
 ├── cli/                   # @kood/* 도구 모노레포 (pnpm workspace)
 │   └── packages/
 │       ├── color/         # @kood/color-cli — hex / rgb / oklch 색상 변환 CLI
 │       └── naver-api/     # @kood/naver-api-cli — Naver API HUB 검색·DataLab·쇼핑인사이트 CLI
-├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/sourcing/validation)
+├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/sourcing/validation 등)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
 └── skills/                # 34개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
@@ -293,7 +294,7 @@ skills/<name>/
 
 ## 개발
 
-빌드와 테스트가 필요한 것은 CLI 패키지(`cli/`)와 `scripts/` 검증(`bun run --cwd scripts verify`)입니다. 스킬은 마크다운 문서와 bash 스크립트로 이루어져 빌드 단계가 없습니다.
+빌드와 테스트가 필요한 것은 CLI 패키지(`cli/`)와 `scripts/` 검증(`bun run --cwd scripts verify`)입니다. 스킬은 마크다운 문서, bash 스크립트, 정적 asset, eval fixture를 그대로 쓰므로 빌드 단계가 없습니다.
 
 ```bash
 pnpm -C cli install     # cli/ 워크스페이스 의존성 설치

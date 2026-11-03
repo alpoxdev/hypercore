@@ -175,7 +175,7 @@ the agent judging it proves to be a strong lever", which is the evidence behind 
 | "Agent = Model + Harness" and the component taxonomy | <https://www.vtrivedy.com/posts/the-anatomy-of-an-agent-harness> (2026-03-10) | PRACTITIONER |
 | "A raw model is not an agent…", the ratchet, hooks as enforcement, "success is silent", and doer/judge separation | <https://addyosmani.com/blog/agent-harness-engineering/> (2026-04-19) | PRACTITIONER |
 | Guides versus sensors, LLM-consumable sensor output, and "not every codebase is equally amenable" | <https://martinfowler.com/articles/harness-engineering.html> (2026-04-02) | PRACTITIONER |
-| Paired harness cost experiment: 10 runs, 178 acceptance checks, 10.5× tokens / ~3× time / ~7× cost, and the per-model divergence | <https://martinfowler.com/articles/are-harnesses-worth-the-cost.html> (2026-10-13) | PRACTITIONER |
+| Paired harness cost experiment: 10 runs, 178 acceptance checks, 10.5× tokens / ~3× time / ~7× cost for the stronger model, and the per-model divergence | <https://martinfowler.com/articles/are-harnesses-worth-the-cost.html> (2026-10-13) | PRACTITIONER |
 | "anytime you find an agent makes a mistake…" and fast tools that tell the agent it is wrong | <https://mitchellh.com/writing/my-ai-adoption-journey> (2026-02-05) | PRACTITIONER |
 | Initializer agent plus incremental sessions, descriptive commits, and the progress file | <https://www.anthropic.com/research/effective-harnesses-for-long-running-agents> (2025-11-26) | VENDOR |
 | "every component in a harness encodes an assumption…", reset plus structured handoff, doer/judge separation, and the 20-minute/$9 versus 6-hour/$200 comparison | <https://www.anthropic.com/research/harness-design-long-running-apps> (2026-03-24) | VENDOR |

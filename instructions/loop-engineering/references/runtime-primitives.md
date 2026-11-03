@@ -10,7 +10,7 @@ Status and limits below were read on 2026-11-03. Vendor features move faster tha
 
 | Capability | Claude Code | Codex | LangChain |
 |---|---|---|---|
-| Repeat until a condition holds | `/goal`, session-scoped, model-evaluated | No direct equivalent; `/goal` only persists an objective (see below) | `create_agent` plus middleware |
+| Repeat until a condition holds | `/goal`, session-scoped, model-evaluated | `/goal` (Goal mode): the objective is also the completion criteria; no separate evaluator model or turn counter (see below) | `create_agent` plus middleware |
 | Repeat on an interval | `/loop` (local), cloud scheduled tasks | Automations with a time schedule | Deployment cron |
 | Start on an external event | Scheduled tasks: API and GitHub triggers | Automations: Gmail, Slack, GitHub events | Deployment webhooks, channels |
 | Independent check | Stop hook with a prompt type; `/goal` evaluator | Not a documented evaluator feature | `RubricMiddleware`, `after_agent` hook, or a deterministic grader |
@@ -20,7 +20,7 @@ Status and limits below were read on 2026-11-03. Vendor features move faster tha
 | Observability | `/usage`, `/workflows`, transcript verdicts | Run history and results inbox | Traces in the platform |
 | Unattended permission model | Permission modes, sandbox, hooks | Sandbox policy plus approval policy | Your deployment |
 
-Only the Persistent state row is "your design" for every runtime: state is not a feature you install but a part you add, which is why the root contract treats it as a required part rather than as a vendor capability. Caps are only partly vendor-supplied. The Hard caps row records where each runtime draws its own outer limit, and the loop's own caps (iterations, tokens, wall clock, kill path) are the part you add on top.
+Only the Persistent state row is "your design" for every runtime: state is not a feature you install but a part you add, which is why the root contract treats it as a required part rather than as a vendor capability. Caps are only partly vendor-supplied. The Hard caps row records where each runtime's outer limit comes from — Claude Code and Codex supply their own, LangChain leaves it to your code — and the loop's own caps (iterations, tokens, wall clock, kill path) are the part you add on top.
 
 ## Claude Code
 
@@ -45,7 +45,7 @@ Three implementation notes matter more than the table. First, `/loop` requires a
 | Sandbox policy | `read-only`, `workspace-write`, `danger-full-access` | Governs filesystem and network access during command execution |
 | Approval policy | `on-request`, `never`, or granular | `untrusted` is documented as unsupported and can prevent a client from starting |
 
-The important portability difference: as documented at this revision, Codex's `/goal` is a **persisted objective**, not a keep-going loop with an evaluator model. The docs describe no verdict states, turn counter, or token readout for it, and a full-text search of the documentation for "run until" returns nothing. A loop written against the Claude Code `/goal` semantics has no direct equivalent there; the closest construction is an automation whose prompt states the completion criteria.
+The important portability difference: as documented at this revision, Codex's `/goal` starts Goal mode — the goal text becomes both the first prompt and the completion criteria, and work continues until the goal is met or a decision is needed — but the docs describe no separate evaluator model, verdict states, turn counter, or token readout for it. A loop written against the Claude Code `/goal` semantics therefore ports only in part: the objective carries over, while independent per-turn evaluation and stop accounting are yours to add, for example through an automation whose prompt states the completion criteria.
 
 ## LangChain
 

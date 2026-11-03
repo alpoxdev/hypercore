@@ -56,7 +56,7 @@ Files that **count** for that check, and therefore suppress `AGENTS.md`: a `CLAU
 | `claude-md-or-agents-md` | `CLAUDE.md` files, or `AGENTS.md` files when no `CLAUDE.md` or `CLAUDE.local.md` exists in the working directory or above it. **The default** |
 | `claude-md-and-agents-md` | Both, each directory's `CLAUDE.md` files first and its `AGENTS.md` after them. An `AGENTS.md` already loaded, for example through an import or a symlink, is skipped rather than read twice |
 | `claude-md` | `CLAUDE.md` files only |
-| `managed-only` | Only the organization's managed `CLAUDE.md` and auto memory at launch. Project, local, and user `CLAUDE.md` files, `.claude/rules/`, and every `AGENTS.md` are left out; a subdirectory's own files still load when Claude reads a file there |
+| `managed-only` | Only the organization's managed `CLAUDE.md` and auto memory at launch. Project, local, and user `CLAUDE.md` files, `.claude/rules/`, and every `AGENTS.md` are left out; a subdirectory's `CLAUDE.md` and `.claude/rules/` files, and path-scoped rules, still load on demand |
 
 The same value can be set in a settings file under the built-in plugin that reads `AGENTS.md`:
 

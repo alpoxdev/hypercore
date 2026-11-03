@@ -56,7 +56,7 @@
 | `claude-md-or-agents-md` | `CLAUDE.md` 파일, 또는 작업 디렉터리나 그 위에 `CLAUDE.md`·`CLAUDE.local.md`가 없을 때 `AGENTS.md` 파일. **기본값** |
 | `claude-md-and-agents-md` | 둘 다. 각 디렉터리의 `CLAUDE.md` 파일이 먼저, 그다음 `AGENTS.md`. import나 심볼릭 링크로 이미 로드된 `AGENTS.md`는 두 번 읽지 않고 건너뛴다 |
 | `claude-md` | `CLAUDE.md` 파일만 |
-| `managed-only` | 시작 시 조직의 관리 `CLAUDE.md`와 auto memory만. 프로젝트·로컬·사용자 `CLAUDE.md`, `.claude/rules/`, 모든 `AGENTS.md`는 제외된다. 하위 디렉터리 자체 파일은 그곳의 파일을 읽을 때 여전히 로드된다 |
+| `managed-only` | 시작 시 조직의 관리 `CLAUDE.md`와 auto memory만. 프로젝트·로컬·사용자 `CLAUDE.md`, `.claude/rules/`, 모든 `AGENTS.md`는 제외된다. 하위 디렉터리의 `CLAUDE.md`와 `.claude/rules/` 파일, 그리고 경로 범위 규칙은 필요할 때 여전히 로드된다 |
 
 같은 값을 `AGENTS.md`를 읽는 내장 플러그인 아래 설정 파일에도 쓸 수 있다.
 
