@@ -26,6 +26,7 @@ One JSON object with `version: 1`. Every key below is required unless the row sa
 | `aspect` | string | no | `16:9` | One of `16:9`, `2.39:1`, `1.85:1`, `4:3`, `9:16`. |
 | `sensorLongMm` | number | no | `35` | Long axis of the sensor in millimetres. Only feeds the vertical field of view. |
 | `panelsPerPage` | integer | no | `3` | `1`–`4`. Panels per printed A4 landscape page. |
+| `style` | string | no | `grayscale manga storyboard line art, clean ink lines, 2-3 flat gray tones, no text, no speech bubbles` | Non-empty. The look carried into every panel prompt (1.7). It never changes the drawn line art. |
 | `characters` | object[] | yes | — | At least one. |
 | `scenes` | object[] | yes | — | At least one, in story order. |
 
@@ -36,6 +37,7 @@ Each `characters[]` entry:
 | `id` | string | yes | — | Unique in the document. Referenced by `focus`, `subjects`, `blocking`, `subjectMoves`, `pov`, `over`, `axis`. |
 | `name` | string | yes | — | Non-empty. Printed on panels and floor plans. |
 | `heightM` | number | no | `1.70` | Metres. Drives framing and the camera-height calculation. |
+| `look` | string | no | absent | Non-empty. One short, original line of appearance (build, hair, clothing) used by the panel prompt so the same character reads the same way in every generated panel. Never name a real actor or a living person. |
 
 ### 1.2 Scenes
 
@@ -49,7 +51,20 @@ Each `characters[]` entry:
 | `axis` | `[string, string]` or `null` | yes | — | Two character ids defining the 180° line, or `null` when the scene has no line. |
 | `shots` | object[] | yes | — | At least one, in cut order. |
 
-`props[]` entries: `id` (string, unique in the scene), `label` (string), `x`, `z` (metres on the scene floor), `w`, `d`, `h` (metres). `x` runs to the scene's right, `z` away from the viewer, and the floor is `y = 0`.
+Each `props[]` entry:
+
+| Key | Type | Required | Default | Rule |
+|---|---|---|---|---|
+| `id` | string | yes | — | Unique in the scene. Referenced by `focus`. |
+| `label` | string | yes | — | Non-empty. Printed on the floor plan. |
+| `x` | number | yes | — | Metres. Runs to the scene's right. |
+| `z` | number | yes | — | Metres. Runs away from the viewer. |
+| `w` | number | yes | — | Metres. Width along `x`. |
+| `d` | number | yes | — | Metres. Depth along `z`. |
+| `h` | number | yes | — | Metres. Height above the base. |
+| `y` | number | no | `0` | Metres. Base elevation above the floor (`props[].y`). A cup on a table of `h: 0.75` uses `y: 0.75`. It must be `0` or greater: a negative value is `SCHEMA_RANGE` and a non-number is `SCHEMA_TYPE`. The drawn box spans `y` to `y + h`; the floor plan ignores `y` because it is a plan view. |
+
+A prop with no `y` stands on the floor and its drawn box is unchanged; prop-focus shots now centre on `y + h / 2`, so existing documents with prop-focus shots get a different camera height.
 
 `blocking[]` entries: `character` (character id present in `blocking` semantics: one entry per character, unique), `x`, `z` (metres), `facingDeg` (degrees, `0` = facing `+z`, positive turns toward `+x`), `pose` (one of `stand`, `walk`, `sit`, `reach`, `crouch`).
 
@@ -68,6 +83,7 @@ Each `characters[]` entry:
 | `action` | string | yes | — | Present-tense action line. |
 | `dialogue` | object[] | no | absent | `{ "speaker": string, "line": string }`. `speaker` is printed verbatim before the colon; use the character name. |
 | `sound` | string | no | absent | Sound note printed on the panel. |
+| `image` | object or `null` | no | absent | A finished picture for this panel. See 1.7. When present it replaces the line art; every note and movement mark stays. |
 | `durationSec` | number | yes | — | `0.2`–`600`. |
 | `transition` | string | yes | — | One of `CUT`, `DISSOLVE`, `FADE IN`, `FADE OUT`, `WIPE`, `SMASH CUT`, `MATCH CUT`. Printed as the transition into the next panel. |
 | `crossing` | object or `null` | yes | — | See 1.6. |
@@ -100,9 +116,25 @@ A move counts toward `PRIMARY_MOVE_OVERLOAD` when its `primary` is `true`. The c
 
 `crossing` is `null` or an object with `method` (one of `neutral`, `subject-move`, `camera-move`, `both`, `none`), `intentional` (boolean), and `reason` (non-empty string). `none` means the cut crosses the line without a bridging device. Any shot that declares `crossing` suppresses the three line-related warnings for the cut into it and is recorded in `intentional[]`, whether or not `intentional` is `true`.
 
-### 1.7 Minimal document
+### 1.7 Pictures, style and look
 
-This block is a complete, valid document. `aspect`, `sensorLongMm`, `panelsPerPage`, `subjects`, `blockingOverride`, and `sound` are omitted here to show their defaults; every other key that the schema requires is present.
+A panel normally carries line art drawn from its camera values. `shots[].image` lets one panel carry a finished picture instead, and `doc.style` plus `characters[].look` describe the art that an image generator should produce.
+
+`image` is `null` or an object:
+
+| Key | Type | Required | Rule |
+|---|---|---|---|
+| `src` | string | yes | A data URI only: `data:image/png;base64,`, `data:image/jpeg;base64,`, or `data:image/webp;base64,` followed by base64 characters. An `http:`, `https:`, `file:`, or blob URL is `SCHEMA_TYPE`; the board never fetches anything. |
+| `provenance` | string | yes | `generated` when an image generator made the picture, `supplied` when a person provided it. Any other value is `SCHEMA_ENUM`. |
+| `prompt` | string | no | The prompt that produced the picture, kept for review and never printed on the board. |
+
+A shot with `image` draws the picture clipped to the frame as `data-part="panel-image"` with `preserveAspectRatio="xMidYMid slice"`, so it fills the frame without stretching. The mannequins and line art are skipped for that panel, but the movement arrows, the end frame and the subject-move arrows stay and print on top of the picture. The full panel note (camera line, action, dialogue, sound, duration, transition) is unchanged. A shot without `image` keeps the line art.
+
+`style` is a single phrase for the whole document; it reaches only `compilePanelPrompt()` (section 4), never the SVG. Keep it free of lettering instructions that contradict the no-text clause that every prompt ends with.
+
+### 1.8 Minimal document
+
+This block is a complete, valid document. `aspect`, `sensorLongMm`, `panelsPerPage`, `style`, `look`, `image`, `subjects`, `blockingOverride`, and `sound` are omitted here to show their defaults; every other key that the schema requires is present.
 
 ```json
 {
@@ -185,7 +217,7 @@ Framing is expressed as a vertical span of the focus character's height `H`. The
 | `ELS` | person fills a quarter of the frame height | `4H`, centred at `0.5H` |
 | `OTS` | focus framed as `MCU` | `0.32H` |
 
-A prop focus uses `1.6 × prop h`, centred at `h / 2`. With `subjects`, the box is the union of the focus box and every subject box, and the union's midpoint becomes the orbit target's height.
+A prop focus uses `1.6 × prop h`, centred at `y + h / 2`, where `y` is the prop's base elevation (`props[].y`, default `0`). With `subjects`, the box is the union of the focus box and every subject box, and the union's midpoint becomes the orbit target's height.
 
 ### 2.3 Distance and orbit
 
@@ -287,6 +319,20 @@ manifest.json     # getReport() for this build
 
 `panels` counts rendered panels and `scenes` counts rendered floor plans. When any error stands both are `0` and `index.html` shows the error status instead of panels.
 
+Every panel `<svg>` tags what it drew, so a check can assert the drawing without reading prose:
+
+| `data-part` | Drawn when | Meaning |
+|---|---|---|
+| `frame` | always | White frame with the ink border. |
+| `panel-image` | the shot has `image` | The picture, clipped to the frame and scaled to fill it. The mannequins, props, ground and horizon are skipped for that panel. |
+| `ground` | no picture, and the grid projects inside the frame | The 6 m ground grid. |
+| `horizon` | no picture, and the horizon is inside the frame | The horizon line. |
+| `head`, `hair`, `face`, `chest` | no picture | Mannequin markers; `hair` appears only from behind, `chest` only when the torso front faces the camera. |
+| `foreground` | no picture, on an `OTS` shot | The over-the-shoulder character, clipped to the frame. |
+| `end-frame`, `end-frame-group` | a `PUSH IN`, `ZOOM IN`, `DOLLY IN`, `PULL OUT`, `ZOOM OUT`, or `DOLLY OUT` move | The dashed end frame and its corner arrows. Prints over a picture too. |
+| `subject-move` | a `subjectMoves` entry | The ground arrow and label for a character move. Prints over a picture too. |
+| `guide-frame` | `renderGuideSvg()` only | The outer border of the composition guide. |
+
 ## 4. Renderer API
 
 `StoryboardCore` lives in `<script id="storyboard-core">` and runs without a DOM. Every function is pure: the same document returns the same string, and no function reads the clock, the network, or global state.
@@ -297,6 +343,8 @@ manifest.json     # getReport() for this build
 | `lint` | `lint(doc)` | `{ warnings: Issue[], info: Issue[], intentional: IntentionalEntry[] }` |
 | `layoutShot` | `layoutShot(doc, sceneId, shotId)` | the layout object below, or `null` when the ids do not resolve |
 | `renderPanelSvg` | `renderPanelSvg(doc, sceneId, shotId)` | one `<svg>` string, or `""` when the ids do not resolve |
+| `compilePanelPrompt` | `compilePanelPrompt(doc, sceneId, shotId)` | one English prompt string, or `""` when the ids do not resolve |
+| `renderGuideSvg` | `renderGuideSvg(doc, sceneId, shotId)` | one grey guide `<svg>` string, or `""` when the ids do not resolve |
 | `renderFloorPlanSvg` | `renderFloorPlanSvg(doc, sceneId)` | one `<svg>` string, or `""` when the scene does not resolve |
 | `render` | `render(doc)` | the full gallery HTML string (no `<html>` wrapper), or `""` when any error stands |
 | `vfovDeg` | `vfovDeg(focalMm, aspect, sensorLongMm)` | the vertical field of view in degrees |
@@ -331,6 +379,12 @@ Input and computed values are separate:
 | `horizonVisible`, `groundVisible`, `facingScreen` | never | always |
 | `angleName`, `yawName`, `heightName` | never | always |
 
+`compilePanelPrompt()` reads the same projection that draws the panel, so one prompt and one panel never disagree. The string, in this order, holds the shot size in English, the yaw view when the focus is a character — `front view, subject faces the camera`, `three-quarter view`, `profile view (side view)`, `three-quarter back view, face mostly hidden`, or `back view, subject's face not visible`, with `, subject facing screen-left` or `, subject facing screen-right` appended to the three-quarter and profile views — the angle name with the absolute pitch (for example `low angle 12°`), the lens in millimetres, the camera height name with metres, `dutch angle, horizon tilted 8° to the right` (or `to the left`) whenever `rollDeg` is not zero, a positive `rollDeg` tilting the drawn horizon to the right, `N characters in frame` with each framed character's `look` when two or more characters are framed (`Characters:` when there is one), the action text as written, the props whose centre projects inside the frame, and finally `doc.style`. A prop focus has no view or facing clause. It never copies `dialogue` and it always ends by asking for no text, letters, numbers, captions, or speech bubbles, because lettering is added in the board, not in the picture. Same document, same string.
+
+`renderGuideSvg()` returns a plain grey-on-white composition reference for an image generator: the same camera projection with mannequins, the ground grid, and the horizon, and nothing else — no arrows, no labels, no props, no notes. Its `viewBox` is `0 0 1600 900` at the default `16:9` and follows the document's aspect ratio otherwise. Attach it next to the prompt when the generator accepts a reference image.
+
+`image`, `image.src`, `image.provenance`, `image.prompt`, `style`, and `characters[].look` are input only; no function computes them. `compilePanelPrompt()` and `renderGuideSvg()` outputs are derived and never written back into the document.
+
 `window.storyboardStudio` is the DOM-facing wrapper. It is what a QA pass calls in a browser.
 
 | Call | Returns | Behaviour |
@@ -348,8 +402,8 @@ Errors stop the build: no panel is rendered while one stands.
 | Code | Raised when |
 |---|---|
 | `SCHEMA_REQUIRED` | A required key is missing, a key that the schema does not declare nullable is `null`, or `size` is `OTS` without `camera.over`. |
-| `SCHEMA_TYPE` | A value has the wrong JSON type, or `camera.over` appears with a size other than `OTS`. |
-| `SCHEMA_ENUM` | `size`, `pose`, `move.type`, `transition`, or `crossing.method` is outside its enumeration. |
+| `SCHEMA_TYPE` | A value has the wrong JSON type, `camera.over` appears with a size other than `OTS`, or `image.src` is not a base64 `data:image/png`, `data:image/jpeg`, or `data:image/webp` URI. |
+| `SCHEMA_ENUM` | `size`, `pose`, `move.type`, `transition`, `crossing.method`, or `image.provenance` is outside its enumeration. |
 | `SCHEMA_RANGE` | A number falls outside its allowed range: `pitchDeg`, `heightM`, `yawDeg`, `rollDeg`, `focalMm`, `durationSec`, `panelsPerPage`. |
 | `SCHEMA_DUPLICATE` | A character id, scene id, prop id, or shot id repeats inside its scope. |
 | `SCHEMA_REFERENCE` | `focus`, a `subjects` entry, `blocking.character`, `axis`, `subjectMoves.character`, `pov`, or `over` names an id that does not exist. |

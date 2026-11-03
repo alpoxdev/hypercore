@@ -86,6 +86,16 @@ var StoryboardCore = (function () {
   var MOVE_ENUM = ["STATIC", "PAN L", "PAN R", "TILT UP", "TILT DOWN", "PUSH IN", "PULL OUT", "ZOOM IN", "ZOOM OUT", "DOLLY IN", "DOLLY OUT", "TRUCK L", "TRUCK R", "PED UP", "PED DOWN", "CRANE UP", "CRANE DOWN", "ROLL L", "ROLL R", "HANDHELD"];
   var TRANSITION_ENUM = ["CUT", "DISSOLVE", "FADE IN", "FADE OUT", "WIPE", "SMASH CUT", "MATCH CUT"];
   var CROSS_ENUM = ["neutral", "subject-move", "camera-move", "both", "none"];
+  var PROVENANCE_ENUM = ["generated", "supplied"];
+  var IMAGE_SRC_RE = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/;
+  var DEFAULT_STYLE = "grayscale manga storyboard line art, clean ink lines, 2-3 flat gray tones, no text, no speech bubbles";
+  var SIZE_EN = {
+    ECU: "extreme close-up", CU: "close-up", MCU: "medium close-up", MS: "medium shot",
+    COWBOY: "cowboy shot", MWS: "medium wide shot", FS: "full shot", WS: "wide shot",
+    ELS: "extreme wide shot", OTS: "over-the-shoulder shot"
+  };
+  var ANGLE_EN = { "EYE LEVEL": "eye level", HIGH: "high angle", LOW: "low angle", OVERHEAD: "overhead", "WORM'S EYE": "worm's eye" };
+  var GUIDE_TONE = { ink: "#8a8a8a", accent: "#8a8a8a", fill: "#f4f4f4", width: 1.4, hair: "#c4c4c4" };
   var IN_MOVES = { "PUSH IN": 1, "ZOOM IN": 1, "DOLLY IN": 1 };
   var OUT_MOVES = { "PULL OUT": 1, "ZOOM OUT": 1, "DOLLY OUT": 1 };
   var FRAME_RANGES = {
@@ -221,7 +231,9 @@ var StoryboardCore = (function () {
     if (focusChar) boxes.push(characterSpan(size, numOr(focusChar.heightM, 1.7)));
     else {
       var prop = propOf(scene, shot.focus);
-      boxes.push([0, prop ? numOr(prop.h, 1) * 1.6 : 1.7]);
+      var propH = prop ? numOr(prop.h, 1) : 1.7;
+      var propCentre = prop ? numOr(prop.y, 0) + propH / 2 : propH / 2;
+      boxes.push([propCentre - propH * 0.8, propCentre + propH * 0.8]);
     }
     var subs = subjectsOf(doc, scene, shot);
     for (i = 0; i < subs.length; i++) {
@@ -375,6 +387,7 @@ var StoryboardCore = (function () {
     if (doc.sensorLongMm !== undefined && (!isNum(doc.sensorLongMm) || doc.sensorLongMm <= 0)) err("SCHEMA_TYPE", "sensorLongMm", "sensorLongMm은 양수여야 합니다.");
     if (doc.panelsPerPage !== undefined && !isNum(doc.panelsPerPage)) err("SCHEMA_TYPE", "panelsPerPage", "panelsPerPage는 숫자여야 합니다.");
     else if (doc.panelsPerPage !== undefined && (doc.panelsPerPage < 1 || doc.panelsPerPage > 4 || doc.panelsPerPage !== Math.round(doc.panelsPerPage))) err("SCHEMA_RANGE", "panelsPerPage", "panelsPerPage는 1~4의 정수여야 합니다.");
+    if (doc.style !== undefined && !isStr(doc.style)) err("SCHEMA_TYPE", "style", "style은 비어 있지 않은 문자열이어야 합니다.");
     if (!isArr(doc.characters) || !doc.characters.length) err("SCHEMA_REQUIRED", "characters", "characters 배열이 하나 이상 필요합니다.");
     else {
       var charIds = {};
@@ -386,6 +399,7 @@ var StoryboardCore = (function () {
         else charIds[ch.id] = true;
         if (!isStr(ch.name)) err("SCHEMA_REQUIRED", p + ".name", "인물 name이 필요합니다.");
         if (ch.heightM !== undefined && !isNum(ch.heightM)) err("SCHEMA_TYPE", p + ".heightM", "heightM은 숫자여야 합니다.");
+        if (ch.look !== undefined && !isStr(ch.look)) err("SCHEMA_TYPE", p + ".look", "look은 비어 있지 않은 문자열이어야 합니다.");
       });
     }
     if (!isArr(doc.scenes) || !doc.scenes.length) err("SCHEMA_REQUIRED", "scenes", "scenes 배열이 하나 이상 필요합니다.");
@@ -412,6 +426,10 @@ var StoryboardCore = (function () {
             ["x", "z", "w", "d", "h"].forEach(function (k) {
               if (!isNum(prop[k])) err("SCHEMA_REQUIRED", pp + "." + k, "소품 " + k + " 값이 필요합니다.");
             });
+            if (prop.y !== undefined) {
+              if (!isNum(prop.y)) err("SCHEMA_TYPE", pp + ".y", "소품 y는 숫자여야 합니다.");
+              else if (prop.y < 0) err("SCHEMA_RANGE", pp + ".y", "소품 y는 0 이상이어야 합니다.");
+            }
           });
         }
         if (!isArr(scene.blocking)) err("SCHEMA_REQUIRED", sp + ".blocking", "blocking 배열이 필요합니다.");
@@ -559,6 +577,17 @@ var StoryboardCore = (function () {
       });
     }
     if (shot.sound !== undefined && shot.sound !== null && typeof shot.sound !== "string") err("SCHEMA_TYPE", hp + ".sound", "sound는 문자열이어야 합니다.");
+    if (shot.image !== undefined && shot.image !== null) {
+      var ip = hp + ".image";
+      if (!isObj(shot.image)) err("SCHEMA_TYPE", ip, "image는 객체이거나 null이어야 합니다.");
+      else {
+        if (!isStr(shot.image.src)) err("SCHEMA_REQUIRED", ip + ".src", "image.src가 필요합니다.");
+        else if (!IMAGE_SRC_RE.test(shot.image.src)) err("SCHEMA_TYPE", ip + ".src", "image.src는 data:image/png, data:image/jpeg, data:image/webp base64 데이터 URI만 허용합니다.");
+        if (!isStr(shot.image.provenance)) err("SCHEMA_REQUIRED", ip + ".provenance", "image.provenance가 필요합니다.");
+        else if (PROVENANCE_ENUM.indexOf(shot.image.provenance) < 0) err("SCHEMA_ENUM", ip + ".provenance", "provenance는 " + PROVENANCE_ENUM.join(", ") + " 중 하나여야 합니다.");
+        if (shot.image.prompt !== undefined && shot.image.prompt !== null && typeof shot.image.prompt !== "string") err("SCHEMA_TYPE", ip + ".prompt", "image.prompt는 문자열이어야 합니다.");
+      }
+    }
     if (!isNum(shot.durationSec)) err("SCHEMA_REQUIRED", hp + ".durationSec", "durationSec이 필요합니다.");
     else if (shot.durationSec < 0.2 || shot.durationSec > 600) err("SCHEMA_RANGE", hp + ".durationSec", "durationSec은 0.2~600초여야 합니다.");
     if (!isStr(shot.transition)) err("SCHEMA_REQUIRED", hp + ".transition", "transition이 필요합니다.");
@@ -866,7 +895,7 @@ var StoryboardCore = (function () {
       }
       list.push({
         depth: depth,
-        svg: '<path' + (style.character ? ' data-character="' + esc(style.character) + '"' : '') + (style.part ? ' data-part="' + style.part + '"' : '') +
+        svg: '<path' + (style.character ? ' data-character="' + esc(style.character) + '"' : '') + (style.part ? ' data-part="' + style.part + '"' : '') + (style.prop ? ' data-prop="' + esc(style.prop) + '"' : '') +
           ' d="' + d + '" fill="' + style.fill + '" stroke="' + style.stroke + '" stroke-width="' + style.width + '" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'
       });
     }
@@ -919,7 +948,12 @@ var StoryboardCore = (function () {
     return j;
   }
 
-  function figureSvg(doc, scene, shot, character, view, list, index) {
+  function figureSvg(doc, scene, shot, character, view, list, index, tone, prefix) {
+    var ink = (tone && tone.ink) || "#111";
+    var accent = (tone && tone.accent) || "#c0392b";
+    var fill = (tone && tone.fill) || "#fff";
+    var lineWidth = (tone && tone.width) || 2.5;
+    var hairFill = (tone && tone.hair) || "#111";
     var H = numOr(character.heightM, 1.7);
     var pos = positionOf(doc, scene, shot, character.id);
     var facing = facingOf(doc, scene, shot, character.id);
@@ -956,7 +990,7 @@ var StoryboardCore = (function () {
       var foot = limbBox(leg.ankle, leg.toe, 0.06 * H, 0.05 * H);
       localBox(foot.center, foot.half, foot.u, foot.v, foot.w);
     });
-    var style = { fill: "#fff", stroke: "#111", width: 2.5, rand: mulberry32(hashId(shot.id + "/fig/" + character.id)), amp: 1.8, character: character.id };
+    var style = { fill: fill, stroke: ink, width: lineWidth, rand: mulberry32(hashId(shot.id + "/fig/" + character.id)), amp: 1.8, character: character.id };
     if (isOver) {
       // Over-the-shoulder foreground: only the near shoulder mass is on frame at
       // 0.35 m, so its faces are clipped to the panel and drawn as one group.
@@ -989,7 +1023,7 @@ var StoryboardCore = (function () {
       var radius = HR / (hp.depth * view.tanV) * (view.H / 2);
       list.push({
         depth: headDepth,
-        svg: '<circle data-part="head" cx="' + fx(hp.x, 1) + '" cy="' + fx(hp.y, 1) + '" r="' + fx(radius, 1) + '" fill="#fff" stroke="#111" stroke-width="2.5" vector-effect="non-scaling-stroke"/>'
+        svg: '<circle data-part="head" cx="' + fx(hp.x, 1) + '" cy="' + fx(hp.y, 1) + '" r="' + fx(radius, 1) + '" fill="' + fill + '" stroke="' + ink + '" stroke-width="' + lineWidth + '" vector-effect="non-scaling-stroke"/>'
       });
       // hair: visible back hemisphere, clipped to the head circle
       var dirs = [], a, b;
@@ -1009,14 +1043,14 @@ var StoryboardCore = (function () {
       if (dirs.length >= 3) {
         var hull = convexHull(dirs);
         if (hull.length >= 3) {
-          var clipId = "sb-hair-" + hashId(scene.id + "/" + shot.id) + "-" + index;
+          var clipId = "sb-hair-" + (prefix || "") + hashId(scene.id + "/" + shot.id) + "-" + index;
           list.push({
             depth: headDepth - 0.001,
             svg: '<clipPath id="' + clipId + '"><circle cx="' + fx(hp.x, 1) + '" cy="' + fx(hp.y, 1) + '" r="' + fx(radius, 1) + '"/></clipPath>'
           });
           list.push({
             depth: headDepth - 0.0015,
-            svg: '<path data-part="hair" d="' + hullPath(hull) + '" fill="#111" opacity="0.86" clip-path="url(#' + clipId + ')"/>'
+            svg: '<path data-part="hair" d="' + hullPath(hull) + '" fill="' + hairFill + '" opacity="0.86" clip-path="url(#' + clipId + ')"/>'
           });
         }
       }
@@ -1025,8 +1059,8 @@ var StoryboardCore = (function () {
       if (dot3(faceNormal, sub3(view.camPos, headWorld)) > 0.02) {
         var right = { x: cs, y: 0, z: -sn };
         var up = { x: 0, y: 1, z: 0 };
-        faceParts.push(runsSvg(view, circleRuns(headWorld, right, faceNormal, HR, toCam, faceNormal, 72), 1.8));
-        faceParts.push(runsSvg(view, circleRuns(headWorld, up, faceNormal, HR, toCam, faceNormal, 72), 1.8));
+        faceParts.push(runsSvg(view, circleRuns(headWorld, right, faceNormal, HR, toCam, faceNormal, 72), 1.8, accent));
+        faceParts.push(runsSvg(view, circleRuns(headWorld, up, faceNormal, HR, toCam, faceNormal, 72), 1.8, accent));
         var nose = [
           { x: 0, y: headWorld.y + 0.025 * H, z: HR * 1.02 },
           { x: 0, y: headWorld.y - 0.005 * H, z: HR * 1.38 },
@@ -1034,7 +1068,7 @@ var StoryboardCore = (function () {
         ];
         var nosePts = nose.map(function (p) { return project(view, toWorld(p)); });
         if (nosePts[0] && nosePts[1] && nosePts[2]) {
-          faceParts.push('<path d="M' + nosePts.map(function (p) { return fx(p.x, 1) + " " + fx(p.y, 1); }).join(" L") + ' Z" fill="none" stroke="#c0392b" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>');
+          faceParts.push('<path d="M' + nosePts.map(function (p) { return fx(p.x, 1) + " " + fx(p.y, 1); }).join(" L") + ' Z" fill="none" stroke="' + accent + '" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>');
         }
       }
       var faceSvg = faceParts.filter(function (s) { return s; }).join("");
@@ -1050,7 +1084,7 @@ var StoryboardCore = (function () {
         if (c1 && c2) {
           list.push({
             depth: dot3(sub3(chestPoint, view.camPos), view.frame.forward) - 0.004,
-            svg: '<line data-part="chest" x1="' + fx(c1.x, 1) + '" y1="' + fx(c1.y, 1) + '" x2="' + fx(c2.x, 1) + '" y2="' + fx(c2.y, 1) + '" stroke="#111" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linecap="round"/>'
+            svg: '<line data-part="chest" x1="' + fx(c1.x, 1) + '" y1="' + fx(c1.y, 1) + '" x2="' + fx(c2.x, 1) + '" y2="' + fx(c2.y, 1) + '" stroke="' + ink + '" stroke-width="' + lineWidth + '" vector-effect="non-scaling-stroke" stroke-linecap="round"/>'
           });
         }
       }
@@ -1076,7 +1110,7 @@ var StoryboardCore = (function () {
     if (run.length > 1) runs.push(run);
     return runs;
   }
-  function runsSvg(view, runs, width) {
+  function runsSvg(view, runs, width, color) {
     var out = "";
     runs.forEach(function (run) {
       var pts = [];
@@ -1086,7 +1120,7 @@ var StoryboardCore = (function () {
         pts.push(p);
       }
       if (pts.length < 2) return;
-      out += '<polyline points="' + pts.map(function (p) { return fx(p.x, 1) + "," + fx(p.y, 1); }).join(" ") + '" fill="none" stroke="#c0392b" stroke-width="' + width + '" vector-effect="non-scaling-stroke" stroke-linecap="round"/>';
+      out += '<polyline points="' + pts.map(function (p) { return fx(p.x, 1) + "," + fx(p.y, 1); }).join(" ") + '" fill="none" stroke="' + (color || "#c0392b") + '" stroke-width="' + width + '" vector-effect="non-scaling-stroke" stroke-linecap="round"/>';
     });
     return out;
   }
@@ -1271,53 +1305,68 @@ var StoryboardCore = (function () {
     return line;
   }
 
+  function imageOf(shot) {
+    return isObj(shot.image) && isStr(shot.image.src) ? shot.image : null;
+  }
+
   function buildPanel(doc, scene, shot, cam) {
     var view = cam.view;
     var out = [];
     var alt = "SC " + scene.number + " SH " + shot.id + " " + shot.size + " " + cam.angleName + " " + cam.yawName;
     out.push('<svg class="panel-svg" viewBox="0 0 ' + view.W + " " + view.H + '" role="img" aria-label="' + esc(alt) + '">');
-    out.push('<rect data-part="frame" x="0" y="0" width="' + view.W + '" height="' + view.H + '" fill="#fff" stroke="#111" stroke-width="3"/>');
-    var grid = groundSegments(view, cam.target);
-    if (grid.length) {
-      out.push('<g data-part="ground" stroke="#999" stroke-width="1" fill="none" vector-effect="non-scaling-stroke">');
-      grid.forEach(function (s) {
-        out.push('<line x1="' + fx(s[0], 1) + '" y1="' + fx(s[1], 1) + '" x2="' + fx(s[2], 1) + '" y2="' + fx(s[3], 1) + '"/>');
-      });
-      out.push("</g>");
-    }
-    if (cam.horizonVisible) {
-      var hl = horizonLine(view);
-      if (hl) {
-        out.push('<line data-part="horizon" x1="' + fx(hl[0], 1) + '" y1="' + fx(hl[1], 1) + '" x2="' + fx(hl[2], 1) + '" y2="' + fx(hl[3], 1) + '" stroke="#3a6ea5" stroke-width="1.4" stroke-dasharray="12 10" vector-effect="non-scaling-stroke"/>');
+    out.push('<rect x="0" y="0" width="' + view.W + '" height="' + view.H + '" fill="#fff"/>');
+    var picture = imageOf(shot);
+    if (picture) {
+      // A supplied or generated picture replaces the line art; the movement
+      // notation below still prints on top of it, and the panel notes stay.
+      var clipId = "sb-panel-clip-" + hashId(shot.id);
+      out.push('<defs><clipPath id="' + clipId + '"><rect x="0" y="0" width="' + view.W + '" height="' + view.H + '"/></clipPath></defs>');
+      out.push('<image data-part="panel-image" href="' + esc(picture.src) + '" x="0" y="0" width="' + view.W + '" height="' + view.H +
+        '" preserveAspectRatio="xMidYMid slice" clip-path="url(#' + clipId + ')"/>');
+    } else {
+      var grid = groundSegments(view, cam.target);
+      if (grid.length) {
+        out.push('<g data-part="ground" stroke="#999" stroke-width="1" fill="none" vector-effect="non-scaling-stroke">');
+        grid.forEach(function (s) {
+          out.push('<line x1="' + fx(s[0], 1) + '" y1="' + fx(s[1], 1) + '" x2="' + fx(s[2], 1) + '" y2="' + fx(s[3], 1) + '"/>');
+        });
+        out.push("</g>");
       }
-    }
-    var list = [];
-    if (isArr(scene.props)) {
-      scene.props.forEach(function (prop) {
-        var w = numOr(prop.w, 1), d = numOr(prop.d, 1), h = numOr(prop.h, 1);
-        var box = {
-          center: { x: numOr(prop.x, 0), y: h / 2, z: numOr(prop.z, 0) },
-          u: { x: 1, y: 0, z: 0 }, v: { x: 0, y: 1, z: 0 }, w: { x: 0, y: 0, z: 1 },
-          half: { x: w / 2, y: h / 2, z: d / 2 }
-        };
-        addBoxFaces(list, box, view, { fill: "#fff", stroke: "#111", width: 1.5, rand: mulberry32(hashId(shot.id + "/prop/" + prop.id)), amp: 1.2 });
+      if (cam.horizonVisible) {
+        var hl = horizonLine(view);
+        if (hl) {
+          out.push('<line data-part="horizon" x1="' + fx(hl[0], 1) + '" y1="' + fx(hl[1], 1) + '" x2="' + fx(hl[2], 1) + '" y2="' + fx(hl[3], 1) + '" stroke="#3a6ea5" stroke-width="1.4" stroke-dasharray="12 10" vector-effect="non-scaling-stroke"/>');
+        }
+      }
+      var list = [];
+      if (isArr(scene.props)) {
+        scene.props.forEach(function (prop) {
+          var w = numOr(prop.w, 1), d = numOr(prop.d, 1), h = numOr(prop.h, 1), baseY = numOr(prop.y, 0);
+          var box = {
+            center: { x: numOr(prop.x, 0), y: baseY + h / 2, z: numOr(prop.z, 0) },
+            u: { x: 1, y: 0, z: 0 }, v: { x: 0, y: 1, z: 0 }, w: { x: 0, y: 0, z: 1 },
+            half: { x: w / 2, y: h / 2, z: d / 2 }
+          };
+          addBoxFaces(list, box, view, { fill: "#fff", stroke: "#111", width: 1.5, rand: mulberry32(hashId(shot.id + "/prop/" + prop.id)), amp: 1.2, prop: prop.id });
+        });
+      }
+      var drawn = {}, order = [];
+      var ids = [shot.focus].concat(subjectsOf(doc, scene, shot));
+      if (shot.size === "OTS" && shot.camera.over) ids.push(shot.camera.over);
+      ids.forEach(function (id) {
+        if (drawn[id]) return;
+        var ch = charOf(doc, id);
+        if (!ch) return;
+        drawn[id] = true;
+        order.push(ch);
       });
+      order.forEach(function (ch, i) {
+        figureSvg(doc, scene, shot, ch, view, list, i);
+      });
+      list.sort(function (a, b) { return b.depth - a.depth; });
+      list.forEach(function (d) { out.push(d.svg); });
     }
-    var drawn = {}, order = [];
-    var ids = [shot.focus].concat(subjectsOf(doc, scene, shot));
-    if (shot.size === "OTS" && shot.camera.over) ids.push(shot.camera.over);
-    ids.forEach(function (id) {
-      if (drawn[id]) return;
-      var ch = charOf(doc, id);
-      if (!ch) return;
-      drawn[id] = true;
-      order.push(ch);
-    });
-    order.forEach(function (ch, i) {
-      figureSvg(doc, scene, shot, ch, view, list, i);
-    });
-    list.sort(function (a, b) { return b.depth - a.depth; });
-    list.forEach(function (d) { out.push(d.svg); });
+    out.push('<rect data-part="frame" x="0" y="0" width="' + view.W + '" height="' + view.H + '" fill="none" stroke="#111" stroke-width="3"/>');
     out.push(notationSvg(doc, scene, shot, cam, view));
     out.push("</svg>");
     return out.join("");
@@ -1506,11 +1555,127 @@ var StoryboardCore = (function () {
     return buildPanel(doc, scene, shot, cameraOf(doc, scene, shot));
   }
 
+  // ------------------------------------------------------- image hand-off
+  function styleOf(doc) { return isStr(doc.style) ? doc.style : DEFAULT_STYLE; }
+  function degText(v) { return String(Math.round(v * 10) / 10); }
+  function sentence(text) { return String(text == null ? "" : text).trim().replace(/[.。\s]+$/, ""); }
+
+  function frameCharacters(doc, scene, shot) {
+    var ids = [shot.focus].concat(subjectsOf(doc, scene, shot));
+    if (shot.size === "OTS" && isObj(shot.camera) && isStr(shot.camera.over)) ids.push(shot.camera.over);
+    var seen = {}, list = [];
+    ids.forEach(function (id) {
+      var ch = charOf(doc, id);
+      if (ch && !seen[ch.id]) { seen[ch.id] = true; list.push(ch); }
+    });
+    return list;
+  }
+
+  function propsInFrame(scene, view) {
+    var list = [];
+    if (!isArr(scene.props)) return list;
+    scene.props.forEach(function (prop) {
+      var p = project(view, {
+        x: numOr(prop.x, 0),
+        y: numOr(prop.y, 0) + numOr(prop.h, 1) / 2,
+        z: numOr(prop.z, 0)
+      });
+      if (p && p.x >= 0 && p.x <= view.W && p.y >= 0 && p.y <= view.H) list.push(prop.label);
+    });
+    return list;
+  }
+
+  // The view clause names what the camera sees of the face, so a profile or a
+  // back shot cannot arrive as a plain front view. The side clause only appears
+  // where the face can turn: three-quarter and profile views.
+  function viewPhrase(yawName, facingScreen) {
+    var base = String(yawName).replace(/ [LR]$/, "");
+    if (base === "FRONT") return "front view, subject faces the camera";
+    if (base === "3/4") return "three-quarter view" + facingSide(facingScreen);
+    if (base === "PROFILE") return "profile view (side view)" + facingSide(facingScreen);
+    if (base === "3/4 BACK") return "three-quarter back view, face mostly hidden";
+    return "back view, subject's face not visible";
+  }
+  function facingSide(facingScreen) {
+    return facingScreen === "center" ? "" : ", subject facing screen-" + facingScreen;
+  }
+
+  // One English prompt for an external image generator. Composition is read
+  // from the same projection as the panel, so changing a camera value changes
+  // the prompt; dialogue is never copied because the art must stay letter-free.
+  function compilePanelPrompt(doc, sceneId, shotId) {
+    var scene = findScene(doc, sceneId);
+    var shot = findShot(scene, shotId);
+    if (!scene || !shot) return "";
+    var cam = cameraOf(doc, scene, shot);
+    var lines = [];
+    var isCharacterFocus = !!charOf(doc, shot.focus);
+    lines.push("Storyboard panel, " + SIZE_EN[shot.size] +
+      (isCharacterFocus ? ", " + viewPhrase(cam.yawName, cam.facingScreen) : "") + ".");
+    var roll = numOr(shot.camera.rollDeg, 0);
+    var dutch = Math.abs(roll) > 0.05
+      ? ", dutch angle, horizon tilted " + degText(Math.abs(roll)) + "° to the " + (roll > 0 ? "right" : "left")
+      : "";
+    lines.push("Camera " + ANGLE_EN[cam.angleName] + " " + degText(Math.abs(cam.pitchDeg)) + "°, " +
+      cam.heightName.toLowerCase() + " height " + fx(cam.heightM, 2) + " m, " + shot.camera.focalMm + "mm lens" + dutch + ".");
+    var chars = frameCharacters(doc, scene, shot);
+    if (chars.length) {
+      var looks = chars.map(function (ch) {
+        return ch.look ? ch.name + " (" + sentence(ch.look) + ")" : ch.name;
+      }).join("; ");
+      lines.push(chars.length > 1 ? chars.length + " characters in frame: " + looks + "." : "Characters: " + looks + ".");
+    }
+    lines.push("Action: " + sentence(shot.action) + ".");
+    var props = propsInFrame(scene, cam.view);
+    if (props.length) lines.push("Props in frame: " + props.join(", ") + ".");
+    lines.push("Style: " + sentence(styleOf(doc)) + ".");
+    lines.push("Do not draw any text, letters, numbers, captions, or speech bubbles in the image.");
+    return lines.join(" ");
+  }
+
+  // Line-only composition reference: the panel's projection with mannequins,
+  // the ground grid and the horizon. No movement arrows, labels, props or notes.
+  function renderGuideSvg(doc, sceneId, shotId) {
+    var scene = findScene(doc, sceneId);
+    var shot = findShot(scene, shotId);
+    if (!scene || !shot) return "";
+    var cam = cameraOf(doc, scene, shot);
+    var view = cam.view;
+    var out = [];
+    out.push('<svg class="guide-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + view.W + " " + view.H + '" role="img" aria-label="SC ' + esc(scene.number) + " SH " + esc(shot.id) + ' composition guide">');
+    out.push('<rect x="0" y="0" width="' + view.W + '" height="' + view.H + '" fill="#fff"/>');
+    var grid = groundSegments(view, cam.target);
+    if (grid.length) {
+      out.push('<g data-part="ground" stroke="#c8c8c8" stroke-width="1" fill="none" vector-effect="non-scaling-stroke">');
+      grid.forEach(function (s) {
+        out.push('<line x1="' + fx(s[0], 1) + '" y1="' + fx(s[1], 1) + '" x2="' + fx(s[2], 1) + '" y2="' + fx(s[3], 1) + '"/>');
+      });
+      out.push("</g>");
+    }
+    if (cam.horizonVisible) {
+      var hl = horizonLine(view);
+      if (hl) {
+        out.push('<line data-part="horizon" x1="' + fx(hl[0], 1) + '" y1="' + fx(hl[1], 1) + '" x2="' + fx(hl[2], 1) + '" y2="' + fx(hl[3], 1) + '" stroke="#b4b4b4" stroke-width="1" stroke-dasharray="14 12" vector-effect="non-scaling-stroke"/>');
+      }
+    }
+    var list = [];
+    frameCharacters(doc, scene, shot).forEach(function (ch, i) {
+      figureSvg(doc, scene, shot, ch, view, list, i, GUIDE_TONE, "guide-");
+    });
+    list.sort(function (a, b) { return b.depth - a.depth; });
+    list.forEach(function (d) { out.push(d.svg); });
+    out.push('<rect data-part="guide-frame" x="0" y="0" width="' + view.W + '" height="' + view.H + '" fill="none" stroke="#9a9a9a" stroke-width="1.5"/>');
+    out.push("</svg>");
+    return out.join("");
+  }
+
   return {
     validate: validate,
     lint: lint,
     layoutShot: layoutShot,
     renderPanelSvg: renderPanelSvg,
+    compilePanelPrompt: compilePanelPrompt,
+    renderGuideSvg: renderGuideSvg,
     renderFloorPlanSvg: function (doc, sceneId) {
       var scene = findScene(doc, sceneId);
       return scene ? floorPlanSvg(doc, scene) : "";
