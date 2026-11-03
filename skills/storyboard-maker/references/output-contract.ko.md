@@ -46,6 +46,7 @@
 | `id` | string | 예 | — | 문서 안에서 고유합니다. |
 | `number` | number | 예 | — | `SC <number>`로 표시합니다. |
 | `heading` | string | 예 | — | 씬의 모든 패널에 인쇄되는 씬 표제입니다. |
+| `planImage` | object 또는 `null` | 아니오 | 없음 | 씬 평면도를 위에서 내려다본 완성 그림입니다. 필드와 검사는 샷 `image`(1.7절)와 같습니다. 기술 평면도 아래에 그리며, 기술 평면도는 바뀌지 않고 위치·카메라·축의 기준으로 남습니다. |
 | `props` | object[] | 예 | — | 비어 있어도 됩니다. |
 | `blocking` | object[] | 예 | — | 이 씬에서 인물의 처음 위치입니다. |
 | `axis` | `[string, string]` 또는 `null` | 예 | — | 180도 선을 정하는 인물 id 두 개이거나, 선이 없는 씬이면 `null`입니다. |
@@ -345,6 +346,7 @@ manifest.json     # 이 빌드의 getReport()
 | `layoutShot` | `layoutShot(doc, sceneId, shotId)` | 아래 레이아웃 객체, id를 찾지 못하면 `null` |
 | `renderPanelSvg` | `renderPanelSvg(doc, sceneId, shotId)` | `<svg>` 문자열 하나, id를 찾지 못하면 `""` |
 | `compilePanelPrompt` | `compilePanelPrompt(doc, sceneId, shotId)` | 영어 프롬프트 문자열 하나, id를 찾지 못하면 `""` |
+| `compileFloorPlanPrompt` | `compileFloorPlanPrompt(doc, sceneId)` | 위에서 내려다본 평면도용 영어 프롬프트 문자열 하나(소품과 인물의 평면 위치와 방향, `+z`가 위쪽), 씬을 찾지 못하면 `""` |
 | `renderGuideSvg` | `renderGuideSvg(doc, sceneId, shotId)` | 회색 구도 가이드 `<svg>` 문자열 하나, id를 찾지 못하면 `""` |
 | `renderFloorPlanSvg` | `renderFloorPlanSvg(doc, sceneId)` | `<svg>` 문자열 하나, 씬을 찾지 못하면 `""` |
 | `render` | `render(doc)` | 보드 마크업을 HTML 문자열 하나로(씬 섹션·페이지·패널·평면도, `<html>` 래퍼 없음) 돌려주고, `validate()`가 오류를 하나라도 돌려주면 `""`입니다. 보고서는 돌려주지 않으므로 `errors`는 `validate()`에서, `warnings`·`info`·`intentional`은 `lint()`에서 읽습니다. |
@@ -380,7 +382,7 @@ manifest.json     # 이 빌드의 getReport()
 | `horizonVisible`, `groundVisible`, `facingScreen` | 절대 불가 | 항상 |
 | `angleName`, `yawName`, `heightName` | 절대 불가 | 항상 |
 
-`compilePanelPrompt()`는 패널을 그리는 것과 같은 투영을 읽으므로 프롬프트와 패널이 어긋나지 않습니다. 문자열에는 차례로 샷 크기의 영어 이름, 초점이 인물일 때 yaw 시점(`front view, subject faces the camera`, `three-quarter view`, `profile view (side view)`, `three-quarter back view, face mostly hidden`, `back view, subject's face not visible` 중 하나이며 3/4과 프로필에는 `, subject facing screen-left` 또는 `, subject facing screen-right`가 붙습니다), 앵글 이름과 피치 절댓값(예: `low angle 12°`), 렌즈 밀리미터, 카메라 높이 이름과 미터, `rollDeg`가 0이 아니면 `dutch angle, horizon tilted 8° to the right`(또는 `to the left`, 양수 롤은 그려지는 지평선을 오른쪽으로 기울입니다), 인물이 둘 이상 프레임에 들면 각 인물의 `look`과 함께 `N characters in frame`(한 명이면 `Characters:`), 적힌 그대로의 액션, 중심이 프레임 안에 투영되는 소품, 마지막으로 `doc.style`이 들어갑니다. 소품 초점에는 시점·방향 문구가 없습니다. 대사는 절대 옮기지 않고, 글자는 보드에서 붙이므로 그림 안에 글자·숫자·캡션·말풍선을 그리지 말라는 문구로 끝납니다. 같은 문서는 같은 문자열을 냅니다.
+`compilePanelPrompt()`는 패널을 그리는 것과 같은 투영을 읽으므로 프롬프트와 패널이 어긋나지 않습니다. 문자열에는 차례로 샷 크기의 영어 이름, 초점이 인물일 때 yaw 시점(`front view, subject faces the camera`, `three-quarter view`, `profile view (side view)`, `three-quarter back view, face mostly hidden`, `back view, subject's face not visible` 중 하나이며 3/4과 프로필에는 `, subject facing screen-left` 또는 `, subject facing screen-right`가 붙습니다), 초점이 인물일 때 샷 크기에 따른 프레이밍 문구(`FRAME_RANGES`에서 크기별로 하나씩: `MCU`는 `framed from mid-chest to just above the head, small headroom, top of the head fully inside the frame`, `WS`는 `full figures head to feet with floor visible`, `OTS`는 `over the near character's shoulder`), 앵글 이름과 피치 절댓값(예: `low angle 12°`), 렌즈 밀리미터, 카메라 높이 이름과 미터, `rollDeg`가 0이 아니면 `dutch angle, horizon tilted 8° to the right`(또는 `to the left`, 양수 롤은 그려지는 지평선을 오른쪽으로 기울입니다), 인물이 둘 이상 프레임에 들면 각 인물의 `look`과 함께 `N characters in frame`(한 명이면 `Characters:`), 프레임에 든 인물마다 투영된 화면 위치(`on screen-left`, `at the centre of frame`, `on screen-right`)와 블로킹 자세(`standing`, `walking`, `sitting`, `reaching`, `crouching`), 카메라를 기준으로 읽은 방향(`facing screen-left`, `facing screen-right`, `facing the camera`, `facing away from the camera`)을 담은 `Blocking:` 문장, 적힌 그대로의 액션, 중심이 프레임 안에 투영되는 소품, 마지막으로 `doc.style`이 들어갑니다. 소품 초점에는 시점·프레이밍·방향 문구가 없습니다. 대사는 절대 옮기지 않고, 글자는 보드에서 붙이므로 그림 안에 글자·숫자·캡션·말풍선을 그리지 말라는 문구로 끝납니다. 같은 문서는 같은 문자열을 냅니다.
 
 `renderGuideSvg()`는 검사자에게 주는 회색조 구도 참고 그림을 돌려줍니다. 같은 카메라 투영에 인형, 바닥 격자, 지평선만 있고 화살표·라벨·소품·메모는 없습니다. `viewBox`는 기본 `16:9`에서 `0 0 1600 900`이고 그 밖의 화면비에서는 문서의 화면비를 따릅니다. 검사할 때 돌아온 그림과 나란히 보고, 패널 그림은 참고 이미지 없이 생성하므로 래스터화하거나 첨부하지 않습니다.
 

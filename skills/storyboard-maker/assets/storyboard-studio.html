@@ -23,7 +23,7 @@ textarea:focus-visible,button:focus-visible{outline:3px solid #2474b8;outline-of
 .scene-board{margin:0 0 30px}
 .scene-board h2{font-size:18px;margin:0 0 8px;padding-bottom:4px;border-bottom:2px solid var(--ink)}
 .floorplan{margin:0 0 12px;max-width:520px}
-.floorplan svg{width:100%;height:auto;display:block;border:1px solid var(--line);background:#fff}
+.floorplan svg,.floorplan img{width:100%;height:auto;display:block;border:1px solid var(--line);background:#fff}
 .floorplan figcaption{font-size:12px;color:var(--muted);margin-top:4px}
 .page{margin:0 0 18px}
 .page-head{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:4px;margin-bottom:8px}
@@ -102,6 +102,24 @@ var StoryboardCore = (function () {
     ECU: [0.90, 0.98], CU: [0.80, 1.02], MCU: [0.70, 1.02], MS: [0.52, 1.03],
     COWBOY: [0.40, 1.04], MWS: [0.28, 1.05], FS: [-0.03, 1.06]
   };
+  // The frame each size crops, in words, read off FRAME_RANGES: a body ratio of
+  // 0.90 is the chin, 0.80 the shoulders, 0.70 mid-chest, 0.52 the waist, 0.40
+  // mid-thigh, 0.28 the knees and a ratio below zero the floor. Every entry names
+  // what is inside the frame and where the head sits in it, because a picture
+  // that crops the crown or drops the headroom reads as a different shot.
+  var FRAMING_EN = {
+    ECU: "framed from the chin to just above the head, tight on the face, small headroom, top of the head inside the frame",
+    CU: "framed from the shoulders to just above the head, small headroom, the whole head inside the frame",
+    MCU: "framed from mid-chest to just above the head, small headroom, top of the head fully inside the frame",
+    MS: "framed from the waist to just above the head, headroom above the head",
+    COWBOY: "framed from mid-thigh to just above the head, headroom above the head",
+    MWS: "framed from the knees to just above the head, headroom above the head",
+    FS: "full figures head to feet with floor visible",
+    WS: "full figures head to feet with floor visible",
+    ELS: "small full figures in a wide environment with floor visible",
+    OTS: "over the near character's shoulder, near shoulder in the foreground, framed from mid-chest to just above the head with small headroom"
+  };
+  var POSE_EN = { stand: "standing", walk: "walking", sit: "sitting", reach: "reaching", crouch: "crouching" };
   var ANGLE_KO = { "EYE LEVEL": "아이레벨", HIGH: "부감", LOW: "앙각", OVERHEAD: "오버헤드", "WORM'S EYE": "웜즈아이" };
   var HEIGHT_KO = { GROUND: "지면", KNEE: "무릎", HIP: "허리", SHOULDER: "어깨", EYE: "눈높이", ABOVE: "머리 위" };
   var VBW = 1600;
@@ -412,6 +430,7 @@ var StoryboardCore = (function () {
         else sceneIds[scene.id] = true;
         if (!isNum(scene.number)) err("SCHEMA_REQUIRED", sp + ".number", "씬 number가 필요합니다.");
         if (!isStr(scene.heading)) err("SCHEMA_REQUIRED", sp + ".heading", "씬 heading이 필요합니다.");
+        if (scene.planImage !== undefined && scene.planImage !== null) validateImage(scene.planImage, sp + ".planImage", "planImage", err);
         if (!isArr(scene.props)) err("SCHEMA_REQUIRED", sp + ".props", "props 배열이 필요합니다(비어 있어도 됩니다).");
         else {
           var propIds = {};
@@ -474,6 +493,17 @@ var StoryboardCore = (function () {
     }
     if (!errors.length) info = horizonInfo(doc);
     return { errors: errors, info: info };
+  }
+
+  // One picture contract for a shot's image and a scene's planImage: a base64
+  // data URI (no URL, no file path), a provenance, and an optional prompt.
+  function validateImage(img, ip, name, err) {
+    if (!isObj(img)) { err("SCHEMA_TYPE", ip, name + "는 객체이거나 null이어야 합니다."); return; }
+    if (!isStr(img.src)) err("SCHEMA_REQUIRED", ip + ".src", name + ".src가 필요합니다.");
+    else if (!IMAGE_SRC_RE.test(img.src)) err("SCHEMA_TYPE", ip + ".src", name + ".src는 data:image/png, data:image/jpeg, data:image/webp base64 데이터 URI만 허용합니다.");
+    if (!isStr(img.provenance)) err("SCHEMA_REQUIRED", ip + ".provenance", name + ".provenance가 필요합니다.");
+    else if (PROVENANCE_ENUM.indexOf(img.provenance) < 0) err("SCHEMA_ENUM", ip + ".provenance", "provenance는 " + PROVENANCE_ENUM.join(", ") + " 중 하나여야 합니다.");
+    if (img.prompt !== undefined && img.prompt !== null && typeof img.prompt !== "string") err("SCHEMA_TYPE", ip + ".prompt", name + ".prompt는 문자열이어야 합니다.");
   }
 
   function validateShot(shot, hp, scene, doc, shotIds, err) {
@@ -576,17 +606,7 @@ var StoryboardCore = (function () {
       });
     }
     if (shot.sound !== undefined && shot.sound !== null && typeof shot.sound !== "string") err("SCHEMA_TYPE", hp + ".sound", "sound는 문자열이어야 합니다.");
-    if (shot.image !== undefined && shot.image !== null) {
-      var ip = hp + ".image";
-      if (!isObj(shot.image)) err("SCHEMA_TYPE", ip, "image는 객체이거나 null이어야 합니다.");
-      else {
-        if (!isStr(shot.image.src)) err("SCHEMA_REQUIRED", ip + ".src", "image.src가 필요합니다.");
-        else if (!IMAGE_SRC_RE.test(shot.image.src)) err("SCHEMA_TYPE", ip + ".src", "image.src는 data:image/png, data:image/jpeg, data:image/webp base64 데이터 URI만 허용합니다.");
-        if (!isStr(shot.image.provenance)) err("SCHEMA_REQUIRED", ip + ".provenance", "image.provenance가 필요합니다.");
-        else if (PROVENANCE_ENUM.indexOf(shot.image.provenance) < 0) err("SCHEMA_ENUM", ip + ".provenance", "provenance는 " + PROVENANCE_ENUM.join(", ") + " 중 하나여야 합니다.");
-        if (shot.image.prompt !== undefined && shot.image.prompt !== null && typeof shot.image.prompt !== "string") err("SCHEMA_TYPE", ip + ".prompt", "image.prompt는 문자열이어야 합니다.");
-      }
-    }
+    if (shot.image !== undefined && shot.image !== null) validateImage(shot.image, hp + ".image", "image", err);
     if (!isNum(shot.durationSec)) err("SCHEMA_REQUIRED", hp + ".durationSec", "durationSec이 필요합니다.");
     else if (shot.durationSec < 0.2 || shot.durationSec > 600) err("SCHEMA_RANGE", hp + ".durationSec", "durationSec은 0.2~600초여야 합니다.");
     if (!isStr(shot.transition)) err("SCHEMA_REQUIRED", hp + ".transition", "transition이 필요합니다.");
@@ -1537,6 +1557,8 @@ var StoryboardCore = (function () {
       out.push('<section class="scene-board" data-scene="' + esc(scene.id) + '">');
       out.push("<h2>SC " + esc(scene.number) + " · " + esc(scene.heading) + "</h2>");
       if (plan) out.push('<figure class="floorplan">' + plan + "<figcaption>SC " + esc(scene.number) + " 평면도 · 빨간 삼각형이 샷 카메라, 점선이 180도 축입니다.</figcaption></figure>");
+      var planPic = isObj(scene.planImage) && isStr(scene.planImage.src) && IMAGE_SRC_RE.test(scene.planImage.src) ? scene.planImage : null;
+      if (planPic) out.push('<figure class="floorplan floorplan-image"><img data-part="plan-image" src="' + esc(planPic.src) + '" alt="SC ' + esc(scene.number) + ' 평면도 그림"><figcaption>SC ' + esc(scene.number) + " 평면도 그림 · " + (planPic.provenance === "generated" ? "생성 그림" : "제공 그림") + ", 위치 기준은 위 평면도입니다.</figcaption></figure>");
       var pages = [];
       for (var i = 0; i < scene.shots.length; i += per) pages.push(scene.shots.slice(i, i + per));
       pages.forEach(function (group, pi) {
@@ -1606,6 +1628,134 @@ var StoryboardCore = (function () {
     return facingScreen === "center" ? "" : ", subject facing screen-" + facingScreen;
   }
 
+  // Where a figure lands across the frame, from the same projection the guide
+  // draws. The thirds of the frame decide the side; a figure in the middle third
+  // is placed against the other figures in the shot, so a pair straddling the
+  // centre still reads as one on the left and one on the right.
+  function screenSideOf(x, W) {
+    if (x < W / 3) return "left";
+    if (x > W * 2 / 3) return "right";
+    return "center";
+  }
+  function sidesOf(anchors, W) {
+    var sides = anchors.map(function (a) { return a ? screenSideOf(a.x, W) : null; });
+    if (anchors.length < 2) return sides;
+    anchors.forEach(function (a, i) {
+      if (!a || sides[i] !== "center") return;
+      var leftOfAll = true, rightOfAll = true;
+      anchors.forEach(function (b, j) {
+        if (!b || j === i) return;
+        if (b.x < a.x) leftOfAll = false;
+        if (b.x > a.x) rightOfAll = false;
+      });
+      if (leftOfAll && !rightOfAll) sides[i] = "left";
+      else if (rightOfAll && !leftOfAll) sides[i] = "right";
+    });
+    return sides;
+  }
+
+  // The head and the chest are projected on the blocking mark, so the anchor uses
+  // exactly the point the guide's mannequin stands on. The facing vector is the
+  // mannequin's face normal compared against the camera axes: within 15° of the
+  // camera axis the figure faces the camera, more than 120° away it faces into
+  // the scene, and every angle between keeps a side.
+  function figureAnchor(doc, scene, shot, character, view) {
+    var H = numOr(character.heightM, 1.7);
+    var pos = positionOf(doc, scene, shot, character.id);
+    var facing = facingOf(doc, scene, shot, character.id);
+    var joints = poseJoints(poseOf(doc, scene, shot, character.id), H);
+    var head = project(view, { x: pos.x, y: joints.headY, z: pos.z });
+    var body = project(view, { x: pos.x, y: (joints.hipY + joints.shoulderY) / 2, z: pos.z });
+    if (!head && !body) return null;
+    var sn = Math.sin(facing * D2R), cs = Math.cos(facing * D2R);
+    return {
+      x: head && body ? (head.x + body.x) / 2 : (head || body).x,
+      forward: sn * view.frame.forward.x + cs * view.frame.forward.z,
+      right: sn * view.frame.right.x + cs * view.frame.right.z
+    };
+  }
+
+  // The focus keeps the words the view clause already chose, so the blocking line
+  // and `viewPhrase()` cannot disagree about which way the subject looks.
+  function focusFacingClause(cam) {
+    var base = String(cam.yawName).replace(/ [LR]$/, "");
+    if (base === "FRONT") return "facing the camera";
+    if (base === "3/4" || base === "PROFILE") {
+      if (cam.facingScreen === "left") return "facing screen-left";
+      if (cam.facingScreen === "right") return "facing screen-right";
+      return "facing the camera";
+    }
+    return "facing away from the camera";
+  }
+  function facingClause(anchor) {
+    if (anchor.forward > 0.5) return "facing away from the camera";
+    if (anchor.forward < -Math.cos(15 * D2R)) return "facing the camera";
+    return anchor.right < 0 ? "facing screen-left" : "facing screen-right";
+  }
+
+  // The near shoulder of an OTS shot is not a standing figure on the floor, so it
+  // is named as foreground instead of being given a screen side the guide does not
+  // draw for it.
+  function blockingClause(doc, scene, shot, chars, cam) {
+    var over = shot.size === "OTS" && isObj(shot.camera) && isStr(shot.camera.over) ? shot.camera.over : null;
+    var anchors = chars.map(function (ch) {
+      return ch.id === over ? null : figureAnchor(doc, scene, shot, ch, cam.view);
+    });
+    var sides = sidesOf(anchors, cam.view.W);
+    var parts = [];
+    chars.forEach(function (ch, i) {
+      if (ch.id === over) { parts.push(ch.name + " in the foreground, near shoulder only"); return; }
+      var anchor = anchors[i];
+      if (!anchor) return;
+      var where = sides[i] === "left" ? "on screen-left" : (sides[i] === "right" ? "on screen-right" : "at the centre of frame");
+      var facing = ch.id === shot.focus ? focusFacingClause(cam) : facingClause(anchor);
+      parts.push(ch.name + " " + where + ", " + POSE_EN[poseOf(doc, scene, shot, ch.id)] + ", " + facing);
+    });
+    return parts.length ? "Blocking: " + parts.join("; ") + "." : "";
+  }
+
+  // Overhead plan picture brief. The plan is drawn with +z (away from the viewer
+  // of the scene) toward the top of the picture and +x to the right, the same
+  // orientation as the technical floor plan, so positions can be checked 1:1.
+  function planSide(x, z, cx, cz, spanX, spanZ) {
+    var h = (x - cx) / (spanX || 1), v = (z - cz) / (spanZ || 1);
+    var vert = v > 0.2 ? "upper" : v < -0.2 ? "lower" : "middle";
+    var hor = h > 0.2 ? "right" : h < -0.2 ? "left" : "centre";
+    return vert === "middle" && hor === "centre" ? "centre" : vert === "middle" ? hor : vert + (hor === "centre" ? " centre" : " " + hor);
+  }
+  function planFacing(deg) {
+    var d = ((Math.round(deg) % 360) + 360) % 360;
+    var names = ["up", "upper right", "right", "lower right", "down", "lower left", "left", "upper left"];
+    return names[Math.round(d / 45) % 8];
+  }
+  function compileFloorPlanPrompt(doc, sceneId) {
+    var scene = findScene(doc, sceneId);
+    if (!scene) return "";
+    var pts = [];
+    (isArr(scene.props) ? scene.props : []).forEach(function (p) { pts.push({ x: numOr(p.x, 0), z: numOr(p.z, 0) }); });
+    (isArr(scene.blocking) ? scene.blocking : []).forEach(function (b) { pts.push({ x: numOr(b.x, 0), z: numOr(b.z, 0) }); });
+    if (!pts.length) pts.push({ x: 0, z: 0 });
+    var minX = Math.min.apply(null, pts.map(function (p) { return p.x; })), maxX = Math.max.apply(null, pts.map(function (p) { return p.x; }));
+    var minZ = Math.min.apply(null, pts.map(function (p) { return p.z; })), maxZ = Math.max.apply(null, pts.map(function (p) { return p.z; }));
+    var cx = (minX + maxX) / 2, cz = (minZ + maxZ) / 2, sx = Math.max(maxX - minX, 1), sz = Math.max(maxZ - minZ, 1);
+    var lines = ["Storyboard floor plan seen straight from above: top-down, 90 degrees overhead, orthographic, no perspective."];
+    lines.push("Location: " + sentence(scene.heading) + ".");
+    var props = (isArr(scene.props) ? scene.props : []).map(function (p) {
+      return p.label + " (" + fx(numOr(p.w, 1), 2) + " m by " + fx(numOr(p.d, 1), 2) + " m) in the " + planSide(numOr(p.x, 0), numOr(p.z, 0), cx, cz, sx, sz) + " of the layout";
+    });
+    if (props.length) lines.push("Furniture and props: " + props.join("; ") + ".");
+    var people = (isArr(scene.blocking) ? scene.blocking : []).map(function (b) {
+      var ch = charOf(doc, b.character);
+      if (!ch) return null;
+      return ch.name + (ch.look ? " (" + sentence(ch.look) + ")" : "") + " seen from directly above, " + (POSE_EN[b.pose] || "standing") + " in the " + planSide(numOr(b.x, 0), numOr(b.z, 0), cx, cz, sx, sz) + " of the layout, facing " + planFacing(numOr(b.facingDeg, 0)) + " in the picture";
+    }).filter(Boolean);
+    if (people.length) lines.push("Characters: " + people.join("; ") + ".");
+    lines.push("Keep these relative positions exactly; leave empty floor around the characters.");
+    lines.push("Style: " + sentence(styleOf(doc)) + ", clean architectural line drawing.");
+    lines.push("Do not draw any text, letters, numbers, labels, arrows, or captions in the image.");
+    return lines.join(" ");
+  }
+
   // One English prompt for an external image generator. Composition is read
   // from the same projection as the panel, so changing a camera value changes
   // the prompt; dialogue is never copied because the art must stay letter-free.
@@ -1618,6 +1768,9 @@ var StoryboardCore = (function () {
     var isCharacterFocus = !!charOf(doc, shot.focus);
     lines.push("Storyboard panel, " + SIZE_EN[shot.size] +
       (isCharacterFocus ? ", " + viewPhrase(cam.yawName, cam.facingScreen) : "") + ".");
+    // The crop is part of the brief: a picture that seats a standing figure or
+    // cuts the crown reads as a different shot than the panel's camera line.
+    if (isCharacterFocus) lines.push("Framing: " + (FRAMING_EN[shot.size] || FRAMING_EN.MCU) + ".");
     var roll = numOr(shot.camera.rollDeg, 0);
     var dutch = Math.abs(roll) > 0.05
       ? ", dutch angle, horizon tilted " + degText(Math.abs(roll)) + "° to the " + (roll > 0 ? "right" : "left")
@@ -1630,6 +1783,8 @@ var StoryboardCore = (function () {
         return ch.look ? ch.name + " (" + sentence(ch.look) + ")" : ch.name;
       }).join("; ");
       lines.push(chars.length > 1 ? chars.length + " characters in frame: " + looks + "." : "Characters: " + looks + ".");
+      var blocking = blockingClause(doc, scene, shot, chars, cam);
+      if (blocking) lines.push(blocking);
     }
     lines.push("Action: " + sentence(shot.action) + ".");
     var props = propsInFrame(scene, cam.view);
@@ -1681,6 +1836,7 @@ var StoryboardCore = (function () {
     layoutShot: layoutShot,
     renderPanelSvg: renderPanelSvg,
     compilePanelPrompt: compilePanelPrompt,
+    compileFloorPlanPrompt: compileFloorPlanPrompt,
     renderGuideSvg: renderGuideSvg,
     renderFloorPlanSvg: function (doc, sceneId) {
       var scene = findScene(doc, sceneId);
