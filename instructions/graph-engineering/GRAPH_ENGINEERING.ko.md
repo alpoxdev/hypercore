@@ -44,7 +44,7 @@
 
 인용한 프리프린트는 Graph Engineering을 prompt, context, harness, loop engineering 다음 자리에 놓는다. 작업이 이질적인 전문성, 서로 의존하는 하위 작업, 병렬 실행, 독립 검증, 지속 상태를 요구하는 순간 에이전트 하나의 수용력이 먼저 바닥나기 때문이다([arXiv 2608.21156](https://arxiv.org/abs/2608.21156)). LangChain은 더 약하고 더 쓸모 있는 주장을 한다. 그래프 엔지니어링은 loop engineering, harness engineering과 "같은 발상"이며, 각 단계에서 모델의 추론을 올바른 자리에 올바른 문맥과 함께 두는 일이라는 것이다.
 
-**GE-4.** 사이클은 그래프 수준에서 자기 한도를 선언한다. 실행 한 번에 back-edge를 몇 번까지 지날 수 있는지 정하며, 이는 노드 내부의 종료 조건과 별개다. ADK 문서는 "그래프 사이클은 자동으로 한정되지 않는다"고 밝히고, 루프 자체를 "back-edge, 곧 하류 노드가 앞선 노드로 되돌아가는 것"으로 정의한다. 한도가 노드가 아니라 엣지에 속하는 이유가 여기에 있다([ADK, graph routes](https://adk.dev/graphs/routes/)). [`instructions/loop-engineering/LOOP_ENGINEERING.ko.md`](../loop-engineering/LOOP_ENGINEERING.ko.md)의 짝 규칙은 올바르게 멈추는 노드도 다시 진입할 수 있다는 것이다.
+**GE-4.** 사이클은 그래프 수준에서 자기 한도를 선언한다. 실행 한 번에 back-edge를 몇 번까지 지날 수 있는지 정하며, 이는 노드 내부의 종료 조건과 별개다. ADK 문서는 "그래프 사이클은 자동으로 한정되지 않는다"고 밝히고, 루프 자체를 "back-edge, 곧 하류 노드가 앞선 노드로 되돌아가는 것"으로 정의한다. 한도가 노드가 아니라 엣지에 속하는 이유가 여기에 있다([ADK, graph routes](https://adk.dev/graphs/routes/)). 노드 내부의 정지 조건은 그 방문 한 번을 끝낼 뿐이고, 그 노드가 다시 도는지는 그래프가 정한다. [`instructions/loop-engineering/LOOP_ENGINEERING.ko.md`](../loop-engineering/LOOP_ENGINEERING.ko.md)도 루프 쪽에서 같은 경계를 적는다. 되돌림 간선은 노드 내부 정지 조건과 별개로 그래프 수준의 상한을 스스로 선언한다.
 
 **GE-5.** 사이클이 끝났는지 판정하는 검사는 일을 하는 주체가 아니라 다른 주체나 결정적 oracle이 수행한다. 루프 수준에서는 이것이 loop engineering 계약이고, 그래프 수준에서는 검증자가 노드가 되고 그 판정이 엣지가 된다는 뜻이다.
 

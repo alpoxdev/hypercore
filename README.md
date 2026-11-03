@@ -30,7 +30,7 @@ Hypercore는 [Vercel Skills CLI](https://github.com/vercel-labs/skills)의 원�
 
 ## 설치 및 수명주기
 
-모든 스킬을 사용자 전역에 설치 (`--skill '*'`가 스킬 전체 선택, agent는 CLI가 설치된 것만 감지):
+모든 스킬을 사용자 전역에 설치 (`--skill '*'`가 스킬 전체 선택. agent를 지정하지 않고 `-y`를 주면 감지된 agent와 universal agent가 대상이고, 감지된 agent가 없으면 CLI가 아는 agent 전체가 대상이 되므로 특정 agent만 원하면 `-a`로 지정합니다):
 
 ```bash
 npx skills add alpoxdev/hypercore --skill '*' -g -y

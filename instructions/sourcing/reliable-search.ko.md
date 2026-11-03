@@ -190,7 +190,7 @@ WebSearch({ query: `Korea SaaS market trends as of ${runtime.currentDate}` })
 .hyper/research/[NN].slug/claims.md          # 선택: 긴 작업의 중간 발견
 ```
 
-이 배치는 `skills/hyper-research/references/journal-format.md`가 정의한다. journal이 이미 있으면 그 파일을 따른다.
+이 배치는 `skills/hyper-research/references/journal-format.ko.md`가 정의한다. journal이 이미 있으면 그 파일을 따른다.
 
 소스 레저 최소 필드:
 
@@ -289,7 +289,7 @@ Claim-source matrix 최소 필드:
 | # | 출처 | 발행 | URL | 발행·갱신일 | 확인일 | 등급 |
 |---:|---|---|---|---|---|---|
 | 1 | OWASP Top 10 for LLM Applications 2026 | OWASP GenAI Security Project | <https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/> | 2026-08-03 | 확인 2026-11-03 | S |
-| 2 | LLM01: Prompt Injection (2025 본문 제공 중) | OWASP GenAI Security Project | <https://genai.owasp.org/llmrisk/llm01-prompt-injection/> | 본문 표기 LLM01:2025 | 확인 2026-11-03 | S |
+| 2 | LLM01: Prompt Injection (2025 본문 제공 중) | OWASP GenAI Security Project | <https://genai.owasp.org/llmrisk/llm01-prompt-injection/> | 표기 없음, 본문 표기 LLM01:2025 | 확인 2026-11-03 | S |
 | 3 | OWASP Top 10 for Agentic Applications 2026 | OWASP GenAI Security Project | <https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/> | 2025-12-09 | 확인 2026-11-03 | S |
 | 4 | Generative AI Profile, NIST AI 600-1 | NIST | <https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence> | 2024-07-26, 페이지 갱신 2026-04-08 | 확인 2026-11-03 | S |
 | 5 | AI RMF 페이지, AI RMF 1.0 개정 공지 | NIST | <https://www.nist.gov/itl/ai-risk-management-framework> | 표기 없음 | 확인 2026-11-03 | S |

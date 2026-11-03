@@ -205,4 +205,4 @@ smoke eval은 바꾸는 instruction 원문에 돌린다. 바꿔 쓴 요약본에
 | 11 | Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces | Merrill 외, arXiv:2601.11868 | <https://arxiv.org/abs/2601.11868> | 2026-01-17 | 확인 2026-11-03 | S |
 | 12 | Introducing SWE-bench Verified; SWE-bench Verified leaderboard | OpenAI; SWE-bench 관리자 | <https://openai.com/index/introducing-swe-bench-verified/>, <https://www.swebench.com/> | 2024-08-13, 2025-02-24 갱신; leaderboard는 수시 갱신 | 확인 2026-11-03; leaderboard 확인 2026-11-04 | S |
 
-42%에서 95%로의 benchmark 사례와 20~50 task 시작점은 Anthropic이 보고한 자체 경험이다. §4.1의 약 80% 수치는 Zheng 외가 보고한 judge와 사람 선호의 일치율이며(출처 7), Anthropic의 결과가 아니다. 세 가지 모두 방법론이 밝혀진 단일 출처 근거로 다루고, 독립 측정으로 다루지 않는다. 통계 권고는 같은 연구소 소속 저자의 논문에서 나왔으므로, 이 원장에서는 둘 다 단일 기관 근거로 표시한다.
+42%에서 95%로의 benchmark 사례와 20~50 task 시작점은 Anthropic이 보고한 자체 경험이다. §4.1의 약 80% 수치는 Zheng 외가 보고한 judge와 사람 선호의 일치율이며(출처 7), Anthropic의 결과가 아니다. 세 가지 모두 방법론이 밝혀진 단일 출처 근거로 다루고, 독립 측정으로 다루지 않는다. 통계 권고는 같은 연구소 소속 저자의 논문에서 나왔으므로, 둘 다 독립 재현이 아니라 단일 기관 근거로 다룬다.
