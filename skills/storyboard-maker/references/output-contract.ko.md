@@ -26,6 +26,7 @@
 | `aspect` | string | 아니오 | `16:9` | `16:9`, `2.39:1`, `1.85:1`, `4:3`, `9:16` 중 하나입니다. |
 | `sensorLongMm` | number | 아니오 | `35` | 센서 긴 축의 밀리미터 값입니다. 세로 화각에만 쓰입니다. |
 | `panelsPerPage` | integer | 아니오 | `3` | `1`~`4`입니다. 인쇄한 A4 가로 한 쪽에 들어가는 패널 수입니다. |
+| `style` | string | 아니오 | `grayscale manga storyboard line art, clean ink lines, 2-3 flat gray tones, no text, no speech bubbles` | 비어 있지 않은 문자열입니다. 모든 패널 프롬프트에 실리는 그림체(1.7절)입니다. 그려지는 선화는 바꾸지 않습니다. |
 | `characters` | object[] | 예 | — | 하나 이상입니다. |
 | `scenes` | object[] | 예 | — | 하나 이상이며 이야기 순서입니다. |
 
@@ -36,6 +37,7 @@
 | `id` | string | 예 | — | 문서 안에서 고유합니다. `focus`, `subjects`, `blocking`, `subjectMoves`, `pov`, `over`, `axis`가 참조합니다. |
 | `name` | string | 예 | — | 비어 있지 않은 문자열입니다. 패널과 평면도에 인쇄됩니다. |
 | `heightM` | number | 아니오 | `1.70` | 미터 단위입니다. 프레이밍과 카메라 높이 계산을 정합니다. |
+| `look` | string | 아니오 | 없음 | 비어 있지 않은 문자열입니다. 체형·머리·옷처럼 외형을 한 줄로 적은 창작 설명이며, 패널 프롬프트가 써서 같은 인물이 모든 생성 패널에서 같은 모습으로 읽히게 합니다. 실존 배우나 생존 인물의 이름은 쓰지 않습니다. |
 
 ### 1.2 씬
 
@@ -49,7 +51,20 @@
 | `axis` | `[string, string]` 또는 `null` | 예 | — | 180도 선을 정하는 인물 id 두 개이거나, 선이 없는 씬이면 `null`입니다. |
 | `shots` | object[] | 예 | — | 하나 이상이며 컷 순서입니다. |
 
-`props[]`의 항목은 `id`(string, 씬 안에서 고유), `label`(string), `x`, `z`(씬 바닥의 미터 좌표), `w`, `d`, `h`(미터)입니다. `x`는 씬의 오른쪽, `z`는 관객 반대쪽으로 뻗고 바닥은 `y = 0`입니다.
+`props[]`의 각 항목:
+
+| 키 | 타입 | 필수 | 기본값 | 규칙 |
+|---|---|---|---|---|
+| `id` | string | 예 | — | 씬 안에서 고유합니다. `focus`가 참조합니다. |
+| `label` | string | 예 | — | 비어 있지 않은 문자열입니다. 평면도에 인쇄합니다. |
+| `x` | number | 예 | — | 미터. 씬의 오른쪽으로 뻗습니다. |
+| `z` | number | 예 | — | 미터. 관객 반대쪽으로 뻗습니다. |
+| `w` | number | 예 | — | 미터. `x` 축 너비입니다. |
+| `d` | number | 예 | — | 미터. `z` 축 깊이입니다. |
+| `h` | number | 예 | — | 미터. 받침면 위 높이입니다. |
+| `y` | number | 아니오 | `0` | 미터. 바닥 위 소품 받침 높이(`props[].y`)입니다. `h: 0.75`인 식탁 위 찻잔은 `y: 0.75`를 씁니다. `0` 이상이어야 하며, 음수는 `SCHEMA_RANGE`, 숫자가 아니면 `SCHEMA_TYPE`입니다. 그려지는 상자는 `y`에서 `y + h`까지이고, 평면도는 평면 투영이므로 `y`를 쓰지 않습니다. |
+
+`y`가 없는 소품의 그려지는 상자는 바뀌지 않습니다. 소품 초점 샷은 `y + h / 2`를 중심으로 잡으므로, 소품 초점 샷이 있는 기존 문서는 카메라 높이가 달라집니다.
 
 `blocking[]`의 항목은 `character`(인물 id, 인물마다 한 항목), `x`, `z`(미터), `facingDeg`(도, `0`이면 `+z`를 봄, 양수면 `+x` 쪽으로 돎), `pose`(`stand`, `walk`, `sit`, `reach`, `crouch` 중 하나)입니다.
 
@@ -68,6 +83,7 @@
 | `action` | string | 예 | — | 현재형 동작 설명입니다. |
 | `dialogue` | object[] | 아니오 | 없음 | `{ "speaker": string, "line": string }`입니다. `speaker`는 콜론 앞에 그대로 인쇄되므로 인물 이름을 씁니다. |
 | `sound` | string | 아니오 | 없음 | 패널에 인쇄되는 사운드 메모입니다. |
+| `image` | object 또는 `null` | 아니오 | 없음 | 이 패널에 넣을 완성 그림입니다. 1.7절을 봅니다. 있으면 선화 대신 그림을 그리고, 메모와 이동 표기는 그대로 남깁니다. |
 | `durationSec` | number | 예 | — | `0.2`~`600`입니다. |
 | `transition` | string | 예 | — | `CUT`, `DISSOLVE`, `FADE IN`, `FADE OUT`, `WIPE`, `SMASH CUT`, `MATCH CUT` 중 하나입니다. 다음 패널로 넘어가는 전환으로 인쇄됩니다. |
 | `crossing` | object 또는 `null` | 예 | — | 1.6절을 봅니다. |
@@ -100,9 +116,25 @@
 
 `crossing`은 `null`이거나 `method`(`neutral`, `subject-move`, `camera-move`, `both`, `none` 중 하나), `intentional`(boolean), `reason`(비어 있지 않은 문자열)을 가진 객체입니다. `none`은 다리 없이 선을 넘는다는 뜻입니다. `crossing`을 선언한 샷은 그 샷으로 들어오는 컷에서 선 관련 경고 세 개를 억제하고, `intentional` 값과 상관없이 `intentional[]`에 기록됩니다.
 
-### 1.7 최소 문서
+### 1.7 그림·그림체·외형
 
-이 블록은 완전하고 유효한 문서입니다. 여기서는 `aspect`, `sensorLongMm`, `panelsPerPage`, `subjects`, `blockingOverride`, `sound`를 빼서 기본값을 보여 주고, 스키마가 요구하는 나머지 키는 모두 넣었습니다.
+패널은 보통 카메라 값으로 그린 선화를 담습니다. `shots[].image`는 한 패널에 완성 그림을 넣고, `doc.style`과 `characters[].look`은 이미지 생성기가 그려야 할 그림을 설명합니다.
+
+`image`는 `null`이거나 다음 객체입니다.
+
+| 키 | 타입 | 필수 | 규칙 |
+|---|---|---|---|
+| `src` | string | 예 | 데이터 URI만 씁니다. `data:image/png;base64,`, `data:image/jpeg;base64,`, `data:image/webp;base64,` 뒤에 base64 문자가 이어집니다. `http:`, `https:`, `file:`, blob URL은 `SCHEMA_TYPE`입니다. 보드는 어떤 것도 내려받지 않습니다. |
+| `provenance` | string | 예 | 이미지 생성기가 만든 그림이면 `generated`, 사람이 준 그림이면 `supplied`입니다. 다른 값은 `SCHEMA_ENUM`입니다. |
+| `prompt` | string | 아니오 | 그 그림을 만든 프롬프트입니다. 검토용으로 남기며 보드에는 인쇄하지 않습니다. |
+
+`image`가 있는 샷은 그림을 프레임에 잘라 `data-part="panel-image"`로 그리고 `preserveAspectRatio="xMidYMid slice"`를 써서 늘리지 않고 프레임을 채웁니다. 그 패널에서는 인형과 선화를 건너뛰지만 이동 화살표, 끝 프레임, 인물 이동 화살표는 남아 그림 위에 인쇄됩니다. 패널 메모(카메라 줄, 액션, 대사, 사운드, 길이, 전환)는 그대로입니다. `image`가 없는 샷은 선화를 그립니다.
+
+`style`은 문서 전체에 하나인 짧은 그림체 문구이며 `compilePanelPrompt()`(4절)에만 실리고 SVG는 바꾸지 않습니다. 모든 프롬프트 끝의 글자 금지 문구와 어긋나는 지시는 넣지 않습니다.
+
+### 1.8 최소 문서
+
+이 블록은 완전하고 유효한 문서입니다. 여기서는 `aspect`, `sensorLongMm`, `panelsPerPage`, `style`, `look`, `image`, `subjects`, `blockingOverride`, `sound`를 빼서 기본값을 보여 주고, 스키마가 요구하는 나머지 키는 모두 넣었습니다.
 
 ```json
 {
@@ -185,7 +217,7 @@ vfovDeg      = 2 * atan(sensorAxisMm / (2 * focalMm)) * 180 / PI
 | `ELS` | 인물이 프레임 높이의 4분의 1 | `4H`, 중심 `0.5H` |
 | `OTS` | 초점을 `MCU`로 프레이밍 | `0.32H` |
 
-초점이 소품이면 소품 높이 `h`의 `1.6`배를 쓰고 중심은 `h / 2`입니다. `subjects`가 있으면 박스는 초점 박스와 모든 인물 박스의 합집합이 되고, 합집합의 중간 높이가 궤도 중심 높이가 됩니다.
+초점이 소품이면 소품 높이 `h`의 `1.6`배를 쓰고 중심은 `y + h / 2`입니다(`y`는 `props[].y` 받침 높이, 기본 `0`). `subjects`가 있으면 박스는 초점 박스와 모든 인물 박스의 합집합이 되고, 합집합의 중간 높이가 궤도 중심 높이가 됩니다.
 
 ### 2.3 거리와 궤도
 
@@ -287,6 +319,20 @@ manifest.json     # 이 빌드의 getReport()
 
 `panels`는 렌더한 패널 수이고 `scenes`는 렌더한 평면도 수입니다. 오류가 하나라도 남아 있으면 둘 다 `0`이고 `index.html`은 패널 대신 오류 상태를 보여 줍니다.
 
+모든 패널 `<svg>`는 무엇을 그렸는지 표시하므로, 산문을 읽지 않고도 그림을 검사할 수 있습니다.
+
+| `data-part` | 그리는 때 | 뜻 |
+|---|---|---|
+| `frame` | 항상 | 잉크 테두리를 두른 흰 프레임입니다. |
+| `panel-image` | 샷에 `image`가 있을 때 | 프레임에 잘라 넣고 채우도록 늘린 그림입니다. 그 패널에서는 인형·소품·바닥·지평선을 그리지 않습니다. |
+| `ground` | 그림이 없고 격자가 프레임 안에 투영될 때 | 6m 바닥 격자입니다. |
+| `horizon` | 그림이 없고 지평선이 프레임 안에 있을 때 | 지평선입니다. |
+| `head`, `hair`, `face`, `chest` | 그림이 없을 때 | 인형 표식입니다. `hair`는 뒤에서 볼 때만, `chest`는 몸통 앞면이 카메라를 향할 때만 나옵니다. |
+| `foreground` | 그림이 없고 `OTS` 샷일 때 | 프레임에 잘린 어깨 너머 인물입니다. |
+| `end-frame`, `end-frame-group` | `PUSH IN`, `ZOOM IN`, `DOLLY IN`, `PULL OUT`, `ZOOM OUT`, `DOLLY OUT` 이동일 때 | 점선 끝 프레임과 네 모서리 화살표입니다. 그림 위에도 인쇄됩니다. |
+| `subject-move` | `subjectMoves` 항목이 있을 때 | 인물 이동의 바닥 화살표와 라벨입니다. 그림 위에도 인쇄됩니다. |
+| `guide-frame` | `renderGuideSvg()`만 | 구도 가이드의 바깥 테두리입니다. |
+
 ## 4. 렌더러 API
 
 `StoryboardCore`는 `<script id="storyboard-core">` 안에 있고 DOM 없이 동작합니다. 모든 함수는 순수합니다. 같은 문서는 같은 문자열을 돌려주며, 어떤 함수도 시계나 네트워크, 전역 상태를 읽지 않습니다.
@@ -297,6 +343,8 @@ manifest.json     # 이 빌드의 getReport()
 | `lint` | `lint(doc)` | `{ warnings: Issue[], info: Issue[], intentional: IntentionalEntry[] }` |
 | `layoutShot` | `layoutShot(doc, sceneId, shotId)` | 아래 레이아웃 객체, id를 찾지 못하면 `null` |
 | `renderPanelSvg` | `renderPanelSvg(doc, sceneId, shotId)` | `<svg>` 문자열 하나, id를 찾지 못하면 `""` |
+| `compilePanelPrompt` | `compilePanelPrompt(doc, sceneId, shotId)` | 영어 프롬프트 문자열 하나, id를 찾지 못하면 `""` |
+| `renderGuideSvg` | `renderGuideSvg(doc, sceneId, shotId)` | 회색 구도 가이드 `<svg>` 문자열 하나, id를 찾지 못하면 `""` |
 | `renderFloorPlanSvg` | `renderFloorPlanSvg(doc, sceneId)` | `<svg>` 문자열 하나, 씬을 찾지 못하면 `""` |
 | `render` | `render(doc)` | 갤러리 HTML 문자열 전체(`<html>` 래퍼 없음), 오류가 하나라도 남아 있으면 `""` |
 | `vfovDeg` | `vfovDeg(focalMm, aspect, sensorLongMm)` | 세로 화각(도) |
@@ -331,6 +379,12 @@ manifest.json     # 이 빌드의 getReport()
 | `horizonVisible`, `groundVisible`, `facingScreen` | 절대 불가 | 항상 |
 | `angleName`, `yawName`, `heightName` | 절대 불가 | 항상 |
 
+`compilePanelPrompt()`는 패널을 그리는 것과 같은 투영을 읽으므로 프롬프트와 패널이 어긋나지 않습니다. 문자열에는 차례로 샷 크기의 영어 이름, 초점이 인물일 때 yaw 시점(`front view, subject faces the camera`, `three-quarter view`, `profile view (side view)`, `three-quarter back view, face mostly hidden`, `back view, subject's face not visible` 중 하나이며 3/4과 프로필에는 `, subject facing screen-left` 또는 `, subject facing screen-right`가 붙습니다), 앵글 이름과 피치 절댓값(예: `low angle 12°`), 렌즈 밀리미터, 카메라 높이 이름과 미터, `rollDeg`가 0이 아니면 `dutch angle, horizon tilted 8° to the right`(또는 `to the left`, 양수 롤은 그려지는 지평선을 오른쪽으로 기울입니다), 인물이 둘 이상 프레임에 들면 각 인물의 `look`과 함께 `N characters in frame`(한 명이면 `Characters:`), 적힌 그대로의 액션, 중심이 프레임 안에 투영되는 소품, 마지막으로 `doc.style`이 들어갑니다. 소품 초점에는 시점·방향 문구가 없습니다. 대사는 절대 옮기지 않고, 글자는 보드에서 붙이므로 그림 안에 글자·숫자·캡션·말풍선을 그리지 말라는 문구로 끝납니다. 같은 문서는 같은 문자열을 냅니다.
+
+`renderGuideSvg()`는 이미지 생성기에 주는 회색조 구도 참고 그림을 돌려줍니다. 같은 카메라 투영에 인형, 바닥 격자, 지평선만 있고 화살표·라벨·소품·메모는 없습니다. `viewBox`는 기본 `16:9`에서 `0 0 1600 900`이고 그 밖의 화면비에서는 문서의 화면비를 따릅니다. 생성기가 참고 이미지를 받으면 프롬프트와 함께 넣습니다.
+
+`image`, `image.src`, `image.provenance`, `image.prompt`, `style`, `characters[].look`은 입력 전용이며 어떤 함수도 계산하지 않습니다. `compilePanelPrompt()`와 `renderGuideSvg()`의 출력은 파생값이며 문서에 다시 쓰지 않습니다.
+
 `window.storyboardStudio`는 DOM을 다루는 껍데기이며, QA 단계에서 브라우저로 호출하는 대상입니다.
 
 | 호출 | 반환 | 동작 |
@@ -348,8 +402,8 @@ manifest.json     # 이 빌드의 getReport()
 | 코드 | 발생 조건 |
 |---|---|
 | `SCHEMA_REQUIRED` | 필수 키가 빠졌거나, 스키마가 null 허용으로 선언하지 않은 키가 `null`이거나, `size`가 `OTS`인데 `camera.over`가 없습니다. |
-| `SCHEMA_TYPE` | 값의 JSON 타입이 틀렸습니다. 또는 `camera.over`가 `OTS`가 아닌 size와 함께 있습니다. |
-| `SCHEMA_ENUM` | `size`, `pose`, `move.type`, `transition`, `crossing.method`가 열거값 밖입니다. |
+| `SCHEMA_TYPE` | 값의 JSON 타입이 틀렸습니다. 또는 `camera.over`가 `OTS`가 아닌 size와 함께 있습니다. `image.src`가 base64 `data:image/png`, `data:image/jpeg`, `data:image/webp` URI가 아니어도 이 코드입니다. |
+| `SCHEMA_ENUM` | `size`, `pose`, `move.type`, `transition`, `crossing.method`, `image.provenance`가 열거값 밖입니다. |
 | `SCHEMA_RANGE` | 수가 허용 범위를 벗어납니다. `pitchDeg`, `heightM`, `yawDeg`, `rollDeg`, `focalMm`, `durationSec`, `panelsPerPage`. |
 | `SCHEMA_DUPLICATE` | 인물 id, 씬 id, 소품 id, 샷 id가 자기 범위 안에서 겹칩니다. |
 | `SCHEMA_REFERENCE` | `focus`, `subjects` 항목, `blocking.character`, `axis`, `subjectMoves.character`, `pov`, `over`가 없는 id를 가리킵니다. |

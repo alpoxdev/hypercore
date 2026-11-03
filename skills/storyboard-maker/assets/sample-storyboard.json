@@ -8,12 +8,14 @@
     {
       "id": "jiwoo",
       "name": "지우",
-      "heightM": 1.66
+      "heightM": 1.66,
+      "look": "late-20s Korean woman, chin-length black bob, grey crew-neck sweater and dark jeans"
     },
     {
       "id": "haneul",
       "name": "하늘",
-      "heightM": 1.78
+      "heightM": 1.78,
+      "look": "early-30s Korean man, short black hair, olive overshirt over a white tee, wire-rim glasses"
     }
   ],
   "scenes": [
@@ -39,6 +41,16 @@
           "w": 0.3,
           "d": 0.3,
           "h": 1.55
+        },
+        {
+          "id": "cup",
+          "label": "찻잔",
+          "x": 0.1,
+          "z": -0.05,
+          "w": 0.09,
+          "d": 0.09,
+          "h": 0.1,
+          "y": 0.75
         }
       ],
       "blocking": [
@@ -88,11 +100,12 @@
         {
           "id": "15",
           "size": "CU",
-          "focus": "table",
+          "focus": "cup",
           "camera": {
             "yawDeg": 0,
             "rollDeg": 0,
-            "focalMm": 50
+            "focalMm": 50,
+            "heightM": 0.95
           },
           "move": null,
           "subjectMoves": [],
@@ -101,7 +114,7 @@
           "durationSec": 2,
           "transition": "CUT",
           "crossing": null,
-          "intent": "대화의 축을 건드리지 않는 중립 다리 숏."
+          "intent": "대화의 축을 건드리지 않는 중립 다리 숏. 식탁 위 찻잔을 인서트로 잡는다."
         },
         {
           "id": "20",

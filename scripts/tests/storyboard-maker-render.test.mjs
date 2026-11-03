@@ -34,6 +34,7 @@ const core = runInNewContext(coreMatch[1] + "\n;StoryboardCore;");
 const WebView = Reflect.get(Bun, "WebView");
 const hasWebView = typeof WebView === "function";
 const samplePanels = sampleDoc.scenes.reduce((n, scene) => n + scene.shots.length, 0);
+const TINY_PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
 
 // ---------------------------------------------------------------- fixtures
 
@@ -410,6 +411,183 @@ test("a prop focus without subjects frames at 1.6x its height", () => {
   const layout = core.layoutShot(doc, "s1", "10");
   const expected = 0.48 / (2 * Math.tan(11.14 * Math.PI / 180));
   near(layout.distanceM, expected, 0.02);
+});
+
+test("a prop rests on the floor by default and rejects a bad base elevation", () => {
+  const doc = {
+    version: 1,
+    title: "PROP",
+    characters: [{ id: "a", name: "A" }],
+    scenes: [{
+      id: "s1",
+      number: 1,
+      heading: "INT. TEST",
+      props: [{ id: "cup", label: "컵", x: 0, z: 0, w: 0.1, d: 0.1, h: 0.2 }],
+      blocking: [{ character: "a", x: 3, z: 0, facingDeg: 0, pose: "stand" }],
+      axis: null,
+      shots: [baseShot({ size: "CU", focus: "cup" })]
+    }]
+  };
+  expect(core.validate(doc).errors).toEqual([]);
+  near(core.layoutShot(doc, "s1", "10").target.y, 0.1);
+
+  const negative = clone(doc);
+  negative.scenes[0].props[0].y = -1;
+  expect(core.validate(negative).errors.map((e) => e.code)).toEqual(["SCHEMA_RANGE"]);
+
+  const text = clone(doc);
+  text.scenes[0].props[0].y = "0.75";
+  expect(core.validate(text).errors.map((e) => e.code)).toEqual(["SCHEMA_TYPE"]);
+});
+
+test("a cup set on a table is framed at its resting height and drawn inside the panel", () => {
+  const doc = {
+    version: 1,
+    title: "CUP",
+    characters: [{ id: "a", name: "A" }],
+    scenes: [{
+      id: "s1",
+      number: 1,
+      heading: "INT. KITCHEN",
+      props: [
+        { id: "table", label: "식탁", x: 0, z: 0, w: 1, d: 0.6, h: 0.75 },
+        { id: "cup", label: "찻잔", x: 0.1, z: -0.05, w: 0.09, d: 0.09, h: 0.1, y: 0.75 }
+      ],
+      blocking: [{ character: "a", x: 3, z: 0, facingDeg: 0, pose: "stand" }],
+      axis: null,
+      shots: [baseShot({ size: "CU", focus: "cup", camera: { yawDeg: 0, rollDeg: 0, focalMm: 50, heightM: 0.8 } })]
+    }]
+  };
+  expect(core.validate(doc).errors).toEqual([]);
+  const layout = core.layoutShot(doc, "s1", "10");
+  near(layout.target.y, 0.75 + 0.05);
+  expect(layout.angleName).toBe("EYE LEVEL");
+
+  const svg = core.renderPanelSvg(doc, "s1", "10");
+  const fragments = [...svg.matchAll(/<path[^>]*data-prop="cup"[^>]*>/g)].map((match) => match[0]);
+  expect(fragments.length).toBeGreaterThanOrEqual(1);
+  const points = drawnPoints(fragments.join(""));
+  expectInsidePanel(points, 1600, 900);
+  const xs = points.map((point) => point[0]);
+  const ys = points.map((point) => point[1]);
+  expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThan(100);
+  expect(Math.max(...ys) - Math.min(...ys)).toBeGreaterThan(300);
+  expect(Math.min(...ys)).toBeGreaterThan(60);
+  expect(Math.max(...ys)).toBeLessThan(840);
+});
+
+test("a panel picture, a style and a character look are optional and the picture must be a data URI", () => {
+  const doc = testDoc([baseShot({ image: { src: TINY_PNG, provenance: "generated", prompt: "kept" } })], {
+    style: "inked noir panels"
+  });
+  doc.characters[0].look = "tall woman in a raincoat";
+  expect(core.validate(doc).errors).toEqual([]);
+
+  /** @type {Array<[string, (doc: any) => void]>} */
+  const variants = [
+    ["SCHEMA_TYPE", (d) => { d.scenes[0].shots[0].image.src = "https://example.com/a.png"; }],
+    ["SCHEMA_TYPE", (d) => { d.scenes[0].shots[0].image.src = "data:image/gif;base64,QUJD"; }],
+    ["SCHEMA_REQUIRED", (d) => { delete d.scenes[0].shots[0].image.provenance; }],
+    ["SCHEMA_ENUM", (d) => { d.scenes[0].shots[0].image.provenance = "borrowed"; }],
+    ["SCHEMA_TYPE", (d) => { d.style = 5; }],
+    ["SCHEMA_TYPE", (d) => { d.characters[0].look = 5; }]
+  ];
+  for (const [code, mutate] of variants) {
+    const copy = clone(doc);
+    mutate(copy);
+    expect(core.validate(copy).errors.map((e) => e.code)).toContain(code);
+  }
+});
+
+test("the panel prompt repeats deterministically and carries the computed framing without dialogue", () => {
+  const doc = testDoc([baseShot({
+    size: "MCU",
+    camera: { yawDeg: 30, rollDeg: 0, focalMm: 50, pitchDeg: -12 },
+    action: "She turns toward the door.",
+    dialogue: [{ speaker: "A", line: "Do not open it." }]
+  })], { style: "grey ink manga panels" });
+  doc.characters[0].look = "short dark hair, navy coat";
+  const prompt = core.compilePanelPrompt(doc, "s1", "10");
+  expect(prompt).toBe(core.compilePanelPrompt(clone(doc), "s1", "10"));
+  expect(prompt).toContain("medium close-up");
+  expect(prompt).toContain("low angle 12°");
+  expect(prompt).toContain("screen-left");
+  expect(prompt).toContain("50mm");
+  expect(prompt).toContain("shoulder height 1.17 m");
+  expect(prompt).toContain("short dark hair, navy coat");
+  expect(prompt).toContain("She turns toward the door.");
+  expect(prompt).toContain("grey ink manga panels");
+  expect(prompt).toContain("speech bubbles");
+  expect(prompt).not.toContain("Do not open it.");
+  expect(core.compilePanelPrompt(doc, "s1", "nope")).toBe("");
+});
+
+test("a shot with a picture clips it to the frame and keeps the movement notation and notes", () => {
+  const doc = testDoc([baseShot({
+    image: { src: TINY_PNG, provenance: "supplied", prompt: "kept" },
+    move: { type: "PUSH IN", endSize: "CU", primary: true },
+    subjectMoves: [{ character: "a", to: { x: 1.2, z: -0.8 }, label: "OUT", primary: false }],
+    dialogue: [{ speaker: "A", line: "Listen." }],
+    transition: "DISSOLVE"
+  })]);
+  expect(core.validate(doc).errors).toEqual([]);
+  const svg = core.renderPanelSvg(doc, "s1", "10");
+  expect(svg).toContain('data-part="panel-image"');
+  expect(svg).toContain('preserveAspectRatio="xMidYMid slice"');
+  expect(svg).toContain('clip-path="url(#sb-panel-clip-');
+  const image = svg.match(/<image[^>]*>/);
+  expect(image).not.toBeNull();
+  expect(image[0]).toContain('href="' + TINY_PNG + '"');
+  expect(image[0]).toContain('width="1600"');
+  expect(image[0]).toContain('height="900"');
+  expect(svg).toContain('data-part="end-frame"');
+  expect(svg).toContain('data-part="subject-move"');
+  expect(svg).not.toContain('data-part="head"');
+
+  const html = core.render(doc);
+  expect(html).toContain('data-part="panel-image"');
+  expect(html).toContain("Listen.");
+  expect(html).toContain("DISSOLVE");
+  expect(html).toContain("PUSH IN");
+});
+
+test("a shot without a picture keeps the line art and the guide is a plain deterministic composition", () => {
+  const svg = core.renderPanelSvg(sampleDoc, "sc1", "10");
+  expect(svg).not.toContain('data-part="panel-image"');
+  expect(svg).toContain('data-part="head"');
+  expect(svg).toContain('data-part="ground"');
+
+  const guide = core.renderGuideSvg(sampleDoc, "sc1", "10");
+  expect(guide).toBe(core.renderGuideSvg(sampleDoc, "sc1", "10"));
+  expect(guide).toContain('viewBox="0 0 1600 900"');
+  expect(guide).toContain('data-part="head"');
+  expect(guide).toContain('data-part="ground"');
+  expect(guide).toContain('data-part="horizon"');
+  for (const absent of ['<text', 'data-part="end-frame"', 'data-part="subject-move"', 'data-part="panel-image"', 'data-part="frame"', "#c0392b", "<image"]) {
+    expect(guide).not.toContain(absent);
+  }
+  expect(core.renderGuideSvg(sampleDoc, "nope", "10")).toBe("");
+});
+
+test("the prompt names the yaw view, the dutch tilt and the character count", () => {
+  const profile = core.compilePanelPrompt(sampleDoc, "sc1", "10");
+  expect(profile).toContain("profile view (side view)");
+  expect(profile).toContain("2 characters in frame");
+
+  const back = core.compilePanelPrompt(sampleDoc, "sc1", "30");
+  expect(back).toContain("back view");
+  expect(back).not.toContain("facing screen-");
+
+  const dutch = core.compilePanelPrompt(sampleDoc, "sc2", "60");
+  expect(dutch).toContain("dutch angle");
+  expect(dutch).toContain("horizon tilted 8° to the right");
+
+  const prop = core.compilePanelPrompt(sampleDoc, "sc1", "15");
+  expect(prop).not.toContain("facing");
+  expect(prop).not.toContain("view");
+
+  const rolled = testDoc([baseShot({ camera: { yawDeg: 0, rollDeg: -8, focalMm: 50, pitchDeg: 0 } })]);
+  expect(core.compilePanelPrompt(rolled, "s1", "10")).toContain("horizon tilted 8° to the left");
 });
 
 test("unknown ids return null or an empty string instead of throwing", () => {
