@@ -103,7 +103,6 @@ var StoryboardCore = (function () {
     COWBOY: [0.40, 1.04], MWS: [0.28, 1.05], FS: [-0.03, 1.06]
   };
   var ANGLE_KO = { "EYE LEVEL": "아이레벨", HIGH: "부감", LOW: "앙각", OVERHEAD: "오버헤드", "WORM'S EYE": "웜즈아이" };
-  var YAW_KO = { FRONT: "정면", "3/4": "3/4", PROFILE: "측면", "3/4 BACK": "3/4 뒷모습", BACK: "뒷모습" };
   var HEIGHT_KO = { GROUND: "지면", KNEE: "무릎", HIP: "허리", SHOULDER: "어깨", EYE: "눈높이", ABOVE: "머리 위" };
   var VBW = 1600;
 
@@ -618,7 +617,7 @@ var StoryboardCore = (function () {
       var h = box.center + d * Math.sin(cam.pitchDeg * D2R);
       if (h < 0.05) out.push("피치 " + fx(cam.pitchDeg, 1) + "°에서 카메라 높이가 " + fx(h, 2) + "m로 바닥 아래입니다.");
     }
-    if (isNum(cam.pov) || shot.size === "OTS") {
+    if (isStr(cam.pov) || shot.size === "OTS") {
       var pv = cameraOf(doc, scene, shot);
       if (pv.heightM < 0.05) out.push("눈 위치 카메라가 바닥 아래입니다.");
       if (pv.distanceM < 0.2) out.push("카메라와 초점 대상이 너무 가깝습니다(" + fx(pv.distanceM, 2) + "m).");
@@ -682,11 +681,11 @@ var StoryboardCore = (function () {
         if (shot.camera.focalMm <= 18 && (shot.size === "ECU" || shot.size === "CU")) {
           warnings.push(issue("WIDE_LENS_FACE", hp, shot.camera.focalMm + "mm로 " + shot.size + "를 잡으면 얼굴이 과장됩니다."));
         }
+        var suppressed = shot.crossing !== null && shot.crossing !== undefined;
+        if (suppressed) {
+          intentional.push({ shot: shot.id, method: shot.crossing.method, intentional: shot.crossing.intentional, reason: shot.crossing.reason });
+        }
         if (prev) {
-          var suppressed = shot.crossing !== null && shot.crossing !== undefined;
-          if (suppressed) {
-            intentional.push({ shot: shot.id, method: shot.crossing.method, intentional: shot.crossing.intentional, reason: shot.crossing.reason });
-          }
           var a1 = sideOfAxis(doc, scene, shot, prev.camPos);
           var a2 = sideOfAxis(doc, scene, shot, cam.camPos);
           if (!suppressed) {
@@ -996,6 +995,7 @@ var StoryboardCore = (function () {
       // 0.35 m, so its faces are clipped to the panel and drawn as one group.
       style.clip = { x0: 3, y0: 3, x1: view.W - 3, y1: view.H - 3 };
       style.part = "foreground";
+      style.fill = "#e2e2e2";
       var overFaces = [];
       boxes.forEach(function (b) { addBoxFaces(overFaces, b, view, style); });
       overFaces.sort(function (a, b) { return b.depth - a.depth; });
@@ -1194,7 +1194,7 @@ var StoryboardCore = (function () {
     var out = [];
     var W = view.W, H = view.H, m = Math.min(W, H);
     var move = shot.move;
-    var primary = move && move.primary !== false;
+    var primary = move && move.primary === true;
     var width = primary ? 2.5 : 1.5;
     if (move && move.type && move.type !== "STATIC") {
       var type = move.type;
@@ -1306,7 +1306,7 @@ var StoryboardCore = (function () {
   }
 
   function imageOf(shot) {
-    return isObj(shot.image) && isStr(shot.image.src) ? shot.image : null;
+    return isObj(shot.image) && isStr(shot.image.src) && IMAGE_SRC_RE.test(shot.image.src) ? shot.image : null;
   }
 
   function buildPanel(doc, scene, shot, cam) {
@@ -1432,6 +1432,7 @@ var StoryboardCore = (function () {
     function facingDir(deg) { return { x: Math.sin(deg * D2R), z: Math.cos(deg * D2R) }; }
     var out = [];
     var labels = [];
+    var obstacles = [];
     out.push('<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(scene.heading) + ' 평면도">');
     out.push('<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#fff" stroke="#111" stroke-width="2"/>');
     if (isArr(scene.axis) && scene.axis.length === 2) {
@@ -1465,6 +1466,7 @@ var StoryboardCore = (function () {
         out.push('<circle data-part="blocking" cx="' + fx(x, 1) + '" cy="' + fx(y, 1) + '" r="11" fill="#fff" stroke="#111" stroke-width="2" vector-effect="non-scaling-stroke"/>');
         out.push('<line x1="' + fx(x, 1) + '" y1="' + fx(y, 1) + '" x2="' + fx(x + dir.x * 24, 1) + '" y2="' + fx(y - dir.z * 24, 1) + '" stroke="#111" stroke-width="2" vector-effect="non-scaling-stroke"/>');
         labels.push({ text: esc(ch.name), x: x, y: y - 18, anchor: "middle" });
+        obstacles.push({ x: x, y: y, r: 11 });
       });
     }
     {
@@ -1479,33 +1481,39 @@ var StoryboardCore = (function () {
           var p1 = { x: cx + Math.cos(ang) * size * 1.6, y: cy + Math.sin(ang) * size * 1.6 };
           var p2 = { x: cx + Math.cos(back + 0.5) * size, y: cy + Math.sin(back + 0.5) * size };
           var p3 = { x: cx + Math.cos(back - 0.5) * size, y: cy + Math.sin(back - 0.5) * size };
-          var hfov = Math.atan(cam.tanH) * R2D;
+          var halfHfov = Math.atan(cam.tanH) * R2D;
           out.push('<path data-part="camera" d="M' + fx(p1.x, 1) + " " + fx(p1.y, 1) + " L" + fx(p2.x, 1) + " " + fx(p2.y, 1) + " L" + fx(p3.x, 1) + " " + fx(p3.y, 1) + ' Z" fill="#c0392b" opacity="0.85"/>');
-          out.push('<path d="M' + fx(cx, 1) + " " + fx(cy, 1) + " L" + fx(cx + Math.cos(ang - hfov / 2 * D2R) * size * 6, 1) + " " + fx(cy + Math.sin(ang - hfov / 2 * D2R) * size * 6, 1) + " L" + fx(cx + Math.cos(ang + hfov / 2 * D2R) * size * 6, 1) + " " + fx(cy + Math.sin(ang + hfov / 2 * D2R) * size * 6, 1) + ' Z" fill="#c0392b" opacity="0.08" stroke="#c0392b" stroke-width="0.8" vector-effect="non-scaling-stroke"/>');
+          out.push('<path d="M' + fx(cx, 1) + " " + fx(cy, 1) + " L" + fx(cx + Math.cos(ang - halfHfov * D2R) * size * 6, 1) + " " + fx(cy + Math.sin(ang - halfHfov * D2R) * size * 6, 1) + " L" + fx(cx + Math.cos(ang + halfHfov * D2R) * size * 6, 1) + " " + fx(cy + Math.sin(ang + halfHfov * D2R) * size * 6, 1) + ' Z" fill="#c0392b" opacity="0.08" stroke="#c0392b" stroke-width="0.8" vector-effect="non-scaling-stroke"/>');
           labels.push({ text: esc(shot.id), x: cx + Math.cos(ang) * 36, y: cy + Math.sin(ang) * 36 + 6, anchor: "middle" });
         } catch (error) { /* a shot that cannot be laid out is already reported as an error */ }
       });
     }
-    out.push(placePlanLabels(labels, W, H));
+    out.push(placePlanLabels(labels, W, H, obstacles));
     out.push("</svg>");
     return out.join("");
   }
 
-  function placePlanLabels(items, W, H) {
-    var placed = [], chunks = [], offsets = [0, -18, 18, -36, 36, -54, 54, -72, 72];
+  function placePlanLabels(items, W, H, obstacles) {
+    var placed = [], chunks = [];
+    var offsets = [0, -18, 18, -36, 36, -54, 54, -72, 72, -90, 90, -108, 108, -126, 126];
+    if (isArr(obstacles)) {
+      obstacles.forEach(function (o) { placed.push({ x: o.x - o.r, y: o.y, w: o.r * 2, h: o.r * 2 }); });
+    }
     items.forEach(function (item) {
-      var w = Math.max(20, item.text.length * 9), h = 16;
+      var w = Math.max(20, item.text.length * 9), h = 20;
       var left = clamp(item.x - (item.anchor === "middle" ? w / 2 : 0), 4, Math.max(4, W - w - 4));
-      var y = clamp(item.y, 16, H - 6);
+      var y = clamp(item.y, 16, H - 6), bestY = y, bestHits = Infinity;
       for (var k = 0; k < offsets.length; k++) {
-        y = clamp(item.y + offsets[k], 16, H - 6);
-        var hit = false;
+        var candidate = clamp(item.y + offsets[k], 16, H - 6);
+        var hits = 0;
         for (var j = 0; j < placed.length; j++) {
           var p = placed[j];
-          if (Math.abs((p.x + p.w / 2) - (left + w / 2)) < (p.w + w) / 2 - 2 && Math.abs(p.y - y) < (p.h + h) / 2) { hit = true; break; }
+          if (Math.abs((p.x + p.w / 2) - (left + w / 2)) < (p.w + w) / 2 - 2 && Math.abs(p.y - candidate) < (p.h + h) / 2) hits++;
         }
-        if (!hit) break;
+        if (hits < bestHits) { bestHits = hits; bestY = candidate; }
+        if (hits === 0) break;
       }
+      y = bestY;
       placed.push({ x: left, y: y, w: w, h: h });
       chunks.push('<text class="hint-text" x="' + fx(left + w / 2, 1) + '" y="' + fx(y, 1) + '" text-anchor="middle">' + item.text + "</text>");
     });
@@ -1524,7 +1532,6 @@ var StoryboardCore = (function () {
     });
     var per = clamp(Math.round(perPageOf(doc)), 1, 4);
     var out = [];
-    var totalPanels = 0;
     doc.scenes.forEach(function (scene, si) {
       var plan = floorPlanSvg(doc, scene);
       out.push('<section class="scene-board" data-scene="' + esc(scene.id) + '">');
@@ -1535,7 +1542,6 @@ var StoryboardCore = (function () {
       pages.forEach(function (group, pi) {
         var cards = group.map(function (shot) {
           var hi = scene.shots.indexOf(shot);
-          totalPanels++;
           return panelHtml(doc, scene, shot, byPath["scenes[" + si + "].shots[" + hi + "]"] || []);
         });
         out.push('<section class="page" style="--per-page:' + per + '">');
