@@ -60,13 +60,13 @@
 |---|---|---|
 | *Do Context Files Help Coding Agents? A Two-Agent Ablation Study on Real Repositories* (Khatri, REALM 2026 워크숍, ACL Anthology `2026.realm-1.5`) | Claude Code·Codex, 실제 저장소 3곳의 task 17개, 288회 실행, gold test | "Context strategy does not measurably move correctness on either agent (bounded to ≤10–15pp via equivalence testing)." 실패는 context가 아니라 구현 역량에서 나왔다 |
 | *Probe-and-Refine Tuning of Repository Guidance for Coding Agents* (Shepard, Albrecht, arXiv:2606.20512) | 저장소를 반복 탐색해 파일을 *도출* | 평균 해결률 33.0%로, 정적 지식 기반 28.3%, 무지침 25.5%를 앞섰다(p < 0.001). 이득은 파일의 존재가 아니라 내용을 만든 방식에서 왔다 |
-| *Why Does CLAUDE.md Keep Growing? Catastrophic Remembering in Agentic Coding* (Chakrabarti, arXiv:2608.11095) | 저장소 1,867곳의 instruction 수명 247,694개 | 파일이 "more than tripling over their lifetime (+226%), gaining +4.9 net instructions every commit"만큼 자란다. 잠재 추론을 적은 항목을 걸러내면 "remove 99.3% of excess instructions" |
+| *Why Does CLAUDE.md Keep Growing? Catastrophic Remembering in Agentic Coding* (Chakrabarti, arXiv:2608.11095) | 저장소 1,867곳의 instruction 수명 247,694개 | 파일이 "more than tripling over their lifetime (+226%), gaining +4.9 net instructions every commit"만큼 자란다. instruction마다 잠재 추론을 기록한 프롬프트 주석이 "remove 99.3% of excess instructions" |
 | *Stale Instruction Files Override the Code in Coding Agents: A One-Sentence Fix* (Xu, Wu, arXiv:2610.30571) | 파일이 코드와 모순되는 저장소에서 320회 실행 | "Without the sentence, 90.1% of the agents' choices followed the stale file". 문장을 넣자 "raised the share of choices that follow the code from 4.2% to 91.4%"가 되고 테스트 통과율이 89.4%에서 100%가 되었다 |
 
 작성에 대한 두 가지 귀결은 벤더 문서의 어떤 서술보다 강하다.
 
 - **낡은 instruction 파일은 코드보다 우선한다.** 에이전트는 읽을 수 있는 소스보다 문서를 신뢰하므로, 낡은 명령이나 뒤처진 아키텍처 설명은 중립적 잡음이 아니라 실제 결함이다. 둘이 어긋날 때 코드가 이긴다고 파일에 분명히 적는다. 네 번째 연구가 고친 것이 바로 그 한 문장이다.
-- **증가는 사고가 아니라 기본 궤적이다.** 그대로 두면 파일은 커밋당 약 5개 instruction을 얻으며 세 배가 된다. 정리는 일정을 가진 유지보수 작업이고, 효과가 있었던 정리 기준은 에이전트가 스스로 도출할 수 있는 추론을 다시 적은 항목을 지우는 것이었다.
+- **증가는 사고가 아니라 기본 궤적이다.** 그대로 두면 파일은 커밋당 약 5개 instruction을 얻으며 세 배가 된다. 정리는 일정을 가진 유지보수 작업이다. 효과가 있었던 개입은 각 instruction이 왜 있는지를 적어 두는 것이었다. 논문은 그런 주석을 쓰는 일 자체는 아무것도 지우지 않지만, 그에 따라 항목을 지우는 단계에는 사람을 두라고 적는다.
 
 표의 출처는 모두 2026-11-03에 확인했다: <https://aclanthology.org/2026.realm-1.5/> (2026년 10월 proceedings, preprint <https://arxiv.org/abs/2607.27250>, 2026-07-28), <https://arxiv.org/abs/2606.20512> (2026-06-18), <https://arxiv.org/abs/2608.11095> (2026-08-11), <https://arxiv.org/abs/2610.30571> (2026-10-22). 동료 심사를 거친 것은 REALM 논문뿐이므로 나머지 효과 크기는 임계값이 아니라 징후로 다룬다.
 

@@ -56,7 +56,7 @@ trace는 증거이므로 필드를 즉석에서 정하지 않고 고정한다. �
 | HE-T-5: 토큰 회계 | 입력·출력 토큰, 그리고 캐시 읽기·쓰기 |
 | HE-T-6: 종료 사유 | 종료 사유 배열. 누락된 사유는 생략하지 않고 오류로 기록한다 |
 | HE-T-7: 도구 호출 | 호출 순서와 호출별 **인자 요약** |
-| HE-T-8: 콘텐츠 속성 | 메시지 본문·시스템 지시·도구 정의는 opt-in이고 기본값은 `NO_CONTENT`이며 PII 경고를 붙인다. 관례가 정한 opt-in 스위치 이름은 `OTEL_INSTRUMENTATION_GENAI_CAPTURE_CONTENT`다 |
+| HE-T-8: 콘텐츠 속성 | 메시지 본문·시스템 지시·도구 호출 인자와 결과는 opt-in이고 기본값은 `NO_CONTENT`이며 PII 경고를 붙인다. 관례가 정한 opt-in 스위치 이름은 `OTEL_INSTRUMENTATION_GENAI_CAPTURE_CONTENT`다 |
 
 ## Prompt / Role Instruction Smoke Eval
 

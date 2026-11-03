@@ -39,7 +39,7 @@ Ordering the `Trust level` column by trust is the point: an independent model is
 | Time-based (`/loop`, `/schedule`) | A specified time interval | "You cancel it, or the work completes (the PR merges, the queue is empty)" | Recurring work, or interfacing with an external system | Longer intervals, or react to events instead of time |
 | Proactive | An event or schedule, no human in real time | Each task exits when its goal is met; "the routine itself runs until you turn it off" | Recurring streams of well-defined work | Route routines to smaller models; reserve capable models for judgement |
 
-Two properties are easy to miss. The time-based type has **no completion semantics of its own** — the work completing and the loop stopping are separate events, which is why an interval loop that polls a finished queue keeps polling until someone cancels it. The proactive type has the opposite shape: each item stops on its own goal, and the routine has no terminal state at all. Copy the wrong one and you get either a stalled loop or an endless one.
+Two properties are easy to miss. The time-based type has **no completion check of its own** — the interval decides only when to fire, so the work completing and the loop stopping are separate events: the loop stops when the agent judges the work done or a person cancels it, and an interval loop whose stop rule never names the finished state keeps firing on a finished queue. The proactive type has the opposite shape: each item stops on its own goal, and the routine has no terminal state at all. Copy the wrong one and you get either a stalled loop or an endless one.
 
 ## The types the four-name taxonomy leaves out
 

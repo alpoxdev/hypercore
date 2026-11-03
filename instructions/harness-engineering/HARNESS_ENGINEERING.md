@@ -53,7 +53,7 @@ A trace is evidence, so its fields are fixed rather than improvised. The names b
 | HE-T-5: token accounting | input and output tokens, plus cache read and cache write |
 | HE-T-6: finish reasons | the array of stop reasons, with a missing reason recorded as an error rather than omitted |
 | HE-T-7: tool calls | call order, and an **argument summary** per call |
-| HE-T-8: content attributes | message bodies, system instructions, and tool definitions are opt-in — default `NO_CONTENT` — and carry a PII warning. The convention names the opt-in switch `OTEL_INSTRUMENTATION_GENAI_CAPTURE_CONTENT` |
+| HE-T-8: content attributes | message bodies, system instructions, and tool call arguments and results are opt-in — default `NO_CONTENT` — and carry a PII warning. The convention names the opt-in switch `OTEL_INSTRUMENTATION_GENAI_CAPTURE_CONTENT` |
 
 ## Prompt / Role Instruction Smoke Eval
 
