@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 33개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 34개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -177,6 +177,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `blog-maker` | 키워드 하나로 리서치부터 초안까지 — 네이버 또는 inblog 글, 네이버 노출 규칙(C-Rank·D.I.A.+·스마트블록)과 공식 제한 기준 준수, 내장 사람 문장 규칙, 인라인 이미지 슬롯, 섹션 역할별 이미지 visual brief(역할·템플릿·시선 순서·색 역할·재질·정확한 글자·점검 기준 + 붙여넣기용 자연어 프롬프트), 기본 본문 HTML에 서식 복사 버튼 포함(plain 텍스트는 명시 요청 시만), 정보/경험형·전환형 | All (self-contained) |
 | `image-maker` | 관찰된 이미지 기능으로 이미지를 생성하고, 미지원 환경에서는 실행 가능한 프롬프트를 안전하게 저장 | Capability-based |
 | `instagram-card-maker` | 브랜드·글감 조사 후 흐름에 맞는 카드뉴스 제작. 편집 가능한 HTML, 같은 비율의 이미지 여러 장, 한국어 캡션과 대체 텍스트 전달 | All (이미지 출력은 브라우저 필요) |
+| `storyboard-maker` | 대본·줄거리를 카메라 값(높이·각도·방향·렌즈·샷 크기)으로 계산한 선화 영화 스토리보드로 — 연속성(180도·30도·시선·화면 방향) 경고, 무브 화살표·패널 메모, 씬 평면도, A4 인쇄용 자체 포함 HTML | All (시각 확인은 브라우저 권장) |
 
 ### 도메인 도구
 
@@ -185,9 +186,17 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `naver-api` | Naver API HUB 검색·DataLab 검색어 트렌드·쇼핑인사이트 조회와 CLI 초기 설정·자격 증명 검증 | Node.js 20+; network; Naver API HUB credentials |
 | `jev-maker` | TypeSafe Jev(System One) 판단 모델용 질문, 호출 코드, 템플릿, 평가 세트 생성과 코드 감사, 연결 설정 | bash 3.2+ · jq (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 33개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 34개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
+
+**카페 대화 장면을 스토리보드로 만들 때**
+
+```text
+storyboard-maker로 카페 창가에서 두 사람이 대화하는 장면을 스토리보드로 만들어줘.
+로우 앵글과 하이 앵글을 한 컷씩 넣고 카메라 높이·렌즈·샷 크기를 패널마다 적어줘.
+화면비는 16:9, A4 가로 인쇄용으로 만들고 180도 축과 시선 방향이 어긋나면 경고해줘.
+```
 
 **인스타그램 카드뉴스를 만들 때**
 
@@ -238,7 +247,7 @@ hypercore/
 │       └── color/         # @kood/color-cli — hex / rgb / oklch 색상 변환 CLI
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/sourcing/validation)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
-└── skills/                # 33개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 34개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:

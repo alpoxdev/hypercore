@@ -1,0 +1,292 @@
+{
+  "version": 1,
+  "title": "부엌에서 복도로",
+  "aspect": "16:9",
+  "sensorLongMm": 35,
+  "panelsPerPage": 3,
+  "characters": [
+    {
+      "id": "jiwoo",
+      "name": "지우",
+      "heightM": 1.66
+    },
+    {
+      "id": "haneul",
+      "name": "하늘",
+      "heightM": 1.78
+    }
+  ],
+  "scenes": [
+    {
+      "id": "sc1",
+      "number": 1,
+      "heading": "INT. KITCHEN - NIGHT",
+      "props": [
+        {
+          "id": "table",
+          "label": "식탁",
+          "x": 0,
+          "z": 0,
+          "w": 1.0,
+          "d": 0.6,
+          "h": 0.75
+        },
+        {
+          "id": "lamp",
+          "label": "스탠드",
+          "x": 1.7,
+          "z": 1.4,
+          "w": 0.3,
+          "d": 0.3,
+          "h": 1.55
+        }
+      ],
+      "blocking": [
+        {
+          "character": "jiwoo",
+          "x": 0,
+          "z": -0.8,
+          "facingDeg": 0,
+          "pose": "stand"
+        },
+        {
+          "character": "haneul",
+          "x": 0,
+          "z": 0.8,
+          "facingDeg": 180,
+          "pose": "stand"
+        }
+      ],
+      "axis": [
+        "jiwoo",
+        "haneul"
+      ],
+      "shots": [
+        {
+          "id": "10",
+          "size": "WS",
+          "focus": "jiwoo",
+          "subjects": [
+            "jiwoo",
+            "haneul"
+          ],
+          "camera": {
+            "yawDeg": 80,
+            "rollDeg": 0,
+            "focalMm": 35,
+            "heightM": 1.35
+          },
+          "move": null,
+          "subjectMoves": [],
+          "action": "지우가 식탁 위 서류를 밀어낸다. 하늘은 문가에 서 있다.",
+          "dialogue": [],
+          "durationSec": 4,
+          "transition": "CUT",
+          "crossing": null,
+          "intent": "두 사람의 거리와 부엌 전체를 한눈에 보여 준다."
+        },
+        {
+          "id": "15",
+          "size": "CU",
+          "focus": "table",
+          "camera": {
+            "yawDeg": 0,
+            "rollDeg": 0,
+            "focalMm": 50
+          },
+          "move": null,
+          "subjectMoves": [],
+          "action": "식탁 위 찻잔에서 김이 오른다.",
+          "sound": "김이 식는 소리",
+          "durationSec": 2,
+          "transition": "CUT",
+          "crossing": null,
+          "intent": "대화의 축을 건드리지 않는 중립 다리 숏."
+        },
+        {
+          "id": "20",
+          "size": "MS",
+          "focus": "haneul",
+          "camera": {
+            "yawDeg": -45,
+            "rollDeg": 0,
+            "focalMm": 50,
+            "heightM": 1.55
+          },
+          "move": null,
+          "subjectMoves": [],
+          "action": "하늘이 지우를 올려다본다.",
+          "dialogue": [
+            {
+              "speaker": "하늘",
+              "line": "이제 그만하자."
+            }
+          ],
+          "durationSec": 3,
+          "transition": "CUT",
+          "crossing": null,
+          "intent": "축 오른쪽에서 하늘의 3/4 얼굴을 잡는다."
+        },
+        {
+          "id": "25",
+          "size": "OTS",
+          "focus": "jiwoo",
+          "subjects": [
+            "jiwoo",
+            "haneul"
+          ],
+          "camera": {
+            "yawDeg": 0,
+            "rollDeg": 0,
+            "focalMm": 85,
+            "over": "haneul"
+          },
+          "move": null,
+          "subjectMoves": [],
+          "action": "하늘의 어깨 너머로 지우의 얼굴이 잡힌다.",
+          "dialogue": [
+            {
+              "speaker": "지우",
+              "line": "내 말 끝까지 들어."
+            }
+          ],
+          "durationSec": 3,
+          "transition": "CUT",
+          "crossing": null,
+          "intent": "하늘 너머로 지우의 반응을 붙여 대화의 압박을 만든다."
+        },
+        {
+          "id": "30",
+          "size": "MCU",
+          "focus": "haneul",
+          "camera": {
+            "yawDeg": 170,
+            "rollDeg": 0,
+            "focalMm": 50
+          },
+          "move": null,
+          "subjectMoves": [],
+          "action": "하늘의 뒷모습. 어깨가 굳는다.",
+          "durationSec": 3,
+          "transition": "SMASH CUT",
+          "crossing": {
+            "method": "neutral",
+            "intentional": true,
+            "reason": "하늘의 뒷모습으로 감정을 닫고 다음 씬으로 넘어가려고 축을 의도적으로 넘었다."
+          },
+          "intent": "감정을 닫는 뒷모습. 중립 다리 숏 뒤라 관객이 방향을 잃지 않는다."
+        }
+      ]
+    },
+    {
+      "id": "sc2",
+      "number": 2,
+      "heading": "INT. HALLWAY - CONTINUOUS",
+      "props": [
+        {
+          "id": "door",
+          "label": "문",
+          "x": -1.6,
+          "z": 1.2,
+          "w": 0.9,
+          "d": 0.15,
+          "h": 2.1
+        }
+      ],
+      "blocking": [
+        {
+          "character": "jiwoo",
+          "x": 0.2,
+          "z": -0.4,
+          "facingDeg": 15,
+          "pose": "stand"
+        },
+        {
+          "character": "haneul",
+          "x": 1.4,
+          "z": 0.6,
+          "facingDeg": 200,
+          "pose": "walk"
+        }
+      ],
+      "axis": null,
+      "shots": [
+        {
+          "id": "40",
+          "size": "MS",
+          "focus": "jiwoo",
+          "camera": {
+            "yawDeg": 35,
+            "rollDeg": 0,
+            "focalMm": 50,
+            "pitchDeg": 0
+          },
+          "move": {
+            "type": "PUSH IN",
+            "endSize": "CU",
+            "primary": true
+          },
+          "subjectMoves": [],
+          "action": "지우가 한 걸음 다가온다.",
+          "dialogue": [
+            {
+              "speaker": "지우",
+              "line": "잠깐만."
+            }
+          ],
+          "durationSec": 4,
+          "transition": "CUT",
+          "crossing": null,
+          "intent": "푸시 인으로 지우의 결심을 좁힌다."
+        },
+        {
+          "id": "50",
+          "size": "MS",
+          "focus": "haneul",
+          "camera": {
+            "yawDeg": -30,
+            "rollDeg": 0,
+            "focalMm": 35,
+            "pitchDeg": -12
+          },
+          "move": null,
+          "subjectMoves": [
+            {
+              "character": "haneul",
+              "to": {
+                "x": 0.4,
+                "z": 1.6
+              },
+              "label": "하늘, 문 쪽으로",
+              "primary": true
+            }
+          ],
+          "action": "하늘이 복도 끝 문 쪽으로 물러난다.",
+          "sound": "발소리",
+          "durationSec": 5,
+          "transition": "CUT",
+          "crossing": null,
+          "intent": "로우 앵글로 하늘의 후퇴를 작게 보이게 한다."
+        },
+        {
+          "id": "60",
+          "size": "MCU",
+          "focus": "jiwoo",
+          "camera": {
+            "yawDeg": -50,
+            "rollDeg": 8,
+            "focalMm": 35,
+            "pitchDeg": 28
+          },
+          "move": null,
+          "subjectMoves": [],
+          "action": "위에서 내려다본 지우의 눈. 시선이 문 쪽으로 간다.",
+          "durationSec": 3,
+          "transition": "FADE OUT",
+          "crossing": null,
+          "intent": "부감과 더치로 장면의 불안을 닫는다."
+        }
+      ]
+    }
+  ]
+}
