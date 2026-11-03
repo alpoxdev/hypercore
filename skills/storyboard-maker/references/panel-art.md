@@ -2,12 +2,12 @@
 
 > Korean version: [`panel-art.ko.md`](panel-art.ko.md)
 
-Read this before turning a panel from a line drawing into a picture. The line drawing stays the floor: it carries the camera geometry, the arrows, and the notes. This file owns the art style, the capability observation that decides whether a picture can be made at all, the per-panel generation flow, the checks that a returned picture must pass, and the fallback when it cannot. A generated picture never replaces the drawing contract; it sits inside the frame while the drawing's overlays stay on top.
+Read this before turning a panel from a line drawing into a picture. The line drawing stays the floor: it carries the camera geometry, the arrows, and the notes. This file owns the art style, the immutable brief handed to image-maker, the per-panel flow, the checks that a returned picture must pass, and the fallback when it cannot. A generated picture never replaces the drawing contract; it sits inside the frame while the drawing's overlays stay on top.
 
 ## Contents
 
 - [1. Style target](#1-style-target)
-- [2. Observe capabilities each run](#2-observe-capabilities-each-run)
+- [2. Hand the brief to image-maker](#2-hand-the-brief-to-image-maker)
 - [3. One panel at a time](#3-one-panel-at-a-time)
 - [4. Camera values to prompt phrases](#4-camera-values-to-prompt-phrases)
 - [5. Character consistency across panels](#5-character-consistency-across-panels)
@@ -33,41 +33,36 @@ Every panel picture is grayscale manga-style storyboard ink line art. The look i
 
 The renderer's compiled prompt already carries the style sentence and the instruction not to draw text inside the picture. Read the compiled prompt before generating; do not add a second style sentence that contradicts it.
 
-## 2. Observe capabilities each run
+## 2. Hand the brief to image-maker
 
-Decide what the run can do from observed behavior, never from a product name, a menu item, or documentation. Record four independent states as `available`, `unavailable`, or `unknown`:
+Panel picture generation is delegated to the `image-maker` skill. Do not call an image action directly, and do not re-implement its capability checks here. `image-maker` owns capability observation, the two-invocation limit per panel, refusal handling, and persistence under `.hyper/image-maker/<topic>/`.
 
-| Capability | What must be observed | What it decides |
-|---|---|---|
-| `generate` | An action that accepts a text brief and returns an image in the same run. | Whether any panel picture can be produced. |
-| `reference input` (edit) | An action that accepts a supplied image as reference or edit input and returns an image. | Whether the composition guide and earlier approved panels can be attached. |
-| `inspect` | The returned image can be viewed at a readable size before embedding. | Whether the inspection in section 6 can pass. |
-| `file write` | The returned image can be converted and written as a data URI into the delivered document. | Whether the picture can be embedded without a remote URL. |
+What this skill supplies:
 
-Rules for the observation:
+- One immutable brief per panel: the exact string from `compilePanelPrompt()`. It is the whole instruction; do not add a style sentence, a negative list, or a translation.
+- No attachment of any kind. No reference image, no rasterized guide, no earlier panel, no character sheet, no style image, and no external image accompanies the brief.
+- The `renderGuideSvg()` guide is kept on the storyboard side and viewed beside the returned picture during the inspection in section 6. It is never sent to the image action.
 
-- An exposed-looking control, a model selector, a button, or a description is not evidence that the action, its output, or its persistence works. Use only a completed action and its returned artifact.
-- `unknown` is conservative evidence. Treat `unknown` as `unavailable` for the purpose of this flow; never upgrade documentation, an earlier run, or an assumption into current-run capability.
-- Observe again after a runtime change, an authorization change, or a failure that contradicts the record.
-- Never ask the user to choose a model. Use the runtime's default and report it only as "the runtime default" when a report needs the word at all.
-- Never write a provider or model name into a prompt, a prompt file, or the delivered document. Provider identity is not a style instruction and does not belong to the panel.
-- State the four observations in the delivery report, in Korean, before the panel results.
+What `image-maker` returns:
 
-When `generate` is `available` but `reference input` is `unavailable` or `unknown`, text-only generation is still allowed: the compiled prompt describes the composition in words. When `generate` is `unavailable` or `unknown`, no picture is made and section 8 applies.
+- A generated picture, which this skill inspects before embedding; or
+- `prompt_saved` or `blocked`, which keeps the line art and sends the panel to section 8; or
+- no picture when the skill is not installed, which also sends the panel to section 8.
+
+Record each panel's result as `generated`, `prompt_saved`, or `blocked` in the delivery report. Never upgrade a product name, a mention in documentation, or an earlier run into evidence that a picture exists now.
 
 ## 3. One panel at a time
 
-Process panels in shot order, because an approved earlier panel is design evidence for the later ones. For each panel:
+Process panels in shot order, because a returned picture is inspected against one document and one brief. For each panel:
 
 1. **Compute the layout.** Call `layoutShot(doc, sceneId, shotId)` and keep its returned `pitchDeg`, `heightM`, `facingScreen`, `angleName`, and `yawName`. These values, not a guess from the script, are what the picture must match. `facingScreen` applies only when the focus is a character; a prop-only insert has no facing side.
-2. **Render the guide.** Call `renderGuideSvg(doc, sceneId, shotId)` and keep the returned SVG string. The guide holds the mannequin, the floor grid, and the horizon only; it has no arrows, labels, or notes. An empty string means the scene or shot id is wrong, so stop and fix the document rather than generating.
-3. **Rasterize the guide when reference input is supported.** Convert the guide SVG to a PNG at the size of its own viewBox, so the reference carries exactly the panel's crop. Do not stretch it to a different aspect. When reference input is unavailable or unknown, skip this step; never claim a guide was attached.
-4. **Compile the prompt.** Call `compilePanelPrompt(doc, sceneId, shotId)` and keep the exact string. The compiler emits the shot size, the angle with its degrees, the facing side when the focus is a character, the lens, each visible character's `look`, the action text, and the style sentence, and it omits dialogue and asks for no text inside the picture. Read it once for errors of fact; after that it is immutable.
-5. **Generate.** Invoke the image action with that prompt. When reference input is supported, pass the rasterized guide first and, if the action accepts more than one reference, one earlier approved panel from the same board. One immutable prompt, at most two attempts in total, and a retry only after an objective failure: an invocation error, a timeout, an empty or non-image return, or a returned picture that fails a check in section 6. A safety refusal is not an objective failure and is never retried. Never edit the prompt between attempts, and never run a third attempt.
-6. **Inspect.** View the returned picture at a readable size and run every check in section 6. A picture that fails is not embedded.
-7. **Embed.** Write the accepted picture into `shots[].image` as described in section 7, then move to the next shot.
+2. **Render the guide.** Call `renderGuideSvg(doc, sceneId, shotId)` and keep the returned SVG string. The guide holds the mannequin, the floor grid, and the horizon only; it has no arrows, labels, or notes. An empty string means the scene or shot id is wrong, so stop and fix the document. The guide is the inspector's composition reference; keep it on the storyboard side.
+3. **Compile the brief.** Call `compilePanelPrompt(doc, sceneId, shotId)` and keep the exact string. The compiler emits the shot size, the angle with its degrees, the facing side when the focus is a character, the lens, each visible character's `look`, the action text, and the style sentence, and it omits dialogue and asks for no text inside the picture. Read it once for errors of fact; after that it is immutable.
+4. **Invoke image-maker.** Hand the compiled string over as the whole brief with nothing attached. A reference image of any kind is not allowed, even when the action would accept one. Character consistency is carried by the `look` text inside the brief.
+5. **Inspect.** View the returned picture at a readable size beside the guide and run every check in section 6. A picture that fails is not embedded; invoke image-maker again only within its remaining allowance, otherwise fall back.
+6. **Embed.** Write the accepted picture into `shots[].image` as described in section 7, then move to the next shot.
 
-Do not generate all panels in one batch and inspect them afterwards. A design drift found on panel four is cheaper to fix before panels five and six inherit it.
+Do not generate all panels in one batch and inspect them afterwards. A design drift found on panel four is cheaper to fix before panels five and six inherit it. Do not bypass image-maker because a direct image action looks available; that bypass loses the capability record, the limit, and the refusal handling.
 
 ## 4. Camera values to prompt phrases
 
@@ -123,13 +118,13 @@ Two wording rules:
 
 ## 5. Character consistency across panels
 
-A character must look like the same person in every panel. Consistency comes from fixed text, not from hope:
+A character must look like the same person in every panel. Consistency comes from fixed text, not from an attached image:
 
 - `characters[].look` is the design contract. It states age range, build, hair shape and length, clothing, and one or two distinguishing features, described by shape and gray value rather than color, for example "short black hair, lean build, dark gray hooded jacket, thin scar over the left eyebrow". The compiler copies it verbatim into every prompt that includes that character.
 - Do not paraphrase, shorten, or restyle the `look` text between panels. A changed description produces a changed face.
-- When the image action accepts more than one reference image, pass the guide first and an earlier approved panel of the same characters second. The guide decides composition; the earlier panel decides design. Never let the earlier panel override the guide's camera or crop.
-- When the action accepts only one reference image, the guide wins. Identity is then carried by the `look` text alone, and the inspection in section 6 checks it harder.
+- The compiled `look` text is the only identity carrier. No character sheet, no earlier panel, and no generated portrait is attached to any invocation.
 - Do not let the model invent a wardrobe change, a hairstyle change, or a new principal character that the document does not contain. Background figures may be simplified silhouettes, but they must not read as extra named subjects.
+- When a returned picture drifts from the `look` text, treat it as a failed inspection row and fall back rather than attaching a picture to correct it.
 
 ## 6. Inspection before embedding
 
@@ -137,18 +132,18 @@ Inspect the returned picture against the document, not against taste. Every row 
 
 | Check | Pass condition | On failure |
 |---|---|---|
-| Shot size | The crop matches `size`: `CU` holds head and neck, `MS` holds waist up, `FS` holds the whole figure with headroom and a little floor. | Attempt 2, then fall back. |
-| Angle | The pitch sign is visible: a low angle shows the underside of the chin and a rising horizon; a high angle shows the crown and a falling horizon; an overhead has no horizon. | Attempt 2, then fall back. |
-| View | When the focus is a character, the view matches `yawName` and the prompt's view phrase: front, three-quarter, profile, three-quarter back, or back, with the face hidden on a back view. | Attempt 2, then fall back. |
-| Dutch tilt | A nonzero `rollDeg` produces the stated tilt, and its direction matches the sign: a positive roll lowers the horizon to the right, a negative roll to the left. Zero roll keeps the horizon level. | Attempt 2, then fall back. |
-| Facing side | Applies only when the focus is a character and `yawName` is 3/4 or PROFILE, the only views whose prompt states a side: the subject looks toward `layoutShot().facingScreen`, screen-left or screen-right. FRONT, 3/4 BACK, and BACK are checked by the View row instead: face toward the camera, face mostly hidden, face not visible. A prop-only insert skips this row. A mirrored picture fails even when it is prettier. | Attempt 2, then fall back. |
-| Subject count | Every `subjects[]` entry and the `focus` are present, and no invented principal figure appears. Background silhouettes do not count as subjects. | Attempt 2, then fall back. |
-| Letters | No letters, numbers, speech bubbles, captions, watermarks, logos, or UI anywhere in the picture, including on clothing and props. | Attempt 2, then fall back. |
-| Look | Hair, build, clothing, and distinguishing features match `characters[].look` and the earlier approved panel. | Attempt 2, then fall back. |
-| Composition | The figure sits where the guide puts it, with the same headroom, floor, and horizon. | Attempt 2, then fall back. |
-| Frame furniture | No baked border, divider, arrow, label, or camera line inside the picture. Those belong to the renderer overlay. | Attempt 2, then fall back. |
+| Shot size | The crop matches `size`: `CU` holds head and neck, `MS` holds waist up, `FS` holds the whole figure with headroom and a little floor. | Retry within image-maker's allowance, then fall back. |
+| Angle | The pitch sign is visible: a low angle shows the underside of the chin and a rising horizon; a high angle shows the crown and a falling horizon; an overhead has no horizon. | Retry within image-maker's allowance, then fall back. |
+| View | When the focus is a character, the view matches `yawName` and the prompt's view phrase: front, three-quarter, profile, three-quarter back, or back, with the face hidden on a back view. | Retry within image-maker's allowance, then fall back. |
+| Dutch tilt | A nonzero `rollDeg` produces the stated tilt, and its direction matches the sign: a positive roll lowers the horizon to the right, a negative roll to the left. Zero roll keeps the horizon level. | Retry within image-maker's allowance, then fall back. |
+| Facing side | Applies only when the focus is a character and `yawName` is 3/4 or PROFILE, the only views whose prompt states a side: the subject looks toward `layoutShot().facingScreen`, screen-left or screen-right. FRONT, 3/4 BACK, and BACK are checked by the View row instead: face toward the camera, face mostly hidden, face not visible. A prop-only insert skips this row. A mirrored picture fails even when it is prettier. | Retry within image-maker's allowance, then fall back. |
+| Subject count | Every `subjects[]` entry and the `focus` are present, and no invented principal figure appears. Background silhouettes do not count as subjects. | Retry within image-maker's allowance, then fall back. |
+| Letters | No letters, numbers, speech bubbles, captions, watermarks, logos, or UI anywhere in the picture, including on clothing and props. | Retry within image-maker's allowance, then fall back. |
+| Look | Hair, build, clothing, and distinguishing features match `characters[].look` in the compiled brief. No attached image supplies identity. | Invoke image-maker again within its allowance, then fall back. |
+| Composition | The figure sits where the guide puts it, with the same headroom, floor, and horizon when the guide is viewed beside the picture. | Invoke image-maker again within its allowance, then fall back. |
+| Frame furniture | No baked border, divider, arrow, label, or camera line inside the picture. Those belong to the renderer overlay. | Retry within image-maker's allowance, then fall back. |
 
-An inspection failure is an objective failure and consumes the second attempt. After the second attempt fails any row, the panel keeps its line art and section 8 applies. "Close enough" is not a pass; a picture that fails the facing side or the subject count is worse than no picture, because it teaches the crew the wrong blocking.
+An inspection failure is an objective failure and consumes one of image-maker's two invocations. When no accepted picture remains within that allowance, the panel keeps its line art and section 8 applies. "Close enough" is not a pass; a picture that fails the facing side or the subject count is worse than no picture, because it teaches the crew the wrong blocking.
 
 ## 7. Embedding and provenance
 
@@ -174,10 +169,9 @@ Rules:
 
 Fall back to the line-art panel when any of these is true:
 
-- `generate` is `unavailable` or `unknown`.
-- `file write` is `unavailable` or `unknown`, so no picture can be embedded.
-- Both attempts failed, whether by invocation error, empty return, or inspection.
-- The image action refused on safety grounds. A refusal is final; do not rephrase the prompt to get around it.
+- `image-maker` is not installed.
+- `image-maker` ends with `prompt_saved` or `blocked`.
+- No accepted picture came back within image-maker's allowance.
 
 The fallback is not a failure of the board. The line drawing already carries the camera geometry, the movement, and the notes; the picture is an addition.
 
@@ -185,7 +179,7 @@ On fallback:
 
 1. Leave `shots[].image` absent. Never write a placeholder, a broken data URI, or the guide raster as if it were a picture.
 2. For a fallback panel, the prompt lives in `shot-list.md`: mark the shot's note as `PROMPT SAVED` and repeat the prompt under a `SH <id>` block after the table. A generated panel keeps its exact prompt in `shots[].image.prompt`. `manifest.json` is the unchanged `getReport()` object and holds no prompts. The prompt must survive so a later run can produce the same picture.
-3. Report the fallback by panel id and cause, for example "SH 30: 생성 실패 2회, 선화 유지, 프롬프트 저장".
+3. Report the fallback by panel id and cause, for example "SH 30: image-maker prompt_saved, 선화 유지, 프롬프트 저장".
 4. Never claim an image was generated, saved, or attached when only a prompt was kept.
 
 A board may mix generated and line-art panels. That is a normal partial result, and it is reported panel by panel. Do not regenerate the whole board because one panel fell back.
@@ -194,22 +188,22 @@ A board may mix generated and line-art panels. That is a normal partial result, 
 
 - Do not depict real people, celebrities, or a recognizable likeness. A script that names a real person is rendered as a fictional character in that role, with the described wardrobe and build but not the face.
 - Do not reproduce frames, boards, or promotional images from existing films. Do not attach a film still, a poster, or a frame grab as a reference image, even when the script cites that film as a reference for tone.
-- Reference images come only from this board: the rasterized guide and earlier approved panels generated for the same document. No external image enters the pipeline.
+- No reference image enters the pipeline. The guide is viewed beside the returned picture during inspection and is never attached; earlier panels, character sheets, style images, and external images are never attached either.
 - Generated pictures are labeled as generated by `provenance` and in the delivery report. Supplied pictures are labeled `supplied`. Neither is described as photography or as an original production frame.
-- The image action's own refusal is respected as final. Change the request only when the document changes; do not disguise a refused subject with softer words.
+- image-maker's refusal is respected as final. Change the request only when the document changes; do not disguise a refused subject with softer words.
 
 ## 10. Common mistakes
 
 | Mistake | Why it hurts | Fix |
 |---|---|---|
-| Passing the SVG guide straight to an action that expects a raster image | The action rejects it or renders nothing, and the panel gets blamed. | Rasterize to PNG first, only when reference input is supported. |
-| Editing the prompt between the two attempts | The comparison is no longer controlled, and the saved prompt stops explaining the result. | Keep one immutable prompt for both attempts. |
-| Letting an earlier panel set the camera | The design reference overrides the computed composition, and the camera line becomes false. | Guide first, earlier panel second, look text last. |
+| Attaching the guide or an earlier panel to the invocation | A reference overrides the computed composition and breaks the no-reference rule, so the camera line becomes false. | Send the compiled brief alone; view the guide only during inspection. |
+| Calling an image action directly instead of image-maker | Capability observation, the invocation limit, and refusal handling are lost or duplicated. | Delegate every panel picture to image-maker with the compiled brief. |
+| Attaching a character sheet or a style image | Identity and style drift from the prompt, and the picture no longer traces to `characters[].look`. | Carry identity in the `look` text inside the brief and attach nothing. |
 | Accepting a mirrored panel | Screen direction and eyelines flip, creating a continuity error the lint cannot see inside a picture. | Check `facingScreen` and regenerate. |
 | Adding text to the picture to explain the action | The picture must read without words, and baked letters break the self-contained board. | Fix the pose or composition; keep text in the panel note. |
 | Calling a saved prompt a generated image | The delivery overstates what exists and a later reader cannot reproduce it. | Report `PROMPT SAVED` and the panel id. |
 | Generating every panel before inspecting any | A design drift repeats across the sequence. | Inspect each panel before the next. |
-| Using a film still as a style reference | It copies an existing work and can reproduce a protected frame. | Use the guide and this board's own approved panels only. |
+| Using a film still as a style reference | It copies an existing work and can reproduce a protected frame. | Attach no reference image at all; the compiled brief is the only input. |
 
 ## Sources
 
@@ -226,4 +220,4 @@ A board may mix generated and line-art panels. That is a normal partial result, 
 | Panel labels, arrows, and notes are drawn outside the picture frame, so the picture itself carries no letters | [`notation-and-drawing.md`](notation-and-drawing.md) |
 | The image slot accepts only a data URI with `generated` or `supplied` provenance and keeps the compiled prompt | [`output-contract.md`](output-contract.md) |
 | Camera values, shot sizes, and facing side come from the computed layout, not from the script's prose | [`camera-and-framing.md`](camera-and-framing.md) |
-| The panel art style follows the grayscale manga line-art reference the user supplied on 2026-11-03 | User direction, 2026-11-03 |
+| The grayscale manga panel style target was set by user direction on 2026-11-03, and no reference image is attached when a picture is generated | User direction, 2026-11-03 |

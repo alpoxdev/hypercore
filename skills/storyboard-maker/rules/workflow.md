@@ -90,15 +90,14 @@ Escape every `</` in the JSON text as `<\/` so the embedded object cannot close 
 
 ## 8. Panel images
 
-Turn a panel from line art into a picture only when the runtime can generate images. Read [`../references/panel-art.md`](../references/panel-art.md) first; it owns the style, the capability observation, the inspection rows, and the fallback.
+Turn a panel from line art into a picture by delegating the picture to the `image-maker` skill. Read [`../references/panel-art.md`](../references/panel-art.md) first; it owns the style, the brief, the inspection rows, and the fallback. `image-maker` owns capability observation, the two-invocation limit per panel, refusal handling, and persistence under `.hyper/image-maker/<topic>/`.
 
-- Observe the four capabilities in that file and record each as `available`, `unavailable`, or `unknown`. `unknown` counts as unavailable.
-- Call `renderGuideSvg(doc, sceneId, shotId)` for the shot. Rasterize the guide to PNG at its own viewBox when the image action accepts a reference image; skip it when reference input is unavailable and never claim a guide was attached.
 - Call `compilePanelPrompt(doc, sceneId, shotId)` and keep the exact string. Read it once for errors of fact, then treat it as immutable.
-- Generate with at most two attempts in total, a retry only after an objective failure, and the same prompt both times. A safety refusal is final and is not retried.
+- Call `renderGuideSvg(doc, sceneId, shotId)` and keep the guide for the storyboard side only: view it beside each returned picture during the inspection, as its composition reference. Do not rasterize it, and do not pass it to the image action.
+- Invoke `image-maker` with the compiled prompt as the whole brief. Attach no reference image of any kind: not the guide, not an earlier panel, not a character sheet, not a style image, not an external image. Character consistency comes from the unchanged `characters[].look` text inside the compiled prompt alone.
 - Inspect every returned picture against every row of the inspection table: shot size, angle, view, dutch tilt, facing side, subject count, letters, look, composition, and frame furniture. A picture that fails any row is not embedded.
 - Embed an accepted picture on the shot as `shots[].image` with `src` a `data:image/png`, `data:image/jpeg`, or `data:image/webp` URI, `provenance: "generated"`, and `prompt` the exact compiled string. No URL, no file path, no blob.
-- When the runtime cannot generate or embed images, when both attempts fail, or when the action refuses, keep the line art and leave `image` absent. Write the compiled prompt into `shot-list.md` as a `PROMPT SAVED` note with a `SH <id>` block after the table, and name the fallback panel by id in the hand-off.
+- When `image-maker` is not installed, or it ends in `prompt_saved` or `blocked`, keep the line art and leave `image` absent. Write the compiled prompt into `shot-list.md` as a `PROMPT SAVED` note with a `SH <id>` block after the table, and name the fallback panel by id in the hand-off.
 
 Process panels in shot order and inspect each before starting the next, so a design drift does not repeat down the sequence. When the panel pass ends, write the document with its accepted pictures back to `storyboard.json` and re-inject it into `index.html` with the same `<\/` escaping, so steps 9–11 read and deliver the same bytes.
 
@@ -124,7 +123,7 @@ Errors are repaired, not explained away.
 - Review every warning: repair the geometry. For `AXIS_CROSSED`, `EYELINE_MISMATCH`, or `SCREEN_DIRECTION_FLIP` you may instead record a `crossing` with `method`, `intentional: true`, and a `reason` that names the effect; `JUMP_CUT`, `PRIMARY_MOVE_OVERLOAD`, and `WIDE_LENS_FACE` cannot be recorded and must be repaired.
 - Leave `HORIZON_OFFFRAME` alone when the angle intends it; the info entry is the record.
 - One round is one edit pass, one re-render, and one re-read of the report. At most two rounds. After the second, deliver with the remaining warning codes named in the hand-off message; an unresolved error stops delivery. Do not keep tuning until the board looks good.
-- After a repair that changes a pictured shot's `size`, camera values, `move`, or `subjects`, rerun step 8 for that shot with the rebuilt guide and prompt, inside the same two-attempt limit, or remove its `image` and save the prompt as a fallback panel; then re-inject the document before re-reading the report.
+- After a repair that changes a pictured shot's `size`, camera values, `move`, or `subjects`, rerun step 8 for that shot with the rebuilt prompt, inside image-maker's two-invocation limit, or remove its `image` and save the prompt as a fallback panel; then re-inject the document before re-reading the report.
 
 ## 11. Deliver
 
@@ -149,5 +148,5 @@ Run [`validation.md`](validation.md) before the folder is called done. The hand-
 | Panels are built from scene, shot size, camera note, action, optional dialogue, and transition | <https://storyboardart.org/storyboard-tutorials/storyboard-format-for-film/> |
 | An A4 landscape print is declared with `@page { size: A4 landscape; margin: … }` and panels avoid page breaks | <https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@page> |
 | The input document, report fields, and the browser-free core run for this package | [`../references/output-contract.md`](../references/output-contract.md) |
-| The panel-image guide, prompt, generation limit, inspection, and fallback for this package | [`../references/panel-art.md`](../references/panel-art.md) |
+| The panel-image brief, delegation to image-maker without reference images, inspection, and fallback for this package | [`../references/panel-art.md`](../references/panel-art.md) |
 | The four crossing methods and the recorded break for this package | [`continuity.md`](continuity.md) |
