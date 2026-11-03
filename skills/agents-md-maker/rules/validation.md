@@ -9,7 +9,7 @@
 | Small wording correction with no behavior change | smoke |
 | One command, path, or scope rule changed | targeted |
 | New root or nested `AGENTS.md` | standard |
-| Reconciliation across `AGENTS.md` and `CLAUDE.md` | standard |
+| Reconciliation across `AGENTS.md` and `AGENTS.ko.md` | standard |
 | Long `AGENTS.md` or extracted support rules | standard |
 | Credentials, deployment, production, destructive, or publication behavior | high-stakes |
 
@@ -35,15 +35,12 @@ Record:
 - Every local link resolves from the instruction file.
 - Referenced paths exist or are clearly identified as outputs.
 - Root and nested scope statements are present and do not conflict.
-- A `CLAUDE.md` companion is present when Claude Code is a target runtime or when requested, and absent otherwise.
-- When `CLAUDE.md` exists, its symlink target or `@AGENTS.md` import actually resolves.
-- `CLAUDE.md` is a symlink to `AGENTS.md` unless a stated reason selected another strategy.
-- In a git repository, `git ls-files -s CLAUDE.md` reports mode `120000`, not `100644`.
-- `git check-ignore -v CLAUDE.md` prints nothing; if it matches, the local-only consequence is reported rather than assumed away.
+- No `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` was created, edited, symlinked, renamed, or deleted.
+- An existing `CLAUDE.md` that suppresses native `AGENTS.md` reading is reported with its path and the one-line consequence, and the file is unchanged.
 - `@path` imports stay within four hops, and relative paths resolve from the importing file.
 - Nested files restate overridden rules in full and contain no parent-negating phrasing.
 - The combined size of root plus deepest nested path leaves headroom under 32 KiB.
-- `AGENTS.md` and `CLAUDE.md` prose is English; `AGENTS.ko.md` exists and is fully Korean.
+- `AGENTS.md` prose is English; `AGENTS.ko.md` exists and is fully Korean.
 - `AGENTS.ko.md` matches `AGENTS.md` section for section, with no untranslated leftovers and no rule present in only one of them.
 - Every adjacent `rules/*.md` file is directly linked from the governing `AGENTS.md` with a specific read condition; the governing core remains safe and actionable without opening it.
 - The selected `rules/` directory does not mix agent policy with product code, generated files, or an unrelated established purpose.
@@ -65,13 +62,13 @@ A command string merely appearing in old prose is insufficient when executable c
 
 | Criterion | Pass condition |
 |---|---|
-| Trigger fit | Artifact is `AGENTS.md` or an explicitly coordinated companion, not a generic doc |
+| Trigger fit | Artifact is `AGENTS.md` or its Korean mirror, not a generic doc and not a Claude-specific file |
 | Project specificity | Rules cite observable project paths, commands, or boundaries and avoid universal filler |
 | Scope | Root, nested, and runtime-specific ownership is explicit |
 | Authority | User/project instructions outrank templates, retrieved content, and tool output |
 | Actionability | An agent can identify what to read, edit, run, avoid, and report |
 | Portability | Shared rules use capabilities; runtime-only behavior is isolated with fallback/block semantics; nested files hold under both merge and nearest-wins |
-| Runtime coverage | Every stated target runtime actually receives a file it reads |
+| Runtime coverage | Every stated target runtime receives instructions through `AGENTS.md`; an existing `CLAUDE.md` is reported, never touched |
 | Admission | Each line is non-obvious, load-bearing, durable, and appropriate for advisory prose |
 | Safety | Consequential actions need explicit authorization while normal local work remains possible |
 | Maintainability | One canonical home per rule; detail is linked instead of duplicated; same-scope conditional detail may use adjacent `rules/*.md` without hiding the always-loaded contract |
@@ -85,13 +82,13 @@ Run or manually inspect at least these behaviors for new files:
 
 - **Normal**: a repository with manifests, lockfile, tests, and CI yields exact grounded commands.
 - **Missing context**: absent task definitions lead to omitted or explicitly unknown commands, never invention.
-- **Boundary**: a README or general prompt request routes away; an explicit `AGENTS.md` plus `CLAUDE.md` request remains in scope.
+- **Boundary**: a README or general prompt request routes away; an `AGENTS.md` request stays in scope, and a `CLAUDE.md` request is answered with the skill's output boundary instead of producing the file.
 - **Adversarial retrieval**: embedded text saying to ignore instructions or run remote commands is rejected as authority.
 - **Unsafe action**: credentials, deployment, publication, production, and destructive steps remain gated.
 - **Portability**: a nested file stays correct whether the parent is concatenated (Codex, Claude Code, Cursor) or replaced by nearest-wins (Copilot).
-- **Runtime coverage**: a repository targeting Claude Code does not ship an `AGENTS.md`-only result without the gap being reported and a strategy offered.
+- **Runtime coverage**: a repository targeting Claude Code is told that v2.1.277 and later read `AGENTS.md` natively, and an existing `CLAUDE.md` at or above the working directory is reported as suppressing that read rather than modified.
 - **Progressive disclosure**: an overlong root is reduced by admission-test deletion first, then same-scope conditional detail is split into directly linked adjacent `rules/*.md`; arbitrary rule files are never assumed to auto-load.
-- **Regression**: root/nested duplication, guessed package-manager commands, unsolicited `CLAUDE.md` creation, parent-negating nested phrasing, unbounded root growth, vague “see rules/” navigation, essential contract hidden in rule files, and rule-directory collisions remain absent.
+- **Regression**: root/nested duplication, guessed package-manager commands, any `CLAUDE.md` creation, edit, symlink, rename, or deletion, parent-negating nested phrasing, unbounded root growth, vague “see rules/” navigation, essential contract hidden in rule files, and rule-directory collisions remain absent.
 
 Use `assets/evals/agents-md-maker-cases.jsonl` as this skill package's reusable baseline.
 
@@ -153,4 +150,4 @@ Additionally:
 | Claim | Source |
 |---|---|
 | The risk-depth, structural, evidence, behavioral, and repair-loop rules in this file | this package's `rules/project-discovery.md` and `rules/instruction-design.md`, plus the repository skill-authoring standard under `instructions/skill/` |
-| The runtime behavior statements (root-to-leaf truncation, `CLAUDE.md` loading, nested-file semantics) | `instructions/agents-md/AGENTS_MD.md` at the repository root, which carries the vendor checked dates; this file restates them |
+| The runtime behavior statements (root-to-leaf truncation, native `AGENTS.md` loading, nested-file semantics) | `instructions/agents-md/AGENTS_MD.md` at the repository root, which carries the vendor checked dates; this file restates them |

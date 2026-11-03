@@ -1,6 +1,6 @@
 # 지침 설계
 
-**목적**: 저장소 근거를 짧고, scope가 명확하며, conflict-safe한 `AGENTS.md` 계약과 선택적이며 중복 없는 `CLAUDE.md` adapter로 바꾼다.
+**목적**: 저장소 근거를 짧고, scope가 명확하며, conflict-safe한 `AGENTS.md` 계약과 그 한국어 미러로 바꾼다. Claude 전용 지침 파일은 만들지 않는다.
 
 ## 1. 정본 소유권
 
@@ -13,54 +13,11 @@
 | Subtree-only command, convention, restriction | 정당한 가장 가까운 nested `AGENTS.md` |
 | 공유 상세 방법론 | 연결된 기존 `instructions/` 또는 project docs |
 | 긴 core에서 분리한 같은 범위의 조건부 정책 | 읽기 조건과 함께 직접 링크한 인접 `rules/*.md` |
-| Claude-only runtime behavior | Claude Code가 대상일 때 필수인 `CLAUDE.md` companion |
-| 개인 선호 | gitignore된 `CLAUDE.local.md` |
 | Generic explanation과 long example | Root instruction이 아닌 기존 docs |
 
 Nested file은 subtree delta만 말한다. Root body를 복사하지 않는다.
 
-`AGENTS.md`와 `CLAUDE.md`를 모두 요청하면 shared project rule의 정본을 `AGENTS.md`에 둔다. `CLAUDE.md`에는 검증된 Claude-specific behavior와 canonical contract에 대한 명확한 reference/loading relation만 둬 작은 adapter로 만든다.
-
-### Claude Code에는 `CLAUDE.md`가 필요하다
-
-Claude Code는 `AGENTS.md`가 아니라 `CLAUDE.md`를 읽는다. 따라서 `AGENTS.md`만 둔 저장소는 Claude Code에 **아무것도** 주지 않는다. 이것은 취향 문제가 아니라 coverage 결함이다.
-
-즉 `CLAUDE.md`는 "요청하면 만드는 선택적 동반 파일"이 아니다. **Claude Code가 대상 런타임이면 필수**로 다룬다.
-
-`AGENTS.md`가 항상 정본이다. **`CLAUDE.md`는 기본적으로 `AGENTS.md`를 가리키는 심볼릭 링크**로 만든다. 파일 하나, 계약 하나이므로 구조적으로 drift가 발생하지 않는다. 아래 사유가 있을 때만 다른 전략으로 올라간다.
-
-| 전략 | 방법 | 사용 시점 |
-|---|---|---|
-| **심볼릭 링크 (기본값)** | `ln -s AGENTS.md CLAUDE.md` | 아래 사유가 없으면 항상 |
-| import stub | `CLAUDE.md`에 `@AGENTS.md`만 | 심볼릭 링크를 쓸 수 없을 때 — Windows checkout, `core.symlinks=false`, 링크를 잘 못 다루는 도구 |
-| 얇은 adapter | `@AGENTS.md` + 검증된 Claude 전용 규칙 | 실제 Claude 전용 차이: skill, hook, permission mode, MCP |
-| 분리된 파일 | 독립 관리 파일 2개 | 거의 없음 — drift를 각오해야 함 |
-
-Claude Code가 대상이 아니라면 요청 없이 `CLAUDE.md`를 만들지 않는다. 대상이라면 심볼릭 링크를 만들고 그 사실을 알린다. 조용히 넘기지 않는다.
-
-### 심볼릭 링크 커밋
-
-올바르게 커밋되지 않은 심볼릭 링크는 한 대의 머신에만 존재하는 심볼릭 링크다. 저장소가 git 저장소라면 끝까지 처리한다.
-
-```bash
-ln -s AGENTS.md CLAUDE.md
-git check-ignore -v CLAUDE.md    # 아무것도 출력되지 않아야 한다
-git add CLAUDE.md
-git ls-files -s CLAUDE.md        # mode 120000이어야 한다
-```
-
-git은 심볼릭 링크를 **내용이 대상 경로인** blob으로 저장하고 mode `120000`으로 기록한다(일반 파일은 `100644`). mode를 직접 확인한다. `git add`가 알아서 했다고 가정하지 않는다.
-
-조용히 실패하는 두 경우가 실재하므로 둘 다 점검한다.
-
-| 실패 | 증상 | 처리 |
-|---|---|---|
-| `CLAUDE.md`가 gitignore 대상 | `git add`가 오류 없이 건너뛴다. 심볼릭 링크가 머신 밖으로 나가지 못한다 | 보고한다. ignore 규칙을 제거하거나, Claude Code 커버리지가 로컬 전용이며 다른 clone에는 없다고 명시한다 |
-| checkout이 `core.symlinks=false` | index는 mode `120000`을 유지하지만, 작업 트리에는 **내용이 문자열 `AGENTS.md`인 일반 파일**이 생성된다. Claude Code는 계약 대신 한 줄짜리 파일을 읽게 된다 | import stub 전략을 쓴다. 실제 파일이므로 어떤 checkout에서도 살아남는다 |
-
-두 번째 실패가 import stub이 존재하는 이유다. 취향상의 대안이 아니라, 심볼릭 링크가 checkout에서 살아남지 못하는 환경을 위한 fallback이다.
-
-프로젝트 관례상 `CLAUDE.md`가 gitignore 대상이라면(로컬 adapter로 취급하는 저장소가 그렇다) 관례와 싸우지 않는다. 공유 계약은 `AGENTS.md`에 있고 `CLAUDE.md`는 로컬 전용임을 보고하고 판단은 사용자에게 맡긴다.
+이 skill은 `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md`를 만들지도, 수정하지도, 심볼릭 링크로 연결하지도, import하지도, 이름을 바꾸지도, 삭제하지도 않는다. 이 파일들은 산출 계약 밖이다. 기존 파일은 근거로만 쓴다. 작업 디렉터리나 그 위에 있으면 Claude Code의 `AGENTS.md` 직접 읽기를 억제하므로 인수인계용으로 경로를 기록하고 아무것도 바꾸지 않는다.
 
 ### Import 동작
 
@@ -69,10 +26,6 @@ git은 심볼릭 링크를 **내용이 대상 경로인** blob으로 저장하�
 - 재귀는 **4 hop**이 상한이다. 사슬을 만들지 말고 말단 문서를 직접 import한다.
 - 상대 경로는 작업 디렉터리가 아니라 **import한 파일 기준**으로 해석된다. 파일을 옮기면 import가 깨진다.
 - import는 **즉시 로드**다. import된 파일은 인라인 텍스트와 똑같이 세션 시작 시 context 비용을 치른다. 항상 필요한 것만 import하고 나머지는 링크만 건다.
-
-### 개인 선호
-
-`CLAUDE.local.md`가 개인용 프로젝트 선호의 문서화된 위치이며 `.gitignore` 대상이다. 개인 선호를 공유 파일에 넣지 않고, 공유 프로젝트 규칙을 로컬 파일에 넣지 않는다.
 
 ## 2. Root `AGENTS.md` 형태
 
@@ -95,7 +48,7 @@ Project evidence가 뒷받침하는 section만 선택한다.
 크기는 가독성 문제만이 아니다. 한 런타임에서는 내용이 조용히 사라진다.
 
 - **Codex는 절단한다.** 합산 크기가 `project_doc_max_bytes`(기본 32 KiB)에 도달하면 파일 추가를 멈추며, 루트→말단 순서로 채운다. 따라서 비대한 루트 파일이 정작 수정 중인 코드를 관장하는 nested file을 굶길 수 있다. nested file 몫을 남긴다.
-- **Claude Code는 절단하지 않는다.** `CLAUDE.md`는 길이와 무관하게 전부 로드된다. 문서화된 목표가 200줄 미만인 이유는 잘려서가 아니라 길수록 준수율이 떨어지기 때문이다. 초과해도 아무 경고 없이 실패한다.
+- **Claude Code는 지침 파일을 전부 로드한다.** 길이 때문에 내용이 잘리지는 않지만, 문서화된 목표가 200줄 미만인 이유는 길수록 준수율이 떨어지기 때문이다. 초과해도 아무 경고 없이 실패한다.
 - **탈출구는 더 긴 파일이 아니다.** reference 자료는 필요할 때 로드되는 skill이나 링크 문서로 옮긴다.
 
 벤더 숫자는 검증된 품질 임계값이 아니라 런타임별 기본값으로 다룬다. 기준은 줄당 관련성이다.
@@ -213,7 +166,7 @@ Normal local read, 사용자가 명시적으로 요청한 scoped edit, project-s
 - [ ] Nested file이 merge와 nearest-wins 양쪽에서 옳은 자기 완결적 delta이며, 부정이 아니라 재진술로 override한다.
 - [ ] Command와 path가 정확하고 근거가 있다.
 - [ ] 보장이 필요한 것이 산문에 맡겨져 있지 않다.
-- [ ] Claude Code가 대상 런타임이면 `CLAUDE.md`가 파일, 심볼릭 링크, 또는 `@AGENTS.md` import로 존재한다.
+- [ ] `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md`를 만들거나, 수정하거나, 심볼릭 링크로 연결하거나, 이름을 바꾸거나, 삭제하지 않았다. `AGENTS.md`를 억제하는 기존 파일이 있으면 인수인계용으로 경로를 기록했다.
 - [ ] `@path` import가 4 hop 이내이며 import한 파일 기준 상대 경로로 해석된다.
 - [ ] 32 KiB 합산 예산에서 root file이 nested file 몫을 남긴다.
 - [ ] 인접한 규칙 파일은 읽기 조건과 함께 직접 링크되며 항상 로드되는 계약을 숨기지 않는다.

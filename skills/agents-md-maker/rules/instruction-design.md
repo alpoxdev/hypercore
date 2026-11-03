@@ -1,6 +1,6 @@
 # Instruction Design
 
-**Purpose**: Turn repository evidence into a short, scoped, conflict-safe `AGENTS.md` contract and an optional non-duplicative `CLAUDE.md` adapter.
+**Purpose**: Turn repository evidence into a short, scoped, conflict-safe `AGENTS.md` contract and its Korean mirror, without producing any Claude-specific instruction file.
 
 ## 1. Canonical Ownership
 
@@ -13,53 +13,11 @@ Use one canonical home per rule:
 | Subtree-only commands, conventions, or restrictions | Closest justified nested `AGENTS.md` |
 | Shared detailed methodology | Existing linked `instructions/` or project docs |
 | Same-scope conditional policy split from a long core | Adjacent `rules/*.md`, directly linked with a read condition |
-| Claude-only runtime behavior | Explicitly requested `CLAUDE.md` companion |
 | Generic explanations and long examples | Existing docs, not root instructions |
 
 A nested file states deltas for its subtree. Do not copy the root body into it.
 
-When both `AGENTS.md` and `CLAUDE.md` are requested, keep shared project rules canonical in `AGENTS.md`. Make `CLAUDE.md` a small adapter containing only verified Claude-specific behavior and a clear reference/loading relation to the canonical contract.
-
-### Claude Code Requires `CLAUDE.md`
-
-Claude Code reads `CLAUDE.md`, not `AGENTS.md`. A repository shipping only `AGENTS.md` therefore gives Claude Code **nothing** — this is a coverage gap, not a stylistic preference.
-
-So `CLAUDE.md` is not merely "an optional companion when asked." Treat it as **required whenever Claude Code is a target runtime**.
-
-`AGENTS.md` is always the canonical file. **`CLAUDE.md` defaults to a symlink pointing at it** — one file, one contract, zero drift by construction. Escalate away from the symlink only for a stated reason:
-
-| Strategy | How | Use when |
-|---|---|---|
-| **Symlink (default)** | `ln -s AGENTS.md CLAUDE.md` | Always, unless a reason below applies |
-| Import stub | `CLAUDE.md` contains only `@AGENTS.md` | Symlinks unavailable — Windows checkouts, `core.symlinks=false`, tooling that dereferences poorly |
-| Thin adapter | `@AGENTS.md` plus verified Claude-only rules | Real Claude-only differences: skills, hooks, permission modes, MCP |
-| Separate files | Two maintained files | Almost never — expect drift |
-
-Do not create `CLAUDE.md` unrequested when Claude Code is not a stated target. When it is, create the symlink and say so rather than silently leaving the gap.
-
-### Committing the Symlink
-
-A symlink that is not committed correctly is a symlink that only exists on one machine. When the repository is a git repository, finish the job:
-
-```bash
-ln -s AGENTS.md CLAUDE.md
-git check-ignore -v CLAUDE.md    # must print nothing
-git add CLAUDE.md
-git ls-files -s CLAUDE.md        # must print mode 120000
-```
-
-Git stores a symlink as a blob whose **content is the target path**, recorded with mode `120000` (a regular file is `100644`). Verify the mode — do not assume `git add` did the right thing.
-
-Two failure modes are real and silent, so check for both:
-
-| Failure | Symptom | Handling |
-|---|---|---|
-| `CLAUDE.md` is gitignored | `git add` skips it with no error; the symlink never leaves the machine | Report it. Either remove the ignore rule, or state that Claude Code coverage is local-only and absent in other clones |
-| Checkout has `core.symlinks=false` | The index keeps mode `120000`, but the working tree materializes a **regular file containing the literal text `AGENTS.md`** — Claude Code then reads a one-line file instead of the contract | Use the import-stub strategy instead, which is a real file and survives any checkout |
-
-The second failure is why the import stub exists. It is not a stylistic alternative; it is the fallback for environments where a symlink cannot survive checkout.
-
-When `CLAUDE.md` is gitignored by project convention — as in a repository that treats it as a local adapter — do not fight the convention. Report that the shared contract lives in `AGENTS.md`, that `CLAUDE.md` is local-only, and let the user decide.
+This skill never creates, edits, symlinks, imports into, renames, or deletes `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md`. Those files are outside its output contract. An existing one is evidence only: when it sits at or above the working directory it suppresses Claude Code's native `AGENTS.md` read, so record its path for the handoff and change nothing.
 
 ### Import Mechanics
 
@@ -68,10 +26,6 @@ When `CLAUDE.md` is gitignored by project convention — as in a repository that
 - Recursion is capped at **four hops**. Import leaf documents directly instead of building chains.
 - Relative paths resolve **from the importing file**, not the working directory. Moving a file breaks its imports.
 - Imports are **eager** — an imported file costs context at session start exactly like inlined text. Import only always-needed material; plain-link everything else.
-
-### Personal Preferences
-
-`CLAUDE.local.md` is the documented home for personal project-specific preferences and belongs in `.gitignore`. Never place personal preference in the shared file, and never place shared project rules in the local one.
 
 ## 2. Root `AGENTS.md` Shape
 
@@ -94,7 +48,7 @@ Keep the first screen operational. Omit empty headings and generic advice that d
 Size is not only a readability concern — in one runtime it silently drops content.
 
 - **Codex truncates.** It stops adding files once the combined size reaches `project_doc_max_bytes` (32 KiB by default), filling root-to-leaf. A bloated root file can therefore starve the nested file that actually governs the code being edited. Leave headroom for nested files.
-- **Claude Code does not truncate.** `CLAUDE.md` loads in full regardless of length; the documented target is under 200 lines because longer files reduce adherence rather than get cut. Exceeding it fails silently and invisibly.
+- **Claude Code loads instruction files in full.** Length is not cut, but the documented target is under 200 lines because longer files reduce adherence rather than get truncated. Exceeding it fails silently and invisibly.
 - **The escape hatch is not a longer file.** Move reference material into skills or linked documents that load on demand.
 
 Treat vendor numbers as runtime-specific defaults, not validated quality thresholds. The governing rule is relevance per line.
@@ -212,7 +166,7 @@ Normal local reads, scoped edits explicitly requested by the user, and project-s
 - [ ] Nested files are self-contained deltas, correct under both merge and nearest-wins semantics, and override by restating rather than negating.
 - [ ] Commands and paths are exact and evidenced.
 - [ ] Nothing requiring a guarantee is left to prose.
-- [ ] If Claude Code is a target runtime, `CLAUDE.md` exists as a file, symlink, or `@AGENTS.md` import.
+- [ ] No `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` was created, edited, symlinked, renamed, or deleted; an existing one that suppresses `AGENTS.md` is recorded for the handoff.
 - [ ] `@path` imports stay within four hops and resolve relative to the importing file.
 - [ ] The root file leaves headroom for nested files under a 32 KiB combined budget.
 - [ ] Any adjacent rule files are directly linked with read conditions and do not hide the always-loaded contract.
