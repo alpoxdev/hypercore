@@ -48,7 +48,7 @@ Project evidence가 뒷받침하는 section만 선택한다.
 크기는 가독성 문제만이 아니다. 한 런타임에서는 내용이 조용히 사라진다.
 
 - **Codex는 절단한다.** 합산 크기가 `project_doc_max_bytes`(기본 32 KiB)에 도달하면 파일 추가를 멈추며, 루트→말단 순서로 채운다. 따라서 비대한 루트 파일이 정작 수정 중인 코드를 관장하는 nested file을 굶길 수 있다. nested file 몫을 남긴다.
-- **Claude Code는 지침 파일을 전부 로드한다.** 길이 때문에 내용이 잘리지는 않지만, 문서화된 목표가 200줄 미만인 이유는 길수록 준수율이 떨어지기 때문이다. 초과해도 아무 경고 없이 실패한다.
+- **Claude Code는 지침 파일을 잘라 쓰지 않는다.** 시작 시 로드하는 파일은 통째로 읽지만 4 MiB를 넘으면 그 파일을 건너뛰고 아무것도 로드하지 않는다. 문서화된 목표가 200줄 미만인 이유는 길수록 준수율이 떨어지기 때문이다. 목표를 넘으면 아무 경고 없이 실패한다.
 - **탈출구는 더 긴 파일이 아니다.** reference 자료는 필요할 때 로드되는 skill이나 링크 문서로 옮긴다.
 
 벤더 숫자는 검증된 품질 임계값이 아니라 런타임별 기본값으로 다룬다. 기준은 줄당 관련성이다.
@@ -81,7 +81,7 @@ instruction 파일은 아무것도 보장하지 못한다. 매번 반드시 일�
 - 이유가 판단을 바꿀 때만 설명하고 motivational prose를 피한다.
 - Command는 repository root에서 copy-paste 가능하게 쓰거나 필요한 working directory를 명시한다.
 - 구분이 중요한 경우에만 required (`MUST`), recommended (`SHOULD`), optional (`MAY`) 동작을 구분한다.
-- Shared instruction에서 provider-specific tool name을 피하고 logical capability로 서술하며 실제 runtime difference는 분리한다.
+- Shared instruction에서 provider-specific tool name을 피하고 logical capability로 서술하며, 실제 runtime 차이는 `AGENTS.md` 안의 조건으로 적는다.
 
 ## 4. 범위와 우선순위
 
@@ -170,8 +170,8 @@ Normal local read, 사용자가 명시적으로 요청한 scoped edit, project-s
 - [ ] `@path` import가 4 hop 이내이며 import한 파일 기준 상대 경로로 해석된다.
 - [ ] 32 KiB 합산 예산에서 root file이 nested file 몫을 남긴다.
 - [ ] 인접한 규칙 파일은 읽기 조건과 함께 직접 링크되며 항상 로드되는 계약을 숨기지 않는다.
-- [ ] 개인 선호가 공유 계약이 아니라 gitignore된 로컬 파일에 있다.
-- [ ] Runtime-specific behavior가 격리되고 capability gate를 가진다.
+- [ ] 개인 선호는 공유 계약에 넣지 않는다. gitignore된 로컬 파일이 알맞은 자리이며 사용자가 직접 관리하고, 이 skill은 그 파일을 만들지 않는다.
+- [ ] Runtime-specific behavior는 `AGENTS.md` 안에서 조건부로 서술하고 capability로 gate하며, 런타임 전용 파일은 만들지 않는다.
 - [ ] Safety restriction이 ordinary local work는 막지 않으면서 consequential effect를 차단한다.
 - [ ] 파일은 빠르게 훑을 수 있을 만큼 짧고 상세 내용을 복사하지 않고 연결한다.
 

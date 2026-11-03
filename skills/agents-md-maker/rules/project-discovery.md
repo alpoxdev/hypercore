@@ -12,9 +12,9 @@ Record:
 - files and actions explicitly excluded
 - output language and any existing `CLAUDE.md` path that must be reported rather than changed
 - whether a long governing `AGENTS.md` needs adjacent `rules/*.md`, and whether an existing `rules/` directory already has a conflicting purpose
-- **which agent runtimes the repository targets**, since this decides required output files
+- **which agent runtimes the repository targets**, so the handoff can say how each one reads `AGENTS.md`
 
-Do not expand from one root `AGENTS.md` into nested or runtime-specific files without evidence of a real scope difference.
+Do not expand from one root `AGENTS.md` into nested files without evidence of a real scope difference. This skill produces no runtime-specific instruction file.
 
 ## 2. Evidence Order
 
@@ -49,7 +49,7 @@ Never infer a command solely from a package manager's conventional defaults.
 
 ## 3a. Target Runtime Detection
 
-Which runtimes the repository serves changes the required output set, so establish it before drafting rather than defaulting to `AGENTS.md` alone.
+Runtime detection now feeds only the handoff: the output set is always `AGENTS.md` and `AGENTS.ko.md`, so use these signals to report how each target runtime reads the file, not to choose what to produce.
 
 Evidence signals:
 
@@ -61,7 +61,7 @@ Evidence signals:
 | `.cursor/rules` | Cursor is a target |
 | `GEMINI.md` or a `context.fileName` setting | Gemini CLI is a target; `AGENTS.md` support is opt-in there |
 
-Record each as confirmed or assumed. Claude Code reads `AGENTS.md` directly from v2.1.277 on, so a confirmed Claude Code target needs no companion artifact and this skill produces none. If an existing `CLAUDE.md` sits at or above the working directory, record its path and the suppression consequence for the handoff. When no runtime is determinable, state the assumption instead of inventing runtime-specific files.
+Record each as confirmed or assumed. Claude Code reads `AGENTS.md` directly from v2.1.277 on, so a confirmed Claude Code target needs no companion artifact and this skill produces none. If an existing `CLAUDE.md` sits at or above the working directory, record its path and the suppression consequence for the handoff. When no runtime is determinable, state the assumption in the handoff; no runtime-specific file is produced either way.
 
 ## 4. Existing Instruction Audit
 
@@ -69,7 +69,7 @@ For refactor mode, classify each existing rule:
 
 - `keep`: correct, project-specific, and still observable
 - `tighten`: valid intent but vague scope or verifier
-- `move`: correct but belongs in a nested scope, adjacent conditional rule file, or runtime adapter
+- `move`: correct but belongs in a nested scope or an adjacent conditional rule file
 - `deduplicate`: repeated elsewhere with the same authority
 - `remove`: stale, contradicted, generic, or unsafe
 - `block`: conflict cannot be resolved from local authority or evidence

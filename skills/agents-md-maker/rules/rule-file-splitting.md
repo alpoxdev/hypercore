@@ -79,7 +79,7 @@ A nested rule mirror follows the same policy selected for its governing nested `
 - [ ] The `rules/` directory is adjacent to the governing `AGENTS.md` or an existing documented instruction location is used instead.
 - [ ] Every support file has one responsibility, a direct link, and an explicit read condition.
 - [ ] No essential always-loaded contract moved out of `AGENTS.md`.
-- [ ] No support rule duplicates root, nested, runtime-adapter, or existing project documentation.
+- [ ] No support rule duplicates root, nested, or existing project documentation.
 - [ ] Existing non-documentation `rules/` content was not overwritten or mixed with agent policy.
 - [ ] English/Korean links resolve to semantically aligned files when mirrors are required.
 - [ ] Root plus applicable nested instruction files still leave headroom under the configured runtime budget.

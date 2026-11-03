@@ -12,9 +12,9 @@
 - 명시적으로 제외된 file과 action
 - output language와 변경하지 않고 보고해야 할 기존 `CLAUDE.md` 경로
 - 긴 관할 `AGENTS.md`에 인접한 `rules/*.md`가 필요한지와 기존 `rules/` 디렉터리가 이미 충돌하는 목적으로 쓰이는지
-- **저장소가 대상으로 하는 에이전트 런타임** — 필수 산출 파일을 결정한다
+- **저장소가 대상으로 하는 에이전트 런타임** — 인수인계에서 각 런타임이 `AGENTS.md`를 어떻게 읽는지 밝히기 위해서다
 
-실제 scope 차이의 근거 없이 루트 `AGENTS.md` 하나를 nested/runtime-specific file로 확장하지 않는다.
+실제 scope 차이의 근거 없이 루트 `AGENTS.md` 하나를 중첩 파일로 확장하지 않는다. 이 skill은 런타임 전용 지침 파일을 만들지 않는다.
 
 ## 2. 근거 순서
 
@@ -49,7 +49,7 @@ Package manager의 일반적인 default만으로 command를 추론하지 않는�
 
 ## 3a. 대상 런타임 판별
 
-어떤 런타임을 지원하는지가 필수 산출물 집합을 바꾸므로, `AGENTS.md` 하나로 기본 가정하지 말고 초안 전에 확정한다.
+런타임 판별은 이제 인수인계에만 쓰인다. 산출물 집합은 항상 `AGENTS.md`와 `AGENTS.ko.md`이므로, 이 신호는 무엇을 만들지 고르는 데가 아니라 각 대상 런타임의 읽기 방식을 보고하는 데 쓴다.
 
 근거 신호:
 
@@ -61,7 +61,7 @@ Package manager의 일반적인 default만으로 command를 추론하지 않는�
 | `.cursor/rules` | Cursor가 대상 |
 | `GEMINI.md` 또는 `context.fileName` 설정 | Gemini CLI가 대상. 거기서 `AGENTS.md` 지원은 opt-in |
 
-각각을 confirmed 또는 assumed로 기록한다. Claude Code는 v2.1.277부터 `AGENTS.md`를 직접 읽으므로 Claude Code 대상이 confirmed여도 companion 산출물이 필요 없고, 이 skill은 만들지 않는다. 작업 디렉터리나 그 위에 기존 `CLAUDE.md`가 있으면 인수인계용으로 경로와 억제 결과를 기록한다. 런타임을 판별할 수 없으면 runtime-specific 파일을 지어내지 말고 가정을 명시한다.
+각각을 confirmed 또는 assumed로 기록한다. Claude Code는 v2.1.277부터 `AGENTS.md`를 직접 읽으므로 Claude Code 대상이 confirmed여도 companion 산출물이 필요 없고, 이 skill은 만들지 않는다. 작업 디렉터리나 그 위에 기존 `CLAUDE.md`가 있으면 인수인계용으로 경로와 억제 결과를 기록한다. 런타임을 판별할 수 없으면 가정을 인수인계에 명시한다. 어느 경우에도 런타임 전용 파일은 만들지 않는다.
 
 ## 4. 기존 지침 감사
 
@@ -69,7 +69,7 @@ Package manager의 일반적인 default만으로 command를 추론하지 않는�
 
 - `keep`: 올바르고 project-specific이며 계속 관찰 가능
 - `tighten`: intent는 유효하지만 scope 또는 verifier가 모호
-- `move`: 올바르지만 nested scope, 인접한 조건부 규칙 파일, runtime adapter 중 하나에 속함
+- `move`: 올바르지만 중첩 scope나 인접한 조건부 규칙 파일에 속함
 - `deduplicate`: 같은 authority로 다른 곳에 반복
 - `remove`: stale, contradicted, generic, unsafe
 - `block`: local authority나 evidence로 conflict를 해결할 수 없음

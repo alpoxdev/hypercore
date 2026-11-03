@@ -48,7 +48,7 @@ Keep the first screen operational. Omit empty headings and generic advice that d
 Size is not only a readability concern — in one runtime it silently drops content.
 
 - **Codex truncates.** It stops adding files once the combined size reaches `project_doc_max_bytes` (32 KiB by default), filling root-to-leaf. A bloated root file can therefore starve the nested file that actually governs the code being edited. Leave headroom for nested files.
-- **Claude Code loads instruction files in full.** Length is not cut, but the documented target is under 200 lines because longer files reduce adherence rather than get truncated. Exceeding it fails silently and invisibly.
+- **Claude Code does not trim instruction files.** It loads each launch file whole, but a file over 4 MiB is skipped and none of it loads; the documented target is under 200 lines because longer files reduce adherence rather than get truncated. Exceeding that target fails silently and invisibly.
 - **The escape hatch is not a longer file.** Move reference material into skills or linked documents that load on demand.
 
 Treat vendor numbers as runtime-specific defaults, not validated quality thresholds. The governing rule is relevance per line.
@@ -81,7 +81,7 @@ An instruction file cannot guarantee anything. If an action must happen every ti
 - Explain the reason only when it changes judgment; avoid motivational prose.
 - Keep commands copy-pasteable from the repository root or state their required working directory.
 - Distinguish required (`MUST`), recommended (`SHOULD`), and optional (`MAY`) behavior only when the distinction matters.
-- Avoid provider-specific tool names in shared instructions; describe logical capabilities and isolate real runtime differences.
+- Avoid provider-specific tool names in shared instructions; describe logical capabilities and state real runtime differences as conditions inside `AGENTS.md`.
 
 ## 4. Scope and Precedence
 
@@ -170,8 +170,8 @@ Normal local reads, scoped edits explicitly requested by the user, and project-s
 - [ ] `@path` imports stay within four hops and resolve relative to the importing file.
 - [ ] The root file leaves headroom for nested files under a 32 KiB combined budget.
 - [ ] Any adjacent rule files are directly linked with read conditions and do not hide the always-loaded contract.
-- [ ] Personal preferences live in a gitignored local file, not the shared contract.
-- [ ] Runtime-specific behavior is isolated and capability-gated.
+- [ ] Personal preferences stay out of the shared contract; a gitignored local file the user maintains is the right home, and this skill does not create it.
+- [ ] Runtime-specific behavior is stated conditionally inside `AGENTS.md` and capability-gated; no runtime-specific file is produced.
 - [ ] Safety restrictions block consequential effects without blocking ordinary local work.
 - [ ] The file is short enough to scan and links deeper detail instead of copying it.
 
