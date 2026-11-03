@@ -84,7 +84,7 @@ For runtimes, isolation is implemented differently: a fork or fresh subagent con
 | Runtime | Spawn surface | Isolation model | Best use | Caution |
 |---|---|---|---|---|
 | Claude Code | `/agents`, project `.claude/agents/*.md`, the `Agent`/legacy `Task` tool, experimental agent teams | A subagent gets its own context window; `isolation: worktree` when needed; agent teams run separate sessions | Isolating high-output investigation, named specialists, 3-5 member team review | Agent teams are experimental and carry high coordination overhead |
-| Codex | Native subagents, `.codex/agents/*.toml`, the `spawn_agent`/`send_input`/`wait_agent`/`close_agent` surface, CSV fan-out where available | Forked context or a separate agent thread; concurrency limited by config | Codebase exploration, splitting PR review, docs researcher, disjoint implementation | Codex spawns a subagent on explicit request, and token cost rises |
+| Codex | Native subagents, `.codex/agents/*.toml`, the `spawn_agent`/`send_input`/`wait_agent`/`close_agent` tool surface | Forked context or a separate agent thread; concurrency limited by config | Codebase exploration, splitting PR review, docs researcher, disjoint implementation | Codex spawns a subagent on explicit request, and token cost rises |
 | Cursor | Cloud Agents (formerly Background Agents), editor/CLI subagents, `.cursor/rules`, `.cursor/environment.json` | A cloud agent runs on a remote isolated machine and branch; a subagent gets its own context | Asynchronous long-running work, branch-based handoff, parallel work streams | A remote agent widens the security boundary through GitHub permissions, internet access, and automatic command execution |
 | Generic MCP/agent client | Capability-discovered tools, prompts, and resources | Depends on the client implementation | Standardizing tool and material access | Treat tool results and resource content as untrusted evidence |
 
@@ -154,10 +154,11 @@ Include the following assertions in a trace-based eval.
 | Subagent context isolation, `isolation: worktree`, project `.claude/agents/*.md` | <https://code.claude.com/docs/en/sub-agents> | undated page, checked 2026-11-03 |
 | Agent teams run as separate sessions and remain experimental | <https://code.claude.com/docs/en/agent-teams> | undated page, checked 2026-11-03 |
 | Codex native subagents, forked context or separate thread, config-limited concurrency | <https://learn.chatgpt.com/docs/agent-configuration/subagents> | undated page, checked 2026-11-03 |
-| `spawn_agent`, `send_input`, `wait_agent`, `close_agent` invocation surface | <https://learn.chatgpt.com/docs/codex/cli> | undated page, checked 2026-11-03 |
+| `spawn_agent`, `send_input`, `wait_agent`, `close_agent` as `features.multi_agent` tools | <https://learn.chatgpt.com/docs/config-file/config-reference> | undated page, checked 2026-11-04 |
 | Cloud agents run on a remote isolated machine and branch; GitHub permissions, internet access, and automatic command execution widen the boundary | <https://cursor.com/docs/cloud-agent> | undated page, checked 2026-11-03 |
 | Editor and CLI subagents in the 2.4 release | <https://cursor.com/changelog/2-4> | Cursor 2.4 release entry, checked 2026-11-03 |
-| `.cursor/rules` and `.cursor/environment.json` configuration surfaces | <https://cursor.com/docs/rules> | undated page, checked 2026-11-03 |
+| `.cursor/rules` project rules | <https://cursor.com/docs/rules> | undated page, checked 2026-11-03 |
+| `.cursor/environment.json` environment configuration, including a Dockerfile | <https://cursor.com/docs/cloud-agent> | undated page, checked 2026-11-04 |
 | Tool annotations untrusted unless the server is trusted; `server/discover`, per-request `_meta`, `resultType: "input_required"` | <https://modelcontextprotocol.io/specification/2026-07-28/server/tools> | 2026-07-28 revision, checked 2026-09-19 |
 | Prompt capability and the input-required (MRTR) flow | <https://modelcontextprotocol.io/specification/2026-07-28/server/prompts> | 2026-07-28 revision, checked 2026-09-19 |
 | Tool results and resource content are untrusted evidence | <https://developers.openai.com/api/docs/guides/agent-builder-safety> | undated page, checked 2026-11-03 |

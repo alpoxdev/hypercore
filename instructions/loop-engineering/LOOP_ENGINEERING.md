@@ -101,7 +101,7 @@ The condition-authoring rules, the verdict state machine, the failure taxonomy (
 
 - LE-C-1: Cost is per **successful** iteration, not per run. Report tokens and wall time per accepted outcome, and the rework rate.
 - LE-C-2: Cost grows with iteration count, not with task size. Iterations that re-send growing context are the dominant term, so a cap is a cost control as much as a safety control.
-- LE-C-3: Fan-out multiplies. One documented runtime caps a single workflow at 1,000 agents per run and 16 concurrent agents by default, and the vendor advises piloting because a fan-out "can spawn hundreds of agents" (checked 2026-11-03).
+- LE-C-3: Fan-out multiplies. One documented runtime caps a single workflow at 1,000 agents per run and 16 concurrent agents by default, describes its scale as "dozens to hundreds of agents per run", and advises running the workflow "on a small slice first" (checked 2026-11-04).
 - LE-C-4: Deterministic steps belong in scripts. Running a script is cheaper than reasoning through the same steps each iteration.
 - LE-C-5: Match the interval to how often the watched thing changes. A five-minute poll of a queue that fills hourly is pure waste.
 - LE-C-6: Route by judgment, not by habit: cheap models for triage and per-iteration checking, capable models for the decisions that are expensive to get wrong.

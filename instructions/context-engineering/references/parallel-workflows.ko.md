@@ -84,7 +84,7 @@ Stop condition: [완료/차단/시간/소스 바닥값]
 | Runtime | Spawn surface | Isolation model | Best use | 주의 |
 |---|---|---|---|---|
 | Claude Code | `/agents`, project `.claude/agents/*.md`, `Agent`/legacy `Task` tool, experimental agent teams | subagent는 자체 context window; 필요 시 `isolation: worktree`; agent teams는 별도 세션 | 고출력 조사 격리, 명명된 specialist, 3-5명 팀 리뷰 | Agent teams는 실험적이며 coordination overhead가 큼 |
-| Codex | native subagents, `.codex/agents/*.toml`, `spawn_agent`/`send_input`/`wait_agent`/`close_agent` surface, CSV fan-out where available | forked context 또는 별도 agent thread; config로 동시성 제한 | 코드베이스 탐색, PR 리뷰 분할, docs researcher, disjoint implementation | Codex는 명시 요청이 있을 때 subagent를 spawn하며 토큰 비용 증가 |
+| Codex | native subagents, `.codex/agents/*.toml`, `spawn_agent`/`send_input`/`wait_agent`/`close_agent` 도구 표면 | forked context 또는 별도 agent thread; config로 동시성 제한 | 코드베이스 탐색, PR 리뷰 분할, docs researcher, disjoint implementation | Codex는 명시 요청이 있을 때 subagent를 spawn하며 토큰 비용 증가 |
 | Cursor | Cloud Agents(구 Background Agents), editor/CLI subagents, `.cursor/rules`, `.cursor/environment.json` | cloud agent는 remote isolated machine/branch; subagent는 자체 context | 비동기 장기 작업, branch 기반 handoff, parallel work streams | remote agent는 GitHub 권한/인터넷/자동 명령 실행으로 보안 경계가 커짐 |
 | Generic MCP/agent client | capability-discovered tools/prompts/resources | client 구현에 따름 | 도구/자료 접근 표준화 | tool result와 resource content는 untrusted evidence로 취급 |
 
@@ -154,10 +154,11 @@ Trace 기반 eval에는 아래 assertion을 둔다.
 | 서브에이전트 문맥 격리, `isolation: worktree`, 프로젝트 `.claude/agents/*.md` | <https://code.claude.com/docs/en/sub-agents> | 날짜 표기 없음, 2026-11-03 확인 |
 | agent teams는 별도 세션으로 돌며 아직 실험 단계 | <https://code.claude.com/docs/en/agent-teams> | 날짜 표기 없음, 2026-11-03 확인 |
 | Codex 네이티브 서브에이전트, fork된 문맥 또는 별도 스레드, 설정으로 제한되는 동시성 | <https://learn.chatgpt.com/docs/agent-configuration/subagents> | 날짜 표기 없음, 2026-11-03 확인 |
-| `spawn_agent`, `send_input`, `wait_agent`, `close_agent` 호출 표면 | <https://learn.chatgpt.com/docs/codex/cli> | 날짜 표기 없음, 2026-11-03 확인 |
+| `spawn_agent`, `send_input`, `wait_agent`, `close_agent`가 `features.multi_agent`로 제공하는 도구 | <https://learn.chatgpt.com/docs/config-file/config-reference> | 날짜 표기 없음, 2026-11-04 확인 |
 | cloud agent는 원격 격리 머신과 브랜치에서 돌고, GitHub 권한·인터넷 접근·자동 명령 실행이 경계를 넓힌다 | <https://cursor.com/docs/cloud-agent> | 날짜 표기 없음, 2026-11-03 확인 |
 | 2.4 릴리스의 에디터·CLI 서브에이전트 | <https://cursor.com/changelog/2-4> | Cursor 2.4 릴리스 항목, 2026-11-03 확인 |
-| `.cursor/rules`와 `.cursor/environment.json` 설정 표면 | <https://cursor.com/docs/rules> | 날짜 표기 없음, 2026-11-03 확인 |
+| `.cursor/rules` 프로젝트 규칙 | <https://cursor.com/docs/rules> | 날짜 표기 없음, 2026-11-03 확인 |
+| `.cursor/environment.json` 환경 구성(Dockerfile 포함) | <https://cursor.com/docs/cloud-agent> | 날짜 표기 없음, 2026-11-04 확인 |
 | 신뢰하는 서버가 아니면 도구 annotation을 신뢰하지 않는다. `server/discover`, 요청별 `_meta`, `resultType: "input_required"` | <https://modelcontextprotocol.io/specification/2026-07-28/server/tools> | 2026-07-28 revision, 2026-09-19 확인 |
 | prompt 기능과 input-required(MRTR) 흐름 | <https://modelcontextprotocol.io/specification/2026-07-28/server/prompts> | 2026-07-28 revision, 2026-09-19 확인 |
 | 도구 결과와 리소스 내용은 신뢰하지 않는 증거다 | <https://developers.openai.com/api/docs/guides/agent-builder-safety> | 날짜 표기 없음, 2026-11-03 확인 |

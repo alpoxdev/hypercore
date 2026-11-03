@@ -41,7 +41,7 @@ Warmup, repeat, aggregation, judging 방식을 정하기 전에 profile을 선�
 - Independent trial이 temporal drift에 교란될 수 있으면 candidate/frontier 순서를 randomize하거나 interleave한다. State carry-over가 workload를 바꾸면 interleave하지 않는다.
 - CPU affinity/isolation, frequency control, GC control은 optional noise mitigation이다. 주장하려는 workload를 보존할 때만 사용한다.
 
-Noisy claim은 raw valid observation을 보존하고 method에 맞는 stability/uncertainty를 보고한다. Statistical significance만으로 keep하지 않는다. Universal nonzero threshold도 잘못이다. Task-specific effect, tie, 또는 exact monotonic rule을 선언한다.
+Noisy claim은 raw valid observation을 보존하고 method에 맞는 stability/uncertainty를 보고한다. Statistical significance만으로 keep하지 않는다. 큰 표본에서는 운영상 무의미한 효과도 검출될 수 있기 때문이다. Universal nonzero threshold도 잘못이다. Task-specific effect, tie, 또는 exact monotonic rule을 선언한다.
 
 ### 후보당 비용 고정
 

@@ -92,7 +92,7 @@
 | TTL | 모델에 따라 5분 또는 1시간이며, 현재 Claude 행은 5분과 1시간을 모두 나열하고 Amazon Nova 행은 5분만 나열한다. TTL은 캐시 적중이 성공할 때마다 다시 시작한다. Converse API에서는 `cachePoint` 객체에, Claude용 InvokeModel에서는 `cache_control`에 `"ttl": "1h"`를 넣는다. 5분만 지원하는 모델에 `ttl`을 보내면 `ValidationException`이 날 수 있다 |
 | 과금 | 캐시에서 읽은 토큰은 모델의 캐시 읽기 요율, 캐시되지 않은 입력은 표준 요율로 과금되며, 쓰기는 모델에 따라 표준 입력 요율보다 비쌀 수 있다 |
 | 관측 | `cacheReadInputTokens`, `cacheWriteInputTokens`, `cacheDetails`(쓴 토큰의 TTL). 캐싱이 켜지면 `inputTokens`는 캐시에서 읽지도 쓰지도 않은 토큰만 가리키므로 전체 입력은 `inputTokens + cacheReadInputTokens + cacheWriteInputTokens`다 |
-| 모델 범위 | Claude 모델은 명시적 캐싱만 지원하며 캐시 제어가 없는 요청은 캐싱되지 않는다. Nova 모델은 모든 텍스트 프롬프트에 암시적 캐싱을 제공하고, 문서에 실린 OpenAI 모델은 암시적 캐싱을 지원하며 GPT-5.6 이후 모델은 명시적 캐싱도 지원한다. 이들의 TTL은 30분이고 쓰기는 1.25배로 과금된다. 콘텐츠 블록 약 20개 되짚기는 Claude의 캐시 지점에 적용된다 |
+| 모델 범위 | Claude 모델은 명시적 캐싱만 지원하며 캐시 제어가 없는 요청은 캐싱되지 않는다. Nova 모델은 모든 텍스트 프롬프트에 암시적 캐싱을 제공하고, 문서에 실린 OpenAI 모델은 암시적 캐싱을 지원하며 GPT-5.6 이후 모델은 명시적 캐싱도 지원한다. GPT-5.6 이후 모델은 TTL이 30분이고 쓰기가 1.25배로 과금되며, GPT-5.5 이하 모델은 쓰기 요금이 따로 없다. 콘텐츠 블록 약 20개 되짚기는 Claude의 캐시 지점에 적용된다 |
 
 Bedrock 문서도 이 저장소의 계약이 이미 따르는 운용 규칙을 그대로 적는다. 정적인 내용은 프롬프트 앞에, 동적인 내용은 뒤에 둔다. 또한 지원 모델이라도 적중이 보장되지는 않는다고 적으므로, 재사용을 추론하지 말고 usage 필드를 읽는다.
 
