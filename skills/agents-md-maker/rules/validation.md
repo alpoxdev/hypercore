@@ -130,7 +130,7 @@ Do not claim that a generated command works merely because it exists in `AGENTS.
 When this skill package itself changes, run from the repository root:
 
 ```bash
-node scripts/check-skill-standards.mjs --skill agents-md-maker --json
+bash scripts/check-skill-standards.sh --skill agents-md-maker --json
 ```
 
 Also run the repository's skill corpus validator against this package (`--root skills --only agents-md-maker --json`).

@@ -53,7 +53,7 @@ This skill is self-contained. It owns the card contract, the composer asset, the
 | Tools | Web search and page fetch for topic research. A browser with Canvas and File APIs to run and export the composer. Native image generation only when the environment exposes it and the user wants a photo that does not exist. Nothing else touches Instagram; no login, no scraping. |
 | Loop | Compose → run the composer's own validation and the `validation` checklist → fix hard failures; at most two revision rounds, then deliver with remaining items named. The composer refuses to export while a validation error stands. |
 | Output | Korean: card titles and body, caption, alt text, source ledger, completion note. Machine-readable: `manifest.json`, `alt-text.json`, and the `window.cardStudio` API result. |
-| Verification | The composer's export contract (`window.cardStudio.exportCards()`) plus the `validation` checklist. On a package change, the corpus validator, the authoring validator with `--require-self-containment`, and `bun run --cwd scripts verify`. |
+| Verification | The composer's export contract (`window.cardStudio.exportCards()`) plus the `validation` checklist. On a package change, the corpus validator, the authoring validator with `--require-self-containment`, and `bash scripts/verify.sh`. |
 | Stop condition | Ask the intake items once, then work without re-asking. Deliver after checks pass; stop and name the missing sources when a required fact cannot be grounded. Never publish or schedule. |
 
 </instruction_contract>
@@ -232,7 +232,7 @@ If the composer asset cannot be opened, or the environment has no browser with C
 - [ ] Every photo's provenance is recorded, and each generated photo is labeled an illustration.
 - [ ] `index.html` embeds all images and any font data as data URIs, with no remote script and no network dependency.
 - [ ] No other skill is named, required, or read; no publish, schedule, or upload path is used.
-- [ ] Package change only: KO/EN parity holds, the corpus validator and the authoring validator with `--require-self-containment` pass, and `bun run --cwd scripts verify` passes; the README count and catalog row are updated when this change adds a skill.
+- [ ] Package change only: KO/EN parity holds, the corpus validator and the authoring validator with `--require-self-containment` pass, and `bash scripts/verify.sh` passes; the README count and catalog row are updated when this change adds a skill.
 
 </validation>
 

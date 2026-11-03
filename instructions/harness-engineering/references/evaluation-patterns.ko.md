@@ -107,7 +107,7 @@ metrics:
 이 저장소의 실행 지점:
 
 ```bash
-bun run --cwd scripts verify
+bash scripts/verify.sh
 bash skills/skill-tester/scripts/validate-skills-corpus.sh --root skills --json
 ```
 

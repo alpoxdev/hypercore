@@ -80,7 +80,7 @@ Only when this package changes:
 - [ ] KO/EN parity holds for every Markdown pair: the same `##` sections in the same order, the same list items, and the same table rows.
 - [ ] The corpus validator passes for this package with `--only storyboard-maker --json` and reports `ok: true`.
 - [ ] The authoring validator passes with `--require-self-containment` and this package's eval file as `--evals`, with no errors and no waiver.
-- [ ] `bun run --cwd scripts verify` exits 0.
+- [ ] `bash scripts/verify.sh` exits 0.
 - [ ] `README.md`'s skill count and catalog row are updated when this package is added or renamed.
 
 ## Sources

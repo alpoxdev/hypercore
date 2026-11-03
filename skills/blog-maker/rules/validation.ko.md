@@ -79,7 +79,7 @@
 - [ ] 로컬 링크가 열리고 코드 펜스가 닫힘.
 - [ ] `assets/evals/blog-maker-cases.jsonl`이 긍정, 부정, 경계, 회귀, 적대 사례를 덮고 현재 트리거·워크플로와 맞음: 플랫폼 판별(inblog 명시·URL 추론, 불명·충돌), HTML 기본값과 plain 명시 요청의 구분, 기본 전달 형태 회귀, 네이버 규칙 미혼입 경계, 그리고 inblog 서식 붙여넣기(일반 본문)·HTML 소스 복사·HTML 임베드(외부 임베드 전용)의 구분과 하이퍼링크 보존을 포함함.
 - [ ] 저장소 유지보수 전용(실행 시 의존성 아님): 이 패키지로 범위를 좁힌 corpus validator(`validate-skills-corpus.sh --root skills --only blog-maker --json`) 통과.
-- [ ] `bun run --cwd scripts verify` 통과.
+- [ ] `bash scripts/verify.sh` 통과.
 - [ ] 이번 변경이 스킬을 추가하거나 스킬 이름·카탈로그 노출을 바꾸면 `README.md`의 스킬 수와 카탈로그 행을 갱신하고, 그 밖에는 `README.md`가 바뀌지 않았음을 확인함.
 
 ## Sources

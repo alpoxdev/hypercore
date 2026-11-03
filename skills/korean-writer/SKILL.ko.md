@@ -176,6 +176,6 @@ Boundary:
 - [ ] 패키지 변경 시 자기적용 감사를 유지한다. 이 패키지의 한국어 본문에 S1 위반이 0건이다.
 - [ ] 패키지 변경 시 eval 케이스가 남아 있고 트리거·워크플로와 맞물린다.
 - [ ] 패키지 변경 시 이 패키지로 범위를 좁힌 corpus validator를 실행한다. `validate-skills-corpus.sh --root skills --only korean-writer --json`.
-- [ ] 패키지 변경 시 `bun run --cwd scripts verify`를 실행한다.
+- [ ] 패키지 변경 시 `bash scripts/verify.sh`를 실행한다.
 
 </validation>

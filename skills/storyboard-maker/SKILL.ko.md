@@ -56,7 +56,7 @@ compatibility: 자체 완결 마크다운 스킬과 의존성 없는 HTML 자산
 | 도구 | 문서와 전달 폴더를 쓰는 파일 작성. 보드·보고서·인쇄용 DOM과 CSS가 있는 브라우저. 없으면 `validate`, `lint`, `render`용 `node`나 `bun` 런타임. 그림에는 관찰된 이미지 생성 능력을 컴파일 프롬프트로, 아무것도 붙이지 않고 씀. 없으면 선화와 저장한 프롬프트가 전달물. 네트워크 없음. |
 | 루프 | 작성 → 렌더 → `getReport()` 읽기 → 오류 수정 → 경고 수리 또는 기록. 최대 두 번, 그 뒤 남은 코드를 밝히고 전달. |
 | 출력 | 한국어 보드 텍스트, `index.html`, `storyboard.json`, `shot-list.md`, `manifest.json`, 그리고 그림이 있는 패널마다의 `shots[].image` 데이터 URI. 기계 판독용은 `getReport()` 객체와 `StoryboardCore` 결과. |
-| 검증 | `window.storyboardStudio.getReport()` 또는 브라우저 없는 코어 실행, 그리고 `validation` 점검표와, 그림을 생성했을 때의 패널별 검사. 패키지 변경 시 코퍼스 검증기, `--require-self-containment`를 붙인 저작 검증기, `bun run --cwd scripts verify`. |
+| 검증 | `window.storyboardStudio.getReport()` 또는 브라우저 없는 코어 실행, 그리고 `validation` 점검표와, 그림을 생성했을 때의 패널별 검사. 패키지 변경 시 코퍼스 검증기, `--require-self-containment`를 붙인 저작 검증기, `bash scripts/verify.sh`. |
 | 종료 조건 | 시작 질문은 한 번만 묻고 다시 묻지 않음. 점검표와 오류 0인 보고서를 확인한 뒤 전달. 보드에 필요한 사실의 근거를 찾지 못하면 필요한 입력을 밝히고 중단. 만들지 않은 패널·인쇄·매니페스트를 만들었다고 말하지 않음. |
 
 </instruction_contract>
@@ -260,7 +260,7 @@ DOM이 있는 브라우저를 쓸 수 없으면 보드를 봤다고 말하지 �
 - [ ] 생성 패널에 실존 인물·연예인·알아볼 수 있는 얼굴이 없고, 외부 이미지가 파이프라인에 들어가지 않았습니다.
 - [ ] 전달 폴더에 네트워크 요청, 원격 `src`나 `href`, 웹 폰트, 번들 스크립트가 없고, 모든 `image.src`가 URL이나 파일 경로가 아닌 데이터 URI입니다.
 - [ ] 기존 영화의 프레임이나 콘티를 복제·트레이스·샷 단위 추종하지 않았습니다.
-- [ ] 패키지 변경 시에만: KO/EN 짝이 유지되고, 코퍼스 검증기와 `--require-self-containment`를 붙인 저작 검증기, `bun run --cwd scripts verify`가 통과합니다.
+- [ ] 패키지 변경 시에만: KO/EN 짝이 유지되고, 코퍼스 검증기와 `--require-self-containment`를 붙인 저작 검증기, `bash scripts/verify.sh`가 통과합니다.
 
 </validation>
 

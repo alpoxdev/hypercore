@@ -221,7 +221,7 @@ Must-pass gates:
 For this repository skill package, run from the repository root:
 
 ```bash
-node scripts/check-skill-standards.mjs --skill agents-md-maker --json
+bash scripts/check-skill-standards.sh --skill agents-md-maker --json
 ```
 
 Also run the repository's skill corpus validator against this package (`--root skills --only agents-md-maker --json`), and parse `assets/evals/agents-md-maker-cases.jsonl` as JSONL and inspect its trigger/routing/safety coverage when this skill changes materially.

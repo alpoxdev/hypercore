@@ -44,7 +44,7 @@
 - [ ] 모든 마크다운 파일의 KO/EN 짝이 유지됩니다.
 - [ ] 저장소 코퍼스 검증기가 이 패키지에 대해 통과합니다. `--root skills --only instagram-card-maker --json`으로 실행합니다.
 - [ ] 패키지 저작 검증기가 `--require-self-containment`와 이 패키지의 eval 파일을 `--evals`로 받아 통과하며, 이 패키지에 대한 오류를 보고하지 않습니다.
-- [ ] `bun run --cwd scripts verify`가 통과합니다.
+- [ ] `bash scripts/verify.sh`가 통과합니다.
 - [ ] 이번 변경이 스킬을 추가하므로 `README.md`의 스킬 수와 카탈로그 행을 갱신합니다.
 
 ## Sources

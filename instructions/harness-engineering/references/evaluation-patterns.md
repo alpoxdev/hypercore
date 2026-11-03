@@ -118,7 +118,7 @@ be advertised), and link resolution.
 This repository's execution points:
 
 ```bash
-bun run --cwd scripts verify
+bash scripts/verify.sh
 bash skills/skill-tester/scripts/validate-skills-corpus.sh --root skills --json
 ```
 

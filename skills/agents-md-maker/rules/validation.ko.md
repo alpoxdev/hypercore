@@ -130,7 +130,7 @@ Claim -> Risk -> Evidence -> Verification -> Result -> Caveat
 이 skill package 자체를 변경할 때는 저장소 루트에서 다음을 실행한다.
 
 ```bash
-node scripts/check-skill-standards.mjs --skill agents-md-maker --json
+bash scripts/check-skill-standards.sh --skill agents-md-maker --json
 ```
 
 저장소의 skill corpus validator도 이 package에 대해 실행한다(`--root skills --only agents-md-maker --json`).

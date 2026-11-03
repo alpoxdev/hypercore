@@ -163,6 +163,6 @@ Boundary:
 - [ ] Delivered spec is self-contained and contains no analysis scaffolding.
 - [ ] Package changes preserve the English/Korean pair of every markdown file in this package.
 - [ ] Package changes run the corpus validator scoped to this package: `validate-skills-corpus.sh --root skills --only tone-manner-maker --json`.
-- [ ] Package changes run `bun run --cwd scripts verify`.
+- [ ] Package changes run `bash scripts/verify.sh`.
 
 </validation>

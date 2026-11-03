@@ -53,7 +53,7 @@ compatibility: 자체 완결 마크다운 스킬과 의존성 없는 HTML 자산
 | 도구 | 주제 리서치용 웹 검색과 페이지 조회. 컴포저 실행·내보내기용 Canvas·File API가 있는 브라우저. 존재하지 않는 사진이 필요하고 환경이 노출하며 사용자가 원할 때만 네이티브 이미지 생성. 그 밖에는 인스타그램에 닿지 않음. 로그인·스크래핑 없음. |
 | 루프 | 구성 → 컴포저 자체 검증과 `validation` 점검표 → 강제 실패 수정. 수정 최대 두 번, 그 뒤 남은 항목을 밝히고 전달. 검증 오류가 남아 있으면 컴포저가 내보내기를 거부. |
 | 출력 | 한국어. 카드 제목·본문, 캡션, 대체 텍스트, 출처 원장, 완료 메모. 기계 판독용: `manifest.json`, `alt-text.json`, `window.cardStudio` API 결과. |
-| 검증 | 컴포저의 내보내기 계약(`window.cardStudio.exportCards()`)과 `validation` 점검표. 패키지 변경 시 코퍼스 검증기, `--require-self-containment`를 붙인 저작 검증기, `bun run --cwd scripts verify`. |
+| 검증 | 컴포저의 내보내기 계약(`window.cardStudio.exportCards()`)과 `validation` 점검표. 패키지 변경 시 코퍼스 검증기, `--require-self-containment`를 붙인 저작 검증기, `bash scripts/verify.sh`. |
 | 종료 조건 | 시작 질문은 한 번만 묻고 다시 묻지 않음. 점검표 통과 시 전달. 필수 사실의 근거를 찾지 못하면 필요한 출처를 밝히고 중단. 게시·예약은 하지 않음. |
 
 </instruction_contract>
@@ -232,7 +232,7 @@ compatibility: 자체 완결 마크다운 스킬과 의존성 없는 HTML 자산
 - [ ] 모든 사진의 출처가 기록됐고 생성 사진은 일러스트로 표시됐습니다.
 - [ ] `index.html`이 모든 이미지와 폰트 데이터를 data URI로 내장하고 원격 스크립트와 네트워크 의존성이 없습니다.
 - [ ] 다른 스킬을 지목·요구·읽지 않았고 게시·예약·업로드 경로를 쓰지 않았습니다.
-- [ ] 패키지 변경 시에만: KO/EN 짝이 유지되고, 코퍼스 검증기와 `--require-self-containment`를 붙인 저작 검증기, `bun run --cwd scripts verify`가 통과하며, 이번 변경이 스킬을 추가할 때 README 수와 카탈로그 행을 갱신합니다.
+- [ ] 패키지 변경 시에만: KO/EN 짝이 유지되고, 코퍼스 검증기와 `--require-self-containment`를 붙인 저작 검증기, `bash scripts/verify.sh`가 통과하며, 이번 변경이 스킬을 추가할 때 README 수와 카탈로그 행을 갱신합니다.
 
 </validation>
 

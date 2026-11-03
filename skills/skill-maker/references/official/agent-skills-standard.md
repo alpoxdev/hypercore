@@ -74,7 +74,7 @@ record what each vendor adds on top.
   `SKILL.md` frontmatter is valid and follows the naming conventions.
 - implication_for_skill_maker: this repository runs it through `uvx` from
   `scripts/validate-skills.sh`, which is network-dependent and is **not** part of
-  `bun run --cwd scripts verify`; do not fold it into the offline gate silently.
+  `bash scripts/verify.sh`; do not fold it into the offline gate silently.
 
 ## Best Practices for Skill Creators
 

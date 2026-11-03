@@ -44,10 +44,10 @@ bash scripts/check-sources.sh             # date format + document length strict
 bash scripts/check-sources.sh --strict    # gate on moved links too (before a release)
 bash scripts/check-sources.sh --offline   # structural checks only, no network
 bash scripts/check-sources.sh --self-test # prove the checks actually catch failures
-bun run --cwd scripts lint:sh        # static analysis of the checker itself (needs shellcheck)
+shellcheck scripts/*.sh scripts/lib/*.sh scripts/tests/*.sh        # static analysis of the checker itself (needs shellcheck)
 ```
 
-The `lint:sh` task runs [ShellCheck](https://www.shellcheck.net/) over `scripts/check-sources.sh`. It is a separate opt-in task because ShellCheck is a system tool rather than a dependency of this repository; `bash-language-server` is declared in `scripts/package.json` for editor diagnostics.
+The shellcheck line runs [ShellCheck](https://www.shellcheck.net/) over the bash tooling under `scripts/`. It is opt-in because ShellCheck is a system tool rather than a dependency of this repository; `scripts/verify.sh` runs it when it is installed and prints `SKIP` otherwise.
 
 - Last full sweep: **2026-11-03**. Every area was re-verified against current first-party sources through the Aside browser, outdated claims were removed or corrected, and two new areas — `loop-engineering/` and `graph-engineering/` — were added. Per-claim checked dates live in each document; a row that could not be re-read keeps its older date. Next full re-verification: **2027-02-03**.
 - Previous sweeps: full sweep 2026-07-29; targeted re-verification 2026-09-19 and 2026-09-20.

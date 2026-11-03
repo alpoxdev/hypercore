@@ -44,7 +44,7 @@ Only when this package changes:
 - [ ] KO/EN parity holds for every Markdown file.
 - [ ] The repository corpus validator passes for this package: run it with `--root skills --only instagram-card-maker --json`.
 - [ ] The package authoring validator passes with `--require-self-containment` and this package's eval file passed as `--evals`; it reports no error for this package.
-- [ ] `bun run --cwd scripts verify` passes.
+- [ ] `bash scripts/verify.sh` passes.
 - [ ] `README.md`'s skill count and catalog row are updated because this change adds a skill.
 
 ## Sources

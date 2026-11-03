@@ -62,7 +62,7 @@ Any change to this skill's files runs all three gates, in order, from the reposi
 
 - the corpus validator scoped to this package: `validate-skills-corpus.sh --root skills --only korean-writer --json`
 - the single-package validator run against this package folder: `validate-skill.sh skills/korean-writer`
-- the repository script gate: `bun run --cwd scripts verify`
+- the repository script gate: `bash scripts/verify.sh`
 
 The repository's policy documents own these commands' locations and flags; this file names the gates a package change must pass.
 

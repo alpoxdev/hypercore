@@ -294,7 +294,7 @@ skills/<name>/
 
 ## 개발
 
-빌드와 테스트가 필요한 것은 CLI 패키지(`cli/`)와 `scripts/` 검증(`bun run --cwd scripts verify`)입니다. 스킬은 마크다운 문서, bash 스크립트, 정적 asset, eval fixture를 그대로 쓰므로 빌드 단계가 없습니다.
+빌드와 테스트가 필요한 것은 CLI 패키지(`cli/`)와 `scripts/` 검증(`bash scripts/verify.sh`)입니다. 스킬은 마크다운 문서, bash 스크립트, 정적 asset, eval fixture를 그대로 쓰므로 빌드 단계가 없습니다.
 
 ```bash
 pnpm -C cli install     # cli/ 워크스페이스 의존성 설치

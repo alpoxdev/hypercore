@@ -55,7 +55,7 @@ Keep essential scope, authority, safety, and completion rules in this file. Link
 Run commands from the repository root unless stated otherwise.
 
 ```bash
-bun run --cwd scripts verify
+bash scripts/verify.sh
 bash skills/skill-tester/scripts/validate-skills-corpus.sh --root skills --only <skill-name> --json
 bash scripts/check-sources.sh --offline
 pnpm -C cli build
@@ -66,10 +66,11 @@ pnpm -C cli format:check
 
 Use the smallest check that covers the change, then the required broader gate:
 
-- Skill or skill-validation-script changes: run the focused corpus validator first, then `bun run --cwd scripts verify`.
+- Skill or skill-validation-script changes: run the focused corpus validator first, then `bash scripts/verify.sh`.
 - Source-sensitive changes under `instructions/**`: run at least `bash scripts/check-sources.sh --offline`. Use the documented strict external-link gate before a release.
 - Changes under `cli/**`: run the affected `build`, `test`, `lint`, and `format:check` commands.
 - Markdown instruction changes: verify local links, balanced fences, English/Korean parity, and absence of unrequested files.
+- Visual rendering checks for instagram-card-maker and storyboard-maker need a browser; they are outside `scripts/verify.sh` and are done manually in a browser when needed.
 
 Never claim an unrun command passed. Do not suppress warnings, weaken checks, or hide failures.
 

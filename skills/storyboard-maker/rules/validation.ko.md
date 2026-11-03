@@ -80,7 +80,7 @@
 - [ ] 모든 Markdown 쌍에서 한영 대응이 맞습니다. 같은 `##` 섹션이 같은 순서로 있고 목록 항목과 표 행도 같습니다.
 - [ ] 이 패키지의 코퍼스 검증기가 `--only storyboard-maker --json`으로 통과하고 `ok: true`를 보고합니다.
 - [ ] 저작 검증기가 `--require-self-containment`와 이 패키지의 eval 파일을 `--evals`로 받아 오류와 면제 없이 통과합니다.
-- [ ] `bun run --cwd scripts verify`가 종료 코드 0으로 끝납니다.
+- [ ] `bash scripts/verify.sh`가 종료 코드 0으로 끝납니다.
 - [ ] 이 패키지를 추가하거나 이름을 바꿨으면 `README.md`의 스킬 개수와 카탈로그 행을 고칩니다.
 
 ## Sources

@@ -125,7 +125,7 @@ find skills/autoresearch-skill -maxdepth 2 \( -name README.md -o -name CHANGELOG
 find .hyper -maxdepth 4 -type f | sort | rg "autoresearch-skill"
 python3 -m json.tool .hyper/autoresearch-skill/[skill-name]/results.json >/dev/null
 test -f .hyper/autoresearch-skill/[skill-name]/results.js
-bun test scripts/tests/skill-scripts.test.mjs --test-name-pattern "autoresearch"
+bash scripts/run-tests.sh skill-scripts
 # When the repository provides a skill-corpus validator, run it on this package too:
 #   <corpus-validator> --root <skills-root> --only <skill-name> --json
 ```

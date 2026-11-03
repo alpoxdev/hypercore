@@ -176,6 +176,6 @@ Boundary:
 - [ ] Package changes keep the self-application audit clean: this package's Korean bodies contain zero S1 tells.
 - [ ] Package changes keep the eval cases present and aligned with the trigger and workflow.
 - [ ] Package changes run the corpus validator scoped to this package: `validate-skills-corpus.sh --root skills --only korean-writer --json`.
-- [ ] Package changes run `bun run --cwd scripts verify`.
+- [ ] Package changes run `bash scripts/verify.sh`.
 
 </validation>

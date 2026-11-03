@@ -72,7 +72,7 @@
 - 출처는 참조 구현 `skills-ref validate ./my-skill`을 제시하며, 이는 `SKILL.md` frontmatter가
   유효하고 작명 관례를 따르는지 검사합니다.
 - implication_for_skill_maker: 이 저장소는 `scripts/validate-skills.sh`에서 `uvx`로 그것을
-  실행합니다. 이 경로는 네트워크가 필요하고 `bun run --cwd scripts verify`에 포함되지 않으므로,
+  실행합니다. 이 경로는 네트워크가 필요하고 `bash scripts/verify.sh`에 포함되지 않으므로,
   오프라인 게이트에 조용히 끼워 넣지 않습니다.
 
 ## 스킬 제작자를 위한 모범 사례

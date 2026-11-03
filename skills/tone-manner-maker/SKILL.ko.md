@@ -163,6 +163,6 @@ Boundary:
 - [ ] 전달된 스펙은 self-contained이고 분석 스캐폴딩이 없다.
 - [ ] 패키지 변경은 이 패키지의 모든 마크다운 파일의 영어/한국어 쌍을 유지한다.
 - [ ] 패키지 변경은 이 패키지로 범위를 좁힌 corpus validator를 실행한다: `validate-skills-corpus.sh --root skills --only tone-manner-maker --json`.
-- [ ] 패키지 변경은 `bun run --cwd scripts verify`를 실행한다.
+- [ ] 패키지 변경은 `bash scripts/verify.sh`를 실행한다.
 
 </validation>

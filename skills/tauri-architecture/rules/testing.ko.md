@@ -72,7 +72,7 @@ Rust는 happy-path JavaScript만이 아니라 policy boundary에서 테스트한
 ```bash
 node -e "const fs=require('node:fs'); const p='skills/tauri-architecture/assets/evals/tauri-architecture-cases.jsonl'; fs.readFileSync(p,'utf8').trim().split(/\\n/).forEach((line,index)=>{try{JSON.parse(line)}catch(error){throw new Error(`${p}:${index+1}: ${error.message}`)}});"
 bash scripts/check-sources.sh --offline
-bun run --cwd scripts verify
+bash scripts/verify.sh
 ```
 
 저장소의 skill-corpus validator가 구조 gate다. 저장소 유지보수 명령이므로 형제 skill의 경로를 넣지 않고 이름으로만 적는다: `validate-skills-corpus.sh --root skills --only tauri-architecture --json`. JSONL parse는 fixture-integrity gate이며 behavior 실행이 아니다. 이 package에는 package-specific behavior runner가 없다. Fixture의 stable positive, negative, boundary, missing-context, unsafe-action, source-guard, regression case를 직접 검사하고 실행했다고 주장하지 않는다. Validator를 지어내거나 fixture 존재를 behavior 증거로 취급하지 않는다.

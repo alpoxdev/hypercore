@@ -221,7 +221,7 @@ Must-pass gates:
 이 저장소의 skill package에 대해 저장소 루트에서 다음을 실행한다.
 
 ```bash
-node scripts/check-skill-standards.mjs --skill agents-md-maker --json
+bash scripts/check-skill-standards.sh --skill agents-md-maker --json
 ```
 
 저장소의 skill corpus validator도 이 package에 대해 실행한다(`--root skills --only agents-md-maker --json`). 이 skill이 실질적으로 변경되면 `assets/evals/agents-md-maker-cases.jsonl`을 JSONL로 parse하고 trigger/routing/safety coverage를 검사한다.

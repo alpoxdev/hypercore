@@ -66,7 +66,7 @@ rg -n "[를] 통해|[에] 있어서|[되]어진다|[시]사하는 바|[결]론�
 
 - 이 패키지로 범위를 좁힌 corpus validator: `validate-skills-corpus.sh --root skills --only korean-writer --json`
 - 이 패키지 폴더에 돌리는 단일 패키지 validator: `validate-skill.sh skills/korean-writer`
-- 저장소 스크립트 게이트: `bun run --cwd scripts verify`
+- 저장소 스크립트 게이트: `bash scripts/verify.sh`
 
 명령의 위치와 플래그는 저장소 정책 문서가 갖는다. 이 파일은 패키지 변경이 통과해야 할 게이트의 이름을 적는다.
 

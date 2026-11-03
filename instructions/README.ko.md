@@ -44,10 +44,10 @@ bash scripts/check-sources.sh             # 확인일 형식·문서 길이 stri
 bash scripts/check-sources.sh --strict    # 링크 이전까지 게이트 (릴리스 전)
 bash scripts/check-sources.sh --offline   # 네트워크 없이 구조 검사만
 bash scripts/check-sources.sh --self-test # 검사 자체가 실패를 잡는지 증명
-bun run --cwd scripts lint:sh        # 검사기 자체의 정적 분석 (shellcheck 필요)
+shellcheck scripts/*.sh scripts/lib/*.sh scripts/tests/*.sh        # 검사기 자체의 정적 분석 (shellcheck 필요)
 ```
 
-`lint:sh`는 `scripts/check-sources.sh`에 [ShellCheck](https://www.shellcheck.net/)를 실행한다. ShellCheck는 이 저장소의 의존성이 아니라 시스템 도구이므로 별도 opt-in 작업으로 둔다. 편집기 진단용 `bash-language-server`는 `scripts/package.json`에 선언되어 있다.
+shellcheck 줄은 `scripts/` 아래 bash 도구 전체에 [ShellCheck](https://www.shellcheck.net/)를 실행한다. ShellCheck는 이 저장소의 의존성이 아니라 시스템 도구이므로 opt-in으로 두고, `scripts/verify.sh`는 설치되어 있을 때만 이 검사를 실행하며 없으면 `SKIP`을 출력한다.
 
 - 마지막 전수 확인: **2026-11-03**. 모든 영역을 Aside 브라우저로 현재 1차 출처와 다시 대조했고, 낡은 주장은 지우거나 고쳤으며, 새 영역 `loop-engineering/`과 `graph-engineering/`을 추가했다. 주장별 확인일은 각 문서에 있고, 다시 읽지 못한 행은 이전 날짜를 그대로 둔다. 다음 전수 재검증: **2027-02-03**.
 - 이전 확인: 전수 확인 2026-07-29, 부분 재검증 2026-09-19와 2026-09-20.

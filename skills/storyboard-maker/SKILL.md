@@ -56,7 +56,7 @@ This skill is self-contained. It owns the input schema, the renderer asset, the 
 | Tools | A file writer for the document and the delivery folder. A browser with DOM and CSS for the board, the report, and print; without one, a `node` or `bun` runtime for `validate`, `lint`, and `render`. An observed image generation capability for pictures, used with the compiled prompt and nothing attached; without one, the line art and the saved prompt are the delivery. No network. |
 | Loop | Write → render → read `getReport()` → fix errors, then repair or record warnings. At most two rounds, then deliver with the remaining codes named. |
 | Output | Korean board text, `index.html`, `storyboard.json`, `shot-list.md`, `manifest.json`, and `shots[].image` data URIs for every panel that carries a picture. Machine-readable: the `getReport()` object and the `StoryboardCore` results. |
-| Verification | `window.storyboardStudio.getReport()`, or the browserless core run, plus the `validation` checklist and the per-panel image inspection when pictures were generated. On a package change, the corpus validator, the authoring validator with `--require-self-containment`, and `bun run --cwd scripts verify`. |
+| Verification | `window.storyboardStudio.getReport()`, or the browserless core run, plus the `validation` checklist and the per-panel image inspection when pictures were generated. On a package change, the corpus validator, the authoring validator with `--require-self-containment`, and `bash scripts/verify.sh`. |
 | Stop condition | Ask the intake items once, then work without re-asking. Deliver after the checklist and a report with zero errors; stop and name the missing input when a fact the board needs cannot be grounded. Never claim a panel, a print, or a manifest that was not produced. |
 
 </instruction_contract>
@@ -260,7 +260,7 @@ If no browser with a DOM is available, do not claim the board was seen. Execute 
 - [ ] No generated panel holds a real person, a celebrity, or a recognizable likeness, and no external image entered the pipeline.
 - [ ] No network request, no remote `src` or `href`, no web font, and no bundled script in the delivered folder; every `image.src` is a data URI, not a URL or a file path.
 - [ ] No existing film's frames or boards were copied, traced, or followed shot for shot.
-- [ ] Package change only: KO/EN parity holds, the corpus validator and the authoring validator with `--require-self-containment` pass, and `bun run --cwd scripts verify` passes.
+- [ ] Package change only: KO/EN parity holds, the corpus validator and the authoring validator with `--require-self-containment` pass, and `bash scripts/verify.sh` passes.
 
 </validation>
 
