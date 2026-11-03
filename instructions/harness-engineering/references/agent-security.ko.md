@@ -66,7 +66,7 @@ OWASP가 최소 자율을 적용한 예로 든 문장은 ASI02 완화 목록에 
 
 | 관찰 | 내용 |
 |---|---|
-| `&`와 `and` | "At A Glance" 격자는 `ASI02: Tool Misuse & Exploitation`, `ASI03: Identity & Privilege Abuse`로 적고, 본문 제목과 목차는 `and`를 쓴다 |
+| `&`와 `and` | "At A Glance" 격자는 `ASI02: Tool Misuse & Exploitation`, `ASI03: Identity & Privilege Abuse`로 적고, 그 두 항목의 본문 제목과 목차는 `and`를 쓴다. ASI06 같은 다른 제목은 `&`를 그대로 쓴다 |
 | ASI05 괄호 | 제목과 격자 모두 `Unexpected Code Execution (RCE)`를 붙인다 |
 | ASI10 오타 | ASI10 본문은 다른 항목을 `AS01`, `AS04`로 적는다 |
 | 제목 대소문자 | 제목은 title case다. 소문자로 "정규화"한 목록을 정본처럼 쓰지 않는다 |

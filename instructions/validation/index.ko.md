@@ -98,7 +98,7 @@ Claim → Risk → Evidence → Verification → Result → Caveat
 | 로컬 테스트/재현 로그 | 강함 | repo-local behavior claim의 1차 근거 |
 | GitHub release/commit/permalink | 강함 | 버전·구현 history 근거 |
 | 신뢰 기관 리포트/논문 | 중~강 | 시장/연구 claim, 방법론 확인 필요 |
-| 벤더 블로그/해설 | 중 | 맥락 보조, 편향 caveat 필요 |
+| 자사 제품 밖을 다루는 벤더 해설, 제3자 블로그 | 중 | 맥락 보조, 편향 caveat 필요 |
 | 검색 snippet/model summary | 약함 | 후보 단서만. 최종 근거 금지 |
 
 critical claim은 supporting quote/citation을 찾지 못하면 claim을 retract하거나 caveat를 명시한다.

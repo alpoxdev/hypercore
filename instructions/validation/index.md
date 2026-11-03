@@ -98,7 +98,7 @@ Bulk changes and "all X" requests follow this order.
 | Local tests and reproduction logs | Strong | Primary evidence for repo-local behavior claims |
 | GitHub release, commit, permalink | Strong | Evidence for version and implementation history |
 | Trusted institution reports and papers | Medium to strong | Market and research claims; methodology must be checked |
-| Vendor blogs and commentary | Medium | Supporting context; needs a bias caveat |
+| Vendor commentary beyond its own product, third-party blogs | Medium | Supporting context; needs a bias caveat |
 | Search snippets and model summaries | Weak | Leads only. Never final evidence |
 
 A versioned standard counts as strong evidence only with its edition named and the artifact you read identified. "OWASP says", "NIST recommends", and "the paper shows" are all incomplete until the edition, version, or arXiv identifier is attached.

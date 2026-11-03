@@ -118,9 +118,9 @@ Record grade and role in the source ledger.
 
 | Grade | Criterion | Example |
 |---|---|---|
-| S | Primary, official, standard, direct data, peer-reviewed, accepted, or arXiv primary paper, official repo evidence | Official docs, NIST/OWASP, GitHub releases, papers, SEC filings |
+| S | Primary, official, standard, direct data, peer-reviewed, accepted, or arXiv primary paper, official repo evidence, or a vendor's own disclosure about its own product or system | Official docs, NIST/OWASP, GitHub releases, papers, SEC filings, a vendor's post describing its own defenses |
 | A | Independent reports with visible methodology, major research institutions, highly trusted press | Stanford AI Index, Reuters Institute, Pew, major technical reports |
-| B | Practitioner writing, vendor blogs, case studies, well-scoped commentary | Vendor blogs, engineering blogs |
+| B | Practitioner writing, vendor commentary beyond its own product, case studies, well-scoped commentary | Third-party engineering blogs, vendor opinion and how-to posts |
 | C | Promotional, unattributed, outdated, single-source claims, or search-lead level | SEO content, anonymous comments, unsourced comparison tables |
 
 | Source role | Meaning |
@@ -296,4 +296,4 @@ The practical rule for this repository: retrieved text can change what you belie
 | 6 | Understanding prompt injections: a frontier security challenge | OpenAI | <https://openai.com/index/prompt-injections/> | 2025-11-07 | checked 2026-11-03 | S |
 | 7 | Designing AI agents to resist prompt injection | OpenAI | <https://openai.com/index/designing-agents-to-resist-prompt-injection/> | 2026-03-11 | checked 2026-11-03 | S |
 
-Grade S here means a first-party standard or vendor artifact, not that every sentence in it has been independently reproduced. Claims about how a classifier performs are quoted from the publisher's own description.
+Grade S here means a first-party standard or a vendor's own disclosure about its own system, not that every sentence in it has been independently reproduced. Claims about how a classifier performs are quoted from the publisher's own description.

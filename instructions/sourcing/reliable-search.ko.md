@@ -118,9 +118,9 @@ WebSearch({ query: `Korea SaaS market trends as of ${runtime.currentDate}` })
 
 | 등급 | 기준 | 예시 |
 |---|---|---|
-| S | 1차/공식/표준/직접 데이터/peer-reviewed·accepted·arXiv 원 논문/공식 repo evidence | 공식 문서, NIST/OWASP, GitHub release, 논문, SEC filing |
+| S | 1차/공식/표준/직접 데이터/peer-reviewed·accepted·arXiv 원 논문/공식 repo evidence, 또는 벤더가 자사 제품·시스템에 대해 직접 밝힌 자료 | 공식 문서, NIST/OWASP, GitHub release, 논문, SEC filing, 벤더가 자사 방어 체계를 설명한 글 |
 | A | 방법론이 보이는 독립 리포트·주요 연구기관·신뢰도 높은 언론 | Stanford AI Index, Reuters Institute, Pew, 주요 기술 리포트 |
-| B | 실무자 글, 벤더 블로그, 케이스 스터디, 잘 범위화된 해설 | vendor blog, engineering blog |
+| B | 실무자 글, 자사 제품 밖을 다루는 벤더 해설, 케이스 스터디, 잘 범위화된 해설 | 제3자 engineering blog, 벤더의 의견·how-to 글 |
 | C | 홍보성·출처 불명·오래됨·단독 주장·검색 단서 수준 | SEO성 글, 익명 댓글, 근거 없는 비교표 |
 
 | Source role | 의미 |
@@ -296,4 +296,4 @@ Claim-source matrix 최소 필드:
 | 6 | Understanding prompt injections: a frontier security challenge | OpenAI | <https://openai.com/index/prompt-injections/> | 2025-11-07 | 확인 2026-11-03 | S |
 | 7 | Designing AI agents to resist prompt injection | OpenAI | <https://openai.com/index/designing-agents-to-resist-prompt-injection/> | 2026-03-11 | 확인 2026-11-03 | S |
 
-여기서 등급 S는 1차 표준이나 벤더 자료라는 뜻이며, 그 문장을 모두 독립 재현했다는 뜻은 아니다. 분류기 성능에 관한 서술은 발행처의 설명을 그대로 인용한 것이다.
+여기서 등급 S는 1차 표준이나 벤더가 자사 시스템에 대해 직접 밝힌 자료라는 뜻이며, 그 문장을 모두 독립 재현했다는 뜻은 아니다. 분류기 성능에 관한 서술은 발행처의 설명을 그대로 인용한 것이다.

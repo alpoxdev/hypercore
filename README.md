@@ -30,7 +30,7 @@ Hypercore는 [Vercel Skills CLI](https://github.com/vercel-labs/skills)의 원�
 
 ## 설치 및 수명주기
 
-모든 스킬을 사용자 전역에 설치 (`--skill '*'`가 스킬 전체 선택. agent를 지정하지 않고 `-y`를 주면 감지된 agent와 universal agent가 대상이고, 감지된 agent가 없으면 CLI가 아는 agent 전체가 대상이 되므로 특정 agent만 원하면 `-a`로 지정합니다):
+모든 스킬을 사용자 전역에 설치 (`--skill '*'`가 스킬 전체 선택. agent를 지정하지 않고 `-y`를 주면 대상은 순서대로 정해집니다. agent 안에서 실행하면 그 agent와 universal agent, Eve가 설치돼 있으면 Eve만, 감지된 agent가 없으면 CLI가 아는 agent 전체, 그 밖에는 감지된 agent와 universal agent입니다. 특정 agent만 원하면 `-a`로 지정합니다):
 
 ```bash
 npx skills add alpoxdev/hypercore --skill '*' -g -y
@@ -228,7 +228,7 @@ instagram-card-maker로 우리 브랜드의 봄 신제품을 소개하는 카드
 /pre-deploy
 ```
 
-lint, typecheck, build, test 같은 프로젝트 게이트를 재현하고, 실패가 있으면 원인을 추적해서 고쳐 다시 검증합니다.
+lint, typecheck, build 같은 프로젝트 게이트를 재현하고, 실패가 있으면 원인을 추적해서 고쳐 다시 검증합니다.
 
 **4) 새 스킬 만들기**
 
@@ -318,7 +318,7 @@ PR 환영합니다. 작업 흐름:
 2. 새 브랜치에서 변경 후 `git-maker`로 Conventional Commits를 생성합니다.
 3. 스킬 변경은 `SKILL.md`(영어 정본)와 `SKILL.ko.md`(한국어 번역)을 함께 갱신합니다.
 4. 가능하면 `skill-tester`나 `autoresearch-skill`의 검증 결과를 PR 본문에 첨부해 주세요.
-5. 큰 구조 변경은 [AGENTS.md](AGENTS.md)의 작업 원칙(작은 변경, 되돌리기 쉬움, 전역 환경 비의존)을 따릅니다.
+5. 큰 구조 변경은 [AGENTS.md](AGENTS.md)의 작업 원칙(작은 변경, 요청 범위 준수, 전역 환경 비의존)을 따릅니다.
 
 ## 라이선스
 

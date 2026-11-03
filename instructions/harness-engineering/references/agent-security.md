@@ -69,7 +69,7 @@ The document is inconsistent with itself, so a quotation that looks wrong may be
 
 | Observation | Detail |
 |---|---|
-| `&` versus `and` | The "At A Glance" grid writes `ASI02: Tool Misuse & Exploitation` and `ASI03: Identity & Privilege Abuse`; the body headings and contents use `and` |
+| `&` versus `and` | The "At A Glance" grid writes `ASI02: Tool Misuse & Exploitation` and `ASI03: Identity & Privilege Abuse`, while the body headings and table of contents for those two entries use `and`; other titles such as ASI06 keep `&` |
 | ASI05 parenthesis | The heading and the grid both carry `Unexpected Code Execution (RCE)` |
 | ASI10 typos | ASI10's body text refers to other entries as `AS01` and `AS04` |
 | Heading case | Headings are title case; do not lowercase them into a "canonical" list |
