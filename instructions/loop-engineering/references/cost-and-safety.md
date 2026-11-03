@@ -58,7 +58,7 @@ An unattended loop needs an approval policy chosen in advance. The runtime's mod
 
 | Mode (Claude Code) | Behavior | Fit for a loop |
 |---|---|---|
-| `default` (alias `manual`) | Prompts on first use of each tool | Interactive loops only |
+| `default` (alias `manual`) | Reads run without asking; asks before most edits, shell commands, and network access | Interactive loops only |
 | `acceptEdits` | Accepts file edits and common filesystem commands | Loops that only edit files in an isolated worktree |
 | `plan` | Reads and explores; does not edit source files | Reconnaissance iterations |
 | `auto` | Runs without routine prompts; a background classifier checks actions against the request | Supervised autonomy, with an explicit statement that it "does not guarantee safety" |

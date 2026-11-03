@@ -48,7 +48,7 @@ npx skills add alpoxdev/hypercore --all -g                                 # 모
 
 `-g`/`--global`을 생략하면 현재 프로젝트에만 설치됩니다. `--copy`는 설치 시 독립 복사본을 만들며, 생략 시 CLI가 대상 조합에 따라 canonical copy 또는 symlink를 선택합니다.
 
-`remove`도 `--all`을 받습니다 — 전역 스킬 전체를 지우려면 `npx skills remove --all -y -g`입니다. `add`의 `--all`과 달리 `remove --all`은 확인 프롬프트를 건너뛰지 않으므로 비대화형 실행에서는 `-y`가 필요하고(없으면 아무것도 지우지 않고 종료), `remove`의 `-a`는 `'*'`를 받지 않으니 agent는 이름으로 지정합니다.
+`remove`도 `--all`을 받습니다 — 전역 스킬 전체를 지우려면 `npx skills remove --all -g`입니다. 주의: `remove --all`은 `-y`를 포함하므로 확인 프롬프트 없이 바로 지웁니다(2026-11-04 `vercel-labs/skills` 소스 기준). 스킬 이름과 함께 쓰면 거부되고, `remove`의 `-a`는 `'*'`를 받지 않으니 agent는 이름으로 지정합니다.
 
 설치 후에는 같은 CLI로 전체 수명주기를 관리합니다:
 

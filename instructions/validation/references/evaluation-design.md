@@ -59,7 +59,7 @@ Two properties of the set matter as much as its size.
 - **Balance.** Test where the behavior should occur and where it should not. A suite that only checks "searched when it should" trains over-triggering.
 - **Unambiguity.** Two domain experts should reach the same pass/fail verdict, and a correct agent should be able to pass from the task text alone. A 0% pass rate across many trials usually indicates a broken task or grader rather than incapable behavior.
 
-Public suites are useful for calibrating difficulty, not for proving local behavior. Terminal-Bench 2.0 reports frontier agents and harnesses below 65% on 89 curated tasks, while the best SWE-bench Verified result on the official leaderboard is 79.2% (2025-12-05; leaderboard checked 2026-11-04), so that suite is nearing saturation. A suite whose cases are all passing has stopped informing you, whatever its name is on a leaderboard.
+Public suites are useful for calibrating difficulty, not for proving local behavior. Terminal-Bench 2.0 reports frontier models and agents below 65% on 89 curated tasks, while the best SWE-bench Verified result on the official leaderboard is 79.2% (2025-12-05; leaderboard checked 2026-11-04), so that suite is nearing saturation. A suite whose cases are all passing has stopped informing you, whatever its name is on a leaderboard.
 
 ---
 

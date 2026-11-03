@@ -31,7 +31,7 @@
 
 **관측**: `usage.cache_read_input_tokens`(읽기), `usage.cache_creation_input_tokens`(쓰기, 중첩된 `cache_creation` 내역의 합), `usage.input_tokens`(마지막 캐시 지점 **뒤**의 토큰만). 중첩된 `cache_creation.ephemeral_5m_input_tokens`와 `ephemeral_1h_input_tokens`가 쓰기를 TTL별로 나눈다.
 
-**접두부를 유지하는 덧붙이기**: `max_tokens: 0`은 출력 없이 캐시를 쓰므로 접두부를 미리 데울 수 있다. thinking 설정과 `output_config.effort`는 프롬프트에 렌더링되므로 실제 요청과 같아야 한다. Claude 5.x 모델에서는 `messages`에 `{"role": "system"}` 메시지를 덧붙이면 시스템·메시지 캐시를 무효화하지 않고 지시를 더할 수 있고(Claude Sonnet 5는 불가), `inline-tools-2026-09-15` 베타는 `tools`를 고치지 않고 대화 중간에 도구를 추가한다.
+**접두부를 유지하는 덧붙이기**: `max_tokens: 0`은 출력 없이 캐시를 쓰므로 접두부를 미리 데울 수 있다. thinking 설정과 `output_config.effort`는 프롬프트에 렌더링되므로 실제 요청과 같아야 한다. 문서가 나열한 모델(Claude Fable 5.1, Mythos 5.1, Fable 5, Mythos 5, Opus 5.5, Opus 4.8, Opus 5, Sonnet 5.5, Haiku 5.5)에서는 `messages`에 `{"role": "system"}` 메시지를 덧붙이면 시스템·메시지 캐시를 무효화하지 않고 지시를 더할 수 있고(Claude Sonnet 5는 불가), `inline-tools-2026-09-15` 베타는 `tools`를 고치지 않고 대화 중간에 도구를 추가한다.
 
 **레이트 리밋**: 페이지는 캐시 적중이 레이트 리밋에서 차감되지 않는다고 적으면서, 동시에 보고되는 토큰 내역이 레이트 리밋 계산을 좌우한다고 적는다. 레이트 리밋 영향은 계획 상수가 아니라 프로바이더 쪽 동작으로 보고 측정한다.
 

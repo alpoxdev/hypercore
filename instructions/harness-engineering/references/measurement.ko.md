@@ -176,8 +176,9 @@ practitioners to select agents based on real-world constraints"라고 밝힌다.
   59.4% of the audited problems have flawed test cases that reject functionally correct
   submissions"을 확인했고, 개선이 "increasingly reflect how much the model was exposed to the
   benchmark at training time"이라는 이유로 자기 벤치마크 보고를 중단했다.
-- **대체재도 틀릴 수 있다.** 권고된 후속 벤치마크는 몇 달 뒤 과제 약 30%가 깨졌다는 조사로 부분
-  철회되었다. 2026년에 정본 대체재는 없고, 결함률을 공개한 후보들이 여럿 있을 뿐이다.
+- **대체재에도 한계가 있다.** 같은 글은 SWE-bench Pro를 후속으로 권하면서도 "not perfect"라고
+  밝히고, 그 벤치마크의 과제 결함률은 제시하지 않는다. 후속 벤치마크는 누군가 결함률을 공개하기
+  전까지 결함률을 모르는 후보로 다룬다.
 
 **HE-J-8.** 벤치마크 점수는 판본, 채점기 버전, 자원 구성, 오염·결함 상태와 함께 기록한다. 두 체계의
 한 자리 수 차이는 채점기와 자원 구성이 동등하다는 사실이 제시되기 전까지 미해결로 둔다. 측정된
@@ -260,7 +261,7 @@ eval 셋이 조용히 죽지 않게 하는 실천이 둘 있다.
 | 벤치마크 저자들의 반복 실행 신뢰도 프레이밍 | <https://sierra.ai/blog/tau-bench-shaping-development-evaluation-agents> | VENDOR |
 | 인프라 잡음: Terminal-Bench 2.0에서 6%p, SWE-bench에서 1.54%p, "3%p 미만은 회의적으로" 규칙 | <https://www.anthropic.com/research/infrastructure-noise> | VENDOR |
 | 평가 인지: 정답 키 복호화 사례, 1,266개 중 11개, 86.81% → 86.57%, "ongoing adversarial problem" | <https://www.anthropic.com/research/eval-awareness-browsecomp> | VENDOR |
-| 감사한 실패의 59.4%에 결함 있는 테스트가 있었고, 그래서 보고를 중단한 결정 | <https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/> | VENDOR |
+| 감사한 실패의 59.4%에 결함 있는 테스트가 있었고, 그래서 보고를 중단한 결정, SWE-bench Pro 권고("not perfect") | <https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/> | VENDOR |
 | "20-50 simple tasks drawn from real failures", 부분 점수, 경로가 아니라 결과 채점, 100% 천장 | <https://www.anthropic.com/research/demystifying-evals-for-ai-agents> | VENDOR |
 | 비슷한 정확도에서 비용이 거의 두 자릿수 배 차이 난다는 지적 | <https://arxiv.org/abs/2407.01502> | PRIMARY |
 | 정확도 대 비용 파레토 경계라는 리더보드 설계 | <https://arxiv.org/abs/2510.11977> | PRIMARY |

@@ -189,9 +189,9 @@ A score is a claim about a test, and the test decays.
   and found "at least 59.4% of the audited problems have flawed test cases that reject functionally
   correct submissions", then stopped reporting their own benchmark because improvements "increasingly
   reflect how much the model was exposed to the benchmark at training time."
-- **The replacement can also be wrong.** The recommended successor was partly retracted months
-  later after roughly 30% of its tasks were found broken. There is no canonical 2026 replacement;
-  there is a set of candidates with published defect rates.
+- **The replacement has its own limits.** The same article recommends SWE-bench Pro as the successor
+  but calls it "not perfect" and reports no task-defect rate for it. Treat any successor as a
+  candidate whose defect rate is unknown until someone publishes one.
 
 **HE-J-8.** A benchmark score is recorded with its version, its grader version, its resource
 configuration, and its contamination and defect status. A single-digit difference between two
@@ -279,7 +279,7 @@ by up to about nine days (130.8 versus ~128.7 post-2023; 196.5 versus ~187.8 all
 | Benchmark authors' framing of reliability over repeated trials | <https://sierra.ai/blog/tau-bench-shaping-development-evaluation-agents> | VENDOR |
 | Infrastructure noise: 6pp on Terminal-Bench 2.0, 1.54pp on SWE-bench, and the "below 3 percentage points" rule | <https://www.anthropic.com/research/infrastructure-noise> | VENDOR |
 | Eval awareness: the decryption case, 11 of 1,266 problems, 86.81% → 86.57%, and "ongoing adversarial problem" | <https://www.anthropic.com/research/eval-awareness-browsecomp> | VENDOR |
-| 59.4% of audited failures have flawed tests, and the decision to stop reporting the benchmark | <https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/> | VENDOR |
+| 59.4% of audited failures have flawed tests, the decision to stop reporting the benchmark, and the SWE-bench Pro recommendation ("not perfect") | <https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/> | VENDOR |
 | "20-50 simple tasks drawn from real failures", partial credit, grading the outcome not the path, and the 100% ceiling | <https://www.anthropic.com/research/demystifying-evals-for-ai-agents> | VENDOR |
 | Cost differing by almost two orders of magnitude at similar accuracy | <https://arxiv.org/abs/2407.01502> | PRIMARY |
 | Accuracy-versus-cost Pareto frontiers as a leaderboard design | <https://arxiv.org/abs/2510.11977> | PRIMARY |
