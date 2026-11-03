@@ -101,6 +101,8 @@ Turn a panel from line art into a picture by delegating the picture to the `imag
 
 Process panels in shot order and inspect each before starting the next, so a design drift does not repeat down the sequence. When the panel pass ends, write the document with its accepted pictures back to `storyboard.json` and re-inject it into `index.html` with the same `<\/` escaping, so steps 9–11 read and deliver the same bytes.
 
+Each scene may also carry one overhead floor-plan picture. Compile its brief with `compileFloorPlanPrompt(doc, sceneId)`, hand it to `image-maker` under the same rules, check that every prop and character sits where the technical floor plan puts them and that the picture has no letters, then store it as `scenes[].planImage`. The technical floor plan is still drawn and stays the reference.
+
 ## 9. Open in a browser and read the report
 
 Open `index.html` in a browser and call `window.storyboardStudio.getReport()` from the console or through the browser automation you are using. Read the returned object, not the page's appearance:

@@ -97,6 +97,28 @@ function pageWith(doc) {
 }
 
 /**
+ * Mean drawn x of each character's body in a guide, which is where the panel
+ * puts the mannequin. The OTS foreground shoulder is skipped because it wraps
+ * around the near frame edge instead of standing on a blocking mark.
+ * @param {string} svg
+ */
+function guideCharacterX(svg) {
+  /** @type {Map<string, number[]>} */
+  const totals = new Map();
+  for (const tag of svg.match(/<path\b[^>]*>/g) || []) {
+    const character = tag.match(/data-character="([^"]+)"/);
+    const part = tag.match(/data-part="([^"]+)"/);
+    if (!character || (part && part[1] === "foreground")) continue;
+    const d = tag.match(/\bd="([^"]+)"/);
+    if (!d) continue;
+    const numbers = d[1].match(/-?\d+(?:\.\d+)?/g).map(Number);
+    const xs = numbers.filter((_, i) => i % 2 === 0);
+    totals.set(character[1], (totals.get(character[1]) || []).concat(xs));
+  }
+  return new Map([...totals].map(([id, xs]) => [id, xs.reduce((sum, x) => sum + x, 0) / xs.length]));
+}
+
+/**
  * Copy a page into a fresh temp dir and run one probe in Bun.WebView.
  * @param {string} source
  * @param {string} body async in-page body; its resolved value is returned
@@ -697,6 +719,79 @@ test("the prompt names the yaw view, the dutch tilt and the character count", ()
   expect(core.compilePanelPrompt(rolled, "s1", "10")).toContain("horizon tilted 8° to the left");
 });
 
+test("the prompt blocks each figure on the side the guide draws, with pose and facing", () => {
+  const nameOf = (/** @type {string} */ id) => sampleDoc.characters.find((c) => c.id === id).name;
+  const entriesOf = (/** @type {string} */ prompt) => {
+    const block = prompt.match(/Blocking: (.+?)\. (?:Action|Props|Style):/);
+    if (!block) throw new Error("no blocking clause in: " + prompt);
+    return block[1].split("; ");
+  };
+  const entryOf = (/** @type {string[]} */ entries, /** @type {string} */ name) =>
+    entries.find((entry) => entry.startsWith(name + " "));
+
+  const prompt = core.compilePanelPrompt(sampleDoc, "sc1", "10");
+  const drawn = [...guideCharacterX(core.renderGuideSvg(sampleDoc, "sc1", "10")).entries()].sort((a, b) => a[1] - b[1]);
+  expect(drawn).toHaveLength(2);
+  const entries = entriesOf(prompt);
+  expect(entries).toHaveLength(2);
+  // The two figures stand a metre apart on the axis; the guide draws the left
+  // one around x=390 and the right one on the centre mark, so the pair must be
+  // named one screen-left and one screen-right, never mirrored.
+  expect(entryOf(entries, nameOf(drawn[0][0]))).toContain("on screen-left");
+  expect(entryOf(entries, nameOf(drawn[1][0]))).toContain("on screen-right");
+  expect(entryOf(entries, nameOf("jiwoo"))).toContain("standing");
+  expect(entryOf(entries, nameOf("haneul"))).toContain("standing");
+  // Facing follows the mannequin's face normal: each one looks at the other, and
+  // the focus agrees with the view clause that opens the prompt.
+  expect(entryOf(entries, nameOf("jiwoo"))).toContain("facing screen-left");
+  expect(entryOf(entries, nameOf("haneul"))).toContain("facing screen-right");
+  expect(prompt).toContain("profile view (side view), subject facing screen-left");
+
+  // OTS: the focus is the only figure standing in frame, so it takes the centre
+  // mark, and the near shoulder is named as foreground instead of being given a
+  // side the guide never draws for it.
+  const ots = core.compilePanelPrompt(sampleDoc, "sc1", "25");
+  expect([...guideCharacterX(core.renderGuideSvg(sampleDoc, "sc1", "25")).keys()]).toEqual(["jiwoo"]);
+  const otsEntries = entriesOf(ots);
+  expect(entryOf(otsEntries, nameOf("jiwoo"))).toBe(nameOf("jiwoo") + " at the centre of frame, standing, facing the camera");
+  expect(entryOf(otsEntries, nameOf("haneul"))).toBe(nameOf("haneul") + " in the foreground, near shoulder only");
+  expect(ots).toContain("framed from mid-chest to just above the head with small headroom");
+});
+
+test("the framing clause states the crop and the headroom for each shot size", () => {
+  const framing = (/** @type {string} */ size, over = {}) => {
+    const prompt = core.compilePanelPrompt(testDoc([baseShot(Object.assign({ size }, over))]), "s1", "10");
+    const match = prompt.match(/Framing: (.+?)\. Camera/);
+    if (!match) throw new Error("no framing clause in: " + prompt);
+    return match[1];
+  };
+  expect(framing("ECU")).toBe("framed from the chin to just above the head, tight on the face, small headroom, top of the head inside the frame");
+  expect(framing("CU")).toBe("framed from the shoulders to just above the head, small headroom, the whole head inside the frame");
+  expect(framing("MCU")).toBe("framed from mid-chest to just above the head, small headroom, top of the head fully inside the frame");
+  expect(framing("MS")).toBe("framed from the waist to just above the head, headroom above the head");
+  expect(framing("COWBOY")).toBe("framed from mid-thigh to just above the head, headroom above the head");
+  expect(framing("MWS")).toBe("framed from the knees to just above the head, headroom above the head");
+  expect(framing("FS")).toBe("full figures head to feet with floor visible");
+  expect(framing("WS")).toBe("full figures head to feet with floor visible");
+  expect(framing("OTS", { camera: { yawDeg: 0, rollDeg: 0, focalMm: 85, over: "b" } }))
+    .toBe("over the near character's shoulder, near shoulder in the foreground, framed from mid-chest to just above the head with small headroom");
+
+  // A prop insert has no body to crop, so it keeps the prop brief without a
+  // framing sentence.
+  expect(core.compilePanelPrompt(sampleDoc, "sc1", "15")).not.toContain("Framing:");
+});
+
+test("the blocking pose comes from the blocking entry and the text clause stays last", () => {
+  const doc = testDoc([baseShot({ size: "MS", subjects: ["a", "b"] })]);
+  doc.scenes[0].blocking[0].pose = "sit";
+  doc.scenes[0].blocking[1].pose = "walk";
+  const prompt = core.compilePanelPrompt(doc, "s1", "10");
+  expect(prompt).toContain("A at the centre of frame, sitting, facing the camera");
+  expect(prompt).toContain("B at the centre of frame, walking, facing away from the camera");
+  expect(prompt.endsWith("Do not draw any text, letters, numbers, captions, or speech bubbles in the image.")).toBe(true);
+  expect(prompt).not.toMatch(/gpt|dall-?e|stable diffusion|midjourney|nano banana/i);
+});
+
 test("unknown ids return null or an empty string instead of throwing", () => {
   expect(core.layoutShot(sampleDoc, "nope", "10")).toBeNull();
   expect(core.layoutShot(sampleDoc, "sc1", "nope")).toBeNull();
@@ -744,4 +839,36 @@ test.skipIf(!hasWebView)("a document without a lens reports the error and draws 
   expect(value.panels).toBe(0);
   expect(value.domPanels).toBe(0);
   expect(value.statusError).toBe(true);
+});
+
+test("a scene floor-plan picture is validated like a panel picture and drawn beside the technical plan", () => {
+  const doc = JSON.parse(JSON.stringify(sampleDoc));
+  expect(core.render(doc)).not.toContain('data-part="plan-image"');
+  doc.scenes[0].planImage = { src: "https://example.com/plan.png", provenance: "generated" };
+  expect(core.validate(doc).errors.map((e) => `${e.code} ${e.path}`)).toEqual(["SCHEMA_TYPE scenes[0].planImage.src"]);
+  doc.scenes[0].planImage = { src: TINY_PNG, provenance: "drawn" };
+  expect(core.validate(doc).errors.map((e) => `${e.code} ${e.path}`)).toEqual(["SCHEMA_ENUM scenes[0].planImage.provenance"]);
+  doc.scenes[0].planImage = { src: TINY_PNG, provenance: "generated", prompt: "plan" };
+  expect(core.validate(doc).errors).toEqual([]);
+  const html = core.render(doc);
+  expect((html.match(/data-part="plan-image"/g) || []).length).toBe(1);
+  expect(html.indexOf('class="floorplan"')).toBeLessThan(html.indexOf('data-part="plan-image"'));
+  expect(html).not.toContain("https://example.com");
+});
+
+test("the floor-plan prompt names every prop and character with plan positions and ends with the no-text clause", () => {
+  const prompt = core.compileFloorPlanPrompt(sampleDoc, "sc1");
+  expect(prompt).toBe(core.compileFloorPlanPrompt(sampleDoc, "sc1"));
+  expect(prompt).toContain("top-down");
+  for (const p of sampleDoc.scenes[0].props) expect(prompt).toContain(p.label);
+  for (const b of sampleDoc.scenes[0].blocking) {
+    const name = sampleDoc.characters.find((c) => c.id === b.character).name;
+    expect(prompt).toContain(name);
+  }
+  // jiwoo stands at z -0.8 facing +z, haneul at z 0.8 facing -z: lower/up and upper/down.
+  expect(prompt).toMatch(/지우[^;]*lower[^;]*facing up/);
+  expect(prompt).toMatch(/하늘[^;]*upper[^;]*facing down/);
+  expect(prompt.endsWith("Do not draw any text, letters, numbers, labels, arrows, or captions in the image.")).toBe(true);
+  expect(prompt).not.toMatch(/siting/);
+  expect(core.compileFloorPlanPrompt(sampleDoc, "nope")).toBe("");
 });

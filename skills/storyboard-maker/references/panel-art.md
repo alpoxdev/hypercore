@@ -57,7 +57,7 @@ Process panels in shot order, because a returned picture is inspected against on
 
 1. **Compute the layout.** Call `layoutShot(doc, sceneId, shotId)` and keep its returned `pitchDeg`, `heightM`, `facingScreen`, `angleName`, and `yawName`. These values, not a guess from the script, are what the picture must match. `facingScreen` applies only when the focus is a character; a prop-only insert has no facing side.
 2. **Render the guide.** Call `renderGuideSvg(doc, sceneId, shotId)` and keep the returned SVG string. The guide holds the mannequin, the floor grid, and the horizon only; it has no arrows, labels, or notes. An empty string means the scene or shot id is wrong, so stop and fix the document. The guide is the inspector's composition reference; keep it on the storyboard side.
-3. **Compile the brief.** Call `compilePanelPrompt(doc, sceneId, shotId)` and keep the exact string. The compiler emits the shot size, the angle with its degrees, the facing side when the focus is a character, the lens, each visible character's `look`, the action text, and the style sentence, and it omits dialogue and asks for no text inside the picture. Read it once for errors of fact; after that it is immutable.
+3. **Compile the brief.** Call `compilePanelPrompt(doc, sceneId, shotId)` and keep the exact string. The compiler emits the shot size, the crop and headroom for that size, the angle with its degrees, the facing side when the focus is a character, the lens, each visible character's `look`, the `Blocking:` sentence that gives every framed figure its screen side, pose, and facing, the action text, and the style sentence, and it omits dialogue and asks for no text inside the picture. Read it once for errors of fact; after that it is immutable.
 4. **Invoke image-maker.** Hand the compiled string over as the whole brief with nothing attached. A reference image of any kind is not allowed, even when the action would accept one. Character consistency is carried by the `look` text inside the brief.
 5. **Inspect.** View the returned picture at a readable size beside the guide and run every check in section 6. A picture that fails is not embedded; invoke image-maker again only within its remaining allowance, otherwise fall back.
 6. **Embed.** Write the accepted picture into `shots[].image` as described in section 7, then move to the next shot.
@@ -69,8 +69,8 @@ Do not generate all panels in one batch and inspect them afterwards. A design dr
 The prompt is written in English and states camera geometry as plain photographic language. The numbers stay in the phrase so the picture can be checked against the panel's camera line. The compiled string is a fixed sequence of sentences:
 
 ```text
-Storyboard panel, <size>[, <view>]. Camera <angle> <degrees>°, <height> height <metres> m, <focal>mm lens[, dutch angle, horizon tilted <degrees>° to the <right|left>].
-[<count> characters in frame: <name> (<look>); ... | Characters: <name> (<look>).]
+Storyboard panel, <size>[, <view>]. [Framing: <crop and headroom>.] Camera <angle> <degrees>°, <height> height <metres> m, <focal>mm lens[, dutch angle, horizon tilted <degrees>° to the <right|left>].
+[<count> characters in frame: <name> (<look>); ... | Characters: <name> (<look>).] [Blocking: <name> <screen side>, <pose>, <facing>; ...]
 Action: <action>. [Props in frame: <labels>.] Style: <style>.
 Do not draw any text, letters, numbers, captions, or speech bubbles in the image.
 ```
@@ -108,8 +108,27 @@ The table below lists the exact fragments the compiler emits for each input. Rea
 | `focalMm` 50 | `50mm lens` |
 | `focalMm` 85 | `85mm lens` |
 | two `subjects` | `2 characters in frame: <name> (<look>); <name> (<look>)` |
+| Framing `size: ECU` | `framed from the chin to just above the head, tight on the face, small headroom, top of the head inside the frame` |
+| Framing `size: CU` | `framed from the shoulders to just above the head, small headroom, the whole head inside the frame` |
+| Framing `size: MCU` | `framed from mid-chest to just above the head, small headroom, top of the head fully inside the frame` |
+| Framing `size: MS` | `framed from the waist to just above the head, headroom above the head` |
+| Framing `size: COWBOY` | `framed from mid-thigh to just above the head, headroom above the head` |
+| Framing `size: MWS` | `framed from the knees to just above the head, headroom above the head` |
+| Framing `size: FS`, `WS` | `full figures head to feet with floor visible` |
+| Framing `size: ELS` | `small full figures in a wide environment with floor visible` |
+| Framing `size: OTS` | `over the near character's shoulder, near shoulder in the foreground, framed from mid-chest to just above the head with small headroom` |
+| Blocking, left of frame | `<name> on screen-left, <pose>, <facing>` |
+| Blocking, centre mark | `<name> at the centre of frame, <pose>, <facing>` |
+| Blocking, right of frame | `<name> on screen-right, <pose>, <facing>` |
+| Blocking pose | `standing`, `walking`, `sitting`, `reaching`, `crouching`, from `blocking[].pose` |
+| Blocking facing | `facing screen-left`, `facing screen-right`, `facing the camera`, `facing away from the camera` |
+| Blocking, OTS near shoulder | `<name> in the foreground, near shoulder only` |
 
-The size and view fragments open the first sentence; the angle, height, and lens fragments share the second sentence, and the roll fragment continues it. The view fragment appears only when the focus is a character. A roll is written to one decimal place, or as a whole number when it is whole.
+The size and view fragments open the first sentence; the framing fragment follows it whenever the focus is a character, the angle, height, and lens fragments share the next sentence, and the roll fragment continues it. The view fragment appears only when the focus is a character. A roll is written to one decimal place, or as a whole number when it is whole.
+
+The framing fragment names the crop the size actually draws, from `FRAME_RANGES`, and restates the headroom so a returned picture cannot cut the crown or reframe the body as a different shot. A prop focus has no framing fragment.
+
+The `Blocking:` sentence places every framed figure. The screen side comes from the same projection the guide draws: the figure's head and chest are projected on its blocking mark, the outer thirds of the frame decide the side, and a figure in the middle third is placed against the other figures so a pair straddling the centre still reads as one screen-left and one screen-right. The facing comes from the figure's `facingDeg` against the camera: a face turned less than 15° from the camera reads `facing the camera`, one turned more than 120° away reads `facing away from the camera`, and every angle between keeps a side, `facing screen-left` or `facing screen-right`. The focus uses the same terms as the view fragment that opens the prompt, so the two sentences cannot disagree. The near shoulder of an OTS shot is named as foreground and gets no screen side, because the guide draws it wrapped around the frame edge instead of standing on the floor.
 
 Two wording rules:
 
@@ -137,6 +156,7 @@ Inspect the returned picture against the document, not against taste. Every row 
 | View | When the focus is a character, the view matches `yawName` and the prompt's view phrase: front, three-quarter, profile, three-quarter back, or back, with the face hidden on a back view. | Retry within image-maker's allowance, then fall back. |
 | Dutch tilt | A nonzero `rollDeg` produces the stated tilt, and its direction matches the sign: a positive roll lowers the horizon to the right, a negative roll to the left. Zero roll keeps the horizon level. | Retry within image-maker's allowance, then fall back. |
 | Facing side | Applies only when the focus is a character and `yawName` is 3/4 or PROFILE, the only views whose prompt states a side: the subject looks toward `layoutShot().facingScreen`, screen-left or screen-right. FRONT, 3/4 BACK, and BACK are checked by the View row instead: face toward the camera, face mostly hidden, face not visible. A prop-only insert skips this row. A mirrored picture fails even when it is prettier. | Retry within image-maker's allowance, then fall back. |
+| Blocking | Every entry of the prompt's `Blocking:` sentence is drawn as stated: the left-to-right order of the named figures matches the prompt, each figure stands in its named pose, and it faces the named way. A mirrored pair — the two figures swapped, or both turned the same way when the prompt gives them opposite sides — fails, even when the picture is prettier. The near shoulder of an OTS shot stays a foreground shoulder and is not drawn as a standing full figure. | Retry within image-maker's allowance, then fall back. |
 | Subject count | Every `subjects[]` entry and the `focus` are present, and no invented principal figure appears. Background silhouettes do not count as subjects. | Retry within image-maker's allowance, then fall back. |
 | Letters | No letters, numbers, speech bubbles, captions, watermarks, logos, or UI anywhere in the picture, including on clothing and props. | Retry within image-maker's allowance, then fall back. |
 | Look | Hair, build, clothing, and distinguishing features match `characters[].look` in the compiled brief. No attached image supplies identity. | Invoke image-maker again within its allowance, then fall back. |
@@ -164,6 +184,8 @@ Rules:
 - `prompt` is the compiled string, unchanged. Do not store a shortened summary, a translated version, or a second prompt from a retry, because the retry uses the same text.
 - Keep the picture at a size that keeps the HTML practical, but never crop it to hide a failed check. If it must be scaled, scale the whole frame.
 - The delivery report names which panels were generated, which were supplied, and which stayed line art. A count without panel ids is not evidence.
+
+A scene's overhead floor-plan picture follows the same rules. Its brief is `compileFloorPlanPrompt(doc, sceneId)`, sent with no attachment. It passes inspection only when it is a straight top-down view, every prop and character in the scene appears, their positions and facing match the technical floor plan (`+z` toward the top), and it carries no letters, labels, or arrows. Store it as `scenes[].planImage` with the same `src`, `provenance`, and `prompt` fields; the technical plan stays on the board as the reference.
 
 ## 8. Failure and fallback
 

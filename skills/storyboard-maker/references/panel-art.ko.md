@@ -57,7 +57,7 @@ image-maker가 돌려주는 것:
 
 1. **구도를 계산한다.** `layoutShot(doc, sceneId, shotId)`를 호출하고 돌려받은 `pitchDeg`, `heightM`, `facingScreen`, `angleName`, `yawName`을 보관합니다. 그림이 맞춰야 하는 값은 대본의 서술이 아니라 이 값입니다. `facingScreen`은 초점이 인물일 때만 적용하고, 소품만 잡는 인서트에는 보는 방향이 없습니다.
 2. **가이드를 렌더한다.** `renderGuideSvg(doc, sceneId, shotId)`를 호출하고 돌려받은 SVG 문자열을 보관합니다. 가이드에는 인형, 바닥 격자, 지평선만 있고 화살표, 라벨, 메모는 없습니다. 빈 문자열이 오면 씬이나 샷 id가 틀린 것이므로 멈추고 문서를 고칩니다. 가이드는 검사자가 보는 구도 참고이며 스토리보드 쪽에 둡니다.
-3. **브리프를 컴파일한다.** `compilePanelPrompt(doc, sceneId, shotId)`를 호출하고 정확한 문자열을 보관합니다. 컴파일러는 샷 크기, 각도와 도수, 초점이 인물일 때의 보는 방향, 렌즈, 화면에 보이는 인물의 `look`, 액션 텍스트, 그림체 문장을 넣고 대사는 빼며 그림 안에 글자를 그리지 말라고 지시합니다. 사실 오류가 없는지 한 번 읽고, 그 뒤에는 바꾸지 않습니다.
+3. **브리프를 컴파일한다.** `compilePanelPrompt(doc, sceneId, shotId)`를 호출하고 정확한 문자열을 보관합니다. 컴파일러는 샷 크기, 그 크기의 크롭과 머리 위 여백, 각도와 도수, 초점이 인물일 때의 보는 방향, 렌즈, 화면에 보이는 인물의 `look`, 프레임에 든 인물마다 화면 위치·자세·방향을 주는 `Blocking:` 문장, 액션 텍스트, 그림체 문장을 넣고 대사는 빼며 그림 안에 글자를 그리지 말라고 지시합니다. 사실 오류가 없는지 한 번 읽고, 그 뒤에는 바꾸지 않습니다.
 4. **image-maker를 호출한다.** 컴파일한 문자열만 브리프로 넘기고 아무것도 붙이지 않습니다. 동작이 참고 이미지를 받더라도 어떤 참고 이미지도 허용하지 않습니다. 인물 일관성은 브리프 안의 `look` 문구가 전달합니다.
 5. **검수한다.** 돌아받은 그림을 읽을 수 있는 크기로 가이드와 나란히 보고 6절의 검사를 모두 수행합니다. 떨어진 그림은 넣지 않고, image-maker의 남은 허용량 안에서만 다시 호출하며, 아니면 대체합니다.
 6. **넣는다.** 통과한 그림을 7절 방식으로 `shots[].image`에 쓰고 다음 샷으로 넘어갑니다.
@@ -69,8 +69,8 @@ image-maker가 돌려주는 것:
 프롬프트는 영어로 쓰고 카메라 기하를 평범한 촬영 언어로 적습니다. 숫자는 패널의 카메라 줄과 대조할 수 있게 문구에 남깁니다. 컴파일된 문자열은 고정된 문장 순서를 따릅니다.
 
 ```text
-Storyboard panel, <size>[, <view>]. Camera <angle> <degrees>°, <height> height <metres> m, <focal>mm lens[, dutch angle, horizon tilted <degrees>° to the <right|left>].
-[<count> characters in frame: <name> (<look>); ... | Characters: <name> (<look>).]
+Storyboard panel, <size>[, <view>]. [Framing: <crop and headroom>.] Camera <angle> <degrees>°, <height> height <metres> m, <focal>mm lens[, dutch angle, horizon tilted <degrees>° to the <right|left>].
+[<count> characters in frame: <name> (<look>); ... | Characters: <name> (<look>).] [Blocking: <name> <screen side>, <pose>, <facing>; ...]
 Action: <action>. [Props in frame: <labels>.] Style: <style>.
 Do not draw any text, letters, numbers, captions, or speech bubbles in the image.
 ```
@@ -108,8 +108,27 @@ Do not draw any text, letters, numbers, captions, or speech bubbles in the image
 | `focalMm` 50 | `50mm lens` |
 | `focalMm` 85 | `85mm lens` |
 | `subjects` 둘 | `2 characters in frame: <name> (<look>); <name> (<look>)` |
+| 프레이밍 `size: ECU` | `framed from the chin to just above the head, tight on the face, small headroom, top of the head inside the frame` |
+| 프레이밍 `size: CU` | `framed from the shoulders to just above the head, small headroom, the whole head inside the frame` |
+| 프레이밍 `size: MCU` | `framed from mid-chest to just above the head, small headroom, top of the head fully inside the frame` |
+| 프레이밍 `size: MS` | `framed from the waist to just above the head, headroom above the head` |
+| 프레이밍 `size: COWBOY` | `framed from mid-thigh to just above the head, headroom above the head` |
+| 프레이밍 `size: MWS` | `framed from the knees to just above the head, headroom above the head` |
+| 프레이밍 `size: FS`, `WS` | `full figures head to feet with floor visible` |
+| 프레이밍 `size: ELS` | `small full figures in a wide environment with floor visible` |
+| 프레이밍 `size: OTS` | `over the near character's shoulder, near shoulder in the foreground, framed from mid-chest to just above the head with small headroom` |
+| 블로킹, 프레임 왼쪽 | `<name> on screen-left, <pose>, <facing>` |
+| 블로킹, 화면 중앙 | `<name> at the centre of frame, <pose>, <facing>` |
+| 블로킹, 프레임 오른쪽 | `<name> on screen-right, <pose>, <facing>` |
+| 블로킹 자세 | `blocking[].pose`에서 온 `standing`, `walking`, `sitting`, `reaching`, `crouching` |
+| 블로킹 방향 | `facing screen-left`, `facing screen-right`, `facing the camera`, `facing away from the camera` |
+| 블로킹, OTS의 가까운 어깨 | `<name> in the foreground, near shoulder only` |
 
-샷 크기와 뷰 조각이 첫 문장을 열고, 앵글·높이·렌즈 조각이 둘째 문장을 이루며 롤 조각이 그 문장을 이어 갑니다. 뷰 조각은 초점이 인물일 때만 나옵니다. 롤은 소수 한 자리로 적고 정수면 소수점 없이 적습니다.
+샷 크기와 뷰 조각이 첫 문장을 열고, 초점이 인물이면 프레이밍 조각이 그 뒤를 잇고, 앵글·높이·렌즈 조각이 다음 문장을 이루며 롤 조각이 그 문장을 이어 갑니다. 뷰 조각은 초점이 인물일 때만 나옵니다. 롤은 소수 한 자리로 적고 정수면 소수점 없이 적습니다.
+
+프레이밍 조각은 그 샷 크기가 실제로 그리는 크롭을 `FRAME_RANGES`에서 읽어 말하고 머리 위 여백을 다시 못 박습니다. 그래야 돌아온 그림이 정수리를 자르거나 몸을 다른 샷으로 다시 잡을 수 없습니다. 소품 초점에는 프레이밍 조각이 없습니다.
+
+`Blocking:` 문장은 프레임에 든 인물을 모두 배치합니다. 화면 위치는 가이드가 그리는 것과 같은 투영에서 옵니다. 인물의 머리와 가슴을 블로킹 자리에 투영하고, 프레임의 바깥 3분할이 위치를 정하며, 가운데 3분할에 든 인물은 다른 인물과의 순서로 자리를 정합니다. 그래서 중앙을 걸친 두 인물도 한 명은 화면 왼쪽, 한 명은 화면 오른쪽으로 읽힙니다. 방향은 인물의 `facingDeg`를 카메라와 견줘 정합니다. 카메라에서 15° 안쪽으로 돌아선 얼굴은 `facing the camera`, 120°를 넘게 돌아선 얼굴은 `facing away from the camera`이고, 그 사이 각도는 `facing screen-left` 또는 `facing screen-right`로 방향을 유지합니다. 초점은 프롬프트를 여는 뷰 조각과 같은 용어를 쓰므로 두 문장이 어긋날 수 없습니다. OTS의 가까운 어깨는 바닥에 선 인물이 아니라 프레임 가장자리를 감싸므로 화면 위치 없이 전경으로 적습니다.
 
 문구 규칙 두 가지:
 
@@ -137,6 +156,7 @@ Do not draw any text, letters, numbers, captions, or speech bubbles in the image
 | 뷰 | 초점이 인물이면 뷰가 `yawName`과 프롬프트의 뷰 조각에 맞습니다. 정면, 3/4, 측면, 3/4 뒷모습, 뒷모습 중 하나이고 뒷모습에서는 얼굴이 보이지 않습니다. | image-maker의 허용량 안에서 다시 호출, 그 뒤 대체. |
 | 사각 | `rollDeg`가 0이 아니면 말한 만큼 기울고 방향이 부호와 맞습니다. 양수 롤은 지평선이 오른쪽으로 내려가고 음수 롤은 왼쪽으로 내려갑니다. 롤이 0이면 지평선이 수평입니다. | image-maker의 허용량 안에서 다시 호출, 그 뒤 대체. |
 | 보는 방향 | 초점이 인물이고 `yawName`이 3/4 또는 PROFILE일 때만 적용합니다. 프롬프트가 방향을 말하는 뷰가 이 둘뿐입니다. 인물이 `layoutShot().facingScreen` 쪽, 즉 화면 왼쪽이나 화면 오른쪽을 봅니다. FRONT, 3/4 BACK, BACK은 뷰 행이 대신 확인합니다. 카메라 쪽 얼굴, 얼굴이 거의 가려짐, 얼굴이 보이지 않음입니다. 소품만 잡는 인서트는 이 행을 건너뜁니다. 더 예뻐도 좌우가 뒤집힌 그림은 실패입니다. | image-maker의 허용량 안에서 다시 호출, 그 뒤 대체. |
+| 블로킹 | 프롬프트의 `Blocking:` 문장에 적힌 대로 그려졌습니다. 이름이 붙은 인물의 화면 왼쪽·오른쪽 순서가 프롬프트와 같고, 각 인물이 적힌 자세로 서 있으며 적힌 방향을 봅니다. 두 인물의 자리가 바뀌었거나 프롬프트가 반대 방향을 준 둘이 같은 쪽을 보면 좌우가 뒤집힌 실패입니다. 더 예뻐도 통과가 아닙니다. OTS의 가까운 어깨는 전경 어깨로 남고 서 있는 전신으로 그려지지 않습니다. | image-maker의 허용량 안에서 다시 호출, 그 뒤 대체. |
 | 인물 수 | `subjects[]`의 모든 인물과 `focus`가 있고, 문서에 없는 주요 인물이 없습니다. 배경 실루엣은 인물 수에 넣지 않습니다. | image-maker의 허용량 안에서 다시 호출, 그 뒤 대체. |
 | 글자 | 그림 어디에도 글자, 숫자, 말풍선, 캡션, 워터마크, 로고, UI가 없습니다. 의상과 소품 위도 포함합니다. | image-maker의 허용량 안에서 다시 호출, 그 뒤 대체. |
 | 외형 | 머리, 체형, 의상, 구별 특징이 컴파일된 브리프의 `characters[].look`에 맞습니다. 첨부 이미지가 정체성을 대신하지 않습니다. | image-maker의 허용량 안에서 다시 호출, 그 뒤 대체. |
@@ -164,6 +184,8 @@ Do not draw any text, letters, numbers, captions, or speech bubbles in the image
 - `prompt`는 컴파일된 문자열 그대로입니다. 줄인 요약, 번역문, 재시도의 두 번째 프롬프트를 저장하지 않습니다. 재시도는 같은 문구를 쓰기 때문입니다.
 - HTML을 다루기 쉬운 크기로 유지하되, 실패한 검사를 숨기려고 그림을 자르지 않습니다. 줄여야 하면 프레임 전체를 줄입니다.
 - 전달 보고는 어느 패널이 생성되었고 어느 패널이 제공되었고 어느 패널이 선화로 남았는지 적습니다. 패널 id 없는 개수는 증거가 아닙니다.
+
+씬의 평면도 그림도 같은 규칙을 따릅니다. 브리프는 `compileFloorPlanPrompt(doc, sceneId)`이고 첨부 없이 보냅니다. 위에서 똑바로 내려다본 그림이고, 씬의 모든 소품과 인물이 나오고, 위치와 방향이 기술 평면도(`+z`가 위쪽)와 같고, 글자·라벨·화살표가 없을 때만 통과합니다. 같은 `src`, `provenance`, `prompt` 필드로 `scenes[].planImage`에 저장하고, 기술 평면도는 기준으로 보드에 남습니다.
 
 ## 8. 실패와 대체
 
