@@ -12,7 +12,7 @@ compatibility: Works best with repo inspection, official Vite and TanStack Route
 @rules/execution-model.md
 @rules/platform.md
 @rules/validation.md
-@references/official/current-docs-2026-06-02.md
+@references/official/current-docs-2026-11-04.md
 
 # Vite + TanStack Router Architecture Enforcement
 
@@ -102,7 +102,7 @@ Boundary examples:
 
 - Core (`SKILL.md`): trigger, contract, gate order, remediation scope, verification, stop condition.
 - Rules: `architecture-rules.md` plus seven topic files mapped in `reference_routing`.
-- References: `references/official/current-docs-2026-06-02.md` holds dated Vite and TanStack Router facts.
+- References: `references/official/current-docs-2026-11-04.md` holds dated Vite and TanStack Router facts.
 - Assets: `assets/evals/hyper-architecture-vite-cases.jsonl` holds trigger and behavior cases.
 - The skill is self-contained; it needs no other skill's path, document, or invocation.
 
@@ -142,7 +142,7 @@ Read `architecture-rules.md` before code changes or architecture findings. Then 
 | Loader/runtime boundaries, SSR-aware caveats, env safety | `rules/execution-model.md` |
 | `vite.config.ts`, router setup, generated files, env and alias rules | `rules/platform.md` |
 | Project and skill validation, readback checks | `rules/validation.md` |
-| Vite config, env handling, router plugin setup, route tree generation, search or load behavior that may have drifted | `references/official/current-docs-2026-06-02.md` |
+| Vite config, env handling, router plugin setup, route tree generation, search or load behavior that may have drifted | `references/official/current-docs-2026-11-04.md` |
 
 </reference_routing>
 
@@ -190,7 +190,7 @@ Routes -> Services -> External API
 | `const Route` without `export`? | BLOCKED. Must be `export const Route` |
 | Logic in page component? | BLOCKED. Extract to `-hooks/` |
 | Layout route missing `route.tsx` while it owns shared loader/beforeLoad/layout work? | BLOCKED |
-| Route with search params but no `validateSearch`? | BLOCKED. Use `zodValidator` |
+| Route with search params but no `validateSearch`? | BLOCKED. Pass a schema to `validateSearch` (Zod 4: the schema directly; Zod 3: `zodValidator` from `@tanstack/zod-adapter`) |
 | Route with loader but no `pendingComponent`? | WARNING. Recommended |
 
 ### Gate 3: Services
@@ -201,6 +201,7 @@ Routes -> Services -> External API
 | Direct `fetch`/`axios` in route or hook? | BLOCKED. Use service functions |
 | `services/index.ts` barrel export? | BLOCKED. Import directly from concrete files |
 | Missing explicit return type on service function? | BLOCKED |
+| Loader prefetch still calls `ensureQueryData`, `fetchQuery`, or `prefetchQuery`? | WARNING. Deprecated in TanStack Query 5.102+; use `queryClient.query({ ...options, staleTime: 'static' })` |
 
 ### Gate 4: Hooks
 
@@ -241,6 +242,7 @@ Routes -> Services -> External API
 | `routeTree.gen.ts` hand-edited? | BLOCKED. Treat as generated output |
 | Router setup hidden or inconsistent with SSR/manual rendering needs? | WARNING. Keep `src/router.tsx` explicit; use a fresh router factory when SSR/manual rendering exists |
 | Path alias or env setup relies on implicit behavior only? | WARNING. Keep `tsconfig`/Vite config and runtime validation explicit |
+| New config uses `esbuild`, `build.rollupOptions`, or object-form `manualChunks`? | WARNING. Vite 8 runs on Oxc and Rolldown, and plugin-react 6 declares `vite: ^8.0.0`, so use `oxc`, `build.rolldownOptions`, and Rolldown `output.codeSplitting` |
 
 Phase 3 — auto-remediation. Auto-fix directly when the issue is local, reversible, and low-risk:
 
@@ -259,9 +261,8 @@ Do not auto-apply broad or potentially breaking migrations without explicit just
 - A proven Vite + TanStack Router project, and an explicit Start-boundary note instead of Vite rules when `@tanstack/react-start` or `app.config.ts` is present.
 - Every touched page keeps `-components/` and `-hooks/`, and no `-functions/` folder appears.
 - `export const Route = createFileRoute(...)` in every touched file route.
-- Search params validated with `validateSearch` and `zodValidator`, and loaders kept public-safe and SSR-safe.
-- Every finding tied to a gate row and labelled BLOCKED or WARNING, with repo-local conventions labelled as such.
-- Verification evidence from the Step 5 checks that apply to the touched surface.
+- Search params validated with `validateSearch` (Zod 4 passes the schema directly, Zod 3 uses `zodValidator`), loader prefetch routed through `queryClient.query({ ...options, staleTime: 'static' })`, and loaders kept public-safe and SSR-safe.
+- Every finding tied to a gate row and labelled BLOCKED or WARNING, with repo-local conventions labelled as such; verification evidence comes from the Step 5 checks that apply to the touched surface.
 - `bash skills/hyper-architecture-vite/scripts/validate-hyper-architecture-vite-skill.sh` run when this skill folder itself changes.
 
 </required>

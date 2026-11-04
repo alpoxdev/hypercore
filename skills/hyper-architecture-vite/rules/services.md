@@ -13,7 +13,7 @@ In Vite projects there are no server functions. All data access goes through **s
 | Validation | Zod schemas | Input/output validation |
 | Query | service function + `useQuery` | GET requests |
 | Mutation | service function + `useMutation` | POST/PUT/DELETE |
-| Prefetch | `queryClient.ensureQueryData` | Loader prefetch |
+| Prefetch | `queryClient.query({ ...options, staleTime: 'static' })` | Loader prefetch |
 
 ---
 
@@ -131,9 +131,11 @@ export const deleteUser = async (id: string): Promise<void> => {
 
 ## Loader Prefetch Pattern
 
-> Use `ensureQueryData` in route loaders for public-safe prefetching. The loader may run during client navigation and can also participate in SSR/manual rendering if the project adds it later.
+> Use `queryClient.query({ ...options, staleTime: 'static' })` in route loaders for public-safe prefetching. The loader may run during client navigation and can also participate in SSR/manual rendering if the project adds it later.
 
-The current TanStack Router doc-recommended pairing is `ensureQueryData` in the loader and `useSuspenseQuery` in the component — the loader fills the cache so the component reads it without a loading flash:
+The current TanStack Router doc-recommended pairing is `queryClient.query({ ...queryOptions, staleTime: 'static' })` in the loader and `useSuspenseQuery` in the component: the loader fills the cache and marks it non-stale, so the component reads it without a loading flash.
+
+`ensureQueryData`, `fetchQuery`, and `prefetchQuery` are deprecated in TanStack Query 5.102+ and will be removed in the next major version. `query()` also differs from the old helpers: retries are off by default (`retry: false`) because no component re-renders to retry, it rejects with the fetch error, and it does not accept observer-only options such as `enabled`, `refetchOn*`, `throwOnError`, `suspense`, or `placeholderData`.
 
 ```typescript
 // routes/users/index.tsx
@@ -141,7 +143,7 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 
 export const Route = createFileRoute('/users/')({
   loader: ({ context: { queryClient } }) =>
-    queryClient.ensureQueryData(usersQueryOptions()),
+    queryClient.query({ ...usersQueryOptions(), staleTime: 'static' }),
   component: UsersPage,
 })
 
@@ -153,24 +155,24 @@ const UsersPage = (): JSX.Element => {
 // routes/users/$id/index.tsx
 export const Route = createFileRoute('/users/$id')({
   loader: ({ params: { id }, context: { queryClient } }) =>
-    queryClient.ensureQueryData(userQueryOptions(id)),
+    queryClient.query({ ...userQueryOptions(id), staleTime: 'static' }),
   component: UserDetailPage,
 })
 ```
 
 `useQuery` is fine for non-critical secondary data the loader did not await (e.g. analytics widgets); `useSuspenseQuery` stays the default for anything the loader prefetched.
 
-For mixed-priority pages, start a non-critical fetch with `queryClient.prefetchQuery(...)` (without awaiting) so it streams during SSR while the loader awaits the critical query:
+For mixed-priority pages, start a non-critical fetch without awaiting it so it streams during SSR while the loader awaits the critical query. `query()` rejects on failure, so swallow the error where the result is optional (`noop` is a local no-op such as `() => {}`):
 
 ```typescript
 // routes/dashboard/index.tsx
 export const Route = createFileRoute('/dashboard/')({
   loader: ({ context: { queryClient } }) => {
-    // Critical — block navigation until ready
-    const user = queryClient.ensureQueryData(userQueryOptions())
+    // Critical: block navigation until ready
+    const user = queryClient.query({ ...userQueryOptions(), staleTime: 'static' })
 
-    // Non-critical — start the request, do not await; streams during SSR
-    queryClient.prefetchQuery(analyticsQueryOptions())
+    // Non-critical: start the request, do not await, ignore failures
+    queryClient.query(analyticsQueryOptions()).catch(noop)
 
     return user
   },
@@ -231,6 +233,8 @@ import Stripe from 'stripe'
 export const stripe = new Stripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 ```
 
+Vite 8 changed how a `default` import resolves from CommonJS packages, so a CommonJS SDK wrapper that worked under Vite 7 can resolve differently. Fix the import or the package instead of pinning the old behavior; `legacy.inconsistentCjsInterop: true` is only a temporary escape hatch.
+
 ---
 
 ## Best Practices
@@ -241,6 +245,7 @@ export const stripe = new Stripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 | **Return types** | All service functions must have explicit return types |
 | **Validation** | Validate input with Zod before POST/PUT/PATCH |
 | **queryOptions** | Export `queryOptions` factories for reuse in loaders and hooks |
+| **Loader prefetch** | Use `queryClient.query({ ...options, staleTime: 'static' })`; `ensureQueryData`/`fetchQuery`/`prefetchQuery` are deprecated |
 | **No direct fetch** | Never call `fetch`/`axios` in routes or hooks - use service functions |
 | **Public-safe loaders** | Loaders only call services/query options and do not read secrets or private env values |
 | **Error handling** | Let errors propagate to `errorComponent`; handle 401/403 in interceptors |
@@ -249,4 +254,4 @@ export const stripe = new Stripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 
 ## Sources
 
-> No external source was used for this file. The TanStack Query and TanStack Router behavior stated here (query-option factories, loader prefetching through the query client, and the loader/component cache pairing) is this package's own guidance; the dated snapshot recorded in `references/official/current-docs-2026-06-02.md` (its own verification date is 2026-06-02) does not record these Query APIs, so it is not cited as their source. The `services/<domain>/` layout, the no-barrel-export rule, and the `src/services/<domain-or-provider>/` grouping are Hypercore/repo-local conventions. No page was re-fetched for this file. Rule text and repository-local paths checked 2026-09-21.
+> The TanStack Query loader-prefetch facts stated here (`queryClient.query({ ...options, staleTime: 'static' })`, the deprecation of `ensureQueryData`/`fetchQuery`/`prefetchQuery`, and the `query()` option surface) come from the dated snapshot recorded in `references/official/current-docs-2026-11-04.md`, whose own verification date is 2026-11-04. The query-option factory layout, the loader/component cache pairing guidance, and the error-handling advice are this package's own guidance. The `services/<domain>/` layout, the no-barrel-export rule, and the `src/services/<domain-or-provider>/` grouping are Hypercore/repo-local conventions. No page was re-fetched for this file. Rule text and repository-local paths checked 2026-11-04.
