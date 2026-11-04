@@ -113,6 +113,8 @@ function PreferencesPage() {
 - Query key에는 결과를 바꾸는 모든 입력을 포함한다. 그런 입력을 query function에 보이지 않게 capture하지 않는다.
 - `validateSearch`는 route search input을 검증해야 한다. `loaderDeps`에는 loader 출력을 바꾸는 모든 검증된 search dependency를 넣어야 한다. 같은 dependency를 query factory/key에서 사용한다. route parameter dependency는 이미 route match가 식별한다.
 
+아래 예시는 Zod v4를 전제하므로 schema를 `validateSearch`에 직접 넘깁니다. Zod v3 프로젝트는 `@tanstack/zod-adapter`의 `zodValidator`로 감싸야 하며, Zod v3에서 직접 형식을 쓰지 않고 한 route tree에 두 관례를 함께 두지 않습니다.
+
 ```ts
 import { z } from 'zod'
 
@@ -161,15 +163,16 @@ const mutation = useMutation({
 4. 의미 있는 route state의 pending, error, not-found 동작이 없다.
 5. client-side guard를 native capability의 authorization control로 제시한다.
 
-날짜가 기록된 API 근거는 [`../references/official/tanstack-vite-react-2026-07-30.ko.md`](../references/official/tanstack-vite-react-2026-07-30.ko.md)를, command-boundary 요구 사항은 [`tauri-ipc.ko.md`](tauri-ipc.ko.md)와 [`security.ko.md`](security.ko.md)를 읽는다.
+날짜가 기록된 API 근거는 [`../references/official/tanstack-vite-react-2026-11-04.ko.md`](../references/official/tanstack-vite-react-2026-11-04.ko.md)를, command-boundary 요구 사항은 [`tauri-ipc.ko.md`](tauri-ipc.ko.md)와 [`security.ko.md`](security.ko.md)를 읽는다.
 
 ## Sources
 
-> 링크 확인 2026-07-30.
+> 링크 확인 2026-11-04.
 
 | 주장 | 출처 |
 |---|---|
-| Router plugin 순서와 file-route 생성, typed router context, `defaultPreloadStaleTime`, `validateSearch`/`loaderDeps`, pending/error/not-found component | [tanstack-vite-react-2026-07-30.ko.md](../references/official/tanstack-vite-react-2026-07-30.ko.md); <https://tanstack.com/router/v1/docs/framework/react/guide/data-loading>; <https://tanstack.com/router/v1/docs/framework/react/guide/not-found-errors> |
-| `queryOptions`, `ensureQueryData`, `useSuspenseQuery`, query key 입력, staleness, invalidation 동작 | [tanstack-vite-react-2026-07-30.ko.md](../references/official/tanstack-vite-react-2026-07-30.ko.md); <https://tanstack.com/query/v5/docs/reference/QueryClient>; <https://tanstack.com/query/latest/docs/framework/react/guides/query-keys> |
-| 패키징된 정적 asset 경계와 native 작업의 Rust 측 권한 | [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md); <https://v2.tauri.app/security/> |
+| Router plugin 순서와 file-route 생성, typed router context, `defaultPreloadStaleTime`, `validateSearch`/`loaderDeps`, pending/error/not-found component | [tanstack-vite-react-2026-11-04.ko.md](../references/official/tanstack-vite-react-2026-11-04.ko.md); <https://tanstack.com/router/v1/docs/framework/react/guide/data-loading>; <https://tanstack.com/router/v1/docs/framework/react/guide/not-found-errors> |
+| Zod v4가 schema를 `validateSearch`에 직접 넘기고 Zod v3는 `zodValidator`가 필요하다는 사실 | <https://tanstack.com/router/latest/docs/framework/react/guide/search-params> |
+| `queryOptions`, `ensureQueryData`, `useSuspenseQuery`, query key 입력, staleness, invalidation 동작 | [tanstack-vite-react-2026-11-04.ko.md](../references/official/tanstack-vite-react-2026-11-04.ko.md); <https://tanstack.com/query/v5/docs/reference/QueryClient>; <https://tanstack.com/query/latest/docs/framework/react/guides/query-keys> |
+| 패키징된 정적 asset 경계와 native 작업의 Rust 측 권한 | [tauri-v2-2026-11-04.ko.md](../references/official/tauri-v2-2026-11-04.ko.md); <https://v2.tauri.app/security/> |
 | Route/page/module 소유권, 좁은 desktop adapter, client guard는 authorization이 아니라는 규칙 | 이 저장소의 규약과 안전 정책; 외부 출처 없음 |

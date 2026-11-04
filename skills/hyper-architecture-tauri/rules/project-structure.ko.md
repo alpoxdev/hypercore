@@ -1,6 +1,6 @@
 # 프로젝트 구조와 소유권
 
-> Tauri v2 애플리케이션의 renderer/Rust 경계를 도입하거나 검토할 때 이 규칙을 사용합니다. 먼저 날짜가 있는 근거를 읽습니다: [Tauri v2 근거](../references/official/tauri-v2-2026-07-30.ko.md), [TanStack + Vite + React 근거](../references/official/tanstack-vite-react-2026-07-30.ko.md).
+> Tauri v2 애플리케이션의 renderer/Rust 경계를 도입하거나 검토할 때 이 규칙을 사용합니다. 먼저 날짜가 있는 근거를 읽습니다: [Tauri v2 근거](../references/official/tauri-v2-2026-11-04.ko.md), [TanStack + Vite + React 근거](../references/official/tanstack-vite-react-2026-11-04.ko.md).
 
 ## 결정 요약
 
@@ -207,6 +207,7 @@ Path alias는 이 경계를 보존할 때만 사용합니다. Alias가 금지된
 | configured frontend output | Vite build | Source/config를 고치고 rebuild하며 `frontendDist`를 `build.outDir`와 정렬 |
 | `src-tauri/target/` | Cargo | Application source로 편집하거나 검토하지 않음 |
 | mobile tooling이 만든 `src-tauri/gen/**` | Tauri generator | 관련 Tauri command로 재생성 |
+| `tauri.conf.json`의 `app > appDirectoriesOverride` | Application team | Tauri와 해당 API를 쓰는 plugin의 `app_config_dir`, `app_data_dir`, `app_local_data_dir`, `app_cache_dir`, `app_log_dir` 및 `$APPCONFIG` 계열 path variable을 함께 옮긴다. 값을 바꾸면 persisted data, log path, asset scope를 다시 확인한다 |
 | `src-tauri/tauri.conf.json`, capability, permission, Rust source | Application team | 의도적으로 검토·편집 |
 | module `index.ts` | Module owner | 지원 surface만 export하고 모든 internal file을 그대로 노출하지 않음 |
 | lockfile | Repository policy 아래 package manager | 선언된 dependency 작업을 통해서만 변경 |
@@ -237,7 +238,7 @@ Folder migration을 Tauri v1 migration, permission 확대, dependency upgrade, w
 
 ## Sources
 
-> 링크 확인 2026-07-30.
+> 링크 확인 2026-11-04.
 
 공식 제약:
 

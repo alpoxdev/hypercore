@@ -92,7 +92,7 @@ Do not complete a touched change while any applicable gate below fails:
 1. **Mode gate:** The project/runtime mode is unknown, a missing stack layer is treated as complete adoption, or a full-stack TanStack project is treated as this packaged static SPA instead of being routed to a full-stack architecture workflow.
 2. **Boundary gate:** Browser modules, routes, loader state, or Query state are mapped to Tauri commands or native authority.
 3. **Secret gate:** A renderer-reachable path can read/exfiltrate credentials, private configuration, native filesystem/process access, or server-only dependencies.
-4. **IPC gate:** A new privileged command/event/plugin path lacks least privilege, validation, authorization, capability/permission/scope coverage, or safe error handling.
+4. **IPC gate:** A new privileged command/event/plugin path lacks least privilege, validation, authorization, capability/permission/scope coverage, or safe error handling, or the design relies on channel/large-response scoping the installed Tauri version does not provide.
 5. **Input gate:** Untrusted renderer, web, deep-link, event, or IPC data reaches native-sensitive behavior without validation and authorization.
 6. **Platform gate:** Static packaging, route generation, asset paths, CSP, Vite environment exposure, or capability configuration would fail or become unsafe outside development.
 7. **Authority gate:** The task needs credentials, native side effects, destructive actions, publication, release, or deployment without explicit authority.
