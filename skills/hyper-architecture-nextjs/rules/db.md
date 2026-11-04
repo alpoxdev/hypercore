@@ -10,6 +10,8 @@
 | `drizzle.config.ts` owns `schema` and `out` | Official Drizzle fact | Verify config points at the chosen schema and migration folder |
 | `generate` + `migrate` committed SQL flow | Official Drizzle workflow | Prefer unless the repo explicitly uses `push`, `pull`, or another workflow |
 | Connections/prepared statements outside handler scope | Official Drizzle serverless guidance | Apply where runtime can reuse module scope |
+| `drizzle-orm >= 0.45.2` | Official Drizzle security fix | Block adding or keeping a lower minor |
+| Migration history collisions checked | Official Drizzle Kit command | Run `drizzle-kit check` when several branches alter the schema |
 | DB folder placement under `src/db` | Hypercore local convention | Label as local convention, not official Next.js or Drizzle law |
 | DB access from client hooks/components | Safety policy | Block |
 
@@ -59,6 +61,8 @@ Rules:
 - Commit generated SQL migrations when the repo follows codebase-first migrations.
 - Treat `drizzle-kit push` as a schema-push alternative for explicit local/dev or project-approved workflows, not as a silent replacement for reviewed migrations.
 - Treat `drizzle-kit pull` as a database-first/introspection workflow and record when it is the project standard.
+- Run `drizzle-kit check` when several branches alter the schema, so generated migration history collisions surface before merge.
+- `drizzle-kit up` upgrades snapshots of previously generated migrations, and `drizzle-kit export` prints the schema as raw SQL DDL for review or external tooling.
 - Do not run production migrations from a Route Handler, Server Action, hook, or request lifecycle path.
 
 ## Runtime and Connection Lifecycle
@@ -66,7 +70,7 @@ Rules:
 - Put Drizzle client creation in a server-only module such as `src/db/client.server.ts`.
 - Add `import 'server-only'` or an equivalent boundary to DB client and repository modules.
 - Declare connection objects and prepared statements outside request handler scope when the runtime can reuse module scope.
-- Verify runtime compatibility before using DB code in Edge runtime surfaces. Many SQL drivers require Node.js runtime or provider-specific serverless drivers.
+- Assume the Node.js runtime. The Edge Runtime is deprecated, and Cache Components rejects the `runtime` export entirely, so pick a driver that works on Node.js or a provider-specific serverless driver rather than targeting an edge surface.
 - Server Components may call server-only DAL/repository functions. Client Components and hooks must not import DB modules.
 
 ## Relations, RQB, and Repositories
@@ -75,6 +79,13 @@ Rules:
 - Keep relation definitions near schema exports or in a clearly named schema relation file.
 - Repository helpers should hide query details and return DTO-ready data, not raw broad rows for client output.
 - Transaction-capable helpers should accept a transaction/client parameter when shared by multi-step writes.
+
+## Version and Security Floor
+
+- Pin `drizzle-orm` at 0.45.2 or newer. `0.45.2` fixed `sql.identifier()` and `sql.as()` escaping, closing a possible SQL injection path (CWE-89); earlier minors can emit unescaped identifiers.
+- `0.45.3` added the `drizzle-orm/netlify-db` driver, and `0.45.4` fixed postgres-js not using prepared queries on an explicit `.prepare(name)`.
+- The stable pair as of 2026-11-04 is `drizzle-orm@0.45.4` with `drizzle-kit@0.31.11`. The 1.0 line is still a release candidate and is not adopted here.
+- The documentation site leads with the v1.0 API (`p.pgTable("users", { id: p.serial().primaryKey() })`). Follow the installed version's column builders, which on 0.45 are `pgTable("users", { id: serial("id").primaryKey() })`.
 
 ## Validation Integrations
 
@@ -91,8 +102,10 @@ Do not treat Drizzle table definitions as sufficient user-input validation by th
 - [ ] Connections/prepared statements are not recreated inside request handlers when module reuse is available.
 - [ ] RQB usage registers the required schema/tables/relations at `drizzle()` initialization.
 - [ ] Validation integrations are used deliberately and do not replace boundary validation.
+- [ ] `drizzle-orm` is pinned at 0.45.2 or newer, and `drizzle-kit` matches the installed minor line.
+- [ ] Migration history is checked with `drizzle-kit check` when multiple branches change the schema.
 - [ ] Folder placement is labelled Hypercore local convention, not official Next.js law.
 
 ## Sources
 
-> No external sources were used in this file. Drizzle behavior is delegated to `references/official/drizzle-docs.md`, and Next.js server-boundary behavior to `references/official/nextjs-docs.md` (last verified 2026-05-24). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04 against `https://orm.drizzle.team/docs/migrations`, `https://orm.drizzle.team/docs/kit-overview`, `https://orm.drizzle.team/docs/drizzle-kit-check`, `https://orm.drizzle.team/docs/drizzle-kit-up`, `https://github.com/drizzle-team/drizzle-orm/releases/tag/0.45.2`, `https://github.com/drizzle-team/drizzle-orm/releases/tag/0.45.3`, and `https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config/runtime`. Drizzle facts also live in `references/official/drizzle-docs.md`, and Next.js server-boundary rules in `references/official/nextjs-docs.md`.

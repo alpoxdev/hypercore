@@ -68,7 +68,7 @@ For touched service code:
 1. Validate untrusted `FormData`, params, headers, search params, and JSON before use.
 2. Authenticate and authorize in the Server Action or delegated server-only service.
 3. Convert Drizzle rows, provider payloads, or internal records into minimal DTOs before crossing into client-visible output.
-4. Revalidate or refresh after writes with `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, or a documented alternative.
+4. Revalidate or refresh after writes with `updateTag`, `revalidateTag(tag, 'max')`, `revalidatePath`, `refresh`, or a documented alternative, and state whether the action response should include a same-roundtrip re-render.
 
 ## Review Checklist
 
@@ -82,4 +82,4 @@ For touched service code:
 
 ## Sources
 
-> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04 against `https://nextjs.org/docs/app/guides/data-security`, `https://nextjs.org/docs/app/getting-started/server-and-client-components`, `https://nextjs.org/docs/app/guides/server-actions`, and `https://nextjs.org/docs/app/api-reference/functions/revalidateTag`. The dated snapshot is `references/official/current-docs-2026-11-04.md`.

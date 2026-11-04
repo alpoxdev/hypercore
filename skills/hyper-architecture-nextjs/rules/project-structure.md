@@ -169,4 +169,4 @@ Add `import 'server-only'` to modules that must never enter the client graph, es
 
 ## Sources
 
-> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04 against `https://nextjs.org/docs/app/getting-started/project-structure`, `https://nextjs.org/docs/app/api-reference/file-conventions`, and `https://nextjs.org/docs/app/api-reference/file-conventions/src`. The dated snapshot is `references/official/current-docs-2026-11-04.md`.

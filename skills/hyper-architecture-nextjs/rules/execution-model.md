@@ -55,6 +55,16 @@ Avoid:
 
 Context providers should wrap only the subtree that needs them. This preserves more of the tree for static optimization and keeps client bundles smaller.
 
+React 19.3 relaxes one part of that rule: a Server Component can import and render a Context object from a `'use client'` module directly, as `<Context value={...}>`, without an intermediate provider component. Use the direct form when the wrapper only forwards a value, because it removes a component from the tree without widening the client boundary. The boundary is still the `'use client'` module that defines the Context, so keep the value it receives serializable and minimal.
+
+## Navigation and State Preservation
+
+With Cache Components enabled, Next.js wraps visited routes in React `<Activity mode="hidden">` instead of unmounting them. Client state survives a navigation and reappears when the user returns.
+
+- Effects are cleaned up while a route is hidden and recreated when it becomes visible again. A hook that assumes a single mount lifetime across navigation is wrong under this model.
+- Assertions that depend on unmount cleanup, such as dropdown or dialog dismissal, must be written against the hide/visible transition instead.
+- Next.js keeps a few recently visited routes hidden and removes older ones from the DOM, so do not rely on hidden routes staying mounted indefinitely.
+
 ## Server-Only and Client-Only Protection
 
 Use `import 'server-only'` for modules that must never run in the client environment:
@@ -71,9 +81,10 @@ Use client-only wrappers for browser-dependent third-party components that do no
 - `'use client'` appears only where needed
 - Client Components do not reach server-only modules
 - Props crossing the server/client boundary are narrow and serializable
-- Providers are placed as deep as practical
+- Providers are placed as deep as practical, and value-only wrappers use direct `<Context value>` rendering where the React 19.3 form applies
+- Effects and cleanup logic account for hidden routes instead of assuming unmount
 - Third-party browser-only UI is wrapped behind a clear Client Component boundary
 
 ## Sources
 
-> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04 against `https://nextjs.org/docs/app/getting-started/server-and-client-components`, `https://nextjs.org/docs/app/guides/server-and-client-boundary`, `https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents`, `https://nextjs.org/docs/app/guides/preserving-ui-state`, and `https://react.dev/blog/2026/09/09/react-19-3`. The dated snapshot is `references/official/current-docs-2026-11-04.md`.

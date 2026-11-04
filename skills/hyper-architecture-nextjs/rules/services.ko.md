@@ -68,7 +68,7 @@ touched service code에서는:
 1. untrusted `FormData`, params, headers, search params, JSON을 사용 전에 validate합니다.
 2. Server Action 또는 delegated server-only service에서 authenticate 및 authorize합니다.
 3. client-visible output으로 넘어가기 전에 Drizzle rows, provider payloads, internal records를 minimal DTO로 변환합니다.
-4. write 후에는 `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, 또는 문서화된 대안으로 revalidate/refresh합니다.
+4. write 후에는 `updateTag`, `revalidateTag(tag, 'max')`, `revalidatePath`, `refresh`, 또는 문서화된 대안으로 revalidate/refresh하고, action 응답에 같은 라운드트립 재렌더가 포함되어야 하는지 밝힙니다.
 
 ## Review Checklist
 
@@ -82,4 +82,4 @@ touched service code에서는:
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Next.js 동작은 `references/official/nextjs-docs.md`(last verified 2026-05-24)와 `references/official/current-docs-2026-06-02.md`(스냅샷 날짜 2026-06-02)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.
+> 확인 2026-11-04. `https://nextjs.org/docs/app/guides/data-security`, `https://nextjs.org/docs/app/getting-started/server-and-client-components`, `https://nextjs.org/docs/app/guides/server-actions`, `https://nextjs.org/docs/app/api-reference/functions/revalidateTag`를 확인했습니다. 날짜가 붙은 스냅숏은 `references/official/current-docs-2026-11-04.md`입니다.

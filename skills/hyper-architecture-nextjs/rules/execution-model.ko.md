@@ -55,6 +55,16 @@ Server Components에서 Client Components로 전달되는 props는 serializable�
 
 Context providers는 필요한 subtree만 감싸야 합니다. 이렇게 하면 tree의 더 많은 부분을 static optimization 대상으로 유지하고 client bundle을 줄일 수 있습니다.
 
+React 19.3은 이 규칙의 한 부분을 풉니다. Server Component가 `'use client'` 모듈에서 Context 객체를 import해 `<Context value={...}>`처럼 중간 provider 컴포넌트 없이 직접 렌더링할 수 있습니다. wrapper가 값만 전달한다면 이 직접 형식을 씁니다. client 경계를 넓히지 않고 tree에서 컴포넌트 하나를 덜기 때문입니다. 경계는 여전히 Context를 정의한 `'use client'` 모듈이므로, 그 모듈이 받는 값은 직렬화 가능하고 작게 유지합니다.
+
+## Navigation and State Preservation
+
+Cache Components가 켜지면 Next.js는 방문한 route를 unmount하지 않고 React `<Activity mode="hidden">`로 감쌉니다. client 상태는 navigation을 넘겨 살아남고 사용자가 돌아오면 다시 나타납니다.
+
+- route가 숨겨지는 동안 effect는 정리되고 다시 보일 때 재생성됩니다. navigation을 넘어 mount 수명이 한 번이라고 가정하는 hook은 이 모델에서 틀립니다.
+- dropdown이나 dialog 닫힘처럼 unmount 정리에 기대는 동작은 hide/visible 전환을 기준으로 작성합니다.
+- Next.js는 최근 방문 route 몇 개만 hidden으로 유지하고 더 오래된 것은 DOM에서 제거하므로, hidden route가 무기한 mount된 채 남는다고 가정하지 않습니다.
+
 ## Server-Only and Client-Only Protection
 
 client environment에서 절대 실행되면 안 되는 modules에는 `import 'server-only'`를 사용합니다:
@@ -71,9 +81,10 @@ browser-dependent third-party components가 compatible client entry point를 제
 - `'use client'`가 필요한 곳에만 존재
 - Client Components가 server-only modules에 접근하지 않음
 - server/client boundary를 넘는 props가 좁고 serializable함
-- Providers가 가능한 깊게 배치됨
+- Providers가 가능한 깊게 배치되고, 값만 전달하는 wrapper는 React 19.3 형식이 맞으면 `<Context value>` 직접 렌더를 씀
+- effect와 정리 로직이 unmount를 가정하지 않고 hidden route를 고려함
 - third-party browser-only UI가 명확한 Client Component boundary 뒤에 있음
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Next.js 동작은 `references/official/nextjs-docs.md`(last verified 2026-05-24)와 `references/official/current-docs-2026-06-02.md`(스냅샷 날짜 2026-06-02)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.
+> 확인 2026-11-04. `https://nextjs.org/docs/app/getting-started/server-and-client-components`, `https://nextjs.org/docs/app/guides/server-and-client-boundary`, `https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents`, `https://nextjs.org/docs/app/guides/preserving-ui-state`, `https://react.dev/blog/2026/09/09/react-19-3`를 확인했습니다. 날짜가 붙은 스냅숏은 `references/official/current-docs-2026-11-04.md`입니다.

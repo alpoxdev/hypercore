@@ -18,10 +18,22 @@ Server code can read runtime env values during dynamic rendering. Do not confuse
 
 ## Cache Components and Route Segment Config
 
-- `cacheComponents: true` is the Next.js 16+ unified switch for Cache Components, PPR, `useCache`, and `dynamicIO` behavior.
-- When `cacheComponents` is enabled, v16 removes `dynamic`, `revalidate`, and `fetchCache` route segment options; use the Cache Components model instead.
-- Current route segment options include `dynamicParams`, `runtime`, `preferredRegion`, and `maxDuration`; they affect Server Component pages, layouts, and Route Handlers.
-- `runtime` defaults to `'nodejs'`; `runtime: 'edge'` is a deployment/platform decision that must be verified for the libraries and APIs used.
+- Cache Components is the recommended default since Next.js 16.4. It is enabled with two flags: `cacheComponents: true` and `partialPrefetching: true`. `partialPrefetching` without `cacheComponents` throws at config validation, and leaving `partialPrefetching` unset logs a warning.
+- `cacheComponents` is the Next.js 16 unified switch for Cache Components, PPR, `useCache`, and `dynamicIO` behavior.
+- When `cacheComponents` is enabled, v16 removes `dynamic`, `dynamicParams`, `revalidate`, and `fetchCache` route segment options; use the Cache Components model instead. `dynamicParams` stays valid in apps that have not enabled Cache Components.
+- Current route segment options:
+
+| Option | Type | Default |
+|---|---|---|
+| `dynamicParams` | `boolean` | `true` |
+| `runtime` | `'nodejs' \| 'edge' (deprecated)` | `'nodejs'` |
+| `preferredRegion` | `'auto' \| 'global' \| 'home' \| string \| string[] (deprecated)` | `'auto'` |
+| `maxDuration` | `number` | Set by deployment platform |
+| `ensureStatic` (Cache Components only) | `'auto' \| 'shell' \| 'prefetch' \| 'navigation' \| false` | `'auto'` |
+
+- `ensureStatic` sets the static requirement for the App Shell, per-link prefetch, or complete route. A layout applies its level to every route below it, a child segment may only be stricter, and parallel slots rendered together must agree. `'navigation'` on a dynamic route requires `generateStaticParams`.
+- `instant` (v16.3 stable) configures Instant Navigation validation, and `prefetch` (v16.3 stable) configures per-segment prefetching with `'partial'` and `'force-disabled'`. Both require Cache Components and cannot be exported from a Client Component.
+- `runtime` defaults to `'nodejs'` and `'edge'` is deprecated. Remove the `runtime` export from route files, including `runtime: 'edge'`; with Cache Components, remove `runtime = 'nodejs'` as well, because Cache Components requires the Node.js runtime and rejects the segment config.
 - Deployment platforms may use `maxDuration`; document changes that alter execution limits.
 
 ## Proxy
@@ -33,22 +45,33 @@ Server code can read runtime env values during dynamic rendering. Do not confuse
 - Matcher values must be static constants so Next.js can analyze them at build time.
 - Do not rely on shared modules or globals inside Proxy.
 - Exclude API routes, metadata, static surfaces, image optimization, and public assets from broad matchers when they should bypass Proxy.
+- A negative matcher does not stop Proxy from running for `_next/data` requests.
+- `revalidateTag` cannot be called from Proxy.
 - Server Functions are POST requests to the route where they are used; matcher changes can silently remove Proxy coverage, so auth/authz must still live inside the Server Function or DAL.
 
 ## Important Proxy Note
 
-The old `middleware` file convention is deprecated and has been renamed to `proxy`. Do not add fresh `middleware.ts` files for new work. Use the official `npx @next/codemod@canary middleware-to-proxy .` codemod for migrations when needed. Proxy defaults to the Node.js runtime and does not accept a `runtime` config option.
+The old `middleware` file convention is deprecated and has been renamed to `proxy`. Do not add fresh `middleware.ts` files for new work. Use the official `npx @next/codemod@canary middleware-to-proxy .` codemod for migrations when needed. Proxy defaults to the Node.js runtime and rejects a `runtime` config option; setting one throws.
 
 ## `next.config.*`
 
 Keep config changes explicit and intentional. Review carefully when changing:
 
 - `typedRoutes`
-- `serverActions.allowedOrigins`
-- `cacheComponents`, `cacheLife`, `cacheHandlers`, or experimental `authInterrupts`
+- `cacheComponents` and `partialPrefetching` (enable together)
+- `serverActions` under `experimental`: `allowedOrigins` and `bodySizeLimit`
+- `cacheLife` and `cacheHandlers`
+- `experimental.authInterrupts` and `experimental.instantInsights`
 - route segment config strategy, especially removed v16 options under `cacheComponents`
 - redirect and rewrite rules
 - output and deployment settings
+
+## Server Action Deployment Settings
+
+- `experimental.serverActions.allowedOrigins` compares the `Origin` host against `x-forwarded-host` or `host`. `*` matches one label and `**` matches one or more; ports must be written out, and partial replacement is not supported.
+- A request with no `Origin` header at all is allowed through with a warning rather than rejected.
+- `experimental.serverActions.bodySizeLimit` defaults to 1MB and applies to the raw request body, including multipart overhead.
+- Action IDs rotate at most every 14 days, so keep `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` stable across instances and prefer rolling deploys.
 
 ## Recommended Platform Checks
 
@@ -61,9 +84,12 @@ Keep config changes explicit and intentional. Review carefully when changing:
 - `.env*` handling matches Next.js behavior
 - Client code sees only `NEXT_PUBLIC_` env vars
 - Cache Components and removed v16 route segment config options are not mixed accidentally
+- `cacheComponents` and `partialPrefetching` are enabled together
+- `runtime` exports are removed rather than set
 - Proxy is truly justified, statically matched, and narrowly scoped
+- Server Action origin, body-size, and encryption-key settings are deliberate
 - `next.config.*` changes are intentional and explained
 
 ## Sources
 
-> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04 against `https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config`, `https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config/ensureStatic`, `https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config/instant`, `https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config/prefetch`, `https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config/runtime`, `https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents`, `https://nextjs.org/docs/app/api-reference/config/next-config-js/partialPrefetching`, `https://nextjs.org/docs/app/api-reference/config/next-config-js/serverActions`, `https://nextjs.org/docs/app/api-reference/file-conventions/proxy`, `https://nextjs.org/docs/app/guides/server-actions`, and `https://nextjs.org/docs/app/guides/environment-variables`. The dated snapshot is `references/official/current-docs-2026-11-04.md`.

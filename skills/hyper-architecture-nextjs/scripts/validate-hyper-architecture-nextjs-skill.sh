@@ -51,8 +51,8 @@ required=(
   'rules/platform.ko.md'
   'references/official/nextjs-docs.md'
   'references/official/nextjs-docs.ko.md'
-  'references/official/current-docs-2026-06-02.md'
-  'references/official/current-docs-2026-06-02.ko.md'
+  'references/official/current-docs-2026-11-04.md'
+  'references/official/current-docs-2026-11-04.ko.md'
   'references/official/drizzle-docs.md'
   'references/official/drizzle-docs.ko.md'
   'rules/validation.md'
@@ -80,9 +80,9 @@ check_phrases() { # $1 = relative file, rest = required phrases
   done
 }
 
-check_phrases 'SKILL.md' 'cacheComponents' 'updateTag' 'Route Handlers' 'Proxy' 'Server Action' 'rules/project-structure.md' 'rules/services.md' 'rules/hooks.md' 'rules/db.md' 'references/official/drizzle-docs.md' 'instruction_contract' 'activation_examples' 'current-docs-2026-06-02'
-check_phrases 'SKILL.ko.md' 'cacheComponents' 'updateTag' 'Route Handlers' 'Proxy' 'Server Action' 'rules/project-structure.ko.md' 'rules/services.ko.md' 'rules/hooks.ko.md' 'rules/db.ko.md' 'references/official/drizzle-docs.ko.md' 'instruction_contract' 'activation_examples' 'current-docs-2026-06-02'
-check_phrases 'architecture-rules.md' 'Current Official Baselines' 'latest checked Next.js 16' 'cacheComponents' 'connection()' 'updateTag' 'middleware' 'Layer Taxonomy' 'src/modules' 'src/db' 'Drizzle schema/config/migrations' 'rules/project-structure.md' 'rules/services.md' 'rules/hooks.md' 'rules/db.md' 'current-docs-2026-06-02'
+check_phrases 'SKILL.md' 'cacheComponents' 'updateTag' 'Route Handlers' 'Proxy' 'Server Action' 'rules/project-structure.md' 'rules/services.md' 'rules/hooks.md' 'rules/db.md' 'references/official/drizzle-docs.md' 'instruction_contract' 'activation_examples' 'current-docs-2026-11-04'
+check_phrases 'SKILL.ko.md' 'cacheComponents' 'updateTag' 'Route Handlers' 'Proxy' 'Server Action' 'rules/project-structure.ko.md' 'rules/services.ko.md' 'rules/hooks.ko.md' 'rules/db.ko.md' 'references/official/drizzle-docs.ko.md' 'instruction_contract' 'activation_examples' 'current-docs-2026-11-04'
+check_phrases 'architecture-rules.md' 'Current Official Baselines' 'latest checked Next.js 16' 'cacheComponents' 'connection()' 'updateTag' 'middleware' 'Layer Taxonomy' 'src/modules' 'src/db' 'Drizzle schema/config/migrations' 'rules/project-structure.md' 'rules/services.md' 'rules/hooks.md' 'rules/db.md' 'current-docs-2026-11-04'
 check_phrases 'architecture-rules.ko.md' '현재 공식 기준선' 'Cache Components' 'connection()' 'updateTag' 'middleware' 'Layer Taxonomy' 'src/modules' 'src/db' 'Drizzle schema/config/migrations' 'rules/project-structure.ko.md' 'rules/services.ko.md' 'rules/hooks.ko.md' 'rules/db.ko.md'
 check_phrases 'rules/project-structure.md' 'Project Structure' 'Nested Shared Folder Grouping' 'src/modules' 'src/lib' 'src/services' 'src/db' 'src/server' 'src/integrations' 'src/config' 'direct leaf' 'private folders' 'Hypercore local convention' 'not official Next.js requirement'
 check_phrases 'rules/project-structure.ko.md' 'Project Structure' 'Nested Shared Folder Grouping' 'src/modules' 'src/services' 'src/db' 'src/server' 'src/integrations' 'src/config' 'direct leaf' 'private folders' 'Hypercore local convention' 'official Next.js requirement'
@@ -97,12 +97,12 @@ check_phrases 'rules/data-fetching.md' '`fetch` requests are not cached by defau
 check_phrases 'rules/server-actions.md' 'reachable POST entry point' 'useActionState' 'refresh' 'updateTag'
 check_phrases 'rules/route-handlers.md' 'HTTP method exports' 'RouteContext' 'params' 'cacheComponents' 'use cache' 'NextResponse.next()'
 check_phrases 'rules/platform.md' 'Route Segment Config' "runtime: 'edge'" 'proxy.ts' 'Node.js runtime' 'middleware'
-check_phrases 'references/official/nextjs-docs.md' 'Last verified: 2026-05-24' 'Next.js 16.2.6' 'https://r.jina.ai/https://nextjs.org/docs/' 'use cache: remote' 'Route Segment Config' 'Authentication' 'authInterrupts'
-check_phrases 'references/official/current-docs-2026-06-02.md' 'checked_at: 2026-06-02' '/vercel/next.js' 'Next.js 16' 'cacheComponents' 'use cache: remote' 'Server Actions' 'Route Handlers' 'proxy.ts' 'NEXT_PUBLIC_' 'not official Next.js requirement'
+check_phrases 'references/official/nextjs-docs.md' 'Last verified: 2026-11-04' 'Next.js 16.4.5' 'https://r.jina.ai/https://nextjs.org/docs/' 'use cache: remote' 'Route Segment Config' 'Authentication' 'authInterrupts'
+check_phrases 'references/official/current-docs-2026-11-04.md' 'checked_at: 2026-11-04' '/vercel/next.js' 'Next.js 16' 'cacheComponents' 'use cache: remote' 'Server Actions' 'Route Handlers' 'proxy.ts' 'NEXT_PUBLIC_' 'not official Next.js requirement'
 check_phrases 'references/official/drizzle-docs.md' 'Official Drizzle Docs Summary' 'Drizzle schema' 'drizzle.config.ts' 'out' 'drizzle-kit generate' 'drizzle-kit migrate' 'push' 'pull' 'prepared statement' 'RQB' 'validation integrations'
 check_phrases 'references/official/drizzle-docs.ko.md' 'Official Drizzle Docs Summary' 'Drizzle schema' 'drizzle.config.ts' 'out' 'drizzle-kit generate' 'drizzle-kit migrate' 'push' 'pull' 'prepared statement' 'RQB' 'validation integrations'
-check_phrases 'rules/validation.md' 'Skill Anatomy Validation' 'current-docs-2026-06-02' 'src/services' 'src/modules' 'src/db' 'direct leaf' 'Deprecated feature-folder guidance is absent' 'Korean parity' 'source-only' 'no adapter'
-check_phrases 'rules/validation.ko.md' 'Skill Anatomy Validation' 'current-docs-2026-06-02' 'src/services' 'src/modules' 'src/db' 'direct leaf' 'Deprecated feature-folder guidance is absent' 'Korean parity' 'source-only' 'no adapter'
+check_phrases 'rules/validation.md' 'Skill Anatomy Validation' 'current-docs-2026-11-04' 'src/services' 'src/modules' 'src/db' 'direct leaf' 'Deprecated feature-folder guidance is absent' 'Korean parity' 'source-only' 'no adapter'
+check_phrases 'rules/validation.ko.md' 'Skill Anatomy Validation' 'current-docs-2026-11-04' 'src/services' 'src/modules' 'src/db' 'direct leaf' 'Deprecated feature-folder guidance is absent' 'Korean parity' 'source-only' 'no adapter'
 if [ ! -e "$root/SKILL.md" ]; then
   echo "hyper-architecture-nextjs: cannot read $root/SKILL.md" >&2
   exit 1
