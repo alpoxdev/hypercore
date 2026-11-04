@@ -1,5 +1,7 @@
 # Prompt Pack Workflow
 
+**Purpose**: Order the draft, refactor, and version decisions for a prompt artifact. **Read when**: producing or revising one.
+
 ## Draft
 
 1. Confirm the prompt will be reused.

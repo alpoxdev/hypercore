@@ -5,8 +5,8 @@ compatibility: Needs git with worktree support, a shell for the repository's own
 ---
 
 @rules/execution-loop.md
-@rules/verification-gates.md
 @rules/worktree-and-delivery.md
+@rules/verification-gates.md
 
 # Hyper Execute Skill
 
@@ -58,7 +58,7 @@ When no plan file exists, do not create one. Stop and state that a decision-comp
 | Loop | One bounded loop per row: dispatch, verify, feedback, retry. Caps and stop rules live in `rules/verification-gates.md`. No unbounded retry, no self-graded pass. |
 | Output | Updated plan checkboxes and appended follow-up rows, `.hyper/execute/<slug>/state.json`, `ledger.jsonl`, evidence files, landed commits, and a completion block. |
 | Verification | The five gates per row, an independent verifier per done claim, and the plan's final verification wave. Only a `confirmed` verdict closes a row. |
-| Stop condition | Every top-level row is `[x]` or `[~]`, the final verification wave ran, cleanup finished, and the completion block was printed; or a stop rule fired and the gap was reported. |
+| Stop condition | Every top-level row is `[x]` or `[~]`, the final verification wave ran, cleanup finished, and the completion block was printed; or the user stopped the run at a named wave and the open rows were reported; or a stop rule fired and the gap was reported. |
 
 </instruction_contract>
 
@@ -217,7 +217,7 @@ Phase rules:
 - [ ] Every top-level row is registered as a todo, and each is `in_progress` only while it is being worked.
 - [ ] The wave ran inside its own verified worktree, and the main checkout changed only by the landing merge and `.hyper/` writes.
 - [ ] Every `- [~]` row closed its transitive dependents at the same moment, each with `Unmet: dependency <n> blocked` and no attempt counted.
-- [ ] Follow-up rows stayed within the run cap of ten, and each carries all nine nested fields plus a wave and dependency-matrix entry.
+- [ ] Follow-up rows stay within the run cap of ten, and each carries all nine nested fields plus a wave and dependency-matrix entry.
 - [ ] Staging used only the row's declared `Write scope` paths, and `--in-place` started from a clean checkout.
 - [ ] Every worker message carried the eight required fields.
 - [ ] Every dispatch was monitored to a named completion condition without polling or sleeping.
@@ -226,7 +226,7 @@ Phase rules:
 - [ ] Every `- [~]` row carries an `Unmet:` line and its unverified changes were reverted before landing.
 - [ ] Delivery matched the flag in force; nothing was pushed or opened without a flag.
 - [ ] Cleanup ran without `--force`, and the branch rule was applied.
-- [ ] The final verification wave ran and the completion block was printed.
+- [ ] The final verification wave ran and the completion block was printed, or a run the user stopped at a named wave reported its open rows.
 
 </validation>
 

@@ -1,5 +1,7 @@
 # Anti-Patterns
 
+**목적**: prompt artifact가 갖고 나가면 안 되는 실패 유형을 모아 둔다. **읽는 조건**: 어떤 prompt artifact든 마무리하기 전.
+
 - success criteria, scope, authority, output contract, verification이 없는 persona 전용 prompt.
 - hidden chain-of-thought나 private scratchpad 공개를 요구하는 prompt.
 - evidence여야 할 출처 text를 instruction으로 취급하는 것.

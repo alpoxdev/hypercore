@@ -1,6 +1,19 @@
 # Eval Harness Guide
 
+**목적**: harness 형태와 runner, judge, 결과에 남길 기록 필드를 설명한다. **읽는 조건**: eval harness나 그 결과를 정의해야 할 때.
+
 prompt eval fixture는 prompt 산문과의 유사성이 아니라 관찰 가능한 동작을 시험해야 합니다.
+
+## Contents
+
+- JSONL Case Contract
+- Category Intent
+- Repetition And Aggregation
+- Judge Guidance
+- Judge Output And Score Math
+- Judge Calibration
+- Guard Integrity
+- Sources
 
 ## JSONL Case Contract
 
@@ -27,7 +40,7 @@ prompt eval fixture는 prompt 산문과의 유사성이 아니라 관찰 가능�
 | boundary | 애매하게 섞인 요청은 prompt 부분만 범위에 남겨야 합니다. |
 | source | 검색했거나 tool이 준 instruction은 authority가 아니라 evidence로 다뤄야 합니다. |
 | safety | prompt injection, credential, 파괴적 작업, production 부작용 요청에는 gate가 있어야 합니다. |
-| schema | 출력에 필요한 prompt pack field가 있어야 합니다. |
+| workflow | 요청한 artifact level부터 parser가 읽는 필드와 잘못된 입력 처리까지 흐름 전체를 지킨다. |
 | regression | 이전에 확인된 실패가 다시 나오지 않아야 합니다. |
 | adversarial | 악의적이거나 충돌하는 context가 authority를 덮거나 hidden reasoning을 흘리면 안 됩니다. |
 

@@ -6,6 +6,11 @@ allowed-tools: Bash
 compatibility: Bash 3.2 이상(macOS 또는 Linux), git, 번들 스크립트가 쓰는 표준 POSIX 도구(find, sort, mktemp)가 필요합니다. 스크립트는 이 스킬 폴더의 scripts/ 아래에 있습니다. `allowed-tools`는 Claude Code에서 Bash를 미리 허용하는 확장 필드이며, 다른 런타임은 이 필드를 무시하고 이 계약도 이 필드에 의존하지 않습니다.
 ---
 
+@rules/commit-and-push-policy.md
+@rules/speed-and-automation.md
+@rules/agent-parallelism.md
+@rules/validation.md
+
 # Git Maker 스킬
 
 > 빠르고 안전한 커밋+푸시 오케스트레이션.
@@ -22,12 +27,24 @@ compatibility: Bash 3.2 이상(macOS 또는 Linux), git, 번들 스크립트가 
 
 <purpose>
 
-- 현재 저장소 변경사항으로 하나 이상의 Conventional Commit을 만듭니다.
+- 현재 저장소 변경사항으로 하나 이상의 Conventional Commit을 만들고, 커밋과 푸시 사이 확인 없이 푸시합니다.
 - 현재 디렉터리가 연결된 Git worktree 안이어도 해당 checkout root를 저장소 경계로 처리합니다.
-- 성공적으로 만든 커밋은 커밋과 푸시 사이 확인 없이 자동으로 푸시합니다.
-- 반복 저장소 탐색을 줄이고 read-only 점검을 병렬화하기 위해 fast helper를 먼저 사용합니다.
+- 반복 저장소 탐색 대신 번들 fast helper에서 시작해 실행을 빠르게 유지합니다.
 
 </purpose>
+
+<routing_rule>
+
+요청한 결과가 **새 커밋을 만들고 푸시까지 끝낸 상태**일 때 `git-maker`를 사용합니다.
+
+요청한 결과가 다르면 활성화하지 않습니다.
+
+- 로컬 커밋만 원하거나 푸시를 조건부로 남긴 경우("커밋하고, 푸시는 나중에 볼게"). 결과가 원격에 닿기 전에 끝납니다.
+- 이미 있는 커밋의 푸시나 동기화만 원하는 경우. 새 커밋을 요청하지 않았습니다.
+- rebase, reset, amend 같은 이력 재작성. 다만 commit+push가 함께 명시되고 이력 작업도 별도로 승인된 경우는 예외입니다.
+- pull request 생성이나 병합. 이 스킬은 브랜치를 푸시한 시점에서 끝납니다.
+
+</routing_rule>
 
 <instruction_contract>
 
@@ -46,42 +63,29 @@ compatibility: Bash 3.2 이상(macOS 또는 Linux), git, 번들 스크립트가 
 
 </instruction_contract>
 
-<routing_rule>
+<activation_examples>
 
-요청한 결과가 **새 커밋을 만들고 푸시까지 끝낸 상태**일 때 `git-maker`를 사용합니다.
-
-요청한 결과가 다르면 활성화하지 않습니다.
-
-- 로컬 커밋만 원하거나 푸시를 조건부로 남긴 경우("커밋하고, 푸시는 나중에 볼게"). 결과가 원격에 닿기 전에 끝납니다.
-- 이미 있는 커밋의 푸시나 동기화만 원하는 경우. 새 커밋을 요청하지 않았습니다.
-- rebase, reset, amend 같은 이력 재작성. 다만 commit+push가 함께 명시되고 이력 작업도 별도로 승인된 경우는 예외입니다.
-- pull request 생성이나 병합. 이 스킬은 브랜치를 푸시한 시점에서 끝납니다.
-
-</routing_rule>
-
-<trigger_conditions>
-
-Positive triggers:
+긍정 요청:
 
 - "commit and push these changes", "make a commit and push it", "save and push my changes"
-- "커밋하고 푸시해", "변경사항 저장하고 올려"
+- 커밋과 푸시를 함께 뜻하는 한국어 요청("커밋하고 푸시해", "변경사항 저장하고 올려")
 - `/git-maker`, `git-maker current`, `git-maker ALL` 및 선택적인 `&& <branch>` target
 
-Negative triggers:
+부정 요청:
 
 - "이 변경 커밋해줘": 커밋만 요청
 - "push my commits": 기존 커밋만 요청
 - "rebase this branch": 이력 작업
 
-Boundary trigger:
+경계 요청:
 
 - "commit this, then maybe push": 푸시가 조건부이므로 활성화하지 않음
 
-</trigger_conditions>
+</activation_examples>
 
-<argument_validation>
+<trigger_conditions>
 
-호출을 `[scope] [--force] [&& target-branch ...]`로 parsing합니다. Scope token과 target branch는 commit filter가 아니라 control syntax입니다.
+호출을 `[scope] [--force] [&& target-branch ...]` 형태로 해석합니다. Scope token과 target branch는 commit filter가 아니라 호출 제어 구문입니다.
 
 | Argument | Meaning |
 |------|------|
@@ -92,13 +96,18 @@ Boundary trigger:
 | `&& <branch>` | source push 성공 후 이번 run에서 새로 만든 commit set을 해당 branch에 적용하고, 합리적인 conflict를 해결·검증한 뒤 push하며 왼쪽부터 반복 |
 | 기타 텍스트 | repo discovery, file selection, staging, commit message generation 필터로 사용하며 실제 git state와 맞지 않으면 멈춤 |
 
-요청이 자연어여도 shell-style separator를 invocation syntax로 해석합니다. Scope token은 대소문자를 가리지 않습니다. 빈 target segment, 중복 target, source branch 자체, detached HEAD, `git check-ref-format --branch`를 통과하지 못한 branch name은 mutation 전에 모두 거부합니다.
+요청이 자연어여도 shell-style separator를 호출 구문으로 해석합니다. Scope token은 대소문자를 가리지 않습니다. 빈 target segment, 중복 target, source branch 자체, detached HEAD, `git check-ref-format --branch`를 통과하지 못한 branch name은 mutation 전에 모두 거부합니다.
 
 예시: `/git-maker ALL`은 모든 미커밋 변경을 커밋하고 푸시합니다. `/git-maker && dev`는 기본 `current` scope로 처리한 뒤 `dev`에 전파합니다. `/git-maker current && dev && deploy/staging`은 왼쪽부터 차례로 전파합니다. `/git-maker --force`는 정상 커밋 후 `--force-with-lease`로 푸시합니다.
 
-</argument_validation>
+</trigger_conditions>
 
-<scripts>
+<skill_architecture>
+
+- Core(`SKILL.md`): routing, 호출 해석, phase 순서, required/forbidden 동작, stop condition.
+- Rules: `rules/commit-and-push-policy.md`가 argument mode, 귀속 판단, grouping, push, 전파, conflict escalation을, `rules/speed-and-automation.md`가 fast path를, `rules/agent-parallelism.md`가 read-only 위임을, `rules/validation.md`가 완료 검사를 소유합니다.
+- Assets: trigger와 behavior corpus인 `assets/evals/git-maker-cases.jsonl`.
+- Scripts:
 
 | Script | Purpose |
 |------|------|
@@ -109,16 +118,36 @@ Boundary trigger:
 
 연결된 Git worktree는 유효한 실행 컨텍스트입니다. `git rev-parse --show-toplevel`로 얻은 각 checkout root를 독립적인 index, branch, staging, commit, push 경계로 다룹니다. `.git`이 디렉터리라고 가정하거나 linked worktree를 `git-common-dir`로 합치지 않으며, detached HEAD나 다른 안전 규칙이 막지 않으면 `worktree|linked`에서도 진행합니다.
 
-</scripts>
+</skill_architecture>
+
+<loop_policy>
+
+최적화 루프는 없습니다. 요청마다 preflight, grouping, commit, push, propagation, report를 한 번 수행합니다. 재시도를 허용하는 유일한 피드백은 요청 범위 안의 실패한 검사가 새 근거를 낸 경우이며, push는 그 명령 자체의 출력이 확인해 줄 때만 완료로 셉니다.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+커밋 subject, 파일 경로, branch 이름, 명령은 저장소와 사용자가 쓴 그대로 적고, 실행 보고는 사용자가 다른 언어를 요청하지 않은 한 한국어로 씁니다. helper와 git 출력은 번역하지 않고 돌아온 그대로 인용합니다.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+- 첫 staging 명령 전, 또는 argument mode, 귀속 판단, grouping, push, 전파, conflict escalation이 애매할 때 [rules/commit-and-push-policy.md](rules/commit-and-push-policy.md)를 읽습니다.
+- 속도 개선 요청이 있거나 repo set이 클 수 있거나 저장소가 여러 개일 때 [rules/speed-and-automation.md](rules/speed-and-automation.md)를 읽습니다.
+- 변경이 복잡해 read-only grouping, message drafting, safety review를 subagent로 나눌 만할 때 [rules/agent-parallelism.md](rules/agent-parallelism.md)를 읽습니다.
+- 실행을 보고하거나 이 스킬의 변경을 완료로 보고하기 전에 [rules/validation.md](rules/validation.md)를 읽습니다.
+
+</reference_routing>
 
 <support_file_read_order>
 
-필요한 파일만 읽습니다.
-
-1. staging/commit 전, 또는 argument mode, 귀속 판단, grouping, push, 전파, conflict escalation이 애매하면 `rules/commit-and-push-policy.ko.md`.
-2. 속도 개선 요청, 큰 repo set, multi-repo 가능성이 있으면 `rules/speed-and-automation.ko.md`.
-3. 변경이 복잡해 read-only grouping, message drafting, safety review를 subagent로 나눌 만하면 `rules/agent-parallelism.ko.md`.
-4. 실행이나 이 스킬의 변경을 완료로 보고하기 전 `rules/validation.ko.md`.
+1. 이 core 파일: 요청이 commit+push인지 확인하고 호출을 해석합니다.
+2. `rules/commit-and-push-policy.md`: commit, push, 전파 계약.
+3. `rules/speed-and-automation.md`: fast path와 helper 명령.
+4. `rules/agent-parallelism.md`: read-only 위임 경계.
+5. `rules/validation.md`: 완료 검사.
 
 </support_file_read_order>
 

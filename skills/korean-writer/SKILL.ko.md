@@ -5,12 +5,12 @@ compatibility: Markdown 전용 스킬이며 스크립트, 네트워크, 자격 �
 ---
 
 @rules/writing-method.ko.md
-@rules/humanize-method.ko.md
 @rules/tell-avoidance.ko.md
 @rules/genre-calibration.ko.md
+@rules/humanize-method.ko.md
+@references/humanize-examples.ko.md
 @rules/validation.ko.md
 @references/ai-tell-catalog.ko.md
-@references/humanize-examples.ko.md
 
 # Korean Writer
 
@@ -151,15 +151,58 @@ Boundary:
 
 </forbidden>
 
+<trigger_conditions>
+
+표현이 아니라 결과물로 판단한다. 다음 요청은 모두 이 스킬을 연다. "AI 티 없이 써줘", "사람이 쓴 것처럼 다듬어줘", "번역투 없이", "자연스럽게 써줘", "make this read human", 그리고 다른 주인이 없는 장르의 한국어 초안 요청.
+
+제공된 글이 없으면 compose 모드가 열리고, 사용자가 고칠 글을 주면 humanize 모드가 열린다. 결과물이 구조, 특정 독자를 위한 설명, 번역, 항목별 교정이면 그 모양을 맡은 쪽의 일이며 경계는 `routing_rule`이 정한다.
+
+</trigger_conditions>
+
+<skill_architecture>
+
+| 층 | 담는 것 | 읽는 시점 |
+|---|---|---|
+| `SKILL.md` | 모드 결정, 계약, 워크플로, 필수·금지 규칙, 검증 | 항상 |
+| `rules/` | 처방(W-ID), tell 패밀리, 장르 등록, humanize 절차, 자체 점검 | 작업 전과 작업 중 |
+| `references/` | 패턴별 카탈로그와 전후 예시 | 진단에 후보군이 필요하거나 패턴 세부가 필요할 때 |
+| `assets/` | 평가 케이스 | 트리거, 워크플로, 출력을 바꿀 때 |
+
+</skill_architecture>
+
+<loop_policy>
+
+어느 모드든 닫힌 루프를 한 번 돈다. 쓰고, `rules/validation.md` 점검표를 돌리고, 고친다. 피드백은 점검표의 실패 항목이며 초안에 대한 스스로의 인상이 아니다. 가드는 의미, 앵커, 정확성, 등록이고 어느 수정도 이 넷을 깎지 않는다. 종료 조건은 실패 항목 0건 또는 수정 세 라운드 중 먼저 오는 쪽이다. 세 라운드를 지나도 실패가 남으면 끝없이 다듬지 않고 실패 항목을 밝힌 채 내보낸다.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+기본은 한국어이며 대상 독자가 기대하는 등록으로 쓴다. 식별자, 명령어, 경로, 제품명, 인용한 원문은 한국어 문장 안에서도 원형을 유지한다. 패키지의 마크다운은 W-ID와 태그 순서가 같은 영어/한국어 쌍으로 유지하며, 실행마다 한 언어판만 읽는다.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+- 사소하지 않은 작업이라면 무엇이든 [`rules/writing-method.md`](rules/writing-method.md)를 먼저 읽는다. 두 모드가 적용하는 처방이 W-ID다.
+- W-ID 뒤에 있는 패밀리 표와 심각도 논리는 [`rules/tell-avoidance.md`](rules/tell-avoidance.md)에 있다.
+- 장르가 정해지면 [`rules/genre-calibration.md`](rules/genre-calibration.md)를 읽는다. humanize 모드에서는 그 파일의 humanize 문단으로 등록 규칙을 확인하고, 장르 행은 장식 상한을 볼 때만 펼친다.
+- humanize 모드에서는 첫 편집 전에 [`rules/humanize-method.md`](rules/humanize-method.md) 전문을 읽고, 자료가 길거나 구조적이거나 문체에 민감하면 [`references/humanize-examples.md`](references/humanize-examples.md)를 읽는다.
+- 최종 응답 전과 이 패키지를 변경할 때마다 [`rules/validation.md`](rules/validation.md)를 읽는다.
+- 초안이 패턴별 세부를 필요로 하거나 humanize 진단이 후보군을 필요로 하면 [`references/ai-tell-catalog.md`](references/ai-tell-catalog.md)를 읽는다. 패밀리마다 개별 패턴을 예시와 처방까지 담고 있다.
+- 트리거, 워크플로, 출력 동작을 바꿀 때 [`assets/evals/korean-writer-cases.jsonl`](assets/evals/korean-writer-cases.jsonl)을 쓴다.
+
+</reference_routing>
+
 <support_file_read_order>
 
-1. 사소하지 않은 작업이라면 무엇이든 [`rules/writing-method.md`](rules/writing-method.md)를 먼저 읽는다. 두 모드가 적용하는 처방이 W-ID다.
-2. [`rules/tell-avoidance.md`](rules/tell-avoidance.md)를 읽어 W-ID 뒤에 있는 패밀리 표와 심각도 논리를 확인한다.
-3. compose 모드에서는 장르가 정해지면 [`rules/genre-calibration.md`](rules/genre-calibration.md)를 읽고, humanize 모드에서는 그 파일의 humanize 문단으로 등록 규칙을 확인한 뒤 장르 행은 장식 상한을 볼 때만 펼친다.
-4. humanize 모드에서는 첫 편집 전에 [`rules/humanize-method.md`](rules/humanize-method.md) 전문을 읽고, 자료가 길거나 구조적이거나 문체에 민감하면 [`references/humanize-examples.md`](references/humanize-examples.md)를 읽는다.
-5. 최종 응답 전과 이 패키지를 변경할 때마다 [`rules/validation.md`](rules/validation.md)를 읽는다.
-6. 초안이 패턴별 세부를 필요로 하거나 humanize 진단이 후보군을 필요로 할 때 [`references/ai-tell-catalog.md`](references/ai-tell-catalog.md)를 읽는다. 카탈로그는 패밀리마다 개별 패턴을 예시와 처방까지 담고 있다.
-7. 트리거, 워크플로, 출력 동작을 바꿀 때 [`assets/evals/korean-writer-cases.jsonl`](assets/evals/korean-writer-cases.jsonl)을 사용한다.
+1. [`rules/writing-method.md`](rules/writing-method.md)
+2. [`rules/tell-avoidance.md`](rules/tell-avoidance.md)
+3. [`rules/genre-calibration.md`](rules/genre-calibration.md)
+4. [`rules/humanize-method.md`](rules/humanize-method.md), 자료가 그러한 경우 [`references/humanize-examples.md`](references/humanize-examples.md)
+5. [`rules/validation.md`](rules/validation.md)
+6. [`references/ai-tell-catalog.md`](references/ai-tell-catalog.md)
+7. [`assets/evals/korean-writer-cases.jsonl`](assets/evals/korean-writer-cases.jsonl)
 
 </support_file_read_order>
 

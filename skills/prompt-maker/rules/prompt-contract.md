@@ -1,5 +1,7 @@
 # Prompt Contract
 
+**Purpose**: Define the field set and authority split of a durable prompt contract. **Read when**: creating or materially refactoring one.
+
 Treat every durable prompt as an execution contract, not a persona paragraph.
 
 ## Required Contract Fields

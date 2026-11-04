@@ -1,6 +1,6 @@
 # Git Worktree 소스 조사
 
-이 조사는 공개 Git worktree 문서, 도구, editor integration, AI-agent workflow에서 추출한 패턴을 기록한다. 근거로 사용하고, operational rule은 `rules/worktree-lifecycle.md`에 유지한다.
+근거, upstream 동작, 출처 비교에 지원이 필요할 때만 읽는다. 이 조사는 공개 Git worktree 문서, 도구, editor integration, AI-agent workflow에서 추출한 패턴을 기록하며, operational rule은 `rules/worktree-lifecycle.md`에 유지한다.
 
 ## Sources
 

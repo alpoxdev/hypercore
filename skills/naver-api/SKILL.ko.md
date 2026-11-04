@@ -4,6 +4,8 @@ description: 사용자가 `naver-api` CLI로 네이버 API HUB 검색, 데이터
 compatibility: Node.js 20 이상, npm 패키지 설치 기능, API 호출용 네트워크 접근, 사용자가 제공한 네이버 API HUB 자격 증명이 필요합니다.
 ---
 
+@references/cli-usage.md
+
 # Naver API
 
 <output_language>
@@ -15,7 +17,7 @@ compatibility: Node.js 20 이상, npm 패키지 설치 기능, API 호출용 네
 </purpose>
 
 <routing_rule>
-네이버 검색(`blog`, `news`, `cafearticle`, `kin`, `local`, `encyc`, `webkr`, `image`, `adult`, `errata`), 데이터랩 검색어 트렌드, 쇼핑인사이트 분야별/키워드별 트렌드에 사용합니다. 폐기된 검색 유형(`shop`, `book`, `doc`), 임의 URL/엔드포인트, 스크래핑, 네이버 로그인 자동화, 무관한 조사에는 사용하지 않습니다. 요청 대상이 API HUB가 아니라 웹 페이지이면 사용 가능한 브라우저 도구로 라우팅합니다.
+요청한 결과가 네이버 API HUB 데이터일 때 이 스킬을 사용합니다. 네이버 검색, 데이터랩 검색어 트렌드, 쇼핑인사이트가 여기에 해당합니다. 폐기된 검색 유형(`shop`, `book`, `doc`), 임의 URL/엔드포인트, 스크래핑, 네이버 로그인 자동화, 무관한 조사에는 사용하지 않습니다. 요청 대상이 API HUB가 아니라 웹 페이지이면 사용 가능한 브라우저 도구를 씁니다.
 </routing_rule>
 
 <instruction_contract>
@@ -52,15 +54,64 @@ compatibility: Node.js 20 이상, npm 패키지 설치 기능, API 호출용 네
 - "네이버 쇼핑 상품을 검색해줘." 폐기된 `shop` API는 지원하지 않으므로 스크래핑이나 다른 엔드포인트로 대체하지 말고 경계를 설명합니다.
 </activation_examples>
 
+<trigger_conditions>
+
+| 요청 데이터 | 작업 |
+|---|---|
+| `blog`, `news`, `cafearticle`, `kin`, `local`, `encyc`, `webkr`, `image`, `adult`, `errata` 검색 | `naver-api search <type> <query>` |
+| 기간을 지정한 검색어 트렌드 비교 | `naver-api trends --input <file>` |
+| 쇼핑인사이트 분야별 또는 키워드별 트렌드 | `naver-api shopping-insight categories\|keywords --input <file>` |
+| 위 작업인데 `PATH`에 `naver-api`가 없음 | `@kood/naver-api-cli`를 설치하고 `naver-api --help`를 검증한 뒤 계속 |
+| 자격 증명이 없거나 `config validate` 실패 | 네트워크 호출 전에 사용자가 `naver-api config set`으로 입력하도록 안내 |
+| 파싱·변환을 위해 JSON 출력이 필요 | `--json`을 추가하며, 실행은 `{ "ok": true, ... }` 문서 하나를 반환 |
+
+</trigger_conditions>
+
+<skill_architecture>
+
+- Core(`SKILL.md`): routing, 작업 선택, phase 순서, required/forbidden 동작, stop condition.
+- References: 설치, 자격 증명 입력, 명령 표면, 트렌드 입력 형식, 실패 분류는 `references/cli-usage.md`가 소유합니다.
+- Assets: trigger와 behavior corpus인 `assets/evals/naver-api-cases.jsonl`.
+- 번들 스크립트는 없습니다. 실행 표면은 배포된 `@kood/naver-api-cli` 패키지이고, 그 동작의 기준은 패키지 README입니다.
+
+</skill_architecture>
+
+<loop_policy>
+
+최적화 루프는 없습니다. 요청 하나에 가장 작은 유효 호출 하나입니다. 명확한 사용법이나 설정 형식 오류를 고친 뒤에만 한 번 재시도하며, 인증·사용량 제한·상위 API·시간 초과·네트워크 오류는 재시도하지 않고 보고합니다.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+답변은 한국어로 쓰되 API 필드명, JSON 키, 명령, 반환된 상위 원문은 원형대로 둡니다. 반환된 제목과 라벨을 사용자의 표현인 것처럼 번역하거나 바꿔 쓰지 않습니다.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+- CLI를 설치하거나, 자격 증명을 설정하거나, 명령을 만들기 전에 [references/cli-usage.md](references/cli-usage.md)를 읽습니다.
+- 허용 옵션이나 요청 스키마가 참조 문서로 정리되지 않을 때만 `cli/packages/naver-api/README.md` 또는 `naver-api --help`를 읽습니다.
+
+</reference_routing>
+
+<support_file_read_order>
+
+1. 이 core 파일: 요청을 분류하고 API HUB 데이터인지 확인합니다.
+2. `references/cli-usage.md`: 설치, 자격 증명, 명령 구성.
+3. 참조 문서가 옵션이나 스키마를 남겨 둘 때 패키지 README 또는 `naver-api --help`.
+
+</support_file_read_order>
+
 <workflow>
 
 1. 요청을 지원되는 검색, 검색어 트렌드, 쇼핑인사이트 분야별 트렌드, 쇼핑인사이트 키워드별 트렌드 중 하나로 분류합니다. 작업을 몰래 바꾸지 말고 지원되지 않는 엔드포인트나 옵션을 거부합니다.
-2. 명령을 만들거나 실행하기 전에 [`references/cli-usage.ko.md`](references/cli-usage.ko.md)를 읽습니다. 동작이나 허용 옵션이 여전히 불명확하면 저장소 패키지 README를 읽습니다.
-3. Node.js 20 이상인지, `naver-api`가 설치되어 있는지 확인합니다. 없다면 CLI가 필요하다고 설명하고 문서화된 전역 npm 명령으로 `@kood/naver-api-cli`를 설치한 다음 `naver-api --help`를 검증합니다. 실행 또는 설치 기능이 없으면 정확한 설치·검증 명령을 제공하고 설치했다고 주장하지 않은 채 차단합니다.
-4. `naver-api config validate`를 실행합니다. 설정이 없거나 유효하지 않으면 사용자가 자신의 API HUB `apiKeyId`와 `apiKey`를 CLI 숨김 프롬프트 또는 stdin 흐름으로 입력하도록 안내합니다. 대화형 비밀 입력 경로가 있으면 채팅에 비밀을 붙여 넣으라고 요청하지 않습니다.
-5. 가장 작은 유효 요청을 만듭니다. 기계 처리는 `--json`을 우선합니다. 트렌드 입력은 임시 YAML/JSON 파일 또는 stdin을 사용하되 그 파일에 자격 증명을 저장하지 않습니다.
-6. 한 번 실행해 stdout, stderr, 종료 상태를 검사하고 안정된 종료 코드로 오류를 분류합니다. 명확한 사용법/설정 형식 오류에만 수정 후 한 번 재시도합니다.
-7. 요청 결과를 한국어로 반환합니다. 필터와 날짜 범위를 밝히고, 트렌드 비율은 절대 검색량이 아니라 최댓값 100의 상대 정규화 지수임을 설명합니다.
+2. Node.js 20 이상인지, `naver-api`가 설치되어 있는지 확인합니다. 없다면 CLI가 필요하다고 설명하고 문서화된 전역 npm 명령으로 `@kood/naver-api-cli`를 설치한 다음 `naver-api --help`를 검증합니다. 실행 또는 설치 기능이 없으면 정확한 설치·검증 명령을 제공하고 설치했다고 주장하지 않은 채 차단합니다.
+3. `naver-api config validate`를 실행합니다. 설정이 없거나 유효하지 않으면 사용자가 자신의 API HUB `apiKeyId`와 `apiKey`를 CLI 숨김 프롬프트 또는 stdin 흐름으로 입력하도록 안내합니다. 대화형 비밀 입력 경로가 있으면 채팅에 비밀을 붙여 넣으라고 요청하지 않습니다.
+4. 가장 작은 유효 요청을 만듭니다. 기계 처리는 `--json`을 우선합니다. 트렌드 입력은 임시 YAML/JSON 파일 또는 stdin을 사용하되 그 파일에 자격 증명을 저장하지 않습니다.
+5. 한 번 실행해 stdout, stderr, 종료 상태를 검사하고 안정된 종료 코드로 오류를 분류합니다. 명확한 사용법/설정 형식 오류에만 수정 후 한 번 재시도합니다.
+6. 요청 결과를 한국어로 반환합니다. 필터와 날짜 범위를 밝히고, 트렌드 비율은 절대 검색량이 아니라 최댓값 100의 상대 정규화 지수임을 설명합니다.
+
 </workflow>
 
 <required>
@@ -90,4 +141,5 @@ compatibility: Node.js 20 이상, npm 패키지 설치 기능, API 호출용 네
 - [ ] 명령이 성공 종료했고, JSON 모드이면 `{ "ok": true, ... }` 문서 하나를 반환했습니다.
 - [ ] 결과가 요청 범위에 답하고 관련 한계를 포함합니다.
 - [ ] 0이 아닌 종료가 문서화된 분류와 재시도 정책을 따릅니다.
+- [ ] `assets/evals/naver-api-cases.jsonl`이 이 파일이 밝힌 작업과 경계를 여전히 다룹니다.
 </validation>

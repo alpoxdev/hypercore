@@ -1,11 +1,10 @@
 ---
 name: hono-architecture
-description: "[Hyper] Use when working on Hono projects or adding Hono into a codebase. Enforces Hono architecture rules for app composition, scalable route modules, middleware, validation, database/ORM boundaries, Drizzle integration, migrations, error handling, OpenAPI/Swagger documentation, testing, and typed RPC boundaries before any code change."
+description: "[Hyper] Use this skill when the user asks to build, audit, or restructure a Hono application, or to introduce Hono into an existing codebase, and the work touches app composition, route modules, middleware, validation, database or ORM boundaries, Drizzle, migrations, error handling, OpenAPI/Swagger, testing, or typed RPC. It enforces Hono architecture rules before code changes. Do not use it for non-Hono frameworks, copy-only edits that cross no architecture boundary, or requests that want official Hono defaults with no Hypercore conventions."
 compatibility: Works best with repo inspection, official Hono docs verification, and direct code edits in Hono applications.
 ---
 
 @architecture-rules.md
-@rules/conventions.md
 @rules/project-structure.md
 @rules/routes.md
 @rules/handlers.md
@@ -16,6 +15,7 @@ compatibility: Works best with repo inspection, official Hono docs verification,
 @rules/errors.md
 @rules/testing-rpc.md
 @rules/platform.md
+@rules/conventions.md
 @references/official/hono-docs.md
 @references/official/drizzle-docs.md
 
@@ -69,7 +69,7 @@ This skill is self-contained. Do not block on global skills or external orchestr
 
 <activation_examples>
 
-### Positive examples:
+Positive examples:
 
 - `Review this Hono app structure before I add more routes.`
 - `Refactor a Hono API so routing, middleware, and validators follow one architecture.`
@@ -79,30 +79,27 @@ This skill is self-contained. Do not block on global skills or external orchestr
 - `hono-architecture 전체 수정`
 - `Run the Hono architecture skill in full-remediation mode.`
 
-### Negative examples:
+Negative examples:
 
 - `Create a generic Express middleware guide.`
 - `Review a React SPA that does not use Hono.`
 
-### Boundary examples:
+Boundary examples:
 
 - `Make a tiny copy-only response text change in a Hono handler.`
-Direct editing can be enough if no architectural boundary is affected.
-
+  Direct editing can be enough if no architectural boundary is affected.
 - `Use official Hono defaults only, not the extra hypercore conventions.`
-This skill still applies, but relax hypercore-only strictness that exceeds the official docs.
+  This skill still applies, but hypercore-only strictness that exceeds the official docs is relaxed.
 
 </activation_examples>
 
 <trigger_conditions>
 
-## Invocation Arguments
-
 Arguments change the remediation scope, not the core rules.
 
 | Argument | Meaning |
-|------|------|
-| missing | Review and fix the requested/touched Hono scope. Untouched legacy drift may be reported as backlog when it is hypercore-only or risky to migrate. |
+|---|---|
+| missing | Review and fix the requested or touched Hono scope. Untouched legacy drift may be reported as backlog when it is hypercore-only or risky to migrate. |
 | `전체 수정` | Full-remediation mode. Scan the whole detected Hono application and fix every violation that is safe, local, reversible, and verifiable. Do not stop at touched files. |
 | `full fix` / `fix all` | Same as `전체 수정`. |
 | `공식 기본만` / `official defaults only` | Use official Hono behavior as the default surface and downgrade hypercore-only conventions to optional findings unless the user also asks for `전체 수정`. |
@@ -110,18 +107,83 @@ Arguments change the remediation scope, not the core rules.
 In `전체 수정` mode:
 
 - Treat all Hono app files, route modules, handlers, middleware, validation schemas, OpenAPI files, database/repository boundaries, tests/RPC surfaces, and runtime entrypoints as in scope.
-- Scan folder and file names across the detected Hono source tree. Folders and files must be kebab-case except framework/tool-required names such as `package.json`, `tsconfig.json`, `drizzle.config.ts`, lockfiles, generated declarations, and explicitly configured migration artifacts.
-- Rename camelCase or PascalCase folders/files to kebab-case when imports, test paths, route references, and configuration references can be updated safely in the same change.
-- Apply all low-risk auto-remediations listed in Step 3.5 across the app, not only touched files.
-- For risky changes that cannot be completed safely in the same run, leave a precise blocker/backlog item with file paths and the rule that failed. Do not silently ignore it.
+- Scan folder and file names across the detected Hono source tree. Folders and files must be kebab-case except framework or tool-required names such as `package.json`, `tsconfig.json`, `drizzle.config.ts`, lockfiles, generated declarations, and explicitly configured migration artifacts.
+- Rename camelCase or PascalCase folders and files to kebab-case when imports, test paths, route references, and configuration references can be updated safely in the same change.
+- Apply every low-risk auto-remediation in Step 3.5 across the app, not only touched files.
+- For risky changes that cannot be completed safely in the same run, leave a precise blocker or backlog item with file paths and the failed rule. Do not silently ignore it.
 
 </trigger_conditions>
 
+<skill_architecture>
+
+- Core (`SKILL.md`): trigger, contract, gate order, remediation policy, verification, stop condition.
+- Rules: `architecture-rules.md` plus the topic files mapped in `reference_routing`.
+- References: `references/official/hono-docs.md` and `references/official/drizzle-docs.md` hold dated official facts.
+- Assets: `assets/evals/hono-architecture-cases.jsonl` holds trigger and behavior cases.
+- No bundled script: `testClient`, type checks, and the topic checklists are the verification surface.
+- The skill is self-contained; it needs no other skill's path, document, or invocation.
+
+</skill_architecture>
+
+<loop_policy>
+
+- No optimization loop. One review or remediation pass per request.
+- After remediation, at most two verify-repair iterations run against the Step 3 gates and the touched checks. A change stays only when it is inside the touched scope and passes those gates.
+- The loop ends at the first passing checklist or at a reported blocker; it never widens the touched scope to reach a green result.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+Write findings, remediation summaries, and validation notes in Korean. Keep identifiers, paths, folder names, API names, and the labels `official` and `hypercore-only` in their source form so a report maps one-to-one onto the rule files. `SKILL.ko.md` mirrors this file section by section; a rule changed here is changed there in the same edit.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+Read `architecture-rules.md` before editing. Then open the one file that owns the touched surface:
+
+| Touched surface | File |
+|---|---|
+| Project profiles, folder ownership, dependency direction, monorepos, structural migration | `rules/project-structure.md` |
+| Route composition, mount order, fallback placement, sub-app structure | `rules/routes.md` |
+| Handler extraction, `createFactory()`, `createHandlers()`, typed context flow | `rules/handlers.md` |
+| Shared request boundaries, auth/logging/request-id flow, `c.set()` / `c.get()` | `rules/middleware.md` |
+| Params/query/json/form validation choices | `rules/validation.md` |
+| Database clients, repositories, ORM boundaries, Drizzle schema, migrations, transactions, D1, Neon, Turso/libSQL, `DATABASE_URL` | `rules/database.md` |
+| OpenAPI generation, Swagger UI, operation metadata, schema drift, docs endpoints | `rules/openapi.md` |
+| `HTTPException`, `app.onError()`, response shaping | `rules/errors.md` |
+| `testClient()`, `hc<AppType>`, `AppType`, larger-app inference | `rules/testing-rpc.md` |
+| Adapters, entrypoints, bindings, env/config typing, `basePath()` boundaries | `rules/platform.md` |
+| Naming, TypeScript style, imports, comments for any touched file | `rules/conventions.md` |
+| Official Hono behavior behind a rule, or an explicit official-defaults request | `references/official/hono-docs.md` |
+| Drizzle behavior behind `rules/database.md` claims | `references/official/drizzle-docs.md` |
+
+When the user asks for official defaults, start from `references/official/hono-docs.md`, treat hypercore-only rules as optional overlays, and label which findings are which.
+
+</reference_routing>
+
+<support_file_read_order>
+
+1. `architecture-rules.md` for the rule taxonomy and gate summary.
+2. The topic file for the touched surface, in `reference_routing` order.
+3. `rules/conventions.md` before editing any file's naming or style.
+4. `references/official/hono-docs.md` when official behavior or an official-defaults request is in play.
+5. `references/official/drizzle-docs.md` when database behavior is in scope.
+
+</support_file_read_order>
+
 <workflow>
 
-## Step 1: Project Validation
+| Step | Task | Output |
+|---|---|---|
+| 1 | Prove the target is a Hono project | Scope decision |
+| 2 | Load the rule files for the touched surface | Minimal evidence set |
+| 3 | Judge planned changes against the critical gates | Findings with file paths |
+| 3.5 | Apply low-risk auto-remediations inside the touched scope | Edits or backlog items |
+| 4 | Implement in the file order below, then verify | Changed files and evidence |
 
-Before doing any work, confirm the target is a Hono project:
+Step 1 — project validation:
 
 ```bash
 rg -n '"hono"|@hono/' package.json
@@ -145,67 +207,7 @@ rg --files src app routes 2>/dev/null
 rg -n "new Hono\\(|app\\.route\\(|basePath\\(|validator\\(|zValidator\\(|standardValidator\\(|OpenAPIHono|swaggerUI|testClient\\(|hc<|drizzle-orm|DATABASE_URL|D1Database|@neondatabase|@libsql" src app .
 ```
 
-## Step 2: Read Architecture Rules
-
-<support_file_read_order>
-
-Read the detailed rules before editing:
-
-- `architecture-rules.md`
-- `rules/project-structure.md`
-- `rules/conventions.md`
-- `rules/routes.md`
-- `rules/handlers.md`
-- `rules/middleware.md`
-- `rules/validation.md`
-- `rules/database.md`
-- `rules/openapi.md`
-- `rules/errors.md`
-- `rules/testing-rpc.md`
-- `rules/platform.md`
-
-When the change depends on current framework behavior or you need to justify a rule from the official docs, read:
-
-- `references/official/hono-docs.md`
-- `references/official/drizzle-docs.md`
-
-### Task-to-Rule Routing
-
-Use the next file based on the change you are making:
-
-- For project profiles, folder ownership, dependency direction, monorepos, or structural migration, read `rules/project-structure.md`
-- For route composition, mount order, fallback placement, or sub-app structure, read `rules/routes.md`
-- For handler extraction, `createFactory()`, `createHandlers()`, or typed context flow, read `rules/handlers.md`
-- For shared request boundaries, auth/logging/request-id flow, or `c.set()` / `c.get()` usage, read `rules/middleware.md`
-- For params/query/json/form validation choices, read `rules/validation.md`
-- For database clients, repositories, ORM boundaries, Drizzle schema, migrations, transactions, D1, Neon, Turso/libSQL, or `DATABASE_URL`, read `rules/database.md`
-- For OpenAPI generation, Swagger UI, operation metadata, schema drift, docs endpoints, or API contract publishing, read `rules/openapi.md`
-- For `HTTPException`, `app.onError()`, or response-shaping problems, read `rules/errors.md`
-- For `testClient()`, `hc<AppType>`, `AppType`, or larger-app inference, read `rules/testing-rpc.md`
-- For adapters, entrypoints, bindings, env/config typing, or `basePath()` boundaries, read `rules/platform.md`
-
-### Official-Defaults Override Mode
-
-When the user explicitly asks for official Hono defaults instead of hypercore-only conventions:
-
-- Start from `references/official/hono-docs.md` first
-- Apply official Hono behavior as the default decision surface
-- Treat stricter hypercore rules as optional overlays and only enforce them when the user did not opt out
-- In findings and final reports, label which rules are official Hono behavior and which are hypercore-only conventions
-
-</support_file_read_order>
-
-## Step 3: Pre-Change Validation Checklist
-
-Validate planned changes against `architecture-rules.md` and the topic rule files before editing.
-
-Brownfield rule:
-
-- Untouched legacy style drift can become backlog.
-- Safety, typing, validation, persistence, OpenAPI, and runtime boundary issues still block touched work.
-- In `전체 수정` mode, the whole detected Hono app is the touched scope.
-
-Critical gates:
+Step 3 — critical gates. Brownfield rule: untouched legacy style drift can become backlog; safety, typing, validation, persistence, OpenAPI, and runtime boundary issues still block touched work; in `전체 수정` mode the whole detected Hono app is the touched scope.
 
 - One runtime-neutral Hono app and one obvious mount table; select the smallest justified structure profile and preserve dependency direction.
 - Touched route modules do not bypass services to import DB/ORM/schema/SDK/runtime adapter details directly.
@@ -214,80 +216,79 @@ Critical gates:
 - Middleware order and typed `Bindings`/`Variables` are explicit when shared context is used.
 - Drizzle schemas, migrations, clients, and transactions stay behind database/service boundaries.
 - Public documented routes keep runtime validation, DTOs, OpenAPI/Swagger, and RPC response shapes aligned.
-- Runtime adapter/bootstrap code stays at the platform edge.
-- Source folders/files use kebab-case unless a tool or external contract requires otherwise.
+- Runtime adapter and bootstrap code stays at the platform edge.
+- Source folders and files use kebab-case unless a tool or external contract requires otherwise.
 
-Use the detailed checklists in the linked support files for findings and remediation detail; do not duplicate them in this core file.
+Use the detailed checklists in the linked support files for remediation detail; this core does not restate them.
 
-## Step 3.5: Auto-Remediation Policy
+Step 3.5 — auto-remediation. Auto-fix directly when the issue is local, reversible, and low-risk:
 
-Auto-fix directly when the issue is local, reversible, and low-risk.
+- Rename touched camelCase/PascalCase source folders or files to kebab-case and update imports and references.
+- Add missing validator middleware to a touched route.
+- Add a typed `AppType` export when a shared RPC or client contract depends on it.
+- Move route mounting into a single composition file.
+- Convert extracted untyped handlers to `createFactory()` / `factory.createHandlers()`.
+- Add `app.onError()` or improve HTTP exception translation.
+- Move runtime adapter imports out of handlers and route modules.
+- Move touched direct database calls into existing services or repositories, and add the missing repository wrapper for a touched query.
+- Centralize repeated database client imports into the existing database client boundary.
+- Add missing OpenAPI metadata for touched public routes when the repo already publishes a spec.
+- Move Swagger UI exposure behind the existing docs/admin/dev boundary.
 
-- Rename touched camelCase/PascalCase source folders or files to kebab-case and update imports/references
-- Add missing validator middleware to a touched route
-- Add typed `AppType` export when a shared RPC/client contract depends on it
-- Move route mounting into a single composition file
-- Convert extracted untyped handlers to `createFactory()` / `factory.createHandlers()`
-- Add `app.onError()` or improve HTTP exception translation
-- Move runtime adapter imports out of handlers and route modules
-- Move touched direct database calls into existing services/repositories
-- Add a missing repository wrapper for a touched query
-- Centralize repeated database client imports into the existing database client boundary
-- Add missing OpenAPI metadata for touched public routes when the repo already publishes a spec
-- Move Swagger UI exposure behind the existing docs/admin/dev boundary
+Do not auto-apply broad or potentially breaking migrations without explicit justification: mass route or module renames (except kebab-case-only renames in `전체 수정` mode with every reference updated and verified), whole-app layer rewrites, repository-wide validation library swaps, RPC shape changes that break existing clients, runtime adapter swaps, database provider or ORM or dialect swaps, generating or applying or deleting production migrations, schema table/column/index renames, transaction boundary rewrites without tests, and switching OpenAPI generators across a whole app.
 
-Do not auto-apply broad or potentially breaking migrations without explicit justification.
-
-- Mass route/module renames, except kebab-case-only renames in `전체 수정` mode when every import/reference/config path can be updated and verified
-- Whole-app layer rewrites
-- Validation library swaps across the entire repository
-- RPC shape changes that break existing clients
-- Runtime adapter swaps
-- Database provider, ORM, dialect, or Drizzle driver swaps
-- Generating, editing, applying, or deleting production migrations
-- Schema table/column/index renames
-- Transaction boundary rewrites without tests for the affected workflow
-- Switching OpenAPI generators (`@hono/zod-openapi` vs `hono-openapi`) across a whole app
-
-## Step 4: Implementation
-
-When changing Hono code, prefer this order:
+Step 4 — implementation order:
 
 1. Validate current structure and rule breaches. In `전체 수정` mode, inventory the whole detected Hono app before editing.
-2. Fix folder/file naming to kebab-case when safe, because later imports and tests depend on stable paths.
-3. Fix route composition and typing boundaries first.
-4. Fix database/repository/connection boundaries for touched persistence behavior, or the full app in `전체 수정` mode.
+2. Fix folder and file naming to kebab-case when safe, because later imports and tests depend on stable paths.
+3. Fix route composition and typing boundaries.
+4. Fix database, repository, and connection boundaries for touched persistence behavior, or for the full app in `전체 수정` mode.
 5. Fix validation and middleware ordering.
-6. Fix OpenAPI/Swagger contract drift for touched public routes, or all documented/public routes in `전체 수정` mode.
+6. Fix OpenAPI/Swagger contract drift for touched public routes, or for every documented route in `전체 수정` mode.
 7. Fix error handling and response shaping.
-8. Fix testing/RPC inference regressions.
+8. Fix testing and RPC inference regressions.
 9. Run verification.
 
 </workflow>
 
-<validation_checklist>
+<required>
 
-## Verification Checklist
+- A proven Hono project before any Hono rule is applied, and a named reason when the request lands outside a Hono scope.
+- One runtime-neutral app composition with an obvious mount table, and a structure profile justified by repository evidence.
+- The repo's existing layering preserved: routes do not reach DB/ORM clients, schema tables, or migration helpers directly.
+- Runtime validation on non-trivial request input, and typed `Bindings`/`Variables` wherever shared context is used.
+- A report that labels each finding `official` or `hypercore-only`.
+- Verification evidence from `testClient` / `hc` / type checks where those surfaces exist.
 
-- Hono project detection confirmed
-- Relevant rule files read
-- Official override mode applied when the user requested official Hono defaults
-- Touched files and folders follow kebab-case naming
-- In `전체 수정` mode, the whole detected Hono source tree was scanned for kebab-case violations
-- Route composition is obvious and mountable
-- Project profile, folder ownership, and dependency direction are justified by repository evidence
-- Middleware order verified
-- Validation enforced on non-trivial inputs
-- Touched routes do not import DB/ORM clients, Drizzle schema tables, or migration helpers directly
-- Database client lifecycle is centralized and runtime-appropriate
-- Schema and migration paths match the configured ORM/drizzle setup
-- Transactions are explicit for affected multi-step writes
-- OpenAPI/Swagger docs updated for touched documented routes
-- Swagger UI exposure is intentional and environment-appropriate
-- Error handling policy is explicit
-- `testClient` / `hc` / `AppType` inference still works when applicable
-- API DTOs, OpenAPI schemas, and RPC response shapes do not accidentally expose raw ORM rows
-- Runtime adapter code stays at the edge
-- Final findings distinguish official Hono rules from hypercore-only conventions
+</required>
 
-</validation_checklist>
+<forbidden>
+
+- Forcing Hono rules on Express, Fastify, or another framework because the request sounds similar.
+- Renaming production migrations, applying migrations, or changing schema table/column/index names without explicit authority.
+- Swapping runtime adapters, database providers, ORMs, dialects, or drivers inside an architecture review.
+- Breaking existing RPC clients by changing response shapes without a recorded decision.
+- Presenting a Hypercore convention as official Hono behavior.
+- Silencing a blocking gate because untouched legacy code shows the same pattern.
+- Claiming a check ran when it did not, or reporting a gate as passed without its output.
+
+</forbidden>
+
+<validation>
+
+- [ ] Hono project detection confirmed.
+- [ ] The touched surface's rule file was read, and official override mode applied when requested.
+- [ ] Touched files and folders follow kebab-case naming; in `전체 수정` mode the whole source tree was scanned for violations.
+- [ ] Route composition is obvious and mountable, and dependency direction is justified by repository evidence.
+- [ ] Middleware order verified and typed context bindings are explicit.
+- [ ] Validation is enforced on non-trivial inputs.
+- [ ] Touched routes do not import DB/ORM clients, Drizzle schema tables, or migration helpers directly.
+- [ ] Database client lifecycle is centralized and runtime-appropriate; schema and migration paths match the configured setup.
+- [ ] Transactions are explicit for affected multi-step writes.
+- [ ] OpenAPI/Swagger docs and Swagger UI exposure are updated and environment-appropriate for touched documented routes.
+- [ ] Error handling policy is explicit and `testClient` / `hc` / `AppType` inference still works where applicable.
+- [ ] API DTOs, OpenAPI schemas, and RPC response shapes do not expose raw ORM rows.
+- [ ] Runtime adapter code stays at the edge.
+- [ ] Final findings distinguish official Hono rules from hypercore-only conventions.
+
+</validation>

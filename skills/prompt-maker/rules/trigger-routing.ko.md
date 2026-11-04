@@ -1,5 +1,7 @@
 # Trigger Routing
 
+**목적**: prompt 작업을 skill, 문서, 조사, 코드 작업과 구분한다. **읽는 조건**: 라우팅이 모호할 때.
+
 요청 산출물이 재사용 가능한 prompt artifact일 때만 `prompt-maker`를 사용한다.
 
 ## Use

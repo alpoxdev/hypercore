@@ -1,5 +1,7 @@
 # Prompt Pack Workflow
 
+**목적**: prompt artifact의 초안, 리팩터, 버전 판단 순서를 정한다. **읽는 조건**: artifact를 만들거나 고칠 때.
+
 ## Draft
 
 1. prompt를 재사용할 것인지 확인합니다.

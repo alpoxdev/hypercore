@@ -89,37 +89,16 @@ Boundary examples:
 
 </activation_examples>
 
-<project_adoption_detection>
+<trigger_conditions>
 
 Inspect before enforcing a complete-stack rule:
 
 1. Confirm Tauri v2 indicators such as `src-tauri/tauri.conf.json`, `src-tauri/tauri.conf.json5`, `src-tauri/Cargo.toml`, `@tauri-apps/api`, or `@tauri-apps/cli`.
 2. Identify the frontend build and packaging wiring: Vite config, package scripts, `beforeDevCommand`, `beforeBuildCommand`, `devUrl`, and `frontendDist`.
 3. Detect installed and used layers: React, `@tanstack/react-router`, `@tanstack/router-plugin`, `@tanstack/react-query`, route files, generated route tree, query client, and Tauri `invoke`/event/plugin calls.
-4. Select one runtime mode: incomplete adoption, complete packaged Vite SPA, or route away.
+4. Select one runtime mode from the table below.
 
 Do not infer file-based routing from a Query dependency. File-based routing belongs to TanStack Router and is generated through `@tanstack/router-plugin/vite`; Query owns asynchronous data cache and freshness.
-
-</project_adoption_detection>
-
-<support_file_read_order>
-
-Read only what the task needs, in this order:
-
-1. `architecture-rules.md` for taxonomy, supported modes, brownfield policy, and blocking gates.
-2. `rules/project-structure.md` for package/config/frontend/Rust layout and static packaging.
-3. `rules/platform.md` for Vite/React platform integration and environment boundaries.
-4. `rules/tauri-ipc.md` for commands, events, state, capabilities, and permissions.
-5. `rules/security.md` for CSP, scopes, credentials, untrusted input, and native side-effect gates.
-6. `rules/router-query.md` for Router file-routing ownership, Query cache/freshness ownership, loaders, preloading, and external data.
-7. `rules/testing.md` before planning or claiming validation for touched runtime surfaces.
-8. `references/official/tauri-v2-2026-07-30.md` for Tauri API/config/security/testing facts.
-9. `references/official/tanstack-vite-react-2026-07-30.md` for Router/Query/Vite/React facts or version-sensitive behavior.
-10. `assets/evals/tauri-architecture-cases.jsonl` when changing this skill or checking trigger/workflow regressions.
-
-</support_file_read_order>
-
-<runtime_modes>
 
 | Mode | Required interpretation | Result |
 |---|---|---|
@@ -127,7 +106,61 @@ Read only what the task needs, in this order:
 | Complete packaged Vite SPA | Tauri packages Vite static assets for a React SPA; Router generates and owns file-based routes, while Query owns asynchronous data cache and freshness. | Keep browser UI and Tauri IPC separate; retain native authority in reviewed Rust commands. |
 | Route away | Tauri v2 or the relevant architecture surface is absent, or the project uses a full-stack TanStack runtime. | Use the applicable non-Tauri or Rust-specific workflow, or the full-stack architecture workflow whose output is a server-owned route/data plan. |
 
-</runtime_modes>
+</trigger_conditions>
+
+<skill_architecture>
+
+- Core (`SKILL.md`): trigger, contract, mode selection, gate order, verification, stop condition.
+- Rules: `architecture-rules.md` (taxonomy, modes, brownfield policy, blocking gates) plus six topic files mapped in `reference_routing`.
+- References: `references/official/tauri-v2-2026-07-30.md` and `tanstack-vite-react-2026-07-30.md` hold dated vendor facts.
+- Assets: `assets/evals/tauri-architecture-cases.jsonl` holds trigger and behavior cases.
+- No bundled script: permitted source/build/test commands and the topic checklists are the verification surface.
+- The skill is self-contained; it needs no other skill's path, document, or invocation.
+
+</skill_architecture>
+
+<loop_policy>
+
+- At most two validate/fix passes per request against the same declared gates.
+- A pass counts only when it carries command or test evidence, or a concrete review rubric; a pass that adds no new finding ends the loop.
+- No unbounded optimization: at the second pass with a gate still failing, report the failing gate and stop instead of widening the change.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+Write decisions, reviews, and handoff notes in Korean. Keep identifiers, paths, command names, config keys, capability names, and the labels `Official`, `Safety`, and `Hypercore` in their source form so a finding maps onto `architecture-rules.md`. `SKILL.ko.md` mirrors this file section by section; a rule changed here is changed there in the same edit.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+Read `architecture-rules.md` first for the taxonomy, supported modes, brownfield policy, and blocking gates. Then open the topic file that owns the touched surface:
+
+| Touched surface | File |
+|---|---|
+| Package/config/frontend/Rust layout and static packaging | `rules/project-structure.md` |
+| Vite/React platform integration and environment boundaries | `rules/platform.md` |
+| Commands, events, state, capabilities, permissions | `rules/tauri-ipc.md` |
+| CSP, scopes, credentials, untrusted input, native side-effect gates | `rules/security.md` |
+| Router file-routing ownership, Query cache/freshness ownership, loaders, preloading, external data | `rules/router-query.md` |
+| Tests and validation claims for touched runtime surfaces | `rules/testing.md` |
+| Tauri API, config, security, and testing facts | `references/official/tauri-v2-2026-07-30.md` |
+| Router, Query, Vite, or React facts and version-sensitive behavior | `references/official/tanstack-vite-react-2026-07-30.md` |
+
+</reference_routing>
+
+<support_file_read_order>
+
+Read only what the task needs, in this order:
+
+1. `architecture-rules.md` for taxonomy, modes, and blocking gates.
+2. The topic file for the touched surface, in `reference_routing` order.
+3. `rules/testing.md` before planning or claiming validation for touched runtime surfaces.
+4. The official reference matching the API in question, only when version-sensitive.
+5. `assets/evals/tauri-architecture-cases.jsonl` when changing this skill or checking trigger and workflow regressions.
+
+</support_file_read_order>
 
 <workflow>
 
@@ -140,20 +173,36 @@ Read only what the task needs, in this order:
 | 4 | Validate declared gates. If they fail, fix and repeat once at most against those same gates. | Evidence from one or two passes. |
 | 5 | Report Korean results, exceptions, deferred brownfield migration work, and any authority-gated action. | Completion handoff. |
 
+Phase rules:
+
+- A packaged stack keeps Vite static packaging, Router-generated routes, and Query cache as three separate owners; a finding that merges them is a blocking finding.
+- Native authority stays in reviewed Rust commands. A renderer-side check is never treated as authorization.
+- Deferred work is reported with the file and the gate it still fails, never silently dropped.
+
 </workflow>
 
-<blocking_safety_summary>
+<required>
 
-Block or fix before proceeding when touched work would:
+- One runtime mode selected from evidence, or an explicit route-away with the reason.
+- The three ownership boundaries stated for the touched surface: static Vite packaging, Router-generated routes, Query cache/freshness.
+- Every new privileged path covered by a narrow capability, permission, scope, input validation, and caller boundary in `rules/tauri-ipc.md` and `rules/security.md`.
+- Every finding classified as `Official`, `Safety`, or `Hypercore` and labelled in the report.
+- Validation evidence from the permitted gates, with non-execution stated explicitly when a gate could not run.
+- Bilingual and support-link alignment when this skill folder changes.
 
-- conflate static Vite SPA assets, generated routes, Query cache, or browser state with Tauri native authority;
-- expose credentials, private keys, server-only environment values, filesystem access, shell/process access, or privileged plugin calls to renderer-reachable code;
-- use an IPC command/event/plugin capability without the narrow capability, permission, scope, input validation, and caller boundary it requires;
-- treat untrusted web/IPC/event input as trusted native data, disable CSP, broaden scopes/capabilities without justification, or bypass platform security controls;
-- make an irreversible native side effect, credential action, publish/release/deploy, or destructive operation without explicit user authority; or
-- claim validation without executing the permitted relevant gates or clearly recording why they cannot run.
+</required>
 
-</blocking_safety_summary>
+<forbidden>
+
+- Conflating static Vite SPA assets, generated routes, Query cache, or browser state with Tauri native authority.
+- Exposing credentials, private keys, server-only environment values, filesystem access, shell/process access, or privileged plugin calls to renderer-reachable code.
+- Using an IPC command, event, or plugin capability without the narrow capability, permission, scope, input validation, and caller boundary it requires.
+- Treating untrusted web, IPC, or event input as trusted native data, disabling CSP, broadening scopes or capabilities without justification, or bypassing platform security controls.
+- Making an irreversible native side effect, credential action, publish/release/deploy, or destructive operation without explicit user authority.
+- Claiming validation without executing the permitted gates, or without recording why they could not run.
+- Presenting a Hypercore convention as official Tauri or TanStack behavior.
+
+</forbidden>
 
 <validation>
 

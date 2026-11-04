@@ -1,5 +1,7 @@
 # Anthropic Official References for Docs Maker
 
+**Purpose**: Provider-sensitive evidence and its refresh policy for docs-maker. **Read when**: the document makes a claim about this provider's model or prompting behavior and the source must be re-verified.
+
 ## Contents
 
 - Refresh Policy

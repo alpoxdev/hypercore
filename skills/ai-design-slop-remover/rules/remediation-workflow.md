@@ -1,5 +1,7 @@
 # Remediation Workflow
 
+Read before choosing a mode. This file owns the mode definitions, the pass sequence, and what each mode may write.
+
 ## Modes
 
 - `audit`: inspect, classify, and report. Never edit product source.

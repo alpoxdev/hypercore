@@ -4,7 +4,7 @@ Use this checklist before claiming the research is done. Run the gates in order;
 
 ## 1. Ordered Gates
 
-1. **Structure.** The report exists at `.hyper/research/[NN].slug.md`, its header carries the as-of anchor, depth, run state, and reviewed and cited counts, and every section of `references/report-template.md` that applies is present.
+1. **Structure.** The report exists at `.hyper/research/[NN].slug.md`, its header carries the as-of anchor, depth, run state, and reviewed and cited counts, and every section of `references/report-template.ko.md` that applies is present.
 2. **Citation.** Every `[S<n>]` in the report resolves to a ledger row that was opened, not read as a snippet. Every non-obvious claim carries a citation. Reviewed and cited counts are recomputed from the deduplicated ledger and match the header.
 3. **Claim gate.** Every high-risk statement in the report maps to a `verified-claims` row (`rules/claim-verification.md` §3), or to a `partial` row and is written only as attributed to its source. No unresolved or refuted annex item is asserted in the findings or the recommendation.
 4. **Number lineage.** Every number carries `MEASURED`, `ASSUMED`, or `DERIVED`; every derived number shows its formula and inputs; no derived number appears when `derived numbers` is `none`.

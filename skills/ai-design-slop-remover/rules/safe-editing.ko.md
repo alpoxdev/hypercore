@@ -1,5 +1,7 @@
 # 안전한 수정
 
+`clean`에서 고치기 전에 읽는다. 이 파일은 자동 제거 경계와 모든 변경이 지켜야 할 보존 대상을 소유한다.
+
 ## 자동 제거 경계
 
 고신뢰 근거가 있고 content, interaction, brand, semantic, state 역할이 없는 요소만 자동 제거할 수 있다. 사용되지 않는 decorative orb, 중복 badge, 의미 없는 status dot·version label, 명시적 placeholder, 근거 없는 장식용 proof/stat, 직접 대체 가능한 `transition-all`이 후보가 된다.

@@ -1,8 +1,10 @@
 # Evaluation And Iteration
 
+**Purpose**: Define eval cases, judges, and bounded optimization rounds. **Read when**: building, scoring, or optimizing a reusable prompt.
+
 ## Minimum Categories
 
-Include positive, negative, boundary, source, safety, schema, regression, and adversarial cases when creating a JSONL prompt eval fixture. The set is composed, not counted: no number of cases is a validated threshold.
+Include positive, negative, boundary, workflow, source, safety, regression, and adversarial cases when creating a JSONL prompt eval fixture. The set is composed, not counted: no number of cases is a validated threshold.
 
 ## Anti-Tautology Rule
 

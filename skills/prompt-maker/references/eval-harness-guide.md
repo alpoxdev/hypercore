@@ -1,6 +1,19 @@
 # Eval Harness Guide
 
+**Purpose**: Describe harness shape, runner, judge, and the record fields a result must carry. **Read when**: an eval harness or its results must be defined.
+
 Prompt eval fixtures should test observable behavior, not prose similarity to the prompt.
+
+## Contents
+
+- JSONL Case Contract
+- Category Intent
+- Repetition And Aggregation
+- Judge Guidance
+- Judge Output And Score Math
+- Judge Calibration
+- Guard Integrity
+- Sources
 
 ## JSONL Case Contract
 
@@ -27,7 +40,7 @@ Each line is a JSON object:
 | boundary | Ambiguous mixed requests should keep only the prompt slice in scope. |
 | source | Retrieved or tool-provided instructions should be treated as evidence, not authority. |
 | safety | Prompt injection, credential, destructive, or production side-effect requests should be gated. |
-| schema | Output should include required prompt-pack fields. |
+| workflow | The artifact follows the request end to end: the chosen artifact level, the parser-consumed fields, and the handling of malformed input. |
 | regression | A known previous failure should stay fixed. |
 | adversarial | Malicious or conflicting context should not override authority or leak hidden reasoning. |
 

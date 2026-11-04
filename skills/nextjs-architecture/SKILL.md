@@ -1,23 +1,23 @@
 ---
 name: nextjs-architecture
-description: "[Hyper] Use when working on Next.js projects, especially App Router or App Router migration work. Enforces current official Next.js architecture rules for project/folder structure, Hypercore local `src/modules` / `src/services` / `src/db` organization, Drizzle boundaries, hooks, Server and Client Component boundaries, Cache Components and data freshness, Server Actions, Route Handlers, Proxy, and platform/env safety."
+description: "[Hyper] Use this skill when the user asks to audit, change, or extend an existing Next.js project, especially App Router work or an App Router migration that touches Server/Client boundaries, data and cache freshness, mutations, Route Handlers, Proxy, env or platform setup, or shared folder layout. It enforces current official Next.js behavior plus labelled Hypercore conventions. Do not use it for generic React architecture, Remix or TanStack Start projects, or copy-only edits that cross no architectural boundary."
 compatibility: Works best with repo inspection, official Next.js docs verification, and direct code edits in Next.js applications.
 ---
 
 @architecture-rules.md
-@rules/project-structure.md
-@rules/services.md
-@rules/hooks.md
-@rules/db.md
 @rules/routes.md
+@rules/project-structure.md
 @rules/execution-model.md
 @rules/data-fetching.md
 @rules/server-actions.md
 @rules/route-handlers.md
+@rules/services.md
+@rules/hooks.md
+@rules/db.md
 @rules/platform.md
 @rules/validation.md
-@references/official/nextjs-docs.md
 @references/official/current-docs-2026-06-02.md
+@references/official/nextjs-docs.md
 @references/official/drizzle-docs.md
 
 # Next.js Architecture Enforcement
@@ -67,34 +67,6 @@ Do not use this skill for generic React architecture, Remix/TanStack Start proje
 
 </instruction_contract>
 
-## Overview
-
-Enforce official Next.js architecture rules before and after code changes. First prove that the target is a Next.js project and identify whether it uses App Router, Pages Router, or both. Then apply the smallest relevant rule set for routing, Server and Client Component boundaries, data/cache behavior, Server Actions, Route Handlers, Proxy, and platform configuration.
-
-**Official-first rule:** the current Next.js docs are the source of truth for framework behavior. If a repo-local convention is stricter than Next.js, label it as a local convention instead of framework law.
-
-**App Router default:** full enforcement applies to `app/` and `src/app/` work. In Pages Router-only projects, apply shared Next.js platform, env, and boundary checks without forcing App Router-only file conventions unless the user is migrating.
-
-**Mutation default:** for App Router UI-originated writes, prefer Server Actions. Use Route Handlers for HTTP-native contracts such as webhooks, feeds, CORS endpoints, public machine-readable endpoints, and non-UI responses.
-
-**Security default:** treat every Server Action as a reachable POST entry point. Validate input, authenticate, authorize, and shape minimal return values inside the action or a delegated server-only layer.
-
-## Quick Surface Chooser
-
-| If the task sounds like... | Default surface | Avoid by default |
-|---|---|---|
-| Add a form or internal UI mutation in App Router | Server Action | `route.ts` RPC |
-| Add a webhook, feed, CORS endpoint, public API, XML, JSON, or stream | Route Handler | Server Action |
-| Fetch initial page data for UI | Server Component | Client-first fetching |
-| Add interactivity, browser APIs, or client hooks | Narrow Client Component | Root-level `'use client'` |
-| Add client orchestration around a Server Action | Client hook calling the action | Hook importing DB/DAL/server-only code |
-| Add domain logic, provider calls, or authorization | Server-only service/DAL layer | Route file or Client Component ownership |
-| Add Drizzle schema, migrations, repositories, or DB client | `rules/db.md` + server-only `src/db` convention | Client hooks or Route Handler request lifecycle |
-| Cache repeatable data/UI in Next.js 16+ | `cacheComponents` + `use cache` / `cacheTag` / `cacheLife` | stale `fetch` default assumptions |
-| Refresh UI after mutation | `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, or redirect flow | undocumented freshness |
-| Redirect/rewrite before render across many requests | `next.config.*` first, then Proxy if needed | Proxy as generic middleware |
-| Pages Router only and no migration requested | shared Next.js checks | App Router-only file rules |
-
 <activation_examples>
 
 Positive examples:
@@ -122,49 +94,101 @@ Boundary examples:
 
 </activation_examples>
 
-## Step 1: Project Validation
+<trigger_conditions>
 
-Before architectural work, confirm the project and router mode:
+Router mode picks the rule set; the table in `architecture-rules.md` § Project Modes owns the modes. No `next` dependency ends the run.
 
-```bash
-rg -n '"next"' package.json
-find . -maxdepth 3 \( -path './app' -o -path './src/app' -o -path './pages' -o -path './src/pages' \)
-test -f next.config.ts -o -f next.config.mjs -o -f next.config.js
-```
+| If the task sounds like... | Default surface | Avoid by default |
+|---|---|---|
+| Add a form or internal UI mutation in App Router | Server Action | `route.ts` RPC |
+| Add a webhook, feed, CORS endpoint, public API, XML, JSON, or stream | Route Handler | Server Action |
+| Fetch initial page data for UI | Server Component | Client-first fetching |
+| Add interactivity, browser APIs, or client hooks | Narrow Client Component | Root-level `'use client'` |
+| Add client orchestration around a Server Action | Client hook calling the action | Hook importing DB/DAL/server-only code |
+| Add domain logic, provider calls, or authorization | Server-only service/DAL layer | Route file or Client Component ownership |
+| Add Drizzle schema, migrations, repositories, or DB client | `rules/db.md` + server-only `src/db` convention | Client hooks or Route Handler request lifecycle |
+| Cache repeatable data/UI in Next.js 16+ | `cacheComponents` + `use cache` / `cacheTag` / `cacheLife` | stale `fetch` default assumptions |
+| Refresh UI after mutation | `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, or redirect flow | undocumented freshness |
+| Redirect/rewrite before render across many requests | `next.config.*` first, then Proxy if needed | Proxy as generic middleware |
+| Pages Router only and no migration requested | shared Next.js checks | App Router-only file rules |
 
-Interpretation:
+</trigger_conditions>
 
-- No `next` dependency: stop; this skill does not apply.
-- `app/` or `src/app/`: App Router mode.
-- `pages/` or `src/pages/` without App Router: shared Next.js mode.
-- Mixed `app/` and `pages/`: enforce App Router rules for touched `app/` code and avoid legacy migration unless requested.
+<skill_architecture>
 
-## Step 2: Read the Smallest Relevant Rule Set
+- Core (`SKILL.md`): trigger, contract, gate order, verification, stop condition.
+- Rules: `architecture-rules.md` (taxonomy and gate summary), plus eleven topic files listed in `reference_routing`.
+- References: `references/official/current-docs-2026-06-02.md`, `nextjs-docs.md`, `drizzle-docs.md` hold dated official facts. `assets/evals/nextjs-architecture-cases.jsonl` holds trigger and behavior cases.
+- The skill is self-contained; it needs no other skill's path, document, or invocation.
 
-**Required first read:** `architecture-rules.md`.
+## Available scripts
 
-Then load only the rule files needed for the touched surface:
+- `scripts/validate-nextjs-architecture-skill.sh`
+  - Purpose: validate this skill folder anatomy, required files, official-baseline phrases, and Korean sibling parity.
+  - Usage: `bash skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh` from the repository root.
+  - Requires: bash 3.2+ and jq 1.6+.
+  - Output: a JSON summary with `ok`, line and file counts, and the executed check names; non-zero exit on failure.
 
-- `rules/routes.md` — file conventions, segment rules, route groups, private folders, parallel/intercepted route cautions
-- `rules/project-structure.md` — top-level project shape, `src/`, shared code placement, nested `src/modules`, `src/services`, `src/db`, `src/server`, `src/integrations`, `src/config`, repo-local organization conventions
-- `rules/services.md` — DAL/service/provider boundaries, DTOs, authorization delegation, server-only helper splits
-- `rules/hooks.md` — client hook orchestration boundaries and where hooks must not cross server/data layers
-- `rules/db.md` — Drizzle schema/config/migrations, connection lifecycle, relations/RQB, validation integrations, server-only DB placement
-- `rules/execution-model.md` — Server/Client Components, `'use client'`, providers, serializable props, `server-only` / `client-only`
-- `rules/data-fetching.md` — server-first reads, streaming, Cache Components, `use cache` / `use cache: remote` / `use cache: private`, cache tags, revalidation, dynamic rendering
-- `rules/server-actions.md` — `use server`, forms, validation, auth/authz, DAL delegation, `updateTag` / revalidation / redirect ordering
-- `rules/route-handlers.md` — `route.ts`, HTTP methods, caching intent, params, non-UI responses, CORS/webhooks
-- `rules/platform.md` — env, `next.config.*`, `typedRoutes`, Proxy, route segment config, deployment-sensitive settings
+</skill_architecture>
 
-For drift-sensitive Next.js behavior, also read `references/official/current-docs-2026-06-02.md` first, then `references/official/nextjs-docs.md` and fetch official pages through `https://r.jina.ai/https://nextjs.org/docs/...` when browser-readable markdown is needed. For Drizzle-specific behavior, read `references/official/drizzle-docs.md`.
+<loop_policy>
 
-## Step 3: Pre-Change Gates
+- No optimization loop. One enforcement pass per request: gates, edits, verification.
+- Verification runs once per request; a second pass happens only on a new user request or a reported failure, and re-runs only the checks tied to the touched surface. Findings come from the gate tables and project checks, never from re-reading the same diff until it feels right.
 
-### Brownfield Adoption
+</loop_policy>
 
-- Do not fail untouched legacy deviations by default.
-- Safety, secret, auth, and boundary issues block immediately in touched files.
-- Bring touched files into compliance unless that requires a broad migration.
+<language_and_translation_default>
+
+Write findings, reviews, and change summaries in Korean. Keep identifiers, file paths, route segments, API names, and rule labels (`BLOCKED`, `WARNING`) in their source form so the report maps one-to-one onto the tables here. `SKILL.ko.md` mirrors this file section by section; a rule changed here is changed there in the same edit.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+Read `architecture-rules.md` first, always. Then read only the files for the touched surface:
+
+| Touched surface | File |
+|---|---|
+| File conventions, segment rules, route groups, private folders, parallel/intercepted routes | `rules/routes.md` |
+| Top-level project shape, `src/`, nested `src/modules` / `src/services` / `src/db` / `src/server` / `src/integrations` / `src/config` | `rules/project-structure.md` |
+| Server/Client Components, `'use client'`, providers, serializable props, `server-only` | `rules/execution-model.md` |
+| Server-first reads, streaming, Cache Components, `use cache`, cache tags, revalidation | `rules/data-fetching.md` |
+| `use server`, forms, validation, auth, DAL delegation, freshness after mutation | `rules/server-actions.md` |
+| `route.ts`, HTTP methods, caching intent, params, CORS, webhooks | `rules/route-handlers.md` |
+| DAL/service/provider boundaries, DTOs, authorization delegation | `rules/services.md` |
+| Client hook orchestration and its boundaries | `rules/hooks.md` |
+| Drizzle schema, migrations, connection lifecycle, server-only DB placement | `rules/db.md` |
+| Env, `next.config.*`, `typedRoutes`, Proxy, route segment config, deployment settings | `rules/platform.md` |
+| Post-change checks for the touched surface | `rules/validation.md` |
+| Next.js behavior that may have drifted since the snapshot | `references/official/current-docs-2026-06-02.md`, then `references/official/nextjs-docs.md`; `references/official/drizzle-docs.md` for Drizzle claims |
+
+Fetch `https://r.jina.ai/https://nextjs.org/docs/...` only when the two official snapshots disagree or the page must be read as markdown.
+
+</reference_routing>
+
+<support_file_read_order>
+
+1. `architecture-rules.md` before any finding or edit.
+2. The topic rule for the touched surface, in `reference_routing` order.
+3. `rules/validation.md` when the change is written and needs its checks.
+4. The official snapshots — `current-docs-2026-06-02.md` then `nextjs-docs.md` — only when framework behavior is version-sensitive; `drizzle-docs.md` only when a Drizzle claim is in scope.
+
+</support_file_read_order>
+
+<workflow>
+
+| Phase | Task | Output |
+|---|---|---|
+| 0 | Confirm the project and router mode | Mode decision |
+| 1 | Load only the rule files for the touched surface | Minimal evidence set |
+| 2 | Judge the planned change against Gates 1–6 | Findings labelled BLOCKED or WARNING |
+| 3 | Apply the implementation policy: auto-fix local reversible issues, refuse broad migrations | Edits or refusal with reason |
+| 4 | Run the post-change checks and report evidence | Verification record |
+
+Phase 0 uses the project-detection commands in `rules/validation.md`; no `next` dependency ends the run.
+
+Phase 2 — gates. Brownfield rule: do not fail untouched legacy deviations by default; safety, secret, auth, and boundary issues block immediately in touched files; bring touched files into compliance unless that requires a broad migration.
 
 ### Gate 1: Routing, File Conventions, and Project Structure
 
@@ -234,36 +258,42 @@ For drift-sensitive Next.js behavior, also read `references/official/current-doc
 | `runtime: 'edge'` or Proxy runtime assumptions changed without platform compatibility checks | BLOCKED |
 | Deployment-sensitive Server Action origin/config changes are undocumented | WARNING/BLOCKED by risk |
 
-## Step 4: Implementation Policy
+Phase 3 — implementation policy. Auto-fix local, reversible issues: narrow client boundaries, move server-only code behind a DAL/helper, add `server-only`, add missing freshness, replace UI-only `route.ts` mutations with small Server Actions, tighten Proxy matcher, and clarify cache intent. Do not auto-apply broad migrations: Pages→App Router rewrites, sweeping cache model changes, mass Route Handler→Server Action conversions, or deployment-sensitive origin/encryption changes.
 
-Auto-fix local, reversible issues: narrow client boundaries, move server-only code behind a DAL/helper, add `server-only`, add missing freshness, replace UI-only `route.ts` mutations with small Server Actions, tighten Proxy matcher, and clarify cache intent.
+Phase 4 runs the post-change checks in the validation section with the commands in `rules/validation.md`, and records the executed commands as evidence.
 
-Do not auto-apply broad migrations: Pages→App Router rewrites, sweeping cache model changes, mass Route Handler→Server Action conversions, or deployment-sensitive origin/encryption changes.
+</workflow>
 
-<validation_checklist>
+<required>
 
-## Step 5: Post-Change Verification
+- A proven project mode before any rule is applied, and a stated reason when the mode excludes App Router rules.
+- The four enforcement defaults: official docs outrank local convention; App Router rules by default for `app/`; Server Actions for App Router UI-originated writes; every Server Action treated as a reachable POST entry point.
+- Every finding tied to a gate row and labelled BLOCKED or WARNING, with repo-local conventions labelled as such.
+- Post-change evidence from the checks in Phase 4 that apply to the touched surface.
+- `bash skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh` run when this skill folder itself changes.
 
-Run the smallest project-specific checks that prove the claim, then report evidence:
+</required>
 
-1. project mode still matches the edited surface
-2. special files are in valid segments and no `page`/`route` conflict exists
-3. shared and segment-local folders follow project-structure rules, with nested `src/lib` / `src/services` grouping required for new touched shared code unless an explicit exception is recorded
-4. `'use client'` boundaries are narrow and safe
-5. client code cannot import server-only modules or private env
-6. data/cache strategy is explicit and current-docs compatible
-7. mutation freshness uses `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect flow, or a documented alternative
-8. Route Handler and Proxy usage remains justified
-9. `next.config.*`, env loading, route segment config, and deployment settings are coherent
+<forbidden>
 
-For this skill folder itself, run:
+- Applying App Router file conventions to a Pages Router-only project that did not ask for migration.
+- Reporting a Hypercore/repo-local folder preference as official Next.js behavior.
+- Auto-applying Pages→App Router rewrites, mass mutation-style conversions, or cache-model sweeps.
+- Touching credentials, production side effects, or deployment-sensitive origin/encryption settings without explicit authority.
+- Silencing a gate because the same pattern exists untouched elsewhere in the repository.
+- Claiming verification that was not run, or recording a gate as passed without its executed check.
 
-```bash
-bash skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh
-```
+</forbidden>
 
-## Stop Condition
+<validation>
 
-Finish when the Next.js mode is known, all touched surfaces pass the relevant gates, verification output is fresh, and any remaining repo-local convention or risk is explicitly reported.
+- [ ] Project mode is proven and matches the edited surface.
+- [ ] Every touched file was judged against Gates 1–6 and the applicable rows are recorded.
+- [ ] `'use client'` boundaries are narrow, no client file reaches server-only code or private env, and cache and freshness behavior is explicit and matches the current snapshot.
+- [ ] Route Handler and Proxy usage is justified, and repo-local conventions are labelled rather than presented as framework law.
+- [ ] Remaining risk, deferred migrations, and dated API ambiguity are reported.
+- [ ] The bundled validator passed when this skill folder changed.
 
-</validation_checklist>
+Stop condition: the Next.js mode is known, all touched surfaces pass the relevant gates, verification output is fresh, and any remaining repo-local convention or risk is explicitly reported.
+
+</validation>

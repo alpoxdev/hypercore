@@ -92,6 +92,8 @@ runs: 3
 gate: 집계 규칙, 동등성 여유, ship 결정
 ```
 
+trigger case는 참/거짓 하나로 끝나지 않습니다. positive, negative, boundary case마다 `expect`(`trigger` 또는 `no_trigger`), `runs`, `threshold`를 그 case에 적고, 실행 결과에는 측정한 비율을 기록합니다. 기본값을 물려받게 하지 않습니다. 실행 횟수가 달라지면 비율의 의미도 달라지기 때문입니다. `runs` 3회와 `threshold` 0.5는 권장 출발점이며 검증된 최적값이 아닙니다. 경계가 모호한 case에 세 번째 기대값을 만들지 않고 `note`와 함께 `no_trigger`로 적습니다. 측정한 비율에는 모델·런타임 식별자와 실행 횟수를 함께 기록하고, 통과율만이 아니라 목표 구간 폭을 밝힙니다.
+
 유지되는 regression surface는 `../assets/evals/docs-maker.ko.jsonl`입니다. 완료 전에 변경된 모든 behavior를 이 fixture로 실행하거나 수동 점검합니다. Candidate를 통과시키려고 expected behavior를 바꾸지 말고, 새로 관측한 failure를 regression case로 추가합니다.
 
 ## 6. Readback 및 Bilingual Gate

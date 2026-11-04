@@ -1,5 +1,7 @@
 # Anti-Patterns
 
+**Purpose**: List the failure modes a prompt artifact must not ship with. **Read when**: before finalizing any prompt artifact.
+
 - Persona-only prompts with no success criteria, scope, authority, output contract, or verification.
 - Prompts that ask for hidden chain-of-thought or private scratchpad disclosure.
 - Source text treated as instructions when it should be evidence.

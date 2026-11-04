@@ -5,8 +5,8 @@ compatibility: git worktree 지원, 저장소 자체의 테스트·타입 검사
 ---
 
 @rules/execution-loop.ko.md
-@rules/verification-gates.ko.md
 @rules/worktree-and-delivery.ko.md
+@rules/verification-gates.ko.md
 
 # Hyper Execute Skill
 
@@ -24,7 +24,7 @@ compatibility: git worktree 지원, 저장소 자체의 테스트·타입 검사
 
 <purpose>
 
-- 선택한 `.hyper/plans/` 계획을 끝까지 밀어 붙입니다. 최상위 행이 모두 `- [x]` 또는 `- [~]`가 되고, 웨이브가 반영되고, 모든 아티팩트가 기록되어야 끝입니다.
+- 선택한 `.hyper/plans/` 계획을 완료까지 이끕니다. 최상위 행이 모두 `- [x]` 또는 `- [~]`가 되고, 웨이브가 반영되고, 모든 아티팩트가 기록되어야 끝입니다.
 - 오케스트레이터로 동작합니다. 계획을 고르고, 분해하고, 배정하고, 검증하고, 기록하고, 반영합니다. 워커 기능이 있으면 이 스킬은 제품 코드를 직접 쓰지 않습니다.
 - 상태를 `.hyper/execute/<slug>/`에 디스크로 남겨, 중단되거나 컨텍스트가 압축된 실행이 기억이 아니라 근거에서 이어지게 합니다.
 - 각 행을 실제 표면에서 캡처한 아티팩트로 증명합니다. 워커의 말이나 dry run으로 증명하지 않습니다.
@@ -47,7 +47,7 @@ compatibility: git worktree 지원, 저장소 자체의 테스트·타입 검사
 
 <instruction_contract>
 
-| Field | Contract |
+| 필드 | 계약 |
 |---|---|
 | Intent | 작성된 계획을 검증된 완료 상태까지 실행하고 요청된 전달 방식으로 반영합니다. |
 | Trigger | `.hyper/plans/` 아래 계획 파일과, 그것을 실행·재개·ship해 달라는 요청이 함께 있을 때입니다. |
@@ -58,26 +58,26 @@ compatibility: git worktree 지원, 저장소 자체의 테스트·타입 검사
 | Loop | 행마다 배정, 검증, 피드백, 재시도의 범위 제한 루프를 돕니다. 상한과 정지 규칙은 `rules/verification-gates.ko.md`에 있습니다. 무제한 재시도와 자기 채점 통과는 없습니다. |
 | Output | 갱신된 계획 체크박스와 추가된 후속 행, `.hyper/execute/<slug>/state.json`, `ledger.jsonl`, 근거 파일, 반영된 커밋, 완료 블록입니다. |
 | Verification | 행마다 다섯 게이트, 완료 주장마다 독립 검증자, 계획의 마지막 검증 웨이브를 수행합니다. `confirmed` 판정만 행을 닫습니다. |
-| Stop condition | 최상위 행이 모두 `[x]` 또는 `[~]`이고, 마지막 검증 웨이브를 돌렸고, 정리를 마쳤고, 완료 블록을 출력했을 때 끝납니다. 정지 규칙이 걸리면 공백을 보고하고 끝냅니다. |
+| Stop condition | 최상위 행이 모두 `[x]` 또는 `[~]`이고, 마지막 검증 웨이브를 돌렸고, 정리를 마쳤고, 완료 블록을 출력했을 때 끝납니다. 사용자가 지정한 웨이브에서 멈추라고 하면 그 웨이브까지 반영하고 남은 행이 열려 있음을 보고합니다. 정지 규칙이 걸리면 공백을 보고하고 끝냅니다. |
 
 </instruction_contract>
 
 <activation_examples>
 
-Positive requests:
+긍정 요청:
 
 - "`hyper-execute billing-retry` 플랜 실행해줘."
 - "`.hyper/plans/api-cleanup.md` 계획 실행하고 ship까지 해줘."
 - "어제 웨이브 2까지 한 실행 이어서 해줘."
 - "`--make-pr`로 이 계획을 웨이브별로 실행해서 PR까지만 열어줘."
 
-Negative requests:
+부정 요청:
 
 - "결제 재시도 기능 계획서부터 써줘."
 - "이 버그 바로 고쳐줘. 플랜 파일은 없어."
 - "방금 바꾼 파일만 커밋해줘."
 
-Boundary requests:
+경계 요청:
 
 - 계획 파일이 어디에도 없는 "`hyper-execute`" 단독 호출은 트리거하되, `.hyper/plans/` 아래 결정 완결된 계획 파일이 필요하다고 말하고 멈춥니다.
 - git 저장소가 아닌 디렉터리에서의 "`--in-place`로 실행해줘"는 트리거하고, 격리 단서를 기록한 뒤 워크트리 없이 진행합니다.
@@ -111,9 +111,9 @@ hyper-execute [plan-slug] [--worktree <absolute-path>] [--make-pr] [--ship] [--i
 <skill_architecture>
 
 - 코어(`SKILL.ko.md`): 트리거, 계약, 사용법, 단계 순서, 종료 조건.
-- Rules: `execution-loop.ko.md`(선택, 재개, 목표와 todo 규율, 웨이브 열기, 레인 배치 결정, 위임 라우터, 워커 메시지 필드, 배정, 모니터링, subagent 없는 대체 경로), `verification-gates.ko.md`(다섯 게이트, 실제 표면 QA 형태, 적대 클래스 트리거 표, DoneClaim과 AdversarialVerify, 판정, 시도와 정지 규칙, `- [~]` 의미), `worktree-and-delivery.ko.md`(통합 기준, 워크트리 생애주기, 반영, 전달 방식, 정리).
-- References: `state-and-ledger.ko.md`(`state.json`과 `ledger.jsonl` 스키마, 이벤트 어휘, 완료 블록 템플릿, 재개 점검 목록).
-- Assets: `assets/evals/hyper-execute-cases.jsonl`, 트리거와 동작 사례.
+- 규칙: `execution-loop.ko.md`(선택, 재개, 목표와 todo 규율, 웨이브 열기, 레인 배치 결정, 위임 라우터, 워커 메시지 필드, 배정, 모니터링, subagent 없는 대체 경로), `verification-gates.ko.md`(다섯 게이트, 실제 표면 QA 형태, 적대 클래스 트리거 표, DoneClaim과 AdversarialVerify, 판정, 시도와 정지 규칙, `- [~]` 의미), `worktree-and-delivery.ko.md`(통합 기준, 워크트리 생애주기, 반영, 전달 방식, 정리).
+- 참조: `state-and-ledger.ko.md`(`state.json`과 `ledger.jsonl` 스키마, 이벤트 어휘, 완료 블록 템플릿, 재개 점검 목록).
+- 자산: `assets/evals/hyper-execute-cases.jsonl`, 트리거와 동작 사례.
 - 묶인 스크립트는 없습니다. 모든 게이트는 오케스트레이터가 캡처한 아티팩트를 보며 실행하는 점검 목록입니다.
 
 </skill_architecture>
@@ -167,7 +167,7 @@ hyper-execute [plan-slug] [--worktree <absolute-path>] [--make-pr] [--ship] [--i
 | 5 | 체크박스를 뒤집고, 후속 행을 덧붙이고, 웨이브를 반영하고, 정리합니다 | `row.closed`, `landed`, `cleanup` 행 |
 | 6 | 마지막 검증 웨이브를 돌리고 완료 블록을 출력합니다 | 완료 블록 |
 
-Phase 규칙:
+단계 규칙:
 
 - 첫 배정 전에 상태를 씁니다. 복구 지점은 계획, 상태, 원장이며 대화가 아닙니다.
 - 웨이브는 하나씩 진행합니다. 웨이브를 반영한 뒤 다음 웨이브의 워크트리를 엽니다.
@@ -226,7 +226,7 @@ Phase 규칙:
 - [ ] 모든 `- [~]` 행에 `Unmet:` 줄이 있고, 미검증 변경을 반영 전에 되돌렸는가.
 - [ ] 전달이 적용 중인 플래그와 일치했고, 플래그 없이 푸시하거나 PR을 열지 않았는가.
 - [ ] 정리를 `--force` 없이 했고 브랜치 삭제 규칙을 지켰는가.
-- [ ] 마지막 검증 웨이브를 돌리고 완료 블록을 출력했는가.
+- [ ] 마지막 검증 웨이브를 돌리고 완료 블록을 출력했거나, 사용자가 지정한 웨이브에서 멈춘 실행이 남은 행을 열린 상태로 보고했는가.
 
 </validation>
 

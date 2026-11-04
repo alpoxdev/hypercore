@@ -1,6 +1,6 @@
 ---
 name: blog-maker
-description: "[Hyper] 네이버 또는 inblog 블로그 글을 쓰거나 고칠 때 사용합니다. 플랫폼과 글의 목표를 먼저 확인하고, 유형을 고른 뒤 키워드 리서치, 출처 있는 운영 수치를 담은 해결 계층이 있는 자연스러운 한국어 초안, 실제 이미지 슬롯과 복사용 이미지 생성 JSON을 제공합니다. 기본은 본문 HTML이며 서식 없는 plain 텍스트는 명시적으로 요청할 때만 씁니다. 네이버·inblog 초안, 후기, 가이드, 제목·개요 수정, 업체 글이 대상이며 웹사이트 SEO 감사, 다른 플랫폼, API 조회만 하는 요청, 자동 발행에는 쓰지 않습니다."
+description: "[Hyper] 네이버 또는 inblog 블로그 글을 쓰거나 고칠 때 사용합니다. 플랫폼과 글의 목표를 먼저 확인하고, 유형을 고른 뒤 키워드 리서치, 출처 있는 운영 수치를 담은 해결 계층이 있는 자연스러운 한국어 초안, 실제 이미지 슬롯과 복사용 이미지 생성 JSON을 제공합니다. 기본은 본문 HTML이며 서식 없는 plain 텍스트는 명시적으로 요청할 때만 씁니다. 네이버 노출 규칙이 무엇인지, 도는 속설이 실제 규칙인지를 출처와 함께 물을 때도 씁니다. 네이버·inblog 초안, 후기, 가이드, 제목·개요 수정, 업체 글이 대상이며 웹사이트 SEO 감사, 다른 플랫폼, API 조회만 하는 요청, 자동 발행에는 쓰지 않습니다."
 compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색과 페이지 조회만 필요합니다. 실제 검색 결과 확인용 브라우저 도구는 선택입니다. 로그인, 스크래핑, 자동 발행 없음.
 ---
 
@@ -35,7 +35,7 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 
 <routing_rule>
 
-결과물이 네이버 또는 inblog 블로그 글(또는 그 제목·개요·수정)이고 사용자가 플랫폼 검색 노출을 신경 쓸 때 `blog-maker`를 씁니다. 지원 플랫폼은 `naver`와 `inblog`이며, 요청이나 아는 URL로 플랫폼을 판별하고 알 수 없거나 충돌할 때만 한 번 묻습니다.
+결과물이 네이버 또는 inblog 블로그 글(또는 그 제목·개요·수정)이고 사용자가 플랫폼 검색 노출을 신경 쓸 때, 또는 네이버 노출 규칙이 무엇인지나 도는 속설이 규칙인지 출처와 함께 물을 때 `blog-maker`를 씁니다.
 
 다음은 활성하지 않습니다.
 
@@ -191,18 +191,59 @@ compatibility: 자체 완결 마크다운 스킬. 주제 리서치용 웹 검색
 
 </runtime_fallback>
 
-<support_file_read_order>
+<trigger_conditions>
 
-기본 본문 HTML을 만들 때 [`references/rich-html-template.ko.md`](references/rich-html-template.ko.md)를 읽고 [`assets/rich-post.html`](assets/rich-post.html)의 서식 복사 버튼을 유지합니다. 유형별 본문은 [`assets/rich-blocks.html`](assets/rich-blocks.html)을 재사용합니다. 읽을 수 없으면 본문 전용 DOM 선택과 클릭 안의 `document.execCommand('copy')`를 갖춘 완전한 HTML을 만들고, 차단 시 본문 선택과 수동 복사를 안내합니다.
+결과물이 네이버 또는 inblog 글 한 편이거나, 네이버가 공개한 노출 규칙을 출처와 함께 답하는 일일 때 다음 입력 모양이면 범위 안입니다.
 
-실행마다 한 언어판만 읽습니다. 경로는 설치된 이 스킬 폴더 기준이며 특정 저장소나 플러그인 캐시 경로를 고정하지 않습니다. 파일은 명시적으로 읽으며 자동으로 포함되지 않습니다. 파일명만 있는 참조는 이 목록에서 일치하는 고유 경로로 찾고 현재 보조 문서 기준으로 해석하지 않습니다.
+- 키워드 하나만 주고 나머지는 리서치로 채우기를 기대하는 요청
+- 업체·브랜드와 주제, 가치입증 사실을 함께 준 요청(전환형)
+- 사용자가 준 경험 메모, 사진, 자료
+- 이미 쓴 글과 함께 제목·서두·구조·문장 수정을 요청하는 경우(수리 경로)
+- 플랫폼 단어 없이 플랫폼 URL(`blog.naver.com`, inblog)만 준 요청
+- 네이버 규칙이나 도는 속설이 맞는지 묻고 답에 출처를 요구하는 질문
 
-- 리서치나 작성 전에 [`rules/intake.ko.md`](rules/intake.ko.md)를 읽습니다. 요청이나 아는 URL로 플랫폼(naver 또는 inblog)을 판별하고 알 수 없거나 충돌할 때만 한 번 묻고, 이미 답한 경우를 제외하고 블로그 URL, 글의 목표, 선택 업체·제품과 그 관계, 선택 업체·제품 URL이나 자료, 선택 톤앤매너의 다섯 항목을 한 번에 묻고 답을 기다립니다. 양식은 묻지 않으며 본문 HTML이 기본이고 plain은 명시 요청 시에만 씁니다.
+플랫폼은 요청이나 아는 URL로 판별하고, 알 수 없거나 충돌할 때만 한 번 묻습니다.
+
+</trigger_conditions>
+
+<skill_architecture>
+
+| 층 | 담는 것 | 읽는 시점 |
+|---|---|---|
+| `SKILL.md` | 트리거, 계약, 워크플로, 출력 형태, 안전, 검증 | 항상 |
+| `rules/` | 실행 절차 — 접수, 리서치, 구조, 랭킹 계약, 문장, 톤, 수리, 이미지 슬롯, 검증 | 그 결정을 맡은 단계에서 |
+| `references/` | 날짜가 붙은 플랫폼 사실, 패턴 라이브러리, 서식·프롬프트 템플릿 | 그 사실이나 패턴이 필요할 때 |
+| `assets/` | 전달용 골격(`rich-post.html`, `rich-blocks.html`)과 평가 케이스 | 전달할 때와 패키지를 바꿀 때 |
+
+</skill_architecture>
+
+<loop_policy>
+
+글 한 편마다 닫힌 루프를 한 번 돕니다. 초안을 쓰고 `rules/validation.ko.md` 점검표와 `references/tell-catalog.ko.md` 스캔을 돌려 강제 규칙 실패를 고치며, 최대 두 라운드까지 반복합니다. 피드백은 점검표와 스캔 결과이며 초안에 대한 스스로의 인상이 아닙니다. 가드는 사실, 공개 문구, 마커, `[확인 필요]` 목록이고 어느 수정도 이 목록을 줄이지 않습니다. 두 라운드를 지나면 남은 항목을 발행 메모에 적고 전달하며, 끝없이 다듬는 루프는 두지 않습니다.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+결과물은 `<output_language>`대로 한국어로 쓰고, 다른 언어는 명시적 요청이 있을 때만 씁니다. 패키지의 마크다운은 영어/한국어 쌍으로 유지하며, 실행마다 한 언어판만 읽고 파일 경로, 마커 표기, JSON 키, 규칙 ID는 양쪽에서 같게 둡니다. 검색어, 인용문, 브랜드 문장은 출처가 쓴 언어 그대로 둡니다.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+- 기본 본문 HTML을 만들 때 [`references/rich-html-template.ko.md`](references/rich-html-template.ko.md)를 읽고 [`assets/rich-post.html`](assets/rich-post.html)의 서식 복사 버튼을 유지합니다. 유형별 본문은 [`assets/rich-blocks.html`](assets/rich-blocks.html)을 재사용합니다. 읽을 수 없으면 본문 전용 DOM 선택과 클릭 안의 `document.execCommand('copy')`를 갖춘 완전한 HTML을 만들고, 차단 시 본문 선택과 수동 복사를 안내합니다.
+- 리서치나 작성 전에 [`rules/intake.ko.md`](rules/intake.ko.md)를 읽고, 이미 답한 경우를 제외하고 블로그 URL, 글의 목표, 선택 업체·제품과 그 관계, 선택 업체·제품 URL이나 자료, 선택 톤앤매너의 다섯 항목을 한 번에 묻고 답을 기다립니다. 양식은 묻지 않으며 본문 HTML이 기본이고 plain은 명시 요청 시에만 씁니다.
 - 유형을 고르기 전에 [`references/post-type-library.ko.md`](references/post-type-library.ko.md) §1~§2를 읽고, 고른 뒤에는 그 유형의 §3 플레이북만 읽습니다(보조 유형을 골랐으면 그 플레이북까지).
 - 주제가 의료이거나 정량적 안전·용량·간격·기간·자격·법적 한도 주장이 걸리면 [`references/regulated-topic-research.ko.md`](references/regulated-topic-research.ko.md)를 읽습니다.
 - 이미지를 배치할 때 [`rules/image-slots.ko.md`](rules/image-slots.ko.md)를 읽고, 생성 프롬프트를 작성할 때 [`references/image-prompt-templates.ko.md`](references/image-prompt-templates.ko.md)를 읽습니다.
 - 전달 전에 [`references/format-options.ko.md`](references/format-options.ko.md)를 읽습니다. 기본 본문 HTML, 제목·태그 분리, plain 예외, HTML 클립보드 조건을 따릅니다.
-- 판별된 플랫폼이 `inblog`이면 전달 전에 [`references/inblog-format.ko.md`](references/inblog-format.ko.md)를 읽습니다. 왼쪽 정렬 자연 문단, `h2`~`h4` 소제목, H1 중복 없음, 분리된 메타데이터, 서식 복사 경로를 확인합니다. 렌더링된 본문을 `서식 콘텐츠 복사`로 복사해 inblog 일반 본문에 Ctrl+V/⌘V로 붙이고, 자동 복사가 막히면 선택된 본문에서 Ctrl+C/⌘C를 누릅니다. 본문은 HTML 임베드 블록에 넣지 않으며(외부 임베드 전용), Markdown 복사 경로는 없습니다.
+- 판별된 플랫폼이 `inblog`이면 전달 전에 [`references/inblog-format.ko.md`](references/inblog-format.ko.md)를 읽습니다. 왼쪽 정렬 자연 문단, `h2`~`h4` 소제목, H1 중복 없음, 분리된 메타데이터, 서식 복사 경로(`서식 콘텐츠 복사` 후 inblog 일반 본문에 Ctrl+V/⌘V)를 확인합니다. 본문은 HTML 임베드 블록에 넣지 않으며(외부 임베드 전용), Markdown 복사 경로는 없습니다.
+
+</reference_routing>
+
+<support_file_read_order>
+
+경로는 설치된 이 스킬 폴더 기준이며 특정 저장소나 플러그인 캐시 경로를 고정하지 않습니다. 파일은 명시적으로 읽으며 자동으로 포함되지 않습니다. 파일명만 있는 참조는 이 목록에서 일치하는 고유 경로로 찾고 현재 보조 문서 기준으로 해석하지 않습니다.
 
 1. 시작 질문을 마친 뒤 매 실행마다 [`rules/post-workflow.ko.md`](rules/post-workflow.ko.md)를 읽습니다. 모드 결정, 접수, 구조 골격, 전달 순서.
 2. 브리프에 경험·출처·이미지가 없을 때(보통의 경우) [`rules/topic-research.ko.md`](rules/topic-research.ko.md)를 읽습니다. 리서치 절차, 경험 슬롯, 인라인 이미지 슬롯, 사실 묶음 형태.

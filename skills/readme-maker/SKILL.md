@@ -1,6 +1,6 @@
 ---
 name: readme-maker
-description: "[Hyper] Create or refactor a project README.md by carefully reading the codebase. Detects project shape (CLI, library, web app, monorepo, plugin, framework, docs site, service), entry points, scripts, configuration, license, and existing docs, then produces a structured Korean README by default, unless the user requests another language or an existing README must preserve its current language. Use when the user wants a new README, a refactor of a stale README, or a section update grounded in the actual code."
+description: "[Hyper] Use this skill when the user asks to create, refactor, or update a project README.md, or a package README inside a monorepo, from the codebase itself. It detects project shape (CLI, library, web app, monorepo, plugin, framework, docs site, service), entry points, scripts, configuration, license, and existing docs, then writes a structured README in Korean by default unless the user requests another language or an existing README must keep its current one. Do not use for CHANGELOG, CONTRIBUTING, LICENSE, general documentation, release notes, or source-code work."
 compatibility: Works best with read/edit/write and shell search tools for project structure scanning, manifest inspection, and source verification.
 ---
 
@@ -17,9 +17,7 @@ compatibility: Works best with read/edit/write and shell search tools for projec
 
 Default all user-facing deliverables, saved artifacts, reports, plans, generated docs, summaries, handoff notes, commit/message drafts, and validation notes to Korean, even when this canonical skill file is written in English.
 
-Preserve source code identifiers, CLI commands, file paths, schema keys, JSON/YAML field names, API names, package names, proper nouns, and quoted source excerpts in their required or original language.
-
-Use a different language only when the user explicitly requests it, an existing target artifact must stay in another language for consistency, or a machine-readable contract requires exact English tokens. If a localized template or reference exists (for example `*.ko.md` or `*.ko.json`), prefer it for user-facing artifacts.
+Use a different language only when the user explicitly requests it, an existing target artifact must stay in another language for consistency, or a machine-readable contract requires exact English tokens.
 
 </output_language>
 
@@ -63,7 +61,7 @@ Do not use `readme-maker` when:
 | Authority | User instructions and project-local docs (`AGENTS.md`, `CLAUDE.md`, root README, package manifests) outrank generic README conventions and external templates. |
 | Evidence | Ground every install command, script invocation, file path, badge, and feature claim in a real file under the project. Do not invent commands or APIs. |
 | Tools | Use read/edit/write and shell search (`find`, `grep`, `ls`) only inside the project. Do not run install, build, deploy, or release commands as part of authoring. |
-| Loop | None. One pass per request: discover the project, plan sections, draft, validate, report, then stop. Re-invoke only when the user asks for another README or a follow-up section update. |
+| Loop | None. One pass per request, specified in `loop_policy`; re-invoke only when the user asks for another README or a follow-up section update. |
 | Output | A single written or updated `README.md`, plus a short summary noting which files were inspected and which sections changed. |
 | Verification | Run project-discovery, shape, language, and evidence checks from `rules/validation.md` before completion. |
 | Stop condition | Finish when checks pass and any uncertain claims are flagged with `<!-- TODO -->`; escalate when project shape is ambiguous, license is unclear, or commands cannot be verified from the repo. |
@@ -110,15 +108,54 @@ Boundary examples:
 
 </trigger_conditions>
 
-<supported_targets>
+<skill_architecture>
 
-- Root `README.md` of an app, library, CLI, plugin, framework, docs site, or service.
-- Package-level `README.md` inside a monorepo workspace.
-- README refactors that re-derive sections from current code.
-- README updates that touch install, usage, configuration, scripts, examples, or project structure.
-- Korean-by-default language alignment, while preserving another language only when the user requests it or an existing README must stay consistent.
+| Part | Role |
+|---|---|
+| `SKILL.md` | Trigger, contract, workflow, gates |
+| `rules/project-discovery.md` | Project shape, entry points, manifests, scripts, existing docs |
+| `rules/section-design.md` | Section policy by project type, order, style, badges, trimming |
+| `rules/validation.md` | Evidence, shape, language, and completeness gates |
+| `references/readme-templates.md` | Per-type README skeletons to adapt, not to paste |
+| `assets/evals/readme-maker-cases.jsonl` | Trigger, routing, evidence, and safety cases |
 
-</supported_targets>
+</skill_architecture>
+
+<loop_policy>
+
+No loop. One request produces one discovery pass, one section plan, one draft, one validation pass, and one report. When a check fails, fix the named section and re-run that check, at most twice; after that, report the remaining gap instead of iterating further. Self-review alone never counts as verification.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+Preserve source code identifiers, CLI commands, file paths, schema keys, JSON/YAML field names, API names, package names, proper nouns, and quoted source excerpts in their required or original language. When a localized template or reference exists (`*.ko.md`, `*.ko.json`), prefer it for user-facing artifacts.
+
+This package's own Markdown is maintained as English/Korean pairs; read one language version per run and keep both sides equal when either changes.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+- When the project type or its evidence sources are unclear, read `rules/project-discovery.md` before choosing sections.
+- Before fixing section order, depth, style, or badge policy, read `rules/section-design.md`.
+- While drafting, read `references/readme-templates.md` for the matching project type; a template is a starting skeleton, never a source of commands.
+- Before completion, read `rules/validation.md` and run its checks.
+- When this package's trigger, workflow, or output changes, read `assets/evals/readme-maker-cases.jsonl` and add observed failures as regressions.
+
+</reference_routing>
+
+<support_file_read_order>
+
+Read one language version per run; the Korean package uses the matching `*.ko.md` file. Read conditions are in `reference_routing`.
+
+1. `rules/project-discovery.md`
+2. `rules/section-design.md`
+3. `references/readme-templates.md`
+4. `rules/validation.md`
+5. `assets/evals/readme-maker-cases.jsonl`
+
+</support_file_read_order>
 
 <workflow>
 
@@ -142,26 +179,18 @@ Boundary examples:
 
 </workflow>
 
-<modes>
+<required>
 
-## create mode
+| Category | Required |
+|------|------|
+| Evidence | Every install/usage line maps to a manifest, script, source file, or existing doc in the repo |
+| Shape match | Section selection matches the detected project type |
+| Language match | README prose is Korean by default, or matches the user-requested/existing target language when preservation is required |
+| Discoverability | Title, one-line description, install, and quickstart are above the fold |
+| Scope | Update mode touches only the sections the user named or the diff implies, and adds a change-history entry only when the README already tracks one |
+| Verification | Validation checklist completed before claiming done |
 
-- Start from the project profile and pick the matching template; translate `references/readme-templates.md` into Korean by default or use `references/readme-templates.ko.md` when available.
-- Include only sections supported by real evidence in the repo.
-- Mark unknowns explicitly with `<!-- TODO: confirm with maintainer -->` instead of fabricating.
-
-## refactor mode
-
-- Preserve correct existing content; rewrite only sections that drift from the code.
-- Re-derive install, usage, scripts, and structure sections from current files.
-- Keep links, badges, and prose that still hold; remove dead links and stale commands.
-
-## update mode
-
-- Touch only the sections the user named or the diff implies.
-- Append a dated entry to a change-history section only if the project README already tracks one.
-
-</modes>
+</required>
 
 <forbidden>
 
@@ -175,37 +204,6 @@ Boundary examples:
 | Extra files | Creating `CHANGELOG.md`, `CONTRIBUTING.md`, or other docs unless the user asks |
 
 </forbidden>
-
-<required>
-
-| Category | Required |
-|------|------|
-| Evidence | Every install/usage line maps to a manifest, script, source file, or existing doc in the repo |
-| Shape match | Section selection matches the detected project type |
-| Language match | README prose is Korean by default, or matches the user-requested/existing target language when preservation is required |
-| Discoverability | Title, one-line description, install, and quickstart are above the fold |
-| Verification | Validation checklist completed before claiming done |
-
-</required>
-
-<structure_blueprint>
-
-Default Korean README outline (adapt by project type per `references/readme-templates.md` / `.ko.md`):
-
-1. Title + one-line description
-2. Optional badges (only when verifiable)
-3. Features or highlights (3-7 bullets max)
-4. Install
-5. Quickstart / Usage
-6. Configuration / Environment
-7. Commands or API surface (CLI, library, plugin)
-8. Examples
-9. Development (build, test, dev server, scripts)
-10. Project structure (only when non-trivial)
-11. Contributing (only if the project documents a process)
-12. License
-
-</structure_blueprint>
 
 <validation>
 

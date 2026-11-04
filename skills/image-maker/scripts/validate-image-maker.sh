@@ -252,6 +252,14 @@ def terminal_prompt($in;$pre;$tok;$bd;$hist;$rt;$art):
       end
   end;
 
+def section_tags: [ split("\n")[] as $line | (try ($line | capture("^<(?<t>[a-z_]+)>[[:space:]]*$") | .t) catch empty) ];
+def tag_errors($file;$en;$ko;$required):
+  ($en|section_tags) as $et
+  | ($ko|section_tags) as $kt
+  | ([ $required[] as $t | select((($et|index($t)) == null)) | "E_REQUIRED_TAG:"+$file+":"+$t ]
+     + [ $required[] as $t | select((($kt|index($t)) == null)) | "E_REQUIRED_TAG:"+($file|sub("\\.md$";".ko.md"))+":"+$t ]
+     + (if $et != $kt then ["E_PAIR_TAG_MISMATCH:"+$file] else [] end)
+     + (if ($et|length) != ($et|unique|length) then ["E_DUPLICATE_TAG:"+$file] else [] end));
 def heading_levels: [ split("\n")[] as $line | (($line|match("^(#{1,6}) ")) // null) | select(. != null) | .captures[0].string | length ] | join(",");
 def heading_set: [ split("\n")[] | select(test("^#{1,6} ")) | trim_str ] | unique;
 def heading_errors($file;$en;$ko;$required):
@@ -264,7 +272,7 @@ def prompt_table_errors($label):
   [ split("\n")[] | select(startswith("|")) | select((test("^\\|[\\s:|-]+\\|?\\s*$"))|not) ] | .[1:] as $rows
   | if ((($rows|length) != 12) or ([ $rows[] | split("|")[1:-1] | map(trim_str) | any(. == "") ] | any)) then ["E_PROMPT_TABLE:"+$label] else [] end;
 
-def normalize_row: if is_rec then walk(if type == "object" then with_entries(select(.key as $k | (["id","paired_id","language","trigger","topic","compiled_brief","question","disclosure"]|index($k)) == null)) else . end) | tojson else tojson end;
+def normalize_row: if is_rec then walk(if type == "object" then with_entries(select(.key as $k | (["id","paired_id","language","trigger","prompt","topic","compiled_brief","question","disclosure"]|index($k)) == null)) else . end) | tojson else tojson end;
 
 def rows_result($rows;$evals;$auto_kinds;$manual_kinds):
   ($rows|length) as $n
@@ -843,10 +851,6 @@ REQUIRED_FILES=(
 )
 
 HEADING_SPEC='{
-  "SKILL.md": {
-    "en": ["# Image Maker","## Job, boundary, and fallback","## Contract","## Workflow","## Examples","## Conditional navigation and verification"],
-    "ko": ["# Image Maker","## 역할, 경계 및 대체","## 계약","## 워크플로","## 예시","## 조건부 탐색과 검증"]
-  },
   "rules/capability-and-output.md": {
     "en": ["# Capability, Delivery, and Stop Rules","## ChatGPT native-image override","## Typed inputs and policy origin","## Resolver order","## Attempts, terminals, and evidence","## Safe output and source handling"],
     "ko": ["# 기능, 전달 및 중단 규칙","## ChatGPT 네이티브 이미지 우선 규칙","## 형식화된 입력과 정책 출처","## 해결 순서","## 시도, 종료 상태 및 증거","## 안전한 출력과 원본 처리"]
@@ -868,6 +872,10 @@ HEADING_SPEC='{
     "ko": ["# 런타임 기능과 드리프트 지침","## 로드 조건","## 현재 실행 관찰하기","### ChatGPT 관찰","## 증거에서 동작 선택하기","## 제공자 관련 주장 기록하기","## 드리프트와 출처 실패 거부하기","## 중단 및 차단 동작"]
   }
 }'
+
+# SKILL.md and its mirror follow the repository skill contract: the ordered section tags must
+# match between languages, and every required section must be present in both.
+REQUIRED_SKILL_TAGS='["output_language","purpose","routing_rule","instruction_contract","activation_examples","trigger_conditions","skill_architecture","loop_policy","language_and_translation_default","reference_routing","support_file_read_order","workflow","required","forbidden","validation"]'
 
 audit_package() { # root
   local root="$1" errors=() file text ko rule_pair direction_pair finding
@@ -902,6 +910,11 @@ audit_package() { # root
       errors+=("E_STRAY_DOC:$file")
     fi
   done
+  while IFS= read -r finding; do
+    [ -n "$finding" ] && errors+=("$finding")
+  done < <(jq -rn --rawfile en "$root/SKILL.md" --rawfile ko "$root/SKILL.ko.md" \
+    --argjson req "$REQUIRED_SKILL_TAGS" \
+    "$JQ"' tag_errors("SKILL.md"; $en; $ko; $req)[]')
   while IFS= read -r file; do
     [ -z "$file" ] && continue
     while IFS= read -r finding; do
@@ -969,16 +982,16 @@ embedded_tests() { # with-audit-fixture(1/0) -> lines of failure codes
   [ "$legacy_allow" = "false" ] || failures+=("E_SELF_LEGACY_ALLOW")
 
   local skill_req
-  skill_req="$(printf '%s' "$HEADING_SPEC" | jq -c '.["SKILL.md"]')"
-  out="$(jq -n --argjson req "$skill_req" "$JQ"' heading_errors("SKILL.md"; "# Image Maker\n## Renamed section\n"; "# Image Maker\n## 이름 바꾼 절\n"; $req)[]')"
+  skill_req="$(printf '%s' "$REQUIRED_SKILL_TAGS")"
+  out="$(jq -n --argjson req "$skill_req" "$JQ"' tag_errors("SKILL.md"; "<purpose>\n<workflow>\n"; "<purpose>\n<workflow>\n"; $req)[]')"
   case "$out" in
-    *E_REQUIRED_HEADING:SKILL.md:\#\#\ Contract*) ;;
-    *) failures+=("E_SELF_HEADING_CHECK") ;;
+    *E_REQUIRED_TAG:SKILL.md:validation*) ;;
+    *) failures+=("E_SELF_TAG_CHECK") ;;
   esac
-  out="$(jq -n --argjson req "$skill_req" "$JQ"' heading_errors("SKILL.md"; "# Image Maker\n## One\n"; "# Image Maker\n## One\n## Two\n"; $req)[]')"
+  out="$(jq -n --argjson req "$skill_req" "$JQ"' tag_errors("SKILL.md"; "<purpose>\n<workflow>\n"; "<purpose>\n<required>\n"; $req)[]')"
   case "$out" in
-    *E_PAIR_HEADING_MISMATCH:SKILL.md*) ;;
-    *) failures+=("E_SELF_HEADING_CHECK") ;;
+    *E_PAIR_TAG_MISMATCH:SKILL.md*) ;;
+    *) failures+=("E_SELF_TAG_CHECK") ;;
   esac
   out="$(jq -n "$JQ"' "| head |\n| --- |\n| only one row |\n" | prompt_table_errors("fixture.md")[]')"
   case "$out" in
@@ -1008,18 +1021,18 @@ embedded_tests() { # with-audit-fixture(1/0) -> lines of failure codes
   local skill_path skill_text skill_ko_path skill_ko_text table_path rule_path direction_path
   skill_path="$audit_fixture/SKILL.md"
   skill_text="$(cat "$skill_path")"
-  sed 's/## Contract/## Agreement/' "$skill_path" >"$skill_path.tmp" && mv "$skill_path.tmp" "$skill_path"
+  sed 's/<purpose>/<intent>/' "$skill_path" >"$skill_path.tmp" && mv "$skill_path.tmp" "$skill_path"
   case "$(audit_package "$audit_fixture")" in
-    *E_REQUIRED_HEADING*) ;;
-    *) failures+=("E_SELF_AUDIT_RED_HEADING") ;;
+    *E_REQUIRED_TAG:SKILL.md:purpose*) ;;
+    *) failures+=("E_SELF_AUDIT_RED_TAG") ;;
   esac
   printf '%s' "$skill_text" >"$skill_path"
   skill_ko_path="$audit_fixture/SKILL.ko.md"
   skill_ko_text="$(cat "$skill_ko_path")"
-  sed 's/## 계약/## 합의/' "$skill_ko_path" >"$skill_ko_path.tmp" && mv "$skill_ko_path.tmp" "$skill_ko_path"
+  sed 's/<purpose>/<intent>/' "$skill_ko_path" >"$skill_ko_path.tmp" && mv "$skill_ko_path.tmp" "$skill_ko_path"
   case "$(audit_package "$audit_fixture")" in
-    *E_REQUIRED_HEADING:SKILL.ko.md*) ;;
-    *) failures+=("E_SELF_AUDIT_RED_KO_HEADING") ;;
+    *E_REQUIRED_TAG:SKILL.ko.md:purpose*) ;;
+    *) failures+=("E_SELF_AUDIT_RED_KO_TAG") ;;
   esac
   printf '%s' "$skill_ko_text" >"$skill_ko_path"
   table_path="$audit_fixture/references/prompt-crafting.md"

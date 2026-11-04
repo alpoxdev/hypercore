@@ -19,7 +19,7 @@ claim이 다음 중 하나에 해당하면 `high` 위험입니다. 숫자, 법�
 
 ## 3. Claim gate
 
-`normal` claim은 그것을 뒷받침하는 출처 하나를 열면 gate를 통과합니다.
+`normal` claim은 그것을 뒷받침하는 출처 하나를 열면 게이트를 통과합니다.
 
 `high` claim은 다음 조건을 모두 충족할 때만 `## verified-claims` 목록으로 들어갑니다.
 
@@ -32,7 +32,7 @@ claim이 다음 중 하나에 해당하면 `high` 위험입니다. 숫자, 법�
 
 반박 검색을 전혀 할 수 없었던 claim은 `partial`입니다. 리포트는 이 claim을 출처에 귀속한 형태("S14에 따르면 ...")로만 쓰고 확정된 사실처럼 쓰지 않으며, caveat에 반박 검색이 빠졌다고 적습니다.
 
-gate를 통과하지 못한 claim은 `Unresolved` 부록(근거 부족)이나 `Refuted` 부록(반박 검색이 이김)으로 갑니다. 리포트는 부록 항목을 단언하지 않으며 미해결로 나열할 수는 있습니다. 판단을 보류하는 것은 메워야 할 구멍이 아니라 올바른 결과입니다.
+게이트를 통과하지 못한 claim은 `Unresolved` 부록(근거 부족)이나 `Refuted` 부록(반박 검색이 이김)으로 갑니다. 리포트는 부록 항목을 단언하지 않으며 미해결로 나열할 수는 있습니다. 판단을 보류하는 것은 메워야 할 구멍이 아니라 올바른 결과입니다.
 
 `source floor`가 `primary only`이면 비1차 출처는 맥락만 뒷받침할 수 있고 claim은 뒷받침하지 못합니다. `pointed only`이면 지목한 출처만 claim을 뒷받침할 수 있습니다.
 
@@ -80,11 +80,11 @@ shell을 쓸 수 없으면 claim은 `unverified by execution`으로 남고 리�
 
 | Claim | Source |
 |---|---|
-| 리더가 소유하는 claim 테이블, `## CLAIMS` 표시, 고위험 gate(도메인 두 개, 1차 출처, 반박 검색, 명시적 날짜), 미해결·반박 부록, `CONFIRMED`/`REFUTED`/`PARTIAL` 판정을 붙이는 실행 검증, `MEASURED`/`ASSUMED`/`DERIVED` 계보를 `ulw-research` 스킬에서 각색함 | <https://github.com/code-yeongyu/oh-my-openagent/tree/0d80470e4201925727e88afbafcdf24d7801a588> |
+| 리더가 소유하는 claim 테이블, `## CLAIMS` 표시, 고위험 게이트(도메인 두 개, 1차 출처, 반박 검색, 명시적 날짜), 미해결·반박 부록, `CONFIRMED`/`REFUTED`/`PARTIAL` 판정을 붙이는 실행 검증, `MEASURED`/`ASSUMED`/`DERIVED` 계보를 `ulw-research` 스킬에서 각색함 | <https://github.com/code-yeongyu/oh-my-openagent/tree/0d80470e4201925727e88afbafcdf24d7801a588> |
 | 날짜, 권위, 범위, 방법론에 따른 충돌 해결과 충돌을 평균으로 덮지 않는 원칙 | `instructions/sourcing/reliable-search.md` |
 | 1차 출처는 직접 열어 확인하며 인용을 거쳐 받지 않음. agent가 모은 행은 상위 agent가 아티팩트를 열기 전까지 미검증으로 둠 | `instructions/sourcing/references/source-ledger.md` |
 | 가져온 코드는 절대 그대로 실행하지 않음. 실행은 최소 권한으로 하고 자격 증명을 쓰지 않음 | `instructions/sourcing/references/retrieval-safety.md` |
 
 ### 근거 등급
 
-`LOCAL` - 이 파일은 이 패키지 자체의 gate를 진술합니다. 위험 등급 목록과 1차 출처 전용 예외 문구는 이 패키지가 선택한 것입니다.
+`LOCAL` - 이 파일은 이 패키지 자체의 게이트를 진술합니다. 위험 등급 목록과 1차 출처 전용 예외 문구는 이 패키지가 선택한 것입니다.

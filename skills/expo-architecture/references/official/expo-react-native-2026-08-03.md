@@ -1,5 +1,7 @@
 # Expo and React Native Official Evidence Snapshot
 
+Read when an installed SDK version or an official API behavior decides the change. This snapshot records the official claims this package relies on and the date each was verified.
+
 - last_verified_at: 2026-08-03
 - `status`: reviewed from official Expo and React Native documentation
 - `refresh_when`: installed Expo SDK/Router differs materially, a native dependency changes, or routing/config/testing/New Architecture guidance changes

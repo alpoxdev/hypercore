@@ -112,7 +112,8 @@ Use this layering model by default:
 - Core skill: durable instructions for what the skill does, when to use it, how to operate, and how to stop.
 - Rules: reusable policy, decision criteria, validation checklists, and anti-patterns.
 - References: detailed knowledge loaded only when needed, including official or provider-sensitive guidance.
-- Scripts/assets: deterministic execution helpers or output resources with explicit usage and failure handling.
+- Scripts: `bash scripts/validate-skill-maker.sh --root <skill-dir> --evals <cases.jsonl> --require-self-containment --json` checks metadata, required sections, direct links, bilingual parity, sources, and eval rows. It needs bash 3.2+ and jq, prints JSON findings, and exits non-zero while an error remains.
+- Assets: output resources and eval fixtures, each with an explicit usage and failure path.
 
 Do not overload the core `SKILL.md` with information that belongs in rules, references, scripts, or assets.
 
@@ -267,8 +268,8 @@ Must-pass thresholds:
 - [ ] Eval coverage includes normal, missing-context/tool-failure, boundary, adversarial retrieval or unsafe-action, and known-regression behavior; recommended corpus size remains risk-proportional.
 - [ ] English/Korean parity is checked structurally and with equivalent behavioral cases, not file presence alone.
 - [ ] External source metadata uses absolute non-future dates and keeps reviewed, cited, unsupported, stale, and conflicting claims distinguishable.
-- [ ] For `skill-maker` package updates, run the deterministic validator and the JSONL eval fixture when `scripts/` and `assets/evals/` integration exists; if not landed yet, state that validator verification is pending integration.
-- [ ] No cross-skill reference remains in the package: run the deterministic validator with `--require-self-containment` and confirm zero findings; a user-directed exception is passed with `--allow <sibling-name>` and recorded.
+- [ ] Run `bash scripts/validate-skill-maker.sh --root skills/<skill-name> --evals skills/<skill-name>/assets/evals/<skill-name>-cases.jsonl --require-self-containment --json` and confirm zero errors. The eval file it reads is the package's own, never the validator's default.
+- [ ] The self-containment part of that run reported zero cross-skill findings; a user-directed exception is passed with `--allow <sibling-name>` and recorded.
 - [ ] The package works from its own folder alone: every needed detail lives in its own `rules/`, `references/`, `scripts/`, or `assets/`, and repository instruction documents are read only when they exist.
 - [ ] Happy-path validation is paired with malformed-input rejection and provider-date/no-stray-doc regression checks.
 - [ ] Local markdown links, code fences, and source-sensitive claims are checked before completion.

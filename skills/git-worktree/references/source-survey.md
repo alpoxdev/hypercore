@@ -1,6 +1,6 @@
 # Git Worktree Source Survey
 
-This survey captures patterns distilled from public Git worktree documentation, tools, editor integrations, and AI-agent workflows. Use it as rationale; keep operational rules in `rules/worktree-lifecycle.md`.
+Read this only when the rationale, upstream behavior, or a source comparison needs support. The survey captures patterns distilled from public Git worktree documentation, tools, editor integrations, and AI-agent workflows; operational rules stay in `rules/worktree-lifecycle.md`.
 
 ## Sources
 

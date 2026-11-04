@@ -1,6 +1,6 @@
 ---
 name: blog-maker
-description: "[Hyper] Write or revise one Naver or inblog blog post: confirm the platform and the post's goal first, then pick a post type, research a keyword, draft natural Korean with a decision layer that carries sourced operating numbers, place real-image slots and copy-ready image prompt JSON, and deliver body HTML by default (plain text only on an explicit request). Use for Naver or inblog drafts, reviews, guides, title or outline rework, and business posts; not website SEO audits, other platforms, API-only requests, or automatic publishing."
+description: "[Hyper] Use this skill when the user asks to write or revise one Naver or inblog blog post. It confirms the platform and the post's goal first, picks a post type, researches a keyword, drafts natural Korean with a decision layer that carries sourced operating numbers, places real-image slots and copy-ready image prompt JSON, and delivers body HTML by default (plain text only on an explicit request). Also use it when the user asks what Naver's ranking rules are, or whether a circulating claim is one, and wants the source. Use for Naver or inblog drafts, reviews, guides, title or outline rework, and business posts; not website SEO audits, other platforms, API-only requests, or automatic publishing."
 compatibility: Self-contained Markdown skill; needs only web search and page fetch for topic research. Browser tooling for live SERP inspection is optional. No login, scraping, or auto-publishing.
 ---
 
@@ -35,7 +35,7 @@ Default every user-facing deliverable — title candidates, the post block with 
 
 <routing_rule>
 
-Use `blog-maker` when the deliverable is a Naver or inblog blog post (or its title/outline/rework) and the user cares about the platform's search exposure. Supported platforms are `naver` and `inblog`; resolve the platform from the request or a known URL and ask it once only when it is unknown or conflicting.
+Use `blog-maker` when the deliverable is a Naver or inblog blog post (or its title/outline/rework) and the user cares about the platform's search exposure, or when the user asks what Naver's ranking rules are, or whether a circulating claim is one, and wants the source.
 
 Do not activate when:
 
@@ -190,18 +190,59 @@ If support files cannot be read, disclose the skipped detailed checks in the pub
 
 </runtime_fallback>
 
-<support_file_read_order>
+<trigger_conditions>
 
-For the default HTML delivery, read [`references/rich-html-template.md`](references/rich-html-template.md), retain the formatted-copy button in [`assets/rich-post.html`](assets/rich-post.html), and reuse [`assets/rich-blocks.html`](assets/rich-blocks.html). If assets cannot be read, provide complete HTML with body-only DOM selection and `document.execCommand('copy')` inside the button click; on blocking, leave the body selected and explain manual copying.
+The request is in scope when the deliverable is one post for Naver or inblog, or a sourced answer about Naver's published ranking rules, in any of these shapes:
 
-Read only one language version per run. Paths are relative to this installed skill directory, never a hard-coded checkout or plugin cache. File reads are explicit actions, not automatic includes. For bare filenames, resolve the unique matching file in this navigation list; do not interpret them relative to the current support document.
+- a keyword alone, with research expected to fill the rest
+- a brand or business with its topic and 가치입증 facts (전환형)
+- experience notes, photos, or material the user supplies
+- an existing post plus a request to rework its title, opening, structure, or prose (repair path)
+- a platform URL (`blog.naver.com`, inblog) with no platform word
+- a question about a Naver rule or a circulating claim, where the answer must name its source
 
-- Before research or drafting, read [`rules/intake.md`](rules/intake.md). Resolve the platform (naver or inblog) from the request or a known URL, asking it once only when unknown or conflicting, then ask the five intake items together and await the reply unless already answered: blog URL, the post's goal, the optional brand/product and the relationship, optional business/product URL or material, and optional tone and manner. The format is never asked — HTML is the default and plain is used only on an explicit request.
+Resolve the platform from the request or a known URL, and ask it once only when it is unknown or conflicting.
+
+</trigger_conditions>
+
+<skill_architecture>
+
+| Layer | Holds | Read |
+|---|---|---|
+| `SKILL.md` | Trigger, contract, workflow, output shape, safety, validation | Always |
+| `rules/` | The run's procedures — intake, research, structure, ranking contract, prose, tone, repair, image slots, validation | At the step that owns the decision |
+| `references/` | Platform facts with dates, pattern libraries, format and prompt templates | When the step needs the fact or pattern |
+| `assets/` | Delivery scaffolds (`rich-post.html`, `rich-blocks.html`) and the eval cases | At delivery and on a package change |
+
+</skill_architecture>
+
+<loop_policy>
+
+One bounded loop per post: draft, run the `rules/validation.md` checklist and the `references/tell-catalog.md` scan, fix hard-rule failures, and repeat at most twice. Feedback is the checklist plus the scan, never the draft's own impression. The guard is the fact, disclosure, marker, and `[확인 필요]` inventory, which no revision may shrink. After two rounds, deliver with the remaining items named on the publish note; there is no unbounded polish loop.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+Deliver in Korean as `output_language` states, and write another language only on an explicit request. The package's Markdown is maintained as English/Korean pairs: read only one language version per run, and keep file paths, marker syntax, JSON keys, and rule IDs identical in both. Query, quote, and brand text stay in the language the source used.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+- For the default HTML delivery, read [`references/rich-html-template.md`](references/rich-html-template.md), retain the formatted-copy button in [`assets/rich-post.html`](assets/rich-post.html), and reuse [`assets/rich-blocks.html`](assets/rich-blocks.html). If assets cannot be read, provide complete HTML with body-only DOM selection and `document.execCommand('copy')` inside the button click; on blocking, leave the body selected and explain manual copying.
+- Before research or drafting, read [`rules/intake.md`](rules/intake.md) and ask the five intake items together unless already answered: blog URL, the post's goal, the optional brand/product and the relationship, optional business/product URL or material, and optional tone and manner. The format is never asked — HTML is the default and plain is used only on an explicit request.
 - Before choosing the type, read [`references/post-type-library.md`](references/post-type-library.md) §1-§2; after choosing, read only the chosen type's §3 playbook (plus a secondary type's, when one was chosen).
 - When the topic is medical or a quantitative safety, dosage, interval, duration, eligibility, or legal-limit claim is involved, read [`references/regulated-topic-research.md`](references/regulated-topic-research.md).
 - While placing images, read [`rules/image-slots.md`](rules/image-slots.md); when compiling generation prompts, read [`references/image-prompt-templates.md`](references/image-prompt-templates.md).
 - Before delivery, read [`references/format-options.md`](references/format-options.md) for the default body HTML, separate title/tags, the plain exception, and the HTML clipboard requirements.
-- When the resolved platform is `inblog`, read [`references/inblog-format.md`](references/inblog-format.md) before delivery: left-aligned natural paragraphs, `h2`-`h4` subheadings, no duplicate H1, separate metadata, and the rich-copy route. The body route is one button: `서식 콘텐츠 복사`, then Ctrl+V/⌘V into the inblog normal body, or Ctrl+C/⌘C on the still-selected body when the automatic copy is blocked. The body never goes into the HTML embed block, which is for third-party embeds only, and there is no Markdown copy route.
+- When the resolved platform is `inblog`, read [`references/inblog-format.md`](references/inblog-format.md) before delivery: left-aligned natural paragraphs, `h2`-`h4` subheadings, no duplicate H1, separate metadata, and the rich-copy route (`서식 콘텐츠 복사`, then Ctrl+V/⌘V into the inblog normal body). The body never goes into the HTML embed block, which is for third-party embeds only, and there is no Markdown copy route.
+
+</reference_routing>
+
+<support_file_read_order>
+
+Paths are relative to this installed skill directory, never a hard-coded checkout or plugin cache. File reads are explicit actions, not automatic includes. For bare filenames, resolve the unique matching file in this navigation list; do not interpret them relative to the current support document.
 
 1. After intake, read [`rules/post-workflow.md`](rules/post-workflow.md) for the remaining run: mode decision, intake, structure skeleton, delivery order.
 2. Read [`rules/topic-research.md`](rules/topic-research.md) whenever the brief lacks experience, sources, or images (the usual case): research procedure, experience slots, inline image slots, fact-pack shape.

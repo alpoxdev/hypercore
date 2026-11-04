@@ -1,5 +1,7 @@
 # Routing과 Navigation
 
+route tree, layout, route group, param을 바꿀 때 읽습니다. 이 파일은 route thinness, navigation 계약, URL 호환 규칙을 소유합니다.
+
 ## Official boundary
 
 Expo Router 프로젝트에서 해당 route root를 쓰면 route file은 `src/app`에 있습니다. 기존/현재 프로젝트는 root `app`을 사용할 수 있습니다. `_layout.tsx`는 layout/navigation 관계를 정의하고 `(group)`은 URL segment 없이 조직하며 `[param]`은 dynamic segment, `+not-found.tsx`는 unmatched route를 처리합니다. 정확한 동작은 설치 Router version으로 확인합니다.

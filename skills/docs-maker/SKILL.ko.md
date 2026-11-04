@@ -4,24 +4,49 @@ description: "[Hyper] 사용자가 범위, 권한, 근거, 안전, 검증을 명
 compatibility: 파일 읽기와 편집 capability가 필요합니다. 출처 민감 작업에는 승인된 retrieval capability도 필요하며, 선택 capability가 없으면 명시적으로 건너뛰고 결과에 필수인 capability가 없으면 완료를 차단합니다.
 ---
 
+@rules/structured-reasoning.ko.md
+@rules/layer-model.ko.md
+@rules/context-engineering.ko.md
+@rules/harness-engineering.ko.md
+@rules/sourcing.ko.md
+@rules/validation.ko.md
+@rules/required-behaviors.ko.md
+@rules/forbidden-patterns.ko.md
+@references/official/anthropic.ko.md
+@references/official/openai.ko.md
+
 # Docs Maker
 
 > 에이전트와 유지보수자가 로드하고, 신뢰하고, 실행하고, 검증할 수 있는 문서를 만듭니다.
 
 <output_language>
 
-사용자-facing 산출물과 완료 메모는 기본적으로 한국어로 작성합니다. 코드 식별자, 명령, 경로, schema key, API 이름, 고유명사, 인용 원문은 필요한 언어 또는 원문을 유지합니다. 사용자가 다른 언어를 명시했거나 기존 산출물과의 일관성이 필요하면 그 언어를 따릅니다.
+사용자에게 보이는 산출물과 완료 메모는 기본적으로 한국어로 씁니다. 사용자가 다른 언어를 명시했거나 기존 산출물과의 일관성이 필요하면 그 언어를 따릅니다.
 
 </output_language>
 
-<routing_rule>
+<purpose>
 
-주 산출물이 다음 구조화 문서 중 하나라면 `docs-maker`를 사용합니다.
+- 에이전트와 유지보수자가 읽고, 믿고, 실행하고, 검증할 수 있는 문서를 만들거나 고칩니다.
+- 범위, 권한, 근거, 안전, 검증을 산문 속에 묻어 두지 않고 드러내고, 규칙마다 정본 위치를 하나만 두며 나머지는 밝혀 둔 읽기 조건으로 필요할 때 불러옵니다.
+- 흩어진 문서 묶음을 의도를 잃지 않는 가장 작은 계층 분할로 줄입니다.
+
+</purpose>
+
+<trigger_conditions>
+
+주 산출물이 다음 구조화 문서 중 하나일 때 활성화합니다.
 
 - instruction base, agent guide, 런북, 운영 절차
-- 명세, 재사용 가능한 prompt artifact, 정책/규칙 팩
+- 명세, 재사용 가능한 prompt artifact, 정책·규칙 팩
 - context, tool, eval, safety, state, validation을 다루는 harness 문서
-- 기존 문서를 더 조밀하고 명확한 범위, 출처 근거, 검증 가능성을 갖도록 개선하는 리팩토링
+- 기존 문서를 더 조밀하고, 범위가 분명하고, 출처에 근거하고, 검증 가능하게 만드는 리팩토링
+
+다른 결과가 요청을 소유하는 경우와 문서가 코드 작업의 부수 산출물일 때는 활성화하지 않습니다. 그 경로는 `routing_rule`에 있습니다.
+
+</trigger_conditions>
+
+<routing_rule>
 
 다른 결과가 요청을 소유하면 다음으로 라우팅합니다.
 
@@ -79,41 +104,66 @@ Boundary:
 
 </instruction_contract>
 
-<document_architecture>
+<skill_architecture>
 
-정당화되는 최소 계층만 사용합니다.
+| 구성 | 역할 |
+|---|---|
+| `SKILL.md` | trigger, 계약, workflow, gate |
+| `rules/structured-reasoning.ko.md` | 비단순 문서의 분해와 판단 순서 |
+| `rules/layer-model.ko.md` | 계층 분할과 규칙별 정본 위치 |
+| `rules/context-engineering.ko.md` | authority, context 예산, prompt 계약 정책 |
+| `rules/harness-engineering.ko.md` | tool, side effect, state, trajectory 정책 |
+| `rules/sourcing.ko.md` | 주장 등급과 provenance 규칙 |
+| `rules/validation.ko.md` | 위험 깊이, eval, trace assertion, 완료 증거 |
+| `rules/required-behaviors.ko.md`, `rules/forbidden-patterns.ko.md` | 완성된 문서의 통과·실패 목록 |
+| `references/official/*.ko.md` | `last_verified_at`이 붙은 provider 민감 근거 |
+| `assets/evals/docs-maker.ko.jsonl`, `assets/evals/docs-maker.jsonl` | 대표 case와 한국어 parity case |
 
-| 계층 | 소유 | 소유하지 않음 |
-|---|---|---|
-| Canonical core | 지속적이고 provider-neutral한 규칙과 상위 workflow | 날짜가 있는 vendor fact, 긴 예시 |
-| Rules | 재사용 정책과 판단 기준 | 일회성 프로젝트 메모 |
-| References | provider/runtime 상세, schema, 심층 예시, source snapshot | core trigger/stop logic |
-| Source ledger | 최신·논쟁·보안·benchmark·비교 주장의 claim-to-source provenance | 출처 없는 결론 |
-| Local overlay | 프로젝트 경로, 관례, scope limit, runtime profile | 보편 정책 |
-| Validation artifact | scenario, oracle, trace assertion, deterministic check, inspected evidence | 모호한 self-review |
-
-규칙마다 canonical home을 하나만 둡니다. 지원 자료는 필요한 파일에서 직접 링크하고 언제 읽거나 실행할지 명시합니다. 결정적 실행, 재사용, 검증을 실제로 개선하지 않는 script, asset, ledger, 추가 guide는 만들지 않습니다.
-
-</document_architecture>
+</skill_architecture>
 
 <conditional_loading>
 
-현재 문서에 필요한 concern만 로드합니다.
+현재 문서에 필요한 저장소 지침 영역만 읽습니다.
 
-- 비단순 create/refactor 전 `rules/structured-reasoning.ko.md`를 읽습니다.
-- authority, context budget, prompt contract, runtime profile, delegation에는 `rules/context-engineering.ko.md`와 `instructions/context-engineering/CONTEXT_ENGINEERING.ko.md`를 읽습니다. 문서가 compaction, tool result 정리, memory, session handoff를 규정하면 `instructions/context-engineering/references/context-management.ko.md`를 더 읽습니다.
-- tool, side effect, state, safety gate, execution trajectory에는 `rules/harness-engineering.ko.md`와 `instructions/harness-engineering/HARNESS_ENGINEERING.ko.md`를 읽습니다.
-- 저장소 수준 지시 파일이나 코드베이스를 설명하는 문서에는 `instructions/agents-md/AGENTS_MD.ko.md`를 읽습니다. 이 문서가 한 줄의 편입 기준, 우선순위 문장, context file의 측정된 비용을 소유합니다.
-- 반복되거나 사람 없이 도는 workflow를 규정하는 문서에는 `instructions/loop-engineering/LOOP_ENGINEERING.ko.md`를, 여러 node로 이루어진 topology를 규정하는 문서에는 `instructions/graph-engineering/GRAPH_ENGINEERING.ko.md`를 읽습니다. 그 문서의 필수 구성 요소가 곧 대상 문서의 절 구성이며, 다른 구성으로 대체하지 않습니다.
-- 최신·논쟁·보안 민감·benchmark·비교·외부 검색 주장에는 `rules/sourcing.ko.md`와 `instructions/sourcing/reliable-search.ko.md`를 읽습니다.
-- risk depth, eval, trace assertion, reviewer gate, completion evidence에는 `rules/validation.ko.md`와 `instructions/validation/index.ko.md`를 읽습니다.
+- authority, context 예산, prompt 계약, 런타임 profile, 위임에는 `instructions/context-engineering/CONTEXT_ENGINEERING.ko.md`를 읽습니다. 문서가 compaction, tool result 정리, memory, session handoff를 규정하면 `instructions/context-engineering/references/context-management.ko.md`를 더 읽습니다.
+- tool, side effect, state, safety gate, execution trajectory에는 `instructions/harness-engineering/HARNESS_ENGINEERING.ko.md`를 읽습니다.
+- 저장소 수준 지시 파일이나 코드베이스를 설명하는 문서에는 `instructions/agents-md/AGENTS_MD.ko.md`를 읽습니다. 한 줄의 편입 기준, 우선순위 문장, context file의 측정된 비용은 이 문서가 소유합니다.
+- 반복되거나 사람 없이 도는 workflow를 규정하는 문서에는 `instructions/loop-engineering/LOOP_ENGINEERING.ko.md`를, 여러 node로 이루어진 topology를 규정하는 문서에는 `instructions/graph-engineering/GRAPH_ENGINEERING.ko.md`를 읽습니다. 그 문서의 필수 구성 요소가 대상 문서의 절 구성이며, 다른 구성으로 대체하지 않습니다.
+- 최신·논쟁·보안 민감·benchmark·비교·외부 검색 주장에는 `instructions/sourcing/reliable-search.ko.md`를 읽습니다.
+- 위험 깊이, eval, trace assertion, reviewer gate, 완료 증거에는 `instructions/validation/index.ko.md`를 읽습니다.
 - 객관적으로 점수화된 최적화에만 `instructions/autoresearch/`를 읽습니다.
-- skill-authoring 문서 또는 문서-스킬 경계에만 `instructions/skill/SKILL_AUTHORING.ko.md`를 읽습니다.
-- 완료 전 `rules/required-behaviors.ko.md`와 `rules/forbidden-patterns.ko.md`를 읽습니다.
-- provider-sensitive evidence가 범위에 있을 때만 `references/official/*.ko.md`를 읽습니다. 이번 작업에서 실제 출처를 다시 확인하지 않았다면 `last_verified_at`을 바꾸지 않습니다.
-- 대표 사례는 `assets/evals/docs-maker.ko.jsonl`로 실행하며 영어 trigger/behavior parity에는 `assets/evals/docs-maker.jsonl`을 사용합니다.
+- skill 저작 문서나 문서-스킬 경계에만 `instructions/skill/SKILL_AUTHORING.ko.md`를 읽습니다.
+
+한국어로 작업할 때는 짝이 맞는 `*.ko.md` 지원 파일이나 지침 파일을 씁니다.
 
 </conditional_loading>
+
+<reference_routing>
+
+- 비단순 생성·리팩터를 분해할 때: `rules/structured-reasoning.ko.md`.
+- 계층을 나누거나 규칙의 정본 위치를 정할 때: `rules/layer-model.ko.md`.
+- 문서가 context, authority, 예산, 런타임 profile, 위임을 규정할 때: `rules/context-engineering.ko.md`.
+- 문서가 tool, side effect, state, 실행 trajectory를 규정할 때: `rules/harness-engineering.ko.md`.
+- 최신·논쟁·보안·benchmark·비교 주장이 문서에 들어올 때: `rules/sourcing.ko.md`.
+- 위험 깊이, eval 형태, 완료 증거를 고를 때: `rules/validation.ko.md`.
+- provider 민감 근거가 범위에 있을 때: `references/official/*.ko.md`. 이번 작업에서 실제로 다시 읽지 않았다면 `last_verified_at`을 바꾸지 않습니다.
+- 이 package의 trigger, workflow, 산출물이 바뀔 때: `assets/evals/docs-maker.ko.jsonl`, 한국어 parity에는 `assets/evals/docs-maker.jsonl`.
+
+</reference_routing>
+
+<support_file_read_order>
+
+한 번의 작업에서는 한 언어판만 읽습니다. 경로는 설치된 스킬 디렉터리 기준이고, 읽는 조건은 `reference_routing`에 있습니다.
+
+1. `rules/structured-reasoning.ko.md`
+2. `rules/layer-model.ko.md`
+3. `rules/context-engineering.ko.md`, `rules/harness-engineering.ko.md`, `rules/sourcing.ko.md`
+4. `references/official/*.ko.md`
+5. `rules/validation.ko.md`
+6. `rules/required-behaviors.ko.md`, `rules/forbidden-patterns.ko.md`
+7. `assets/evals/docs-maker.ko.jsonl`과 `assets/evals/docs-maker.jsonl`
+
+</support_file_read_order>
 
 <loop_policy>
 
@@ -130,7 +180,16 @@ Self-grading만 사용하거나, baseline/eval set을 바꾸거나, "좋아질 �
 
 이 개정 루프는 루프 계약이 아닙니다. 사람 없이 도는 루프를 규정하는 문서는 그 루프 자체의 구성 요소로 판정합니다. 트리거, 작업 출처, 행위자가 아닌 주체가 확인하는 정지 조건, 예산, 에스컬레이션, 디스크에 남는 상태 파일입니다. graph 문서는 node schema, 허용 edge, 라우팅 권한, 상태 병합 규칙, 상한, 내구성으로 판정합니다.
 
+
 </loop_policy>
+
+<language_and_translation_default>
+
+코드 식별자, 명령, 경로, schema key, API 이름, 고유명사, 인용 원문은 필요한 언어 또는 원문 그대로 둡니다.
+
+이 package의 Markdown은 영어/한국어 쌍으로 관리합니다. 한 번의 작업에서는 한 언어판만 읽고, 한쪽을 고치면 다른 쪽도 같게 맞춥니다.
+
+</language_and_translation_default>
 
 <workflow>
 
@@ -147,15 +206,14 @@ Self-grading만 사용하거나, baseline/eval set을 바꾸거나, "좋아질 �
 
 작성 규칙:
 
-- 관심사가 섞인 prose보다 명시적 heading, table, checklist, schema, compact example을 우선합니다.
-- "적절히", "필요시" 같은 모호한 표현을 판단 기준으로 바꿉니다.
+- 관심사가 섞인 prose보다 명시적 heading, table, checklist, schema, compact example을 우선하고, "적절히", "필요시" 같은 모호한 표현은 판단 기준으로 바꿉니다.
 - runtime profile이 정확한 syntax를 요구하지 않으면 특정 provider tool name보다 capability를 기술합니다.
 - 리팩토링 중 핵심 scope, safety, source, validation 제약을 보존합니다.
 - 광범위하거나 "모든" 요청은 편집 전 전체 candidate set을 찾고 완료 전 다시 검색합니다.
 
 </workflow>
 
-<verification>
+<validation>
 
 Risk와 claim에 따라 점검을 고릅니다.
 
@@ -166,7 +224,7 @@ Risk와 claim에 따라 점검을 고릅니다.
 | High: 외부 claim, tool, agent, safety, loop | normal + missing capability/context + boundary + adversarial + regression; output과 trajectory 검사 |
 | Critical: credentialed, production, destructive, publication, deployment | 명시적 authority와 approval/precondition gate; 독립 evidence; 불확실하면 block |
 
-Medium 이상 case는 `scenario`, `oracle`, `runner`, `judge`, `trace`, `gate`를 정의합니다. Tool, state, delegation, side effect가 claim에 영향을 주면 최종 artifact와 execution path를 모두 검증합니다.
+Medium 이상 case는 `scenario`, `oracle`, `runner`, `judge`, `trace`, `gate`를 정의하고, tool, state, delegation, side effect가 claim에 영향을 주면 최종 artifact와 execution path를 모두 검증합니다.
 
 Core exit gates:
 
@@ -175,19 +233,11 @@ Core exit gates:
 - 모든 지시 줄이 줄 단위 제거 검사를 통과함. 관찰된 실패나 코드가 드러내지 못하는 제약으로 거슬러 올라가야 함
 - 코드베이스를 설명하는 문서는 어긋날 때 코드가 이긴다고 밝히고, 측정된 주장은 한 번의 실행이나 보정하지 않은 판정자가 아니라 선언한 실행 횟수와 구간으로 뒷받침함
 - core rule이 reference/local overlay에 중복되지 않음
-- current/provider-sensitive claim에 적절한 provenance와 미래가 아닌 날짜가 있음
-- capability 부재가 요청 결과를 조용히 축소하지 않음
+- current/provider-sensitive claim에 적절한 provenance와 미래가 아닌 날짜가 있고, capability 부재가 요청 결과를 조용히 축소하지 않음
 - 영·한 mirror가 contract, phase order, gate, 대표 behavior를 보존함
-- local link와 code fence가 통과하고 변경 파일을 모두 검사함
-- residual risk와 unrun check를 밝힘
+- local link와 code fence가 통과하고 변경 파일을 모두 검사했으며, residual risk와 unrun check를 밝힘
 
-</verification>
-
-<stop_condition>
-
-요청한 문서 산출물이 존재하고, 핵심 risk-matched gate가 통과하며, 대표 eval 결과를 실제로 검사하고, 적용되는 bilingual behavior를 조정하고, 잔여 risk를 보고했을 때만 멈춥니다. Authority, scope, evidence, capability, safety approval이 실질적으로 부족하면 질문하거나 block합니다.
-
-</stop_condition>
+</validation>
 
 <required>
 
@@ -221,19 +271,6 @@ Core exit gates:
 | 안전 | 자격 증명, 네트워크, 배포, 게시, 파괴적 작업, 프로덕션 부작용에 대한 게이트 누락 |
 
 </forbidden>
-
-<trigger_metric>
-
-트리거 케이스는 참·거짓이 아니다. 모든 케이스가 `expect`, `runs`, `threshold`를 갖고, 실행은 측정된 `trigger_rate`를 기록한다.
-
-- `expect`: `trigger` 또는 `no_trigger`. 답이 요청된 산출물 형태에 따라 갈리는 경계 케이스는 세 번째 값이 아니라 `note`를 붙인 `no_trigger`로 기록한다.
-- `runs`와 `threshold`: 모든 케이스가 스스로 밝힌다. 기본값을 상속하게 두지 않는다. `runs`가 달라지면 비율의 의미가 달라지기 때문이다. `runs` `3`회와 `threshold` `0.5`는 권장 출발점이며 검증된 최적값이 아니다.
-- 측정된 트리거 비율은 `stochastic-model` 측정이다. 결과와 함께 모델·런타임 식별자와 실행 횟수를 기록하고, 단순 통과율 대신 목표 구간 폭을 밝힌다.
-- 트리거 세트는 세는 것이 아니라 구성하는 것이다. 켜져야 하는 경우, 켜지면 안 되는 경우, 경계, 근접 실패, 출처 민감, 안전 케이스를 덮고, 기존 케이스가 다루지 않는 것을 탐침할 때만 케이스를 추가한다.
-
-케이스 전체 형태와 두 축, 설명 최적화 규칙은 `instructions/skill/references/trigger-design.md`에서 읽는다.
-
-</trigger_metric>
 
 ## Sources
 

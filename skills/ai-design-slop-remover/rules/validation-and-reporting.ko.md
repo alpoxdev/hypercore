@@ -1,5 +1,7 @@
 # 검증과 보고
 
+report를 쓰기 전에 읽는다. 이 파일은 검증 순서, report 구성, 각 주장이 인용해야 할 근거를 소유한다.
+
 ## 검증 순서
 
 1. 같은 대상에 `detect-slop.sh`를 다시 실행하고 rule ID, severity count, engine/evidence field, 사용한 baseline delta를 비교한다.

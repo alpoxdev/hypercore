@@ -11,12 +11,18 @@ REQUIRED_MARKERS=(
   output_language
   purpose
   routing_rule
-  Contract
-  support_file_read_order
+  instruction_contract
   activation_examples
+  trigger_conditions
+  skill_architecture
+  loop_policy
+  language_and_translation_default
+  reference_routing
+  support_file_read_order
   workflow
+  required
+  forbidden
   validation
-  trigger_metric
 )
 CONTRACT_LABELS=(
   Intent
@@ -31,9 +37,9 @@ CONTRACT_LABELS=(
 )
 ACTIVATION_LABELS=(positive negative boundary)
 ACTIVATION_FLOORS=(3 2 1)
-CATEGORIES=(positive negative boundary source safety schema regression adversarial)
-CAT_FLOORS=(1 1 1 1 1 1 1 1)
-RICH_CAT_FLOORS=(3 2 2 2 2 2 2 2)
+CATEGORIES=(positive negative boundary workflow source safety regression adversarial coexistence)
+CAT_FLOORS=(1 1 1 1 1 1 1 1 0)
+RICH_CAT_FLOORS=(3 2 2 2 2 2 2 2 0)
 LANGUAGES=(en ko mixed)
 LANG_FLOORS=(1 1 1)
 INVOCATIONS=(explicit implicit contextual)
@@ -402,11 +408,13 @@ validate_skill_file() {
     fi
 
     for i in "${!REQUIRED_MARKERS[@]}"; do
-      pattern="^##[[:space:]]+$(escape_ere "${REQUIRED_MARKERS[$i]}")[[:space:]]*\$"
-      if grep -Eiq "$pattern" "$skill_path"; then
+      marker=$(escape_ere "${REQUIRED_MARKERS[$i]}")
+      pattern="^##[[:space:]]+${marker}[[:space:]]*\$"
+      tag_pattern="^<${marker}>[[:space:]]*\$"
+      if grep -Eiq "$pattern" "$skill_path" || grep -Eiq "$tag_pattern" "$skill_path"; then
         MARKER_FOUND[i]=true
       else
-        push_error MARKER_MISSING "Required SKILL.md marker is missing: ## ${REQUIRED_MARKERS[$i]}" \
+        push_error MARKER_MISSING "Required SKILL.md marker is missing: ## ${REQUIRED_MARKERS[$i]} or <${REQUIRED_MARKERS[$i]}>" \
           "$(jq -cn --arg m "${REQUIRED_MARKERS[$i]}" '{path: "SKILL.md", marker: $m}')"
       fi
     done
@@ -421,7 +429,7 @@ validate_skill_file() {
           "$(jq -cn --arg l "$label" '{path: "SKILL.md", label: $l}')"
       fi
     done
-    if grep -Fq '## artifact_levels' "$skill_path"; then
+    if grep -Fq '## artifact_levels' "$skill_path" || grep -Fq '<artifact_levels>' "$skill_path"; then
       if grep -Eiq '(^|[^A-Za-z0-9_])Loop([^A-Za-z0-9_]|$)' "$skill_path"; then
         LOOP_FOUND=true
       else

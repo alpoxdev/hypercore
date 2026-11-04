@@ -1,5 +1,7 @@
 # Plan Format
 
+Use this reference before writing or validating the plan file. It owns the plan grammar: the header order, the todo row fields, the checkbox states, and a worked example.
+
 ## Contents
 
 1. File Location and Slug

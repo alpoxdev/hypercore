@@ -1,5 +1,7 @@
 # Project Structure
 
+Read when choosing or changing folders, module ownership, imports, aliases, or a migration order. This file owns the scale profiles, the feature and shared boundaries, and the import direction.
+
 ## 1. Choose structure from evidence
 
 Inspect app size, team boundaries, route root, aliases, workspace layout, generated files, native-directory ownership, server/API routes, tests, and current imports. Do not replace a coherent brownfield structure merely to match this rule.

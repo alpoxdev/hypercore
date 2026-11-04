@@ -1,5 +1,7 @@
 # Slop Taxonomy
 
+Read before classifying a finding. This file owns the finding classes, the rule IDs, and the cluster grouping.
+
 ## Finding classes
 
 | Class | Meaning | Default handling |

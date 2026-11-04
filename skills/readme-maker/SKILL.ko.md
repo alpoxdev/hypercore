@@ -1,6 +1,6 @@
 ---
 name: readme-maker
-description: "[Hyper] 프로젝트를 꼼꼼히 읽고 README.md를 생성하거나 리팩터한다. 프로젝트 형태(CLI, 라이브러리, 웹 앱, 모노레포, 플러그인, 프레임워크, 문서 사이트, 서비스), 진입점, 스크립트, 설정, 라이선스, 기존 문서를 감지한 뒤 기본적으로 한국어 구조화 README를 만든다. 사용자가 다른 언어를 요청했거나 기존 README 언어를 보존해야 할 때만 그 언어를 따른다. 새 README가 필요하거나, 오래된 README를 리팩터해야 하거나, 실제 코드를 근거로 일부 섹션을 업데이트해야 할 때 사용한다."
+description: "[Hyper] 사용자가 코드베이스를 근거로 프로젝트 README.md나 모노레포 패키지 README를 새로 쓰거나, 리팩터하거나, 일부 섹션을 갱신해 달라고 요청할 때 사용한다. 프로젝트 형태(CLI, 라이브러리, 웹 앱, 모노레포, 플러그인, 프레임워크, 문서 사이트, 서비스), 진입점, 스크립트, 설정, 라이선스, 기존 문서를 확인한 뒤, 사용자가 다른 언어를 요청했거나 기존 README의 언어를 유지해야 하는 경우가 아니면 한국어 README를 쓴다. CHANGELOG, CONTRIBUTING, LICENSE, 일반 문서, 릴리스 노트, 소스 코드 작업에는 사용하지 않는다."
 compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증을 위해 read/edit/write와 셸 검색 도구가 가장 잘 동작한다.
 ---
 
@@ -15,11 +15,9 @@ compatibility: 프로젝트 구조 스캔, 매니페스트 분석, 소스 검증
 
 <output_language>
 
-사용자에게 보이는 모든 산출물, 저장 아티팩트, 리포트, 계획서, 생성 문서, 요약, 인수인계 메모, 커밋/메시지 초안, 검증 메모는 기본적으로 한국어로 작성합니다.
+사용자에게 보이는 모든 산출물, 저장 파일, 리포트, 계획서, 생성 문서, 요약, 인수인계 메모, 커밋 메시지 초안, 검증 메모는 기본적으로 한국어로 작성한다. 이 정본 파일이 영어로 쓰여 있어도 같다.
 
-소스 코드 식별자, CLI 명령, 파일 경로, 스키마 키, JSON/YAML 필드명, API 이름, 패키지명, 고유명사, 인용한 원문 발췌는 필요한 언어 또는 원문 그대로 유지합니다.
-
-사용자가 명시적으로 다른 언어를 요청했거나, 기존 대상 산출물의 언어 일관성을 맞춰야 하거나, 기계 판독 계약상 정확한 영어 토큰이 필요한 경우에만 다른 언어를 사용합니다. 사용자-facing 산출물에 쓸 로컬라이즈된 템플릿/참조(`*.ko.md`, `*.ko.json` 등)가 있으면 우선 사용합니다.
+사용자가 다른 언어를 명시적으로 요청했거나, 기존 대상 산출물의 언어 일관성을 유지해야 하거나, 기계 판독 계약이 정확한 영어 토큰을 요구할 때만 다른 언어를 쓴다.
 
 </output_language>
 
@@ -110,15 +108,54 @@ Boundary examples (경계 예시):
 
 </trigger_conditions>
 
-<supported_targets>
+<skill_architecture>
 
-- 앱, 라이브러리, CLI, 플러그인, 프레임워크, 문서 사이트, 서비스의 루트 `README.md`.
-- 모노레포 워크스페이스 내부의 패키지 단위 `README.md`.
-- 현재 코드에서 섹션을 다시 도출하는 README 리팩터.
-- install, usage, configuration, scripts, examples, project structure를 만지는 README 업데이트.
-- 기본 한국어 README 언어 정렬. 사용자가 요청했거나 기존 README 언어를 보존해야 할 때만 다른 언어를 사용합니다.
+| 구성 | 역할 |
+|---|---|
+| `SKILL.md` | trigger, 계약, workflow, gate |
+| `rules/project-discovery.md` | 프로젝트 형태, 진입점, 매니페스트, 스크립트, 기존 문서 |
+| `rules/section-design.md` | 프로젝트 유형별 섹션 정책, 순서, 문체, 배지, 축약 기준 |
+| `rules/validation.md` | 근거, 형태, 언어, 완성도 검사 |
+| `references/readme-templates.md` | 유형별 README 골격. 붙여 넣는 문장이 아니라 적응할 틀이다 |
+| `assets/evals/readme-maker-cases.jsonl` | trigger, routing, 근거, 안전 case |
 
-</supported_targets>
+</skill_architecture>
+
+<loop_policy>
+
+loop은 없다. 요청 하나에 프로젝트 확인, 섹션 계획, 초안, 검증, 보고를 각각 한 번씩 한다. 검사가 실패하면 지목된 섹션을 고치고 그 검사만 다시 실행하며, 이 재실행은 두 번을 넘기지 않는다. 그 뒤에도 남은 문제는 계속 반복하지 않고 그대로 보고한다. 자체 검토만으로는 검증이 되지 않는다.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+소스 코드 식별자, CLI 명령, 파일 경로, 스키마 키, JSON/YAML 필드명, API 이름, 패키지명, 고유명사, 인용한 원문 발췌는 필요한 언어 또는 원문 그대로 유지한다. 사용자에게 보이는 산출물에는 현지화된 템플릿이나 참조(`*.ko.md`, `*.ko.json`)가 있으면 그것을 먼저 쓴다.
+
+이 package의 Markdown은 영어/한국어 쌍으로 관리한다. 한 번의 작업에서는 한 언어판만 읽고, 한쪽을 고치면 다른 쪽도 같게 맞춘다.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+- 프로젝트 유형이나 근거 출처가 불분명하면 섹션을 고르기 전에 `rules/project-discovery.md`를 읽는다.
+- 섹션 순서, 깊이, 문체, 배지 정책을 정할 때 `rules/section-design.md`를 읽는다.
+- 초안을 쓰는 동안 해당 프로젝트 유형의 `references/readme-templates.md`를 읽는다. 템플릿은 시작 골격일 뿐 명령의 출처가 아니다.
+- 완료 전에 `rules/validation.md`를 읽고 그 검사를 실행한다.
+- 이 package의 trigger, workflow, 산출물이 바뀌면 `assets/evals/readme-maker-cases.jsonl`을 읽고 관찰한 실패를 regression으로 추가한다.
+
+</reference_routing>
+
+<support_file_read_order>
+
+한 번의 작업에서는 한 언어판만 읽는다. 한국어 package는 맞는 `*.ko.md` 파일을 쓰며, 읽는 조건은 `reference_routing`에 있다.
+
+1. `rules/project-discovery.md`
+2. `rules/section-design.md`
+3. `references/readme-templates.md`
+4. `rules/validation.md`
+5. `assets/evals/readme-maker-cases.jsonl`
+
+</support_file_read_order>
 
 <workflow>
 
@@ -142,26 +179,18 @@ Boundary examples (경계 예시):
 
 </workflow>
 
-<modes>
+<required>
 
-## create 모드
+| 카테고리 | 필수 |
+|------|------|
+| Evidence | README의 모든 install/usage 라인이 매니페스트, 스크립트, 소스 파일 또는 기존 문서에 매핑된다 |
+| Shape match | 섹션 선택이 감지된 프로젝트 형태와 일치한다 |
+| Language match | README 산문이 기본적으로 한국어이거나, 보존이 필요한 경우 사용자 요청/기존 대상 언어와 일치한다 |
+| Discoverability | 제목, 한 줄 설명, install, quickstart가 첫 화면 안에 있다 |
+| Scope | update 모드에서는 사용자가 지목한 섹션이나 diff가 가리키는 섹션만 고치고, README에 변경 이력 섹션이 이미 있을 때만 항목을 추가한다 |
+| Verification | 완료 선언 전에 검증 체크리스트가 끝난다 |
 
-- 프로젝트 프로필에서 시작해 일치하는 템플릿을 고르고, 기본적으로 `references/readme-templates.ko.md`를 사용하거나 `references/readme-templates.md`를 한국어로 번역한다.
-- 저장소에 실제 증거가 있는 섹션만 포함한다.
-- 모르는 부분은 지어내지 말고 `<!-- TODO: confirm with maintainer -->`로 명시한다.
-
-## refactor 모드
-
-- 정확한 기존 내용은 보존한다. 코드와 어긋난 섹션만 다시 쓴다.
-- install, usage, scripts, structure 섹션은 현재 파일에서 다시 도출한다.
-- 여전히 유효한 링크, 배지, 산문은 유지한다. 죽은 링크와 오래된 명령은 제거한다.
-
-## update 모드
-
-- 사용자가 명시한 또는 변경 사항이 암시하는 섹션만 만진다.
-- 프로젝트 README가 이미 변경 이력 섹션을 운영하는 경우에만 날짜가 있는 항목을 추가한다.
-
-</modes>
+</required>
 
 <forbidden>
 
@@ -175,37 +204,6 @@ Boundary examples (경계 예시):
 | Extra files | 사용자가 요청하지 않은 `CHANGELOG.md`, `CONTRIBUTING.md` 등 추가 파일 생성 |
 
 </forbidden>
-
-<required>
-
-| 카테고리 | 필수 |
-|------|------|
-| Evidence | README의 모든 install/usage 라인이 매니페스트, 스크립트, 소스 파일 또는 기존 문서에 매핑된다 |
-| Shape match | 섹션 선택이 감지된 프로젝트 형태와 일치한다 |
-| Language match | README 산문이 기본적으로 한국어이거나, 보존이 필요한 경우 사용자 요청/기존 대상 언어와 일치한다 |
-| Discoverability | 제목, 한 줄 설명, install, quickstart가 첫 화면 안에 있다 |
-| Verification | 완료 선언 전에 검증 체크리스트가 끝난다 |
-
-</required>
-
-<structure_blueprint>
-
-기본 한국어 README 아웃라인 (`references/readme-templates.md` / `.ko.md`의 프로젝트 형태별 템플릿에 맞춰 조정):
-
-1. 제목 + 한 줄 설명
-2. 선택적 배지 (검증 가능한 경우에만)
-3. 기능 또는 하이라이트 (3-7개 불릿)
-4. Install
-5. Quickstart / Usage
-6. Configuration / Environment
-7. Commands 또는 API 표면 (CLI, 라이브러리, 플러그인)
-8. Examples
-9. Development (build, test, dev server, scripts)
-10. Project structure (자명하지 않을 때만)
-11. Contributing (프로젝트가 프로세스를 문서화한 경우에만)
-12. License
-
-</structure_blueprint>
 
 <validation>
 

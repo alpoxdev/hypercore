@@ -1,5 +1,7 @@
 # Prompt crafting reference
 
+Read this whenever a request needs a category, an output format, or the text-render protocol.
+
 Classify the request into one category, read only that category's row, and compose the brief. This file covers category routing, format selection, cut splitting, and the text-render protocol. Vocabulary choice and deadword reduction live in `visual-direction.md`.
 
 ## Request categories

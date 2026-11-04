@@ -1,5 +1,7 @@
 # Safe Editing
 
+Read before any `clean` edit. This file owns the automatic-removal boundary and what every change must preserve.
+
 ## Automatic removal boundary
 
 Automatic removal is allowed only when the evidence is high-confidence and the element has no content, interaction, brand, semantic, or state role. Candidates include an unused decorative orb, redundant badge, meaningless status dot or version label, explicit placeholder, unsupported decorative proof/stat, and a directly replaceable `transition-all` declaration.

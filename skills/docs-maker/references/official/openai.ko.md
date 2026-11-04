@@ -1,5 +1,7 @@
 # Docs Maker용 OpenAI 공식 참조
 
+**목적**: docs-maker가 쓰는 provider 민감 근거와 갱신 정책. **읽는 조건**: 문서가 이 provider의 모델이나 prompting 동작을 주장해 출처를 다시 확인해야 할 때.
+
 ## 목차
 
 - 갱신 정책

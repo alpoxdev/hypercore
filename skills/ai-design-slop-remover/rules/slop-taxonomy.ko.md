@@ -1,5 +1,7 @@
 # Slop 분류 체계
 
+finding을 분류하기 전에 읽는다. 이 파일은 finding class, rule ID, cluster 묶음을 소유한다.
+
 ## Finding class
 
 | Class | 의미 | 기본 처리 |

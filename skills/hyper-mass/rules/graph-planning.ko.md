@@ -2,9 +2,9 @@
 
 노드를 정의하기 전과 모든 `amend` 전에 이 규칙을 읽습니다. 이 규칙 없이 정의한 그래프는 검증 없는 몇 개의 거대한 노드로 무너집니다. 이 문서의 각 절은 그 실패에 이미 이름이 붙어 있기 때문에 존재합니다.
 
-계획은 노드를 쓰는 일이 아닙니다. 리더는 화면 판정, 목표, justification, 위상을 한 번에 적고 그 계획을 실행합니다. 현실이 바꾸게 하면 리더는 소리 내어 다시 계획하고, 노드 하나씩 흔들리는 대신 `amend`를 기록합니다.
+계획은 노드를 쓰는 일이 아닙니다. 리더는 선별, 목표, justification, 토폴로지를 한 번에 적고 그 계획을 실행합니다. 현실이 바꾸게 하면 리더는 소리 내어 다시 계획하고, 노드 하나씩 흔들리는 대신 `amend`를 기록합니다.
 
-## 1. 먼저 화면 판정
+## 1. 먼저 선별
 
 그래프는 위임의 기본 형태가 아닙니다. 계획 전에 판단합니다.
 
@@ -54,7 +54,7 @@
 
 이 기록은 "왜 이것이 그래프이고, 무엇이 안전하게 실행되게 하는가"에 대한 답입니다. 채팅의 산문이 아니라 정의의 일부입니다.
 
-## 5. 위상 고정
+## 5. 토폴로지 고정
 
 노드를 쓰기 전에 각각 독립적으로 성공하거나 실패할 수 있는 최상위 컴포넌트 1-6개를 나열합니다. 모든 노드는 정확히 한 컴포넌트에 대응합니다.
 
@@ -179,7 +179,7 @@ prompt가 지켜지게 만드는 규칙:
 | Claim | Source |
 |---|---|
 | 분해 doctrine, category 라우팅 사다리, 쓰기 범위 규칙, node prompt 계약, 검증 wave, 대량 수확 sharding을 `mass-ulw` 스킬의 계획 참조에서 각색 | <https://github.com/code-yeongyu/oh-my-openagent/tree/0d80470e4201925727e88afbafcdf24d7801a588> |
-| 그래프 전 화면 판정, 그래프가 없애는 병목, 승인을 구조적 노드로 두기, 생산자와 분리된 검증자, fan-out 상한 | `instructions/graph-engineering/GRAPH_ENGINEERING.md` |
+| 그래프 전 선별, 그래프가 없애는 병목, 승인을 구조적 노드로 두기, 생산자와 분리된 검증자, fan-out 상한 | `instructions/graph-engineering/GRAPH_ENGINEERING.md` |
 | 위임 prompt 항목과 상위가 통합하고 검증한다는 원칙 | `instructions/context-engineering/references/parallel-workflows.md` |
 | 근거 파일이 없으면 일어나지 않은 일, 판정자는 작업자 요약이 아니라 아티팩트와 기준을 받음 | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
 | tier 사다리와 32개 노드, 동시 8개, retry 2회, amend 3회 상한 | 패밀리 계약, 2026-11-03, `instructions/loop-engineering/LOOP_ENGINEERING.md` |

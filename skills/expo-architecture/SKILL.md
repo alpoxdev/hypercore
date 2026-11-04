@@ -9,8 +9,8 @@ compatibility: Requires an Expo project or an explicit request to create one; cu
 @rules/routing-and-navigation.md
 @rules/data-state-and-boundaries.md
 @rules/native-platform-and-security.md
-@rules/testing-and-validation.md
 @references/official/expo-react-native-2026-08-03.md
+@rules/testing-and-validation.md
 
 # Expo Architecture
 
@@ -75,28 +75,63 @@ Boundary:
 
 </activation_examples>
 
-<project_validation>
+<trigger_conditions>
 
-Before enforcement, identify:
-1. Expo SDK, React Native, Expo Router, TypeScript, package manager, and workspace mode from local files.
-2. Managed/CNG, committed `ios/` or `android/`, development build, or Expo Go constraints.
-3. Existing route root (`src/app` or `app`), aliases, generated files, tests, and project commands.
-4. Whether requested changes need package installation, `prebuild`, EAS, credentials, signing, or store-side effects.
+Activate when the request names an Expo or React Native app, Expo Router, the app folder or a route boundary, native configuration, platform-specific code, or the layout of app data and state, and the work is setup, implementation, review, or remediation.
 
-If the target is not Expo and the user did not request creating an Expo app, stop routing through this skill.
+Activate also when a shipped or growing Expo project needs its structure, routing, imports, or platform seams changed, including review requests that end in a change set.
 
-</project_validation>
+The project test runs before the request test. When local files show neither Expo nor Expo prebuild and the user did not ask to create an Expo app, do not route here. The remaining exclusions are in `<routing_rule>`.
+
+</trigger_conditions>
+
+<skill_architecture>
+
+| Part | Role | Load condition |
+|---|---|---|
+| `SKILL.md` | Trigger, contract, workflow, gates, validation | Always |
+| `architecture-rules.md` | Rule classes and blocking gates | Before classifying a finding |
+| `rules/project-structure.md` | Folders, ownership, imports, migration, scale profiles | When changing folders or imports |
+| `rules/routing-and-navigation.md` | Expo Router layouts, groups, params, route thinness | When changing routes |
+| `rules/data-state-and-boundaries.md` | Server and client state, DTOs, persistence, dependency direction | When changing data flow |
+| `rules/native-platform-and-security.md` | App config, permissions, secrets, storage, native code | When touching config or platform code |
+| `rules/testing-and-validation.md` | Check order and completion evidence | Before claiming completion |
+| `references/official/expo-react-native-2026-08-03.md` | Dated official SDK and API facts | When a current SDK claim decides the change |
+
+</skill_architecture>
+
+<loop_policy>
+
+One bounded loop per change set: run the checks, read the failures, repair only what failed, and re-run. One round is one repair and its re-run, and the loop ends after two rounds. A change stays only when the critical type, route, native-config, and safety gates pass; otherwise the loop ends with the failing check named and nothing claimed as verified. There is no loop that keeps refactoring until the structure feels right and no self-scoring loop. Evidence is the recorded command output and the resolved config, not a restatement of the plan.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+Deliver user-facing text in Korean by default: the report, decisions, caveats, and residual risks. Keep code identifiers, commands, paths, package and API names, and quoted source lines in their original form. This package is maintained as English/Korean pairs (`X.md` ↔ `X.ko.md`); read one language version per run and update both when a rule changes.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+- Before classifying any finding or enforcing a rule, read `architecture-rules.md`.
+- When changing folders, imports, module ownership, or migration order, read `rules/project-structure.md`.
+- When changing the route tree, layouts, groups, or params, read `rules/routing-and-navigation.md`.
+- When changing server state, client state, persistence, or the direction of a dependency, read `rules/data-state-and-boundaries.md`.
+- When touching app config, permissions, secrets, storage, native code, or platform files, read `rules/native-platform-and-security.md`.
+- Before claiming completion, read `rules/testing-and-validation.md`.
+- When the installed SDK or an official API behavior decides the change, read `references/official/expo-react-native-2026-08-03.md` and compare its `last_verified_at` with the installed version.
+
+</reference_routing>
 
 <support_file_read_order>
 
+Read one language version per run, in this order. Paths are relative to this skill directory.
+
 1. Read `architecture-rules.md` for rule classes and blocking gates.
-2. Read only affected topics:
-   - `rules/project-structure.md` for scalable folders, ownership, imports, and migration.
-   - `rules/routing-and-navigation.md` for Expo Router layouts, route groups, params, and route thinness.
-   - `rules/data-state-and-boundaries.md` for server state, client state, DTOs, persistence, and dependency direction.
-   - `rules/native-platform-and-security.md` for app config, permissions, secrets, storage, native code, and platform files.
-   - `rules/testing-and-validation.md` before implementation completion.
+2. Read the rule files for the topics the change touches, choosing them with `<reference_routing>`.
 3. Read `references/official/expo-react-native-2026-08-03.md` only when current SDK/API behavior affects a decision.
+4. Read `rules/testing-and-validation.md` before implementation completion.
 
 </support_file_read_order>
 
@@ -104,7 +139,7 @@ If the target is not Expo and the user did not request creating an Expo app, sto
 
 | Phase | Task | Output |
 |---|---|---|
-| 0 | Confirm Expo mode, SDK, platforms, request scope, and side-effect gates | Scope decision |
+| 0 | Confirm the project facts from local files: Expo SDK, React Native, Router, TypeScript, package manager, workspace mode, managed/CNG versus committed `ios/` and `android/`, route root (`src/app` or `app`), aliases, project commands, and whether the request needs installs, `prebuild`, EAS, credentials, signing, or store effects | Scope decision |
 | 1 | Inventory routes, features, shared modules, state/data, native config, tests, and dependency direction | Architecture map |
 | 2 | Classify findings as Official, Safety, or Hypercore convention | Prioritized plan |
 | 3 | Define target boundaries and the smallest migration slice; preserve user work | Change set |

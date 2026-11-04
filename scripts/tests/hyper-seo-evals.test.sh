@@ -10,8 +10,11 @@
 #   2. render-page  — the shipped dashboard template executed with node over the
 #      case payload; escaping and chart-absent observations.
 #   3. doc-query    — the shared document parser over the real rule documents.
-# Cases with no seam are marked probe.kind "none", and the runner asserts that
-# exact set instead of letting an unevaluated case look evaluated.
+# Cases with no seam are marked probe.kind "none" and carry no probe.expected, so
+# an unevaluated case cannot look evaluated. The runner checks the corpus
+# invariants — row schema, unique ids, equal English/Korean axes, the cases that
+# existed before a hardening pass, and the per-file category and language floors
+# — instead of pinning total row counts.
 #
 # HYPER_SEO_EVAL_DIR points the corpus read at another directory holding both
 # JSONL files; documents and scripts always come from the repository.
@@ -32,6 +35,30 @@ TEMPLATE="$ROOT/skills/hyper-seo/assets/dashboard-template.html"
 RESULTS_JS_PREFIX='window.__SEO_RESULTS__ = '
 
 NO_SEAM_IDS=(seo-guarantee-language-negative seo-non-seo-negative seo-policy-bulk-generation seo-policy-expired-domain seo-site-setup-positive)
+# Cases that existed before the corpus was widened. A change may add rows but must
+# never delete or rename one of these, so the ids are compared without the per-file
+# -en/-ko suffix.
+BASELINE_AXIS_IDS=(
+  seo-audit-positive
+  seo-missing-evidence-grade
+  seo-all-unknown
+  seo-not-applicable-mix
+  seo-tool-absent-fallback
+  seo-chart-not-loaded
+  seo-finding-with-markup
+  seo-policy-bulk-generation
+  seo-policy-expired-domain
+  seo-unverified-policy-negative
+  seo-guarantee-language-negative
+  seo-commerce-only-negative
+  seo-platform-conditional-negative
+  seo-non-seo-negative
+  seo-site-setup-positive
+)
+# Rubric floors per file: the validator applies them per --evals file, so each file
+# carries at least one case in every language and category.
+CATEGORY_FLOORS="positive:3 negative:2 boundary:1 workflow:1 source:1 safety:1 adversarial:1 regression:1"
+LANGUAGE_FLOORS="en:1 ko:1 mixed:1"
 REQUIRED_METRICS="evidence-discipline unknown-handling no-guarantee-language policy-accuracy scope-fidelity target-conditionality output-escaping dashboard-resilience tool-fallback triggerability"
 # axis|case-id-prefix
 REQUIRED_AXES=(
@@ -50,6 +77,12 @@ REQUIRED_AXES=(
   "Naver and Bing stay conditional|seo-platform-conditional-negative"
   "non-SEO request does not trigger|seo-non-seo-negative"
   "new site setup plan|seo-site-setup-positive"
+  "single-page on-page audit|seo-positive-page-audit"
+  "bounded optimize loop|seo-workflow-optimize-loop"
+  "official document source ledger|seo-source-official-ledger"
+  "unavailable field data stays unknown|seo-safety-no-fabricated-field-data"
+  "re-audit regression guard|seo-regression-reaudit-guard"
+  "bilingual single-target request|seo-mixed-bilingual-target"
 )
 
 # ---- corpus and seam helpers ---------------------------------------------
@@ -227,15 +260,27 @@ case_required_fields() {
   load_corpus "$CORPUS_DIR" "$EN_NAME" "$work/en.json"
   load_corpus "$CORPUS_DIR" "$KO_NAME" "$work/ko.json"
   jq -e '
+    def cats: ["positive", "negative", "boundary", "workflow", "source", "safety", "adversarial", "regression", "coexistence"];
+    def langs: ["en", "ko", "mixed"];
+    def trigs: ["positive", "negative", "boundary", "coexistence"];
     all(.[];
       ((.id | type) == "string") and ((.id | length) > 0) and
-      ((.intent | type) == "string") and ((.prompt | type) == "string") and
+      ((.intent | type) == "string") and ((.intent | length) > 0) and
+      ((.prompt | type) == "string") and ((.prompt | length) > 0) and
       ((.shouldTrigger | type) == "boolean") and
       ((.context | type) == "object") and
+      ((.context.files | type) == "array") and
+      ((.context.sources | type) == "array") and
       ((.expected.must | type) == "array") and ((.expected.must | length) > 0) and
       ((.expected.mustNot | type) == "array") and ((.expected.mustNot | length) > 0) and
       ((.metrics | type) == "array") and ((.metrics | length) > 0) and
-      (.category as $c | ["positive", "negative", "boundary", "adversarial"] | index($c) != null)
+      (.category as $c | cats | index($c) != null) and
+      (.language as $l | langs | index($l) != null) and
+      (if (.category as $c | trigs | index($c) != null) then
+        ((.expect == "trigger") or (.expect == "no_trigger")) and
+        ((.runs | type) == "number") and ((.runs | floor) == .runs) and (.runs >= 1) and
+        ((.threshold | type) == "number") and (.threshold > 0) and (.threshold < 1)
+       else true end)
     )
   ' "$work/en.json" "$work/ko.json" >/dev/null ||
     fail "an entry is missing a required field"
@@ -284,13 +329,54 @@ case_unique_identifiers() {
   done
 }
 
-case_language_declared() {
-  local work
+case_language_floors() {
+  local work corpus name floor actual entry
   work=$(new_workdir)
   load_corpus "$CORPUS_DIR" "$EN_NAME" "$work/en.json"
   load_corpus "$CORPUS_DIR" "$KO_NAME" "$work/ko.json"
-  jq -e 'all(.[]; .language == "en")' "$work/en.json" >/dev/null || fail "en file does not declare en"
-  jq -e 'all(.[]; .language == "ko")' "$work/ko.json" >/dev/null || fail "ko file does not declare ko"
+  for corpus in en ko; do
+    for entry in $LANGUAGE_FLOORS; do
+      name=${entry%%:*}
+      floor=${entry#*:}
+      actual=$(jq --arg k "$name" '[.[] | select(.language == $k)] | length' "$work/$corpus.json")
+      [ "$actual" -ge "$floor" ] || fail "$corpus file has $actual $name case(s), floor is $floor"
+    done
+  done
+}
+
+case_category_floors() {
+  local work corpus name floor actual entry
+  work=$(new_workdir)
+  load_corpus "$CORPUS_DIR" "$EN_NAME" "$work/en.json"
+  load_corpus "$CORPUS_DIR" "$KO_NAME" "$work/ko.json"
+  for corpus in en ko; do
+    for entry in $CATEGORY_FLOORS; do
+      name=${entry%%:*}
+      floor=${entry#*:}
+      actual=$(jq --arg k "$name" '[.[] | select(.category == $k)] | length' "$work/$corpus.json")
+      [ "$actual" -ge "$floor" ] || fail "$corpus file has $actual $name case(s), floor is $floor"
+    done
+  done
+}
+
+case_baseline_ids_present() {
+  local work corpus suffix stem ids missing=
+  work=$(new_workdir)
+  load_corpus "$CORPUS_DIR" "$EN_NAME" "$work/en.json"
+  load_corpus "$CORPUS_DIR" "$KO_NAME" "$work/ko.json"
+  for corpus in en ko; do
+    case $corpus in
+      en) suffix=-en ;;
+      *) suffix=-ko ;;
+    esac
+    ids=$(jq -r '.[].id' "$work/$corpus.json")
+    for stem in "${BASELINE_AXIS_IDS[@]}"; do
+      if ! printf '%s\n' "$ids" | grep -qx "${stem}${suffix}"; then
+        missing="$missing ${stem}${suffix}"
+      fi
+    done
+  done
+  assert_empty "$missing" "baseline case ids removed"
 }
 
 case_same_axes_in_order() {
@@ -298,8 +384,8 @@ case_same_axes_in_order() {
   work=$(new_workdir)
   load_corpus "$CORPUS_DIR" "$EN_NAME" "$work/en.json"
   load_corpus "$CORPUS_DIR" "$KO_NAME" "$work/ko.json"
-  assert_eq "$(jq -c '[.[].id | sub("-en$"; "")]' "$work/en.json")" \
-    "$(jq -c '[.[].id | sub("-ko$"; "")]' "$work/ko.json")" "case order"
+  assert_eq "$(jq -c '[.[].id | sub("-[a-z][a-z]$"; "")]' "$work/en.json")" \
+    "$(jq -c '[.[].id | sub("-[a-z][a-z]$"; "")]' "$work/ko.json")" "case order"
 }
 
 case_plan_axes_covered() {
@@ -367,14 +453,21 @@ case_verdict_distribution() {
   assert_eq "$(printf '%s' "$en_verdicts" | jq -Sc 'sort')" "$(printf '%s' "$ko_verdicts" | jq -Sc 'sort')" "verdict multiset"
 }
 
-case_no_seam_set() {
-  local work none_ids
+case_no_seam_invariants() {
+  local work corpus stem id off_seam
   work=$(new_workdir)
   load_corpus "$CORPUS_DIR" "$EN_NAME" "$work/en.json"
   load_corpus "$CORPUS_DIR" "$KO_NAME" "$work/ko.json"
   for corpus in en ko; do
-    none_ids=$(jq -r '[.[] | select(.probe.kind == "none") | .id | sub("-[a-z][a-z]$"; "")] | sort | join(" ")' "$work/$corpus.json")
-    assert_eq "$(printf '%s\n' "${NO_SEAM_IDS[@]}" | sort | tr '\n' ' ' | sed 's/ $//')" "$none_ids" "$corpus seam-free cases"
+    # The declared seam-free cases stay seam-free: a case that once had no machine
+    # seam cannot be relabelled to hide that it is still unevaluated.
+    for stem in "${NO_SEAM_IDS[@]}"; do
+      id=$(jq -r --arg p "$stem" '.[] | select(.id | startswith($p)) | .id' "$work/$corpus.json" | head -n 1)
+      [ -n "$id" ] || fail "$corpus is missing seam-free case $stem"
+      assert_eq "none" "$(jq -r --arg id "$id" '.[] | select(.id == $id) | .probe.kind' "$work/$corpus.json")" "$id probe kind"
+    done
+    off_seam=$(jq -r '.[] | select(.probe.kind == "none" and (.probe | has("expected"))) | .id' "$work/$corpus.json")
+    assert_empty "$off_seam" "$corpus seam-free cases claiming a probe verdict"
   done
 }
 
@@ -385,9 +478,9 @@ case_machine_checked_cases() {
   total=$(wc -l <"$work/run.tsv" | tr -d ' ')
   evaluated=$(awk -F '\t' '$2 != "none"' "$work/run.tsv" | wc -l | tr -d ' ')
   none=$(awk -F '\t' '$2 == "none"' "$work/run.tsv" | wc -l | tr -d ' ')
-  assert_eq "30" "$total" "case count"
-  assert_eq "20" "$evaluated" "machine-checked cases"
-  assert_eq "10" "$none" "seam-free cases"
+  [ "$total" -gt 0 ] || fail "the corpus has no cases"
+  [ "$evaluated" -gt 0 ] || fail "no case is machine-checked"
+  assert_eq "$total" "$((evaluated + none))" "case count vs evaluated plus seam-free"
   mismatches=$(awk -F '\t' '$3 == "0" { printf "%s (%s): expected %s actual %s\n", $1, $2, $4, $5 }' "$work/run.tsv")
   assert_empty "$mismatches" "probe mismatches"
 }
@@ -418,14 +511,16 @@ run_case "both language files parse and carry the same number of cases" case_lan
 run_case "every case has the required machine-readable fields" case_required_fields
 run_case "every case names a probe the runner can execute" case_probe_executable
 run_case "identifiers are unique inside each file" case_unique_identifiers
-run_case "each file declares its own language" case_language_declared
+run_case "each file meets the language floors" case_language_floors
+run_case "each file meets the category floors" case_category_floors
+run_case "no case that existed before the hardening pass was deleted" case_baseline_ids_present
 run_case "the English and Korean files cover the same axes in the same order" case_same_axes_in_order
 run_case "every axis the plan names has a case in both languages" case_plan_axes_covered
 run_case "every required metric appears somewhere in the corpus" case_required_metrics_present
 run_case "each language has a case that triggers and a case that must not" case_trigger_and_non_trigger
 run_case "the no-guarantee and target-conditional cases forbid the overclaim they guard" case_overclaim_guards
 run_case "the two languages carry the same expected-verdict distribution" case_verdict_distribution
-run_case "the corpus marks exactly the cases with no machine seam" case_no_seam_set
+run_case "seam-free cases stay seam-free and claim no probe verdict" case_no_seam_invariants
 run_case "every machine-checked case matches an actual value computed from a real system call" case_machine_checked_cases
 run_case "flipping one expected verdict in a temp corpus copy is reported as a mismatch" case_flipped_verdict_detected
 test_summary

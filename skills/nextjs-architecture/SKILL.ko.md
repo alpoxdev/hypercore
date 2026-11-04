@@ -1,52 +1,52 @@
 ---
 name: nextjs-architecture
-description: "[Hyper] Next.js 프로젝트, 특히 App Router 또는 App Router 마이그레이션 작업에 사용합니다. 현재 공식 Next.js 아키텍처 규칙에 따라 project/folder structure, Hypercore local `src/modules` / `src/services` / `src/db` organization, Drizzle boundaries, hooks, Server/Client Component 경계, Cache Components와 데이터 freshness, Server Actions, Route Handlers, Proxy, 플랫폼/env 안전성을 강제합니다."
-compatibility: Next.js 애플리케이션에서 저장소 검사, 공식 Next.js 문서 확인, 직접 코드 편집과 함께 사용할 때 가장 적합합니다.
+description: "[Hyper] 기존 Next.js 프로젝트를 점검하거나 고치거나 확장할 때 사용합니다. 특히 App Router 작업이나 App Router 마이그레이션에서 Server/Client 경계, 데이터와 캐시 최신성, mutation, Route Handler, Proxy, env와 플랫폼 설정, 공유 폴더 배치를 건드리는 경우가 대상입니다. 현재 공식 Next.js 동작과, 그와 구분해 표시한 Hypercore 관례를 함께 강제합니다. 일반 React 아키텍처, Remix나 TanStack Start 프로젝트, 아키텍처 경계를 건드리지 않는 문구만 고치는 편집에는 쓰지 않습니다."
+compatibility: Next.js 애플리케이션에서 저장소를 살펴보고 공식 Next.js 문서를 확인하며 직접 코드를 고칠 때 가장 잘 맞습니다.
 ---
 
 @architecture-rules.ko.md
-@rules/project-structure.ko.md
-@rules/services.ko.md
-@rules/hooks.ko.md
-@rules/db.ko.md
 @rules/routes.ko.md
+@rules/project-structure.ko.md
 @rules/execution-model.ko.md
 @rules/data-fetching.ko.md
 @rules/server-actions.ko.md
 @rules/route-handlers.ko.md
+@rules/services.ko.md
+@rules/hooks.ko.md
+@rules/db.ko.md
 @rules/platform.ko.md
 @rules/validation.ko.md
-@references/official/nextjs-docs.ko.md
 @references/official/current-docs-2026-06-02.ko.md
+@references/official/nextjs-docs.ko.md
 @references/official/drizzle-docs.ko.md
 
 # Next.js Architecture Enforcement
 
 <output_language>
 
-사용자-facing 결과물, 저장 아티팩트, 보고서, 계획, 생성 문서, 요약, 핸드오프 노트, 커밋/메시지 초안, 검증 노트는 기본적으로 한국어로 작성합니다. canonical skill 파일이 영어로 작성되어 있어도 동일합니다.
+사용자에게 보이는 결과물, 저장하는 산출물, 보고서, 계획, 생성 문서, 요약, 핸드오프 노트, 커밋 메시지 초안, 검증 노트는 이 표준 파일이 영어로 쓰여 있어도 기본적으로 한국어로 작성합니다.
 
-소스 코드 식별자, CLI 명령, 파일 경로, schema key, JSON/YAML field, API 이름, package 이름, 고유명사, 인용된 원문은 필요한 언어 또는 원래 언어를 보존합니다.
+소스 코드 식별자, CLI 명령, 파일 경로, 스키마 키, JSON/YAML 필드 이름, API 이름, 패키지 이름, 고유명사, 인용한 원문은 원래 표기를 유지합니다.
 
-사용자가 명시적으로 다른 언어를 요청하거나, 기존 대상 산출물이 일관성을 위해 다른 언어를 유지해야 하거나, machine-readable contract가 정확한 영어 token을 요구하는 경우에만 다른 언어를 사용합니다. localized template 또는 reference가 있으면(예: `*.ko.md`, `*.ko.json`) 사용자-facing 산출물에 우선 사용합니다.
+사용자가 다른 언어를 명시적으로 요청했거나, 기존 산출물이 일관성을 위해 다른 언어를 유지해야 하거나, 기계가 읽는 계약이 정확한 영어 토큰을 요구할 때만 다른 언어를 씁니다. 번역본 템플릿이나 참고 자료가 있으면(예: `*.ko.md`, `*.ko.json`) 사용자에게 보이는 산출물에는 그것을 먼저 씁니다.
 
 </output_language>
 
 <purpose>
 
-- repository가 Next.js project인지 확인하고 App Router, Pages Router, mixed mode를 식별한 뒤 architecture rules를 적용합니다.
-- file conventions, Server/Client Component boundaries, data/cache behavior, Server Actions, Route Handlers, Proxy, env/platform safety에 대한 official Next.js behavior를 강제합니다.
-- `src/modules/<domain>/`, `src/services/<domain>/`, `src/db/<area>/`, `src/server/<area>/`, `src/integrations/<provider>/`, `src/config/<area>/` 같은 nested shared folders에 대한 Hypercore/repo-local convention을 적용하되 official Next.js law처럼 표현하지 않습니다.
-- Drizzle, DAL/service boundaries, client hook orchestration은 이 entrypoint를 비대하게 만들지 않고 focused rule files로 route합니다.
-- version-sensitive official facts는 `references/official/`에 보관해 core skill을 lean하게 유지하고 current docs를 독립적으로 refresh할 수 있게 합니다.
+- 저장소가 Next.js 프로젝트인지 확인하고, App Router인지 Pages Router인지 아니면 둘이 섞였는지를 먼저 가립니다.
+- 파일 규칙, Server/Client Component 경계, 데이터와 캐시 동작, Server Actions, Route Handlers, Proxy, env와 플랫폼 안전성에 대해 공식 Next.js 동작을 강제합니다.
+- `src/modules/<domain>/`, `src/services/<domain>/`, `src/db/<area>/`, `src/server/<area>/`, `src/integrations/<provider>/`, `src/config/<area>/` 같은 중첩 공유 폴더 관례는 Hypercore/저장소 로컬 규칙으로 적용하고, 공식 Next.js 법칙처럼 제시하지 않습니다.
+- Drizzle, DAL/service 경계, 클라이언트 hook 조합은 이 진입점을 부풀리지 않고 주제별 규칙 파일로 넘깁니다.
+- 버전에 민감한 공식 사실은 `references/official/`에 두어 핵심 파일을 가볍게 유지하고 최신 문서를 따로 갱신할 수 있게 합니다.
 
 </purpose>
 
 <routing_rule>
 
-existing Next.js project의 architecture enforcement, implementation guidance, review에 사용합니다. 특히 App Router work, App Router migration, Server/Client boundaries, cache/freshness, Server Actions, Route Handlers, Proxy, env/platform safety, service/DAL boundaries, client hook orchestration, Drizzle/DB placement, nested shared-folder organization이 포함됩니다.
+기존 Next.js 프로젝트의 아키텍처 강제, 구현 안내, 리뷰에 씁니다. App Router 작업, App Router 마이그레이션, Server/Client 경계, 캐시와 최신성, Server Actions, Route Handlers, Proxy, env와 플랫폼 안전성, service/DAL 경계, 클라이언트 hook 조합, Drizzle과 DB 배치, 중첩 공유 폴더 구성이 여기에 해당합니다.
 
-generic React architecture, Remix/TanStack Start project, docs-only summary, architecture boundary를 건드리지 않는 copy-only edit에는 quick safety check 이상으로 사용하지 않습니다. Pages Router-only project에서는 shared Next.js safety/platform checks를 적용하되 migration 요청이 없으면 App Router-only file conventions를 강제하지 않습니다.
+일반 React 아키텍처, Remix나 TanStack Start 프로젝트, 문서 요약만 하는 요청, 아키텍처 경계를 건드리지 않는 문구 편집에는 쓰지 않습니다. 문구 편집이라도 안전성 확인 한 번은 남깁니다. Pages Router만 쓰는 프로젝트에서는 Next.js 공통 안전성과 플랫폼 검사를 적용하되, 마이그레이션을 요청하지 않았다면 App Router 전용 파일 규칙을 강요하지 않습니다.
 
 </routing_rule>
 
@@ -54,46 +54,18 @@ generic React architecture, Remix/TanStack Start project, docs-only summary, arc
 
 | Field | Contract |
 |---|---|
-| Intent | Next.js project를 official docs와 labelled Hypercore/repo-local conventions에 맞춰 architecturally safe하게 유지. |
-| Trigger | App Router, Pages Router, Server/Client boundaries, data/cache behavior, Server Actions, Route Handlers, Proxy, platform/env, shared folder layout이 포함된 Next.js project work. |
-| Scope | touched project architecture, topic rule files, official references, validation notes, small reversible architecture fixes를 review/guide. |
-| Authority | user/project instructions가 이 skill보다 우선. Current official Next.js docs가 framework behavior에서 local convention보다 우선. Safety policy는 risky runtime/auth/secret/import-boundary change를 차단. |
-| Evidence | local package/config/router indicators, touched source paths, topic rules, official references, validation scripts, project check output. |
-| Tools | local search/read/edit/validation commands 사용; API drift가 중요하면 current official docs 사용; destructive migrations, credentials, production side effects, broad codemods는 gate. |
-| Loop | 없음. 요청당 한 번의 enforcement pass만 실행하고, 사용자가 추가 pass를 요청할 때만 다시 진입합니다. |
-| Output | rule classification, changed files, validation evidence, remaining risks, dated official-doc ambiguity notes를 포함한 Korean architecture decision/review. |
-| Verification | touched surface 관련 `rules/validation.ko.md` checks와 이 skill folder 변경 시 `bash scripts/validate-nextjs-architecture-skill.sh` 실행. |
-| Stop condition | project mode 확인, applicable safety gates 통과, local conventions 적용 또는 defer, validation evidence 기록, unresolved API drift가 dated/source된 상태. |
+| Intent | Next.js 프로젝트를 공식 문서와, 그와 구분해 표시한 Hypercore/저장소 로컬 관례에 맞춰 아키텍처 측면에서 안전하게 유지합니다. |
+| Trigger | App Router, Pages Router, Server/Client 경계, 데이터와 캐시 동작, Server Actions, Route Handlers, Proxy, 플랫폼과 env, 공유 폴더 배치를 다루는 Next.js 작업. |
+| Scope | 수정하는 프로젝트 아키텍처, 주제별 규칙 파일, 공식 참고 자료, 검증 노트, 되돌리기 쉬운 작은 아키텍처 수정을 검토하고 안내합니다. |
+| Authority | 사용자와 프로젝트 지시가 이 스킬보다 우선합니다. 프레임워크 동작에서는 현재 공식 Next.js 문서가 로컬 관례보다 우선합니다. 안전 정책은 위험한 런타임, 인증, 비밀 값, import 경계 변경을 막습니다. |
+| Evidence | 로컬 패키지·설정·라우터 표지, 수정한 소스 경로, 주제별 규칙, 공식 참고 자료, 검증 스크립트, 프로젝트 검사 출력을 근거로 씁니다. |
+| Tools | 로컬 검색·읽기·편집·검증 명령을 쓰고, API가 달라졌을 수 있으면 현재 공식 문서를 확인합니다. 파괴적 마이그레이션, 자격 증명, 프로덕션 부작용, 광범위한 일괄 수정은 게이트를 둡니다. |
+| Loop | 없습니다. 요청마다 강제 절차를 한 번만 돌리고, 사용자가 다시 요청할 때만 새로 시작합니다. |
+| Output | 규칙 분류, 변경한 파일, 검증 근거, 남은 위험, 날짜를 붙인 공식 문서 모호성 메모를 담은 한국어 아키텍처 판단이나 리뷰. |
+| Verification | 수정한 영역에 해당하는 `rules/validation.ko.md` 검사를 돌리고, 이 스킬 폴더를 고쳤으면 `bash scripts/validate-nextjs-architecture-skill.sh`를 실행합니다. |
+| Stop condition | 프로젝트 모드를 확인했고, 적용되는 안전 게이트를 통과했고, 로컬 관례를 적용했거나 미뤘고, 검증 근거를 남겼고, 남은 API 차이에 날짜와 출처를 붙인 상태에서 멈춥니다. |
 
 </instruction_contract>
-
-## 개요
-
-코드 변경 전후에 공식 Next.js 아키텍처 규칙을 적용합니다. 먼저 대상이 Next.js 프로젝트인지 증명하고 App Router, Pages Router, 혼합 모드 중 무엇인지 식별합니다. 그다음 라우팅, Server/Client Component 경계, 데이터/캐시 동작, Server Actions, Route Handlers, Proxy, 플랫폼 설정에 필요한 최소 규칙만 적용합니다.
-
-**official-first 규칙:** 프레임워크 동작은 현재 Next.js 문서가 기준입니다. 저장소 로컬 규칙이 Next.js보다 엄격하면 프레임워크 법칙이 아니라 로컬 규칙이라고 표시합니다.
-
-**App Router 기본값:** `app/` 및 `src/app/` 작업에는 전체 규칙을 적용합니다. Pages Router-only 프로젝트에서는 사용자가 마이그레이션을 요청하지 않는 한 App Router 전용 파일 규칙을 강요하지 않고 공유 Next.js 플랫폼, env, 경계 검사를 적용합니다.
-
-**mutation 기본값:** App Router UI에서 시작되는 쓰기는 Server Actions를 우선합니다. webhook, feed, CORS endpoint, public machine-readable endpoint, non-UI response처럼 HTTP-native 계약이 있는 경우 Route Handlers를 사용합니다.
-
-**보안 기본값:** 모든 Server Action을 도달 가능한 POST entry point처럼 취급합니다. 입력 검증, 인증, 권한 확인, 최소 반환값 shaping을 action 또는 위임된 server-only layer 안에서 수행합니다.
-
-## 빠른 Surface 선택기
-
-| 작업이 이런 형태라면... | 기본 surface | 기본으로 피할 것 |
-|---|---|---|
-| App Router에서 form 또는 internal UI mutation 추가 | Server Action | `route.ts` RPC |
-| webhook, feed, CORS endpoint, public API, XML, JSON, stream 추가 | Route Handler | Server Action |
-| UI 초기 페이지 데이터 가져오기 | Server Component | client-first fetching |
-| interactivity, browser API, client hook 추가 | 좁은 Client Component | root-level `'use client'` |
-| Server Action 주변 client orchestration 추가 | action을 호출하는 client hook | DB/DAL/server-only code를 import하는 hook |
-| domain logic, provider calls, authorization 추가 | server-only service/DAL layer | route file 또는 Client Component ownership |
-| Drizzle schema, migrations, repositories, DB client 추가 | `rules/db.ko.md` + server-only `src/db` convention | Client hooks 또는 Route Handler request lifecycle |
-| Next.js 16+에서 반복 데이터/UI 캐시 | `cacheComponents` + `use cache` / `cacheTag` / `cacheLife` | 오래된 `fetch` 기본값 가정 |
-| mutation 후 UI 갱신 | `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect flow | 문서화되지 않은 freshness |
-| 많은 request에서 render 전 redirect/rewrite | 먼저 `next.config.*`, 필요하면 Proxy | generic middleware로서 Proxy |
-| Pages Router only이고 migration 요청 없음 | 공유 Next.js 검사 | App Router-only 파일 규칙 |
 
 <activation_examples>
 
@@ -116,154 +88,212 @@ Negative examples:
 Boundary examples:
 
 - "Make a tiny copy-only text change in a Next.js page."
-  아키텍처 경계가 영향받지 않으면 직접 편집으로 충분할 수 있지만, touched files는 빠른 boundary check를 거쳐야 합니다.
+  아키텍처 경계가 걸리지 않으면 직접 고쳐도 되지만, 손댄 파일은 안전성 확인을 한 번 거칩니다.
 - "This repo is Pages Router only and I am not migrating to App Router."
-  공유 Next.js platform, env, server/client safety checks를 적용하고 App Router-only file conventions는 완화합니다.
+  Next.js 공통 플랫폼, env, server/client 안전성 검사를 적용하고 App Router 전용 파일 규칙은 풉니다.
 
 </activation_examples>
 
-## Step 1: Project Validation
+<trigger_conditions>
 
-아키텍처 작업 전에 프로젝트와 router mode를 확인합니다:
+라우터 모드가 어떤 규칙 묶음을 적용할지 정합니다. 모드 표는 `architecture-rules.ko.md`의 Project Modes가 갖고 있습니다. `next` 의존성이 없으면 여기서 끝냅니다.
 
-```bash
-rg -n '"next"' package.json
-find . -maxdepth 3 \( -path './app' -o -path './src/app' -o -path './pages' -o -path './src/pages' \)
-test -f next.config.ts -o -f next.config.mjs -o -f next.config.js
-```
+| 작업이 이런 형태라면 | 기본 표면 | 기본으로 피할 것 |
+|---|---|---|
+| App Router에서 form이나 내부 UI mutation 추가 | Server Action | `route.ts` RPC |
+| webhook, feed, CORS endpoint, 공개 API, XML, JSON, stream 추가 | Route Handler | Server Action |
+| 화면 초기 데이터 가져오기 | Server Component | 클라이언트 우선 fetch |
+| 상호작용, 브라우저 API, 클라이언트 hook 추가 | 범위를 좁힌 Client Component | 트리 상단의 `'use client'` |
+| Server Action 주변의 클라이언트 조합 추가 | action을 호출하는 클라이언트 hook | DB/DAL/server-only 코드를 import하는 hook |
+| 도메인 로직, provider 호출, 권한 확인 추가 | server-only service/DAL 계층 | route 파일이나 Client Component가 직접 소유 |
+| Drizzle 스키마, 마이그레이션, repository, DB 클라이언트 추가 | `rules/db.ko.md` + server-only `src/db` 관례 | 클라이언트 hook이나 Route Handler 요청 주기 |
+| Next.js 16 이상에서 반복되는 데이터/UI 캐시 | `cacheComponents` + `use cache` / `cacheTag` / `cacheLife` | 오래된 `fetch` 기본값 가정 |
+| mutation 뒤 화면 갱신 | `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect 흐름 | 근거 없는 최신성 |
+| 여러 요청에서 render 전 redirect/rewrite | 먼저 `next.config.*`, 필요하면 Proxy | 범용 미들웨어로서의 Proxy |
+| Pages Router만 쓰고 마이그레이션 요청 없음 | Next.js 공통 검사 | App Router 전용 파일 규칙 |
 
-해석:
+</trigger_conditions>
 
-- `next` dependency 없음: 중지. 이 skill은 적용되지 않습니다.
-- `app/` 또는 `src/app/`: App Router mode.
-- App Router 없이 `pages/` 또는 `src/pages/`: shared Next.js mode.
-- `app/`와 `pages/` 혼합: touched `app/` code에는 App Router 규칙을 적용하고, 요청 없이는 legacy migration을 피합니다.
+<skill_architecture>
 
-## Step 2: 필요한 최소 Rule Set 읽기
+- 핵심(`SKILL.md`): 트리거, 계약, 게이트 순서, 검증, 정지 조건.
+- 규칙: `architecture-rules.ko.md`(분류와 게이트 요약)와 `reference_routing`에 적힌 주제별 파일 열한 개.
+- 참고: `references/official/current-docs-2026-06-02.ko.md`, `nextjs-docs.ko.md`, `drizzle-docs.ko.md`에 날짜가 붙은 공식 사실을 둡니다. 트리거와 동작 사례는 `assets/evals/nextjs-architecture-cases.jsonl`에 있습니다.
+- 이 스킬은 스스로 완결됩니다. 다른 스킬의 경로, 문서, 호출을 필요로 하지 않습니다.
 
-**필수 첫 읽기:** `architecture-rules.md`.
+## Available scripts
 
-그다음 touched surface에 필요한 rule file만 읽습니다:
+- `scripts/validate-nextjs-architecture-skill.sh`
+  - Purpose: 이 스킬 폴더 구성, 필수 파일, 공식 기준 문구, 한국어 짝 파일 일치를 검사합니다.
+  - Usage: 저장소 루트에서 `bash skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh`.
+  - Requires: bash 3.2 이상, jq 1.6 이상.
+  - Output: `ok`, 줄 수, 파일 수, 실행한 검사 이름을 담은 JSON 요약. 실패하면 0이 아닌 종료 코드.
 
-- `rules/routes.md` — file conventions, segment rules, route groups, private folders, parallel/intercepted route 주의점
-- `rules/project-structure.md` — top-level project shape, `src/`, shared code placement, nested `src/modules`, `src/services`, `src/db`, `src/server`, `src/integrations`, `src/config`, repo-local organization conventions
-- `rules/services.md` — DAL/service/provider boundaries, DTOs, authorization delegation, server-only helper splits
-- `rules/hooks.md` — client hook orchestration boundaries와 hooks가 server/data layers를 넘지 말아야 할 위치
-- `rules/db.md` — Drizzle schema/config/migrations, connection lifecycle, relations/RQB, validation integrations, server-only DB placement
-- `rules/execution-model.md` — Server/Client Components, `'use client'`, providers, serializable props, `server-only` / `client-only`
-- `rules/data-fetching.md` — server-first reads, streaming, Cache Components, `use cache` / `use cache: remote` / `use cache: private`, cache tags, revalidation, dynamic rendering
-- `rules/server-actions.md` — `use server`, forms, validation, auth/authz, DAL delegation, `updateTag` / revalidation / redirect ordering
-- `rules/route-handlers.md` — `route.ts`, HTTP methods, caching intent, params, non-UI responses, CORS/webhooks
-- `rules/platform.md` — env, `next.config.*`, `typedRoutes`, Proxy, route segment config, deployment-sensitive settings
+</skill_architecture>
 
-drift-sensitive Next.js behavior는 먼저 `references/official/current-docs-2026-06-02.ko.md`, 그다음 `references/official/nextjs-docs.ko.md`도 확인합니다. browser-readable markdown이 필요하면 official pages를 `https://r.jina.ai/https://nextjs.org/docs/...`로 가져옵니다. Drizzle-specific behavior는 `references/official/drizzle-docs.ko.md`를 읽습니다.
+<loop_policy>
 
-## Step 3: Pre-Change Gates
+- 최적화 루프는 없습니다. 요청마다 게이트, 편집, 검증을 한 번씩 돕니다.
+- 검증은 요청당 한 번입니다. 새 요청이 오거나 보고된 검사가 실패했을 때만 두 번째 패스를 돌리고, 그때도 손댄 영역에 걸린 검사만 다시 돌립니다. 판정은 게이트 표와 프로젝트 검사에서 나오며, 같은 diff를 다시 읽는 것으로 대신하지 않습니다.
 
-### Brownfield Adoption
+</loop_policy>
 
-- untouched legacy deviation을 기본 실패로 보지 않습니다.
-- touched files의 safety, secret, auth, boundary issue는 즉시 차단합니다.
-- broad migration이 필요하지 않다면 touched files를 규칙에 맞춥니다.
+<language_and_translation_default>
+
+판단, 리뷰, 변경 요약은 한국어로 씁니다. 식별자, 파일 경로, 라우트 세그먼트, API 이름, 규칙 라벨(`BLOCKED`, `WARNING`)은 원래 표기를 유지해 이 문서의 표와 일대일로 맞출 수 있게 합니다. `SKILL.ko.md`는 이 파일과 절 단위로 짝을 이루며, 규칙을 바꾸면 같은 편집에서 함께 바꿉니다.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+`architecture-rules.md`는 항상 먼저 읽습니다. 그다음 손댄 영역에 해당하는 파일만 읽습니다.
+
+| 손댄 영역 | 파일 |
+|---|---|
+| 파일 규칙, 세그먼트 규칙, route group, private folder, parallel/intercepted route | `rules/routes.md` |
+| 최상위 프로젝트 구성, `src/`, 중첩 `src/modules` / `src/services` / `src/db` / `src/server` / `src/integrations` / `src/config` | `rules/project-structure.md` |
+| Server/Client Component, `'use client'`, provider, 직렬화 가능한 props, `server-only` | `rules/execution-model.md` |
+| 서버 우선 읽기, 스트리밍, Cache Components, `use cache`, 캐시 태그, 재검증 | `rules/data-fetching.md` |
+| `use server`, form, 검증, 인증, DAL 위임, mutation 뒤 최신성 | `rules/server-actions.md` |
+| `route.ts`, HTTP 메서드, 캐시 의도, params, CORS, webhook | `rules/route-handlers.md` |
+| DAL/service/provider 경계, DTO, 권한 위임 | `rules/services.md` |
+| 클라이언트 hook 조합과 그 경계 | `rules/hooks.md` |
+| Drizzle 스키마, 마이그레이션, 연결 수명, server-only DB 배치 | `rules/db.md` |
+| env, `next.config.*`, `typedRoutes`, Proxy, route segment 설정, 배포 관련 설정 | `rules/platform.md` |
+| 손댄 영역의 변경 후 검사 | `rules/validation.md` |
+| 스냅숏 이후 달라졌을 수 있는 Next.js 동작 | `references/official/current-docs-2026-06-02.md`, 그다음 `references/official/nextjs-docs.md`. Drizzle 주장은 `references/official/drizzle-docs.md` |
+
+`https://r.jina.ai/https://nextjs.org/docs/...`는 공식 스냅숏 두 개가 어긋나거나 해당 페이지를 마크다운으로 읽어야 할 때만 씁니다.
+
+</reference_routing>
+
+<support_file_read_order>
+
+1. 어떤 판단이나 편집보다 먼저 `architecture-rules.md`.
+2. 손댄 영역의 주제별 규칙 파일. 순서는 `reference_routing` 표를 따릅니다.
+3. 변경을 다 쓴 뒤 검사가 필요하면 `rules/validation.md`.
+4. 공식 스냅숏은 프레임워크 동작이 버전에 민감할 때만 `current-docs-2026-06-02.md`, 그다음 `nextjs-docs.md`. Drizzle 주장이 범위에 들어올 때만 `drizzle-docs.md`.
+
+</support_file_read_order>
+
+<workflow>
+
+| 단계 | 할 일 | 산출물 |
+|---|---|---|
+| 0 | 프로젝트와 라우터 모드를 확인합니다. | 모드 판정 |
+| 1 | 손댄 영역에 필요한 규칙 파일만 읽습니다. | 최소 근거 묶음 |
+| 2 | 계획한 변경을 게이트 1~6에 대봅니다. | BLOCKED 또는 WARNING 라벨이 붙은 판정 |
+| 3 | 구현 정책을 적용합니다. 국소적이고 되돌릴 수 있는 문제는 고치고, 광범위한 마이그레이션은 하지 않습니다. | 편집 또는 이유를 붙인 거절 |
+| 4 | 변경 후 검사를 돌리고 근거를 남깁니다. | 검증 기록 |
+
+0단계는 `rules/validation.md`에 있는 프로젝트 확인 명령을 씁니다. `next` 의존성이 없으면 여기서 끝냅니다.
+
+2단계 — 게이트. 브라운필드 규칙: 손대지 않은 레거시 편차를 기본 실패로 보지 않습니다. 안전성, 비밀 값, 인증, 경계 문제는 손댄 파일에서 즉시 막습니다. 광범위한 마이그레이션이 필요하지 않다면 손댄 파일을 규칙에 맞춥니다.
 
 ### Gate 1: Routing, File Conventions, and Project Structure
 
 | 확인 | 규칙 |
 |---|---|
-| `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`, `route.ts`가 유효한 segment 구조 밖에 있음 | 차단 |
-| 같은 route segment에 `route.ts`와 `page.tsx`를 생성 | 차단 |
-| route group을 URL 변경 수단처럼 사용 | 차단 |
-| private implementation file을 `_folder` 대신 routable segment로 노출 | 차단 |
-| nested domain/provider grouping이 touched code를 더 명확하게 하는데 shared `src/modules` / `src/services` / `src/db` / `src/server` / `src/integrations` / `src/config` organization을 flat/direct-leaf로 강제 | 경고. nested grouping 권장 |
-| repo-local folder preference를 official Next.js law처럼 보고 | 차단 |
-| parallel/intercepted routes를 layout slot 또는 hard-navigation 동작 검토 없이 추가 | 위험도에 따라 경고/차단 |
+| `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`, `route.ts`가 유효한 세그먼트 구조 밖에 있음 | BLOCKED |
+| 같은 route 세그먼트에 `route.ts`와 `page.tsx`를 함께 만듦 | BLOCKED |
+| route group을 URL이 바뀌는 것처럼 사용 | BLOCKED |
+| private 구현 파일을 `_folder` 대신 라우팅되는 세그먼트로 노출 | BLOCKED |
+| 중첩 도메인/provider 묶음이 손댄 코드를 더 분명하게 만드는데도 공유 `src/modules` / `src/services` / `src/db` / `src/server` / `src/integrations` / `src/config` 구성을 평면이나 단일 파일로 강제 | WARNING. 중첩 묶음을 권장 |
+| 저장소 로컬 폴더 취향을 공식 Next.js 법칙처럼 보고 | BLOCKED |
+| parallel/intercepted route를 대응하는 layout slot이나 hard-navigation 동작 확인 없이 추가 | 위험도에 따라 WARNING/BLOCKED |
 
 ### Gate 2: Server and Client Boundaries
 
 | 확인 | 규칙 |
 |---|---|
-| interactive component에 `'use client'` 없음 | 차단 |
-| 필요 없이 tree 상단에 `'use client'` 추가 | 차단 |
-| Client Component가 DB code, private env, `cookies()`, `headers()`, server-only helper import | 차단 |
-| Server→Client props가 넓거나 secret-bearing 또는 non-serializable | 차단 |
-| Provider가 필요한 범위보다 넓게 감쌈 | 경고 |
-| Client hook이 DB, Drizzle schema, DAL, private env, `cookies()`, `headers()`, server-only provider clients를 import | 차단 |
+| 상호작용하는 컴포넌트에 `'use client'`가 없음 | BLOCKED |
+| 필요 없이 트리 상단에 `'use client'`를 붙임 | BLOCKED |
+| Client Component가 DB 코드, private env, `cookies()`, `headers()`, server-only 도우미를 import | BLOCKED |
+| Server에서 Client로 넘기는 props가 넓거나 비밀 값을 담거나 직렬화할 수 없음 | BLOCKED |
+| Provider가 필요한 범위보다 넓게 감쌈 | WARNING |
+| 클라이언트 hook이 DB, Drizzle 스키마, DAL, private env, `cookies()`, `headers()`, server-only provider 클라이언트를 import | BLOCKED |
 
 ### Gate 3: Data Fetching, Cache, and Freshness
 
 | 확인 | 규칙 |
 |---|---|
-| client-only 필요 없이 Client Component에서 초기 UI data fetch | 차단 |
-| 캐시 동작이 우발적이거나 문서화되지 않았거나 오래된 기본값 기반 | 차단 |
-| `cacheComponents` 활성 상태에서 uncached runtime data에 `use cache`, `connection()`, `loading.tsx`, `<Suspense>` 의도가 없음 | 차단 |
-| `use cache` scope 안에서 `cookies()` / `headers()`를 읽고 serializable argument로 전달하지 않음 | 정당화된 experimental `use cache: private`를 명시적으로 쓰는 경우가 아니면 차단 |
-| 새 App Router 작업에 `connection()` 대신 `unstable_noStore` 추가 | legacy code 유지보수가 아니면 차단 |
-| mutation에 `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect freshness 또는 문서화된 대안이 없음 | 차단 |
+| 클라이언트 전용 필요가 없는데 Client Component에서 초기 UI 데이터를 가져옴 | BLOCKED |
+| 캐시 동작이 우연히 정해졌거나, 문서화되지 않았거나, 오래된 기본값에 기댐 | BLOCKED |
+| `cacheComponents`가 켜져 있는데 캐시하지 않는 런타임 데이터에 `use cache`, `connection()`, `loading.tsx`, `<Suspense>` 의도가 없음 | BLOCKED |
+| `use cache` 범위 안에서 `cookies()` / `headers()`를 읽고 직렬화 가능한 인자로 받지 않음 | 근거를 남긴 실험적 `use cache: private`를 쓰는 경우가 아니면 BLOCKED |
+| 새 App Router 작업에 `connection()` 대신 `unstable_noStore`를 추가 | 레거시 코드를 유지하는 경우가 아니면 BLOCKED |
+| mutation에 `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect 최신성, 문서화된 대안 중 아무것도 없음 | BLOCKED |
 
 ### Gate 4: Server Actions
 
 | 확인 | 규칙 |
 |---|---|
-| Server Action이 맞는 internal UI mutation을 `route.ts`로 구현 | HTTP semantics가 필요하지 않으면 차단 |
-| Action이 `FormData`, params, headers, search params를 검증/재확인 없이 신뢰 | 차단 |
-| Action이 page-level auth check에만 의존 | 차단 |
-| Action이 raw DB row 또는 broad internal object 반환 | 차단 |
-| Action이 authz, DTO shaping, provider orchestration에 필요한 server-only service/DAL boundary를 우회 | 위험도에 따라 경고/차단 |
-| 필요한 revalidation/tag update 전 `redirect()` 실행 | 차단 |
+| Server Action으로 충분한 내부 UI mutation을 `route.ts`로 구현 | HTTP 의미가 필요하지 않으면 BLOCKED |
+| Action이 `FormData`, params, headers, search params를 검증이나 재확인 없이 신뢰 | BLOCKED |
+| Action이 페이지 수준 인증 확인에만 기댐 | BLOCKED |
+| Action이 DB 원본 행이나 넓은 내부 객체를 그대로 반환 | BLOCKED |
+| Action이 권한 확인, DTO 형태 맞추기, provider 조합에 필요한 server-only service/DAL 경계를 우회 | 위험도에 따라 WARNING/BLOCKED |
+| 필요한 재검증이나 태그 갱신 전에 `redirect()`를 실행 | BLOCKED |
 
 ### Gate 5: Route Handlers and Proxy
 
 | 확인 | 규칙 |
 |---|---|
-| UI-only flow에 Route Handler를 기본 internal RPC로 사용 | 차단 |
-| Route Handler 안에서 `NextResponse.next()` 사용 | 차단 |
-| correctness가 중요한데 Route Handler caching을 명시하지 않고 가정 | 차단 |
-| Route Handler body 안에 `use cache`를 직접 두고 helper function으로 분리하지 않음 | 차단 |
-| 새 `middleware.ts`를 추가하고 `proxy.ts`를 쓰지 않음 | 차단 |
-| `next.config.*`, headers, redirects, rewrites, render-time logic으로 충분한데 Proxy 추가 | 차단 |
-| Proxy matcher가 없거나 너무 넓거나 metadata/static surface 제외가 필요할 때 누락 | 차단 |
+| UI 전용 흐름에서 Route Handler를 기본 내부 RPC로 사용 | BLOCKED |
+| Route Handler 안에서 `NextResponse.next()` 사용 | BLOCKED |
+| 정확성이 중요한데 Route Handler 캐시를 명시하지 않고 가정 | BLOCKED |
+| `use cache`를 도우미 함수로 빼지 않고 Route Handler 본문에 직접 둠 | BLOCKED |
+| 새 `middleware.ts`를 만들고 `proxy.ts`를 쓰지 않음 | BLOCKED |
+| `next.config.*`, 헤더, redirect, rewrite, render 시점 로직으로 충분한데 Proxy를 추가 | BLOCKED |
+| Proxy matcher가 없거나, 너무 넓거나, metadata/정적 표면을 빼야 하는데 빠뜨림 | BLOCKED |
 
 ### Gate 6: Platform and Environment
 
 | 확인 | 규칙 |
 |---|---|
-| `.env*` files가 `src/`에서 load된다고 가정 | 차단 |
-| Client code가 non-`NEXT_PUBLIC_` env vars 읽음 | 차단 |
-| runtime client env를 build-time public env처럼 취급 | 차단 |
-| `cacheComponents` 활성 상태에서 v16에서 제거된 route segment config options(`dynamic`, `revalidate`, `fetchCache`) 사용 | 차단 |
-| `runtime: 'edge'` 또는 Proxy runtime 가정을 platform compatibility 확인 없이 변경 | 차단 |
-| deployment-sensitive Server Action origin/config 변경이 문서화되지 않음 | 위험도에 따라 경고/차단 |
+| `.env*` 파일이 `src/`에서 읽힌다고 가정 | BLOCKED |
+| 클라이언트 코드가 `NEXT_PUBLIC_`이 아닌 env 값을 읽음 | BLOCKED |
+| 런타임 클라이언트 env를 빌드 시점 공개 env처럼 취급 | BLOCKED |
+| `cacheComponents`가 켜진 상태에서 v16에서 빠진 route segment 설정(`dynamic`, `revalidate`, `fetchCache`)을 사용 | BLOCKED |
+| `runtime: 'edge'`나 Proxy 런타임 가정을 플랫폼 호환성 확인 없이 변경 | BLOCKED |
+| 배포에 민감한 Server Action origin/설정 변경을 문서화하지 않음 | 위험도에 따라 WARNING/BLOCKED |
 
-## Step 4: Implementation Policy
+3단계 — 구현 정책. 국소적이고 되돌릴 수 있는 문제는 바로 고칩니다. 클라이언트 경계를 좁히고, server-only 코드를 DAL이나 도우미 뒤로 옮기고, `server-only`를 붙이고, 빠진 최신성을 채우고, UI 전용 `route.ts` mutation을 작은 Server Action으로 바꾸고, Proxy matcher를 좁히고, 캐시 의도를 분명히 합니다. 광범위한 마이그레이션은 스스로 적용하지 않습니다. Pages에서 App Router로의 재작성, 캐시 모델 전면 교체, Route Handler에서 Server Action으로의 대량 전환, 배포에 민감한 origin이나 암호화 변경이 여기에 해당합니다.
 
-local, reversible issue는 자동 수정합니다: client boundary 좁히기, server-only code를 DAL/helper 뒤로 이동, `server-only` 추가, freshness 누락 보완, 작은 UI-only `route.ts` mutation을 Server Action으로 대체, Proxy matcher 축소, cache intent 명확화.
+4단계는 검증 절의 변경 후 검사를 `rules/validation.md` 명령으로 돌리고, 실행한 명령을 근거로 남깁니다.
 
-broad migration은 자동 적용하지 않습니다: Pages→App Router 대규모 rewrite, sweeping cache model change, 대량 Route Handler→Server Action conversion, deployment-sensitive origin/encryption 변경.
+</workflow>
 
-<validation_checklist>
+<required>
 
-## Step 5: Post-Change Verification
+- 규칙을 적용하기 전에 확인한 프로젝트 모드. 모드 때문에 App Router 규칙을 빼는 경우에는 그 이유.
+- 강제 기본값 네 가지: 공식 문서가 로컬 관례보다 우선, `app/`에는 App Router 규칙이 기본, App Router UI에서 시작한 쓰기는 Server Action, 모든 Server Action을 외부에서 닿는 POST 진입점으로 취급.
+- 모든 판정을 게이트 행과 연결하고 BLOCKED 또는 WARNING으로 표시. 저장소 로컬 관례는 그렇게 표시.
+- 손댄 영역에 해당하는 4단계 검사의 근거.
+- 이 스킬 폴더 자체를 고쳤을 때 `bash skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh` 실행.
 
-claim을 증명하는 가장 작은 프로젝트별 검사를 실행하고 evidence를 보고합니다:
+</required>
 
-1. project mode가 edited surface와 일치
-2. special files가 유효한 segment에 있고 `page`/`route` 충돌 없음
-3. shared 및 segment-local folders가 project-structure rules를 따르고, new touched shared code는 explicit exception이 없으면 nested `src/lib` / `src/services` grouping을 사용
-4. `'use client'` boundary가 좁고 안전함
-5. client code가 server-only modules 또는 private env를 import하지 않음
-6. data/cache strategy가 명시적이고 현재 docs와 호환
-7. mutation freshness가 `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect flow 또는 문서화된 대안을 사용
-8. Route Handler와 Proxy 사용이 여전히 정당함
-9. `next.config.*`, env loading, route segment config, deployment settings가 일관됨
+<forbidden>
 
-이 skill folder 자체는 다음을 실행합니다:
+- 마이그레이션을 요청하지 않은 Pages Router 전용 프로젝트에 App Router 파일 규칙을 적용하는 것.
+- Hypercore/저장소 로컬 폴더 취향을 공식 Next.js 동작으로 보고하는 것.
+- Pages에서 App Router로의 재작성, mutation 방식 대량 전환, 캐시 모델 전면 교체를 스스로 적용하는 것.
+- 명시적 권한 없이 자격 증명, 프로덕션 부작용, 배포에 민감한 origin이나 암호화 설정을 건드리는 것.
+- 저장소의 다른 곳에 같은 패턴이 손대지 않은 채 있다는 이유로 게이트를 끄는 것.
+- 돌리지 않은 검증을 돌렸다고 하거나, 실행한 검사 없이 게이트를 통과로 기록하는 것.
 
-```bash
-bash skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.sh
-```
+</forbidden>
 
-## Stop Condition
+<validation>
 
-Next.js mode가 확인되고, touched surface가 관련 gate를 통과하며, fresh verification output이 있고, 남은 repo-local convention 또는 risk가 명시적으로 보고되면 완료합니다.
+- [ ] 프로젝트 모드를 확인했고 편집한 영역과 맞는다.
+- [ ] 손댄 파일을 게이트 1~6에 대보았고 해당 행을 기록했다.
+- [ ] `'use client'` 경계가 좁고, 클라이언트 파일이 server-only 코드나 private env에 닿지 않으며, 캐시와 최신성 동작이 명시적이고 현재 스냅숏과 맞는다.
+- [ ] Route Handler와 Proxy 사용이 정당화되고, 저장소 로컬 관례에 라벨이 붙어 있으며 프레임워크 법칙처럼 제시되지 않는다.
+- [ ] 남은 위험, 미룬 마이그레이션, 날짜를 붙인 API 모호성을 보고했다.
+- [ ] 이 스킬 폴더를 고쳤다면 번들 검사기가 통과했다.
 
-</validation_checklist>
+정지 조건: Next.js 모드를 확인했고, 손댄 영역이 해당 게이트를 통과했고, 검증 출력이 최신이며, 남은 저장소 로컬 관례나 위험을 분명히 보고한 상태에서 멈춥니다.
+
+</validation>

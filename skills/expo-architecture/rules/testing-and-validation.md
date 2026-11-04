@@ -1,5 +1,7 @@
 # Testing and Validation
 
+Read before claiming completion. This file owns the risk depth, the check order, the required scenarios, and the completion record.
+
 ## Risk depth
 
 Use `standard` depth for new architecture or material refactors; `thorough` when native modules, permissions, auth/secrets, offline data, EAS config, or platform divergence changes. Pair final-output checks with trajectory checks for installs, native generation, credentials, and publication gates.

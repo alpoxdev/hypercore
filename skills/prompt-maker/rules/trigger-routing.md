@@ -1,5 +1,7 @@
 # Trigger Routing
 
+**Purpose**: Separate prompt work from skill, documentation, research, and code work. **Read when**: routing is ambiguous.
+
 Use `prompt-maker` only when the requested deliverable is a reusable prompt artifact.
 
 ## Use

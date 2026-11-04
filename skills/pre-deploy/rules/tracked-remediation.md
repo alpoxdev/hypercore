@@ -2,13 +2,13 @@
 
 **Purpose**: Preserve evidence, ownership, and resume state when pre-deploy blockers are too complex for a direct fix pass.
 
-**Read when**: the baseline deploy check failed, triage classified the shape as Medium or Complex, or a `.hyper/pre-deploy/flow.json` already exists. Nothing else needs this file.
+**Read when**: the baseline deploy check failed, triage classified the shape as Medium, Complex, or Laned, or a `.hyper/pre-deploy/flow.json` already exists. Nothing else needs this file.
 
 Use it only after:
 
 1. The target root exists and `bash skills/pre-deploy/scripts/stack-detect.sh` has run there.
 2. A full `bash skills/pre-deploy/scripts/deploy-check.sh` run captured the baseline failure.
-3. Triage classified the shape as Medium or Complex.
+3. Triage classified the shape as Medium, Complex, or Laned.
 
 ## Flow file
 

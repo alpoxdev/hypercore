@@ -1,5 +1,7 @@
 # Data, State, and Boundaries
 
+Read when changing server state, client state, persistence, or the direction of a dependency. This file owns state ownership, the runtime boundaries, and the offline rule.
+
 ## Separate state by owner
 
 - **Server state**: remote cache, request status, invalidation, retries. Keep it in a query/data layer; do not mirror it wholesale into global client state.

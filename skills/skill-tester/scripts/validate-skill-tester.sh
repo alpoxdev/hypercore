@@ -4,8 +4,8 @@
 set -euo pipefail
 shopt -s dotglob nullglob
 
-REQUIRED_SECTIONS=(output_language purpose routing_rule instruction_contract activation_examples required_inputs skill_architecture workflow loop_policy output_contract validation)
-CATEGORY_FLOORS=(positive:3 negative:2 boundary:2 edge:2 workflow:1 adversarial:1 regression:1)
+REQUIRED_SECTIONS=(output_language purpose routing_rule instruction_contract activation_examples trigger_conditions skill_architecture loop_policy language_and_translation_default reference_routing support_file_read_order workflow required forbidden validation)
+CATEGORY_FLOORS=(positive:3 negative:2 boundary:1 workflow:1 source:1 safety:1 adversarial:1 regression:1)
 LANGUAGE_FLOORS=(en:1 ko:1 mixed:1)
 
 cwd=$(pwd -P)
@@ -476,9 +476,13 @@ ROW_MESSAGES_FILTER='
     else empty end;
   def trigger_problem:
     . as $row
-    | if (($row.category | text) and (["positive", "negative", "boundary"] | index($row.category) != null)) then
-        (if ($row.shouldTrigger == true or $row.shouldTrigger == false or $row.shouldTrigger == "depends") then empty
-         else "Trigger eval requires shouldTrigger true, false, or depends." end)
+    | if (($row.category | text) and (["positive", "negative", "boundary", "coexistence"] | index($row.category) != null)) then
+        (if ($row.expect == "trigger" or $row.expect == "no_trigger") then empty
+         else "Trigger eval requires expect to be trigger or no_trigger." end),
+        (if (($row.runs | type) == "number" and ($row.runs | floor) == $row.runs and $row.runs >= 1) then empty
+         else "Trigger eval requires a positive integer runs value on the case." end),
+        (if (($row.threshold | type) == "number" and $row.threshold > 0 and $row.threshold < 1) then empty
+         else "Trigger eval requires a threshold between 0 and 1 on the case." end)
       else empty end;
   [category_problem, language_problem, risk_problem, intent_problem, context_problem, metrics_problem, expected_problem, trigger_problem]
   | .[]'
@@ -526,7 +530,7 @@ check_evals() { # evalPath; prints the evals object on stdout
 
     cat=$(jq -r 'if (.category | type) == "string" then .category else "" end' <<< "$row")
     case $cat in
-      positive|negative|boundary|edge|workflow|adversarial|regression)
+      positive|negative|boundary|workflow|source|safety|adversarial|regression|coexistence)
         count=$(jq -cn --argjson c "$count" --arg k "$cat" '$c + {($k): (($c[$k] // 0) + 1)}')
         ;;
     esac
@@ -538,7 +542,7 @@ check_evals() { # evalPath; prints the evals object on stdout
     esac
 
     messages=$(jq -r \
-      --argjson cats '{"positive":true,"negative":true,"boundary":true,"edge":true,"workflow":true,"adversarial":true,"regression":true}' \
+      --argjson cats '{"positive":true,"negative":true,"boundary":true,"workflow":true,"source":true,"safety":true,"adversarial":true,"regression":true,"coexistence":true}' \
       --argjson langs '{"en":true,"ko":true,"mixed":true}' \
       --argjson risks '{"smoke":true,"targeted":true,"standard":true,"thorough":true,"high-stakes":true}' \
       "$ROW_MESSAGES_FILTER" <<< "$row")

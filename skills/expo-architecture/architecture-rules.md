@@ -1,5 +1,7 @@
 # Expo Architecture Rules
 
+Read before classifying any finding or enforcing a rule. This file owns the rule classes, the authority order, the blocking gates, and the migration policy.
+
 ## Rule classes
 
 - **Official**: behavior documented by Expo or React Native and applicable to the installed versions.

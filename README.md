@@ -117,12 +117,12 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | 스킬 | 설명 | 호환 |
 |------|------|------|
 | `skill-maker` | 유지보수하기 쉬운 Codex/AI 에이전트 스킬 생성 및 리팩터링 | All |
-| `skill-tester` | 스킬 트리거/동작을 시나리오 기반으로 검증 | All |
+| `skill-tester` | 스킬 트리거/동작을 시나리오 기반으로 검증하고, 확인된 결함은 대상 스킬 안에서 안전하게 수리 | All |
 | `autoresearch-skill` | 반복 실행과 이진 eval 기반으로 기존 스킬을 자동 최적화 | All |
 | `readme-maker` | 코드베이스 분석 기반 README 생성 및 리팩터링 | All |
 | `agents-md-maker` | 저장소 근거 기반 `AGENTS.md`(영어) + `AGENTS.ko.md`(한국어 미러) 생성·리팩터링. `CLAUDE.md`는 만들지 않으며, 기존 파일이 `AGENTS.md` 직접 읽기를 막으면 경로만 보고 | All |
-| `docs-maker` | AI가 읽기 좋은 구조화된 문서/룰 팩 생성 | All |
-| `prd-maker` | 증거 기반 Living PRD + 다이어그램·플로우·와이어프레임 생성 | All |
+| `docs-maker` | AI가 읽기 좋은 구조화된 문서/룰 팩 생성 및 리팩터링 | All |
+| `prd-maker` | 증거 기반 Living PRD + 다이어그램·플로우·와이어프레임 생성·갱신 | All |
 | `prompt-maker` | 재사용 가능한 프롬프트·역할 프롬프트·프롬프트 템플릿/팩·프롬프트 eval 픽스처 생성 및 리팩터링 | All |
 
 ### 아키텍처 가드
@@ -140,23 +140,23 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `pre-deploy` | 배포 전 lint/타입/빌드 검증 | All |
+| `pre-deploy` | 배포 전 lint/타입/빌드 검증 | Node.js·Rust·Python 툴체인; bash 3.2+ & jq 1.6+ |
 | `deploy-fix` | 빌드/CI/배포 장애 진단 및 수정 | All |
-| `version-update` | node/rust/python 시맨틱 버전 업데이트와 버전 파일 동기화, 선택적 커밋·푸시 | All |
+| `version-update` | node/rust/python 시맨틱 버전 업데이트와 버전 파일 동기화, 선택적 커밋·푸시 | bash 3.2+; git (커밋·푸시 시) |
 
 ### Git 워크플로
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `git-maker` | 커밋과 푸시를 한 번에 (worktree 인지) | All |
-| `git-worktree` | Git worktree 생성/진입/정리, 병렬 에이전트 워크스페이스 관리 | All |
+| `git-maker` | 커밋과 푸시를 한 번에 (worktree 인지) | bash 3.2+ & git |
+| `git-worktree` | Git worktree 생성/진입/정리, 병렬 에이전트 워크스페이스 관리 | git worktree; bash 3.2+ & jq 1.6+ (검증기) |
 
 ### 계획 · 실행 오케스트레이션
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
-| `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git |
+| `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
 | `hyper-mass` | 의존 순서가 있는 하위 작업을 그래프로 정의해 단계별 병렬 실행, 재시도·수정·재개 지원 | All |
 
 ### 리서치 · 디버깅 · QA
@@ -171,7 +171,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper-seo` | SEO / AEO / GEO 통합 분석 및 최적화 리포트, 새 홈페이지 출시 세팅 계획(검색·AI 크롤러 정책·등록·측정) | All |
+| `hyper-seo` | SEO / AEO / GEO / LLMO 통합 감사와 최적화 리포트, 점수 개선 루프, 새 홈페이지 출시 세팅 계획(검색·AI 크롤러 정책·등록·측정) | All |
 | `korean-writer` | 한국어 산문을 사람이 쓴 것처럼 — 새 글은 생성 시점 회피로, 기존 글은 앵커 보존과 과교정 가드 아래에서 AI 티 제거 | All |
 | `tone-manner-maker` | 글 샘플에서 말투 스펙 문서 추출 — 다른 AI가 그 말투로 쓸 수 있는 self-contained 톤 프로파일, 커뮤니티 말투 7종 근사치 프리셋 포함 | All |
 | `blog-maker` | 키워드 하나로 리서치부터 초안까지 — 네이버 또는 inblog 글, 네이버 노출 규칙(C-Rank·D.I.A.+·스마트블록)과 공식 제한 기준 준수, 내장 사람 문장 규칙, 인라인 이미지 슬롯, 섹션 역할별 이미지 visual brief(역할·템플릿·시선 순서·색 역할·재질·정확한 글자·점검 기준 + 붙여넣기용 자연어 프롬프트), 기본 본문 HTML에 서식 복사 버튼 포함(plain 텍스트는 명시 요청 시만), 정보/경험형·전환형 | All (self-contained) |

@@ -1,5 +1,7 @@
 # Data, State, Boundary
 
+server state, client state, persistence, dependency 방향을 바꿀 때 읽습니다. 이 파일은 state 소유권, runtime 경계, offline 규칙을 소유합니다.
+
 ## Owner별 state 분리
 
 - **Server state**: remote cache, request status, invalidation, retry. Query/data layer에 두고 전체를 global client state에 복제하지 않습니다.

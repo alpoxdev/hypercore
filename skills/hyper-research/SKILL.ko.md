@@ -45,7 +45,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 
 <instruction_contract>
 
-| Field | Contract |
+| 필드 | 계약 |
 |---|---|
 | Intent | 질문의 핵심에 답하는 인용 기반 조사 리포트를 저장하고, 위험도가 높은 모든 주장을 claim gate로 거르며, 모든 공백을 밝힙니다. |
 | Scope | 분해, fidelity 기록, journal, 수집, 확장 wave, 주장 검증, 리포트 저장, 마감 브리핑을 맡습니다. 코드 변경, 게시, 계정 관련 작업은 범위 밖입니다. |
@@ -84,7 +84,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 
 <trigger_conditions>
 
-| Situation | Mode |
+| 상황 | 모드 |
 |---|---|
 | 짧은 사실 답이나 날짜가 붙은 답에 출처 두세 개면 충분한 경우 | `--quick` |
 | 질문, 비교, 트렌드에 표준 인용 리포트가 필요한 경우 | 기본 |
@@ -112,9 +112,9 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 <skill_architecture>
 
 - 코어(`SKILL.ko.md`): 트리거, 계약, 깊이 표, 단계 순서, 종료 조건.
-- Rules: `research-workflow.ko.md`(틀 잡기, journal, 수집, 저장), `expansion-and-convergence.ko.md`(`## EXPAND` 단서, wave, excursion, 종료 규칙), `claim-verification.ko.md`(claim gate, 실행 확인, 숫자 계보), `parallel-research.ko.md`(lane 계약과 join), `validation.ko.md`(순서가 있는 게이트와 마감).
-- References: `channel-selection.ko.md`(채널과 검색 요령), `journal-format.ko.md`(journal 파일과 각 열), `report-template.ko.md`(저장하는 리포트).
-- Assets: `assets/evals/hyper-research-cases.jsonl`, 트리거와 동작 사례.
+- 규칙: `research-workflow.ko.md`(틀 잡기, journal, 수집, 저장), `expansion-and-convergence.ko.md`(`## EXPAND` 단서, wave, excursion, 종료 규칙), `claim-verification.ko.md`(claim gate, 실행 확인, 숫자 계보), `parallel-research.ko.md`(lane 계약과 join), `validation.ko.md`(순서가 있는 게이트와 마감).
+- 참조: `channel-selection.ko.md`(채널과 검색 요령), `journal-format.ko.md`(journal 파일과 각 열), `report-template.ko.md`(저장하는 리포트).
+- 자산: `assets/evals/hyper-research-cases.jsonl`, 트리거와 동작 사례.
 - 묶인 스크립트는 없습니다. 모든 게이트는 에이전트가 journal과 리포트를 보며 실행하는 점검 목록입니다.
 
 </skill_architecture>
@@ -169,10 +169,10 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 | 1 | 축마다 채널과 서로 다른 쿼리 계획 | 쿼리 로그 |
 | 2 | 모든 축에 걸쳐 첫 wave를 한꺼번에 수집하고, 각 출처는 연 즉시 기록 | Source ledger, 관찰 메모 |
 | 3 | `## EXPAND` 단서로 확장하고, 이름이 붙은 트리거에서만 excursion을 돌리고, 수렴 규칙에서 멈춤 | 확장 로그, `converged` 또는 `exhausted` |
-| 4 | 위험도가 높은 주장을 gate로 거르고, 코드 형태의 다툼은 실행으로 확인하고, 모든 숫자에 계보를 붙임 | Claim 표, `verify-<slug>.md` 파일 |
+| 4 | 위험도가 높은 주장을 게이트로 거르고, 코드 형태의 다툼은 실행으로 확인하고, 모든 숫자에 계보를 붙임 | Claim 표, `verify-<slug>.md` 파일 |
 | 5 | 결론을 앞세운 리포트를 쓰고, 순서가 있는 게이트를 돌리고, 저장하고, 마감 브리핑 | 저장된 리포트와 브리핑 |
 
-Phase 규칙:
+단계 규칙:
 
 - 주제가 없거나, 답에 따라 결과가 달라지는 fidelity 항목이 비어 있을 때만 묻습니다. 형식에 대한 답을 기다리지 않고 수집을 시작합니다.
 - 이름이 가리키는 대상을 확정한 뒤에 이후 쿼리나 lane이 그것을 전제로 다룹니다.

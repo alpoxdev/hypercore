@@ -747,16 +747,19 @@ case_autoresearch_corpus() {
     (map(has("id") and (.id | type == "string")) | all) and
     (([.[].id] | length) == ([.[].id] | unique | length)) and
     (map(.prompt | type == "string") | all) and
-    (map(.shouldTrigger | type == "boolean") | all) and
     (map(.context | type == "object") | all) and
     (map((.expected.must | length) > 0 and (.expected.mustNot | length) > 0) | all) and
-    (map((.metrics | length) > 0) | all)
+    (map((.metrics | length) > 0) | all) and
+    (map(.category as $c |
+      if (["positive", "negative", "boundary", "coexistence"] | index($c)) != null
+      then (.expect == "trigger" or .expect == "no_trigger")
+      else true end) | all)
   ' "$eval_file" >/dev/null || { fail "autoresearch eval corpus has malformed rows"; return 1; }
   jq -s -e '([.[].category] | unique) as $c | (["positive","negative","boundary","adversarial","regression"] - $c | length) == 0' \
     "$eval_file" >/dev/null || { fail "autoresearch corpus misses a required category"; return 1; }
-  jq -s -e 'any(.[]; .language == "ko" and .shouldTrigger == true)' "$eval_file" >/dev/null \
+  jq -s -e 'any(.[]; .language == "ko" and .expect == "trigger")' "$eval_file" >/dev/null \
     || { fail "no Korean triggering case"; return 1; }
-  jq -s -e 'any(.[]; .language == "ko" and .shouldTrigger == false)' "$eval_file" >/dev/null \
+  jq -s -e 'any(.[]; .language == "ko" and .expect == "no_trigger")' "$eval_file" >/dev/null \
     || { fail "no Korean non-triggering case"; return 1; }
 
   contract=$work/contract.md
@@ -826,7 +829,7 @@ case_deploy_fix_corpus() {
     'non-resumable' \
     'authorized_target' \
     'rollback_or_stop' \
-    'three materially different|실질적으로 다른 실패 접근'; do
+    'one materially different approach|실질적으로 다른 접근'; do
     if ! grep -Eq "$pattern" "$contract"; then
       fail "deploy-fix contract misses /$pattern/"
       return 1
@@ -1577,6 +1580,38 @@ EOF
   done
 }
 
+# image-maker and git-worktree ship their own validators outside the standard gate,
+# so the repository suite runs them here to catch drift in their fixtures and core.
+case_image_maker_validator() {
+  require_cmd jq
+  local out err rc work
+  work=$(workdir)
+  out=$work/image-maker.json
+  err=$work/image-maker.err
+  rc=$(run_in "$ROOT" "$out" "$err" bash "$ROOT/skills/image-maker/scripts/validate-image-maker.sh" --root skills/image-maker --json)
+  assert_eq 0 "$rc" "image-maker validator exit"
+  assert_json_valid "$out" "image-maker validator output"
+  assert_eq "true" "$(jq -r '.ok' "$out")" "image-maker validator ok"
+  assert_eq 0 "$(jq -r '.counts.errors' "$out")" "image-maker case errors"
+  assert_eq "$(jq -r '.counts.total' "$out")" \
+    "$(jq -r '.counts.automatic + .counts.manual_required' "$out")" "image-maker case total"
+  assert_eq "$(jq -r '.counts.manual_required' "$out")" \
+    "$(jq -r '.manual_required | length' "$out")" "image-maker manual cases"
+}
+
+case_git_worktree_validator() {
+  require_cmd jq
+  local out err rc work
+  work=$(workdir)
+  out=$work/git-worktree.json
+  err=$work/git-worktree.err
+  rc=$(run_in "$ROOT" "$out" "$err" bash "$ROOT/skills/git-worktree/scripts/validate-git-worktree-skill.sh")
+  assert_eq 0 "$rc" "git-worktree validator exit"
+  assert_json_valid "$out" "git-worktree validator output"
+  assert_eq "$(jq -r '.total' "$out")" "$(jq -r '.score' "$out")" "git-worktree validator score"
+  assert_jq "$out" '.total > 0 and (.checks | length) > 0 and all(.checks[]; .pass)' "git-worktree validator checks"
+}
+
 STRUCTURE_GATE_MARKERS='필수 키가 없습니다
 값이 유효하지 않습니다
 배열이어야 합니다
@@ -1712,6 +1747,8 @@ run_case "git-maker-fast inspects a repository whose path contains spaces withou
 run_case "pre-deploy rejects malformed package metadata" case_pre_deploy_rejects_malformed_metadata
 run_case "self-containment check catches cross-skill references, including with no sibling present" case_self_containment_check
 run_case "script-runtime check rejects non-bash bundled scripts and non-bash shebangs" case_script_runtime_check
+run_case "the image-maker validator accepts its own skill folder and eval corpus" case_image_maker_validator
+run_case "the git-worktree validator scores its own skill folder at full marks" case_git_worktree_validator
 run_case "autoresearch-skill preserves both prior outputs when its second-write fails" case_autoresearch_renderer_second_write
 run_case "autoresearch-skill preserves both prior outputs when its second-rename fails" case_autoresearch_renderer_second_rename
 run_case "hyper-seo preserves both prior outputs when its second-write fails" case_hyper_seo_renderer_second_write

@@ -9,8 +9,8 @@ compatibility: Expo 프로젝트 또는 Expo 프로젝트 생성 요청이 필�
 @rules/routing-and-navigation.ko.md
 @rules/data-state-and-boundaries.ko.md
 @rules/native-platform-and-security.ko.md
-@rules/testing-and-validation.ko.md
 @references/official/expo-react-native-2026-08-03.ko.md
+@rules/testing-and-validation.ko.md
 
 # Expo Architecture
 
@@ -75,28 +75,63 @@ Boundary:
 
 </activation_examples>
 
-<project_validation>
+<trigger_conditions>
 
-적용 전에 다음을 식별합니다.
-1. 로컬 파일에서 Expo SDK, React Native, Expo Router, TypeScript, package manager, workspace mode.
-2. Managed/CNG, committed `ios/`/`android/`, development build, Expo Go 제약.
-3. route root(`src/app` 또는 `app`), alias, generated file, test, project command.
-4. 요청 변경이 package install, `prebuild`, EAS, credential, signing, store side effect를 요구하는지 여부.
+요청에 Expo나 React Native 앱, Expo Router, app folder나 route boundary, native config, platform별 code, 앱 data/state 배치가 나오고, 하는 일이 setup, 구현, review, remediation이면 활성화합니다.
 
-대상이 Expo가 아니고 Expo 앱 생성 요청도 없다면 이 스킬 routing을 중단합니다.
+이미 운영 중이거나 커지는 Expo 프로젝트의 structure, routing, import, platform seam을 바꿔야 하거나, review 요청이 change set으로 끝나는 경우에도 활성화합니다.
 
-</project_validation>
+요청보다 프로젝트 판정을 먼저 합니다. 로컬 파일에서 Expo나 Expo prebuild가 확인되지 않고 사용자가 Expo 앱 생성을 요청하지도 않았다면 이 스킬로 routing하지 않습니다. 나머지 제외 대상은 `<routing_rule>`에 있습니다.
+
+</trigger_conditions>
+
+<skill_architecture>
+
+| 구성 | 역할 | 읽는 조건 |
+|---|---|---|
+| `SKILL.ko.md` | trigger, contract, workflow, gate, validation | 항상 |
+| `architecture-rules.ko.md` | rule class와 blocking gate | finding을 분류하기 전 |
+| `rules/project-structure.ko.md` | folder, ownership, import, migration, scale profile | folder나 import를 바꿀 때 |
+| `rules/routing-and-navigation.ko.md` | Expo Router layout, group, param, route thinness | route를 바꿀 때 |
+| `rules/data-state-and-boundaries.ko.md` | server/client state, DTO, persistence, dependency direction | data 흐름을 바꿀 때 |
+| `rules/native-platform-and-security.ko.md` | app config, permission, secret, storage, native code | config나 platform code를 건드릴 때 |
+| `rules/testing-and-validation.ko.md` | check 순서와 완료 근거 | 완료를 주장하기 전 |
+| `references/official/expo-react-native-2026-08-03.ko.md` | 날짜가 고정된 공식 SDK/API 사실 | 현재 SDK 주장이 변경을 가를 때 |
+
+</skill_architecture>
+
+<loop_policy>
+
+change set마다 loop는 한 번만 돌립니다. check를 실행하고 실패를 읽고 실패한 것만 고친 뒤 다시 실행합니다. 한 round는 repair 한 번과 그 재실행이며, 두 round 뒤에 끝냅니다. critical type, route, native-config, safety gate를 모두 통과한 변경만 남기고, 통과하지 못하면 실패한 check를 밝히고 끝내며 검증됐다고 주장하지 않습니다. 구조가 만족스러워질 때까지 refactor를 반복하는 loop도, 스스로 점수를 매기는 loop도 없습니다. 근거는 기록한 command 출력과 resolved config이고, 계획을 다시 읽는 것이 아닙니다.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+사용자에게 보이는 글은 기본적으로 한국어로 씁니다. 보고서, 결정, caveat, residual risk가 여기 해당합니다. code identifier, command, path, package/API 이름, 인용한 원문은 원래 형태를 유지합니다. 이 패키지는 영문/한글 쌍(`X.md` ↔ `X.ko.md`)으로 관리하므로 한 번에 한 언어판만 읽고, 규칙이 바뀌면 양쪽을 함께 고칩니다.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+- finding을 분류하거나 규칙을 적용하기 전에 `architecture-rules.ko.md`를 읽습니다.
+- folder, import, module ownership, migration 순서를 바꿀 때 `rules/project-structure.ko.md`를 읽습니다.
+- route tree, layout, group, param을 바꿀 때 `rules/routing-and-navigation.ko.md`를 읽습니다.
+- server state, client state, persistence, dependency 방향을 바꿀 때 `rules/data-state-and-boundaries.ko.md`를 읽습니다.
+- app config, permission, secret, storage, native code, platform file을 건드릴 때 `rules/native-platform-and-security.ko.md`를 읽습니다.
+- 완료를 주장하기 전에 `rules/testing-and-validation.ko.md`를 읽습니다.
+- 설치된 SDK나 공식 API 동작이 변경을 가를 때 `references/official/expo-react-native-2026-08-03.ko.md`를 읽고 `last_verified_at`을 설치 버전과 맞춰 봅니다.
+
+</reference_routing>
 
 <support_file_read_order>
 
-1. rule class와 blocking gate는 `architecture-rules.ko.md`를 읽습니다.
-2. 영향 topic만 읽습니다.
-   - `rules/project-structure.ko.md`: scalable folder, ownership, import, migration.
-   - `rules/routing-and-navigation.ko.md`: Expo Router layout, route group, param, route thinness.
-   - `rules/data-state-and-boundaries.ko.md`: server/client state, DTO, persistence, dependency direction.
-   - `rules/native-platform-and-security.ko.md`: app config, permission, secret, storage, native/platform file.
-   - `rules/testing-and-validation.ko.md`: 완료 전 검증.
+한 번에 한 언어판만, 다음 순서로 읽습니다. 경로는 이 스킬 directory 기준입니다.
+
+1. rule class와 blocking gate는 `architecture-rules.ko.md`에서 읽습니다.
+2. 변경이 건드리는 topic의 rule file은 `<reference_routing>`으로 골라 읽습니다.
 3. 현재 SDK/API 동작이 결정에 영향을 줄 때만 `references/official/expo-react-native-2026-08-03.ko.md`를 읽습니다.
+4. 구현을 마치기 전에 `rules/testing-and-validation.ko.md`를 읽습니다.
 
 </support_file_read_order>
 
@@ -104,7 +139,7 @@ Boundary:
 
 | Phase | Task | Output |
 |---|---|---|
-| 0 | Expo mode, SDK, platform, request scope, side-effect gate 확인 | Scope decision |
+| 0 | 로컬 파일에서 Expo SDK, React Native, Router, TypeScript, package manager, workspace mode, managed/CNG인지 committed `ios/`·`android/`인지, route root(`src/app` 또는 `app`), alias, project command, 요청에 install·`prebuild`·EAS·credential·signing·store effect가 필요한지 확인 | Scope decision |
 | 1 | route, feature, shared module, state/data, native config, test, dependency direction inventory | Architecture map |
 | 2 | finding을 Official, Safety, Hypercore convention으로 분류 | Prioritized plan |
 | 3 | target boundary와 최소 migration slice 정의, user work 보존 | Change set |

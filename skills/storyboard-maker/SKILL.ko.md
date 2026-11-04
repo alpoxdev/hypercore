@@ -1,8 +1,17 @@
 ---
 name: storyboard-maker
-description: Use this skill when 사용자가 대본·줄거리·비트 개요로 영화 스토리보드를 만들어 달라고 할 때 사용합니다. 실행 환경이 이미지를 만들 수 있으면 패널과 씬 평면도마다 정확한 컴파일 프롬프트로 참고 이미지 없이 회색조 만화풍 그림을 생성하고, 그렇지 않으면 선화로 두고 패널별 프롬프트를 저장합니다. 대본이나 줄거리가 들어가면 패널, 카메라 값 라벨, 이동 화살표, 씬별 평면도, 연속성 경고가 든 자체 완결 `index.html`과 `storyboard.json`, `shot-list.md`, `manifest.json`이 나옵니다. 애니매틱·영상·GIF, 브라우저 인쇄 외의 PNG·PDF 파일에는 쓰지 않습니다. 사진·스크린샷 삽입, 관절·드래그 편집, 생성 패널 속 실존 인물·연예인, 기존 영화 프레임 복제에도 쓰지 않습니다.
+description: 대본·줄거리·비트 개요를 주고 영화 스토리보드를 만들어 달라고 할 때 이 스킬을 씁니다. 실행 환경이 이미지를 만들 수 있으면 패널과 씬 평면도마다 정확한 컴파일 프롬프트로 참고 이미지 없이 회색조 만화풍 그림을 생성하고, 그렇지 않으면 선화로 두고 패널별 프롬프트를 저장합니다. 대본이나 줄거리가 들어가면 패널, 카메라 값 라벨, 이동 화살표, 씬별 평면도, 연속성 경고가 든 자체 완결 `index.html`과 `storyboard.json`, `shot-list.md`, `manifest.json`이 나옵니다. 애니매틱·영상·GIF, 브라우저 인쇄 외의 PNG·PDF 파일에는 쓰지 않습니다. 사진·스크린샷 삽입, 관절·드래그 편집, 생성 패널 속 실존 인물·연예인, 기존 영화 프레임 복제에도 쓰지 않습니다.
 compatibility: 자체 완결 마크다운 스킬과 의존성 없는 HTML 자산 하나로 구성됩니다. DOM과 CSS가 있는 브라우저가 보드를 렌더링·인쇄·보고하며, 없으면 같은 코어 스크립트를 `node`나 `bun` 런타임에서 실행합니다. 패널 그림과 평면도 그림은 선택 사항이며, 관찰된 이미지 생성 능력(실행 환경의 이미지 도구, 브라우저로 조작하는 로그인된 채팅 앱, 이미 설정된 이미지 API)이 필요합니다. 없으면 선화와 저장한 프롬프트를 유지합니다. 네트워크, 로그인, 폰트 바이너리 번들링, 외부 라이브러리는 없습니다.
 ---
+
+@rules/workflow.ko.md
+@references/output-contract.ko.md
+@references/camera-and-framing.ko.md
+@rules/continuity.ko.md
+@references/notation-and-drawing.ko.md
+@references/image-generation.ko.md
+@references/panel-art.ko.md
+@rules/validation.ko.md
 
 # 스토리보드 메이커
 

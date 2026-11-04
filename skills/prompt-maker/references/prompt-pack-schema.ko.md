@@ -1,5 +1,7 @@
 # Prompt Pack Schema
 
+**목적**: parser가 읽는 pack 필드를 정의한다. **읽는 조건**: 완전한 pack이나 parser가 읽는 schema를 요청받았을 때.
+
 재사용 가능한 prompt artifact에는 이 schema를 사용합니다. eval harness나 downstream script가 읽는 경우 key를 안정적으로 유지합니다.
 
 ```yaml
@@ -53,7 +55,7 @@ output_schema:
   forbidden: []
 eval_cases:
   fixture: ""
-  categories: [positive, negative, boundary, source, safety, schema, regression, adversarial]
+  categories: [positive, negative, boundary, workflow, source, safety, regression, adversarial]
   runs: 0
   aggregation: ""
   grader_version: ""

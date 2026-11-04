@@ -1,6 +1,6 @@
 # Parallel Research
 
-subagent나 background lane을 만들기 전에 이 규칙을 읽습니다. lane은 독립된 근거 경로를 나누는 수단이며, 같은 검색을 여러 번 돌리는 수단이 아닙니다. leader는 계획, 쿼리 중복 제거, journal, claim table, 충돌 해소, 리포트, 모든 gate를 소유합니다.
+subagent나 background lane을 만들기 전에 이 규칙을 읽습니다. lane은 독립된 근거 경로를 나누는 수단이며, 같은 검색을 여러 번 돌리는 수단이 아닙니다. leader는 계획, 쿼리 중복 제거, journal, claim table, 충돌 해소, 리포트, 모든 게이트를 소유합니다.
 
 ## 1. lane을 쓰는 경우
 
@@ -69,7 +69,7 @@ Stop condition: [N]개 source를 열었거나, [N]번의 서로 다른 시도 �
 - [ ] lane 쿼리가 서로 달랐고, 집계 전에 source를 중복 제거했습니다.
 - [ ] 누락된 lane을 빈 결과가 아니라 갭으로 기록했습니다.
 - [ ] leader가 고위험 주장의 산출물을 모두 직접 열었습니다.
-- [ ] leader가 claim table과 리포트를 작성하고 gate를 실행했습니다.
+- [ ] leader가 claim table과 리포트를 작성하고 게이트를 실행했습니다.
 
 ## Sources
 

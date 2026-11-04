@@ -1,5 +1,7 @@
 # Prompt Pack Schema
 
+**Purpose**: Define the pack fields a parser consumes. **Read when**: a full pack or a parser-consumed schema is requested.
+
 Use this schema for reusable prompt artifacts. Keep keys stable when an eval harness or downstream script reads them.
 
 ```yaml
@@ -53,7 +55,7 @@ output_schema:
   forbidden: []
 eval_cases:
   fixture: ""
-  categories: [positive, negative, boundary, source, safety, schema, regression, adversarial]
+  categories: [positive, negative, boundary, workflow, source, safety, regression, adversarial]
   runs: 0
   aggregation: ""
   grader_version: ""

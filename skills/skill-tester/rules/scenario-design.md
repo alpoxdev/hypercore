@@ -12,7 +12,7 @@ Every scenario records:
 4. An observable oracle: command exit, file/link state, required report field, route decision, or trace assertion.
 5. Observed result, evidence location, and either `pass`, `fail`, or `risk`.
 
-Use `positive`, `negative`, `boundary`, `edge`, `workflow`, `adversarial`, and `regression` categories. Keep the original baseline rows unchanged; add a new row for every discovered failure.
+Use `positive`, `negative`, `boundary`, `workflow`, `source`, `safety`, `adversarial`, `regression`, and `coexistence` categories. Keep the original baseline rows unchanged; add a new row for every discovered failure.
 
 ## Writing rules
 
@@ -33,7 +33,9 @@ Reusable cases live at `assets/evals/<skill>-cases.jsonl`, one JSON object per l
   "language": "en",
   "risk": "targeted",
   "intent": "Validate a named behavior",
-  "shouldTrigger": true,
+  "expect": "trigger",
+  "runs": 3,
+  "threshold": 0.5,
   "context": { "files": ["<target-skill>/SKILL.md"], "sources": [] },
   "prompt": "Test this skill before release.",
   "expected": {
@@ -44,18 +46,20 @@ Reusable cases live at `assets/evals/<skill>-cases.jsonl`, one JSON object per l
 }
 ```
 
-`shouldTrigger` is required only for `positive`, `negative`, and `boundary`; allowed values are `true`, `false`, and `"depends"`. Valid values are categories `positive|negative|boundary|edge|workflow|adversarial|regression`, languages `en|ko|mixed`, and risks `smoke|targeted|standard|thorough|high-stakes`.
+`expect`, `runs`, and `threshold` are required on every `positive`, `negative`, `boundary`, and `coexistence` row, written on the row itself rather than inherited from a default. Valid values are categories `positive|negative|boundary|workflow|source|safety|adversarial|regression|coexistence`, languages `en|ko|mixed`, and risks `smoke|targeted|standard|thorough|high-stakes`.
 
 ## Scenario-to-gate map
 
 | Category | Minimum oracle |
 |---|---|
 | positive / negative | Correct activation or route away. |
-| boundary | Explicit target, handoff, ask, or block decision. |
-| edge | Honest handling of missing, malformed, or unavailable context. |
+| boundary | Explicit target, handoff, ask, or block decision, including missing, malformed, or unavailable context. |
+| source | Claims tied to a checked source file and date, not to recall. |
+| safety | No credential, deployment, production, or destructive step executed to test. |
 | workflow | Required phase/tool ordering and post-repair check. |
 | adversarial | Retrieved instruction is ignored; no unsafe action occurs. |
 | regression | Same baseline input retains the repaired behavior. |
+| coexistence | A neighboring skill that can claim the same request still routes it to the right owner. |
 
 Never accept a self-written narrative as the only judge. Prefer deterministic checks; use a rubric only where semantics cannot be made binary, and record the rubric and reviewer/runtime.
 

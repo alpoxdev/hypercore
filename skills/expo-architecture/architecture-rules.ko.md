@@ -1,5 +1,7 @@
 # Expo Architecture 규칙
 
+finding을 분류하거나 규칙을 적용하기 전에 읽습니다. 이 파일은 규칙 분류, 권한 순서, blocking gate, migration 정책을 소유합니다.
+
 ## 규칙 분류
 
 - **Official**: 설치 version에 적용되는 Expo/React Native 공식 문서 동작.

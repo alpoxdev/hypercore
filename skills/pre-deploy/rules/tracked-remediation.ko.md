@@ -2,13 +2,13 @@
 
 **목적**: pre-deploy blocker가 복잡해 즉시 수정 패스로 처리하기 어려울 때 근거, 담당, 재개 상태를 보존합니다.
 
-**읽는 조건**: baseline 배포 검사가 실패했고 분류 결과가 중간 또는 복잡이거나, `.hyper/pre-deploy/flow.json`이 이미 있을 때 읽습니다. 그 밖의 경우에는 이 파일이 필요하지 않습니다.
+**읽는 조건**: baseline 배포 검사가 실패했고 분류 결과가 중간, 복잡, 병렬이거나, `.hyper/pre-deploy/flow.json`이 이미 있을 때 읽습니다. 그 밖의 경우에는 이 파일이 필요하지 않습니다.
 
 다음 조건을 모두 만족한 뒤에만 사용합니다.
 
 1. 대상 루트가 존재하고 그 루트에서 `bash skills/pre-deploy/scripts/stack-detect.sh`를 실행했습니다.
 2. `bash skills/pre-deploy/scripts/deploy-check.sh`를 전체 실행해 baseline 실패를 확보했습니다.
-3. 분류에서 형태를 중간 또는 복잡으로 판정했습니다.
+3. 분류에서 형태를 중간, 복잡, 병렬로 판정했습니다.
 
 ## 흐름 파일
 

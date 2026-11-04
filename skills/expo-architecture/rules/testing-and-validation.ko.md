@@ -1,5 +1,7 @@
 # Testing과 Validation
 
+완료를 주장하기 전에 읽습니다. 이 파일은 risk depth, check 순서, 필수 scenario, 완료 기록을 소유합니다.
+
 ## Risk depth
 
 새 architecture/material refactor는 `standard`, native module, permission, auth/secret, offline data, EAS config, platform divergence 변경은 `thorough`를 사용합니다. Install, native generation, credential, publication gate에는 final-output check와 trajectory check를 함께 적용합니다.

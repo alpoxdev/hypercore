@@ -70,7 +70,7 @@ For `json` or `yaml`, replace `fields` with exact keys and types, define malform
 ## eval cases
 
 - fixture:
-- categories: positive, negative, boundary, source, safety, schema, regression, adversarial
+- categories: positive, negative, boundary, workflow, source, safety, regression, adversarial
 - runs per case:
 - aggregation rule and acceptance threshold:
 - grader version:

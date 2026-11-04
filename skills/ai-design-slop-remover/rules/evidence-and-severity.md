@@ -1,5 +1,7 @@
 # Evidence and Severity
 
+Read before a finding gets a disposition. This file owns the finding record, the evidence kinds, the confidence split, and the severity classes.
+
 ## Finding record
 
 Every finding must include:

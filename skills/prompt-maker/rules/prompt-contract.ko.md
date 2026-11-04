@@ -1,5 +1,7 @@
 # Prompt Contract
 
+**목적**: 오래 쓰는 prompt 계약의 필드 집합과 authority 구분을 정의한다. **읽는 조건**: 그 계약을 만들거나 크게 고칠 때.
+
 지속적으로 사용할 prompt는 persona paragraph가 아니라 execution contract로 다룹니다.
 
 ## Required Contract Fields

@@ -1,5 +1,7 @@
 # Routing and Navigation
 
+Read when changing the route tree, a layout, a route group, or a param. This file owns route thinness, the navigation contracts, and the URL compatibility rule.
+
 ## Official boundary
 
 For Expo Router projects, route files live in `src/app` when that route root is used; a root `app` may exist in older/current projects. `_layout.tsx` defines layout/navigation relationships, `(group)` organizes without adding a URL segment, `[param]` represents a dynamic segment, and `+not-found.tsx` handles unmatched routes. Confirm exact behavior against the installed Router version.

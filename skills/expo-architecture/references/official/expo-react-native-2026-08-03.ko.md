@@ -1,5 +1,7 @@
 # Expo와 React Native 공식 근거 Snapshot
 
+설치된 SDK version이나 공식 API 동작이 변경을 가를 때 읽습니다. 이 snapshot은 이 패키지가 근거로 삼는 공식 주장과 확인 날짜를 기록합니다.
+
 - last_verified_at: 2026-08-03
 - `status`: Expo/React Native 공식 문서 검토 완료
 - `refresh_when`: 설치 Expo SDK/Router가 크게 다르거나 native dependency, routing/config/testing/New Architecture 지침이 바뀔 때

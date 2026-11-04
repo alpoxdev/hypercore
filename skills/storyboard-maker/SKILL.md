@@ -1,8 +1,17 @@
 ---
 name: storyboard-maker
 description: Use this skill when the user wants a film storyboard from a script, a synopsis, or a beat outline as HTML panels computed from numeric camera values, with continuity lint and A4 landscape print. When the runtime can make images, each panel and each scene floor plan gets a grayscale manga picture generated from the exact compiled prompt with no reference image; otherwise panels stay line art and each keeps a saved prompt. A script goes in; a self-contained `index.html` with panels, camera-value labels, movement arrows, a floor plan per scene, and continuity warnings comes out, beside `storyboard.json`, `shot-list.md`, and `manifest.json`. Not for animatics, video, GIF, PNG, or PDF files beyond the browser print dialog; not for photo or screenshot insertion, joint or drag editing, real people or celebrities in generated panels, or reproducing frames from an existing film.
-compatibility: Self-contained Markdown skill plus one dependency-free HTML asset. A browser with DOM and CSS renders, prints, and reports the board; without one, the same core script runs under a `node` or `bun` runtime. Panel and floor-plan pictures are optional and need an observed image generation capability (a runtime image tool, a signed-in chat app driven through a browser, or an image API already configured); without one, panels keep line art and a saved prompt. No network, no login, no bundled font, no external library.
+compatibility: Self-contained Markdown skill plus one dependency-free HTML asset. A browser with DOM and CSS renders, prints, and reports the board; without one, the same core script runs under `node` or `bun`. Panel and floor-plan pictures are optional and need an observed image generation capability (a runtime image tool, a browser-driven chat app, or a configured image API); without one, panels keep line art and a saved prompt. No network, no login, no bundled font, no external library.
 ---
+
+@rules/workflow.md
+@references/output-contract.md
+@references/camera-and-framing.md
+@rules/continuity.md
+@references/notation-and-drawing.md
+@references/image-generation.md
+@references/panel-art.md
+@rules/validation.md
 
 # Storyboard Maker
 

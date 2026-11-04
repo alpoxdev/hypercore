@@ -10,14 +10,14 @@
 |---|---|---|
 | `native` | 런타임이 workflow 또는 DAG 기능을 제공 | 이 정의를 그 기능에 제출하고, 그 이벤트를 구독하고, 모든 전이를 `run.jsonl`에 그대로 옮깁니다. 그래프 파일과 journal이 의도의 기록으로 남습니다. |
 | `waves` | subagent나 background agent가 있고 네이티브 엔진은 없음 | 리더가 준비 노드를 계산하고 wave를 직접 dispatch합니다. |
-| `sequential` | 둘 다 없음 | 리더가 위상 순서대로 각 노드를 직접 실행하고 `parallelism: none`을 기록합니다. 검증 노드는 `verifier: self (no subagent capability)`를 기록하고 결정적 판정만 낼 수 있으며, 정산은 `maker-checker not available`을 밝힙니다. |
+| `sequential` | 둘 다 없음 | 리더가 토폴로지 순서대로 각 노드를 직접 실행하고 `parallelism: none`을 기록합니다. 검증 노드는 `verifier: self (no subagent capability)`를 기록하고 결정적 판정만 낼 수 있으며, 정산은 `maker-checker not available`을 밝힙니다. |
 
 - 네이티브 모드가 상한, 쓰기 범위, 검증 계약의 소유권을 넘기지는 않습니다. 엔진이 정의를 지켰다고 가정하지 말고 그 상태를 `graph.json`과 대조합니다.
 - 네이티브 엔진에 복구 verb가 없으면 흉내 내지 않습니다. 지원되는 가장 가까운 동작을 쓰고, 그 대체를 journal에 적고, 공백을 정산에서 밝힙니다.
 - `sequential` 모드에서는 생산자와 판정자가 같은 작업자입니다. 검증 노드의 handoff와 `node.completed` payload에 `verifier: self (no subagent capability)`를 적고, 판정은 결정적 확인으로 제한합니다. 캡처한 출력이 있는 명령, 파일 존재, diff입니다. 자기 평가를 독립 검토처럼 제시하지 않습니다.
 - 어떤 모드도 의존 노드가 완료되지 않았거나 handoff가 관찰되지 않은 노드를 dispatch할 수 없습니다.
 
-## 2. 위상 wave
+## 2. 토폴로지 wave
 
 `waves` 모드의 절차입니다.
 

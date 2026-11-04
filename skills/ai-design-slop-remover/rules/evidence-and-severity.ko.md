@@ -1,5 +1,7 @@
 # 증거와 심각도
 
+finding에 disposition을 붙이기 전에 읽는다. 이 파일은 finding 기록, evidence 종류, confidence 분리, 심각도 분류를 소유한다.
+
 ## Finding 기록
 
 모든 finding은 다음을 포함한다.

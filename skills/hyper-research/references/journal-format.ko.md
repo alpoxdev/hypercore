@@ -2,7 +2,7 @@
 
 기본, deep, parallel 실행에서 저널 디렉터리를 열기 전에 이 참고 파일을 사용합니다. `--quick`은 source ledger와 질의 로그를 저널 대신 리포트 안에 둡니다.
 
-## Contents
+## 목차
 
 - 디렉터리 구조
 - `brief.md`

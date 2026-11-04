@@ -1,5 +1,7 @@
 # Capability, Delivery, and Stop Rules
 
+Read this before choosing a route, after any capability change, and before writing an artifact or a report.
+
 Use observed runtime evidence, not product names. A request does not prove a tool, permission, source, or safe destination exists.
 
 ## ChatGPT native-image override

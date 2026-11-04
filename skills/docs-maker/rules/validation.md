@@ -92,6 +92,8 @@ runs: 3
 gate: aggregate rule, equivalence margin, and ship decision
 ```
 
+A trigger case is not a boolean: every case in the positive, negative, and boundary categories states its own `expect` (`trigger` or `no_trigger`), `runs`, and `threshold`, and the run records the measured rate. Do not let a case inherit a default, because `runs` changes what the rate means. Three runs and a 0.5 threshold are a recommended starting point, not a validated optimum. Do not invent a third expectation value for an ambiguous boundary case; record it as `no_trigger` with a note. Record the model and runtime identity and the run count beside any measured rate, and state the target interval width rather than a bare pass rate.
+
 The maintained regression surface is `../assets/evals/docs-maker.jsonl`. Run or manually exercise every changed behavior against that fixture before completion. Do not rewrite expected behavior merely to make a candidate pass; add newly observed failures as regression cases.
 
 ## 6. Readback and Bilingual Gate

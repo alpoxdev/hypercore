@@ -1,5 +1,7 @@
 # Prompt Compilation Rules
 
+Read this before compiling any brief, and when a rendered-text, series, or edit-boundary rule needs its exact wording.
+
 Compile the request into a portable visual brief before choosing generation or prompt-file delivery. The brief describes the requested result; it does not encode a provider, model, command syntax, hidden control, or assumed capability.
 
 ## Resolve the request

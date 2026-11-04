@@ -8,7 +8,7 @@
 |---|---|---|
 | `smoke` | 메타데이터 또는 한 가지 로컬 문구 변경 | 구조 검사와 3–5개 집중 케이스. |
 | `targeted` | 하나의 trigger, workflow, support link, 알려진 실패 변경 | smoke + 실패 케이스 + 이웃 boundary + 수정 후 재실행. |
-| `standard` | 실질적인 스킬 workflow 또는 resource 변경 | positive, negative, boundary, edge, workflow, regression 8–15개, 정적·한영 검사. |
+| `standard` | 실질적인 스킬 workflow 또는 resource 변경 | positive, negative, boundary, workflow, source, safety, regression 케이스 8~15개, 정적·한영 검사. |
 | `thorough` | tool use, source handling, delegation, deletion, runtime fallback, 넓은 동작 변경 | standard + trace, adversarial safety, capability-degradation, safe-deletion 검사. |
 
 파일 수가 아니라 주장 위험도로 고른다. 자격 증명, 운영, 파괴적, 외부 행동이 있는 대상은 high-stakes다. 명시적 사용자 허가와 적용 가능한 사람 관문 없이 부작용을 고치지 않는다.
@@ -28,7 +28,7 @@
 
 ## Coverage floor
 
-사용자가 smoke-only를 명시하지 않으면 positive 3개, negative 2개, boundary 2개, edge 2개, regression 1개를 포함한다. `standard`에는 workflow 또는 adversarial 하나를, `thorough`에는 둘 다 추가한다. 지역화 대상에는 파일 쌍 검사만이 아니라 동작상 동등한 한국어 시나리오가 하나 이상 필요하다.
+사용자가 smoke-only를 명시하지 않으면 positive 3개, negative 2개, boundary 1개, workflow 1개, source 1개, safety 1개, adversarial 1개, regression 1개를 넣는다. 이웃 스킬이 같은 요청을 가져갈 수 있으면 `coexistence` 행을 하나 더한다. 지역화 대상에는 파일 쌍 검사만이 아니라 동작상 동등한 한국어 시나리오가 하나 이상 필요하다.
 
 ## Fast-path order
 

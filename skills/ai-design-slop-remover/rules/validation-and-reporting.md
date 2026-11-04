@@ -1,5 +1,7 @@
 # Validation and Reporting
 
+Read before writing the report. This file owns the verification order, the report sections, and what each claim must cite.
+
 ## Verification order
 
 1. Re-run `detect-slop.sh` against the same target and compare rule IDs, severity counts, engine/evidence fields, and baseline delta when used.

@@ -4,6 +4,8 @@ description: Use this skill when the user asks to query Naver API HUB search, Da
 compatibility: Requires Node.js 20+, npm package installation capability, network access for API calls, and user-provided Naver API HUB credentials.
 ---
 
+@references/cli-usage.md
+
 # Naver API
 
 <output_language>
@@ -15,7 +17,7 @@ Use the repository's `@kood/naver-api-cli` package to perform supported Naver AP
 </purpose>
 
 <routing_rule>
-Use this skill for Naver Search (`blog`, `news`, `cafearticle`, `kin`, `local`, `encyc`, `webkr`, `image`, `adult`, `errata`), DataLab search trends, and Shopping Insight category or keyword trends. Do not use it for retired search types (`shop`, `book`, `doc`), arbitrary URLs/endpoints, scraping, Naver login automation, or unrelated research. Use available browser tooling when the requested source is a web page rather than API HUB.
+Use this skill when the requested result is data from Naver API HUB: Naver Search, DataLab search trends, or Shopping Insight. Do not use it for retired search types (`shop`, `book`, `doc`), arbitrary URLs or endpoints, scraping, Naver login automation, or unrelated research. Use available browser tooling when the requested source is a web page rather than API HUB.
 </routing_rule>
 
 <instruction_contract>
@@ -52,15 +54,64 @@ Boundary:
 - "네이버 쇼핑 상품을 검색해줘." The retired `shop` API is unsupported; explain the boundary rather than substituting scraping or another endpoint.
 </activation_examples>
 
+<trigger_conditions>
+
+| Requested data | Operation |
+|---|---|
+| Search of `blog`, `news`, `cafearticle`, `kin`, `local`, `encyc`, `webkr`, `image`, `adult`, or `errata` | `naver-api search <type> <query>` |
+| Search-term trend comparison over a date range | `naver-api trends --input <file>` |
+| Shopping category or keyword trend | `naver-api shopping-insight categories\|keywords --input <file>` |
+| Any of the above with no `naver-api` on `PATH` | Install `@kood/naver-api-cli`, verify `naver-api --help`, then continue |
+| Credentials absent or failing `config validate` | Have the user enter them through `naver-api config set` before any network call |
+| JSON output needed for parsing or transformation | Add `--json`; the run returns one `{ "ok": true, ... }` document |
+
+</trigger_conditions>
+
+<skill_architecture>
+
+- Core (`SKILL.md`): routing, operation selection, phase order, required and forbidden behavior, stop condition.
+- References: `references/cli-usage.md` owns installation, credential entry, the command surface, trend input shape, and failure classification.
+- Assets: `assets/evals/naver-api-cases.jsonl`, the trigger and behavior corpus.
+- No bundled script: the executable surface is the published `@kood/naver-api-cli` package, and its behavior authority is the package README.
+
+</skill_architecture>
+
+<loop_policy>
+
+No optimization loop. One request, one smallest valid call. A retry is allowed only after a clear usage or config-shape mistake was corrected; auth, rate-limit, upstream, timeout, and network failures are reported, not retried.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+Answer in Korean while keeping API field names, JSON keys, commands, and returned upstream text in their original form. Do not translate or paraphrase returned titles and labels as if they were the user's own wording.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+- Read [references/cli-usage.md](references/cli-usage.md) before installing the CLI, configuring credentials, or constructing any command.
+- Read `cli/packages/naver-api/README.md` or `naver-api --help` only when the reference does not settle the accepted options or request schema.
+
+</reference_routing>
+
+<support_file_read_order>
+
+1. This core, to classify the request and confirm it is API HUB data.
+2. `references/cli-usage.md` for installation, credentials, and command construction.
+3. The package README or `naver-api --help` when the reference leaves an option or schema open.
+
+</support_file_read_order>
+
 <workflow>
 
 1. Classify the request as supported search, search trend, Shopping Insight category trend, or Shopping Insight keyword trend. Reject unsupported endpoints or options without silently changing the task.
-2. Read [`references/cli-usage.md`](references/cli-usage.md) before constructing or running a command. Read the repository package README when behavior or accepted options remain unclear.
-3. Check Node.js is at least 20 and whether `naver-api` is available. If missing, explain that the CLI is required, install `@kood/naver-api-cli` with the documented global npm command, then verify `naver-api --help`. If execution or installation capability is unavailable, provide the exact install and verification commands and block rather than claiming installation.
-4. Run `naver-api config validate`. When config is absent or invalid, ask the user to enter/provide their own API HUB `apiKeyId` and `apiKey` through the CLI's hidden prompt or stdin flow. Never request that secrets be pasted into chat when an interactive secret entry path exists.
-5. Build the smallest valid request. Prefer `--json` for machine processing. Use a temporary YAML/JSON file or stdin for trend inputs; do not persist credentials in that file.
-6. Execute once, inspect stdout, stderr, and exit status, and classify failures using the stable exit codes. Correct and retry once only for a clear usage/config-shape mistake.
-7. Return the requested result in Korean. State filters/date ranges and clarify that trend ratios are relative normalized indices with a maximum of 100, not absolute search volume.
+2. Check Node.js is at least 20 and whether `naver-api` is available. If missing, explain that the CLI is required, install `@kood/naver-api-cli` with the documented global npm command, then verify `naver-api --help`. If execution or installation capability is unavailable, provide the exact install and verification commands and block rather than claiming installation.
+3. Run `naver-api config validate`. When config is absent or invalid, ask the user to enter/provide their own API HUB `apiKeyId` and `apiKey` through the CLI's hidden prompt or stdin flow. Never request that secrets be pasted into chat when an interactive secret entry path exists.
+4. Build the smallest valid request. Prefer `--json` for machine processing. Use a temporary YAML/JSON file or stdin for trend inputs; do not persist credentials in that file.
+5. Execute once, inspect stdout, stderr, and exit status, and classify failures using the stable exit codes. Correct and retry once only for a clear usage/config-shape mistake.
+6. Return the requested result in Korean. State filters/date ranges and clarify that trend ratios are relative normalized indices with a maximum of 100, not absolute search volume.
+
 </workflow>
 
 <required>
@@ -90,4 +141,5 @@ Boundary:
 - [ ] Command exited successfully and JSON mode returned one `{ "ok": true, ... }` document when used.
 - [ ] Result answers the requested scope and includes relevant limitations.
 - [ ] Nonzero exits follow the documented classification and retry policy.
+- [ ] `assets/evals/naver-api-cases.jsonl` still covers the operations and boundaries this file states.
 </validation>

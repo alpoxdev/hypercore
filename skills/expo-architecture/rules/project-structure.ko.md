@@ -1,5 +1,7 @@
 # Project Structure
 
+folder, module ownership, import, alias, migration 순서를 고르거나 바꿀 때 읽습니다. 이 파일은 scale profile, feature/shared 경계, import 방향을 소유합니다.
+
 ## 1. 근거로 구조 선택
 
 App 규모, team boundary, route root, alias, workspace layout, generated file, native-directory ownership, server/API route, test, 현재 import를 조사합니다. 이 규칙에 맞추기 위해 일관된 brownfield 구조를 교체하지 않습니다.

@@ -1,8 +1,10 @@
 # Evaluation And Iteration
 
+**목적**: eval case, judge, 한도가 있는 optimization 회차를 정의한다. **읽는 조건**: 재사용 prompt를 만들거나, 채점하거나, 최적화할 때.
+
 ## Minimum Categories
 
-JSONL prompt eval fixture를 만들 때 positive, negative, boundary, source, safety, schema, regression, adversarial case를 포함합니다. 세트는 세는 것이 아니라 구성하는 것이며, 검증된 케이스 수라는 기준은 없습니다.
+JSONL prompt eval fixture를 만들 때 positive, negative, boundary, workflow, source, safety, regression, adversarial case를 포함합니다. 세트는 세는 것이 아니라 구성하는 것이며, 검증된 케이스 수라는 기준은 없습니다.
 
 ## Anti-Tautology Rule
 

@@ -1,5 +1,7 @@
 # Native Platform과 Security
 
+app config, permission, storage, secret, native code, native effect가 있는 dependency, platform file을 건드릴 때 읽습니다. 이 파일은 해당 gate와 project mode 판정을 소유합니다.
+
 ## Project mode
 
 Native project가 CNG/prebuild로 생성되는지, 의도적으로 commit/관리되는지, 없는지 식별합니다. Config plugin/app config는 project ownership이 지정한 범위에서만 source of truth입니다. 명시적 승인과 검토된 diff/backup 전략 없이 clean prebuild로 manual native change를 덮어쓰지 않습니다.

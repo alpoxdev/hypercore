@@ -5,12 +5,12 @@ compatibility: Markdown-only skill; no scripts, network, credentials, or runtime
 ---
 
 @rules/writing-method.md
-@rules/humanize-method.md
 @rules/tell-avoidance.md
 @rules/genre-calibration.md
+@rules/humanize-method.md
+@references/humanize-examples.md
 @rules/validation.md
 @references/ai-tell-catalog.md
-@references/humanize-examples.md
 
 # Korean Writer
 
@@ -151,15 +151,58 @@ Boundary:
 
 </forbidden>
 
+<trigger_conditions>
+
+Activate on the deliverable, not on the wording. These requests all open the skill: "AI 티 없이 써줘", "사람이 쓴 것처럼 다듬어줘", "번역투 없이", "자연스럽게 써줘", "make this read human", and any request for a Korean draft in a named genre with no other owner.
+
+Compose mode opens when no supplied text exists; humanize mode opens when the user supplies text to repair. A request whose deliverable is a structure, an explanation for a named audience, a translation, or itemized proofreading belongs to the owner of that shape, as `routing_rule` states.
+
+</trigger_conditions>
+
+<skill_architecture>
+
+| Part | Holds | Read |
+|---|---|---|
+| `SKILL.md` | Mode decision, contract, workflow, required and forbidden rules, validation | Always |
+| `rules/` | The prescriptions (W-IDs), the tell families, genre registers, the humanize procedure, the self-check | Before and during the work |
+| `references/` | The per-pattern catalog and worked before/after examples | When a diagnosis needs the candidate pool or a pattern's detail |
+| `assets/` | The eval cases | On a change to trigger, workflow, or output |
+
+</skill_architecture>
+
+<loop_policy>
+
+One bounded loop, in either mode: work, run the `rules/validation.md` checklist, revise. Feedback is the checklist's failed items, never the draft's own impression. The guard is meaning, anchors, accuracy, and register — no revision may cost one of them. The stop condition is zero failed items or three revision rounds, whichever comes first; a draft that still fails after three rounds ships with the failure named rather than entering an unbounded polish loop.
+
+</loop_policy>
+
+<language_and_translation_default>
+
+Deliver Korean by default, in the register the target reader expects. Keep identifiers, commands, paths, product names, and quoted source text in their original form inside Korean sentences. The package's Markdown is maintained as English/Korean pairs with identical W-IDs and tag order; read only one language version per run.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+- Before any non-trivial work, read [`rules/writing-method.md`](rules/writing-method.md): its W-IDs are the prescriptions both modes apply.
+- For the family table and severity logic behind those W-IDs, read [`rules/tell-avoidance.md`](rules/tell-avoidance.md).
+- Once the genre is settled, read [`rules/genre-calibration.md`](rules/genre-calibration.md); in humanize mode read its humanize paragraph for the register rule and use the row only for decoration ceilings.
+- In humanize mode, read [`rules/humanize-method.md`](rules/humanize-method.md) in full before the first edit, and [`references/humanize-examples.md`](references/humanize-examples.md) when the material is long, structured, or register-sensitive.
+- Before the final response and whenever this package changes, read [`rules/validation.md`](rules/validation.md).
+- When a draft needs per-pattern detail or a humanize diagnosis needs the candidate pool, read [`references/ai-tell-catalog.md`](references/ai-tell-catalog.md); it carries each family's individual patterns with examples and fixes.
+- When changing trigger, workflow, or output behavior, use [`assets/evals/korean-writer-cases.jsonl`](assets/evals/korean-writer-cases.jsonl).
+
+</reference_routing>
+
 <support_file_read_order>
 
-1. Read [`rules/writing-method.md`](rules/writing-method.md) before any non-trivial work: its W-IDs are the prescriptions both modes apply.
-2. Read [`rules/tell-avoidance.md`](rules/tell-avoidance.md) for the family table and severity logic behind the W-IDs.
-3. In compose mode, read [`rules/genre-calibration.md`](rules/genre-calibration.md) once the genre is settled; in humanize mode, read its humanize paragraph for the register rule and use the row only for decoration ceilings.
-4. In humanize mode, read [`rules/humanize-method.md`](rules/humanize-method.md) in full before the first edit, and [`references/humanize-examples.md`](references/humanize-examples.md) when the material is long, structured, or register-sensitive.
-5. Read [`rules/validation.md`](rules/validation.md) before the final response and whenever this package changes.
-6. Read [`references/ai-tell-catalog.md`](references/ai-tell-catalog.md) when a draft needs per-pattern detail or a humanize diagnosis needs the candidate pool: the catalog carries each family's individual patterns with examples and fixes.
-7. Use [`assets/evals/korean-writer-cases.jsonl`](assets/evals/korean-writer-cases.jsonl) when changing trigger, workflow, or output behavior.
+1. [`rules/writing-method.md`](rules/writing-method.md)
+2. [`rules/tell-avoidance.md`](rules/tell-avoidance.md)
+3. [`rules/genre-calibration.md`](rules/genre-calibration.md)
+4. [`rules/humanize-method.md`](rules/humanize-method.md), then [`references/humanize-examples.md`](references/humanize-examples.md) when the material warrants it
+5. [`rules/validation.md`](rules/validation.md)
+6. [`references/ai-tell-catalog.md`](references/ai-tell-catalog.md)
+7. [`assets/evals/korean-writer-cases.jsonl`](assets/evals/korean-writer-cases.jsonl)
 
 </support_file_read_order>
 

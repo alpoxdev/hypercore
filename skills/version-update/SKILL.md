@@ -1,8 +1,7 @@
 ---
 name: version-update
-description: "[Hyper] Update semantic versions across node/rust/python projects, keep discovered version files synchronized, and use this skill's bash helpers for optional commits and pushes."
-allowed-tools: Bash Read Edit
-compatibility: Requires Bash 3.2+, a git repository, and the bash scripts under skills/version-update/scripts.
+description: "[Hyper] Use this skill when the user asks to bump, set, or synchronize a semantic version across a node, rust, or python project, or to commit and push exactly the files that version change touched. Do not use it for a commit with no version change, a release plan or changelog, or a dependency upgrade that leaves the project version alone."
+compatibility: Requires Bash 3.2+ with the scripts under skills/version-update/scripts and a local git repository for the optional commit and push.
 ---
 
 # Version Update Skill
@@ -27,6 +26,52 @@ Use a different language only when the user explicitly requests it, an existing 
 
 </purpose>
 
+<routing_rule>
+
+Use this skill when the deliverable is a version change across the project's version-bearing files, with an optional commit and push of exactly those files.
+
+Route away when the deliverable has another shape:
+
+| Requested output | Where it belongs |
+|---|---|
+| A commit with no version change | a commit request, not a version update |
+| A release plan, changelog, or tag strategy with no version edit | release planning |
+| A dependency upgrade that changes a manifest but not the project version | dependency work |
+| A version check whose only output is the current number | a read-only version report |
+
+</routing_rule>
+
+<activation_examples>
+
+Positive:
+
+- "bump this repo from 0.8.2 to 0.9.0 and commit it"
+- "increase the patch version for this Python package"
+- "update package.json and Cargo.toml to 2.0.0"
+
+Negative:
+
+- "make a git commit for these docs changes"
+- "summarize our release process"
+
+Boundary:
+
+- "update the version only, do not commit yet"
+
+</activation_examples>
+
+<trigger_conditions>
+
+| User intent | Activate |
+|------|------|
+| "bump this package to 1.4.0" | yes |
+| "update the version and commit it" | yes |
+| "increase patch version for this crate" | yes |
+| "just make a git commit" | no |
+| "rewrite this release runbook" | no |
+
+</trigger_conditions>
+
 <instruction_contract>
 
 | Field | Contract |
@@ -44,32 +89,46 @@ Use a different language only when the user explicitly requests it, an existing 
 
 </instruction_contract>
 
-<trigger_conditions>
+<skill_architecture>
 
-| User intent | Activate |
-|------|------|
-| "bump this package to 1.4.0" | yes |
-| "update the version and commit it" | yes |
-| "increase patch version for this crate" | yes |
-| "just make a git commit" | no |
-| "rewrite this release runbook" | no |
+- Core (`SKILL.md`): trigger, contract, version rules, helper order, and the git boundary.
+- Scripts: the seven bash helpers in `<scripts>`, the only execution surface; each is documented there with its purpose and argument shape.
+- Assets: `assets/evals/version-update-cases.jsonl`, the trigger and behavior cases.
+- No rules or references: the procedure fits in the core, and a copied semver summary would drift from the helpers that apply it.
 
-</trigger_conditions>
+</skill_architecture>
 
-<supported_targets>
+<loop_policy>
 
-- `package.json`
-- `Cargo.toml`
-- `pyproject.toml`
-- `setup.py`
-- python `__version__` declarations
-- inline `.version('x.y.z')` code patterns
+No loop. One pass per request: detect, discover, read, compute, apply, review, then the requested git step. A mis-typed argument or an unsupported stack stops with the helper's error; it does not start a retry cycle. Re-invoke only for another version change.
 
-</supported_targets>
+</loop_policy>
+
+<language_and_translation_default>
+
+- Canonical package files are English; every `*.ko.md` is a structurally aligned Korean translation of the same rules.
+- Deliverables follow `<output_language>`: Korean by default, with identifiers, commands, paths, and commit messages in their original form.
+
+</language_and_translation_default>
+
+<reference_routing>
+
+- Read `<scripts>` before the first helper run: it carries each helper's purpose, arguments, and output.
+- Read `<workflow>` for the order to run them in, and `<version_rules>` when the user's argument is a bump rule rather than an explicit version.
+- Read `assets/evals/version-update-cases.jsonl` only when changing a trigger, a version rule, or the git boundary.
+
+</reference_routing>
+
+<support_file_read_order>
+
+1. This core, for the trigger boundary, the contract, and the version rules.
+2. `<scripts>` before running any helper.
+3. `<workflow>` while running, so each step's evidence is collected as it happens.
+4. `<validation>` before reporting.
+
+</support_file_read_order>
 
 <scripts>
-
-## Available scripts
 
 | Script | Purpose |
 |------|------|
@@ -81,16 +140,9 @@ Use a different language only when the user explicitly requests it, an existing 
 | `bash scripts/git-commit.sh "msg" [files]` | Directly commit the specified version-update files |
 | `bash scripts/git-push.sh` | Directly push after an explicit user request |
 
+Run every helper from the target root with Bash 3.2+ and git. Each prints its result to stdout and exits non-zero with a usage or format error on invalid input: `version-bump.sh` rejects a version that is not `x.y.z` and a bump that is not `+1`, `+patch`, `+minor`, `+major`, or an explicit `x.y.z`, `version-current.sh` prints `<file>|<version>`, `version-find.sh --plain` prints bare paths, and `git-commit.sh` stages only the paths it was given and aborts on unrelated staged changes.
+
 </scripts>
-
-<git_integration>
-
-- If the user asked for version-only work, stop after the version files and diff review. Do not commit or push.
-- For a requested commit, run `bash scripts/git-commit.sh "chore: bump version to x.y.z" [files...]` with only the files changed by `version-update`, unless the user requested a different message.
-- For a requested push, run `bash scripts/git-push.sh` only after the commit succeeds and the user explicitly requested push.
-- Keep git write operations sequential.
-
-</git_integration>
 
 <version_rules>
 
@@ -103,41 +155,6 @@ Use a different language only when the user explicitly requests it, an existing 
 
 </version_rules>
 
-<workflow>
-
-## Workflow
-
-```bash
-# 1) detect stack(s)
-bash scripts/stack-detect.sh
-
-# 2) find version-bearing files
-bash scripts/version-find.sh
-
-# 3) read current version
-bash scripts/version-current.sh
-# output: <file>|<version>
-
-# 4) compute next version
-bash scripts/version-bump.sh 1.2.3 +minor
-# -> 1.3.0
-
-# 5) apply to all discovered files (or selected files)
-bash scripts/version-apply.sh 1.3.0
-
-# 6) review the final diff and changed file list
-git diff --stat
-git diff
-
-# 7) optional commit only when explicitly requested
-bash scripts/git-commit.sh "chore: bump version to 1.3.0" package.json
-
-# 8) optional push only when explicitly requested
-bash scripts/git-push.sh
-```
-
-</workflow>
-
 <stack_targets>
 
 | Stack | Primary files | Additional patterns |
@@ -147,6 +164,30 @@ bash scripts/git-push.sh
 | Python | `pyproject.toml`, `setup.py`, `__version__` in `.py` | `.version('x.y.z')` in code |
 
 </stack_targets>
+
+<git_integration>
+
+- If the user asked for version-only work, stop after the version files and diff review. Do not commit or push.
+- For a requested commit, run `bash scripts/git-commit.sh "chore: bump version to x.y.z" [files...]` with only the files changed by `version-update`, unless the user requested a different message.
+- For a requested push, run `bash scripts/git-push.sh` only after the commit succeeds and the user explicitly requested push.
+- Keep git write operations sequential.
+
+</git_integration>
+
+<workflow>
+
+| Phase | Action | Evidence that ends the phase |
+|---|---|---|
+| 1. Detect | Run `bash scripts/stack-detect.sh` from the target root | The stacks it prints, or the unsupported-stack stop |
+| 2. Discover | Run `bash scripts/version-find.sh` | The version-bearing files |
+| 3. Read current | Run `bash scripts/version-current.sh [file]` | The `<file>|<version>` line |
+| 4. Compute target | Run `bash scripts/version-bump.sh <current> <type>` | The target version |
+| 5. Apply | Run `bash scripts/version-apply.sh <new> [files...]` | Every intended file carrying the new version |
+| 6. Review | Run `git diff --stat` and `git diff` | The diff read, with only intended files changed |
+| 7. Commit, when requested | Run `bash scripts/git-commit.sh` with the message and files | The commit touching only the version files |
+| 8. Push, when requested | Run `bash scripts/git-push.sh` after a successful commit | The push result |
+
+</workflow>
 
 <required>
 
@@ -162,31 +203,17 @@ bash scripts/git-push.sh
 
 </required>
 
-<scope_boundaries>
+<forbidden>
 
-- `version-update` owns version discovery, target calculation, file updates, diff review, and requested git operations.
-- Commit only files changed by `version-update`.
+| Category | Forbidden |
+|------|------|
+| State | Applying an update without reading the current version |
+| Consistency | Updating one version file while the others keep the old version |
+| Git scope | Committing files outside the version-update file set |
+| Git safety | Force-pushing a protected branch, or pushing when the commit failed |
+| Authority | Committing or pushing when the user asked for the version change only |
 
-</scope_boundaries>
-
-<examples>
-
-## Positive triggers
-
-- "bump this repo from 0.8.2 to 0.9.0 and commit it"
-- "increase the patch version for this Python package"
-- "update package.json and Cargo.toml to 2.0.0"
-
-## Negative triggers
-
-- "make a git commit for these docs changes"
-- "summarize our release process"
-
-## Boundary trigger
-
-- "update the version only, do not commit yet"
-
-</examples>
+</forbidden>
 
 <validation>
 
@@ -204,12 +231,5 @@ Execution checklist:
 - [ ] `git diff` reviewed
 - [ ] Requested commit used `bash scripts/git-commit.sh` with only the version-update files
 - [ ] Requested push used `bash scripts/git-push.sh` only after a successful commit
-
-Forbidden:
-
-- [ ] Starting updates without reading current version
-- [ ] Updating only one file when multiple version files exist
-- [ ] Committing files outside the version-update file set
-- [ ] Force-pushing protected branches
 
 </validation>
