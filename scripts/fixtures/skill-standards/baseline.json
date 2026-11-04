@@ -19,14 +19,24 @@
     "docs-maker": {
       "FRONTMATTER_TRIGGER": 1
     },
-    "expo-architecture": {},
     "git-maker": {},
     "git-worktree": {
       "FRONTMATTER_TRIGGER": 1
     },
-    "hono-architecture": {
+    "hyper-architecture": {
+      "FRONTMATTER_TRIGGER": 1,
+      "CROSS_SKILL_REFERENCE": 47
+    },
+    "hyper-architecture-expo": {},
+    "hyper-architecture-hono": {
       "FRONTMATTER_TRIGGER": 1
     },
+    "hyper-architecture-nextjs": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "hyper-architecture-tanstack-start": {},
+    "hyper-architecture-tauri": {},
+    "hyper-architecture-vite": {},
     "hyper-execute": {
       "FRONTMATTER_TRIGGER": 1
     },
@@ -34,8 +44,8 @@
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-plan": {
-      "CROSS_SKILL_REFERENCE": 9,
-      "FRONTMATTER_TRIGGER": 1
+      "FRONTMATTER_TRIGGER": 1,
+      "CROSS_SKILL_REFERENCE": 9
     },
     "hyper-research": {
       "FRONTMATTER_TRIGGER": 1
@@ -50,9 +60,6 @@
       "FRONTMATTER_TRIGGER": 1
     },
     "naver-api": {},
-    "nextjs-architecture": {
-      "FRONTMATTER_TRIGGER": 1
-    },
     "prd-maker": {
       "FRONTMATTER_TRIGGER": 1
     },
@@ -68,14 +75,11 @@
     "skill-maker": {},
     "skill-tester": {},
     "storyboard-maker": {},
-    "tanstack-start-architecture": {},
-    "tauri-architecture": {},
     "tone-manner-maker": {
       "FRONTMATTER_TRIGGER": 1
     },
     "version-update": {
       "FRONTMATTER_TRIGGER": 1
-    },
-    "vite-architecture": {}
+    }
   }
 }
