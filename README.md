@@ -129,9 +129,10 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper-architecture` | 저장소의 스택(TanStack Start, Next.js, Vite, Expo, Hono, Tauri, Flutter)을 감지해 맞는 `hyper-architecture-<스택>` 스킬로 연결 | All |
+| `hyper-architecture` | 저장소의 스택(TanStack Start, Next.js, Vite, Expo, Hono, Axum, Tauri, Flutter)을 감지해 맞는 `hyper-architecture-<스택>` 스킬로 연결 | All |
 | `hyper-architecture-nextjs` | Next.js App Router 아키텍처 규칙 적용 | All |
 | `hyper-architecture-hono` | Hono 아키텍처 규칙 적용 | All |
+| `hyper-architecture-axum` | Axum(Rust) 서버 아키텍처 규칙 적용 | All |
 | `hyper-architecture-expo` | React Native + Expo + TypeScript Android/iOS 아키텍처 규칙 적용 | All |
 | `hyper-architecture-flutter` | Flutter + Dart Android/iOS 크로스 플랫폼 아키텍처 규칙 적용 | All |
 | `hyper-architecture-tanstack-start` | TanStack Start 아키텍처 규칙 적용 | All |
