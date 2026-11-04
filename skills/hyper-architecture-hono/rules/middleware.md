@@ -11,7 +11,7 @@ Recommended order is an explicit project contract, commonly request ID/observabi
 
 - Scope middleware with a path or sub-app; do not make feature-only authorization global.
 - Use typed `Variables` or `createMiddleware<Env>()` for guaranteed request-scoped values.
-- Use global `ContextVariableMap` augmentation only for values truly guaranteed across every consuming app; local typed chaining is safer.
+- Use global `ContextVariableMap` augmentation only for values truly guaranteed across every consuming app; local typed chaining is safer. This is official guidance, not a Hypercore preference: the Context API documents that `ContextVariableMap` adds types globally to all contexts, regardless of whether the middleware that sets the variable has actually run, so `c.get()` looks type-safe in handlers where the value is `undefined`.
 - Never store request state in module globals or reuse `Context` across requests.
 - Keep Hono core and middleware package versions compatible, especially for URL-import runtimes such as Deno.
 
@@ -55,4 +55,9 @@ export const authMiddleware = createMiddleware<AppEnv>(async (c, next) => {
 
 ## Sources
 
-> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04.
+
+| Claim | Source |
+|---|---|
+| Registration order, onion execution, typed variable accumulation | [Middleware Guide](https://hono.dev/docs/guides/middleware), [Routing API](https://hono.dev/docs/api/routing) |
+| `ContextVariableMap` applying types globally regardless of whether the middleware ran | [Context API](https://hono.dev/docs/api/context) |

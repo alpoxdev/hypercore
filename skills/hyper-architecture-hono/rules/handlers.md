@@ -7,6 +7,7 @@
 
 `createFactory<Env>()`, `factory.createApp()`, `factory.createHandlers()`, and `createMiddleware()` are official type-preserving helpers. Use one factory per compatible `Env` surface instead of restating bindings and variables in every file.
 
+- `createFactory()` also accepts `defaultAppOptions` for the `HonoOptions` every `factory.createApp()` inherits, such as `{ strict: false }`, and `initApp` for initializing an app created by `createApp()`.
 - `createHandlers()` returns a handler tuple; spread it into the route call.
 - Keep validator middleware and the handler in the same typed chain when the handler reads `c.req.valid()`.
 - Return a `Response` on every terminal branch and use literal status arguments when RPC clients need status unions.
@@ -47,4 +48,8 @@ export const usersApp = factory.createApp().get('/', ...listUsers)
 
 ## Sources
 
-> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04.
+
+| Claim | Source |
+|---|---|
+| `createFactory()`, `createApp()`, `createHandlers()`, `defaultAppOptions`, `initApp` | [Factory Helper](https://hono.dev/docs/helpers/factory) |

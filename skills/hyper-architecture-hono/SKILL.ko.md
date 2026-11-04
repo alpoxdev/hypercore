@@ -188,7 +188,7 @@ Boundary examples:
 ```bash
 rg -n '"hono"|@hono/' package.json
 rg -n "from 'hono'|from \"hono\"" src app .
-rg -n "new Hono\\(|createFactory\\(|testClient\\(|hc<|OpenAPIHono|swaggerUI" src app .
+rg -n "new Hono\\(|createFactory\\(|testClient\\(|hc<|OpenAPIHono|swaggerUI|hono/mount|methodNotAllowed|from '@hono/" src app .
 ```
 
 이 표지가 하나도 없으면 Hono 규칙을 강제하지 않고 일반 구현이나 리뷰 경로로 돌려보냅니다.
@@ -204,16 +204,17 @@ rg -n "from 'drizzle-orm|from \"drizzle-orm|db\\.|transaction\\(|migrate\\(|sche
 
 ```bash
 rg --files src app routes 2>/dev/null
-rg -n "new Hono\\(|app\\.route\\(|basePath\\(|validator\\(|zValidator\\(|standardValidator\\(|OpenAPIHono|swaggerUI|testClient\\(|hc<|drizzle-orm|DATABASE_URL|D1Database|@neondatabase|@libsql" src app .
+rg -n "new Hono\\(|app\\.route\\(|app\\.mount\\(|hono/mount|methodNotAllowed|basePath\\(|validator\\(|zValidator\\(|standardValidator\\(|OpenAPIHono|swaggerUI|testClient\\(|hc<|drizzle-orm|DATABASE_URL|D1Database|@neondatabase|@libsql" src app .
 ```
 
 3단계 — 핵심 게이트. 브라운필드 규칙: 손대지 않은 레거시 스타일 편차는 백로그로 넘길 수 있습니다. 안전성, 타입, 검증, 영속성, OpenAPI, 런타임 경계 문제는 손댄 작업에서 계속 막습니다. `전체 수정` 모드에서는 감지한 Hono 앱 전체가 손댄 범위입니다.
 
 - 런타임에 중립적인 Hono 앱 하나와 분명한 마운트 표 하나를 둡니다. 근거가 뒷받침하는 가장 작은 구조 프로필을 고르고 의존 방향을 지킵니다.
 - 손댄 라우트 모듈이 service를 건너뛰고 DB/ORM/스키마/SDK/런타임 어댑터 세부를 직접 import하지 않습니다.
-- 사소하지 않은 params, query, json, form 데이터는 도메인 로직 전에 validator 미들웨어로 검증합니다.
+- 사소하지 않은 params, query, json, form 데이터는 도메인 로직 전에 validator 미들웨어로 검증합니다. form과 multipart 검증은 Hono 4.13.16 이상을 요구합니다.
 - 분리한 핸들러는 인라인 체이닝이나 `createFactory()` / `createHandlers()`로 타입을 유지합니다.
 - 공유 context를 쓰면 미들웨어 순서와 `Bindings`/`Variables` 타입을 명시합니다.
+- 손댄 code는 4.x에서 deprecated된 API(`app.mount()`, `hono/<adapter>` import, `@hono/node-ws`)를 쓰지 않고, `methodNotAllowed()`를 켜서 404 계약을 암묵적으로 바꾸지 않습니다.
 - Drizzle 스키마, 마이그레이션, 클라이언트, 트랜잭션은 데이터베이스와 service 경계 뒤에 둡니다.
 - 공개 문서화 라우트는 런타임 검증, DTO, OpenAPI/Swagger, RPC 응답 형태를 서로 맞춰 둡니다.
 - 런타임 어댑터와 부트스트랩 코드는 플랫폼 경계에 둡니다.

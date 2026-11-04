@@ -166,4 +166,4 @@ Producer/consumer의 `hono` version compatibility를 유지하고 TypeScript `st
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Hono 동작은 `references/official/hono-docs.ko.md`에 위임합니다(last verified 2026-08-04). 저장소 로컬 링크 확인 2026-09-21.
+> Checked 2026-11-04. 이 파일은 이 package 자체 참조 밖의 외부 출처를 쓰지 않았습니다. 공식 Hono 동작은 [`references/official/hono-docs.ko.md`](../references/official/hono-docs.ko.md)에 위임하며, 그 문서는 2026-11-04에 확인했습니다.

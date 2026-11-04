@@ -6,10 +6,11 @@
 
 ## Stable Drizzle 기준
 
-2026-08-04 확인 기준 stable release는 `drizzle-orm` 0.45.2와 `drizzle-kit` 0.31.10입니다. Drizzle은 많은 optional driver를 지원하며 peer가 존재한다고 모든 Hono runtime에 적합한 것은 아닙니다.
+2026-11-04 확인 기준 stable release는 `drizzle-orm` 0.45.4와 `drizzle-kit` 0.31.11입니다. `drizzle-orm` 1.0.0-rc.x는 release candidate이며 여기에서 채택하지 않습니다. Drizzle은 많은 optional driver를 지원하며 peer가 존재한다고 모든 Hono runtime에 적합한 것은 아닙니다.
 
 - Persistence code 변경 전 `drizzle.config.ts`, installed driver, dialect, schema root, migration output, credential source, runtime을 조사합니다.
-- `generate`는 SQL artifact 생성, `migrate`는 committed migration 적용, `push`는 direct schema synchronization, `pull`은 introspection으로 구분합니다. Workflow를 조용히 대체하지 않습니다.
+- `generate`는 SQL artifact 생성, `migrate`는 committed migration 적용, `push`는 direct schema synchronization, `pull`은 introspection, `check`는 migration 이력 검증으로 구분합니다. Workflow를 조용히 대체하지 않습니다.
+- 둘 이상의 branch가 migration을 생성한 경우 merge 전에 `drizzle-kit check`를 실행합니다. 이 명령은 생성된 SQL 이력의 정합성을 검사하고, 0.31.11은 이전에 그냥 지나치던 silent migration skip을 경고합니다. `--ignore-conflicts`는 검토된 예외를 위한 탈출구이지 기본값이 아닙니다.
 - Project가 해당 policy를 명시적으로 소유하지 않으면 `push`를 production migration strategy로 사용하지 않습니다.
 - Schema와 migration history를 하나의 provenance chain으로 유지하고 local state를 통과시키려고 history를 재생성하거나 renumber하지 않습니다.
 - 필요한 column만 select하고 public DTO를 mapping합니다. Pagination bound를 검증하고 ordering을 deterministic하게 만듭니다.
@@ -59,6 +60,7 @@ drizzle/
 - Cloudflare D1은 `c.env.DB` 같은 typed `Bindings` surface를 통해 흐르게 합니다. `process.env`로 흉내내지 않습니다.
 - Neon, serverless Postgres, D1, SQLite, Node Postgres는 client lifecycle이 다릅니다. Repository를 쓰기 전에 runtime-specific Drizzle connection path를 먼저 정합니다.
 - `drizzle.config.ts`는 실제 schema file/folder와 실제 migration output folder를 가리켜야 합니다.
+- 안정판 0.45.x에서는 `drizzle-orm`의 `relations()`로 relation을 선언합니다. `defineRelations()`와 Relational Queries v2는 `drizzle-orm@rc`에 속하며, 현재 relations page가 그 release candidate 기준으로 쓰여 있어 0.45.x에서 따르면 설치된 version에 없는 API를 요구하게 됩니다.
 - Drizzle table object는 persistence schema입니다. DTO mapping 결정 없이 route response contract나 OpenAPI schema로 노출하지 않습니다.
 - Repository function이 transaction 안팎에서 모두 동작해야 한다면 각 함수 안에서 global client를 import하지 말고 `db`/`tx` dependency를 받습니다.
 
@@ -121,6 +123,8 @@ route handler -> service/use-case -> repository/query module -> database client
 - Service가 여러 dependent write를 transaction 또는 명시적 이유 없이 수행함
 - Public response가 내부 field를 포함한 raw ORM row를 그대로 serialize함
 - 큰 app에 repository는 있지만 database client/config boundary가 불명확함
+- 안정판 0.45.x 설치에서 `defineRelations()`로 relation을 선언함
+- 여러 branch가 migration을 생성했는데 아무도 `drizzle-kit check`를 돌리지 않음
 
 ## Auto-Remediation 경계
 
@@ -147,10 +151,19 @@ route handler -> service/use-case -> repository/query module -> database client
 - Repository function이 query detail을 숨기고 Hono `Context`에 의존하지 않음
 - Multi-step write의 transaction이 명시적임
 - Schema/migration path가 `drizzle.config.ts`와 일치함
+- Branch가 갈릴 수 있었으면 migration 이력을 `drizzle-kit check`로 확인함
+- Relation이 설치된 세대의 API(`0.45.x`에서는 `relations()`)를 사용함
 - API DTO, validation schema, OpenAPI response, typed RPC contract가 여전히 일치함
 - Persistence behavior가 가장 작은 유용한 repository, service, request-level test로 커버됨
 
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Hono 동작은 `references/official/hono-docs.ko.md`에, Drizzle 동작은 `references/official/drizzle-docs.ko.md`에 위임합니다(둘 다 last verified 2026-08-04). 저장소 로컬 링크 확인 2026-09-21.
+> Checked 2026-11-04.
+
+| 주장 | 출처 |
+|---|---|
+| 안정판 조합 `drizzle-orm` 0.45.4, `drizzle-kit` 0.31.11 | [npm registry: drizzle-orm](https://registry.npmjs.org/drizzle-orm), [npm registry: drizzle-kit](https://registry.npmjs.org/drizzle-kit), [Drizzle releases](https://github.com/drizzle-team/drizzle-orm/releases) |
+| `drizzle-kit check`의 migration 이력 정합성 검사 | [`drizzle-kit check`](https://orm.drizzle.team/docs/drizzle-kit-check) |
+| 0.x의 `relations()`와 `drizzle-orm@rc`의 `defineRelations()` | [Relations v1 to v2](https://orm.drizzle.team/docs/relations-v1-v2) |
+| Transaction, driver, serverless connection 동작은 Drizzle 참조에 위임 | [`references/official/drizzle-docs.ko.md`](../references/official/drizzle-docs.ko.md) |
