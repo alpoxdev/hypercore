@@ -9,7 +9,7 @@ compatibility: Requires an Expo project or an explicit request to create one; cu
 @rules/routing-and-navigation.md
 @rules/data-state-and-boundaries.md
 @rules/native-platform-and-security.md
-@references/official/expo-react-native-2026-08-03.md
+@references/official/expo-react-native-2026-11-04.md
 @rules/testing-and-validation.md
 
 # Expo Architecture
@@ -48,7 +48,7 @@ Do not use it for bare React Native without Expo, generic web React, a single vi
 | Scope | Touched app configuration, TypeScript source, route tree, feature/shared modules, tests, and architecture validation notes; broad native regeneration and dependency replacement require explicit scope. |
 | Authority | User and project instructions outrank this skill. Installed package/config evidence controls project behavior. Official Expo/React Native docs control API facts; Hypercore conventions are recommendations unless adopted by the project. |
 | Evidence | Inspect `package.json`, app config, router entry, TypeScript/Metro/Babel config, native directories, existing source/tests, and lockfile first. Use dated official references when version drift matters. |
-| Tools | Use capability-based inspect/read/search/edit/execute. Validate commands and paths. Gate network installs, credentials, EAS operations, native clean regeneration, signing, publication, deployment, and production effects. |
+| Tools | Use capability-based inspect/read/search/edit/execute. Validate commands and paths. Gate network installs, credentials, EAS operations, any `prebuild` run on committed native directories, signing, publication, deployment, and production effects. |
 | Loop | Use a bounded verify-repair loop: run relevant checks, repair only observed failures, and stop after two repair passes. Keep changes only when critical type, route, native-config, and safety guards pass. |
 | Output | A project-local architecture implementation or review, plus a concise Korean report of decisions, changed files, checks, source/version caveats, and residual risks. |
 | Verification | Run project-defined format/lint/type/test checks plus Expo diagnostics and platform checks relevant to touched surfaces; inspect resolved config and route behavior when changed. |
@@ -92,11 +92,11 @@ The project test runs before the request test. When local files show neither Exp
 | `SKILL.md` | Trigger, contract, workflow, gates, validation | Always |
 | `architecture-rules.md` | Rule classes and blocking gates | Before classifying a finding |
 | `rules/project-structure.md` | Folders, ownership, imports, migration, scale profiles | When changing folders or imports |
-| `rules/routing-and-navigation.md` | Expo Router layouts, groups, params, route thinness | When changing routes |
-| `rules/data-state-and-boundaries.md` | Server and client state, DTOs, persistence, dependency direction | When changing data flow |
-| `rules/native-platform-and-security.md` | App config, permissions, secrets, storage, native code | When touching config or platform code |
+| `rules/routing-and-navigation.md` | Expo Router layouts, groups, params, protected screens, route thinness | When changing routes |
+| `rules/data-state-and-boundaries.md` | Server and client state, DTOs, transport, persistence, dependency direction | When changing data flow |
+| `rules/native-platform-and-security.md` | App config, permissions, secrets, storage, native toolchain, EAS, native code | When touching config or platform code |
 | `rules/testing-and-validation.md` | Check order and completion evidence | Before claiming completion |
-| `references/official/expo-react-native-2026-08-03.md` | Dated official SDK and API facts | When a current SDK claim decides the change |
+| `references/official/expo-react-native-2026-11-04.md` | Dated official SDK and API facts, per-SDK baseline, removed APIs | When a current SDK claim decides the change |
 
 </skill_architecture>
 
@@ -120,7 +120,7 @@ Deliver user-facing text in Korean by default: the report, decisions, caveats, a
 - When changing server state, client state, persistence, or the direction of a dependency, read `rules/data-state-and-boundaries.md`.
 - When touching app config, permissions, secrets, storage, native code, or platform files, read `rules/native-platform-and-security.md`.
 - Before claiming completion, read `rules/testing-and-validation.md`.
-- When the installed SDK or an official API behavior decides the change, read `references/official/expo-react-native-2026-08-03.md` and compare its `last_verified_at` with the installed version.
+- When the installed SDK or an official API behavior decides the change, read `references/official/expo-react-native-2026-11-04.md` and compare its `last_verified_at` with the installed version.
 
 </reference_routing>
 
@@ -130,7 +130,7 @@ Read one language version per run, in this order. Paths are relative to this ski
 
 1. Read `architecture-rules.md` for rule classes and blocking gates.
 2. Read the rule files for the topics the change touches, choosing them with `<reference_routing>`.
-3. Read `references/official/expo-react-native-2026-08-03.md` only when current SDK/API behavior affects a decision.
+3. Read `references/official/expo-react-native-2026-11-04.md` only when current SDK/API behavior affects a decision.
 4. Read `rules/testing-and-validation.md` before implementation completion.
 
 </support_file_read_order>
@@ -139,7 +139,7 @@ Read one language version per run, in this order. Paths are relative to this ski
 
 | Phase | Task | Output |
 |---|---|---|
-| 0 | Confirm the project facts from local files: Expo SDK, React Native, Router, TypeScript, package manager, workspace mode, managed/CNG versus committed `ios/` and `android/`, route root (`src/app` or `app`), aliases, project commands, and whether the request needs installs, `prebuild`, EAS, credentials, signing, or store effects | Scope decision |
+| 0 | Confirm the project facts from local files: Expo SDK, React Native, Router, TypeScript, package manager, workspace mode, managed/CNG versus committed `ios/` and `android/`, route root (`src/app` or `app`), aliases, project commands, `web.output` and whether API routes exist, and whether the request needs installs, `prebuild`, EAS, credentials, signing, or store effects | Scope decision |
 | 1 | Inventory routes, features, shared modules, state/data, native config, tests, and dependency direction | Architecture map |
 | 2 | Classify findings as Official, Safety, or Hypercore convention | Prioritized plan |
 | 3 | Define target boundaries and the smallest migration slice; preserve user work | Change set |
@@ -151,14 +151,15 @@ Read one language version per run, in this order. Paths are relative to this ski
 
 <required>
 
-- Prefer `src/app` for routes in current Expo Router projects while keeping non-route code outside it.
+- Prefer `src/app` for routes and keep non-route code outside it: the SDK 55+ default template ships `src/app`, `src/components`, `src/constants`, and `src/hooks`, and `src/app` outranks a root `app` when both exist.
 - Organize growth by `src/features/<domain>` and narrowly scoped `src/shared/*`; avoid dumping domain behavior into global `components`, `hooks`, `utils`, or `services` buckets.
 - Keep route files composition-oriented; business rules and reusable data access belong to feature/application layers.
-- Keep TypeScript strict, validate untrusted runtime data at boundaries, and avoid `any` and unchecked casts.
+- Keep TypeScript strict, validate untrusted runtime data at boundaries, and avoid `any` and unchecked casts. On React Native 0.88 the Strict TypeScript API is the default: no `react-native/Libraries/*` deep imports and no `*Properties` type aliases.
 - Separate server state, client UI state, form state, and persisted device state by ownership and lifecycle.
 - Treat `EXPO_PUBLIC_*` as public; store small secrets only in secure platform-backed storage and never bundle server secrets.
 - Make platform divergence explicit with `.ios.ts(x)` / `.android.ts(x)` or a small adapter when behavior truly differs.
-- Use the installed SDK and `expo install` compatibility rather than guessing package versions.
+- Use the installed SDK and `expo install` compatibility rather than guessing package versions; from SDK 55 every Expo package shares the SDK major, so `expo-camera@^58` on SDK 58 is expected.
+- Recommend removing manual `useMemo`/`useCallback`/`React.memo` only when `experiments.reactCompiler` is enabled and the file is in its scope.
 
 </required>
 
@@ -168,8 +169,10 @@ Read one language version per run, in this order. Paths are relative to this ski
 - A universal folder template applied without inspecting project scale and existing conventions.
 - Domain features importing route files, UI importing infrastructure internals, or broad barrel files that create cycles.
 - Secrets in source, app config `extra`, `EXPO_PUBLIC_*`, logs, AsyncStorage, or client bundles.
-- Running package installs, `prebuild --clean`, EAS builds/updates/submits, signing, or store publication without explicit authorization.
-- Treating Expo Go success as proof that development/standalone builds, permissions, config plugins, or native modules work.
+- Running package installs, EAS builds/updates/submits, signing, or store publication without explicit authorization.
+- Running `prebuild` on committed `ios/`/`android/` directories without explicit authorization. Bare `prebuild` clears and regenerates both directories since SDK 57, so the preserving path is `--no-clean` plus a diff review.
+- Treating Expo Go success as proof that development/standalone builds, permissions, config plugins, or native modules work. Expo Go also requires a signed-in Expo account in both the CLI and the app, and only one SDK version is supported from the stores, so name the SDK it targets before citing a run as evidence.
+- Adopting an experimental path as the default supported setup: Swift Package Manager (`npx react-native spm`), `experiments.noxcturnalTransformWorker`, or `expo-location/next`.
 - Unbounded refactoring or migration without a verified incremental boundary.
 
 </forbidden>
@@ -177,10 +180,14 @@ Read one language version per run, in this order. Paths are relative to this ski
 <validation>
 
 - [ ] Expo mode, SDK, React Native, Router, package manager, platforms, and native-directory ownership are identified.
+- [ ] The SDK generation is named against the dated reference baseline (SDK 58: react-native 0.88, react 19.3, expo-router 58) rather than a remembered version.
+- [ ] No removed API from the reference's removed-API table is introduced or left untouched in reviewed code.
 - [ ] At least 3 positive, 2 negative, and 1 boundary trigger examples remain present.
 - [ ] Route files are thin and non-route modules do not live under `app`/`src/app`.
 - [ ] Dependency direction and feature/shared ownership are explicit; cycles and unsafe barrels are absent.
+- [ ] Route access control uses the navigator's protected-screen API and is not the only authorization.
 - [ ] Runtime inputs, environment, persistence, permissions, and secure storage follow boundary rules.
+- [ ] `web.output`, API routes, and `asyncRoutes` are consistent with the app's actual hosting model.
 - [ ] Android/iOS changes are checked independently where behavior or config differs.
 - [ ] Relevant typecheck, lint, tests, Expo diagnostics, resolved config, and build checks ran or are explicitly reported as unavailable.
 - [ ] English/Korean skill files retain equivalent trigger, authority, workflow, safety, and completion semantics.
