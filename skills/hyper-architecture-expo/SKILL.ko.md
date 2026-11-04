@@ -9,7 +9,7 @@ compatibility: Expo 프로젝트 또는 Expo 프로젝트 생성 요청이 필�
 @rules/routing-and-navigation.ko.md
 @rules/data-state-and-boundaries.ko.md
 @rules/native-platform-and-security.ko.md
-@references/official/expo-react-native-2026-08-03.ko.md
+@references/official/expo-react-native-2026-11-04.ko.md
 @rules/testing-and-validation.ko.md
 
 # Expo Architecture
@@ -48,7 +48,7 @@ Expo 없는 bare React Native, generic web React, architecture 영향이 없는 
 | Scope | touched app config, TypeScript source, route tree, feature/shared module, test, architecture validation note. 광범위 native 재생성과 dependency 교체는 명시적 scope가 필요합니다. |
 | Authority | user/project 지시가 이 스킬보다 우선합니다. 설치 package/config 근거가 project 동작을 결정합니다. API 사실은 공식 Expo/React Native 문서가, convention은 프로젝트가 채택하지 않는 한 권고가 우선합니다. |
 | Evidence | 먼저 `package.json`, app config, router entry, TypeScript/Metro/Babel config, native directory, 기존 source/test, lockfile을 조사합니다. Version drift가 중요하면 날짜가 있는 공식 reference를 사용합니다. |
-| Tools | capability 기반 inspect/read/search/edit/execute를 사용합니다. command/path를 검증하고 network install, credential, EAS 작업, native clean regeneration, signing, publish/deploy/production effect를 gate합니다. |
+| Tools | capability 기반 inspect/read/search/edit/execute를 사용합니다. command/path를 검증하고 network install, credential, EAS 작업, commit된 native directory의 `prebuild` 실행, signing, publish/deploy/production effect를 gate합니다. |
 | Loop | 제한된 verify-repair loop를 사용합니다. 관련 check를 실행하고 관찰된 실패만 고치며 최대 2회 repair 후 멈춥니다. Critical type, route, native-config, safety guard를 모두 통과한 변경만 유지합니다. |
 | Output | project-local architecture 구현 또는 review와 decision, changed files, check, source/version caveat, residual risk를 담은 간결한 한국어 보고서. |
 | Verification | project-defined format/lint/type/test와 touched surface에 맞는 Expo diagnostic/platform check를 실행하고 config/route 변경 시 resolved behavior를 검사합니다. |
@@ -92,11 +92,11 @@ Boundary:
 | `SKILL.ko.md` | trigger, contract, workflow, gate, validation | 항상 |
 | `architecture-rules.ko.md` | rule class와 blocking gate | finding을 분류하기 전 |
 | `rules/project-structure.ko.md` | folder, ownership, import, migration, scale profile | folder나 import를 바꿀 때 |
-| `rules/routing-and-navigation.ko.md` | Expo Router layout, group, param, route thinness | route를 바꿀 때 |
-| `rules/data-state-and-boundaries.ko.md` | server/client state, DTO, persistence, dependency direction | data 흐름을 바꿀 때 |
-| `rules/native-platform-and-security.ko.md` | app config, permission, secret, storage, native code | config나 platform code를 건드릴 때 |
+| `rules/routing-and-navigation.ko.md` | Expo Router layout, group, param, protected screen, route thinness | route를 바꿀 때 |
+| `rules/data-state-and-boundaries.ko.md` | server/client state, DTO, transport, persistence, dependency direction | data 흐름을 바꿀 때 |
+| `rules/native-platform-and-security.ko.md` | app config, permission, secret, storage, native toolchain, EAS, native code | config나 platform code를 건드릴 때 |
 | `rules/testing-and-validation.ko.md` | check 순서와 완료 근거 | 완료를 주장하기 전 |
-| `references/official/expo-react-native-2026-08-03.ko.md` | 날짜가 고정된 공식 SDK/API 사실 | 현재 SDK 주장이 변경을 가를 때 |
+| `references/official/expo-react-native-2026-11-04.ko.md` | 날짜가 고정된 공식 SDK/API 사실, SDK별 기준, 제거 API | 현재 SDK 주장이 변경을 가를 때 |
 
 </skill_architecture>
 
@@ -120,7 +120,7 @@ change set마다 loop는 한 번만 돌립니다. check를 실행하고 실패�
 - server state, client state, persistence, dependency 방향을 바꿀 때 `rules/data-state-and-boundaries.ko.md`를 읽습니다.
 - app config, permission, secret, storage, native code, platform file을 건드릴 때 `rules/native-platform-and-security.ko.md`를 읽습니다.
 - 완료를 주장하기 전에 `rules/testing-and-validation.ko.md`를 읽습니다.
-- 설치된 SDK나 공식 API 동작이 변경을 가를 때 `references/official/expo-react-native-2026-08-03.ko.md`를 읽고 `last_verified_at`을 설치 버전과 맞춰 봅니다.
+- 설치된 SDK나 공식 API 동작이 변경을 가를 때 `references/official/expo-react-native-2026-11-04.ko.md`를 읽고 `last_verified_at`을 설치 버전과 맞춰 봅니다.
 
 </reference_routing>
 
@@ -130,7 +130,7 @@ change set마다 loop는 한 번만 돌립니다. check를 실행하고 실패�
 
 1. rule class와 blocking gate는 `architecture-rules.ko.md`에서 읽습니다.
 2. 변경이 건드리는 topic의 rule file은 `<reference_routing>`으로 골라 읽습니다.
-3. 현재 SDK/API 동작이 결정에 영향을 줄 때만 `references/official/expo-react-native-2026-08-03.ko.md`를 읽습니다.
+3. 현재 SDK/API 동작이 결정에 영향을 줄 때만 `references/official/expo-react-native-2026-11-04.ko.md`를 읽습니다.
 4. 구현을 마치기 전에 `rules/testing-and-validation.ko.md`를 읽습니다.
 
 </support_file_read_order>
@@ -139,7 +139,7 @@ change set마다 loop는 한 번만 돌립니다. check를 실행하고 실패�
 
 | Phase | Task | Output |
 |---|---|---|
-| 0 | 로컬 파일에서 Expo SDK, React Native, Router, TypeScript, package manager, workspace mode, managed/CNG인지 committed `ios/`·`android/`인지, route root(`src/app` 또는 `app`), alias, project command, 요청에 install·`prebuild`·EAS·credential·signing·store effect가 필요한지 확인 | Scope decision |
+| 0 | 로컬 파일에서 Expo SDK, React Native, Router, TypeScript, package manager, workspace mode, managed/CNG인지 committed `ios/`·`android/`인지, route root(`src/app` 또는 `app`), alias, project command, `web.output`과 API route 존재 여부, 요청에 install·`prebuild`·EAS·credential·signing·store effect가 필요한지 확인 | Scope decision |
 | 1 | route, feature, shared module, state/data, native config, test, dependency direction inventory | Architecture map |
 | 2 | finding을 Official, Safety, Hypercore convention으로 분류 | Prioritized plan |
 | 3 | target boundary와 최소 migration slice 정의, user work 보존 | Change set |
@@ -151,14 +151,15 @@ change set마다 loop는 한 번만 돌립니다. check를 실행하고 실패�
 
 <required>
 
-- 현재 Expo Router 프로젝트에서 route는 `src/app`을 선호하고 non-route code는 그 밖에 둡니다.
+- Route는 `src/app`을 선호하고 non-route code는 그 밖에 둡니다. SDK 55 이후 기본 template이 `src/app`, `src/components`, `src/constants`, `src/hooks`를 만들고, 두 route root가 있으면 `src/app`이 root `app`보다 우선합니다.
 - 성장은 `src/features/<domain>`과 좁은 `src/shared/*`로 조직하고 domain behavior를 전역 `components`, `hooks`, `utils`, `services` bucket에 쌓지 않습니다.
 - route file은 composition 중심으로 유지하고 business rule/reusable data access는 feature/application layer에 둡니다.
-- TypeScript strict를 유지하고 untrusted runtime data를 boundary에서 검증하며 `any`와 unchecked cast를 피합니다.
+- TypeScript strict를 유지하고 untrusted runtime data를 boundary에서 검증하며 `any`와 unchecked cast를 피합니다. React Native 0.88에서는 Strict TypeScript API가 기본이므로 `react-native/Libraries/*` deep import와 `*Properties` type alias를 쓰지 않습니다.
 - server state, client UI state, form state, persisted device state를 ownership/lifecycle별로 분리합니다.
 - `EXPO_PUBLIC_*`를 public으로 취급하고 작은 secret만 secure platform-backed storage에 저장하며 server secret을 bundle하지 않습니다.
 - 실제 동작이 다를 때 `.ios.ts(x)`/`.android.ts(x)` 또는 작은 adapter로 platform divergence를 명시합니다.
-- package version을 추측하지 않고 설치 SDK와 `expo install` compatibility를 따릅니다.
+- package version을 추측하지 않고 설치 SDK와 `expo install` compatibility를 따릅니다. SDK 55부터 모든 Expo package가 SDK major를 공유하므로 SDK 58의 `expo-camera@^58`은 정상입니다.
+- 수동 `useMemo`/`useCallback`/`React.memo` 제거는 `experiments.reactCompiler`가 켜져 있고 그 file이 적용 범위에 있을 때만 권합니다.
 
 </required>
 
@@ -168,8 +169,10 @@ change set마다 loop는 한 번만 돌립니다. check를 실행하고 실패�
 - project scale/convention 조사 없이 universal folder template 강제.
 - domain feature가 route file을 import하거나 UI가 infrastructure 내부를 import하거나 cycle을 만드는 broad barrel 사용.
 - source, app config `extra`, `EXPO_PUBLIC_*`, log, AsyncStorage, client bundle에 secret 저장.
-- 명시적 승인 없는 package install, `prebuild --clean`, EAS build/update/submit, signing, store publish.
-- Expo Go 성공을 development/standalone build, permission, config plugin, native module 동작의 증거로 취급.
+- 명시적 승인 없는 package install, EAS build/update/submit, signing, store publish.
+- commit된 `ios/`·`android/` directory에 명시적 승인 없이 `prebuild`를 실행하는 것. SDK 57부터 bare `prebuild`가 두 directory를 지우고 다시 생성하므로 보존 경로는 `--no-clean`과 diff 검토입니다.
+- Expo Go 성공을 development/standalone build, permission, config plugin, native module 동작의 증거로 취급. Expo Go는 CLI와 app 양쪽 로그인된 Expo account를 요구하고 store에서는 한 SDK version만 지원하므로, 실행을 근거로 인용하기 전에 대상 SDK를 밝힙니다.
+- Swift Package Manager(`npx react-native spm`), `experiments.noxcturnalTransformWorker`, `expo-location/next` 같은 실험 경로를 기본 지원 설정처럼 채택.
 - 검증된 incremental boundary 없는 unbounded refactor/migration.
 
 </forbidden>
@@ -177,10 +180,14 @@ change set마다 loop는 한 번만 돌립니다. check를 실행하고 실패�
 <validation>
 
 - [ ] Expo mode, SDK, React Native, Router, package manager, platform, native-directory ownership을 식별했습니다.
+- [ ] SDK 세대를 기억이 아니라 날짜가 있는 reference 기준(SDK 58: react-native 0.88, react 19.3, expo-router 58)으로 밝혔습니다.
+- [ ] Reference의 제거 API 표에 있는 API를 새로 도입하거나 review 대상 code에 그대로 두지 않았습니다.
 - [ ] positive 3개, negative 2개, boundary 1개 이상의 trigger example이 유지됩니다.
 - [ ] route file은 얇고 non-route module은 `app`/`src/app` 밖에 있습니다.
 - [ ] dependency direction과 feature/shared ownership이 명확하며 cycle/unsafe barrel이 없습니다.
+- [ ] route 접근 제어는 navigator의 protected-screen API를 쓰며 그것이 유일한 authorization이 아닙니다.
 - [ ] runtime input, environment, persistence, permission, secure storage가 boundary rule을 따릅니다.
+- [ ] `web.output`, API route, `asyncRoutes`가 실제 hosting model과 일치합니다.
 - [ ] 동작/config가 다르면 Android/iOS 변경을 각각 확인했습니다.
 - [ ] relevant typecheck, lint, test, Expo diagnostic, resolved config, build check를 실행했거나 불가 사유를 기록했습니다.
 - [ ] 영문/한글 파일의 trigger, authority, workflow, safety, completion 의미가 동등합니다.

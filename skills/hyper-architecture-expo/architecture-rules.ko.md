@@ -29,10 +29,13 @@ Dependency는 오른쪽/아래쪽으로 향하며 lower layer는 route, widget, 
 1. Server credential/private key를 client code, `EXPO_PUBLIC_*`, app config output, log, unencrypted storage에 둠.
 2. Deep-link param, persisted data, push payload, API response를 boundary runtime validation 없이 신뢰함.
 3. 필요한 native config와 user-facing purpose text 없이 runtime permission을 요청함.
-4. 명시적 권한 없이 destructive native regeneration, EAS publication, signing, store action을 실행함.
-5. 근거 없이 설치 Expo SDK/New Architecture와 호환되지 않는 native dependency를 도입함.
+4. 명시적 권한 없이 commit된 native directory에 `prebuild`를 실행하거나 EAS publication, signing, store action을 수행함.
+5. 근거 없이 설치 Expo SDK/New Architecture와 호환되지 않는 native dependency를 도입함. SDK 55부터 58까지는 architecture opt-out이 없으므로 호환되지 않는 library는 교체하거나 patch하거나 차단 사유로 보고하고, `npx expo-doctor`와 React Native Directory로 진단합니다. 뒤집을 flag를 찾지 않습니다.
 6. route/feature/shared dependency cycle 또는 unsafe universal module에서 platform-only module import를 만듦.
-7. native 동작이 바뀌었는데 web/Expo Go만 시험하고 Android/iOS 지원을 주장함.
+7. native 동작이 바뀌었는데 web/Expo Go만 시험하고 Android/iOS 지원을 주장함. Expo Go는 CLI와 app 양쪽 로그인된 Expo account를 요구하고 store에서는 하나의 SDK version을 배포하므로, 실행 결과는 대상 SDK를 밝혀야 하며 config plugin이나 native permission의 증거를 대신하지 못합니다.
+8. 날짜가 있는 reference에 정리된, 제거되었거나 deprecated되었거나 대체된 API를 쓰거나 그대로 둠. `InteractionManager`, `Modal`의 `animated` prop, `StatusBar` appearance prop, `Touchable` root export, `NativeMethods`, boolean `keyboardShouldPersistTaps`, `freezeOnBlur`, `initialRouteName` navigator prop, 비상 수단으로서의 `prebuild --clean`, `expo-sqlite` libSQL entry point, `File.md5`, `AppMetrics`, `@expo/vector-icons`가 해당합니다.
+9. Application code에서 `@react-navigation/*`를 직접 import하거나, Strict TypeScript API에서 `react-native/Libraries/*` deep import와 `*Properties` type alias를 씀.
+10. Commit된 `ios/`와 손본 `AppDelegate.swift`가 있는 프로젝트의 SDK 58 upgrade를 iOS 27 scene-lifecycle migration 확인 없이 계획함. Prebuild가 이제 `SceneDelegate.swift`와 `UIApplicationSceneManifest`를 만들고 `UIWindow`는 scene delegate가 생성합니다.
 
 ## 확장 가능한 기본 구조
 
@@ -51,13 +54,15 @@ src/
     theme/              # token/theme composition
     ui/                 # reusable presentation primitive
     lib/                # focused framework-independent utility
-  server/               # optional Expo Router API-route support
+  server/               # API route와 middleware 뒤의 server-only helper
   generated/            # generated code; hand-edit 금지
 assets/                 # Expo static asset
 app.config.ts           # root native/build config
 ```
 
 실제 code ownership이 있을 때만 folder를 추가합니다. 작은 앱은 `app`, `features`, `shared`로 시작할 수 있으며 빈 architecture theater를 만들지 않습니다.
+
+SDK 58에서는 `server/`가 기본 구성에 들어옵니다. Expo Router 프로젝트는 `web.output`이 없으면 `"server"`를 쓰므로 `"static"`을 고르지 않는 한 `+api.ts` route와 `+middleware.ts`가 존재합니다. Hosting model을 명시적으로 정하고 어느 쪽이든 privileged code는 server boundary 뒤에 둡니다.
 
 ## Migration policy
 

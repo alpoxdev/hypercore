@@ -22,7 +22,7 @@ Promote a folder only after it has a distinct owner or dependency rule. Empty di
 .
 ├── app.config.ts                 # dynamic Expo/native/build configuration
 ├── eas.json                      # EAS profiles; no client secrets
-├── metro.config.js               # only evidenced Metro customization
+├── metro.config.js               # .js, .ts, or .mts; only evidenced customization
 ├── package.json
 ├── tsconfig.json
 ├── assets/                       # fonts, icons, images, animations
@@ -39,7 +39,8 @@ Promote a folder only after it has a distinct owner or dependency rule. Empty di
 │   │   │   │   ├── _layout.tsx
 │   │   │   │   └── index.tsx
 │   │   │   └── profile/[id].tsx
-│   │   └── api/                  # optional Expo Router API routes only
+│   │   ├── +middleware.ts        # optional server middleware (app root)
+│   │   └── api/                  # Expo Router +api routes; server output is the SDK 58 default
 │   │       └── health+api.ts
 │   ├── features/                 # independently changeable product capabilities
 │   │   ├── auth/
@@ -129,7 +130,9 @@ Shared means domain-agnostic and reusable across at least two owners, not merely
 
 ### `src/server`
 
-Use only when Expo Router API routes exist. Server-only database, secret, and privileged code must not be exported through client-safe barrels or imported by native routes/features. Add lint/import boundaries when server code is present.
+Use only when Expo Router API routes or middleware exist. Server-only database, secret, and privileged code must not be exported through client-safe barrels or imported by native routes/features. Add lint/import boundaries when server code is present.
+
+On SDK 58 this layer is reachable by default: an Expo Router project uses `web.output: "server"` when `web.output` is unset, so `+api.ts` handlers and `+middleware.ts` run unless the project sets `"static"` (optionally with `apiRoutes: true`). Record which of those three shapes the app intends, because it decides whether the server layer exists at all, whether HTML is prerendered or rendered per request, and where the deployment must run. `expo-server` supplies the runtime helpers such as `StatusError` for privileged code.
 
 ## 4. Dependency rule
 
@@ -180,7 +183,11 @@ Do not move code to `packages/*` merely because it might be reused. Extract only
 
 ## 7. Naming and configuration
 
-Follow evidenced project naming; for a new structure prefer kebab-case files and folders, named exports except framework-required defaults, and `@/* -> src/*` when supported by the actual config. An alias change must update TypeScript, Metro/Babel if applicable, Jest, lint/import rules, and all callsites. Root Expo/config files stay at the app root. Confirm current SDK monorepo behavior before adding custom Metro resolver settings.
+Follow evidenced project naming; for a new structure prefer kebab-case files and folders, named exports except framework-required defaults, and `@/* -> src/*` when supported by the actual config. An alias change must update TypeScript, Metro/Babel if applicable, Jest, lint/import rules, and all callsites. Root Expo/config files stay at the app root.
+
+Metro config may be `metro.config.js`, `metro.config.ts`, or `metro.config.mts`. YAML configs and `.es6` extensions were removed with Metro 0.87 and are broken in this generation.
+
+Metro monorepo behavior is automatic, including autolinking module resolution from SDK 55. Do not add or retain `watchFolders`, `resolver.nodeModulesPath`, `resolver.extraNodeModules`, or `resolver.disableHierarchicalLookup`; these are legacy workarounds that now conflict with the default resolution.
 
 ## 8. Placement decision
 
@@ -202,4 +209,4 @@ Move one vertical feature at a time. Update routes, public exports, aliases, tes
 
 ## Sources
 
-> Claims checked 2026-09-21. No external source was used in this file; the Expo-specific statements restate this package's own official snapshot, references/official/expo-react-native-2026-08-03.md.
+> Claims checked 2026-11-04. The Expo-specific statements restate this package's official snapshot, `references/official/expo-react-native-2026-11-04.md`, which cites https://docs.expo.dev/router/reference/src-directory/, https://docs.expo.dev/router/web/api-routes/, https://docs.expo.dev/guides/monorepos/, and https://reactnative.dev/blog/2026/08/11/react-native-0.87. The layering and scale profiles are Hypercore convention and rest on no external source.

@@ -22,7 +22,7 @@ Folder는 별도 owner나 dependency rule이 생긴 뒤 승격합니다. 빈 dir
 .
 ├── app.config.ts                 # dynamic Expo/native/build config
 ├── eas.json                      # EAS profile; client secret 금지
-├── metro.config.js               # 근거가 있는 Metro customization만
+├── metro.config.js               # .js, .ts, .mts 중 하나. 근거가 있는 customization만
 ├── package.json
 ├── tsconfig.json
 ├── assets/                       # font, icon, image, animation
@@ -39,7 +39,8 @@ Folder는 별도 owner나 dependency rule이 생긴 뒤 승격합니다. 빈 dir
 │   │   │   │   ├── _layout.tsx
 │   │   │   │   └── index.tsx
 │   │   │   └── profile/[id].tsx
-│   │   └── api/                  # optional Expo Router API route only
+│   │   ├── +middleware.ts        # 선택적 server middleware (app root)
+│   │   └── api/                  # Expo Router +api route. server output이 SDK 58 기본
 │   │       └── health+api.ts
 │   ├── features/                 # 독립적으로 변경 가능한 product capability
 │   │   ├── auth/
@@ -71,7 +72,7 @@ Folder는 별도 owner나 dependency rule이 생긴 뒤 승격합니다. 빈 dir
 │   │   ├── theme/                # token/theme composition
 │   │   ├── types/                # 드문 domain-agnostic shared type
 │   │   └── ui/                   # design-system primitive
-│   ├── server/                   # optional server-only API-route support
+│   ├── server/                   # API route와 middleware 뒤의 server-only 지원
 │   └── generated/                # generated code; hand-edit 금지
 └── ios/ / android/               # project ownership이 요구할 때만
 ```
@@ -129,7 +130,9 @@ Shared는 단지 편리한 code가 아니라 domain-agnostic이고 둘 이상의
 
 ### `src/server`
 
-Expo Router API route가 있을 때만 사용합니다. Server-only database/secret/privileged code를 client-safe barrel로 export하거나 native route/feature에서 import하지 않습니다. Server code가 있으면 lint/import boundary를 추가합니다.
+Expo Router API route나 middleware가 있을 때만 사용합니다. Server-only database/secret/privileged code를 client-safe barrel로 export하거나 native route/feature에서 import하지 않습니다. Server code가 있으면 lint/import boundary를 추가합니다.
+
+SDK 58에서는 이 layer가 기본 구성에 들어옵니다. Expo Router 프로젝트는 `web.output`이 없으면 `"server"`를 쓰므로, `"static"`과 선택적 `apiRoutes: true`를 고르지 않는 한 `+api.ts` handler와 `+middleware.ts`가 실행됩니다. 앱이 세 형태 중 무엇을 의도하는지 기록합니다. Server layer의 존재 여부, HTML을 미리 만들어 둘지 요청마다 render할지, 배포가 어디서 돌아야 하는지가 여기서 갈립니다. `expo-server`가 `StatusError` 같은 runtime helper를 제공합니다.
 
 ## 4. Dependency rule
 
@@ -180,7 +183,11 @@ Layer는 오른쪽 layer만 import할 수 있습니다. Same-layer cross-import�
 
 ## 7. Naming/configuration
 
-근거가 있는 project naming을 따릅니다. 새 구조는 kebab-case file/folder, framework-required default 외 named export, 실제 config가 지원하면 `@/* -> src/*`를 선호합니다. Alias 변경은 TypeScript, 해당 시 Metro/Babel, Jest, lint/import rule, callsite를 함께 갱신합니다. Root Expo/config file은 app root에 둡니다. Custom Metro resolver 추가 전에 current SDK monorepo 동작을 확인합니다.
+근거가 있는 project naming을 따릅니다. 새 구조는 kebab-case file/folder, framework-required default 외 named export, 실제 config가 지원하면 `@/* -> src/*`를 선호합니다. Alias 변경은 TypeScript, 해당 시 Metro/Babel, Jest, lint/import rule, callsite를 함께 갱신합니다. Root Expo/config file은 app root에 둡니다.
+
+Metro config는 `metro.config.js`, `metro.config.ts`, `metro.config.mts`를 쓸 수 있습니다. YAML config와 `.es6` extension은 Metro 0.87에서 제거되어 이 세대에서는 동작하지 않습니다.
+
+Metro monorepo 동작은 SDK 55부터 autolinking module resolution을 포함해 자동입니다. `watchFolders`, `resolver.nodeModulesPath`, `resolver.extraNodeModules`, `resolver.disableHierarchicalLookup`은 추가하거나 유지하지 않습니다. 기본 resolution과 충돌하는 legacy 우회 설정입니다.
 
 ## 8. Placement decision
 
@@ -202,4 +209,4 @@ Ownership이 불명확하면 유일한 caller 가까이에 둡니다. Premature 
 
 ## Sources
 
-> 자체 검토 확인 2026-09-21. 이 파일은 외부 출처를 직접 사용하지 않았고, Expo 관련 서술은 이 패키지 자체의 공식 snapshot(references/official/expo-react-native-2026-08-03.md)을 재진술한 것입니다.
+> 확인 2026-11-04. Expo 관련 서술은 이 패키지의 공식 snapshot `references/official/expo-react-native-2026-11-04.md`를 재진술한 것이며, 그 파일이 다음 URL을 인용합니다: https://docs.expo.dev/router/reference/src-directory/, https://docs.expo.dev/router/web/api-routes/, https://docs.expo.dev/guides/monorepos/, https://reactnative.dev/blog/2026/08/11/react-native-0.87. Layering과 scale profile은 외부 출처에 기대지 않는 Hypercore convention입니다.
