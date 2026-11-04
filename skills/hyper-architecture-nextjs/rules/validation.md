@@ -18,9 +18,10 @@ find app src/app -maxdepth 5 -type f \( -name 'page.tsx' -o -name 'route.ts' -o 
 rg -n "^['\"]use client['\"]|server-only|client-only|cookies\(|headers\(|process\.env|NEXT_PUBLIC_" app src/app src/components src/lib src/services 2>/dev/null
 
 # Cache, mutation freshness, and route handler checks
-rg -n "cacheComponents|use cache|cacheTag|cacheLife|connection\(|updateTag|revalidateTag|revalidatePath|refresh\(|redirect\(" next.config.* app src/app src/lib src/services 2>/dev/null
+rg -n "cacheComponents|partialPrefetching|use cache|cacheTag|cacheLife|io\(|connection\(|navigation\(|prefetch\(|ensureStatic|instant|updateTag|revalidateTag|revalidatePath|refresh\(|redirect\(" next.config.* app src/app src/lib src/services 2>/dev/null
+rg -n "export const runtime|export const ensureStatic|export const instant|export const prefetch" app src/app 2>/dev/null
 rg -n "export async function (GET|POST|PUT|PATCH|DELETE)|NextResponse\.next\(|RouteContext" app src/app 2>/dev/null
-rg -n "drizzle|drizzle.config|schema|migrate|push|pull|prepared|relations|RQB" drizzle.config.* src/db db src/modules src/services 2>/dev/null
+rg -n "drizzle|drizzle.config|schema|migrate|push|pull|check|prepared|relations|RQB" drizzle.config.* src/db db src/modules src/services 2>/dev/null
 
 # Proxy / env checks
 find . -maxdepth 2 \( -name 'proxy.ts' -o -name 'middleware.ts' -o -name 'middleware.js' \)
@@ -36,14 +37,14 @@ For edits to this skill itself:
 ```bash
 find skills/hyper-architecture-nextjs -maxdepth 3 -type f | sort
 wc -l skills/hyper-architecture-nextjs/SKILL.md skills/hyper-architecture-nextjs/SKILL.ko.md
-rg -n 'instruction_contract|activation_examples|routing_rule|rules/validation|current-docs-2026-06-02' skills/hyper-architecture-nextjs/SKILL.md skills/hyper-architecture-nextjs/SKILL.ko.md
+rg -n 'instruction_contract|activation_examples|routing_rule|rules/validation|current-docs-2026-11-04' skills/hyper-architecture-nextjs/SKILL.md skills/hyper-architecture-nextjs/SKILL.ko.md
 rg -n 'rules/services|rules/hooks|rules/db|drizzle-docs' skills/hyper-architecture-nextjs/SKILL.md skills/hyper-architecture-nextjs/SKILL.ko.md
 rg -n 'checked_at|Next.js 16|cacheComponents|use cache: remote|proxy.ts|middleware|NEXT_PUBLIC|Server Actions|Route Handlers|Drizzle schema|drizzle.config.ts|drizzle-kit generate|RQB' skills/hyper-architecture-nextjs/references/official
 rg -n 'src/modules|src/lib|src/services|src/db|src/server|src/integrations|src/config|direct leaf|Hypercore local convention|not official Next.js requirement' skills/hyper-architecture-nextjs/rules/project-structure.md skills/hyper-architecture-nextjs/rules/project-structure.ko.md
 rg -n 'DAL|DTO|server-only service|provider|authorization' skills/hyper-architecture-nextjs/rules/services.md skills/hyper-architecture-nextjs/rules/services.ko.md
 rg -n 'client orchestration|hooks|server/data layers|Drizzle schema|private env' skills/hyper-architecture-nextjs/rules/hooks.md skills/hyper-architecture-nextjs/rules/hooks.ko.md
 rg -n 'Drizzle schema|drizzle.config.ts|generate|migrate|prepared statements|validation integrations|RQB' skills/hyper-architecture-nextjs/rules/db.md skills/hyper-architecture-nextjs/rules/db.ko.md
-rg -n 'Deprecated feature-folder guidance is absent|src/services|src/modules|src/db|direct leaf|current-docs-2026-06-02|Korean parity|source-only|no adapter' skills/hyper-architecture-nextjs/rules/validation.md skills/hyper-architecture-nextjs/rules/validation.ko.md
+rg -n 'Deprecated feature-folder guidance is absent|src/services|src/modules|src/db|direct leaf|current-docs-2026-11-04|Korean parity|source-only|no adapter' skills/hyper-architecture-nextjs/rules/validation.md skills/hyper-architecture-nextjs/rules/validation.ko.md
 bash skills/hyper-architecture-nextjs/scripts/validate-hyper-architecture-nextjs-skill.sh
 ```
 
@@ -52,7 +53,7 @@ Must pass:
 - `SKILL.md` and `SKILL.ko.md` include routing, instruction contract, activation examples, workflow, verification, and stop condition.
 - Support files referenced from the core are directly linked; there is no indirect reference chain.
 - Official Next.js facts live in `references/official/`, not in long core sections.
-- Current official snapshot `references/official/current-docs-2026-06-02.md` is directly linked from `SKILL.md` and used when API drift matters.
+- Current official snapshot `references/official/current-docs-2026-11-04.md` is directly linked from `SKILL.md` and used when API drift matters.
 - Hypercore/repo-local conventions are labelled as such.
 - Project-structure guidance handles `app`, `src/app`, `pages`, `src/pages`, private folders, shared nested folders, and no-new-direct-leaf-files under touched shared roots.
 - Shared nested folders such as `src/modules`, `src/lib`, `src/services`, `src/db`, `src/server`, `src/integrations`, and `src/config` are labelled as Hypercore/repo-local convention, not official Next.js law.
@@ -62,6 +63,7 @@ Must pass:
 - Official Drizzle facts live in `references/official/drizzle-docs.md` and `.ko.md`, not in long core sections.
 - Deprecated feature-folder guidance is absent from this skill.
 - Cache Components, Server Actions, Route Handlers, Proxy, env, and Server/Client boundary guidance remain current-docs compatible.
+- The `cacheComponents` and `partialPrefetching` pair, the `io()`-over-`connection()` preference, and the `runtime` export removal are stated together wherever Cache Components is described.
 - English and Korean entrypoints have aligned trigger, boundary, workflow, contract, and read order.
 - English and Korean sibling files are structurally and semantically aligned; Korean parity checks include services/hooks/db/Drizzle phrases.
 - This skill is validated source-only from `skills/hyper-architecture-nextjs`; it has no plugin mirror, symlink, or adapter contract.
@@ -100,4 +102,4 @@ Boundary examples:
 
 ## Sources
 
-> No external sources were used in this file; it describes repository-local commands and readback steps. Framework facts live in the topic rule files under `rules/` and in `references/official/`. Repository-local links checked 2026-09-21.
+> No external sources were used in this file; it describes repository-local commands and readback steps. Framework facts live in the topic rule files under `rules/` and in `references/official/`. Repository-local links checked 2026-11-04.

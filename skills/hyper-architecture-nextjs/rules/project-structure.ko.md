@@ -169,4 +169,4 @@ DB clients, DAL modules, secret-bearing SDK wrappers, authorization helpers처�
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Next.js 동작은 `references/official/nextjs-docs.md`(last verified 2026-05-24)와 `references/official/current-docs-2026-06-02.md`(스냅샷 날짜 2026-06-02)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.
+> 확인 2026-11-04. `https://nextjs.org/docs/app/getting-started/project-structure`, `https://nextjs.org/docs/app/api-reference/file-conventions`, `https://nextjs.org/docs/app/api-reference/file-conventions/src`를 확인했습니다. 날짜가 붙은 스냅숏은 `references/official/current-docs-2026-11-04.md`입니다.

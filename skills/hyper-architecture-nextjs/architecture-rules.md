@@ -18,21 +18,28 @@ Brownfield adoption rule: untouched legacy `pages/` code is not an automatic fai
 
 ## Current Official Baselines
 
-Source priority starts with `references/official/current-docs-2026-06-02.md`, then `references/official/nextjs-docs.md` for the broader doc map.
+Source priority starts with `references/official/current-docs-2026-11-04.md`, then `references/official/nextjs-docs.md` for the broader doc map. In the latest checked Next.js 16 docs the stable baseline is 16.4.5 (16.4.0 on 2026-10-06, 16.3.0 on 2026-08-03); 16.5 exists only on canary.
 
 - Server Components are the default in App Router; add `'use client'` only at client entry points that need interactivity, browser APIs, or client hooks.
 - In modern App Router docs, `fetch` requests are not cached by default, while routes may still be prerendered and HTML cached. Cache intent must be explicit.
-- In latest checked Next.js 16 docs, Cache Components are enabled with `cacheComponents: true`; `use cache`, `cacheTag`, and `cacheLife` are the preferred cache primitives for that mode.
+- Since Next.js 16.4 the docs recommend Cache Components as the best choice for every App Router app, and new `create-next-app` apps ship with it enabled. Adoption in an existing app still needs an explicit migration reason.
+- Cache Components is enabled with `cacheComponents: true` plus `partialPrefetching: true`. Leaving `partialPrefetching` unset logs a warning, and `partialPrefetching` without `cacheComponents` fails config validation.
 - `cacheComponents` is the unified v16 switch for PPR, `useCache`, and `dynamicIO`; experimental PPR flags and the `experimental_ppr` segment option are removed.
-- With `cacheComponents`, `dynamic`, `revalidate`, and `fetchCache` route segment config options are removed; only current segment options such as `dynamicParams`, `runtime`, `preferredRegion`, and `maxDuration` remain.
-- `use cache` cannot directly read request-time APIs; pass serializable values in, use `use cache: remote` for justified durable shared cache, and treat experimental `use cache: private` as exceptional.
-- Use `connection()` for new request-time dynamic work; `unstable_noStore` is deprecated in favor of `connection()`.
+- With `cacheComponents`, `dynamic`, `dynamicParams`, `revalidate`, and `fetchCache` route segment config options are removed. Remaining options are `runtime` (`'edge'` deprecated), `preferredRegion` (deprecated), `maxDuration`, plus `ensureStatic` for pages and layouts. `dynamicParams` stays available outside Cache Components.
+- `use cache` cannot directly read request-time APIs; pass serializable values in. `use cache: private` may read them, deduplicates within one request, keeps a client-memory copy for its `stale` window, and stores nothing server-side across requests. `use cache: remote` is for justified durable shared cache and cannot nest with `use cache: private`.
+- Pair every `use cache` scope with `cacheLife`; without one the implicit `default` profile applies.
+- With Cache Components, prefer `io()` over `connection()`: `io()` leaves the static shell while staying cacheable and prefetchable, and `connection()` is for work that must wait for a real user request. `unstable_noStore` is legacy-only.
+- `navigation()` and `prefetch()` (v16.4) defer expensive work to a later navigation stage; `ensureStatic` (v16.4) requires a static shell, prefetch, or navigation output.
+- Edge Runtime is deprecated: remove the `runtime` export, and under Cache Components remove `runtime = 'nodejs'` as well.
 - Server Actions are Server Functions invoked from UI/forms/events; treat each one as a reachable POST surface and re-check auth/authz inside it.
+- Next.js dispatches Server Actions one at a time per client, so client-side `Promise.all` does not parallelize them. `updateTag`, `revalidatePath`, `refresh`, cookie mutation, and `redirect` re-render the current route in the same response; `revalidateTag` with a stale-while-revalidate profile does not.
 - Official data-security guidance recommends a server-only DAL, authorization checks, and minimal DTOs for sensitive data. Server Components may query an ORM/database directly when the boundary is safe, but local architecture can still require a DAL for non-trivial logic.
-- `updateTag` is Server Action-only for read-your-own-writes; `revalidateTag` works in Server Actions and Route Handlers and should use a second argument such as `'max'` for stale-while-revalidate. The single-argument form is deprecated.
+- `updateTag` is Server Action-only for read-your-own-writes; `revalidateTag` works in Server Functions and Route Handlers and should use a second argument such as `'max'` for stale-while-revalidate. The single-argument form is deprecated. Neither runs in Client Components or Proxy.
 - Route Handlers are for HTTP-native endpoints and support standard Web `Request`/`Response` APIs plus method exports. With Cache Components, `GET` handlers follow the same prerendering model as UI routes and `use cache` must live in a helper, not directly in the handler body.
-- The old `middleware` convention is deprecated in favor of `proxy.ts`; Proxy is a last-resort network-boundary tool, defaults to Node.js runtime, and must use static, narrow matchers.
-- Drizzle schema/config/migrations and connection lifecycle are independent DB architecture concerns; keep them in `rules/db.md`, not hidden inside generic services guidance.
+- The old `middleware` convention is deprecated in favor of `proxy.ts`; Proxy is a last-resort network-boundary tool, defaults to Node.js runtime, rejects a `runtime` export, and must use static, narrow matchers.
+- `catchError` from `next/error` (stable in v16.3) gives component-level error boundaries that coexist with `redirect()` and `notFound()`.
+- With Cache Components, navigation keeps state through React `<Activity mode="hidden">`: state survives, effects are cleaned up while hidden and recreated when visible.
+- Drizzle schema/config/migrations and connection lifecycle are independent DB architecture concerns; keep them in `rules/db.md`, not hidden inside generic services guidance. Pin `drizzle-orm >= 0.45.2` and run `drizzle-kit check` when several branches touch the schema.
 
 ---
 
@@ -81,10 +88,15 @@ Never report `src/modules`, `src/services`, `src/db`, `src/server`, `src/integra
 | Services | Returning raw DB rows or provider payloads across client-visible boundaries |
 | Drizzle | Running migrations from request lifecycle code or hiding schema/config drift |
 | Cache Intent | Relying on implicit caching or dynamic rendering without understanding why |
-| Cache Components | Reading runtime request APIs inside a `use cache` scope instead of passing serializable inputs or a justified experimental `use cache: private` exception |
-| Cache Components | Adding `unstable_noStore` for new dynamic work instead of `connection()` |
+| Cache Components | Reading runtime request APIs inside a `use cache` scope instead of passing serializable inputs; `use cache: private` is the supported escape hatch, but only when refactoring the runtime read out is impractical |
+| Cache Components | Adding `unstable_noStore` for new dynamic work instead of `io()` or `connection()` |
+| Cache Components | Shipping `cacheComponents: true` without `partialPrefetching` in a new or migrated app |
+| Cache Components | Removing content from the static shell with `connection()` when `io()` would do, because `connection()` blocks prefetches |
 | Server Actions | Trusting client input, skipping auth/authz, or returning raw internal objects |
+| Server Actions | Parallelizing Server Actions from the client with `Promise.all`; dispatch is sequential per client |
+| Server Actions | Leaving `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` unstable across instances in a multi-instance deployment |
 | Freshness | Redirecting before necessary revalidation/tag update or omitting freshness entirely |
+| Freshness | Assuming `revalidateTag` with a stale-while-revalidate profile re-renders the current route in the action response |
 | Route Handlers | Using `route.ts` as default internal RPC when a Server Action or Server Component is right |
 | Route Handlers | Using `NextResponse.next()` inside a Route Handler |
 | Proxy | Adding `proxy.ts` when `next.config.*` or render-time logic is enough |
@@ -103,9 +115,16 @@ Never report `src/modules`, `src/services`, `src/db`, `src/server`, `src/integra
 | Services | Validate, authorize, and shape DTOs in Server Actions or delegated server-only services |
 | Hooks | Keep hooks as client orchestration only; do not cross server/data layers |
 | DB | Keep Drizzle client/schema/repositories server-only and make `drizzle.config.ts` schema/out explicit |
-| Cache | State whether data/UI is uncached, cached with `use cache`, remotely/private cached by exception, tag-revalidated, path-revalidated, or refreshed |
+| Cache | State whether data/UI is uncached, cached with `use cache`, remotely/privately cached, tag-revalidated, path-revalidated, or refreshed |
+| Cache | Pair every `use cache` scope with an explicit `cacheLife` profile or inline value |
+| Cache | Enable `cacheComponents` and `partialPrefetching` together; `partialPrefetching` alone fails config validation |
+| Prerendering | Use `io()` to drop synchronous values from the static shell; reserve `connection()` for work that must wait for a real request |
+| Prerendering | Use `navigation()`, `prefetch()`, or `ensureStatic` deliberately when a route needs staged or guaranteed static output |
 | Auth | Re-check authentication and authorization inside each Server Action or delegated server-only layer |
 | Platform | Keep env handling, route segment config, Proxy, and Next config explicit |
+| Platform | Remove `runtime` exports (including `runtime = 'nodejs'` under Cache Components) rather than selecting a runtime |
+| Platform | Verify `experimental.serverActions.allowedOrigins` and `bodySizeLimit` for proxied or upload-heavy deployments |
+| Errors | Use `catchError` for component-level recovery and `retry()` for re-fetching failed server work |
 | Reporting | Label repo-local conventions as conventions, not framework law |
 | Shared folders | New touched shared code under `src/modules`, `src/lib`, `src/services`, `src/db`, `src/server`, `src/integrations`, `src/config`, `lib`, or `services` uses nested domain/provider grouping unless an explicit exception is recorded |
 
@@ -117,7 +136,8 @@ Never report `src/modules`, `src/services`, `src/db`, `src/server`, `src/integra
 2. Is this code server-only, client-interactive, shared, cached, or request-time dynamic?
 3. Does this need HTML/UI rendering, an internal UI mutation, or an HTTP-native endpoint?
 4. Should the read be uncached, cached with `use cache`, revalidated by tag/path, or refreshed after mutation?
-5. Does the change affect deployment-sensitive config such as env, Proxy, runtime, route segment config, or Server Action origins?
+5. Which navigation stage should carry the work: App Shell, per-link prefetch, navigation, or a real request?
+6. Does the change affect deployment-sensitive config such as env, Proxy, runtime, route segment config, or Server Action origins?
 
 Default surface order:
 
@@ -140,7 +160,7 @@ Default surface order:
 - `rules/server-actions.md`
 - `rules/route-handlers.md`
 - `rules/platform.md`
-- `references/official/current-docs-2026-06-02.md`
+- `references/official/current-docs-2026-11-04.md`
 - `references/official/nextjs-docs.md`
 - `references/official/drizzle-docs.md`
 

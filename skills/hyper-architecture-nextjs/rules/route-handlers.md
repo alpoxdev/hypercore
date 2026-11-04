@@ -27,7 +27,7 @@ If a mutation originates from app UI, assume Server Action first and justify `ro
 - A `route.ts` file supports standard HTTP method exports: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, and `OPTIONS`.
 - Route Handlers use Web `Request` / `Response` APIs, with `NextRequest` / `NextResponse` when Next.js helpers are needed.
 - Dynamic segment `params` are promise-shaped in current App Router examples; await them before use or use the global `RouteContext<'/route/[id]'>` helper for typed params.
-- Route Handlers share route segment config, but with `cacheComponents` enabled the v16 removed options (`dynamic`, `revalidate`, `fetchCache`) must not be used.
+- Route Handlers share route segment config, but with `cacheComponents` enabled the v16 removed options (`dynamic`, `dynamicParams`, `revalidate`, `fetchCache`) must not be used, and the `runtime` export must be removed as well.
 - Route Handlers are not cached by default in the previous model; only `GET` can opt into caching. Other methods are not cached even when colocated with cached `GET`.
 - With Cache Components enabled, `GET` Route Handlers follow the same prerendering model as UI routes: request-time by default, prerenderable when no uncached/runtime data is accessed, and cacheable through helper functions marked `use cache`.
 
@@ -48,6 +48,8 @@ If a mutation originates from app UI, assume Server Action first and justify `ro
 - In the previous caching model, cache `GET` handlers only with explicit route config such as `dynamic = 'force-static'` or another documented strategy.
 - With Cache Components enabled, `GET` handlers follow the UI-route prerendering model; put `use cache` in helper functions and use `cacheLife` / `cacheTag` where appropriate.
 - For freshness, state whether you use `cacheTag`, `revalidateTag(tag, 'max')`, `revalidateTag(tag, { expire: 0 })` for webhook-like immediate expiry, `revalidatePath`, or another explicit strategy.
+- `updateTag` and `refresh` are Server Action-only, so a webhook Route Handler cannot use them. Use `revalidateTag(tag, { expire: 0 })` when the invalidation must be immediate.
+- `revalidateTag` cannot be called from Proxy, so cache invalidation that a webhook needs has to run in the handler itself.
 - Do not rely on undocumented `GET` caching defaults for correctness-critical endpoints.
 
 ## Decision Rule
@@ -69,4 +71,4 @@ Choose:
 
 ## Sources
 
-> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04 against `https://nextjs.org/docs/app/getting-started/route-handlers`, `https://nextjs.org/docs/app/api-reference/file-conventions/route`, `https://nextjs.org/docs/app/api-reference/functions/revalidateTag`, and `https://nextjs.org/docs/app/api-reference/functions/updateTag`. The dated snapshot is `references/official/current-docs-2026-11-04.md`.

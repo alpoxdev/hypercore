@@ -36,6 +36,8 @@ app/
 | `forbidden.tsx` / `unauthorized.tsx` | Experimental auth interruption UI; `experimental.authInterrupts`와 명시적 risk acceptance 필요 |
 | `route.ts` | HTTP-native Route Handler |
 
+컴포넌트 단위 에러 복구는 파일 관례가 아닙니다. `next/error`의 `catchError`(`v16.3` stable)는 `redirect()`와 `notFound()`와 공존하는 error boundary로 컴포넌트 tree 일부를 감싸고, fallback은 실패한 server 작업을 다시 받아오는 `retry()`를 받습니다. 경계가 route 세그먼트보다 잘아야 할 때 씁니다.
+
 ## Non-Routable Organization
 
 | Pattern | Meaning |
@@ -70,7 +72,8 @@ route segment가 되면 안 되는 colocated implementation files에는 private 
 
 ## Error and Loading Boundaries
 
-- `error.tsx`는 Client Component여야 합니다.
+- `error.tsx`는 Client Component여야 하고, 실패한 server render 뒤 세그먼트를 다시 렌더링하는 `retry()`를 받습니다.
+- `catchError`는 세그먼트 하위 경계를 맡습니다. `error.tsx` default export는 이미 프레임워크 error boundary 안에서 렌더링되므로 `catchError`로 감싸지 않습니다.
 - `loading.tsx`는 segment-level streaming fallback에 적합합니다.
 - blocking work가 tree 깊은 곳에 있으면 segment root `loading.tsx`에만 맡기지 말고 더 가까운 `<Suspense>` boundary를 선호합니다.
 - missing resource flow에는 `notFound()`와 `not-found.tsx`를 사용합니다.
@@ -91,4 +94,4 @@ route segment가 되면 안 되는 colocated implementation files에는 private 
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Next.js 동작은 `references/official/nextjs-docs.md`(last verified 2026-05-24)와 `references/official/current-docs-2026-06-02.md`(스냅샷 날짜 2026-06-02)에 위임합니다. 저장소 로컬 링크 확인 2026-09-21.
+> 확인 2026-11-04. `https://nextjs.org/docs/app/api-reference/file-conventions`, `https://nextjs.org/docs/app/api-reference/functions/catchError`, `https://nextjs.org/docs/app/api-reference/file-conventions/error`, `https://nextjs.org/docs/app/getting-started/project-structure`를 확인했습니다. 날짜가 붙은 스냅숏은 `references/official/current-docs-2026-11-04.md`입니다.

@@ -57,6 +57,18 @@ Responsibilities that should stay server-side:
 - raw DB row shaping for security-sensitive output
 - Route Handler or Server Action replacement for public HTTP contracts
 
+## Navigation and Effect Lifecycle
+
+With Cache Components enabled, a route you navigate away from is hidden with React `<Activity mode="hidden">` rather than unmounted. Hooks must be written for that model:
+
+- Effects and subscriptions are cleaned up when the route is hidden and recreated when it becomes visible again. A hook that registers a listener once per component lifetime loses it after a navigation and never restores it unless it is effect-based.
+- Local state survives a round trip, so a hook that expects a closed dropdown or a cleared draft after navigation will not see that reset. Trigger the reset explicitly on the visibility transition when the UX needs it.
+- Do not rely on hidden routes staying mounted forever; Next.js keeps only a few recently visited routes hidden.
+
+## Server Action Invocation State
+
+Server Actions are dispatched one at a time per client, so a client hook cannot assume two calls run concurrently. A hook that fires several actions from one handler gets queued execution, and `Promise.all` does not change that. Sequence dependent writes through one composite action, or accept that later calls wait.
+
 ## Internal Order
 
 For touched non-trivial hooks, prefer a consistent order:
@@ -79,9 +91,11 @@ export const useInvoices = (): UseInvoicesReturn => {
 - [ ] Hook imports no DB client, Drizzle schema, private env, `server-only`, `cookies()`, `headers()`, or privileged provider client.
 - [ ] Initial Server Component data is not refetched client-side without a browser-only reason.
 - [ ] Server Action calls still validate and authorize server-side; hook-level checks are UX aids only.
+- [ ] Hook does not assume parallel Server Action dispatch or a fresh mount after navigation.
+- [ ] Effects re-register after a hidden route becomes visible again.
 - [ ] Hook returns client-safe DTO/view state, not internal records.
 - [ ] Segment-local hooks stay in `_hooks/`; cross-route hooks move to a shared domain/component folder.
 
 ## Sources
 
-> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04 against `https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents`, `https://nextjs.org/docs/app/guides/preserving-ui-state`, `https://nextjs.org/docs/app/guides/server-actions`, and `https://nextjs.org/docs/app/getting-started/server-and-client-components`. The dated snapshot is `references/official/current-docs-2026-11-04.md`.

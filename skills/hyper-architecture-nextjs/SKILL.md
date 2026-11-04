@@ -16,7 +16,7 @@ compatibility: Works best with repo inspection, official Next.js docs verificati
 @rules/db.md
 @rules/platform.md
 @rules/validation.md
-@references/official/current-docs-2026-06-02.md
+@references/official/current-docs-2026-11-04.md
 @references/official/nextjs-docs.md
 @references/official/drizzle-docs.md
 
@@ -35,10 +35,9 @@ Use a different language only when the user explicitly requests it, an existing 
 <purpose>
 
 - Confirm a repository is a Next.js project and identify App Router, Pages Router, or mixed mode before enforcing architecture rules.
-- Enforce official Next.js behavior for file conventions, Server/Client Component boundaries, data/cache behavior, Server Actions, Route Handlers, Proxy, and env/platform safety.
+- Enforce official Next.js behavior for file conventions, Server/Client Component boundaries, data/cache behavior (Cache Components is the recommended default since 16.4), Server Actions, Route Handlers, Proxy, and env/platform safety.
 - Apply Hypercore/repo-local conventions for nested shared folders such as `src/modules/<domain>/`, `src/services/<domain>/`, `src/db/<area>/`, `src/server/<area>/`, `src/integrations/<provider>/`, and `src/config/<area>/` without presenting them as official Next.js law.
-- Route Drizzle, DAL/service boundaries, and client hook orchestration to focused rule files instead of bloating this entrypoint.
-- Keep version-sensitive official facts in `references/official/` so the core skill stays lean and current docs can be refreshed independently.
+- Route Drizzle, DAL/service boundaries, and client hook orchestration to focused rule files, and keep version-sensitive official facts in `references/official/` so the core stays lean.
 
 </purpose>
 
@@ -87,10 +86,8 @@ Negative examples:
 
 Boundary examples:
 
-- "Make a tiny copy-only text change in a Next.js page."
-  Direct editing can be enough if no architectural boundary is affected, but touched files still need a quick boundary check.
-- "This repo is Pages Router only and I am not migrating to App Router."
-  Apply shared Next.js platform, env, and server/client safety checks; relax App Router-only file conventions.
+- "Make a tiny copy-only text change in a Next.js page." Direct editing can be enough if no architectural boundary is affected, but touched files still need a quick boundary check.
+- "This repo is Pages Router only and I am not migrating to App Router." Apply shared Next.js platform, env, and server/client safety checks; relax App Router-only file conventions.
 
 </activation_examples>
 
@@ -107,7 +104,9 @@ Router mode picks the rule set; the table in `architecture-rules.md` § Project 
 | Add client orchestration around a Server Action | Client hook calling the action | Hook importing DB/DAL/server-only code |
 | Add domain logic, provider calls, or authorization | Server-only service/DAL layer | Route file or Client Component ownership |
 | Add Drizzle schema, migrations, repositories, or DB client | `rules/db.md` + server-only `src/db` convention | Client hooks or Route Handler request lifecycle |
-| Cache repeatable data/UI in Next.js 16+ | `cacheComponents` + `use cache` / `cacheTag` / `cacheLife` | stale `fetch` default assumptions |
+| Cache repeatable data/UI in Next.js 16.4+ (recommended default) | `cacheComponents` + `partialPrefetching` + `use cache` / `cacheTag` / `cacheLife` | stale `fetch` default assumptions |
+| Keep synchronous values out of the static shell | `io()` inside `<Suspense>` | `connection()` where `io()` would stay cacheable |
+| Stage expensive work behind the App Shell or navigation | `prefetch()`, `navigation()`, `ensureStatic` | unprefetched blocking work |
 | Refresh UI after mutation | `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, or redirect flow | undocumented freshness |
 | Redirect/rewrite before render across many requests | `next.config.*` first, then Proxy if needed | Proxy as generic middleware |
 | Pages Router only and no migration requested | shared Next.js checks | App Router-only file rules |
@@ -116,25 +115,19 @@ Router mode picks the rule set; the table in `architecture-rules.md` § Project 
 
 <skill_architecture>
 
-- Core (`SKILL.md`): trigger, contract, gate order, verification, stop condition.
-- Rules: `architecture-rules.md` (taxonomy and gate summary), plus eleven topic files listed in `reference_routing`.
-- References: `references/official/current-docs-2026-06-02.md`, `nextjs-docs.md`, `drizzle-docs.md` hold dated official facts. `assets/evals/hyper-architecture-nextjs-cases.jsonl` holds trigger and behavior cases.
-- The skill is self-contained; it needs no other skill's path, document, or invocation.
+- Core (`SKILL.md`): trigger, contract, gate order, verification, stop condition. Rules: `architecture-rules.md` (taxonomy and gate summary) plus the eleven topic files listed in `reference_routing`.
+- References: `references/official/current-docs-2026-11-04.md`, `nextjs-docs.md`, `drizzle-docs.md` hold dated official facts; `assets/evals/hyper-architecture-nextjs-cases.jsonl` holds trigger and behavior cases.
+- The skill is self-contained and needs no other skill's path, document, or invocation.
 
 ## Available scripts
 
-- `scripts/validate-hyper-architecture-nextjs-skill.sh`
-  - Purpose: validate this skill folder anatomy, required files, official-baseline phrases, and Korean sibling parity.
-  - Usage: `bash skills/hyper-architecture-nextjs/scripts/validate-hyper-architecture-nextjs-skill.sh` from the repository root.
-  - Requires: bash 3.2+ and jq 1.6+.
-  - Output: a JSON summary with `ok`, line and file counts, and the executed check names; non-zero exit on failure.
+`scripts/validate-hyper-architecture-nextjs-skill.sh` validates folder anatomy, required files, official-baseline phrases, and Korean sibling parity. Run `bash skills/hyper-architecture-nextjs/scripts/validate-hyper-architecture-nextjs-skill.sh` from the repository root (bash 3.2+, jq 1.6+); it prints a JSON summary and exits non-zero on failure.
 
 </skill_architecture>
 
 <loop_policy>
 
-- No optimization loop. One enforcement pass per request: gates, edits, verification.
-- Verification runs once per request; a second pass happens only on a new user request or a reported failure, and re-runs only the checks tied to the touched surface. Findings come from the gate tables and project checks, never from re-reading the same diff until it feels right.
+No optimization loop. One enforcement pass per request: gates, edits, verification. Verification runs once per request; a second pass happens only on a new request or a reported failure and re-runs only the checks tied to the touched surface. Findings come from the gate tables and project checks, not from rereading the same diff.
 
 </loop_policy>
 
@@ -161,7 +154,7 @@ Read `architecture-rules.md` first, always. Then read only the files for the tou
 | Drizzle schema, migrations, connection lifecycle, server-only DB placement | `rules/db.md` |
 | Env, `next.config.*`, `typedRoutes`, Proxy, route segment config, deployment settings | `rules/platform.md` |
 | Post-change checks for the touched surface | `rules/validation.md` |
-| Next.js behavior that may have drifted since the snapshot | `references/official/current-docs-2026-06-02.md`, then `references/official/nextjs-docs.md`; `references/official/drizzle-docs.md` for Drizzle claims |
+| Next.js behavior that may have drifted since the snapshot | `references/official/current-docs-2026-11-04.md`, then `references/official/nextjs-docs.md`; `references/official/drizzle-docs.md` for Drizzle claims |
 
 Fetch `https://r.jina.ai/https://nextjs.org/docs/...` only when the two official snapshots disagree or the page must be read as markdown.
 
@@ -172,7 +165,7 @@ Fetch `https://r.jina.ai/https://nextjs.org/docs/...` only when the two official
 1. `architecture-rules.md` before any finding or edit.
 2. The topic rule for the touched surface, in `reference_routing` order.
 3. `rules/validation.md` when the change is written and needs its checks.
-4. The official snapshots — `current-docs-2026-06-02.md` then `nextjs-docs.md` — only when framework behavior is version-sensitive; `drizzle-docs.md` only when a Drizzle claim is in scope.
+4. The official snapshots — `current-docs-2026-11-04.md`, then `nextjs-docs.md`, then `drizzle-docs.md` for a Drizzle claim — only when framework behavior is version-sensitive.
 
 </support_file_read_order>
 
@@ -219,9 +212,13 @@ Phase 2 — gates. Brownfield rule: do not fail untouched legacy deviations by d
 |---|---|
 | Initial UI data fetched in a Client Component without client-only need | BLOCKED |
 | Cache behavior is accidental, undocumented, or based on stale defaults | BLOCKED |
-| `cacheComponents` enabled but uncached runtime data lacks `use cache`, `connection()`, `loading.tsx`, or `<Suspense>` intent | BLOCKED |
-| `use cache` reads `cookies()` / `headers()` inside the cached scope instead of receiving serializable arguments | BLOCKED unless explicitly using justified experimental `use cache: private` |
-| `unstable_noStore` added for new App Router work instead of `connection()` | BLOCKED unless maintaining legacy code |
+| `cacheComponents` enabled but uncached runtime data lacks `use cache`, `io()`, `loading.tsx`, or `<Suspense>` intent | BLOCKED |
+| `cacheComponents` enabled without `partialPrefetching`, or `partialPrefetching` without `cacheComponents` | BLOCKED |
+| `use cache` scope has no `cacheLife` and the effective lifetime cannot be stated | BLOCKED |
+| `use cache` reads `cookies()` / `headers()` inside the cached scope instead of receiving serializable arguments | BLOCKED unless `use cache: private` is justified because the runtime read cannot move outward |
+| `connection()` used to leave the static shell where `io()` would keep the output cacheable and prefetchable | WARNING |
+| `use cache: private` nested with `use cache: remote`, or used with no runtime-read reason | BLOCKED |
+| `unstable_noStore` added for new App Router work instead of `io()` or `connection()` | BLOCKED unless maintaining legacy code |
 | Mutation lacks `updateTag`, `revalidateTag`, `revalidatePath`, `refresh`, redirect freshness, or documented alternative | BLOCKED |
 
 ### Gate 4: Server Actions
@@ -234,6 +231,9 @@ Phase 2 — gates. Brownfield rule: do not fail untouched legacy deviations by d
 | Action returns raw DB rows or broad internal objects | BLOCKED |
 | Action bypasses a needed server-only service/DAL boundary for authz, DTO shaping, or provider orchestration | WARNING/BLOCKED by risk |
 | `redirect()` runs before required revalidation or tag update | BLOCKED |
+| Client code assumes parallel Server Action dispatch, or uses `Promise.all` to achieve it | BLOCKED |
+| Action expects `revalidateTag(tag, 'max')` to re-render the current route in its response | BLOCKED |
+| `updateTag` or `refresh` called outside a Server Action | BLOCKED |
 
 ### Gate 5: Route Handlers and Proxy
 
@@ -254,9 +254,9 @@ Phase 2 — gates. Brownfield rule: do not fail untouched legacy deviations by d
 | `.env*` files assumed to load from `src/` | BLOCKED |
 | Client code reads non-`NEXT_PUBLIC_` env vars | BLOCKED |
 | Runtime client env treated as build-time public env | BLOCKED |
-| Removed v16 route segment config options (`dynamic`, `revalidate`, `fetchCache`) used while `cacheComponents` is enabled | BLOCKED |
-| `runtime: 'edge'` or Proxy runtime assumptions changed without platform compatibility checks | BLOCKED |
-| Deployment-sensitive Server Action origin/config changes are undocumented | WARNING/BLOCKED by risk |
+| Removed v16 route segment config options (`dynamic`, `dynamicParams`, `revalidate`, `fetchCache`) used while `cacheComponents` is enabled | BLOCKED |
+| `runtime` export added or kept, including `runtime: 'edge'` or `runtime: 'nodejs'` under `cacheComponents` | BLOCKED |
+| Deployment-sensitive Server Action origin, body-size, or encryption-key changes are undocumented | WARNING/BLOCKED by risk |
 
 Phase 3 — implementation policy. Auto-fix local, reversible issues: narrow client boundaries, move server-only code behind a DAL/helper, add `server-only`, add missing freshness, replace UI-only `route.ts` mutations with small Server Actions, tighten Proxy matcher, and clarify cache intent. Do not auto-apply broad migrations: Pages→App Router rewrites, sweeping cache model changes, mass Route Handler→Server Action conversions, or deployment-sensitive origin/encryption changes.
 

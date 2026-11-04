@@ -36,6 +36,8 @@ app/
 | `forbidden.tsx` / `unauthorized.tsx` | Experimental auth interruption UI; requires `experimental.authInterrupts` and explicit risk acceptance |
 | `route.ts` | HTTP-native Route Handler |
 
+Component-level error recovery is not a file convention. `catchError` from `next/error` (stable in `v16.3`) wraps part of the component tree in an error boundary that cooperates with `redirect()` and `notFound()`, and its fallback receives `retry()` to re-fetch failed server work. Use it when the boundary is finer-grained than a route segment.
+
 ## Non-Routable Organization
 
 | Pattern | Meaning |
@@ -70,7 +72,8 @@ Use private folders for colocated implementation files that must not become rout
 
 ## Error and Loading Boundaries
 
-- `error.tsx` must be a Client Component.
+- `error.tsx` must be a Client Component and receives `retry()` to re-render the segment after a failed server render.
+- `catchError` covers sub-segment boundaries; do not wrap an `error.tsx` default export with it, because that file already renders inside a framework error boundary.
 - `loading.tsx` is best for segment-level streaming fallbacks.
 - If the blocking work is deep inside the tree, prefer a closer `<Suspense>` boundary instead of pushing all fallback responsibility to the segment root.
 - Use `notFound()` with `not-found.tsx` for missing resource flows.
@@ -90,4 +93,4 @@ Use private folders for colocated implementation files that must not become rout
 
 ## Sources
 
-> No external sources were used in this file. Official Next.js behavior is delegated to `references/official/nextjs-docs.md` (last verified 2026-05-24) and `references/official/current-docs-2026-06-02.md` (snapshot dated 2026-06-02). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04 against `https://nextjs.org/docs/app/api-reference/file-conventions`, `https://nextjs.org/docs/app/api-reference/functions/catchError`, `https://nextjs.org/docs/app/api-reference/file-conventions/error`, and `https://nextjs.org/docs/app/getting-started/project-structure`. The dated snapshot is `references/official/current-docs-2026-11-04.md`.
