@@ -10,7 +10,7 @@
 |---|---|---|
 | Request middleware uses `createMiddleware()` by default | Official | Do not force function-only syntax for request middleware |
 | Server function middleware uses `createMiddleware({ type: 'function' })` | Official | Block wrong middleware type when `.client(...)`, `.validator(...)`, or server-function-only behavior is used |
-| Server function middleware validation uses `.validator(...)` | Official | `.inputValidator(...)` is the deprecated alias that still works; keep middleware and server-function validation chains conceptually separate |
+| Server function middleware validation uses `.validator(...)` | Official | Block `.inputValidator(...)`, removed in 1.169.0; keep middleware and server-function validation chains conceptually separate |
 | `sendContext` is explicit and not automatic | Official | Validate before trust |
 | Validate client-provided context server-side | Safety policy | Block unvalidated trust |
 | The session principal comes from a server-trusted source, never from `sendContext` | Safety policy | Block authorization decisions taken on client-supplied values |
@@ -34,7 +34,7 @@ TanStack Start has two middleware types:
 | Check | Rule |
 |------|------|
 | Request middleware written with function-only behavior? | BLOCKED. Use `createMiddleware({ type: 'function' })` |
-| Server function middleware validation written as `.inputValidator(...)`? | DEPRECATED, not blocked. `.validator(...)` is canonical; the alias still works, so migrate it only in code you are already touching |
+| Server function middleware validation written as `.inputValidator(...)`? | BLOCKED. The alias was removed from `createMiddleware` in 1.169.0; `.validator(...)` is the only spelling |
 | Dynamic data sent from client via `sendContext` and used on the server without validation? | BLOCKED |
 | A `sendContext` value treated as authorization because it passed shape validation? | BLOCKED. A parsed identifier is well-formed, not authorized; verify the session principal's access separately |
 | Middleware mutates context implicitly instead of returning `next({ context: ... })`? | BLOCKED |
@@ -50,6 +50,8 @@ TanStack Start has two middleware types:
 - Use client middleware `sendContext` only for data that is actually needed on the server
 - Validate client-provided `sendContext` on the server before trusting it
 - Use `createStart(() => ({ requestMiddleware: [...] }))` in `src/start.ts` for global request middleware
+- When the global request middleware array installs CSRF protection, filter it to server functions with `filter: (ctx) => ctx.handlerType === 'serverFn'`. The unfiltered default validates every request the middleware handles, including SSR page requests and server routes
+- A route guard is not a data authorization boundary. `beforeLoad` and middleware can keep a user off a page, but anything a server function or server route returns still needs its own check against the session principal
 
 ---
 
@@ -124,4 +126,4 @@ const workspaceGuard = createMiddleware({ type: 'function' })
 
 ## Sources
 
-> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, and `references/official/current-docs-2026-09-22.md` (official facts verified 2026-09-22). Repository-local links checked 2026-09-22.
+> Sources checked 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/guide/middleware.md> (middleware types, `sendContext`, "shape validation is not authorization", CSRF `filter`, middleware `handlerType`), <https://tanstack.com/start/latest/docs/framework/react/guide/authentication-server-primitives.md> ("A route guard is not a data authorization boundary."), <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md> (`.inputValidator()` removal). Official TanStack behavior is otherwise delegated to this package's own snapshots: `references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, and `references/official/current-docs-2026-11-04.md` (official facts verified 2026-11-04). Repository-local links checked 2026-11-04.

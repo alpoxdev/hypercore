@@ -31,6 +31,7 @@ Do not guess where code runs. In TanStack Start:
 |------|------|
 | `loader` directly reads secrets, DB, filesystem, or privileged SDKs? | BLOCKED. Move to `createServerFn` or `createServerOnlyFn` |
 | Client-reachable code reads secret values directly from `process.env`? | BLOCKED |
+| Module-scope `process.env` read in server code? | BLOCKED on edge SSR runtimes. Env is injected per request, so the read evaluates to `undefined` before the env exists |
 | Browser-only APIs (`window`, `localStorage`, `document`) used in server-capable code without guard or boundary? | BLOCKED |
 | Manual `typeof window` branching used where `createClientOnlyFn` / `createServerOnlyFn` / `createIsomorphicFn` is clearer? | WARNING. Prefer framework primitives |
 | Shared utility mixes server-only and client-only logic in one unbounded function? | BLOCKED. Split or use explicit environment function |
@@ -79,6 +80,7 @@ export const Route = createFileRoute('/users')({
 ## Security Rules
 
 - Secrets, DB clients, filesystem access, and privileged SDKs stay behind `createServerFn` or `createServerOnlyFn`
+- Read env per request: `process.env` belongs inside `.handler()`, middleware `.server()`, server-route handlers, or another per-request callback. This is a correctness rule as well as a leak rule — on Cloudflare Workers and other edge SSR runtimes a module-scope read is `undefined` even on the server, because env is injected at request time
 - Browser APIs stay behind `createClientOnlyFn`, `ClientOnly`, or client-only components/hooks
 - If code can be imported by the client, assume it is public unless import protection and execution boundaries prove otherwise
 
@@ -93,4 +95,4 @@ export const Route = createFileRoute('/users')({
 
 ## Sources
 
-> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, and `references/official/current-docs-2026-09-22.md` (official facts verified 2026-09-22). Repository-local links checked 2026-09-22.
+> Sources checked 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/guide/execution-model.md> (isomorphic-by-default, loaders are isomorphic), <https://tanstack.com/start/latest/docs/framework/react/guide/environment-variables.md> (read env per request, not at module scope). Official TanStack behavior is otherwise delegated to this package's own snapshots: `references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, and `references/official/current-docs-2026-11-04.md` (official facts verified 2026-11-04). Repository-local links checked 2026-11-04.

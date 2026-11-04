@@ -12,9 +12,9 @@ Brownfield adoption: touched files must satisfy applicable safety rules and curr
 
 ## Source Priority
 
-1. `references/official/current-docs-2026-09-22.md`
-2. `references/official/tanstack-start-2026-09-22.md`
-3. `references/official/tanstack-router-2026-09-22.md`
+1. `references/official/current-docs-2026-11-04.md`
+2. `references/official/tanstack-start-2026-11-04.md`
+3. `references/official/tanstack-router-2026-11-04.md`
 4. `references/official/api-drift-notes.md`
 5. Topic rules under `rules/`
 6. Project-local package types and tests when installed versions differ
@@ -25,8 +25,8 @@ Brownfield adoption: touched files must satisfy applicable safety rules and curr
 |---|---|---|
 | Loader boundaries | Official + Safety policy | A loader assumes server-only execution or reads secrets/DB/filesystem directly |
 | Server functions | Official + Safety policy | Mutation input is not validated at runtime, handler is missing, installed package/API version is not respected, or auth-required RPC lacks its own auth boundary |
-| Import protection | Official + Safety policy (Official page status: **Experimental**) | Import protection is disabled, config is overwritten, or server/client-only imports leak outside compiler-recognized boundaries |
-| Middleware | Official + Safety policy | Client `sendContext` is trusted server-side without runtime validation, or a `sendContext` value selects which rows are read or written without a separate authorization check (Official: "shape validation is not authorization"; derive the session from a server-trusted source, never from `sendContext`) |
+| Import protection | Official + Safety policy | Import protection is disabled, config is overwritten, or server/client-only imports leak outside compiler-recognized boundaries |
+| Middleware | Official + Safety policy | Client `sendContext` is trusted server-side without runtime validation; a `sendContext` value selects which rows are read or written without a separate authorization check (Official: "shape validation is not authorization"; derive the session from a server-trusted source, never from `sendContext`); or a route guard is treated as the data authorization boundary (Official: "A route guard is not a data authorization boundary") |
 | SSR/hydration | Official + Safety policy | First render includes unstable values without a stabilization/fallback strategy |
 | Server routes | Official + Hypercore convention | Internal app RPC is implemented as server routes instead of server functions without explicit justification |
 | Route export | Official | File routes do not export the route instance as `Route` |
@@ -60,9 +60,10 @@ Rules:
 
 - TanStack Router officially supports flat, directory, and mixed route structures. Hypercore prefers route directories for app pages.
 - TanStack Start docs show `src/routes`, `src/router.tsx`, generated `src/routeTree.gen.ts`, `public/`, and root `vite.config.ts` as the typical project shape; nested `src/modules`, `src/lib`, `src/integrations`, and similar shared folders are Hypercore/repo-local conventions.
-- TanStack Start import protection is enabled by default. Hypercore requires explicit extension when project-specific deny rules are needed.
+- TanStack Start is stable at 1.169 and requires Vite 8 with Node ≥22.12 when it builds with Vite; the 1.168 release-candidate line and Vite 7 are not supported targets.
+- TanStack Start import protection is enabled by default and its option surface is documented by the guide. Hypercore requires explicit extension when project-specific deny rules are needed.
 - TanStack Start server function wrappers are static-importable RPC entrypoints. Hypercore applies the official larger-app split between `.functions.ts` wrappers and `.server.ts` server-only helpers inside the `src/modules/<domain>/<feature>/` convention.
-- TanStack Router with Zod v4 can pass schemas directly to `validateSearch`; Zod v3 uses `@tanstack/zod-adapter`.
+- TanStack Router with Zod v4 passes schemas directly to `validateSearch`; `@tanstack/zod-adapter` is Zod v3 only and its peer range (`zod: ^3.23.8`) conflicts with Zod 4, so a Zod 4 project must not install it.
 - Server routes are an official Start feature; hypercore reserves them for HTTP semantics, not internal app RPC.
 - Publishing-only static pages do not require `-hooks/`, `-components/`, or `-functions/`. Add `-hooks/` or `-components/` when interactive UI grows; add `-functions/` only for route-only server actions.
 
@@ -105,7 +106,7 @@ Do not auto-apply broad or potentially breaking migrations without a clear user 
 |---|---|
 | `const Route = createFileRoute(...)` | `export const Route = createFileRoute(...)` |
 | Treating `loader` as server-only | Move privileged work behind `createServerFn` / `createServerOnlyFn` |
-| Zod v4 search params forced through adapter | Use direct schema unless project convention says adapter |
+| Zod v4 search params forced through adapter | Use the direct schema; the adapter's peer range excludes Zod 4 |
 | Zod v3 search params without adapter/fallback | Use `zodValidator` / `fallback` from `@tanstack/zod-adapter` |
 | Server function mutation without runtime validation | Add `.validator(...)` before `.handler(...)` |
 | Auth-required server function relies only on route `beforeLoad` | Add server function middleware or handler-level auth check |
@@ -122,4 +123,4 @@ A change is complete only when `rules/validation.md` passes and any remaining of
 
 ## Sources
 
-> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, and `references/official/current-docs-2026-09-22.md`, plus the decision log `references/official/api-drift-notes.md`. Official facts verified 2026-09-22; repository-local links checked 2026-09-22.
+> Sources checked 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/overview.md> (stable status), <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md> (removed APIs, Vite 8), <https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md> (defaults), <https://tanstack.com/router/latest/docs/how-to/validate-search-params.md> (Zod v4 direct schema), <https://registry.npmjs.org/@tanstack/zod-adapter/latest> (Zod v3 peer range). Everything else is delegated to this package's own snapshots: `references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, and `references/official/current-docs-2026-11-04.md`, plus the decision log `references/official/api-drift-notes.md`. Official facts verified 2026-11-04; repository-local links checked 2026-11-04.

@@ -10,7 +10,7 @@
 |---|---|---|
 | Request middleware는 default로 `createMiddleware()` 사용 | Official | request middleware에 function-only syntax를 강제하지 않음 |
 | Server function middleware는 `createMiddleware({ type: 'function' })` 사용 | Official | `.client(...)`, `.validator(...)`, server-function-only behavior가 쓰이면 잘못된 middleware type 차단 |
-| Server function middleware validation은 `.validator(...)` 사용 | Official | `.inputValidator(...)`는 아직 동작하는 폐기 별칭이며, middleware와 server-function validation chain은 개념적으로 분리 |
+| Server function middleware validation은 `.validator(...)` 사용 | Official | `.inputValidator(...)` 차단. 1.169.0에서 제거됐고, middleware와 server-function validation chain은 개념적으로 분리 |
 | `sendContext`는 명시적이며 자동 전송 아님 | Official | trust 전 validation |
 | client-provided context를 server-side 검증 | Safety policy | unvalidated trust 차단 |
 | session 주체는 서버가 신뢰하는 출처에서 얻고 `sendContext`에서는 얻지 않음 | Safety policy | 클라이언트가 보낸 값으로 권한을 판단하지 않음 |
@@ -34,7 +34,7 @@ TanStack Start에는 두 middleware type이 있습니다:
 | 확인 항목 | 규칙 |
 |------|------|
 | Request middleware가 function-only behavior를 사용함? | 차단. `createMiddleware({ type: 'function' })` 사용 |
-| Server function middleware validation을 `.inputValidator(...)`로 작성함? | 폐기. 차단은 아니며 `.validator(...)`가 정본입니다. 별칭은 아직 동작하므로 이미 건드리는 코드에서만 마이그레이션합니다 |
+| Server function middleware validation을 `.inputValidator(...)`로 작성함? | BLOCKED. 별칭은 1.169.0에서 `createMiddleware`에서 제거됐고 `.validator(...)`가 유일한 표기입니다 |
 | 클라이언트에서 `sendContext`로 보낸 동적 데이터를 서버에서 검증 없이 사용함? | 차단 |
 | shape validation을 통과했다는 이유로 `sendContext` 값을 권한 판단으로 사용함? | 차단. 파싱된 식별자는 형식이 맞을 뿐 권한이 증명된 것이 아니므로 session 주체의 접근 권한을 별도로 확인합니다 |
 | `next({ context: ... })` 대신 암묵적으로 context를 변형함? | 차단 |
@@ -50,6 +50,8 @@ TanStack Start에는 두 middleware type이 있습니다:
 - client middleware의 `sendContext`는 서버에 정말 필요한 데이터만 전송합니다
 - 클라이언트가 보낸 `sendContext`는 서버에서 반드시 검증 후 신뢰합니다
 - global request middleware는 `src/start.ts`에서 `createStart(() => ({ requestMiddleware: [...] }))`로 설정합니다
+- global request middleware 배열에 CSRF 보호를 넣을 때는 `filter: (ctx) => ctx.handlerType === 'serverFn'`으로 server function에 한정합니다. filter 없는 기본값은 middleware가 처리하는 모든 request(SSR page request, server route 포함)를 검증합니다
+- route guard는 data authorization 경계가 아닙니다. `beforeLoad`와 middleware가 page 접근을 막을 수는 있지만, server function이나 server route가 돌려주는 값은 session 주체에 대한 자체 검사를 거쳐야 합니다
 
 ---
 
@@ -124,4 +126,4 @@ const workspaceGuard = createMiddleware({ type: 'function' })
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, `references/official/current-docs-2026-09-22.md`, 공식 사실 검증일 2026-09-22)에 위임합니다. 저장소 로컬 링크 확인 2026-09-22.
+> 출처 확인 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/guide/middleware.md>(middleware 종류, `sendContext`, "shape validation is not authorization", CSRF `filter`, middleware `handlerType`), <https://tanstack.com/start/latest/docs/framework/react/guide/authentication-server-primitives.md>("A route guard is not a data authorization boundary."), <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md>(`.inputValidator()` 제거). 그 밖의 공식 TanStack 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, `references/official/current-docs-2026-11-04.md`, 공식 사실 검증일 2026-11-04)에 위임합니다. 저장소 로컬 링크 확인 2026-11-04.

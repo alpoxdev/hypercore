@@ -1,9 +1,13 @@
 # TanStack Router 공식 스냅샷
 
-- last_verified_at: 2026-09-22
-- next_re_verification: 2027-03-22 (또는 아래 Refresh Trigger가 먼저 발동하면 그때)
+- last_verified_at: 2026-11-04
+- next_re_verification: 2027-05-04 (또는 아래 Refresh Trigger가 먼저 발동하면 그때)
 - packages_checked:
-  - `@tanstack/react-router`: `1.170.38` (npm `latest` dist-tag, 2026-09-16 publish)
+  - `@tanstack/react-router`: `1.170.46` (npm `latest` dist-tag, 2026-10-22 publish)
+  - `@tanstack/router-plugin`: `1.168.48`
+  - `@tanstack/router-generator`: `1.167.46`
+  - `@tanstack/router-core`: `1.171.39`
+  - `@tanstack/zod-adapter`: `1.167.0`
 - source_priority: latest docs pages > API pages > examples
 
 Route, search, loader, context, SSR rules에 Router behavior가 영향을 줄 때 이 파일을 사용합니다.
@@ -82,12 +86,14 @@ Route, search, loader, context, SSR rules에 Router behavior가 영향을 줄 �
 ### Search parameter validation
 
 - `validateSearch`는 planning callback입니다. "It must be deterministic and side-effect-free for the same input; do not navigate or mutate application/router state from it."
-- Zod v4: Zod schema를 `validateSearch`에 직접 전달합니다. Adapter가 더 이상 필요하지 않습니다.
+- Zod v4: Zod schema를 `validateSearch`에 직접 전달합니다. "With Zod v4, you should directly use the schema in `validateSearch`"이며 adapter가 필요 없습니다. `@tanstack/zod-adapter`의 `peerDependencies`가 `zod: ^3.23.8`을 고정하므로 Zod 4와는 아예 함께 설치할 수 없습니다.
 - Zod v3: `@tanstack/zod-adapter`(`zodValidator`, `fallback`)를 사용합니다.
+- 문서 자체에 불일치가 하나 있습니다. middleware guide의 예시 하나가 아직 `zodValidator`를 import합니다. Zod 버전 분기는 `how-to/validate-search-params`와 `guide/search-params`를 기준으로 판단합니다.
 - Sources:
   - <https://tanstack.com/router/latest/docs/how-to/validate-search-params>
   - <https://tanstack.com/router/latest/docs/api/router/RouteOptionsType>
   - <https://tanstack.com/router/latest/docs/guide/search-params>
+  - <https://registry.npmjs.org/@tanstack/zod-adapter/latest>
 
 ### Route lifecycle, `beforeLoad`, and `loader`
 
@@ -115,8 +121,8 @@ Route, search, loader, context, SSR rules에 Router behavior가 영향을 줄 �
 - Router file naming conventions, route generation requirements, 또는 `routeToken` / `indexToken` / `routeFileIgnorePrefix` 기본값이 변경됨.
 - Zod/adapter usage에 대한 search validation guidance가 변경되거나 search 변환 API(`search.middlewares`)가 변경됨.
 - Loader / `beforeLoad` lifecycle, pending behavior, 또는 `staleReloadMode` semantics가 변경됨.
-- **공식 문서 페이지가 변경됨** — 그리고 pinned version에 대한 advisory check를 돌립니다. "Local package versions move materially"에 trigger를 걸지 **않습니다**. Router와 Start는 `1.x`에 머물면서 **patch** 릴리스에서 BREAKING 변경을 싣기 때문입니다(예: `@tanstack/react-router@1.170.19`, patch 릴리스가 export 약 20개를 제거). 따라서 version bump는 신뢰할 수 있는 drift 신호가 아닙니다.
+- **공식 문서 페이지가 변경됨**, 그리고 pinned version에 대한 advisory check를 돌립니다. "Local package versions move materially"에 trigger를 걸지 **않습니다**. Router와 Start는 `1.x`에 머물면서 patch 릴리스에서도 breaking change를 싣고, 반대로 여러 patch 릴리스가 동작 변화 없이 지나가기도 합니다. 1.170.41부터 1.170.46까지는 내부 composition과 link hydration 작업, 패키지 자체 agent skill 배포뿐이었습니다. 따라서 version bump는 어느 방향으로도 신뢰할 수 있는 drift 신호가 아닙니다.
 
 ## Sources
 
-> 출처 확인 2026-09-22. 이 snapshot이 `last_verified_at`으로 기록한 날짜이며, 위 모든 주장은 해당 주장 아래에 밝힌 TanStack Router(또는 Start) docs page를 근거로 합니다. 아래 각 페이지는 그날 HTTP 200으로 응답했고, cached copy를 다시 가져온 것이 아닙니다. `custom-route-directories`는 의도적으로 인용하지 않습니다. 그 페이지는 존재하지 않으며, file-based-routing config 표면은 `api/file-based-routing`에 있습니다.
+> 출처 확인 2026-11-04. 이 snapshot이 `last_verified_at`으로 기록한 날짜이며, 위 모든 주장은 해당 주장 아래에 밝힌 TanStack Router(또는 Start) docs page를 근거로 합니다. 아래 각 페이지는 그날 HTTP 200으로 응답했고, cached copy를 다시 가져온 것이 아닙니다. `custom-route-directories`는 의도적으로 인용하지 않습니다. 그 페이지는 존재하지 않으며, file-based-routing config 표면은 `api/file-based-routing`에 있습니다.

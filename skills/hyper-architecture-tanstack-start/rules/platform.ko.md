@@ -12,6 +12,7 @@
 | server/client env boundary | Safety policy | secret leak 차단 |
 | non-trivial app runtime env validation | Hypercore convention + Safety policy | warn 또는 `src/config/env.ts` scaffold 추가 |
 | Vite version-aware path alias | Hypercore convention | touched code에서 수정 |
+| Nitro(`nitro/vite`) 기반 hosting, Vite 8, Node ≥22.12 | Official | 삭제된 plugin 또는 Vite 7 안내 차단 |
 | 설치된 `@tanstack/*` 버전을 공식 공급망 권고의 영향·패치 범위와 대조 | Safety policy | install 또는 upgrade 전에 확인 |
 
 ---
@@ -37,7 +38,10 @@
 
 ## Release Status
 
-- **Official.** Start는 v1 GA가 아니라 **Release Candidate** 단계입니다. 원문: "TanStack Start is currently in the **Release Candidate** stage! This means it is considered feature-complete and its API is considered stable." 같은 문단이 "**This does not mean it is bug-free or without issues**"라고 덧붙이므로, Start API를 확정된 것으로 다루지 말고 고정된 스냅샷을 다시 확인합니다.
+- **Official.** Start는 v1 stable입니다. `@tanstack/react-start` 1.169.0(2026-10-12 게시)이 첫 stable release입니다. 원문: "TanStack Start is stable. If you're upgrading from a release candidate, follow `Migrate from the Release Candidate`." stable line은 1.169.x이고 `@tanstack/react-router`는 1.170.x에서 따로 움직입니다.
+- **Official.** Release Candidate 프로젝트를 올릴 때는 API 세 개를 제거하고 동작 영역 네 곳을 확인합니다. `@tanstack/nitro-v2-vite-plugin`은 `nitro/vite`의 `nitro()`로, `useSession`은 iron-session 같은 session library로, `.inputValidator()`는 `.validator()`로, Vite 7은 Vite 8로 바뀝니다. 동작 영역은 Errors, Responses, Requests and middleware이며 각 내용은 `references/official/tanstack-start-2026-11-04.md`에 기록했습니다.
+- **Official.** Start는 Vite로 빌드할 때 Vite 8을 요구합니다(`peerDependencies.vite`가 `>=8.0.0`이고 "Vite 7 is no longer supported"). `@tanstack/react-start@1.169.4`는 `engines.node`로 `>=22.12.0`을 선언합니다. version bump나 새 scaffold를 제안하기 전에 두 조건을 확인합니다.
+- stable이 되었다고 동작을 추측해도 되는 것은 아닙니다. Router와 Start는 patch release에서도 BREAKING 변경을 싣기 때문에, API가 확정됐다고 가정하지 말고 날짜가 박힌 snapshot을 다시 확인합니다.
 
 ---
 
@@ -60,6 +64,7 @@
 - client-safe env는 `import.meta.env`에서 가져오고 `client`에 나열하며 public prefix를 사용합니다.
 - 명시적인 build-time coverage가 필요하면 `runtimeEnvStrict`를 우선 사용하고, framework/runtime이 전체 env object를 안정적으로 제공할 때만 `runtimeEnv`를 사용합니다.
 - shared config file이 server/client 양쪽에서 import될 수 있으면 `isServer: typeof window === "undefined"`를 포함합니다.
+- env는 module scope가 아니라 request 안에서 읽습니다. `process.env` 접근은 `.handler()`, middleware `.server()`, server-route handler 같은 per-request callback 안에 둡니다. Cloudflare Workers와 다른 edge SSR runtime은 env를 request 시점에 주입하므로 module scope에서 읽으면 서버에서도 `undefined`가 되고, client에서는 secret이 bundle에 inline될 위험이 있습니다.
 - 프로젝트에 문서화된 예외가 없으면 새 validation module에는 `emptyStringAsUndefined: true`를 설정합니다.
 - 서버 변수 이름 자체가 client bundle에 노출되면 안 되는 경우에도 schema split은 `src/config/` 아래(예: `env.server.ts`, `env.client.ts`)에서 수행하고 `src/env/` 아래에는 만들지 않습니다.
 
@@ -92,8 +97,9 @@ export const env = createEnv({
 ## Path Alias 규칙
 
 - path alias는 암묵적으로 가정하지 말고 명시적으로 설정합니다
-- Vite 8+: `resolve.tsconfigPaths: true` 우선
+- Vite 8+: `resolve.tsconfigPaths: true` 우선(Vite 자체 옵션이고 기본값은 `false`입니다)
 - Vite 7 이하: `vite-tsconfig-paths` 사용
+- TanStack Start 프로젝트는 반드시 첫 번째 갈래입니다. Start 1.169+는 Vite 8을 요구하므로 `vite-tsconfig-paths` 갈래는 Start가 아닌 Vite 7 프로젝트에만 해당합니다
 - 저장소 전체에서 하나의 canonical alias 규칙을 유지합니다
 
 ---
@@ -107,13 +113,27 @@ export const env = createEnv({
 
 ---
 
+## Server Entry
+
+- `src/server.ts`는 선택 사항입니다. 없으면 Start가 내장 entry를 쓰고, 그 entry가 request를 렌더하며 잡히지 않은 error를 HTTP response로 바꿉니다. error 처리만을 위해 custom entry를 추가하지 않습니다.
+- custom entry가 필요하면 `createServerEntry`가 callback 전체를 request context 안에 두고, `createStartHandler(...)`가 원래 error를 다시 던져 `handleStartError(error)`가 helper state를 적용한 response를 만들 수 있게 합니다.
+- request ID나 database handle처럼 request마다 달라지는 값은 `handler.fetch(request, { context })`로 넘기고, `@tanstack/react-router`의 `Register` interface에 `server.requestContext`를 보강해 type을 붙입니다. type 등록은 runtime 값을 만들지 않습니다. 이 context는 global middleware, request/function middleware, server route, server function, router에 전달됩니다.
+
+## Hosting과 Deployment
+
+- **Official.** 배포는 삭제된 `@tanstack/nitro-v2-vite-plugin`이 아니라 `nitro/vite` plugin의 Nitro로 합니다. `vite.config.ts`에서 `tanstackStart()`와 함께 `nitro/vite`의 `nitro()`를 추가합니다. Nitro는 Vite Environments API와 통합되어 Start의 기반 build tool로 동작합니다.
+- **Official.** 공식 hosting partner는 Cloudflare(`@cloudflare/vite-plugin`과 `wrangler`), Netlify(`@netlify/vite-plugin-tanstack-start`), Railway(Nitro)입니다. 다른 provider도 지원되지만 partner는 아닙니다.
+- **Official.** Node + Nitro에서 srvx `FastResponse`가 문서화된 처리량 선택지입니다. 이것은 배포 tuning 선택이지 아키텍처 요구사항이 아닙니다.
+- hosting 설정을 page나 route code에 적지 않습니다. 배포 설정은 `vite.config.ts`, provider 설정 파일, operations 문서에 둡니다.
+
 ## 리뷰 체크리스트
 
 - `getRouter()`가 존재하고 새 instance를 반환함
-- env 사용이 typed이고 경계가 안전함
+- env 사용이 typed이고 경계가 안전하며 module scope가 아니라 request 단위로 읽음
 - alias 설정이 사용 중인 Vite 버전과 맞음
+- hosting 안내가 `nitro/vite`를 가리키고 삭제된 plugin을 언급하지 않음
 - 운영 endpoint가 내부 앱 RPC와 섞이지 않음
 
 ## Sources
 
-> Safety policy 사실은 공식 권고 <https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx>와 그 postmortem <https://tanstack.com/blog/npm-supply-chain-compromise-postmortem>에서, Release Candidate 문구는 <https://tanstack.com/start/latest/docs/framework/react/overview.md>에서 왔습니다. 공식 사실 검증일 2026-09-22. 나머지는 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, `references/official/current-docs-2026-09-22.md`)에 위임합니다. 저장소 로컬 링크 확인 2026-09-22.
+> Safety policy 사실은 공식 권고 <https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx>와 그 postmortem <https://tanstack.com/blog/npm-supply-chain-compromise-postmortem>에서 왔습니다. stable release 상태, Vite 8 요구, 삭제된 API, hosting partner는 <https://tanstack.com/start/latest/docs/framework/react/overview.md>, <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md>, <https://tanstack.com/start/latest/docs/framework/react/guide/hosting.md>, <https://tanstack.com/start/latest/docs/framework/react/guide/environment-variables.md>, <https://registry.npmjs.org/@tanstack/react-start/latest>, <https://vite.dev/config/shared-options.md>에서 확인했습니다. 공식 사실 검증일 2026-11-04. 나머지는 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, `references/official/current-docs-2026-11-04.md`)에 위임합니다. 저장소 로컬 링크 확인 2026-11-04.

@@ -31,6 +31,7 @@
 |------|------|
 | `loader`가 secret, DB, filesystem, privileged SDK를 직접 읽음? | 차단. `createServerFn` 또는 `createServerOnlyFn`으로 이동 |
 | 클라이언트에서 도달 가능한 코드가 secret 값을 `process.env`에서 직접 읽음? | 차단 |
+| 서버 코드가 module scope에서 `process.env`를 읽음? | edge SSR runtime에서 차단. env가 request 시점에 주입되므로 env가 생기기 전에 읽으면 `undefined`가 됩니다 |
 | 서버에서도 실행될 수 있는 코드에서 `window`, `localStorage`, `document`를 경계 없이 사용함? | 차단 |
 | `typeof window` 분기 대신 `createClientOnlyFn` / `createServerOnlyFn` / `createIsomorphicFn`이 더 명확한데 수동 분기함? | 경고. 프레임워크 primitive 선호 |
 | 하나의 공용 유틸이 서버 전용 로직과 클라이언트 전용 로직을 함께 섞고 있음? | 차단. 분리하거나 환경 함수 사용 |
@@ -79,7 +80,7 @@ export const Route = createFileRoute('/users')({
 ## 보안 규칙
 
 - secret, DB client, filesystem 접근, privileged SDK는 반드시 `createServerFn` 또는 `createServerOnlyFn` 뒤에 둡니다
-- 브라우저 API는 `createClientOnlyFn`, `ClientOnly`, client-only component/hook 뒤에 둡니다
+- env는 request 단위로 읽습니다. `process.env`는 `.handler()`, middleware `.server()`, server-route handler 같은 per-request callback 안에 둡니다. 이것은 leak 규칙이면서 정확성 규칙입니다. Cloudflare Workers와 다른 edge SSR runtime은 env를 request 시점에 주입하므로 module scope에서 읽으면 서버에서도 `undefined`가 됩니다
 - 클라이언트가 import할 수 있는 코드라면, import protection과 실행 경계로 증명되지 않는 한 공개 코드라고 가정합니다
 
 ---
@@ -90,7 +91,8 @@ export const Route = createFileRoute('/users')({
 - 환경 전용 헬퍼는 TanStack Start primitive를 사용함
 - 서버 전용 코드가 클라이언트에서 도달되지 않음
 - 브라우저 전용 코드가 서버 렌더에서 실행되지 않음
+- server-only 경로에서 module scope `process.env` 읽기가 없음
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, `references/official/current-docs-2026-09-22.md`)에 위임합니다. 공식 사실 검증 2026-09-22. 저장소 로컬 링크 확인 2026-09-22.
+> 출처 확인 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/guide/execution-model.md>(isomorphic by default, loader는 isomorphic), <https://tanstack.com/start/latest/docs/framework/react/guide/environment-variables.md>(env를 module scope가 아니라 request 단위로 읽음). 그 밖의 공식 TanStack 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, `references/official/current-docs-2026-11-04.md`)에 위임합니다. 공식 사실 검증 2026-11-04. 저장소 로컬 링크 확인 2026-11-04.

@@ -7,7 +7,7 @@
 | Rule | Classification | Enforcement |
 |---|---|---|
 | Start import protection은 기본 enabled | Official | custom config 전 behavior 확인 |
-| 공식 페이지가 **Experimental** 상태를 달고 있음 | Official | option surface를 재확인하고 변경 가능한 것으로 취급 |
+| 문서화된 옵션 표는 신뢰할 수 있고 `mockAccess`는 미문서 옵션 | Official | 문서화된 옵션만 인용하고 `mockAccess`는 버전마다 다시 확인 |
 | `.server.*`는 client에서, `.client.*`는 server에서 deny | Official | leak 차단 |
 | marker import는 module을 한 environment로 제한 | Official | suffix가 부족할 때 사용 |
 | `database/`, `server/`, ORM package custom deny rules | Safety policy | 프로젝트에 필요하면 추가/확장 |
@@ -17,7 +17,9 @@
 
 TanStack Start import protection은 기본 enabled입니다. explicit `importProtection` object가 항상 필요하다고 말하지 않습니다.
 
-공식 가이드 페이지는 `> **Experimental:** Import protection is experimental and subject to change.`로 시작합니다. option surface를 이미 확정된 API가 아니라 변경될 수 있는 것으로 취급합니다.
+가이드에는 더 이상 Experimental 표시가 없습니다. defaults 표, replace-vs-additive 시맨틱, `include`, `exclude`, `ignoreImporters`, `maxTraceDepth`, `onViolation` 옵션을 문서화합니다. `mockAccess`는 예외입니다. plugin schema에는 실제로 있지만 가이드에는 없으므로 미문서 항목으로 남깁니다.
+
+dev mode 위반은 오탐일 수 있습니다. build mode는 tree-shaking 뒤까지 검사를 미루기 때문에 production graph에서 사라지는 import가 dev에서는 경고로 남을 수 있습니다. 의심스러운 dev 경고는 boundary를 고치기 전에 production build로 확인합니다.
 
 문서화된 기본값 (Official, 가이드 option table):
 
@@ -89,7 +91,7 @@ Project가 development에서도 violation을 실패시키길 원하면 `behavior
 
 `client`와 `server` rules는 `files`, `specifiers`, `excludeFiles`를 지원합니다(설정 전에 위의 replace-vs-additive 표를 먼저 확인합니다). Default는 `node_modules` 아래 resolved files를 제외합니다. `excludeFiles: []`는 선택한 environment에서 이 검사를 다시 켜므로, third-party package false positive 가능성을 고려해 의도적으로만 사용합니다.
 
-`mockAccess`(`'error' | 'warn' | 'off'`, default `'error'`)는 `packages/start-plugin-core/src/schema.ts`에 존재하며, `behavior: 'mock'`일 때 mock된 import가 runtime console diagnostic을 내보낼지 제어합니다. 공식 가이드의 option table에는 **없습니다** — 문서가 다루지 않는 실제 schema option입니다. 인용할 때는 undocumented로 표시하고, 의존하기 전에 설치된 package types와 다시 대조합니다. 문서화된 option처럼 적지 않습니다.
+`mockAccess`(`'error' | 'warn' | 'off'`, default `'error'`)는 `@tanstack/start-plugin-core@1.171.55`의 `schema.d.ts`에 존재하며, `behavior: 'mock'`일 때 mock된 import가 runtime console diagnostic을 내보낼지 제어합니다. 공식 가이드의 option table에는 **없습니다**. 문서가 다루지 않는 실제 schema option입니다. 인용할 때는 undocumented로 표시하고, 의존하기 전에 설치된 package types와 다시 대조합니다. 문서화된 option처럼 적지 않습니다.
 
 ## Compiler Boundary Leak Rule
 
@@ -140,4 +142,4 @@ src/modules/users/profile/
 
 ## Sources
 
-> 이 파일의 공식 TanStack Start import protection 사실(defaults 표, replace-vs-additive 시맨틱, **Experimental** 상태, `mockAccess`)은 2026-09-22에 `https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md`와 고정 SHA `fe7f1fd0e6ef73c3f341dd2338b406749538a85d`의 `packages/start-plugin-core/src/schema.ts`로 검증했습니다. 이 사실은 이 패키지 자체의 2026-09-22 snapshot `references/official/current-docs-2026-09-22.md`에 담겨 있고, 외부 출처는 runtime 의존이 아닙니다. 저장소 로컬 링크 확인 2026-09-22.
+> 출처 확인 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md>(defaults 표, replace-vs-additive 시맨틱, 문서화된 옵션 표면. 페이지에 Experimental 표시가 없습니다)와 `@tanstack/start-plugin-core@1.171.55`의 `schema.d.ts`(`mockAccess` enum과 기본값)입니다. 이 사실은 이 패키지 자체의 2026-11-04 snapshot `references/official/current-docs-2026-11-04.md`에 담겨 있고, 외부 출처는 runtime 의존이 아닙니다. 저장소 로컬 링크 확인 2026-11-04.

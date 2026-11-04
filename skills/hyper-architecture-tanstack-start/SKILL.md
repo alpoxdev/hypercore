@@ -17,10 +17,10 @@ compatibility: Works best with repo inspection, official TanStack Start/Router d
 @rules/platform.md
 @rules/conventions.md
 @rules/validation.md
-@references/official/tanstack-start-2026-09-22.md
-@references/official/tanstack-router-2026-09-22.md
+@references/official/tanstack-start-2026-11-04.md
+@references/official/tanstack-router-2026-11-04.md
 @references/official/api-drift-notes.md
-@references/official/current-docs-2026-09-22.md
+@references/official/current-docs-2026-11-04.md
 
 # TanStack Start Architecture Enforcement
 
@@ -164,9 +164,9 @@ Read `architecture-rules.md` first for the taxonomy and blocking gates. Then ope
 | `getRouter()`, env validation, path aliases, operational endpoints | `rules/platform.md` |
 | File naming, TypeScript style, comments, error classes | `rules/conventions.md` |
 | Completion checks for the touched surface | `rules/validation.md` |
-| Start API behavior that matters for the change | `references/official/tanstack-start-2026-09-22.md` |
-| Router, file route, search, or loading behavior | `references/official/tanstack-router-2026-09-22.md` |
-| Plugin config, import protection, server functions, execution-control APIs | `references/official/current-docs-2026-09-22.md` |
+| Start API behavior that matters for the change | `references/official/tanstack-start-2026-11-04.md` |
+| Router, file route, search, or loading behavior | `references/official/tanstack-router-2026-11-04.md` |
+| Plugin config, import protection, server functions, execution-control APIs | `references/official/current-docs-2026-11-04.md` |
 | Conflicting docs or uncertain installed behavior | `references/official/api-drift-notes.md` |
 
 </reference_routing>

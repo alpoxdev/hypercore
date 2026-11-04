@@ -8,6 +8,7 @@
 |---|---|---|
 | file route instance를 `Route`로 export | Official | 없으면 차단 |
 | search params를 사용할 때 validation | Official + Safety policy | 사용자 입력이 동작에 영향 주면 차단 |
+| Zod 버전에 맞는 validation 경로 선택 | Official | Zod 4와 `@tanstack/zod-adapter` 동시 사용 차단 |
 | `beforeLoad`가 `loader`보다 먼저 실행되는 lifecycle | Official | auth/context/redirect에 사용 |
 | Router는 flat/directory 혼용 지원 | Official | flat route를 TanStack invalid라고 말하지 않음 |
 | 앱 페이지 route-directory 선호 | Hypercore convention | official default 요청이 없으면 touched page에 적용 |
@@ -129,7 +130,7 @@ export const Route = createFileRoute('/products/')({
 })
 ```
 
-프로젝트가 모든 버전에서 `zodValidator`를 표준화한다면 project note에 hypercore convention으로 표시합니다.
+`@tanstack/zod-adapter`는 Zod v3 전용입니다. `peerDependencies`가 `zod: ^3.23.8`을 고정하고 있어 Zod 4와 충돌합니다. Zod 4 프로젝트에서는 import 방식을 통일하려는 목적이더라도 adapter를 설치하지 않고 schema를 직접 전달합니다. Zod 3에서는 adapter가 여전히 공식 경로입니다. 프로젝트가 `zodValidator`로 표준화하는 경우에도 Zod 3에 머무는 동안만 성립하며 project note에 hypercore convention으로 표시해야 합니다.
 
 ## Loader Boundary Rule
 
@@ -150,4 +151,4 @@ export const Route = createFileRoute('/products/')({
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, `references/official/current-docs-2026-09-22.md`)에 위임합니다. 공식 사실 검증 2026-09-22. 저장소 로컬 링크 확인 2026-09-22.
+> 출처 확인 2026-11-04: <https://tanstack.com/router/latest/docs/guide/search-params.md>(Zod v4 direct schema, `search.middlewares`), <https://tanstack.com/router/latest/docs/how-to/validate-search-params.md>(Zod v4에서 adapter 불필요), <https://registry.npmjs.org/@tanstack/zod-adapter/latest>(Zod v3 peer 범위). 그 밖의 공식 TanStack 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, `references/official/current-docs-2026-11-04.md`)에 위임합니다. 공식 사실 검증 2026-11-04. 저장소 로컬 링크 확인 2026-11-04.

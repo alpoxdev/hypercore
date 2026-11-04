@@ -7,12 +7,28 @@
 변경 표면에 맞는 check를 실행합니다:
 
 ```bash
+# route export와 직접 DB 접근 검사
 rg -n "const Route = createFileRoute|export const Route" src/routes 2>/dev/null
 rg -n "from ['\"]@/database|from ['\"].*/database|@prisma/client|drizzle-orm" src/routes 2>/dev/null
-# 탐지 grep: 구버전 프로젝트의 폐기 별칭 `.inputValidator(`도 계속 찾도록 두 철자를 모두 유지합니다
+
+# server function 검증과 낡은 API 검사
+# 탐지 grep: 두 철자를 모두 유지합니다. `.inputValidator(`는 1.169.0에서 제거됐으므로 발견되면 legacy 스타일이 아니라 깨진 코드입니다
 rg -n "\.validator\(|\.inputValidator\(|createServerFn" src 2>/dev/null
+
+# import 경계 검사
 rg -n "server-only|client-only|\.server\.|\.client\.|importProtection|tanstackStart" vite.config.* src 2>/dev/null
+
+# loader와 hydration 위험 검사
 rg -n "loader:|beforeLoad:|Date\.now\(|Math\.random\(|localStorage|window\." src/routes src/components 2>/dev/null
+
+# per-request env 규칙: edge SSR runtime에서 module scope process.env 읽기는 틀림
+rg -n "^\s*(const|let|var|export const)\s+\w+\s*=\s*process\.env\." src 2>/dev/null
+
+# v1 업그레이드 표면: 제거된 API와 Vite 8 / Node 22.12 하한
+rg -n "nitro-v2-vite-plugin|useSession|inputValidator" src vite.config.* package.json 2>/dev/null
+rg -n '"(vite|node)"' package.json 2>/dev/null
+
+# env validation을 손대거나 scaffold할 때의 env 설정 검사
 test ! -d src/env
 test ! -f src/env.ts
 test -f src/config/env.ts
@@ -48,16 +64,16 @@ Must pass:
 - `SKILL.md`와 `SKILL.ko.md`가 duplicated rulebook이 아니라 lean entrypoint임.
 - core에서 참조하는 support file은 직접 링크되어 있고 indirect reference chain이 없음.
 - 공식 TanStack 사실은 긴 core section이 아니라 `references/official/`에 있음.
-- current official snapshot `references/official/current-docs-2026-09-22.ko.md`는 `SKILL.ko.md`에서 직접 link되며 API drift가 중요할 때 사용됨.
+- current official snapshot `references/official/current-docs-2026-11-04.ko.md`는 `SKILL.ko.md`에서 직접 link되며 API drift가 중요할 때 사용됨.
 - hypercore-only convention이 그렇게 label됨.
 - `rules/project-structure.md`와 `rules/project-structure.ko.md`가 존재하고 직접 링크됨.
 - project-structure guidance가 `src/routes`, custom `routesDirectory`, generated `routeTree.gen.ts`, shared nested folders, touched shared root direct leaf file 금지, route-local/shared server function placement를 다룸.
 - server-function-heavy guidance가 `.functions.ts` wrapper, `.server.ts` helper, static direct imports, no mixed barrels, auth/CSRF boundary를 다룸.
 - `src/modules`, `src/lib`, `src/integrations` 같은 shared nested folders는 official TanStack law가 아니라 Hypercore/repo-local convention으로 label됨.
 - publishing-only route exception과 hook extraction rule이 모순되지 않음.
-- search validation guidance가 Zod v4 direct schema와 Zod v3 adapter를 모두 다룸.
-- import protection guidance가 default 존재와 custom deny 필요 시 explicit config를 모두 설명함.
-- Middleware guidance가 request middleware `createMiddleware()`, server function middleware `createMiddleware({ type: 'function' })`, middleware `.validator(...)`, server function `.validator(...)`를 구분하며, 두 체인 모두에서 `.validator(...)`가 정본이고 `.inputValidator(...)`는 폐기 별칭임.
+- search validation guidance가 Zod v4 direct schema와 Zod v3 adapter를 다루고, peer 범위가 Zod 4를 제외하므로 Zod 4에서는 adapter를 차단함.
+- import protection guidance가 default 존재, custom deny 필요 시 explicit config, option surface가 experimental이 아니라 문서화되었다는 점을 설명함.
+- Middleware guidance가 request middleware `createMiddleware()`, server function middleware `createMiddleware({ type: 'function' })`, middleware `.validator(...)`, server function `.validator(...)`를 구분하며, 두 체인 모두에서 `.validator(...)`가 유일한 표기이며 `.inputValidator(...)`는 1.169.0에서 제거됨.
 - Server route guidance가 `server.handlers`, `createHandlers`, route-level `server.middleware`, duplicate method collision checks, wildcard/splat route notes를 포함함.
 - Import protection guidance가 type-only import behavior, `behavior: 'error'`, `excludeFiles`, diagnostic/scoping options를 포함함.
 - env validation guidance가 `src/config/env.ts`를 사용하고, 새 `src/env/` scaffold를 금지하며, `@t3-oss/env-core` / Vite public-prefix boundary를 설명함.
@@ -101,4 +117,4 @@ Boundary:
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, `references/official/current-docs-2026-09-22.md`)에 위임합니다. 공식 사실 검증 2026-09-22. 저장소 로컬 링크 확인 2026-09-22.
+> 출처 확인 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md>(삭제된 API, Vite 8), <https://tanstack.com/start/latest/docs/framework/react/guide/environment-variables.md>(request 단위 env 읽기), <https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md>(문서화된 option 표면), <https://registry.npmjs.org/@tanstack/react-start/latest>(Node engine 하한). 그 밖의 공식 TanStack 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, `references/official/current-docs-2026-11-04.md`)에 위임합니다. 공식 사실 검증 2026-11-04. 저장소 로컬 링크 확인 2026-11-04.

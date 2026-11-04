@@ -7,7 +7,7 @@
 | Rule | Classification | Enforcement |
 |---|---|---|
 | Use `createServerFn` for client-callable server RPC | Official | Required for server RPC |
-| Use `.validator(...)` as canonical validation API | Official | `.inputValidator(...)` is the deprecated alias; existing use is not blocked |
+| Use `.validator(...)` as the only validation API | Official | Block `.inputValidator(...)`; it was removed in 1.169.0 |
 | Validate mutation input at runtime | Safety policy | Block POST/PUT/PATCH without validation |
 | Handler last in chain | Official/API shape | Block malformed chain |
 | Domain module/lib layer for non-trivial logic | Hypercore convention | Apply to touched non-trivial logic |
@@ -15,7 +15,7 @@
 | No `functions/index.ts` barrel | Hypercore convention + Safety policy | Avoid import-protection/tree-shaking ambiguity |
 | Server functions are same-origin app RPC | Official + Safety policy | Use server routes for public/cross-origin HTTP endpoints |
 
-See `references/official/api-drift-notes.md` for the `.validator()` canonical / `.inputValidator()` deprecated-alias history.
+See `references/official/api-drift-notes.md` for the `.validator()` history, including the removal of the `.inputValidator()` alias in 1.169.0.
 
 ## Canonical Server Function Pattern
 
@@ -38,7 +38,7 @@ export const createUser = createServerFn({ method: 'POST' })
 
 Notes:
 
-- `.validator(...)` is canonical; `.inputValidator(...)` is the deprecated alias that still resolves at runtime. New code uses `.validator(...)`; migrate the alias only when the code is already being touched. (Official)
+- `.validator(...)` is the only spelling. `.inputValidator(...)` was removed from `createServerFn` and `createMiddleware` in 1.169.0 — it no longer resolves, so any occurrence is a broken call and a migration, not legacy debt. (Official)
 - `.validator(...)` accepts Zod schemas directly, and a builder carries a single validator — a later `.validator(...)` call replaces the earlier one — while `.middleware([...])` is repeatable and merges with previously supplied middleware. (Official)
 - `Method` is exactly `'GET' | 'POST'`; no other verb exists. (Official)
 - The `strict` option exists and defaults to `strict: true`. It governs TypeScript-level serialization checks; `strict: false` relaxes only the type checks, not the runtime serialization layer. (Official)
@@ -119,23 +119,41 @@ Route / hook / query
 - Client hooks should usually wrap server functions with `useServerFn` and TanStack Query for cache invalidation.
 - Loaders may directly call server functions because route lifecycle code is not a React component.
 - Auth-required server functions must not rely only on route `beforeLoad`; add middleware or handler-level auth checks to the server function itself.
-- CSRF: Start auto-installs `createCsrfMiddleware()` for server functions when `src/start.ts` is ABSENT. Creating `src/start.ts` silently drops that automatic installation, so the file must add `requestMiddleware: [createCsrfMiddleware()]` explicitly. (Official + Safety policy)
-- GET server functions that depend on user/session/tenant data must not set public cache headers. Choose response cache policy from identity dependency.
+- CSRF: Start auto-installs `createCsrfMiddleware()` for server functions when `src/start.ts` is ABSENT. Creating `src/start.ts` silently drops that automatic installation, so the file must add `requestMiddleware: [createCsrfMiddleware()]` explicitly, filtered to server functions. (Official + Safety policy)
+
+```ts
+// src/start.ts
+import { createStart, createCsrfMiddleware } from '@tanstack/react-start'
+
+const csrfMiddleware = createCsrfMiddleware({
+  filter: (ctx) => ctx.handlerType === 'serverFn',
+})
+
+export const startInstance = createStart(() => ({
+  requestMiddleware: [csrfMiddleware],
+}))
+```
+
+- The `filter` is not optional polish: by default `createCsrfMiddleware()` validates every request the middleware handles, so an unfiltered global install also checks SSR page requests and server routes. The official types expose `filter`, `origin`, `secFetchSite` (default `'same-origin'`), `referer` (default `true`), `allowRequestsWithoutOriginCheck` (default `false`), and `failureResponse` (default `403 Forbidden`); the last three are type-level facts that the guide does not document. (Official)
+- GET server functions that depend on user/session/tenant data must not set public cache headers. `public` tells every CDN and proxy between the user and the origin that anybody may be served that response, so one user's authenticated payload gets replayed to the next user. Use `private` and vary on identity, or bypass caching entirely:
+  `Cache-Control: private, max-age=60` with `Vary: Cookie, Authorization`, or `no-store` when the response must never be cached. (Official)
+- Server function IDs are SHA256 hashes of the function in production, with `_1`/`_2` suffixes on duplicates. `tanstackStart({ serverFns: { generateFunctionId } })` customizes them (experimental). Treat the ID as an internal detail when a log or cache key depends on it. (Official)
+- `serverFns.fetch` in `createStart` sets the fetch implementation for server function calls when tests or custom runtimes need it; the call site and middleware can override it. It is a testing seam, not a production routing rule.
 
 ## Validation Checklist
 
 - [ ] New mutation server functions have `.validator(...)`.
-- [ ] `.inputValidator(...)` appears only in pre-existing code; it is the deprecated alias and is migrated when that code is touched.
+- [ ] `.inputValidator(` does not appear anywhere; it was removed in 1.169.0 and a hit means broken code.
 - [ ] `handler` is last in the chain.
 - [ ] Auth-required server functions use middleware or an equivalent checked boundary.
 - [ ] `*.functions.ts` and `*.server.ts` are split (a naming convention, not an import-protection rule), and server-only imports do not survive outside recognized boundaries.
 - [ ] Server functions are direct static imports, not dynamic imports or mixed-barrel imports.
 - [ ] Public/cross-origin/raw HTTP endpoints use server routes, not server functions.
-- [ ] A custom `src/start.ts` explicitly adds `requestMiddleware: [createCsrfMiddleware()]`.
+- [ ] A custom `src/start.ts` explicitly adds `requestMiddleware: [createCsrfMiddleware({ filter: (ctx) => ctx.handlerType === 'serverFn' })]`.
 - [ ] Routes do not access ORM/database clients directly.
 - [ ] Non-trivial logic is delegated to `modules/<domain>/<feature>/` or domain-specific `lib/<domain>/` folders.
 - [ ] No `functions/index.ts` barrel export was introduced.
 
 ## Sources
 
-> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, and `references/official/current-docs-2026-09-22.md` (official facts verified 2026-09-22). Repository-local links checked 2026-09-22.
+> Sources checked 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/guide/server-functions.md> (same-origin RPC, `Cache-Control` safety), <https://tanstack.com/start/latest/docs/framework/react/guide/middleware.md> (CSRF `filter` and default-validates-every-request behavior), <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md> (`.inputValidator()` removal). Official TanStack behavior is otherwise delegated to this package's own snapshots: `references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, and `references/official/current-docs-2026-11-04.md` (official facts verified 2026-11-04). Repository-local links checked 2026-11-04.
