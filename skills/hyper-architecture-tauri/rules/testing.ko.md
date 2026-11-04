@@ -10,7 +10,7 @@
 | Vite Router plugin, route file, provider wiring | route tree를 생성하고 Router plugin이 React plugin보다 앞서는지 확인하는 production Vite build | validated search input을 포함해 생성된 route를 이동하는 browser-level navigation |
 | Query factory, loader, `loaderDeps`, mutation | 새 `QueryClient`를 쓰는 focused test; key input, loader cache reuse, targeted invalidation 검증 | stale/failed fetch와 route preload 테스트로 Router가 아닌 Query가 freshness를 소유함 입증 |
 | Desktop API adapter 또는 IPC schema | type이 지정된 mock으로 adapter 단위 테스트; command 이름, 인자, 결과 정규화, rejection mapping 검증 | privileged operation의 Rust command test와 capability/permission 검토 |
-| Rust command, state, filesystem, plugin, authorization | validation, authorization, state transition, error form을 다루는 Rust unit/integration test | OS 통합, window, dialog, filesystem, updater, plugin 동작을 위한 disposable profile native E2E |
+| Rust command, state, filesystem, plugin, authorization | validation, authorization, state transition, error form을 다루는 Rust unit/integration test | OS 통합, window, dialog, filesystem, updater, plugin 동작을 위한 disposable profile의 `@wdio/tauri-service` native E2E |
 | 패키징된 Tauri navigation 또는 deep link | 패키징된 test build의 native E2E: launch, 생성된 route 간 이동, 지원하는 deep link 열기, active route reload | platform별 protocol registration과 거부되거나 malformed인 deep-link payload 테스트 |
 | capability, permission, scope, CSP, asset policy, secret | manifest와 최소 권한 계약에 대한 static security review | 허용 경로는 동작하고 거부 경로는 안전하게 실패함을 보이는 native E2E |
 | 이 skill package | skill-focused validation: frontmatter/link, bilingual rule parity, source-ledger date/version field, 관련 eval case | 상위 workflow가 요구하는 전체 repository skill validation |
@@ -41,6 +41,13 @@ Rust는 happy-path JavaScript만이 아니라 policy boundary에서 테스트한
 - privileged command에는 authorized request와 unauthorized, malformed, out-of-scope request를 모두 입증한다. 후자는 side effect 또는 민감한 error 공개 없이 실패해야 한다.
 - 패키징된 navigation에는 unsigned development/test package를 disposable profile로 실행한다. 최초 생성-route rendering, in-app navigation, 지원하는 deep link, active route의 reload를 검증하고, test가 만든 artifact만 정리한다.
 - client route guard test를 authorization 주장으로 바꾸지 않는다. native command authorization에는 Rust-side 근거가 필요하다.
+
+**권장 native harness.** Tauri는 WebdriverIO와 `@wdio/tauri-service`를 권장 end-to-end 경로로 문서화하며 Windows, Linux, macOS를 지원합니다.
+
+- 기본 `embedded` provider는 `tauri-plugin-wdio-webdriver`로 앱 내부 WebDriver server를 실행하므로 외부 driver를 설치하지 않습니다. macOS 지원도 이 경로입니다. 외부 driver를 선호하면 Windows/Linux는 `tauri-driver`를 쓰고, CrabNebula fork는 모든 platform을 지원하지만 macOS에는 유료 key가 필요합니다.
+- `tauri-plugin-wdio`는 backend 접근을 추가합니다. Rust 측 호출을 위한 `browser.tauri.execute()`, command(IPC) mocking, frontend/backend log 수집입니다. Native authorization과 거부는 UI 상태에서 추론하지 말고 `execute()`로 확인합니다.
+- Service의 **browser mode**는 Vite dev server에 붙은 일반 Chrome에서 frontend를 실행하고 `invoke()`를 가로챕니다. 이는 renderer 근거일 뿐이며 packaged app을 실행하지 않으므로 packaging, plugin, OS dialog, native permission 근거를 대신하지 못합니다.
+- Test project에서 service와 plugin version을 고정하고 실행에 쓴 provider를 기록하며, release-critical flow는 한 provider의 결과가 다른 OS로 전이된다고 가정하지 말고 출시 대상 OS마다 다시 실행합니다.
 
 ## Build와 Security 게이트
 
@@ -90,11 +97,11 @@ Handoff 전 어떤 gate를 실행했고 결과가 무엇인지, 또는 gate를 �
 
 ## Sources
 
-> 링크 확인 2026-07-30.
+> 링크 확인 2026-11-04.
 
 | 주장 | 출처 |
 |---|---|
-| Native 근거 행의 근거인 Tauri testing layer, IPC mock, mock runtime, WebDriver 지원 | [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md); <https://v2.tauri.app/develop/tests/>; <https://v2.tauri.app/develop/tests/mocking/>; <https://v2.tauri.app/develop/tests/webdriver/> |
-| Router plugin 순서, 생성된 route tree, `defaultPreloadStaleTime`, loader/Query assertion | [tanstack-vite-react-2026-07-30.ko.md](../references/official/tanstack-vite-react-2026-07-30.ko.md) |
-| Disposable profile에서의 패키징된 navigation, deep-link, reload 근거 | [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md); <https://v2.tauri.app/develop/tests/webdriver/> |
+| Native 근거 행의 근거인 Tauri testing layer, IPC mock, mock runtime, WebdriverIO 기반 native harness | [tauri-v2-2026-11-04.ko.md](../references/official/tauri-v2-2026-11-04.ko.md); <https://v2.tauri.app/develop/tests/>; <https://v2.tauri.app/develop/tests/mocking/>; <https://v2.tauri.app/develop/tests/webdriver/>; <https://webdriver.io/docs/desktop-testing/tauri> |
+| Router plugin 순서, 생성된 route tree, `defaultPreloadStaleTime`, loader/Query assertion | [tanstack-vite-react-2026-11-04.ko.md](../references/official/tanstack-vite-react-2026-11-04.ko.md) |
+| Disposable profile에서의 패키징된 navigation, deep-link, reload 근거 | [tauri-v2-2026-11-04.ko.md](../references/official/tauri-v2-2026-11-04.ko.md); <https://v2.tauri.app/develop/tests/webdriver/> |
 | 범위가 제한된 수정 루프, 스킬 패키지 검사, readback checklist | 이 파일의 규약; 여기서 이름을 밝히는 저장소 명령은 외부 출처가 아닌 저장소 정책이다 |

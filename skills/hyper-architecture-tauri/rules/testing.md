@@ -10,7 +10,7 @@
 | Vite Router plugin, route files, or provider wiring | Production Vite build that generates the route tree and checks the Router plugin is before the React plugin | Browser-level navigation across generated routes, including validated search input |
 | Query factory, loader, `loaderDeps`, mutation | Focused test with a fresh `QueryClient`; assert key inputs, loader cache reuse, and targeted invalidation | Test a stale/failed fetch and route preloading to prove Query, not Router, owns freshness |
 | Desktop API adapter or IPC schema | Unit test the adapter with a typed mock and assert command name, arguments, result normalization, and rejection mapping | Rust command test plus capability/permission review for a privileged operation |
-| Rust command, state, filesystem, plugin, or authorization | Rust unit/integration test for validation, authorization, state transition, and error form | Native E2E in a disposable profile for OS integration, windows, dialogs, filesystem, updater, or plugin behavior |
+| Rust command, state, filesystem, plugin, or authorization | Rust unit/integration test for validation, authorization, state transition, and error form | Native E2E through `@wdio/tauri-service` in a disposable profile for OS integration, windows, dialogs, filesystem, updater, or plugin behavior |
 | Packaged Tauri navigation or deep links | Native E2E from the packaged test build: launch, navigate between generated routes, open a supported deep link, and reload the active route | Test platform-specific protocol registration and a denied or malformed deep-link payload |
 | Capabilities, permissions, scopes, CSP, asset policy, secrets | Static security review against the manifest and the least-privilege contract | Native E2E that proves an allowed path works and a denied path fails safely |
 | This skill package | Skill-focused validation: frontmatter/links, bilingual rule parity, source-ledger date/version fields, and relevant eval cases | Full repository skill validation when the parent workflow requests it |
@@ -41,6 +41,13 @@ Test Rust at the policy boundary rather than only through happy-path JavaScript:
 - For privileged commands, prove both an authorized request and an unauthorized, malformed, or out-of-scope request. The latter must fail without side effects or sensitive error disclosure.
 - For packaged navigation, launch an unsigned development/test package with a disposable profile. Verify initial generated-route rendering, in-app navigation, a supported deep link, and reload of the active route; clean only artifacts created by the test.
 - Do not turn a client route guard test into an authorization claim. Native command authorization needs Rust-side evidence.
+
+**Recommended native harness.** Tauri documents WebdriverIO with `@wdio/tauri-service` as the recommended end-to-end path, and it covers Windows, Linux, and macOS:
+
+- The default `embedded` provider runs an in-app WebDriver server through `tauri-plugin-wdio-webdriver`, so no external driver is installed; this is also how macOS is supported. `tauri-driver` remains the route for Windows and Linux when an external driver is preferred, and CrabNebula's fork covers all platforms but needs a paid key for macOS.
+- `tauri-plugin-wdio` adds backend access: `browser.tauri.execute()` for Rust-side calls, command (IPC) mocking, and frontend/backend log capture. Use `execute()` to assert native authorization and denial instead of inferring them from UI state.
+- The service's **browser mode** runs the frontend in plain Chrome against the Vite dev server and intercepts `invoke()`. Treat it as renderer evidence only: it never launches the packaged app, so it cannot stand in for packaging, plugin, OS-dialog, or native-permission evidence.
+- Pin the service and plugin versions in the test project, record which provider a run used, and re-run release-critical flows on each shipped operating system rather than assuming one provider's result transfers.
 
 ## Build and Security Gates
 
@@ -90,11 +97,11 @@ Before handoff, state which gates ran and their outcomes, or state precisely why
 
 ## Sources
 
-> Links checked 2026-07-30.
+> Links checked 2026-11-04.
 
 | Claim | Source |
 |---|---|
-| Tauri's testing layers, IPC mocks, mock runtime, and WebDriver support behind the native-evidence rows | [tauri-v2-2026-07-30.md](../references/official/tauri-v2-2026-07-30.md); <https://v2.tauri.app/develop/tests/>; <https://v2.tauri.app/develop/tests/mocking/>; <https://v2.tauri.app/develop/tests/webdriver/> |
-| Router plugin order, the generated route tree, `defaultPreloadStaleTime`, and the loader/Query assertions | [tanstack-vite-react-2026-07-30.md](../references/official/tanstack-vite-react-2026-07-30.md) |
-| Packaged navigation, deep-link, and reload evidence in a disposable profile | [tauri-v2-2026-07-30.md](../references/official/tauri-v2-2026-07-30.md); <https://v2.tauri.app/develop/tests/webdriver/> |
+| Tauri's testing layers, IPC mocks, mock runtime, and the WebdriverIO-based native harness behind the native-evidence rows | [tauri-v2-2026-11-04.md](../references/official/tauri-v2-2026-11-04.md); <https://v2.tauri.app/develop/tests/>; <https://v2.tauri.app/develop/tests/mocking/>; <https://v2.tauri.app/develop/tests/webdriver/>; <https://webdriver.io/docs/desktop-testing/tauri> |
+| Router plugin order, the generated route tree, `defaultPreloadStaleTime`, and the loader/Query assertions | [tanstack-vite-react-2026-11-04.md](../references/official/tanstack-vite-react-2026-11-04.md) |
+| Packaged navigation, deep-link, and reload evidence in a disposable profile | [tauri-v2-2026-11-04.md](../references/official/tauri-v2-2026-11-04.md); <https://v2.tauri.app/develop/tests/webdriver/> |
 | The bounded correction loop, the skill package checks, and the readback checklist | This file's convention; the repository commands it names are repository policy, not external sources |

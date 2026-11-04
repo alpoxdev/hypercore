@@ -4,7 +4,7 @@
 
 ## 근거와 용어
 
-**공식 사실.** Tauri command는 프런트엔드에서 호출하며 값 또는 오류를 반환할 수 있고, event는 단방향 알림을 전달하며, channel은 Rust에서 프런트엔드로 순서가 보장된 데이터를 전송합니다. [Tauri v2 근거 원장](../references/official/tauri-v2-2026-07-30.ko.md), [프런트엔드에서 Rust 호출](https://v2.tauri.app/develop/calling-rust/), [Rust에서 프런트엔드 호출](https://v2.tauri.app/develop/calling-frontend/)을 참조합니다. 링크된 페이지는 2026-07-30에 근거로 확인했으며 불변 API 계약이 아닙니다. 버전 의존 변경 전에는 원장과 최신 공식 문서를 다시 확인합니다.
+**공식 사실.** Tauri command는 프런트엔드에서 호출하며 값 또는 오류를 반환할 수 있고, event는 단방향 알림을 전달하며, channel은 Rust에서 프런트엔드로 순서가 보장된 데이터를 전송합니다. [Tauri v2 근거 원장](../references/official/tauri-v2-2026-11-04.ko.md), [프런트엔드에서 Rust 호출](https://v2.tauri.app/develop/calling-rust/), [Rust에서 프런트엔드 호출](https://v2.tauri.app/develop/calling-frontend/)을 참조합니다. 링크된 페이지는 2026-11-04에 근거로 확인했으며 불변 API 계약이 아닙니다. 버전 의존 변경 전에는 원장과 최신 공식 문서를 다시 확인합니다.
 
 **프로젝트 규약.** *native adapter*는 `invoke`, `listen`, `Channel` 또는 다른 `@tauri-apps/api/*` native API를 import할 수 있는 유일한 프론트엔드 모듈입니다. 이 모듈은 직렬화/역직렬화, 런타임 검증, 오류 정규화 및 취소 의미를 소유합니다. route, route loader, component 및 표현용 hook은 native API를 직접 호출하지 않고 domain/query helper를 호출합니다.
 
@@ -86,7 +86,7 @@ pub async fn settings_update(
 }
 ```
 
-**공식 사실.** Tauri managed state는 애플리케이션에 등록하고 command에서 `State`로 접근할 수 있습니다. [State Management](https://v2.tauri.app/develop/state-management/)을 참조하세요(2026-07-30 접근; 위 근거 원장 주의사항 적용).
+**공식 사실.** Tauri managed state는 애플리케이션에 등록하고 command에서 `State`로 접근할 수 있습니다. [State Management](https://v2.tauri.app/develop/state-management/)을 참조하세요(2026-11-04 접근; 위 근거 원장 주의사항 적용).
 
 - **규약:** `AppState` 소유권과 동기화를 의도적으로 정의합니다. 데이터와 platform API에 맞춰 `Mutex`, `RwLock`, atomic 또는 message passing을 사용하고 변경 가능한 global state를 사용하지 않습니다.
 - **안전 정책:** blocking mutex, `std::sync` guard, database transaction 또는 기타 exclusive guard를 `.await` 동안 절대 유지하지 않습니다. lock 유지 시간은 최소화하고, 여러 lock은 순서를 정하며, blocking 작업은 프로젝트 runtime 설계에 따라 async executor 밖으로 옮깁니다.
@@ -103,7 +103,13 @@ pub async fn settings_update(
 | best-effort 알림 또는 lifecycle signal | event | 이름 있는 payload schema, 명시적 producer/consumer, listener cleanup. authorization 결정이나 요청/응답 protocol로 사용하지 않습니다. |
 | Rust에서 나오는 순서 있는 다중 값 progress/stream | `Channel<T>` | 타입된 item schema, completion/error 동작, bounded production, consumer lifecycle. |
 
-**공식 사실.** Tauri event system은 프론트엔드와 Rust 사이 event를 통신하고, channel은 Rust에서 프론트엔드로 순서 있는 데이터를 전송하도록 설계되었습니다. [Events](https://v2.tauri.app/develop/calling-frontend/)와 [Channels](https://v2.tauri.app/develop/calling-rust/#channels)를 참조하세요(2026-07-30 접근; 위 근거 원장 주의사항 적용).
+**공식 사실.** Tauri event system은 프론트엔드와 Rust 사이 event를 통신하고, channel은 Rust에서 프론트엔드로 순서 있는 데이터를 전송하도록 설계되었습니다. Event는 내부적으로 command로 구현되므로 event API 자체가 capability만이 아니라 event permission(`core:event:*`)으로 제한됩니다. [Events](https://v2.tauri.app/develop/calling-frontend/), [Channels](https://v2.tauri.app/develop/calling-rust/#channels), [IPC concept](https://v2.tauri.app/concept/inter-process-communication/)을 참조하세요(2026-11-04 접근; 위 근거 원장 주의사항 적용).
+
+**공식 사실.** Channel과 대용량 invoke 응답에는 version floor가 있습니다. Tauri `2.11.6` 이전에는 대용량 channel 응답이 단조 증가 `u32` 식별자로 앱 전역 queue에 저장되었고, `plugin:__TAURI_CHANNEL__|fetch`가 정상 ACL 거부 경로를 우회한 채 renderer가 보낸 header만 보고 entry를 반환했습니다. `window.__TAURI_INTERNALS__.invoke`를 호출할 수 있는 webview는 식별자를 추측해 다른 webview의 payload를 읽거나 비울 수 있었습니다([GHSA-w28w-mhc8-qvjv](https://github.com/tauri-apps/tauri/security/advisories/GHSA-w28w-mhc8-qvjv), High, workaround 없음). `2.11.6`부터 entry가 소유 webview에 결속되고 식별자는 무작위이며, 다른 webview와 알 수 없는 식별자에 같은 응답을 주고, 소유 webview가 닫히면 오래된 entry를 정리합니다. `2.12.0`은 닫힌 webview로 보내던 대용량 payload를 queue에 남기지 않습니다.
+
+**안전 정책:** webview가 둘 이상이거나 민감한 native data를 channel로 보내는 Tauri 앱은 `2.11.6` 이상을 실행해야 합니다. JavaScript에서 payload를 filter하는 방식으로 완화하지 않습니다. Queue는 native state이므로 upgrade가 fix입니다.
+
+**안전 정책:** credential, token, authorization 결정을 channel이나 event로 보내지 않습니다. Channel scoping은 같은 앱의 다른 webview로부터 payload를 보호할 뿐, channel을 정당하게 소유한 compromised renderer로부터 보호하지 않습니다.
 
 **규약:** mutation의 권위 있는 결과는 command를 선호하고, 이후 progress 또는 invalidation에만 event/channel을 사용합니다. subscription 전에 이미 발생했을 수 있는 event를 route가 기다리게 하지 않습니다. event를 secret-bearing transport로 사용하지 않습니다.
 
@@ -129,6 +135,8 @@ useEffect(() => {
 ```
 
 **안전 정책:** event/channel payload가 신뢰된 프론트엔드 state를 변경하기 전에 검증합니다. 완료, window close, route teardown 및 React Strict Mode 재마운트가 duplicate listener나 consumer 없는 producer를 남기지 않아야 합니다.
+
+**공식 사실:** Tauri `2.12.0`은 webview가 파괴될 때 그 webview의 Rust 측과 JavaScript 측 event listener를 backend registry에서 제거하고, 닫힌 webview로 보내던 channel payload를 queue에 남기지 않습니다. 이전에는 창을 닫기 전에 직접 `unlisten()`을 호출해야 했던 누수가 사라지지만, webview가 살아 있는 동안 component, route, 재마운트보다 오래 사는 listener의 cleanup 의무는 그대로입니다.
 
 ---
 
@@ -167,15 +175,18 @@ export function settingsQueryOptions() {
 5. **동시성 gate:** 변경 가능한 managed state에는 문서화된 synchronization invariant가 있으며 `.await`를 넘는 lock 또는 transaction이 없습니다.
 6. **취소 gate:** 명시적 cooperative native protocol이 구현되고 테스트되지 않은 native 작업을 abortable이라고 설명하지 않습니다.
 7. **보안 gate:** adapter를 노출하기 전에 [security.md](security.md)가 요구하는 custom command capability/permission/scope 검토를 완료합니다.
+8. **version gate:** channel 또는 대용량 invoke 응답이 경계를 넘을 때마다 앱이 Tauri `2.11.6` 이상을 실행하며, adapter가 설치 version이 제공하지 않는 완화를 주장하지 않습니다.
 
 실패한 gate를 type assertion, 넓은 catch, frontend-only check 또는 event 기반 우회로 통과시키지 않습니다.
 
 ## Sources
 
-> 링크 확인 2026-07-30.
+> 링크 확인 2026-11-04.
 
 | 주장 | 출처 |
 |---|---|
-| Frontend-to-Rust IPC 표면의 command, event, channel, managed `State` | [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md); <https://v2.tauri.app/develop/calling-rust/>; <https://v2.tauri.app/develop/calling-frontend/>; <https://v2.tauri.app/develop/state-management/> |
-| Query가 넘긴 `AbortSignal`은 Tauri가 이미 수락한 Rust command를 취소하지 않는다 | [tanstack-vite-react-2026-07-30.ko.md](../references/official/tanstack-vite-react-2026-07-30.ko.md); <https://tanstack.com/query/latest/docs/framework/react/guides/query-cancellation>; [tauri-v2-2026-07-30.ko.md](../references/official/tauri-v2-2026-07-30.ko.md) |
+| Frontend-to-Rust IPC 표면의 command, event, channel, managed `State` | [tauri-v2-2026-11-04.ko.md](../references/official/tauri-v2-2026-11-04.ko.md); <https://v2.tauri.app/develop/calling-rust/>; <https://v2.tauri.app/develop/calling-frontend/>; <https://v2.tauri.app/develop/state-management/> |
+| Event가 command로 구현되고 event permission으로 제한된다는 사실 | <https://v2.tauri.app/concept/inter-process-communication/> |
+| `2.11.6` channel 및 대용량 응답 scoping 수정, `2.12.0` listener와 queue 회수 | <https://github.com/tauri-apps/tauri/security/advisories/GHSA-w28w-mhc8-qvjv>; <https://github.com/tauri-apps/tauri/releases/tag/tauri-v2.12.0>; <https://github.com/tauri-apps/tauri/releases/tag/tauri-v2.11.6> |
+| Query가 넘긴 `AbortSignal`은 Tauri가 이미 수락한 Rust command를 취소하지 않는다 | [tanstack-vite-react-2026-11-04.ko.md](../references/official/tanstack-vite-react-2026-11-04.ko.md); <https://tanstack.com/query/latest/docs/framework/react/guides/query-cancellation>; [tauri-v2-2026-11-04.ko.md](../references/official/tauri-v2-2026-11-04.ko.md) |
 | DTO/error 형태, listener cleanup, managed state 동시성 요구 | 이 파일의 규약과 안전 정책; 외부 출처 없음 |

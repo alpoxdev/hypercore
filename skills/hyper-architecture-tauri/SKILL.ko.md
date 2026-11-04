@@ -11,8 +11,8 @@ compatibility: "정적 Vite 프런트엔드를 쓰는 Tauri v2, React, `@tanstac
 @rules/security.ko.md
 @rules/router-query.ko.md
 @rules/testing.ko.md
-@references/official/tauri-v2-2026-07-30.ko.md
-@references/official/tanstack-vite-react-2026-07-30.ko.md
+@references/official/tauri-v2-2026-11-04.ko.md
+@references/official/tanstack-vite-react-2026-11-04.ko.md
 @assets/evals/hyper-architecture-tauri-cases.jsonl
 
 # Tauri Architecture
@@ -112,7 +112,7 @@ Query 의존성만 보고 파일 기반 라우팅을 추론하지 않습니다. 
 
 - 핵심(`SKILL.md`): 트리거, 계약, 모드 선택, 게이트 순서, 검증, 정지 조건.
 - 규칙: `architecture-rules.ko.md`(분류, 모드, 브라운필드 정책, 차단 게이트)와 `reference_routing`에 매핑된 주제별 파일 여섯 개.
-- 참고: `references/official/tauri-v2-2026-07-30.ko.md`와 `tanstack-vite-react-2026-07-30.ko.md`에 날짜가 붙은 벤더 사실을 둡니다.
+- 참고: `references/official/tauri-v2-2026-11-04.ko.md`와 `tanstack-vite-react-2026-11-04.ko.md`에 날짜가 붙은 벤더 사실을 둡니다.
 - 자산: `assets/evals/hyper-architecture-tauri-cases.jsonl`에 트리거와 동작 사례를 둡니다.
 - 번들 스크립트는 없습니다. 허용된 소스·빌드·테스트 명령과 주제별 체크리스트가 검증 수단입니다.
 - 이 스킬은 스스로 완결됩니다. 다른 스킬의 경로, 문서, 호출을 필요로 하지 않습니다.
@@ -145,8 +145,8 @@ Query 의존성만 보고 파일 기반 라우팅을 추론하지 않습니다. 
 | CSP, scope, 자격 증명, 신뢰할 수 없는 입력, 네이티브 부작용 게이트 | `rules/security.md` |
 | Router의 파일 라우팅 소유, Query 캐시와 최신성 소유, loader, preloading, 외부 데이터 | `rules/router-query.md` |
 | 손댄 런타임 영역의 테스트와 검증 주장 | `rules/testing.md` |
-| Tauri API, 설정, 보안, 테스트 사실 | `references/official/tauri-v2-2026-07-30.md` |
-| Router, Query, Vite, React 사실과 버전에 민감한 동작 | `references/official/tanstack-vite-react-2026-07-30.md` |
+| Tauri API, 설정, 보안, 테스트 사실 | `references/official/tauri-v2-2026-11-04.md` |
+| Router, Query, Vite, React 사실과 버전에 민감한 동작 | `references/official/tanstack-vite-react-2026-11-04.md` |
 
 </reference_routing>
 
@@ -186,6 +186,7 @@ Query 의존성만 보고 파일 기반 라우팅을 추론하지 않습니다. 
 - 근거로 고른 런타임 모드 하나, 또는 이유를 붙인 명시적 경로 이탈.
 - 손댄 영역에 대한 세 소유 경계 명시: 정적 Vite 패키징, Router 생성 라우트, Query 캐시와 최신성.
 - 새로 생기는 모든 권한 경로를 `rules/tauri-ipc.md`와 `rules/security.md`의 좁은 capability, permission, scope, 입력 검증, 호출자 경계로 덮음.
+- channel이나 대용량 IPC 응답이 경계를 넘을 때 설치된 Tauri version이 `2.11.6` 이상이고, `2.12` upgrade 뒤 capability `deny`를 다시 테스트함.
 - 모든 판정을 `Official`, `Safety`, `Hypercore` 중 하나로 분류하고 보고에 라벨을 붙임.
 - 허용된 게이트의 검증 근거. 게이트를 돌릴 수 없었으면 그 사실을 분명히 적음.
 - 이 스킬 폴더를 고쳤을 때 한국어와 영어 파일, 지원 링크의 일치.
@@ -197,6 +198,7 @@ Query 의존성만 보고 파일 기반 라우팅을 추론하지 않습니다. 
 - 정적 Vite SPA 자산, 생성 라우트, Query 캐시, 브라우저 상태를 Tauri 네이티브 권한과 뒤섞는 것.
 - 렌더러에서 닿는 코드에 자격 증명, 개인 키, 서버 전용 환경 값, 파일 시스템 접근, 셸이나 프로세스 접근, 권한이 필요한 플러그인 호출을 노출하는 것.
 - 요구되는 좁은 capability, permission, scope, 입력 검증, 호출자 경계 없이 IPC command나 이벤트나 플러그인 capability를 쓰는 것.
+- `invoke_handler` 등록을 최소 권한으로 취급하거나, application command에 plugin식 `prefix:base` permission 식별자를 주는 것.
 - 신뢰할 수 없는 웹, IPC, 이벤트 입력을 신뢰된 네이티브 데이터로 취급하거나, CSP를 끄거나, 근거 없이 scope와 capability를 넓히거나, 플랫폼 보안 통제를 우회하는 것.
 - 명시적 사용자 권한 없이 되돌릴 수 없는 네이티브 부작용, 자격 증명 작업, 게시·릴리스·배포, 파괴적 작업을 하는 것.
 - 허용된 게이트를 실행하지 않고, 또는 실행할 수 없는 이유를 적지 않고 검증을 주장하는 것.

@@ -1,6 +1,6 @@
 # Project Structure and Ownership
 
-> Use this rule when adopting or reviewing the renderer/Rust boundary in a Tauri v2 application. Read the dated evidence first: [Tauri v2 evidence](../references/official/tauri-v2-2026-07-30.md) and [TanStack + Vite + React evidence](../references/official/tanstack-vite-react-2026-07-30.md).
+> Use this rule when adopting or reviewing the renderer/Rust boundary in a Tauri v2 application. Read the dated evidence first: [Tauri v2 evidence](../references/official/tauri-v2-2026-11-04.md) and [TanStack + Vite + React evidence](../references/official/tanstack-vite-react-2026-11-04.md).
 
 ## Decision Summary
 
@@ -207,6 +207,7 @@ Use path aliases only when they preserve these boundaries. An alias must not hid
 | configured frontend output | Vite build | Fix source/config, rebuild, and align `frontendDist` with `build.outDir` |
 | `src-tauri/target/` | Cargo | Never edit or review as application source |
 | `src-tauri/gen/**` when created by mobile tooling | Tauri generator | Regenerate through the relevant Tauri command |
+| `app > appDirectoriesOverride` in `tauri.conf.json` | Application team | Relocates `app_config_dir`, `app_data_dir`, `app_local_data_dir`, `app_cache_dir`, `app_log_dir`, and the `$APPCONFIG`-style path variables for Tauri and for plugins that use those APIs; re-check persisted data, log paths, and asset scopes when it changes |
 | `src-tauri/tauri.conf.json`, capabilities, permissions, Rust source | Application team | Review and edit intentionally |
 | module `index.ts` | Module owner | Export the supported surface only; do not mirror every internal file |
 | lockfiles | Package manager under repository policy | Change only through a declared dependency operation |
@@ -237,7 +238,7 @@ Reject or correct a structure when any condition holds:
 
 ## Sources
 
-> Links checked 2026-07-30.
+> Links checked 2026-11-04.
 
 Official constraints:
 

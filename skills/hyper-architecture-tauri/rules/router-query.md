@@ -113,6 +113,8 @@ Rules:
 - A query key contains every input that changes the result. Do not capture such input invisibly in a query function.
 - `validateSearch` MUST validate route search input. `loaderDeps` MUST contain every validated search dependency that changes loader output. Use the same dependencies in the query factory/key; route parameter dependencies are already identified by the route match.
 
+The example below assumes Zod v4, where the schema is passed to `validateSearch` directly. A Zod v3 project must wrap the schema in `zodValidator` from `@tanstack/zod-adapter`; do not adopt the direct form on Zod v3, and do not keep both conventions in one route tree.
+
 ```ts
 import { z } from 'zod'
 
@@ -161,15 +163,16 @@ Reject the proposed implementation or correct it when any condition holds:
 4. Pending, error, or not-found behavior is absent for a meaningful route state.
 5. A client-side guard is presented as the authorization control for a native capability.
 
-See [`../references/official/tanstack-vite-react-2026-07-30.md`](../references/official/tanstack-vite-react-2026-07-30.md) for dated API evidence and [`tauri-ipc.md`](tauri-ipc.md) and [`security.md`](security.md) for command-boundary requirements.
+See [`../references/official/tanstack-vite-react-2026-11-04.md`](../references/official/tanstack-vite-react-2026-11-04.md) for dated API evidence and [`tauri-ipc.md`](tauri-ipc.md) and [`security.md`](security.md) for command-boundary requirements.
 
 ## Sources
 
-> Links checked 2026-07-30.
+> Links checked 2026-11-04.
 
 | Claim | Source |
 |---|---|
-| Router plugin ordering and file-route generation, typed router context, `defaultPreloadStaleTime`, `validateSearch`/`loaderDeps`, and pending/error/not-found components | [tanstack-vite-react-2026-07-30.md](../references/official/tanstack-vite-react-2026-07-30.md); <https://tanstack.com/router/v1/docs/framework/react/guide/data-loading>; <https://tanstack.com/router/v1/docs/framework/react/guide/not-found-errors> |
-| `queryOptions`, `ensureQueryData`, `useSuspenseQuery`, query-key inputs, staleness, and invalidation behavior | [tanstack-vite-react-2026-07-30.md](../references/official/tanstack-vite-react-2026-07-30.md); <https://tanstack.com/query/v5/docs/reference/QueryClient>; <https://tanstack.com/query/latest/docs/framework/react/guides/query-keys> |
-| The packaged static-asset boundary and Rust-side authority for native operations | [tauri-v2-2026-07-30.md](../references/official/tauri-v2-2026-07-30.md); <https://v2.tauri.app/security/> |
+| Router plugin ordering and file-route generation, typed router context, `defaultPreloadStaleTime`, `validateSearch`/`loaderDeps`, and pending/error/not-found components | [tanstack-vite-react-2026-11-04.md](../references/official/tanstack-vite-react-2026-11-04.md); <https://tanstack.com/router/v1/docs/framework/react/guide/data-loading>; <https://tanstack.com/router/v1/docs/framework/react/guide/not-found-errors> |
+| Zod v4 passing its schema directly to `validateSearch`, and Zod v3 needing `zodValidator` | <https://tanstack.com/router/latest/docs/framework/react/guide/search-params> |
+| `queryOptions`, `ensureQueryData`, `useSuspenseQuery`, query-key inputs, staleness, and invalidation behavior | [tanstack-vite-react-2026-11-04.md](../references/official/tanstack-vite-react-2026-11-04.md); <https://tanstack.com/query/v5/docs/reference/QueryClient>; <https://tanstack.com/query/latest/docs/framework/react/guides/query-keys> |
+| The packaged static-asset boundary and Rust-side authority for native operations | [tauri-v2-2026-11-04.md](../references/official/tauri-v2-2026-11-04.md); <https://v2.tauri.app/security/> |
 | Route/page/module ownership, the narrow desktop adapter, and the rule that a client guard is not authorization | This repository's convention and safety policy; no external source |

@@ -11,8 +11,8 @@ compatibility: "Tauri v2 with a static Vite frontend, React, TanStack Router v1 
 @rules/security.md
 @rules/router-query.md
 @rules/testing.md
-@references/official/tauri-v2-2026-07-30.md
-@references/official/tanstack-vite-react-2026-07-30.md
+@references/official/tauri-v2-2026-11-04.md
+@references/official/tanstack-vite-react-2026-11-04.md
 @assets/evals/hyper-architecture-tauri-cases.jsonl
 
 # Tauri Architecture
@@ -112,7 +112,7 @@ Do not infer file-based routing from a Query dependency. File-based routing belo
 
 - Core (`SKILL.md`): trigger, contract, mode selection, gate order, verification, stop condition.
 - Rules: `architecture-rules.md` (taxonomy, modes, brownfield policy, blocking gates) plus six topic files mapped in `reference_routing`.
-- References: `references/official/tauri-v2-2026-07-30.md` and `tanstack-vite-react-2026-07-30.md` hold dated vendor facts.
+- References: `references/official/tauri-v2-2026-11-04.md` and `tanstack-vite-react-2026-11-04.md` hold dated vendor facts.
 - Assets: `assets/evals/hyper-architecture-tauri-cases.jsonl` holds trigger and behavior cases.
 - No bundled script: permitted source/build/test commands and the topic checklists are the verification surface.
 - The skill is self-contained; it needs no other skill's path, document, or invocation.
@@ -145,8 +145,8 @@ Read `architecture-rules.md` first for the taxonomy, supported modes, brownfield
 | CSP, scopes, credentials, untrusted input, native side-effect gates | `rules/security.md` |
 | Router file-routing ownership, Query cache/freshness ownership, loaders, preloading, external data | `rules/router-query.md` |
 | Tests and validation claims for touched runtime surfaces | `rules/testing.md` |
-| Tauri API, config, security, and testing facts | `references/official/tauri-v2-2026-07-30.md` |
-| Router, Query, Vite, or React facts and version-sensitive behavior | `references/official/tanstack-vite-react-2026-07-30.md` |
+| Tauri API, config, security, and testing facts | `references/official/tauri-v2-2026-11-04.md` |
+| Router, Query, Vite, or React facts and version-sensitive behavior | `references/official/tanstack-vite-react-2026-11-04.md` |
 
 </reference_routing>
 
@@ -186,6 +186,7 @@ Phase rules:
 - One runtime mode selected from evidence, or an explicit route-away with the reason.
 - The three ownership boundaries stated for the touched surface: static Vite packaging, Router-generated routes, Query cache/freshness.
 - Every new privileged path covered by a narrow capability, permission, scope, input validation, and caller boundary in `rules/tauri-ipc.md` and `rules/security.md`.
+- The installed Tauri version is `2.11.6` or newer whenever a channel or large IPC response crosses the boundary, and any capability `deny` was re-tested after a `2.12` upgrade.
 - Every finding classified as `Official`, `Safety`, or `Hypercore` and labelled in the report.
 - Validation evidence from the permitted gates, with non-execution stated explicitly when a gate could not run.
 - Bilingual and support-link alignment when this skill folder changes.
@@ -197,6 +198,7 @@ Phase rules:
 - Conflating static Vite SPA assets, generated routes, Query cache, or browser state with Tauri native authority.
 - Exposing credentials, private keys, server-only environment values, filesystem access, shell/process access, or privileged plugin calls to renderer-reachable code.
 - Using an IPC command, event, or plugin capability without the narrow capability, permission, scope, input validation, and caller boundary it requires.
+- Treating `invoke_handler` registration as least privilege, or giving an application command a plugin-style `prefix:base` permission identifier.
 - Treating untrusted web, IPC, or event input as trusted native data, disabling CSP, broadening scopes or capabilities without justification, or bypassing platform security controls.
 - Making an irreversible native side effect, credential action, publish/release/deploy, or destructive operation without explicit user authority.
 - Claiming validation without executing the permitted gates, or without recording why they could not run.

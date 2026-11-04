@@ -92,7 +92,7 @@ Untouched라는 이유로 legacy code를 compliant라고 부르지 않습니다.
 1. **Mode gate:** Project/runtime mode를 알 수 없거나 missing stack layer를 complete adoption으로 취급하거나 full-stack TanStack project를 이 packaged static SPA로 취급해 full-stack architecture workflow로 라우팅하지 않았습니다.
 2. **Boundary gate:** Browser module, route, loader state, Query state를 Tauri command 또는 native authority로 매핑합니다.
 3. **Secret gate:** Renderer-reachable path가 credentials, private configuration, native filesystem/process access, server-only dependencies를 read/exfiltrate할 수 있습니다.
-4. **IPC gate:** 새 privileged command/event/plugin path에 least privilege, validation, authorization, capability/permission/scope coverage, safe error handling이 없습니다.
+4. **IPC gate:** 새 privileged command/event/plugin path에 least privilege, validation, authorization, capability/permission/scope coverage, safe error handling이 없거나, 설계가 설치된 Tauri version이 제공하지 않는 channel/대용량 응답 scoping에 의존합니다.
 5. **Input gate:** Untrusted renderer, web, deep-link, event, IPC data가 validation/authorization 없이 native-sensitive behavior에 도달합니다.
 6. **Platform gate:** Static packaging, route generation, asset paths, CSP, Vite environment exposure, capability configuration이 development 밖에서 실패하거나 unsafe해집니다.
 7. **Authority gate:** 명시적 authority 없이 credentials, native side effects, destructive actions, publication, release, deployment이 필요합니다.
