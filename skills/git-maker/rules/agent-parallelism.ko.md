@@ -19,7 +19,7 @@
 |------|------|------|------|------|
 | Repo Mapper | 저장소/worktree 루트, staged/unstaged/untracked 파일, 소유 경계를 매핑한다 | `git-maker-fast.sh inspect` 출력, `git diff --name-only` | 저장소/파일 맵, linked-worktree 맥락, 모호성 목록 | 아니오 |
 | Grouping Critic | 논리적 커밋 그룹을 제안하고 무관한 파일이나 비밀을 표시한다 | status, 파일 목록, diff 요약 | 신뢰도와 제외 항목을 포함한 그룹 계획 | 아니오 |
-| Message Drafter | 한국어 Conventional Commit 제목/본문을 작성한다 | 그룹 계획과 diff 요약 | 근거가 있는 메시지 후보 | 아니오 |
+| Message Drafter | 영어 Conventional Commit 제목/본문을 작성한다 | 그룹 계획과 diff 요약 | 근거가 있는 메시지 후보 | 아니오 |
 | Safety Verifier | 비밀, 파괴적 작업, 보호 브랜치, detached HEAD, upstream/push 위험을 확인한다 | status, branch/upstream 출력, 스크립트 diff | 통과/차단 보고서 | 아니오 |
 | Main Integrator | 레인 간 충돌을 해결하고 stage, commit, push, report를 수행한다 | 모든 레인 출력 | 실제 커밋과 push 요약 | 예 |
 
@@ -63,7 +63,7 @@ Return: proposed logical commit groups, files included in each group, exclusions
 ```text
 Read-only git-maker commit message drafting. Do not edit, stage, commit, push, or restore files.
 Input: [paste final or candidate group plan and diff summary].
-Return: Korean-language Conventional Commit subject/body candidates for each group, with rationale, no fabricated issue footers, and no Korean command-style imperative endings.
+Return: English Conventional Commit subject/body candidates for each group, with rationale: imperative subjects, lowercase after the colon, no trailing period, at most 72 characters, no fabricated issue footers, and no sign-off or attribution trailers unless requested.
 ```
 
 ### Safety Verifier

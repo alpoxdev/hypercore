@@ -31,29 +31,37 @@
 | Staging discipline | 선택한 그룹에 필요한 파일만 stage한다. `ALL` 모드가 모든 uncommitted 파일을 의도적으로 포함하고 grouping이 여전히 논리 단위별로 일어나는 경우가 아니면 blanket staging을 사용하지 않는다. |
 | Type selection | 실제 dominant change에서 Conventional Commit type을 선택한다. |
 | Scope selection | 하나의 module/package/feature가 변경을 명확히 소유할 때만 scope를 사용한다. |
-| Language | Commit subject와 body는 한국어이며 Conventional Commit type/scope는 영어로 유지한다. |
-| Subject line | command/imperative ending이 아닌 중립적인 Conventional Commit result/summary wording을 사용한다. colon 뒤는 lowercase이고 72자 미만이어야 한다. |
-| Body/footer | why/risk/follow-up, breaking change, 검증된 issue reference, 또는 명시적으로 요청된 metadata가 필요할 때만 추가한다. |
+| Language | Subject, body, footer는 영어로 쓴다. 저장소가 자체 커밋 규칙(기여 가이드나 commitlint 설정)을 문서로 두었다면 그 규칙을 따른다. |
+| Subject line | `<type>(<scope>): <summary>` 형태로, 명령형("add", "fix", "remove")을 쓰고 colon 뒤 첫 단어는 소문자, 끝에 마침표를 붙이지 않는다. 50자를 목표로 하고 72자를 넘기지 않는다. |
+| Body/footer | Body는 subject와 빈 줄 하나로 띄우고 72자에서 줄바꿈한다. 이유, 위험, 후속 작업이 subject만으로 분명하지 않을 때만 쓰고, 어떻게가 아니라 무엇을 왜 바꿨는지 설명한다. Footer는 `BREAKING CHANGE:`, 검증된 issue reference, 명시적으로 요청된 metadata에만 쓴다. |
+| Attribution | `Signed-off-by`, `Co-authored-by` 같은 서명·AI 출처 trailer는 사용자나 저장소가 요구할 때만 붙인다. sign-off는 사람의 권한을 증명하는 것이라 에이전트가 대신할 수 없다. issue 번호, reviewer, co-author를 지어내지 않는다. |
 | Safety | secret, generated credential, unrelated user change를 절대 커밋하지 않는다. 명시 요청 없이는 `--no-verify`, rebase, reset, amend, destructive history operation을 사용하지 않는다. |
 | Hook failures | 오류를 검사한다. 현재 변경이 원인이고 fix가 안전할 때만 수정 후 재시도한다. 그렇지 않으면 중단하고 blocker를 보고한다. |
 
-## 커밋 메시지 톤
+## 커밋 메시지 형식
 
-한국어 subject는 독자에게 지시하는 문장이 아니라 commit-message summary로 작성한다.
+Subject는 "If applied, this commit will ..." 문장을 완성하는 변경 내용으로 쓴다.
 
 | 사용 | 피함 | 이유 |
 |------|------|------|
-| `build(deps): 안정 버전 도구 체인으로 빌드 경로 정렬` | `build(deps): 안정 버전 도구 체인으로 빌드 경로를 맞춰라` | `맞춰라`는 명령처럼 들린다. |
-| `build(cloudflare): Workers 배포 경로 안정화` | `build(cloudflare): Workers 배포 경로를 안정화하라` | `~하라`는 명령형 어미다. |
-| `refactor(nextjs): 아키텍처 경계 강화로 배포 안정성 확보` | `refactor(nextjs): 아키텍처 경계를 강제해 배포 안정성을 확보하라` | Commit subject는 변경/결과를 설명해야 한다. |
+| `fix(auth): handle expired refresh tokens` | `fix(auth): Fixed expired refresh tokens.` | 과거형, 대문자로 시작하는 첫 단어, 끝 마침표 |
+| `feat(cli): add --json output to status` | `feat(cli): this commit adds JSON output` | 변경 내용이 아니라 commit 자체를 설명한다. |
+| `refactor(api): split request validation from handlers` | `refactor: misc cleanup` | 너무 모호해 나중에 검토하거나 검색하기 어렵다. |
+| `build(deps): pin toolchain to stable versions` | `build(deps): 안정 버전 도구 체인으로 고정` | 커밋 메시지는 영어로 쓴다. |
 
-선호하는 한국어 subject 형태:
+Body와 footer가 있는 예:
 
-- 명사/결과 구문: `빌드 경로 정렬`, `배포 경로 안정화`, `검증 흐름 개선`
-- 간결한 과거 효과/결과 요약: `의존성 해석 고정`, `라우팅 경계 분리`
-- `~하라`, `~해라`, `~라`, `~하자` 같은 문장 끝 명령형 어미나 future maintainer에게 직접 명령하는 표현 없음
+```text
+fix(sync): retry uploads after transient network errors
 
-자연스러운 초안이 명령처럼 읽히면 현재 commit에 존재하는 결과로 다시 쓴다.
+Uploads failed permanently on the first timeout, which left local
+changes unsynced until the next manual run. Retry up to three times
+with exponential backoff before reporting the failure.
+
+Refs: #142
+```
+
+초안이 과거형이거나, commit 자체를 설명하거나("this commit ..."), 모호하면 명령형 변경 내용으로 다시 쓴다.
 
 ## 그룹화 휴리스틱
 
@@ -127,6 +135,13 @@ Conflict가 생기면 기본적으로 자율 해결한다:
 
 ## Sources
 
-> 외부 출처 없음. 내용 확인 2026-09-22.
+> 확인 2026-11-04.
 
-이 규칙은 이 패키지의 저장소 작업 경험에서 작성했다. 외부 주장이 없으므로 외부 출처를 인용하지 않는다.
+| Claim | Source |
+|---|---|
+| `<type>[optional scope]: <description>`, body 앞 빈 줄, footer 문법 | <https://www.conventionalcommits.org/en/v1.0.0/> |
+| 50자 안팎 요약 한 줄, 빈 줄, 그다음 설명 | `git-commit(1)` DISCUSSION (git 2.56.0), <https://git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project> |
+| 명령형, `area:` 접두사 뒤 소문자, 마침표 없음 | <https://github.com/git/git/blob/master/Documentation/SubmittingPatches> |
+| 사람만 증명할 수 있으므로 에이전트는 `Signed-off-by`를 붙이지 않는다 | <https://docs.kernel.org/process/coding-assistants.html> |
+
+인자 모드, attribution, grouping, push, propagation, conflict 규칙은 이 패키지가 저장소 작업 경험에서 작성했으며 외부 출처를 인용하지 않는다.

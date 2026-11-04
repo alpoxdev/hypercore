@@ -17,7 +17,7 @@ compatibility: Requires Bash 3.2+ (macOS or Linux), git, and the standard POSIX 
 
 <output_language>
 
-Default all user-facing deliverables, saved artifacts, reports, plans, generated docs, summaries, handoff notes, commit/message drafts, and validation notes to Korean, even when this canonical skill file is written in English.
+Default all user-facing deliverables, saved artifacts, reports, plans, generated docs, summaries, handoff notes, and validation notes to Korean, even when this canonical skill file is written in English. Commit messages are the exception: write them in English as `rules/commit-and-push-policy.md` defines.
 
 Preserve source code identifiers, CLI commands, file paths, schema keys, JSON/YAML field names, API names, package names, proper nouns, and quoted source excerpts in their required or original language.
 
@@ -128,7 +128,7 @@ No optimization loop. One deterministic pass per request: preflight, group, comm
 
 <language_and_translation_default>
 
-Write commit subjects, file paths, branch names, and commands as the repository and the user stated them; write the run report in Korean unless the user asked otherwise. Quote helper and git output as returned instead of translating it.
+Write commit messages in English (`rules/commit-and-push-policy.md`); write file paths, branch names, and commands as the repository and the user stated them; write the run report in Korean unless the user asked otherwise. Quote helper and git output as returned instead of translating it.
 
 </language_and_translation_default>
 
@@ -162,11 +162,11 @@ Run `scripts/git-maker-fast.sh inspect . --jobs 4` first. Use its repo, worktree
 Partition selected changes into one logical change per commit, use targeted staging, and commit sequentially per repository:
 
 ```bash
-scripts/git-commit.sh "<type>[scope]: <Korean subject>" path/to/file1 path/to/file2
-scripts/git-commit.sh --repo path/to/repo "<type>[scope]: <Korean subject>" path/to/file1
+scripts/git-commit.sh "<type>(<scope>): <imperative summary>" path/to/file1 path/to/file2
+scripts/git-commit.sh --repo path/to/repo "<type>(<scope>): <imperative summary>" path/to/file1
 ```
 
-Use Korean neutral result-summary subjects after the Conventional Commit type/scope.
+Write the subject in English, in the imperative mood, after the Conventional Commit type and optional scope, for example `fix(auth): handle expired refresh tokens`.
 
 ## Phase 3. Push automatically
 

@@ -17,7 +17,7 @@ compatibility: Bash 3.2 이상(macOS 또는 Linux), git, 번들 스크립트가 
 
 <output_language>
 
-사용자에게 보이는 모든 산출물, 저장 아티팩트, 리포트, 계획서, 생성 문서, 요약, 인수인계 메모, 커밋/메시지 초안, 검증 메모는 기본적으로 한국어로 작성합니다.
+사용자에게 보이는 모든 산출물, 저장 아티팩트, 리포트, 계획서, 생성 문서, 요약, 인수인계 메모, 검증 메모는 기본적으로 한국어로 작성합니다. 커밋 메시지만 예외로 `rules/commit-and-push-policy.ko.md`가 정한 대로 영어로 씁니다.
 
 소스 코드 식별자, CLI 명령, 파일 경로, 스키마 키, JSON/YAML 필드명, API 이름, 패키지명, 고유명사, 인용한 원문 발췌는 필요한 언어 또는 원문 그대로 유지합니다.
 
@@ -128,7 +128,7 @@ compatibility: Bash 3.2 이상(macOS 또는 Linux), git, 번들 스크립트가 
 
 <language_and_translation_default>
 
-커밋 subject, 파일 경로, branch 이름, 명령은 저장소와 사용자가 쓴 그대로 적고, 실행 보고는 사용자가 다른 언어를 요청하지 않은 한 한국어로 씁니다. helper와 git 출력은 번역하지 않고 돌아온 그대로 인용합니다.
+커밋 메시지는 영어로 쓰고(`rules/commit-and-push-policy.ko.md`), 파일 경로, branch 이름, 명령은 저장소와 사용자가 쓴 그대로 적으며, 실행 보고는 사용자가 다른 언어를 요청하지 않은 한 한국어로 씁니다. helper와 git 출력은 번역하지 않고 돌아온 그대로 인용합니다.
 
 </language_and_translation_default>
 
@@ -162,11 +162,11 @@ compatibility: Bash 3.2 이상(macOS 또는 Linux), git, 번들 스크립트가 
 선택한 변경을 commit당 하나의 logical change로 나누고 targeted staging으로 저장소별 순차 commit합니다.
 
 ```bash
-scripts/git-commit.sh "<type>[scope]: <한국어 subject>" path/to/file1 path/to/file2
-scripts/git-commit.sh --repo path/to/repo "<type>[scope]: <한국어 subject>" path/to/file1
+scripts/git-commit.sh "<type>(<scope>): <imperative summary>" path/to/file1 path/to/file2
+scripts/git-commit.sh --repo path/to/repo "<type>(<scope>): <imperative summary>" path/to/file1
 ```
 
-Conventional Commit type/scope 뒤에는 중립적인 한국어 결과 요약을 씁니다.
+Conventional Commit type과 선택적 scope 뒤에는 영어 명령형 요약을 씁니다. 예: `fix(auth): handle expired refresh tokens`.
 
 ## Phase 3. Push automatically
 

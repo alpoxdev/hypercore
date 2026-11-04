@@ -20,7 +20,7 @@ Run these checks before declaring `git-maker` changes complete or before reporti
 - A local linked-worktree fixture, when practical, shows `worktree|linked` and a `repo|...` path at the linked checkout root.
 - Push helper is not tested against a real remote unless the user asked to push; use local fixtures when validating behavior.
 - Commit phase still uses targeted staging and one logical change per commit.
-- Commit subjects read like neutral Conventional Commit summaries, not Korean command-style imperatives.
+- Commit messages are English Conventional Commits: imperative subject, lowercase after the colon, no trailing period, at most 72 characters, a blank line before any body, and no sign-off or attribution trailer the user or repository did not request.
 - Push phase is automatic only after all commit groups succeed.
 - Force push remains blocked for `main` and `master`.
 - If subagents were used, their work was read-only, no two agents owned the same git index mutation, final staged files match the main integrator's selected group, and every skipped or failed push target is reported.
@@ -33,7 +33,7 @@ Read as:
 
 1. a trigger model: the skill activates on commit+push, not commit-only or push-only.
 2. a rushed operator: the fastest safe command is obvious.
-3. a commit reviewer: generated Korean subjects look like concise change/result summaries, not instructions.
+3. a commit reviewer: generated subjects read as English imperative changes ("add", "fix"), not past-tense reports or vague summaries.
 4. a maintainer: future speed rules belong in `rules/speed-and-automation.md`; durable commit policy belongs in `rules/commit-and-push-policy.md`; subagent lane rules belong in `rules/agent-parallelism.md`.
 5. a branch operator: `/git-maker && dev`, `/git-maker CURRENT && dev && deploy/staging`, and `/git-maker all && dev` have unambiguous scope and propagation behavior.
 

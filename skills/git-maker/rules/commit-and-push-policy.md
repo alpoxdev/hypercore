@@ -31,29 +31,37 @@ Use this rule when `git-maker` is active and you need the durable commit/push co
 | Staging discipline | Stage only files required for the selected group. Do not use blanket staging unless `ALL` mode truly includes every uncommitted file and grouping still happens per logical unit. |
 | Type selection | Choose the Conventional Commit type from the actual dominant change. |
 | Scope selection | Use scope only when one module/package/feature clearly owns the change. |
-| Language | Commit subject and body are Korean; Conventional Commit type/scope remain English. |
-| Subject line | Use neutral Conventional Commit result/summary wording, not Korean command/imperative endings; lowercase after colon, under 72 characters. |
-| Body/footer | Add only when needed for why/risk/follow-up, breaking change, verified issue references, or explicitly requested metadata. |
+| Language | Write the subject, body, and footers in English. If the repository documents its own commit convention (a contributing guide or a commitlint config), follow that convention instead. |
+| Subject line | `<type>(<scope>): <summary>` in the imperative mood ("add", "fix", "remove"), lowercase first word after the colon, no trailing period; aim for 50 characters and never exceed 72. |
+| Body/footer | Separate the body from the subject with one blank line and wrap it at 72 characters. Add a body only when the why, risk, or follow-up is not obvious from the subject; explain what changed and why, not how. Add footers only for `BREAKING CHANGE:`, verified issue references, or explicitly requested metadata. |
+| Attribution | Add `Signed-off-by`, `Co-authored-by`, or other sign-off or AI attribution trailers only when the user or the repository requires them; a sign-off certifies a human's authority, which an agent cannot give. Never invent issue numbers, reviewers, or co-authors. |
 | Safety | Never commit secrets, generated credentials, or unrelated user changes. Never use `--no-verify`, rebase, reset, amend, or destructive history operations unless explicitly requested. |
 | Hook failures | Inspect the error. Fix and retry only if the current change caused it and the fix is safe; otherwise stop and report the blocker. |
 
-## Commit Message Tone
+## Commit Message Format
 
-Write the Korean subject as a commit-message summary, not as an instruction to the reader.
+Write the subject as the change the commit applies, completing the sentence "If applied, this commit will ...".
 
 | Use | Avoid | Why |
 |------|------|------|
-| `build(deps): align build paths with stable toolchain versions` | `build(deps): make the build paths use stable toolchain versions` | The avoided form reads like an instruction. |
-| `build(cloudflare): stabilize Workers deployment path` | `build(cloudflare): stabilize the Workers deployment path now` | The avoided form reads like an imperative order. |
-| `refactor(nextjs): secure deploy stability with stronger architecture boundaries` | `refactor(nextjs): force architecture boundaries to secure deploy stability` | Commit subjects should describe the change/result. |
+| `fix(auth): handle expired refresh tokens` | `fix(auth): Fixed expired refresh tokens.` | Past tense, capitalized first word, and trailing period. |
+| `feat(cli): add --json output to status` | `feat(cli): this commit adds JSON output` | Describes the commit instead of stating the change. |
+| `refactor(api): split request validation from handlers` | `refactor: misc cleanup` | Too vague to review or search later. |
+| `build(deps): pin toolchain to stable versions` | `build(deps): 안정 버전 도구 체인으로 고정` | Commit messages are English. |
 
-Preferred Korean subject shapes:
+Example with a body and footer:
 
-- noun/result phrase, such as "build path alignment", "deployment path stabilization", or "validation flow improvement"
-- concise past-effect/result summary, such as "dependency resolution pinned" or "routing boundary separated"
-- no sentence-final Korean command endings or direct orders to future maintainers
+```text
+fix(sync): retry uploads after transient network errors
 
-If the natural draft reads like a command, rewrite it to the result now present in the commit.
+Uploads failed permanently on the first timeout, which left local
+changes unsynced until the next manual run. Retry up to three times
+with exponential backoff before reporting the failure.
+
+Refs: #142
+```
+
+If the natural draft is past tense, descriptive ("this commit ..."), or vague, rewrite it to the imperative change itself.
 
 ## Grouping Heuristics
 
@@ -127,6 +135,13 @@ Ask the user one narrow outcome question only if at least one material decision 
 
 ## Sources
 
-> No external sources were used. Content checked 2026-09-22.
+> Checked 2026-11-04.
 
-This rule set is authored in this package from repository practice. It makes no external claim, so no external source is cited.
+| Claim | Source |
+|---|---|
+| `<type>[optional scope]: <description>`, the blank line before the body, and footer syntax | <https://www.conventionalcommits.org/en/v1.0.0/> |
+| A short summary line of about 50 characters, a blank line, then the description | `git-commit(1)` DISCUSSION (git 2.56.0), <https://git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project> |
+| Imperative mood, lowercase after the `area:` prefix, and no full stop | <https://github.com/git/git/blob/master/Documentation/SubmittingPatches> |
+| Agents must not add `Signed-off-by`, because only a human can certify it | <https://docs.kernel.org/process/coding-assistants.html> |
+
+The argument modes, attribution, grouping, push, propagation, and conflict rules are authored in this package from repository practice and cite no external source.
