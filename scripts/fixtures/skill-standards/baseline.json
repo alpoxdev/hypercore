@@ -25,9 +25,10 @@
     },
     "hyper-architecture": {
       "FRONTMATTER_TRIGGER": 1,
-      "CROSS_SKILL_REFERENCE": 47
+      "CROSS_SKILL_REFERENCE": 56
     },
     "hyper-architecture-expo": {},
+    "hyper-architecture-flutter": {},
     "hyper-architecture-hono": {
       "FRONTMATTER_TRIGGER": 1
     },
