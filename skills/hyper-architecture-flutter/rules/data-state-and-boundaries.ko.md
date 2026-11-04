@@ -10,7 +10,7 @@ repository를 추가하거나, 상태를 계층 사이에서 옮기거나, 영�
 |---|---|---|
 | 위젯 로컬·일시적 상태 | 그 상태를 그리는 위젯 | `setState`나 `ValueNotifier`를 씁니다. 다른 위젯이 필요로 하거나 rebuild를 넘겨 살아남아야 할 때만 위로 올립니다 |
 | ViewModel UI 상태 | view와 1:1로 짝지은 view model | view가 그리는 불변 snapshot입니다. repository 객체가 view에 닿지 않습니다 |
-| 공유 데이터와 앱 session | 데이터 계층의 repository, 단일 진실 원천 | 데이터 타입마다 repository 하나입니다. caching, retry, refresh, 앱 전역 lifecycle 상태가 여기 있습니다 |
+| 공유 데이터와 앱 session | 데이터 계층의 repository, 단일 진실 공급원 | 데이터 타입마다 repository 하나입니다. caching, retry, refresh, 앱 전역 lifecycle 상태가 여기 있습니다 |
 | 영속 기기 상태 | storage service 하나 위의 repository | version이 있는 schema, migration, 정의된 실패 경로가 있습니다 |
 | form 상태 | form 자체의 controller 또는 view model | 입력, 검증, dirty, 제출 lifecycle은 제출 전까지 로컬에 있습니다 |
 
@@ -18,7 +18,7 @@ repository를 추가하거나, 상태를 계층 사이에서 옮기거나, 영�
 
 **view model 상태**는 view가 화면 하나를 그리려고 쓰는 값입니다. view는 네 종류의 logic만 가집니다(Official). flag나 nullable에 따른 표시 여부, animation, 기기 정보에 따른 layout, 단순 routing입니다. view model과 repository는 의존성을 private 생성자 member로 받으므로 view가 view model을 거쳐 repository에 닿을 수 없습니다.
 
-**repository 상태**는 해당 데이터 타입의 단일 진실 원천이며 "data changes always happen in the SSOT, which is the data layer"입니다(Official). 앱 전역 lifecycle 상태도 repository에 둡니다. session, 메모리 cache, 일시 설정을 dependency injection container로 view model 사이에서 공유합니다. view model은 server 데이터를 두 번째로 들고 있지 않고 repository에서 다시 읽습니다. repository끼리는 서로를 알지 않습니다(Official). 여러 repository를 합치는 logic이 실제로 복잡하거나 여러 view model이 재사용할 때만 선택적 domain 계층이 그 결합을 맡고, 그 조건일 때만 추가합니다.
+**repository 상태**는 해당 데이터 타입의 단일 진실 공급원이며 "data changes always happen in the SSOT, which is the data layer"입니다(Official). 앱 전역 lifecycle 상태도 repository에 둡니다. session, 메모리 cache, 일시 설정을 dependency injection container로 view model 사이에서 공유합니다. view model은 server 데이터를 두 번째로 들고 있지 않고 repository에서 다시 읽습니다. repository끼리는 서로를 알지 않습니다(Official). 여러 repository를 합치는 logic이 실제로 복잡하거나 여러 view model이 재사용할 때만 선택적 domain 계층이 그 결합을 맡고, 그 조건일 때만 추가합니다.
 
 **영속 상태**는 storage 위의 repository입니다. 위젯이나 view model이 key를 직접 쓰는 곳이 아닙니다. schema version과 migration을 갖고, 오래된 record를 읽는 일은 신뢰할 수 없는 입력을 다루는 일로 봅니다.
 
@@ -145,7 +145,7 @@ Dart macro는 2025-01-29에 중단됐고 augmentation은 experimental이므로, 
 | Claim | Source |
 |---|---|
 | 아키텍처 문서는 구속력이 없고 상태 라이브러리를 강제하지 않는다 | <https://docs.flutter.dev/app-architecture/guide>, <https://docs.flutter.dev/data-and-backend/state-mgmt/options> |
-| 데이터 계층이 단일 진실 원천이고 변경이 그곳에서 일어나며, 데이터 타입마다 repository가 하나다 | <https://docs.flutter.dev/app-architecture/guide>, <https://docs.flutter.dev/app-architecture/concepts> |
+| 데이터 계층이 단일 진실 공급원이고 변경이 그곳에서 일어나며, 데이터 타입마다 repository가 하나다 | <https://docs.flutter.dev/app-architecture/guide>, <https://docs.flutter.dev/app-architecture/concepts> |
 | repository는 session과 메모리 cache 같은 앱 전역 lifecycle 상태도 소유한다 | <https://docs.flutter.dev/app-architecture/guide> |
 | service는 상태가 없고 side effect가 없으며 data source마다 하나 있고 repository를 알지 않는다 | <https://docs.flutter.dev/app-architecture/guide> |
 | view는 표시 여부, animation, layout, 단순 routing logic만 갖고 view model은 private 생성자 의존성을 받는다 | <https://docs.flutter.dev/app-architecture/guide>, <https://docs.flutter.dev/app-architecture/case-study/ui-layer> |
@@ -174,4 +174,4 @@ Dart macro는 2025-01-29에 중단됐고 augmentation은 experimental이므로, 
 
 ### 근거 등급
 
-`OFFICIAL + DERIVED` - 계층 소유권, 단일 진실 원천, service와 repository의 책임, view model의 가시성 규칙, `Result`와 `Command` 계약, `package:provider` 권장, 계층 사이의 `==` filtering, 모든 버전과 SDK 하한은 표에 적은 Flutter, Riverpod, bloc, `shared_preferences`, pub 문서를 재진술한 것입니다. DTO와 mapper 경계, domain `Command` 충돌은 유지되는 실무 아키텍처 문서에서 가져왔고 Flutter 요구 사항이 아닙니다. 상태 소유권 표와 소유자별 문장, 신뢰할 수 없는 입력 목록, HTTP client 하나 규칙, "처리되지 않은 `Error`는 결함" 규칙은 그 문서에서 이끌어 낸 Hypercore 관례와 Safety 규칙입니다. deep link나 push payload를 쓰기 전에 검증해야 한다고 밝힌 공식 문서는 없고, 단일 호출에 mapper class를 요구하는 문서도 없습니다. Package 버전은 설명문이 아니라 pub metadata에서 읽었고 2026-11-04 기준입니다.
+`OFFICIAL + DERIVED` - 계층 소유권, 단일 진실 공급원, service와 repository의 책임, view model의 가시성 규칙, `Result`와 `Command` 계약, `package:provider` 권장, 계층 사이의 `==` filtering, 모든 버전과 SDK 하한은 표에 적은 Flutter, Riverpod, bloc, `shared_preferences`, pub 문서를 재진술한 것입니다. DTO와 mapper 경계, domain `Command` 충돌은 유지되는 실무 아키텍처 문서에서 가져왔고 Flutter 요구 사항이 아닙니다. 상태 소유권 표와 소유자별 문장, 신뢰할 수 없는 입력 목록, HTTP client 하나 규칙, "처리되지 않은 `Error`는 결함" 규칙은 그 문서에서 이끌어 낸 Hypercore 관례와 Safety 규칙입니다. deep link나 push payload를 쓰기 전에 검증해야 한다고 밝힌 공식 문서는 없고, 단일 호출에 mapper class를 요구하는 문서도 없습니다. Package 버전은 설명문이 아니라 pub metadata에서 읽었고 2026-11-04 기준입니다.

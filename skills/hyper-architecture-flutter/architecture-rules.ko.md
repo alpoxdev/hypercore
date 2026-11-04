@@ -1,6 +1,6 @@
 # Flutter 아키텍처 규칙
 
-발견 사항을 분류하거나 규칙을 적용하기 전에 읽습니다. 이 파일은 규칙 등급, 권한 순서, 차단 게이트, 기본 트리, 마이그레이션 정책을 소유합니다. Android와 iOS를 1차 대상으로 하는 Flutter·Dart 앱에 적용하며, web과 desktop은 프로젝트가 선언했을 때만 대상입니다.
+발견 사항을 분류하거나 규칙을 적용하기 전에 읽습니다. 이 파일은 규칙 등급, authority 순서, 차단 게이트, 기본 트리, 마이그레이션 정책을 소유합니다. Android와 iOS를 1차 대상으로 하는 Flutter·Dart 앱에 적용하며, web과 desktop은 프로젝트가 선언했을 때만 대상입니다.
 
 ## 규칙 등급
 
@@ -8,7 +8,7 @@
 - **Safety**: secret, runtime input, permission, signing, transport trust, data loss를 다루는 차단형 로컬 정책입니다.
 - **Hypercore convention**: 근거가 있는 프로젝트 관례에 맞게 조정할 수 있는 확장 가능한 기본값입니다.
 
-우선순위는 사용자·프로젝트 권한, 설치된 프로젝트 근거, 적용 가능한 공식 동작, 안전 정책, Hypercore convention 순서입니다. Safety 발견 사항은 명시적 해결이 필요합니다.
+우선순위는 user/project authority, 설치된 프로젝트 근거, 적용 가능한 공식 동작, 안전 정책, Hypercore convention 순서입니다. Safety 발견 사항은 명시적 해결이 필요합니다.
 
 공식 앱 아키텍처 가이드는 스스로를 "guidelines, not steadfast rules"라고 밝히고, 모든 권장안에 strongly recommend, recommend, conditional 등급을 붙입니다. 아래 차단 게이트에 해당하지 않는 권장안은 조정할 수 있고, 게이트는 조정할 수 없습니다.
 
@@ -26,7 +26,7 @@ View (widget)
 
 공식 관계 모델도 이 순서와 같습니다. View는 ViewModel 하나에 대응하고, ViewModel은 여러 repository를 쓸 수 있으며, View에 허용되는 로직은 조건부 표시, 애니메이션, 기기·창 정보에 따른 레이아웃, 단순 라우팅 네 가지뿐입니다.
 
-Hypercore convention: 기능 간 접근은 의도적으로 작은 공개 API를 거치고, 한 기능의 presentation 계층은 다른 기능의 data 계층을 import하지 않습니다.
+Hypercore convention: feature 간 접근은 의도적으로 작은 공개 API를 거치고, 한 feature의 presentation 계층은 다른 feature의 data 계층을 import하지 않습니다.
 
 ## 차단 게이트
 
@@ -45,7 +45,7 @@ Hypercore convention: 기능 간 접근은 의도적으로 작은 공개 API를 
 
 ## 확장 가능한 기본 구조
 
-작은 앱의 기본값은 공식 샘플 구조를 따릅니다. UI는 기능별로, data와 domain은 타입별로 묶습니다.
+작은 앱의 기본값은 공식 샘플 구조를 따릅니다. UI는 feature별로, data와 domain은 타입별로 묶습니다.
 
 ```text
 lib/
@@ -63,11 +63,11 @@ ios/                      # owned platform sources, committed and reviewed
 android/                  # owned platform sources, committed and reviewed
 ```
 
-실제 코드를 소유할 때만 폴더를 추가합니다. 작은 앱은 `ui/`, `data/`, `routing/`, `config/`로 시작하고, `domain/`은 use-case가 생길 때 등장하며, `testing/`은 배포 코드 경로 밖에 둡니다. 평평한 `ui/` 트리가 더 이상 확장되지 않으면 기능별로 묶거나(`lib/features/<domain>/{presentation,domain,data}`) 기능을 pub workspace 패키지로 나눕니다. 두 경우 모두 위 의존 방향은 그대로입니다.
+실제 코드를 소유할 때만 폴더를 추가합니다. 작은 앱은 `ui/`, `data/`, `routing/`, `config/`로 시작하고, `domain/`은 use-case가 생길 때 등장하며, `testing/`은 배포 코드 경로 밖에 둡니다. 평평한 `ui/` 트리가 더 이상 확장되지 않으면 feature별로 묶거나(`lib/features/<domain>/{presentation,domain,data}`) feature를 pub workspace 패키지로 나눕니다. 두 경우 모두 위 의존 방향은 그대로입니다.
 
 ## 마이그레이션 정책
 
-수직 슬라이스로 진행합니다. 기능 하나를 옮기고 import와 테스트를 갱신한 뒤 포맷, 분석, 테스트를 실행하고 다음으로 넘어갑니다. 구조 이동은 디자인 라이브러리 마이그레이션이나 라우터 교체와 함께 하지 않습니다. 한 단계에는 되돌릴 수 있는 변경 하나만 두어야 실패 원인을 좁힐 수 있습니다. alias, 생성 코드, 네이티브 설정, 소유권이 아직 불확실하면 저장소 전체 이동을 하지 않습니다. `ios/`와 `android/` 수정은 생성물이 아니라 소유 소스이므로 일반 리뷰 대상으로 둡니다. 요청이 없으면 공개 동작을 보존합니다.
+수직 슬라이스로 진행합니다. feature 하나를 옮기고 import와 테스트를 갱신한 뒤 포맷, 분석, 테스트를 실행하고 다음으로 넘어갑니다. 구조 이동은 디자인 라이브러리 마이그레이션이나 라우터 교체와 함께 하지 않습니다. 한 단계에는 되돌릴 수 있는 변경 하나만 두어야 실패 원인을 좁힐 수 있습니다. alias, 생성 코드, 네이티브 설정, 소유권이 아직 불확실하면 저장소 전체 이동을 하지 않습니다. `ios/`와 `android/` 수정은 생성물이 아니라 소유 소스이므로 일반 리뷰 대상으로 둡니다. 요청이 없으면 공개 동작을 보존합니다.
 
 ## 완료 게이트
 
@@ -83,7 +83,7 @@ android/                  # owned platform sources, committed and reviewed
 | 권장 강도 등급(strongly recommend, recommend, conditional) | https://docs.flutter.dev/app-architecture/recommendations |
 | `package:provider`를 쓰는 의존성 주입 | https://docs.flutter.dev/app-architecture/case-study/dependency-injection |
 | `Result` 객체는 필수가 아닌 권장안 | https://docs.flutter.dev/app-architecture/design-patterns/result |
-| 공식 샘플 구조: `ui/`는 기능별, `data/`와 `domain/`은 타입별 | https://api.github.com/repos/flutter/samples/contents/compass_app/app/lib |
+| 공식 샘플 구조: `ui/`는 feature별, `data/`와 `domain/`은 타입별 | https://api.github.com/repos/flutter/samples/contents/compass_app/app/lib |
 | provider와 `ChangeNotifier`를 출발점으로 두는 상태 관리 | https://docs.flutter.dev/data-and-backend/state-mgmt/simple |
 | `--dart-define` 값은 바이너리 안의 컴파일 타임 상수 | https://dart.dev/libraries/core/environment-declarations |
 | 앱에 secret을 두는 것은 나쁜 보안 관행 | https://docs.flutter.dev/deployment/obfuscate |
