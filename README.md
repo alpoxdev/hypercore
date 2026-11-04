@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 34개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 35개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -129,12 +129,13 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `nextjs-architecture` | Next.js App Router 아키텍처 규칙 적용 | All |
-| `hono-architecture` | Hono 아키텍처 규칙 적용 | All |
-| `expo-architecture` | React Native + Expo + TypeScript Android/iOS 아키텍처 규칙 적용 | All |
-| `tanstack-start-architecture` | TanStack Start 아키텍처 규칙 적용 | All |
-| `vite-architecture` | Vite + TanStack Router 아키텍처 규칙 적용 | All |
-| `tauri-architecture` | Tauri 2 + Vite + React + TanStack Router/Query 데스크톱 아키텍처 규칙 적용 | All |
+| `hyper-architecture` | 저장소의 스택(TanStack Start, Next.js, Vite, Expo, Hono, Tauri)을 감지해 맞는 `hyper-architecture-<스택>` 스킬로 연결 | All |
+| `hyper-architecture-nextjs` | Next.js App Router 아키텍처 규칙 적용 | All |
+| `hyper-architecture-hono` | Hono 아키텍처 규칙 적용 | All |
+| `hyper-architecture-expo` | React Native + Expo + TypeScript Android/iOS 아키텍처 규칙 적용 | All |
+| `hyper-architecture-tanstack-start` | TanStack Start 아키텍처 규칙 적용 | All |
+| `hyper-architecture-vite` | Vite + TanStack Router 아키텍처 규칙 적용 | All |
+| `hyper-architecture-tauri` | Tauri 2 + Vite + React + TanStack Router/Query 데스크톱 아키텍처 규칙 적용 | All |
 
 ### 빌드 · 배포 · 릴리스
 
@@ -186,7 +187,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `naver-api` | Naver API HUB 검색·DataLab 검색어 트렌드·쇼핑인사이트 조회와 CLI 초기 설정·자격 증명 검증 | Node.js 20+; network; Naver API HUB credentials |
 | `jev-maker` | TypeSafe Jev(System One) 판단 모델용 질문, 호출 코드, 템플릿, 평가 세트 생성과 코드 감사, 연결 설정 | bash 3.2+ · jq (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 34개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 35개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
 
@@ -249,7 +250,7 @@ hypercore/
 │       └── naver-api/     # @kood/naver-api-cli — Naver API HUB 검색·DataLab·쇼핑인사이트 CLI
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/sourcing/validation 등)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
-└── skills/                # 34개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 35개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:
