@@ -20,7 +20,7 @@
 - 가능하면 local linked-worktree fixture가 `worktree|linked`와 linked checkout root의 `repo|...` path를 보여준다.
 - 사용자가 push를 요청하지 않는 한 push helper는 실제 remote에 대해 테스트하지 않는다. behavior validation에는 local fixture를 사용한다.
 - Commit phase는 여전히 targeted staging과 commit당 하나의 logical change를 사용한다.
-- Commit subject는 `~하라`, `~해라`, `~라`로 끝나는 한국어 command가 아니라 neutral Conventional Commit summary처럼 읽힌다.
+- 커밋 메시지는 영어 Conventional Commit이다. 명령형 subject, colon 뒤 소문자, 끝 마침표 없음, 72자 이하, body 앞 빈 줄을 지키고, 사용자나 저장소가 요청하지 않은 sign-off·attribution trailer가 없다.
 - Push phase는 모든 commit group이 성공한 뒤에만 automatic이다.
 - Force push는 `main`과 `master`에서 계속 차단된다.
 - Subagent를 사용했다면 그 작업은 read-only였고, 두 에이전트가 같은 Git index mutation을 소유하지 않았으며, 최종 staged 파일이 main integrator가 선택한 그룹과 일치하고, 건너뛴/실패한 push target을 모두 보고했다.
@@ -33,7 +33,7 @@
 
 1. trigger model: 이 skill은 commit+push에서 활성화되고 commit-only 또는 push-only에서는 활성화되지 않는다.
 2. rushed operator: 가장 빠르고 안전한 명령이 명확하다.
-3. commit reviewer: 생성된 한국어 subject가 instruction이 아니라 간결한 change/result summary처럼 보인다.
+3. commit reviewer: 생성된 subject가 과거형 보고나 모호한 요약이 아니라 영어 명령형 변경("add", "fix")으로 읽힌다.
 4. maintainer: future speed rules는 `rules/speed-and-automation.md`에, durable commit policy는 `rules/commit-and-push-policy.md`에, subagent lane rules는 `rules/agent-parallelism.md`에 속한다.
 5. branch operator: `/git-maker && dev`, `/git-maker CURRENT && dev && deploy/staging`, `/git-maker all && dev`의 scope와 propagation behavior가 모호하지 않다.
 

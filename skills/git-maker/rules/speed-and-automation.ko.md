@@ -13,8 +13,8 @@ scripts/git-maker-fast.sh inspect . --jobs 4
 그런 다음 기존 commit helper로 각 논리 그룹을 commit한다.
 
 ```bash
-scripts/git-commit.sh "<type>[scope]: <한국어 subject>" path/to/file1 path/to/file2
-scripts/git-commit.sh --repo path/to/repo "<type>[scope]: <한국어 subject>" path/to/file1
+scripts/git-commit.sh "<type>(<scope>): <imperative summary>" path/to/file1 path/to/file2
+scripts/git-commit.sh --repo path/to/repo "<type>(<scope>): <imperative summary>" path/to/file1
 ```
 
 모든 commit이 성공하면 다시 discovery하지 말고 inspected repo list를 재사용한다.
