@@ -12,7 +12,7 @@ Middleware는 등록 순서에 따라 onion 방식으로 실행됩니다. `await
 
 - Middleware를 path 또는 sub-app으로 scope하며 feature-only authorization을 global로 만들지 않습니다.
 - 보장된 request-scoped value에는 typed `Variables` 또는 `createMiddleware<Env>()`를 사용합니다.
-- Global `ContextVariableMap` augmentation은 모든 consuming app에서 실제 보장되는 값에만 사용합니다. Local typed chaining이 더 안전합니다.
+- Global `ContextVariableMap` augmentation은 모든 consuming app에서 실제 보장되는 값에만 사용합니다. Local typed chaining이 더 안전합니다. 이는 Hypercore 취향이 아니라 공식 guide입니다. Context API는 `ContextVariableMap`이 해당 변수를 설정하는 middleware가 실제로 실행됐는지와 무관하게 모든 context에 type을 전역으로 추가한다고 적고 있습니다. 그래서 값이 `undefined`인 handler에서도 `c.get()`이 type-safe해 보입니다.
 - Request state를 module global에 저장하거나 `Context`를 request 사이에서 재사용하지 않습니다.
 - 특히 Deno 같은 URL-import runtime에서는 Hono core와 middleware package version compatibility를 유지합니다.
 ## 핵심 규칙
@@ -55,4 +55,9 @@ export const authMiddleware = createMiddleware<AppEnv>(async (c, next) => {
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Hono 동작은 `references/official/hono-docs.ko.md`에 위임합니다(last verified 2026-08-04). 저장소 로컬 링크 확인 2026-09-21.
+> Checked 2026-11-04.
+
+| 주장 | 출처 |
+|---|---|
+| 등록 순서, onion 실행, typed variable 누적 | [Middleware Guide](https://hono.dev/docs/guides/middleware), [Routing API](https://hono.dev/docs/api/routing) |
+| Middleware 실행 여부와 무관하게 `ContextVariableMap`이 type을 전역 적용함 | [Context API](https://hono.dev/docs/api/context) |

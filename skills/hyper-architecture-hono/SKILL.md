@@ -188,7 +188,7 @@ Step 1 — project validation:
 ```bash
 rg -n '"hono"|@hono/' package.json
 rg -n "from 'hono'|from \"hono\"" src app .
-rg -n "new Hono\\(|createFactory\\(|testClient\\(|hc<|OpenAPIHono|swaggerUI" src app .
+rg -n "new Hono\\(|createFactory\\(|testClient\\(|hc<|OpenAPIHono|swaggerUI|hono/mount|methodNotAllowed|from '@hono/" src app .
 ```
 
 If none of those indicators exist, stop and route back to the normal implementation or review path instead of forcing Hono rules.
@@ -204,16 +204,17 @@ When `전체 수정` mode is active, run broad discovery before editing:
 
 ```bash
 rg --files src app routes 2>/dev/null
-rg -n "new Hono\\(|app\\.route\\(|basePath\\(|validator\\(|zValidator\\(|standardValidator\\(|OpenAPIHono|swaggerUI|testClient\\(|hc<|drizzle-orm|DATABASE_URL|D1Database|@neondatabase|@libsql" src app .
+rg -n "new Hono\\(|app\\.route\\(|app\\.mount\\(|hono/mount|methodNotAllowed|basePath\\(|validator\\(|zValidator\\(|standardValidator\\(|OpenAPIHono|swaggerUI|testClient\\(|hc<|drizzle-orm|DATABASE_URL|D1Database|@neondatabase|@libsql" src app .
 ```
 
 Step 3 — critical gates. Brownfield rule: untouched legacy style drift can become backlog; safety, typing, validation, persistence, OpenAPI, and runtime boundary issues still block touched work; in `전체 수정` mode the whole detected Hono app is the touched scope.
 
 - One runtime-neutral Hono app and one obvious mount table; select the smallest justified structure profile and preserve dependency direction.
 - Touched route modules do not bypass services to import DB/ORM/schema/SDK/runtime adapter details directly.
-- Non-trivial params/query/json/form data uses validator middleware before domain logic.
+- Non-trivial params/query/json/form data uses validator middleware before domain logic; form/multipart validation requires Hono 4.13.16 or later.
 - Extracted handlers preserve typing with inline chaining or `createFactory()` / `createHandlers()`.
 - Middleware order and typed `Bindings`/`Variables` are explicit when shared context is used.
+- Touched code avoids APIs deprecated in 4.x (`app.mount()`, `hono/<adapter>` imports, `@hono/node-ws`) and does not change the 404 contract implicitly by enabling `methodNotAllowed()`.
 - Drizzle schemas, migrations, clients, and transactions stay behind database/service boundaries.
 - Public documented routes keep runtime validation, DTOs, OpenAPI/Swagger, and RPC response shapes aligned.
 - Runtime adapter and bootstrap code stays at the platform edge.

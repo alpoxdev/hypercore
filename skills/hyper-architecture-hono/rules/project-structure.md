@@ -166,4 +166,4 @@ This is a bounded migration loop: feedback is focused tests/type checks plus imp
 
 ## Sources
 
-> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04. No external source outside this package's own references informed this file; official Hono behavior is delegated to [`references/official/hono-docs.md`](../references/official/hono-docs.md), verified 2026-11-04.

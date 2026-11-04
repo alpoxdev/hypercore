@@ -1,15 +1,15 @@
 # Drizzle 공식 문서 요약
 
-last_verified_at: 2026-08-04
+last_verified_at: 2026-11-04
 
 ## Stable package snapshot
 
-2026-08-04 npm registry metadata 확인 기준입니다.
+2026-11-04 npm registry metadata와 release note를 확인한 기준입니다.
 
 | Package | Stable |
 |---|---:|
-| `drizzle-orm` | 0.45.2 |
-| `drizzle-kit` | 0.31.10 |
+| `drizzle-orm` | 0.45.4 |
+| `drizzle-kit` | 0.31.11 |
 
 출처: [npm registry: drizzle-orm](https://registry.npmjs.org/drizzle-orm), [npm registry: drizzle-kit](https://registry.npmjs.org/drizzle-kit), [Drizzle releases](https://github.com/drizzle-team/drizzle-orm/releases)
 
@@ -34,8 +34,8 @@ Hono 아키텍처 결정이 Drizzle ORM, `drizzle-kit`, runtime-specific databas
 5. `drizzle-kit migrate`는 `drizzle-kit generate`가 만든 SQL migration을 적용합니다. Migration folder를 읽고, migrations log table을 확인하고, 아직 적용되지 않은 SQL을 실행한 뒤 적용 기록을 남깁니다.
 출처: [`drizzle-kit migrate`](https://orm.drizzle.team/docs/drizzle-kit-migrate)
 
-6. Drizzle migration 문서는 database-first와 codebase-first workflow를 구분합니다. `pull`, `generate`, `push`, `migrate`, `export`는 서로 다른 workflow를 위한 명령이므로, 저장소 표준이 없는 한 스킬이 하나의 workflow를 강제하면 안 됩니다.
-출처: [Migrations](https://orm.drizzle.team/docs/migrations)
+6. Drizzle migration 문서는 database-first와 codebase-first workflow를 구분합니다. `pull`, `generate`, `push`, `migrate`, `export`, `check`는 서로 다른 workflow를 위한 명령이므로, 저장소 표준이 없는 한 스킬이 하나의 workflow를 강제하면 안 됩니다. `drizzle-kit check`는 생성된 SQL migration 이력의 정합성을 검사하며, 여러 branch가 각각 migration을 만드는 상황에서 필요합니다.
+출처: [Migrations](https://orm.drizzle.team/docs/migrations), [`drizzle-kit check`](https://orm.drizzle.team/docs/drizzle-kit-check)
 
 7. Drizzle serverless performance 문서는 runtime이 process를 재사용할 수 있을 때 database connection과 prepared statement를 handler scope 밖에 선언하라고 권장합니다.
 출처: [Serverless performance](https://orm.drizzle.team/docs/perf-serverless)
@@ -48,6 +48,9 @@ Hono 아키텍처 결정이 Drizzle ORM, `drizzle-kit`, runtime-specific databas
 
 10. Drizzle transaction은 `db.transaction(async (tx) => ...)` 형태를 사용합니다. 문서는 값 반환, rollback, savepoint 기반 nested transaction, transaction 안의 relational query, dialect-specific transaction config도 보여줍니다.
 출처: [Transactions](https://orm.drizzle.team/docs/transactions)
+
+11. Relational query는 두 세대가 있습니다. 안정판 0.x는 `drizzle-orm`에서 가져온 `relations()`로 relation을 선언하고, `defineRelations()`와 Relational Queries v2는 `drizzle-orm@rc`와 그 migration guide에 속합니다. 현재 relations page는 release candidate 기준으로 쓰여 있어, 0.45.x 설치에서 그대로 따르면 존재하지 않는 API를 요구하게 됩니다.
+출처: [Relations v1 to v2](https://orm.drizzle.team/docs/relations-v1-v2), [Relations](https://orm.drizzle.team/docs/relations)
 
 ## 이 스킬에 미치는 영향
 
@@ -63,14 +66,16 @@ Hono 아키텍처 결정이 Drizzle ORM, `drizzle-kit`, runtime-specific databas
 - Drizzle 문서는 live 문서이고 version-sensitive합니다. 코드 변경 전에는 설치된 `drizzle-orm` / `drizzle-kit` release에 맞는 정확한 package version과 import path를 다시 확인합니다.
 - Repository helper가 `tx`를 받아야 한다는 규칙은 Drizzle transaction API 형태에서 나온 아키텍처 추론이지, 공식 문서의 문장을 그대로 옮긴 요구사항은 아닙니다.
 - Neon, D1, Turso/libSQL 등 provider runtime 문서는 provider SDK 변화에 따라 바뀔 수 있습니다.
+- `drizzle-orm` 1.0.0-rc.x는 release candidate입니다. `defineRelations` / Relational Queries v2 API, `EmptyFilter`, `undefined` filter 오류는 안정 동작이 아니며, 이 스킬은 이를 예정 사항으로만 적고 채택하지 않습니다.
+- `drizzle-kit` 0.31.11은 `check` 중 silent migration skip을 경고합니다. 이 경고는 잡음이 아니라 migration 이력 결함으로 다룹니다.
 
 
 ## Sources
 
-> 링크 확인 2026-08-04, 이 파일 자체의 `last_verified_at` 표기가 가진 날짜입니다. 2026-09-21 pass에서 페이지를 다시 가져오지 않았고, 위에 인용한 출처 밖의 출처는 주장하지 않습니다.
+> Checked 2026-11-04.
 
 | 주장 | 출처 |
 |---|---|
 | 위 snapshot 표의 `drizzle-orm`, `drizzle-kit` version | 그 표 옆에 적은 registry·release URL |
-| 위 1-10번 항목에 기록한 Drizzle 동작 | 각 번호 항목에 붙은 inline `Source:` 링크 |
-| 마지막 caveat 절. 그 절이 공식 요구사항이 아니라 이 package의 추론이라고 표시한 `tx` 설명 포함 | 1-10번 항목에서 링크한 같은 Drizzle 문서 page. 추론 부분은 그 절에서 이 package의 것으로 밝힘 |
+| 위 1-11번 항목에 기록한 Drizzle 동작 | 각 번호 항목에 붙은 inline `Source:` 링크 |
+| 마지막 caveat 절. 그 절이 공식 요구사항이 아니라 이 package의 추론이라고 표시한 `tx` 설명 포함 | 1-11번 항목에서 링크한 같은 Drizzle 문서 page. 추론 부분은 그 절에서 이 package의 것으로 밝힘 |

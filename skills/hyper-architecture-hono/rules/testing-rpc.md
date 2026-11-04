@@ -10,9 +10,14 @@ Hono RPC requires TypeScript `strict` on both server and client. Producer and co
 - Export `AppType` from the final chained route value, not a later mutated app or partial child.
 - Compile and consume declarations or use project references across package boundaries; do not deep-import server implementation.
 - Use `ApplyGlobalResponse` for shared global error response typing.
-- Use `parseResponse()`, `InferRequestType`, and `InferResponseType` where they make client contracts observable.
+- Use `parseResponse()`, `DetailedError`, `InferRequestType`, and `InferResponseType` where they make client contracts observable.
+- Pass path parameters and query values as `string`. `hc` types them as strings even when the server schema coerces numbers, so a literal `id: 1` fails type checking.
+- Return `await`ed values or plain promises from handlers, never a `.then()` chain. A handler that returns a `.then()` chain directly loses its response type and the client infers `unknown`.
 - Remember that `hc` does not URL-encode path parameter values automatically; encode values or use an explicitly tested regexp route when slashes are allowed.
+- Use `$path()` or `$url()` to build a request path from the client instead of assembling strings by hand; both stay typed against the app.
+- When the client contract includes a typed 404, either return a route-local `c.json(..., 404)` or augment `NotFoundResponse` so `c.notFound()` carries the response type.
 - Use `app.request()` for behavior, `testClient()` for server-side typed ergonomics, and a real `hc` boundary test only when client serialization/base URL behavior matters.
+- `testClient()` and route typing require routes defined through chained methods directly on the `Hono` instance; detached registration erases inference.
 - Pass runtime bindings as the third argument to `app.request()` and test adapter-specific behavior separately.
 
 ## Core Rule
@@ -54,6 +59,21 @@ import type { AppType } from './app'
 export const client = hc<AppType>('/api')
 ```
 
+When client compile time or editor latency becomes the problem, calculate the client type once at compile time instead of on every call site:
+
+```ts
+// client.ts
+import { hc } from 'hono/client'
+
+import type { AppType } from './app'
+
+const client = hc<AppType>('')
+export type Client = typeof client
+
+export const hcWithType = (...args: Parameters<typeof hc>): Client =>
+  hc<AppType>(...args)
+```
+
 Use `app.request()` for request/response behavior tests, `testClient()` for typed server-side ergonomics, and `hc<AppType>()` for shared client-contract checks.
 
 ## Non-Compliance Signatures
@@ -61,6 +81,8 @@ Use `app.request()` for request/response behavior tests, `testClient()` for type
 - Route registration uses detached mutation that erases chained route types
 - `AppType` is exported from a partial sub-app when consumers expect the full API
 - Response helpers omit explicit statuses for routes with multiple success or error variants
+- A handler returns a `.then()` chain and the client acquires an `unknown` response type
+- Client call sites pass numbers or objects for path parameters and query values
 - Frontend typed clients import route internals instead of the exported app type
 - Generated OpenAPI response schemas disagree with RPC-inferred response variants
 - Public clients depend on 404 shape but no `app.notFound()` or explicit JSON response contract is tested
@@ -70,6 +92,8 @@ Use `app.request()` for request/response behavior tests, `testClient()` for type
 - Route types still flow through the exported app
 - `testClient()` remains useful after refactors
 - `hc<AppType>` or sub-app clients still infer correctly
+- Handlers return `await`ed values, not `.then()` chains
+- Path and query arguments are strings at the call site
 - `AppType` is exported for RPC/client consumers, not merely because a test exists
 - Detached registration did not silently erase route typing
 - Request-level tests cover changed behavior with `app.request()` or the runtime adapter's equivalent
@@ -77,4 +101,9 @@ Use `app.request()` for request/response behavior tests, `testClient()` for type
 
 ## Sources
 
-> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md` (last verified 2026-08-04). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04. The RPC and testing behavior below comes from the official guide pages; no package version claim is made beyond the Hono 4.13 line.
+
+| Claim | Source |
+|---|---|
+| `testClient()` requiring chained route definitions on the instance | [Testing Helper](https://hono.dev/docs/helpers/testing) |
+| `string` path/query arguments, `.then()` chain type loss, `$path()` / `$url()`, typed `NotFoundResponse`, `hcWithType`, `DetailedError`, version matching | [RPC Guide](https://hono.dev/docs/guides/rpc) |

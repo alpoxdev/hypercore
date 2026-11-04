@@ -5,10 +5,11 @@
 ---
 ## Stable Drizzle Baseline
 
-As verified on 2026-08-04, stable releases are `drizzle-orm` 0.45.2 and `drizzle-kit` 0.31.10. Drizzle supports many optional drivers; the presence of a peer does not make it valid for every Hono runtime.
+As verified on 2026-11-04, stable releases are `drizzle-orm` 0.45.4 and `drizzle-kit` 0.31.11. `drizzle-orm` 1.0.0-rc.x is a release candidate and is not adopted here. Drizzle supports many optional drivers; the presence of a peer does not make it valid for every Hono runtime.
 
 - Inspect `drizzle.config.ts`, installed driver, dialect, schema roots, migration output, credentials source, and runtime before changing persistence code.
-- Treat `generate` as SQL artifact creation, `migrate` as applying committed migrations, `push` as direct schema synchronization, and `pull` as introspection. Never substitute one workflow silently.
+- Treat `generate` as SQL artifact creation, `migrate` as applying committed migrations, `push` as direct schema synchronization, `pull` as introspection, and `check` as migration-history validation. Never substitute one workflow silently.
+- Run `drizzle-kit check` before merging when more than one branch generated migrations; it verifies that the generated SQL history is consistent, and 0.31.11 warns about silent migration skips it previously passed over. `--ignore-conflicts` is an escape hatch for a reviewed exception, not a default.
 - Do not use `push` as a production migration strategy unless the project explicitly owns that policy.
 - Keep schema and migration history as one provenance chain; never recreate or renumber history to make local state pass.
 - Select only required columns and map public DTOs. Validate pagination bounds and make ordering deterministic.
@@ -59,6 +60,7 @@ drizzle/
 - Cloudflare D1 should flow through a typed `Bindings` surface such as `c.env.DB`; do not fake it with `process.env`.
 - Neon, serverless Postgres, D1, SQLite, and Node Postgres have different client lifecycles. Choose the runtime-specific Drizzle connection path before writing repositories.
 - `drizzle.config.ts` should point to the real schema file or schema folder and the real migration output folder.
+- Declare relations with `relations()` from `drizzle-orm` on the stable 0.45.x line. `defineRelations()` and Relational Queries v2 belong to `drizzle-orm@rc`; the live relations page is written for that release candidate, so following it on 0.45.x asks for APIs the installed version does not have.
 - Drizzle table objects are persistence schema. Do not expose them as route response contracts or OpenAPI schemas without a DTO mapping decision.
 - If repository functions need to work inside and outside transactions, accept a `db`/`tx` dependency instead of importing the global client inside every function.
 
@@ -121,6 +123,8 @@ route handler -> service/use-case -> repository/query module -> database client
 - A service performs multiple dependent writes without a transaction or an explicit reason.
 - Public responses serialize raw ORM rows with internal fields.
 - A large app has repositories but no clear database client/config boundary.
+- Relations are declared with `defineRelations()` on a stable 0.45.x install.
+- Parallel branches generated migrations and nobody ran `drizzle-kit check`.
 
 ## Auto-Remediation Boundaries
 
@@ -147,10 +151,19 @@ Do not auto-apply without explicit justification:
 - Repository functions hide query details and do not depend on Hono `Context`.
 - Transactions are explicit for multi-step writes.
 - Schema and migration paths match `drizzle.config.ts`.
+- Migration history was checked with `drizzle-kit check` when branches could have diverged.
+- Relations use the API of the installed generation (`relations()` on 0.45.x).
 - API DTOs, validation schemas, OpenAPI responses, and typed RPC contracts still agree.
 - Persistence behavior is covered by the smallest useful repository, service, or request-level test.
 
 
 ## Sources
 
-> No external sources were used in this file. Official Hono behavior is delegated to `references/official/hono-docs.md`, and Drizzle behavior to `references/official/drizzle-docs.md` (both last verified 2026-08-04). Repository-local links checked 2026-09-21.
+> Checked 2026-11-04.
+
+| Claim | Source |
+|---|---|
+| `drizzle-orm` 0.45.4 and `drizzle-kit` 0.31.11 as the stable pair | [npm registry: drizzle-orm](https://registry.npmjs.org/drizzle-orm), [npm registry: drizzle-kit](https://registry.npmjs.org/drizzle-kit), [Drizzle releases](https://github.com/drizzle-team/drizzle-orm/releases) |
+| `drizzle-kit check` verifying migration-history consistency | [`drizzle-kit check`](https://orm.drizzle.team/docs/drizzle-kit-check) |
+| `relations()` on 0.x versus `defineRelations()` on `drizzle-orm@rc` | [Relations v1 to v2](https://orm.drizzle.team/docs/relations-v1-v2) |
+| Transaction, driver, and serverless connection behavior delegated to the Drizzle reference | [`references/official/drizzle-docs.md`](../references/official/drizzle-docs.md) |

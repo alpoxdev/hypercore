@@ -8,6 +8,7 @@
 
 `createFactory<Env>()`, `factory.createApp()`, `factory.createHandlers()`, `createMiddleware()`는 공식 type-preserving helper입니다. 모든 파일에서 binding/variable을 반복하지 말고 호환되는 `Env` surface마다 factory 하나를 사용합니다.
 
+- `createFactory()`는 `factory.createApp()`이 상속하는 `HonoOptions`를 `defaultAppOptions`로 받을 수 있고(`{ strict: false }` 등), `createApp()`이 만든 app을 초기화하는 `initApp`도 받습니다.
 - `createHandlers()`는 handler tuple을 반환하므로 route call에 spread합니다.
 - Handler가 `c.req.valid()`를 읽으면 validator middleware와 handler를 같은 typed chain에 둡니다.
 - 모든 terminal branch에서 `Response`를 반환하고 RPC client가 status union을 필요로 하면 literal status argument를 사용합니다.
@@ -47,4 +48,8 @@ export const usersApp = factory.createApp().get('/', ...listUsers)
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 Hono 동작은 `references/official/hono-docs.ko.md`에 위임합니다(last verified 2026-08-04). 저장소 로컬 링크 확인 2026-09-21.
+> Checked 2026-11-04.
+
+| Claim | Source |
+|---|---|
+| `createFactory()`, `createApp()`, `createHandlers()`, `defaultAppOptions`, `initApp` | [Factory Helper](https://hono.dev/docs/helpers/factory) |
