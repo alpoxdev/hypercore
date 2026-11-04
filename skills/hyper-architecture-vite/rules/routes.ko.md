@@ -88,7 +88,9 @@ const UsersPage = (): JSX.Element => {
 
 > route loader는 클라이언트에서 도달 가능한 코드로 취급합니다. SPA-only Vite 앱에서는 보통 브라우저 탐색 중 실행되지만, 저장소가 나중에 SSR/manual rendering을 추가하면 같은 loader가 서버 렌더에도 참여할 수 있습니다. 어떤 경우든 공개 가능한 로직만 loader에 둡니다.
 
-최신 TanStack Router 문서가 권장하는 표준 조합은 loader의 `ensureQueryData` + 컴포넌트의 `useSuspenseQuery`입니다. `useSuspenseQuery`는 loader가 채워둔 캐시를 그대로 읽고 업데이트를 구독하므로 로딩 깜빡임이 없습니다.
+최신 TanStack Router 문서의 조합은 loader의 `queryClient.query({ ...queryOptions, staleTime: 'static' })`와 컴포넌트의 `useSuspenseQuery`입니다. `query()`는 캐시 데이터가 아직 신선하면 그대로 반환하고 아니면 가져오며, `staleTime: 'static'`은 loader가 채운 캐시 항목을 절대 stale이 되지 않게 표시합니다. `useSuspenseQuery`가 그 캐시를 읽고 업데이트를 구독하므로 로딩 깜빡임이 없습니다.
+
+`ensureQueryData`, `fetchQuery`, `prefetchQuery`는 TanStack Query 5.102+에서 deprecated이며 다음 메이저에서 제거됩니다.
 
 ```tsx
 // routes/users/$id/index.tsx
@@ -98,7 +100,7 @@ import { userQueryOptions } from '@/services/user/queries'
 
 export const Route = createFileRoute('/users/$id')({
   loader: ({ params: { id }, context: { queryClient } }) =>
-    queryClient.ensureQueryData(userQueryOptions(id)),
+    queryClient.query({ ...userQueryOptions(id), staleTime: 'static' }),
   component: UserDetailPage,
 })
 
@@ -116,42 +118,74 @@ const UserDetailPage = (): JSX.Element => {
 
 `useQuery`는 옆에서 함께 가져오는 비-크리티컬 데이터(예: analytics 위젯)처럼 로딩 스켈레톤이 허용되는 경우에만 사용합니다.
 
+## 지연 데이터 로딩
+
+```tsx
+import { createFileRoute, Await } from '@tanstack/react-router'
+import { Suspense } from 'react'
+
+export const Route = createFileRoute('/dashboard/')({
+  loader: async ({ context: { queryClient } }) => {
+    const slowDataPromise = queryClient.query(slowQueryOptions())
+    const fastData = await queryClient.query({ ...fastQueryOptions(), staleTime: 'static' })
+    return { fastData, deferredSlowData: slowDataPromise }
+  },
+  component: DashboardPage,
+})
+
+const DashboardPage = (): JSX.Element => {
+  const { fastData, deferredSlowData } = Route.useLoaderData()
+  return (
+    <div>
+      <div>{JSON.stringify(fastData)}</div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Await promise={deferredSlowData}>
+          {(data) => <div>{JSON.stringify(data)}</div>}
+        </Await>
+      </Suspense>
+    </div>
+  )
+}
+```
+
 ---
 
 ## 검색 파라미터 검증
 
-> `@tanstack/zod-adapter`로 타입 안전한 검색 파라미터
+> 타입 안전한 검색 파라미터. Zod 4는 스키마를 `validateSearch`에 그대로 넘기고, `@tanstack/zod-adapter`는 Zod 3용 도구입니다.
 
 ```tsx
 import { createFileRoute } from '@tanstack/react-router'
-import { zodValidator, fallback } from '@tanstack/zod-adapter'
 import { z } from 'zod'
 
 const searchSchema = z.object({
-  page: fallback(z.number().int().positive(), 1),
+  page: z.number().int().positive().catch(1),
   filter: z.string().optional(),
   sortBy: z.enum(['newest', 'oldest', 'price']).default('newest'),
 })
 
 export const Route = createFileRoute('/products/')({
-  validateSearch: zodValidator(searchSchema),
+  validateSearch: searchSchema,
   // 검증된 search params를 loader cache key로 연결
   loaderDeps: ({ search: { page, sortBy, filter } }) => ({ page, sortBy, filter }),
   loader: ({ deps, context: { queryClient } }) =>
-    queryClient.ensureQueryData(productsQueryOptions(deps)),
+    queryClient.query({ ...productsQueryOptions(deps), staleTime: 'static' }),
   component: ProductsPage,
 })
 ```
 
 | API | 출처 | 용도 |
 |-----|--------|---------|
-| `zodValidator` | `@tanstack/zod-adapter` | 검색 파라미터 스키마 검증 (Zod v3) |
-| `fallback` | `@tanstack/zod-adapter` | 잘못된 파라미터 기본값 (raw `.catch()`와 달리 타입 보존) |
+| `validateSearch: schema` | `@tanstack/react-router` + Zod 4 | 검색 파라미터 스키마 검증 (Zod 4 직접) |
+| `zodValidator` | `@tanstack/zod-adapter` | 검색 파라미터 스키마 검증 (Zod v3 전용) |
+| `fallback` | `@tanstack/zod-adapter` | Zod v3에서 잘못된 파라미터 기본값 (raw `.catch()`와 달리 타입 보존) |
 | `loaderDeps` | route option | 검증된 search params를 loader cache key로 연결 |
 | `Route.useSearch()` | `@tanstack/react-router` | 검증된 검색 파라미터 접근 |
 | `Route.useNavigate()` | `@tanstack/react-router` | 검색 파라미터 업데이트로 탐색 |
 
-> Zod 4: schema를 `validateSearch`에 직접 넘길 수 있고 `zodValidator`가 필요 없습니다 (adapter는 Zod v3 전용). Zod v3에서는 `.catch(...)` 대신 `fallback(...)`을 쓰세요; `zodValidator`와 결합한 `.catch()`는 추론 타입을 `unknown`으로 떨어뜨립니다.
+> Zod 4에서는 스키마를 `validateSearch`에 직접 넘기고 `@tanstack/zod-adapter`를 쓰지 않습니다. 어댑터의 현재 peer dependency는 `zod: ^3.23.8`입니다. Zod 4의 `.catch()`는 타입 추론을 유지하므로, `fallback(...)`은 `zodValidator`와 함께 쓸 때 `.catch()`가 추론 타입을 `unknown`으로 떨어뜨리는 Zod 3의 보완책으로 남습니다.
+>
+> `search.strict: true`(라우터 옵션, 기본 `false`)는 `validateSearch`가 반환하지 않는 search param을 버려 엉뚱한 URL 파라미터가 앱 상태로 들어오지 않게 합니다.
 
 ### Route Group (괄호)
 
@@ -177,7 +211,7 @@ routes/
 ```tsx
 export const Route = createFileRoute('/posts/')({
   loader: ({ context: { queryClient } }) =>
-    queryClient.ensureQueryData(postsQueryOptions()),
+    queryClient.query({ ...postsQueryOptions(), staleTime: 'static' }),
   pendingComponent: () => <div>Loading posts...</div>,
   errorComponent: ({ error }) => (
     <div>
@@ -225,6 +259,25 @@ export const Route = createFileRoute('/dashboard')({
 
 ---
 
+## 라우터 로더 캐시와 Query 캐시
+
+TanStack Router는 자체 loader 캐시를 두므로 loader는 단순한 프리페치 지점이 아닙니다. 현재 문서화된 기본값입니다.
+
+| 설정 | 범위 | 기본값 |
+|---------|-------|---------|
+| `staleTime` | route option | `0`. 재사용되는 loader 데이터가 즉시 stale이 되어 백그라운드에서 재검증 |
+| `defaultStaleTime` | router option | 미설정. 라우트 기본값을 한곳에서 지정 |
+| preload 신선도 | router 캐시 | preload가 만든 loader 데이터는 30초 동안 신선 |
+| `gcTime` / `preloadGcTime` | route / router | 각각 5분 |
+| `staleReloadMode` / `defaultStaleReloadMode` | route / router | `'background'` |
+| `shouldReload` | route option | 미설정. `false` 또는 탐색마다 판단하는 함수를 받음 |
+
+- TanStack Query가 캐시를 소유하면 라우터에 `defaultPreloadStaleTime: 0`을 두어 라우터가 preload 데이터를 신선하게 붙들지 않고 Query가 fetch 여부를 정하게 합니다.
+- 라우트가 한 번만 로드되어야 할 때만 `staleTime: Infinity`를 씁니다. 이 값은 stale이 되는 것을 막고, 재로드를 기다리는 `staleReloadMode: 'blocking'`과 다릅니다.
+- `staleReloadMode` 같은 loader별 동작은 객체형 `loader: { handler, staleReloadMode: 'blocking' }`으로 설정합니다.
+
+---
+
 ## 폴더 구조 규칙
 
 | 페이지 크기 | 필수 | 선택 |
@@ -237,4 +290,4 @@ export const Route = createFileRoute('/dashboard')({
 
 ## Sources
 
-> `references/official/current-docs-2026-06-02.ko.md`에 기록된 dated snapshot은 file-based routing, route tree 생성, `validateSearch`와 `zodValidator`/`fallback` helper를 사용한 search param validation, route loader가 client-reachable하다는 점을 기록하고 있고(그 스냅샷이 기록한 자체 검증일은 2026-06-02), 이 파일은 그 항목들을 그대로 서술합니다. 이 파일의 route 구조·route 파일 이름·route option·loader 실행 순서 서술은 이 패키지 자체의 guidance이며 외부 출처를 사용하지 않았습니다. folder route 선호, `-components/`/`-hooks/`/`-sections/` 요구사항, 페이지 크기 기준은 Hypercore/repo-local convention입니다. 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 규칙 문장과 저장소 로컬 경로 확인 2026-09-21.
+> `references/official/current-docs-2026-11-04.ko.md`에 기록된 dated snapshot은 file-based routing, route tree 생성, `validateSearch`와 Zod 4 직접 스키마 방식을 사용한 search param validation, 라우터 loader 캐시 기본값, deprecated된 `<ScrollRestoration />` 컴포넌트, route loader가 client-reachable하다는 점을 기록하고 있고(그 스냅샷이 기록한 자체 검증일은 2026-11-04), 이 파일은 그 항목들을 그대로 서술합니다. 이 파일의 route 구조·route 파일 이름·route option·loader 실행 순서 서술은 이 패키지 자체의 guidance이며 외부 출처를 사용하지 않았습니다. folder route 선호, `-components/`/`-hooks/`/`-sections/` 요구사항, 페이지 크기 기준은 Hypercore/repo-local convention입니다. 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 규칙 문장과 저장소 로컬 경로 확인 2026-11-04.

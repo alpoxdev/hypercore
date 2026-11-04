@@ -4,6 +4,8 @@
 
 참고: 아래 일부 규칙은 TanStack Router 기본값보다 엄격합니다. 이는 보편적인 framework requirements가 아니라 hypercore team conventions입니다.
 
+Drift에 민감한 Vite/TanStack Router 동작의 출처 우선순위는 `references/official/current-docs-2026-11-04.ko.md`에서 시작합니다.
+
 Brownfield 적용 규칙: 손대지 않은 legacy code는 문제가 stylistic 또는 hypercore-specific이면 즉시 실패가 아니라 migration work로 추적할 수 있습니다. Safety-boundary issues는 특히 touched code에서 즉시 차단합니다.
 
 ---
@@ -89,11 +91,12 @@ export const Route = createFileRoute('/path')({
 
 ### Loader pattern (client-reachable prefetch):
 ```typescript
-// Use ensureQueryData for TanStack Query prefetching.
+// Use queryClient.query with a static staleTime for TanStack Query prefetching.
+// ensureQueryData, fetchQuery, prefetchQuery는 TanStack Query 5.102+에서 deprecated입니다.
 // Treat loaders as client-reachable. If the app later adds SSR/manual rendering,
 // the same loader may also run during server render.
 loader: ({ context: { queryClient } }) =>
-  queryClient.ensureQueryData(usersQueryOptions()),
+  queryClient.query({ ...usersQueryOptions(), staleTime: 'static' }),
 ```
 
 ### Component separation:
@@ -268,7 +271,9 @@ import type { User } from '@/types'
 ## Platform Setup Rules
 
 - `vite.config.ts`는 `tanstackRouter()`를 explicit하게 유지하고 `react()`보다 앞에 둡니다.
+- `@vitejs/plugin-react` 6은 Vite 8에 두고(peer가 `vite: ^8.0.0`), `@tanstack/router-plugin`과 `@tanstack/react-router`는 같은 릴리스로 함께 올립니다.
 - `routeTree.gen.ts`는 generated output이며 직접 수정하면 안 됩니다.
+- 새 Vite 설정은 Oxc/Rolldown 이름(`oxc`, `build.rolldownOptions`, Rolldown `output.codeSplitting`)을 쓰고, `esbuild`, `build.rollupOptions`, 객체형 `manualChunks`를 새로 넣지 않습니다.
 - `src/router.tsx`의 router wiring을 explicit하게 유지합니다.
 - SSR/manual rendering이 있다면 process-global singleton보다 fresh router factory를 선호합니다.
 - Vite와 TypeScript config 양쪽에서 path alias를 명시적으로 유지합니다.
@@ -320,13 +325,13 @@ services/<provider>/
 
 | Layer | Technology |
 |-------|------------|
-| Bundler | Vite (latest) |
-| Router | TanStack Router (latest) |
-| Data | TanStack Query 5.x |
+| Bundler | Vite 8.x (Rolldown + Oxc; `build.rolldownOptions`, `oxc`) |
+| Router | TanStack Router 1.170.x, `@tanstack/router-plugin` 1.168.x와 짝을 맞춤 |
+| Data | TanStack Query 5.105.x (`queryClient.query`, `staleTime: 'static'`) |
 | State | Zustand (latest) |
-| Validation | Zod 4.x (`z.email()`, `z.url()`) |
-| Zod Adapter | @tanstack/zod-adapter |
-| UI | React 19+, Tailwind CSS 4.x |
+| Validation | Zod 4.6.x (`z.email()`, `z.url()`) |
+| Zod Adapter | `@tanstack/zod-adapter`는 Zod 3 전용 (`zodValidator`, `fallback`) |
+| UI | React 19.3+, Tailwind CSS 4.x |
 | Auth | Client-side auth (Better Auth / Clerk / etc.) |
 | Env | t3-env |
 | Monitoring | Sentry |
@@ -355,13 +360,14 @@ beforeLoad: async ({ context }) => {
 // 3. component에서 사용
 const { queryClient } = useRouteContext({ from: '__root__' })
 
-// 4. Search params validation
-import { zodValidator } from '@tanstack/zod-adapter'
-
+// 4. Search params validation (Zod 4는 스키마를 직접 넘김)
 export const Route = createFileRoute('/dashboard/')({
-  validateSearch: zodValidator(dashboardSearchSchema),
+  validateSearch: dashboardSearchSchema,
   component: DashboardPage,
 })
+
+// Zod 3만: validateSearch: zodValidator(dashboardSearchSchema)
+// @tanstack/zod-adapter를 쓰며, 이 패키지의 peer dependency는 zod ^3.23.8입니다.
 ```
 
 ---

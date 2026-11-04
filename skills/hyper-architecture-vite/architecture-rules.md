@@ -4,7 +4,7 @@
 
 Note: some rules below are stricter than TanStack Router defaults. They are hypercore team conventions, not universal framework requirements.
 
-Source priority starts with `references/official/current-docs-2026-06-02.md` for drift-sensitive Vite/TanStack Router behavior.
+Source priority starts with `references/official/current-docs-2026-11-04.md` for drift-sensitive Vite/TanStack Router behavior.
 
 Brownfield adoption rule: untouched legacy code may be tracked as migration work instead of an immediate failure if the issue is stylistic or hypercore-specific. Safety-boundary issues still block immediately, especially in touched code.
 
@@ -91,11 +91,12 @@ export const Route = createFileRoute('/path')({
 
 ### Loader pattern (client-reachable prefetch):
 ```typescript
-// Use ensureQueryData for TanStack Query prefetching.
+// Use queryClient.query with a static staleTime for TanStack Query prefetching.
+// ensureQueryData, fetchQuery, and prefetchQuery are deprecated in TanStack Query 5.102+.
 // Treat loaders as client-reachable. If the app later adds SSR/manual rendering,
 // the same loader may also run during server render.
 loader: ({ context: { queryClient } }) =>
-  queryClient.ensureQueryData(usersQueryOptions()),
+  queryClient.query({ ...usersQueryOptions(), staleTime: 'static' }),
 ```
 
 ### Component separation:
@@ -270,7 +271,9 @@ import type { User } from '@/types'
 ## Platform Setup Rules
 
 - `vite.config.ts` should keep `tanstackRouter()` explicit and before `react()`
+- Keep `@vitejs/plugin-react` 6 on Vite 8 (its peer is `vite: ^8.0.0`) and upgrade `@tanstack/router-plugin` together with `@tanstack/react-router`
 - `routeTree.gen.ts` is generated output and must not be hand-edited
+- New Vite config uses the Oxc/Rolldown names (`oxc`, `build.rolldownOptions`, Rolldown `output.codeSplitting`); do not add `esbuild`, `build.rollupOptions`, or object-form `manualChunks` to new config
 - `src/lib`, `src/services`, and similar shared roots use nested domain/provider grouping for new touched code unless an explicit exception is recorded
 - Keep router wiring explicit in `src/router.tsx`
 - If SSR/manual rendering exists, prefer a fresh router factory instead of a process-global singleton
@@ -323,13 +326,13 @@ services/<provider>/
 
 | Layer | Technology |
 |-------|------------|
-| Bundler | Vite (latest) |
-| Router | TanStack Router (latest) |
-| Data | TanStack Query 5.x |
+| Bundler | Vite 8.x (Rolldown + Oxc; `build.rolldownOptions`, `oxc`) |
+| Router | TanStack Router 1.170.x with `@tanstack/router-plugin` 1.168.x (paired peer) |
+| Data | TanStack Query 5.105.x (`queryClient.query`, `staleTime: 'static'`) |
 | State | Zustand (latest) |
-| Validation | Zod 4.x (`z.email()`, `z.url()`) |
-| Zod Adapter | @tanstack/zod-adapter |
-| UI | React 19+, Tailwind CSS 4.x |
+| Validation | Zod 4.6.x (`z.email()`, `z.url()`) |
+| Zod Adapter | `@tanstack/zod-adapter` only for Zod 3 (`zodValidator`, `fallback`) |
+| UI | React 19.3+, Tailwind CSS 4.x |
 | Auth | Client-side auth (Better Auth / Clerk / etc.) |
 | Env | t3-env |
 | Monitoring | Sentry |
@@ -358,13 +361,14 @@ beforeLoad: async ({ context }) => {
 // 3. Use in component
 const { queryClient } = useRouteContext({ from: '__root__' })
 
-// 4. Search params validation
-import { zodValidator } from '@tanstack/zod-adapter'
-
+// 4. Search params validation (Zod 4: pass the schema directly)
 export const Route = createFileRoute('/dashboard/')({
-  validateSearch: zodValidator(dashboardSearchSchema),
+  validateSearch: dashboardSearchSchema,
   component: DashboardPage,
 })
+
+// Zod 3 only: validateSearch: zodValidator(dashboardSearchSchema)
+// from @tanstack/zod-adapter, whose peer dependency is zod ^3.23.8.
 ```
 
 ---

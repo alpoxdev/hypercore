@@ -16,6 +16,10 @@ find src/routes -maxdepth 5 -type f \( -name 'index.tsx' -o -name 'route.tsx' -o
 rg -n 'export const Route|const Route|createFileRoute|validateSearch|zodValidator|fallback|loader:' src/routes 2>/dev/null
 rg -n 'createServerFn|useServerFn|createMiddleware|/-functions|/-components|/-hooks' src/routes src 2>/dev/null
 
+# Query prefetch API and Vite 8 bundler names
+rg -n 'ensureQueryData|fetchQuery|prefetchQuery|queryClient\.query' src 2>/dev/null
+rg -n 'esbuild|rollupOptions|manualChunks|rolldownOptions|codeSplitting|oxc' vite.config.* 2>/dev/null
+
 # Layer and runtime-boundary checks
 rg -n 'fetch\(|axios\.|import\.meta\.env\.(?!VITE_)|process\.env|DB_|DATABASE_URL|SECRET|TOKEN|PASSWORD|fs\b|@prisma/client|drizzle-orm' src/routes src/hooks src/services src/lib 2>/dev/null
 
@@ -36,8 +40,8 @@ For edits to this skill itself:
 ```bash
 find skills/hyper-architecture-vite -maxdepth 3 -type f | sort
 wc -l skills/hyper-architecture-vite/SKILL.md skills/hyper-architecture-vite/SKILL.ko.md
-rg -n 'instruction_contract|activation_examples|routing_rule|rules/validation|current-docs-2026-06-02' skills/hyper-architecture-vite/SKILL.md skills/hyper-architecture-vite/SKILL.ko.md
-rg -n 'checked_at|/websites/vite_dev|/tanstack/router|VITE_|loadEnv|tanstackRouter|routeTree.gen|validateSearch|zodValidator' skills/hyper-architecture-vite/references/official
+rg -n 'instruction_contract|activation_examples|routing_rule|rules/validation|current-docs-2026-11-04' skills/hyper-architecture-vite/SKILL.md skills/hyper-architecture-vite/SKILL.ko.md
+rg -n 'checked_at|/websites/vite_dev|/tanstack/router|VITE_|loadEnv|tanstackRouter|routeTree.gen|validateSearch|zodValidator|queryClient\.query' skills/hyper-architecture-vite/references/official
 rg -n 'src/lib|src/services|direct leaf|repo-local convention|not official Vite|not official.*TanStack Router' skills/hyper-architecture-vite/architecture-rules.md skills/hyper-architecture-vite/rules/services.md skills/hyper-architecture-vite/rules/validation.md
 bash skills/hyper-architecture-vite/scripts/validate-hyper-architecture-vite-skill.sh
 ```
@@ -47,12 +51,14 @@ Must pass:
 - `SKILL.md` and `SKILL.ko.md` include routing, instruction contract, activation examples, workflow, verification, and stop condition.
 - Support files referenced from the core are directly linked; there is no indirect reference chain.
 - Official Vite and TanStack Router facts live in `references/official/`, not in long core sections.
-- Current official snapshot `references/official/current-docs-2026-06-02.md` is directly linked from `SKILL.md` and used when API drift matters.
+- Current official snapshot `references/official/current-docs-2026-11-04.md` is directly linked from `SKILL.md` and used when API drift matters.
 - Hypercore/repo-local conventions are labelled as such.
 - Shared nested folders such as `src/lib` and `src/services` are labelled as Hypercore/repo-local convention, not official Vite or TanStack Router law.
 - New touched shared code avoids direct leaf files under `src/lib`, `src/services`, `lib`, or `services` unless an explicit exception is recorded.
 - Deprecated feature-folder guidance is absent from this skill.
-- Vite plugin order, generated route tree, env prefix, route export, search validation, loader safety, and service layering guidance remain current-docs compatible.
+- Vite plugin order, generated route tree, env prefix, route export, search validation, loader safety, service layering, and the curated loader prefetch API guidance remain current-docs compatible.
+- Deprecated TanStack Query prefetch helpers (`ensureQueryData`, `fetchQuery`, `prefetchQuery`) are named as deprecated, with `queryClient.query({ ...options, staleTime: 'static' })` as the replacement.
+- Vite 8 config names (`oxc`, `build.rolldownOptions`, `output.codeSplitting`) are used when the file describes bundler options.
 - English and Korean entrypoints have aligned trigger, boundary, workflow, contract, and read order.
 
 ## Trigger Tests
@@ -80,4 +86,4 @@ Boundary examples:
 
 ## Sources
 
-> This file's validation and readback commands are this package's own checks over project state and over the package itself. The official-snapshot reference they cite is `references/official/current-docs-2026-06-02.md`, whose own verification date is 2026-06-02; no external source was used to author the commands and no page was re-fetched for this file. Command text and repository-local paths checked 2026-09-21.
+> This file's validation and readback commands are this package's own checks over project state and over the package itself. The official-snapshot reference they cite is `references/official/current-docs-2026-11-04.md`, whose own verification date is 2026-11-04; no external source was used to author the commands and no page was re-fetched for this file. Command text and repository-local paths checked 2026-11-04.

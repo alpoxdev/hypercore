@@ -26,7 +26,7 @@ In a typical SPA-only Vite app, loaders run in the browser during navigation. If
 
 ## Safe Patterns
 
-- Route loaders call `queryClient.ensureQueryData(...)` with service-owned query options
+- Route loaders call `queryClient.query({ ...options, staleTime: 'static' })` with service-owned query options
 - Browser-only behavior lives inside components, hooks, effects, or explicit client-only wrappers
 - Public runtime config uses `import.meta.env.VITE_*`
 - Private secrets stay behind a real backend/API boundary
@@ -44,4 +44,4 @@ In a typical SPA-only Vite app, loaders run in the browser during navigation. If
 
 ## Sources
 
-> The client-reachability of route modules and loaders and the `VITE_`-only client env rule stated here come from the dated snapshot recorded in `references/official/current-docs-2026-06-02.md`, whose own verification date is 2026-06-02. The server-render caveat and the routing-loader-networking-through-service-helpers rule are this package's own guidance and Hypercore/repo-local conventions, not facts taken from the snapshot. No page was re-fetched for this file. Rule text and repository-local paths checked 2026-09-21.
+> The client-reachability of route modules and loaders and the `VITE_`-only client env rule stated here come from the dated snapshot recorded in `references/official/current-docs-2026-11-04.md`, whose own verification date is 2026-11-04. The server-render caveat and the routing-loader-networking-through-service-helpers rule are this package's own guidance and Hypercore/repo-local conventions, not facts taken from the snapshot. No page was re-fetched for this file. Rule text and repository-local paths checked 2026-11-04.

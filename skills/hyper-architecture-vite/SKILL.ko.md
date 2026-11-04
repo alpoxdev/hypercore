@@ -12,7 +12,7 @@ compatibility: Vite 애플리케이션에서 저장소를 살펴보고 공식 Vi
 @rules/execution-model.ko.md
 @rules/platform.ko.md
 @rules/validation.ko.md
-@references/official/current-docs-2026-06-02.ko.md
+@references/official/current-docs-2026-11-04.ko.md
 
 # Vite + TanStack Router Architecture Enforcement
 
@@ -102,7 +102,7 @@ Boundary examples:
 
 - 핵심(`SKILL.md`): 트리거, 계약, 게이트 순서, 교정 범위, 검증, 정지 조건.
 - 규칙: `architecture-rules.ko.md`와 `reference_routing`에 매핑된 주제별 파일 일곱 개.
-- 참고: `references/official/current-docs-2026-06-02.ko.md`에 날짜가 붙은 Vite와 TanStack Router 사실을 둡니다.
+- 참고: `references/official/current-docs-2026-11-04.ko.md`에 날짜가 붙은 Vite와 TanStack Router 사실을 둡니다.
 - 자산: `assets/evals/hyper-architecture-vite-cases.jsonl`에 트리거와 동작 사례를 둡니다.
 - 이 스킬은 스스로 완결됩니다. 다른 스킬의 경로, 문서, 호출을 필요로 하지 않습니다.
 
@@ -142,7 +142,7 @@ Boundary examples:
 | loader와 런타임 경계, SSR 주의점, env 안전성 | `rules/execution-model.md` |
 | `vite.config.ts`, 라우터 설정, 생성 파일, env와 alias 규칙 | `rules/platform.md` |
 | 프로젝트와 스킬 검증, 읽기 확인 | `rules/validation.md` |
-| 달라졌을 수 있는 Vite 설정, env 처리, 라우터 플러그인, 라우트 트리 생성, search나 로딩 동작 | `references/official/current-docs-2026-06-02.md` |
+| 달라졌을 수 있는 Vite 설정, env 처리, 라우터 플러그인, 라우트 트리 생성, search나 로딩 동작 | `references/official/current-docs-2026-11-04.md` |
 
 </reference_routing>
 
@@ -190,7 +190,7 @@ Routes -> Services -> External API
 | `export`가 빠진 `const Route`? | BLOCKED. `export const Route`여야 함 |
 | 페이지 컴포넌트 안에 로직이 남음? | BLOCKED. `-hooks/`로 분리 |
 | 공유 loader, beforeLoad, layout을 맡는데 `route.tsx`가 없는 layout 라우트? | BLOCKED |
-| search params가 있는데 `validateSearch`가 없음? | BLOCKED. `zodValidator`를 씀 |
+| search params가 있는데 `validateSearch`가 없음? | BLOCKED. 스키마를 `validateSearch`에 넘김 (Zod 4는 스키마 직접, Zod 3은 `@tanstack/zod-adapter`의 `zodValidator`) |
 | loader가 있는데 `pendingComponent`가 없음? | WARNING. 권장 |
 
 ### Gate 3: Services
@@ -201,6 +201,7 @@ Routes -> Services -> External API
 | 라우트나 hook에 직접 `fetch`/`axios`? | BLOCKED. service 함수를 씀 |
 | `services/index.ts` 배럴 export? | BLOCKED. 구체 파일에서 직접 import |
 | service 함수에 명시적 반환 타입이 없음? | BLOCKED |
+| loader 프리페치가 아직 `ensureQueryData`, `fetchQuery`, `prefetchQuery`를 호출? | WARNING. TanStack Query 5.102+에서 deprecated. `queryClient.query({ ...options, staleTime: 'static' })`를 씀 |
 
 ### Gate 4: Hooks
 
@@ -241,6 +242,7 @@ Routes -> Services -> External API
 | `routeTree.gen.ts`를 손으로 고침? | BLOCKED. 생성 산출물로 취급 |
 | 라우터 설정이 숨겨져 있거나 SSR과 수동 렌더링 요구와 어긋남? | WARNING. `src/router.tsx`를 명시적으로 두고, SSR이나 수동 렌더링이 있으면 새 라우터 팩토리를 씀 |
 | 경로 alias나 env 설정이 암묵적 동작에만 기댐? | WARNING. `tsconfig`와 Vite 설정, 런타임 검증을 명시 |
+| 새 설정이 `esbuild`, `build.rollupOptions`, 객체형 `manualChunks`를 씀? | WARNING. Vite 8은 Oxc와 Rolldown으로 동작하고 plugin-react 6은 `vite: ^8.0.0`을 선언하므로 `oxc`, `build.rolldownOptions`, Rolldown `output.codeSplitting`을 씁니다 |
 
 3단계 — 자동 교정. 국소적이고 되돌릴 수 있고 위험도 낮은 문제는 바로 고칩니다.
 
@@ -259,9 +261,8 @@ Routes -> Services -> External API
 - 확인한 Vite + TanStack Router 프로젝트. `@tanstack/react-start`나 `app.config.ts`가 있으면 Vite 규칙 대신 Start 경계 메모.
 - 손댄 페이지마다 `-components/`와 `-hooks/`를 유지하고 `-functions/`를 만들지 않음.
 - 손댄 파일 라우트마다 `export const Route = createFileRoute(...)`.
-- search params는 `validateSearch`와 `zodValidator`로 검증하고, loader는 공개 안전과 SSR 안전을 유지.
-- 모든 판정을 게이트 행과 연결하고 BLOCKED 또는 WARNING으로 표시. 저장소 로컬 관례는 그렇게 표시.
-- 손댄 영역에 해당하는 5단계 검사의 근거.
+- search params는 `validateSearch`로 검증하고(Zod 4는 스키마 직접, Zod 3은 `zodValidator`), loader 프리페치는 `queryClient.query({ ...options, staleTime: 'static' })`로 보내며, loader는 공개 안전과 SSR 안전을 유지.
+- 모든 판정을 게이트 행과 연결하고 BLOCKED 또는 WARNING으로 표시하며 저장소 로컬 관례는 그렇게 표시. 검증 근거는 손댄 영역에 해당하는 5단계 검사에서 가져옴.
 - 이 스킬 폴더 자체를 고쳤을 때 `bash skills/hyper-architecture-vite/scripts/validate-hyper-architecture-vite-skill.sh` 실행.
 
 </required>

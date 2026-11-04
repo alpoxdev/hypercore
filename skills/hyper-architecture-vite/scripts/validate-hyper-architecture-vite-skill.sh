@@ -43,8 +43,8 @@ required=(
   'rules/platform.ko.md'
   'rules/validation.md'
   'rules/validation.ko.md'
-  'references/official/current-docs-2026-06-02.md'
-  'references/official/current-docs-2026-06-02.ko.md'
+  'references/official/current-docs-2026-11-04.md'
+  'references/official/current-docs-2026-11-04.ko.md'
 )
 
 errors=()
@@ -68,13 +68,13 @@ check_phrases() { # $1 = relative file, rest = required phrases
   done
 }
 
-check_phrases 'SKILL.md' 'instruction_contract' 'activation_examples' 'routing_rule' 'rules/validation.md' 'current-docs-2026-06-02' 'src/lib' 'src/services'
-check_phrases 'SKILL.ko.md' 'instruction_contract' 'activation_examples' 'routing_rule' 'rules/validation.ko.md' 'current-docs-2026-06-02' 'src/lib' 'src/services'
+check_phrases 'SKILL.md' 'instruction_contract' 'activation_examples' 'routing_rule' 'rules/validation.md' 'current-docs-2026-11-04' 'src/lib' 'src/services'
+check_phrases 'SKILL.ko.md' 'instruction_contract' 'activation_examples' 'routing_rule' 'rules/validation.ko.md' 'current-docs-2026-11-04' 'src/lib' 'src/services'
 check_phrases 'architecture-rules.md' 'Shared Nested Folder Grouping' 'src/lib/<domain>' 'src/services/<domain-or-provider>' 'direct leaf' 'repo-local convention' 'not official Vite' 'routeTree.gen.ts'
 check_phrases 'rules/services.md' 'services/<domain>' 'services/<domain-or-provider>' 'direct leaf' 'services/index.ts' 'VITE_API_URL'
-check_phrases 'rules/platform.md' 'tanstackRouter' 'react()' 'routeTree.gen.ts' 'current-docs-2026-06-02' 'VITE_*'
-check_phrases 'rules/validation.md' 'Skill Anatomy Validation' 'current-docs-2026-06-02' 'src/services' 'direct leaf' 'Deprecated feature-folder guidance is absent'
-check_phrases 'references/official/current-docs-2026-06-02.md' 'checked_at: 2026-06-02' '/websites/vite_dev' '/tanstack/router' 'VITE_' 'loadEnv' 'tanstackRouter' 'routeTree.gen.ts' 'validateSearch' 'zodValidator' 'not official Vite'
+check_phrases 'rules/platform.md' 'tanstackRouter' 'react()' 'routeTree.gen.ts' 'current-docs-2026-11-04' 'VITE_*'
+check_phrases 'rules/validation.md' 'Skill Anatomy Validation' 'current-docs-2026-11-04' 'src/services' 'direct leaf' 'Deprecated feature-folder guidance is absent'
+check_phrases 'references/official/current-docs-2026-11-04.md' 'checked_at: 2026-11-04' '/websites/vite_dev' '/tanstack/router' 'VITE_' 'loadEnv' 'tanstackRouter' 'routeTree.gen.ts' 'validateSearch' 'zodValidator' 'not official Vite'
 
 forbidden=('src/features' 'features/' 'feature layer' 'features<')
 

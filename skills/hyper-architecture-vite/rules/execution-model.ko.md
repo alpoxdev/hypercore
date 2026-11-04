@@ -26,7 +26,7 @@ route module이나 loader를 private server boundary처럼 취급하지 않습�
 
 ## 안전한 패턴
 
-- route loader는 service가 소유한 query options에 대해 `queryClient.ensureQueryData(...)`를 호출합니다
+- route loader는 service가 소유한 query options에 대해 `queryClient.query({ ...options, staleTime: 'static' })`를 호출합니다
 - 브라우저 전용 동작은 component, hook, effect 또는 명시적 client-only wrapper 안에 둡니다
 - 공개 가능한 런타임 설정은 `import.meta.env.VITE_*`를 사용합니다
 - private secret은 실제 backend/API 경계 뒤에 둡니다
@@ -44,4 +44,4 @@ route module이나 loader를 private server boundary처럼 취급하지 않습�
 
 ## Sources
 
-> route module과 loader의 client-reachability, client env에 `VITE_`만 허용하는 규칙은 `references/official/current-docs-2026-06-02.ko.md`에 기록된 dated snapshot에서 왔고, 그 스냅샷이 기록한 자체 검증일은 2026-06-02입니다. server render 주의점과 loader 네트워킹을 service helper 뒤로 두는 규칙은 이 패키지 자체의 guidance이자 Hypercore/repo-local convention이며 스냅샷에서 가져온 사실이 아닙니다. 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 규칙 문장과 저장소 로컬 경로 확인 2026-09-21.
+> route module과 loader의 client-reachability, client env에 `VITE_`만 허용하는 규칙은 `references/official/current-docs-2026-11-04.ko.md`에 기록된 dated snapshot에서 왔고, 그 스냅샷이 기록한 자체 검증일은 2026-11-04입니다. server render 주의점과 loader 네트워킹을 service helper 뒤로 두는 규칙은 이 패키지 자체의 guidance이자 Hypercore/repo-local convention이며 스냅샷에서 가져온 사실이 아닙니다. 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 규칙 문장과 저장소 로컬 경로 확인 2026-11-04.
