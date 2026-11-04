@@ -1,24 +1,28 @@
 # TanStack Start 공식 스냅샷
 
-- last_verified_at: 2026-09-22
-- next_re_verification: 2027-03-22 (또는 아래 Refresh Trigger가 먼저 발동하면 그때)
+- last_verified_at: 2026-11-04
+- next_re_verification: 2027-05-04 (또는 아래 Refresh Trigger가 먼저 발동하면 그때)
 - packages_checked:
-  - `@tanstack/react-start`: `1.168.57`
-  - `@tanstack/start-client-core`: `1.170.32`
-  - `@tanstack/start-server-core`: `1.169.37`
-  - `@tanstack/start-plugin-core`: `1.171.47`
-  - `@tanstack/router-plugin`: `1.168.40`
-  - `@tanstack/router-cli`: `1.167.38`
+  - `@tanstack/react-start`: `1.169.4`
+  - `@tanstack/start-client-core`: `1.170.39`
+  - `@tanstack/start-server-core`: `1.169.45`
+  - `@tanstack/start-plugin-core`: `1.171.55`
+  - `@tanstack/router-plugin`: `1.168.48`
+  - `@tanstack/router-cli`: `1.167.46`
   - `@tanstack/zod-adapter`: `1.167.0`
-  - `@tanstack/cli`: `0.71.0`
+  - `@tanstack/cli`: `0.72.16`
+  - `vite`: `8.3.5`
+  - `zod`: `4.6.7`
+  - `@tanstack/react-query`: `5.105.3`
+- engines: `@tanstack/react-start@1.169.4`는 `node >=22.12.0`을, `peerDependencies.vite`는 `>=8.0.0`을 선언합니다
 - source_priority: canonical guide pages > API/reference pages > examples > migration/comparison pages > release notes for drift context
-- supersedes: 은퇴한 2026-04-30 Start 스냅샷
+- supersedes: 은퇴한 2026-09-22 Start 스냅샷(release candidate 시기)
 
 Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일을 사용합니다. 아래 모든 사실에는 `Official` 라벨이 붙습니다. 즉 TanStack 자체 guide page, source tree, package metadata에서 온 내용입니다. Hypercore conventions는 `rules/`에 두고 official facts는 여기에 둡니다.
 
 ## Contents
 
-- [Corrected from the 2026-04-30 snapshot](#corrected-from-the-2026-04-30-snapshot)
+- [Corrected from the 2026-09-22 snapshot](#corrected-from-the-2026-09-22-snapshot)
 - [Release status](#release-status)
 - [Project structure](#project-structure)
 - [Router setup](#router-setup)
@@ -32,16 +36,24 @@ Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일
 - [Refresh Triggers](#refresh-triggers)
 - [Sources](#sources)
 
-## Corrected from the 2026-04-30 snapshot
+## Corrected from the 2026-09-22 snapshot
 
-- **`.validator(...)`가 정본입니다. `.inputValidator(...)`는 런타임에서 여전히 동작하는 폐기 별칭입니다.** 은퇴한 2026-04-30 스냅샷은 이 별칭을 정본으로 가르쳤고, 그것이 이 파일에서 바로잡는 유일한 동작 역전 항목입니다. 별칭은 위반이 아니고 기존 코드도 계속 동작합니다. 이미 손대는 코드에서만 마이그레이션합니다.
-- 은퇴한 스냅샷의 pinned version도 함께 이동했습니다. 위 version 목록은 2026-09-22에 npm `latest` dist-tag에서 다시 측정했습니다.
+- **`.inputValidator(...)`는 폐기가 아니라 제거됐습니다.** 은퇴한 2026-09-22 스냅샷과 그 이전 2026-04-30 스냅샷은 이 별칭을 "폐기됐지만 런타임에서 계속 해석된다"고 기록했습니다. `@tanstack/react-start@1.169.0`이 `createServerFn`과 `createMiddleware` 양쪽에서 제거했고, `start-client-core@1.170.39`의 type 선언에는 `inputValidator`가 한 번도 나오지 않습니다. 남아 있는 호출은 깨진 코드입니다.
+- **Start는 stable입니다.** 은퇴한 스냅샷은 Release Candidate 단계를 설명했지만, overview page는 이제 "TanStack Start is stable."로 시작합니다.
+- **Vite 8은 필수입니다.** 은퇴한 스냅샷은 Vite 7을 지원 갈래로 다뤘습니다. Start 1.169+는 Vite 8을 요구합니다.
+- 위 version 목록은 2026-11-04에 npm `latest` dist-tag에서 다시 측정했습니다.
 
 ## Release status
 
-- Start overview page 원문입니다. "TanStack Start is currently in the **Release Candidate** stage! This means it is considered feature-complete and its API is considered stable." 같은 안내는 이어서 "**This does not mean it is bug-free or without issues**, which is why we invite you to try it out and provide feedback"라고 밝힙니다.
-- v1 GA 발표는 없습니다. Start를 pre-1.0으로 다루고, experimental surface(import protection, deferred hydration, static server functions, RSC)는 불안정한 것으로 봅니다.
-- Source: <https://tanstack.com/start/latest/docs/framework/react/overview.md>
+- Start overview page 원문입니다. "TanStack Start is stable. If you're upgrading from a release candidate, follow `Migrate from the Release Candidate`."
+- `@tanstack/react-start` 1.169.0이 첫 stable release이고 2026-10-12에 게시됐습니다. migration page도 분명히 적습니다. "`@tanstack/react-start` 1.169 is the first stable release of TanStack Start." 현재 stable patch는 1.169.4(2026-10-22)입니다.
+- Release candidate에서 올릴 때 제거되는 API입니다. `@tanstack/nitro-v2-vite-plugin`은 `nitro/vite`의 `nitro()`로, `useSession`은 iron-session 같은 session library로(새 library는 기존 Start session cookie를 읽을 수 없으므로 새 cookie 이름을 쓰거나 기존 cookie를 먼저 읽는 migration을 검증해야 합니다), `.inputValidator()`는 `.validator()`로 바뀝니다.
+- Vite 8: "Start requires Vite 8 when you build with Vite." release note는 "Require Vite 8 for Vite builds. Vite 7 is no longer supported."라고 덧붙입니다.
+- stable이 되어도 실험 단계로 남아 도입 근거가 되지 않는 표면입니다. Deferred hydration(`<Hydrate>`), static server functions, React Server Components.
+- Sources:
+  - <https://tanstack.com/start/latest/docs/framework/react/overview.md>
+  - <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md>
+  - <https://github.com/TanStack/router/releases/tag/%40tanstack%2Freact-start%401.169.0>
 
 ## Project structure
 
@@ -65,7 +77,7 @@ Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일
 ## Server functions
 
 - `createServerFn()`이 server function을 정의합니다. `method` 기본값은 `'GET'`이고, `Method`는 정확히 `'GET' | 'POST'`입니다. 다른 verb는 없습니다(`packages/start-client-core/src/createServerFn.ts:449`, `:84-86`).
-- `.validator(...)`가 정본입니다. `.inputValidator(...)`는 폐기 별칭이며 런타임에서 여전히 해석됩니다. source는 `/** @deprecated Use \`validator\` instead. */` 마커를 달고 `const validator = options.validator ?? options.inputValidator`를 읽습니다.
+- `.validator(...)`가 유일한 표기입니다. `.inputValidator(...)`는 1.169.0에서 `createServerFn`과 `createMiddleware`에서 제거됐습니다. release note 원문은 "Remove the deprecated `.inputValidator()` from `createServerFn` and `createMiddleware`. Use `.validator()`, which takes the same validator,"이고, `start-client-core@1.170.39`의 선언에는 `inputValidator`가 전혀 없습니다.
 - Zod schema는 `.validator(...)`에 직접 전달합니다. validator input type은 serializable해야 하고, `FormData`도 `POST` server function에서 허용됩니다.
 - builder가 담는 validator는 **하나**입니다. `.validator(...)`는 그 하나를 설정하고(나중 호출이 앞 호출을 대체) `.middleware([...])`는 반복 호출이 가능하며 이전 middleware와 merge됩니다.
 - `strict` 옵션이 있고 기본값은 `strict: true`입니다. TypeScript 수준 serialization 검사를 관장하며, `createServerFn({ strict: false })`와 세분화 형태 `strict: { input: false }` / `strict: { output: false }`로 opt out합니다. 문서는 `strict: false`가 type 검사만 완화한다고 경고합니다. 값은 여전히 runtime serialization layer가 제대로 처리해야 합니다.
@@ -88,13 +100,14 @@ Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일
 
 ## Import protection
 
-- **Status: Experimental.** 페이지는 `> **Experimental:** Import protection is experimental and subject to change.`로 시작합니다. option surface를 불안정한 것으로 다룹니다.
+- **Status: 문서화됨, Experimental 표시 없음.** 페이지는 "Import protection prevents server-only code from leaking into client bundles and client-only code from leaking into server bundles. It runs inside TanStack Start and is enabled by default."로 시작합니다. 문서화된 option surface는 `enabled`, `behavior`, `log`, `include`, `exclude`, `maxTraceDepth`, `client`/`server` rule(`files`, `specifiers`, `excludeFiles`), `ignoreImporters`, `onViolation`입니다.
 - 기본 활성화입니다. 문서화된 기본값: `enabled: true`; `behavior: { dev: 'mock', build: 'error' }`; `log: 'once'`(반복 위반을 deduplicate); `include` = Start의 `srcDirectory`; `exclude: []`; `maxTraceDepth: 20`.
 - 기본 deny rule: `client.files` = `['**/*.server.*']`, `server.files` = `['**/*.client.*']`, `client.specifiers` = framework server specifiers, `server.specifiers` = `[]`, 양쪽 `excludeFiles` = `['**/node_modules/**']`.
 - **replace와 additive를 헷갈리는 것이 함정입니다.** option table 기준으로 `client.specifiers`는 **기본값에 additive**이고, `client.files`, `client.excludeFiles`, `server.files`, `server.specifiers`, `server.excludeFiles`는 기본값을 **replace**합니다. `excludeFiles`는 `['**/node_modules/**']`를 **완전히 replace**하므로, `node_modules`를 계속 건너뛰면서 경로를 더 제외하려면 둘 다 넘깁니다. `client.files`를 `'**/*.server.*'` 없이 설정하면 기본 deny rule이 조용히 사라집니다.
 - Type-only import와 re-export는 런타임에 지워지므로 무시됩니다. mixed import는 runtime 값을 하나라도 담으면 여전히 검사 대상입니다.
 - 명시적 boundary를 위한 side-effect marker import는 그대로 쓸 수 있습니다. `@tanstack/react-start/server-only`와 `@tanstack/react-start/client-only`입니다.
-- `mockAccess`(`'error' | 'warn' | 'off'`)는 `packages/start-plugin-core/src/schema.ts:42`에 있지만 **import-protection guide의 option table에는 없습니다.** 실제로 존재하되 문서화되지 않은 schema option이므로, 인용할 때는 그렇게 라벨하고 문서화된 옵션처럼 제시하지 않습니다.
+- `mockAccess`(`'error' | 'warn' | 'off'`)는 `@tanstack/start-plugin-core@1.171.55`의 `schema.d.ts`에 있지만 **import-protection guide에는 없습니다.** 실제로 존재하되 문서화되지 않은 schema option이므로, 인용할 때는 그렇게 라벨하고 문서화된 옵션처럼 제시하지 않습니다.
+- dev mode 위반은 오탐일 수 있습니다. build mode는 tree-shaking 뒤까지 검사를 미루므로 production graph에서 사라지는 import가 dev에서 경고로 남을 수 있습니다. boundary를 고치기 전에 build로 확인합니다.
 - Sources:
   - <https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md>
   - <https://raw.githubusercontent.com/TanStack/router/fe7f1fd0e6ef73c3f341dd2338b406749538a85d/packages/start-plugin-core/src/schema.ts>
@@ -102,12 +115,12 @@ Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일
 ## Middleware
 
 - Middleware type은 둘입니다. **Request middleware**는 모든 server request를 customize하고, **server function middleware**는 그 부분집합으로서 input validation과 client-side logic처럼 server function 전용 기능을 더합니다. Request middleware는 `createMiddleware()`(또는 `createMiddleware({ type: 'request' })`)를, server function middleware는 `createMiddleware({ type: 'function' })`를 씁니다.
-- Middleware input validation도 `.validator(...)`를 씁니다. 같은 rename이 적용되며, `packages/start-client-core/src/createMiddleware.ts:182-183`이 `inputValidator`에 같은 `@deprecated` 마커를 답니다.
+- Middleware input validation도 `.validator(...)`를 씁니다. 같은 1.169.0 release에서 `inputValidator`가 `createMiddleware`에서 제거됐습니다.
 - `sendContext`는 명시적이고 hop마다 단방향입니다. Client context는 기본적으로 server에 전송되지 않고 `next({ sendContext: {...} })`로 넘겨야 합니다. Client가 보낼 수 있는 값은 client가 거짓으로 만들 수 있습니다.
 - **"Shape validation is not authorization."** 파싱된 UUID나 number는 잘 형성된 identifier일 뿐 authorized identifier가 아닙니다. 그 값이 어떤 row를 읽거나 쓸지 고르는 경우(query key, filter, path parameter)에는 session principal의 접근 권한을 따로 검증해야 합니다. 그렇지 않으면 로그인한 사용자가 자기 요청에서 값을 바꿔 다른 tenant의 data에 닿습니다.
 - 문서가 요구하는 패턴입니다. "Always derive the session itself from a server-trusted source (a cookie + DB lookup in `authMiddleware`), never from `sendContext`."
-- **CSRF.** `createCsrfMiddleware()`가 server function을 cross-site request에서 보호합니다. option은 `filter`, `origin`, `allowRequestsWithoutOriginCheck`입니다. 기본적으로 `Origin`과 `Referer`를 들어온 request URL origin과 비교하고, `Sec-Fetch-Site`, `Origin`, `Referer`를 모두 싣지 않은 request는 거부합니다.
-- **CSRF 함정:** app이 `src/start.ts`를 정의하지 않으면 Start가 server function용 CSRF middleware를 자동으로 설치합니다. `src/start.ts`를 정의하는 순간 그 자동 설치가 조용히 사라지므로, 그 파일이 `requestMiddleware: [createCsrfMiddleware()]`를 직접 추가해야 합니다. `src/start.ts`가 있는데 이 middleware가 없으면 Start가 server function request에 대해 development warning을 기록합니다. CSRF를 다른 방식으로 처리하는 app은 `disableCsrfMiddlewareWarning: true`로 그 warning을 끕니다.
+- **CSRF.** `createCsrfMiddleware()`가 server function을 cross-site request에서 보호합니다. guide의 설치 예시는 filter를 함께 씁니다. `createCsrfMiddleware({ filter: (ctx) => ctx.handlerType === 'serverFn' })`이고, 이유는 "by default, `createCsrfMiddleware()` validates every request handled by the middleware"입니다. `Sec-Fetch-Site`, `Origin`, `Referer`를 검사하고 same-origin임을 증명할 수 없는 request를 거부하며, 세 header를 모두 싣지 않은 request는 `allowRequestsWithoutOriginCheck: true`가 아니면 거부합니다. type 표면(`createCsrfMiddleware.d.ts`)은 `filter`, `origin`, `secFetchSite`(기본 `'same-origin'`), `referer`(기본 `true`), `allowRequestsWithoutOriginCheck`(기본 `false`), `failureResponse`(기본 `403 Forbidden`)입니다. guide가 문서화한 것은 `filter`, `origin`, `allowRequestsWithoutOriginCheck`이고 나머지 셋은 type 수준 사실입니다.
+- **CSRF 함정:** app이 `src/start.ts`를 정의하지 않으면 Start가 server function용 CSRF middleware를 자동으로 설치합니다. `src/start.ts`를 정의하는 순간 그 자동 설치가 조용히 사라지므로, 그 파일이 CSRF middleware를 직접 추가해야 합니다. `src/start.ts`가 있는데 이 middleware가 없으면 Start가 server function request에 대해 development warning을 기록합니다. CSRF를 다른 방식으로 처리하는 app은 `serverFns.disableCsrfMiddlewareWarning: true`로 그 warning을 끕니다.
 - Sources:
   - <https://tanstack.com/start/latest/docs/framework/react/guide/middleware.md>
   - <https://tanstack.com/start/latest/docs/framework/react/guide/server-functions.md>
@@ -140,7 +153,8 @@ Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일
 - 공식 bundler는 둘입니다. Vite(기본)와 **Rsbuild**이며, Rsbuild는 `rsbuild.config.ts`에서 `@tanstack/react-start/plugin/rsbuild`로 import합니다. Rsbuild production build는 client asset을 `dist/client`에, server bundle을 `dist/server/index.js`에 냅니다.
 - `autoCodeSplitting`은 기본값 `false`인 bundler-plugin option입니다(v2에서는 `true`가 기본이 될 예정). Start plugin의 config schema는 이를 제외하므로(`configSchema.omit({ autoCodeSplitting: true, target: true })`) `tanstackStart()`를 통해 **전달할 수 없습니다.**
 - Client에 노출되는 environment variable은 build tool의 public prefix를 씁니다. Vite는 `VITE_`, Rsbuild는 `PUBLIC_`입니다.
-- `src/server.ts`는 선택적인 server entry point이고 fetch 형태의 `ServerEntry`를 씁니다. 없으면 Start가 기본값을 공급합니다.
+- `src/server.ts`는 선택적인 server entry point이고 fetch 형태의 `ServerEntry`를 씁니다. 없으면 Start가 기본값을 공급합니다. `createStartHandler(...)`가 반환한 handler는 이제 원래 error를 다시 던집니다. `createServerEntry`가 error를 response로 바꾸고 built-in entry는 이미 그것을 씁니다. `handleStartError(error)`는 helper state를 적용한 Start error response를 만듭니다. `@tanstack/react-router`의 `Register` interface에 `server.requestContext`를 등록하면 `handler.fetch(request, { context })`로 넘기는 context에 type이 붙습니다.
+- Nitro hosting은 `nitro/vite`의 `nitro()`를 씁니다. `@tanstack/nitro-v2-vite-plugin`은 제거됐습니다. 공식 partner는 Cloudflare(`@cloudflare/vite-plugin` + `wrangler`), Netlify(`@netlify/vite-plugin-tanstack-start`), Railway(Nitro 경유)입니다.
 - Static server function은 **experimental입니다**(`@tanstack/start-static-server-functions`의 `staticFunctionMiddleware`).
 - Scaffolding은 `npx @tanstack/cli@latest create`(`@tanstack/cli` `0.71.0`) 또는 TanStack Builder입니다. Legacy alias `create-tsrouter-app`, `create-start-app`, `create-tanstack-app`, `create-tanstack`, `@tanstack/create-start`는 deprecation warning을 출력합니다.
 - Sources:
@@ -157,15 +171,16 @@ Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일
 - Sources 아래에 나열한 Start guide page가 본문, option table, 문서화된 기본값을 바꿀 때.
 - 이 skill이 의존하는 Start guide page가 이름을 바꾸거나 사라지거나 새 page로 대체될 때.
 - security advisory가 pinned package에 영향을 줄 때. 저장소 advisory(`gh api repos/TanStack/router/security-advisories`)와 npm advisory database를 확인합니다. 선례: advisory `GHSA-g7cv-rxg3-hmpx`(2026-05-11)는 42개 `@tanstack/*` package의 악성 version을 공표했습니다. 따라서 advisory 확인은 모든 재검증 pass에 들어갑니다.
-- Start가 pre-1.0 단계를 벗어나거나 v1 GA를 발표할 때.
+- Start가 새 major를 발표하거나 stable line의 최소 Vite/Node 하한을 바꿀 때.
 
-**이 trigger를 version number만으로 걸지 않습니다.** Router와 Start는 `1.x`에 머물면서 PATCH release에서 breaking change를 흡수합니다. patch인 `@tanstack/react-router@1.170.19`가 export 약 20개를 제거한 것이 그 예입니다. 그래서 "local package version이 pinned 목록을 지나갔다"는 trigger는 과하게도, 모자라게도 발동합니다. 위 version 목록은 2026-09-22에 무엇을 측정했는지 남기는 provenance 기록이지 trigger가 아닙니다.
+**이 trigger를 version number만으로 걸지 않습니다.** Router와 Start는 `1.x`에 머물면서 patch release에서도 breaking change를 흡수합니다. `@tanstack/react-router` 1.170.41부터 1.170.46까지는 내부 composition과 link hydration 변경, agent skill 배포뿐이어서 version bump가 잡아낼 동작 변화가 없습니다. 반대로 `@tanstack/react-start@1.169.0`은 평범한 minor처럼 보이지만 `useSession`과 `.inputValidator()`를 제거했습니다. 그래서 version 기반 trigger는 과하게도, 모자라게도 발동합니다. 위 version 목록은 2026-11-04에 무엇을 측정했는지 남기는 provenance 기록이지 trigger가 아닙니다.
 
 ## Sources
 
-> 출처 확인 2026-09-22. 이 snapshot이 검증 날짜로 기록한 날짜이며, 파일 이름의 날짜와 그 기록은 구조상 일치합니다. 아래 출처는 모두 2026-09-22에 이 snapshot을 위해 가져왔습니다. `guide/` path segment는 필수이고, 같은 page에서 이 segment를 빼면 404가 납니다. 인용한 line number는 2026-09-22에 가져온 사본에서의 위치이므로 page가 바뀌면 함께 이동합니다. 안정된 기준은 인용문 자체입니다. 위 목록 밖의 출처는 주장하지 않습니다.
+> 출처 확인 2026-11-04. 이 snapshot이 검증 날짜로 기록한 날짜이며, 파일 이름의 날짜와 그 기록은 구조상 일치합니다. 아래 출처는 모두 2026-11-04에 이 snapshot을 위해 가져왔습니다. `guide/` path segment는 필수이고, 같은 page에서 이 segment를 빼면 404가 납니다. 인용한 line number는 이전에 가져온 사본에서의 위치이므로 page가 바뀌면 함께 이동합니다. 안정된 기준은 인용문 자체입니다. 위 목록 밖의 출처는 주장하지 않습니다.
 
 - <https://tanstack.com/start/latest/docs/framework/react/overview.md>
+- <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md>
 - <https://tanstack.com/start/latest/docs/framework/react/guide/routing.md>
 - <https://tanstack.com/start/latest/docs/framework/react/guide/server-functions.md>
 - <https://tanstack.com/start/latest/docs/framework/react/guide/environment-functions.md>
@@ -190,4 +205,5 @@ Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일
 - <https://raw.githubusercontent.com/TanStack/router/fe7f1fd0e6ef73c3f341dd2338b406749538a85d/packages/start-client-core/src/createCsrfMiddleware.ts>
 - <https://raw.githubusercontent.com/TanStack/router/fe7f1fd0e6ef73c3f341dd2338b406749538a85d/packages/start-plugin-core/src/schema.ts>
 - <https://registry.npmjs.org/@tanstack/react-start/latest>
+- <https://github.com/TanStack/router/releases/tag/%40tanstack%2Freact-start%401.169.0>
 - <https://github.com/TanStack/router/security/advisories/GHSA-g7cv-rxg3-hmpx>

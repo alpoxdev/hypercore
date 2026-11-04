@@ -97,4 +97,4 @@ export const useUsers = (): UseUsersReturn => {
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, `references/official/current-docs-2026-09-22.md`)에 위임합니다. 공식 사실 검증 2026-09-22. 저장소 로컬 링크 확인 2026-09-22.
+> 출처 확인 2026-11-04. 이 파일은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, `references/official/current-docs-2026-11-04.md`)에 담기지 않은 공식 사실을 주장하지 않습니다. 그 snapshot의 공식 사실은 거기 나열된 TanStack guide page에서 2026-11-04에 다시 검증했습니다. 저장소 로컬 링크 확인 2026-11-04.

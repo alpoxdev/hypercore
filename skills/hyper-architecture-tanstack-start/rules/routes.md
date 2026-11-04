@@ -8,6 +8,7 @@
 |---|---|---|
 | File route instance exported as `Route` | Official | Block if missing |
 | Search params validated when consumed | Official + Safety policy | Block if unvalidated user input affects behavior |
+| Zod version matched to its validation path | Official | Block `@tanstack/zod-adapter` alongside Zod 4 |
 | `beforeLoad` before `loader` lifecycle | Official | Use for auth/context/redirect decisions |
 | Mixed flat/directory routes supported by Router | Official | Do not claim flat routes are invalid TanStack usage |
 | Route-directory preference for app pages | Hypercore convention | Apply to touched app pages unless official defaults requested |
@@ -133,7 +134,7 @@ export const Route = createFileRoute('/products/')({
 })
 ```
 
-If a project standardizes on `zodValidator` for all versions, label that as a hypercore convention in the project notes.
+`@tanstack/zod-adapter` is Zod v3 only: its `peerDependencies` pin `zod: ^3.23.8`, which conflicts with Zod 4. On a Zod 4 project, do not install the adapter at all, even to keep a uniform import style. Pass the schema directly. On Zod 3 the adapter remains the official path. If a project standardizes on `zodValidator`, that only works while it stays on Zod 3 and must be labelled as a hypercore convention in the project notes.
 
 ## Loader Boundary Rule
 
@@ -154,4 +155,4 @@ If a project standardizes on `zodValidator` for all versions, label that as a hy
 
 ## Sources
 
-> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, and `references/official/current-docs-2026-09-22.md` (official facts verified 2026-09-22). Repository-local links checked 2026-09-22.
+> Sources checked 2026-11-04: <https://tanstack.com/router/latest/docs/guide/search-params.md> (Zod v4 direct schema, `search.middlewares`), <https://tanstack.com/router/latest/docs/how-to/validate-search-params.md> (adapter unnecessary on Zod v4), <https://registry.npmjs.org/@tanstack/zod-adapter/latest> (Zod v3 peer range). Official TanStack behavior is otherwise delegated to this package's own snapshots: `references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, and `references/official/current-docs-2026-11-04.md` (official facts verified 2026-11-04). Repository-local links checked 2026-11-04.

@@ -17,10 +17,10 @@ compatibility: TanStack Start 애플리케이션에서 저장소를 살펴보고
 @rules/platform.ko.md
 @rules/conventions.ko.md
 @rules/validation.ko.md
-@references/official/tanstack-start-2026-09-22.ko.md
-@references/official/tanstack-router-2026-09-22.ko.md
+@references/official/tanstack-start-2026-11-04.ko.md
+@references/official/tanstack-router-2026-11-04.ko.md
 @references/official/api-drift-notes.ko.md
-@references/official/current-docs-2026-09-22.ko.md
+@references/official/current-docs-2026-11-04.ko.md
 
 # TanStack Start Architecture Enforcement
 
@@ -164,9 +164,9 @@ ls src/routes/__root.tsx 2>/dev/null
 | `getRouter()`, env 검증, 경로 alias, 운영 엔드포인트 | `rules/platform.md` |
 | 파일 이름, TypeScript 스타일, 주석, 오류 클래스 | `rules/conventions.md` |
 | 손댄 영역의 완료 검사 | `rules/validation.md` |
-| 변경에 영향을 주는 Start API 동작 | `references/official/tanstack-start-2026-09-22.md` |
-| Router, 파일 라우트, search, 로딩 동작 | `references/official/tanstack-router-2026-09-22.md` |
-| 플러그인 설정, import protection, server function, 실행 제어 API | `references/official/current-docs-2026-09-22.md` |
+| 변경에 영향을 주는 Start API 동작 | `references/official/tanstack-start-2026-11-04.md` |
+| Router, 파일 라우트, search, 로딩 동작 | `references/official/tanstack-router-2026-11-04.md` |
+| 플러그인 설정, import protection, server function, 실행 제어 API | `references/official/current-docs-2026-11-04.md` |
 | 문서 충돌이나 설치된 동작의 불확실성 | `references/official/api-drift-notes.md` |
 
 </reference_routing>

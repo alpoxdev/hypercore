@@ -7,7 +7,7 @@
 | Rule | Classification | Enforcement |
 |---|---|---|
 | Start import protection exists and is enabled by default | Official | Verify behavior before custom config |
-| The official page carries an **Experimental** status | Official | Re-check the option surface; treat it as subject to change |
+| The documented option table is stable enough to rely on; `mockAccess` is undocumented | Official | Cite documented options; re-check `mockAccess` per version |
 | `.server.*` denied from client and `.client.*` denied from server | Official | Block leaks |
 | Marker imports restrict modules to one environment | Official | Use when suffix is not enough |
 | Custom deny rules for `database/`, `server/`, ORM packages | Safety policy | Add/extend when project needs them |
@@ -17,7 +17,9 @@
 
 TanStack Start import protection is enabled by default. Do not claim an explicit `importProtection` object is always required.
 
-The official guide's page opens with `> **Experimental:** Import protection is experimental and subject to change.` Treat the option surface as unstable rather than as a settled API.
+The guide no longer carries an Experimental banner. It documents the defaults table, the replace-vs-additive semantics, and the `include`, `exclude`, `ignoreImporters`, `maxTraceDepth`, and `onViolation` options. `mockAccess` is the exception: it is real in the plugin schema and absent from the guide, so it stays in the undocumented bucket.
+
+Dev-mode violations can be false positives: build mode defers the check until after tree-shaking, so an import that disappears from the production graph may still warn in dev. Confirm a suspicious dev warning with a production build before editing the boundary.
 
 Documented defaults (Official, the guide's option table):
 
@@ -93,7 +95,7 @@ Use `behavior: 'error'` when a project wants violations to fail even in developm
 
 `client` and `server` rules support `files`, `specifiers`, and `excludeFiles` (read the replace-vs-additive table above before setting any of them). The default excludes resolved files under `node_modules`; setting `excludeFiles: []` opts back into those checks for the selected environment and should be deliberate because third-party packages can produce false positives.
 
-`mockAccess` (`'error' | 'warn' | 'off'`, default `'error'`) exists in `packages/start-plugin-core/src/schema.ts`, where it controls whether mocked imports emit a runtime console diagnostic under `behavior: 'mock'`. It is **absent from the official guide's option table** — a real schema option that the docs do not document. Cite it as undocumented and re-check it against the installed package types before relying on it; never present it as a documented option.
+`mockAccess` (`'error' | 'warn' | 'off'`, default `'error'`) exists in `@tanstack/start-plugin-core@1.171.55`'s `schema.d.ts`, where it controls whether mocked imports emit a runtime console diagnostic under `behavior: 'mock'`. It is **absent from the official guide's option table** — a real schema option that the docs do not document. Cite it as undocumented and re-check it against the installed package types before relying on it; never present it as a documented option.
 
 ## Compiler Boundary Leak Rule
 
@@ -144,4 +146,4 @@ Blocked or warned:
 
 ## Sources
 
-> Official TanStack Start import-protection facts in this file (the defaults table, replace-vs-additive semantics, the **Experimental** status, and `mockAccess`) were verified 2026-09-22 against `https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md` and `packages/start-plugin-core/src/schema.ts` at pinned SHA `fe7f1fd0e6ef73c3f341dd2338b406749538a85d`. They are carried in this package's own 2026-09-22 snapshot, `references/official/current-docs-2026-09-22.md`; no external source is a runtime dependency. Repository-local links checked 2026-09-22.
+> Sources checked 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md> (defaults table, replace-vs-additive semantics, documented option surface; the page carries no Experimental banner) and `@tanstack/start-plugin-core@1.171.55`'s `schema.d.ts` (`mockAccess` enum and default). They are carried in this package's own 2026-11-04 snapshot, `references/official/current-docs-2026-11-04.md`; no external source is a runtime dependency. Repository-local links checked 2026-11-04.

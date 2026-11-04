@@ -12,9 +12,9 @@ Brownfield 적용: touched files는 해당 safety rules와 현재 hypercore conv
 
 ## Source Priority
 
-1. `references/official/current-docs-2026-09-22.ko.md`
-2. `references/official/tanstack-start-2026-09-22.ko.md`
-3. `references/official/tanstack-router-2026-09-22.ko.md`
+1. `references/official/current-docs-2026-11-04.ko.md`
+2. `references/official/tanstack-start-2026-11-04.ko.md`
+3. `references/official/tanstack-router-2026-11-04.ko.md`
 4. `references/official/api-drift-notes.ko.md`
 5. `rules/` 아래 topic rules
 6. Installed versions가 다르면 project-local package types와 tests
@@ -26,7 +26,7 @@ Brownfield 적용: touched files는 해당 safety rules와 현재 hypercore conv
 | Loader boundaries | Official + Safety policy | Loader가 server-only execution을 가정하거나 secrets/DB/filesystem을 직접 읽음 |
 | Server functions | Official + Safety policy | Mutation input이 runtime에 validate되지 않거나 handler가 없거나 installed package/API version을 따르지 않거나 auth-required RPC가 자체 auth boundary를 갖지 않음 |
 | Import protection | Official + Safety policy (Official 페이지 상태: **Experimental**) | Import protection을 disable하거나 config를 overwrite하거나 server/client-only imports가 compiler-recognized boundaries 밖으로 leak됨 |
-| Middleware | Official + Safety policy | Client `sendContext`를 runtime validation 없이 server-side에서 trust하거나, `sendContext` 값이 어떤 row를 읽고 쓸지 고르는 데 별도 authorization 검증 없이 쓰임 (Official: "shape validation is not authorization". session은 server-trusted source에서 얻고 `sendContext`에서 얻지 않음) |
+| Middleware | Official + Safety policy | Client `sendContext`를 서버에서 runtime validation 없이 신뢰하거나, `sendContext` 값이 별도 authorization check 없이 어떤 row를 읽고 쓸지 고르거나(Official: "shape validation is not authorization", session은 `sendContext`가 아니라 서버가 신뢰하는 출처에서 도출), route guard를 data authorization 경계로 취급함(Official: "A route guard is not a data authorization boundary") |
 | SSR/hydration | Official + Safety policy | Stabilization/fallback strategy 없이 first render에 unstable values 포함 |
 | Server routes | Official + Hypercore convention | Explicit justification 없이 internal app RPC를 server functions 대신 server routes로 구현 |
 | Route export | Official | File routes가 route instance를 `Route`로 export하지 않음 |
@@ -60,9 +60,10 @@ Rules:
 
 - TanStack Router는 flat, directory, mixed route structures를 공식 지원합니다. Hypercore는 app pages에 route directories를 선호합니다.
 - TanStack Start docs는 `src/routes`, `src/router.tsx`, generated `src/routeTree.gen.ts`, `public/`, root `vite.config.ts`를 typical project shape로 보여줍니다. nested `src/modules`, `src/lib`, `src/integrations`와 비슷한 shared folders는 Hypercore/repo-local conventions입니다.
-- TanStack Start import protection은 기본 활성화됩니다. Hypercore는 project-specific deny rules가 필요할 때 explicit extension을 요구합니다.
+- TanStack Start는 1.169에서 stable이고, Vite로 빌드할 때 Vite 8과 Node ≥22.12를 요구합니다. 1.168 release candidate 계열과 Vite 7은 지원 대상이 아닙니다.
+- TanStack Start import protection은 기본 활성화되고 option 표면은 guide가 문서화합니다. Hypercore는 project-specific deny rules가 필요할 때 explicit extension을 요구합니다.
 - TanStack Start server function wrapper는 static import 가능한 RPC entrypoint입니다. 큰 앱에서는 `.functions.ts` wrapper와 `.server.ts` server-only helper를 분리하는 official guidance를 Hypercore `src/modules/<domain>/<feature>/` convention으로 적용합니다.
-- Zod v4와 함께 쓰는 TanStack Router는 schema를 `validateSearch`에 직접 전달할 수 있습니다. Zod v3는 `@tanstack/zod-adapter`를 사용합니다.
+- Zod v4와 함께 쓰는 TanStack Router는 schema를 `validateSearch`에 직접 전달합니다. `@tanstack/zod-adapter`는 Zod v3 전용이고 peer 범위(`zod: ^3.23.8`)가 Zod 4와 충돌하므로 Zod 4 프로젝트는 설치하면 안 됩니다.
 - Server routes는 공식 Start feature입니다. Hypercore는 internal app RPC가 아니라 HTTP semantics 용도로 제한합니다.
 - Publishing-only static pages는 `-hooks/`, `-components/`, `-functions/`가 필요 없습니다. Interactive UI가 커지면 `-hooks/` 또는 `-components/`를 추가하고, route-only server action일 때만 `-functions/`를 추가합니다.
 
@@ -105,7 +106,7 @@ Issue가 local, reversible, low-risk이면 직접 auto-fix합니다:
 |---|---|
 | `const Route = createFileRoute(...)` | `export const Route = createFileRoute(...)` |
 | `loader`를 server-only로 취급 | Privileged work를 `createServerFn` / `createServerOnlyFn` 뒤로 이동 |
-| Zod v4 search params를 adapter에 강제로 통과 | Project convention이 adapter를 요구하지 않으면 direct schema 사용 |
+| Zod v4 search params를 adapter에 강제로 통과 | direct schema 사용. adapter의 peer 범위가 Zod 4를 제외함 |
 | Zod v3 search params에 adapter/fallback 없음 | `@tanstack/zod-adapter`의 `zodValidator` / `fallback` 사용 |
 | Runtime validation 없는 server function mutation | `.handler(...)` 전에 `.validator(...)` 추가 |
 | Auth-required server function이 route `beforeLoad`만 의존 | server function middleware 또는 handler-level auth check 추가 |
@@ -122,4 +123,4 @@ Issue가 local, reversible, low-risk이면 직접 auto-fix합니다:
 
 ## Sources
 
-> 이 파일에는 외부 출처를 사용하지 않았습니다. 공식 TanStack Start/Router 동작은 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-09-22.ko.md`, `references/official/tanstack-router-2026-09-22.ko.md`, `references/official/current-docs-2026-09-22.ko.md`)과 결정 로그 `references/official/api-drift-notes.ko.md`에 위임합니다. 공식 사실 검증 2026-09-22, 저장소 로컬 링크 확인 2026-09-22.
+> 출처 확인 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/overview.md>(stable 상태), <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md>(삭제된 API, Vite 8), <https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md>(기본값), <https://tanstack.com/router/latest/docs/how-to/validate-search-params.md>(Zod v4 direct schema), <https://registry.npmjs.org/@tanstack/zod-adapter/latest>(Zod v3 peer 범위). 나머지는 이 패키지 자체의 snapshot(`references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, `references/official/current-docs-2026-11-04.md`)과 결정 기록 `references/official/api-drift-notes.md`에 위임합니다. 공식 사실 검증 2026-11-04. 저장소 로컬 링크 확인 2026-11-04.

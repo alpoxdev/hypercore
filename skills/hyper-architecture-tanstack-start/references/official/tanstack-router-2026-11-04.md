@@ -1,9 +1,13 @@
 # TanStack Router Official Snapshot
 
-- last_verified_at: 2026-09-22
-- next_re_verification: 2027-03-22 (or earlier if a Refresh Trigger below fires)
+- last_verified_at: 2026-11-04
+- next_re_verification: 2027-05-04 (or earlier if a Refresh Trigger below fires)
 - packages_checked:
-  - `@tanstack/react-router`: `1.170.38` (npm `latest` dist-tag, published 2026-09-16)
+  - `@tanstack/react-router`: `1.170.46` (npm `latest` dist-tag, published 2026-10-22)
+  - `@tanstack/router-plugin`: `1.168.48`
+  - `@tanstack/router-generator`: `1.167.46`
+  - `@tanstack/router-core`: `1.171.39`
+  - `@tanstack/zod-adapter`: `1.167.0`
 - source_priority: latest docs pages > API pages > examples
 
 Use this file when Router behavior affects route, search, loader, context, or SSR rules.
@@ -77,13 +81,16 @@ Use this file when Router behavior affects route, search, loader, context, or SS
 - The legacy `preSearchFilters` / `postSearchFilters` are marked deprecated in the API reference ("⚠️ deprecated, use `search.middlewares` instead") and no longer appear anywhere in the search-params guide.
 - Sources:
   - <https://tanstack.com/router/latest/docs/guide/search-params>
+  - <https://tanstack.com/router/latest/docs/how-to/validate-search-params>
   - <https://tanstack.com/router/latest/docs/api/router/RouteOptionsType>
+  - <https://registry.npmjs.org/@tanstack/zod-adapter/latest>
 
 ### Search parameter validation
 
 - `validateSearch` is a planning callback: "It must be deterministic and side-effect-free for the same input; do not navigate or mutate application/router state from it."
-- Zod v4: pass the Zod schema directly to `validateSearch` — the adapter is no longer necessary.
+- Zod v4: pass the Zod schema directly to `validateSearch`; "the adapter is no longer necessary". `@tanstack/zod-adapter`'s `peerDependencies` pin `zod: ^3.23.8`, so it cannot be installed alongside Zod 4 at all.
 - Zod v3: use `@tanstack/zod-adapter` (`zodValidator`, `fallback`).
+- Note a live doc inconsistency: the middleware guide still shows a `zodValidator` import in one example. Treat `how-to/validate-search-params` and `guide/search-params` as the authority for the Zod version split.
 - Sources:
   - <https://tanstack.com/router/latest/docs/how-to/validate-search-params>
   - <https://tanstack.com/router/latest/docs/api/router/RouteOptionsType>
@@ -115,8 +122,8 @@ Refresh this snapshot when:
 - Router file naming conventions, route generation requirements, or the `routeToken` / `indexToken` / `routeFileIgnorePrefix` defaults change.
 - Search validation guidance changes for Zod/adapter usage, or the search-transform API (`search.middlewares`) changes.
 - Loader / `beforeLoad` lifecycle, pending behavior, or `staleReloadMode` semantics change.
-- **Official doc pages change** — and run an advisory check on the pinned version. Do **not** key this trigger on "local package versions move materially": Router and Start stay on `1.x` and absorb BREAKING changes in **patch** releases (e.g. `@tanstack/react-router@1.170.19`, a patch, removed roughly 20 exports), so a version bump is not a reliable drift signal.
+- **Official doc pages change**, and run an advisory check on the pinned version. Do **not** key this trigger on "local package versions move materially". Router and Start stay on `1.x` and absorb breaking changes in patch releases, while a run of patch releases can carry no behavior change at all: 1.170.41 through 1.170.46 shipped only internal composition and link-hydration work, plus publishing the packages' own agent skills. A version bump is therefore not a reliable drift signal in either direction.
 
 ## Sources
 
-> Sources checked 2026-09-22, the date this snapshot records as `last_verified_at`; every claim above names the TanStack Router (or Start) docs page it came from. Each page below resolved with HTTP 200 on that date and none was re-fetched from a cached copy. `custom-route-directories` is deliberately not cited — that page does not exist; the file-based-routing config surface lives at `api/file-based-routing`.
+> Sources checked 2026-11-04, the date this snapshot records as `last_verified_at`; every claim above names the TanStack Router (or Start) docs page it came from. Each page below resolved with HTTP 200 on that date and none was re-fetched from a cached copy. `custom-route-directories` is deliberately not cited — that page does not exist; the file-based-routing config surface lives at `api/file-based-routing`.

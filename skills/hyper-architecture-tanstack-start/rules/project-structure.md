@@ -245,4 +245,4 @@ Never let route loaders or client-reachable modules import DB clients, secret en
 
 ## Sources
 
-> No external sources were used in this file. Official TanStack Start and Router behavior is delegated to this package's own snapshots: `references/official/tanstack-start-2026-09-22.md`, `references/official/tanstack-router-2026-09-22.md`, and `references/official/current-docs-2026-09-22.md`. Official facts in those snapshots were verified 2026-09-22; repository-local links in this file checked 2026-09-22.
+> Sources checked 2026-11-04. This file states no official fact that is not carried in this package's own snapshots: `references/official/tanstack-start-2026-11-04.md`, `references/official/tanstack-router-2026-11-04.md`, and `references/official/current-docs-2026-11-04.md`, whose official facts were re-verified on 2026-11-04 from the TanStack guide pages listed there. Repository-local links in this file checked 2026-11-04.
