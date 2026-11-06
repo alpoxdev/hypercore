@@ -23,6 +23,10 @@
     "git-worktree": {
       "FRONTMATTER_TRIGGER": 1
     },
+    "hyper": {
+      "FRONTMATTER_TRIGGER": 1,
+      "CROSS_SKILL_REFERENCE": 266
+    },
     "hyper-architecture": {
       "FRONTMATTER_TRIGGER": 1,
       "CROSS_SKILL_REFERENCE": 62

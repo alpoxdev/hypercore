@@ -1,0 +1,103 @@
+# Stage Handoff
+
+> 각 단계에 정확한 요청을 주고, 저장된 산출물을 디스크에서 확인하고, 마지막 단계가 완료를 증명할 때까지 그 산출물을 넘깁니다.
+
+## 1. 단계 계약
+
+런타임의 스킬 기능으로 각 단계 스킬을 불러오고(스킬이 일반 파일이면 그 `SKILL.md`를 읽고) 첫 단계부터 따릅니다. 실행 안의 모든 일은 그 단계가 소유합니다.
+
+| Stage | Request passed to the stage | Artifact that must exist before the next stage | Passed forward |
+|---|---|---|---|
+| `hyper-research` | 작업이 달려 있는 질문과 그 질문이 뒷받침할 결정("이 저장소에 맞는 상태관리 라이브러리, 다음에 도입할 것") | `.hyper/research/[NN].<slug>.md` | 보고서 경로와 추천 한 줄 |
+| `hyper-seo` | 대상, 그리고 Build 작업이면 허용 동작 `recommend`, Report 작업이면 사용자가 말한 모드 | `.hyper/seo/<slug>/` 아래 보고서 | 보고서 경로와 critical·warning 결과 |
+| `hyper-architecture` | Build 작업에서는 "아키텍처 감사만, 파일 경로와 함께 결과 보고, 수정 금지"와 대상 경로. 마지막 단계일 때는 사용자 요청 그대로 | 라우팅 줄과 결과를 워크플로 기록의 단계 메모에 옮긴 것. 감사 모드에서는 이 단계가 자기 파일을 저장하지 않기 때문입니다 | 단계 메모 위치와 결과 |
+| `hyper-plan` | 사용자의 원래 요청, 꼭 읽어야 할 앞 단계 산출물 경로 전부, 전달 플래그, 사용자가 말했다면 `--plan-only`나 승인 보류 | `## Handoff` 섹션이 있는 `.hyper/plans/<slug>.md` | 없음. 이 단계가 스스로 `hyper-execute`로 이어집니다 |
+| `hyper-execute` | 계획 slug와 전달 플래그 | `status`가 `complete`인 `.hyper/execute/<slug>/state.json`과 출력된 완료 블록 | - |
+| `hyper-mass` | 목표, 성공 기준, 앞 단계 산출물 경로 전부 | `status`가 `completed`인 `run.settled` 이벤트로 끝나는 `.hyper/mass/<run-key>/run.jsonl` | - |
+
+모든 전달에 적용하는 규칙:
+
+- 단계를 done으로 표시하기 전에 산출물을 디스크에서 읽습니다. 파일 없이 채팅에서만 완료를 주장한 단계는 전달 실패입니다.
+- 앞 단계 산출물은 경로로 넘기고 다음 단계에 필요한 결론만 최대 세 줄 덧붙입니다. 보고서 전체를 붙여 넣지 않습니다.
+- 사용자의 제약(범위 제한, 제외 경로, "커밋하지 말고")은 모든 단계에 그대로 넘깁니다.
+
+## 2. 계획에서 실행으로 넘어가는 단계
+
+`hyper-plan`은 자기 조건이 맞으면 같은 세션에서 `hyper-execute`로 이어집니다. 이 스킬은 그 실행을 직접 시작하지 않습니다.
+
+계획 단계가 돌아오면 계획의 `## Handoff` 줄을 읽습니다.
+
+| `Auto-execute` value | Meaning | Next action |
+|---|---|---|
+| `yes` | 계획 단계 안에서 실행이 돌았습니다 | `.hyper/execute/<slug>/state.json`을 확인합니다. `complete`면 체인이 끝나고, `active`나 `paused`면 실행이 진행 중이거나 멈춘 것이므로 그 실행 자신의 보고가 결정합니다 |
+| `no (plan only requested)` 또는 `no (approval requested)` | 사용자가 계획 뒤에 멈추라고 했습니다 | Report 작업으로 체인을 끝냅니다 |
+| 그 밖의 `no (...)` | 계획 단계가 강제 정지에 걸렸습니다 | 그 사유로 체인을 멈춥니다(§5) |
+
+## 3. 워크플로 기록
+
+첫 단계 전에 `.hyper/workflows/<slug>.md`를 씁니다. `<slug>`는 작업을 나타내는 짧은 kebab-case 이름이고, 다른 작업의 파일이 이미 있으면 `-2`, `-3`을 붙입니다. 경로, 스킬 이름, 플래그를 빼고 한국어로 씁니다.
+
+```markdown
+# <job title>
+
+- 요청: <the user's request, verbatim>
+- 작업 종류: build | report | resume
+- 전달: local | make-pr | ship | plan-only
+- 상태: running | done | stopped
+- 정지 사유: <reason, or 없음>
+
+## 단계
+
+| # | 단계 | 선택 근거 | 상태 | 산출물 |
+|---|---|---|---|---|
+| 1 | hyper-architecture | "폴더 구조 리팩토링" + package.json `next` | done | 단계 메모 1 |
+| 2 | hyper-plan | 여러 파일 변경 | running | .hyper/plans/<slug>.md |
+
+## 단계 메모
+
+### 1. hyper-architecture
+<routing line and findings with file paths>
+```
+
+단계 상태 값은 `pending`, `running`, `done`, `skipped`, `stopped`입니다. 단계가 시작될 때와 끝날 때 상태 줄을 출력하기 전에 행을 갱신합니다.
+
+## 4. 단계 결과
+
+| Stage result | Action |
+|---|---|
+| 산출물이 있고 단계가 성공을 보고함 | `done`으로 표시하고 `<#>/<total> <stage> 완료 - <artifact>`를 출력한 뒤 다음 단계를 시작합니다 |
+| 앞 단계 자리의 `hyper-architecture`가 지원하지 않는 스택으로 멈춤 | 사유와 함께 `skipped`로 표시하고 계속합니다. 그 출력은 참고 근거였기 때문입니다 |
+| 단계가 요청의 결과물 형태가 다르다며 멈춤 | 한 번 다시 라우팅합니다(§6) |
+| 단계가 사용자 결정, 자격 증명, 충돌, 실패한 게이트로 멈춤 | `stopped`로 표시하고 체인을 끝냅니다(§5) |
+| 단계 스킬이 설치되지 않았거나 불러올 수 없음 | `stopped`로 표시하고 체인과 `npx skills add alpoxdev/hypercore --skill <stage>`를 보고합니다 |
+
+통과시키려고 단계 산출물을 고치지 않고, 멈춘 단계를 더 약한 입력으로 다시 실행하지 않으며, 건너뜀으로 정한 경우가 아닌 정지를 넘어서 계속하지 않습니다.
+
+## 5. 정지 보고
+
+체인이 일찍 끝나면 한국어로 다음을 출력합니다.
+
+1. 각 단계의 최종 상태를 붙인 라우팅 줄
+2. 멈춘 단계, 그 단계 자신의 사유 한 줄, 사용자가 풀 수 있는 방법 하나
+3. 나중에 "이어서"로 재개할 수 있게 기록 경로
+
+## 6. 재라우팅과 재개
+
+- 재라우팅: 단계가 요청의 결과물 형태가 다르다고 하면(계획 단계가 사실은 리서치 작업이라고 보고함) 그 근거로 `rules/workflow-routing.md`에 따라 체인을 다시 만들고, 두 체인을 모두 기록한 뒤 계속합니다. 두 번째로 형태가 맞지 않으면 실행을 멈춥니다.
+- 재개: "이어서" / "resume"이면 `상태`가 `running`이나 `stopped`인 가장 최근 기록을 읽고, 멈춘 단계의 차단 요인이 사라졌는지 확인한 뒤 `done`도 `skipped`도 아닌 첫 단계부터 다시 시작합니다. 기록이 없으면 열린 실행 상태를 `hyper-execute` 단독으로 이어갑니다.
+
+## 7. 마무리 보고
+
+한국어로 보고합니다. 상태를 붙인 최종 체인, 각 산출물 경로, 마지막 단계의 완료 근거(실행 완료 블록, mass 실행의 검증 결과, 보고서 경로), 전달 결과(로컬 커밋, PR URL, 병합), 건너뛰거나 멈춘 단계와 그 사유를 담습니다.
+
+## Sources
+
+> Checked 2026-11-06.
+
+| Claim | Source |
+|---|---|
+| 단계 산출물 경로와 상태 값(`.hyper/research/`, `.hyper/seo/<slug>/`, `.hyper/plans/<slug>.md`, `state.json` `status`, `run.settled`) | 이 저장소의 각 단계 스킬 `SKILL.md`와 references, 2026-11-06 |
+| 계획 단계의 `## Handoff` 줄과 실행으로 자동 연결 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
+| 아키텍처 단계가 지원하지 않는 스택에서 멈추고 없는 스킬의 설치 명령을 보고함 | 이 저장소의 아키텍처 스킬 stack-detection 규칙, 2026-11-06 |
+| 채팅이 아니라 저장된 산출물과 지속 상태로 전달 | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
+| 워크플로 기록 형태, 건너뜀 규칙, 한 번의 재라우팅 | 이 패키지가 고른 설계이며 검증된 최적값이 아님 |
