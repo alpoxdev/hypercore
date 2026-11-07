@@ -85,7 +85,7 @@ No route may report `prompt_saved` from a compiled string or proposed path, or g
 |---|---|
 | Retry only transient failures; never auto-retry quota errors or errors that need a changed request | OpenAI image generation guide, <https://developers.openai.com/api/docs/guides/image-generation> |
 | The inspection checklist (exact readable text, only the requested change, real alpha) and reporting a pixel-identical limit | OpenAI image prompting guide, <https://developers.openai.com/api/docs/guides/image-prompting> |
-| Never switching to an API-key path unprompted, and the non-overwriting versioned destination copy | OpenAI `imagegen` skill, <https://github.com/openai/skills/blob/e6afb0d74cc75d220df2faf3dd6c635c2dc6a108/skills/.system/imagegen/SKILL.md> |
-| Inspection tests written before generation, transport success kept apart from a met request, and asset contents treated as untrusted input | AgriciDaniel/banana-claude `banana` skill, <https://github.com/AgriciDaniel/banana-claude/blob/08e329b37dae396fc869c10d3494c5950d1d61c2/skills/banana/SKILL.md> |
+| Never switching to an API-key path unprompted, and the non-overwriting versioned destination copy | OpenAI `imagegen` skill, <https://github.com/openai/skills> (commit `e6afb0d`, file `.system/imagegen/SKILL.md`) |
+| Inspection tests written before generation, transport success kept apart from a met request, and asset contents treated as untrusted input | AgriciDaniel/banana-claude `banana` skill, <https://github.com/AgriciDaniel/banana-claude> (commit `08e329b`, the `banana` skill's `SKILL.md`) |
 | GPT Image 2.6 ships as `gpt-image-2.6-sunburst` (detail, layout, precise edits) and `gpt-image-2.6-flare` (speed) | OpenAI image prompting guide, checked 2026-11-07, <https://developers.openai.com/api/docs/guides/image-prompting> |
 | The typed resolver, terminals, and secure-write rules | this package's own rules |

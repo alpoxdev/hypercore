@@ -70,7 +70,7 @@ Rendered characters are quote-pinned inside the brief. The string inside quotes 
 
 | Claim | Source |
 |---|---|
-| The eight edit categories and their change-only and preserve pairs | OpenAI `imagegen` skill, <https://github.com/openai/skills/blob/e6afb0d74cc75d220df2faf3dd6c635c2dc6a108/skills/.system/imagegen/references/prompting.md> |
+| The eight edit categories and their change-only and preserve pairs | OpenAI `imagegen` skill, <https://github.com/openai/skills> (commit `e6afb0d`, file `.system/imagegen/references/prompting.md`) |
 | An edit keeps the input ratio and follows the last image with several inputs | Google Developers Blog, 2025-08-28, <https://developers.googleblog.com/en/how-to-prompt-gemini-2-5-flash-image-generation-for-the-best-results/> |
 | The exact output count is not guaranteed | Gemini API image generation docs, <https://ai.google.dev/gemini-api/docs/image-generation> |
 | The generation categories, format selection, and text-render protocol | this package's own rules |

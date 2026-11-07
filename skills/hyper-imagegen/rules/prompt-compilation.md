@@ -61,7 +61,7 @@ Before delivery, ensure every brief is complete, maps to one image, preserves ex
 
 | Claim | Source |
 |---|---|
-| Indexed input-image roles, references-only meaning generation, and the specificity policy with its allowed and disallowed augmentations | OpenAI `imagegen` skill, <https://github.com/openai/skills/blob/e6afb0d74cc75d220df2faf3dd6c635c2dc6a108/skills/.system/imagegen/references/prompting.md> |
+| Indexed input-image roles, references-only meaning generation, and the specificity policy with its allowed and disallowed augmentations | OpenAI `imagegen` skill, <https://github.com/openai/skills> (commit `e6afb0d`, file `.system/imagegen/references/prompting.md`) |
 | Scene-first ordering, `change only X` with a named preserve list restated every iteration, and letter-by-letter spelling | OpenAI image prompting guide, <https://developers.openai.com/api/docs/guides/image-prompting>; OpenAI Cookbook image prompting guide, <https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide> |
 | Describing the scene instead of listing keywords, step-by-step phrasing for crowded scenes, and restarting from a full description after drift | Google Developers Blog, "How to prompt Gemini 2.5 Flash Image Generation for the best results", 2025-08-28, <https://developers.googleblog.com/en/how-to-prompt-gemini-2-5-flash-image-generation-for-the-best-results/> |
 | Front-loading subject before style and context, and the 30-80 word band for an ordinary brief | Black Forest Labs FLUX.2 prompting guide, <https://docs.bfl.ai/guides/prompting_guide_flux2> |

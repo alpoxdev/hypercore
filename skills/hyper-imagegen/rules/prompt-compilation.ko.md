@@ -61,7 +61,7 @@
 
 | Claim | Source |
 |---|---|
-| 번호를 붙인 입력 이미지 역할, 참고 자료만 있으면 생성, 허용·금지 보강을 담은 구체성 정책 | OpenAI `imagegen` skill, <https://github.com/openai/skills/blob/e6afb0d74cc75d220df2faf3dd6c635c2dc6a108/skills/.system/imagegen/references/prompting.md> |
+| 번호를 붙인 입력 이미지 역할, 참고 자료만 있으면 생성, 허용·금지 보강을 담은 구체성 정책 | OpenAI `imagegen` skill, <https://github.com/openai/skills> (commit `e6afb0d`, file `.system/imagegen/references/prompting.md`) |
 | 장면 우선 순서, 이름을 붙인 보존 목록과 함께 쓰는 `change only X`와 매 반복의 재기재, 한 글자씩 철자 적기 | OpenAI image prompting guide, <https://developers.openai.com/api/docs/guides/image-prompting>; OpenAI Cookbook image prompting guide, <https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide> |
 | 키워드 나열 대신 장면 묘사, 붐비는 장면의 단계 서술, 흐트러진 뒤 완전한 설명으로 다시 시작 | Google Developers Blog, "How to prompt Gemini 2.5 Flash Image Generation for the best results", 2025-08-28, <https://developers.googleblog.com/en/how-to-prompt-gemini-2-5-flash-image-generation-for-the-best-results/> |
 | 대상을 스타일과 맥락보다 앞에 두기, 보통 브리프의 30~80단어 범위 | Black Forest Labs FLUX.2 prompting guide, <https://docs.bfl.ai/guides/prompting_guide_flux2> |

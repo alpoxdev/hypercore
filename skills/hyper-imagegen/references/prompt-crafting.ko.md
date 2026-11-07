@@ -70,7 +70,7 @@
 
 | Claim | Source |
 |---|---|
-| 여덟 편집 카테고리와 각각의 변경·보존 짝 | OpenAI `imagegen` skill, <https://github.com/openai/skills/blob/e6afb0d74cc75d220df2faf3dd6c635c2dc6a108/skills/.system/imagegen/references/prompting.md> |
+| 여덟 편집 카테고리와 각각의 변경·보존 짝 | OpenAI `imagegen` skill, <https://github.com/openai/skills> (commit `e6afb0d`, file `.system/imagegen/references/prompting.md`) |
 | 편집은 입력 비율을 유지하고 여러 입력이면 마지막 이미지를 따름 | Google Developers Blog, 2025-08-28, <https://developers.googleblog.com/en/how-to-prompt-gemini-2-5-flash-image-generation-for-the-best-results/> |
 | 출력 장수는 보장되지 않음 | Gemini API image generation docs, <https://ai.google.dev/gemini-api/docs/image-generation> |
 | 생성 카테고리, 형식 선택, 텍스트 렌더 규칙 | 이 패키지 자체의 규칙 |

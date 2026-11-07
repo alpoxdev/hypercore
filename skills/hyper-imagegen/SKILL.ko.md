@@ -194,5 +194,5 @@ compatibility: 관찰된 이미지 생성 또는 편집 기능이 필요합니�
 | Claim | Source |
 |---|---|
 | `image-maker`에서 이름을 바꾸고 공개된 이미지 스킬을 참고해 최적화하라는 요청 | user instruction, 2026-11-07 |
-| 코드로 만들 에셋의 경계, 참고 자료만 있으면 생성으로 보는 생성·편집 구분, 번호를 붙인 입력 이미지 역할, 구체성 정책, 덮어쓰지 않는 `-v2` 경로 사본, API 키 경로로 스스로 바꾸지 않음 | OpenAI `imagegen` system skill, <https://github.com/openai/skills/blob/e6afb0d74cc75d220df2faf3dd6c635c2dc6a108/skills/.system/imagegen/SKILL.md> |
+| 코드로 만들 에셋의 경계, 참고 자료만 있으면 생성으로 보는 생성·편집 구분, 번호를 붙인 입력 이미지 역할, 구체성 정책, 덮어쓰지 않는 `-v2` 경로 사본, API 키 경로로 스스로 바꾸지 않음 | OpenAI `imagegen` system skill, <https://github.com/openai/skills> (commit `e6afb0d`, file `.system/imagegen/SKILL.md`) |
 | 해결 순서, 다섯 종료 상태, 두 번 호출 상한, 안전 쓰기 규칙 | `image-maker`에서 이어받은 이 패키지의 `rules/` |

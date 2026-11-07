@@ -85,7 +85,7 @@
 |---|---|
 | 일시적 실패만 재시도하고 할당량 오류나 요청을 바꿔야 하는 오류는 자동 재시도하지 않음 | OpenAI image generation guide, <https://developers.openai.com/api/docs/guides/image-generation> |
 | 검사 목록(정확하고 읽을 수 있는 텍스트, 요청한 변경만, 실제 알파)과 픽셀 동일성 한계 보고 | OpenAI image prompting guide, <https://developers.openai.com/api/docs/guides/image-prompting> |
-| API 키 경로로 스스로 바꾸지 않음, 덮어쓰지 않는 버전 이름 경로 사본 | OpenAI `imagegen` skill, <https://github.com/openai/skills/blob/e6afb0d74cc75d220df2faf3dd6c635c2dc6a108/skills/.system/imagegen/SKILL.md> |
-| 생성 전에 쓰는 검사 시험, 전송 성공과 요청 충족의 구분, 에셋 내용을 신뢰하지 않는 입력으로 취급 | AgriciDaniel/banana-claude `banana` skill, <https://github.com/AgriciDaniel/banana-claude/blob/08e329b37dae396fc869c10d3494c5950d1d61c2/skills/banana/SKILL.md> |
+| API 키 경로로 스스로 바꾸지 않음, 덮어쓰지 않는 버전 이름 경로 사본 | OpenAI `imagegen` skill, <https://github.com/openai/skills> (commit `e6afb0d`, file `.system/imagegen/SKILL.md`) |
+| 생성 전에 쓰는 검사 시험, 전송 성공과 요청 충족의 구분, 에셋 내용을 신뢰하지 않는 입력으로 취급 | AgriciDaniel/banana-claude `banana` skill, <https://github.com/AgriciDaniel/banana-claude> (commit `08e329b`, the `banana` skill's `SKILL.md`) |
 | GPT Image 2.6은 `gpt-image-2.6-sunburst`(세부, 레이아웃, 정밀 편집)와 `gpt-image-2.6-flare`(속도)로 나옴 | OpenAI image prompting guide, 2026-11-07 확인, <https://developers.openai.com/api/docs/guides/image-prompting> |
 | 형식화된 해결기, 종료 상태, 안전 쓰기 규칙 | 이 패키지 자체의 규칙 |

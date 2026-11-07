@@ -194,5 +194,5 @@ Write the report in Korean unless the user asked otherwise. Keep rendered text, 
 | Claim | Source |
 |---|---|
 | The rename from `image-maker` and the request to optimize it against public image skills | user instruction, 2026-11-07 |
-| The code-native boundary, the generate-versus-edit split where references alone mean generate, the indexed input-image roles, the specificity policy, the non-overwriting `-v2` destination copy, and never switching to an API-key path unprompted | OpenAI `imagegen` system skill, <https://github.com/openai/skills/blob/e6afb0d74cc75d220df2faf3dd6c635c2dc6a108/skills/.system/imagegen/SKILL.md> |
+| The code-native boundary, the generate-versus-edit split where references alone mean generate, the indexed input-image roles, the specificity policy, the non-overwriting `-v2` destination copy, and never switching to an API-key path unprompted | OpenAI `imagegen` system skill, <https://github.com/openai/skills> (commit `e6afb0d`, file `.system/imagegen/SKILL.md`) |
 | The resolver, the five terminals, the two-invocation cap, and the safe-write rules | this package's own rules in `rules/`, carried over from `image-maker` |
