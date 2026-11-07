@@ -21,6 +21,7 @@
 | Stage | Add it when | Evidence to quote |
 |---|---|---|
 | `hyper-research` | 작업이 저장소 밖 사실에 달려 있습니다. 라이브러리나 서비스 선택, 새 메이저 버전, 낯선 외부 API, "최신" / "latest" 동작 | 요청 문구 |
+| `hyper-issue` | 요청한 결과물이 이슈 기록이나 배치 명세입니다. 확인된 발견을 기록하거나, 범위·수용 기준이 빠진 이슈를 채우거나, 열린 이슈 집합을 조건으로 골라 구현 전에 레인으로 묶을 때입니다 | 요청 문구, 그리고 트래커와 지목된 라벨 또는 질의 |
 | `hyper-seo` | 작업이 이름이 정해진 사이트나 페이지 묶음의 검색 또는 AI 답변 노출에 관한 것입니다 | 요청 문구와 대상 URL 또는 앱 경로 |
 | `hyper-architecture` | 작업이 폴더, 라우트, 모듈, 데이터나 서버 경계, 플랫폼 설정을 재구성하거나, 새 라우트·모듈·서버 경계를 만드는 기능을 추가하거나, 린트·포맷·타입 도구(oxlint, Prettier, rustfmt, clippy)를 셋업하거나 통일하거나, 빌드·런타임 성능을 최적화합니다 | 요청 문구와 읽은 스택 매니페스트(`package.json`, `Cargo.toml` 등) |
 | `hyper-database` | 작업이 데이터 모델이나 스키마를 설계·리뷰하거나, 데이터베이스 마이그레이션이나 백필을 쓰거나 리뷰하거나, 느린 쿼리·인덱스·핫 키·핫 파티션을 튜닝하거나, 데이터베이스 엔진이나 매니지드 데이터 서비스를 고르거나, 데이터베이스 운영(백업과 복구, 복제와 장애 조치, 커넥션 풀, 업그레이드, 데이터베이스 보안, 모니터링)을 바꿉니다 | 요청 문구와, 있으면 읽은 스키마·마이그레이션·ORM·드라이버 파일(`schema.prisma`, `drizzle.config.ts`, `migrations/` 폴더, `package.json`의 `pg`나 `ioredis`, compose 파일의 데이터베이스 이미지 등) |
@@ -39,13 +40,14 @@
 고른 단계는 항상 이 순서로 실행합니다. 고르지 않은 단계는 건너뜁니다.
 
 ```text
-hyper-research -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-design -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git]
+hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-design -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git]
 ```
 
 - 앞 단계(`hyper-research`, `hyper-seo`, `hyper-architecture`)는 꼬리 단계에 쓸 근거를 만듭니다. Build 작업에서는 보고서 모드로 실행하고, 코드 변경은 꼬리 단계가 합니다.
 - `hyper-database`가 마지막으로 고른 단계면 꼬리 단계입니다. 직접 스키마를 설계하거나 무중단 마이그레이션을 쓰거나 쿼리·인덱스를 튜닝하거나 운영 설정을 바꾸고 결과를 검증합니다. 뒤에 `hyper-plan`이나 `hyper-mass`가 오면 리뷰 모드(설계 브리프, 스키마·마이그레이션 리뷰, 엔진 선택)로 실행하고 저장한 보고서가 계획의 입력이 됩니다.
 - `hyper-mcp`가 마지막으로 고른 단계면 꼬리 단계입니다. 직접 만들거나 고치거나 이전하거나 연결하고 결과를 검증합니다. 뒤에 `hyper-plan`이나 `hyper-mass`가 오면 점검 모드로 실행하고 그 보고서가 계획의 입력이 됩니다.
 - `hyper-design`가 마지막으로 고른 단계면 꼬리 단계입니다. 직접 화면을 디자인하거나 리디자인하거나 연출 화면을 만들거나 정리하고 결과를 검증합니다. 뒤에 `hyper-plan`이나 `hyper-mass`가 오면 아직 없는 화면은 `brief-only` 모드로, 기존 화면은 `audit` 모드로 실행하고 저장한 브리프나 보고서가 계획의 입력이 됩니다.
+- `hyper-issue`는 다른 상류 단계처럼 꼬리에 쓸 근거를 만듭니다. 이슈 기록과 배치 명세가 계획의 입력입니다. 기록이나 명세만 원하면 그것이 마지막 단계이고 체인은 거기서 끝납니다.
 - 그 밖의 경우 꼬리 단계는 정확히 하나입니다. `hyper-plan`(스스로 `hyper-execute`로 이어짐), `hyper-mass`, 기존 계획에 대한 `hyper-execute` 단독, 스킬 폴더에 대한 `hyper-skill`, 문서나 프롬프트 산출물에 대한 `hyper-documentation`, 이미지 한 장이나 이미지 프롬프트 하나에 대한 `hyper-imagegen` 중 하나입니다.
 - `hyper-git`은 혼자서 꼬리 단계가 되지 않습니다. 파일은 바꾸지만 전달은 맡지 않는 꼬리 뒤에 붙습니다. `hyper-plan`, `hyper-execute`, `hyper-mass`는 스스로 전달하므로 `hyper-git`이 뒤따르지 않습니다.
 - Report 작업에서는 요청한 마지막 단계에서 체인이 끝납니다. 계획을 요청한 Report 작업은 `--plan-only`로 `hyper-plan`에서 끝납니다.
@@ -61,6 +63,9 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp
 | 여러 파일에 걸친 기능이나 수정 | `hyper-plan` |
 | 라우트, 모듈, 서버 경계를 추가하는 기능 | `hyper-architecture` -> `hyper-plan` |
 | 라이브러리나 기술 선택 후 도입 | `hyper-research` -> `hyper-plan` |
+| 이슈 기록만, 또는 배치 명세만 | `hyper-issue` |
+| 이슈 기록과 레인이 준비된 배치를 구현 | `hyper-issue` -> `hyper-plan` |
+| 이슈의 수정에 낯선 외부 사실이 필요 | `hyper-research` -> `hyper-issue` -> `hyper-plan` |
 | 프레임워크나 메이저 버전 마이그레이션 | `hyper-research` -> `hyper-architecture` -> `hyper-plan` |
 | 스키마 설계, 마이그레이션 작성, 쿼리·인덱스 튜닝, 데이터베이스 운영 변경 | `hyper-database` |
 | 데이터베이스 리뷰, 엔진 선택, 설계 브리프만 | 리뷰나 choose 모드의 `hyper-database` 단독 |
@@ -95,6 +100,8 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp
 ## 5. 동률 처리
 
 - 긴 요청 안에서 사용자가 이름을 댄 단계("hyper-research로 조사하고 바로 적용해")는 고르고, 나머지 단계는 여전히 신호를 따릅니다.
+- `hyper-issue`는 `hyper-skill`이나 `hyper-documentation`과 한 체인에서 실행하지 않습니다. 이슈 기록이나 배치 명세는 그 자체가 산출물이고, 스킬 폴더나 일반 문서는 각자의 단계로 갑니다.
+- `hyper-issue`는 계획이 그 배치 명세나 이슈 기록을 소비할 때만 `hyper-plan` 앞에 놓습니다. 뒤에 구현이 없는 이슈 기록은 `hyper-issue`에서 체인을 끝냅니다.
 - `hyper-mass`와 `hyper-plan`은 한 체인에서 함께 실행하지 않습니다. 명시 신호가 있을 때만 `hyper-mass`를 고르고, 아니면 `hyper-plan`을 고릅니다.
 - `hyper-skill`과 `hyper-plan`은 한 체인에서 함께 실행하지 않습니다. 요청한 결과물이 스킬 폴더면 `hyper-skill`을 고릅니다. 계획 파일은 그 단계의 입력이 아닙니다.
 - `hyper-documentation`은 `hyper-plan`과 한 체인에서 함께 실행하지 않습니다. 주된 결과물로 고릅니다. README, `AGENTS.md`, 문서, 재사용 프롬프트 산출물은 모드를 스스로 고르는 `hyper-documentation`, 스킬 폴더는 `hyper-skill`입니다.

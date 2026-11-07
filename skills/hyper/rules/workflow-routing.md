@@ -21,6 +21,7 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 | Stage | Add it when | Evidence to quote |
 |---|---|---|
 | `hyper-research` | The job depends on facts outside the repository: choosing between libraries or services, a new major version, an unfamiliar external API, or "최신" / "latest" behavior | The request phrase |
+| `hyper-issue` | The requested output is an issue record or a batch manifest: a confirmed finding to write up, an issue whose scope or acceptance is missing, or a condition over open issues to select and group before implementation | The request phrase, plus the tracker and the named label or query |
 | `hyper-seo` | The job is about search or AI-answer visibility of a named site or page set | The request phrase and the target URL or app path |
 | `hyper-architecture` | The job restructures folders, routes, modules, data or server boundaries, or platform setup; adds a feature that creates a new route, module, or server boundary; sets up or unifies the lint, format, and type tooling (oxlint, Prettier, rustfmt, clippy); or optimizes build or runtime performance | The request phrase plus a stack manifest that was read, such as `package.json` or `Cargo.toml` |
 | `hyper-database` | The job designs or reviews a data model or schema, writes or reviews a database migration or backfill, tunes a slow query, an index, a hot key, or a hot partition, chooses a database engine or managed data service, or changes database operations (backup and restore, replication and failover, connection pooling, upgrades, database security, monitoring) | The request phrase, plus the schema, migration, ORM, or driver file that was read when one exists, such as `schema.prisma`, `drizzle.config.ts`, a `migrations/` folder, `pg` or `ioredis` in `package.json`, or a database image in a compose file |
@@ -39,13 +40,14 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 Chosen stages always run in this order. Skip the ones that were not chosen.
 
 ```text
-hyper-research -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-design -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git]
+hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-design -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git]
 ```
 
 - Upstream stages (`hyper-research`, `hyper-seo`, `hyper-architecture`) produce evidence for the tail. In a Build job they run in report mode; the tail makes the code change.
 - `hyper-database` is the tail when it is the last chosen stage: it designs the schema, writes the online migration, tunes the query or index, or changes the operations setup and verifies the result itself. When `hyper-plan` or `hyper-mass` follows it, it runs in review mode (design brief, schema or migration review, or engine choice) and its saved report is the plan's input.
 - `hyper-mcp` is the tail when it is the last chosen stage: it builds, fixes, migrates, or connects and verifies the result itself. When `hyper-plan` or `hyper-mass` follows it, it runs in audit mode and its report is the plan's input.
 - `hyper-design` is the tail when it is the last chosen stage: it designs, restyles, mocks up, or cleans the interface and verifies it itself. When `hyper-plan` or `hyper-mass` follows it, it runs in `brief-only` mode for an interface that does not exist yet or in `audit` mode for an existing one, and its saved brief or report is the plan's input.
+- `hyper-issue` produces evidence for the tail, like the other upstream stages: its issue records and manifest are the plan's input. When the user wants only the record or the manifest, it is the last stage and the chain ends there.
 - Otherwise the tail is exactly one of: `hyper-plan` (which continues into `hyper-execute` by itself), `hyper-mass`, `hyper-execute` alone for an existing plan, `hyper-skill` for a skill folder, `hyper-documentation` for a document or prompt artifact, or `hyper-imagegen` for one image or one image prompt.
 - `hyper-git` is never a tail on its own: it runs after a tail that changed files but owns no delivery. `hyper-plan`, `hyper-execute`, and `hyper-mass` deliver for themselves, so `hyper-git` never follows them.
 - In a Report job the chain ends at the last requested stage. A Report job that asks for a plan ends at `hyper-plan` with `--plan-only`.
@@ -61,6 +63,9 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp
 | Feature or fix across several files | `hyper-plan` |
 | Feature that adds a route, module, or server boundary | `hyper-architecture` -> `hyper-plan` |
 | Library or technology choice, then adoption | `hyper-research` -> `hyper-plan` |
+| Issue record only, or a batch manifest only | `hyper-issue` |
+| Issue batch implemented after the issue records and lanes exist | `hyper-issue` -> `hyper-plan` |
+| Unfamiliar external facts behind the issue's fix | `hyper-research` -> `hyper-issue` -> `hyper-plan` |
 | Framework or major-version migration | `hyper-research` -> `hyper-architecture` -> `hyper-plan` |
 | Schema designed, migration written, query or index tuned, or database operations changed | `hyper-database` |
 | Database review, engine choice, or design brief only | `hyper-database` in review or choose mode, alone |
@@ -95,6 +100,8 @@ Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report 
 ## 5. Tie-Breaks
 
 - A stage the user names inside a longer request ("hyper-research로 조사하고 바로 적용해") is chosen, and the other stages still follow the signals.
+- `hyper-issue` never runs with `hyper-skill` or `hyper-documentation`; an issue record or a manifest is its own deliverable, and a skill folder or general document goes to its own stage.
+- `hyper-issue` runs before `hyper-plan` only when the plan consumes its manifest or issue records. Issue recording with no implementation afterwards ends the chain at `hyper-issue`.
 - `hyper-mass` and `hyper-plan` never run in one chain. Choose `hyper-mass` only on its explicit signal; otherwise choose `hyper-plan`.
 - `hyper-skill` and `hyper-plan` never run in one chain. When the requested output is a skill folder, choose `hyper-skill`; a plan file is not its input.
 - `hyper-documentation` never runs with `hyper-plan`. Choose by the primary deliverable: a README, `AGENTS.md`, document, or reusable prompt artifact goes to `hyper-documentation`, which picks its own mode, and a skill folder goes to `hyper-skill`.

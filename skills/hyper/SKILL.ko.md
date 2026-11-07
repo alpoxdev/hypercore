@@ -1,6 +1,6 @@
 ---
 name: hyper
-description: "[Hyper] 사용자가 기능 추가, 버그 수정, 리팩토링, 마이그레이션, 기술 선택, 검색 노출 개선, 데이터베이스 작업, MCP 작업, 화면 디자인이나 리디자인, 이미지 생성이나 편집, 스킬 폴더, 문서, 재사용 프롬프트 같은 개발 작업을 hyper 단계 스킬 하나를 지정하지 않고 처음부터 끝까지 맡기거나 hyper를 이름으로 부를 때 사용합니다. 리서치, SEO, 아키텍처, 데이터베이스, MCP, UI/UX, 이미지 생성, 계획, 실행, 의존 그래프 병렬 실행, 스킬, 문서, Git 전달 단계 스킬 중 가장 짧은 체인을 골라 순서대로 실행하고 각 단계가 저장한 산출물을 다음 단계에 넘깁니다. 사용자가 hyper 스킬 하나를 직접 지정했거나, 계획이 필요 없는 한 곳 수정, 커밋만 하는 요청, PRD 패키지, 일반 질문에는 쓰지 않습니다."
+description: "[Hyper] 사용자가 기능 추가, 버그 수정, 리팩토링, 마이그레이션, 기술 선택, 검색 노출 개선, 데이터베이스 작업, MCP 작업, 화면 디자인이나 리디자인, 이미지 생성이나 편집, 스킬 폴더, 문서, 재사용 프롬프트 같은 개발 작업을 hyper 단계 스킬 하나를 지정하지 않고 처음부터 끝까지 맡기거나 hyper를 이름으로 부를 때 사용합니다. 리서치, 이슈 기록, SEO, 아키텍처, 데이터베이스, MCP, UI/UX, 이미지 생성, 계획, 실행, 의존 그래프 병렬 실행, 스킬, 문서, Git 전달 단계 스킬 중 가장 짧은 체인을 골라 순서대로 실행하고 각 단계가 저장한 산출물을 다음 단계에 넘깁니다. 사용자가 hyper 스킬 하나를 직접 지정했거나, 계획이 필요 없는 한 곳 수정, 커밋만 하는 요청, PRD 패키지, 일반 질문에는 쓰지 않습니다."
 compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대상 저장소의 파일 읽기와 검색, `.hyper/workflows/` 쓰기 권한이 필요합니다. 불러온 각 단계는 자기 요구 사항(git worktree, 하위 에이전트, 실시간 웹)을 따로 가집니다. 스킬을 불러올 수 없으면 단계를 실행하지 않고 고른 체인과 설치 명령을 보고합니다.
 ---
 
@@ -34,11 +34,12 @@ compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대�
 
 요청한 결과물이 아래 단계 스킬 하나 이상을 차례로 거쳐야 끝나는 개발 결과이거나, 사용자가 `hyper`를 이름으로 부르면 이 스킬을 씁니다.
 
-사용자 지시에 따라 이 패키지는 오케스트레이터입니다. 아래 단계 표, `rules/workflow-routing.md`, `rules/stage-handoff.md`, Sources 행, 평가 라우트에서만 열세 단계 스킬의 이름을 씁니다. 이 패키지가 가진 스킬 간 연결은 이것뿐입니다.
+사용자 지시에 따라 이 패키지는 오케스트레이터입니다. 아래 단계 표, `rules/workflow-routing.md`, `rules/stage-handoff.md`, Sources 행, 평가 라우트에서만 열네 단계 스킬의 이름을 씁니다. 이 패키지가 가진 스킬 간 연결은 이것뿐입니다.
 
 | Stage skill | What the stage produces |
 |---|---|
 | `hyper-research` | `.hyper/research/` 아래의 출처 있는 리서치 보고서 |
+| `hyper-issue` | 항목마다 구현 가능한 이슈. 배치 요청이면 `.hyper/issues/<slug>/` 아래 레인으로 묶은 배치 명세 |
 | `hyper-seo` | `.hyper/seo/<slug>/` 아래의 검색 노출 감사, 보고서, 횟수 제한이 있는 최적화 루프 |
 | `hyper-architecture` | 스택에 맞춘 아키텍처, 셋업(린트·포맷·타입 도구), 성능 점검 결과, 마지막 단계일 때는 그 수정 |
 | `hyper-database` | `.hyper/database/<slug>/`에 저장한 데이터베이스 점검 결과(스키마·마이그레이션 리뷰, 설계 브리프, 엔진 선택). 마지막 단계일 때는 근거 게이트로 검증한 스키마 설계, 무중단 마이그레이션, 쿼리·인덱스 튜닝, 운영 변경 |
@@ -90,6 +91,7 @@ Positive requests:
 - "사내 배포 체크리스트를 스킬로 만들어줘. 최신 Agent Skills 규격 확인해서." -> `hyper-research` -> `hyper-skill`
 - "이 저장소 배포 런북을 에이전트가 읽기 좋게 다시 정리해줘." -> `hyper-documentation`
 - "Build a reusable code-review system prompt with an eval fixture, checked against the latest provider prompting guide." -> `hyper-research` -> `hyper-documentation`
+- "이 버그 이슈로 남기고, 라벨 붙은 것들 배치로 돌려줘." -> `hyper-issue` -> `hyper-plan` -> `hyper-execute`
 - "hyper-git 스킬 새로 만들고 다 하면 dev, main에 머지하고 푸시해줘." -> `hyper-skill` -> `hyper-git` (`&& dev && main`)
 - "사내 DB 조회하는 MCP 서버 만들어서 Claude Code에 연결까지 해줘." -> `hyper-mcp`
 - "Migrate our MCP server to the current spec and open a PR." -> `hyper-mcp`(점검) -> `hyper-plan` -> `hyper-execute`와 `--make-pr`
@@ -126,6 +128,7 @@ Boundary requests:
 | 지원 스택의 리팩토링이나 구조 변경 | `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | 새 기능, 버그 수정, 여러 단계 구축 | `hyper-plan` -> `hyper-execute`. 아키텍처 경계를 넘으면 앞에 `hyper-architecture` |
 | 라이브러리나 기술 선택, 낯선 외부 API 뒤에 구현 | `hyper-research` -> `hyper-plan` -> `hyper-execute` |
+| 확인된 발견을 구현 가능한 이슈로 남기거나, 고정 이슈 배치를 골라 구현 전에 레인으로 묶기 | 배치는 `hyper-issue` -> `hyper-plan` -> `hyper-execute`. 기록이나 명세만 원하면 `hyper-issue` 단독 |
 | 프레임워크나 메이저 버전 마이그레이션 | `hyper-research` -> `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | SEO, AEO, GEO 감사 뒤 수정을 계획된 변경으로 구현 | `hyper-seo` -> `hyper-plan` -> `hyper-execute` |
 | 계획 파일 없이 의존 순서가 있는 다중 에이전트 작업 | `hyper-mass` |
@@ -241,7 +244,7 @@ Phase 규칙:
 
 | Claim | Source |
 |---|---|
-| 오케스트레이터 역할, 처음부터 끝까지 실행, 이 패키지가 열세 단계 스킬의 이름을 쓰도록 허용한 사용자 지시 예외 | user instruction, 2026-11-06(오케스트레이터 역할); 현재의 열세 단계로 늘린 사용자 지시, 2026-11-07 |
+| 오케스트레이터 역할, 처음부터 끝까지 실행, 이 패키지가 열네 단계 스킬의 이름을 쓰도록 허용한 사용자 지시 예외 | user instruction, 2026-11-06(오케스트레이터 역할); 현재의 열네 단계로 늘린 사용자 지시, 2026-11-07 |
 | 각 단계 스킬의 결과물, 산출물 경로, 경계 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 계획 단계가 스스로 실행으로 이어지고 전달 플래그를 넘김 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 순차 체인은 저장된 산출물로 상태를 넘기고 라우터는 코드 같은 규칙으로 갈래를 고름 | `instructions/graph-engineering/references/graph-patterns.md` |

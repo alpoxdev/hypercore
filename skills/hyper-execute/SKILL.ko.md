@@ -88,7 +88,7 @@ compatibility: git worktree 지원, 저장소 자체의 테스트·타입 검사
 <trigger_conditions>
 
 ```text
-hyper-execute [plan-slug] [--worktree <absolute-path>] [--make-pr] [--ship] [--in-place]
+hyper-execute [plan-slug] [--worktree <absolute-path>] [--land <merge|cherry-pick>] [--make-pr] [--ship] [--in-place]
 ```
 
 | 상황 | 모드 |
@@ -103,6 +103,7 @@ hyper-execute [plan-slug] [--worktree <absolute-path>] [--make-pr] [--ship] [--i
 | "PR까지만", "make a PR", "PR만" | `--make-pr` |
 | "in place", "워크트리 없이" | `--in-place` |
 | 사용자가 기존 절대 경로 워크트리를 줌 | `--worktree <path>` |
+| "cherry-pick으로 반영", "선형 이력", `--land cherry-pick` | `--land cherry-pick` |
 
 전달을 가리키는 단어는 그대로 읽고, 플래그가 계획의 인수인계보다 우선합니다. 푸시와 PR 생성은 `--make-pr` 또는 `--ship`에서만 일어납니다.
 
@@ -182,7 +183,7 @@ hyper-execute [plan-slug] [--worktree <absolute-path>] [--make-pr] [--ship] [--i
 - 선택 경로 하나와 그 이유를 기록합니다.
 - 첫 배정 전에 `state.json`을 쓰고, 모든 단계 경계에서 갱신합니다. `main_root`에 메인 체크아웃의 절대 경로를 기록합니다.
 - 마지막 검증 웨이브를 포함한 최상위 계획 행 전체를 첫 배정 전에 todo로 등록합니다.
-- 웨이브마다 `<repo-parent>/<repo-name>-wt/<slug>-w<N>` 경로, `hyper/<slug>/w<N>` 브랜치로 워크트리 하나를 만들고 `git worktree list --porcelain`으로 확인합니다.
+- 웨이브마다 `<repo-root>/.hyper/worktree/<slug>-w<N>` 경로, `hyper/<slug>/w<N>` 브랜치로 워크트리 하나를 만들고, 레인이 여럿이면 레인마다 `<slug>-w<N>-l<M>`을 만듭니다. `git worktree list --porcelain`으로 확인하고 `.hyper/`가 `.gitignore`에 등록되어 있는지 먼저 검사합니다.
 - `--make-pr`에서는 각 웨이브를 직전 웨이브의 PR 브랜치에서 갈라지게 하고, 그 PR은 직전 웨이브 브랜치를 대상으로 엽니다. 첫 PR만 통합 기준을 대상으로 합니다. `--ship`에서는 웨이브 `N`이 병합된 뒤에만 웨이브 `N+1`을 엽니다.
 - 계획, 상태, 원장, 근거 경로는 항상 `main_root` 기준으로 풀고, 웨이브 워크트리 기준으로 풀지 않습니다.
 - 모든 워커 메시지에 `rules/execution-loop.ko.md`가 정한 여덟 필드를 담습니다.

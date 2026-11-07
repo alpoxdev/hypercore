@@ -15,20 +15,24 @@ At phase 0, record the branch checked out in the main worktree as `integration_b
 One worktree per wave, at a fixed place and on a fixed branch:
 
 ```bash
-git worktree add -b hyper/<slug>/w<N> <repo-parent>/<repo-name>-wt/<slug>-w<N> <wave_base>
+git worktree add -b hyper/<slug>/w<N> <repo-root>/.hyper/worktree/<slug>-w<N> <wave_base>
 ```
 
-- Path: `<repo-parent>/<repo-name>-wt/<slug>-w<N>`. Branch: `hyper/<slug>/w<N>`.
+- Path: `<repo-root>/.hyper/worktree/<slug>-w<N>`. Branch: `hyper/<slug>/w<N>`.
+- `<repo-root>` is the main checkout's absolute path, the same value recorded as `main_root`.
+- Before the first worktree, run `git check-ignore -q --no-index .hyper/`. A non-zero exit means `.hyper/` is not ignored: add one `.hyper/` line to the repository root `.gitignore` (create it when absent) and record that edit as part of this run. Never un-track files already committed under `.hyper/`.
+- A wave that runs parallel lanes uses one worktree per lane at `<repo-root>/.hyper/worktree/<slug>-w<N>-l<M>`, on branch `hyper/<slug>/w<N>-l<M>`, created from the same `<wave_base>`.
 - `<wave_base>` is the branch this wave starts from, and it is recorded per wave in `state.json` as `wave_bases`:
 
 | Wave | Base |
 |---|---|
 | Wave 1 | `integration_base` |
+| Lane `M` inside wave `N` | the wave's own base, never another lane's branch |
 | Wave `N+1` under `local` | `integration_base`, already holding wave `N` |
 | Wave `N+1` under `--make-pr` | `hyper/<slug>/w<N>`, the previous wave's pull-request branch |
 | Wave `N+1` under `--ship` | `integration_base`, only after wave `N`'s pull request merged |
 
-- Verify with `git worktree list --porcelain` before dispatch, and store the absolute path in `state.json` as `worktree_path`.
+- Verify with `git worktree list --porcelain` before dispatch, and store the absolute path in `state.json` as `worktree_path`, or the per-lane paths as `lane_worktrees`.
 - With `--worktree <absolute-path>`, verify the path appears in that porcelain output and sits on a branch owned by this slug. Never create, move, or repurpose a worktree the user pointed at. A path that is not a worktree, or is on another branch, is a stop.
 
 ## 3. Work Inside Only
@@ -53,9 +57,10 @@ Land once, when every row in the wave is `[x]` or `[~]`, every verdict is `confi
 1. Revert each `[~]` row's unverified changes inside the wave worktree: restore tracked files and remove files that row created. Record the revert in that row's `Unmet:` line.
 2. Commit the remaining changes in the worktree, staging only the declared `Write scope` paths, with one commit per plan `Commit:` line where the rows are separable.
 3. Under `local`, check the main checkout is clean and on `integration_base`. If it is dirty, stop and report the dirty paths; do not stash and do not merge.
-4. Under `local`, merge with the repository's policy, defaulting to `--no-ff`, and record the landed commit sha in the ledger against the wave's base.
+4. Under `local`, land by the landing policy: `merge` uses the repository's merge policy, defaulting to `--no-ff`; `cherry-pick` applies the wave's commits in order onto `integration_base`. Record the landed sha, or shas, in the ledger against the wave's base.
 5. Under `--make-pr` and `--ship`, a wave lands by opening its pull request, and under `--ship` by merging it; the next wave's base follows the table in section 2. Never merge a `--make-pr` wave into the integration base.
 6. Only the orchestrator merges. Workers never merge, never push the base, and never resolve a sibling's conflict.
+7. When the wave ran in parallel lanes, land the wave in two steps: cherry-pick each lane's commits onto the wave branch in the lane order recorded in `state.json`, then land the wave branch by the policy in force. A lane whose cherry-pick conflicts is paused; the orchestrator resolves it, reruns that lane's affected gates, and records the extra verification. Never drop a lane's commits to avoid a conflict.
 
 A merge conflict is the orchestrator's job. Resolve it in the wave branch, rerun the affected gates, and record that the landing preceded a fresh verification.
 
@@ -63,9 +68,20 @@ A merge conflict is the orchestrator's job. Resolve it in the wave branch, rerun
 
 | Mode | Actions |
 |---|---|
-| `local` (default) | Commit on the wave branch, merge into the integration base locally, no push |
+| `local` (default) | Commit on the wave branch, land into the integration base locally by the landing policy, no push |
 | `--make-pr` | Push the wave branch and open a pull request against that wave's base, naming the plan, the rows, and the evidence paths; hand off the URL; do not merge |
 | `--ship` | Everything in `--make-pr`, then watch CI and review, fix inside the worktree with fresh QA evidence, push again, and merge per the repository's policy when green; wave `N+1` opens only after wave `N` merged |
+
+### Landing policy
+
+`--land <merge|cherry-pick>` selects how a wave's commits reach `integration_base`. The default is `merge`.
+
+| Policy | When to use it | What it records |
+|---|---|---|
+| `merge` (default) | The integration base is the only target and its history should show the wave as one merge | The merge commit sha as the landed sha |
+| `cherry-pick` | The same commits must also reach other branches, or the base must stay linear | Each cherry-picked sha, in order, as the landed shas |
+
+Under `cherry-pick`, never test the wave branch tip for ancestry: the picked commits are new objects, so test each landed sha instead.
 
 - Push and pull-request creation happen only under `--make-pr` or `--ship`. No flag means nothing leaves the machine.
 - Under `--make-pr`, waves stack. Wave `N+1` branches from `hyper/<slug>/w<N>` and its pull request targets that branch, while the first pull request targets the integration base. Never branch wave `N+1` from an integration base that does not contain wave `N`, and record every wave's base in `wave_bases`.
@@ -83,7 +99,7 @@ Only after the landing is confirmed on the wave's own base - a local merge, or a
 1. Copy the wave's evidence into `.hyper/execute/<slug>/evidence/` under `main_root`, and confirm the copies exist.
 2. `git worktree remove <path>` without `--force`.
 3. If the removal is refused because of dirty, untracked, or locked state, stop and report the paths. Keep the worktree. Never escalate to `--force`.
-4. Delete the branch only after confirming the landed commit is on that wave's base: for a local wave the integration base, for a stacked wave its parent wave branch. Test it with `git merge-base --is-ancestor <landed-sha> <wave_base>`. After a squash merge the branch tip is not an ancestor, so confirm the merge on the base by the landed commit or the pull request's merged state instead. Never use `git branch --merged` as the test.
+4. Delete the branch only after confirming the landed commit is on that wave's base: for a local wave the integration base, for a stacked wave its parent wave branch. Under the `merge` policy test it with `git merge-base --is-ancestor <landed-sha> <wave_base>`; under `cherry-pick` test each picked sha with `git merge-base --is-ancestor <landed-sha> <base>`; never test the wave branch tip, which is not an ancestor after a pick. After a squash merge the branch tip is not an ancestor, so confirm the merge on the base by the landed commit or the pull request's merged state instead. Never use `git branch --merged` as the test.
 5. Delete the remote branch only when it was pushed and its pull request is merged.
 6. Remove `<repo>-wt/` when it is empty.
 7. Append a `cleanup` ledger row with each path and branch removed, and each item kept with its reason.
@@ -102,6 +118,7 @@ Only after the landing is confirmed on the wave's own base - a local merge, or a
 | CI red after three repair rounds | Stop with the pull-request URL, set `ci: failing`, and report it in the completion block |
 | `git worktree remove` refused | Keep the worktree and stop; never use `--force` |
 | The landed commit cannot be found on the base | Treat the landing as unconfirmed, keep the worktree, and report |
+| A lane cherry-pick conflicts | Pause that lane, resolve in the wave worktree, rerun the lane's affected gates, record the extra verification |
 
 ## Sources
 

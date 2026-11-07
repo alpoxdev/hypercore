@@ -9,6 +9,7 @@ Load each stage skill through the runtime's skill mechanism (or read its `SKILL.
 | Stage | Request passed to the stage | Artifact that must exist before the next stage | Passed forward |
 |---|---|---|---|
 | `hyper-research` | The question the job depends on, with the decision it must support ("which state library fits this repo, to adopt it next") | `.hyper/research/[NN].<slug>.md` | Report path and its recommendation line |
+| `hyper-issue` | The item to record, or the selection condition, plus the tracker, the repository, and any user restriction such as draft-only | The issue record, and for a batch `.hyper/issues/<slug>/batch.md` | The issue numbers with URLs, the manifest path, and the lane table |
 | `hyper-seo` | The target, plus `recommend` as the allowed action in a Build job, or the user's own mode in a Report job | The report under `.hyper/seo/<slug>/` | Report path and its critical and warning findings |
 | `hyper-architecture` | In a Build job: "architecture audit only; report findings with file paths; do not edit", plus the target paths. As the last stage: the user's request unchanged | Its routing line plus findings, copied into the workflow record's stage notes, because the stage saves no file of its own in audit mode | The stage-notes section path and the findings |
 | `hyper-database` | Before a plan or mass stage: "review only; report findings, the design brief, or the engine choice with file paths; do not edit", plus the target paths and every upstream artifact path. As the last stage: the user's request unchanged, plus every upstream artifact path | `.hyper/database/<slug>/report.md`; as the last stage its verification section lists each check as run with its output or `not run` with the reason | Report path and its critical and high findings |
@@ -97,7 +98,7 @@ When the chain ends early, print in Korean:
 
 ## 7. Closing Report
 
-Report in Korean: the final chain with statuses, each artifact path, the last stage's completion evidence (the execution completion block, the mass run's verification result, the skill validator result, the documentation mode's validation handoff, the database report's verification section, the MCP report's verification table, the UI report's validator result and craft-floor line, the image stage's terminal with its path, digest, and inspection record, the Git delivery's commit SHAs found on each remote target, or the report path), the delivery result (local commits, PR URL, or merge), and every skipped or stopped stage with its reason.
+Report in Korean: the final chain with statuses, each artifact path, the last stage's completion evidence (the execution completion block, the mass run's verification result, the skill validator result, the issue record's number and URL with the manifest path, the documentation mode's validation handoff, the database report's verification section, the MCP report's verification table, the UI report's validator result and craft-floor line, the image stage's terminal with its path, digest, and inspection record, the Git delivery's commit SHAs found on each remote target, or the report path), the delivery result (local commits, PR URL, or merge), and every skipped or stopped stage with its reason.
 
 ## Sources
 

@@ -8,12 +8,15 @@
     },
     "hyper": {
       "FRONTMATTER_TRIGGER": 1,
-      "CROSS_SKILL_REFERENCE": 682
+      "CROSS_SKILL_REFERENCE": 730
     },
     "hyper-architecture": {
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-database": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "hyper-design": {
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-documentation": {
@@ -25,6 +28,10 @@
     "hyper-git": {
       "FRONTMATTER_TRIGGER": 1
     },
+    "hyper-imagegen": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "hyper-issue": {},
     "hyper-mass": {
       "FRONTMATTER_TRIGGER": 1
     },
@@ -42,12 +49,6 @@
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-skill": {},
-    "hyper-design": {
-      "FRONTMATTER_TRIGGER": 1
-    },
-    "hyper-imagegen": {
-      "FRONTMATTER_TRIGGER": 1
-    },
     "instagram-card-maker": {},
     "jev-maker": {},
     "korean-writer": {

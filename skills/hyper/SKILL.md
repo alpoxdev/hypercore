@@ -34,11 +34,12 @@ Use a different language only when the user explicitly requests it or a machine-
 
 Use this skill when the requested output is a finished development result that needs one or more of the stage skills below in sequence, or when the user calls `hyper` by name.
 
-By user instruction, this package is an orchestrator: it names its thirteen stage skills in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
+By user instruction, this package is an orchestrator: it names its fourteen stage skills in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
 
 | Stage skill | What the stage produces |
 |---|---|
 | `hyper-research` | A cited research report under `.hyper/research/` |
+| `hyper-issue` | An implementation-ready issue per item, and for a batch request a lane-grouped manifest under `.hyper/issues/<slug>/` |
 | `hyper-seo` | A search-visibility audit, report, or bounded optimize loop under `.hyper/seo/<slug>/` |
 | `hyper-architecture` | Stack-matched architecture, setup (lint, format, type tooling), or performance findings, or those edits when it is the last stage |
 | `hyper-database` | Database findings saved under `.hyper/database/<slug>/` (a schema or migration review, a design brief, an engine choice), or, when it is the last stage, a designed schema, an online migration, a tuned query or index, or an operations change verified by its evidence gates |
@@ -90,6 +91,7 @@ Positive requests:
 - "사내 배포 체크리스트를 스킬로 만들어줘. 최신 Agent Skills 규격 확인해서." -> `hyper-research` -> `hyper-skill`
 - "이 저장소 배포 런북을 에이전트가 읽기 좋게 다시 정리해줘." -> `hyper-documentation`
 - "Build a reusable code-review system prompt with an eval fixture, checked against the latest provider prompting guide." -> `hyper-research` -> `hyper-documentation`
+- "이 버그 이슈로 남기고, 라벨 붙은 것들 배치로 돌려줘." -> `hyper-issue` -> `hyper-plan` -> `hyper-execute`
 - "hyper-git 스킬 새로 만들고 다 하면 dev, main에 머지하고 푸시해줘." -> `hyper-skill` -> `hyper-git` (`&& dev && main`)
 - "사내 DB 조회하는 MCP 서버 만들어서 Claude Code에 연결까지 해줘." -> `hyper-mcp`
 - "Migrate our MCP server to the current spec and open a PR." -> `hyper-mcp` (audit) -> `hyper-plan` -> `hyper-execute` with `--make-pr`
@@ -126,6 +128,7 @@ Boundary requests:
 | Refactor or restructure in a supported stack | `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | New feature, fix, or multi-step build | `hyper-plan` -> `hyper-execute`, with `hyper-architecture` first when the change crosses an architecture boundary |
 | Library or technology choice, or unfamiliar external API, followed by implementation | `hyper-research` -> `hyper-plan` -> `hyper-execute` |
+| A confirmed finding to record as an implementation-ready issue, or a fixed issue batch selected and grouped into lanes before implementation | `hyper-issue` -> `hyper-plan` -> `hyper-execute` for a batch; `hyper-issue` alone when only the record or the manifest is wanted |
 | Framework or major-version migration | `hyper-research` -> `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | SEO, AEO, or GEO audit with fixes implemented as a planned change | `hyper-seo` -> `hyper-plan` -> `hyper-execute` |
 | Dependency-ordered multi-agent phase with no plan file wanted | `hyper-mass` |
@@ -241,7 +244,7 @@ Phase rules:
 
 | Claim | Source |
 |---|---|
-| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its thirteen stage skills | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current thirteen by user instruction, 2026-11-07 |
+| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its fourteen stage skills | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current fourteen by user instruction, 2026-11-07 |
 | The output, artifact path, and boundary of each stage skill | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The plan stage continues into execution by itself and passes the delivery flag through | the plan skill's handoff rule in this repository, 2026-11-06 |
 | A sequential chain hands state forward through saved artifacts, and a router picks a branch by code-like rules | `instructions/graph-engineering/references/graph-patterns.md` |
