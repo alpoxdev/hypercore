@@ -1,5 +1,4 @@
 {
-  "client-feedback|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
   "hyper-architecture|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
   "hyper-documentation|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
   "hyper-execute|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",

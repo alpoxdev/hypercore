@@ -1,11 +1,8 @@
 {
   "skills": {
-    "client-feedback": {
-      "FRONTMATTER_TRIGGER": 1
-    },
     "hyper": {
       "FRONTMATTER_TRIGGER": 1,
-      "CROSS_SKILL_REFERENCE": 864
+      "CROSS_SKILL_REFERENCE": 972
     },
     "hyper-architecture": {
       "FRONTMATTER_TRIGGER": 1
@@ -25,6 +22,7 @@
     "hyper-execute": {
       "FRONTMATTER_TRIGGER": 1
     },
+    "hyper-feedback": {},
     "hyper-git": {
       "FRONTMATTER_TRIGGER": 1
     },
