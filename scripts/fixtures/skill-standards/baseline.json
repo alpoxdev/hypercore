@@ -8,9 +8,12 @@
     },
     "hyper": {
       "FRONTMATTER_TRIGGER": 1,
-      "CROSS_SKILL_REFERENCE": 538
+      "CROSS_SKILL_REFERENCE": 614
     },
     "hyper-architecture": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "hyper-database": {
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-documentation": {

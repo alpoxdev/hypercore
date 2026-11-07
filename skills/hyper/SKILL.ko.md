@@ -1,6 +1,6 @@
 ---
 name: hyper
-description: "[Hyper] 사용자가 기능 추가, 버그 수정, 리팩토링, 마이그레이션, 기술 선택, 검색 노출 개선, MCP 작업, 화면 디자인이나 리디자인, 스킬 폴더, 문서, 재사용 프롬프트 같은 개발 작업을 hyper 단계 스킬 하나를 지정하지 않고 처음부터 끝까지 맡기거나 hyper를 이름으로 부를 때 사용합니다. 리서치, SEO, 아키텍처, MCP, UI/UX, 계획, 실행, 의존 그래프 병렬 실행, 스킬, 문서, Git 전달 단계 스킬 중 가장 짧은 체인을 골라 순서대로 실행하고 각 단계가 저장한 산출물을 다음 단계에 넘깁니다. 사용자가 hyper 스킬 하나를 직접 지정했거나, 계획이 필요 없는 한 곳 수정, 커밋만 하는 요청, PRD 패키지, 일반 질문에는 쓰지 않습니다."
+description: "[Hyper] 사용자가 기능 추가, 버그 수정, 리팩토링, 마이그레이션, 기술 선택, 검색 노출 개선, 데이터베이스 작업, MCP 작업, 화면 디자인이나 리디자인, 스킬 폴더, 문서, 재사용 프롬프트 같은 개발 작업을 hyper 단계 스킬 하나를 지정하지 않고 처음부터 끝까지 맡기거나 hyper를 이름으로 부를 때 사용합니다. 리서치, SEO, 아키텍처, 데이터베이스, MCP, UI/UX, 계획, 실행, 의존 그래프 병렬 실행, 스킬, 문서, Git 전달 단계 스킬 중 가장 짧은 체인을 골라 순서대로 실행하고 각 단계가 저장한 산출물을 다음 단계에 넘깁니다. 사용자가 hyper 스킬 하나를 직접 지정했거나, 계획이 필요 없는 한 곳 수정, 커밋만 하는 요청, PRD 패키지, 일반 질문에는 쓰지 않습니다."
 compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대상 저장소의 파일 읽기와 검색, `.hyper/workflows/` 쓰기 권한이 필요합니다. 불러온 각 단계는 자기 요구 사항(git worktree, 하위 에이전트, 실시간 웹)을 따로 가집니다. 스킬을 불러올 수 없으면 단계를 실행하지 않고 고른 체인과 설치 명령을 보고합니다.
 ---
 
@@ -34,13 +34,14 @@ compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대�
 
 요청한 결과물이 아래 단계 스킬 하나 이상을 차례로 거쳐야 끝나는 개발 결과이거나, 사용자가 `hyper`를 이름으로 부르면 이 스킬을 씁니다.
 
-사용자 지시에 따라 이 패키지는 오케스트레이터입니다. 아래 단계 표, `rules/workflow-routing.md`, `rules/stage-handoff.md`, Sources 행, 평가 라우트에서만 열한 단계 스킬의 이름을 씁니다. 이 패키지가 가진 스킬 간 연결은 이것뿐입니다.
+사용자 지시에 따라 이 패키지는 오케스트레이터입니다. 아래 단계 표, `rules/workflow-routing.md`, `rules/stage-handoff.md`, Sources 행, 평가 라우트에서만 열두 단계 스킬의 이름을 씁니다. 이 패키지가 가진 스킬 간 연결은 이것뿐입니다.
 
 | Stage skill | What the stage produces |
 |---|---|
 | `hyper-research` | `.hyper/research/` 아래의 출처 있는 리서치 보고서 |
 | `hyper-seo` | `.hyper/seo/<slug>/` 아래의 검색 노출 감사, 보고서, 횟수 제한이 있는 최적화 루프 |
 | `hyper-architecture` | 스택에 맞춘 아키텍처 점검 결과, 마지막 단계일 때는 아키텍처 수정 |
+| `hyper-database` | `.hyper/database/<slug>/`에 저장한 데이터베이스 점검 결과(스키마·마이그레이션 리뷰, 설계 브리프, 엔진 선택). 마지막 단계일 때는 근거 게이트로 검증한 스키마 설계, 무중단 마이그레이션, 쿼리·인덱스 튜닝, 운영 변경 |
 | `hyper-mcp` | `.hyper/mcp/<slug>/`에 저장한 MCP 점검 결과. 마지막 단계일 때는 MCP Inspector로 검증한 MCP 서버, 클라이언트, 호스트 설정의 구축, 수정, 이전, 연결 |
 | `hyper-design` | 정석 수치 기준과 독립 검토로 확인한 화면 디자인, 리디자인, 연출 화면. 계획 앞에서는 `.hyper/design/<slug>/`에 저장한 디자인 브리프나 화면 점검 결과 |
 | `hyper-plan` | `.hyper/plans/<slug>.md`의 결정이 끝난 계획. 스스로 실행 단계로 이어집니다 |
@@ -93,6 +94,8 @@ Positive requests:
 - "Migrate our MCP server to the current spec and open a PR." -> `hyper-mcp`(점검) -> `hyper-plan` -> `hyper-execute`와 `--make-pr`
 - "새 요금제 페이지 디자인해서 만들어줘. AI가 만든 티 안 나게." -> `hyper-design`
 - "Redesign the dashboard so it stops looking generic, and open a PR." -> `hyper-design`(점검) -> `hyper-plan` -> `hyper-execute`와 `--make-pr`
+- "주문 서비스 DB 스키마 설계하고 마이그레이션까지 만들어줘. Postgres야." -> `hyper-database`
+- "결제 테이블 구조 바꾸고 관련 API까지 고쳐서 PR까지." -> `hyper-database`(리뷰) -> `hyper-plan` -> `hyper-execute`와 `--make-pr`
 
 Negative requests:
 
@@ -124,10 +127,11 @@ Boundary requests:
 | 재사용 스킬 폴더를 새로 만들거나 리팩터링. 필요하면 공식 문서 리서치 뒤에 | `hyper-skill`. 요청이 최신 외부 문서에 기대면 앞에 `hyper-research` |
 | README, `AGENTS.md`, AI가 읽기 좋은 문서, 지침 베이스, 런북, 규칙 묶음, 재사용 프롬프트, 프롬프트 템플릿, 프롬프트 팩, 프롬프트 평가 픽스처를 새로 만들거나 리팩터링 | `hyper-documentation`. 내용이 최신 외부 출처나 공급자 지침에 기대면 앞에 `hyper-research` |
 | MCP 서버, 클라이언트, 이전, 보안 수정, 호스트 MCP 설정 | `hyper-mcp`. 서버가 낯선 외부 API를 감싸면 앞에 `hyper-research`, 사용자가 PR이나 배포 전달을 요청했거나 MCP 밖 모듈까지 바뀌면 `hyper-mcp`를 점검 모드로 두고 뒤에 `hyper-plan` |
+| 데이터 모델, 스키마, 마이그레이션, 느린 쿼리나 인덱스, 엔진 선택, 데이터베이스 운영 변경(백업, 복제, 커넥션 풀, 업그레이드, 보안) | `hyper-database`. 저장소가 아직 쓰지 않는 엔진이나 서비스에 기대면 앞에 `hyper-research`, 사용자가 PR이나 배포 전달을 요청했거나 애플리케이션 코드까지 바뀌면 `hyper-database`를 리뷰 모드로 두고 뒤에 `hyper-plan` |
 | 화면·페이지·컴포넌트 디자인이나 리디자인, 연출 화면, generic한 "AI 티" 제거 | `hyper-design`. 최신 외부 지침에 기대면 앞에 `hyper-research`, 사용자가 PR이나 배포 전달을 요청했거나 UI 밖 작업까지 필요하면 `hyper-design`를 brief-only나 점검 모드로 두고 뒤에 `hyper-plan` |
-| 스킬, 문서, MCP, 인터페이스 꼬리 뒤에 커밋·푸시나 병합·푸시 단어가 붙거나, 스킬이나 문서 꼬리 뒤에 PR 단어가 붙음 | 위 체인 그대로 두고 뒤에 `hyper-git`을 전달 단계로 붙입니다 |
+| 스킬, 문서, MCP, 인터페이스, 데이터베이스 꼬리 뒤에 커밋·푸시나 병합·푸시 단어가 붙거나, 스킬이나 문서 꼬리 뒤에 PR 단어가 붙음 | 위 체인 그대로 두고 뒤에 `hyper-git`을 전달 단계로 붙입니다 |
 | 이미 있는 계획 파일을 실행 | `hyper-execute` |
-| 보고서만 원하는 리서치, 감사, 아키텍처 점검 | 맞는 단계 하나 |
+| 보고서만 원하는 리서치, 감사, 아키텍처 점검, 데이터베이스 리뷰 | 맞는 단계 하나 |
 
 신호, 단계 순서, 동률 처리는 `rules/workflow-routing.md`가 소유합니다.
 
@@ -230,7 +234,7 @@ Phase 규칙:
 
 | Claim | Source |
 |---|---|
-| 오케스트레이터 역할, 처음부터 끝까지 실행, 이 패키지가 열한 단계 스킬의 이름을 쓰도록 허용한 사용자 지시 예외 | user instruction, 2026-11-06(오케스트레이터 역할); 현재의 열한 단계로 늘린 사용자 지시, 2026-11-07 |
+| 오케스트레이터 역할, 처음부터 끝까지 실행, 이 패키지가 열두 단계 스킬의 이름을 쓰도록 허용한 사용자 지시 예외 | user instruction, 2026-11-06(오케스트레이터 역할); 현재의 열두 단계로 늘린 사용자 지시, 2026-11-07 |
 | 각 단계 스킬의 결과물, 산출물 경로, 경계 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 계획 단계가 스스로 실행으로 이어지고 전달 플래그를 넘김 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 순차 체인은 저장된 산출물로 상태를 넘기고 라우터는 코드 같은 규칙으로 갈래를 고름 | `instructions/graph-engineering/references/graph-patterns.md` |

@@ -1,6 +1,6 @@
 ---
 name: hyper
-description: "[Hyper] Use this skill when the user wants a development job carried from start to finish - a feature, fix, refactor, migration, technology choice, search-visibility improvement, MCP job, UI design or restyle, skill folder, document, or reusable prompt - without naming one hyper stage skill, or invokes hyper by name. It picks the shortest chain of hyper stage skills (research, SEO, architecture, MCP, UI/UX, plan, execute, mass, skill, documentation, and Git delivery), runs the stages in order, and passes each stage's saved artifact to the next. Do not use it when the user names one hyper skill directly, or for a one-place edit with no plan, commit-only requests, PRD packages, or general questions."
+description: "[Hyper] Use this skill when the user wants a development job carried from start to finish - a feature, fix, refactor, migration, technology choice, search-visibility improvement, database job, MCP job, UI design or restyle, skill folder, document, or reusable prompt - without naming one hyper stage skill, or invokes hyper by name. It picks the shortest chain of hyper stage skills (research, SEO, architecture, database, MCP, UI/UX, plan, execute, mass, skill, documentation, and Git delivery), runs the stages in order, and passes each stage's saved artifact to the next. Do not use it when the user names one hyper skill directly, or for a one-place edit with no plan, commit-only requests, PRD packages, or general questions."
 compatibility: Needs the ability to load another installed skill by name, file read and search over the target repository, and write access for `.hyper/workflows/`. Each loaded stage brings its own requirements (git worktrees, subagents, live web). Without skill loading, it reports the chosen chain and the install commands instead of running stages.
 ---
 
@@ -34,13 +34,14 @@ Use a different language only when the user explicitly requests it or a machine-
 
 Use this skill when the requested output is a finished development result that needs one or more of the stage skills below in sequence, or when the user calls `hyper` by name.
 
-By user instruction, this package is an orchestrator: it names its eleven stage skills in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
+By user instruction, this package is an orchestrator: it names its twelve stage skills in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
 
 | Stage skill | What the stage produces |
 |---|---|
 | `hyper-research` | A cited research report under `.hyper/research/` |
 | `hyper-seo` | A search-visibility audit, report, or bounded optimize loop under `.hyper/seo/<slug>/` |
 | `hyper-architecture` | Stack-matched architecture findings, or architecture edits when it is the last stage |
+| `hyper-database` | Database findings saved under `.hyper/database/<slug>/` (a schema or migration review, a design brief, an engine choice), or, when it is the last stage, a designed schema, an online migration, a tuned query or index, or an operations change verified by its evidence gates |
 | `hyper-mcp` | MCP findings saved under `.hyper/mcp/<slug>/`, or, when it is the last stage, a built, fixed, migrated, or connected MCP server, client, or host configuration verified with the MCP Inspector |
 | `hyper-design` | A designed, restyled, or mocked-up interface checked against a craft floor and an independent review, or, before a plan, a design brief or an interface audit, saved under `.hyper/design/<slug>/` |
 | `hyper-plan` | A decision-complete plan under `.hyper/plans/<slug>.md`, which continues into execution by itself |
@@ -93,6 +94,8 @@ Positive requests:
 - "Migrate our MCP server to the current spec and open a PR." -> `hyper-mcp` (audit) -> `hyper-plan` -> `hyper-execute` with `--make-pr`
 - "새 요금제 페이지 디자인해서 만들어줘. AI가 만든 티 안 나게." -> `hyper-design`
 - "Redesign the dashboard so it stops looking generic, and open a PR." -> `hyper-design` (audit) -> `hyper-plan` -> `hyper-execute` with `--make-pr`
+- "주문 서비스 DB 스키마 설계하고 마이그레이션까지 만들어줘. Postgres야." -> `hyper-database`
+- "결제 테이블 구조 바꾸고 관련 API까지 고쳐서 PR까지." -> `hyper-database` (review) -> `hyper-plan` -> `hyper-execute` with `--make-pr`
 
 Negative requests:
 
@@ -124,10 +127,11 @@ Boundary requests:
 | A reusable skill folder created or refactored, optionally after provider-doc research | `hyper-skill`, with `hyper-research` first when the request depends on current external docs |
 | A README, `AGENTS.md`, AI-readable document, instruction base, runbook, rule pack, reusable prompt, prompt template, prompt pack, or prompt eval fixture created or refactored | `hyper-documentation`, with `hyper-research` first when its claims depend on current external sources or provider guidance |
 | An MCP server, client, migration, security fix, or host MCP configuration | `hyper-mcp`, with `hyper-research` first when the server wraps an unfamiliar external API, and with `hyper-mcp` in audit mode before `hyper-plan` when the user asks for a PR or ship delivery or the change spans non-MCP modules |
+| A data model, schema, migration, slow query or index, engine choice, or database operations change (backup, replication, pooling, upgrade, security) | `hyper-database`, with `hyper-research` first when it depends on an engine or service the repository does not use yet, and with `hyper-database` in review mode before `hyper-plan` when the user asks for a PR or ship delivery or the change also needs application code |
 | A screen, page, or component designed or restyled, faux product UI, or a generic "AI look" removed | `hyper-design`, with `hyper-research` first when it depends on current external guidance, and with `hyper-design` in brief-only or audit mode before `hyper-plan` when the user asks for a PR or ship delivery or the change also needs non-UI work |
-| A skill, document, MCP, or interface tail followed by commit-and-push or merge-and-push words, or a skill or document tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
+| A skill, document, MCP, interface, or database tail followed by commit-and-push or merge-and-push words, or a skill or document tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
 | A plan file already exists and the user wants it run | `hyper-execute` |
-| Report-only research, audit, or architecture review | The one matching stage alone |
+| Report-only research, audit, architecture review, or database review | The one matching stage alone |
 
 `rules/workflow-routing.md` owns the signals, the stage order, and the tie-breaks.
 
@@ -230,7 +234,7 @@ Phase rules:
 
 | Claim | Source |
 |---|---|
-| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its eleven stage skills | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current eleven by user instruction, 2026-11-07 |
+| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its twelve stage skills | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current twelve by user instruction, 2026-11-07 |
 | The output, artifact path, and boundary of each stage skill | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The plan stage continues into execution by itself and passes the delivery flag through | the plan skill's handoff rule in this repository, 2026-11-06 |
 | A sequential chain hands state forward through saved artifacts, and a router picks a branch by code-like rules | `instructions/graph-engineering/references/graph-patterns.md` |
