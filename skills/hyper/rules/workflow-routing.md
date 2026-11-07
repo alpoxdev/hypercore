@@ -30,19 +30,21 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 | `hyper-mass` | The user asks for a dependency graph, a DAG, "의존성 그래프", "단계별 병렬", or several tasks where some must finish before others start, and no plan file is wanted | The request phrase |
 | `hyper-skill` | The requested output is a reusable skill folder: a new skill, or a refactor of an existing skill's trigger, contract, resources, or validation | The request phrase, plus the target `skills/<name>/SKILL.md` when it already exists |
 | `hyper-documentation` | The requested output is a documentation artifact, new or refactored: a README, an `AGENTS.md`, an AI-readable document (instruction base, agent guide, runbook, specification, or rule pack), or a reusable prompt artifact (role, system, or agent prompt, prompt template or pack, or prompt eval fixture) | The request phrase, plus the target path when it already exists |
+| `hyper-git` | Only as the last stage, after a tail that does not deliver (`hyper-skill`, `hyper-documentation`, or `hyper-mcp` or `hyper-ui-ux` as the last build stage), when the user asks to commit and push or to merge into named branches and push; after `hyper-skill` or `hyper-documentation` also for a pull request | The delivery phrase and the named target branches |
 
 ## 3. Stage Order
 
 Chosen stages always run in this order. Skip the ones that were not chosen.
 
 ```text
-hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation)
+hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation) [-> hyper-git]
 ```
 
 - Upstream stages (`hyper-research`, `hyper-seo`, `hyper-architecture`) produce evidence for the tail. In a Build job they run in report mode; the tail makes the code change.
 - `hyper-mcp` is the tail when it is the last chosen stage: it builds, fixes, migrates, or connects and verifies the result itself. When `hyper-plan` or `hyper-mass` follows it, it runs in audit mode and its report is the plan's input.
 - `hyper-ui-ux` is the tail when it is the last chosen stage: it designs, restyles, mocks up, or cleans the interface and verifies it itself. When `hyper-plan` or `hyper-mass` follows it, it runs in `brief-only` mode for an interface that does not exist yet or in `audit` mode for an existing one, and its saved brief or report is the plan's input.
 - Otherwise the tail is exactly one of: `hyper-plan` (which continues into `hyper-execute` by itself), `hyper-mass`, `hyper-execute` alone for an existing plan, `hyper-skill` for a skill folder, or `hyper-documentation` for a document or prompt artifact.
+- `hyper-git` is never a tail on its own: it runs after a tail that changed files but owns no delivery. `hyper-plan`, `hyper-execute`, and `hyper-mass` deliver for themselves, so `hyper-git` never follows them.
 - In a Report job the chain ends at the last requested stage. A Report job that asks for a plan ends at `hyper-plan` with `--plan-only`.
 - At most four stages run. A chain that seems to need more is two jobs: run the first and report the second as the next step.
 
@@ -74,6 +76,9 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux ->
 | Skill folder that depends on current provider docs ("최신 규격", "latest spec") | `hyper-research` -> `hyper-skill` |
 | README, `AGENTS.md`, document, rule pack, reusable prompt, template, pack, or prompt eval fixture created or refactored | `hyper-documentation` |
 | Document or prompt that depends on current external sources or provider guidance | `hyper-research` -> `hyper-documentation` |
+| Skill folder, document, MCP, or interface change, then commit and push ("커밋하고 푸시까지") | that chain -> `hyper-git` in commit mode |
+| Same, then merge into named branches ("dev, main에 머지하고 푸시") | that chain -> `hyper-git` in commit mode with `&& <branch>` targets for this run's commits, or workflow mode when a whole work branch must be merged |
+| Skill folder or document, then a pull request ("PR까지") | that chain -> `hyper-git` in workflow mode; an MCP or interface job with "PR까지" or "ship" keeps the audit -> `hyper-plan` route above |
 
 Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report job.
 
@@ -89,6 +94,8 @@ Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report 
 - `hyper-ui-ux` never runs with `hyper-skill` or `hyper-documentation` in one chain. A skill folder, a general document, or a prompt about design goes to its own stage; a project's `DESIGN.md` that records the product's visual system goes to `hyper-ui-ux`.
 - A feature whose main output is behavior (a new API, a data flow, a fix) routes by the existing rows even when it has a screen; add `hyper-ui-ux` only when the request asks for the look itself ("디자인 신경 써서", "AI 티 안 나게", "redesign").
 - Delivery words ("PR까지", "ship") on an interface job put `hyper-ui-ux` in `audit` or `brief-only` mode before `hyper-plan`, because only the plan and execute stages own delivery.
+- `hyper-git` never runs with `hyper-plan`, `hyper-execute`, or `hyper-mass` in one chain; their delivery flags carry the same words. A Git-only request with no other stage (commit, worktree, issue, or merge alone) is not a `hyper` job.
+- On a `hyper-git` delivery stage, merges into `main`, `master`, the default branch, or a deploy branch happen only when the user named that branch.
 - An existing plan file wins over a new plan only when the user points at it or says to resume. A new Build request with an unrelated old plan gets a new plan.
 - When the stack is outside the architecture stage's supported set, keep the stage anyway: it decides support from files and stops with a reason, and `rules/stage-handoff.md` §4 records that stop as a skip.
 
@@ -96,13 +103,16 @@ Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report 
 
 Pass these through to the stage that owns them; never pick one the user did not say.
 
-| User words | Passed to the plan or execute stage |
+| User words | Passed to |
 |---|---|
 | none | local delivery (the stage's default) |
 | "PR까지", "PR만", "make a PR", `--make-pr` | `--make-pr` |
 | "머지까지", "배포까지", "ship", `--ship` | `--ship` |
 | "계획만", "실행하지 말고", "plan only", `--plan-only` | `--plan-only`; the chain ends after the plan |
 | "승인은 내가 할게", "I'll approve" | The approval hold, passed as said; the chain ends after the plan |
+| "커밋하고 푸시", "commit and push", after a non-delivering tail | `hyper-git` delivery stage in commit mode |
+| "<branch>, <branch>에 머지하고 푸시", "merge into dev and main", after a non-delivering tail | `hyper-git` delivery stage with those targets, in the named order |
+| "PR까지" after `hyper-skill` or `hyper-documentation` | `hyper-git` delivery stage in workflow mode (pull request) |
 
 ## 7. Ambiguity
 
@@ -115,7 +125,7 @@ Pass these through to the stage that owns them; never pick one the user did not 
 Print one Korean line before the first stage:
 
 ```text
-워크플로: <stage> -> <stage> -> ... (전달: local|make-pr|ship|plan-only) / 근거: <stage>=<signal>; <stage>=<signal>
+워크플로: <stage> -> <stage> -> ... (전달: local|make-pr|ship|plan-only|git:<mode> <targets>) / 근거: <stage>=<signal>; <stage>=<signal>
 ```
 
 A run that stops before the first stage prints the same line with the stop reason in place of the chain.
@@ -126,7 +136,7 @@ A run that stops before the first stage prints the same line with the stop reaso
 
 | Claim | Source |
 |---|---|
-| The ten stage skills and the orchestrator role | user instruction, 2026-11-06; `hyper-skill`, `hyper-mcp`, and the documentation stage added by user instruction, 2026-11-07; the documentation stages merged into `hyper-documentation` by user instruction, 2026-11-07; `hyper-ui-ux` added by user instruction, 2026-11-07 |
+| The eleven stage skills and the orchestrator role | user instruction, 2026-11-06; `hyper-skill`, `hyper-mcp`, and the documentation stage added by user instruction, 2026-11-07; the documentation stages merged into `hyper-documentation` by user instruction, 2026-11-07; `hyper-ui-ux` added by user instruction, 2026-11-07; `hyper-git` added as the delivery stage by user instruction, 2026-11-07 |
 | Each stage's trigger, output, and exclusions, including `hyper-mass` excluding plan-file execution and `hyper-execute` requiring an existing plan | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The delivery words, the plan-only and approval-hold words, and the plan-to-execute auto-continue | the plan skill's handoff rule in this repository, 2026-11-06 |
 | The stage order, the four-stage cap, the recipes, and the tie-breaks | this package's chosen design, not a validated optimum |

@@ -30,19 +30,21 @@
 | `hyper-mass` | 사용자가 의존성 그래프, DAG, "의존성 그래프", "단계별 병렬"을 요청하거나, 일부가 먼저 끝나야 다른 일이 시작되는 여러 작업이 있고 계획 파일을 원하지 않습니다 | 요청 문구 |
 | `hyper-skill` | 요청한 결과물이 재사용 스킬 폴더입니다. 새 스킬, 또는 기존 스킬의 트리거, 계약, 리소스, 검증 리팩터링 | 요청 문구, 그리고 이미 있으면 대상 `skills/<name>/SKILL.md` |
 | `hyper-documentation` | 요청한 결과물이 새로 만들거나 리팩터링하는 문서 산출물입니다. README, `AGENTS.md`, AI가 읽기 좋은 문서(지침 베이스, 에이전트 가이드, 런북, 스펙, 규칙 묶음), 재사용 프롬프트 산출물(역할·시스템·에이전트 프롬프트, 프롬프트 템플릿이나 팩, 프롬프트 평가 픽스처) | 요청 문구, 그리고 이미 있으면 대상 경로 |
+| `hyper-git` | 마지막 단계일 때만. 전달하지 않는 꼬리(`hyper-skill`, `hyper-documentation`, 또는 마지막 구축 단계인 `hyper-mcp`나 `hyper-ui-ux`) 뒤에서 사용자가 커밋과 푸시, 또는 지정 브랜치로 병합과 푸시를 요청합니다. `hyper-skill`이나 `hyper-documentation` 뒤에서는 PR도 해당합니다 | 전달 문구와 지정한 대상 브랜치 |
 
 ## 3. 단계 순서
 
 고른 단계는 항상 이 순서로 실행합니다. 고르지 않은 단계는 건너뜁니다.
 
 ```text
-hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation)
+hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation) [-> hyper-git]
 ```
 
 - 앞 단계(`hyper-research`, `hyper-seo`, `hyper-architecture`)는 꼬리 단계에 쓸 근거를 만듭니다. Build 작업에서는 보고서 모드로 실행하고, 코드 변경은 꼬리 단계가 합니다.
 - `hyper-mcp`가 마지막으로 고른 단계면 꼬리 단계입니다. 직접 만들거나 고치거나 이전하거나 연결하고 결과를 검증합니다. 뒤에 `hyper-plan`이나 `hyper-mass`가 오면 점검 모드로 실행하고 그 보고서가 계획의 입력이 됩니다.
 - `hyper-ui-ux`가 마지막으로 고른 단계면 꼬리 단계입니다. 직접 화면을 디자인하거나 리디자인하거나 연출 화면을 만들거나 정리하고 결과를 검증합니다. 뒤에 `hyper-plan`이나 `hyper-mass`가 오면 아직 없는 화면은 `brief-only` 모드로, 기존 화면은 `audit` 모드로 실행하고 저장한 브리프나 보고서가 계획의 입력이 됩니다.
 - 그 밖의 경우 꼬리 단계는 정확히 하나입니다. `hyper-plan`(스스로 `hyper-execute`로 이어짐), `hyper-mass`, 기존 계획에 대한 `hyper-execute` 단독, 스킬 폴더에 대한 `hyper-skill`, 문서나 프롬프트 산출물에 대한 `hyper-documentation` 중 하나입니다.
+- `hyper-git`은 혼자서 꼬리 단계가 되지 않습니다. 파일은 바꾸지만 전달은 맡지 않는 꼬리 뒤에 붙습니다. `hyper-plan`, `hyper-execute`, `hyper-mass`는 스스로 전달하므로 `hyper-git`이 뒤따르지 않습니다.
 - Report 작업에서는 요청한 마지막 단계에서 체인이 끝납니다. 계획을 요청한 Report 작업은 `--plan-only`로 `hyper-plan`에서 끝납니다.
 - 최대 네 단계까지 실행합니다. 더 필요해 보이는 체인은 작업 두 개입니다. 첫 작업을 실행하고 두 번째는 다음 단계로 보고합니다.
 
@@ -74,6 +76,9 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux ->
 | 최신 공식 문서에 기대는 스킬 폴더("최신 규격", "latest spec") | `hyper-research` -> `hyper-skill` |
 | README, `AGENTS.md`, 문서, 규칙 묶음, 재사용 프롬프트, 템플릿, 팩, 프롬프트 평가 픽스처를 새로 만들거나 리팩터링 | `hyper-documentation` |
 | 최신 외부 출처나 공급자 지침에 기대는 문서나 프롬프트 | `hyper-research` -> `hyper-documentation` |
+| 스킬 폴더, 문서, MCP, 인터페이스 변경 뒤 커밋과 푸시("커밋하고 푸시까지") | 그 체인 -> 커밋 모드의 `hyper-git` |
+| 같은 작업 뒤 지정 브랜치로 병합과 푸시("dev, main에 머지하고 푸시") | 그 체인 -> 이번 실행의 커밋에 `&& <branch>` 대상을 붙인 커밋 모드의 `hyper-git`, 작업 브랜치 전체를 병합해야 하면 워크플로 모드 |
+| 스킬 폴더나 문서 뒤 PR("PR까지") | 그 체인 -> 워크플로 모드의 `hyper-git`. MCP나 인터페이스 작업에 "PR까지"나 "ship"이 붙으면 위의 점검 -> `hyper-plan` 경로를 유지합니다 |
 
 `hyper-plan`이 들어간 행은 Report 작업이 아니면 `hyper-execute`로 이어집니다.
 
@@ -89,6 +94,8 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux ->
 - `hyper-ui-ux`는 `hyper-skill`, `hyper-documentation`과 한 체인에서 함께 실행하지 않습니다. 디자인에 관한 스킬 폴더, 일반 문서, 프롬프트는 각자의 단계로 가고, 제품의 시각 체계를 기록하는 프로젝트 `DESIGN.md`는 `hyper-ui-ux`로 갑니다.
 - 주된 결과물이 동작(새 API, 데이터 흐름, 버그 수정)인 기능은 화면이 있어도 기존 행대로 라우팅합니다. 요청이 보이는 모습 자체를 요구할 때("디자인 신경 써서", "AI 티 안 나게", "redesign")만 `hyper-ui-ux`를 더합니다.
 - 화면 작업에 전달 단어("PR까지", "ship")가 있으면 `hyper-ui-ux`를 `audit`나 `brief-only` 모드로 `hyper-plan` 앞에 둡니다. 전달은 계획과 실행 단계만 맡기 때문입니다.
+- `hyper-git`은 `hyper-plan`, `hyper-execute`, `hyper-mass`와 한 체인에서 함께 실행하지 않습니다. 같은 단어를 그 단계들의 전달 플래그가 이미 받습니다. 다른 단계 없이 Git만 원하는 요청(커밋, 워크트리, 이슈, 병합만)은 `hyper` 작업이 아닙니다.
+- `hyper-git` 전달 단계에서 `main`, `master`, 기본 브랜치, 배포 브랜치로 병합하는 일은 사용자가 그 브랜치를 지정했을 때만 합니다.
 - 기존 계획 파일이 새 계획보다 우선하는 경우는 사용자가 그 파일을 가리키거나 재개를 말했을 때뿐입니다. 관계없는 옛 계획이 있는 새 Build 요청은 새 계획을 씁니다.
 - 스택이 아키텍처 단계의 지원 범위 밖이어도 그 단계는 유지합니다. 그 단계가 파일로 지원 여부를 정하고 사유와 함께 멈추며, `rules/stage-handoff.md` §4가 그 정지를 건너뜀으로 기록합니다.
 
@@ -96,13 +103,16 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux ->
 
 그것을 소유한 단계에 그대로 넘깁니다. 사용자가 말하지 않은 것을 고르지 않습니다.
 
-| User words | Passed to the plan or execute stage |
+| User words | Passed to |
 |---|---|
 | 없음 | local 전달(단계 기본값) |
 | "PR까지", "PR만", "make a PR", `--make-pr` | `--make-pr` |
 | "머지까지", "배포까지", "ship", `--ship` | `--ship` |
 | "계획만", "실행하지 말고", "plan only", `--plan-only` | `--plan-only`. 체인은 계획 뒤에 끝납니다 |
 | "승인은 내가 할게", "I'll approve" | 말한 그대로 승인 보류를 넘깁니다. 체인은 계획 뒤에 끝납니다 |
+| 전달하지 않는 꼬리 뒤의 "커밋하고 푸시", "commit and push" | 커밋 모드의 `hyper-git` 전달 단계 |
+| 전달하지 않는 꼬리 뒤의 "<branch>, <branch>에 머지하고 푸시", "merge into dev and main" | 그 대상을 지정 순서대로 받는 `hyper-git` 전달 단계 |
+| `hyper-skill`이나 `hyper-documentation` 뒤의 "PR까지" | 워크플로 모드(PR)의 `hyper-git` 전달 단계 |
 
 ## 7. 애매함
 
@@ -115,7 +125,7 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux ->
 첫 단계 전에 한국어 한 줄을 출력합니다.
 
 ```text
-워크플로: <stage> -> <stage> -> ... (전달: local|make-pr|ship|plan-only) / 근거: <stage>=<signal>; <stage>=<signal>
+워크플로: <stage> -> <stage> -> ... (전달: local|make-pr|ship|plan-only|git:<mode> <targets>) / 근거: <stage>=<signal>; <stage>=<signal>
 ```
 
 첫 단계 전에 멈추는 실행은 같은 줄에 체인 대신 정지 사유를 씁니다.
@@ -126,7 +136,7 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux ->
 
 | Claim | Source |
 |---|---|
-| 열 단계 스킬과 오케스트레이터 역할 | user instruction, 2026-11-06; `hyper-skill`, `hyper-mcp`, 문서 단계 추가 사용자 지시, 2026-11-07; 문서 단계를 `hyper-documentation` 하나로 합친 사용자 지시, 2026-11-07; `hyper-ui-ux` 추가 사용자 지시, 2026-11-07 |
+| 열한 단계 스킬과 오케스트레이터 역할 | user instruction, 2026-11-06; `hyper-skill`, `hyper-mcp`, 문서 단계 추가 사용자 지시, 2026-11-07; 문서 단계를 `hyper-documentation` 하나로 합친 사용자 지시, 2026-11-07; `hyper-ui-ux` 추가 사용자 지시, 2026-11-07; `hyper-git`을 전달 단계로 추가한 사용자 지시, 2026-11-07 |
 | 각 단계의 트리거, 결과물, 제외 범위. `hyper-mass`가 계획 파일 실행을 제외하고 `hyper-execute`가 기존 계획을 요구한다는 점 포함 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 전달 단어, 계획만·승인 보류 단어, 계획에서 실행으로 자동 연결 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 단계 순서, 네 단계 상한, 레시피, 동률 처리 | 이 패키지가 고른 설계이며 검증된 최적값이 아님 |
