@@ -119,7 +119,7 @@ This repository's execution points:
 
 ```bash
 bash scripts/verify.sh
-bash skills/skill-tester/scripts/validate-skills-corpus.sh --root skills --json
+bash scripts/validate-skills-corpus.sh --root skills --json
 ```
 
 The first runs the repository's own checks; the second validates the skill corpus and reports JSON.

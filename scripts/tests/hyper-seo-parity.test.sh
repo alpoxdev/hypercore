@@ -13,7 +13,7 @@ source "${HYPERCORE_TEST_LIB:-$(dirname "$0")/../lib/test-lib.sh}"
 test_init
 
 ROOT=${HYPERCORE_ROOT:-$(CDPATH='' cd -- "$(dirname "$0")/../.." && pwd)}
-VALIDATOR="$ROOT/skills/skill-tester/scripts/validate-skill.sh"
+VALIDATOR="$ROOT/scripts/validate-skill.sh"
 SKILL="$ROOT/skills/hyper-seo"
 
 # structural_tags <file> — whole-line structural tags, lowercased.

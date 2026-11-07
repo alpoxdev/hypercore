@@ -274,19 +274,6 @@
       "behaviorContractId": "hyper-ui-ux--validate-waivers"
     },
     {
-      "path": "skills/autoresearch-skill/scripts/render-dashboard.sh",
-      "family": "autoresearch-skill",
-      "legacyOrigin": "former-sh",
-      "usage": "render-dashboard",
-      "behavior": "render-dashboard",
-      "sourcePreimage": {
-        "path": "skills/autoresearch-skill/scripts/render-dashboard.sh",
-        "sha256": "79e4085028c20b9f037542a4232adc72d2959a7ea8c0c8d12024a84441009373",
-        "gitMode": "100755"
-      },
-      "behaviorContractId": "autoresearch-skill--render-dashboard"
-    },
-    {
       "path": "skills/git-maker/scripts/git-commit.sh",
       "family": "git-maker",
       "legacyOrigin": "former-sh",
@@ -508,144 +495,6 @@
       "behaviorContractId": "hyper-skill--validate-hyper-skill"
     },
     {
-      "path": "skills/skill-tester/scripts/validate-skill.sh",
-      "family": "skill-tester",
-      "legacyOrigin": "retained-mjs",
-      "usage": "validate-skill",
-      "behavior": "skill-validation",
-      "sourcePreimage": {
-        "path": "skills/skill-tester/scripts/validate-skill.mjs",
-        "sha256": "590d46fde866f6f641743d9c21839070dbf70bb69faf38d07e99258e3d62c35a",
-        "gitMode": "100755"
-      },
-      "behaviorContractId": "skill-tester--validate-skill"
-    },
-    {
-      "path": "skills/skill-tester/scripts/validate-skills-corpus.sh",
-      "family": "skill-tester",
-      "legacyOrigin": "retained-mjs",
-      "usage": "validate-skill-corpus",
-      "behavior": "skills-corpus-validation",
-      "sourcePreimage": {
-        "path": "skills/skill-tester/scripts/validate-skills-corpus.mjs",
-        "sha256": "2888adda8d3d574760afe6f8eba7d3677be5c68615554d1940917102dc741dbb",
-        "gitMode": "100644"
-      },
-      "behaviorContractId": "skill-tester--validate-skills-corpus"
-    },
-    {
-      "path": "skills/skill-tester/scripts/validate-skill-tester.sh",
-      "family": "skill-tester",
-      "legacyOrigin": "authored-mjs",
-      "usage": "validate-skill",
-      "behavior": "skill-validation",
-      "sourcePreimage": {
-        "baselineAbsence": {
-          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/skill-tester/scripts/validate-skill-tester.mjs",
-          "absent": true
-        },
-        "migration": {
-          "fromPath": "skills/skill-tester/scripts/validate-skill-tester.js",
-          "fromSha256": "978399934eee9ee856d07ae6703c6181ab4ec2c25e19ab420107682b0bebee56",
-          "fromMode": "100644",
-          "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
-        }
-      },
-      "behaviorContractId": "skill-tester--validate-skill-tester"
-    },
-    {
-      "path": "skills/version-update/scripts/git-commit.sh",
-      "family": "version-update",
-      "legacyOrigin": "former-sh",
-      "usage": "commit-files",
-      "behavior": "scoped-git-commit",
-      "sourcePreimage": {
-        "path": "skills/version-update/scripts/git-commit.sh",
-        "sha256": "317493004cb98e16fb752bd7e1c6e3f1503f73cc632883fd509d7774d2889ae6",
-        "gitMode": "100755"
-      },
-      "behaviorContractId": "version-update--git-commit"
-    },
-    {
-      "path": "skills/version-update/scripts/git-push.sh",
-      "family": "version-update",
-      "legacyOrigin": "former-sh",
-      "usage": "push-commit",
-      "behavior": "git-push",
-      "sourcePreimage": {
-        "path": "skills/version-update/scripts/git-push.sh",
-        "sha256": "87de1d571b5722bd93dcd1bab84b6d2e82de2aabe2c39ef7e56d07f65cf6b132",
-        "gitMode": "100755"
-      },
-      "behaviorContractId": "version-update--git-push"
-    },
-    {
-      "path": "skills/version-update/scripts/stack-detect.sh",
-      "family": "version-update",
-      "legacyOrigin": "former-sh",
-      "usage": "detect-stack",
-      "behavior": "stack-detection",
-      "sourcePreimage": {
-        "path": "skills/version-update/scripts/stack-detect.sh",
-        "sha256": "0f22f0bd18052be6d6acbfa6092f7ca8cf59e638f2105aca3f315717724a8326",
-        "gitMode": "100755"
-      },
-      "behaviorContractId": "version-update--stack-detect"
-    },
-    {
-      "path": "skills/version-update/scripts/version-apply.sh",
-      "family": "version-update",
-      "legacyOrigin": "former-sh",
-      "usage": "apply-version",
-      "behavior": "version-application",
-      "sourcePreimage": {
-        "path": "skills/version-update/scripts/version-apply.sh",
-        "sha256": "2b5aa40c43d37661e7974569dbe9c9475cf76e2ce4768eb99ebba900f8695d8e",
-        "gitMode": "100755"
-      },
-      "behaviorContractId": "version-update--version-apply"
-    },
-    {
-      "path": "skills/version-update/scripts/version-bump.sh",
-      "family": "version-update",
-      "legacyOrigin": "former-sh",
-      "usage": "calculate-version",
-      "behavior": "version-calculation",
-      "sourcePreimage": {
-        "path": "skills/version-update/scripts/version-bump.sh",
-        "sha256": "18bf6f2c6913be903092bb30db85aa1624f68281d05230de7cc3027161f01c00",
-        "gitMode": "100755"
-      },
-      "behaviorContractId": "version-update--version-bump"
-    },
-    {
-      "path": "skills/version-update/scripts/version-current.sh",
-      "family": "version-update",
-      "legacyOrigin": "former-sh",
-      "usage": "read-version",
-      "behavior": "version-reading",
-      "sourcePreimage": {
-        "path": "skills/version-update/scripts/version-current.sh",
-        "sha256": "1a6e4daf89c4e3e294ead2d74eb192c39e5caf923109d14229271926100eb576",
-        "gitMode": "100755"
-      },
-      "behaviorContractId": "version-update--version-current"
-    },
-    {
-      "path": "skills/version-update/scripts/version-find.sh",
-      "family": "version-update",
-      "legacyOrigin": "former-sh",
-      "usage": "discover-version",
-      "behavior": "version-discovery",
-      "sourcePreimage": {
-        "path": "skills/version-update/scripts/version-find.sh",
-        "sha256": "ba09fed01b10cf7bf8cf91e7b4e493d0709fc15c6f5c85bab25d401b75143d00",
-        "gitMode": "100755"
-      },
-      "behaviorContractId": "version-update--version-find"
-    },
-    {
       "path": "skills/hyper-architecture/scripts/validate-vite-stack.sh",
       "family": "hyper-architecture",
       "legacyOrigin": "retained-mjs",
@@ -732,7 +581,6 @@
       }
     ],
     "scanTargets": [
-      "skills/version-update",
       "scripts/fixtures/skill-script-parity/behavior"
     ],
     "enforcementFiles": [
@@ -741,109 +589,6 @@
       "scripts/tests/skill-scripts.test.mjs"
     ]
   },
-  "versionUpdateDetectorAbsentCorrection": {
-    "detectorRestored": false,
-    "legacyFiles": [
-      {
-        "legacyPath": "skills/version-update/scripts/stack-detect.sh",
-        "sha256": "0f22f0bd18052be6d6acbfa6092f7ca8cf59e638f2105aca3f315717724a8326",
-        "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/stack-detect.sh"
-      },
-      {
-        "legacyPath": "skills/version-update/scripts/version-find.sh",
-        "sha256": "ba09fed01b10cf7bf8cf91e7b4e493d0709fc15c6f5c85bab25d401b75143d00",
-        "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/version-find.sh"
-      },
-      {
-        "legacyPath": "skills/version-update/scripts/version-current.sh",
-        "sha256": "1a6e4daf89c4e3e294ead2d74eb192c39e5caf923109d14229271926100eb576",
-        "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/version-current.sh"
-      },
-      {
-        "legacyPath": "skills/version-update/scripts/version-bump.sh",
-        "sha256": "18bf6f2c6913be903092bb30db85aa1624f68281d05230de7cc3027161f01c00",
-        "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/version-bump.sh"
-      },
-      {
-        "legacyPath": "skills/version-update/scripts/version-apply.sh",
-        "sha256": "2b5aa40c43d37661e7974569dbe9c9475cf76e2ce4768eb99ebba900f8695d8e",
-        "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/version-apply.sh"
-      },
-      {
-        "legacyPath": "skills/version-update/scripts/git-commit.sh",
-        "sha256": "317493004cb98e16fb752bd7e1c6e3f1503f73cc632883fd509d7774d2889ae6",
-        "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/git-commit.sh"
-      },
-      {
-        "legacyPath": "skills/version-update/scripts/git-push.sh",
-        "sha256": "87de1d571b5722bd93dcd1bab84b6d2e82de2aabe2c39ef7e56d07f65cf6b132",
-        "gitMode": "100755",
-        "finalPath": "skills/version-update/scripts/git-push.sh"
-      }
-    ],
-    "documents": {
-      "paths": [
-        "skills/version-update/SKILL.md",
-        "skills/version-update/SKILL.ko.md"
-      ],
-      "legacyCommands": [
-        "scripts/git-commit.sh \"chore: bump version to x.y.z\" package.json",
-        "scripts/git-push.sh"
-      ],
-      "finalCommands": [
-        "bash scripts/git-commit.sh",
-        "bash scripts/git-push.sh"
-      ],
-      "hashStrategy": "sha256 of detector-absent direct-SH correction-baseline document bytes captured before the V port",
-      "directShBaseline": [
-        {
-          "path": "skills/version-update/SKILL.md",
-          "sha256": "a1e2108528cc5429051f58616798969d325885771ff7a75eca38ff8bb1923c69",
-          "gitMode": "100644",
-          "commands": [
-            "scripts/git-commit.sh \"chore: bump version to x.y.z\" package.json",
-            "scripts/git-push.sh"
-          ]
-        },
-        {
-          "path": "skills/version-update/SKILL.ko.md",
-          "sha256": "7a73a071cf424fa8705fcb126759ff88252860af3ec96973f2c2e457b023c751",
-          "gitMode": "100644",
-          "commands": [
-            "scripts/git-commit.sh \"chore: bump version to x.y.z\" package.json",
-            "scripts/git-push.sh"
-          ]
-        }
-      ]
-    },
-    "callerEdge": {
-      "legacy": "skills/version-update/scripts/version-apply.sh -> version-find.sh",
-      "final": "skills/version-update/scripts/version-apply.sh -> version-find.sh",
-      "restoreFixture": {
-        "id": "version-update--version-apply--caller-restoration",
-        "legacyCaller": "skills/version-update/scripts/version-apply.sh",
-        "legacyCallee": "skills/version-update/scripts/version-find.sh",
-        "finalCaller": "skills/version-update/scripts/version-apply.sh",
-        "finalCallee": "skills/version-update/scripts/version-find.sh",
-        "legacyCallerSha256": "2b5aa40c43d37661e7974569dbe9c9475cf76e2ce4768eb99ebba900f8695d8e"
-      }
-    },
-    "restoreOrder": [
-      "restore seven legacy files with recorded bytes and modes",
-      "restore detector-absent direct-SH paired docs",
-      "restore legacy caller edge",
-      "verify forbidden-reference scan",
-      "never restore detector source or handoff policy"
-    ]
-  },
-  "behaviorContractsPath": "scripts/fixtures/skill-script-parity/behavior/contracts.json",
-  "legacyPreimageBase": "990359457e2ccbf2bd4bb65065037d456c5940bc",
   "portPreimage": {
     "baselineRef": "fc4910a1b16ff439e274891f4cce1375599be3af",
     "model": "historical-origin-records",
@@ -855,5 +600,7 @@
       "skills/pre-deploy/scripts/lint-check.mjs",
       "skills/skill-maker/scripts/validate-skill-maker.mjs"
     ]
-  }
+  },
+  "behaviorContractsPath": "scripts/fixtures/skill-script-parity/behavior/contracts.json",
+  "legacyPreimageBase": "990359457e2ccbf2bd4bb65065037d456c5940bc"
 }

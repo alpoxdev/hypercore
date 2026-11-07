@@ -131,6 +131,5 @@ Command family는 하나의 universal command namespace가 아니라 재사용 �
 - [`../loop-engineering/LOOP_ENGINEERING.ko.md`](../loop-engineering/LOOP_ENGINEERING.ko.md) — 이 metric 기반 loop보다 한 단계 위의 일반 loop 설계: loop 유형, stop condition, 비용, runtime primitive
 - [`../validation/index.ko.md`](../validation/index.ko.md)
 - [`../sourcing/reliable-search.ko.md`](../sourcing/reliable-search.ko.md)
-- 이 계약의 저장소 구현: [`../../skills/autoresearch-skill/SKILL.ko.md`](../../skills/autoresearch-skill/SKILL.ko.md)
 
 로컬 연구 artifact는 ignored runtime directory에 있을 수 있지만, 이 문서는 특정 cache path가 ignored되거나 portable하다고 주장하지 않는다. 위 pinned URL과 repository evidence가 source record다.

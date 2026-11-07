@@ -131,6 +131,5 @@ See [`references/safety-and-observability.md`](references/safety-and-observabili
 - [`../loop-engineering/LOOP_ENGINEERING.md`](../loop-engineering/LOOP_ENGINEERING.md) — general loop design one level above this metric-driven loop: loop types, stop conditions, cost, runtime primitives
 - [`../validation/index.md`](../validation/index.md)
 - [`../sourcing/reliable-search.md`](../sourcing/reliable-search.md)
-- Repository implementation of this contract: [`../../skills/autoresearch-skill/SKILL.md`](../../skills/autoresearch-skill/SKILL.md)
 
 Local research artifacts may exist in ignored runtime directories, but this document does not claim a specific cache path is ignored or portable. The pinned URLs and repository evidence above are the source record.

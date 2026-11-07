@@ -65,8 +65,6 @@ approved_child_scripts() {
     skills/pre-deploy/scripts/build-run.sh) printf '%s\n' 'pm-detect.sh' 'stack-detect.sh' ;;
     skills/pre-deploy/scripts/deploy-check.sh) printf '%s\n' 'build-run.sh' 'lint-check.sh' 'stack-detect.sh' ;;
     skills/pre-deploy/scripts/lint-check.sh) printf '%s\n' 'pm-detect.sh' 'stack-detect.sh' ;;
-    skills/version-update/scripts/version-apply.sh) printf '%s\n' 'version-find.sh' ;;
-    skills/version-update/scripts/version-current.sh) printf '%s\n' 'version-find.sh' ;;
     *) : ;;
   esac
 }
@@ -87,7 +85,6 @@ metadata_for() {
     skills/hyper-ui-ux/scripts/run-detector-evals.sh) printf 'run-detector-evals\tdetector-eval-run\n' ;;
     skills/hyper-ui-ux/scripts/validate-report.sh) printf 'validate-report\treport-validation\n' ;;
     skills/hyper-ui-ux/scripts/validate-waivers.sh) printf 'validate-waivers\twaiver-validation\n' ;;
-    skills/autoresearch-skill/scripts/render-dashboard.sh) printf 'render-dashboard\trender-dashboard\n' ;;
     skills/git-maker/scripts/git-commit.sh) printf 'commit-files\tscoped-git-commit\n' ;;
     skills/git-maker/scripts/git-maker-fast.sh) printf 'commit-files\tfast-git-commit\n' ;;
     skills/git-maker/scripts/git-push.sh) printf 'push-commit\tgit-push\n' ;;
@@ -105,16 +102,6 @@ metadata_for() {
     skills/pre-deploy/scripts/stack-detect.sh) printf 'detect-stack\tstack-detection\n' ;;
     skills/hyper-seo/scripts/render-dashboard.sh) printf 'render-dashboard\trender-dashboard\n' ;;
     skills/hyper-skill/scripts/validate-hyper-skill.sh) printf 'validate-skill\tskill-validation\n' ;;
-    skills/skill-tester/scripts/validate-skill.sh) printf 'validate-skill\tskill-validation\n' ;;
-    skills/skill-tester/scripts/validate-skills-corpus.sh) printf 'validate-skill-corpus\tskills-corpus-validation\n' ;;
-    skills/skill-tester/scripts/validate-skill-tester.sh) printf 'validate-skill\tskill-validation\n' ;;
-    skills/version-update/scripts/git-commit.sh) printf 'commit-files\tscoped-git-commit\n' ;;
-    skills/version-update/scripts/git-push.sh) printf 'push-commit\tgit-push\n' ;;
-    skills/version-update/scripts/stack-detect.sh) printf 'detect-stack\tstack-detection\n' ;;
-    skills/version-update/scripts/version-apply.sh) printf 'apply-version\tversion-application\n' ;;
-    skills/version-update/scripts/version-bump.sh) printf 'calculate-version\tversion-calculation\n' ;;
-    skills/version-update/scripts/version-current.sh) printf 'read-version\tversion-reading\n' ;;
-    skills/version-update/scripts/version-find.sh) printf 'discover-version\tversion-discovery\n' ;;
     skills/hyper-architecture/scripts/validate-vite-stack.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/jev-maker/scripts/check-jev-request.sh) printf 'check-jev-request\tjev-request-validation\n' ;;
     *) : ;;
@@ -300,12 +287,12 @@ validate_script_edges() {
 jq -e 'type == "object"' "$manifest" >/dev/null 2>&1 || die "manifest must be a JSON object"
 jq -e '(.scripts | type) == "array"' "$manifest" >/dev/null 2>&1 || die "manifest scripts must be an array"
 row_count=$(jq -r '.scripts | length' "$manifest")
-[ "$row_count" -eq 43 ] || die "manifest must contain exactly 43 scripts"
+[ "$row_count" -eq 32 ] || die "manifest must contain exactly 32 scripts"
 jq -e 'all(.scripts[]; type == "object")' "$manifest" >/dev/null 2>&1 || die "manifest rows must be objects"
 
 legacy_origins=$(printf '%s\n' former-sh former-py retained-mjs authored-mjs)
-usage_enum=$(printf '%s\n' analyze-structure apply-version build-preview calculate-version check-deployment check-jev-request check-lint collect-rendered-evidence commit-files detect-package-manager detect-slop detect-stack discover-version inspect-repository push-commit read-version render-dashboard render-planning-map resolve-context run-build run-contract-evals run-detector-evals slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared validate-report validate-skill validate-skill-corpus validate-waivers)
-behavior_enum=$(printf '%s\n' context-resolution contract-eval-run deployment-readiness-check detector-eval-run fast-git-commit git-push jev-request-validation lint-readiness-check package-manager-detection planning-map-render preview-build project-build render-dashboard rendered-evidence-collection report-validation repository-discovery repository-status scoped-git-commit skill-validation skills-corpus-validation slop-detection slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared stack-detection structure-analysis version-application version-calculation version-discovery version-reading waiver-validation)
+usage_enum=$(printf '%s\n' analyze-structure build-preview check-deployment check-jev-request check-lint collect-rendered-evidence commit-files detect-package-manager detect-slop detect-stack inspect-repository push-commit render-dashboard render-planning-map resolve-context run-build run-contract-evals run-detector-evals slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared validate-report validate-skill validate-waivers)
+behavior_enum=$(printf '%s\n' context-resolution contract-eval-run deployment-readiness-check detector-eval-run fast-git-commit git-push jev-request-validation lint-readiness-check package-manager-detection planning-map-render preview-build project-build render-dashboard rendered-evidence-collection report-validation repository-discovery repository-status scoped-git-commit skill-validation slop-detection slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared stack-detection structure-analysis waiver-validation)
 
 former_sh=0
 former_py=0
@@ -390,8 +377,8 @@ while IFS=$'\x1f' read -r idx rtype field_ok path family legacy usage behavior s
   i=$((i + 1))
 done <"$tmp/manifest-rows.tsv"
 
-[ "$former_sh" -eq 19 ] && [ "$former_py" -eq 1 ] && [ "$retained_mjs" -eq 8 ] && [ "$authored_mjs" -eq 15 ] ||
-  die "manifest historical origin counts must be exactly 19/1/8/15"
+[ "$former_sh" -eq 11 ] && [ "$former_py" -eq 1 ] && [ "$retained_mjs" -eq 6 ] && [ "$authored_mjs" -eq 14 ] ||
+  die "manifest historical origin counts must be exactly 11/1/6/14"
 
 if ! jq -e '.portPreimage | (type == "object") and (.baselineRef | type == "string" and test("^[a-f0-9]{40}$")) and (.model | type == "string" and test("\\S")) and (.note | type == "string" and test("\\S")) and (.workingTreeEdited | type == "array" and length == 4)' "$manifest" >/dev/null 2>&1; then
   die "manifest portPreimage must record the port baseline and the uncommitted pre-port edits"
@@ -408,11 +395,11 @@ sort "$tmp/approved" | uniq -d >"$tmp/approved-dupes"
 jq -e 'type == "object"' "$contracts" >/dev/null 2>&1 || die "behavior contracts must be a JSON object"
 [ "$(jq -r '.requiredBy' "$contracts")" = "scripts/fixtures/skill-script-parity/manifest.json" ] ||
   die "behavior contracts must name the manifest as their central owner"
-if ! jq -e '(.coverage | type == "object") and .coverage.expectedRows == 43 and .coverage.expectedFixtures == 129' "$contracts" >/dev/null 2>&1; then
-  die "behavior contract coverage must be exactly 43 rows and 129 fixtures"
+if ! jq -e '(.coverage | type == "object") and .coverage.expectedRows == 32 and .coverage.expectedFixtures == 96' "$contracts" >/dev/null 2>&1; then
+  die "behavior contract coverage must be exactly 32 rows and 96 fixtures"
 fi
 contract_rows=$(jq -r '.rows | length' "$contracts")
-[ "$contract_rows" -eq 43 ] || die "behavior contracts must contain exactly 43 rows"
+[ "$contract_rows" -eq 32 ] || die "behavior contracts must contain exactly 32 rows"
 
 jq -r '.scripts[] | [(.path // ""), (.behaviorContractId // "")] | join("\u001f")' "$manifest" >"$tmp/script-contract-ids"
 cat >"$tmp/contract-rows.jq" <<'JQ'
@@ -484,7 +471,7 @@ sort "$tmp/forbidden" | uniq -d >"$tmp/forbidden-dupes"
 printf '%s\n' git-commit-detect .agents/skills/git-commit .claude/skills/git-commit .codex/skills/git-commit 'installed|' 'missing|' | sort -u >"$tmp/forbidden-expected"
 same_list "$tmp/forbidden" "$tmp/forbidden-expected" || die "forbidden detector literal set must match the validator-owned contract"
 jq -r '.forbiddenDetectorReferences.scanTargets[]' "$manifest" | sort -u >"$tmp/scan-targets"
-printf '%s\n' skills/version-update scripts/fixtures/skill-script-parity/behavior | sort -u >"$tmp/scan-targets-expected"
+printf '%s\n' scripts/fixtures/skill-script-parity/behavior | sort -u >"$tmp/scan-targets-expected"
 same_list "$tmp/scan-targets" "$tmp/scan-targets-expected" || die "forbidden detector scan targets must be exact"
 jq -r '.forbiddenDetectorReferences.enforcementFiles[]' "$manifest" | sort -u >"$tmp/enforcement"
 printf '%s\n' scripts/fixtures/skill-script-parity/manifest.json scripts/validate-skills.mjs scripts/tests/skill-scripts.test.mjs | sort -u >"$tmp/enforcement-expected"
@@ -503,32 +490,6 @@ while [ "$ri" -lt "$record_count" ]; do
   [ "$occurrences" -eq 1 ] || die "forbidden literal $literal must occur only in its declared manifest data location"
   ri=$((ri + 1))
 done
-
-# ---------------------------------------------------------------------------
-# Version-update detector-absence correction
-# ---------------------------------------------------------------------------
-
-if ! jq -e '(.versionUpdateDetectorAbsentCorrection | type == "object") and .versionUpdateDetectorAbsentCorrection.detectorRestored == false' "$manifest" >/dev/null 2>&1; then
-  die "detector must never be restored"
-fi
-legacy_count=$(jq -r '.versionUpdateDetectorAbsentCorrection.legacyFiles | length' "$manifest")
-[ "$legacy_count" -eq 7 ] || die "correction baseline requires exactly seven legacy files"
-li=0
-while [ "$li" -lt "$legacy_count" ]; do
-  if ! jq -e ".versionUpdateDetectorAbsentCorrection.legacyFiles[$li] | (type == \"object\") and (.legacyPath | type == \"string\" and test(\"^\\\\s*$\") | not) and (.sha256 | type == \"string\" and test(\"^[a-f0-9]{64}$\")) and (.gitMode == \"100755\") and (.finalPath | type == \"string\" and test(\"^\\\\s*$\") | not) and (.finalPath | endswith(\".sh\"))" "$manifest" >/dev/null 2>&1; then
-    die "every correction legacy file requires path, SHA-256, executable mode, and a bash final path"
-  fi
-  li=$((li + 1))
-done
-if ! jq -e '.versionUpdateDetectorAbsentCorrection.documents | (type == "object") and (.paths | type == "array" and length == 2) and (.legacyCommands | type == "array") and (.finalCommands | type == "array") and all(.finalCommands[]; type == "string" and startswith("bash scripts/"))' "$manifest" >/dev/null 2>&1; then
-  die "correction baseline requires paired document paths and bash final commands"
-fi
-if ! jq -e '.versionUpdateDetectorAbsentCorrection.callerEdge | (type == "object") and (.legacy | type == "string" and test("\\S")) and (.final | type == "string" and endswith("version-apply.sh -> version-find.sh"))' "$manifest" >/dev/null 2>&1; then
-  die "correction baseline requires legacy and bash final caller edges"
-fi
-if ! jq -e '.versionUpdateDetectorAbsentCorrection.restoreOrder | type == "array" and length >= 4' "$manifest" >/dev/null 2>&1; then
-  die "correction baseline requires an executable restoration order"
-fi
 
 # ---------------------------------------------------------------------------
 # Inventory: only bash scripts, exactly the manifest paths
@@ -574,4 +535,4 @@ while IFS= read -r file; do
   fi
 done <"$tmp/approved"
 
-printf 'Validated %s bash skill scripts (19 former-sh, 1 former-py, 8 retained-mjs, 15 authored-mjs historical origins).\n' "$(wc -l <"$tmp/approved" | tr -d ' ')"
+printf 'Validated %s bash skill scripts (11 former-sh, 1 former-py, 6 retained-mjs, 14 authored-mjs historical origins).\n' "$(wc -l <"$tmp/approved" | tr -d ' ')"

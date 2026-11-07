@@ -108,7 +108,7 @@ metrics:
 
 ```bash
 bash scripts/verify.sh
-bash skills/skill-tester/scripts/validate-skills-corpus.sh --root skills --json
+bash scripts/validate-skills-corpus.sh --root skills --json
 ```
 
 첫 번째는 저장소 자체 검사를 돌리고, 두 번째는 스킬 코퍼스를 검증해 JSON을 낸다. 형식·검증기·코퍼스

@@ -16,7 +16,6 @@
 - `skills/`: 배포되는 skill의 단일 원본입니다. 각 `SKILL.md`가 영어 정본 계약이고 `SKILL.ko.md`가 한국어 번역입니다. skill에 포함되는 script는 bash(bash 3.2+, POSIX 도구, JSON은 `jq`)이며 `bash <script>`로 실행합니다.
 - `instructions/`: context, harness, MCP, sourcing, validation, skill authoring의 공유 지침입니다. Markdown은 영어/한국어 쌍으로 관리합니다.
 - `scripts/`: Bun 기반 skill validator, source check, test, fixture입니다.
-- `cli/`: `@kood/*` CLI package를 위한 pnpm workspace입니다.
 - `assets/`: 프로젝트 문서가 사용하는 저장소 수준의 정적 asset입니다.
 - `README.md`: 설치, skill catalog, 프로젝트 구조, 개발 workflow 문서입니다.
 
@@ -55,19 +54,14 @@
 
 ```bash
 bash scripts/verify.sh
-bash skills/skill-tester/scripts/validate-skills-corpus.sh --root skills --only <skill-name> --json
+bash scripts/validate-skills-corpus.sh --root skills --only <skill-name> --json
 bash scripts/check-sources.sh --offline
-pnpm -C cli build
-pnpm -C cli test
-pnpm -C cli lint
-pnpm -C cli format:check
 ```
 
 변경을 다루는 가장 작은 검사부터 실행한 뒤 필요한 넓은 gate를 실행합니다.
 
 - skill 또는 skill validation script 변경: focused corpus validator를 먼저 실행한 뒤 `bash scripts/verify.sh`를 실행합니다.
 - `instructions/**` 아래의 source-sensitive 변경: 최소 `bash scripts/check-sources.sh --offline`을 실행합니다. release 전에는 문서화된 strict external-link gate를 사용합니다.
-- `cli/**` 변경: 영향받는 `build`, `test`, `lint`, `format:check` 명령을 실행합니다.
 - Markdown 지침 변경: local link, balanced fence, 영어/한국어 동등성, 요청하지 않은 파일이 없는지 검증합니다.
 - instagram-card-maker와 storyboard-maker의 visual rendering 검사는 브라우저가 필요하므로 `scripts/verify.sh` 범위 밖이며, 필요할 때 브라우저에서 직접 수행합니다.
 

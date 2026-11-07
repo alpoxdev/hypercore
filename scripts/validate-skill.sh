@@ -252,7 +252,7 @@ parse_args() {
 }
 
 print_help() {
-  printf '%s\n' 'Usage: bash skills/skill-tester/scripts/validate-skill.sh <skill-folder> [--json]'
+  printf '%s\n' 'Usage: bash scripts/validate-skill.sh <skill-folder> [--json]'
   printf '\n'
   printf '%s\n' 'Checks local metadata, direct links, bilingual structure, core parity, and code fences with bash and jq.'
 }

@@ -1,15 +1,9 @@
 {
   "skills": {
-    "autoresearch-skill": {
-      "FRONTMATTER_TRIGGER": 1
-    },
     "blog-maker": {
       "FRONTMATTER_TRIGGER": 1
     },
     "client-feedback": {
-      "FRONTMATTER_TRIGGER": 1
-    },
-    "deploy-fix": {
       "FRONTMATTER_TRIGGER": 1
     },
     "git-maker": {},
@@ -55,19 +49,14 @@
     "korean-writer": {
       "FRONTMATTER_TRIGGER": 1
     },
-    "naver-api": {},
     "prd-maker": {
       "FRONTMATTER_TRIGGER": 1
     },
     "pre-deploy": {
       "FRONTMATTER_TRIGGER": 1
     },
-    "skill-tester": {},
     "storyboard-maker": {},
     "tone-manner-maker": {
-      "FRONTMATTER_TRIGGER": 1
-    },
-    "version-update": {
       "FRONTMATTER_TRIGGER": 1
     }
   }

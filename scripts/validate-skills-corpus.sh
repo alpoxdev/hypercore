@@ -551,7 +551,7 @@ build_result() {
 }
 
 print_help() {
-  printf '%s\n' 'Usage: bash skills/skill-tester/scripts/validate-skills-corpus.sh --root <skills-dir> [--only a,b,c] [--json]'
+  printf '%s\n' 'Usage: bash scripts/validate-skills-corpus.sh --root <skills-dir> [--only a,b,c] [--json]'
   printf '\n'
   printf '%s\n' 'Validates a repository-local skills corpus with bash and jq only.'
   printf '\n'

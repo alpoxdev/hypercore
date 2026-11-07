@@ -20,10 +20,6 @@ CONTRACTS=$FIXTURES/behavior/contracts.json
 LEGACY_REF=990359457e2ccbf2bd4bb65065037d456c5940bc
 MIGRATION_REF=d648cf6eeba28402f0b3c1265ca5d9f05995a131
 
-VERSION_CURRENT=$ROOT/skills/version-update/scripts/version-current.sh
-VERSION_APPLY=$ROOT/skills/version-update/scripts/version-apply.sh
-VERSION_GIT_COMMIT=$ROOT/skills/version-update/scripts/git-commit.sh
-VERSION_GIT_PUSH=$ROOT/skills/version-update/scripts/git-push.sh
 DEPLOY_CHECK=$ROOT/skills/pre-deploy/scripts/deploy-check.sh
 GIT_MAKER_COMMIT=$ROOT/skills/git-maker/scripts/git-commit.sh
 REPO_DISCOVER=$ROOT/skills/git-maker/scripts/repo-discover.sh
@@ -47,7 +43,6 @@ skills/hyper-ui-ux/scripts/run-contract-evals.sh	skills/ai-design-slop-remover/s
 skills/hyper-ui-ux/scripts/run-detector-evals.sh	skills/ai-design-slop-remover/scripts/run-detector-evals.cjs	fddb35e5a47670733d2b85f657b88e6136d0bad7482d3e652bd3129466c4dbf4	100644	migrationPreimageRef
 skills/hyper-ui-ux/scripts/validate-report.sh	skills/ai-design-slop-remover/scripts/validate-report.cjs	0876b9f0c9291cc590c406fb6552363de33303b9fdb244dfcd940d85798c7d1f	100644	migrationPreimageRef
 skills/hyper-ui-ux/scripts/validate-waivers.sh	skills/ai-design-slop-remover/scripts/validate-waivers.cjs	f288eaeca8342136488d50ba456dfc00acc2fa78177ce356cb9256691075f1f7	100644	migrationPreimageRef
-skills/skill-tester/scripts/validate-skill-tester.sh	skills/skill-tester/scripts/validate-skill-tester.js	978399934eee9ee856d07ae6703c6181ab4ec2c25e19ab420107682b0bebee56	100644	migrationPreimageRef
 TSV
 )
 
@@ -285,10 +280,10 @@ run_repo_validator() { # <stdout> <stderr> — prints exit code
 case_manifest_inventory() {
   require_cmd jq
   require_cmd git
-  assert_eq 43 "$(jq '.scripts | length' "$MANIFEST")" "script count"
-  assert_eq 43 "$(jq '[.scripts[].path] | unique | length' "$MANIFEST")" "unique script paths"
+  assert_eq 32 "$(jq '.scripts | length' "$MANIFEST")" "script count"
+  assert_eq 32 "$(jq '[.scripts[].path] | unique | length' "$MANIFEST")" "unique script paths"
   assert_eq 0 "$(jq '[.scripts[] | select((.path // "") == "" or (.family // "") == "" or (.legacyOrigin // "") == "" or (.usage // "") == "" or (.behavior // "") == "")] | length' "$MANIFEST")" "every row carries its required fields"
-  assert_eq '{"authored-mjs":15,"former-py":1,"former-sh":19,"retained-mjs":8}' \
+  assert_eq '{"authored-mjs":14,"former-py":1,"former-sh":11,"retained-mjs":6}' \
     "$(jq -S -c '[.scripts[].legacyOrigin] | group_by(.) | map({key: .[0], value: length}) | from_entries' "$MANIFEST")" \
     "legacy origin counts"
 
@@ -308,7 +303,6 @@ skills/hyper-ui-ux/scripts/run-detector-evals.sh
 skills/hyper-ui-ux/scripts/validate-report.sh
 skills/hyper-ui-ux/scripts/validate-waivers.sh
 skills/jev-maker/scripts/check-jev-request.sh
-skills/skill-tester/scripts/validate-skill-tester.sh
 LIST
 )
   local work expected_migration
@@ -351,10 +345,6 @@ EOF
 
   assert_eq 6 "$(jq '.forbiddenDetectorReferences.records | length' "$MANIFEST")" "forbidden detector records"
   assert_eq 0 "$(jq '[.forbiddenDetectorReferences.records[] | select((.literal // "") == "" or (.allowedLocations | length) != 1)] | length' "$MANIFEST")" "every forbidden literal has exactly one allowed location"
-  assert_eq "false" "$(jq '.versionUpdateDetectorAbsentCorrection.detectorRestored' "$MANIFEST")" "detector stays absent"
-  assert_eq 7 "$(jq '.versionUpdateDetectorAbsentCorrection.legacyFiles | length' "$MANIFEST")" "legacy files"
-  assert_eq 0 "$(jq '[.versionUpdateDetectorAbsentCorrection.legacyFiles[] | select((.sha256 | test("^[a-f0-9]{64}$") | not) or .gitMode != "100755")] | length' "$MANIFEST")" "legacy file hashes and modes"
-  assert_jq "$MANIFEST" '.versionUpdateDetectorAbsentCorrection.restoreOrder | length >= 4' "restore order"
 }
 
 case_behavior_contracts() {
@@ -364,11 +354,11 @@ case_behavior_contracts() {
   assert_eq "$(cd "$ROOT" && echo "${MANIFEST#"$ROOT"/}")" "$(jq -r '.requiredBy' "$CONTRACTS")" "contracts point at the manifest"
   assert_eq "$LEGACY_REF" "$(jq -r '.legacyPreimageBase' "$MANIFEST")" "manifest legacy ref"
   assert_eq "$LEGACY_REF" "$(jq -r '.legacyPreimageBase' "$CONTRACTS")" "contracts legacy ref"
-  assert_eq 43 "$(jq '.coverage.expectedRows' "$CONTRACTS")"
-  assert_eq 129 "$(jq '.coverage.expectedFixtures' "$CONTRACTS")"
-  assert_eq '{"authored-mjs":15,"former-py":1,"former-sh":19,"retained-mjs":8}' \
+  assert_eq 32 "$(jq '.coverage.expectedRows' "$CONTRACTS")"
+  assert_eq 96 "$(jq '.coverage.expectedFixtures' "$CONTRACTS")"
+  assert_eq '{"authored-mjs":14,"former-py":1,"former-sh":11,"retained-mjs":6}' \
     "$(jq -S -c '.coverage.legacyOriginCounts' "$CONTRACTS")" "coverage origins"
-  assert_eq 43 "$(jq '.rows | length' "$CONTRACTS")" "contract rows"
+  assert_eq 32 "$(jq '.rows | length' "$CONTRACTS")" "contract rows"
   assert_eq "$(printf '%s\n' "$MIGRATION_PREIMAGES" | cut -f1 | LC_ALL=C sort)" \
     "$(jq -r '.rows[] | select(.sourcePreimage.migration) | .path' "$CONTRACTS" | LC_ALL=C sort)" \
     "renamed rows pinned to the migration ref"
@@ -476,102 +466,7 @@ case_behavior_contracts() {
     fi
     i=$((i + 1))
   done
-  assert_eq 129 "$cases" "fixture executions"
-}
-
-case_detector_absent_correction() {
-  require_cmd jq
-  require_cmd git
-  local fixture correction manifest
-  fixture=$(workdir)
-  correction=$(jq -c '.detectorAbsentCorrection' "$CONTRACTS")
-  manifest=$(jq -c '.versionUpdateDetectorAbsentCorrection' "$MANIFEST")
-  assert_contains "$(printf '%s' "$correction" | jq -r '.absenceEvidence')" "exact 30-entrypoint inventory" "absence evidence"
-  assert_eq "$(printf '%s' "$manifest" | jq -S -c '.legacyFiles')" \
-    "$(printf '%s' "$correction" | jq -S -c '.legacyFiles')" "legacy file records match the manifest"
-
-  local n i legacy_path final_path git_mode target
-  n=$(printf '%s' "$correction" | jq '.legacyFiles | length')
-  i=0
-  while [ "$i" -lt "$n" ]; do
-    legacy_path=$(printf '%s' "$correction" | jq -r --argjson i "$i" '.legacyFiles[$i].legacyPath')
-    git_mode=$(printf '%s' "$correction" | jq -r --argjson i "$i" '.legacyFiles[$i].gitMode')
-    target=$fixture/$legacy_path
-    mkdir -p "$(dirname "$target")"
-    git -C "$ROOT" show "$LEGACY_REF:$legacy_path" >"$target" || { fail "git show $LEGACY_REF:$legacy_path failed"; return 1; }
-    chmod "${git_mode#100}" "$target"
-    assert_eq "$(printf '%s' "$correction" | jq -r --argjson i "$i" '.legacyFiles[$i].sha256')" \
-      "$(sha256_of "$target")" "restored legacy sha for $legacy_path"
-    assert_eq 755 "$(file_mode "$target")" "restored legacy mode for $legacy_path"
-    i=$((i + 1))
-  done
-
-  n=$(printf '%s' "$correction" | jq '.pairedDirectShDocuments | length')
-  i=0
-  while [ "$i" -lt "$n" ]; do
-    legacy_path=$(printf '%s' "$correction" | jq -r --argjson i "$i" '.pairedDirectShDocuments[$i].path')
-    git_mode=$(printf '%s' "$correction" | jq -r --argjson i "$i" '.pairedDirectShDocuments[$i].gitMode')
-    target=$fixture/$legacy_path
-    mkdir -p "$(dirname "$target")"
-    git -C "$ROOT" show "$LEGACY_REF:$legacy_path" >"$target" || { fail "git show $LEGACY_REF:$legacy_path failed"; return 1; }
-    chmod "${git_mode#100}" "$target"
-    assert_eq "$(printf '%s' "$correction" | jq -r --argjson i "$i" '.pairedDirectShDocuments[$i].sha256')" \
-      "$(sha256_of "$target")" "restored document sha for $legacy_path"
-    assert_eq 644 "$(file_mode "$target")" "restored document mode for $legacy_path"
-    local command
-    while IFS= read -r command; do
-      assert_file_contains "$target" "$command" "restored document command for $legacy_path"
-    done < <(printf '%s' "$correction" | jq -r --argjson i "$i" '.pairedDirectShDocuments[$i].commands[]')
-    i=$((i + 1))
-  done
-
-  local legacy_caller final_caller caller_file
-  legacy_caller=$(printf '%s' "$correction" | jq -r '.callerRestoration.legacyCaller')
-  final_caller=$(printf '%s' "$correction" | jq -r '.callerRestoration.finalCaller')
-  caller_file=$fixture/$legacy_caller
-  assert_eq "$(printf '%s' "$correction" | jq -r '.callerRestoration.legacyCallerSha256')" \
-    "$(sha256_of "$caller_file")" "legacy caller sha"
-  assert_file_contains "$caller_file" "version-find.sh" "legacy caller keeps its callee edge"
-
-  # Apply the final state: every legacy file is replaced by the shipped file.
-  n=$(printf '%s' "$correction" | jq '.legacyFiles | length')
-  i=0
-  while [ "$i" -lt "$n" ]; do
-    legacy_path=$(printf '%s' "$correction" | jq -r --argjson i "$i" '.legacyFiles[$i].legacyPath')
-    final_path=$(printf '%s' "$correction" | jq -r --argjson i "$i" '.legacyFiles[$i].finalPath')
-    target=$fixture/$final_path
-    mkdir -p "$(dirname "$target")"
-    cp "$ROOT/$final_path" "$target"
-    chmod "$(file_mode "$ROOT/$final_path")" "$target"
-    assert_eq "$(sha256_of "$ROOT/$final_path")" "$(sha256_of "$target")" "final bytes for $final_path"
-    assert_eq "$(file_mode "$ROOT/$final_path")" "$(file_mode "$target")" "final mode for $final_path"
-    if [ "$legacy_path" != "$final_path" ]; then
-      rm -f "$fixture/$legacy_path"
-    fi
-    i=$((i + 1))
-  done
-
-  n=$(printf '%s' "$correction" | jq '.pairedDirectShDocuments | length')
-  i=0
-  while [ "$i" -lt "$n" ]; do
-    final_path=$(printf '%s' "$correction" | jq -r --argjson i "$i" '.pairedDirectShDocuments[$i].path')
-    target=$fixture/$final_path
-    cp "$ROOT/$final_path" "$target"
-    chmod "$(file_mode "$ROOT/$final_path")" "$target"
-    assert_eq "$(sha256_of "$ROOT/$final_path")" "$(sha256_of "$target")" "final document bytes for $final_path"
-    local command
-    while IFS= read -r command; do
-      assert_file_contains "$target" "$command" "final document command for $final_path"
-    done < <(printf '%s' "$manifest" | jq -r '.documents.finalCommands[]')
-    i=$((i + 1))
-  done
-
-  if [ "$legacy_caller" != "$final_caller" ]; then
-    assert_not_file "$fixture/$legacy_caller" "legacy caller removed"
-  fi
-  assert_file_contains "$fixture/$final_caller" "version-find.sh" "final caller keeps its callee edge"
-  assert_eq "$(printf '%s' "$manifest" | jq -c '.restoreOrder')" \
-    "$(printf '%s' "$correction" | jq -c '.restoreReapplyFixture.restoreOrder')" "restore order matches the manifest"
+  assert_eq 96 "$cases" "fixture executions"
 }
 
 case_validator_accepts_inventory() {
@@ -584,7 +479,7 @@ case_validator_accepts_inventory() {
   rc=$(run_repo_validator "$out" "$err")
   assert_empty "$(cat "$err")" "validator stderr"
   assert_eq 0 "$rc" "validator exit"
-  assert_contains "$(cat "$out")" "Validated 43 bash skill scripts (19 former-sh, 1 former-py, 8 retained-mjs, 15 authored-mjs historical origins)." "validator summary"
+  assert_contains "$(cat "$out")" "Validated 32 bash skill scripts (11 former-sh, 1 former-py, 6 retained-mjs, 14 authored-mjs historical origins)." "validator summary"
 }
 
 case_validator_rejects_mutations() {
@@ -597,7 +492,7 @@ case_validator_rejects_mutations() {
   mkdir -p "$fixture"
   cp -R "$ROOT/skills" "$fixture/skills"
   install_validator "$fixture"
-  target=$fixture/skills/version-update/scripts/version-current.sh
+  target=$fixture/skills/pre-deploy/scripts/stack-detect.sh
   original=$work/original.sh
   cp "$target" "$original"
   original_mode=$(file_mode "$target")
@@ -663,220 +558,6 @@ EOF
   fi
 }
 
-trim() { # <file>
-  sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' "$1"
-}
-
-case_version_current_isolated() {
-  local fixture package source work out err rc
-  work=$(workdir)
-  fixture=$work/fixture
-  mkdir -p "$fixture"
-  package=$fixture/package.json
-  source='{"name":"fixture","version":"1.2.3"}'
-  printf '%s\n' "$source" >"$package"
-  out=$work/stdout
-  err=$work/stderr
-  rc=$(run_in "$fixture" "$out" "$err" bash "$VERSION_CURRENT" "$package")
-  assert_eq 0 "$rc" "version-current exit"
-  assert_eq "$package|1.2.3" "$(trim "$out")" "version-current output"
-  assert_eq "$source" "$(cat "$package")" "version-current leaves the package untouched"
-}
-
-case_version_rejects_leading_zero() {
-  local fixture package work out err rc
-  work=$(workdir)
-  fixture="$work/hypercore version fixture"
-  mkdir -p "$fixture"
-  package=$fixture/package.json
-  printf '%s\n' '{"name":"fixture","version":"1.2.3"}' >"$package"
-
-  out=$work/stdout
-  err=$work/stderr
-  rc=$(run_in "$fixture" "$out" "$err" bash "$VERSION_APPLY" "01.2.3" "$package")
-  assert_eq 1 "$rc" "leading-zero semver rejected"
-
-  rc=$(run_in "$fixture" "$out" "$err" bash "$VERSION_APPLY" "2.0.0" "$package")
-  assert_eq 0 "$rc" "valid semver accepted"
-  assert_file_contains "$package" '"version":"2.0.0"' "version rewritten in place"
-}
-
-case_version_apply_rollback() {
-  local work fixture first_directory second_directory first second out err rc
-  work=$(workdir)
-  fixture=$work/fixture
-  first_directory=$fixture/first
-  second_directory=$fixture/second
-  first=$first_directory/package.json
-  second=$second_directory/package.json
-  mkdir -p "$first_directory" "$second_directory"
-  local padding first_source second_source
-  padding=$(head -c 262144 /dev/zero | tr '\0' 'x')
-  first_source=$(printf '{"name":"first","version":"1.2.3","padding":"%s"}' "$padding")
-  second_source='{"name":"second","version":"1.2.3"}'
-  printf '%s\n' "$first_source" >"$first"
-  printf '%s\n' "$second_source" >"$second"
-  chmod 640 "$first"
-  chmod 600 "$second"
-  cp "$first" "$work/first.original"
-  cp "$second" "$work/second.original"
-  chmod 500 "$second_directory"
-
-  out=$work/stdout
-  err=$work/stderr
-  rc=$(run_in "$fixture" "$out" "$err" bash "$VERSION_APPLY" "2.0.0" "$first" "$second")
-  chmod 755 "$second_directory"
-
-  assert_eq 1 "$rc" "version-apply fails when the later write cannot proceed"
-  assert_nonempty "$(trim "$err")" "rollback failure is reported"
-  cmp -s "$work/first.original" "$first" || { fail "first package bytes changed"; return 1; }
-  assert_eq 640 "$(file_mode "$first")" "first package keeps its mode"
-  cmp -s "$work/second.original" "$second" || { fail "second package bytes changed"; return 1; }
-  assert_eq 600 "$(file_mode "$second")" "second package keeps its mode"
-  assert_eq "package.json" "$(ls -A "$first_directory")" "no temporary files beside the first package"
-  assert_eq "package.json" "$(ls -A "$second_directory")" "no temporary files beside the second package"
-  assert_eq "first second" "$(find "$fixture" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort | tr '\n' ' ' | sed 's/ $//')" "fixture keeps only its inputs"
-}
-
-case_autoresearch_corpus() {
-  require_cmd jq
-  local eval_file work contract
-  eval_file=$ROOT/skills/autoresearch-skill/assets/evals/autoresearch-skill-cases.jsonl
-  work=$(workdir)
-  jq -s -e '
-    (map(has("id") and (.id | type == "string")) | all) and
-    (([.[].id] | length) == ([.[].id] | unique | length)) and
-    (map(.prompt | type == "string") | all) and
-    (map(.context | type == "object") | all) and
-    (map((.expected.must | length) > 0 and (.expected.mustNot | length) > 0) | all) and
-    (map((.metrics | length) > 0) | all) and
-    (map(.category as $c |
-      if (["positive", "negative", "boundary", "coexistence"] | index($c)) != null
-      then (.expect == "trigger" or .expect == "no_trigger")
-      else true end) | all)
-  ' "$eval_file" >/dev/null || { fail "autoresearch eval corpus has malformed rows"; return 1; }
-  jq -s -e '([.[].category] | unique) as $c | (["positive","negative","boundary","adversarial","regression"] - $c | length) == 0' \
-    "$eval_file" >/dev/null || { fail "autoresearch corpus misses a required category"; return 1; }
-  jq -s -e 'any(.[]; .language == "ko" and .expect == "trigger")' "$eval_file" >/dev/null \
-    || { fail "no Korean triggering case"; return 1; }
-  jq -s -e 'any(.[]; .language == "ko" and .expect == "no_trigger")' "$eval_file" >/dev/null \
-    || { fail "no Korean non-triggering case"; return 1; }
-
-  contract=$work/contract.md
-  cat \
-    "$ROOT/skills/autoresearch-skill/SKILL.md" \
-    "$ROOT/skills/autoresearch-skill/SKILL.ko.md" \
-    "$ROOT/skills/autoresearch-skill/rules/experiment-loop.md" \
-    "$ROOT/skills/autoresearch-skill/rules/experiment-loop.ko.md" \
-    "$ROOT/skills/autoresearch-skill/rules/context-sourcing-and-trace.md" \
-    "$ROOT/skills/autoresearch-skill/rules/context-sourcing-and-trace.ko.md" \
-    "$ROOT/skills/autoresearch-skill/rules/validation-and-exit.md" \
-    "$ROOT/skills/autoresearch-skill/rules/validation-and-exit.ko.md" \
-    "$ROOT/skills/autoresearch-skill/references/artifact-spec.md" \
-    "$ROOT/skills/autoresearch-skill/references/artifact-spec.ko.md" >"$contract"
-  local pattern
-  for pattern in \
-    'compare-before-restore' \
-    'guard-error' \
-    'cleanup-error' \
-    'rollback-error' \
-    'manual_recovery' \
-    'non_resumable' \
-    'last finalized iteration|last_finalized_iteration' \
-    'network destination/data|destination/data policy'; do
-    if ! grep -Eq "$pattern" "$contract"; then
-      fail "autoresearch contract misses /$pattern/"
-      return 1
-    fi
-  done
-}
-
-case_deploy_fix_corpus() {
-  require_cmd jq
-  local eval_file work contract
-  eval_file=$ROOT/skills/deploy-fix/assets/evals/deploy-fix-cases.jsonl
-  work=$(workdir)
-  jq -s -e '
-    (map((.id | type == "string") and ((.id | length) > 0)) | all) and
-    (([.[].id] | length) == ([.[].id] | unique | length)) and
-    (map((.prompt | type == "string") and ((.prompt | length) > 0)) | all) and
-    (map((.context.files | type == "array") and (.context.sources | type == "array")) | all) and
-    (map((.expected.must | type == "array") and ((.expected.must | length) > 0) and (.expected.mustNot | type == "array") and ((.expected.mustNot | length) > 0)) | all) and
-    (map((.metrics | type == "array") and ((.metrics | length) > 0)) | all)
-  ' "$eval_file" >/dev/null || { fail "deploy-fix eval corpus has malformed rows"; return 1; }
-  jq -s -e '([.[].category] | unique) as $c | (["positive","negative","boundary","workflow","source","safety","adversarial","regression"] - $c | length) == 0' \
-    "$eval_file" >/dev/null || { fail "deploy-fix corpus misses a required category"; return 1; }
-  jq -s -e '([.[].language] | unique) as $l | (["en","ko","mixed"] - $l | length) == 0' \
-    "$eval_file" >/dev/null || { fail "deploy-fix corpus misses a language"; return 1; }
-  jq -s -e '([.[].invocationMode] | unique) as $m | (["explicit","implicit","contextual","negative-control"] - $m | length) == 0' \
-    "$eval_file" >/dev/null || { fail "deploy-fix corpus misses an invocation mode"; return 1; }
-  assert_eq 3 "$(jq -s '[.[] | select(.category == "positive")] | length' "$eval_file")" "positive cases"
-  assert_eq 2 "$(jq -s '[.[] | select(.category == "negative")] | length' "$eval_file")" "negative cases"
-  jq -s -e 'any(.[]; .expect == "trigger")' "$eval_file" >/dev/null || { fail "no triggering case"; return 1; }
-  jq -s -e 'any(.[]; .expect == "no_trigger")' "$eval_file" >/dev/null || { fail "no non-triggering case"; return 1; }
-
-  contract=$work/contract.md
-  cat \
-    "$ROOT/skills/deploy-fix/SKILL.md" \
-    "$ROOT/skills/deploy-fix/SKILL.ko.md" \
-    "$ROOT/skills/deploy-fix/rules/diagnosis-resume-and-safety.md" \
-    "$ROOT/skills/deploy-fix/rules/diagnosis-resume-and-safety.ko.md" \
-    "$ROOT/skills/deploy-fix/references/flow-schema.md" \
-    "$ROOT/skills/deploy-fix/references/flow-schema.ko.md" >"$contract"
-  local pattern
-  for pattern in \
-    'evidence only|근거일 뿐' \
-    'non-resumable' \
-    'authorized_target' \
-    'rollback_or_stop' \
-    'one materially different approach|실질적으로 다른 접근'; do
-    if ! grep -Eq "$pattern" "$contract"; then
-      fail "deploy-fix contract misses /$pattern/"
-      return 1
-    fi
-  done
-}
-
-case_autoresearch_dashboard_typed_statuses() {
-  require_cmd jq
-  local work fixture statuses
-  work=$(workdir)
-  fixture=$work/fixture
-  mkdir -p "$fixture"
-  statuses='["tie","inconclusive","candidate-crash","infra-flake","timeout","signaled","guard-failed","guard-error","cleanup-error","rollback-error"]'
-  printf '%s' "$statuses" | jq '{
-    skill_name: "fixture",
-    status: "running",
-    current_experiment: length,
-    baseline_score: 1,
-    best_score: 1,
-    metric_direction: "higher_is_better",
-    last_statuses: .,
-    best_experiment: 0,
-    experiments: [to_entries[] | {
-      id: .key,
-      commit: "-",
-      score: 1,
-      max_score: 1,
-      metric: 1,
-      delta: 0,
-      pass_rate: 100,
-      guard: (if .value == "guard-failed" then "fail" elif .value == "guard-error" then "error" else "pass" end),
-      guard_metric: null,
-      status: .value,
-      description: .value
-    }]
-  }' >"$fixture/results.json"
-
-  local out err rc
-  out=$work/stdout
-  err=$work/stderr
-  rc=$(run_in "$fixture" "$out" "$err" bash "$ROOT/skills/autoresearch-skill/scripts/render-dashboard.sh" "$fixture")
-  assert_eq 0 "$rc" "dashboard render exit"
-  assert_eq "dashboard.html results.js results.json" \
-    "$(find "$fixture" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort | tr '\n' ' ' | sed 's/ $//')" "dashboard outputs"
-}
-
 init_git() { # <fixture>
   git -C "$1" init -q
   git -C "$1" config user.name Test
@@ -911,158 +592,6 @@ wait_for_file() { # <path> <attempts>
     i=$((i + 1))
   done
   [ -e "$1" ]
-}
-
-case_version_git_helpers_reject_unrelated() {
-  local fixture out err rc
-  fixture=$(workdir)
-  init_git "$fixture"
-  printf 'initial\n' >"$fixture/a.txt"
-  printf 'initial\n' >"$fixture/b.txt"
-  git -C "$fixture" add a.txt b.txt
-  git -C "$fixture" commit -qm initial
-  printf 'changed\n' >"$fixture/a.txt"
-  printf 'changed\n' >"$fixture/b.txt"
-  git -C "$fixture" add b.txt
-
-  out=$(mktemp "$fixture/stdout.XXXXXX")
-  err=$(mktemp "$fixture/stderr.XXXXXX")
-  rc=$(run_in "$fixture" "$out" "$err" bash "$VERSION_GIT_COMMIT" "test: scoped" a.txt)
-  assert_eq 1 "$rc" "scoped commit refuses unrelated staged files"
-  assert_eq "b.txt" "$(git -C "$fixture" diff --cached --name-only | tr -d '\n')" "unrelated index entry preserved"
-  assert_eq "initial" "$(git -C "$fixture" log -1 --format=%s)" "no commit was created"
-}
-
-case_version_git_commit_all_is_literal() {
-  local fixture out err rc
-  fixture=$(workdir)
-  init_git "$fixture"
-  printf 'initial\n' >"$fixture/requested.txt"
-  printf 'initial\n' >"$fixture/unrelated.txt"
-  git -C "$fixture" add .
-  git -C "$fixture" commit -qm initial
-  printf 'changed\n' >"$fixture/requested.txt"
-  printf 'changed\n' >"$fixture/unrelated.txt"
-
-  out=$(mktemp "$fixture/stdout.XXXXXX")
-  err=$(mktemp "$fixture/stderr.XXXXXX")
-  rc=$(run_in "$fixture" "$out" "$err" bash "$VERSION_GIT_COMMIT" "test: injection" "--all")
-  assert_eq 1 "$rc" "--all is treated as a literal path"
-  assert_eq "" "$(git -C "$fixture" diff --cached --name-only | tr -d '\n')" "nothing staged"
-  assert_eq "initial" "$(git -C "$fixture" log -1 --format=%s)" "no commit was created"
-}
-
-case_version_git_commit_boundaries() {
-  local fixture marker out err rc path
-  fixture=$(workdir)
-  marker=$fixture/marker.txt
-  printf 'unchanged\n' >"$marker"
-
-  out=$(mktemp "$fixture/stdout.XXXXXX")
-  err=$(mktemp "$fixture/stderr.XXXXXX")
-  rc=$(run_in "$fixture" "$out" "$err" env LC_ALL=C LANG=C bash "$VERSION_GIT_COMMIT" "test: boundary" "$marker")
-  assert_eq 1 "$rc" "non-repository boundary exit"
-  assert_contains "$(cat "$err")" "Not a git repository" "non-repository message"
-  assert_eq "unchanged" "$(tr -d '\n' <"$marker")" "marker untouched outside a repository"
-
-  path=$(write_fake_git "$fixture" '#!/bin/sh
-printf "%s\n" "$*" >> git-calls.log
-printf "%s\n" "fake rev-parse failure" >&2
-exit 97
-')
-  rm -f "$fixture/git-calls.log"
-  out=$(mktemp "$fixture/stdout.XXXXXX")
-  err=$(mktemp "$fixture/stderr.XXXXXX")
-  rc=$(run_in "$fixture" "$out" "$err" env "PATH=$path" bash "$VERSION_GIT_COMMIT" "test: inspection" "$marker")
-  assert_eq 97 "$rc" "Git inspection failure propagates"
-  assert_contains "$(cat "$err")" "fake rev-parse failure" "inspection stderr"
-  assert_eq "rev-parse --git-dir" "$(trim "$fixture/git-calls.log")" "only the first inspection ran"
-  assert_eq "unchanged" "$(tr -d '\n' <"$marker")" "marker untouched after inspection failure"
-}
-
-case_version_current_forwards_signals() {
-  local fixture current_fixture finder ready signal_file out err
-  fixture=$(workdir)
-  current_fixture=$fixture/version-current.sh
-  cp "$VERSION_CURRENT" "$current_fixture"
-  finder=$fixture/version-find.sh
-  cat >"$finder" <<'FINDER'
-#!/usr/bin/env bash
-set -u
-printf '%s' "$$" > "$READY_FILE"
-trap 'printf %s SIGTERM > "$SIGNAL_FILE"; exit 143' TERM
-trap 'printf %s SIGINT > "$SIGNAL_FILE"; exit 130' INT
-deadline=$((SECONDS + 90))
-while kill -0 "$PPID" 2>/dev/null && [ "$SECONDS" -lt "$deadline" ]; do sleep 0.02; done
-exit 99
-FINDER
-  chmod 755 "$finder"
-
-  local name expected signal pid rc discovery_pid alive
-  set -m
-  for entry in "SIGTERM:143" "SIGINT:130"; do
-    name=${entry%:*}
-    expected=${entry#*:}
-    ready=$fixture/ready-$name
-    signal_file=$fixture/signal-$name
-    out=$fixture/stdout-$name
-    err=$fixture/stderr-$name
-    (
-      cd "$fixture" || exit 1
-      exec env "READY_FILE=$ready" "SIGNAL_FILE=$signal_file" bash "$current_fixture"
-    ) >"$out" 2>"$err" &
-    pid=$!
-    if ! wait_for_file "$ready" 200; then
-      kill -KILL "$pid" 2>/dev/null || true
-      wait "$pid" 2>/dev/null || true
-      fail "version-current discovery child never signalled ready ($name)"
-      return 1
-    fi
-    discovery_pid=$(tr -d '[:space:]' <"$ready")
-    kill -s "$name" "$pid" 2>/dev/null || true
-    rc=0
-    wait "$pid" 2>/dev/null || rc=$?
-    assert_eq "$expected" "$rc" "version-current exit after $name"
-    assert_eq "$name" "$(cat "$signal_file" 2>/dev/null)" "discovery child received $name"
-    alive=1
-    kill -0 "$discovery_pid" 2>/dev/null || alive=0
-    assert_eq 0 "$alive" "discovery child reaped after $name"
-  done
-  set +m
-}
-
-case_version_git_push_unknown_arguments() {
-  local fixture out err rc
-  fixture=$(workdir)
-  git -C "$fixture" init -q
-  out=$(mktemp "$fixture/stdout.XXXXXX")
-  err=$(mktemp "$fixture/stderr.XXXXXX")
-  rc=$(run_in "$fixture" "$out" "$err" bash "$VERSION_GIT_PUSH" "--unknown")
-  assert_eq 2 "$rc" "unknown argument exit"
-  assert_contains "$(cat "$err")" "Usage:" "unknown argument usage"
-}
-
-case_version_git_push_upstream_failure() {
-  local fixture out err rc path calls
-  fixture=$(workdir)
-  path=$(write_fake_git "$fixture" '#!/bin/sh
-printf "%s\n" "$*" >> git-calls.log
-case "$*" in
-  "rev-parse --git-dir") printf "%s\n" .git ;;
-  "branch --show-current") printf "%s\n" topic ;;
-  "for-each-ref --format=%(upstream:short) refs/heads/topic") printf "%s\n" "fake upstream failure" >&2; exit 97 ;;
-  *) printf "%s\n" "unexpected git invocation: $*" >&2; exit 98 ;;
-esac
-')
-  out=$(mktemp "$fixture/stdout.XXXXXX")
-  err=$(mktemp "$fixture/stderr.XXXXXX")
-  rc=$(run_in "$fixture" "$out" "$err" env "PATH=$path" bash "$VERSION_GIT_PUSH")
-  assert_eq 97 "$rc" "upstream inspection failure propagates"
-  assert_contains "$(cat "$err")" "fake upstream failure" "upstream failure stderr"
-  calls=$(cat "$fixture/git-calls.log")
-  assert_eq "rev-parse --git-dir
-branch --show-current
-for-each-ref --format=%(upstream:short) refs/heads/topic" "$calls" "push stops before the network"
 }
 
 case_git_maker_commit_rejects_option_paths() {
@@ -1621,9 +1150,6 @@ JSON 파싱에 실패했습니다'
 
 renderer_results_json() { # <name>
   case $1 in
-    autoresearch-skill)
-      printf '%s' '{"skill_name":"fixture","status":"running","current_experiment":0,"baseline_score":1,"best_score":1,"metric_direction":"higher_is_better","last_statuses":[],"best_experiment":0,"experiments":[]}'
-      ;;
     hyper-seo)
       printf '%s' '{"project_name":"fixture","status":"running","categories":[{"name":"Technical SEO","status":"unknown","score":null}],"findings":[{"id":"T1","severity":"info","finding":"fixture finding","evidence_grade":"heuristic","source_tier":"research-backed-heuristic"}]}'
       ;;
@@ -1634,9 +1160,6 @@ renderer_seam_source() { # <name> <failure>
   case $1:$2 in
     hyper-seo:second-write)
       printf '%s' "  if ! printf 'window.__SEO_RESULTS__ = %s;\\n' \"\$results_json\" | write_temp_stream \"\$RESULTS_JS_TEMP\" \"\$RESULTS_MODE\"; then"
-      ;;
-    autoresearch-skill:second-write)
-      printf '%s' "  if ! printf 'window.__AUTORESEARCH_RESULTS__ = %s;\\nwindow.__AUTORESEARCH_DETAILS__ = %s;\\n' \"\$results_json\" \"\$details_json\" | write_temp_stream \"\$RESULTS_JS_TEMP\" \"\$RESULTS_MODE\"; then"
       ;;
     *:second-rename)
       # shellcheck disable=SC2016
@@ -1661,10 +1184,6 @@ renderer_atomic_case() { # <renderer> <failure>
   assets=$fixture/assets
   mkdir -p "$fixture/scripts" "$assets"
   case $name in
-    autoresearch-skill)
-      template=$ROOT/skills/autoresearch-skill/assets/dashboard-template.html
-      src_script=$ROOT/skills/autoresearch-skill/scripts/render-dashboard.sh
-      ;;
     hyper-seo)
       template=$ROOT/skills/hyper-seo/assets/dashboard-template.html
       src_script=$ROOT/skills/hyper-seo/scripts/render-dashboard.sh
@@ -1717,28 +1236,13 @@ EOF
   assert_empty "$leftovers" "no temp files left behind"
 }
 
-case_autoresearch_renderer_second_write() { renderer_atomic_case autoresearch-skill second-write; }
-case_autoresearch_renderer_second_rename() { renderer_atomic_case autoresearch-skill second-rename; }
 case_hyper_seo_renderer_second_write() { renderer_atomic_case hyper-seo second-write; }
 case_hyper_seo_renderer_second_rename() { renderer_atomic_case hyper-seo second-rename; }
 
-run_case "manifest centrally inventories 43 scripts including fifteen authored baseline-absent MJS paths" case_manifest_inventory
-run_case "behavior contracts execute all 129 isolated semantic fixtures with exact observables" case_behavior_contracts
-run_case "detector-absent correction restores legacy bytes and reapplies the exact final filesystem state" case_detector_absent_correction
+run_case "manifest centrally inventories 32 scripts including fourteen authored baseline-absent MJS paths" case_manifest_inventory
+run_case "behavior contracts execute all 96 isolated semantic fixtures with exact observables" case_behavior_contracts
 run_case "validator accepts the approved inventory" case_validator_accepts_inventory
 run_case "validator rejects bash policy mutations a real regression would introduce" case_validator_rejects_mutations
-run_case "version-current reads an isolated package fixture without changing it" case_version_current_isolated
-run_case "version scripts reject leading-zero semver and preserve paths with spaces" case_version_rejects_leading_zero
-run_case "version-apply leaves every input untouched when a later write cannot proceed" case_version_apply_rollback
-run_case "autoresearch skill contract eval corpus is valid and covers fail-closed recovery" case_autoresearch_corpus
-run_case "deploy-fix eval corpus covers trigger, trajectory, safety, and recovery regressions" case_deploy_fix_corpus
-run_case "autoresearch dashboard accepts typed non-happy outcomes" case_autoresearch_dashboard_typed_statuses
-run_case "version Git helpers reject unrelated staged files without staging requested files" case_version_git_helpers_reject_unrelated
-run_case "version git-commit treats --all as a literal path and cannot stage unrelated files" case_version_git_commit_all_is_literal
-run_case "version git-commit stops at Git inspection failures and non-repository boundaries" case_version_git_commit_boundaries
-run_case "version-current forwards SIGTERM and SIGINT and reaps its ready discovery child" case_version_current_forwards_signals
-run_case "version git-push rejects unknown arguments before touching a remote" case_version_git_push_unknown_arguments
-run_case "version git-push stops before network push when upstream inspection fails" case_version_git_push_upstream_failure
 run_case "git-maker commit rejects option-like paths without staging unrelated changes" case_git_maker_commit_rejects_option_paths
 run_case "git-maker discover and status reject option-like paths before Git inspection" case_git_maker_discover_status_reject_option_paths
 run_case "pre-deploy drains multi-MiB children and forwards termination without orphaning sequential or parallel work" case_pre_deploy_forwards_termination
@@ -1749,8 +1253,6 @@ run_case "self-containment check catches cross-skill references, including with 
 run_case "script-runtime check rejects non-bash bundled scripts and non-bash shebangs" case_script_runtime_check
 run_case "the image-maker validator accepts its own skill folder and eval corpus" case_image_maker_validator
 run_case "the git-worktree validator scores its own skill folder at full marks" case_git_worktree_validator
-run_case "autoresearch-skill preserves both prior outputs when its second-write fails" case_autoresearch_renderer_second_write
-run_case "autoresearch-skill preserves both prior outputs when its second-rename fails" case_autoresearch_renderer_second_rename
 run_case "hyper-seo preserves both prior outputs when its second-write fails" case_hyper_seo_renderer_second_write
 run_case "hyper-seo preserves both prior outputs when its second-rename fails" case_hyper_seo_renderer_second_rename
 

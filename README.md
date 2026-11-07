@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 28개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 23개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -119,8 +119,6 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | 스킬 | 설명 | 호환 |
 |------|------|------|
 | `hyper-skill` | 유지보수하기 쉬운 Codex/AI 에이전트 스킬 생성 및 리팩터링 | All |
-| `skill-tester` | 스킬 트리거/동작을 시나리오 기반으로 검증하고, 확인된 결함은 대상 스킬 안에서 안전하게 수리 | All |
-| `autoresearch-skill` | 반복 실행과 이진 eval 기반으로 기존 스킬을 자동 최적화 | All |
 | `hyper-documentation` | 요청한 산출물에 맞춰 네 모드 중 하나로 작업: `readme`(코드베이스 기반 README), `agents-md`(영어 `AGENTS.md` + 한국어 `AGENTS.ko.md`, `CLAUDE.md`는 만들지 않음), `prompt`(재사용 프롬프트·템플릿/팩·eval 픽스처), `docs`(AI가 읽기 좋은 문서·런북·룰 팩) | All |
 | `prd-maker` | 증거 기반 Living PRD + 다이어그램·플로우·와이어프레임 생성·갱신 | All |
 
@@ -135,8 +133,6 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | 스킬 | 설명 | 호환 |
 |------|------|------|
 | `pre-deploy` | 배포 전 lint/타입/빌드 검증 | Node.js·Rust·Python 툴체인; bash 3.2+ & jq 1.6+ |
-| `deploy-fix` | 빌드/CI/배포 장애 진단 및 수정 | All |
-| `version-update` | node/rust/python 시맨틱 버전 업데이트와 버전 파일 동기화, 선택적 커밋·푸시 | bash 3.2+; git (커밋·푸시 시) |
 
 ### Git 워크플로
 
@@ -178,11 +174,10 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `naver-api` | Naver API HUB 검색·DataLab 검색어 트렌드·쇼핑인사이트 조회와 CLI 초기 설정·자격 증명 검증 | Node.js 20+; network; Naver API HUB credentials |
 | `hyper-mcp` | MCP(Model Context Protocol) 서버·클라이언트 구축, 보안·규격 점검과 수정, 2026-07-28 판 이전, 호스트 MCP 설정 연결, 레지스트리 메타데이터 준비를 MCP Inspector 검증과 `.hyper/mcp/` 보고서까지 처리 | 대상 언어 도구 모음; MCP Inspector는 Node.js 22.19+ |
 | `jev-maker` | TypeSafe Jev(System One) 판단 모델용 질문, 호출 코드, 템플릿, 평가 세트 생성과 코드 감사, 연결 설정 | bash 3.2+ · jq (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 28개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 23개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
 
@@ -232,20 +227,16 @@ lint, typecheck, build 같은 프로젝트 게이트를 재현하고, 실패가 
 /hyper-skill "내가 자주 쓰는 워크플로를 스킬로 만들어줘"
 ```
 
-`hyper-skill`이 트리거 디자인, 리소스 배치, 검증 체크리스트까지 갖춘 스킬 폴더를 만들어 냅니다. 이후 `autoresearch-skill`로 baseline-first 반복 최적화를 돌릴 수 있습니다.
+`hyper-skill`이 트리거 디자인, 리소스 배치, 검증 체크리스트까지 갖춘 스킬 폴더를 만들어 냅니다.
 
 ## 프로젝트 구조
 
 ```text
 hypercore/
 ├── assets/                # README 이미지 등 저장소 수준 정적 asset
-├── cli/                   # @kood/* 도구 모노레포 (pnpm workspace)
-│   └── packages/
-│       ├── color/         # @kood/color-cli — hex / rgb / oklch 색상 변환 CLI
-│       └── naver-api/     # @kood/naver-api-cli — Naver API HUB 검색·DataLab·쇼핑인사이트 CLI
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
-└── skills/                # 28개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 23개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:
@@ -265,9 +256,8 @@ skills/<name>/
 직접 스킬을 만들고 싶다면:
 
 1. `/hyper-skill "<설명>"` — 빈 폴더부터 lean한 `SKILL.md`까지 한 번에.
-2. `/autoresearch-skill <skill-path>` — 만들어진 스킬을 반복 실험으로 점수가 올라가지 않을 때까지 자동 최적화.
-3. 영어 정본(`SKILL.md`) 옆에 한국어 번역(`SKILL.ko.md`)을 함께 유지하세요.
-4. PR이 반영되면 `npx skills add alpoxdev/hypercore --list`로 저장소의 `skills/` 원격 source에서 발견되는지 확인합니다.
+2. 영어 정본(`SKILL.md`) 옆에 한국어 번역(`SKILL.ko.md`)을 함께 유지하세요.
+3. PR이 반영되면 `npx skills add alpoxdev/hypercore --list`로 저장소의 `skills/` 원격 source에서 발견되는지 확인합니다.
 
 세부 설계 가이드는 [`skills/hyper-skill/SKILL.md`](skills/hyper-skill/SKILL.md)와 [`instructions/`](instructions/)를 참고하세요.
 
@@ -291,21 +281,17 @@ skills/<name>/
 
 ## 개발
 
-빌드와 테스트가 필요한 것은 CLI 패키지(`cli/`)와 `scripts/` 검증(`bash scripts/verify.sh`)입니다. 스킬은 마크다운 문서, bash 스크립트, 정적 asset, eval fixture를 그대로 쓰므로 빌드 단계가 없습니다.
+빌드와 테스트가 필요한 것은 `scripts/` 검증(`bash scripts/verify.sh`)입니다. 스킬은 마크다운 문서, bash 스크립트, 정적 asset, eval fixture를 그대로 쓰므로 빌드 단계가 없습니다.
 
 ```bash
-pnpm -C cli install     # cli/ 워크스페이스 의존성 설치
-pnpm -C cli build       # 모든 cli 패키지 빌드 (현재: @kood/color-cli, @kood/naver-api-cli)
-pnpm -C cli test        # 모든 cli 패키지 테스트
-pnpm -C cli lint        # oxlint
-pnpm -C cli format      # Prettier
+bash scripts/verify.sh                                                     # 저장소 전체 검증
+bash scripts/validate-skills-corpus.sh --root skills --only <스킬> --json   # 스킬 하나의 구조 검증
 ```
 
 새 스킬을 추가했을 때:
 
 1. [README의 스킬 표](#스킬-카탈로그)와 `npx skills add alpoxdev/hypercore --list` 결과를 갱신·확인.
-2. `skill-tester`로 트리거/동작을 검증.
-3. `autoresearch-skill`로 점수 plateau까지 다듬는 것을 권장.
+2. `bash scripts/validate-skills-corpus.sh --root skills --only <스킬> --json`과 `bash scripts/verify.sh`로 구조를 검증.
 
 ## 기여
 
@@ -314,7 +300,7 @@ PR 환영합니다. 작업 흐름:
 1. 이슈를 열거나 기존 이슈에 의도를 적습니다 (한국어/영어 모두 환영).
 2. 새 브랜치에서 변경 후 `git-maker`로 Conventional Commits를 생성합니다.
 3. 스킬 변경은 `SKILL.md`(영어 정본)와 `SKILL.ko.md`(한국어 번역)을 함께 갱신합니다.
-4. 가능하면 `skill-tester`나 `autoresearch-skill`의 검증 결과를 PR 본문에 첨부해 주세요.
+4. 가능하면 `bash scripts/verify.sh` 검증 결과를 PR 본문에 첨부해 주세요.
 5. 큰 구조 변경은 [AGENTS.md](AGENTS.md)의 작업 원칙(작은 변경, 요청 범위 준수, 전역 환경 비의존)을 따릅니다.
 
 ## 라이선스
