@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 23개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 24개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -191,6 +191,7 @@ flowchart LR
 | `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-architecture·hyper-database·hyper-mcp·hyper-design·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation·hyper-git 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
 | `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
+| `hyper-issue` | 확정된 발견이나 결정된 작업을 바로 구현 가능한 이슈로 기록하고, 열린 이슈 묶음을 서로 겹치지 않는 작업 레인으로 묶어 배치 매니페스트 생성(구현은 하지 않음) | 인증된 이슈 트래커 CLI(`gh`); 쓰기 권한이 없으면 본문을 디스크에 초안으로 남김 |
 | `hyper-mass` | 의존 순서가 있는 하위 작업을 그래프로 정의해 단계별 병렬 실행, 재시도·수정·재개 지원 | All |
 
 ### 리서치 · 디버깅 · QA
@@ -221,7 +222,7 @@ flowchart LR
 | `hyper-mcp` | MCP(Model Context Protocol) 서버·클라이언트 구축, 보안·규격 점검과 수정, 2026-07-28 판 이전, 호스트 MCP 설정 연결, 레지스트리 메타데이터 준비를 MCP Inspector 검증과 `.hyper/mcp/` 보고서까지 처리 | 대상 언어 도구 모음; MCP Inspector는 Node.js 22.19+ |
 | `jev-maker` | TypeSafe Jev(System One) 판단 모델용 질문, 호출 코드, 템플릿, 평가 세트 생성과 코드 감사, 연결 설정 | bash 3.2+ · jq (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 23개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 24개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
 
@@ -280,7 +281,7 @@ hypercore/
 ├── assets/                # README 이미지 등 저장소 수준 정적 asset
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
-└── skills/                # 23개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 24개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:
