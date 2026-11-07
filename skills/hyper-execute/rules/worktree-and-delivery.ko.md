@@ -15,15 +15,19 @@
 웨이브마다 워크트리 하나를 정해진 위치와 정해진 브랜치로 만듭니다.
 
 ```bash
-git worktree add -b hyper/<slug>/w<N> <repo-parent>/<repo-name>-wt/<slug>-w<N> <wave_base>
+git worktree add -b hyper/<slug>/w<N> <repo-root>/.hyper/worktree/<slug>-w<N> <wave_base>
 ```
 
-- 경로는 `<repo-parent>/<repo-name>-wt/<slug>-w<N>`, 브랜치는 `hyper/<slug>/w<N>`입니다.
+- 경로는 `<repo-root>/.hyper/worktree/<slug>-w<N>`, 브랜치는 `hyper/<slug>/w<N>`입니다.
+- `<repo-root>`는 메인 체크아웃의 절대 경로이며 `main_root`로 기록한 값과 같습니다.
+- 첫 워크트리를 만들기 전에 `git check-ignore -q --no-index .hyper/`를 실행합니다. 종료 코드가 0이 아니면 `.hyper/`가 무시되지 않은 것이므로 저장소 루트 `.gitignore`(없으면 새로 만듦)에 `.hyper/` 한 줄을 넣고, 그 수정을 이번 실행의 변경으로 기록합니다. 이미 커밋된 `.hyper/` 파일은 추적 해제하지 않습니다.
+- 같은 웨이브에서 병렬 레인을 돌리면 레인마다 워크트리를 `<repo-root>/.hyper/worktree/<slug>-w<N>-l<M>`, 브랜치를 `hyper/<slug>/w<N>-l<M>`로 만들고, 모두 같은 `<wave_base>`에서 시작합니다.
 - `<wave_base>`는 그 웨이브가 시작하는 브랜치이고, 웨이브별로 `state.json`의 `wave_bases`에 기록합니다.
 
 | 웨이브 | 기준 |
 |---|---|
 | 웨이브 1 | `integration_base` |
+| 웨이브 `N` 안의 레인 `M` | 그 웨이브의 기준. 다른 레인의 브랜치는 절대 쓰지 않음 |
 | `local`의 웨이브 `N+1` | 웨이브 `N`이 이미 들어 있는 `integration_base` |
 | `--make-pr`의 웨이브 `N+1` | 직전 웨이브의 PR 브랜치인 `hyper/<slug>/w<N>` |
 | `--ship`의 웨이브 `N+1` | 웨이브 `N`의 PR이 병합된 뒤의 `integration_base` |
@@ -53,9 +57,10 @@ git worktree add -b hyper/<slug>/w<N> <repo-parent>/<repo-name>-wt/<slug>-w<N> <
 1. `[~]` 행의 미검증 변경을 웨이브 워크트리 안에서 되돌립니다. 추적 파일은 복원하고 그 행이 만든 파일은 제거합니다. 되돌린 사실을 그 행의 `Unmet:` 줄에 기록합니다.
 2. 남은 변경을 워크트리에서 커밋합니다. 선언된 `Write scope` 경로만 스테이징하고, 행을 분리할 수 있으면 계획의 `Commit:` 줄마다 커밋 하나를 만듭니다.
 3. `local`이면 메인 체크아웃이 깨끗하고 `integration_base`에 있는지 확인합니다. 더러우면 멈추고 더러운 경로를 보고합니다. stash하지 않고 병합하지 않습니다.
-4. `local`이면 저장소 정책대로 병합하고, 기본은 `--no-ff`이며, 반영된 커밋 sha를 그 웨이브 기준에 대고 원장에 기록합니다.
+4. `local`이면 반영 정책대로 반영합니다. `merge`는 저장소 병합 정책을 따르고 기본은 `--no-ff`이며, `cherry-pick`은 웨이브의 커밋을 순서대로 `integration_base`에 적용합니다. 반영된 sha(또는 sha들)를 그 웨이브 기준에 대고 원장에 기록합니다.
 5. `--make-pr`과 `--ship`에서는 PR을 여는 것이 그 웨이브의 반영이고, `--ship`에서는 병합까지가 반영입니다. 다음 웨이브의 기준은 2절 표를 따릅니다. `--make-pr` 웨이브를 통합 기준에 병합하지 않습니다.
 6. 병합은 오케스트레이터만 합니다. 워커는 병합하지 않고, 기준 브랜치에 푸시하지 않고, 다른 레인의 충돌을 대신 풀지 않습니다.
+7. 웨이브가 병렬 레인으로 돌았다면 두 단계로 반영합니다. 먼저 `state.json`에 기록한 레인 순서대로 각 레인의 커밋을 웨이브 브랜치에 cherry-pick하고, 다음에 웨이브 브랜치를 적용 중인 정책으로 반영합니다. cherry-pick이 충돌한 레인은 멈추고, 오케스트레이터가 풀고, 그 레인의 영향 게이트를 다시 돌린 뒤 추가 검증을 기록합니다. 충돌을 피하려고 레인의 커밋을 버리지 않습니다.
 
 병합 충돌은 오케스트레이터의 일입니다. 웨이브 브랜치에서 풀고, 영향을 받은 게이트를 다시 돌리고, 반영 앞에 새 검증이 있었다는 사실을 기록합니다.
 
@@ -116,4 +121,4 @@ git worktree add -b hyper/<slug>/w<N> <repo-parent>/<repo-name>-wt/<slug>-w<N> <
 
 ### 근거 등급
 
-`LOCAL` - 이 파일은 위에 적은 원본 스킬을 각색한 이 패키지의 절차입니다. 기본 `--no-ff` 병합, 웨이브당 PR 하나 기본값, squash 병합 뒤 브랜치 삭제 판정은 이 패키지가 고른 값이며, squash된 반영이 병합되지 않은 것처럼 보이는 브랜치를 남기지 않게 하려고 정했습니다.
+`LOCAL` - 이 파일은 위에 적은 원본 스킬을 각색한 이 패키지의 절차입니다. 기본 `--no-ff` 병합과 `--land cherry-pick` 선택지, 웨이브당 PR 하나 기본값, squash 병합 뒤 브랜치 삭제 판정은 이 패키지가 고른 값이며, squash된 반영이 병합되지 않은 것처럼 보이는 브랜치를 남기지 않게 하려고 정했습니다.

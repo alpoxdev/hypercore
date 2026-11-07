@@ -88,7 +88,7 @@ Boundary requests:
 <trigger_conditions>
 
 ```text
-hyper-execute [plan-slug] [--worktree <absolute-path>] [--make-pr] [--ship] [--in-place]
+hyper-execute [plan-slug] [--worktree <absolute-path>] [--land <merge|cherry-pick>] [--make-pr] [--ship] [--in-place]
 ```
 
 | Situation | Mode |
@@ -103,6 +103,7 @@ hyper-execute [plan-slug] [--worktree <absolute-path>] [--make-pr] [--ship] [--i
 | User says "PR까지만", "make a PR", "PR만" | `--make-pr` |
 | User says "in place", "워크트리 없이" | `--in-place` |
 | User gave an existing absolute worktree path | `--worktree <path>` |
+| User says "cherry-pick으로 반영", "linear history", `--land cherry-pick` | `--land cherry-pick` |
 
 Delivery words are literal, and a flag overrides the plan's handoff. Pushing and opening a pull request happen only under `--make-pr` or `--ship`.
 
@@ -111,7 +112,7 @@ Delivery words are literal, and a flag overrides the plan's handoff. Pushing and
 <skill_architecture>
 
 - Core (`SKILL.md`): trigger, contract, usage, phase order, stop condition.
-- Rules: `rules/execution-loop.md` (selection, resume, goal and todo discipline, wave opening, lane topology, delegation router, worker message fields, dispatch, monitoring, no-subagent fallback), `rules/verification-gates.md` (five gates, real-surface QA shapes, adversarial trigger map, DoneClaim and AdversarialVerify, verdicts, attempts and stop rules, `- [~]` semantics), `rules/worktree-and-delivery.md` (integration base, worktree lifecycle, landing, delivery modes, cleanup).
+- Rules: `rules/execution-loop.md` (selection, resume, goal and todo discipline, wave opening, lane topology, delegation router, worker message fields, dispatch, monitoring, no-subagent fallback), `rules/verification-gates.md` (five gates, real-surface QA shapes, adversarial trigger map, DoneClaim and AdversarialVerify, verdicts, attempts and stop rules, `- [~]` semantics), `rules/worktree-and-delivery.md` (integration base, worktree lifecycle, landing policy, delivery modes, cleanup).
 - References: `references/state-and-ledger.md` (`state.json` and `ledger.jsonl` schemas, event vocabulary, completion block template, resume checklist).
 - Assets: `assets/evals/hyper-execute-cases.jsonl`, the trigger and behavior cases.
 - No bundled script: every gate is a checklist the orchestrator runs against captured artifacts.
@@ -182,14 +183,14 @@ Phase rules:
 - One recorded selection path, with the reason it was chosen.
 - `state.json` written before the first dispatch and updated at every phase boundary, with `main_root` holding the main checkout's absolute path.
 - Every top-level plan row, including the final verification wave, registered as a todo before the first dispatch.
-- One worktree per wave at `<repo-parent>/<repo-name>-wt/<slug>-w<N>` on branch `hyper/<slug>/w<N>`, verified with `git worktree list --porcelain`.
+- One worktree per wave at `<repo-root>/.hyper/worktree/<slug>-w<N>` on branch `hyper/<slug>/w<N>`, or one per lane at `<slug>-w<N>-l<M>`, verified with `git worktree list --porcelain` and with `.hyper/` registered in `.gitignore`.
 - Under `--make-pr`, each wave branched from the previous wave's pull-request branch and its pull request targeting that branch; the first targets the integration base. Under `--ship`, wave `N+1` opens only after wave `N` merged.
 - Plan, state, ledger, and evidence paths resolved against `main_root`, never against the wave worktree.
-- Every worker message carrying the eight fields named in `rules/execution-loop.md`.
+- Every worker message carrying the eight fields named in `rules/execution-loop.md`, and a reply bounded by the return budget in that file.
 - An independent verifier for every done claim, and a `confirmed` verdict before any checkbox flips.
 - Artifacts for all five gates, per row, with cleanup receipts.
 - Plan edits limited to checkbox flips and appended follow-up rows.
-- Delivery performed only for the mode in force, with the push and pull-request flags respected.
+- Delivery performed only for the mode in force, with the push and the landing policy respected.
 - A completion block listing plan path, rows done and blocked, commands and results, artifacts, landed commits, removed worktrees and branches, and residual risk.
 
 </required>
