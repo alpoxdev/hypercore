@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Repo-level skill standard gate with a baseline ratchet.
 #
-# Every directory directly under the skill root is validated by the skill-maker validator, the
+# Every directory directly under the skill root is validated by the hyper-skill validator, the
 # watched finding codes are counted per skill, and the counts are compared with a frozen baseline.
 # A count above its baseline entry is a regression (exit 1); an accepted or pre-existing count is
 # debt, reported only, and never changes the exit code.
@@ -9,7 +9,7 @@ set -uo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
-VALIDATOR_PATH=$REPO_ROOT/skills/skill-maker/scripts/validate-skill-maker.sh
+VALIDATOR_PATH=$REPO_ROOT/skills/hyper-skill/scripts/validate-hyper-skill.sh
 DEFAULT_ROOT=skills
 DEFAULT_BASELINE=scripts/fixtures/skill-standards/baseline.json
 DEFAULT_EXCEPTIONS=scripts/fixtures/skill-standards/exceptions.json
@@ -342,7 +342,7 @@ write_baseline() {
 print_help() {
   printf '%s\n' "Usage: scripts/check-skill-standards.sh [options]
 
-Runs the skill-maker validator over every skill directory under the root, counts the watched
+Runs the hyper-skill validator over every skill directory under the root, counts the watched
 finding codes per skill, and compares them with the frozen baseline.
 
   --root <dir>        skill root (default $DEFAULT_ROOT, resolved from the repository root)

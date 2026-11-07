@@ -47,7 +47,7 @@ The invocation-mode axis comes from OpenAI's skill eval guidance (<https://devel
 
 | Invocation mode | Meaning | Example |
 |---|---|---|
-| explicit | Names the skill directly | `Use $skill-maker to build a skill` |
+| explicit | Names the skill directly | `Use $hyper-skill to build a skill` |
 | implicit | Matches the description in natural language without the name | `Create a reusable skill folder for me` |
 | contextual | A real work sentence mixed with domain context | `Make this migration review procedure run identically every time` |
 | negative control | A similar request that must not activate | `Clean up this runbook so it reads better` |

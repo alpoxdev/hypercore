@@ -226,7 +226,7 @@ case_default_paths_from_repo_root() {
   if [ "$GATE_STATUS" -ne 0 ] && [ "$GATE_STATUS" -ne 1 ]; then
     fail "default-path run exited $GATE_STATUS: $(gate_stderr)"
   fi
-  assert_jq "$WORKSPACE/stdout" '.counts | keys | index("skill-maker") != null' "repository counts"
+  assert_jq "$WORKSPACE/stdout" '.counts | keys | index("hyper-skill") != null' "repository counts"
   assert_not_file "$WORKSPACE/scripts" "workspace scripts"
   assert_not_file "$BASELINE_PATH" "workspace baseline"
   assert_eq '{}' "$(cat "$EXCEPTIONS_PATH")" "workspace exceptions"

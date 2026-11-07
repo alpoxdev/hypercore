@@ -117,7 +117,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `skill-maker` | 유지보수하기 쉬운 Codex/AI 에이전트 스킬 생성 및 리팩터링 | All |
+| `hyper-skill` | 유지보수하기 쉬운 Codex/AI 에이전트 스킬 생성 및 리팩터링 | All |
 | `skill-tester` | 스킬 트리거/동작을 시나리오 기반으로 검증하고, 확인된 결함은 대상 스킬 안에서 안전하게 수리 | All |
 | `autoresearch-skill` | 반복 실행과 이진 eval 기반으로 기존 스킬을 자동 최적화 | All |
 | `readme-maker` | 코드베이스 분석 기반 README 생성 및 리팩터링 | All |
@@ -238,10 +238,10 @@ lint, typecheck, build 같은 프로젝트 게이트를 재현하고, 실패가 
 **4) 새 스킬 만들기**
 
 ```text
-/skill-maker "내가 자주 쓰는 워크플로를 스킬로 만들어줘"
+/hyper-skill "내가 자주 쓰는 워크플로를 스킬로 만들어줘"
 ```
 
-`skill-maker`가 트리거 디자인, 리소스 배치, 검증 체크리스트까지 갖춘 스킬 폴더를 만들어 냅니다. 이후 `autoresearch-skill`로 baseline-first 반복 최적화를 돌릴 수 있습니다.
+`hyper-skill`이 트리거 디자인, 리소스 배치, 검증 체크리스트까지 갖춘 스킬 폴더를 만들어 냅니다. 이후 `autoresearch-skill`로 baseline-first 반복 최적화를 돌릴 수 있습니다.
 
 ## 프로젝트 구조
 
@@ -273,12 +273,12 @@ skills/<name>/
 
 직접 스킬을 만들고 싶다면:
 
-1. `/skill-maker "<설명>"` — 빈 폴더부터 lean한 `SKILL.md`까지 한 번에.
+1. `/hyper-skill "<설명>"` — 빈 폴더부터 lean한 `SKILL.md`까지 한 번에.
 2. `/autoresearch-skill <skill-path>` — 만들어진 스킬을 반복 실험으로 점수가 올라가지 않을 때까지 자동 최적화.
 3. 영어 정본(`SKILL.md`) 옆에 한국어 번역(`SKILL.ko.md`)을 함께 유지하세요.
 4. PR이 반영되면 `npx skills add alpoxdev/hypercore --list`로 저장소의 `skills/` 원격 source에서 발견되는지 확인합니다.
 
-세부 설계 가이드는 [`skills/skill-maker/SKILL.md`](skills/skill-maker/SKILL.md)와 [`instructions/`](instructions/)를 참고하세요.
+세부 설계 가이드는 [`skills/hyper-skill/SKILL.md`](skills/hyper-skill/SKILL.md)와 [`instructions/`](instructions/)를 참고하세요.
 
 ## 인스트럭션 베이스
 

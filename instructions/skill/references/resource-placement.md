@@ -108,7 +108,7 @@ Each file includes:
 - Drift caveats
 - The summary that was promoted into a core rule
 
-The `references/official/` folder name is a recommendation, not a required path; several skills already use it (for example `skills/skill-maker/references/official/`). The rule that matters is that provider detail is separated from the core. When the evidence is a pinned snapshot of this repository's own documents, name the folder `references/local/`; `skills/skill-maker/references/local/` is the existing example.
+The `references/official/` folder name is a recommendation, not a required path; several skills already use it (for example `skills/hyper-skill/references/official/`). The rule that matters is that provider detail is separated from the core. When the evidence is a pinned snapshot of this repository's own documents, name the folder `references/local/`; `skills/hyper-skill/references/local/` is the existing example.
 
 ## 6. Placing eval resources
 

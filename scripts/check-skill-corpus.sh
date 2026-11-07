@@ -105,7 +105,7 @@ metadata_for() {
     skills/pre-deploy/scripts/stack-detect.sh) printf 'detect-stack\tstack-detection\n' ;;
     skills/prompt-maker/scripts/validate-prompt-maker.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/hyper-seo/scripts/render-dashboard.sh) printf 'render-dashboard\trender-dashboard\n' ;;
-    skills/skill-maker/scripts/validate-skill-maker.sh) printf 'validate-skill\tskill-validation\n' ;;
+    skills/hyper-skill/scripts/validate-hyper-skill.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/skill-tester/scripts/validate-skill.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/skill-tester/scripts/validate-skills-corpus.sh) printf 'validate-skill-corpus\tskills-corpus-validation\n' ;;
     skills/skill-tester/scripts/validate-skill-tester.sh) printf 'validate-skill\tskill-validation\n' ;;

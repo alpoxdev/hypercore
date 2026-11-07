@@ -448,7 +448,7 @@ case_behavior_contracts() {
     done
 
     case " $family " in
-      " hyper-architecture-nextjs "|" prompt-maker "|" skill-maker "|" hyper-architecture-vite ")
+      " hyper-architecture-nextjs "|" prompt-maker "|" hyper-skill "|" hyper-architecture-vite ")
         assert_eq 3 "$(LC_ALL=C sort -u "$observables" | wc -l | tr -d ' ')" "three distinct observables for $family"
         ;;
     esac
@@ -1336,8 +1336,8 @@ case_self_containment_check() {
   local fixture validator evals out err rc work
   fixture=$(workdir)
   work=$(workdir)
-  validator=$ROOT/skills/skill-maker/scripts/validate-skill-maker.sh
-  evals=$ROOT/skills/skill-maker/assets/evals/skill-maker-cases.jsonl
+  validator=$ROOT/skills/hyper-skill/scripts/validate-hyper-skill.sh
+  evals=$ROOT/skills/hyper-skill/assets/evals/hyper-skill-cases.jsonl
   mkdir -p "$fixture/skills/sibling-one" "$fixture/skills/sibling-two" "$fixture/skills/target-pkg"
   printf '%s\n' "---" "name: sibling-one" "description: fixture package" "---" >"$fixture/skills/sibling-one/SKILL.md"
   printf '%s\n' "---" "name: sibling-two" "description: fixture package" "---" >"$fixture/skills/sibling-two/SKILL.md"
@@ -1397,8 +1397,8 @@ case_script_runtime_check() {
   work=$(workdir)
   parent=$work/parent
   mkdir -p "$parent"
-  validator=$ROOT/skills/skill-maker/scripts/validate-skill-maker.sh
-  evals=$ROOT/skills/skill-maker/assets/evals/skill-maker-cases.jsonl
+  validator=$ROOT/skills/hyper-skill/scripts/validate-hyper-skill.sh
+  evals=$ROOT/skills/hyper-skill/assets/evals/hyper-skill-cases.jsonl
   package_name="fixture-pkg"
   pkg=$parent/$package_name
   tags='<output_language>

@@ -47,7 +47,7 @@ Invocation mode 축은 OpenAI skill eval 지침에서 왔습니다(<https://deve
 
 | 호출 모드 | 의미 | 예 |
 |---|---|---|
-| explicit | skill 이름을 직접 부름 | `Use $skill-maker to build a skill` |
+| explicit | skill 이름을 직접 부름 | `Use $hyper-skill to build a skill` |
 | implicit | 이름 없이 자연어로 설명과 일치 | `Create a reusable skill folder for me` |
 | contextual | 실제 업무 문장에 도메인 맥락이 섞임 | `Make this migration review procedure run identically every time` |
 | negative control | 비슷하지만 켜지면 안 되는 요청 | `Clean up this runbook so it reads better` |

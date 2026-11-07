@@ -2,7 +2,7 @@
 
 > Korean version: [`SKILL_AUTHORING.ko.md`](SKILL_AUTHORING.ko.md)
 >
-> Pinned snapshot: `skills/skill-maker/references/local/instructions-skill-authoring.md` keeps a pinned summary of `instructions/skill/**` (not a copy) so that skill stays self-contained; where the two disagree, this base wins. Refresh that summary deliberately when this base changes; nothing syncs it automatically.
+> Pinned snapshot: `skills/hyper-skill/references/local/instructions-skill-authoring.md` keeps a pinned summary of `instructions/skill/**` (not a copy) so that skill stays self-contained; where the two disagree, this base wins. Refresh that summary deliberately when this base changes; nothing syncs it automatically.
 
 This is the base document to read when creating or improving `skills/*`. Its purpose is to let you hand an AI a repeatable role and procedure by designing a skill as a **triggerable execution package** and a **verifiable small program**, not a plain prompt.
 

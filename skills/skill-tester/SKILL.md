@@ -8,7 +8,7 @@ compatibility: Requires local read and search capabilities. Edit and execute cap
 @rules/scenario-design.md
 @rules/evidence-reporting.md
 @rules/repair-workflow.md
-@rules/skill-maker-handoff.md
+@rules/hyper-skill-handoff.md
 @references/prompt-pack-template.md
 
 # Skill Tester
@@ -126,7 +126,7 @@ Assessment selects **no loop**. A requested repair uses exactly one bounded cycl
 | [`rules/scenario-design.md`](rules/scenario-design.md) | before writing cases, for the required fields and the positive, negative, boundary, adversarial, and regression shapes |
 | [`rules/evidence-reporting.md`](rules/evidence-reporting.md) | before forming a verdict or writing a handoff, for the verdict set and the claim-to-evidence mapping |
 | [`rules/repair-workflow.md`](rules/repair-workflow.md) | before any target edit, addition, or deletion, for the permission, ownership, and safe-deletion gates |
-| [`rules/skill-maker-handoff.md`](rules/skill-maker-handoff.md) | only when a finding needs a structural refactor of the target, and again when the refactored target returns for recheck |
+| [`rules/hyper-skill-handoff.md`](rules/hyper-skill-handoff.md) | only when a finding needs a structural refactor of the target, and again when the refactored target returns for recheck |
 | [`references/prompt-pack-template.md`](references/prompt-pack-template.md) | only when the user asks for a reusable test pack that travels with the skill |
 
 </reference_routing>
@@ -137,7 +137,7 @@ Assessment selects **no loop**. A requested repair uses exactly one bounded cycl
 2. Read the target `SKILL.md`, its direct links, and the local instructions that govern it.
 3. Read `rules/scenario-design.md` and build the cases before running anything.
 4. Record the baseline, then read `rules/evidence-reporting.md` before forming a verdict.
-5. Read `rules/repair-workflow.md` before the first target edit, and `rules/skill-maker-handoff.md` only when the defect is structural.
+5. Read `rules/repair-workflow.md` before the first target edit, and `rules/hyper-skill-handoff.md` only when the defect is structural.
 6. Read `references/prompt-pack-template.md` only when a reusable pack was requested.
 
 </support_file_read_order>

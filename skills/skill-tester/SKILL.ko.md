@@ -8,7 +8,7 @@ compatibility: 로컬 read·search 기능이 필요합니다. edit·execute 기�
 @rules/scenario-design.md
 @rules/evidence-reporting.md
 @rules/repair-workflow.md
-@rules/skill-maker-handoff.md
+@rules/hyper-skill-handoff.md
 @references/prompt-pack-template.md
 
 # Skill Tester
@@ -126,7 +126,7 @@ Boundary requests:
 | [`rules/scenario-design.md`](rules/scenario-design.md) | 케이스를 쓰기 전. 필수 필드와 positive, negative, boundary, adversarial, regression 모양을 확인한다 |
 | [`rules/evidence-reporting.md`](rules/evidence-reporting.md) | verdict를 만들거나 인수인계를 쓰기 전. verdict 집합과 claim-to-evidence 매핑을 확인한다 |
 | [`rules/repair-workflow.md`](rules/repair-workflow.md) | 대상 파일을 추가·수정·삭제하기 전. 허가, 소유, 안전 삭제 관문을 확인한다 |
-| [`rules/skill-maker-handoff.md`](rules/skill-maker-handoff.md) | 발견사항이 대상의 구조 리팩터링을 요구할 때와, 리팩터링된 대상이 재검증을 위해 돌아왔을 때만 |
+| [`rules/hyper-skill-handoff.md`](rules/hyper-skill-handoff.md) | 발견사항이 대상의 구조 리팩터링을 요구할 때와, 리팩터링된 대상이 재검증을 위해 돌아왔을 때만 |
 | [`references/prompt-pack-template.md`](references/prompt-pack-template.md) | 스킬과 함께 이동하는 재사용 테스트 팩을 요청했을 때만 |
 
 </reference_routing>
@@ -137,7 +137,7 @@ Boundary requests:
 2. 대상 `SKILL.md`, 직접 링크, 대상을 규율하는 로컬 지침을 읽는다.
 3. `rules/scenario-design.md`를 읽고 검사를 실행하기 전에 케이스를 만든다.
 4. 기준선을 기록한 뒤, verdict를 만들기 전에 `rules/evidence-reporting.md`를 읽는다.
-5. 첫 대상 수정 전에 `rules/repair-workflow.md`를 읽고, 결함이 구조적일 때만 `rules/skill-maker-handoff.md`를 읽는다.
+5. 첫 대상 수정 전에 `rules/repair-workflow.md`를 읽고, 결함이 구조적일 때만 `rules/hyper-skill-handoff.md`를 읽는다.
 6. 재사용 팩을 요청받았을 때만 `references/prompt-pack-template.md`를 읽는다.
 
 </support_file_read_order>

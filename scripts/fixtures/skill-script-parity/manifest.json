@@ -508,8 +508,8 @@
       "behaviorContractId": "hyper-seo--render-dashboard"
     },
     {
-      "path": "skills/skill-maker/scripts/validate-skill-maker.sh",
-      "family": "skill-maker",
+      "path": "skills/hyper-skill/scripts/validate-hyper-skill.sh",
+      "family": "hyper-skill",
       "legacyOrigin": "retained-mjs",
       "usage": "validate-skill",
       "behavior": "skill-validation",
@@ -518,7 +518,7 @@
         "sha256": "09c0af2808c509ab6e527515e4dbb7a70991fe3f3940a341bae9018b84fee286",
         "gitMode": "100644"
       },
-      "behaviorContractId": "skill-maker--validate-skill-maker"
+      "behaviorContractId": "hyper-skill--validate-hyper-skill"
     },
     {
       "path": "skills/skill-tester/scripts/validate-skill.sh",
@@ -861,7 +861,7 @@
     "baselineRef": "fc4910a1b16ff439e274891f4cce1375599be3af",
     "model": "historical-origin-records",
     "portedTo": "bash",
-    "note": "The 44 skill scripts were ported from Bun MJS to bash at the same paths with a .sh extension. legacyOrigin and sourcePreimage remain historical origin records for the earlier .cjs/.sh/.py migrations, because the pre-port bytes are no longer the working tree. The MJS bytes at baselineRef are not hashed: four scripts (pre-deploy build-run, deploy-check, lint-check; skill-maker validate-skill-maker) carried uncommitted edits when the port started, so the HEAD blobs are not the final pre-port bytes.",
+    "note": "The 44 skill scripts were ported from Bun MJS to bash at the same paths with a .sh extension. legacyOrigin and sourcePreimage remain historical origin records for the earlier .cjs/.sh/.py migrations, because the pre-port bytes are no longer the working tree. The MJS bytes at baselineRef are not hashed: four scripts (pre-deploy build-run, deploy-check, lint-check; hyper-skill validate-hyper-skill) carried uncommitted edits when the port started, so the HEAD blobs are not the final pre-port bytes.",
     "workingTreeEdited": [
       "skills/pre-deploy/scripts/build-run.mjs",
       "skills/pre-deploy/scripts/deploy-check.mjs",

@@ -11,17 +11,17 @@
 # headings differ by design), and numerals inside prose (numerals are localized).
 #
 # Four pair sets, each with its OWN root: the instructions set (hardcoded pairs), the discovered
-# skill-maker set, and the explicit docs-maker and prompt-maker single pairs. `--root` addresses the
-# instruction set; `--root-skills` keeps its historical meaning as the skill-maker root and
+# hyper-skill set, and the explicit docs-maker and prompt-maker single pairs. `--root` addresses the
+# instruction set; `--root-skills` keeps its historical meaning as the hyper-skill root and
 # additionally overrides the selected skill set when exactly one skill set is selected.
 #
 # Usage:
 #   check-skill-contract-parity.sh [--root <dir>] [--root-skills <dir>] [--set <name>] [--list]
 #
 #   --root <dir>        root of the instructions/skill pair set (default: ../instructions/skill)
-#   --root-skills <dir> skill-set root override: the skill-maker root when no set is selected, and
+#   --root-skills <dir> skill-set root override: the hyper-skill root when no set is selected, and
 #                       the selected set's own root when exactly one skill set is selected
-#   --set <name>        restrict to one set: instructions-skill | skill-maker | docs-maker | prompt-maker
+#   --set <name>        restrict to one set: instructions-skill | hyper-skill | docs-maker | prompt-maker
 #                       (default: all)
 #   --list              print one line per pair as set<TAB>root<TAB>en<TAB>ko, then exit 0
 #
@@ -33,9 +33,9 @@ export LC_ALL
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
 VALUE_FLAGS="--root --root-skills --set"
-SKILL_SET_NAMES="skill-maker docs-maker prompt-maker"
-ALLOWED_SETS_LABEL="instructions-skill|skill-maker|docs-maker|prompt-maker"
-ALLOWED_SETS_PADDED=" instructions-skill skill-maker docs-maker prompt-maker "
+SKILL_SET_NAMES="hyper-skill docs-maker prompt-maker"
+ALLOWED_SETS_LABEL="instructions-skill|hyper-skill|docs-maker|prompt-maker"
+ALLOWED_SETS_PADDED=" instructions-skill hyper-skill docs-maker prompt-maker "
 
 argc=$#
 args=("$@")
@@ -133,7 +133,7 @@ fi
 if [ "$has_set" -eq 1 ]; then
   case "$ALLOWED_SETS_PADDED" in
     *" $requested_set "*) ;;
-    *) problems[${#problems[@]}]="--set must be one of instructions-skill | skill-maker | docs-maker | prompt-maker, got \"$requested_set\"" ;;
+    *) problems[${#problems[@]}]="--set must be one of instructions-skill | hyper-skill | docs-maker | prompt-maker, got \"$requested_set\"" ;;
   esac
 fi
 
@@ -169,7 +169,7 @@ else
   esac
 fi
 
-sroot_skill_maker="$REPO_ROOT/skills/skill-maker"
+sroot_hyper_skill="$REPO_ROOT/skills/hyper-skill"
 sroot_docs_maker="$REPO_ROOT/skills/docs-maker"
 sroot_prompt_maker="$REPO_ROOT/skills/prompt-maker"
 
@@ -180,7 +180,7 @@ for name in $SKILL_SET_NAMES; do
       if [ "$requested_set" = "$name" ]; then
         override_applies=1
       fi
-    elif [ "$name" = "skill-maker" ]; then
+    elif [ "$name" = "hyper-skill" ]; then
       override_applies=1
     fi
   fi
@@ -190,7 +190,7 @@ for name in $SKILL_SET_NAMES; do
     resolved_root="$REPO_ROOT/skills/$name"
   fi
   case "$name" in
-    skill-maker) sroot_skill_maker="$resolved_root" ;;
+    hyper-skill) sroot_hyper_skill="$resolved_root" ;;
     docs-maker) sroot_docs_maker="$resolved_root" ;;
     prompt-maker) sroot_prompt_maker="$resolved_root" ;;
   esac
@@ -199,7 +199,7 @@ done
 root_for_set() {
   case "$1" in
     instructions-skill) printf '%s' "$instruction_root" ;;
-    skill-maker) printf '%s' "$sroot_skill_maker" ;;
+    hyper-skill) printf '%s' "$sroot_hyper_skill" ;;
     docs-maker) printf '%s' "$sroot_docs_maker" ;;
     prompt-maker) printf '%s' "$sroot_prompt_maker" ;;
   esac
@@ -313,7 +313,7 @@ walk_dir() {
   done < <(find "$dir" -mindepth 1 -maxdepth 1 -print0 2>/dev/null)
 }
 
-DISCOVERY_ROOT="$sroot_skill_maker"
+DISCOVERY_ROOT="$sroot_hyper_skill"
 : >"$PAIRS_FILE"
 : >"$ORPHANS_FILE"
 : >"$SEEN_DIRS"
@@ -345,7 +345,7 @@ references/validation.md|references/validation.ko.md
 INSTRUCTION_PAIRS
 
 while IFS="$(printf '\t')" read -r en ko; do
-  add_pair "skill-maker" "$sroot_skill_maker" "$en" "$ko"
+  add_pair "hyper-skill" "$sroot_hyper_skill" "$en" "$ko"
 done <"$PAIRS_FILE"
 
 add_pair "docs-maker" "$sroot_docs_maker" "SKILL.md" "SKILL.ko.md"
@@ -385,7 +385,7 @@ fail() {
 
 # A file whose sibling is missing is a parity failure, not something to skip.
 while IFS="$(printf '\t')" read -r orphan_path orphan_reason; do
-  fail "skill-maker:$orphan_path: $orphan_reason"
+  fail "hyper-skill:$orphan_path: $orphan_reason"
 done <"$ORPHANS_FILE"
 
 # Every selected pair must resolve to real files before anything is listed or checked.

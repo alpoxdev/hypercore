@@ -2,7 +2,7 @@
 
 > 영어판: [`SKILL_AUTHORING.md`](SKILL_AUTHORING.md)
 >
-> 고정 스냅샷: `skills/skill-maker/references/local/instructions-skill-authoring.ko.md`는 `instructions/skill/**`의 고정 요약(사본이 아님)을 담아 그 skill이 자립할 수 있게 합니다. 둘이 다르면 이 기준 문서가 우선합니다. 이 기준 문서가 바뀌면 그 요약을 의도적으로 갱신합니다. 자동으로 동기화되지 않습니다.
+> 고정 스냅샷: `skills/hyper-skill/references/local/instructions-skill-authoring.ko.md`는 `instructions/skill/**`의 고정 요약(사본이 아님)을 담아 그 skill이 자립할 수 있게 합니다. 둘이 다르면 이 기준 문서가 우선합니다. 이 기준 문서가 바뀌면 그 요약을 의도적으로 갱신합니다. 자동으로 동기화되지 않습니다.
 
 이 문서는 `skills/*`를 새로 만들거나 개선할 때 읽는 기본 문서입니다. 목적은 AI에게 반복 가능한 역할과 절차를 맡길 수 있도록, skill을 단순 프롬프트가 아니라 **트리거 가능한 실행 패키지**이자 **검증 가능한 작은 프로그램**으로 설계하게 하는 것입니다.
 
