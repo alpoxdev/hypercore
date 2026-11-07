@@ -22,7 +22,7 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 |---|---|---|
 | `hyper-research` | The job depends on facts outside the repository: choosing between libraries or services, a new major version, an unfamiliar external API, or "최신" / "latest" behavior | The request phrase |
 | `hyper-seo` | The job is about search or AI-answer visibility of a named site or page set | The request phrase and the target URL or app path |
-| `hyper-architecture` | The job restructures folders, routes, modules, data or server boundaries, or platform setup, or adds a feature that creates a new route, module, or server boundary | The request phrase plus a stack manifest that was read, such as `package.json`, `pubspec.yaml`, or `Cargo.toml` |
+| `hyper-architecture` | The job restructures folders, routes, modules, data or server boundaries, or platform setup; adds a feature that creates a new route, module, or server boundary; sets up or unifies the lint, format, and type tooling (oxlint, Prettier, rustfmt, clippy); or optimizes build or runtime performance | The request phrase plus a stack manifest that was read, such as `package.json` or `Cargo.toml` |
 | `hyper-database` | The job designs or reviews a data model or schema, writes or reviews a database migration or backfill, tunes a slow query, an index, a hot key, or a hot partition, chooses a database engine or managed data service, or changes database operations (backup and restore, replication and failover, connection pooling, upgrades, database security, monitoring) | The request phrase, plus the schema, migration, ORM, or driver file that was read when one exists, such as `schema.prisma`, `drizzle.config.ts`, a `migrations/` folder, `pg` or `ioredis` in `package.json`, or a database image in a compose file |
 | `hyper-mcp` | The job builds, fixes, migrates, audits, or connects an MCP (Model Context Protocol) server, client, or host MCP configuration, or prepares MCP registry metadata | The request phrase, plus the MCP dependency or configuration file that was read when one exists, such as `@modelcontextprotocol/*` in `package.json`, `mcp` in `pyproject.toml`, `.mcp.json`, or `server.json` |
 | `hyper-design` | The requested output is an interface whose look is the point: a new screen, page, or component designed, an existing UI restyled, faux product UI for a hero, card, or demo, a design brief or `DESIGN.md`, or generic "AI look" patterns audited or removed | The request phrase, plus the target UI path and the styling or design-system file that was read when one exists, such as `DESIGN.md`, a tokens file, or `tailwind.config.*` |
@@ -56,6 +56,7 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp
 | Job | Chain |
 |---|---|
 | Architecture review only | `hyper-architecture` |
+| Lint, format, or type tooling set up or unified, or build or runtime performance optimized | `hyper-architecture` alone, as the last stage that makes the edits |
 | Refactor or restructure | `hyper-architecture` -> `hyper-plan` |
 | Feature or fix across several files | `hyper-plan` |
 | Feature that adds a route, module, or server boundary | `hyper-architecture` -> `hyper-plan` |

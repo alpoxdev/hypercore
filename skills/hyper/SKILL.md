@@ -40,7 +40,7 @@ By user instruction, this package is an orchestrator: it names its thirteen stag
 |---|---|
 | `hyper-research` | A cited research report under `.hyper/research/` |
 | `hyper-seo` | A search-visibility audit, report, or bounded optimize loop under `.hyper/seo/<slug>/` |
-| `hyper-architecture` | Stack-matched architecture findings, or architecture edits when it is the last stage |
+| `hyper-architecture` | Stack-matched architecture, setup (lint, format, type tooling), or performance findings, or those edits when it is the last stage |
 | `hyper-database` | Database findings saved under `.hyper/database/<slug>/` (a schema or migration review, a design brief, an engine choice), or, when it is the last stage, a designed schema, an online migration, a tuned query or index, or an operations change verified by its evidence gates |
 | `hyper-mcp` | MCP findings saved under `.hyper/mcp/<slug>/`, or, when it is the last stage, a built, fixed, migrated, or connected MCP server, client, or host configuration verified with the MCP Inspector |
 | `hyper-design` | A designed, restyled, or mocked-up interface checked against a craft floor and an independent review, or, before a plan, a design brief or an interface audit, saved under `.hyper/design/<slug>/` |
@@ -138,6 +138,7 @@ Boundary requests:
 | A skill, document, MCP, interface, or database tail followed by commit-and-push or merge-and-push words, or a skill or document tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
 | A plan file already exists and the user wants it run | `hyper-execute` |
 | Report-only research, audit, architecture review, or database review | The one matching stage alone |
+| Lint, format, or type tooling set up or unified, or build or runtime performance optimized in a supported stack | `hyper-architecture` alone |
 
 `rules/workflow-routing.md` owns the signals, the stage order, and the tie-breaks.
 

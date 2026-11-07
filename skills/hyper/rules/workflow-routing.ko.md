@@ -22,7 +22,7 @@
 |---|---|---|
 | `hyper-research` | 작업이 저장소 밖 사실에 달려 있습니다. 라이브러리나 서비스 선택, 새 메이저 버전, 낯선 외부 API, "최신" / "latest" 동작 | 요청 문구 |
 | `hyper-seo` | 작업이 이름이 정해진 사이트나 페이지 묶음의 검색 또는 AI 답변 노출에 관한 것입니다 | 요청 문구와 대상 URL 또는 앱 경로 |
-| `hyper-architecture` | 작업이 폴더, 라우트, 모듈, 데이터나 서버 경계, 플랫폼 설정을 재구성하거나, 새 라우트·모듈·서버 경계를 만드는 기능을 추가합니다 | 요청 문구와 읽은 스택 매니페스트(`package.json`, `pubspec.yaml`, `Cargo.toml` 등) |
+| `hyper-architecture` | 작업이 폴더, 라우트, 모듈, 데이터나 서버 경계, 플랫폼 설정을 재구성하거나, 새 라우트·모듈·서버 경계를 만드는 기능을 추가하거나, 린트·포맷·타입 도구(oxlint, Prettier, rustfmt, clippy)를 셋업하거나 통일하거나, 빌드·런타임 성능을 최적화합니다 | 요청 문구와 읽은 스택 매니페스트(`package.json`, `Cargo.toml` 등) |
 | `hyper-database` | 작업이 데이터 모델이나 스키마를 설계·리뷰하거나, 데이터베이스 마이그레이션이나 백필을 쓰거나 리뷰하거나, 느린 쿼리·인덱스·핫 키·핫 파티션을 튜닝하거나, 데이터베이스 엔진이나 매니지드 데이터 서비스를 고르거나, 데이터베이스 운영(백업과 복구, 복제와 장애 조치, 커넥션 풀, 업그레이드, 데이터베이스 보안, 모니터링)을 바꿉니다 | 요청 문구와, 있으면 읽은 스키마·마이그레이션·ORM·드라이버 파일(`schema.prisma`, `drizzle.config.ts`, `migrations/` 폴더, `package.json`의 `pg`나 `ioredis`, compose 파일의 데이터베이스 이미지 등) |
 | `hyper-mcp` | 작업이 MCP(Model Context Protocol) 서버, 클라이언트, 호스트 MCP 설정을 만들거나 고치거나 이전하거나 점검하거나 연결합니다. 또는 MCP 레지스트리 메타데이터를 준비합니다 | 요청 문구와, 있으면 읽은 MCP 의존성이나 설정 파일(`package.json`의 `@modelcontextprotocol/*`, `pyproject.toml`의 `mcp`, `.mcp.json`, `server.json` 등) |
 | `hyper-design` | 요청한 결과물이 보이는 모습 자체가 핵심인 화면입니다. 새 화면·페이지·컴포넌트 디자인, 기존 UI 리디자인, 히어로·카드·데모용 연출 화면, 디자인 브리프나 `DESIGN.md`, generic한 "AI 티" 패턴의 점검이나 제거 | 요청 문구와 대상 UI 경로, 그리고 있으면 읽은 스타일·디자인 시스템 파일(`DESIGN.md`, 토큰 파일, `tailwind.config.*` 등) |
@@ -56,6 +56,7 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp
 | Job | Chain |
 |---|---|
 | 아키텍처 점검만 | `hyper-architecture` |
+| 린트·포맷·타입 도구 셋업이나 통일, 빌드·런타임 성능 최적화 | 직접 수정하는 마지막 단계로 `hyper-architecture` 단독 |
 | 리팩토링이나 구조 변경 | `hyper-architecture` -> `hyper-plan` |
 | 여러 파일에 걸친 기능이나 수정 | `hyper-plan` |
 | 라우트, 모듈, 서버 경계를 추가하는 기능 | `hyper-architecture` -> `hyper-plan` |
