@@ -30,6 +30,10 @@
 | 10 | 핸드오프 블록이 완전하다 | 플랫폼, 규모, P1 범위, 남은 막힘 질문, 다음 단계 입력 중 하나가 빠진다 |
 | 11 | 메타 블록에 상태, 플랫폼, 규모, 갱신일이 있다 | 필드 하나가 빠진다 |
 | 12 | 바뀌면 안 되는 동작이 적혀 있거나 없다고 명시했다 | 변경이 기존 흐름을 건드리는데 그 절이 없다 |
+| 13 | 결정된 플랫폼마다 모든 `[M]`·`[M-조건]` 항목이 그 플랫폼의 출시 게이트 표에 결론과 함께 있다 | 결정된 플랫폼 체크리스트의 `[M]`이나 `[M-조건]` 항목에 행이 없거나, 행에 결론이 없다 |
+| 14 | 기기 이름을 기준으로 한 중단점이 없다 | 중단점이 콘텐츠 폭(CSS 픽셀) 대신 `iPhone 375px`, `iPad`, `desktop 1440` 같은 기기 분류로 적혀 있다 |
+
+13번은 행이 아니라 항목을 센다. 조건과 이유가 붙은 "비해당"으로 적힌 `[M-조건]` 항목도 통과하고, `[확인 필요: <질문>]`으로 적힌 `[M]` 항목도 문서가 `status: draft`를 유지하면 통과한다. 14번은 목표, 플랫폼 블록, 요구사항 어디에 적힌 폭에나 적용한다. 중단점은 콘텐츠 폭을 CSS 픽셀로 적고 무엇이 그 폭을 필요로 하는지 함께 쓴다. 예: `640px where the metric row wraps`. 기기 이름을 중단점에 쓰면 결함이다. 기기 목록은 바뀌지만 콘텐츠 폭은 바뀌지 않는다.
 
 실패는 그 자리에서 고치고 실패한 항목만 다시 확인한다. 끝났다는 느낌을 위해 체크리스트 전체를 다시 돌리지 않는다.
 
@@ -58,6 +62,8 @@
 |---|---|---|---|
 | 1 | FR maps to goal or story | pass | |
 | 2 | Metric target and measurement | fail | Section 5, FR-007 has no target |
+| 13 | Platform `[M]` items in the release gate table | fail | Android block, A9 has no row |
+| 14 | Breakpoints named by content | fail | Section 9, web block says "iPhone 375px" |
 ```
 
 체크리스트 항목마다 한 행, 체크리스트 순서대로. 표 뒤에 막힘 질문을 적는 한 줄과 파일을 고치지 않았다는 한 줄을 둔다.
@@ -76,7 +82,9 @@
 | 측정 가능한 목표 집합의 일부로서 대응 지표 | [TerminalSkills prd-writing](https://github.com/TerminalSkills/skills) - "Counter-metrics: [Metrics we don't want to hurt]" |
 | 구현 메커니즘 감사 | [ai-conductor prd](https://github.com/jstoup111/ai-conductor) - "It MUST NOT name the new internal mechanism by which this feature is built." |
 | 체크리스트를 짧게 유지하는, 문제에 비례한 산출물 | [Martin Fowler, SDD 도구 비교](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html) - "it quickly became clear that the workflow was like using a sledgehammer to crack a nut" |
+| 기기 분류가 아니라 콘텐츠로 고른 중단점 | [Responsive web design basics](https://web.dev/articles/responsive-web-design-basics) - "Don't define breakpoints based on device classes" |
+| 강제 스토어 항목이 출시 게이트에 모두 닿는지 | [Play Data safety](https://support.google.com/googleplay/android-developer/answer/10787469) - "Even developers with apps that do not collect any user data must complete this form" |
 
 ### 근거 등급
 
-`LOCAL` - 열두 체크리스트 항목과 검토 표 형태는 이 패키지의 설계다. 표시 상한과 삭제 규칙은 인용한 명세 지침에서 가져왔고, 독자 테스트는 인용한 작성 지침에서 가져왔다.
+`LOCAL` - 열네 체크리스트 항목과 검토 표 형태는 이 패키지의 설계다. 표시 상한과 삭제 규칙은 인용한 명세 지침에서 가져왔고, 독자 테스트는 인용한 작성 지침에서 가져왔다.
