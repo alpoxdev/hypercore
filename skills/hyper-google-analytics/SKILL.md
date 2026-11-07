@@ -114,7 +114,7 @@ Boundary requests:
 
 - Core (`SKILL.md`): trigger, output-shape routing, modes, contract, workflow, stop conditions.
 - Rules: [rules/ga-workflow.md](rules/ga-workflow.md) owns mode selection and per-mode phases; [rules/safety-gates.md](rules/safety-gates.md) owns approval tiers, property identification, PII, and credentials; [rules/validation.md](rules/validation.md) owns completion evidence and the repair bound.
-- References: [references/report-template.md](references/report-template.md) for the saved report. Follow-up reference notes cover install methods, consent and privacy, site configuration, events and limits, verification, Data API reporting, Admin API audit, MCP and auth, and BigQuery export; they are named as plain text here until they exist, so this package links only files it ships.
+- References: [references/report-template.md](references/report-template.md) for the saved report, [references/install-methods.md](references/install-methods.md), [references/consent-and-privacy.md](references/consent-and-privacy.md), [references/site-config.md](references/site-config.md), [references/events-and-limits.md](references/events-and-limits.md), and [references/verification.md](references/verification.md). Follow-up notes for Data API reporting, Admin API audit, MCP and auth, and BigQuery export are named as plain text here until they exist, so this package links only files it ships.
 - Assets: `assets/evals/hyper-google-analytics-cases.jsonl`, the trigger and behavior cases.
 
 </skill_architecture>
@@ -139,7 +139,7 @@ Write the target line, questions, findings, and the report in Korean. Keep event
 - Read [rules/safety-gates.md](rules/safety-gates.md) before the first call that writes to a property or changes a live site's consent behavior.
 - Read [rules/validation.md](rules/validation.md) before declaring any mode complete.
 - Read [references/report-template.md](references/report-template.md) when writing the report.
-- Read a follow-up reference note only after its file exists in this skill folder: install methods for `install`, consent and privacy for a consent or PII question, site configuration for cross-domain, referrals, filters, and retention, events and limits for an event or ecommerce question, verification for a collection proof, Data API reporting for `analyze`, Admin API audit for `audit` and `configure`, MCP and auth for a credential or tool question, and BigQuery export when the question needs unsampled raw events.
+- Read a follow-up reference note only after its file exists in this skill folder: [references/install-methods.md](references/install-methods.md) for `install`, [references/consent-and-privacy.md](references/consent-and-privacy.md) for a consent, PII, retention, or Korean disclosure question, [references/site-config.md](references/site-config.md) for cross-domain, referrals, and traffic filters, [references/events-and-limits.md](references/events-and-limits.md) for an event or ecommerce question, and [references/verification.md](references/verification.md) for a collection proof. Data API reporting for `analyze`, Admin API audit for `audit` and `configure`, MCP and auth for a credential or tool question, and BigQuery export when the question needs unsampled raw events are named as plain text until their files exist.
 - Read no second reference when the first one answers the question.
 
 </reference_routing>

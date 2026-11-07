@@ -114,7 +114,7 @@ Boundary requests:
 
 - 핵심(`SKILL.md`): 트리거, 결과물 형태 라우팅, 모드, 계약, 워크플로, 정지 조건입니다.
 - 규칙: [rules/ga-workflow.md](rules/ga-workflow.md)는 모드 선택과 모드별 단계를, [rules/safety-gates.md](rules/safety-gates.md)는 승인 등급과 속성 식별과 PII와 자격 증명을, [rules/validation.md](rules/validation.md)는 완료 근거와 수리 한도를 소유합니다.
-- 참조: 저장할 보고서용 [references/report-template.md](references/report-template.md)입니다. 후속 참고 노트는 탑재 방식, 동의와 개인정보, 사이트 설정, 이벤트와 한도, 검증, Data API 리포트, Admin API 감사, MCP와 인증, BigQuery 내보내기를 다룹니다. 그 파일이 생기기 전에는 이 자리에서 평문으로만 이름을 적고, 이 패키지는 실제로 들어 있는 파일만 링크합니다.
+- 참조: 저장할 보고서용 [references/report-template.md](references/report-template.md), [references/install-methods.md](references/install-methods.md), [references/consent-and-privacy.md](references/consent-and-privacy.md), [references/site-config.md](references/site-config.md), [references/events-and-limits.md](references/events-and-limits.md), [references/verification.md](references/verification.md)입니다. Data API 리포트, Admin API 감사, MCP와 인증, BigQuery 내보내기 후속 노트는 그 파일이 생기기 전까지 이 자리에서 평문으로만 이름을 적고, 이 패키지는 실제로 들어 있는 파일만 링크합니다.
 - 자산: 트리거와 동작 사례인 `assets/evals/hyper-google-analytics-cases.jsonl`입니다.
 
 </skill_architecture>
@@ -139,7 +139,7 @@ Boundary requests:
 - 속성에 쓰는 첫 호출이나 라이브 사이트의 동의 동작을 바꾸는 일 전에 [rules/safety-gates.md](rules/safety-gates.md)를 읽습니다.
 - 어느 모드든 완료로 선언하기 전에 [rules/validation.md](rules/validation.md)를 읽습니다.
 - 보고서를 쓸 때 [references/report-template.md](references/report-template.md)를 읽습니다.
-- 후속 참고 노트는 그 파일이 이 스킬 폴더에 생긴 뒤에만 읽습니다. `install`에는 탑재 방식, 동의나 PII 질문에는 동의와 개인정보, 교차 도메인·추천·필터·보존에는 사이트 설정, 이벤트나 이커머스 질문에는 이벤트와 한도, 수집 증명에는 검증, `analyze`에는 Data API 리포트, `audit`과 `configure`에는 Admin API 감사, 자격 증명이나 도구 질문에는 MCP와 인증, 샘플링 없는 원본 이벤트가 필요하면 BigQuery 내보내기입니다.
+- 후속 참고 노트는 그 파일이 이 스킬 폴더에 생긴 뒤에만 읽습니다. `install`에는 [references/install-methods.md](references/install-methods.md), 동의·PII·보존 기간·한국 고지 점검에는 [references/consent-and-privacy.md](references/consent-and-privacy.md), 교차 도메인·추천·트래픽 필터에는 [references/site-config.md](references/site-config.md), 이벤트나 이커머스 질문에는 [references/events-and-limits.md](references/events-and-limits.md), 수집 증명에는 [references/verification.md](references/verification.md)입니다. `analyze`의 Data API 리포트, `audit`과 `configure`의 Admin API 감사, 자격 증명이나 도구 질문의 MCP와 인증, 샘플링 없는 원본 이벤트가 필요할 때의 BigQuery 내보내기는 그 파일이 생길 때까지 평문으로만 이름을 적습니다.
 - 첫 참고 자료가 질문에 답하면 두 번째는 읽지 않습니다.
 
 </reference_routing>
