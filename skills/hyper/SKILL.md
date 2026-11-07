@@ -1,6 +1,6 @@
 ---
 name: hyper
-description: "[Hyper] Use this skill when the user wants a development job carried from start to finish through the hyper skill family without picking the skills - a refactor, feature, fix, migration, technology choice, search-visibility improvement, MCP server or host-configuration job, reusable skill folder, AI-readable document, or reusable prompt that needs some mix of architecture review, cited research, an SEO audit, MCP work, a written plan, plan execution, dependency-ordered parallel work, skill authoring, document authoring, or prompt authoring - or when the user invokes hyper by name. It classifies the job, picks the shortest chain of hyper-research, hyper-seo, hyper-architecture, hyper-mcp, hyper-plan, hyper-execute, hyper-mass, hyper-skill, and hyper-documentation, runs the stages in order, and passes each stage's saved artifact to the next. Do not use it when the user names one hyper skill directly, or for a one-place edit that needs no plan, commit-only requests, PRD packages, or general questions."
+description: "[Hyper] Use this skill when the user wants a development job carried from start to finish through the hyper skill family without picking the skills - a refactor, feature, fix, migration, technology choice, search-visibility improvement, MCP job, UI design or restyle, reusable skill folder, AI-readable document, or reusable prompt that needs some mix of architecture review, cited research, an SEO audit, MCP work, UI design, a written plan, plan execution, dependency-ordered parallel work, or skill, document, or prompt authoring - or when the user invokes hyper by name. It classifies the job, picks the shortest chain of hyper-research, hyper-seo, hyper-architecture, hyper-mcp, hyper-ui-ux, hyper-plan, hyper-execute, hyper-mass, hyper-skill, and hyper-documentation, runs the stages in order, and passes each stage's saved artifact to the next. Do not use it when the user names one hyper skill directly, or for a one-place edit with no plan, commit-only requests, PRD packages, or general questions."
 compatibility: Needs the ability to load another installed skill by name, file read and search over the target repository, and write access for `.hyper/workflows/`. Each loaded stage brings its own requirements (git worktrees, subagents, live web). Without skill loading, it reports the chosen chain and the install commands instead of running stages.
 ---
 
@@ -34,7 +34,7 @@ Use a different language only when the user explicitly requests it or a machine-
 
 Use this skill when the requested output is a finished development result that needs one or more of the stage skills below in sequence, or when the user calls `hyper` by name.
 
-By user instruction, this package is an orchestrator: it names its nine stage skills in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
+By user instruction, this package is an orchestrator: it names its ten stage skills in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
 
 | Stage skill | What the stage produces |
 |---|---|
@@ -42,6 +42,7 @@ By user instruction, this package is an orchestrator: it names its nine stage sk
 | `hyper-seo` | A search-visibility audit, report, or bounded optimize loop under `.hyper/seo/<slug>/` |
 | `hyper-architecture` | Stack-matched architecture findings, or architecture edits when it is the last stage |
 | `hyper-mcp` | MCP findings saved under `.hyper/mcp/<slug>/`, or, when it is the last stage, a built, fixed, migrated, or connected MCP server, client, or host configuration verified with the MCP Inspector |
+| `hyper-ui-ux` | A designed, restyled, or mocked-up interface checked against a craft floor and an independent review, or, before a plan, a design brief or an interface audit, saved under `.hyper/ui-ux/<slug>/` |
 | `hyper-plan` | A decision-complete plan under `.hyper/plans/<slug>.md`, which continues into execution by itself |
 | `hyper-execute` | An existing plan executed wave by wave and delivered locally, as a PR, or shipped |
 | `hyper-mass` | One phase of dependency-ordered work run as a graph under `.hyper/mass/<run-key>/` |
@@ -88,6 +89,8 @@ Positive requests:
 - "Build a reusable code-review system prompt with an eval fixture, checked against the latest provider prompting guide." -> `hyper-research` -> `hyper-documentation`
 - "사내 DB 조회하는 MCP 서버 만들어서 Claude Code에 연결까지 해줘." -> `hyper-mcp`
 - "Migrate our MCP server to the current spec and open a PR." -> `hyper-mcp` (audit) -> `hyper-plan` -> `hyper-execute` with `--make-pr`
+- "새 요금제 페이지 디자인해서 만들어줘. AI가 만든 티 안 나게." -> `hyper-ui-ux`
+- "Redesign the dashboard so it stops looking generic, and open a PR." -> `hyper-ui-ux` (audit) -> `hyper-plan` -> `hyper-execute` with `--make-pr`
 
 Negative requests:
 
@@ -118,6 +121,7 @@ Boundary requests:
 | A reusable skill folder created or refactored, optionally after provider-doc research | `hyper-skill`, with `hyper-research` first when the request depends on current external docs |
 | A README, `AGENTS.md`, AI-readable document, instruction base, runbook, rule pack, reusable prompt, prompt template, prompt pack, or prompt eval fixture created or refactored | `hyper-documentation`, with `hyper-research` first when its claims depend on current external sources or provider guidance |
 | An MCP server, client, migration, security fix, or host MCP configuration | `hyper-mcp`, with `hyper-research` first when the server wraps an unfamiliar external API, and with `hyper-mcp` in audit mode before `hyper-plan` when the user asks for a PR or ship delivery or the change spans non-MCP modules |
+| A screen, page, or component designed or restyled, faux product UI, or a generic "AI look" removed | `hyper-ui-ux`, with `hyper-research` first when it depends on current external guidance, and with `hyper-ui-ux` in brief-only or audit mode before `hyper-plan` when the user asks for a PR or ship delivery or the change also needs non-UI work |
 | A plan file already exists and the user wants it run | `hyper-execute` |
 | Report-only research, audit, or architecture review | The one matching stage alone |
 
@@ -221,7 +225,7 @@ Phase rules:
 
 | Claim | Source |
 |---|---|
-| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its nine stage skills | user instruction, 2026-11-06; `hyper-skill`, `hyper-mcp`, and the documentation stage added by user instruction, 2026-11-07, and the documentation stages merged into `hyper-documentation` by user instruction, 2026-11-07 |
+| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its ten stage skills | user instruction, 2026-11-06; `hyper-skill`, `hyper-mcp`, and the documentation stage added by user instruction, 2026-11-07, the documentation stages merged into `hyper-documentation` by user instruction, 2026-11-07, and `hyper-ui-ux` added by user instruction, 2026-11-07 |
 | The output, artifact path, and boundary of each stage skill | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The plan stage continues into execution by itself and passes the delivery flag through | the plan skill's handoff rule in this repository, 2026-11-06 |
 | A sequential chain hands state forward through saved artifacts, and a router picks a branch by code-like rules | `instructions/graph-engineering/references/graph-patterns.md` |
