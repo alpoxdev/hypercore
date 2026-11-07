@@ -54,6 +54,9 @@
     },
     "hyper-deploy": {
       "FRONTMATTER_TRIGGER": 1
+    },
+    "hyper-google-analytics": {
+      "FRONTMATTER_TRIGGER": 1
     }
   }
 }

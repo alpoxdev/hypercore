@@ -16,5 +16,6 @@
   "hyper-browsing|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
   "hyper-git|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
   "hyper-database|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
-  "hyper-imagegen|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence."
+  "hyper-imagegen|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
+  "hyper-google-analytics|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence."
 }
