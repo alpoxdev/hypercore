@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 32,
+    "expectedRows": 33,
     "legacyOriginCounts": {
       "former-sh": 11,
       "retained-mjs": 2,
-      "authored-mjs": 19
+      "authored-mjs": 20
     },
     "requiredDimensions": [
       "stdout",
@@ -23,7 +23,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 96
+    "expectedFixtures": 99
   },
   "rows": [
     {
@@ -6577,6 +6577,221 @@
             },
             "argv": [
               "--root",
+              "."
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper-google-analytics--ga-detect",
+      "path": "skills/hyper-google-analytics/scripts/ga-detect.sh",
+      "family": "hyper-google-analytics",
+      "legacyOrigin": "authored-mjs",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-google-analytics/scripts/ga-detect.mjs",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-google-analytics--ga-detect--stdout",
+        "stderr": "hyper-google-analytics--ga-detect--stderr",
+        "exit": "hyper-google-analytics--ga-detect--exit",
+        "files": "hyper-google-analytics--ga-detect--files",
+        "modes": "hyper-google-analytics--ga-detect--modes",
+        "cwd": "hyper-google-analytics--ga-detect--cwd",
+        "env": "hyper-google-analytics--ga-detect--env",
+        "argv": "hyper-google-analytics--ga-detect--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-google-analytics/scripts/ga-detect.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "."
+            ],
+            "files": [
+              {
+                "path": "app/layout.tsx",
+                "text": "import { GoogleAnalytics } from '@next/third-parties/google';\n\nexport default function RootLayout({ children }) {\n  return (\n    <html>\n      <body>\n        {children}\n        <GoogleAnalytics gaId=\"G-ABC123DEF4\" />\n      </body>\n    </html>\n  );\n}\n"
+              },
+              {
+                "path": "index.html",
+                "text": "<script async src=\"https://www.googletagmanager.com/gtm.js?id=GTM-ABCD12\"></script>\n"
+              },
+              {
+                "path": "lib/consent.js",
+                "text": "window.dataLayer = window.dataLayer || [];\nfunction gtag() { dataLayer.push(arguments); }\ngtag('consent', 'default', {\n  ad_user_data: 'denied',\n  ad_personalization: 'denied',\n});\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"kind\":\"framework_integration\",\"path\":\"app/layout.tsx\",\"line\":1,\"value\":\"@next/third-parties/google\"}\n{\"kind\":\"measurement_id\",\"path\":\"app/layout.tsx\",\"line\":8,\"value\":\"G-ABC123DEF4\"}\n{\"kind\":\"framework_integration\",\"path\":\"app/layout.tsx\",\"line\":8,\"value\":\"<GoogleAnalytics\"}\n{\"kind\":\"gtm_id\",\"path\":\"index.html\",\"line\":1,\"value\":\"GTM-ABCD12\"}\n{\"kind\":\"gtm_snippet\",\"path\":\"index.html\",\"line\":1,\"value\":\"googletagmanager.com/gtm.js\"}\n{\"kind\":\"consent_default\",\"path\":\"lib/consent.js\",\"line\":3,\"value\":\"consent', 'default\"}\n{\"summary\":{\"files_scanned\":3,\"findings\":6}}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "app/layout.tsx",
+                "bytes": 249,
+                "sha256": "13a9f5774d309dac0367f04f18c4e1913739ba03c9c342d9c993c549190c2153"
+              },
+              {
+                "path": "index.html",
+                "bytes": 84,
+                "sha256": "e435b08188c7df60a60f534a6e7f6f82ffd5471bb22b64a4a4198473b19992ae"
+              },
+              {
+                "path": "lib/consent.js",
+                "bytes": 181,
+                "sha256": "19a38365f91a52896dcbfd2ebb9642a2236aeed374b4708d8fc9b2207e8031ec"
+              }
+            ],
+            "modes": {
+              "app/layout.tsx": "644",
+              "index.html": "644",
+              "lib/consent.js": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "."
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-google-analytics/scripts/ga-detect.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "missing-dir"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "# empty\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "equals": "ga-detect: not a directory: missing-dir\n"
+            },
+            "exit": 64,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "f7ff302fd49cbfcfc2b3c1c9c891c6bf1d6fc1712bb2ebe5b00a8d64b709411d"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "missing-dir"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-google-analytics/scripts/ga-detect.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "."
+            ],
+            "files": [
+              {
+                "path": "server/mp.js",
+                "text": "const payload = { api_secret: \"Xy9fakeSecretValue123\" };\nfetch('https://www.google-analytics.com/mp/collect?api_secret=Xy9fakeSecretValue123');\n"
+              },
+              {
+                "path": ".env",
+                "text": "GA_API_SECRET=Zq8realEnvSecretValue999\n"
+              },
+              {
+                "path": "node_modules/pkg/index.js",
+                "text": "const id = 'G-SKIPPED0000';\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"kind\":\"possible_api_secret\",\"path\":\"server/mp.js\",\"line\":1,\"value\":\"Xy9f…\"}\n{\"kind\":\"mp_endpoint\",\"path\":\"server/mp.js\",\"line\":2,\"value\":\"www.google-analytics.com/mp/collect\"}\n{\"kind\":\"possible_api_secret\",\"path\":\"server/mp.js\",\"line\":2,\"value\":\"Xy9f…\"}\n{\"summary\":{\"files_scanned\":1,\"findings\":3}}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": ".env",
+                "bytes": 39,
+                "sha256": "785c2cff938aa4c8156cadbf7c5262c981c92dd6253b8e76d72f4e17d37037ff"
+              },
+              {
+                "path": "node_modules/pkg/index.js",
+                "bytes": 28,
+                "sha256": "48987f10abb6931a7bf2835aec7b6776c6c7306866904477d7fa0ea6934ec043"
+              },
+              {
+                "path": "server/mp.js",
+                "bytes": 144,
+                "sha256": "8cccbb901f321695c37fd29d76f5dffe6456e85e03f9e9b1928cd805967e38c1"
+              }
+            ],
+            "modes": {
+              ".env": "644",
+              "node_modules/pkg/index.js": "644",
+              "server/mp.js": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
               "."
             ]
           }

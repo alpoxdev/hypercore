@@ -280,10 +280,10 @@ run_repo_validator() { # <stdout> <stderr> — prints exit code
 case_manifest_inventory() {
   require_cmd jq
   require_cmd git
-  assert_eq 32 "$(jq '.scripts | length' "$MANIFEST")" "script count"
-  assert_eq 32 "$(jq '[.scripts[].path] | unique | length' "$MANIFEST")" "unique script paths"
+  assert_eq 33 "$(jq '.scripts | length' "$MANIFEST")" "script count"
+  assert_eq 33 "$(jq '[.scripts[].path] | unique | length' "$MANIFEST")" "unique script paths"
   assert_eq 0 "$(jq '[.scripts[] | select((.path // "") == "" or (.family // "") == "" or (.legacyOrigin // "") == "" or (.usage // "") == "" or (.behavior // "") == "")] | length' "$MANIFEST")" "every row carries its required fields"
-  assert_eq '{"authored-mjs":19,"former-sh":11,"retained-mjs":2}' \
+  assert_eq '{"authored-mjs":20,"former-sh":11,"retained-mjs":2}' \
     "$(jq -S -c '[.scripts[].legacyOrigin] | group_by(.) | map({key: .[0], value: length}) | from_entries' "$MANIFEST")" \
     "legacy origin counts"
 
@@ -307,6 +307,7 @@ skills/hyper-design/scripts/run-contract-evals.sh
 skills/hyper-design/scripts/run-detector-evals.sh
 skills/hyper-design/scripts/validate-report.sh
 skills/hyper-design/scripts/validate-waivers.sh
+skills/hyper-google-analytics/scripts/ga-detect.sh
 skills/hyper-decision/scripts/check-decision-request.sh
 LIST
 )
@@ -359,11 +360,11 @@ case_behavior_contracts() {
   assert_eq "$(cd "$ROOT" && echo "${MANIFEST#"$ROOT"/}")" "$(jq -r '.requiredBy' "$CONTRACTS")" "contracts point at the manifest"
   assert_eq "$LEGACY_REF" "$(jq -r '.legacyPreimageBase' "$MANIFEST")" "manifest legacy ref"
   assert_eq "$LEGACY_REF" "$(jq -r '.legacyPreimageBase' "$CONTRACTS")" "contracts legacy ref"
-  assert_eq 32 "$(jq '.coverage.expectedRows' "$CONTRACTS")"
-  assert_eq 96 "$(jq '.coverage.expectedFixtures' "$CONTRACTS")"
-  assert_eq '{"authored-mjs":19,"former-sh":11,"retained-mjs":2}' \
+  assert_eq 33 "$(jq '.coverage.expectedRows' "$CONTRACTS")"
+  assert_eq 99 "$(jq '.coverage.expectedFixtures' "$CONTRACTS")"
+  assert_eq '{"authored-mjs":20,"former-sh":11,"retained-mjs":2}' \
     "$(jq -S -c '.coverage.legacyOriginCounts' "$CONTRACTS")" "coverage origins"
-  assert_eq 32 "$(jq '.rows | length' "$CONTRACTS")" "contract rows"
+  assert_eq 33 "$(jq '.rows | length' "$CONTRACTS")" "contract rows"
   assert_eq "$(printf '%s\n' "$MIGRATION_PREIMAGES" | cut -f1 | LC_ALL=C sort)" \
     "$(jq -r '.rows[] | select(.sourcePreimage.migration) | .path' "$CONTRACTS" | LC_ALL=C sort)" \
     "renamed rows pinned to the migration ref"
@@ -471,7 +472,7 @@ case_behavior_contracts() {
     fi
     i=$((i + 1))
   done
-  assert_eq 96 "$cases" "fixture executions"
+  assert_eq 99 "$cases" "fixture executions"
 }
 
 case_validator_accepts_inventory() {
@@ -484,7 +485,7 @@ case_validator_accepts_inventory() {
   rc=$(run_repo_validator "$out" "$err")
   assert_empty "$(cat "$err")" "validator stderr"
   assert_eq 0 "$rc" "validator exit"
-  assert_contains "$(cat "$out")" "Validated 32 bash skill scripts (11 former-sh, 0 former-py, 2 retained-mjs, 19 authored-mjs historical origins)." "validator summary"
+  assert_contains "$(cat "$out")" "Validated 33 bash skill scripts (11 former-sh, 0 former-py, 2 retained-mjs, 20 authored-mjs historical origins)." "validator summary"
 }
 
 case_validator_rejects_mutations() {
@@ -1231,8 +1232,8 @@ EOF
 case_hyper_seo_renderer_second_write() { renderer_atomic_case hyper-seo second-write; }
 case_hyper_seo_renderer_second_rename() { renderer_atomic_case hyper-seo second-rename; }
 
-run_case "manifest centrally inventories 32 scripts including nineteen authored baseline-absent MJS paths" case_manifest_inventory
-run_case "behavior contracts execute all 96 isolated semantic fixtures with exact observables" case_behavior_contracts
+run_case "manifest centrally inventories 33 scripts including twenty authored baseline-absent MJS paths" case_manifest_inventory
+run_case "behavior contracts execute all 99 isolated semantic fixtures with exact observables" case_behavior_contracts
 run_case "validator accepts the approved inventory" case_validator_accepts_inventory
 run_case "validator rejects bash policy mutations a real regression would introduce" case_validator_rejects_mutations
 run_case "hyper-git commit rejects option-like paths without staging unrelated changes" case_hyper_git_commit_rejects_option_paths
