@@ -1,6 +1,6 @@
 ---
 name: hyper
-description: "[Hyper] Use this skill when the user wants a development job carried from start to finish through the hyper skill family without picking the skills - a refactor, feature, fix, migration, technology choice, search-visibility improvement, or reusable skill folder that needs some mix of architecture review, cited research, an SEO audit, a written plan, plan execution, dependency-ordered parallel work, or skill authoring - or when the user invokes hyper by name. It classifies the job, picks the shortest chain of hyper-research, hyper-seo, hyper-architecture, hyper-plan, hyper-execute, hyper-mass, and hyper-skill, runs the stages in order, and passes each stage's saved artifact to the next. Do not use it when the user names one hyper skill directly, or for a one-place edit that needs no plan, commit-only requests, PRD packages, or general questions."
+description: "[Hyper] Use this skill when the user wants a development job carried from start to finish through the hyper skill family without picking the skills - a refactor, feature, fix, migration, technology choice, search-visibility improvement, reusable skill folder, AI-readable document, or reusable prompt that needs some mix of architecture review, cited research, an SEO audit, a written plan, plan execution, dependency-ordered parallel work, skill authoring, document authoring, or prompt authoring - or when the user invokes hyper by name. It classifies the job, picks the shortest chain of hyper-research, hyper-seo, hyper-architecture, hyper-plan, hyper-execute, hyper-mass, hyper-skill, hyper-docs, and hyper-prompt, runs the stages in order, and passes each stage's saved artifact to the next. Do not use it when the user names one hyper skill directly, or for a one-place edit that needs no plan, commit-only requests, PRD packages, or general questions."
 compatibility: Needs the ability to load another installed skill by name, file read and search over the target repository, and write access for `.hyper/workflows/`. Each loaded stage brings its own requirements (git worktrees, subagents, live web). Without skill loading, it reports the chosen chain and the install commands instead of running stages.
 ---
 
@@ -34,7 +34,7 @@ Use a different language only when the user explicitly requests it or a machine-
 
 Use this skill when the requested output is a finished development result that needs one or more of the stage skills below in sequence, or when the user calls `hyper` by name.
 
-By user instruction, this package is an orchestrator: it names its seven stage skills in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
+By user instruction, this package is an orchestrator: it names its nine stage skills in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
 
 | Stage skill | What the stage produces |
 |---|---|
@@ -45,13 +45,15 @@ By user instruction, this package is an orchestrator: it names its seven stage s
 | `hyper-execute` | An existing plan executed wave by wave and delivered locally, as a PR, or shipped |
 | `hyper-mass` | One phase of dependency-ordered work run as a graph under `.hyper/mass/<run-key>/` |
 | `hyper-skill` | A created or refactored skill folder under `skills/<name>/` with its own validator run |
+| `hyper-docs` | A created or refactored AI-readable document, instruction base, runbook, or rule pack at the requested path, with its own validation handoff |
+| `hyper-prompt` | A created or refactored reusable prompt, prompt template, prompt pack, or prompt eval fixture at the requested path, with its own validation handoff |
 
 Do not use it when:
 
 - the user names one stage skill directly; that skill handles the request alone
 - the output is a one-place edit that needs no plan, such as a typo, a copy change, or a single config value
 - the output is only a commit, a push, or a pull request for changes that already exist
-- the output is a PRD, spec, or wireframe package, a general document, or an answer to a question
+- the output is a PRD, spec, or wireframe package, or an answer to a question
 
 </routing_rule>
 
@@ -82,6 +84,8 @@ Positive requests:
 - "hyper로 우리 사이트 SEO 점검하고 고칠 거 다 고쳐줘." -> `hyper-seo` -> `hyper-plan` -> `hyper-execute`
 - "상태관리 라이브러리 뭐 쓸지 비교해보고 골라서 적용까지 해줘." -> `hyper-research` -> `hyper-plan` -> `hyper-execute`
 - "사내 배포 체크리스트를 스킬로 만들어줘. 최신 Agent Skills 규격 확인해서." -> `hyper-research` -> `hyper-skill`
+- "이 저장소 배포 런북을 에이전트가 읽기 좋게 다시 정리해줘." -> `hyper-docs`
+- "Build a reusable code-review system prompt with an eval fixture, checked against the latest provider prompting guide." -> `hyper-research` -> `hyper-prompt`
 
 Negative requests:
 
@@ -110,6 +114,8 @@ Boundary requests:
 | SEO, AEO, or GEO audit with fixes implemented as a planned change | `hyper-seo` -> `hyper-plan` -> `hyper-execute` |
 | Dependency-ordered multi-agent phase with no plan file wanted | `hyper-mass` |
 | A reusable skill folder created or refactored, optionally after provider-doc research | `hyper-skill`, with `hyper-research` first when the request depends on current external docs |
+| An AI-readable document, instruction base, runbook, or rule pack created or refactored | `hyper-docs`, with `hyper-research` first when its claims depend on current external sources |
+| A reusable prompt, prompt template, prompt pack, or prompt eval fixture created or refactored | `hyper-prompt`, with `hyper-research` first when it depends on current provider guidance |
 | A plan file already exists and the user wants it run | `hyper-execute` |
 | Report-only research, audit, or architecture review | The one matching stage alone |
 
@@ -213,7 +219,7 @@ Phase rules:
 
 | Claim | Source |
 |---|---|
-| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its seven stage skills | user instruction, 2026-11-06; `hyper-skill` added as the seventh stage by user instruction, 2026-11-07 |
+| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its nine stage skills | user instruction, 2026-11-06; `hyper-skill`, `hyper-docs`, and `hyper-prompt` added as stages by user instruction, 2026-11-07 |
 | The output, artifact path, and boundary of each stage skill | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The plan stage continues into execution by itself and passes the delivery flag through | the plan skill's handoff rule in this repository, 2026-11-06 |
 | A sequential chain hands state forward through saved artifacts, and a router picks a branch by code-like rules | `instructions/graph-engineering/references/graph-patterns.md` |
