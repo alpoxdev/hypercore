@@ -15,7 +15,7 @@
 | `functions/index.ts` barrel 금지 | Hypercore convention + Safety policy | import-protection/tree-shaking ambiguity 방지 |
 | server functions는 same-origin app RPC | Official + Safety policy | public/cross-origin HTTP endpoint는 server route 사용 |
 
-`.validator()` 이력과 1.169.0에서 `.inputValidator()` 별칭이 제거된 경위는 `references/official/tanstack-start/api-drift-notes.md`를 봅니다.
+`.validator()` 규칙과 1.169.0에서 `.inputValidator()`가 제거된 경위는 `references/official/tanstack-start/tanstack-start-2026-11-04.md`를 봅니다.
 
 ## Canonical Server Function Pattern
 

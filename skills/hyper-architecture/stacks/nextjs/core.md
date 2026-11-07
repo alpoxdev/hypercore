@@ -60,7 +60,7 @@ Do not use this skill for generic React architecture, Remix/TanStack Start proje
 | Tools | Use local search/read/edit/validation commands; use current official docs when API drift matters; gate destructive migrations, credentials, production side effects, and broad codemods. |
 | Loop | None. This skill runs a single enforcement pass per request and re-enters only when the user asks for another pass. |
 | Output | Korean architecture decision or review with rule classifications, changed files if any, validation evidence, remaining risks, and dated official-doc ambiguity notes. |
-| Verification | Run `rules/nextjs/validation.md` checks relevant to touched surfaces and `bash scripts/validate-nextjs-stack.sh` when this skill folder changes. |
+| Verification | Run `rules/nextjs/validation.md` checks relevant to touched surfaces and `bash skills/hyper-architecture/scripts/validate-architecture.sh` when this skill folder changes. |
 | Stop condition | Stop after project mode is known, applicable safety gates pass, local conventions are applied or deferred, validation evidence is recorded, and unresolved API drift is dated and sourced. |
 
 </instruction_contract>
@@ -120,7 +120,7 @@ Router mode picks the rule set; the table in `stacks/nextjs/architecture-rules.m
 
 ## Available scripts
 
-`scripts/validate-nextjs-stack.sh` validates folder anatomy, required files, official-baseline phrases, and Korean sibling parity. Run `bash skills/hyper-architecture/scripts/validate-nextjs-stack.sh` from the repository root (bash 3.2+, jq 1.6+); it prints a JSON summary and exits non-zero on failure.
+`scripts/validate-architecture.sh` validates the skill folder itself: every stack guide exists with its rule set, every local Markdown path resolves, every English file has its Korean sibling, code fences balance, guides stay within their size caps, and the eval fixtures parse. Run `bash skills/hyper-architecture/scripts/validate-architecture.sh` from the repository root (bash 3.2+, jq 1.6+); it prints a JSON summary and exits non-zero on failure.
 
 </skill_architecture>
 
@@ -153,6 +153,8 @@ Read `stacks/nextjs/architecture-rules.md` first, always. Then read only the fil
 | Drizzle schema, migrations, connection lifecycle, server-only DB placement | `rules/nextjs/db.md` |
 | Env, `next.config.*`, `typedRoutes`, Proxy, route segment config, deployment settings | `rules/nextjs/platform.md` |
 | Post-change checks for the touched surface | `rules/nextjs/validation.md` |
+| Bundle weight, rendering and cache cost, Core Web Vitals, React Compiler, `next analyze`, `next/image` | `rules/nextjs/performance.md` |
+| Lint, format, and type-check setup (oxlint, Prettier, tsconfig, package manager pinning) | `rules/setup/typescript.md` |
 | Next.js behavior that may have drifted since the snapshot | `references/official/nextjs/current-docs-2026-11-04.md`, then `references/official/nextjs/nextjs-docs.md`; `references/official/nextjs/drizzle-docs.md` for Drizzle claims |
 
 Fetch `https://r.jina.ai/https://nextjs.org/docs/...` only when the two official snapshots disagree or the page must be read as markdown.
@@ -269,7 +271,7 @@ Phase 4 runs the post-change checks in the validation section with the commands 
 - The four enforcement defaults: official docs outrank local convention; App Router rules/nextjs by default for `app/`; Server Actions for App Router UI-originated writes; every Server Action treated as a reachable POST entry point.
 - Every finding tied to a gate row and labelled BLOCKED or WARNING, with repo-local conventions labelled as such.
 - Post-change evidence from the checks in Phase 4 that apply to the touched surface.
-- `bash skills/hyper-architecture/scripts/validate-nextjs-stack.sh` run when this skill folder itself changes.
+- `bash skills/hyper-architecture/scripts/validate-architecture.sh` run when this skill folder itself changes.
 
 </required>
 

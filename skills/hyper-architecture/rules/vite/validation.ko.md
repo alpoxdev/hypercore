@@ -1,6 +1,6 @@
 # Validation and Readback
 
-> Vite + TanStack Router architecture 작업과 이 skill 자체 유지보수 완료 검증.
+> Vite + TanStack Router architecture 작업 완료 검증.
 
 ## Project Work Validation
 
@@ -22,36 +22,17 @@ rg -n 'tanstackRouter|@tanstack/router-plugin/vite|@vitejs/plugin-react|react\(|
 
 grep 결과만으로 판단하지 말고 relevant topic rule files와 함께 해석합니다.
 
-## Skill Anatomy Validation
+## Readback Evidence
 
-이 skill 자체를 수정한 경우:
+completion을 보고하기 전에 다음을 기록합니다:
 
-```bash
-find skills/hyper-architecture -maxdepth 3 -type f | sort
-wc -l skills/hyper-architecture/stacks/vite/core.md skills/hyper-architecture/stacks/vite/core.ko.md
-rg -n 'instruction_contract|activation_examples|routing_rule|rules/vite/validation|current-docs-2026-11-04' skills/hyper-architecture/stacks/vite/core.md skills/hyper-architecture/stacks/vite/core.ko.md
-rg -n 'checked_at|/websites/vite_dev|/tanstack/router|VITE_|loadEnv|tanstackRouter|routeTree.gen|validateSearch|zodValidator|queryClient\.query' skills/hyper-architecture/references/official/vite
-rg -n 'src/lib|src/services|direct leaf|repo-local convention|not official Vite|not official.*TanStack Router' skills/hyper-architecture/stacks/vite/architecture-rules.md skills/hyper-architecture/rules/vite/services.md skills/hyper-architecture/rules/vite/validation.md
-bash skills/hyper-architecture/scripts/validate-vite-stack.sh
-```
+- 검증하는 claim과 그것을 담당하는 check
+- exact invocation
+- exit code, missing-file count, diff result 같은 binary observable
+- captured artifact path가 있으면 그 경로
 
-Must pass:
-
-- `stacks/vite/core.md`와 `stacks/vite/core.ko.md`가 routing, instruction contract, activation examples, workflow, verification, stop condition을 포함함.
-- core에서 참조하는 support file은 직접 link되어 있고 indirect reference chain이 없음.
-- official Vite/TanStack Router facts는 긴 core section이 아니라 `references/official/vite/`에 있음.
-- current official snapshot `references/official/vite/current-docs-2026-11-04.ko.md`는 `stacks/vite/core.ko.md`에서 직접 link되며 API drift가 중요할 때 사용됨.
-- Hypercore/repo-local conventions가 그렇게 label됨.
-- `src/lib`, `src/services` 같은 shared nested folders는 official Vite 또는 TanStack Router law가 아니라 Hypercore/repo-local convention으로 label됨.
-- 새 touched shared code는 explicit exception이 없는 한 `src/lib`, `src/services`, `lib`, `services` 바로 아래 direct leaf file을 만들지 않음.
-- Deprecated feature-folder guidance is absent from this skill.
-- Vite plugin order, generated route tree, env prefix, route export, search validation, loader safety, service layering, loader prefetch API 지침이 current-docs와 맞음.
-- deprecated된 TanStack Query prefetch helper(`ensureQueryData`, `fetchQuery`, `prefetchQuery`)를 deprecated로 적고 `queryClient.query({ ...options, staleTime: 'static' })`를 대체 경로로 제시함.
-- 번들러 옵션을 서술하는 파일은 Vite 8 이름(`oxc`, `build.rolldownOptions`, `output.codeSplitting`)을 씀.
-- English/Korean entrypoint의 trigger, boundary, workflow, contract, read order가 일치함.
-
----
+변경이 닿은 프로젝트 파일을 read back하고 links, headings, rule responsibilities가 그대로 맞는지 확인합니다.
 
 ## Sources
 
-> 이 파일의 validation/readback 명령은 project 상태와 이 package 자체에 대한 이 패키지 고유의 check입니다. 이 명령들이 인용하는 official snapshot 참조는 `references/official/vite/current-docs-2026-11-04.ko.md`이고, 그 스냅샷이 기록한 자체 검증일은 2026-11-04입니다. 명령 작성에 외부 출처를 사용하지 않았고 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 명령 문장과 저장소 로컬 경로 확인 2026-11-04.
+> 이 파일의 validation/readback 명령은 project 상태에 대한 이 패키지 고유의 check입니다. 이 명령들이 인용하는 official snapshot 참조는 `references/official/vite/current-docs-2026-11-04.ko.md`이고, 그 스냅샷이 기록한 자체 검증일은 2026-11-04입니다. 명령 작성에 외부 출처를 사용하지 않았고 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 명령 문장과 저장소 로컬 경로 확인 2026-11-04.

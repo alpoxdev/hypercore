@@ -2,6 +2,32 @@
 
 > Read this rule for crate or module design, composition ownership, feature growth, workspaces, or structural refactors. Official axum facts are summarized in [`../../references/official/axum/axum-docs.md`](../../references/official/axum/axum-docs.md); the layouts below are Hypercore conventions unless marked otherwise.
 
+## Discovery commands
+
+Run these before choosing a profile, applying a structural change, or reporting on an untouched crate. The target routing decision itself belongs to `rules/stack-detection.md`; this block only collects the facts the structure decision needs.
+
+```bash
+# is this an Axum server at all
+rg -n '^axum\s*=|axum\s*=\s*\{|axum-extra' Cargo.toml */Cargo.toml
+rg -n "use axum::|axum::Router|axum::serve|#\[derive\(.*FromRef" src crates
+rg -n "tokio::main|Router::new\(\)|\.with_state\(" src crates
+```
+
+```bash
+# persistence indicators, when a database is in scope
+rg -n 'sqlx|sea-orm|diesel|tokio-postgres' Cargo.toml */Cargo.toml
+rg -n "PgPool|MySqlPool|SqlitePool|query!|query_as!|\.begin\(\)|sqlx::migrate" src crates
+ls migrations sqlx.toml .sqlx 2>/dev/null
+```
+
+```bash
+# full-crate inventory for 전체 수정 mode
+rg --files -g '*.rs' src crates 2>/dev/null
+rg -n "Router::new\(\)|\.route\(|\.nest\(|\.merge\(|\.layer\(|\.route_layer\(|from_fn|with_state|FromRef|Json<|Query<|Path<|validate\(|sqlx::|AppError|IntoResponse|utoipa" src crates
+```
+
+If the first block finds nothing, the crate is not an Axum server and the Axum rules do not apply.
+
 ## 1. Choose a profile from repository evidence
 
 Inspect the crate layout, binaries, `Cargo.toml` features and dependencies, module tree, composition function, state type, pool construction, migration directory, OpenAPI definition, tests, and current `use` graph. Preserve a coherent brownfield layout unless a touched boundary is unsafe or blocks the requested change.

@@ -18,7 +18,6 @@ Stack guide inside `hyper-architecture` for TanStack Start. Read it when `rules/
 @../../rules/tanstack-start/validation.md
 @../../references/official/tanstack-start/tanstack-start-2026-11-04.md
 @../../references/official/tanstack-start/tanstack-router-2026-11-04.md
-@../../references/official/tanstack-start/api-drift-notes.md
 @../../references/official/tanstack-start/current-docs-2026-11-04.md
 
 # TanStack Start Architecture Enforcement
@@ -116,7 +115,7 @@ ls src/routes/__root.tsx 2>/dev/null
 | No indicator present | Route away to the normal implementation or review path |
 | Copy-only edit on a publishing-only page | Boundary check only |
 | User asks for official TanStack defaults | Enforce official and safety rules; relax hypercore-only conventions |
-| API behavior uncertain against the installed version | Enforce with dated drift evidence from `references/official/tanstack-start/api-drift-notes.md` |
+| API behavior uncertain against the installed version | Enforce with dated evidence from `references/official/tanstack-start/tanstack-start-2026-11-04.md` |
 
 </trigger_conditions>
 
@@ -124,9 +123,9 @@ ls src/routes/__root.tsx 2>/dev/null
 
 - Core (`stacks/tanstack-start/core.md`): trigger, contract, gate order, verification, stop condition.
 - Rules: `stacks/tanstack-start/architecture-rules.md` (taxonomy, source priority, blocking gates) plus twelve topic files mapped in `reference_routing`.
-- References: dated Start, Router, current-docs, and drift notes under `references/official/tanstack-start/`.
+- References: dated Start, Router, and current-docs snapshots under `references/official/tanstack-start/`.
 - Assets: `assets/evals/tanstack-start-cases.jsonl` holds trigger and behavior cases.
-- No bundled script: package typechecks and the `rules/tanstack-start/validation.md` checks are the verification surface.
+- Script: `scripts/validate-architecture.sh` checks this skill folder's structure; package typechecks and the `rules/tanstack-start/validation.md` checks remain the project-verification surface.
 - The skill is self-contained; it needs no other skill's path, document, or invocation.
 
 </skill_architecture>
@@ -163,10 +162,12 @@ Read `stacks/tanstack-start/architecture-rules.md` first for the taxonomy and bl
 | `getRouter()`, env validation, path aliases, operational endpoints | `rules/tanstack-start/platform.md` |
 | File naming, TypeScript style, comments, error classes | `rules/tanstack-start/conventions.md` |
 | Completion checks for the touched surface | `rules/tanstack-start/validation.md` |
+| Preloading, code splitting, selective SSR, streaming, Query prefetch freshness, Core Web Vitals, React Compiler | `rules/tanstack-start/performance.md` |
+| Lint, format, and type-check setup (oxlint, Prettier, tsconfig, package manager pinning) | `rules/setup/typescript.md` |
 | Start API behavior that matters for the change | `references/official/tanstack-start/tanstack-start-2026-11-04.md` |
 | Router, file route, search, or loading behavior | `references/official/tanstack-start/tanstack-router-2026-11-04.md` |
 | Plugin config, import protection, server functions, execution-control APIs | `references/official/tanstack-start/current-docs-2026-11-04.md` |
-| Conflicting docs or uncertain installed behavior | `references/official/tanstack-start/api-drift-notes.md` |
+| Conflicting docs or uncertain installed behavior | `references/official/tanstack-start/tanstack-start-2026-11-04.md`, then `references/official/tanstack-start/current-docs-2026-11-04.md` |
 
 </reference_routing>
 

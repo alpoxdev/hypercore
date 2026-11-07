@@ -4,8 +4,9 @@
 
 last_verified_at: 2026-11-04
 checked_at: 2026-11-04
+patch_checked_at: 2026-11-07 (stable_versions `vite` and `@tanstack/react-query`, and the React Compiler native-path status below)
 library_ids: `/websites/vite_dev`, `/tanstack/router`
-stable_versions: vite 8.3.5, @vitejs/plugin-react 6.2.1, @tanstack/react-router 1.170.46, @tanstack/router-plugin 1.168.48, @tanstack/react-query 5.105.3, @tanstack/router-core 1.171.39, zod 4.6.7
+stable_versions: vite 8.3.6, @vitejs/plugin-react 6.2.1, @tanstack/react-router 1.170.46, @tanstack/router-plugin 1.168.48, @tanstack/react-query 5.107.1, @tanstack/router-core 1.171.39, zod 4.6.7
 source_priority: official Vite docs, the Vite 8 release posts, the `vitejs/vite` and `vitejs/vite-plugin-react` changelogs, official TanStack Router and TanStack Query docs, and the npm registry.
 
 ## Current Official Vite Facts
@@ -29,7 +30,8 @@ source_priority: official Vite docs, the Vite 8 release posts, the `vitejs/vite`
 - Vite 8 handles the React Refresh transform through Oxc, so plugin-react 6 no longer depends on Babel; the plugin's Babel options were removed in 6.0.0.
 - Projects that still need Babel transform use `@rolldown/plugin-babel` next to `react()` instead of plugin options.
 - React Compiler support is available as `react({ compiler: true })` with `oxc-transform-react` installed, or through `reactCompilerPreset()` with `@rolldown/plugin-babel`.
-- `compiler.reportDiagnostics` replaces the deprecated `compiler.logDiagnostics`; `refreshInclude` and `refreshExclude` skip Fast Refresh for files that never run in the browser.
+- The native `compiler` path is **experimental**: the plugin README says so, and as of `@vitejs/plugin-react` 6.2.0 it peers on `oxc-transform-react >=0.152.0 <0.157.0`. Prefer `reactCompilerPreset()` for production until that label changes. (Re-checked 2026-11-07.)
+- `compiler.reportDiagnostics` replaces the deprecated `compiler.logDiagnostics` (6.1.2); `refreshInclude` and `refreshExclude` skip Fast Refresh for files that never run in the browser. The plugin's README on `main` still shows `logDiagnostics`, so the changelog is the authority.
 
 ## Current Official TanStack Router Facts
 
@@ -68,7 +70,7 @@ source_priority: official Vite docs, the Vite 8 release posts, the `vitejs/vite`
 
 ## Sources
 
-> Checked 2026-11-04.
+> Checked 2026-11-04; the `vite` and `@tanstack/react-query` version rows and the React Compiler native-path status were re-checked 2026-11-07.
 
 - `https://vite.dev/guide/migration`
 - `https://vite.dev/blog/announcing-vite8`

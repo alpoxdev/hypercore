@@ -2,6 +2,32 @@
 
 > crate나 모듈 설계, 조립 소유권, 기능 성장, 워크스페이스, 구조 리팩터에 이 규칙을 읽습니다. 공식 axum 사실은 [`../../references/official/axum/axum-docs.md`](../../references/official/axum/axum-docs.md)에 요약되어 있고, 아래 배치는 표시가 없으면 Hypercore 규약입니다.
 
+## 탐색 명령
+
+프로필을 고르거나, 구조 변경을 적용하거나, 건드리지 않은 crate를 보고하기 전에 실행합니다. 대상 라우팅 판정 자체는 `rules/stack-detection.md`가 소유하고, 이 블록은 구조 판단에 필요한 사실만 모읍니다.
+
+```bash
+# is this an Axum server at all
+rg -n '^axum\s*=|axum\s*=\s*\{|axum-extra' Cargo.toml */Cargo.toml
+rg -n "use axum::|axum::Router|axum::serve|#\[derive\(.*FromRef" src crates
+rg -n "tokio::main|Router::new\(\)|\.with_state\(" src crates
+```
+
+```bash
+# persistence indicators, when a database is in scope
+rg -n 'sqlx|sea-orm|diesel|tokio-postgres' Cargo.toml */Cargo.toml
+rg -n "PgPool|MySqlPool|SqlitePool|query!|query_as!|\.begin\(\)|sqlx::migrate" src crates
+ls migrations sqlx.toml .sqlx 2>/dev/null
+```
+
+```bash
+# full-crate inventory for 전체 수정 mode
+rg --files -g '*.rs' src crates 2>/dev/null
+rg -n "Router::new\(\)|\.route\(|\.nest\(|\.merge\(|\.layer\(|\.route_layer\(|from_fn|with_state|FromRef|Json<|Query<|Path<|validate\(|sqlx::|AppError|IntoResponse|utoipa" src crates
+```
+
+첫 블록이 아무것도 찾지 못하면 그 crate는 Axum 서버가 아니므로 Axum 규칙을 적용하지 않습니다.
+
 ## 1. 저장소 근거로 프로필 고르기
 
 crate 배치, 바이너리, `Cargo.toml` 기능과 의존성, 모듈 트리, 조립 함수, 상태 타입, 풀 생성, 마이그레이션 디렉터리, OpenAPI 정의, 테스트, 현재 `use` 그래프를 확인합니다. 건드린 경계가 안전하지 않거나 요청한 변경을 막지 않으면 일관된 브라운필드 배치를 유지합니다.

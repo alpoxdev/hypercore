@@ -5,7 +5,7 @@
 ---
 ## Stable Runtime Baseline
 
-As verified on 2026-11-04, Hono is 4.13.16 and `@hono/node-server` is 2.1.6. The adapter requires Node `>=20` and accepts Hono `^4 || ^5.0.0-0`; this package manifest is stricter than the Node.js guide page, which still lists 18.x minimums. Installed package metadata and the selected runtime's current official guide win.
+As verified on 2026-11-07, Hono is 4.13.17 (4.13.16 remains the security floor that fixes the router and form-validation defects) and `@hono/node-server` is 2.1.6. The adapter requires Node `>=20` and accepts Hono `^4 || ^5.0.0-0`; this package manifest is stricter than the Node.js guide page, which still lists 18.x minimums. Installed package metadata and the selected runtime's current official guide win.
 
 - Cloudflare/Deno/Bun runtimes commonly expose a Fetch-compatible app entry; Node uses the official adapter.
 - Import adapters from their own packages (`@hono/bun`, `@hono/deno`, `@hono/cloudflare-workers`, `@hono/aws-lambda`, `@hono/lambda-edge`, `@hono/netlify`, `@hono/vercel`, `@hono/service-worker`). `hono/<adapter>` still works in v4 but is deprecated and is removed in v5, so new code must not add it. `hono/cloudflare-pages` has no replacement package.
@@ -42,11 +42,11 @@ As verified on 2026-11-04, Hono is 4.13.16 and `@hono/node-server` is 2.1.6. The
 
 ## Sources
 
-> Checked 2026-11-04. The adapter split, deprecations, and static-file behavior come from the linked release notes and guides; package versions come from the npm registry.
+> Checked 2026-11-07. The adapter split, deprecations, and static-file behavior come from the linked release notes and guides; package versions come from the npm registry.
 
 | Claim | Source |
 |---|---|
-| Hono 4.13.16, `@hono/node-server` 2.1.6, and their peer and engine ranges | [npm registry: hono](https://registry.npmjs.org/hono), [npm registry: `@hono/node-server`](https://registry.npmjs.org/@hono/node-server) |
+| Hono 4.13.17 as registry `latest`, `@hono/node-server` 2.1.6, and their peer and engine ranges | [npm registry: hono](https://registry.npmjs.org/hono), [npm registry: `@hono/node-server`](https://registry.npmjs.org/@hono/node-server) |
 | Adapter packages and `hono/<adapter>` deprecation | [`hono` v4.13.10 release](https://github.com/honojs/hono/releases/tag/v4.13.10) |
 | Node WebSocket bootstrap and `@hono/node-ws` deprecation | [Node.js Guide](https://hono.dev/docs/getting-started/nodejs), [`@hono/node-server` README](https://github.com/honojs/node-server) |
 | `serveStatic` `%` rejection, `allowPercentInPath`, GET/HEAD only | [`hono` v4.13.11 release](https://github.com/honojs/hono/releases/tag/v4.13.11), [`hono` v4.13.14 release](https://github.com/honojs/hono/releases/tag/v4.13.14) |

@@ -15,7 +15,7 @@
 | No `functions/index.ts` barrel | Hypercore convention + Safety policy | Avoid import-protection/tree-shaking ambiguity |
 | Server functions are same-origin app RPC | Official + Safety policy | Use server routes for public/cross-origin HTTP endpoints |
 
-See `references/official/tanstack-start/api-drift-notes.md` for the `.validator()` history, including the removal of the `.inputValidator()` alias in 1.169.0.
+See `references/official/tanstack-start/tanstack-start-2026-11-04.md` for the `.validator()` rule, including the removal of `.inputValidator()` in 1.169.0.
 
 ## Canonical Server Function Pattern
 

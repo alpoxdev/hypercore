@@ -10,7 +10,7 @@ As verified on 2026-11-05, axum is 0.8.9 with MSRV 1.80, and `axum::serve` accep
 - Keep `#[tokio::main]`, configuration loading, tracing setup, pool creation, state assembly, listener binding, and graceful shutdown in `main.rs` or a `bin/*.rs`.
 - Expose a composition function that returns `Router`; the binary calls it. Tests call the same function.
 - Build configuration once into a typed struct, validate it, and put it in `AppState`. Do not call `std::env::var` in handlers.
-- Initialize tracing once, before serving, and respect `RUST_LOG` or the repository's filter configuration.
+- Initialize tracing once, before serving, and respect `RUST_LOG` or the repository's filter configuration. `EnvFilter` requires `tracing-subscriber`'s `env-filter` feature because it is not a default, and `EnvFilter::from_default_env()` reads `RUST_LOG` and adds an `ERROR`-level directive when the variable is empty or unset.
 - Bind explicitly rather than relying on a default address, and log the chosen address with structured fields.
 - Use `with_graceful_shutdown` with a signal future so in-flight requests finish on SIGINT/SIGTERM.
 - Keep health and readiness endpoints independent of optional dependencies; readiness may check the pool, liveness must not.
@@ -18,6 +18,14 @@ As verified on 2026-11-05, axum is 0.8.9 with MSRV 1.80, and `axum::serve` accep
 - Do not change the async runtime, TLS backend, listener model, or deployment manifest inside an architecture review.
 
 ## Example
+
+`EnvFilter` is not a default feature of `tracing-subscriber` (defaults are `ansi`, `fmt`, `smallvec`, `std`, `tracing-log`), so the dependency must enable it or the snippet below does not compile.
+
+```toml
+[dependencies]
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+```
 
 ```rust
 use std::net::SocketAddr;
@@ -103,7 +111,7 @@ async fn shutdown_signal() {
 
 ## Sources
 
-> Checked 2026-11-05.
+> Checked 2026-11-07. Runtime and serve behavior were re-verified against the axum and tokio docs; the `env-filter` feature requirement comes from the tracing-subscriber feature list and `EnvFilter` source.
 
 | Claim | Source |
 |---|---|
@@ -111,4 +119,5 @@ async fn shutdown_signal() {
 | `serve` generic over listeners, `tcp_nodelay` removal, MSRV 1.80 | [axum 0.8.0 changelog](https://github.com/tokio-rs/axum/blob/main/axum/CHANGELOG.md), [axum 0.8.9 changelog](https://github.com/tokio-rs/axum/blob/main/axum/CHANGELOG.md) |
 | Tokio runtime and signal handling | [tokio](https://docs.rs/tokio/latest/tokio/), [tokio::signal](https://docs.rs/tokio/latest/tokio/signal/index.html) |
 | `tracing` subscriber setup | [tracing-subscriber](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/) |
+| `EnvFilter` requires the `env-filter` feature, and `from_default_env()` reads `RUST_LOG` | [tracing-subscriber features](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/), [EnvFilter source](https://raw.githubusercontent.com/tokio-rs/tracing/master/tracing-subscriber/src/filter/env/mod.rs) |
 | `TraceLayer` | [tower-http trace](https://docs.rs/tower-http/latest/tower_http/trace/index.html) |

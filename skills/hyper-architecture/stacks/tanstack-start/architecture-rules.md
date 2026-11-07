@@ -15,9 +15,8 @@ Brownfield adoption: touched files must satisfy applicable safety rules/tanstack
 1. `references/official/tanstack-start/current-docs-2026-11-04.md`
 2. `references/official/tanstack-start/tanstack-start-2026-11-04.md`
 3. `references/official/tanstack-start/tanstack-router-2026-11-04.md`
-4. `references/official/tanstack-start/api-drift-notes.md`
-5. Topic rules/tanstack-start under `rules/tanstack-start/`
-6. Project-local package types and tests when installed versions differ
+4. Topic rules/tanstack-start under `rules/tanstack-start/`
+5. Project-local package types and tests when installed versions differ
 
 ## Blocking Safety Gates
 
@@ -123,4 +122,4 @@ A change is complete only when `rules/tanstack-start/validation.md` passes and a
 
 ## Sources
 
-> Sources checked 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/overview.md> (stable status), <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md> (removed APIs, Vite 8), <https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md> (defaults), <https://tanstack.com/router/latest/docs/how-to/validate-search-params.md> (Zod v4 direct schema), <https://registry.npmjs.org/@tanstack/zod-adapter/latest> (Zod v3 peer range). Everything else is delegated to this package's own snapshots: `references/official/tanstack-start/tanstack-start-2026-11-04.md`, `references/official/tanstack-start/tanstack-router-2026-11-04.md`, and `references/official/tanstack-start/current-docs-2026-11-04.md`, plus the decision log `references/official/tanstack-start/api-drift-notes.md`. Official facts verified 2026-11-04; repository-local links checked 2026-11-04.
+> Sources checked 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/overview.md> (stable status), <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md> (removed APIs, Vite 8), <https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md> (defaults), <https://tanstack.com/router/latest/docs/how-to/validate-search-params.md> (Zod v4 direct schema), <https://registry.npmjs.org/@tanstack/zod-adapter/latest> (Zod v3 peer range). Everything else is delegated to this package's own snapshots: `references/official/tanstack-start/tanstack-start-2026-11-04.md`, `references/official/tanstack-start/tanstack-router-2026-11-04.md`, and `references/official/tanstack-start/current-docs-2026-11-04.md`. Official facts verified 2026-11-04; repository-local links checked 2026-11-04.

@@ -155,6 +155,8 @@ Boundary examples:
 | `testClient()`, `hc<AppType>`, `AppType`, 큰 앱에서의 추론 | `rules/hono/testing-rpc.md` |
 | 어댑터, 진입점, 바인딩, env/config 타입, `basePath()` 경계 | `rules/hono/platform.md` |
 | 손대는 파일의 이름 규칙, TypeScript 스타일, import, 주석 | `rules/hono/conventions.md` |
+| 지연, 처리량, 라우터 선택, 응답 압축, ETag, 공유 캐시, 번들 크기 | `rules/hono/performance.md` |
+| lint, format, type-check, tsconfig, package manager, CI 검사 순서 | `rules/setup/typescript.md` |
 | 규칙 뒤에 있는 공식 Hono 동작, 또는 공식 기본값 요청 | `references/official/hono/hono-docs.md` |
 | `rules/hono/database.md` 주장 뒤에 있는 Drizzle 동작 | `references/official/hono/drizzle-docs.md` |
 

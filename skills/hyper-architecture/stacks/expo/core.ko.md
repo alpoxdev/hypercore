@@ -118,6 +118,8 @@ change set마다 loop는 한 번만 돌립니다. check를 실행하고 실패�
 - route tree, layout, group, param을 바꿀 때 `rules/expo/routing-and-navigation.ko.md`를 읽습니다.
 - server state, client state, persistence, dependency 방향을 바꿀 때 `rules/expo/data-state-and-boundaries.ko.md`를 읽습니다.
 - app config, permission, secret, storage, native code, platform file을 건드릴 때 `rules/expo/native-platform-and-security.ko.md`를 읽습니다.
+- 요청이 끊김, 느린 시작, 목록 스크롤 비용, 메모리, 앱 크기, 번들 크기, "최적화"를 말하면 `rules/expo/performance.ko.md`를 읽습니다.
+- 작업이 lint, format, type-check, tsconfig, package manager 고정, CI 검사 순서를 다루면 `rules/setup/typescript.ko.md`를 읽습니다.
 - 완료를 주장하기 전에 `rules/expo/testing-and-validation.ko.md`를 읽습니다.
 - 설치된 SDK나 공식 API 동작이 변경을 가를 때 `references/official/expo/expo-react-native-2026-11-04.ko.md`를 읽고 `last_verified_at`을 설치 버전과 맞춰 봅니다.
 

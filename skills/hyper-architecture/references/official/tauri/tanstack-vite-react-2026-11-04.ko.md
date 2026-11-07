@@ -20,15 +20,15 @@
 
 ## 패키지 스냅샷
 
-다음 npm `latest` metadata는 2026-11-04에 확인했습니다. 이는 registry 상태의 근거이며 dependency upgrade 지시가 아닙니다.
+다음 npm `latest` metadata는 2026-11-04에 확인했고 `vite`와 `@tanstack/react-query` 행은 2026-11-07에 다시 확인했습니다. 이는 registry 상태의 근거이며 dependency upgrade 지시가 아닙니다.
 
 | Package | 확인 버전 | Registry |
 |---|---:|---|
 | `@tanstack/react-router` | `1.170.46` | <https://registry.npmjs.org/@tanstack/react-router/latest> |
 | `@tanstack/router-plugin` | `1.168.48` | <https://registry.npmjs.org/@tanstack/router-plugin/latest> |
-| `@tanstack/react-query` | `5.105.3` | <https://registry.npmjs.org/@tanstack/react-query/latest> |
+| `@tanstack/react-query` | `5.107.1` | <https://registry.npmjs.org/@tanstack/react-query/latest> |
 | `@tanstack/zod-adapter` | `1.167.0` | <https://registry.npmjs.org/@tanstack/zod-adapter/latest> |
-| `vite` | `8.3.5` | <https://registry.npmjs.org/vite/latest> |
+| `vite` | `8.3.6` | <https://registry.npmjs.org/vite/latest> |
 | `@vitejs/plugin-react` | `6.2.1` | <https://registry.npmjs.org/@vitejs/plugin-react/latest> |
 | `react` | `19.3.1` | <https://registry.npmjs.org/react/latest> |
 | `zod` | `4.6.7` | <https://registry.npmjs.org/zod/latest> |

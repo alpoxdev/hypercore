@@ -18,7 +18,6 @@
 @../../rules/tanstack-start/validation.ko.md
 @../../references/official/tanstack-start/tanstack-start-2026-11-04.ko.md
 @../../references/official/tanstack-start/tanstack-router-2026-11-04.ko.md
-@../../references/official/tanstack-start/api-drift-notes.ko.md
 @../../references/official/tanstack-start/current-docs-2026-11-04.ko.md
 
 # TanStack Start Architecture Enforcement
@@ -116,7 +115,7 @@ ls src/routes/__root.tsx 2>/dev/null
 | 표지가 하나도 없음 | 일반 구현이나 리뷰 경로로 돌려보냄 |
 | 게시 전용 페이지의 문구만 고치는 편집 | 경계 확인만 |
 | 사용자가 공식 TanStack 기본값을 요청 | 공식 규칙과 안전 규칙을 강제하고 Hypercore 전용 관례는 풂 |
-| 설치된 버전과 공식 동작이 어긋날 수 있음 | `references/official/tanstack-start/api-drift-notes.md`의 날짜 있는 근거와 함께 강제 |
+| 설치된 버전과 공식 동작이 어긋날 수 있음 | `references/official/tanstack-start/tanstack-start-2026-11-04.md`의 날짜 있는 근거와 함께 강제 |
 
 </trigger_conditions>
 
@@ -124,9 +123,9 @@ ls src/routes/__root.tsx 2>/dev/null
 
 - 핵심(`stacks/tanstack-start/core.md`): 트리거, 계약, 게이트 순서, 검증, 정지 조건.
 - 규칙: `stacks/tanstack-start/architecture-rules.ko.md`(분류, 출처 우선순위, 차단 게이트)와 `reference_routing`에 매핑된 주제별 파일 열두 개.
-- 참고: `references/official/tanstack-start/` 아래 Start, Router, 현재 문서, 드리프트 노트를 날짜와 함께 둡니다.
+- 참고: `references/official/tanstack-start/` 아래 Start, Router, 현재 문서 스냅숏을 날짜와 함께 둡니다.
 - 자산: `assets/evals/tanstack-start-cases.jsonl`에 트리거와 동작 사례를 둡니다.
-- 번들 스크립트는 없습니다. 패키지 타입 검사와 `rules/tanstack-start/validation.md` 검사가 검증 수단입니다.
+- 스크립트: `scripts/validate-architecture.sh`가 이 스킬 폴더 구조를 검사합니다. 프로젝트 검증 수단은 패키지 타입 검사와 `rules/tanstack-start/validation.md` 검사입니다.
 - 이 스킬은 스스로 완결됩니다. 다른 스킬의 경로, 문서, 호출을 필요로 하지 않습니다.
 
 </skill_architecture>
@@ -163,10 +162,12 @@ ls src/routes/__root.tsx 2>/dev/null
 | `getRouter()`, env 검증, 경로 alias, 운영 엔드포인트 | `rules/tanstack-start/platform.md` |
 | 파일 이름, TypeScript 스타일, 주석, 오류 클래스 | `rules/tanstack-start/conventions.md` |
 | 손댄 영역의 완료 검사 | `rules/tanstack-start/validation.md` |
+| preloading, 코드 분할, 선택적 SSR, 스트리밍, Query prefetch 최신성, Core Web Vitals, React Compiler | `rules/tanstack-start/performance.md` |
+| lint, format, 타입 검사 설정(oxlint, Prettier, tsconfig, 패키지 매니저 고정) | `rules/setup/typescript.md` |
 | 변경에 영향을 주는 Start API 동작 | `references/official/tanstack-start/tanstack-start-2026-11-04.md` |
 | Router, 파일 라우트, search, 로딩 동작 | `references/official/tanstack-start/tanstack-router-2026-11-04.md` |
 | 플러그인 설정, import protection, server function, 실행 제어 API | `references/official/tanstack-start/current-docs-2026-11-04.md` |
-| 문서 충돌이나 설치된 동작의 불확실성 | `references/official/tanstack-start/api-drift-notes.md` |
+| 문서 충돌이나 설치된 동작의 불확실성 | `references/official/tanstack-start/tanstack-start-2026-11-04.md`, 그다음 `references/official/tanstack-start/current-docs-2026-11-04.md` |
 
 </reference_routing>
 

@@ -91,7 +91,7 @@ metadata_for() {
     skills/hyper-git/scripts/repo-discover.sh) printf 'inspect-repository\trepository-discovery\n' ;;
     skills/hyper-git/scripts/repo-status.sh) printf 'inspect-repository\trepository-status\n' ;;
     skills/hyper-imagegen/scripts/validate-hyper-imagegen.sh) printf 'validate-skill\tskill-validation\n' ;;
-    skills/hyper-architecture/scripts/validate-nextjs-stack.sh) printf 'validate-skill\tskill-validation\n' ;;
+    skills/hyper-architecture/scripts/validate-architecture.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/prd-maker/scripts/build-preview.sh) printf 'build-preview\tpreview-build\n' ;;
     skills/prd-maker/scripts/render-planning-map.sh) printf 'render-planning-map\tplanning-map-render\n' ;;
     skills/hyper-database/scripts/detect-engines.sh) printf 'detect-engines\tengine-detection\n' ;;
@@ -102,7 +102,6 @@ metadata_for() {
     skills/pre-deploy/scripts/stack-detect.sh) printf 'detect-stack\tstack-detection\n' ;;
     skills/hyper-seo/scripts/render-dashboard.sh) printf 'render-dashboard\trender-dashboard\n' ;;
     skills/hyper-skill/scripts/validate-hyper-skill.sh) printf 'validate-skill\tskill-validation\n' ;;
-    skills/hyper-architecture/scripts/validate-vite-stack.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/jev-maker/scripts/check-jev-request.sh) printf 'check-jev-request\tjev-request-validation\n' ;;
     *) : ;;
   esac
@@ -287,7 +286,7 @@ validate_script_edges() {
 jq -e 'type == "object"' "$manifest" >/dev/null 2>&1 || die "manifest must be a JSON object"
 jq -e '(.scripts | type) == "array"' "$manifest" >/dev/null 2>&1 || die "manifest scripts must be an array"
 row_count=$(jq -r '.scripts | length' "$manifest")
-[ "$row_count" -eq 32 ] || die "manifest must contain exactly 32 scripts"
+[ "$row_count" -eq 31 ] || die "manifest must contain exactly 31 scripts"
 jq -e 'all(.scripts[]; type == "object")' "$manifest" >/dev/null 2>&1 || die "manifest rows must be objects"
 
 legacy_origins=$(printf '%s\n' former-sh former-py retained-mjs authored-mjs)
@@ -377,8 +376,8 @@ while IFS=$'\x1f' read -r idx rtype field_ok path family legacy usage behavior s
   i=$((i + 1))
 done <"$tmp/manifest-rows.tsv"
 
-[ "$former_sh" -eq 11 ] && [ "$former_py" -eq 0 ] && [ "$retained_mjs" -eq 6 ] && [ "$authored_mjs" -eq 15 ] ||
-  die "manifest historical origin counts must be exactly 11/0/6/15"
+[ "$former_sh" -eq 11 ] && [ "$former_py" -eq 0 ] && [ "$retained_mjs" -eq 4 ] && [ "$authored_mjs" -eq 16 ] ||
+  die "manifest historical origin counts must be exactly 11/0/4/16"
 
 if ! jq -e '.portPreimage | (type == "object") and (.baselineRef | type == "string" and test("^[a-f0-9]{40}$")) and (.model | type == "string" and test("\\S")) and (.note | type == "string" and test("\\S")) and (.workingTreeEdited | type == "array" and length == 4)' "$manifest" >/dev/null 2>&1; then
   die "manifest portPreimage must record the port baseline and the uncommitted pre-port edits"
@@ -395,11 +394,11 @@ sort "$tmp/approved" | uniq -d >"$tmp/approved-dupes"
 jq -e 'type == "object"' "$contracts" >/dev/null 2>&1 || die "behavior contracts must be a JSON object"
 [ "$(jq -r '.requiredBy' "$contracts")" = "scripts/fixtures/skill-script-parity/manifest.json" ] ||
   die "behavior contracts must name the manifest as their central owner"
-if ! jq -e '(.coverage | type == "object") and .coverage.expectedRows == 32 and .coverage.expectedFixtures == 96' "$contracts" >/dev/null 2>&1; then
-  die "behavior contract coverage must be exactly 32 rows and 96 fixtures"
+if ! jq -e '(.coverage | type == "object") and .coverage.expectedRows == 31 and .coverage.expectedFixtures == 93' "$contracts" >/dev/null 2>&1; then
+  die "behavior contract coverage must be exactly 31 rows and 93 fixtures"
 fi
 contract_rows=$(jq -r '.rows | length' "$contracts")
-[ "$contract_rows" -eq 32 ] || die "behavior contracts must contain exactly 32 rows"
+[ "$contract_rows" -eq 31 ] || die "behavior contracts must contain exactly 31 rows"
 
 jq -r '.scripts[] | [(.path // ""), (.behaviorContractId // "")] | join("\u001f")' "$manifest" >"$tmp/script-contract-ids"
 cat >"$tmp/contract-rows.jq" <<'JQ'
@@ -535,4 +534,4 @@ while IFS= read -r file; do
   fi
 done <"$tmp/approved"
 
-printf 'Validated %s bash skill scripts (11 former-sh, 0 former-py, 6 retained-mjs, 15 authored-mjs historical origins).\n' "$(wc -l <"$tmp/approved" | tr -d ' ')"
+printf 'Validated %s bash skill scripts (11 former-sh, 0 former-py, 4 retained-mjs, 16 authored-mjs historical origins).\n' "$(wc -l <"$tmp/approved" | tr -d ' ')"

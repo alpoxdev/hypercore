@@ -1,6 +1,6 @@
 # Hono Official Docs Summary
 
-last_verified_at: 2026-11-04
+last_verified_at: 2026-11-07
 
 ## Contents
 
@@ -11,11 +11,11 @@ last_verified_at: 2026-11-04
 
 ## Stable package snapshot
 
-Verified from npm registry metadata and the cited release notes on 2026-11-04. These are evidence snapshots, not automatic upgrade targets.
+Verified from npm registry metadata and the cited release notes on 2026-11-07. These are evidence snapshots, not automatic upgrade targets.
 
 | Package | Stable | Compatibility observed |
 |---|---:|---|
-| `hono` | 4.13.16 | Node engine `>=16.9.0` in the core package; 4.13.16 is the security floor |
+| `hono` | 4.13.17 | Node engine `>=16.9.0` in the core package; registry `latest` is 4.13.17 and 4.13.16 remains the security floor |
 | `@hono/node-server` | 2.1.6 | Node `>=20`, Hono `^4 || ^5.0.0-0` |
 | `@hono/zod-validator` | 0.9.1 | Hono `>=4.11.2`, Zod `^3.25.0 || ^4.0.0` |
 | `@hono/standard-validator` | 0.4.1 | Hono `>=4.11.2`, Standard Schema `^1.0.0` |
@@ -134,7 +134,7 @@ Source: [Node.js Guide](https://hono.dev/docs/getting-started/nodejs), [`@hono/n
 
 ## Sources
 
-> Checked 2026-11-04.
+> Checked 2026-11-07. The `hono` row was refreshed against the npm registry; 4.13.16 stays the documented security floor.
 
 | Claim | Source |
 |---|---|

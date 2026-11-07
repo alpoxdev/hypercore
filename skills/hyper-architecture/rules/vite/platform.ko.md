@@ -6,7 +6,7 @@
 
 ## Vite 8 툴체인
 
-Vite 8(현재 안정 8.3.5)은 Rollup과 esbuild 대신 Rolldown과 Oxc로 동작합니다. Node 20.19+ 또는 22.12+를 요구하고 ESM으로만 배포됩니다.
+Vite 8(현재 안정 8.3.6)은 Rollup과 esbuild 대신 Rolldown과 Oxc로 동작합니다. Node 20.19+ 또는 22.12+를 요구하고 ESM으로만 배포됩니다.
 
 - 빌드 설정은 새 이름을 씁니다. `build.rollupOptions`(deprecated 별칭) 대신 `build.rolldownOptions`, `esbuild`(deprecated, 자동 변환) 대신 `oxc`, `optimizeDeps.esbuildOptions` 대신 `optimizeDeps.rolldownOptions`, 객체형이 제거되고 함수형이 deprecated된 `output.manualChunks` 대신 Rolldown `output.codeSplitting`입니다. `build.commonjsOptions`는 no-op입니다.
 - `build.target` 기본값은 `'baseline-widely-available'`이고 이 메이저에서는 `['chrome111', 'edge111', 'firefox114', 'safari16.4', 'ios16.4']`로 해석됩니다. 구형 브라우저를 지원해야 하는 저장소는 `build.target`을 직접 지정합니다.
@@ -148,4 +148,4 @@ declare module '@tanstack/react-router' {
 
 ## Sources
 
-> 이 파일이 서술하는 Vite와 TanStack Router platform 사실(Rolldown/Oxc 옵션 이름, Node와 ESM 요구사항, `build.target` 기본값, `server.forwardConsole`, `defineConfig`, `react()`보다 앞선 `tanstackRouter()`, plugin-react 6의 peer와 Babel 제거, 포맷 옵션을 포함한 generated output `routeTree.gen.ts`, `routeTree`를 넘겨 구성하는 `createRouter`, `scrollRestoration` 옵션과 deprecated된 `<ScrollRestoration />` 컴포넌트, `search.strict`, `basepath`, `router.state` 표면 변경, `ImportMetaEnv`/`vite/client`, `loadEnv`)은 `references/official/vite/current-docs-2026-11-04.ko.md`에 기록된 dated snapshot에서 왔고, 그 스냅샷이 기록한 자체 검증일은 2026-11-04입니다. 저장소에 맞춘 설정 선택과 `base`/`basepath` 정합 조언은 이 패키지 자체의 guidance입니다. folder route 선호와 alias/env 명시성 요구는 Hypercore/repo-local convention입니다. 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 규칙 문장과 저장소 로컬 경로 확인 2026-11-04.
+> 이 파일이 서술하는 Vite와 TanStack Router platform 사실(Rolldown/Oxc 옵션 이름, Node와 ESM 요구사항, `build.target` 기본값, `server.forwardConsole`, `defineConfig`, `react()`보다 앞선 `tanstackRouter()`, plugin-react 6의 peer와 Babel 제거, 포맷 옵션을 포함한 generated output `routeTree.gen.ts`, `routeTree`를 넘겨 구성하는 `createRouter`, `scrollRestoration` 옵션과 deprecated된 `<ScrollRestoration />` 컴포넌트, `search.strict`, `basepath`, `router.state` 표면 변경, `ImportMetaEnv`/`vite/client`, `loadEnv`)은 `references/official/vite/current-docs-2026-11-04.ko.md`에 기록된 dated snapshot에서 왔고, 그 스냅샷이 기록한 자체 검증일은 2026-11-04입니다. 저장소에 맞춘 설정 선택과 `base`/`basepath` 정합 조언은 이 패키지 자체의 guidance입니다. folder route 선호와 alias/env 명시성 요구는 Hypercore/repo-local convention입니다. 이 파일을 위해 페이지를 다시 가져오지 않았습니다. 규칙 문장과 저장소 로컬 경로 확인 2026-11-04. `vite 8.3.6` 현재 안정 수치는 2026-11-07에 스냅숏과 다시 대조했습니다.

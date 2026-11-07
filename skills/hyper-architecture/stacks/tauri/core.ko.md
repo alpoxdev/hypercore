@@ -144,6 +144,9 @@ Query 의존성만 보고 파일 기반 라우팅을 추론하지 않습니다. 
 | CSP, scope, 자격 증명, 신뢰할 수 없는 입력, 네이티브 부작용 게이트 | `rules/tauri/security.md` |
 | Router의 파일 라우팅 소유, Query 캐시와 최신성 소유, loader, preloading, 외부 데이터 | `rules/tauri/router-query.md` |
 | 손댄 런타임 영역의 테스트와 검증 주장 | `rules/tauri/testing.md` |
+| 릴리스 프로필, `removeUnusedCommands`, 바이너리 크기, 웹뷰 번들 무게 | `rules/tauri/performance.md` |
+| 프런트엔드의 lint, format, 타입 검사 설정(oxlint, Prettier, tsconfig, 패키지 매니저 고정) | `rules/setup/typescript.md` |
+| `src-tauri` crate의 lint, format, 툴체인 설정(rustfmt, clippy, 워크스페이스 lint, 프로필) | `rules/setup/rust.md` |
 | Tauri API, 설정, 보안, 테스트 사실 | `references/official/tauri/tauri-v2-2026-11-04.md` |
 | Router, Query, Vite, React 사실과 버전에 민감한 동작 | `references/official/tauri/tanstack-vite-react-2026-11-04.md` |
 

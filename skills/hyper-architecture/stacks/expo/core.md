@@ -118,6 +118,8 @@ Deliver user-facing text in Korean by default: the report, decisions, caveats, a
 - When changing the route tree, layouts, groups, or params, read `rules/expo/routing-and-navigation.md`.
 - When changing server state, client state, persistence, or the direction of a dependency, read `rules/expo/data-state-and-boundaries.md`.
 - When touching app config, permissions, secrets, storage, native code, or platform files, read `rules/expo/native-platform-and-security.md`.
+- When the request names jank, slow startup, list scroll cost, memory, app size, bundle size, or "최적화", read `rules/expo/performance.md`.
+- When the work involves lint, format, type-check, tsconfig, package manager pinning, or the CI check order, read `rules/setup/typescript.md`.
 - Before claiming completion, read `rules/expo/testing-and-validation.md`.
 - When the installed SDK or an official API behavior decides the change, read `references/official/expo/expo-react-native-2026-11-04.md` and compare its `last_verified_at` with the installed version.
 

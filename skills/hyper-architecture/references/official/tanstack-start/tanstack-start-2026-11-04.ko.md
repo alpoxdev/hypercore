@@ -11,9 +11,10 @@
   - `@tanstack/router-cli`: `1.167.46`
   - `@tanstack/zod-adapter`: `1.167.0`
   - `@tanstack/cli`: `0.72.16`
-  - `vite`: `8.3.5`
+  - `vite`: `8.3.6`
   - `zod`: `4.6.7`
-  - `@tanstack/react-query`: `5.105.3`
+  - `@tanstack/react-query`: `5.107.1`
+- patch_checked_at: 2026-11-07 (`vite`와 `@tanstack/react-query`만. 나머지 행은 2026-11-04 확인값입니다)
 - engines: `@tanstack/react-start@1.169.4`는 `node >=22.12.0`을, `peerDependencies.vite`는 `>=8.0.0`을 선언합니다
 - source_priority: canonical guide pages > API/reference pages > examples > migration/comparison pages > release notes for drift context
 - supersedes: 은퇴한 2026-09-22 Start 스냅샷(release candidate 시기)
@@ -62,6 +63,7 @@ Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일
 - `routeTree.gen.ts`는 Router tooling이 생성합니다. Router FAQ는 이 파일을 커밋하라고 말합니다. "it is essentially part of your application's runtime, not a build artifact." file-based-routing API page는 생성된 path를 linter와 formatter에서 무시하도록 권고합니다. 손으로 고치지 않습니다(Hypercore convention).
 - File organization: server-functions guide는 `*.functions.ts`(server function wrapper, 어디서든 import해도 안전) / `*.server.ts`(server-only helper) / 접미사 없는 `*.ts`(client-safe) 분리를 "one approach"로 제시할 뿐 의무로 두지 않습니다.
 - `.functions.ts`는 import protection이 **강제하지 않습니다.** import-protection guide의 기본 file pattern은 `**/*.server.*`와 `**/*.client.*`뿐이고, `.functions.ts`는 server-functions guide의 file-organization 절에만 나옵니다.
+- Router는 flat, directory, mixed route file 구조를 공식 지원합니다. route directory 선호는 로컬 관례이며 공식 TanStack 동작이 아닙니다(<https://tanstack.com/router/latest/docs/routing/file-based-routing>).
 - Sources:
   - <https://tanstack.com/start/latest/docs/framework/react/guide/server-functions.md>
   - <https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md>
@@ -72,7 +74,12 @@ Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일
 ## Router setup
 
 - `src/router.tsx`는 호출할 때마다 새 router instance를 반환하는 `getRouter` function을 export해야 합니다. 공식 예시는 function declaration을 씁니다. `export function getRouter() { ... }`
-- Source: <https://tanstack.com/start/latest/docs/framework/react/guide/routing.md>
+- Search validation: Zod v4는 schema를 `validateSearch`에 직접 전달합니다. `@tanstack/zod-adapter`는 `peerDependencies`가 `zod: ^3.23.8`을 고정하므로 Zod v3 전용이고, Zod 4 프로젝트는 설치할 수 없습니다. Zod v3는 여전히 adapter의 `zodValidator` / `fallback`을 씁니다.
+- Sources:
+  - <https://tanstack.com/start/latest/docs/framework/react/guide/routing.md>
+  - <https://tanstack.com/router/latest/docs/guide/search-params>
+  - <https://tanstack.com/router/latest/docs/how-to/validate-search-params>
+  - <https://registry.npmjs.org/@tanstack/zod-adapter/latest>
 
 ## Server functions
 
@@ -199,6 +206,10 @@ Start-specific API behavior가 architecture rule에 영향을 줄 때 이 파일
 - <https://tanstack.com/start/latest/docs/framework/react/guide/static-server-functions.md>
 - <https://tanstack.com/router/latest/docs/faq>
 - <https://tanstack.com/router/latest/docs/api/file-based-routing>
+- <https://tanstack.com/router/latest/docs/routing/file-based-routing>
+- <https://tanstack.com/router/latest/docs/guide/search-params>
+- <https://tanstack.com/router/latest/docs/how-to/validate-search-params>
+- <https://registry.npmjs.org/@tanstack/zod-adapter/latest>
 - <https://raw.githubusercontent.com/TanStack/router/fe7f1fd0e6ef73c3f341dd2338b406749538a85d/packages/start-client-core/src/createServerFn.ts>
 - <https://raw.githubusercontent.com/TanStack/router/fe7f1fd0e6ef73c3f341dd2338b406749538a85d/packages/start-client-core/src/createMiddleware.ts>
 - <https://raw.githubusercontent.com/TanStack/router/fe7f1fd0e6ef73c3f341dd2338b406749538a85d/packages/start-client-core/src/createStart.ts>

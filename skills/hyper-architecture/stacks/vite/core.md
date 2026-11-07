@@ -55,7 +55,7 @@ When official Vite/TanStack Router guidance and Hypercore conventions differ, en
 | Tools | Use local search/read/edit/validation commands; use current official docs when API drift matters; gate broad route migrations, credential access, SSR adoption, and production side effects. |
 | Loop | No optimization loop. After an architecture pass, allow at most two verify-repair iterations against the touched-surface checks in `rules/vite/validation.md`; keep a change only when it stays inside the touched scope and passes those checks, and stop when the Step 5 checklist passes or a blocker is reported. |
 | Output | Korean architecture decision or review with rule classifications, changed files if any, validation evidence, remaining risks, and official-doc ambiguity notes. |
-| Verification | Run `rules/vite/validation.md` checks relevant to touched surfaces and `bash scripts/validate-vite-stack.sh` when this skill folder changes. |
+| Verification | Run `rules/vite/validation.md` checks relevant to touched surfaces and `bash skills/hyper-architecture/scripts/validate-architecture.sh` when this skill folder changes. |
 | Stop condition | Stop after project mode is known, applicable safety gates pass, Hypercore conventions are applied or explicitly deferred, validation evidence is recorded, and unresolved API drift is dated and sourced. |
 
 </instruction_contract>
@@ -107,9 +107,9 @@ Boundary examples:
 
 ## Available scripts
 
-- `scripts/validate-vite-stack.sh`
-  - Purpose: validate this skill folder anatomy, required files, current-docs baseline phrases, and Korean sibling parity.
-  - Usage: `bash skills/hyper-architecture/scripts/validate-vite-stack.sh` from the repository root.
+- `scripts/validate-architecture.sh`
+  - Purpose: validate the skill folder itself — every stack guide with its rule set, every local Markdown path, every English/Korean sibling pair, code-fence balance, guide size caps, and eval fixture parsing.
+  - Usage: `bash skills/hyper-architecture/scripts/validate-architecture.sh` from the repository root.
   - Requires: bash 3.2+ and jq 1.6+.
   - Output: a JSON summary with `ok`, line and file counts, and the executed check names; non-zero exit on failure.
 
@@ -141,13 +141,15 @@ Read `stacks/vite/architecture-rules.md` before code changes or architecture fin
 | Loader/runtime boundaries, SSR-aware caveats, env safety | `rules/vite/execution-model.md` |
 | `vite.config.ts`, router setup, generated files, env and alias rules/vite | `rules/vite/platform.md` |
 | Project and skill validation, readback checks | `rules/vite/validation.md` |
+| Build target, chunk splitting, barrel files, dev-server warmup, React Compiler, Core Web Vitals | `rules/vite/performance.md` |
+| Lint, format, and type-check setup (oxlint, Prettier, tsconfig, package manager pinning) | `rules/setup/typescript.md` |
 | Vite config, env handling, router plugin setup, route tree generation, search or load behavior that may have drifted | `references/official/vite/current-docs-2026-11-04.md` |
 
 </reference_routing>
 
 <support_file_read_order>
 
-Read `stacks/vite/architecture-rules.md` before any code change or architecture finding, the topic rule for the touched surface next, the official snapshot only when plugin, env, route tree, search, or loader behavior may be API-drift sensitive, and `rules/vite/validation.md` before claiming completion. Run `bash scripts/validate-vite-stack.sh` after editing this skill folder.
+Read `stacks/vite/architecture-rules.md` before any code change or architecture finding, the topic rule for the touched surface next, the official snapshot only when plugin, env, route tree, search, or loader behavior may be API-drift sensitive, and `rules/vite/validation.md` before claiming completion. Run `bash skills/hyper-architecture/scripts/validate-architecture.sh` after editing this skill folder.
 
 </support_file_read_order>
 
@@ -262,7 +264,7 @@ Do not auto-apply broad or potentially breaking migrations without explicit just
 - `export const Route = createFileRoute(...)` in every touched file route.
 - Search params validated with `validateSearch` (Zod 4 passes the schema directly, Zod 3 uses `zodValidator`), loader prefetch routed through `queryClient.query({ ...options, staleTime: 'static' })`, and loaders kept public-safe and SSR-safe.
 - Every finding tied to a gate row and labelled BLOCKED or WARNING, with repo-local conventions labelled as such; verification evidence comes from the Step 5 checks that apply to the touched surface.
-- `bash skills/hyper-architecture/scripts/validate-vite-stack.sh` run when this skill folder itself changes.
+- `bash skills/hyper-architecture/scripts/validate-architecture.sh` run when this skill folder itself changes.
 
 </required>
 

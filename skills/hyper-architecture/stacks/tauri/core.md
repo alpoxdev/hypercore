@@ -144,6 +144,9 @@ Read `stacks/tauri/architecture-rules.md` first for the taxonomy, supported mode
 | CSP, scopes, credentials, untrusted input, native side-effect gates | `rules/tauri/security.md` |
 | Router file-routing ownership, Query cache/freshness ownership, loaders, preloading, external data | `rules/tauri/router-query.md` |
 | Tests and validation claims for touched runtime surfaces | `rules/tauri/testing.md` |
+| Release profile, `removeUnusedCommands`, binary size, webview bundle weight | `rules/tauri/performance.md` |
+| Lint, format, and type-check setup for the frontend (oxlint, Prettier, tsconfig, package manager pinning) | `rules/setup/typescript.md` |
+| Lint, format, and toolchain setup for the `src-tauri` crate (rustfmt, clippy, workspace lints, profiles) | `rules/setup/rust.md` |
 | Tauri API, config, security, and testing facts | `references/official/tauri/tauri-v2-2026-11-04.md` |
 | Router, Query, Vite, or React facts and version-sensitive behavior | `references/official/tauri/tanstack-vite-react-2026-11-04.md` |
 

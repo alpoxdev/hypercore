@@ -4,8 +4,9 @@
 
 last_verified_at: 2026-11-04
 checked_at: 2026-11-04
+patch_checked_at: 2026-11-07 (stable_versions의 `vite`와 `@tanstack/react-query`, 아래 React Compiler 네이티브 경로 상태)
 library_ids: `/websites/vite_dev`, `/tanstack/router`
-stable_versions: vite 8.3.5, @vitejs/plugin-react 6.2.1, @tanstack/react-router 1.170.46, @tanstack/router-plugin 1.168.48, @tanstack/react-query 5.105.3, @tanstack/router-core 1.171.39, zod 4.6.7
+stable_versions: vite 8.3.6, @vitejs/plugin-react 6.2.1, @tanstack/react-router 1.170.46, @tanstack/router-plugin 1.168.48, @tanstack/react-query 5.107.1, @tanstack/router-core 1.171.39, zod 4.6.7
 source_priority: 공식 Vite 문서, Vite 8 릴리스 글, `vitejs/vite`와 `vitejs/vite-plugin-react` 체인지로그, 공식 TanStack Router·TanStack Query 문서, npm 레지스트리.
 
 ## 현재 공식 Vite 사실
@@ -29,7 +30,8 @@ source_priority: 공식 Vite 문서, Vite 8 릴리스 글, `vitejs/vite`와 `vit
 - Vite 8이 React Refresh 변환을 Oxc로 처리하므로 plugin-react 6은 Babel에 의존하지 않습니다. 플러그인의 Babel 옵션은 6.0.0에서 제거되었습니다.
 - Babel 변환이 여전히 필요한 프로젝트는 플러그인 옵션이 아니라 `react()` 옆에 `@rolldown/plugin-babel`을 붙입니다.
 - React Compiler 지원은 `oxc-transform-react`를 설치하고 `react({ compiler: true })`를 쓰거나, `reactCompilerPreset()`과 `@rolldown/plugin-babel`을 조합합니다.
-- `compiler.reportDiagnostics`가 deprecated된 `compiler.logDiagnostics`를 대체합니다. `refreshInclude`와 `refreshExclude`는 브라우저에서 실행되지 않는 파일의 Fast Refresh를 건너뜁니다.
+- 네이티브 `compiler` 경로는 **experimental**입니다. 플러그인 README가 그렇게 표시하고, `@vitejs/plugin-react` 6.2.0 기준 `oxc-transform-react >=0.152.0 <0.157.0`을 peer로 선언합니다. 그 표시가 바뀌기 전까지 프로덕션에는 `reactCompilerPreset()`을 우선합니다. (2026-11-07 재확인.)
+- `compiler.reportDiagnostics`가 deprecated된 `compiler.logDiagnostics`(6.1.2)를 대체합니다. `refreshInclude`와 `refreshExclude`는 브라우저에서 실행되지 않는 파일의 Fast Refresh를 건너뜁니다. 플러그인의 `main` README에는 아직 `logDiagnostics`가 적혀 있으므로 체인지로그가 기준입니다.
 
 ## 현재 공식 TanStack Router 사실
 
@@ -68,7 +70,7 @@ source_priority: 공식 Vite 문서, Vite 8 릴리스 글, `vitejs/vite`와 `vit
 
 ## Sources
 
-> 확인 2026-11-04.
+> 확인 2026-11-04. `vite`와 `@tanstack/react-query` 버전 행, React Compiler 네이티브 경로 상태는 2026-11-07에 다시 확인했습니다.
 
 - `https://vite.dev/guide/migration`
 - `https://vite.dev/blog/announcing-vite8`

@@ -15,9 +15,8 @@ Brownfield 적용: touched files는 해당 safety rules와 현재 hypercore conv
 1. `references/official/tanstack-start/current-docs-2026-11-04.ko.md`
 2. `references/official/tanstack-start/tanstack-start-2026-11-04.ko.md`
 3. `references/official/tanstack-start/tanstack-router-2026-11-04.ko.md`
-4. `references/official/tanstack-start/api-drift-notes.ko.md`
-5. `rules/tanstack-start/` 아래 topic rules/tanstack-start
-6. Installed versions가 다르면 project-local package types와 tests
+4. `rules/tanstack-start/` 아래 topic rules/tanstack-start
+5. Installed versions가 다르면 project-local package types와 tests
 
 ## Blocking Safety Gates
 
@@ -123,4 +122,4 @@ Issue가 local, reversible, low-risk이면 직접 auto-fix합니다:
 
 ## Sources
 
-> 출처 확인 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/overview.md>(stable 상태), <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md>(삭제된 API, Vite 8), <https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md>(기본값), <https://tanstack.com/router/latest/docs/how-to/validate-search-params.md>(Zod v4 direct schema), <https://registry.npmjs.org/@tanstack/zod-adapter/latest>(Zod v3 peer 범위). 나머지는 이 패키지 자체의 snapshot(`references/official/tanstack-start/tanstack-start-2026-11-04.md`, `references/official/tanstack-start/tanstack-router-2026-11-04.md`, `references/official/tanstack-start/current-docs-2026-11-04.md`)과 결정 기록 `references/official/tanstack-start/api-drift-notes.md`에 위임합니다. 공식 사실 검증 2026-11-04. 저장소 로컬 링크 확인 2026-11-04.
+> 출처 확인 2026-11-04: <https://tanstack.com/start/latest/docs/framework/react/overview.md>(stable 상태), <https://tanstack.com/start/latest/docs/framework/react/migrate-from-release-candidate.md>(삭제된 API, Vite 8), <https://tanstack.com/start/latest/docs/framework/react/guide/import-protection.md>(기본값), <https://tanstack.com/router/latest/docs/how-to/validate-search-params.md>(Zod v4 direct schema), <https://registry.npmjs.org/@tanstack/zod-adapter/latest>(Zod v3 peer 범위). 나머지는 이 패키지 자체의 snapshot(`references/official/tanstack-start/tanstack-start-2026-11-04.md`, `references/official/tanstack-start/tanstack-router-2026-11-04.md`, `references/official/tanstack-start/current-docs-2026-11-04.md`)에 위임합니다. 공식 사실 검증 2026-11-04. 저장소 로컬 링크 확인 2026-11-04.

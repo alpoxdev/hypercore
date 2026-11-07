@@ -60,7 +60,7 @@
 | Tools | 로컬 검색·읽기·편집·검증 명령을 쓰고, API가 달라졌을 수 있으면 현재 공식 문서를 확인합니다. 파괴적 마이그레이션, 자격 증명, 프로덕션 부작용, 광범위한 일괄 수정은 게이트를 둡니다. |
 | Loop | 없습니다. 요청마다 강제 절차를 한 번만 돌리고, 사용자가 다시 요청할 때만 새로 시작합니다. |
 | Output | 규칙 분류, 변경한 파일, 검증 근거, 남은 위험, 날짜를 붙인 공식 문서 모호성 메모를 담은 한국어 아키텍처 판단이나 리뷰. |
-| Verification | 수정한 영역에 해당하는 `rules/nextjs/validation.ko.md` 검사를 돌리고, 이 스킬 폴더를 고쳤으면 `bash scripts/validate-nextjs-stack.sh`를 실행합니다. |
+| Verification | 수정한 영역에 해당하는 `rules/nextjs/validation.ko.md` 검사를 돌리고, 이 스킬 폴더를 고쳤으면 `bash skills/hyper-architecture/scripts/validate-architecture.sh`를 실행합니다. |
 | Stop condition | 프로젝트 모드를 확인했고, 적용되는 안전 게이트를 통과했고, 로컬 관례를 적용했거나 미뤘고, 검증 근거를 남겼고, 남은 API 차이에 날짜와 출처를 붙인 상태에서 멈춥니다. |
 
 </instruction_contract>
@@ -120,7 +120,7 @@ Boundary examples:
 
 ## Available scripts
 
-`scripts/validate-nextjs-stack.sh`는 이 스킬 폴더 구성, 필수 파일, 공식 기준 문구, 한국어 짝 파일 일치를 검사합니다. 저장소 루트에서 `bash skills/hyper-architecture/scripts/validate-nextjs-stack.sh`로 실행하고(bash 3.2 이상, jq 1.6 이상), JSON 요약을 출력하며 실패하면 0이 아닌 종료 코드를 냅니다.
+`scripts/validate-architecture.sh`는 이 스킬 폴더 자체를 검사합니다. 모든 스택 가이드가 규칙 묶음과 함께 있는지, Markdown의 로컬 경로가 실제로 있는지, 영어 파일마다 한국어 짝 파일이 있는지, 코드 펜스가 맞는지, 가이드가 크기 상한 안에 있는지, eval fixture가 해석되는지 확인합니다. 저장소 루트에서 `bash skills/hyper-architecture/scripts/validate-architecture.sh`로 실행하고(bash 3.2 이상, jq 1.6 이상), JSON 요약을 출력하며 실패하면 0이 아닌 종료 코드를 냅니다.
 
 </skill_architecture>
 
@@ -153,6 +153,8 @@ Boundary examples:
 | Drizzle 스키마, 마이그레이션, 연결 수명, server-only DB 배치 | `rules/nextjs/db.md` |
 | env, `next.config.*`, `typedRoutes`, Proxy, route segment 설정, 배포 관련 설정 | `rules/nextjs/platform.md` |
 | 손댄 영역의 변경 후 검사 | `rules/nextjs/validation.md` |
+| 번들 무게, 렌더링과 캐시 비용, Core Web Vitals, React Compiler, `next analyze`, `next/image` | `rules/nextjs/performance.md` |
+| lint, format, 타입 검사 설정(oxlint, Prettier, tsconfig, 패키지 매니저 고정) | `rules/setup/typescript.md` |
 | 스냅숏 이후 달라졌을 수 있는 Next.js 동작 | `references/official/nextjs/current-docs-2026-11-04.md`, 그다음 `references/official/nextjs/nextjs-docs.md`. Drizzle 주장은 `references/official/nextjs/drizzle-docs.md` |
 
 `https://r.jina.ai/https://nextjs.org/docs/...`는 공식 스냅숏 두 개가 어긋나거나 해당 페이지를 마크다운으로 읽어야 할 때만 씁니다.
@@ -269,7 +271,7 @@ Boundary examples:
 - 강제 기본값 네 가지: 공식 문서가 로컬 관례보다 우선, `app/`에는 App Router 규칙이 기본, App Router UI에서 시작한 쓰기는 Server Action, 모든 Server Action을 외부에서 닿는 POST 진입점으로 취급.
 - 모든 판정을 게이트 행과 연결하고 BLOCKED 또는 WARNING으로 표시. 저장소 로컬 관례는 그렇게 표시.
 - 손댄 영역에 해당하는 4단계 검사의 근거.
-- 이 스킬 폴더 자체를 고쳤을 때 `bash skills/hyper-architecture/scripts/validate-nextjs-stack.sh` 실행.
+- 이 스킬 폴더 자체를 고쳤을 때 `bash skills/hyper-architecture/scripts/validate-architecture.sh` 실행.
 
 </required>
 

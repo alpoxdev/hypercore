@@ -80,7 +80,6 @@ Positive examples:
 - `handler가 풀을 직접 만지지 않게 SQLx를 이 Axum API에 연결해줘.`
 - `영속 엔드포인트를 추가하기 전에 SQLx 마이그레이션과 OpenAPI 경계를 검토해줘.`
 - `hyper-architecture 전체 수정`
-- `Axum 아키텍처 스킬을 전체 교정 모드로 실행해줘.`
 
 Negative examples:
 
@@ -89,12 +88,9 @@ Negative examples:
 
 Boundary examples:
 
-- `Axum health 응답 문자열만 한 줄 바꿔줘.`
-  아키텍처 경계가 걸리지 않으면 직접 수정으로 충분합니다.
-- `공식 Axum 기본값만 쓰고 Hypercore 추가 규약은 빼줘.`
-  이 스킬은 여전히 적용되지만, 공식 문서를 넘는 Hypercore 전용 엄격성은 선택 사항으로 낮춥니다.
-- `이 저장소에는 Hono API와 Rust Axum 워커가 있어.`
-  이 스킬은 Axum 워커만 소유하고, 다른 서버는 자기 아키텍처 규칙을 유지합니다.
+- `Axum health 응답 문자열만 한 줄 바꿔줘.` 아키텍처 경계가 걸리지 않으면 직접 수정으로 충분합니다.
+- `공식 Axum 기본값만 쓰고 Hypercore 추가 규약은 빼줘.` 이 스킬은 여전히 적용되지만, 공식 문서를 넘는 Hypercore 전용 엄격성은 선택 사항으로 낮춥니다.
+- `이 저장소에는 Hono API와 Rust Axum 워커가 있어.` 이 스킬은 Axum 워커만 소유하고, 다른 서버는 자기 아키텍처 규칙을 유지합니다.
 
 </activation_examples>
 
@@ -159,6 +155,8 @@ Boundary examples:
 | `tower::ServiceExt::oneshot`, `axum-test`, 통합·DB 테스트 | `rules/axum/testing.md` |
 | `main.rs` 부트스트랩, 설정, `axum::serve`, graceful shutdown, tracing | `rules/axum/platform.md` |
 | Rust 이름 규칙, 모듈, import, clippy와 스타일 | `rules/axum/conventions.md` |
+| 지연, 처리량, 릴리스 프로필, SQLx 풀 크기, 압축, 타임아웃 layer, 메모리, 바이너리 크기 | `rules/axum/performance.md` |
+| lint, format, clippy, rustfmt, toolchain 고정, workspace lint, CI 검사 순서 | `rules/setup/rust.md` |
 | 규칙 뒤의 공식 axum 동작 또는 공식 기본값 요청 | `references/official/axum/axum-docs.md` |
 | `rules/axum/middleware.md` 주장 뒤의 tower와 tower-http 동작 | `references/official/axum/tower-docs.md` |
 | `rules/axum/database.md` 주장 뒤의 SQLx 동작 | `references/official/axum/sqlx-docs.md` |
@@ -175,10 +173,7 @@ Boundary examples:
 2. `reference_routing` 순서로 건드린 표면의 주제 파일.
 3. 파일 이름이나 스타일을 수정하기 전에 `rules/axum/conventions.md`.
 4. 공식 동작이나 공식 기본값 요청이면 `references/official/axum/axum-docs.md`.
-5. layer나 service 조립 동작이면 `references/official/axum/tower-docs.md`.
-6. 데이터베이스 동작이 범위에 있으면 `references/official/axum/sqlx-docs.md`.
-7. API 계약이 범위에 있으면 `references/official/axum/utoipa-docs.md`.
-8. 검증, 테스트, 오류, 로깅 crate 동작이 범위에 있으면 `references/official/axum/ecosystem-docs.md`.
+5. 주장을 뒷받침하는 참조: layer는 `tower-docs.md`, 데이터베이스 동작은 `sqlx-docs.md`, API 계약은 `utoipa-docs.md`, 검증·테스트·오류·로깅 crate는 `ecosystem-docs.md`.
 
 </support_file_read_order>
 
@@ -192,32 +187,9 @@ Boundary examples:
 | 3.5 | 건드린 범위 안에서 저위험 자동 교정 적용 | 수정 또는 백로그 항목 |
 | 4 | 아래 파일 순서로 구현하고 검증 | 변경 파일과 근거 |
 
-1단계 — 프로젝트 검증:
+1단계 — 프로젝트 검증: `rules/axum/project-structure.ko.md`의 탐색 명령(Axum 표지, 영속성 표지, `전체 수정` 모드의 crate 전체 목록화)과 `rules/stack-detection.md`의 라우팅 확인을 실행합니다. Axum 표지가 없으면 Axum 규칙을 강제하지 말고 일반 구현·검토 경로로 돌려보냅니다.
 
-```bash
-rg -n '^axum\s*=|axum\s*=\s*\{|axum-extra' Cargo.toml */Cargo.toml
-rg -n "use axum::|axum::Router|axum::serve|#\[derive\(.*FromRef" src crates
-rg -n "tokio::main|Router::new\(\)|\.with_state\(" src crates
-```
-
-해당 표지가 하나도 없으면 Axum 규칙을 강제하지 말고 일반 구현·검토 경로로 돌려보냅니다.
-
-영속성이 범위에 있으면 데이터베이스 표지도 확인합니다:
-
-```bash
-rg -n 'sqlx|sea-orm|diesel|tokio-postgres' Cargo.toml */Cargo.toml
-rg -n "PgPool|MySqlPool|SqlitePool|query!|query_as!|\.begin\(\)|sqlx::migrate" src crates
-ls migrations sqlx.toml .sqlx 2>/dev/null
-```
-
-`전체 수정` 모드가 활성이면 수정 전에 넓게 탐색합니다:
-
-```bash
-rg --files -g '*.rs' src crates 2>/dev/null
-rg -n "Router::new\(\)|\.route\(|\.nest\(|\.merge\(|\.layer\(|\.route_layer\(|from_fn|with_state|FromRef|Json<|Query<|Path<|validate\(|sqlx::|AppError|IntoResponse|utoipa" src crates
-```
-
-3단계 — 핵심 게이트. 브라운필드 규칙: 건드리지 않은 기존 스타일 드리프트는 백로그가 될 수 있지만, 안전, 타입, 검증, 영속성, OpenAPI, 런타임 경계 문제는 건드린 작업에서 즉시 차단합니다. `전체 수정` 모드에서는 감지한 Axum crate 전체가 건드린 범위입니다.
+3단계 — 핵심 게이트. 브라운필드 규칙: 건드리지 않은 기존 스타일 드리프트는 백로그가 될 수 있지만, 안전, 타입, 검증, 영속성, OpenAPI, 런타임 경계 문제는 건드린 작업에서 즉시 차단합니다. `전체 수정` 모드에서는 감지한 Axum crate 전체가 건드린 범위입니다. 교정 세부는 연결된 지원 파일의 체크리스트를 사용하고, 이 코어는 그것을 다시 서술하지 않습니다.
 
 - `Router`를 반환하는 조립 루트가 하나이고 `main.rs`는 부트스트랩만 합니다. 상태는 `with_state`로 한 번 주입합니다.
 - handler가 SQL, 풀 생성, 마이그레이션 로직을 들고 있지 않고 영속성은 repository 뒤에 있습니다.
@@ -229,8 +201,6 @@ rg -n "Router::new\(\)|\.route\(|\.nest\(|\.merge\(|\.layer\(|\.route_layer\(|fr
 - 하나의 `AppError`가 `IntoResponse`를 구현하고, 내부 오류 텍스트, SQL, 비밀은 응답 본문에 도달하지 않습니다.
 - 부트스트랩 코드가 `axum::serve`, 시그널 처리, tracing 초기화, 설정 검증을 소유하고, 라우트 모듈은 포트를 바인딩하지 않습니다.
 - Rust 모듈과 파일은 `snake_case`이고, `cargo clippy`에 건드린 코드에서 새 경고가 없습니다.
-
-교정 세부는 연결된 지원 파일의 체크리스트를 사용하고, 이 코어는 그것을 다시 서술하지 않습니다.
 
 3.5단계 — 자동 교정. 문제가 국소적이고 되돌릴 수 있으며 저위험이면 직접 고칩니다:
 

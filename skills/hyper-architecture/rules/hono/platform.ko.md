@@ -6,7 +6,7 @@
 
 ## Stable runtime 기준
 
-2026-11-04 확인 기준 Hono는 4.13.16이고 `@hono/node-server`는 2.1.6입니다. Adapter는 Node `>=20`과 Hono `^4 || ^5.0.0-0`을 요구하며, 이 package manifest가 아직 18.x 최소 버전을 적고 있는 Node.js guide page보다 엄격합니다. Installed package metadata와 선택한 runtime의 최신 공식 guide가 우선합니다.
+2026-11-07 확인 기준 Hono는 4.13.17이고(4.13.16은 라우터와 form 검증 결함을 고친 보안 하한으로 남습니다) `@hono/node-server`는 2.1.6입니다. Adapter는 Node `>=20`과 Hono `^4 || ^5.0.0-0`을 요구하며, 이 package manifest가 아직 18.x 최소 버전을 적고 있는 Node.js guide page보다 엄격합니다. Installed package metadata와 선택한 runtime의 최신 공식 guide가 우선합니다.
 
 - Cloudflare/Deno/Bun runtime은 일반적으로 Fetch-compatible app entry를 제공하고 Node는 공식 adapter를 사용합니다.
 - Adapter는 자체 package에서 가져옵니다(`@hono/bun`, `@hono/deno`, `@hono/cloudflare-workers`, `@hono/aws-lambda`, `@hono/lambda-edge`, `@hono/netlify`, `@hono/vercel`, `@hono/service-worker`). `hono/<adapter>`는 v4에서 동작하지만 deprecated이고 v5에서 제거되므로 새 code에 추가하지 않습니다. `hono/cloudflare-pages`는 대체 package가 없습니다.
@@ -43,11 +43,11 @@
 
 ## Sources
 
-> Checked 2026-11-04. adapter 분리, deprecation, static-file 동작은 링크한 release note와 guide에서, package version은 npm registry에서 확인했습니다.
+> 확인 2026-11-07. adapter 분리, deprecation, static-file 동작은 링크한 release note와 guide에서, package version은 npm registry에서 확인했습니다.
 
 | 주장 | 출처 |
 |---|---|
-| Hono 4.13.16, `@hono/node-server` 2.1.6과 각각의 peer·engine 범위 | [npm registry: hono](https://registry.npmjs.org/hono), [npm registry: `@hono/node-server`](https://registry.npmjs.org/@hono/node-server) |
+| registry `latest` Hono 4.13.17, `@hono/node-server` 2.1.6과 각각의 peer·engine 범위 | [npm registry: hono](https://registry.npmjs.org/hono), [npm registry: `@hono/node-server`](https://registry.npmjs.org/@hono/node-server) |
 | adapter package와 `hono/<adapter>` deprecation | [`hono` v4.13.10 release](https://github.com/honojs/hono/releases/tag/v4.13.10) |
 | Node WebSocket bootstrap과 `@hono/node-ws` deprecation | [Node.js Guide](https://hono.dev/docs/getting-started/nodejs), [`@hono/node-server` README](https://github.com/honojs/node-server) |
 | `serveStatic`의 `%` 거부, `allowPercentInPath`, GET/HEAD 한정 | [`hono` v4.13.11 release](https://github.com/honojs/hono/releases/tag/v4.13.11), [`hono` v4.13.14 release](https://github.com/honojs/hono/releases/tag/v4.13.14) |

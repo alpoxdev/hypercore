@@ -155,6 +155,8 @@ Read `stacks/hono/architecture-rules.md` before editing. Then open the one file 
 | `testClient()`, `hc<AppType>`, `AppType`, larger-app inference | `rules/hono/testing-rpc.md` |
 | Adapters, entrypoints, bindings, env/config typing, `basePath()` boundaries | `rules/hono/platform.md` |
 | Naming, TypeScript style, imports, comments for any touched file | `rules/hono/conventions.md` |
+| Latency, throughput, router choice, response compression, ETag, shared cache, bundle size | `rules/hono/performance.md` |
+| Lint, format, type-check, tsconfig, package manager, CI check order | `rules/setup/typescript.md` |
 | Official Hono behavior behind a rule, or an explicit official-defaults request | `references/official/hono/hono-docs.md` |
 | Drizzle behavior behind `rules/hono/database.md` claims | `references/official/hono/drizzle-docs.md` |
 

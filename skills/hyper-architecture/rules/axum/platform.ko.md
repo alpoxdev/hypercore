@@ -10,7 +10,7 @@
 - `#[tokio::main]`, 설정 로딩, tracing 설정, 풀 생성, 상태 조립, 리스너 바인딩, 정상 종료를 `main.rs`나 `bin/*.rs`에 둡니다.
 - `Router`를 반환하는 조립 함수를 노출하고 바이너리가 그것을 호출합니다. 테스트도 같은 함수를 호출합니다.
 - 설정을 한 번 타입이 있는 구조체로 만들고 검증한 뒤 `AppState`에 둡니다. handler에서 `std::env::var`를 호출하지 않습니다.
-- tracing을 서비스 전에 한 번 초기화하고 `RUST_LOG`나 저장소의 필터 설정을 존중합니다.
+- tracing을 서비스 전에 한 번 초기화하고 `RUST_LOG`나 저장소의 필터 설정을 존중합니다. `EnvFilter`는 `tracing-subscriber`의 `env-filter` feature를 요구합니다(기본 feature가 아닙니다). `EnvFilter::from_default_env()`는 `RUST_LOG`를 읽고 변수가 비었거나 없으면 `ERROR` 수준 지시자를 더합니다.
 - 기본 주소에 기대지 않고 명시적으로 바인딩하며, 고른 주소를 구조화된 필드로 기록합니다.
 - 시그널 future와 함께 `with_graceful_shutdown`을 써서 처리 중인 요청이 SIGINT/SIGTERM에서 끝나게 합니다.
 - health와 readiness 엔드포인트를 선택적 의존성과 분리합니다. readiness는 풀을 확인해도 되지만 liveness는 안 됩니다.
@@ -18,6 +18,14 @@
 - 아키텍처 검토 안에서 비동기 런타임, TLS 백엔드, 리스너 모델, 배포 manifest를 바꾸지 않습니다.
 
 ## 예시
+
+`EnvFilter`는 `tracing-subscriber`의 기본 feature가 아닙니다(기본값은 `ansi`, `fmt`, `smallvec`, `std`, `tracing-log`). 따라서 의존성에서 이 feature를 켜야 하며, 그렇지 않으면 아래 코드는 컴파일되지 않습니다.
+
+```toml
+[dependencies]
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+```
 
 ```rust
 use std::net::SocketAddr;
@@ -103,7 +111,7 @@ async fn shutdown_signal() {
 
 ## Sources
 
-> Checked 2026-11-05.
+> 확인 2026-11-07. 런타임과 serve 동작은 axum·tokio 문서로 다시 확인했고, `env-filter` feature 요구는 tracing-subscriber feature 목록과 `EnvFilter` 소스에서 확인했습니다.
 
 | Claim | Source |
 |---|---|
@@ -111,4 +119,5 @@ async fn shutdown_signal() {
 | 리스너에 대한 `serve` 제네릭, `tcp_nodelay` 제거, MSRV 1.80 | [axum 0.8.0 changelog](https://github.com/tokio-rs/axum/blob/main/axum/CHANGELOG.md), [axum 0.8.9 changelog](https://github.com/tokio-rs/axum/blob/main/axum/CHANGELOG.md) |
 | Tokio 런타임과 시그널 처리 | [tokio](https://docs.rs/tokio/latest/tokio/), [tokio::signal](https://docs.rs/tokio/latest/tokio/signal/index.html) |
 | `tracing` subscriber 설정 | [tracing-subscriber](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/) |
+| `EnvFilter`가 `env-filter` feature를 요구하고 `from_default_env()`가 `RUST_LOG`를 읽음 | [tracing-subscriber features](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/), [EnvFilter source](https://raw.githubusercontent.com/tokio-rs/tracing/master/tracing-subscriber/src/filter/env/mod.rs) |
 | `TraceLayer` | [tower-http trace](https://docs.rs/tower-http/latest/tower_http/trace/index.html) |

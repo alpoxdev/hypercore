@@ -80,7 +80,6 @@ Positive examples:
 - `Wire SQLx into this Axum API without handlers touching the pool directly.`
 - `Review the SQLx migration and OpenAPI boundaries before adding a persisted endpoint.`
 - `hyper-architecture 전체 수정`
-- `Run the Axum architecture skill in full-remediation mode.`
 
 Negative examples:
 
@@ -89,12 +88,9 @@ Negative examples:
 
 Boundary examples:
 
-- `Make a tiny copy-only change to an Axum health response string.`
-  Direct editing can be enough when no architectural boundary is affected.
-- `Use official Axum defaults only, without the extra Hypercore conventions.`
-  This skill still applies, but Hypercore-only strictness that exceeds the official docs is relaxed.
-- `This repository has a Hono API and a Rust Axum worker.`
-  This skill owns only the Axum worker; the other server keeps its own architecture rules.
+- `Make a tiny copy-only change to an Axum health response string.` Direct editing can be enough when no architectural boundary is affected.
+- `Use official Axum defaults only, without the extra Hypercore conventions.` This skill still applies, but Hypercore-only strictness that exceeds the official docs is relaxed.
+- `This repository has a Hono API and a Rust Axum worker.` This skill owns only the Axum worker; the other server keeps its own architecture rules.
 
 </activation_examples>
 
@@ -159,6 +155,8 @@ Read `stacks/axum/architecture-rules.md` before editing. Then open the one file 
 | `tower::ServiceExt::oneshot`, `axum-test`, integration and database tests | `rules/axum/testing.md` |
 | `main.rs` bootstrap, configuration, `axum::serve`, graceful shutdown, tracing | `rules/axum/platform.md` |
 | Rust naming, modules, imports, clippy and style for any touched file | `rules/axum/conventions.md` |
+| Latency, throughput, release profile, SQLx pool sizing, compression, timeout layers, memory, binary size | `rules/axum/performance.md` |
+| Lint, format, clippy, rustfmt, toolchain pinning, workspace lints, CI check order | `rules/setup/rust.md` |
 | Official axum behavior behind a rule, or an explicit official-defaults request | `references/official/axum/axum-docs.md` |
 | tower and tower-http behavior behind `rules/axum/middleware.md` claims | `references/official/axum/tower-docs.md` |
 | SQLx behavior behind `rules/axum/database.md` claims | `references/official/axum/sqlx-docs.md` |
@@ -175,10 +173,7 @@ When the user asks for official defaults, start from the official references, tr
 2. The topic file for the touched surface, in `reference_routing` order.
 3. `rules/axum/conventions.md` before editing any file's naming or style.
 4. `references/official/axum/axum-docs.md` when official behavior or an official-defaults request is in play.
-5. `references/official/axum/tower-docs.md` for layer or service-composition behavior.
-6. `references/official/axum/sqlx-docs.md` when database behavior is in scope.
-7. `references/official/axum/utoipa-docs.md` when the API contract is in scope.
-8. `references/official/axum/ecosystem-docs.md` when validation, testing, error, or logging crate behavior is in scope.
+5. The reference that backs the claim: `tower-docs.md` for layers, `sqlx-docs.md` for database behavior, `utoipa-docs.md` for the API contract, `ecosystem-docs.md` for validation, testing, error, and logging crates.
 
 </support_file_read_order>
 
@@ -192,32 +187,9 @@ When the user asks for official defaults, start from the official references, tr
 | 3.5 | Apply low-risk auto-remediations inside the touched scope | Edits or backlog items |
 | 4 | Implement in the file order below, then verify | Changed files and evidence |
 
-Step 1 — project validation:
+Step 1 — project validation: run the discovery commands in `rules/axum/project-structure.md` (Axum indicators, persistence indicators, and the full-crate inventory for `전체 수정` mode), plus the routing check in `rules/stack-detection.md`. If the Axum indicators are absent, stop and route back to the normal implementation or review path instead of forcing Axum rules.
 
-```bash
-rg -n '^axum\s*=|axum\s*=\s*\{|axum-extra' Cargo.toml */Cargo.toml
-rg -n "use axum::|axum::Router|axum::serve|#\[derive\(.*FromRef" src crates
-rg -n "tokio::main|Router::new\(\)|\.with_state\(" src crates
-```
-
-If none of those indicators exist, stop and route back to the normal implementation or review path instead of forcing Axum rules.
-
-When persistence is in scope, also inspect database indicators:
-
-```bash
-rg -n 'sqlx|sea-orm|diesel|tokio-postgres' Cargo.toml */Cargo.toml
-rg -n "PgPool|MySqlPool|SqlitePool|query!|query_as!|\.begin\(\)|sqlx::migrate" src crates
-ls migrations sqlx.toml .sqlx 2>/dev/null
-```
-
-When `전체 수정` mode is active, run broad discovery before editing:
-
-```bash
-rg --files -g '*.rs' src crates 2>/dev/null
-rg -n "Router::new\(\)|\.route\(|\.nest\(|\.merge\(|\.layer\(|\.route_layer\(|from_fn|with_state|FromRef|Json<|Query<|Path<|validate\(|sqlx::|AppError|IntoResponse|utoipa" src crates
-```
-
-Step 3 — critical gates. Brownfield rule: untouched legacy style drift can become backlog; safety, typing, validation, persistence, OpenAPI, and runtime boundary issues still block touched work; in `전체 수정` mode the whole detected Axum crate is the touched scope.
+Step 3 — critical gates. Brownfield rule: untouched legacy style drift can become backlog; safety, typing, validation, persistence, OpenAPI, and runtime boundary issues still block touched work; in `전체 수정` mode the whole detected Axum crate is the touched scope. Use the detailed checklists in the linked support files for remediation detail; this core does not restate them.
 
 - One composition root returns `Router`, and `main.rs` only bootstraps it; state is provided once with `with_state`.
 - Handlers do not hold SQL, pool creation, or migration logic; persistence stays behind repositories.
@@ -229,8 +201,6 @@ Step 3 — critical gates. Brownfield rule: untouched legacy style drift can bec
 - One `AppError` implements `IntoResponse`; internal error text, SQL, and secrets never reach the response body.
 - Bootstrap code owns `axum::serve`, signal handling, tracing initialization, and configuration validation; route modules never bind ports.
 - Rust modules and files use `snake_case`, and `cargo clippy` has no newly introduced warnings on touched code.
-
-Use the detailed checklists in the linked support files for remediation detail; this core does not restate them.
 
 Step 3.5 — auto-remediation. Auto-fix directly when the issue is local, reversible, and low-risk:
 

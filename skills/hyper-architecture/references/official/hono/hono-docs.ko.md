@@ -1,6 +1,6 @@
 # Hono 공식 문서 요약
 
-last_verified_at: 2026-11-04
+last_verified_at: 2026-11-07
 
 ## Contents
 
@@ -11,11 +11,11 @@ last_verified_at: 2026-11-04
 
 ## Stable package snapshot
 
-2026-11-04 npm registry metadata와 아래 인용한 release note를 확인한 기준입니다. 이는 근거 snapshot이며 자동 upgrade target이 아닙니다.
+2026-11-07 npm registry metadata와 아래 인용한 release note를 확인한 기준입니다. 이는 근거 snapshot이며 자동 upgrade target이 아닙니다.
 
 | Package | Stable | 확인된 compatibility |
 |---|---:|---|
-| `hono` | 4.13.16 | Core package의 Node engine `>=16.9.0`, 4.13.16이 보안 최소 버전 |
+| `hono` | 4.13.17 | Core package의 Node engine `>=16.9.0`, registry `latest`는 4.13.17이고 4.13.16이 보안 최소 버전 |
 | `@hono/node-server` | 2.1.6 | Node `>=20`, Hono `^4 || ^5.0.0-0` |
 | `@hono/zod-validator` | 0.9.1 | Hono `>=4.11.2`, Zod `^3.25.0 || ^4.0.0` |
 | `@hono/standard-validator` | 0.4.1 | Hono `>=4.11.2`, Standard Schema `^1.0.0` |
@@ -134,7 +134,7 @@ last_verified_at: 2026-11-04
 
 ## Sources
 
-> Checked 2026-11-04.
+> 확인 2026-11-07. `hono` 행을 npm registry 기준으로 갱신했고, 4.13.16은 문서화된 보안 최소 버전으로 남습니다.
 
 | 주장 | 출처 |
 |---|---|

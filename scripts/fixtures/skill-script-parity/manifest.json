@@ -352,17 +352,19 @@
       "behaviorContractId": "hyper-imagegen--validate-hyper-imagegen"
     },
     {
-      "path": "skills/hyper-architecture/scripts/validate-nextjs-stack.sh",
+      "path": "skills/hyper-architecture/scripts/validate-architecture.sh",
       "family": "hyper-architecture",
-      "legacyOrigin": "retained-mjs",
+      "legacyOrigin": "authored-mjs",
       "usage": "validate-skill",
       "behavior": "skill-validation",
       "sourcePreimage": {
-        "path": "skills/nextjs-architecture/scripts/validate-nextjs-architecture-skill.mjs",
-        "sha256": "ad593912e14400893f6f6912a8e5d38bd3614bf2d6f7bc24a4180728e919ee30",
-        "gitMode": "100755"
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-architecture/scripts/validate-architecture.mjs",
+          "absent": true
+        }
       },
-      "behaviorContractId": "hyper-architecture--validate-nextjs-stack"
+      "behaviorContractId": "hyper-architecture--validate-architecture"
     },
     {
       "path": "skills/prd-maker/scripts/build-preview.sh",
@@ -480,19 +482,6 @@
         "gitMode": "100644"
       },
       "behaviorContractId": "hyper-skill--validate-hyper-skill"
-    },
-    {
-      "path": "skills/hyper-architecture/scripts/validate-vite-stack.sh",
-      "family": "hyper-architecture",
-      "legacyOrigin": "retained-mjs",
-      "usage": "validate-skill",
-      "behavior": "skill-validation",
-      "sourcePreimage": {
-        "path": "skills/vite-architecture/scripts/validate-vite-architecture-skill.mjs",
-        "sha256": "899d876160f308164bdd9a4e3ac03a6076683f7524e4e5a2e466d5b6cac53b5d",
-        "gitMode": "100644"
-      },
-      "behaviorContractId": "hyper-architecture--validate-vite-stack"
     },
     {
       "path": "skills/jev-maker/scripts/check-jev-request.sh",
