@@ -106,7 +106,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 /hyper-database "<작업>" # 엔진을 감지해 스키마 설계·무중단 마이그레이션·쿼리·인덱스 튜닝·엔진 선택·DBA 운영을 근거 게이트로 검증
 /hyper-design "<작업>"   # AI 티 없는 화면 디자인·리디자인·연출 화면(mockup)과 generic 패턴 점검·정리를 정석 수치와 독립 검토로 검증
 /hyper-browsing "<대상>"  # 403·WAF·챌린지·JavaScript·사라진 페이지처럼 평범한 요청으로 안 열리는 페이지 내용을 단계 사다리로 가져오고 출처·종료 상태까지 기록
-/prd-maker "<아이디어>"  # 다이어그램·플로우·와이어프레임을 포함한 기획 패키지
+/hyper-prd "<아이디어>"  # 웹·iOS·Android·데스크톱 PRD를 `prd.md` 한 파일로, 규모별 질문 상한과 테스트 가능한 요구사항까지
 /hyper-deploy "<작업>"   # Railway·Cloudflare·Docker·Compose·VPS 배포 전 점검·첫 설정·배포·설정 변경·실패 진단과 수정을 플랫폼 최종 상태로 검증
 ```
 
@@ -170,7 +170,7 @@ flowchart LR
 |------|------|------|
 | `hyper-skill` | 유지보수하기 쉬운 Codex/AI 에이전트 스킬 생성 및 리팩터링 | All |
 | `hyper-documentation` | 요청한 산출물에 맞춰 네 모드 중 하나로 작업: `readme`(코드베이스 기반 README), `agents-md`(영어 `AGENTS.md` + 한국어 `AGENTS.ko.md`, `CLAUDE.md`는 만들지 않음), `prompt`(재사용 프롬프트·템플릿/팩·eval 픽스처), `docs`(AI가 읽기 좋은 문서·런북·룰 팩) | All |
-| `prd-maker` | 증거 기반 Living PRD + 다이어그램·플로우·와이어프레임 생성·갱신 | All |
+| `hyper-prd` | 웹·iOS·Android·데스크톱 PRD를 `prd.md` 한 파일로 작성·갱신·검토 — 규모별 질문 상한, EARS 테스트 가능한 요구사항, 인수 시나리오, 핸드오프 블록 | All |
 
 ### 아키텍처 가드
 
