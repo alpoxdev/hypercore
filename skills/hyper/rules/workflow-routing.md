@@ -21,7 +21,7 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 | Stage | Add it when | Evidence to quote |
 |---|---|---|
 | `hyper-research` | The job depends on facts outside the repository: choosing between libraries or services, a new major version, an unfamiliar external API, or "최신" / "latest" behavior | The request phrase |
-| `hyper-issue` | The requested output is an issue record or a batch manifest: a confirmed finding to write up, an issue whose scope or acceptance is missing, or a condition over open issues to select and group before implementation | The request phrase, plus the tracker and the named label or query |
+| `hyper-issue` | The request asks to register or record issues ("이슈 등록해줘", "이슈로 남겨줘", "register these as issues"), names issue numbers (`#1~3`, `#4, #7`, `1~3번 이슈`), names a condition over open issues to select and group, or names an issue whose scope or acceptance is missing | The request phrase, plus the tracker and the named numbers, label, or query |
 | `hyper-seo` | The job is about search or AI-answer visibility of a named site or page set | The request phrase and the target URL or app path |
 | `hyper-architecture` | The job restructures folders, routes, modules, data or server boundaries, or platform setup; adds a feature that creates a new route, module, or server boundary; sets up or unifies the lint, format, and type tooling (oxlint, Prettier, rustfmt, clippy); or optimizes build or runtime performance | The request phrase plus a stack manifest that was read, such as `package.json` or `Cargo.toml` |
 | `hyper-database` | The job designs or reviews a data model or schema, writes or reviews a database migration or backfill, tunes a slow query, an index, a hot key, or a hot partition, chooses a database engine or managed data service, or changes database operations (backup and restore, replication and failover, connection pooling, upgrades, database security, monitoring) | The request phrase, plus the schema, migration, ORM, or driver file that was read when one exists, such as `schema.prisma`, `drizzle.config.ts`, a `migrations/` folder, `pg` or `ioredis` in `package.json`, or a database image in a compose file |
@@ -52,7 +52,8 @@ When both delivery brackets are chosen, `hyper-git` runs first and `hyper-deploy
 - `hyper-mcp` is the tail when it is the last chosen stage: it builds, fixes, migrates, or connects and verifies the result itself. When `hyper-plan` or `hyper-mass` follows it, it runs in audit mode and its report is the plan's input.
 - `hyper-design` is the tail when it is the last chosen stage: it designs, restyles, mocks up, or cleans the interface and verifies it itself. When `hyper-plan` or `hyper-mass` follows it, it runs in `brief-only` mode for an interface that does not exist yet or in `audit` mode for an existing one, and its saved brief or report is the plan's input.
 - `hyper-feedback` is the tail when it is the last chosen stage: it applies every item within its direct-edit budget and verifies it itself. When its run ends `handoff`, `hyper-plan` is added after it in the same run with `.hyper/feedback/<slug>/brief.md` as required reading; the route line shows that conditional stage as `hyper-feedback [-> hyper-plan]`. When it ends `applied`, no plan stage runs.
-- `hyper-issue` produces evidence for the tail, like the other upstream stages: its issue records and manifest are the plan's input. When the user wants only the record or the manifest, it is the last stage and the chain ends there.
+- `hyper-issue` produces evidence for the tail, like the other upstream stages: it registers the issues and writes the lane manifest, and `hyper-plan` turns each manifest lane into one parallel lane of its waves. Registration words or issue numbers continue into `hyper-plan` by default, so the run ends only after the lanes are executed and delivered. Only record-only words ("등록만", "이슈만", "작업은 하지 마", "manifest only") make `hyper-issue` the last stage.
+- A request handed over by `hyper-issue` itself (it names `.hyper/issues/<slug>/batch.md` and says the issue stage is done) does not run `hyper-issue` again: record it as stage 1 `done` with the manifest path, and start at `hyper-plan`.
 - Otherwise the tail is exactly one of: `hyper-plan` (which continues into `hyper-execute` by itself), `hyper-mass`, `hyper-execute` alone for an existing plan, `hyper-skill` for a skill folder, `hyper-documentation` for a document or prompt artifact, or `hyper-imagegen` for one image or one image prompt.
 - `hyper-git` is never a tail on its own: it runs after a tail that changed files but owns no delivery. `hyper-plan`, `hyper-execute`, and `hyper-mass` deliver for themselves, so `hyper-git` never follows them.
 - `hyper-deploy` is the last stage of a chain: it deploys the result the earlier stages produced, and no stage ever follows it. When the user also asks for commit, push, or merge delivery, `hyper-git` runs before `hyper-deploy`.
@@ -71,8 +72,9 @@ When both delivery brackets are chosen, `hyper-git` runs first and `hyper-deploy
 | Feature or fix across several files | `hyper-plan` |
 | Feature that adds a route, module, or server boundary | `hyper-architecture` -> `hyper-plan` |
 | Library or technology choice, then adoption | `hyper-research` -> `hyper-plan` |
-| Issue record only, or a batch manifest only | `hyper-issue` |
-| Issue batch implemented after the issue records and lanes exist | `hyper-issue` -> `hyper-plan` |
+| Issue record only, or a batch manifest only ("등록만", "명세만") | `hyper-issue` |
+| Issues registered, or issue numbers named, then the lanes implemented ("이슈 등록해줘", "#1~3 작업해줘") | `hyper-issue` -> `hyper-plan` |
+| Hand-off from `hyper-issue` with a manifest | `hyper-plan`, with `hyper-issue` recorded as `done` |
 | Unfamiliar external facts behind the issue's fix | `hyper-research` -> `hyper-issue` -> `hyper-plan` |
 | Framework or major-version migration | `hyper-research` -> `hyper-architecture` -> `hyper-plan` |
 | Schema designed, migration written, query or index tuned, or database operations changed | `hyper-database` |
@@ -120,7 +122,7 @@ Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report 
 - A stage the user names inside a longer request ("hyper-research로 조사하고 바로 적용해") is chosen, and the other stages still follow the signals.
 - A request whose whole output is one blocked page's content ("이 403 페이지 본문만 가져와") is not a `hyper` job: `hyper-browsing` handles it alone. A blocked source met while researching stays inside the `hyper-research` stage as its companion.
 - `hyper-issue` never runs with `hyper-skill` or `hyper-documentation`; an issue record or a manifest is its own deliverable, and a skill folder or general document goes to its own stage.
-- `hyper-issue` runs before `hyper-plan` only when the plan consumes its manifest or issue records. Issue recording with no implementation afterwards ends the chain at `hyper-issue`.
+- `hyper-issue` runs before `hyper-plan` whenever issues are registered or numbers are named, unless the user used record-only words; then the chain ends at `hyper-issue`.
 - `hyper-mass` and `hyper-plan` never run in one chain. Choose `hyper-mass` only on its explicit signal; otherwise choose `hyper-plan`.
 - `hyper-skill` and `hyper-plan` never run in one chain. When the requested output is a skill folder, choose `hyper-skill`; a plan file is not its input.
 - `hyper-documentation` never runs with `hyper-plan`. Choose by the primary deliverable: a README, `AGENTS.md`, document, or reusable prompt artifact goes to `hyper-documentation`, which picks its own mode, and a skill folder goes to `hyper-skill`.

@@ -39,7 +39,7 @@ compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대�
 | Stage skill | What the stage produces |
 |---|---|
 | `hyper-research` | `.hyper/research/` 아래의 출처 있는 리서치 보고서 |
-| `hyper-issue` | 항목마다 구현 가능한 이슈. 배치 요청이면 `.hyper/issues/<slug>/` 아래 레인으로 묶은 배치 명세 |
+| `hyper-issue` | `hyper:` 블록을 담아 트래커에 영어로 등록한 이슈, 그리고 계획 단계가 병렬 레인으로 돌리는 `.hyper/issues/<slug>/` 아래 레인 묶음 배치 명세 |
 | `hyper-seo` | `.hyper/seo/<slug>/` 아래의 검색 노출 감사, 보고서, 횟수 제한이 있는 최적화 루프 |
 | `hyper-architecture` | 스택에 맞춘 아키텍처, 셋업(린트·포맷·타입 도구), 성능 점검 결과, 마지막 단계일 때는 그 수정 |
 | `hyper-database` | `.hyper/database/<slug>/`에 저장한 데이터베이스 점검 결과(스키마·마이그레이션 리뷰, 설계 브리프, 엔진 선택). 마지막 단계일 때는 근거 게이트로 검증한 스키마 설계, 무중단 마이그레이션, 쿼리·인덱스 튜닝, 운영 변경 |
@@ -97,6 +97,8 @@ Positive requests:
 - "이 저장소 배포 런북을 에이전트가 읽기 좋게 다시 정리해줘." -> `hyper-documentation`
 - "Build a reusable code-review system prompt with an eval fixture, checked against the latest provider prompting guide." -> `hyper-research` -> `hyper-documentation`
 - "이 버그 이슈로 남기고, 라벨 붙은 것들 배치로 돌려줘." -> `hyper-issue` -> `hyper-plan` -> `hyper-execute`
+- "이 세 가지 이슈로 등록해줘." -> `hyper-issue`(등록, 레인) -> `hyper-plan` -> `hyper-execute`, 레인은 병렬로 실행
+- "hyper #1~3" -> `hyper-issue`(번호, 레인) -> `hyper-plan` -> `hyper-execute`
 - "hyper-git 스킬 새로 만들고 다 하면 dev, main에 머지하고 푸시해줘." -> `hyper-skill` -> `hyper-git` (`&& dev && main`)
 - "사내 DB 조회하는 MCP 서버 만들어서 Claude Code에 연결까지 해줘." -> `hyper-mcp`
 - "Migrate our MCP server to the current spec and open a PR." -> `hyper-mcp`(점검) -> `hyper-plan` -> `hyper-execute`와 `--make-pr`
@@ -140,7 +142,8 @@ Boundary requests:
 | 지원 스택의 리팩토링이나 구조 변경 | `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | 새 기능, 버그 수정, 여러 단계 구축 | `hyper-plan` -> `hyper-execute`. 아키텍처 경계를 넘으면 앞에 `hyper-architecture` |
 | 라이브러리나 기술 선택, 낯선 외부 API 뒤에 구현 | `hyper-research` -> `hyper-plan` -> `hyper-execute` |
-| 확인된 발견을 구현 가능한 이슈로 남기거나, 고정 이슈 배치를 골라 구현 전에 레인으로 묶기 | 배치는 `hyper-issue` -> `hyper-plan` -> `hyper-execute`. 기록이나 명세만 원하면 `hyper-issue` 단독 |
+| 이슈 등록 요청("이슈 등록해줘", "이슈로 남겨줘", "register these as issues"), 이슈 번호(`#1~3`, `#4, #7`), 또는 열린 이슈에 대한 조건 | 기본은 `hyper-issue` -> `hyper-plan` -> `hyper-execute`이므로 등록부터 레인 작업까지 끝까지 갑니다. 기록만 원하는 단어("등록만", "이슈만", "작업은 하지 마")가 있을 때만 `hyper-issue` 단독 |
+| `hyper-issue`가 넘긴 요청으로, `.hyper/issues/<slug>/batch.md`를 지목하고 이슈 단계가 끝났다고 밝힘 | `hyper-plan` -> `hyper-execute`, `hyper-issue`는 `done`으로 기록 |
 | 프레임워크나 메이저 버전 마이그레이션 | `hyper-research` -> `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | SEO, AEO, GEO 감사 뒤 수정을 계획된 변경으로 구현 | `hyper-seo` -> `hyper-plan` -> `hyper-execute` |
 | 계획 파일 없이 의존 순서가 있는 다중 에이전트 작업 | `hyper-mass` |
@@ -215,6 +218,7 @@ Phase 규칙:
 - 단계 사이에 허락을 묻지 않습니다. 앞 산출물이 확인되면 바로 다음 단계를 시작합니다.
 - 단계 규칙을 기억으로 적용하지 않습니다. 스킬을 불러오거나 사용 불가 보고와 함께 멈춥니다.
 - 이미 실행으로 이어진 `hyper-plan` 단계 뒤에 `hyper-execute`를 부르지 않습니다.
+- `hyper-issue`는 `--from-hyper`로 불러옵니다. 그래야 이슈를 등록하고 명세를 쓰되 두 번째 `hyper` 실행을 시작하지 않습니다. 그 명세는 레인 입력으로 `hyper-plan`에 넘깁니다.
 
 </workflow>
 
@@ -263,6 +267,7 @@ Phase 규칙:
 | 각 단계 스킬의 결과물, 산출물 경로, 경계 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 계획 단계가 스스로 실행으로 이어지고 전달 플래그를 넘김 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 순차 체인은 저장된 산출물로 상태를 넘기고 라우터는 코드 같은 규칙으로 갈래를 고름 | `instructions/graph-engineering/references/graph-patterns.md` |
+| 이슈 등록 단어와 이슈 번호는 기본으로 `hyper-issue`를 거쳐 레인 배치까지 가고, `hyper-issue`가 넘긴 요청은 계획 단계에서 시작함 | user instruction, 2026-11-07 |
 | `[Hyper]`로 시작해 트리거를 먼저 쓰는 description, 이중 언어 패키지 형태, 한 단계 참조 규칙 | `instructions/skill/SKILL_AUTHORING.md` |
 
 ### Evidence grade
