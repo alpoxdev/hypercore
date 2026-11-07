@@ -7,6 +7,8 @@ Use this reference when creating or restructuring `prd.md`. It owns the section 
 - Section order
 - Skeleton
 - Worked example
+- Release gate table
+- Data collection matrix
 - Rules
 
 ## Section order
@@ -19,7 +21,7 @@ Use this reference when creating or restructuring `prd.md`. It owns the section 
 6. Scope: P1/P2/P3 stories, non-goals, must-not-change behavior
 7. Functional requirements
 8. Acceptance scenarios
-9. Platform requirements
+9. Platform requirements: one block per decided platform, a release gate table in each block, and the shared data collection matrix when both `ios` and `android` are targets
 10. Assumptions
 11. Open questions
 12. Risks and dependencies
@@ -119,7 +121,31 @@ Then <observable outcome>
 
 ### web
 
-<The decided platform, and the obligations its checklist must settle. Where a checklist exists it fills this block.>
+<One block per decided platform, in the order the platforms were decided. Name the checklist file the block was filled from. A platform that was not decided gets no block and its checklist is never read.>
+
+#### Release gate
+
+| ID | Grade | Item | Conclusion | Evidence |
+|---|---|---|---|---|
+| W5 | `[M-조건]` | <the item sentence, short form> | applies, or not applicable with the condition, or `[확인 필요: <question>]` | <document, screen, or measurement that settles it> |
+| W6 | `[M-조건]` | <...> | <...> | <...> |
+| W1 | `[G]` | <only when relevant to this product> | <...> | <...> |
+
+### Data collection matrix (ios and android)
+
+Write this once, inside the platform requirements section and outside any single platform block, only when the decided platforms include both `ios` and `android`.
+
+| Data type | Collected | Shared with third parties | Linked to the user's identity | Used for tracking | Purpose |
+|---|---|---|---|---|---|
+| <e.g. email address> | yes | no | yes | no | account sign-in |
+| <e.g. coarse location> | no | - | - | - | not collected; named so both stores agree |
+
+Apple privacy label view: <which rows of the table map to which App Privacy label data types, and what the label says for each>.
+
+Play Data safety view: <which rows map to which Data safety data types, and what the declaration says for each, including "no data collected" when that is the answer>.
+
+- The matrix is written once. The App Privacy label (`I4`) and the Play Data safety declaration (`A2`, `A3`) both read from it; neither restates the data types from memory.
+- A data type one platform handles and the other does not is a product decision: record the difference and its reason next to the matrix.
 
 ## Assumptions
 
@@ -208,6 +234,7 @@ A single-purpose focus timer that starts a fixed session and blocks mid-session 
 
 - Preset library and custom duration authoring: would add a settings surface and a second mental model for the same 25 minutes.
 - Cross-device session sync: would add an account and a server dependency that the single-device case does not need.
+- Paid tier: a subscription or one-off purchase would add store billing, a price surface, and an entitlement state the free timer does not need.
 
 ### Must not change
 
@@ -256,11 +283,53 @@ Then no session is restored and the start state is shown
 
 ### ios
 
-Decided platform. The iOS checklist must settle in-app account handling, privacy declarations, and the review demo path before the build stage; until that checklist exists those items stay open and are not invented here.
+Filled from `references/platforms/ios.md`.
+
+#### Release gate
+
+| ID | Grade | Item | Conclusion | Evidence |
+|---|---|---|---|---|
+| I1 | `[M-조건]` | In-app account deletion under 5.1.1(v) | not applicable - the app creates no account and has no sign-in, so 5.1.1(v) has no subject | product scope above: no account, no sync |
+| I2 | `[M-조건]` | In-app purchase under 3.1.1 | not applicable - no paid digital goods or services | non-goals: no paid tier |
+| I3 | `[M-조건]` | Subscription terms under 3.1.2 | not applicable - no subscription | non-goals: no paid tier |
+| I4 | `[M]` | App Privacy label for every data type the release handles | applies - session events and crash reports, neither linked to identity nor used for tracking; the label reads from the data collection matrix below | data collection matrix |
+| I5 | `[M]` | Privacy manifest content and its owner | applies - manifest lists the same data types as the label, no tracking domains, owner is the release owner | data collection matrix |
+| I6 | `[M-조건]` | Review demo account under 2.1 | not applicable - no sign-in, so the reviewer needs no credentials | product scope: no account |
+| I7 | `[M]` | Minimum functionality under 4.2 and 4.2.2 | applies - the timer, its session state, and its completion state are the app's own function, not a repackaged site or a link collection | scope P1 |
+| I8 | `[G]` | Notification permission request in context | applies - the completion alert asks on first session start, with one sentence naming the timer | scope P1 |
 
 ### android
 
-Decided platform. The Android checklist must settle the target API level deadline and the data-safety declaration before the build stage; those items stay open until that checklist exists.
+Filled from `references/platforms/android.md`.
+
+#### Release gate
+
+| ID | Grade | Item | Conclusion | Evidence |
+|---|---|---|---|---|
+| A1 | `[M]` | Target API level of the release | applies - the release targets API level 36, the floor in force from 2026-08-31 | build config at release time |
+| A2 | `[M]` | Play Data safety declaration | applies - the declaration is written from the data collection matrix below | data collection matrix |
+| A3 | `[M]` | Per-type collected, shared, purpose, optional, ephemeral | applies - session events and crash reports, not shared, not optional, not ephemeral | data collection matrix |
+| A4 | `[M]` | Permission list limited to promoted current features | applies - the notification permission serves the completion alert promoted in the listing | scope P1 |
+| A5 | `[M]` | Permission-to-feature mapping table | applies - one row: notification permission, completion alert, listing screenshot 2, asked on first session start | store listing plan |
+| A6 | `[M-조건]` | Sensitive or restricted permission declaration | not applicable - the release requests no sensitive or restricted permission | permission list above |
+| A7 | `[M-조건]` | Play billing for digital goods | not applicable - no digital goods are sold | non-goals: no paid tier |
+| A8 | `[M-조건]` | Play Billing library version | not applicable - the app does not use Play Billing | non-goals: no paid tier |
+| A9 | `[M]` | Published artifact format | applies - an Android App Bundle is uploaded, with no delivery split relied on | build config at release time |
+| A10 | `[G]` | Stability floor read from Android vitals | applies - the counter-metric reads user-perceived crash rate below 1.09% and ANR rate below 0.47%, per app version, in Play Console | goal 3 in the metrics table |
+| A11 | `[G]` | Interactive touch targets at 48 dp or more | applies - the start and stop controls are measured at 56 dp on one compact and one large screen | layout inspection record |
+
+### Data collection matrix
+
+| Data type | Collected | Shared with third parties | Linked to the user's identity | Used for tracking | Purpose |
+|---|---|---|---|---|---|
+| Session start and end events | yes | no | no | no | measuring the completed-session rate |
+| Crash reports | yes | no | no | no | stability |
+| Account identifiers | no | - | - | - | no account exists |
+| Precise location | no | - | - | - | not requested |
+
+Apple privacy label view: session events and crash reports are declared as usage and diagnostics, not linked to identity, not used for tracking; the label names no other type.
+
+Play Data safety view: the same two types are declared as collected, not shared, not optional, not ephemeral; the declaration names no other type and does not claim "no data collected".
 
 ## Assumptions
 
@@ -293,8 +362,42 @@ Decided platform. The Android checklist must settle the target API level deadlin
 - Size: S
 - P1 scope: FR-001, FR-002 with the start-and-finish story
 - Remaining blocking questions: none
-- Inputs for the next stage: the fixed duration, the completion state, the resume window, and the two platform obligations above
+- Inputs for the next stage: the fixed duration, the completion state, the resume window, the iOS and Android release gate tables, and the shared data collection matrix
 ```
+
+## Release gate table
+
+One table per decided platform block, filled from that platform's checklist file.
+
+| Column | Content |
+|---|---|
+| ID | The checklist item id, for example `I1` or `A2` |
+| Grade | The grade copied from the checklist, unaltered: `[M]`, `[M-조건]`, `[G]` |
+| Item | The obligation in one short sentence, with the threshold, measurement method, and percentile for a numeric item |
+| Conclusion | `applies`, `not applicable` with the condition or reason, or `[확인 필요: <question>]` |
+| Evidence | The document, console screen, or measurement that settles the conclusion |
+
+- Every `[M]` and `[M-조건]` item of the loaded checklist gets a row. A `[M-조건]` row whose condition is false reads "not applicable" with the reason; the row does not disappear.
+- A `[G]` item gets a row only when it is relevant to this product.
+- A `[M]` row left at `[확인 필요]` keeps the document at `status: draft`.
+- A store obligation is written as the clause plus the observable state the clause requires. "Follow the store guidelines" is not a conclusion.
+
+## Data collection matrix
+
+One matrix for the document, written only when the decided platforms include both `ios` and `android`.
+
+| Column | Content |
+|---|---|
+| Data type | The data category, in the words the store forms use |
+| Collected | `yes` or `no` |
+| Shared with third parties | `yes` or `no`, with the recipient when `yes` |
+| Linked to the user's identity | `yes` or `no` |
+| Used for tracking | `yes` or `no` |
+| Purpose | Why the release handles it |
+
+- The matrix is written once. The App Privacy label and the Play Data safety declaration both read from it; neither restates the data types from memory.
+- A type one platform handles and the other does not is a product decision: record the difference and its reason next to the matrix.
+- A type the release handles but the matrix omits is a defect in the matrix, fixed before either store form is filled.
 
 ## Rules
 
@@ -302,6 +405,10 @@ Decided platform. The Android checklist must settle the target API level deadlin
 - Delete every placeholder you cannot fill with a fact, an assumption, or a marker. An empty section is a defect, not a template artifact.
 - A `[가정: …]` that changes scope appears again as an `A-###` entry; a `[확인 필요: …]` that blocks scope becomes a `Q-###` with `Blocking: yes`.
 - Every story gets one happy-path and one failure-or-edge scenario, so two stories produce four scenarios.
+- Every decided platform block carries a release gate table. Every `[M]` and `[M-조건]` item of that platform's checklist gets a row with a conclusion; `[G]` items appear only when relevant.
+- A numeric gate item states its threshold, its measurement method, and its percentile in the same cell.
+- When `ios` and `android` are both decided, the data collection matrix is written once for the document, with the Apple privacy label view and the Play Data safety view derived from it.
+- A store obligation is written as the clause plus the observable state the clause requires. A sentence that says to follow the guidelines without naming the clause and the state is not a requirement.
 - At most three `[확인 필요: …]` markers in the whole document.
 - The handoff block is the only place the next stage's inputs are described; this document never contains a task list, a design, or a flow.
 
@@ -321,6 +428,7 @@ Decided platform. The Android checklist must settle the target API level deadlin
 | Assumptions and open questions kept out of the body as fact | [phuryn create-prd](https://github.com/phuryn/pm-skills) - "Don't invent. What you don't know goes to 7.4 Assumptions and open questions, clearly marked, not into the body as fact." |
 | Counter-metrics in the metric set | [TerminalSkills prd-writing](https://github.com/TerminalSkills/skills) - "Counter-metrics: [Metrics we don't want to hurt]" |
 | A handoff block at the end of the document | [Citadel prd](https://github.com/SethGammon/Citadel) |
+| One data inventory that both store privacy forms read from | [App Privacy Details](https://developer.apple.com/app-store/app-privacy-details/) - "This information is required to submit new apps and app updates to the App Store."; [Play Data safety](https://support.google.com/googleplay/android-developer/answer/10787469) - "Even developers with apps that do not collect any user data must complete this form" |
 | No-naming of the internal build mechanism | [ai-conductor prd](https://github.com/jstoup111/ai-conductor) - "It MUST NOT name the new internal mechanism by which this feature is built." |
 
 ### Evidence grade
