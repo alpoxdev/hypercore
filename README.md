@@ -123,7 +123,8 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 | "결제 재시도 기능 추가해줘" | `hyper-plan` -> `hyper-execute` |
 | "폴더 구조 리팩토링해줘" | `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | "상태관리 라이브러리 비교해서 적용까지" | `hyper-research` -> `hyper-plan` -> `hyper-execute` |
-| "이 버그 이슈로 남겨줘" | `hyper-issue` |
+| "이 버그들 이슈로 등록해줘" | `hyper-issue` -> `hyper-plan` -> `hyper-execute` (등록부터 레인 작업까지 자동) |
+| "이 버그 이슈 등록만 해줘" | `hyper-issue` |
 | "label:bug 이슈들 배치로 돌려줘" | `hyper-issue` -> `hyper-plan` -> `hyper-execute` |
 | "스킬 만들고 dev에 머지·푸시" | `hyper-skill` -> `hyper-git` |
 | "결제 버그 고치고 staging에 배포까지" | `hyper-plan` -> `hyper-execute` -> `hyper-deploy` |
@@ -142,7 +143,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 
 ### 이슈 배치 흐름
 
-여러 작업을 한 번에 처리할 때는 이슈를 먼저 남기고 배치로 돌립니다.
+여러 작업을 한 번에 처리할 때는 이슈를 먼저 남기고 배치로 돌립니다. `hyper`에 "이슈로 등록해줘"라고 하거나 `hyper-issue #1~3`처럼 이슈 번호를 적으면 등록(또는 번호 읽기), 레인 나누기, 레인별 작업까지 한 번에 진행합니다. 작업 없이 기록이나 명세만 원하면 "등록만", "레인만"이라고 말합니다.
 
 ```mermaid
 flowchart LR
@@ -152,6 +153,7 @@ flowchart LR
   D --> E[검증 1회 후 dev 반영]
 ```
 
+- 이슈 제목과 본문은 새 세션의 에이전트가 읽기 쉽도록 커밋 메시지처럼 영어로 씁니다. 실행 보고와 배치 명세는 한국어입니다.
 - 이슈 본문 `## Scope`의 `hyper:` 블록(`touches`, `depends_on`, `conflicts_with`, `verify`)으로 겹침을 판정하므로 배치 때 코드를 다시 조사하지 않습니다.
 - 같은 파일을 쓰는 이슈는 한 레인에서 순서대로, 서로 겹치지 않는 레인만 병렬로 실행합니다(기본 최대 4개).
 - 워크트리는 저장소 안 `.hyper/worktree/`에 만들고, `.hyper/`가 `.gitignore`에 없으면 먼저 추가합니다.
@@ -195,7 +197,7 @@ flowchart LR
 | `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-architecture·hyper-database·hyper-mcp·hyper-design·hyper-feedback·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation·hyper-git·hyper-deploy 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 고객·기획자 변경 요청 → feedback(큰 항목은 → plan), 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute, 인터넷 검색 리서치 → research(막힌 출처는 hyper-browsing 동반), 기능 고치고 배포 → plan → execute → deploy, 배포 실패 고치기 → deploy) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
 | `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
-| `hyper-issue` | 확정된 발견이나 결정된 작업을 바로 구현 가능한 이슈로 기록하고, 열린 이슈 묶음을 서로 겹치지 않는 작업 레인으로 묶어 배치 매니페스트 생성(구현은 하지 않음) | 인증된 이슈 트래커 CLI(`gh`); 쓰기 권한이 없으면 본문을 디스크에 초안으로 남김 |
+| `hyper-issue` | 확정된 발견이나 결정된 작업을 새 세션 에이전트가 읽는 영어 이슈로 등록하고, 열린 이슈 묶음이나 `#1~3` 같은 번호를 서로 겹치지 않는 작업 레인으로 묶어 배치 매니페스트 생성. 작업까지 원하면 `hyper`에 넘겨 레인별로 실행(스킬 자체는 구현하지 않음) | 인증된 이슈 트래커 CLI(`gh`); 쓰기 권한이 없으면 본문을 디스크에 초안으로 남김; 레인 실행에는 `hyper` 스킬 |
 | `hyper-mass` | 의존 순서가 있는 하위 작업을 그래프로 정의해 단계별 병렬 실행, 재시도·수정·재개 지원 | All |
 
 ### 리서치 · 디버깅 · QA

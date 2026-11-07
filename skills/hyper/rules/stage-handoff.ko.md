@@ -9,7 +9,7 @@
 | Stage | Request passed to the stage | Artifact that must exist before the next stage | Passed forward |
 |---|---|---|---|
 | `hyper-research` | 작업이 달려 있는 질문과 그 질문이 뒷받침할 결정("이 저장소에 맞는 상태관리 라이브러리, 다음에 도입할 것"). 웹 조사형이면 "평범한 요청으로 읽지 못하는 출처마다 그 출처 하나에 `hyper-browsing`을 불러오고, 출처 표시와 보고서 경로를 `sources.md`에 적을 것"도 넘깁니다 | `.hyper/research/[NN].<slug>.md`와, 그 `sources.md`가 인용하는 모든 `.hyper/browsing/<slug>/report.md` | 보고서 경로와 추천 한 줄 |
-| `hyper-issue` | 기록할 항목 또는 선택 조건, 그리고 트래커, 저장소, 초안만 같은 사용자 제한 | 이슈 기록, 배치면 `.hyper/issues/<slug>/batch.md` | 이슈 번호와 URL, 명세 경로, 레인 표 |
+| `hyper-issue` | `--from-hyper`, 등록할 항목·이슈 번호·선택 조건, 그리고 트래커, 저장소, 초안만 같은 사용자 제한. "이슈마다 `hyper:` 블록을 담아 영어로 등록하고, 레인 명세를 쓰고, `hyper` 실행을 또 시작하지 말 것"도 넘깁니다 | 트래커에서 다시 읽은 등록 이슈와 `.hyper/issues/<slug>/batch.md` | 이슈 번호와 URL, 명세 경로. `hyper-plan`에는 "명세의 Lane 표에서 레인 최대 네 개 묶음마다 웨이브 하나를 계획할 것. 레인 하나는 병렬 레인 하나이고 그 안의 이슈는 순서대로. 이슈마다 `verify`가 그 행의 게이트. 목록은 고정"을 넘깁니다 |
 | `hyper-seo` | 대상, 그리고 Build 작업이면 허용 동작 `recommend`, Report 작업이면 사용자가 말한 모드 | `.hyper/seo/<slug>/` 아래 보고서 | 보고서 경로와 critical·warning 결과 |
 | `hyper-architecture` | Build 작업에서는 "아키텍처 감사만, 파일 경로와 함께 결과 보고, 수정 금지"와 대상 경로. 마지막 단계일 때는 사용자 요청 그대로 | 라우팅 줄과 결과를 워크플로 기록의 단계 메모에 옮긴 것. 감사 모드에서는 이 단계가 자기 파일을 저장하지 않기 때문입니다 | 단계 메모 위치와 결과 |
 | `hyper-database` | 계획이나 mass 단계 앞에서는 "리뷰만, 파일 경로와 함께 결과·설계 브리프·엔진 선택 보고, 수정 금지"와 대상 경로, 모든 앞 단계 산출물 경로. 마지막 단계일 때는 사용자 요청 그대로와 모든 앞 단계 산출물 경로 | `.hyper/database/<slug>/report.md`. 마지막 단계일 때는 검증 절이 각 확인을 실행 결과와 함께, 또는 사유를 붙인 `not run`으로 적습니다 | 보고서 경로와 critical, high 발견 |

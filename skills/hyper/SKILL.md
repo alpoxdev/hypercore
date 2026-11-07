@@ -39,7 +39,7 @@ By user instruction, this package is an orchestrator: it names its sixteen stage
 | Stage skill | What the stage produces |
 |---|---|
 | `hyper-research` | A cited research report under `.hyper/research/` |
-| `hyper-issue` | An implementation-ready issue per item, and for a batch request a lane-grouped manifest under `.hyper/issues/<slug>/` |
+| `hyper-issue` | Issues registered on the tracker in English with their `hyper:` blocks, and a lane-grouped manifest under `.hyper/issues/<slug>/` that the plan stage runs as parallel lanes |
 | `hyper-seo` | A search-visibility audit, report, or bounded optimize loop under `.hyper/seo/<slug>/` |
 | `hyper-architecture` | Stack-matched architecture, setup (lint, format, type tooling), or performance findings, or those edits when it is the last stage |
 | `hyper-database` | Database findings saved under `.hyper/database/<slug>/` (a schema or migration review, a design brief, an engine choice), or, when it is the last stage, a designed schema, an online migration, a tuned query or index, or an operations change verified by its evidence gates |
@@ -97,6 +97,8 @@ Positive requests:
 - "이 저장소 배포 런북을 에이전트가 읽기 좋게 다시 정리해줘." -> `hyper-documentation`
 - "Build a reusable code-review system prompt with an eval fixture, checked against the latest provider prompting guide." -> `hyper-research` -> `hyper-documentation`
 - "이 버그 이슈로 남기고, 라벨 붙은 것들 배치로 돌려줘." -> `hyper-issue` -> `hyper-plan` -> `hyper-execute`
+- "이 세 가지 이슈로 등록해줘." -> `hyper-issue` (register, lanes) -> `hyper-plan` -> `hyper-execute`, with the lanes run in parallel
+- "hyper #1~3" -> `hyper-issue` (numbers, lanes) -> `hyper-plan` -> `hyper-execute`
 - "hyper-git 스킬 새로 만들고 다 하면 dev, main에 머지하고 푸시해줘." -> `hyper-skill` -> `hyper-git` (`&& dev && main`)
 - "사내 DB 조회하는 MCP 서버 만들어서 Claude Code에 연결까지 해줘." -> `hyper-mcp`
 - "Migrate our MCP server to the current spec and open a PR." -> `hyper-mcp` (audit) -> `hyper-plan` -> `hyper-execute` with `--make-pr`
@@ -140,7 +142,8 @@ Boundary requests:
 | Refactor or restructure in a supported stack | `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | New feature, fix, or multi-step build | `hyper-plan` -> `hyper-execute`, with `hyper-architecture` first when the change crosses an architecture boundary |
 | Library or technology choice, or unfamiliar external API, followed by implementation | `hyper-research` -> `hyper-plan` -> `hyper-execute` |
-| A confirmed finding to record as an implementation-ready issue, or a fixed issue batch selected and grouped into lanes before implementation | `hyper-issue` -> `hyper-plan` -> `hyper-execute` for a batch; `hyper-issue` alone when only the record or the manifest is wanted |
+| Issues to register ("이슈 등록해줘", "이슈로 남겨줘", "register these as issues"), issue numbers (`#1~3`, `#4, #7`), or a condition over open issues | `hyper-issue` -> `hyper-plan` -> `hyper-execute` by default, so registration runs through the lanes to the end; `hyper-issue` alone only with record-only words ("등록만", "이슈만", "작업은 하지 마") |
+| A request handed over by `hyper-issue` that names `.hyper/issues/<slug>/batch.md` and says the issue stage is done | `hyper-plan` -> `hyper-execute`, with `hyper-issue` recorded as `done` |
 | Framework or major-version migration | `hyper-research` -> `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | SEO, AEO, or GEO audit with fixes implemented as a planned change | `hyper-seo` -> `hyper-plan` -> `hyper-execute` |
 | Dependency-ordered multi-agent phase with no plan file wanted | `hyper-mass` |
@@ -215,6 +218,7 @@ Phase rules:
 - Never ask permission between stages; the next stage starts as soon as the previous artifact checks out.
 - Never apply a stage's rules from memory. Load the skill, or stop with the unavailable-skill report.
 - Never call `hyper-execute` after a `hyper-plan` stage that already continued into execution.
+- Load `hyper-issue` with `--from-hyper`, so it registers the issues and writes the manifest without starting a second `hyper` run; its manifest goes to `hyper-plan` as the lane input.
 
 </workflow>
 
@@ -263,6 +267,7 @@ Phase rules:
 | The output, artifact path, and boundary of each stage skill | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The plan stage continues into execution by itself and passes the delivery flag through | the plan skill's handoff rule in this repository, 2026-11-06 |
 | A sequential chain hands state forward through saved artifacts, and a router picks a branch by code-like rules | `instructions/graph-engineering/references/graph-patterns.md` |
+| Issue registration words and issue numbers run through `hyper-issue` into the lane batch by default, and a `hyper-issue` hand-off enters at the plan stage | user instruction, 2026-11-07 |
 | The `[Hyper]` trigger-first description, the bilingual package shape, and the one-level reference rule | `instructions/skill/SKILL_AUTHORING.md` |
 
 ### Evidence grade
