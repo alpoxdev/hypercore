@@ -14,6 +14,7 @@ Load each stage skill through the runtime's skill mechanism (or read its `SKILL.
 | `hyper-database` | Before a plan or mass stage: "review only; report findings, the design brief, or the engine choice with file paths; do not edit", plus the target paths and every upstream artifact path. As the last stage: the user's request unchanged, plus every upstream artifact path | `.hyper/database/<slug>/report.md`; as the last stage its verification section lists each check as run with its output or `not run` with the reason | Report path and its critical and high findings |
 | `hyper-mcp` | Before a plan or mass stage: "audit only; report findings with file paths; do not edit", plus the target paths and every upstream artifact path. As the last stage: the user's request unchanged, plus every upstream artifact path | `.hyper/mcp/<slug>/report.md`; as the last stage its verification table also lists the MCP Inspector run in the era the target claims | Report path and its critical and high findings |
 | `hyper-design` | Before a plan or mass stage: "report only; write the design brief for a new interface, or audit the existing one; do not edit", plus the target paths and every upstream artifact path. As the last stage: the user's request unchanged, plus every upstream artifact path | `.hyper/design/<slug>/brief.md` (brief-only) or `.hyper/design/<slug>/report.md`; as the last stage the report passes the stage's report validator and records the craft-floor result and the review mode | Brief or report path and its P0 and P1 findings |
+| `hyper-imagegen` | The user's request unchanged, the supplied edit source or reference path when one exists, and every upstream artifact path | One terminal line (`generated_verified`, `generated_caveated`, `prompt_saved`, `awaiting_input`, or `blocked`) with its evidence: the runtime's returned-image record, or the relative path and digest of the file under `.hyper/imagegen/<topic>/` | - |
 | `hyper-plan` | The user's original request, every upstream artifact path as required reading, the delivery flag, and `--plan-only` or the approval hold when the user said so | `.hyper/plans/<slug>.md` with a `## Handoff` section | Nothing: the stage continues into `hyper-execute` itself |
 | `hyper-execute` | The plan slug and the delivery flag | `.hyper/execute/<slug>/state.json` with `status` of `complete` and the printed completion block | - |
 | `hyper-mass` | The goal, its success criteria, and every upstream artifact path | `.hyper/mass/<run-key>/run.jsonl` ending in a `run.settled` event with `status` of `completed` | - |
@@ -75,6 +76,7 @@ Stage status values: `pending`, `running`, `done`, `skipped`, `stopped`. Update 
 | Artifact exists and the stage reports success | Mark `done`, print `<#>/<total> <stage> 완료 - <artifact>`, start the next stage |
 | `hyper-architecture` stops with an unsupported stack while it is an upstream stage | Mark `skipped` with the reason; continue, because its output was advisory evidence |
 | A stage stops because the request is a different output shape | Re-route once (§6) |
+| `hyper-imagegen` ends `awaiting_input` | Relay its one question unchanged and mark `stopped`; on the answer, resume at the same stage |
 | A stage stops for a user decision, a credential, a conflict, or a failed gate | Mark `stopped` and end the chain (§5) |
 | The stage skill is not installed or cannot be loaded | Mark `stopped`; report the chain and `npx skills add alpoxdev/hypercore --skill <stage>` |
 
@@ -95,7 +97,7 @@ When the chain ends early, print in Korean:
 
 ## 7. Closing Report
 
-Report in Korean: the final chain with statuses, each artifact path, the last stage's completion evidence (the execution completion block, the mass run's verification result, the skill validator result, the documentation mode's validation handoff, the database report's verification section, the MCP report's verification table, the UI report's validator result and craft-floor line, the Git delivery's commit SHAs found on each remote target, or the report path), the delivery result (local commits, PR URL, or merge), and every skipped or stopped stage with its reason.
+Report in Korean: the final chain with statuses, each artifact path, the last stage's completion evidence (the execution completion block, the mass run's verification result, the skill validator result, the documentation mode's validation handoff, the database report's verification section, the MCP report's verification table, the UI report's validator result and craft-floor line, the image stage's terminal with its path, digest, and inspection record, the Git delivery's commit SHAs found on each remote target, or the report path), the delivery result (local commits, PR URL, or merge), and every skipped or stopped stage with its reason.
 
 ## Sources
 
@@ -103,7 +105,7 @@ Report in Korean: the final chain with statuses, each artifact path, the last st
 
 | Claim | Source |
 |---|---|
-| The stage artifact paths and state values (`.hyper/research/`, `.hyper/seo/<slug>/`, `.hyper/database/<slug>/report.md`, `.hyper/mcp/<slug>/report.md`, `.hyper/design/<slug>/brief.md` and `report.md`, `.hyper/plans/<slug>.md`, `state.json` `status`, `run.settled`, `skills/<name>/SKILL.md`, the documentation artifact paths, the Git delivery's remote-branch checks) | each stage skill's own `SKILL.md` and references in this repository, 2026-11-07 |
+| The stage artifact paths and state values (`.hyper/research/`, `.hyper/seo/<slug>/`, `.hyper/database/<slug>/report.md`, `.hyper/mcp/<slug>/report.md`, `.hyper/design/<slug>/brief.md` and `report.md`, `.hyper/imagegen/<topic>/` and the image stage's five terminals, `.hyper/plans/<slug>.md`, `state.json` `status`, `run.settled`, `skills/<name>/SKILL.md`, the documentation artifact paths, the Git delivery's remote-branch checks) | each stage skill's own `SKILL.md` and references in this repository, 2026-11-07 |
 | The plan stage's `## Handoff` lines and its auto-continue into execution | the plan skill's handoff rule in this repository, 2026-11-06 |
 | The architecture stage stops on an unsupported stack and reports the install command for a missing skill | the architecture skill's stack-detection rule in this repository, 2026-11-06 |
 | Hand-off through saved artifacts and durable state rather than chat | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |

@@ -8,7 +8,7 @@ Decide the job from the requested output, then confirm it with repository files.
 
 | Job class | Requested output | Example words |
 |---|---|---|
-| Build | Changed code: a feature, fix, refactor, migration, or adoption; a data model, schema, database migration, tuned query or index, or database operations change; an MCP server, client, or host configuration; a designed or restyled interface or a faux product UI; or a created or refactored skill folder, document, or prompt artifact | 만들어, 추가해, 고쳐, 리팩토링해, 옮겨, 적용해, 연결해, 스키마 설계해, 인덱스 잡아줘, 디자인해, 리디자인해, AI 티 빼줘, 스킬로 만들어, 문서로 정리해, 프롬프트 만들어, implement, refactor, migrate, connect, redesign |
+| Build | Changed code: a feature, fix, refactor, migration, or adoption; a data model, schema, database migration, tuned query or index, or database operations change; an MCP server, client, or host configuration; a designed or restyled interface or a faux product UI; one generated or edited image or one image prompt; or a created or refactored skill folder, document, or prompt artifact | 만들어, 추가해, 고쳐, 리팩토링해, 옮겨, 적용해, 연결해, 스키마 설계해, 인덱스 잡아줘, 디자인해, 리디자인해, AI 티 빼줘, 스킬로 만들어, 문서로 정리해, 프롬프트 만들어, implement, refactor, migrate, connect, redesign, generate an image |
 | Report | A saved report, audit, review, or plan with no code change | 조사만, 점검만, 리뷰만, 리포트만, 계획만, audit only, just the plan |
 | Resume | An earlier run continued | 이어서, 계속, 재개, resume, continue |
 
@@ -26,26 +26,27 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 | `hyper-database` | The job designs or reviews a data model or schema, writes or reviews a database migration or backfill, tunes a slow query, an index, a hot key, or a hot partition, chooses a database engine or managed data service, or changes database operations (backup and restore, replication and failover, connection pooling, upgrades, database security, monitoring) | The request phrase, plus the schema, migration, ORM, or driver file that was read when one exists, such as `schema.prisma`, `drizzle.config.ts`, a `migrations/` folder, `pg` or `ioredis` in `package.json`, or a database image in a compose file |
 | `hyper-mcp` | The job builds, fixes, migrates, audits, or connects an MCP (Model Context Protocol) server, client, or host MCP configuration, or prepares MCP registry metadata | The request phrase, plus the MCP dependency or configuration file that was read when one exists, such as `@modelcontextprotocol/*` in `package.json`, `mcp` in `pyproject.toml`, `.mcp.json`, or `server.json` |
 | `hyper-design` | The requested output is an interface whose look is the point: a new screen, page, or component designed, an existing UI restyled, faux product UI for a hero, card, or demo, a design brief or `DESIGN.md`, or generic "AI look" patterns audited or removed | The request phrase, plus the target UI path and the styling or design-system file that was read when one exists, such as `DESIGN.md`, a tokens file, or `tailwind.config.*` |
+| `hyper-imagegen` | The whole requested output is one new image, one edit of a supplied image, or one ready-to-use image prompt | The request phrase, plus the supplied edit source or reference path when one exists |
 | `hyper-plan` | A Build job touches several files or steps, or a Report job asks for a plan | The request phrase |
 | `hyper-execute` | Only as the first stage: a plan file under `.hyper/plans/` already exists and the user wants it run or resumed | The plan path that was read |
 | `hyper-mass` | The user asks for a dependency graph, a DAG, "의존성 그래프", "단계별 병렬", or several tasks where some must finish before others start, and no plan file is wanted | The request phrase |
 | `hyper-skill` | The requested output is a reusable skill folder: a new skill, or a refactor of an existing skill's trigger, contract, resources, or validation | The request phrase, plus the target `skills/<name>/SKILL.md` when it already exists |
 | `hyper-documentation` | The requested output is a documentation artifact, new or refactored: a README, an `AGENTS.md`, an AI-readable document (instruction base, agent guide, runbook, specification, or rule pack), or a reusable prompt artifact (role, system, or agent prompt, prompt template or pack, or prompt eval fixture) | The request phrase, plus the target path when it already exists |
-| `hyper-git` | Only as the last stage, after a tail that does not deliver (`hyper-skill`, `hyper-documentation`, or `hyper-database`, `hyper-mcp`, or `hyper-design` as the last build stage), when the user asks to commit and push or to merge into named branches and push; after `hyper-skill` or `hyper-documentation` also for a pull request | The delivery phrase and the named target branches |
+| `hyper-git` | Only as the last stage, after a tail that does not deliver (`hyper-skill`, `hyper-documentation`, or `hyper-database`, `hyper-mcp`, or `hyper-design` as the last build stage), when the user asks to commit and push or to merge into named branches and push; after `hyper-skill` or `hyper-documentation` also for a pull request. Never after `hyper-imagegen`, whose artifact is the delivered image or the gitignored `.hyper/imagegen/` file | The delivery phrase and the named target branches |
 
 ## 3. Stage Order
 
 Chosen stages always run in this order. Skip the ones that were not chosen.
 
 ```text
-hyper-research -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-design -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation) [-> hyper-git]
+hyper-research -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-design -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git]
 ```
 
 - Upstream stages (`hyper-research`, `hyper-seo`, `hyper-architecture`) produce evidence for the tail. In a Build job they run in report mode; the tail makes the code change.
 - `hyper-database` is the tail when it is the last chosen stage: it designs the schema, writes the online migration, tunes the query or index, or changes the operations setup and verifies the result itself. When `hyper-plan` or `hyper-mass` follows it, it runs in review mode (design brief, schema or migration review, or engine choice) and its saved report is the plan's input.
 - `hyper-mcp` is the tail when it is the last chosen stage: it builds, fixes, migrates, or connects and verifies the result itself. When `hyper-plan` or `hyper-mass` follows it, it runs in audit mode and its report is the plan's input.
 - `hyper-design` is the tail when it is the last chosen stage: it designs, restyles, mocks up, or cleans the interface and verifies it itself. When `hyper-plan` or `hyper-mass` follows it, it runs in `brief-only` mode for an interface that does not exist yet or in `audit` mode for an existing one, and its saved brief or report is the plan's input.
-- Otherwise the tail is exactly one of: `hyper-plan` (which continues into `hyper-execute` by itself), `hyper-mass`, `hyper-execute` alone for an existing plan, `hyper-skill` for a skill folder, or `hyper-documentation` for a document or prompt artifact.
+- Otherwise the tail is exactly one of: `hyper-plan` (which continues into `hyper-execute` by itself), `hyper-mass`, `hyper-execute` alone for an existing plan, `hyper-skill` for a skill folder, `hyper-documentation` for a document or prompt artifact, or `hyper-imagegen` for one image or one image prompt.
 - `hyper-git` is never a tail on its own: it runs after a tail that changed files but owns no delivery. `hyper-plan`, `hyper-execute`, and `hyper-mass` deliver for themselves, so `hyper-git` never follows them.
 - In a Report job the chain ends at the last requested stage. A Report job that asks for a plan ends at `hyper-plan` with `--plan-only`.
 - At most four stages run. A chain that seems to need more is two jobs: run the first and report the second as the next step.
@@ -72,6 +73,8 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp
 | Interface audit or design direction only | `hyper-design` in `audit` or `brief-only` mode, alone |
 | Interface work delivered as a PR or ship, or one that also needs API, data, or route changes | `hyper-design` (`audit` or `brief-only`) -> `hyper-plan` |
 | Interface that depends on current external guidance ("최신 가이드라인 확인해서") | `hyper-research` -> `hyper-design` |
+| One image created, one supplied image edited, or one image prompt written | `hyper-imagegen` |
+| Image that depends on current external guidance or references ("최신 프롬프트 가이드 참고해서") | `hyper-research` -> `hyper-imagegen` |
 | Research report only | `hyper-research` |
 | SEO audit or report only | `hyper-seo` |
 | SEO score loop ("최대 점수까지", "keep improving the score") | `hyper-seo` in its optimize mode, alone |
@@ -100,6 +103,8 @@ Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report 
 - `hyper-design` never runs with `hyper-skill` or `hyper-documentation` in one chain. A skill folder, a general document, or a prompt about design goes to its own stage; a project's `DESIGN.md` that records the product's visual system goes to `hyper-design`.
 - A feature whose main output is behavior (a new API, a data flow, a fix) routes by the existing rows even when it has a screen; add `hyper-design` only when the request asks for the look itself ("디자인 신경 써서", "AI 티 안 나게", "redesign").
 - Delivery words ("PR까지", "ship") on an interface job put `hyper-design` in `audit` or `brief-only` mode before `hyper-plan`, because only the plan and execute stages own delivery.
+- `hyper-imagegen` never runs with `hyper-plan`, `hyper-mass`, `hyper-skill`, `hyper-documentation`, or `hyper-design` in one chain. Choose by the primary deliverable: one image or one image prompt goes to `hyper-imagegen`; an interface that contains a picture goes to `hyper-design`; a reusable prompt pack or template for images goes to `hyper-documentation`; image analysis or critique is not a `hyper` job.
+- A `hyper-imagegen` stage that ends `awaiting_input` asked its one question; the chain stops there and resumes on the answer.
 - `hyper-database` never runs with `hyper-skill` or `hyper-documentation` in one chain. A skill folder or a document about databases goes to its own stage.
 - An MCP server that queries a database ("사내 DB 조회하는 MCP 서버") routes to `hyper-mcp`; add `hyper-database` only when the job also changes the schema, a migration, an index, or a database setting.
 - `hyper-architecture` and `hyper-database` both run only when the job restructures folders or modules and also changes the schema or queries; persistence-layer placement alone ("repository 레이어 정리") stays with `hyper-architecture`.
@@ -147,7 +152,7 @@ A run that stops before the first stage prints the same line with the stop reaso
 
 | Claim | Source |
 |---|---|
-| The twelve stage skills and the orchestrator role | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current twelve by user instruction, 2026-11-07 |
+| The thirteen stage skills and the orchestrator role | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current thirteen by user instruction, 2026-11-07 |
 | Each stage's trigger, output, and exclusions, including `hyper-mass` excluding plan-file execution and `hyper-execute` requiring an existing plan | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The delivery words, the plan-only and approval-hold words, and the plan-to-execute auto-continue | the plan skill's handoff rule in this repository, 2026-11-06 |
 | The stage order, the four-stage cap, the recipes, and the tie-breaks | this package's chosen design, not a validated optimum |
