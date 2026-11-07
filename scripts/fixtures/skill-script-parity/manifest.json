@@ -1,15 +1,15 @@
 {
   "scripts": [
     {
-      "path": "skills/hyper-ui-ux/scripts/analyze-structure.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/analyze-structure.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "analyze-structure",
       "behavior": "structure-analysis",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/analyze-structure.mjs",
+          "path": "skills/hyper-design/scripts/analyze-structure.mjs",
           "absent": true
         },
         "migration": {
@@ -19,18 +19,18 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--analyze-structure"
+      "behaviorContractId": "hyper-design--analyze-structure"
     },
     {
-      "path": "skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/collect-rendered-evidence.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "collect-rendered-evidence",
       "behavior": "rendered-evidence-collection",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/collect-rendered-evidence.mjs",
+          "path": "skills/hyper-design/scripts/collect-rendered-evidence.mjs",
           "absent": true
         },
         "migration": {
@@ -40,18 +40,18 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--collect-rendered-evidence"
+      "behaviorContractId": "hyper-design--collect-rendered-evidence"
     },
     {
-      "path": "skills/hyper-ui-ux/scripts/detect-slop.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/detect-slop.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "detect-slop",
       "behavior": "slop-detection",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/detect-slop.mjs",
+          "path": "skills/hyper-design/scripts/detect-slop.mjs",
           "absent": true
         },
         "migration": {
@@ -61,18 +61,18 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--detect-slop"
+      "behaviorContractId": "hyper-design--detect-slop"
     },
     {
-      "path": "skills/hyper-ui-ux/scripts/engine-css.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/engine-css.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "slop-engine-css",
       "behavior": "slop-engine-css",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/engine-css.mjs",
+          "path": "skills/hyper-design/scripts/engine-css.mjs",
           "absent": true
         },
         "migration": {
@@ -82,18 +82,18 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--engine-css"
+      "behaviorContractId": "hyper-design--engine-css"
     },
     {
-      "path": "skills/hyper-ui-ux/scripts/engine-markup.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/engine-markup.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "slop-engine-markup",
       "behavior": "slop-engine-markup",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/engine-markup.mjs",
+          "path": "skills/hyper-design/scripts/engine-markup.mjs",
           "absent": true
         },
         "migration": {
@@ -103,18 +103,18 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--engine-markup"
+      "behaviorContractId": "hyper-design--engine-markup"
     },
     {
-      "path": "skills/hyper-ui-ux/scripts/engine-text.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/engine-text.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "slop-engine-text",
       "behavior": "slop-engine-text",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/engine-text.mjs",
+          "path": "skills/hyper-design/scripts/engine-text.mjs",
           "absent": true
         },
         "migration": {
@@ -124,18 +124,18 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--engine-text"
+      "behaviorContractId": "hyper-design--engine-text"
     },
     {
-      "path": "skills/hyper-ui-ux/scripts/resolve-context.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/resolve-context.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "resolve-context",
       "behavior": "context-resolution",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/resolve-context.mjs",
+          "path": "skills/hyper-design/scripts/resolve-context.mjs",
           "absent": true
         },
         "migration": {
@@ -145,18 +145,18 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--resolve-context"
+      "behaviorContractId": "hyper-design--resolve-context"
     },
     {
-      "path": "skills/hyper-ui-ux/scripts/rule-registry.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/rule-registry.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "slop-rule-registry",
       "behavior": "slop-rule-registry",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/rule-registry.mjs",
+          "path": "skills/hyper-design/scripts/rule-registry.mjs",
           "absent": true
         },
         "migration": {
@@ -166,18 +166,18 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--rule-registry"
+      "behaviorContractId": "hyper-design--rule-registry"
     },
     {
-      "path": "skills/hyper-ui-ux/scripts/rule-shared.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/rule-shared.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "slop-rule-shared",
       "behavior": "slop-rule-shared",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/rule-shared.mjs",
+          "path": "skills/hyper-design/scripts/rule-shared.mjs",
           "absent": true
         },
         "migration": {
@@ -187,18 +187,18 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--rule-shared"
+      "behaviorContractId": "hyper-design--rule-shared"
     },
     {
-      "path": "skills/hyper-ui-ux/scripts/run-contract-evals.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/run-contract-evals.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "run-contract-evals",
       "behavior": "contract-eval-run",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/run-contract-evals.mjs",
+          "path": "skills/hyper-design/scripts/run-contract-evals.mjs",
           "absent": true
         },
         "migration": {
@@ -208,18 +208,18 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--run-contract-evals"
+      "behaviorContractId": "hyper-design--run-contract-evals"
     },
     {
-      "path": "skills/hyper-ui-ux/scripts/run-detector-evals.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/run-detector-evals.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "run-detector-evals",
       "behavior": "detector-eval-run",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/run-detector-evals.mjs",
+          "path": "skills/hyper-design/scripts/run-detector-evals.mjs",
           "absent": true
         },
         "migration": {
@@ -229,18 +229,18 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--run-detector-evals"
+      "behaviorContractId": "hyper-design--run-detector-evals"
     },
     {
-      "path": "skills/hyper-ui-ux/scripts/validate-report.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/validate-report.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "validate-report",
       "behavior": "report-validation",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/validate-report.mjs",
+          "path": "skills/hyper-design/scripts/validate-report.mjs",
           "absent": true
         },
         "migration": {
@@ -250,18 +250,18 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--validate-report"
+      "behaviorContractId": "hyper-design--validate-report"
     },
     {
-      "path": "skills/hyper-ui-ux/scripts/validate-waivers.sh",
-      "family": "hyper-ui-ux",
+      "path": "skills/hyper-design/scripts/validate-waivers.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "usage": "validate-waivers",
       "behavior": "waiver-validation",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/validate-waivers.mjs",
+          "path": "skills/hyper-design/scripts/validate-waivers.mjs",
           "absent": true
         },
         "migration": {
@@ -271,7 +271,7 @@
           "fromRef": "d648cf6eeba28402f0b3c1265ca5d9f05995a131"
         }
       },
-      "behaviorContractId": "hyper-ui-ux--validate-waivers"
+      "behaviorContractId": "hyper-design--validate-waivers"
     },
     {
       "path": "skills/hyper-git/scripts/git-commit.sh",

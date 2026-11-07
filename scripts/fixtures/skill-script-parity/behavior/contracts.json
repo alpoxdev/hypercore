@@ -27,14 +27,14 @@
   },
   "rows": [
     {
-      "id": "hyper-ui-ux--analyze-structure",
-      "path": "skills/hyper-ui-ux/scripts/analyze-structure.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--analyze-structure",
+      "path": "skills/hyper-design/scripts/analyze-structure.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/analyze-structure.mjs",
+          "path": "skills/hyper-design/scripts/analyze-structure.mjs",
           "absent": true
         },
         "migration": {
@@ -45,14 +45,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--analyze-structure--stdout",
-        "stderr": "hyper-ui-ux--analyze-structure--stderr",
-        "exit": "hyper-ui-ux--analyze-structure--exit",
-        "files": "hyper-ui-ux--analyze-structure--files",
-        "modes": "hyper-ui-ux--analyze-structure--modes",
-        "cwd": "hyper-ui-ux--analyze-structure--cwd",
-        "env": "hyper-ui-ux--analyze-structure--env",
-        "argv": "hyper-ui-ux--analyze-structure--argv"
+        "stdout": "hyper-design--analyze-structure--stdout",
+        "stderr": "hyper-design--analyze-structure--stderr",
+        "exit": "hyper-design--analyze-structure--exit",
+        "files": "hyper-design--analyze-structure--files",
+        "modes": "hyper-design--analyze-structure--modes",
+        "cwd": "hyper-design--analyze-structure--cwd",
+        "env": "hyper-design--analyze-structure--env",
+        "argv": "hyper-design--analyze-structure--argv"
       },
       "fixtures": {
         "happy": {
@@ -60,7 +60,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/analyze-structure.sh"
+              "skills/hyper-design/scripts/analyze-structure.sh"
             ]
           },
           "input": {
@@ -114,7 +114,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/analyze-structure.sh"
+              "skills/hyper-design/scripts/analyze-structure.sh"
             ]
           },
           "input": {
@@ -168,7 +168,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/analyze-structure.sh"
+              "skills/hyper-design/scripts/analyze-structure.sh"
             ]
           },
           "input": {
@@ -240,14 +240,14 @@
       }
     },
     {
-      "id": "hyper-ui-ux--collect-rendered-evidence",
-      "path": "skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--collect-rendered-evidence",
+      "path": "skills/hyper-design/scripts/collect-rendered-evidence.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/collect-rendered-evidence.mjs",
+          "path": "skills/hyper-design/scripts/collect-rendered-evidence.mjs",
           "absent": true
         },
         "migration": {
@@ -258,14 +258,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--collect-rendered-evidence--stdout",
-        "stderr": "hyper-ui-ux--collect-rendered-evidence--stderr",
-        "exit": "hyper-ui-ux--collect-rendered-evidence--exit",
-        "files": "hyper-ui-ux--collect-rendered-evidence--files",
-        "modes": "hyper-ui-ux--collect-rendered-evidence--modes",
-        "cwd": "hyper-ui-ux--collect-rendered-evidence--cwd",
-        "env": "hyper-ui-ux--collect-rendered-evidence--env",
-        "argv": "hyper-ui-ux--collect-rendered-evidence--argv"
+        "stdout": "hyper-design--collect-rendered-evidence--stdout",
+        "stderr": "hyper-design--collect-rendered-evidence--stderr",
+        "exit": "hyper-design--collect-rendered-evidence--exit",
+        "files": "hyper-design--collect-rendered-evidence--files",
+        "modes": "hyper-design--collect-rendered-evidence--modes",
+        "cwd": "hyper-design--collect-rendered-evidence--cwd",
+        "env": "hyper-design--collect-rendered-evidence--env",
+        "argv": "hyper-design--collect-rendered-evidence--argv"
       },
       "fixtures": {
         "happy": {
@@ -273,7 +273,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh"
+              "skills/hyper-design/scripts/collect-rendered-evidence.sh"
             ]
           },
           "input": {
@@ -327,7 +327,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh"
+              "skills/hyper-design/scripts/collect-rendered-evidence.sh"
             ]
           },
           "input": {
@@ -383,7 +383,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh"
+              "skills/hyper-design/scripts/collect-rendered-evidence.sh"
             ]
           },
           "input": {
@@ -435,14 +435,14 @@
       }
     },
     {
-      "id": "hyper-ui-ux--detect-slop",
-      "path": "skills/hyper-ui-ux/scripts/detect-slop.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--detect-slop",
+      "path": "skills/hyper-design/scripts/detect-slop.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/detect-slop.mjs",
+          "path": "skills/hyper-design/scripts/detect-slop.mjs",
           "absent": true
         },
         "migration": {
@@ -453,14 +453,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--detect-slop--stdout",
-        "stderr": "hyper-ui-ux--detect-slop--stderr",
-        "exit": "hyper-ui-ux--detect-slop--exit",
-        "files": "hyper-ui-ux--detect-slop--files",
-        "modes": "hyper-ui-ux--detect-slop--modes",
-        "cwd": "hyper-ui-ux--detect-slop--cwd",
-        "env": "hyper-ui-ux--detect-slop--env",
-        "argv": "hyper-ui-ux--detect-slop--argv"
+        "stdout": "hyper-design--detect-slop--stdout",
+        "stderr": "hyper-design--detect-slop--stderr",
+        "exit": "hyper-design--detect-slop--exit",
+        "files": "hyper-design--detect-slop--files",
+        "modes": "hyper-design--detect-slop--modes",
+        "cwd": "hyper-design--detect-slop--cwd",
+        "env": "hyper-design--detect-slop--env",
+        "argv": "hyper-design--detect-slop--argv"
       },
       "fixtures": {
         "happy": {
@@ -468,7 +468,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/detect-slop.sh"
+              "skills/hyper-design/scripts/detect-slop.sh"
             ]
           },
           "input": {
@@ -522,7 +522,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/detect-slop.sh"
+              "skills/hyper-design/scripts/detect-slop.sh"
             ]
           },
           "input": {
@@ -576,7 +576,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/detect-slop.sh"
+              "skills/hyper-design/scripts/detect-slop.sh"
             ]
           },
           "input": {
@@ -644,14 +644,14 @@
       }
     },
     {
-      "id": "hyper-ui-ux--engine-css",
-      "path": "skills/hyper-ui-ux/scripts/engine-css.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--engine-css",
+      "path": "skills/hyper-design/scripts/engine-css.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/engine-css.mjs",
+          "path": "skills/hyper-design/scripts/engine-css.mjs",
           "absent": true
         },
         "migration": {
@@ -662,14 +662,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--engine-css--stdout",
-        "stderr": "hyper-ui-ux--engine-css--stderr",
-        "exit": "hyper-ui-ux--engine-css--exit",
-        "files": "hyper-ui-ux--engine-css--files",
-        "modes": "hyper-ui-ux--engine-css--modes",
-        "cwd": "hyper-ui-ux--engine-css--cwd",
-        "env": "hyper-ui-ux--engine-css--env",
-        "argv": "hyper-ui-ux--engine-css--argv"
+        "stdout": "hyper-design--engine-css--stdout",
+        "stderr": "hyper-design--engine-css--stderr",
+        "exit": "hyper-design--engine-css--exit",
+        "files": "hyper-design--engine-css--files",
+        "modes": "hyper-design--engine-css--modes",
+        "cwd": "hyper-design--engine-css--cwd",
+        "env": "hyper-design--engine-css--env",
+        "argv": "hyper-design--engine-css--argv"
       },
       "fixtures": {
         "happy": {
@@ -677,7 +677,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/engine-css.sh"
+              "skills/hyper-design/scripts/engine-css.sh"
             ]
           },
           "input": {
@@ -723,7 +723,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/engine-css.sh"
+              "skills/hyper-design/scripts/engine-css.sh"
             ]
           },
           "input": {
@@ -787,7 +787,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/engine-css.sh"
+              "skills/hyper-design/scripts/engine-css.sh"
             ]
           },
           "input": {
@@ -845,14 +845,14 @@
       }
     },
     {
-      "id": "hyper-ui-ux--engine-markup",
-      "path": "skills/hyper-ui-ux/scripts/engine-markup.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--engine-markup",
+      "path": "skills/hyper-design/scripts/engine-markup.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/engine-markup.mjs",
+          "path": "skills/hyper-design/scripts/engine-markup.mjs",
           "absent": true
         },
         "migration": {
@@ -863,14 +863,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--engine-markup--stdout",
-        "stderr": "hyper-ui-ux--engine-markup--stderr",
-        "exit": "hyper-ui-ux--engine-markup--exit",
-        "files": "hyper-ui-ux--engine-markup--files",
-        "modes": "hyper-ui-ux--engine-markup--modes",
-        "cwd": "hyper-ui-ux--engine-markup--cwd",
-        "env": "hyper-ui-ux--engine-markup--env",
-        "argv": "hyper-ui-ux--engine-markup--argv"
+        "stdout": "hyper-design--engine-markup--stdout",
+        "stderr": "hyper-design--engine-markup--stderr",
+        "exit": "hyper-design--engine-markup--exit",
+        "files": "hyper-design--engine-markup--files",
+        "modes": "hyper-design--engine-markup--modes",
+        "cwd": "hyper-design--engine-markup--cwd",
+        "env": "hyper-design--engine-markup--env",
+        "argv": "hyper-design--engine-markup--argv"
       },
       "fixtures": {
         "happy": {
@@ -878,7 +878,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/engine-markup.sh"
+              "skills/hyper-design/scripts/engine-markup.sh"
             ]
           },
           "input": {
@@ -924,7 +924,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/engine-markup.sh"
+              "skills/hyper-design/scripts/engine-markup.sh"
             ]
           },
           "input": {
@@ -988,7 +988,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/engine-markup.sh"
+              "skills/hyper-design/scripts/engine-markup.sh"
             ]
           },
           "input": {
@@ -1046,14 +1046,14 @@
       }
     },
     {
-      "id": "hyper-ui-ux--engine-text",
-      "path": "skills/hyper-ui-ux/scripts/engine-text.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--engine-text",
+      "path": "skills/hyper-design/scripts/engine-text.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/engine-text.mjs",
+          "path": "skills/hyper-design/scripts/engine-text.mjs",
           "absent": true
         },
         "migration": {
@@ -1064,14 +1064,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--engine-text--stdout",
-        "stderr": "hyper-ui-ux--engine-text--stderr",
-        "exit": "hyper-ui-ux--engine-text--exit",
-        "files": "hyper-ui-ux--engine-text--files",
-        "modes": "hyper-ui-ux--engine-text--modes",
-        "cwd": "hyper-ui-ux--engine-text--cwd",
-        "env": "hyper-ui-ux--engine-text--env",
-        "argv": "hyper-ui-ux--engine-text--argv"
+        "stdout": "hyper-design--engine-text--stdout",
+        "stderr": "hyper-design--engine-text--stderr",
+        "exit": "hyper-design--engine-text--exit",
+        "files": "hyper-design--engine-text--files",
+        "modes": "hyper-design--engine-text--modes",
+        "cwd": "hyper-design--engine-text--cwd",
+        "env": "hyper-design--engine-text--env",
+        "argv": "hyper-design--engine-text--argv"
       },
       "fixtures": {
         "happy": {
@@ -1079,7 +1079,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/engine-text.sh"
+              "skills/hyper-design/scripts/engine-text.sh"
             ]
           },
           "input": {
@@ -1125,7 +1125,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/engine-text.sh"
+              "skills/hyper-design/scripts/engine-text.sh"
             ]
           },
           "input": {
@@ -1189,7 +1189,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/engine-text.sh"
+              "skills/hyper-design/scripts/engine-text.sh"
             ]
           },
           "input": {
@@ -1247,14 +1247,14 @@
       }
     },
     {
-      "id": "hyper-ui-ux--resolve-context",
-      "path": "skills/hyper-ui-ux/scripts/resolve-context.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--resolve-context",
+      "path": "skills/hyper-design/scripts/resolve-context.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/resolve-context.mjs",
+          "path": "skills/hyper-design/scripts/resolve-context.mjs",
           "absent": true
         },
         "migration": {
@@ -1265,14 +1265,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--resolve-context--stdout",
-        "stderr": "hyper-ui-ux--resolve-context--stderr",
-        "exit": "hyper-ui-ux--resolve-context--exit",
-        "files": "hyper-ui-ux--resolve-context--files",
-        "modes": "hyper-ui-ux--resolve-context--modes",
-        "cwd": "hyper-ui-ux--resolve-context--cwd",
-        "env": "hyper-ui-ux--resolve-context--env",
-        "argv": "hyper-ui-ux--resolve-context--argv"
+        "stdout": "hyper-design--resolve-context--stdout",
+        "stderr": "hyper-design--resolve-context--stderr",
+        "exit": "hyper-design--resolve-context--exit",
+        "files": "hyper-design--resolve-context--files",
+        "modes": "hyper-design--resolve-context--modes",
+        "cwd": "hyper-design--resolve-context--cwd",
+        "env": "hyper-design--resolve-context--env",
+        "argv": "hyper-design--resolve-context--argv"
       },
       "fixtures": {
         "happy": {
@@ -1280,7 +1280,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/resolve-context.sh"
+              "skills/hyper-design/scripts/resolve-context.sh"
             ]
           },
           "input": {
@@ -1326,7 +1326,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/resolve-context.sh"
+              "skills/hyper-design/scripts/resolve-context.sh"
             ]
           },
           "input": {
@@ -1390,7 +1390,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/resolve-context.sh"
+              "skills/hyper-design/scripts/resolve-context.sh"
             ]
           },
           "input": {
@@ -1448,14 +1448,14 @@
       }
     },
     {
-      "id": "hyper-ui-ux--rule-registry",
-      "path": "skills/hyper-ui-ux/scripts/rule-registry.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--rule-registry",
+      "path": "skills/hyper-design/scripts/rule-registry.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/rule-registry.mjs",
+          "path": "skills/hyper-design/scripts/rule-registry.mjs",
           "absent": true
         },
         "migration": {
@@ -1466,14 +1466,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--rule-registry--stdout",
-        "stderr": "hyper-ui-ux--rule-registry--stderr",
-        "exit": "hyper-ui-ux--rule-registry--exit",
-        "files": "hyper-ui-ux--rule-registry--files",
-        "modes": "hyper-ui-ux--rule-registry--modes",
-        "cwd": "hyper-ui-ux--rule-registry--cwd",
-        "env": "hyper-ui-ux--rule-registry--env",
-        "argv": "hyper-ui-ux--rule-registry--argv"
+        "stdout": "hyper-design--rule-registry--stdout",
+        "stderr": "hyper-design--rule-registry--stderr",
+        "exit": "hyper-design--rule-registry--exit",
+        "files": "hyper-design--rule-registry--files",
+        "modes": "hyper-design--rule-registry--modes",
+        "cwd": "hyper-design--rule-registry--cwd",
+        "env": "hyper-design--rule-registry--env",
+        "argv": "hyper-design--rule-registry--argv"
       },
       "fixtures": {
         "happy": {
@@ -1481,7 +1481,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/rule-registry.sh"
+              "skills/hyper-design/scripts/rule-registry.sh"
             ]
           },
           "input": {
@@ -1527,7 +1527,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/rule-registry.sh"
+              "skills/hyper-design/scripts/rule-registry.sh"
             ]
           },
           "input": {
@@ -1591,7 +1591,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/rule-registry.sh"
+              "skills/hyper-design/scripts/rule-registry.sh"
             ]
           },
           "input": {
@@ -1649,14 +1649,14 @@
       }
     },
     {
-      "id": "hyper-ui-ux--rule-shared",
-      "path": "skills/hyper-ui-ux/scripts/rule-shared.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--rule-shared",
+      "path": "skills/hyper-design/scripts/rule-shared.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/rule-shared.mjs",
+          "path": "skills/hyper-design/scripts/rule-shared.mjs",
           "absent": true
         },
         "migration": {
@@ -1667,14 +1667,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--rule-shared--stdout",
-        "stderr": "hyper-ui-ux--rule-shared--stderr",
-        "exit": "hyper-ui-ux--rule-shared--exit",
-        "files": "hyper-ui-ux--rule-shared--files",
-        "modes": "hyper-ui-ux--rule-shared--modes",
-        "cwd": "hyper-ui-ux--rule-shared--cwd",
-        "env": "hyper-ui-ux--rule-shared--env",
-        "argv": "hyper-ui-ux--rule-shared--argv"
+        "stdout": "hyper-design--rule-shared--stdout",
+        "stderr": "hyper-design--rule-shared--stderr",
+        "exit": "hyper-design--rule-shared--exit",
+        "files": "hyper-design--rule-shared--files",
+        "modes": "hyper-design--rule-shared--modes",
+        "cwd": "hyper-design--rule-shared--cwd",
+        "env": "hyper-design--rule-shared--env",
+        "argv": "hyper-design--rule-shared--argv"
       },
       "fixtures": {
         "happy": {
@@ -1682,7 +1682,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/rule-shared.sh"
+              "skills/hyper-design/scripts/rule-shared.sh"
             ]
           },
           "input": {
@@ -1728,7 +1728,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/rule-shared.sh"
+              "skills/hyper-design/scripts/rule-shared.sh"
             ]
           },
           "input": {
@@ -1792,7 +1792,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/rule-shared.sh"
+              "skills/hyper-design/scripts/rule-shared.sh"
             ]
           },
           "input": {
@@ -1850,14 +1850,14 @@
       }
     },
     {
-      "id": "hyper-ui-ux--run-contract-evals",
-      "path": "skills/hyper-ui-ux/scripts/run-contract-evals.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--run-contract-evals",
+      "path": "skills/hyper-design/scripts/run-contract-evals.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/run-contract-evals.mjs",
+          "path": "skills/hyper-design/scripts/run-contract-evals.mjs",
           "absent": true
         },
         "migration": {
@@ -1868,14 +1868,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--run-contract-evals--stdout",
-        "stderr": "hyper-ui-ux--run-contract-evals--stderr",
-        "exit": "hyper-ui-ux--run-contract-evals--exit",
-        "files": "hyper-ui-ux--run-contract-evals--files",
-        "modes": "hyper-ui-ux--run-contract-evals--modes",
-        "cwd": "hyper-ui-ux--run-contract-evals--cwd",
-        "env": "hyper-ui-ux--run-contract-evals--env",
-        "argv": "hyper-ui-ux--run-contract-evals--argv"
+        "stdout": "hyper-design--run-contract-evals--stdout",
+        "stderr": "hyper-design--run-contract-evals--stderr",
+        "exit": "hyper-design--run-contract-evals--exit",
+        "files": "hyper-design--run-contract-evals--files",
+        "modes": "hyper-design--run-contract-evals--modes",
+        "cwd": "hyper-design--run-contract-evals--cwd",
+        "env": "hyper-design--run-contract-evals--env",
+        "argv": "hyper-design--run-contract-evals--argv"
       },
       "fixtures": {
         "happy": {
@@ -1883,7 +1883,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/run-contract-evals.sh"
+              "skills/hyper-design/scripts/run-contract-evals.sh"
             ]
           },
           "input": {
@@ -1906,7 +1906,7 @@
                 "text": "# AI Design Slop 정리 결과\n\n## 처리 요약\n- Detector: v2\n- 실행한 engine: text | context\n- Baseline delta: 미사용\n- Generic-output risk: low\n- 렌더링 검증: static_only\n- 최종 상태: pass\n\n## Brief inference\n- 확인됨\n\n## 발견 사항\n- 없음\n\n## 적용한 변경\n- 없음\n\n## 검증\n- Detector/baseline: pass\n\n## 남은 위험\n- 없음\n"
               },
               {
-                "path": "skills/hyper-ui-ux/scripts/validate-report.sh",
+                "path": "skills/hyper-design/scripts/validate-report.sh",
                 "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"ok\":true}'\n"
               }
             ]
@@ -1931,7 +1931,7 @@
                 "sha256": "005f78aecf2fa7795767c0808c5bb33a79f75ae2a8dcc0a464025d6e7fcd4865"
               },
               {
-                "path": "skills/hyper-ui-ux/scripts/validate-report.sh",
+                "path": "skills/hyper-design/scripts/validate-report.sh",
                 "bytes": 48,
                 "sha256": "d1f983f2d4728fb3564260395cbe69c13625dca5c6f11125488d719ef815c87b"
               }
@@ -1939,7 +1939,7 @@
             "modes": {
               "report.md": "644",
               "cases.jsonl": "644",
-              "skills/hyper-ui-ux/scripts/validate-report.sh": "644"
+              "skills/hyper-design/scripts/validate-report.sh": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -1957,7 +1957,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/run-contract-evals.sh"
+              "skills/hyper-design/scripts/run-contract-evals.sh"
             ]
           },
           "input": {
@@ -2013,7 +2013,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/run-contract-evals.sh"
+              "skills/hyper-design/scripts/run-contract-evals.sh"
             ]
           },
           "input": {
@@ -2036,7 +2036,7 @@
                 "text": "# AI Design Slop 정리 결과\n\n## 처리 요약\n- Detector: v2\n- 실행한 engine: text | context\n- Baseline delta: 미사용\n- Generic-output risk: low\n- 렌더링 검증: static_only\n- 최종 상태: pass\n\n## Brief inference\n- 확인됨\n\n## 발견 사항\n- 없음\n\n## 적용한 변경\n- 없음\n\n## 검증\n- Detector/baseline: pass\n\n## 남은 위험\n- 없음\n"
               },
               {
-                "path": "skills/hyper-ui-ux/scripts/validate-report.sh",
+                "path": "skills/hyper-design/scripts/validate-report.sh",
                 "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"ok\":true}'\n"
               }
             ]
@@ -2061,7 +2061,7 @@
                 "sha256": "005f78aecf2fa7795767c0808c5bb33a79f75ae2a8dcc0a464025d6e7fcd4865"
               },
               {
-                "path": "skills/hyper-ui-ux/scripts/validate-report.sh",
+                "path": "skills/hyper-design/scripts/validate-report.sh",
                 "bytes": 48,
                 "sha256": "d1f983f2d4728fb3564260395cbe69c13625dca5c6f11125488d719ef815c87b"
               }
@@ -2069,7 +2069,7 @@
             "modes": {
               "report.md": "644",
               "cases.jsonl": "644",
-              "skills/hyper-ui-ux/scripts/validate-report.sh": "644"
+              "skills/hyper-design/scripts/validate-report.sh": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -2085,14 +2085,14 @@
       }
     },
     {
-      "id": "hyper-ui-ux--run-detector-evals",
-      "path": "skills/hyper-ui-ux/scripts/run-detector-evals.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--run-detector-evals",
+      "path": "skills/hyper-design/scripts/run-detector-evals.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/run-detector-evals.mjs",
+          "path": "skills/hyper-design/scripts/run-detector-evals.mjs",
           "absent": true
         },
         "migration": {
@@ -2103,14 +2103,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--run-detector-evals--stdout",
-        "stderr": "hyper-ui-ux--run-detector-evals--stderr",
-        "exit": "hyper-ui-ux--run-detector-evals--exit",
-        "files": "hyper-ui-ux--run-detector-evals--files",
-        "modes": "hyper-ui-ux--run-detector-evals--modes",
-        "cwd": "hyper-ui-ux--run-detector-evals--cwd",
-        "env": "hyper-ui-ux--run-detector-evals--env",
-        "argv": "hyper-ui-ux--run-detector-evals--argv"
+        "stdout": "hyper-design--run-detector-evals--stdout",
+        "stderr": "hyper-design--run-detector-evals--stderr",
+        "exit": "hyper-design--run-detector-evals--exit",
+        "files": "hyper-design--run-detector-evals--files",
+        "modes": "hyper-design--run-detector-evals--modes",
+        "cwd": "hyper-design--run-detector-evals--cwd",
+        "env": "hyper-design--run-detector-evals--env",
+        "argv": "hyper-design--run-detector-evals--argv"
       },
       "fixtures": {
         "happy": {
@@ -2118,7 +2118,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/run-detector-evals.sh"
+              "skills/hyper-design/scripts/run-detector-evals.sh"
             ]
           },
           "input": {
@@ -2141,7 +2141,7 @@
                 "text": "<div class=\"panel\" style=\"transition: all 150ms\"></div>\n"
               },
               {
-                "path": "skills/hyper-ui-ux/scripts/detect-slop.sh",
+                "path": "skills/hyper-design/scripts/detect-slop.sh",
                 "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"detectorVersion\":2,\"findings\":[{\"id\":\"copy.cliche\",\"exceptionStatus\":\"not-checked\"}],\"summary\":{\"P0\":0,\"P1\":0,\"P2\":0,\"P3\":1}}'\n"
               }
             ]
@@ -2166,7 +2166,7 @@
                 "sha256": "dba76d031b3ccf0b0d9e65c4a13474478cdb2727d2594ef7bcd5aa99b574ef8e"
               },
               {
-                "path": "skills/hyper-ui-ux/scripts/detect-slop.sh",
+                "path": "skills/hyper-design/scripts/detect-slop.sh",
                 "bytes": 164,
                 "sha256": "51b25b6532e460e00dd4e023bd3618cf1e99be1ebef50faf0734c52d1fe4dcb4"
               }
@@ -2174,7 +2174,7 @@
             "modes": {
               "cases.jsonl": "644",
               "site/page.html": "644",
-              "skills/hyper-ui-ux/scripts/detect-slop.sh": "644"
+              "skills/hyper-design/scripts/detect-slop.sh": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -2192,7 +2192,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/run-detector-evals.sh"
+              "skills/hyper-design/scripts/run-detector-evals.sh"
             ]
           },
           "input": {
@@ -2248,7 +2248,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/run-detector-evals.sh"
+              "skills/hyper-design/scripts/run-detector-evals.sh"
             ]
           },
           "input": {
@@ -2271,7 +2271,7 @@
                 "text": "<div class=\"panel\" style=\"transition: all 150ms\"></div>\n"
               },
               {
-                "path": "skills/hyper-ui-ux/scripts/detect-slop.sh",
+                "path": "skills/hyper-design/scripts/detect-slop.sh",
                 "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"detectorVersion\":2,\"findings\":[{\"id\":\"copy.cliche\",\"exceptionStatus\":\"not-checked\"}],\"summary\":{\"P0\":0,\"P1\":0,\"P2\":0,\"P3\":1}}'\n"
               }
             ]
@@ -2296,7 +2296,7 @@
                 "sha256": "dba76d031b3ccf0b0d9e65c4a13474478cdb2727d2594ef7bcd5aa99b574ef8e"
               },
               {
-                "path": "skills/hyper-ui-ux/scripts/detect-slop.sh",
+                "path": "skills/hyper-design/scripts/detect-slop.sh",
                 "bytes": 164,
                 "sha256": "51b25b6532e460e00dd4e023bd3618cf1e99be1ebef50faf0734c52d1fe4dcb4"
               }
@@ -2304,7 +2304,7 @@
             "modes": {
               "cases.jsonl": "644",
               "site/page.html": "644",
-              "skills/hyper-ui-ux/scripts/detect-slop.sh": "644"
+              "skills/hyper-design/scripts/detect-slop.sh": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -2320,14 +2320,14 @@
       }
     },
     {
-      "id": "hyper-ui-ux--validate-report",
-      "path": "skills/hyper-ui-ux/scripts/validate-report.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--validate-report",
+      "path": "skills/hyper-design/scripts/validate-report.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/validate-report.mjs",
+          "path": "skills/hyper-design/scripts/validate-report.mjs",
           "absent": true
         },
         "migration": {
@@ -2338,14 +2338,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--validate-report--stdout",
-        "stderr": "hyper-ui-ux--validate-report--stderr",
-        "exit": "hyper-ui-ux--validate-report--exit",
-        "files": "hyper-ui-ux--validate-report--files",
-        "modes": "hyper-ui-ux--validate-report--modes",
-        "cwd": "hyper-ui-ux--validate-report--cwd",
-        "env": "hyper-ui-ux--validate-report--env",
-        "argv": "hyper-ui-ux--validate-report--argv"
+        "stdout": "hyper-design--validate-report--stdout",
+        "stderr": "hyper-design--validate-report--stderr",
+        "exit": "hyper-design--validate-report--exit",
+        "files": "hyper-design--validate-report--files",
+        "modes": "hyper-design--validate-report--modes",
+        "cwd": "hyper-design--validate-report--cwd",
+        "env": "hyper-design--validate-report--env",
+        "argv": "hyper-design--validate-report--argv"
       },
       "fixtures": {
         "happy": {
@@ -2353,7 +2353,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/validate-report.sh"
+              "skills/hyper-design/scripts/validate-report.sh"
             ]
           },
           "input": {
@@ -2407,7 +2407,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/validate-report.sh"
+              "skills/hyper-design/scripts/validate-report.sh"
             ]
           },
           "input": {
@@ -2461,7 +2461,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/validate-report.sh"
+              "skills/hyper-design/scripts/validate-report.sh"
             ]
           },
           "input": {
@@ -2505,14 +2505,14 @@
       }
     },
     {
-      "id": "hyper-ui-ux--validate-waivers",
-      "path": "skills/hyper-ui-ux/scripts/validate-waivers.sh",
-      "family": "hyper-ui-ux",
+      "id": "hyper-design--validate-waivers",
+      "path": "skills/hyper-design/scripts/validate-waivers.sh",
+      "family": "hyper-design",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/hyper-ui-ux/scripts/validate-waivers.mjs",
+          "path": "skills/hyper-design/scripts/validate-waivers.mjs",
           "absent": true
         },
         "migration": {
@@ -2523,14 +2523,14 @@
         }
       },
       "dimensions": {
-        "stdout": "hyper-ui-ux--validate-waivers--stdout",
-        "stderr": "hyper-ui-ux--validate-waivers--stderr",
-        "exit": "hyper-ui-ux--validate-waivers--exit",
-        "files": "hyper-ui-ux--validate-waivers--files",
-        "modes": "hyper-ui-ux--validate-waivers--modes",
-        "cwd": "hyper-ui-ux--validate-waivers--cwd",
-        "env": "hyper-ui-ux--validate-waivers--env",
-        "argv": "hyper-ui-ux--validate-waivers--argv"
+        "stdout": "hyper-design--validate-waivers--stdout",
+        "stderr": "hyper-design--validate-waivers--stderr",
+        "exit": "hyper-design--validate-waivers--exit",
+        "files": "hyper-design--validate-waivers--files",
+        "modes": "hyper-design--validate-waivers--modes",
+        "cwd": "hyper-design--validate-waivers--cwd",
+        "env": "hyper-design--validate-waivers--env",
+        "argv": "hyper-design--validate-waivers--argv"
       },
       "fixtures": {
         "happy": {
@@ -2538,7 +2538,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/validate-waivers.sh"
+              "skills/hyper-design/scripts/validate-waivers.sh"
             ]
           },
           "input": {
@@ -2592,7 +2592,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/validate-waivers.sh"
+              "skills/hyper-design/scripts/validate-waivers.sh"
             ]
           },
           "input": {
@@ -2648,7 +2648,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/hyper-ui-ux/scripts/validate-waivers.sh"
+              "skills/hyper-design/scripts/validate-waivers.sh"
             ]
           },
           "input": {

@@ -4,14 +4,14 @@ Read before writing the report. This file owns the verification order, the repor
 
 ## Verification order
 
-1. Re-run `scripts/detect-slop.sh` against the same target and compare rule IDs, severity counts, engine and evidence fields, and the baseline delta when used. Save the before and after JSON under `.hyper/ui-ux/<slug>/`.
+1. Re-run `scripts/detect-slop.sh` against the same target and compare rule IDs, severity counts, engine and evidence fields, and the baseline delta when used. Save the before and after JSON under `.hyper/design/<slug>/`.
 2. Run the craft-floor checklist (`rules/craft-floor.md` §9) for every changed screen.
 3. Run the smallest project build, typecheck, lint, and test commands that cover changed files; inspect failures rather than suppressing them.
 4. When rendering is available, inspect the checked widths and the states the surface exposes; otherwise mark rendered items `static_only` or `unavailable`.
 5. Check keyboard focus, semantics, contrast where measurable, reduced motion, and responsive overflow affected by the change.
 6. Exercise directly affected behavior and preserve copy, routes, form contracts, state transitions, and analytics hooks.
 7. Run the independent review (`rules/independent-review.md`) and answer its findings.
-8. Validate the saved report with `scripts/validate-report.sh --report .hyper/ui-ux/<slug>/report.md` and record residual risk.
+8. Validate the saved report with `scripts/validate-report.sh --report .hyper/design/<slug>/report.md` and record residual risk.
 
 ## Claim rules
 

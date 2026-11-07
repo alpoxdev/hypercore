@@ -2,7 +2,7 @@
 # Run the report/waiver/rendered-evidence contract cases and report per-case exit-code agreement.
 set -euo pipefail
 
-RC_DEFAULT_CASES='skills/hyper-ui-ux/assets/evals/contract-cases.jsonl'
+RC_DEFAULT_CASES='skills/hyper-design/assets/evals/contract-cases.jsonl'
 RC_USAGE='Usage: bash run-contract-evals.sh [--cases <cases.jsonl>] [--json]'
 
 rc_fail() {
@@ -13,9 +13,9 @@ rc_fail() {
 # rc_command_script <command> prints the script that implements one contract command.
 rc_command_script() {
   case "$1" in
-    report) printf 'skills/hyper-ui-ux/scripts/validate-report.sh' ;;
-    waiver) printf 'skills/hyper-ui-ux/scripts/validate-waivers.sh' ;;
-    rendered) printf 'skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh' ;;
+    report) printf 'skills/hyper-design/scripts/validate-report.sh' ;;
+    waiver) printf 'skills/hyper-design/scripts/validate-waivers.sh' ;;
+    rendered) printf 'skills/hyper-design/scripts/collect-rendered-evidence.sh' ;;
     *) return 1 ;;
   esac
 }

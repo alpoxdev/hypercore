@@ -1,6 +1,6 @@
 # Design Direction
 
-Read in `design`, `restyle`, `mockup`, and `brief-only` before the first token or markup. This file owns the brief, the visitor mode, the reference, the token plan, the rejected alternative, and the anti-convergence checks. The result is saved as `.hyper/ui-ux/<slug>/brief.md` using `assets/design-brief-template.ko.md`.
+Read in `design`, `restyle`, `mockup`, and `brief-only` before the first token or markup. This file owns the brief, the visitor mode, the reference, the token plan, the rejected alternative, and the anti-convergence checks. The result is saved as `.hyper/design/<slug>/brief.md` using `assets/design-brief-template.ko.md`.
 
 ## 1. Why Direction Comes First
 

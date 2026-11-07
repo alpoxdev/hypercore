@@ -2,8 +2,8 @@
 # Run the detector eval cases against the static detector and report per-case agreement.
 set -euo pipefail
 
-RD_DEFAULT_CASES='skills/hyper-ui-ux/assets/evals/detector-cases.jsonl'
-RD_DETECTOR='skills/hyper-ui-ux/scripts/detect-slop.sh'
+RD_DEFAULT_CASES='skills/hyper-design/assets/evals/detector-cases.jsonl'
+RD_DETECTOR='skills/hyper-design/scripts/detect-slop.sh'
 RD_USAGE='Usage: bash run-detector-evals.sh [--cases <cases.jsonl>] [--json]'
 
 rd_fail() {

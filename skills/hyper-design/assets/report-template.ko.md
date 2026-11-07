@@ -4,7 +4,7 @@
 
 - 대상: `<path 또는 surface>`
 - 모드: `design | restyle | mockup | audit | clean | verify`
-- 디자인 브리프: `.hyper/ui-ux/<slug>/brief.md | 해당 없음`
+- 디자인 브리프: `.hyper/design/<slug>/brief.md | 해당 없음`
 - Detector: `v2 | unavailable (사유)`
 - 실행한 engine: `text | css | markup | context | dom | visual`
 - Baseline delta: `미사용 | only-new | unavailable (사유)`

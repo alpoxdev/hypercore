@@ -1,6 +1,6 @@
 # 디자인 방향
 
-`design`, `restyle`, `mockup`, `brief-only`에서 첫 token이나 마크업 전에 읽는다. 이 파일은 브리프, 방문 모드, 참조, 토큰 계획, 버린 대안, 수렴 방지 검사를 소유한다. 결과는 `assets/design-brief-template.ko.md`를 써서 `.hyper/ui-ux/<slug>/brief.md`로 저장한다.
+`design`, `restyle`, `mockup`, `brief-only`에서 첫 token이나 마크업 전에 읽는다. 이 파일은 브리프, 방문 모드, 참조, 토큰 계획, 버린 대안, 수렴 방지 검사를 소유한다. 결과는 `assets/design-brief-template.ko.md`를 써서 `.hyper/design/<slug>/brief.md`로 저장한다.
 
 ## 1. 방향이 먼저인 이유
 

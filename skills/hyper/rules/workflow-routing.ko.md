@@ -24,25 +24,25 @@
 | `hyper-seo` | 작업이 이름이 정해진 사이트나 페이지 묶음의 검색 또는 AI 답변 노출에 관한 것입니다 | 요청 문구와 대상 URL 또는 앱 경로 |
 | `hyper-architecture` | 작업이 폴더, 라우트, 모듈, 데이터나 서버 경계, 플랫폼 설정을 재구성하거나, 새 라우트·모듈·서버 경계를 만드는 기능을 추가합니다 | 요청 문구와 읽은 스택 매니페스트(`package.json`, `pubspec.yaml`, `Cargo.toml` 등) |
 | `hyper-mcp` | 작업이 MCP(Model Context Protocol) 서버, 클라이언트, 호스트 MCP 설정을 만들거나 고치거나 이전하거나 점검하거나 연결합니다. 또는 MCP 레지스트리 메타데이터를 준비합니다 | 요청 문구와, 있으면 읽은 MCP 의존성이나 설정 파일(`package.json`의 `@modelcontextprotocol/*`, `pyproject.toml`의 `mcp`, `.mcp.json`, `server.json` 등) |
-| `hyper-ui-ux` | 요청한 결과물이 보이는 모습 자체가 핵심인 화면입니다. 새 화면·페이지·컴포넌트 디자인, 기존 UI 리디자인, 히어로·카드·데모용 연출 화면, 디자인 브리프나 `DESIGN.md`, generic한 "AI 티" 패턴의 점검이나 제거 | 요청 문구와 대상 UI 경로, 그리고 있으면 읽은 스타일·디자인 시스템 파일(`DESIGN.md`, 토큰 파일, `tailwind.config.*` 등) |
+| `hyper-design` | 요청한 결과물이 보이는 모습 자체가 핵심인 화면입니다. 새 화면·페이지·컴포넌트 디자인, 기존 UI 리디자인, 히어로·카드·데모용 연출 화면, 디자인 브리프나 `DESIGN.md`, generic한 "AI 티" 패턴의 점검이나 제거 | 요청 문구와 대상 UI 경로, 그리고 있으면 읽은 스타일·디자인 시스템 파일(`DESIGN.md`, 토큰 파일, `tailwind.config.*` 등) |
 | `hyper-plan` | Build 작업이 여러 파일이나 단계를 건드리거나, Report 작업이 계획을 요청합니다 | 요청 문구 |
 | `hyper-execute` | 첫 단계일 때만: `.hyper/plans/` 아래 계획 파일이 이미 있고 사용자가 실행이나 재개를 원합니다 | 읽은 계획 경로 |
 | `hyper-mass` | 사용자가 의존성 그래프, DAG, "의존성 그래프", "단계별 병렬"을 요청하거나, 일부가 먼저 끝나야 다른 일이 시작되는 여러 작업이 있고 계획 파일을 원하지 않습니다 | 요청 문구 |
 | `hyper-skill` | 요청한 결과물이 재사용 스킬 폴더입니다. 새 스킬, 또는 기존 스킬의 트리거, 계약, 리소스, 검증 리팩터링 | 요청 문구, 그리고 이미 있으면 대상 `skills/<name>/SKILL.md` |
 | `hyper-documentation` | 요청한 결과물이 새로 만들거나 리팩터링하는 문서 산출물입니다. README, `AGENTS.md`, AI가 읽기 좋은 문서(지침 베이스, 에이전트 가이드, 런북, 스펙, 규칙 묶음), 재사용 프롬프트 산출물(역할·시스템·에이전트 프롬프트, 프롬프트 템플릿이나 팩, 프롬프트 평가 픽스처) | 요청 문구, 그리고 이미 있으면 대상 경로 |
-| `hyper-git` | 마지막 단계일 때만. 전달하지 않는 꼬리(`hyper-skill`, `hyper-documentation`, 또는 마지막 구축 단계인 `hyper-mcp`나 `hyper-ui-ux`) 뒤에서 사용자가 커밋과 푸시, 또는 지정 브랜치로 병합과 푸시를 요청합니다. `hyper-skill`이나 `hyper-documentation` 뒤에서는 PR도 해당합니다 | 전달 문구와 지정한 대상 브랜치 |
+| `hyper-git` | 마지막 단계일 때만. 전달하지 않는 꼬리(`hyper-skill`, `hyper-documentation`, 또는 마지막 구축 단계인 `hyper-mcp`나 `hyper-design`) 뒤에서 사용자가 커밋과 푸시, 또는 지정 브랜치로 병합과 푸시를 요청합니다. `hyper-skill`이나 `hyper-documentation` 뒤에서는 PR도 해당합니다 | 전달 문구와 지정한 대상 브랜치 |
 
 ## 3. 단계 순서
 
 고른 단계는 항상 이 순서로 실행합니다. 고르지 않은 단계는 건너뜁니다.
 
 ```text
-hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation) [-> hyper-git]
+hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-design -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation) [-> hyper-git]
 ```
 
 - 앞 단계(`hyper-research`, `hyper-seo`, `hyper-architecture`)는 꼬리 단계에 쓸 근거를 만듭니다. Build 작업에서는 보고서 모드로 실행하고, 코드 변경은 꼬리 단계가 합니다.
 - `hyper-mcp`가 마지막으로 고른 단계면 꼬리 단계입니다. 직접 만들거나 고치거나 이전하거나 연결하고 결과를 검증합니다. 뒤에 `hyper-plan`이나 `hyper-mass`가 오면 점검 모드로 실행하고 그 보고서가 계획의 입력이 됩니다.
-- `hyper-ui-ux`가 마지막으로 고른 단계면 꼬리 단계입니다. 직접 화면을 디자인하거나 리디자인하거나 연출 화면을 만들거나 정리하고 결과를 검증합니다. 뒤에 `hyper-plan`이나 `hyper-mass`가 오면 아직 없는 화면은 `brief-only` 모드로, 기존 화면은 `audit` 모드로 실행하고 저장한 브리프나 보고서가 계획의 입력이 됩니다.
+- `hyper-design`가 마지막으로 고른 단계면 꼬리 단계입니다. 직접 화면을 디자인하거나 리디자인하거나 연출 화면을 만들거나 정리하고 결과를 검증합니다. 뒤에 `hyper-plan`이나 `hyper-mass`가 오면 아직 없는 화면은 `brief-only` 모드로, 기존 화면은 `audit` 모드로 실행하고 저장한 브리프나 보고서가 계획의 입력이 됩니다.
 - 그 밖의 경우 꼬리 단계는 정확히 하나입니다. `hyper-plan`(스스로 `hyper-execute`로 이어짐), `hyper-mass`, 기존 계획에 대한 `hyper-execute` 단독, 스킬 폴더에 대한 `hyper-skill`, 문서나 프롬프트 산출물에 대한 `hyper-documentation` 중 하나입니다.
 - `hyper-git`은 혼자서 꼬리 단계가 되지 않습니다. 파일은 바꾸지만 전달은 맡지 않는 꼬리 뒤에 붙습니다. `hyper-plan`, `hyper-execute`, `hyper-mass`는 스스로 전달하므로 `hyper-git`이 뒤따르지 않습니다.
 - Report 작업에서는 요청한 마지막 단계에서 체인이 끝납니다. 계획을 요청한 Report 작업은 `--plan-only`로 `hyper-plan`에서 끝납니다.
@@ -62,10 +62,10 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux ->
 | MCP 점검이나 보고서만 | `hyper-mcp` 점검 모드 단독 |
 | 낯선 외부 API를 감싸는 MCP 서버("Notion API를 MCP로") | `hyper-research` -> `hyper-mcp` |
 | PR이나 배포로 전달하는 MCP 변경, 또는 MCP 밖 모듈도 바꾸는 변경 | `hyper-mcp`(점검) -> `hyper-plan` |
-| 화면 디자인, 리디자인, 연출 화면, generic 패턴 정리 | `hyper-ui-ux` |
-| 화면 점검이나 디자인 방향만 | `audit`나 `brief-only` 모드의 `hyper-ui-ux` 단독 |
-| PR이나 배포로 전달하는 화면 작업, 또는 API·데이터·라우트 변경도 필요한 작업 | `hyper-ui-ux`(`audit`나 `brief-only`) -> `hyper-plan` |
-| 최신 외부 지침에 기대는 화면("최신 가이드라인 확인해서") | `hyper-research` -> `hyper-ui-ux` |
+| 화면 디자인, 리디자인, 연출 화면, generic 패턴 정리 | `hyper-design` |
+| 화면 점검이나 디자인 방향만 | `audit`나 `brief-only` 모드의 `hyper-design` 단독 |
+| PR이나 배포로 전달하는 화면 작업, 또는 API·데이터·라우트 변경도 필요한 작업 | `hyper-design`(`audit`나 `brief-only`) -> `hyper-plan` |
+| 최신 외부 지침에 기대는 화면("최신 가이드라인 확인해서") | `hyper-research` -> `hyper-design` |
 | 리서치 보고서만 | `hyper-research` |
 | SEO 감사나 보고서만 | `hyper-seo` |
 | SEO 점수 루프("최대 점수까지", "keep improving the score") | 최적화 모드의 `hyper-seo` 단독 |
@@ -91,9 +91,9 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux ->
 - `hyper-mcp`와 `hyper-skill`은 한 체인에서 함께 실행하지 않습니다. 요청한 결과물이 스킬 폴더면 MCP에 관한 스킬이라도 `hyper-skill`을 고릅니다.
 - `hyper-mcp`와 `hyper-architecture`는 작업이 MCP 밖의 폴더, 라우트, 모듈도 재구성할 때만 함께 실행합니다. MCP만 다루는 작업은 아키텍처 단계 없이 `hyper-mcp`로 보냅니다.
 - MCP 작업에 전달 단어("PR까지", "ship")가 있으면 `hyper-mcp`를 점검 모드로 `hyper-plan` 앞에 둡니다. 전달은 계획과 실행 단계만 맡기 때문입니다.
-- `hyper-ui-ux`는 `hyper-skill`, `hyper-documentation`과 한 체인에서 함께 실행하지 않습니다. 디자인에 관한 스킬 폴더, 일반 문서, 프롬프트는 각자의 단계로 가고, 제품의 시각 체계를 기록하는 프로젝트 `DESIGN.md`는 `hyper-ui-ux`로 갑니다.
-- 주된 결과물이 동작(새 API, 데이터 흐름, 버그 수정)인 기능은 화면이 있어도 기존 행대로 라우팅합니다. 요청이 보이는 모습 자체를 요구할 때("디자인 신경 써서", "AI 티 안 나게", "redesign")만 `hyper-ui-ux`를 더합니다.
-- 화면 작업에 전달 단어("PR까지", "ship")가 있으면 `hyper-ui-ux`를 `audit`나 `brief-only` 모드로 `hyper-plan` 앞에 둡니다. 전달은 계획과 실행 단계만 맡기 때문입니다.
+- `hyper-design`는 `hyper-skill`, `hyper-documentation`과 한 체인에서 함께 실행하지 않습니다. 디자인에 관한 스킬 폴더, 일반 문서, 프롬프트는 각자의 단계로 가고, 제품의 시각 체계를 기록하는 프로젝트 `DESIGN.md`는 `hyper-design`로 갑니다.
+- 주된 결과물이 동작(새 API, 데이터 흐름, 버그 수정)인 기능은 화면이 있어도 기존 행대로 라우팅합니다. 요청이 보이는 모습 자체를 요구할 때("디자인 신경 써서", "AI 티 안 나게", "redesign")만 `hyper-design`를 더합니다.
+- 화면 작업에 전달 단어("PR까지", "ship")가 있으면 `hyper-design`를 `audit`나 `brief-only` 모드로 `hyper-plan` 앞에 둡니다. 전달은 계획과 실행 단계만 맡기 때문입니다.
 - `hyper-git`은 `hyper-plan`, `hyper-execute`, `hyper-mass`와 한 체인에서 함께 실행하지 않습니다. 같은 단어를 그 단계들의 전달 플래그가 이미 받습니다. 다른 단계 없이 Git만 원하는 요청(커밋, 워크트리, 이슈, 병합만)은 `hyper` 작업이 아닙니다.
 - `hyper-git` 전달 단계에서 `main`, `master`, 기본 브랜치, 배포 브랜치로 병합하는 일은 사용자가 그 브랜치를 지정했을 때만 합니다.
 - 기존 계획 파일이 새 계획보다 우선하는 경우는 사용자가 그 파일을 가리키거나 재개를 말했을 때뿐입니다. 관계없는 옛 계획이 있는 새 Build 요청은 새 계획을 씁니다.

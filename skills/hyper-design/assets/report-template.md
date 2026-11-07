@@ -4,7 +4,7 @@
 
 - Target: `<path or surface>`
 - Mode: `design | restyle | mockup | audit | clean | verify`
-- Design brief: `.hyper/ui-ux/<slug>/brief.md | not applicable`
+- Design brief: `.hyper/design/<slug>/brief.md | not applicable`
 - Detector: `v2 | unavailable (reason)`
 - Engines run: `text | css | markup | context | dom | visual`
 - Baseline delta: `not used | only-new | unavailable (reason)`

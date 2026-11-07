@@ -42,7 +42,7 @@ compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대�
 | `hyper-seo` | `.hyper/seo/<slug>/` 아래의 검색 노출 감사, 보고서, 횟수 제한이 있는 최적화 루프 |
 | `hyper-architecture` | 스택에 맞춘 아키텍처 점검 결과, 마지막 단계일 때는 아키텍처 수정 |
 | `hyper-mcp` | `.hyper/mcp/<slug>/`에 저장한 MCP 점검 결과. 마지막 단계일 때는 MCP Inspector로 검증한 MCP 서버, 클라이언트, 호스트 설정의 구축, 수정, 이전, 연결 |
-| `hyper-ui-ux` | 정석 수치 기준과 독립 검토로 확인한 화면 디자인, 리디자인, 연출 화면. 계획 앞에서는 `.hyper/ui-ux/<slug>/`에 저장한 디자인 브리프나 화면 점검 결과 |
+| `hyper-design` | 정석 수치 기준과 독립 검토로 확인한 화면 디자인, 리디자인, 연출 화면. 계획 앞에서는 `.hyper/design/<slug>/`에 저장한 디자인 브리프나 화면 점검 결과 |
 | `hyper-plan` | `.hyper/plans/<slug>.md`의 결정이 끝난 계획. 스스로 실행 단계로 이어집니다 |
 | `hyper-execute` | 기존 계획을 웨이브별로 실행하고 로컬, PR, ship 중 하나로 전달 |
 | `hyper-mass` | 의존 순서가 있는 작업 한 단계를 `.hyper/mass/<run-key>/` 그래프로 실행 |
@@ -91,8 +91,8 @@ Positive requests:
 - "hyper-git 스킬 새로 만들고 다 하면 dev, main에 머지하고 푸시해줘." -> `hyper-skill` -> `hyper-git` (`&& dev && main`)
 - "사내 DB 조회하는 MCP 서버 만들어서 Claude Code에 연결까지 해줘." -> `hyper-mcp`
 - "Migrate our MCP server to the current spec and open a PR." -> `hyper-mcp`(점검) -> `hyper-plan` -> `hyper-execute`와 `--make-pr`
-- "새 요금제 페이지 디자인해서 만들어줘. AI가 만든 티 안 나게." -> `hyper-ui-ux`
-- "Redesign the dashboard so it stops looking generic, and open a PR." -> `hyper-ui-ux`(점검) -> `hyper-plan` -> `hyper-execute`와 `--make-pr`
+- "새 요금제 페이지 디자인해서 만들어줘. AI가 만든 티 안 나게." -> `hyper-design`
+- "Redesign the dashboard so it stops looking generic, and open a PR." -> `hyper-design`(점검) -> `hyper-plan` -> `hyper-execute`와 `--make-pr`
 
 Negative requests:
 
@@ -124,7 +124,7 @@ Boundary requests:
 | 재사용 스킬 폴더를 새로 만들거나 리팩터링. 필요하면 공식 문서 리서치 뒤에 | `hyper-skill`. 요청이 최신 외부 문서에 기대면 앞에 `hyper-research` |
 | README, `AGENTS.md`, AI가 읽기 좋은 문서, 지침 베이스, 런북, 규칙 묶음, 재사용 프롬프트, 프롬프트 템플릿, 프롬프트 팩, 프롬프트 평가 픽스처를 새로 만들거나 리팩터링 | `hyper-documentation`. 내용이 최신 외부 출처나 공급자 지침에 기대면 앞에 `hyper-research` |
 | MCP 서버, 클라이언트, 이전, 보안 수정, 호스트 MCP 설정 | `hyper-mcp`. 서버가 낯선 외부 API를 감싸면 앞에 `hyper-research`, 사용자가 PR이나 배포 전달을 요청했거나 MCP 밖 모듈까지 바뀌면 `hyper-mcp`를 점검 모드로 두고 뒤에 `hyper-plan` |
-| 화면·페이지·컴포넌트 디자인이나 리디자인, 연출 화면, generic한 "AI 티" 제거 | `hyper-ui-ux`. 최신 외부 지침에 기대면 앞에 `hyper-research`, 사용자가 PR이나 배포 전달을 요청했거나 UI 밖 작업까지 필요하면 `hyper-ui-ux`를 brief-only나 점검 모드로 두고 뒤에 `hyper-plan` |
+| 화면·페이지·컴포넌트 디자인이나 리디자인, 연출 화면, generic한 "AI 티" 제거 | `hyper-design`. 최신 외부 지침에 기대면 앞에 `hyper-research`, 사용자가 PR이나 배포 전달을 요청했거나 UI 밖 작업까지 필요하면 `hyper-design`를 brief-only나 점검 모드로 두고 뒤에 `hyper-plan` |
 | 스킬, 문서, MCP, 인터페이스 꼬리 뒤에 커밋·푸시나 병합·푸시 단어가 붙거나, 스킬이나 문서 꼬리 뒤에 PR 단어가 붙음 | 위 체인 그대로 두고 뒤에 `hyper-git`을 전달 단계로 붙입니다 |
 | 이미 있는 계획 파일을 실행 | `hyper-execute` |
 | 보고서만 원하는 리서치, 감사, 아키텍처 점검 | 맞는 단계 하나 |

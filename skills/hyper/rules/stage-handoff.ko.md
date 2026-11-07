@@ -12,7 +12,7 @@
 | `hyper-seo` | 대상, 그리고 Build 작업이면 허용 동작 `recommend`, Report 작업이면 사용자가 말한 모드 | `.hyper/seo/<slug>/` 아래 보고서 | 보고서 경로와 critical·warning 결과 |
 | `hyper-architecture` | Build 작업에서는 "아키텍처 감사만, 파일 경로와 함께 결과 보고, 수정 금지"와 대상 경로. 마지막 단계일 때는 사용자 요청 그대로 | 라우팅 줄과 결과를 워크플로 기록의 단계 메모에 옮긴 것. 감사 모드에서는 이 단계가 자기 파일을 저장하지 않기 때문입니다 | 단계 메모 위치와 결과 |
 | `hyper-mcp` | 계획이나 mass 단계 앞에서는 "점검만, 파일 경로와 함께 결과 보고, 수정 금지"와 대상 경로, 모든 앞 단계 산출물 경로. 마지막 단계일 때는 사용자 요청 그대로와 모든 앞 단계 산출물 경로 | `.hyper/mcp/<slug>/report.md`. 마지막 단계일 때는 검증 표에 대상이 주장하는 era로 실행한 MCP Inspector 결과도 들어 있어야 합니다 | 보고서 경로와 critical, high 발견 |
-| `hyper-ui-ux` | 계획이나 mass 단계 앞에서는 "보고서만: 새 화면이면 디자인 브리프를 쓰고 기존 화면이면 점검, 수정 금지"와 대상 경로, 모든 앞 단계 산출물 경로. 마지막 단계일 때는 사용자 요청 그대로와 모든 앞 단계 산출물 경로 | `.hyper/ui-ux/<slug>/brief.md`(brief-only) 또는 `.hyper/ui-ux/<slug>/report.md`. 마지막 단계일 때는 보고서가 그 단계의 보고서 검증기를 통과하고 정석 수치 점검 결과와 검토 방식을 기록해야 합니다 | 브리프나 보고서 경로와 P0, P1 발견 |
+| `hyper-design` | 계획이나 mass 단계 앞에서는 "보고서만: 새 화면이면 디자인 브리프를 쓰고 기존 화면이면 점검, 수정 금지"와 대상 경로, 모든 앞 단계 산출물 경로. 마지막 단계일 때는 사용자 요청 그대로와 모든 앞 단계 산출물 경로 | `.hyper/design/<slug>/brief.md`(brief-only) 또는 `.hyper/design/<slug>/report.md`. 마지막 단계일 때는 보고서가 그 단계의 보고서 검증기를 통과하고 정석 수치 점검 결과와 검토 방식을 기록해야 합니다 | 브리프나 보고서 경로와 P0, P1 발견 |
 | `hyper-plan` | 사용자의 원래 요청, 꼭 읽어야 할 앞 단계 산출물 경로 전부, 전달 플래그, 사용자가 말했다면 `--plan-only`나 승인 보류 | `## Handoff` 섹션이 있는 `.hyper/plans/<slug>.md` | 없음. 이 단계가 스스로 `hyper-execute`로 이어집니다 |
 | `hyper-execute` | 계획 slug와 전달 플래그 | `status`가 `complete`인 `.hyper/execute/<slug>/state.json`과 출력된 완료 블록 | - |
 | `hyper-mass` | 목표, 성공 기준, 앞 단계 산출물 경로 전부 | `status`가 `completed`인 `run.settled` 이벤트로 끝나는 `.hyper/mass/<run-key>/run.jsonl` | - |
@@ -102,7 +102,7 @@
 
 | Claim | Source |
 |---|---|
-| 단계 산출물 경로와 상태 값(`.hyper/research/`, `.hyper/seo/<slug>/`, `.hyper/mcp/<slug>/report.md`, `.hyper/ui-ux/<slug>/brief.md`와 `report.md`, `.hyper/plans/<slug>.md`, `state.json` `status`, `run.settled`, `skills/<name>/SKILL.md`, 문서 산출물 경로, Git 전달의 원격 브랜치 확인) | 이 저장소의 각 단계 스킬 `SKILL.md`와 references, 2026-11-07 |
+| 단계 산출물 경로와 상태 값(`.hyper/research/`, `.hyper/seo/<slug>/`, `.hyper/mcp/<slug>/report.md`, `.hyper/design/<slug>/brief.md`와 `report.md`, `.hyper/plans/<slug>.md`, `state.json` `status`, `run.settled`, `skills/<name>/SKILL.md`, 문서 산출물 경로, Git 전달의 원격 브랜치 확인) | 이 저장소의 각 단계 스킬 `SKILL.md`와 references, 2026-11-07 |
 | 계획 단계의 `## Handoff` 줄과 실행으로 자동 연결 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 아키텍처 단계가 지원하지 않는 스택에서 멈추고 없는 스킬의 설치 명령을 보고함 | 이 저장소의 아키텍처 스킬 stack-detection 규칙, 2026-11-06 |
 | 채팅이 아니라 저장된 산출물과 지속 상태로 전달 | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |

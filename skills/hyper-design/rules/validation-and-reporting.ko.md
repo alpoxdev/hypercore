@@ -4,14 +4,14 @@ report를 쓰기 전에 읽는다. 이 파일은 검증 순서, report 구성, �
 
 ## 검증 순서
 
-1. 같은 대상에 `scripts/detect-slop.sh`를 다시 실행하고 rule ID, severity count, engine과 evidence field, 사용한 baseline delta를 비교한다. 실행 전과 후의 JSON을 `.hyper/ui-ux/<slug>/` 아래에 저장한다.
+1. 같은 대상에 `scripts/detect-slop.sh`를 다시 실행하고 rule ID, severity count, engine과 evidence field, 사용한 baseline delta를 비교한다. 실행 전과 후의 JSON을 `.hyper/design/<slug>/` 아래에 저장한다.
 2. 변경한 화면마다 정석 수치 체크리스트(`rules/craft-floor.md` §9)를 실행한다.
 3. 변경 파일을 포함하는 가장 작은 project build, typecheck, lint, test 명령을 실행한다. 실패를 억제하지 말고 살펴본다.
 4. 렌더링이 가능하면 확인 대상 폭과 화면이 드러내는 상태를 살펴본다. 그렇지 않으면 렌더링이 필요한 항목을 `static_only` 또는 `unavailable`로 표시한다.
 5. 변경이 영향을 주는 keyboard focus, semantics, 측정 가능한 contrast, reduced motion, responsive overflow를 확인한다.
 6. 직접 영향받은 동작을 실행하고 copy, route, form contract, state transition, analytics hook을 보존한다.
 7. 독립 검토(`rules/independent-review.md`)를 실행하고 그 발견 사항에 답한다.
-8. 저장한 리포트를 `scripts/validate-report.sh --report .hyper/ui-ux/<slug>/report.md`로 검증하고 residual risk를 기록한다.
+8. 저장한 리포트를 `scripts/validate-report.sh --report .hyper/design/<slug>/report.md`로 검증하고 residual risk를 기록한다.
 
 ## Claim 규칙
 

@@ -42,7 +42,7 @@ By user instruction, this package is an orchestrator: it names its eleven stage 
 | `hyper-seo` | A search-visibility audit, report, or bounded optimize loop under `.hyper/seo/<slug>/` |
 | `hyper-architecture` | Stack-matched architecture findings, or architecture edits when it is the last stage |
 | `hyper-mcp` | MCP findings saved under `.hyper/mcp/<slug>/`, or, when it is the last stage, a built, fixed, migrated, or connected MCP server, client, or host configuration verified with the MCP Inspector |
-| `hyper-ui-ux` | A designed, restyled, or mocked-up interface checked against a craft floor and an independent review, or, before a plan, a design brief or an interface audit, saved under `.hyper/ui-ux/<slug>/` |
+| `hyper-design` | A designed, restyled, or mocked-up interface checked against a craft floor and an independent review, or, before a plan, a design brief or an interface audit, saved under `.hyper/design/<slug>/` |
 | `hyper-plan` | A decision-complete plan under `.hyper/plans/<slug>.md`, which continues into execution by itself |
 | `hyper-execute` | An existing plan executed wave by wave and delivered locally, as a PR, or shipped |
 | `hyper-mass` | One phase of dependency-ordered work run as a graph under `.hyper/mass/<run-key>/` |
@@ -91,8 +91,8 @@ Positive requests:
 - "hyper-git 스킬 새로 만들고 다 하면 dev, main에 머지하고 푸시해줘." -> `hyper-skill` -> `hyper-git` (`&& dev && main`)
 - "사내 DB 조회하는 MCP 서버 만들어서 Claude Code에 연결까지 해줘." -> `hyper-mcp`
 - "Migrate our MCP server to the current spec and open a PR." -> `hyper-mcp` (audit) -> `hyper-plan` -> `hyper-execute` with `--make-pr`
-- "새 요금제 페이지 디자인해서 만들어줘. AI가 만든 티 안 나게." -> `hyper-ui-ux`
-- "Redesign the dashboard so it stops looking generic, and open a PR." -> `hyper-ui-ux` (audit) -> `hyper-plan` -> `hyper-execute` with `--make-pr`
+- "새 요금제 페이지 디자인해서 만들어줘. AI가 만든 티 안 나게." -> `hyper-design`
+- "Redesign the dashboard so it stops looking generic, and open a PR." -> `hyper-design` (audit) -> `hyper-plan` -> `hyper-execute` with `--make-pr`
 
 Negative requests:
 
@@ -124,7 +124,7 @@ Boundary requests:
 | A reusable skill folder created or refactored, optionally after provider-doc research | `hyper-skill`, with `hyper-research` first when the request depends on current external docs |
 | A README, `AGENTS.md`, AI-readable document, instruction base, runbook, rule pack, reusable prompt, prompt template, prompt pack, or prompt eval fixture created or refactored | `hyper-documentation`, with `hyper-research` first when its claims depend on current external sources or provider guidance |
 | An MCP server, client, migration, security fix, or host MCP configuration | `hyper-mcp`, with `hyper-research` first when the server wraps an unfamiliar external API, and with `hyper-mcp` in audit mode before `hyper-plan` when the user asks for a PR or ship delivery or the change spans non-MCP modules |
-| A screen, page, or component designed or restyled, faux product UI, or a generic "AI look" removed | `hyper-ui-ux`, with `hyper-research` first when it depends on current external guidance, and with `hyper-ui-ux` in brief-only or audit mode before `hyper-plan` when the user asks for a PR or ship delivery or the change also needs non-UI work |
+| A screen, page, or component designed or restyled, faux product UI, or a generic "AI look" removed | `hyper-design`, with `hyper-research` first when it depends on current external guidance, and with `hyper-design` in brief-only or audit mode before `hyper-plan` when the user asks for a PR or ship delivery or the change also needs non-UI work |
 | A skill, document, MCP, or interface tail followed by commit-and-push or merge-and-push words, or a skill or document tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
 | A plan file already exists and the user wants it run | `hyper-execute` |
 | Report-only research, audit, or architecture review | The one matching stage alone |
