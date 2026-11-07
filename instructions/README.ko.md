@@ -18,6 +18,7 @@
 | Harness Engineering | [`harness-engineering/HARNESS_ENGINEERING.ko.md`](harness-engineering/HARNESS_ENGINEERING.ko.md) | 프롬프트, 에이전트, 도구 사용을 테스트 가능한 하네스로 관리 |
 | Loop Engineering | [`loop-engineering/LOOP_ENGINEERING.ko.md`](loop-engineering/LOOP_ENGINEERING.ko.md) | 하네스 한 층 위에서 자율 에이전트 루프를 설계한다. 트리거, 작업 출처, 상태, 작성자·검증자 분리, 검증 가능한 멈춤 조건, 예산을 다룬다 |
 | Graph Engineering | [`graph-engineering/GRAPH_ENGINEERING.ko.md`](graph-engineering/GRAPH_ENGINEERING.ko.md) | 다단계·다중 에이전트 작업을 노드, 간선, 상태로 이루어진 그래프로 설계하고, 그래프가 맞지 않는 경우를 가린다 |
+| MCP | [`mcp/MCP.ko.md`](mcp/MCP.ko.md) | 현재 판(`2026-07-28`) 기준으로 Model Context Protocol 서버와 클라이언트를 만들고 연결하고 관리한다. 만들지 판단하는 기준, 프로토콜 규칙, 도구 설계, 보안, 호스트 통합, 검증을 다룬다 |
 | Harness Anatomy | [`harness-engineering/references/harness-anatomy.ko.md`](harness-engineering/references/harness-anatomy.ko.md) | 하네스를 이루는 부품과 하네스 구성 요소가 낡았는지 판단하는 기준 |
 | Context Management | [`context-engineering/references/context-management.ko.md`](context-engineering/references/context-management.ko.md) | 긴 실행에서 문맥을 쓰고, 고르고, 압축하고, 격리하는 방법과 런타임별 압축·메모리 기능 |
 | Context Core Principles | [`context-engineering/references/core-principles.ko.md`](context-engineering/references/core-principles.ko.md) | instruction을 쓰기 전에 정할 고도, 구체성, 우선순위 규칙 |
@@ -51,6 +52,7 @@ shellcheck 줄은 `scripts/` 아래 bash 도구 전체에 [ShellCheck](https://w
 
 - 마지막 전수 확인: **2026-11-03**. 모든 영역을 Aside 브라우저로 현재 1차 출처와 다시 대조했고, 낡은 주장은 지우거나 고쳤으며, 새 영역 `loop-engineering/`과 `graph-engineering/`을 추가했다. 주장별 확인일은 각 문서에 있고, 다시 읽지 못한 행은 이전 날짜를 그대로 둔다. 다음 전수 재검증: **2027-02-03**.
 - 이전 확인: 전수 확인 2026-07-29, 부분 재검증 2026-09-19와 2026-09-20.
+- 2026-11-07에 추가한 영역: `mcp/`. MCP `2026-07-28` 판을 기준으로 썼고, 문서 안의 모든 행을 그날 확인했다. 2026-11-03 전수 확인에는 포함되지 않았다.
 - 링크 검사는 인라인 인용만 읽는다. 코드 블록과 RFC 2606이 문서용으로 예약한 도메인(`example.com`, `example.net`, `example.org`, `*.example`), 루프백(`localhost`, `127/8`, `[::1]`)의 예시 URL은 제외하고, 제외한 개수를 보고한다. 검사하지 않은 코드 블록 안 URL도 함께 보고하므로 조용히 사라지는 항목이 없다. 나머지는 리다이렉트 없이 해석되어야 한다.
 - 분기 재검증 주기는 이 프로젝트의 정책으로 지킨다. 벤더 문서는 각자의 일정으로 바뀌며, 이 주기는 벤더 보장이 아니라 우리가 고른 검토 간격이다. arXiv·표준 문서는 부패 속도가 달라 URL 확인만으로 충분하다.
 - `.hyper/`는 `.gitignore` 대상이므로 그 아래 미추적 리서치 리포트는 **로컬 재검증 캐시**이며 다른 clone에는 없다. 반면 `.hyper/`에는 추적 중인 파일도 있어 디렉터리 자체는 어느 clone에나 존재한다. 공유 가능한 근거는 항상 문서 안의 URL이다.
@@ -78,6 +80,7 @@ shellcheck 줄은 `scripts/` 아래 bash 도구 전체에 [ShellCheck](https://w
 @instructions/harness-engineering/HARNESS_ENGINEERING.ko.md
 @instructions/loop-engineering/LOOP_ENGINEERING.ko.md
 @instructions/graph-engineering/GRAPH_ENGINEERING.ko.md
+@instructions/mcp/MCP.ko.md
 @instructions/sourcing/reliable-search.ko.md
 @instructions/validation/index.ko.md
 ```
@@ -95,5 +98,7 @@ Skill을 새로 만들거나 `skills/*`를 refactor할 때는 [`skill/SKILL_AUTH
 Autoresearch-style 반복 개선, metric optimization, autonomous debug/fix/learn/reason loop를 설계할 때는 [`autoresearch/AUTORESEARCH.ko.md`](autoresearch/AUTORESEARCH.ko.md)를 읽고, metric/verify/guard/log/rollback 기준에 따라 `autoresearch/references/`를 추가로 읽는다.
 
 목표 기반, 예약 실행, 이벤트 기반처럼 멈춤 조건을 만족할 때까지 반복하는 자율 에이전트 루프를 설계할 때는 [`loop-engineering/LOOP_ENGINEERING.ko.md`](loop-engineering/LOOP_ENGINEERING.ko.md)를 읽는다. autoresearch는 이 영역 안의 지표 기반 특수 루프 하나다. 작업을 노드와 간선으로 나누고 공유 상태, 체크포인트, 에이전트 간 fan-out/fan-in을 다룰 때는 [`graph-engineering/GRAPH_ENGINEERING.ko.md`](graph-engineering/GRAPH_ENGINEERING.ko.md)를 읽는다.
+
+MCP 서버나 클라이언트를 만들거나 리뷰할 때, MCP 서버를 에이전트 호스트에 연결할 때, 어떤 기능을 MCP 서버로 만들지 판단할 때는 [`mcp/MCP.ko.md`](mcp/MCP.ko.md)를 읽고, 필요에 따라 `mcp/references/` 아래 문서를 읽는다. 전송 규칙과 이전 절차는 `protocol-2026-07-28.ko.md`, 도구 표면은 `server-design.ko.md`, 위협과 OAuth는 `security-and-authorization.ko.md`, 컨텍스트 비용과 승인은 `host-integration.ko.md`, SDK·인스펙터·레지스트리는 `build-test-ship.ko.md`다.
 
 리서치·최신성·출처 추적이 중요한 작업은 [`sourcing/reliable-search.ko.md`](sourcing/reliable-search.ko.md)를 먼저 읽고, source ledger/citation/freshness가 필요하면 `sourcing/references/`를 추가로 읽는다. 완료 주장, eval, agent/tool 검증이 중요한 작업은 [`validation/index.ko.md`](validation/index.ko.md)와 `validation/references/`를 함께 읽는다.

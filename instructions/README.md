@@ -18,6 +18,7 @@ This folder is the LLM working-instruction layer for this project. Its purpose i
 | Harness Engineering | [`harness-engineering/HARNESS_ENGINEERING.md`](harness-engineering/HARNESS_ENGINEERING.md) | Manage prompts, agents, and tool use as a testable harness |
 | Loop Engineering | [`loop-engineering/LOOP_ENGINEERING.md`](loop-engineering/LOOP_ENGINEERING.md) | Design autonomous agent loops — trigger, work source, state, maker/checker split, verifiable stop condition, budget — one level above the harness |
 | Graph Engineering | [`graph-engineering/GRAPH_ENGINEERING.md`](graph-engineering/GRAPH_ENGINEERING.md) | Design multi-step and multi-agent work as a graph of nodes, edges, and state — and know when not to |
+| MCP | [`mcp/MCP.md`](mcp/MCP.md) | Build, connect, and govern Model Context Protocol servers and clients against the current revision (`2026-07-28`): when to build one, protocol rules, tool design, security, host integration, and verification |
 | Harness Anatomy | [`harness-engineering/references/harness-anatomy.md`](harness-engineering/references/harness-anatomy.md) | The parts a harness is made of and when a harness component has gone stale |
 | Context Management | [`context-engineering/references/context-management.md`](context-engineering/references/context-management.md) | Write, select, compress, and isolate context over a long run; per-runtime compaction and memory surfaces |
 | Context Core Principles | [`context-engineering/references/core-principles.md`](context-engineering/references/core-principles.md) | The altitude, specificity, and priority rules an instruction should carry before it is written |
@@ -51,6 +52,7 @@ The shellcheck line runs [ShellCheck](https://www.shellcheck.net/) over the bash
 
 - Last full sweep: **2026-11-03**. Every area was re-verified against current first-party sources through the Aside browser, outdated claims were removed or corrected, and two new areas — `loop-engineering/` and `graph-engineering/` — were added. Per-claim checked dates live in each document; a row that could not be re-read keeps its older date. Next full re-verification: **2027-02-03**.
 - Previous sweeps: full sweep 2026-07-29; targeted re-verification 2026-09-19 and 2026-09-20.
+- Area added 2026-11-07: `mcp/`, written against the MCP `2026-07-28` revision; every row in its documents was checked on that date. It was not part of the 2026-11-03 sweep.
 - The link check reads inline citations only: it skips fenced code blocks and documentation example URLs on the RFC 2606 reserved domains (`example.com`, `example.net`, `example.org`, `*.example`) and loopback addresses (`localhost`, `127/8`, `[::1]`), and reports how many it skipped — including the URLs inside code blocks that it did not check, so nothing is dropped silently. Every other URL must resolve without a redirect.
 - Keep the quarterly re-verification cadence as project policy: vendor documentation changes on its own schedule, and this cadence is our chosen review interval rather than a vendor guarantee. arXiv and standards documents decay differently, so a URL check is enough for those.
 - `.hyper/` is covered by `.gitignore`, so untracked research reports under `.hyper/research/` are a **local re-verification cache** and do not exist in another clone. `.hyper/` also contains tracked files, so the directory itself is present in any clone. Shareable evidence is always the URL inside the document.
@@ -78,6 +80,7 @@ The shellcheck line runs [ShellCheck](https://www.shellcheck.net/) over the bash
 @instructions/harness-engineering/HARNESS_ENGINEERING.md
 @instructions/loop-engineering/LOOP_ENGINEERING.md
 @instructions/graph-engineering/GRAPH_ENGINEERING.md
+@instructions/mcp/MCP.md
 @instructions/sourcing/reliable-search.md
 @instructions/validation/index.md
 ```
@@ -95,5 +98,7 @@ When creating a new skill or refactoring `skills/*`, read [`skill/SKILL_AUTHORIN
 When designing autoresearch-style iterative improvement, metric optimization, or an autonomous debug/fix/learn/reason loop, read [`autoresearch/AUTORESEARCH.md`](autoresearch/AUTORESEARCH.md), then read further under `autoresearch/references/` according to the metric, verify, guard, log, and rollback criteria you need.
 
 When designing any autonomous agent loop — goal-based, scheduled, or event-driven work that repeats until a stop condition holds — read [`loop-engineering/LOOP_ENGINEERING.md`](loop-engineering/LOOP_ENGINEERING.md); autoresearch is one specialized, metric-driven loop inside that area. When work is decomposed into nodes and edges with shared state, checkpoints, or fan-out/fan-in across agents, read [`graph-engineering/GRAPH_ENGINEERING.md`](graph-engineering/GRAPH_ENGINEERING.md).
+
+When building or reviewing an MCP server or client, wiring MCP servers into an agent host, or deciding whether a capability should be an MCP server at all, read [`mcp/MCP.md`](mcp/MCP.md), then the documents under `mcp/references/` as needed — `protocol-2026-07-28.md` for wire rules and migration, `server-design.md` for the tool surface, `security-and-authorization.md` for threats and OAuth, `host-integration.md` for context cost and approvals, and `build-test-ship.md` for SDKs, the inspector, and the registry.
 
 For work where research, recency, and source traceability matter, read [`sourcing/reliable-search.md`](sourcing/reliable-search.md) first, then `sourcing/references/` when a source ledger, citation, or freshness handling is required. For work where completion claims, evals, and agent/tool verification matter, read [`validation/index.md`](validation/index.md) together with `validation/references/`.

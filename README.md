@@ -252,7 +252,7 @@ hypercore/
 │   └── packages/
 │       ├── color/         # @kood/color-cli — hex / rgb / oklch 색상 변환 CLI
 │       └── naver-api/     # @kood/naver-api-cli — Naver API HUB 검색·DataLab·쇼핑인사이트 CLI
-├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/sourcing/validation 등)
+├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
 └── skills/                # 37개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
@@ -292,6 +292,7 @@ skills/<name>/
 | Harness Engineering | [`instructions/harness-engineering/`](instructions/harness-engineering/) | 프롬프트·에이전트·도구 사용을 테스트 가능한 하네스로 관리 |
 | Loop Engineering | [`instructions/loop-engineering/`](instructions/loop-engineering/) | 멈춤 조건이 있는 자율 에이전트 루프(목표·시간·이벤트 기반) 설계 |
 | Graph Engineering | [`instructions/graph-engineering/`](instructions/graph-engineering/) | 다단계·다중 에이전트 작업을 노드·간선·상태의 그래프로 설계 |
+| MCP | [`instructions/mcp/`](instructions/mcp/) | MCP 2026-07-28 판 기준 서버·클라이언트 제작, 호스트 연결, 보안·검증 기준 |
 | Sourcing | [`instructions/sourcing/`](instructions/sourcing/) | 자료 조사·검색·출처 검증 기준 |
 | Validation | [`instructions/validation/`](instructions/validation/) | 작업 완료 전 검증 기준 |
 
