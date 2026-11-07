@@ -486,6 +486,21 @@
         }
       },
       "behaviorContractId": "hyper-database--detect-engines"
+    },
+    {
+      "path": "skills/hyper-google-analytics/scripts/ga-detect.sh",
+      "family": "hyper-google-analytics",
+      "legacyOrigin": "authored-mjs",
+      "usage": "detect-ga-signals",
+      "behavior": "ga-signal-detection",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-google-analytics/scripts/ga-detect.mjs",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-google-analytics--ga-detect"
     }
   ],
   "forbiddenDetectorReferences": {
