@@ -26,6 +26,7 @@
     "hyper-git": {
       "FRONTMATTER_TRIGGER": 1
     },
+    "hyper-google-tagmanager": {},
     "hyper-imagegen": {
       "FRONTMATTER_TRIGGER": 1
     },
