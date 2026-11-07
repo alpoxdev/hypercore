@@ -448,7 +448,7 @@ case_behavior_contracts() {
     done
 
     case " $family " in
-      " hyper-architecture-nextjs "|" prompt-maker "|" hyper-skill "|" hyper-architecture-vite ")
+      " hyper-architecture-nextjs "|" hyper-prompt "|" hyper-skill "|" hyper-architecture-vite ")
         assert_eq 3 "$(LC_ALL=C sort -u "$observables" | wc -l | tr -d ' ')" "three distinct observables for $family"
         ;;
     esac

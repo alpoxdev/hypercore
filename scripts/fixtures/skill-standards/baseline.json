@@ -16,9 +16,6 @@
     "deploy-fix": {
       "FRONTMATTER_TRIGGER": 1
     },
-    "docs-maker": {
-      "FRONTMATTER_TRIGGER": 1
-    },
     "git-maker": {},
     "git-worktree": {
       "FRONTMATTER_TRIGGER": 1
@@ -43,6 +40,9 @@
     "hyper-architecture-tanstack-start": {},
     "hyper-architecture-tauri": {},
     "hyper-architecture-vite": {},
+    "hyper-docs": {
+      "FRONTMATTER_TRIGGER": 1
+    },
     "hyper-execute": {
       "FRONTMATTER_TRIGGER": 1
     },
@@ -52,6 +52,9 @@
     "hyper-plan": {
       "FRONTMATTER_TRIGGER": 1,
       "CROSS_SKILL_REFERENCE": 9
+    },
+    "hyper-prompt": {
+      "FRONTMATTER_TRIGGER": 1
     },
     "hyper-research": {
       "FRONTMATTER_TRIGGER": 1
@@ -71,9 +74,6 @@
       "FRONTMATTER_TRIGGER": 1
     },
     "pre-deploy": {
-      "FRONTMATTER_TRIGGER": 1
-    },
-    "prompt-maker": {
       "FRONTMATTER_TRIGGER": 1
     },
     "readme-maker": {

@@ -482,8 +482,8 @@
       "behaviorContractId": "pre-deploy--stack-detect"
     },
     {
-      "path": "skills/prompt-maker/scripts/validate-prompt-maker.sh",
-      "family": "prompt-maker",
+      "path": "skills/hyper-prompt/scripts/validate-hyper-prompt.sh",
+      "family": "hyper-prompt",
       "legacyOrigin": "retained-mjs",
       "usage": "validate-skill",
       "behavior": "skill-validation",
@@ -492,7 +492,7 @@
         "sha256": "7a8437e37277abfcb902d3994b8d16b6417f27d98b183f782e379e8839112477",
         "gitMode": "100644"
       },
-      "behaviorContractId": "prompt-maker--validate-prompt-maker"
+      "behaviorContractId": "hyper-prompt--validate-hyper-prompt"
     },
     {
       "path": "skills/hyper-seo/scripts/render-dashboard.sh",

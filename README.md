@@ -122,9 +122,9 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `autoresearch-skill` | 반복 실행과 이진 eval 기반으로 기존 스킬을 자동 최적화 | All |
 | `readme-maker` | 코드베이스 분석 기반 README 생성 및 리팩터링 | All |
 | `agents-md-maker` | 저장소 근거 기반 `AGENTS.md`(영어) + `AGENTS.ko.md`(한국어 미러) 생성·리팩터링. `CLAUDE.md`는 만들지 않으며, 기존 파일이 `AGENTS.md` 직접 읽기를 막으면 경로만 보고 | All |
-| `docs-maker` | AI가 읽기 좋은 구조화된 문서/룰 팩 생성 및 리팩터링 | All |
+| `hyper-docs` | AI가 읽기 좋은 구조화된 문서/룰 팩 생성 및 리팩터링 | All |
 | `prd-maker` | 증거 기반 Living PRD + 다이어그램·플로우·와이어프레임 생성·갱신 | All |
-| `prompt-maker` | 재사용 가능한 프롬프트·역할 프롬프트·프롬프트 템플릿/팩·프롬프트 eval 픽스처 생성 및 리팩터링 | All |
+| `hyper-prompt` | 재사용 가능한 프롬프트·역할 프롬프트·프롬프트 템플릿/팩·프롬프트 eval 픽스처 생성 및 리팩터링 | All |
 
 ### 아키텍처 가드
 
