@@ -30,6 +30,10 @@ Run each item over the saved text, not over the intention behind it.
 | 10 | The handoff block is complete | It lacks platforms, size, P1 scope, remaining blocking questions, or next-stage inputs |
 | 11 | The meta block carries status, platforms, size, and the updated date | One field is missing |
 | 12 | The must-not-change behavior is stated or explicitly declared absent | The change touches an existing flow and the section is missing |
+| 13 | Every `[M]` and `[M-조건]` item of each decided platform appears in that platform's release gate table with a conclusion | A decided platform's checklist has an `[M]` or `[M-조건]` item with no row, or a row with no conclusion |
+| 14 | No breakpoint is named after a device | A breakpoint reads `iPhone 375px`, `iPad`, `desktop 1440`, or any other device class instead of a content width in CSS pixels |
+
+Item 13 counts items, not rows: an `[M-조건]` item that reads "not applicable" with the condition and its reason passes, and so does an `[M]` item marked `[확인 필요: <question>]` as long as the document stays `status: draft`. Item 14 applies to every width the document names, in the goals, the platform block, or a requirement. A breakpoint is written as the content width in CSS pixels plus what in the content needs it, for example `640px where the metric row wraps`; a device name in a breakpoint is a defect because the device list changes while the content width does not.
 
 Fix a failure in place and re-run only the failing item. Do not re-run the whole checklist to feel finished.
 
@@ -58,6 +62,8 @@ Record the outcome as `reader test: passed <n>/5` or `reader test: skipped (<rea
 |---|---|---|---|
 | 1 | FR maps to goal or story | pass | |
 | 2 | Metric target and measurement | fail | Section 5, FR-007 has no target |
+| 13 | Platform `[M]` items in the release gate table | fail | Android block, A9 has no row |
+| 14 | Breakpoints named by content | fail | Section 9, web block says "iPhone 375px" |
 ```
 
 One row per checklist item, in checklist order. After the table, one line naming the blocking questions and one line stating that no file was edited.
@@ -76,7 +82,9 @@ One row per checklist item, in checklist order. After the table, one line naming
 | Counter-metrics as part of a measurable goal set | [TerminalSkills prd-writing](https://github.com/TerminalSkills/skills) - "Counter-metrics: [Metrics we don't want to hurt]" |
 | The implementation-mechanism audit | [ai-conductor prd](https://github.com/jstoup111/ai-conductor) - "It MUST NOT name the new internal mechanism by which this feature is built." |
 | Output proportional to the problem, so the checklist stays short | [Martin Fowler, SDD tool comparison](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html) - "it quickly became clear that the workflow was like using a sledgehammer to crack a nut" |
+| Breakpoints chosen by content instead of device class | [Responsive web design basics](https://web.dev/articles/responsive-web-design-basics) - "Don't define breakpoints based on device classes" |
+| Every mandatory store item reaching the release gate | [Play Data safety](https://support.google.com/googleplay/android-developer/answer/10787469) - "Even developers with apps that do not collect any user data must complete this form" |
 
 ### Evidence grade
 
-`LOCAL` - the twelve checklist items and the review table shape are this package's design. The marker cap and the removal rule are quoted from the cited specification guidance; the reader test is quoted from the cited authoring guidance.
+`LOCAL` - the fourteen checklist items and the review table shape are this package's design. The marker cap and the removal rule are quoted from the cited specification guidance; the reader test is quoted from the cited authoring guidance.

@@ -108,8 +108,17 @@ hyper-prd [--create <slug>] [--update <slug>] [--review <slug|path>]
 - Rules: `rules/intake-and-questions.md` (platform and size judgment, explore-first, question budget and format, defaults not to ask), `rules/requirements-writing.md` (FR ids, EARS forms, scenarios, metrics, markers, assumptions, open questions, forbidden mechanisms), `rules/validation.md` (per-mode completion evidence, the pre-save checklist, the optional reader test).
 - References: `references/prd-template.md` (the `prd.md` skeleton and one worked example).
 - Assets: `assets/evals/hyper-prd-cases.jsonl`, the trigger and behavior cases.
-- Platform checklists: a routing placeholder only. A checklist is loaded only for a platform the document decided; an undecided platform loads nothing. When the decided platform's checklist file exists, that platform's block is filled from it. Until then the block records the decided platform and its open checklist items as `[확인 필요: …]`-style gaps rather than inventing content. This package ships no checklist file and links none.
+- Platform checklists: `references/platforms/` holds one checklist per platform. Load only the files for the decided platforms; a web-only PRD never opens the mobile or desktop files, and an undecided platform loads nothing. Each decided platform gets one platform block, filled from that platform's checklist and nothing else.
 - No bundled script: every check is a deterministic checklist over the saved document.
+
+| Decided platform | Checklist to load |
+|---|---|
+| `web` | [references/platforms/web.md](references/platforms/web.md) |
+| `ios` | [references/platforms/ios.md](references/platforms/ios.md) |
+| `android` | [references/platforms/android.md](references/platforms/android.md) |
+| `desktop` | [references/platforms/desktop.md](references/platforms/desktop.md) |
+
+Checklist items do not consume the question budget. An `[M]` item that the repository and the pasted context cannot answer stays `[확인 필요]` in its release gate table, and it becomes a question to the user only when the size's budget still has room.
 
 </skill_architecture>
 
@@ -130,6 +139,7 @@ Write `prd.md` in Korean by default. Keep the `##` section names, the id formats
 - Read [rules/intake-and-questions.md](rules/intake-and-questions.md) first, before any question.
 - Read [rules/requirements-writing.md](rules/requirements-writing.md) before writing the scope, requirements, scenario, or metric sections.
 - Read [references/prd-template.md](references/prd-template.md) when creating or restructuring the document.
+- Read [references/platforms/web.md](references/platforms/web.md) only when `web` is a decided platform, [references/platforms/ios.md](references/platforms/ios.md) only when `ios` is, [references/platforms/android.md](references/platforms/android.md) only when `android` is, and [references/platforms/desktop.md](references/platforms/desktop.md) only when `desktop` is. No other checklist file is read in that run.
 - Read [rules/validation.md](rules/validation.md) before saving, and always in `review` mode.
 
 </reference_routing>
@@ -140,7 +150,8 @@ Write `prd.md` in Korean by default. Keep the `##` section names, the id formats
 2. `rules/intake-and-questions.md` for the platform and size judgment and the question budget.
 3. `rules/requirements-writing.md` at the moment requirements, scenarios, and metrics are written.
 4. `references/prd-template.md` when the skeleton is needed.
-5. `rules/validation.md` before the save and for every review.
+5. `references/platforms/<decided platform>.md` for each decided platform only, at the moment the platform block and its release gate table are written.
+6. `rules/validation.md` before the save and for every review.
 
 </support_file_read_order>
 
@@ -159,7 +170,7 @@ Writing steps, in order:
 1. Decide the target platforms (`web`, `ios`, `android`, `desktop`; more than one allowed) and the size (`S`, `M`, `L`), then record both in the document head with a one-line reason for each judgment.
 2. Read the repository, existing documents, and any context the user pasted before asking anything. Never ask what those sources already answer.
 3. Ask only what the user alone can decide, one question at a time, up to the size's budget: `S 1, M 3, L 5`. Each question carries two to five options and exactly one recommended option. Silence or "알아서" takes the recommended option and marks the result as an assumption.
-4. Write the sections in the template order. Delete a section that does not apply instead of leaving it empty or writing `N/A`.
+4. Write the sections in the template order. Delete a section that does not apply instead of leaving it empty or writing `N/A`. For each decided platform, write one platform block from that platform's checklist and give it a release gate table in which every `[M]` and `[M-조건]` item has a conclusion.
 5. Run the pre-save checklist. Fix every failure in place.
 6. Save to `.hyper/prd/<slug>/prd.md` and report the mode's completion evidence, plus any blocking question that leaves the document at `status: draft`.
 
@@ -180,7 +191,7 @@ Rules that hold across every mode:
 - P1, P2, and P3 stories where the size warrants them, each with a priority reason and an independent test; at least two non-goals; the behavior that must not change.
 - Every functional requirement as `FR-###` with an EARS sentence, a one-line verification method, and a `P0`/`P1`/`P2` priority.
 - One happy-path and one failure-or-edge Given/When/Then scenario per story, each citing its `FR-###` ids.
-- A platform block for each decided platform.
+- A platform block for each decided platform, each with a release gate table whose `[M]` and `[M-조건]` rows all carry a conclusion.
 - `A-###` assumptions with an evidence grade and the consequence of being wrong; `Q-###` open questions with an answerer and a blocking flag.
 - A handoff block naming the platforms, size, P1 scope, remaining blocking questions, and the inputs for the next stage.
 - Inline markers only where the gap is: `[가정: …]` and `[확인 필요: …]`, with at most three `[확인 필요: …]` markers in the document.
@@ -210,6 +221,7 @@ Rules that hold across every mode:
 - [ ] Every metric has a target, a measurement means, and a measurement time; at least one counter-metric exists.
 - [ ] Each story has a happy-path and a failure-or-edge scenario citing its `FR-###` ids.
 - [ ] At least two non-goals cut real scope, and the must-not-change behavior is stated where one exists.
+- [ ] Every `[M]` and `[M-조건]` item of each decided platform appears in that platform's release gate table with a conclusion, and no breakpoint is named after a device.
 - [ ] `[확인 필요: …]` appears at most three times, and each `A-###` carries an evidence grade and a consequence.
 - [ ] No implementation mechanism appears outside an existing external constraint; no vague word survives.
 - [ ] `create`/`update` saved the file and passed the checklist; `review` produced a pass/fail table and edited nothing.

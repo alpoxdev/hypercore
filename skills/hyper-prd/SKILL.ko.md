@@ -108,8 +108,17 @@ hyper-prd [--create <slug>] [--update <slug>] [--review <slug|path>]
 - Rules: `rules/intake-and-questions.md`(플랫폼·규모 판정, 탐색 우선, 질문 예산과 형식, 묻지 않을 기본값), `rules/requirements-writing.md`(FR ID, EARS 형식, 시나리오, 지표, 표시, 가정, 열린 질문, 금지 메커니즘), `rules/validation.md`(모드별 완료 증거, 저장 전 체크리스트, 선택 독자 테스트).
 - References: `references/prd-template.md`(`prd.md` 골격과 예시 하나).
 - Assets: `assets/evals/hyper-prd-cases.jsonl`, 트리거와 동작 케이스.
-- 플랫폼 체크리스트: 라우팅 자리표시자만 둔다. 체크리스트는 문서가 결정한 플랫폼에만 불러오고, 결정되지 않은 플랫폼은 아무것도 불러오지 않는다. 결정된 플랫폼의 체크리스트 파일이 생기면 그 플랫폼 블록을 그 파일에서 채운다. 그전까지 블록은 결정된 플랫폼과 남은 체크리스트 항목을 `[확인 필요: …]` 형태의 공백으로 기록하고 내용을 지어내지 않는다. 이 패키지는 체크리스트 파일을 넣지 않고 링크하지도 않는다.
+- 플랫폼 체크리스트: `references/platforms/`에 플랫폼마다 체크리스트 하나를 둔다. 판정한 플랫폼의 파일만 불러온다. 웹 전용 PRD는 모바일·데스크톱 파일을 열지 않고, 결정되지 않은 플랫폼은 아무것도 불러오지 않는다. 결정된 플랫폼마다 블록 하나를 그 플랫폼의 체크리스트로만 채운다.
 - 번들 스크립트 없음: 모든 검사는 저장한 문서에 대한 결정론적 체크리스트다.
+
+| 결정된 플랫폼 | 불러올 체크리스트 |
+|---|---|
+| `web` | [references/platforms/web.ko.md](references/platforms/web.ko.md) |
+| `ios` | [references/platforms/ios.ko.md](references/platforms/ios.ko.md) |
+| `android` | [references/platforms/android.ko.md](references/platforms/android.ko.md) |
+| `desktop` | [references/platforms/desktop.ko.md](references/platforms/desktop.ko.md) |
+
+체크리스트 항목은 질문 예산을 쓰지 않는다. 저장소와 붙여 준 맥락이 답할 수 없는 `[M]` 항목은 그 플랫폼의 출시 게이트 표에 `[확인 필요]`로 남기고, 규모별 예산이 아직 남았을 때만 사용자에게 묻는다.
 
 </skill_architecture>
 
@@ -130,6 +139,7 @@ hyper-prd [--create <slug>] [--update <slug>] [--review <slug|path>]
 - 질문을 하나라도 하기 전에 [rules/intake-and-questions.md](rules/intake-and-questions.md)를 먼저 읽는다.
 - 범위, 요구사항, 시나리오, 지표 절을 쓰기 전에 [rules/requirements-writing.md](rules/requirements-writing.md)를 읽는다.
 - 문서를 새로 만들거나 구조를 바꿀 때 [references/prd-template.md](references/prd-template.md)를 읽는다.
+- `web`이 결정된 플랫폼일 때만 [references/platforms/web.ko.md](references/platforms/web.ko.md)를, `ios`일 때만 [references/platforms/ios.ko.md](references/platforms/ios.ko.md)를, `android`일 때만 [references/platforms/android.ko.md](references/platforms/android.ko.md)를, `desktop`일 때만 [references/platforms/desktop.ko.md](references/platforms/desktop.ko.md)를 읽는다. 영어판 파일 이름은 `references/platforms/web.md`, `references/platforms/ios.md`, `references/platforms/android.md`, `references/platforms/desktop.md`이고, 한국어판은 같은 이름에 `.ko.md`를 붙인다. 그 실행에서 다른 체크리스트 파일은 읽지 않는다.
 - 저장 전에 [rules/validation.md](rules/validation.md)를 읽고, `review` 모드에서는 항상 읽는다.
 
 </reference_routing>
@@ -140,7 +150,8 @@ hyper-prd [--create <slug>] [--update <slug>] [--review <slug|path>]
 2. 플랫폼·규모 판정과 질문 예산은 `rules/intake-and-questions.md`에서 읽는다.
 3. 요구사항, 시나리오, 지표를 쓰는 시점에 `rules/requirements-writing.md`를 읽는다.
 4. 골격이 필요할 때 `references/prd-template.md`를 읽는다.
-5. 저장 전과 모든 검토에서 `rules/validation.md`를 읽는다.
+5. 플랫폼 블록과 그 출시 게이트 표를 쓰는 시점에 결정된 플랫폼마다 `references/platforms/<결정된 플랫폼>.ko.md`만 읽는다.
+6. 저장 전과 모든 검토에서 `rules/validation.md`를 읽는다.
 
 </support_file_read_order>
 
@@ -159,7 +170,7 @@ hyper-prd [--create <slug>] [--update <slug>] [--review <slug|path>]
 1. 대상 플랫폼(`web`, `ios`, `android`, `desktop`, 여러 개 가능)과 규모(`S`, `M`, `L`)를 정하고, 판정 근거를 한 줄씩 붙여 문서 머리에 적는다.
 2. 저장소, 기존 문서, 사용자가 붙여 준 맥락을 먼저 읽는다. 거기서 답이 나오는 내용은 묻지 않는다.
 3. 사용자만 결정할 수 있는 것만 한 번에 하나씩, 규모별 예산 `S 1, M 3, L 5`까지 묻는다. 질문마다 선택지 2~5개와 권장안 하나를 붙인다. 답이 없거나 "알아서"면 권장안을 택하고 그 결과를 가정으로 표시한다.
-4. 템플릿 순서대로 절을 쓴다. 적용되지 않는 절은 비워 두거나 `N/A`로 채우지 않고 지운다.
+4. 템플릿 순서대로 절을 쓴다. 적용되지 않는 절은 비워 두거나 `N/A`로 채우지 않고 지운다. 결정된 플랫폼마다 그 플랫폼의 체크리스트로 블록을 하나 쓰고, `[M]`·`[M-조건]` 항목 모두에 결론이 있는 출시 게이트 표를 붙인다.
 5. 저장 전 체크리스트를 돌린다. 실패 항목은 그 자리에서 고친다.
 6. `.hyper/prd/<slug>/prd.md`에 저장하고 모드별 완료 증거를 보고한다. 막힘 질문이 남아 `status: draft`인 문서는 그 사실도 함께 보고한다.
 
@@ -180,7 +191,7 @@ hyper-prd [--create <slug>] [--update <slug>] [--review <slug|path>]
 - 규모가 요구할 때 P1, P2, P3 스토리를 쓰고, 스토리마다 우선순위 이유와 독립 테스트를 붙인다. 비목표는 최소 2개, 바뀌면 안 되는 동작도 적는다.
 - 모든 기능 요구사항을 `FR-###`과 EARS 문장, 검증 방법 한 줄, `P0`/`P1`/`P2` 우선순위로 쓴다.
 - 스토리마다 정상 경로 하나와 실패·경계 하나를 Given/When/Then으로 쓰고, 대응하는 `FR-###` ID를 적는다.
-- 결정된 플랫폼마다 블록 하나를 둔다.
+- 결정된 플랫폼마다 블록 하나를 두고, 블록마다 `[M]`·`[M-조건]` 행 모두에 결론이 있는 출시 게이트 표를 붙인다.
 - `A-###` 가정에는 근거 등급과 틀렸을 때 바뀌는 것을 적고, `Q-###` 열린 질문에는 답할 사람과 막힘 여부를 적는다.
 - 핸드오프 블록에 플랫폼, 규모, P1 범위, 남은 막힘 질문, 다음 단계에 넘길 입력을 적는다.
 - 문장 안 표시는 공백이 생긴 자리에만 쓴다. `[가정: …]`와 `[확인 필요: …]`이고, `[확인 필요: …]`는 문서 전체에서 최대 3개다.
@@ -210,6 +221,7 @@ hyper-prd [--create <slug>] [--update <slug>] [--review <slug|path>]
 - [ ] 모든 지표에 목표치, 측정 수단, 측정 시점이 있고 대응 지표가 최소 하나 있다.
 - [ ] 스토리마다 정상 경로와 실패·경계 시나리오가 그 스토리의 `FR-###` ID를 인용한다.
 - [ ] 비목표가 최소 2개이고 실제 범위를 자르며, 바뀌면 안 되는 동작이 있는 곳에 적혀 있다.
+- [ ] 결정된 플랫폼마다 `[M]`·`[M-조건]` 항목이 모두 그 플랫폼의 출시 게이트 표에 결론과 함께 있고, 기기 이름을 기준으로 한 중단점이 없다.
 - [ ] `[확인 필요: …]`가 최대 3회이고, 모든 `A-###`에 근거 등급과 결과가 있다.
 - [ ] 기존 외부 제약 밖에 구현 메커니즘이 없고 모호어가 남지 않았다.
 - [ ] `create`/`update`는 파일을 저장하고 체크리스트를 통과했고, `review`는 통과·실패 표를 냈으며 아무것도 고치지 않았다.
