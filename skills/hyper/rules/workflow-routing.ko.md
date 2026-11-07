@@ -8,7 +8,7 @@
 
 | Job class | Requested output | Example words |
 |---|---|---|
-| Build | 바뀐 코드: 기능, 수정, 리팩토링, 마이그레이션, 도입. 데이터 모델, 스키마, 데이터베이스 마이그레이션, 튜닝한 쿼리나 인덱스, 데이터베이스 운영 변경. MCP 서버, 클라이언트, 호스트 설정. 디자인하거나 리디자인한 화면, 연출 화면. 새로 만들거나 편집한 이미지 한 장이나 이미지 프롬프트 하나. 배포 준비 판정, 배포 구성, 배포, 배포 설정 변경, 배포 실패 수정. 또는 새로 만들거나 리팩터링한 스킬 폴더, 문서, 프롬프트 산출물 | 만들어, 추가해, 고쳐, 리팩토링해, 옮겨, 적용해, 연결해, 스키마 설계해, 인덱스 잡아줘, 디자인해, 리디자인해, AI 티 빼줘, 배포해, 배포 설정해, 배포 실패 고쳐, 점검해, 스킬로 만들어, 문서로 정리해, 프롬프트 만들어, implement, refactor, migrate, connect, redesign, generate an image, deploy, ship to staging |
+| Build | 바뀐 코드: 기능, 수정, 리팩토링, 마이그레이션, 도입. 데이터 모델, 스키마, 데이터베이스 마이그레이션, 튜닝한 쿼리나 인덱스, 데이터베이스 운영 변경. MCP 서버, 클라이언트, 호스트 설정. 디자인하거나 리디자인한 화면, 연출 화면. 사용자·고객사·기획자의 변경 요청을 기존 동작에 반영한 결과. 새로 만들거나 편집한 이미지 한 장이나 이미지 프롬프트 하나. 배포 준비 판정, 배포 구성, 배포, 배포 설정 변경, 배포 실패 수정. 또는 새로 만들거나 리팩터링한 스킬 폴더, 문서, 프롬프트 산출물 | 만들어, 추가해, 고쳐, 리팩토링해, 옮겨, 적용해, 연결해, 스키마 설계해, 인덱스 잡아줘, 디자인해, 리디자인해, AI 티 빼줘, 피드백 반영해, 요청대로 바꿔줘, 배포해, 배포 설정해, 배포 실패 고쳐, 점검해, 스킬로 만들어, 문서로 정리해, 프롬프트 만들어, implement, refactor, migrate, connect, redesign, apply this feedback, generate an image, deploy, ship to staging |
 | Report | 코드 변경 없는 저장 보고서, 감사, 리뷰, 계획 | 조사만, 점검만, 리뷰만, 리포트만, 계획만, audit only, just the plan |
 | Resume | 앞선 실행 이어가기 | 이어서, 계속, 재개, resume, continue |
 
@@ -27,13 +27,14 @@
 | `hyper-database` | 작업이 데이터 모델이나 스키마를 설계·리뷰하거나, 데이터베이스 마이그레이션이나 백필을 쓰거나 리뷰하거나, 느린 쿼리·인덱스·핫 키·핫 파티션을 튜닝하거나, 데이터베이스 엔진이나 매니지드 데이터 서비스를 고르거나, 데이터베이스 운영(백업과 복구, 복제와 장애 조치, 커넥션 풀, 업그레이드, 데이터베이스 보안, 모니터링)을 바꿉니다 | 요청 문구와, 있으면 읽은 스키마·마이그레이션·ORM·드라이버 파일(`schema.prisma`, `drizzle.config.ts`, `migrations/` 폴더, `package.json`의 `pg`나 `ioredis`, compose 파일의 데이터베이스 이미지 등) |
 | `hyper-mcp` | 작업이 MCP(Model Context Protocol) 서버, 클라이언트, 호스트 MCP 설정을 만들거나 고치거나 이전하거나 점검하거나 연결합니다. 또는 MCP 레지스트리 메타데이터를 준비합니다 | 요청 문구와, 있으면 읽은 MCP 의존성이나 설정 파일(`package.json`의 `@modelcontextprotocol/*`, `pyproject.toml`의 `mcp`, `.mcp.json`, `server.json` 등) |
 | `hyper-design` | 요청한 결과물이 보이는 모습 자체가 핵심인 화면입니다. 새 화면·페이지·컴포넌트 디자인, 기존 UI 리디자인, 히어로·카드·데모용 연출 화면, 디자인 브리프나 `DESIGN.md`, generic한 "AI 티" 패턴의 점검이나 제거 | 요청 문구와 대상 UI 경로, 그리고 있으면 읽은 스타일·디자인 시스템 파일(`DESIGN.md`, 토큰 파일, `tailwind.config.*` 등) |
+| `hyper-feedback` | 입력이 기존 동작에 대해 제품 언어로 쓴 변경 요청입니다. 사용자, 고객사, 기획자가 직접 보내거나 전달된 피드백, 불만, 티켓, 회의 메모, 기획 수정, 새 문구이고, 사용자가 그것을 파악해 반영하길 원합니다("알아서 파악해서 고쳐", "피드백 반영해", "이 메모대로 반영") | 요청 문구와 인용한 피드백 원문, 그리고 작성자나 전달 경로 |
 | `hyper-imagegen` | 요청한 결과물 전부가 새 이미지 한 장, 제공한 이미지 한 장의 편집, 바로 쓸 수 있는 이미지 프롬프트 하나입니다 | 요청 문구, 그리고 있으면 제공한 편집 원본이나 참고 자료 경로 |
 | `hyper-plan` | Build 작업이 여러 파일이나 단계를 건드리거나, Report 작업이 계획을 요청합니다 | 요청 문구 |
 | `hyper-execute` | 첫 단계일 때만: `.hyper/plans/` 아래 계획 파일이 이미 있고 사용자가 실행이나 재개를 원합니다 | 읽은 계획 경로 |
 | `hyper-mass` | 사용자가 의존성 그래프, DAG, "의존성 그래프", "단계별 병렬"을 요청하거나, 일부가 먼저 끝나야 다른 일이 시작되는 여러 작업이 있고 계획 파일을 원하지 않습니다 | 요청 문구 |
 | `hyper-skill` | 요청한 결과물이 재사용 스킬 폴더입니다. 새 스킬, 또는 기존 스킬의 트리거, 계약, 리소스, 검증 리팩터링 | 요청 문구, 그리고 이미 있으면 대상 `skills/<name>/SKILL.md` |
 | `hyper-documentation` | 요청한 결과물이 새로 만들거나 리팩터링하는 문서 산출물입니다. README, `AGENTS.md`, AI가 읽기 좋은 문서(지침 베이스, 에이전트 가이드, 런북, 스펙, 규칙 묶음), 재사용 프롬프트 산출물(역할·시스템·에이전트 프롬프트, 프롬프트 템플릿이나 팩, 프롬프트 평가 픽스처) | 요청 문구, 그리고 이미 있으면 대상 경로 |
-| `hyper-git` | 전달하지 않는 꼬리(`hyper-skill`, `hyper-documentation`, 또는 마지막 구축 단계인 `hyper-database`, `hyper-mcp`, `hyper-design`) 뒤에서 사용자가 커밋과 푸시, 또는 지정 브랜치로 병합과 푸시를 요청합니다. `hyper-skill`이나 `hyper-documentation` 뒤에서는 PR도 해당합니다. 같은 체인이 배포까지 하면 `hyper-deploy` 앞에서 실행합니다. `hyper-imagegen` 뒤에는 붙지 않습니다. 그 산출물은 전달된 이미지이거나 git이 무시하는 `.hyper/imagegen/` 파일이기 때문입니다. `hyper-deploy` 뒤에도 붙지 않습니다 | 전달 문구와 지정한 대상 브랜치 |
+| `hyper-git` | 전달하지 않는 꼬리(`hyper-skill`, `hyper-documentation`, `hyper-feedback`, 또는 마지막 구축 단계인 `hyper-database`, `hyper-mcp`, `hyper-design`) 뒤에서 사용자가 커밋과 푸시, 또는 지정 브랜치로 병합과 푸시를 요청합니다. `hyper-skill`, `hyper-documentation`, `hyper-feedback` 뒤에서는 PR도 해당합니다. 같은 체인이 배포까지 하면 `hyper-deploy` 앞에서 실행합니다. `hyper-imagegen` 뒤에는 붙지 않습니다. 그 산출물은 전달된 이미지이거나 git이 무시하는 `.hyper/imagegen/` 파일이기 때문입니다. `hyper-deploy` 뒤에도 붙지 않습니다 | 전달 문구와 지정한 대상 브랜치 |
 | `hyper-deploy` | 작업이 배포나 배포 관련 발견입니다. 배포 준비 판정, 첫 배포 구성, 지목한 환경으로의 배포, 기존 배포 설정 변경, 실패했거나 비정상인 배포의 원인 진단과 수정 | 요청 문구와, 읽은 배포 파일(`Dockerfile`, `compose.yaml`, `wrangler.jsonc`, `.railway/railway.ts`, `railway.toml`, `config/deploy.yml` 등) |
 
 ## 3. 단계 순서
@@ -41,7 +42,7 @@
 고른 단계는 항상 이 순서로 실행합니다. 고르지 않은 단계는 건너뜁니다.
 
 ```text
-hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-design -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git] [-> hyper-deploy]
+hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-design -> hyper-feedback -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git] [-> hyper-deploy]
 ```
 
 두 전달 갈래를 모두 고르면 `hyper-git`이 먼저, `hyper-deploy`가 마지막에 실행합니다. `hyper-deploy` 뒤에는 어떤 단계도 오지 않습니다.
@@ -50,6 +51,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-databa
 - `hyper-database`가 마지막으로 고른 단계면 꼬리 단계입니다. 직접 스키마를 설계하거나 무중단 마이그레이션을 쓰거나 쿼리·인덱스를 튜닝하거나 운영 설정을 바꾸고 결과를 검증합니다. 뒤에 `hyper-plan`이나 `hyper-mass`가 오면 리뷰 모드(설계 브리프, 스키마·마이그레이션 리뷰, 엔진 선택)로 실행하고 저장한 보고서가 계획의 입력이 됩니다.
 - `hyper-mcp`가 마지막으로 고른 단계면 꼬리 단계입니다. 직접 만들거나 고치거나 이전하거나 연결하고 결과를 검증합니다. 뒤에 `hyper-plan`이나 `hyper-mass`가 오면 점검 모드로 실행하고 그 보고서가 계획의 입력이 됩니다.
 - `hyper-design`가 마지막으로 고른 단계면 꼬리 단계입니다. 직접 화면을 디자인하거나 리디자인하거나 연출 화면을 만들거나 정리하고 결과를 검증합니다. 뒤에 `hyper-plan`이나 `hyper-mass`가 오면 아직 없는 화면은 `brief-only` 모드로, 기존 화면은 `audit` 모드로 실행하고 저장한 브리프나 보고서가 계획의 입력이 됩니다.
+- `hyper-feedback`이 마지막으로 고른 단계면 꼬리 단계입니다. 직접 수정 예산 안의 항목을 모두 반영하고 스스로 검증합니다. 실행이 `handoff`로 끝나면 같은 실행에서 그 뒤에 `hyper-plan`을 붙이고 `.hyper/feedback/<slug>/brief.md`를 필수 입력으로 넘깁니다. 라우팅 줄에는 이 조건부 단계를 `hyper-feedback [-> hyper-plan]`으로 씁니다. `applied`로 끝나면 계획 단계는 실행하지 않습니다.
 - `hyper-issue`는 다른 상류 단계처럼 꼬리에 쓸 근거를 만듭니다. 이슈 기록과 배치 명세가 계획의 입력입니다. 기록이나 명세만 원하면 그것이 마지막 단계이고 체인은 거기서 끝납니다.
 - 그 밖의 경우 꼬리 단계는 정확히 하나입니다. `hyper-plan`(스스로 `hyper-execute`로 이어짐), `hyper-mass`, 기존 계획에 대한 `hyper-execute` 단독, 스킬 폴더에 대한 `hyper-skill`, 문서나 프롬프트 산출물에 대한 `hyper-documentation`, 이미지 한 장이나 이미지 프롬프트 하나에 대한 `hyper-imagegen` 중 하나입니다.
 - `hyper-git`은 혼자서 꼬리 단계가 되지 않습니다. 파일은 바꾸지만 전달은 맡지 않는 꼬리 뒤에 붙습니다. `hyper-plan`, `hyper-execute`, `hyper-mass`는 스스로 전달하므로 `hyper-git`이 뒤따르지 않습니다.
@@ -85,6 +87,9 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-databa
 | 화면 점검이나 디자인 방향만 | `audit`나 `brief-only` 모드의 `hyper-design` 단독 |
 | PR이나 배포로 전달하는 화면 작업, 또는 API·데이터·라우트 변경도 필요한 작업 | `hyper-design`(`audit`나 `brief-only`) -> `hyper-plan` |
 | 최신 외부 지침에 기대는 화면("최신 가이드라인 확인해서") | `hyper-research` -> `hyper-design` |
+| 사용자, 고객사, 기획자의 변경 요청을 기존 동작에 반영 | `hyper-feedback` |
+| 같은 요청에 직접 수정 예산을 넘는 항목(새 라우트, 스키마 변경, API 계약)이 있음 | `hyper-feedback` -> `hyper-plan`. 계획 단계는 변경 요청 단계가 `handoff`로 끝났을 때 붙입니다 |
+| 최신 외부 사실에 기대는 변경 요청("최신 정책에 맞게 바꿔달래") | `hyper-research` -> `hyper-feedback` |
 | 이미지 한 장 생성, 제공한 이미지 한 장 편집, 이미지 프롬프트 하나 작성 | `hyper-imagegen` |
 | 최신 외부 지침이나 참고 자료에 기대는 이미지("최신 프롬프트 가이드 참고해서") | `hyper-research` -> `hyper-imagegen` |
 | 리서치 보고서만 | `hyper-research` |
@@ -97,9 +102,9 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-databa
 | 최신 공식 문서에 기대는 스킬 폴더("최신 규격", "latest spec") | `hyper-research` -> `hyper-skill` |
 | README, `AGENTS.md`, 문서, 규칙 묶음, 재사용 프롬프트, 템플릿, 팩, 프롬프트 평가 픽스처를 새로 만들거나 리팩터링 | `hyper-documentation` |
 | 최신 외부 출처나 공급자 지침에 기대는 문서나 프롬프트 | `hyper-research` -> `hyper-documentation` |
-| 스킬 폴더, 문서, MCP, 인터페이스, 데이터베이스 변경 뒤 커밋과 푸시("커밋하고 푸시까지") | 그 체인 -> 커밋 모드의 `hyper-git` |
+| 스킬 폴더, 문서, MCP, 인터페이스, 데이터베이스, 변경 요청 반영 뒤 커밋과 푸시("커밋하고 푸시까지") | 그 체인 -> 커밋 모드의 `hyper-git` |
 | 같은 작업 뒤 지정 브랜치로 병합과 푸시("dev, main에 머지하고 푸시") | 그 체인 -> 이번 실행의 커밋에 `&& <branch>` 대상을 붙인 커밋 모드의 `hyper-git`, 작업 브랜치 전체를 병합해야 하면 워크플로 모드 |
-| 스킬 폴더나 문서 뒤 PR("PR까지") | 그 체인 -> 워크플로 모드의 `hyper-git`. MCP, 인터페이스, 데이터베이스 작업에 "PR까지"나 "ship"이 붙으면 위의 리뷰나 점검 -> `hyper-plan` 경로를 유지합니다 |
+| 스킬 폴더, 문서, 변경 요청 반영 뒤 PR("PR까지") | 그 체인 -> 워크플로 모드의 `hyper-git`. MCP, 인터페이스, 데이터베이스 작업에 "PR까지"나 "ship"이 붙으면 위의 리뷰나 점검 -> `hyper-plan` 경로를 유지합니다 |
 | 지목한 환경으로 배포("배포해줘", "staging에 올려줘", "deploy it to staging") | `deploy` 모드의 `hyper-deploy` |
 | 실패했거나 죽거나 비정상인 배포 수정("배포 실패 고쳐줘", "로그 보고 원인 찾아서 고쳐줘") | `diagnose` 모드의 `hyper-deploy` |
 | 배포 전 준비 점검("배포 전 점검", "배포 전 검사만") | `preflight` 모드의 `hyper-deploy`. "고치지 말고"가 붙으면 validate-only입니다 |
@@ -127,6 +132,11 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-databa
 - 화면 작업에 전달 단어("PR까지", "ship")가 있으면 `hyper-design`를 `audit`나 `brief-only` 모드로 `hyper-plan` 앞에 둡니다. 전달은 계획과 실행 단계만 맡기 때문입니다.
 - `hyper-imagegen`은 `hyper-plan`, `hyper-mass`, `hyper-skill`, `hyper-documentation`, `hyper-design`과 한 체인에서 함께 실행하지 않습니다. 주된 결과물로 고릅니다. 이미지 한 장이나 이미지 프롬프트 하나는 `hyper-imagegen`, 그림이 들어간 인터페이스는 `hyper-design`, 이미지용 재사용 프롬프트 팩이나 템플릿은 `hyper-documentation`으로 갑니다. 이미지 분석이나 평가는 `hyper` 작업이 아닙니다.
 - `hyper-imagegen` 단계가 `awaiting_input`으로 끝나면 질문 하나를 이미 했으므로 체인은 그 자리에서 멈추고 답을 받으면 재개합니다.
+- `hyper-feedback`은 `hyper-skill`, `hyper-documentation`, `hyper-imagegen`, `hyper-mass`, `hyper-design`과 한 체인에서 함께 실행하지 않습니다. 생김새가 핵심인 요청("리디자인", "AI 티 안 나게")은 `hyper-design`, 스킬 폴더나 문서에 대한 변경 요청은 그 단계, 의존 그래프를 명시한 요청은 `hyper-mass`로 갑니다.
+- 제품 언어로 쓴 변경 요청은 한 항목이 스키마, 라우트, API 변경을 필요로 해도 `hyper-feedback`으로 갑니다. 그 단계가 예산 안 항목을 반영하고 나머지는 `brief.md`로 `hyper-plan`에 넘깁니다. `hyper-architecture`나 `hyper-database`는 사용자가 그 점검을 이름이나 말로 요청했을 때만 앞에 붙입니다.
+- 위치와 새 값을 이미 지정한 한 곳 수정("이 버튼 문구 하나만 바꿔줘")은 `hyper` 작업이 아닙니다. 항목이 여럿이거나 위치를 모르거나 느낌만 말한 요청("복잡하대", "불편하대")은 `hyper-feedback`으로 갑니다.
+- 변경 요청 작업의 전달 단어는 변경 요청 단계가 `applied`로 끝나면 `hyper-git`으로 갑니다. `handoff`로 끝나면 덧붙인 `hyper-plan`의 전달 플래그로 넘기고 `hyper-git`은 뺍니다. 계획과 실행 단계가 스스로 전달하기 때문입니다.
+- `hyper-feedback` 단계가 `awaiting_input`으로 끝나면 질문 하나를 이미 했으므로 체인은 그 자리에서 멈추고 답을 받으면 재개합니다.
 - `hyper-database`는 `hyper-skill`, `hyper-documentation`과 한 체인에서 함께 실행하지 않습니다. 데이터베이스에 관한 스킬 폴더나 문서는 각자의 단계로 갑니다.
 - 데이터베이스를 조회하는 MCP 서버("사내 DB 조회하는 MCP 서버")는 `hyper-mcp`로 갑니다. 작업이 스키마, 마이그레이션, 인덱스, 데이터베이스 설정까지 바꿀 때만 `hyper-database`를 더합니다.
 - `hyper-architecture`와 `hyper-database`는 작업이 폴더나 모듈을 재구성하면서 스키마나 쿼리까지 바꿀 때만 함께 실행합니다. 영속 계층 배치만 다루는 일("repository 레이어 정리")은 `hyper-architecture`에 남깁니다.
@@ -155,7 +165,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-databa
 | "승인은 내가 할게", "I'll approve" | 말한 그대로 승인 보류를 넘깁니다. 체인은 계획 뒤에 끝납니다 |
 | 전달하지 않는 꼬리 뒤의 "커밋하고 푸시", "commit and push" | 커밋 모드의 `hyper-git` 전달 단계 |
 | 전달하지 않는 꼬리 뒤의 "<branch>, <branch>에 머지하고 푸시", "merge into dev and main" | 그 대상을 지정 순서대로 받는 `hyper-git` 전달 단계 |
-| `hyper-skill`이나 `hyper-documentation` 뒤의 "PR까지" | 워크플로 모드(PR)의 `hyper-git` 전달 단계 |
+| `hyper-skill`, `hyper-documentation`, `hyper-feedback` 뒤의 "PR까지" | 워크플로 모드(PR)의 `hyper-git` 전달 단계 |
 
 코드 변경 체인에서 "배포까지"의 동률 처리: "배포까지"는 두 뜻을 함께 가집니다. 그래서 두 뜻을 모두 반영합니다. 계획 단계는 `--ship`(병합 전달)을 받고 체인은 꼬리 뒤에 `hyper-deploy`를 더합니다. 배포 단계는 실행 완료 블록 뒤에만 시작하므로 ship 전달이 먼저 끝나고, 그다음 병합된 결과에 배포를 실행합니다. 사용자가 플랫폼 언급 없이 ship 전달만 뜻하면("머지까지") `--ship`만 넘기고 `hyper-deploy`를 건너뜁니다. 병합 없이 배포만 뜻하면("배포만") `--ship` 없이 `hyper-deploy`만 실행합니다.
 
@@ -183,7 +193,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-databa
 
 | Claim | Source |
 |---|---|
-| 열다섯 단계 스킬, 동반 스킬, 오케스트레이터 역할 | user instruction, 2026-11-06(오케스트레이터 역할); 현재의 열다섯 단계로 늘린 사용자 지시, 2026-11-07; 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
+| 열여섯 단계 스킬, 동반 스킬, 오케스트레이터 역할 | user instruction, 2026-11-06(오케스트레이터 역할); `hyper-deploy`를 더해 열다섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-feedback`을 더해 현재의 열여섯 단계로 늘린 사용자 지시, 2026-11-07; 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
 | 각 단계의 트리거, 결과물, 제외 범위. `hyper-mass`가 계획 파일 실행을 제외하고 `hyper-execute`가 기존 계획을 요구한다는 점 포함 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 전달 단어, 계획만·승인 보류 단어, 계획에서 실행으로 자동 연결 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 단계 순서, 네 단계 상한, 레시피, 동률 처리 | 이 패키지가 고른 설계이며 검증된 최적값이 아님 |

@@ -128,6 +128,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 | "스킬 만들고 dev에 머지·푸시" | `hyper-skill` -> `hyper-git` |
 | "결제 버그 고치고 staging에 배포까지" | `hyper-plan` -> `hyper-execute` -> `hyper-deploy` |
 | "배포 실패했어, 로그 보고 고쳐줘" | `hyper-deploy` |
+| "고객사 피드백 반영하고 dev, main에 머지·푸시" | `hyper-feedback` -> `hyper-git` (큰 항목이 있으면 `hyper-feedback` -> `hyper-plan` -> `hyper-execute`) |
 
 ### 전달 방식
 
@@ -191,7 +192,7 @@ flowchart LR
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-architecture·hyper-database·hyper-mcp·hyper-design·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation·hyper-git·hyper-deploy 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute, 인터넷 검색 리서치 → research(막힌 출처는 hyper-browsing 동반), 기능 고치고 배포 → plan → execute → deploy, 배포 실패 고치기 → deploy) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
+| `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-architecture·hyper-database·hyper-mcp·hyper-design·hyper-feedback·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation·hyper-git·hyper-deploy 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 고객·기획자 변경 요청 → feedback(큰 항목은 → plan), 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute, 인터넷 검색 리서치 → research(막힌 출처는 hyper-browsing 동반), 기능 고치고 배포 → plan → execute → deploy, 배포 실패 고치기 → deploy) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
 | `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
 | `hyper-issue` | 확정된 발견이나 결정된 작업을 바로 구현 가능한 이슈로 기록하고, 열린 이슈 묶음을 서로 겹치지 않는 작업 레인으로 묶어 배치 매니페스트 생성(구현은 하지 않음) | 인증된 이슈 트래커 CLI(`gh`); 쓰기 권한이 없으면 본문을 디스크에 초안으로 남김 |
@@ -203,7 +204,7 @@ flowchart LR
 |------|------|------|
 | `hyper-research` | 질문을 축으로 나눠 확장 웨이브로 수렴시키고, 고위험 주장을 게이트로 검증한 다중 출처 마크다운 리서치 보고서. 평범한 요청으로 안 열리는 출처는 막힌 페이지 접근 기능(예: `hyper-browsing`)으로 열고 출처 표시를 남김 | All |
 | `hyper-browsing` | 평범한 요청으로 안 열리는 페이지의 내용을 tier 0 공식 엔드포인트 → 1 헤드리스 요청 격자 → 2 아카이브 사본 → 3 자체 브라우저 → 4 연결 브라우저 순서로 가져오고, HTTP 200을 성공으로 보지 않는 네 증명 층과 출처 표시(`live`·`api`·`reader`·`snapshot`·`rendered`)로 검증해 `.hyper/browsing/` 보고서에 시도 기록과 다이제스트를 남김. 로그인 벽·유료 벽·CAPTCHA 풀이·쿠키 복사·프록시는 사용자가 요청해도 경계를 보고 | curl 셸; jq·curl_cffi·yt-dlp·브라우저 자동화는 선택(없으면 해당 tier `skipped`) |
-| `client-feedback` | 고객사 피드백을 코드 영향·선택지·리스크로 해석하고 확인 후 구현 | All |
+| `hyper-feedback` | 사용자·고객사·기획자의 변경 요청(피드백, 불만, 티켓, 회의 메모, 문구)을 원자 항목으로 나누고, 복제본·로케일·다른 채널·테스트·문서까지 9개 영향 위치 점검표로 수정할 곳을 모두 찾아 바로 반영·검증. 해석이 크게 갈리거나 되돌릴 수 없는 변경일 때만 묻고, 스키마·라우트·API 계약처럼 직접 수정 범위를 넘는 항목은 `.hyper/feedback/`에 브리프로 남김 | All |
 | `hyper-design` | 새 화면 디자인, 기존 UI 리디자인, 히어로·데모용 연출 화면(mockup), AI형 generic 패턴 점검·정리를 디자인 브리프·생동감 다이얼→정석 수치(WCAG 2.2·플랫폼·KRDS)와 대비 계산→정적 검출기→독립 검토→증거 기반 납품 게이트 순서로 처리하고 `.hyper/design/`에 브리프와 보고서 저장 | Bash 3.2+ & jq 1.6+; browser optional |
 
 ### 콘텐츠 · SEO
