@@ -109,4 +109,4 @@ assumptions_and_open_question:
 
 ## Sources
 
-> 외부 출처를 사용하지 않았습니다. 이 파일은 image-maker 패키지 자체의 규칙을 적습니다. 내용 확인 2026-09-21.
+> 외부 출처를 사용하지 않았습니다. 이 파일은 hyper-imagegen 패키지 자체의 규칙을 적습니다. 내용 확인 2026-09-21.

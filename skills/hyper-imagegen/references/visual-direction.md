@@ -109,4 +109,4 @@ Omit fields that genuinely do not apply, rather than filling them with placehold
 
 ## Sources
 
-> No external sources were used. This file states rules that belong to the image-maker package itself. Content checked 2026-09-21.
+> No external sources were used. This file states rules that belong to the hyper-imagegen package itself. Content checked 2026-09-21.

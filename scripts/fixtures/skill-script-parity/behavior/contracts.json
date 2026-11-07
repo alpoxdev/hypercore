@@ -3668,9 +3668,9 @@
       }
     },
     {
-      "id": "image-maker--validate-image-maker",
-      "path": "skills/image-maker/scripts/validate-image-maker.sh",
-      "family": "image-maker",
+      "id": "hyper-imagegen--validate-hyper-imagegen",
+      "path": "skills/hyper-imagegen/scripts/validate-hyper-imagegen.sh",
+      "family": "hyper-imagegen",
       "legacyOrigin": "retained-mjs",
       "sourcePreimage": {
         "path": "skills/image-maker/scripts/validate-image-maker.mjs",
@@ -3683,7 +3683,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/image-maker/scripts/validate-image-maker.sh"
+              "skills/hyper-imagegen/scripts/validate-hyper-imagegen.sh"
             ]
           },
           "input": {
@@ -3716,7 +3716,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/image-maker/scripts/validate-image-maker.sh"
+              "skills/hyper-imagegen/scripts/validate-hyper-imagegen.sh"
             ]
           },
           "input": {
@@ -3732,7 +3732,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "{\"ok\":false,\"errors\":[\"ENOENT: no such file or directory, open 'skills/image-maker/assets/evals/image-maker-cases.jsonl'\"],\"manual_required\":[],\"counts\":{\"errors\":1,\"manual_required\":0}}\n"
+              "equals": "{\"ok\":false,\"errors\":[\"ENOENT: no such file or directory, open 'skills/hyper-imagegen/assets/evals/hyper-imagegen-cases.jsonl'\"],\"manual_required\":[],\"counts\":{\"errors\":1,\"manual_required\":0}}\n"
             },
             "stderr": {
               "equals": ""
@@ -3755,7 +3755,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/image-maker/scripts/validate-image-maker.sh"
+              "skills/hyper-imagegen/scripts/validate-hyper-imagegen.sh"
             ]
           },
           "input": {
@@ -3804,14 +3804,14 @@
         }
       },
       "dimensions": {
-        "stdout": "image-maker--validate-image-maker--stdout",
-        "stderr": "image-maker--validate-image-maker--stderr",
-        "exit": "image-maker--validate-image-maker--exit",
-        "files": "image-maker--validate-image-maker--files",
-        "modes": "image-maker--validate-image-maker--modes",
-        "cwd": "image-maker--validate-image-maker--cwd",
-        "env": "image-maker--validate-image-maker--env",
-        "argv": "image-maker--validate-image-maker--argv"
+        "stdout": "hyper-imagegen--validate-hyper-imagegen--stdout",
+        "stderr": "hyper-imagegen--validate-hyper-imagegen--stderr",
+        "exit": "hyper-imagegen--validate-hyper-imagegen--exit",
+        "files": "hyper-imagegen--validate-hyper-imagegen--files",
+        "modes": "hyper-imagegen--validate-hyper-imagegen--modes",
+        "cwd": "hyper-imagegen--validate-hyper-imagegen--cwd",
+        "env": "hyper-imagegen--validate-hyper-imagegen--env",
+        "argv": "hyper-imagegen--validate-hyper-imagegen--argv"
       }
     },
     {

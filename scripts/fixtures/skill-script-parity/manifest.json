@@ -339,8 +339,8 @@
       "behaviorContractId": "hyper-git--repo-status"
     },
     {
-      "path": "skills/image-maker/scripts/validate-image-maker.sh",
-      "family": "image-maker",
+      "path": "skills/hyper-imagegen/scripts/validate-hyper-imagegen.sh",
+      "family": "hyper-imagegen",
       "legacyOrigin": "retained-mjs",
       "usage": "validate-skill",
       "behavior": "skill-validation",
@@ -349,7 +349,7 @@
         "sha256": "d9b9707bc4761518828ca28187d90621bbae07daeca7fdb8554b678e120aa686",
         "gitMode": "100644"
       },
-      "behaviorContractId": "image-maker--validate-image-maker"
+      "behaviorContractId": "hyper-imagegen--validate-hyper-imagegen"
     },
     {
       "path": "skills/hyper-architecture/scripts/validate-nextjs-stack.sh",

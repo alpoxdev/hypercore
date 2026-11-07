@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Validates the image-maker skill package: eval corpus, resolver/terminal logic, and package docs.
-# Bash 3.2+ port of the former validate-image-maker.mjs (Bun). Requires jq >= 1.6.
+# Validates the hyper-imagegen skill package: eval corpus, resolver/terminal logic, and package docs.
+# Bash 3.2+ port of the former validate-hyper-imagegen.mjs (Bun). Requires jq >= 1.6.
 set -euo pipefail
 
 SCRIPT_PATH="${BASH_SOURCE[0]}"
@@ -86,6 +86,7 @@ def classify($text):
   if ($text|type) != "string" then "manual_required"
   else ($text|ascii_downcase) as $s
   | if ($s|test("(분석|설명|analysis|explain)")) then "negative"
+    elif ($s|test("(svg|벡터|vector)")) then "negative"
     elif (($s|test("(프롬프트만|prompt[ -]?only)")) and ($s|test("(이미지|그림|사진|image|picture|illustration)"))) then "prompt_only"
     elif ($s|test("(이미지|그림|사진|image|picture).{0,36}(편집|수정|보정|edit|retouch)|(edit|retouch).{0,36}(image|picture)")) then "edit"
     elif ($s|test("(이미지|그림|사진|image|picture|illustration).{0,36}(만들|생성|그려|create|generate|draw)|(create|generate|draw|illustrate).{0,36}(image|picture|illustration)")) then "create"
@@ -268,8 +269,14 @@ def heading_errors($file;$en;$ko;$required):
   | ([ $required.en[] as $h | select((($ep|index($h)) == null)) | "E_REQUIRED_HEADING:"+$file+":"+$h ]
      + [ $required.ko[] as $h | select((($kp|index($h)) == null)) | "E_REQUIRED_HEADING:"+($file|sub("\\.md$";".ko.md"))+":"+$h ]
      + (if (($en|heading_levels) != ($ko|heading_levels)) then ["E_PAIR_HEADING_MISMATCH:"+$file] else [] end));
+# Only the generation-category table (the "## Request categories" section) must hold exactly
+# twelve complete rows; other tables in the same file are not counted.
 def prompt_table_errors($label):
-  [ split("\n")[] | select(startswith("|")) | select((test("^\\|[\\s:|-]+\\|?\\s*$"))|not) ] | .[1:] as $rows
+  [ foreach split("\n")[] as $l ({in:false, out:null};
+      if ($l|test("^## ")) then .in = ($l|test("^## (Request categories|요청 카테고리)\\s*$")) | .out = null
+      else .out = (if .in then $l else null end) end;
+      .out) | select(. != null) ]
+  | [ .[] | select(startswith("|")) | select((test("^\\|[\\s:|-]+\\|?\\s*$"))|not) ] | .[1:] as $rows
   | if ((($rows|length) != 12) or ([ $rows[] | split("|")[1:-1] | map(trim_str) | any(. == "") ] | any)) then ["E_PROMPT_TABLE:"+$label] else [] end;
 
 def normalize_row: if is_rec then walk(if type == "object" then with_entries(select(.key as $k | (["id","paired_id","language","trigger","prompt","topic","compiled_brief","question","disclosure"]|index($k)) == null)) else . end) | tojson else tojson end;
@@ -429,7 +436,7 @@ validate_contained_path() { # root topic target
     printf '{"ok":false,"error":"E_PATH"}'
     return 0
   fi
-  parent="$canonical/.hyper/image-maker/$topic"
+  parent="$canonical/.hyper/imagegen/$topic"
   resolved="$(node_resolve "$target")"
   case "$resolved" in
     "$canonical"|"$canonical"/*) path="$resolved" ;;
@@ -578,7 +585,7 @@ prompt_evidence() { # root topic target provenance-json
 fixture_write() { # root topic name bytes-file -> {target,provenance}
   local root="$1" topic="$2" name="$3" bytes_file="$4"
   local dir target n=2 base ext id root_id parent_id
-  dir="$root/.hyper/image-maker/$topic"
+  dir="$root/.hyper/imagegen/$topic"
   mkdir -p "$dir"
   target="$dir/$name"
   while [ -e "$target" ] || [ -L "$target" ]; do
@@ -610,8 +617,8 @@ run_fixture_case() { # row-json -> result-json
     return 0
   fi
   topic="$(printf '%s' "$checked" | jq -r '.context.topic')"
-  root="$(mktemp -d "${TMPDIR:-/tmp}/image-maker-XXXXXX")"
-  dir="$root/.hyper/image-maker/$topic"
+  root="$(mktemp -d "${TMPDIR:-/tmp}/hyper-imagegen-XXXXXX")"
+  dir="$root/.hyper/imagegen/$topic"
   mkdir -p "$dir"
 
   case "$kind" in
@@ -847,7 +854,7 @@ REQUIRED_FILES=(
   "references/visual-direction.md" "references/visual-direction.ko.md"
   "references/prompt-crafting.md" "references/prompt-crafting.ko.md"
   "references/runtime-capability-and-drift.md" "references/runtime-capability-and-drift.ko.md"
-  "scripts/validate-image-maker.sh" "assets/evals/image-maker-cases.jsonl"
+  "scripts/validate-hyper-imagegen.sh" "assets/evals/hyper-imagegen-cases.jsonl"
 )
 
 HEADING_SPEC='{
@@ -894,9 +901,9 @@ audit_package() { # root
       *.md) text="$text$(cat "$root/$file")"$'\n' ;;
     esac
   done
-  finding="$(jq -cn -r --arg t "$text" 'if ($t | test("gongnyang|gpt-image-2(?!\\.5(?:\\b|-))|check[_-]prompt|Tier-[0-9]|SAFETY_ASSERT|NEGATIVE_TAIL|E-SLOT-LEAK|AR x:y"; "i")) then "E_LEGACY_FOOTPRINT" else empty end')"
+  finding="$(jq -cn -r --arg t "$text" 'if ($t | test("gongnyang|gpt-image-2(?!\\.[56](?:\\b|-))|check[_-]prompt|Tier-[0-9]|SAFETY_ASSERT|NEGATIVE_TAIL|E-SLOT-LEAK|AR x:y"; "i")) then "E_LEGACY_FOOTPRINT" else empty end')"
   [ -n "$finding" ] && errors+=("$finding")
-  finding="$(jq -cn -r --arg t "$text" 'if ($t | test("<!--\\s*image-maker-provider-claim:"; "i")) then "E_PROVIDER_LEDGER" else empty end')"
+  finding="$(jq -cn -r --arg t "$text" 'if ($t | test("<!--\\s*hyper-imagegen-provider-claim:"; "i")) then "E_PROVIDER_LEDGER" else empty end')"
   [ -n "$finding" ] && errors+=("$finding")
   ko="$(cat "$root/SKILL.ko.md")"
   for file in '@rules/capability-and-output.ko.md' '@rules/prompt-compilation.ko.md' '@references/visual-direction.ko.md' '@references/prompt-crafting.ko.md' '@references/runtime-capability-and-drift.ko.md'; do
@@ -976,9 +983,9 @@ embedded_tests() { # with-audit-fixture(1/0) -> lines of failure codes
   [ "$code" = '[false,false,false,true,"..."]' ] || failures+=("E_SELF_TOPIC")
 
   local legacy_ban legacy_allow
-  legacy_ban="$(jq -cn '[ "gpt-image-2","gpt-image-2 ","gpt-image-2.50","gongnyang","check_prompt","check-prompt","Tier-1","SAFETY_ASSERT","NEGATIVE_TAIL","E-SLOT-LEAK","AR x:y" ] | map(test("gongnyang|gpt-image-2(?!\\.5(?:\\b|-))|check[_-]prompt|Tier-[0-9]|SAFETY_ASSERT|NEGATIVE_TAIL|E-SLOT-LEAK|AR x:y"; "i")) | all')"
+  legacy_ban="$(jq -cn '[ "gpt-image-2","gpt-image-2 ","gpt-image-2.50","gpt-image-2.60","gongnyang","check_prompt","check-prompt","Tier-1","SAFETY_ASSERT","NEGATIVE_TAIL","E-SLOT-LEAK","AR x:y" ] | map(test("gongnyang|gpt-image-2(?!\\.[56](?:\\b|-))|check[_-]prompt|Tier-[0-9]|SAFETY_ASSERT|NEGATIVE_TAIL|E-SLOT-LEAK|AR x:y"; "i")) | all')"
   [ "$legacy_ban" = "true" ] || failures+=("E_SELF_LEGACY_BAN")
-  legacy_allow="$(jq -cn '[ "gpt-image-2.5","gpt-image-2.5-sunburst","gpt-image-2.5-flare" ] | map(test("gongnyang|gpt-image-2(?!\\.5(?:\\b|-))|check[_-]prompt|Tier-[0-9]|SAFETY_ASSERT|NEGATIVE_TAIL|E-SLOT-LEAK|AR x:y"; "i")) | any')"
+  legacy_allow="$(jq -cn '[ "gpt-image-2.5","gpt-image-2.5-sunburst","gpt-image-2.5-flare","gpt-image-2.6","gpt-image-2.6-sunburst","gpt-image-2.6-flare" ] | map(test("gongnyang|gpt-image-2(?!\\.[56](?:\\b|-))|check[_-]prompt|Tier-[0-9]|SAFETY_ASSERT|NEGATIVE_TAIL|E-SLOT-LEAK|AR x:y"; "i")) | any')"
   [ "$legacy_allow" = "false" ] || failures+=("E_SELF_LEGACY_ALLOW")
 
   local skill_req
@@ -1010,7 +1017,7 @@ embedded_tests() { # with-audit-fixture(1/0) -> lines of failure codes
   fi
 
   local audit_fixture
-  audit_fixture="$(mktemp -d "${TMPDIR:-/tmp}/image-maker-audit-XXXXXX")"
+  audit_fixture="$(mktemp -d "${TMPDIR:-/tmp}/hyper-imagegen-audit-XXXXXX")"
   cp -R "$PACKAGE_ROOT/." "$audit_fixture/" 2>/dev/null || true
   if [ -n "$(audit_package "$audit_fixture")" ]; then
     failures+=("E_SELF_AUDIT_GREEN")
@@ -1140,7 +1147,7 @@ throw_error() {
 }
 
 main() {
-  local root="" evals="skills/image-maker/assets/evals/image-maker-cases.jsonl" self=0 evals_specified=0
+  local root="" evals="skills/hyper-imagegen/assets/evals/hyper-imagegen-cases.jsonl" self=0 evals_specified=0
   while [ "$#" -gt 0 ]; do
     case "$1" in
       --self-test) self=1 ;;
@@ -1212,7 +1219,7 @@ kind_is_automatic() {
 
 validate_all_rows() { # rows-array-json -> {errors,manual,automatic,paired,total}
   local rows="$1" tmp n i=0 row meta evals="[]" dup_ids="[]"
-  tmp="$(mktemp "${TMPDIR:-/tmp}/image-maker-rows-XXXXXX")"
+  tmp="$(mktemp "${TMPDIR:-/tmp}/hyper-imagegen-rows-XXXXXX")"
   printf '%s' "$rows" | jq -c '.[]' >"$tmp"
   n="$(wc -l <"$tmp" | tr -d ' ')"
   while IFS= read -r row; do

@@ -90,7 +90,7 @@ metadata_for() {
     skills/hyper-git/scripts/git-push.sh) printf 'push-commit\tgit-push\n' ;;
     skills/hyper-git/scripts/repo-discover.sh) printf 'inspect-repository\trepository-discovery\n' ;;
     skills/hyper-git/scripts/repo-status.sh) printf 'inspect-repository\trepository-status\n' ;;
-    skills/image-maker/scripts/validate-image-maker.sh) printf 'validate-skill\tskill-validation\n' ;;
+    skills/hyper-imagegen/scripts/validate-hyper-imagegen.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/hyper-architecture/scripts/validate-nextjs-stack.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/prd-maker/scripts/build-preview.sh) printf 'build-preview\tpreview-build\n' ;;
     skills/prd-maker/scripts/render-planning-map.sh) printf 'render-planning-map\tplanning-map-render\n' ;;

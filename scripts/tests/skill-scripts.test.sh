@@ -1110,23 +1110,23 @@ EOF
   done
 }
 
-# image-maker ships its own validator outside the standard gate,
+# hyper-imagegen ships its own validator outside the standard gate,
 # so the repository suite runs it here to catch drift in their fixtures and core.
-case_image_maker_validator() {
+case_hyper_imagegen_validator() {
   require_cmd jq
   local out err rc work
   work=$(workdir)
-  out=$work/image-maker.json
-  err=$work/image-maker.err
-  rc=$(run_in "$ROOT" "$out" "$err" bash "$ROOT/skills/image-maker/scripts/validate-image-maker.sh" --root skills/image-maker --json)
-  assert_eq 0 "$rc" "image-maker validator exit"
-  assert_json_valid "$out" "image-maker validator output"
-  assert_eq "true" "$(jq -r '.ok' "$out")" "image-maker validator ok"
-  assert_eq 0 "$(jq -r '.counts.errors' "$out")" "image-maker case errors"
+  out=$work/hyper-imagegen.json
+  err=$work/hyper-imagegen.err
+  rc=$(run_in "$ROOT" "$out" "$err" bash "$ROOT/skills/hyper-imagegen/scripts/validate-hyper-imagegen.sh" --root skills/hyper-imagegen --json)
+  assert_eq 0 "$rc" "hyper-imagegen validator exit"
+  assert_json_valid "$out" "hyper-imagegen validator output"
+  assert_eq "true" "$(jq -r '.ok' "$out")" "hyper-imagegen validator ok"
+  assert_eq 0 "$(jq -r '.counts.errors' "$out")" "hyper-imagegen case errors"
   assert_eq "$(jq -r '.counts.total' "$out")" \
-    "$(jq -r '.counts.automatic + .counts.manual_required' "$out")" "image-maker case total"
+    "$(jq -r '.counts.automatic + .counts.manual_required' "$out")" "hyper-imagegen case total"
   assert_eq "$(jq -r '.counts.manual_required' "$out")" \
-    "$(jq -r '.manual_required | length' "$out")" "image-maker manual cases"
+    "$(jq -r '.manual_required | length' "$out")" "hyper-imagegen manual cases"
 }
 
 STRUCTURE_GATE_MARKERS='필수 키가 없습니다
@@ -1239,7 +1239,7 @@ run_case "hyper-git git-fast inspects a repository whose path contains spaces wi
 run_case "pre-deploy rejects malformed package metadata" case_pre_deploy_rejects_malformed_metadata
 run_case "self-containment check catches cross-skill references, including with no sibling present" case_self_containment_check
 run_case "script-runtime check rejects non-bash bundled scripts and non-bash shebangs" case_script_runtime_check
-run_case "the image-maker validator accepts its own skill folder and eval corpus" case_image_maker_validator
+run_case "the hyper-imagegen validator accepts its own skill folder and eval corpus" case_hyper_imagegen_validator
 run_case "hyper-seo preserves both prior outputs when its second-write fails" case_hyper_seo_renderer_second_write
 run_case "hyper-seo preserves both prior outputs when its second-rename fails" case_hyper_seo_renderer_second_rename
 

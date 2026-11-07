@@ -23,6 +23,21 @@ Read the request's signal words and pick exactly one category from the table. Wh
 | 3d icon | single object cut | square | object form, material (matte or glossy), background | 3d icon, icon, rendered object | rendered object rather than photo beats product |
 | beauty | close-up cut, texture cut | portrait | skin grain, makeup texture, lighting angle | beauty, makeup, cosmetics, skin | face or skin expression as main goal beats editorial |
 
+## Edit categories
+
+When the request edits a supplied image, pick exactly one edit category instead of a generation row. Every edit brief states `change only <X>; keep <Y> unchanged` and the preserve list from `rules/prompt-compilation.md`.
+
+| Edit category | Change only | Always preserve |
+| --- | --- | --- |
+| text localization | the in-image wording | layout, typography, spacing, hierarchy; no reflow unless the new text needs it |
+| identity preserve | the named clothing, setting, or prop | face, body, pose, hair, expression; matched light and shadow |
+| precise object edit | the one named element removed or replaced | surrounding texture and lighting, everything else |
+| lighting and weather | time of day, season, atmosphere, precipitation | geometry, framing, subject identity |
+| background extraction | the background, cut to real transparency | a crisp silhouette with no halo, label text exactly, no restyling |
+| style transfer | the subject or scene, rendered in the reference style | the named style cues (palette, texture, brushwork); no extra elements |
+| compositing | the element moved from one indexed image into another | base framing; matched light, perspective, and scale |
+| sketch to render | the medium, from line art to finished render | layout, proportions, perspective; no new elements |
+
 ## Format selection
 
 - Format A (default): a simple request gets a natural prose brief. No labels.
@@ -33,6 +48,10 @@ Read the request's signal words and pick exactly one category from the table. Wh
 ## One row, one cut, one call
 
 One request row is one cut and one generation call. Splitting several cuts onto one canvas (grid, artboard) is not the standard path. When several cuts are needed, split them into separate briefs and repeat the shared invariants (palette, lighting, type treatment, motif) in every brief.
+
+## Canvas
+
+State the requested shape as a ratio description and pass actual ratio and size only through the runtime's structured fields, never in the prompt string. When the runtime exposes no size field, say so in the report instead of inventing one. An edit normally keeps the source's ratio; when several images are supplied, name which one sets the output ratio, because some runtimes follow the last input. A runtime may return a different count or size than requested; report what came back.
 
 ## Text rendering
 
@@ -47,4 +66,11 @@ Rendered characters are quote-pinned inside the brief. The string inside quotes 
 
 ## Sources
 
-> No external sources were used. This file states rules that belong to the image-maker package itself. Content checked 2026-09-21.
+> Checked 2026-11-07.
+
+| Claim | Source |
+|---|---|
+| The eight edit categories and their change-only and preserve pairs | OpenAI `imagegen` skill, <https://github.com/openai/skills/blob/e6afb0d74cc75d220df2faf3dd6c635c2dc6a108/skills/.system/imagegen/references/prompting.md> |
+| An edit keeps the input ratio and follows the last image with several inputs | Google Developers Blog, 2025-08-28, <https://developers.googleblog.com/en/how-to-prompt-gemini-2-5-flash-image-generation-for-the-best-results/> |
+| The exact output count is not guaranteed | Gemini API image generation docs, <https://ai.google.dev/gemini-api/docs/image-generation> |
+| The generation categories, format selection, and text-render protocol | this package's own rules |

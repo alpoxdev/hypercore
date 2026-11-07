@@ -145,7 +145,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper` | 작업만 말하면 hyper-research·hyper-seo·hyper-architecture·hyper-database·hyper-mcp·hyper-design·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation·hyper-git 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 스키마 설계 → database) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
+| `hyper` | 작업만 말하면 hyper-research·hyper-seo·hyper-architecture·hyper-database·hyper-mcp·hyper-design·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation·hyper-git 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 스키마 설계 → database, 이미지 한 장 → imagegen) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
 | `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
 | `hyper-mass` | 의존 순서가 있는 하위 작업을 그래프로 정의해 단계별 병렬 실행, 재시도·수정·재개 지원 | All |
@@ -166,7 +166,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 | `korean-writer` | 한국어 산문을 사람이 쓴 것처럼 — 새 글은 생성 시점 회피로, 기존 글은 앵커 보존과 과교정 가드 아래에서 AI 티 제거 | All |
 | `tone-manner-maker` | 글 샘플에서 말투 스펙 문서 추출 — 다른 AI가 그 말투로 쓸 수 있는 self-contained 톤 프로파일, 커뮤니티 말투 7종 근사치 프리셋 포함 | All |
 | `blog-maker` | 키워드 하나로 리서치부터 초안까지 — 네이버 또는 inblog 글, 네이버 노출 규칙(C-Rank·D.I.A.+·스마트블록)과 공식 제한 기준 준수, 내장 사람 문장 규칙, 인라인 이미지 슬롯, 섹션 역할별 이미지 visual brief(역할·템플릿·시선 순서·색 역할·재질·정확한 글자·점검 기준 + 붙여넣기용 자연어 프롬프트), 기본 본문 HTML에 서식 복사 버튼 포함(plain 텍스트는 명시 요청 시만), 정보/경험형·전환형 | All (self-contained) |
-| `image-maker` | 관찰된 이미지 기능으로 이미지를 생성하고, 미지원 환경에서는 실행 가능한 프롬프트를 안전하게 저장 | Capability-based |
+| `hyper-imagegen` | 관찰된 이미지 기능으로 이미지를 생성하고, 미지원 환경에서는 실행 가능한 프롬프트를 안전하게 저장 | Capability-based |
 | `instagram-card-maker` | 브랜드·글감 조사 후 흐름에 맞는 카드뉴스 제작. 편집 가능한 HTML, 같은 비율의 이미지 여러 장, 한국어 캡션과 대체 텍스트 전달 | All (이미지 출력은 브라우저 필요) |
 | `storyboard-maker` | 대본·줄거리를 카메라 값(높이·각도·방향·렌즈·샷 크기)으로 계산한 영화 스토리보드로 — 패널과 씬 평면도는 참고 이미지 없이 컴파일 프롬프트로 생성한 회색조 만화풍 이미지, 이미지 기능이 없으면 선화와 저장한 패널별 프롬프트로 대체, 연속성(180도·30도·시선·화면 방향) 경고, 무브 화살표·패널 메모, 씬 평면도, A4 인쇄용 자체 포함 HTML | 이미지 생성은 선택 · 시각 확인은 브라우저 권장 |
 
