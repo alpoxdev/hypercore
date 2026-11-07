@@ -118,7 +118,7 @@ Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report 
 - `hyper-architecture` and `hyper-database` both run only when the job restructures folders or modules and also changes the schema or queries; persistence-layer placement alone ("repository 레이어 정리") stays with `hyper-architecture`.
 - When `hyper-database` and another build tail (`hyper-mcp` or `hyper-design`) are both chosen, the job spans modules: run each of them in its report mode (review, audit, or `brief-only`) and end the chain at `hyper-plan`.
 - Delivery words ("PR까지", "ship") on a database job put `hyper-database` in review mode before `hyper-plan`, because only the plan and execute stages own delivery.
-- `hyper-git` never runs with `hyper-plan`, `hyper-execute`, or `hyper-mass` in one chain; their delivery flags carry the same words. A Git-only request with no other stage (commit, worktree, issue, or merge alone) is not a `hyper` job.
+- `hyper-git` never runs with `hyper-plan`, `hyper-execute`, or `hyper-mass` in one chain; their delivery flags carry the same words. A Git-only request with no other stage (commit, worktree, or merge alone) is not a `hyper` job; recording an issue goes to `hyper-issue`.
 - On a `hyper-git` delivery stage, merges into `main`, `master`, the default branch, or a deploy branch happen only when the user named that branch.
 - An existing plan file wins over a new plan only when the user points at it or says to resume. A new Build request with an unrelated old plan gets a new plan.
 - When the stack is outside the architecture stage's supported set, keep the stage anyway: it decides support from files and stops with a reason, and `rules/stage-handoff.md` §4 records that stop as a skip.

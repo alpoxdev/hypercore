@@ -118,7 +118,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-databa
 - `hyper-architecture`와 `hyper-database`는 작업이 폴더나 모듈을 재구성하면서 스키마나 쿼리까지 바꿀 때만 함께 실행합니다. 영속 계층 배치만 다루는 일("repository 레이어 정리")은 `hyper-architecture`에 남깁니다.
 - `hyper-database`와 다른 구축 꼬리(`hyper-mcp`나 `hyper-design`)를 함께 골랐다면 작업이 여러 모듈에 걸친 것입니다. 각 단계를 보고서 모드(리뷰, 점검, `brief-only`)로 실행하고 체인을 `hyper-plan`에서 끝냅니다.
 - 데이터베이스 작업에 전달 단어("PR까지", "ship")가 있으면 `hyper-database`를 리뷰 모드로 `hyper-plan` 앞에 둡니다. 전달은 계획과 실행 단계만 맡기 때문입니다.
-- `hyper-git`은 `hyper-plan`, `hyper-execute`, `hyper-mass`와 한 체인에서 함께 실행하지 않습니다. 같은 단어를 그 단계들의 전달 플래그가 이미 받습니다. 다른 단계 없이 Git만 원하는 요청(커밋, 워크트리, 이슈, 병합만)은 `hyper` 작업이 아닙니다.
+- `hyper-git`은 `hyper-plan`, `hyper-execute`, `hyper-mass`와 한 체인에서 함께 실행하지 않습니다. 같은 단어를 그 단계들의 전달 플래그가 이미 받습니다. 다른 단계 없이 Git만 원하는 요청(커밋, 워크트리, 병합만)은 `hyper` 작업이 아닙니다. 이슈 기록은 `hyper-issue`로 갑니다.
 - `hyper-git` 전달 단계에서 `main`, `master`, 기본 브랜치, 배포 브랜치로 병합하는 일은 사용자가 그 브랜치를 지정했을 때만 합니다.
 - 기존 계획 파일이 새 계획보다 우선하는 경우는 사용자가 그 파일을 가리키거나 재개를 말했을 때뿐입니다. 관계없는 옛 계획이 있는 새 Build 요청은 새 계획을 씁니다.
 - 스택이 아키텍처 단계의 지원 범위 밖이어도 그 단계는 유지합니다. 그 단계가 파일로 지원 여부를 정하고 사유와 함께 멈추며, `rules/stage-handoff.md` §4가 그 정지를 건너뜀으로 기록합니다.

@@ -112,6 +112,49 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 
 자연어로도 트리거됩니다 — 예: "이 프로젝트 README 다시 써줘"·"이 저장소에 맞는 AGENTS.md 만들어줘" → `hyper-documentation`, "방금 변경 사항 커밋하고 푸시"·"이슈 42로 워크트리 만들어줘"·"dev, main에 머지하고 푸시" → `hyper-git`.
 
+## hyper 사용법
+
+`hyper`는 작업만 말하면 필요한 단계 스킬을 골라 순서대로 실행하는 진입점입니다. 실행하면 먼저 `워크플로: <단계> -> ...` 한 줄로 고른 체인과 근거를 보여 주고, 진행 기록을 `.hyper/workflows/<slug>.md`에 남깁니다.
+
+### 자주 쓰는 체인
+
+| 요청 예 | 체인 |
+|---|---|
+| "결제 재시도 기능 추가해줘" | `hyper-plan` -> `hyper-execute` |
+| "폴더 구조 리팩토링해줘" | `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
+| "상태관리 라이브러리 비교해서 적용까지" | `hyper-research` -> `hyper-plan` -> `hyper-execute` |
+| "이 버그 이슈로 남겨줘" | `hyper-issue` |
+| "label:bug 이슈들 배치로 돌려줘" | `hyper-issue` -> `hyper-plan` -> `hyper-execute` |
+| "스킬 만들고 dev에 머지·푸시" | `hyper-skill` -> `hyper-git` |
+
+### 전달 방식
+
+| 말하는 법 | 결과 |
+|---|---|
+| (아무 말 없음) | 로컬 반영만, 푸시 없음 |
+| "PR까지" / `--make-pr` | 웨이브별 PR 생성, 병합은 하지 않음 |
+| "머지까지" / `--ship` | PR 생성 후 CI 확인, 병합까지 |
+| "계획만" / `--plan-only` | 계획 파일만 쓰고 멈춤 |
+| "이어서" | 마지막으로 멈춘 단계부터 재개 |
+
+### 이슈 배치 흐름
+
+여러 작업을 한 번에 처리할 때는 이슈를 먼저 남기고 배치로 돌립니다.
+
+```mermaid
+flowchart LR
+  A[hyper-issue<br/>이슈 + hyper 블록] --> B[hyper-issue batch<br/>고정 목록·레인 명세]
+  B --> C[hyper-plan<br/>레인 = 웨이브]
+  C --> D[hyper-execute<br/>.hyper/worktree 레인 병렬]
+  D --> E[검증 1회 후 dev 반영]
+```
+
+- 이슈 본문 `## Scope`의 `hyper:` 블록(`touches`, `depends_on`, `conflicts_with`, `verify`)으로 겹침을 판정하므로 배치 때 코드를 다시 조사하지 않습니다.
+- 같은 파일을 쓰는 이슈는 한 레인에서 순서대로, 서로 겹치지 않는 레인만 병렬로 실행합니다(기본 최대 4개).
+- 워크트리는 저장소 안 `.hyper/worktree/`에 만들고, `.hyper/`가 `.gitignore`에 없으면 먼저 추가합니다.
+- 반영 방식은 기본 `merge`이며, 선형 이력이 필요하면 `--land cherry-pick`을 씁니다.
+- 서로 다른 파일을 건드리는 작업이 3건 이상일 때 배치가 이득입니다. 1~2건이면 `hyper-plan` 한 번이 더 쌉니다.
+
 ## 스킬 카탈로그
 
 용도별 분류입니다. 같은 스킬이 둘 이상의 그룹에 어울릴 수 있습니다.
@@ -146,7 +189,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper` | 작업만 말하면 hyper-research·hyper-seo·hyper-architecture·hyper-database·hyper-mcp·hyper-design·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation·hyper-git 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 스키마 설계 → database, 이미지 한 장 → imagegen) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
+| `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-architecture·hyper-database·hyper-mcp·hyper-design·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation·hyper-git 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
 | `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
 | `hyper-issue` | 확정된 발견이나 결정된 작업을 바로 구현 가능한 이슈로 기록하고, 열린 이슈 묶음을 서로 겹치지 않는 작업 레인으로 묶어 배치 매니페스트 생성(구현은 하지 않음) | 인증된 이슈 트래커 CLI(`gh`); 쓰기 권한이 없으면 본문을 디스크에 초안으로 남김 |

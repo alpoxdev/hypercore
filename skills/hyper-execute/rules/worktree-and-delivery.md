@@ -101,7 +101,7 @@ Only after the landing is confirmed on the wave's own base - a local merge, or a
 3. If the removal is refused because of dirty, untracked, or locked state, stop and report the paths. Keep the worktree. Never escalate to `--force`.
 4. Delete the branch only after confirming the landed commit is on that wave's base: for a local wave the integration base, for a stacked wave its parent wave branch. Under the `merge` policy test it with `git merge-base --is-ancestor <landed-sha> <wave_base>`; under `cherry-pick` test each picked sha with `git merge-base --is-ancestor <landed-sha> <base>`; never test the wave branch tip, which is not an ancestor after a pick. After a squash merge the branch tip is not an ancestor, so confirm the merge on the base by the landed commit or the pull request's merged state instead. Never use `git branch --merged` as the test.
 5. Delete the remote branch only when it was pushed and its pull request is merged.
-6. Remove `<repo>-wt/` when it is empty.
+6. Remove `<repo-root>/.hyper/worktree/` when it is empty; keep the rest of `.hyper/`.
 7. Append a `cleanup` ledger row with each path and branch removed, and each item kept with its reason.
 
 ## 8. Failure Handling
