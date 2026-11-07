@@ -1,6 +1,6 @@
 # Agent Parallelism
 
-Use this rule when `git-maker` is active and the dirty tree is complex enough that Claude Code or Codex subagents can reduce analysis time without touching git state.
+Use this rule when the commit mode of `hyper-git` is active and the dirty tree is complex enough that Claude Code or Codex subagents can reduce analysis time without touching git state.
 
 ## When To Delegate
 
@@ -17,7 +17,7 @@ Do not spawn agents for a single obvious one-file or one-group commit; coordinat
 
 | Lane | Responsibility | Inputs | Output | Edit/stage/commit? |
 |------|------|------|------|------|
-| Repo Mapper | Map repositories/worktree roots, staged/unstaged/untracked files, and ownership boundaries | `git-maker-fast.sh inspect` output, `git diff --name-only` | repo/file map, linked-worktree context, and ambiguity list | no |
+| Repo Mapper | Map repositories/worktree roots, staged/unstaged/untracked files, and ownership boundaries | `git-fast.sh inspect` output, `git diff --name-only` | repo/file map, linked-worktree context, and ambiguity list | no |
 | Grouping Critic | Propose logical commit groups and flag unrelated files or secrets | status, file list, diff summaries | group plan with confidence and exclusions | no |
 | Message Drafter | Draft English Conventional Commit subjects/bodies | group plan and diff summaries | message candidates with rationale | no |
 | Safety Verifier | Check secrets, destructive operations, protected branch, detached HEAD, upstream/push risk | status, branch/upstream output, script diff | pass/block report | no |
@@ -45,15 +45,15 @@ Use these templates as copy-ready prompts. Replace bracketed fields with the cur
 ### Repo Mapper
 
 ```text
-Read-only git-maker repo mapping. Do not edit, stage, commit, push, or restore files.
-Input: [paste git-maker-fast inspect output and optional git diff --name-only].
+Read-only hyper-git commit-mode repo mapping. Do not edit, stage, commit, push, or restore files.
+Input: [paste git-fast inspect output and optional git diff --name-only].
 Return: repositories/worktree roots in scope, staged/unstaged/untracked files by repo, linked-worktree context if present, ownership boundaries, and ambiguity list.
 ```
 
 ### Grouping Critic
 
 ```text
-Read-only git-maker grouping review. Do not edit, stage, commit, push, or restore files.
+Read-only hyper-git commit-mode grouping review. Do not edit, stage, commit, push, or restore files.
 Input: [paste status, file list, and focused diff summaries].
 Return: proposed logical commit groups, files included in each group, exclusions, confidence, and any secret/unrelated-change concerns.
 ```
@@ -61,7 +61,7 @@ Return: proposed logical commit groups, files included in each group, exclusions
 ### Message Drafter
 
 ```text
-Read-only git-maker commit message drafting. Do not edit, stage, commit, push, or restore files.
+Read-only hyper-git commit-mode commit message drafting. Do not edit, stage, commit, push, or restore files.
 Input: [paste final or candidate group plan and diff summary].
 Return: English Conventional Commit subject/body candidates for each group, with rationale: imperative subjects, lowercase after the colon, no trailing period, at most 72 characters, no fabricated issue footers, and no sign-off or attribution trailers unless requested.
 ```
@@ -69,8 +69,8 @@ Return: English Conventional Commit subject/body candidates for each group, with
 ### Safety Verifier
 
 ```text
-Read-only git-maker safety verification. Do not edit, stage, commit, push, or restore files.
-Input: [paste branch/upstream/status output, changed file list, and changed git-maker script diff if this run modifies scripts].
+Read-only hyper-git commit-mode safety verification. Do not edit, stage, commit, push, or restore files.
+Input: [paste branch/upstream/status output, changed file list, and changed hyper-git script diff if this run modifies scripts].
 Return: pass/block verdict for secrets, destructive git operations, protected branch force-push risk, detached HEAD, upstream risk, and missing validation.
 ```
 

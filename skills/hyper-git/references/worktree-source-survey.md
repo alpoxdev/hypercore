@@ -45,7 +45,7 @@ Read this only when the rationale, upstream behavior, or a source comparison nee
 
 - **Native Git first**: Use official `git worktree` behavior as the stable base; wrap it with disciplined checks rather than depending on a new package.
 - **One task equals one worktree**: Popular AI-agent workflows converge on one branch, one folder, one terminal/editor/agent session per task.
-- **Predictable path convention**: Tools reduce friction by computing paths. This skill standardizes on `.hyper/git-worktree/<folder_name>`.
+- **Predictable path convention**: Tools reduce friction by computing paths. This skill standardizes on `.hyper/worktree/<folder_name>`.
 - **Branch and folder are separate concepts**: Keep Git branch names meaningful while sanitizing folder labels for safe local paths.
 - **Interactive/list visibility matters**: Good tools expose list/status dashboards. This skill requires `git worktree list --porcelain` plus per-path `git status` when listing.
 - **Safe cleanup is a first-class operation**: Tools and IDEs warn before deletion; this skill requires status inspection before `remove` and dry run before `prune`.
@@ -55,14 +55,14 @@ Read this only when the rationale, upstream behavior, or a source comparison nee
 - **Issue/PR-driven creation is high leverage**: worktree.io, LazyWorktree, and VS Code patterns show that PR/issue/task labels are natural folder and branch seeds.
 - **Global labels help humans navigate many contexts**: Par/gwq/ccswitch show that short labels and dashboards are critical when many worktrees exist.
 - **Repair/lock/prune are real lifecycle states**: Official Git and IDE tools surface locked/prunable states; the skill keeps them in the operator workflow.
-- **Nested worktrees are controversial**: The user-requested `.hyper/git-worktree/` convention is convenient for project locality, but IDE docs warn against nesting under the current project. This skill mitigates noise with local excludes and calls out IDE/runtime risks.
+- **Nested worktrees are controversial**: The user-requested `.hyper/worktree/` convention is convenient for project locality, but IDE docs warn against nesting under the current project. This skill mitigates noise with local excludes and calls out IDE/runtime risks.
 - **Cross-platform paths can bite**: GitExtensions notes Windows/WSL native path issues; avoid assuming worktrees created by one Git executable are portable to another.
 
 ## Forward-test prompts
 
 Use these prompts to evaluate whether the skill triggers and behaves correctly:
 
-1. "Create a worktree for `fix/api-timeout` under `.hyper/git-worktree` and open Cursor there."
+1. "Create a worktree for `fix/api-timeout` under `.hyper/worktree` and open Cursor there."
 2. "List all worktrees and tell me which ones are dirty."
 3. "Remove the stale worktree for `experiment-cache`, but don't delete the branch."
 4. "Spin up Codex and Claude in two separate branches without conflicts."

@@ -1,6 +1,6 @@
 # 에이전트 병렬 처리
 
-`git-maker`가 활성화되어 있고 더러운 작업 트리가 복잡해 Claude Code 또는 Codex 하위 에이전트가 Git 상태를 건드리지 않고 분석 시간을 줄일 수 있을 때 이 규칙을 사용한다.
+`hyper-git`의 commit 모드가 활성화되어 있고 더러운 작업 트리가 복잡해 Claude Code 또는 Codex 하위 에이전트가 Git 상태를 건드리지 않고 분석 시간을 줄일 수 있을 때 이 규칙을 사용한다.
 
 ## 위임 시점
 
@@ -17,7 +17,7 @@
 
 | 레인 | 책임 | 입력 | 출력 | 편집/스테이징/커밋? |
 |------|------|------|------|------|
-| Repo Mapper | 저장소/worktree 루트, staged/unstaged/untracked 파일, 소유 경계를 매핑한다 | `git-maker-fast.sh inspect` 출력, `git diff --name-only` | 저장소/파일 맵, linked-worktree 맥락, 모호성 목록 | 아니오 |
+| Repo Mapper | 저장소/worktree 루트, staged/unstaged/untracked 파일, 소유 경계를 매핑한다 | `git-fast.sh inspect` 출력, `git diff --name-only` | 저장소/파일 맵, linked-worktree 맥락, 모호성 목록 | 아니오 |
 | Grouping Critic | 논리적 커밋 그룹을 제안하고 무관한 파일이나 비밀을 표시한다 | status, 파일 목록, diff 요약 | 신뢰도와 제외 항목을 포함한 그룹 계획 | 아니오 |
 | Message Drafter | 영어 Conventional Commit 제목/본문을 작성한다 | 그룹 계획과 diff 요약 | 근거가 있는 메시지 후보 | 아니오 |
 | Safety Verifier | 비밀, 파괴적 작업, 보호 브랜치, detached HEAD, upstream/push 위험을 확인한다 | status, branch/upstream 출력, 스크립트 diff | 통과/차단 보고서 | 아니오 |
@@ -45,15 +45,15 @@
 ### Repo Mapper
 
 ```text
-Read-only git-maker repo mapping. Do not edit, stage, commit, push, or restore files.
-Input: [paste git-maker-fast inspect output and optional git diff --name-only].
+Read-only hyper-git commit-mode repo mapping. Do not edit, stage, commit, push, or restore files.
+Input: [paste git-fast inspect output and optional git diff --name-only].
 Return: repositories/worktree roots in scope, staged/unstaged/untracked files by repo, linked-worktree context if present, ownership boundaries, and ambiguity list.
 ```
 
 ### Grouping Critic
 
 ```text
-Read-only git-maker grouping review. Do not edit, stage, commit, push, or restore files.
+Read-only hyper-git commit-mode grouping review. Do not edit, stage, commit, push, or restore files.
 Input: [paste status, file list, and focused diff summaries].
 Return: proposed logical commit groups, files included in each group, exclusions, confidence, and any secret/unrelated-change concerns.
 ```
@@ -61,7 +61,7 @@ Return: proposed logical commit groups, files included in each group, exclusions
 ### Message Drafter
 
 ```text
-Read-only git-maker commit message drafting. Do not edit, stage, commit, push, or restore files.
+Read-only hyper-git commit-mode commit message drafting. Do not edit, stage, commit, push, or restore files.
 Input: [paste final or candidate group plan and diff summary].
 Return: English Conventional Commit subject/body candidates for each group, with rationale: imperative subjects, lowercase after the colon, no trailing period, at most 72 characters, no fabricated issue footers, and no sign-off or attribution trailers unless requested.
 ```
@@ -69,8 +69,8 @@ Return: English Conventional Commit subject/body candidates for each group, with
 ### Safety Verifier
 
 ```text
-Read-only git-maker safety verification. Do not edit, stage, commit, push, or restore files.
-Input: [paste branch/upstream/status output, changed file list, and changed git-maker script diff if this run modifies scripts].
+Read-only hyper-git commit-mode safety verification. Do not edit, stage, commit, push, or restore files.
+Input: [paste branch/upstream/status output, changed file list, and changed hyper-git script diff if this run modifies scripts].
 Return: pass/block verdict for secrets, destructive git operations, protected branch force-push risk, detached HEAD, upstream risk, and missing validation.
 ```
 

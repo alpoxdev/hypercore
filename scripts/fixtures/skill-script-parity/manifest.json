@@ -274,8 +274,8 @@
       "behaviorContractId": "hyper-ui-ux--validate-waivers"
     },
     {
-      "path": "skills/git-maker/scripts/git-commit.sh",
-      "family": "git-maker",
+      "path": "skills/hyper-git/scripts/git-commit.sh",
+      "family": "hyper-git",
       "legacyOrigin": "former-sh",
       "usage": "commit-files",
       "behavior": "scoped-git-commit",
@@ -284,11 +284,11 @@
         "sha256": "573390a4dd99fb0069ca6df40184429321bf0c3f7fc7a4f88ce4b72cd55c85e2",
         "gitMode": "100755"
       },
-      "behaviorContractId": "git-maker--git-commit"
+      "behaviorContractId": "hyper-git--git-commit"
     },
     {
-      "path": "skills/git-maker/scripts/git-maker-fast.sh",
-      "family": "git-maker",
+      "path": "skills/hyper-git/scripts/git-fast.sh",
+      "family": "hyper-git",
       "legacyOrigin": "former-sh",
       "usage": "commit-files",
       "behavior": "fast-git-commit",
@@ -297,11 +297,11 @@
         "sha256": "969dfc791c03e775fc19156cf35022a2dd51e5d52e6938f6bff5309019711a0c",
         "gitMode": "100755"
       },
-      "behaviorContractId": "git-maker--git-maker-fast"
+      "behaviorContractId": "hyper-git--git-fast"
     },
     {
-      "path": "skills/git-maker/scripts/git-push.sh",
-      "family": "git-maker",
+      "path": "skills/hyper-git/scripts/git-push.sh",
+      "family": "hyper-git",
       "legacyOrigin": "former-sh",
       "usage": "push-commit",
       "behavior": "git-push",
@@ -310,11 +310,11 @@
         "sha256": "e18fae51bfe44fdbc6adfcf529dcbf9838e96827a26b5d94185ede5b62e56dfc",
         "gitMode": "100755"
       },
-      "behaviorContractId": "git-maker--git-push"
+      "behaviorContractId": "hyper-git--git-push"
     },
     {
-      "path": "skills/git-maker/scripts/repo-discover.sh",
-      "family": "git-maker",
+      "path": "skills/hyper-git/scripts/repo-discover.sh",
+      "family": "hyper-git",
       "legacyOrigin": "former-sh",
       "usage": "inspect-repository",
       "behavior": "repository-discovery",
@@ -323,11 +323,11 @@
         "sha256": "11867ffdbbc5ff5f3df7289b205a79cf409feaa1efb2f4c47b642aaae1f0badb",
         "gitMode": "100755"
       },
-      "behaviorContractId": "git-maker--repo-discover"
+      "behaviorContractId": "hyper-git--repo-discover"
     },
     {
-      "path": "skills/git-maker/scripts/repo-status.sh",
-      "family": "git-maker",
+      "path": "skills/hyper-git/scripts/repo-status.sh",
+      "family": "hyper-git",
       "legacyOrigin": "former-sh",
       "usage": "inspect-repository",
       "behavior": "repository-status",
@@ -336,20 +336,7 @@
         "sha256": "1f24265cfa08ebff6fb8a786fe6ebe22b137275d3a9abba82250138e309cee99",
         "gitMode": "100755"
       },
-      "behaviorContractId": "git-maker--repo-status"
-    },
-    {
-      "path": "skills/git-worktree/scripts/validate-git-worktree-skill.sh",
-      "family": "git-worktree",
-      "legacyOrigin": "former-py",
-      "usage": "validate-skill",
-      "behavior": "skill-validation",
-      "sourcePreimage": {
-        "path": "skills/git-worktree/scripts/validate-git-worktree-skill.py",
-        "sha256": "d31022e84e72d9b8842d76f035fd21cb9723b447a7d15ba5a71f5b1a57f33b61",
-        "gitMode": "100755"
-      },
-      "behaviorContractId": "git-worktree--validate-git-worktree-skill"
+      "behaviorContractId": "hyper-git--repo-status"
     },
     {
       "path": "skills/image-maker/scripts/validate-image-maker.sh",

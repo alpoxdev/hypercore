@@ -1,6 +1,6 @@
 # Worktree Lifecycle 규칙
 
-`git-worktree` skill로 Git worktree를 operating할 때 이 규칙을 사용한다.
+`hyper-git`의 worktree 모드가 활성화되었을 때 이 규칙을 사용한다.
 
 ## 1. 저장소 discovery
 
@@ -19,14 +19,14 @@ Git repository 내부가 아니면 operation을 중단하고 repository path가 
 기본 root:
 
 ```text
-<repo-root>/.hyper/git-worktree/<folder_name>
+<repo-root>/.hyper/worktree/<folder_name>
 ```
 
 Direct argument fast path:
 
-- invocation이 `git-worktree <ARGUMENT>`이면 `<ARGUMENT>`를 create target으로 취급하고 어떤 worktree를 만들지 묻지 않는다.
+- invocation이 `hyper-git worktree <ARGUMENT>`이면 `<ARGUMENT>`를 create target으로 취급하고 어떤 worktree를 만들지 묻지 않는다.
 - PR, issue, ref, explicit path를 명확히 나타내지 않는 한 argument를 branch/task label로 해석한다.
-- Git operation에는 branch/ref text를 보존하고 `.hyper/git-worktree/<folder_name>`의 folder label만 sanitize한다.
+- Git operation에는 branch/ref text를 보존하고 `.hyper/worktree/<folder_name>`의 folder label만 sanitize한다.
 - unsafe, reserved, conflicting, unmappable argument에 대해서만 계속 질문한다.
 
 Interaction language:
@@ -38,7 +38,7 @@ Interaction language:
 
 Worktree를 만들기 전에 거기서 무엇을 할지 확정한다.
 
-- direct `git-worktree <ARGUMENT>` argument가 있으면 그것이 work intent다. work-intent question을 건너뛴다.
+- direct `hyper-git worktree <ARGUMENT>` argument가 있으면 그것이 work intent다. work-intent question을 건너뛴다.
 - 사용자가 이미 branch, PR, issue, task, concrete work item을 명명했다면 그 context를 사용한다.
 - 사용자가 worktree 생성만 말했고 task가 불명확하면 생성 전에 정확히 하나의 concise localized question을 묻는다. 한국어 사용자에게는 "이 worktree에서 어떤 작업을 할 예정인가요?"라고 묻는다.
 - 답변에서 `<folder_name>`을 도출한다. 사용자가 명시적으로 원하지 않는 한 random timestamp나 generic `worktree-1`을 사용하지 않는다.
@@ -58,7 +58,7 @@ Naming rules:
 ```bash
 exclude_file="$(git rev-parse --git-path info/exclude)"
 mkdir -p "$(dirname "$exclude_file")"
-grep -qxF ".hyper/git-worktree/" "$exclude_file" 2>/dev/null || printf '\n.hyper/git-worktree/\n' >> "$exclude_file"
+grep -qxF ".hyper/worktree/" "$exclude_file" 2>/dev/null || printf '\n.hyper/worktree/\n' >> "$exclude_file"
 ```
 
 사용자가 convention을 commit하라고 요청하지 않는 한 `.gitignore` 편집보다 local exclude를 선호한다.
@@ -235,31 +235,44 @@ Path를 수동으로 옮겼다면 recreate하기 전에 repair한다.
 git worktree repair <path>
 ```
 
-## 8. Merge-back handoff
+연결된 워크트리는 Git으로 옮겨 레지스트리 항목이 따라오게 한다. 잠긴 워크트리는 먼저 잠금을 해제해야 한다.
 
-Worktree의 task가 완료되면:
+```bash
+git worktree move <path> <new-path>
+```
 
-1. status가 clean이거나 의도적으로 staged/committed인지 검증한다.
-2. 그 worktree에서 project의 test/build를 실행한다.
-3. project의 일반 Git workflow에 따라 merge, rebase, 또는 PR open을 수행한다.
-4. work가 merged, pushed, 또는 intentionally abandoned된 뒤에만 worktree를 remove한다.
-5. Stale metadata는 먼저 dry run으로 prune한다.
+레지스트리를 해석하는 스크립트는 `git worktree list --porcelain -z`를 쓴다. 경로에 줄바꿈이 들어갈 수 있기 때문이다.
 
-## 9. 일반적인 hazard
+## 8. 이슈 기반 워크트리
 
-- `.hyper/git-worktree/` 아래 nested worktree는 local에서 ignored되어야 한다. 그렇지 않으면 main worktree가 noisy해진다.
-- 같은 branch는 보통 동시에 두 worktree에서 checked out될 수 없다.
-- Linked worktree는 Git object storage와 config를 공유하지만 working file은 독립적이다.
-- Per-worktree dependency folder, port, database, generated artifact는 여전히 충돌할 수 있다. 필요하면 별도 env file 또는 port를 사용한다.
-- 한 Git executable이 만든 worktree를 다른 executable이 사용할 때 Windows/WSL path portability가 깨질 수 있다.
+워크트리가 GitHub 이슈를 위한 것이고 `gh`가 인증되어 있으면 `gh issue develop <n> --base <base> --name <branch> --worktree <path>`가 연결된 브랜치와 워크트리를 한 단계로 만든다(`rules/issue-workflow.md`). 경로는 여전히 2절을 따르고, 3절의 제외 등록, 검증, 컨텍스트 이동 검사도 그대로 적용한다.
+
+## 9. 병합 복귀 인계
+
+워크트리의 작업이 끝나면:
+
+1. 상태가 깨끗하거나 의도적으로 스테이징·커밋되었는지 검증한다.
+2. 그 워크트리에서 프로젝트의 테스트와 빌드를 실행한다.
+3. 프로젝트의 워크플로(`rules/branch-workflow.md`)에 따라 병합하고, rebase하거나, PR을 연다.
+4. 작업이 병합, 푸시, 또는 의도적으로 버려진 뒤에만 워크트리를 제거한다. squash나 cherry-pick 병합은 `git branch --merged`로 증명되지 않으므로, `+` 줄이 없는 `git cherry <target> <branch>`나 병합된 풀 리퀘스트로 확인한다.
+5. 오래된 메타데이터는 먼저 dry run으로 정리한다.
+
+## 10. 흔한 위험
+
+- `.hyper/worktree/` 아래 중첩 워크트리는 로컬에서 무시되어야 한다. 그렇지 않으면 메인 워크트리가 지저분해진다.
+- 같은 브랜치는 보통 두 워크트리에서 동시에 체크아웃할 수 없다.
+- 연결된 워크트리는 Git 객체 저장소와 설정을 공유하지만 작업 파일은 독립적이다.
+- 워크트리별 의존성 폴더, 포트, 데이터베이스, 생성 산출물은 여전히 충돌할 수 있다. 필요하면 별도 env 파일이나 포트를 쓴다.
+- 한 Git 실행 파일이 만든 워크트리를 다른 실행 파일이 쓰면 Windows/WSL 경로 이식성이 깨질 수 있다.
 
 ## Sources
 
-> 링크 확인 2026-09-21.
+> 링크 확인 2026-11-07.
 
 | 주장 | 출처 |
 |---|---|
-| 이 규칙이 기반으로 삼는 `git worktree add`, `list`, `remove`, `prune`, `lock`, `unlock`, `repair`, `--porcelain`, `--detach`와 이미 checkout된 branch 오류 | <https://git-scm.com/docs/git-worktree.html> |
-| repository 탐지와 local exclude 단계에서 쓰는 `git rev-parse --show-toplevel`, `--git-dir`, `--git-common-dir`, `--git-path info/exclude` | <https://git-scm.com/docs/git-rev-parse> |
-| `.hyper/git-worktree/`를 status 출력에서 제외하는 local exclude 파일의 의미 | <https://git-scm.com/docs/gitignore> |
-| 이 패키지가 native Git, worktree당 하나의 task, 삭제 전 확인을 우선하는 이유 | [`../references/source-survey.ko.md`](../references/source-survey.ko.md) |
+| 이 규칙이 기반으로 삼는 `git worktree add`, `list`, `move`, `remove`, `prune`, `lock`, `unlock`, `repair`, `--porcelain -z`, `--detach`와 이미 체크아웃된 브랜치 오류 | <https://git-scm.com/docs/git-worktree> |
+| 이슈 브랜치와 그 워크트리를 함께 만드는 `gh issue develop --worktree` | <https://cli.github.com/manual/gh_issue_develop> |
+| 저장소 탐지와 로컬 제외 단계에서 쓰는 `git rev-parse --show-toplevel`, `--git-dir`, `--git-common-dir`, `--git-path info/exclude` | <https://git-scm.com/docs/git-rev-parse> |
+| `.hyper/worktree/`를 status 출력에서 제외하는 로컬 제외 파일의 의미 | <https://git-scm.com/docs/gitignore> |
+| 이 패키지가 네이티브 Git, 워크트리당 하나의 작업, 삭제 전 확인을 우선하는 이유 | [`../references/worktree-source-survey.ko.md`](../references/worktree-source-survey.ko.md) |

@@ -45,7 +45,7 @@
 
 - **Native Git first**: 공식 `git worktree` 동작을 안정적인 기반으로 사용한다. 새 package에 의존하기보다 disciplined check로 감싼다.
 - **하나의 task는 하나의 worktree**: 인기 있는 AI-agent workflow는 task마다 하나의 branch, folder, terminal/editor/agent session으로 수렴한다.
-- **예측 가능한 path convention**: 도구들은 path를 계산해 friction을 줄인다. 이 skill은 `.hyper/git-worktree/<folder_name>`을 표준화한다.
+- **예측 가능한 path convention**: 도구들은 path를 계산해 friction을 줄인다. 이 skill은 `.hyper/worktree/<folder_name>`을 표준화한다.
 - **Branch와 folder는 별개 개념**: Git branch name은 의미 있게 유지하고 folder label만 safe local path로 sanitize한다.
 - **Interactive/list visibility가 중요하다**: 좋은 도구는 list/status dashboard를 노출한다. 이 skill은 list 시 `git worktree list --porcelain`과 per-path `git status`를 요구한다.
 - **Safe cleanup은 일급 operation이다**: 도구와 IDE는 삭제 전 경고한다. 이 skill은 `remove` 전 status inspection과 `prune` 전 dry run을 요구한다.
@@ -55,14 +55,14 @@
 - **Issue/PR-driven creation은 leverage가 높다**: worktree.io, LazyWorktree, VS Code pattern은 PR/issue/task label이 자연스러운 folder와 branch seed임을 보여준다.
 - **Global label은 많은 context를 탐색하는 사람에게 도움이 된다**: Par/gwq/ccswitch는 많은 worktree가 있을 때 short label과 dashboard가 중요함을 보여준다.
 - **Repair/lock/prune은 실제 lifecycle state다**: 공식 Git과 IDE tool은 locked/prunable state를 노출한다. 이 skill은 이를 operator workflow에 유지한다.
-- **Nested worktree는 논쟁적이다**: 사용자가 요청한 `.hyper/git-worktree/` convention은 project locality에 편리하지만, IDE 문서는 current project 아래 nesting을 경고한다. 이 skill은 local exclude로 noise를 줄이고 IDE/runtime risk를 명시한다.
+- **Nested worktree는 논쟁적이다**: 사용자가 요청한 `.hyper/worktree/` convention은 project locality에 편리하지만, IDE 문서는 current project 아래 nesting을 경고한다. 이 skill은 local exclude로 noise를 줄이고 IDE/runtime risk를 명시한다.
 - **Cross-platform path가 문제를 일으킬 수 있다**: GitExtensions는 Windows/WSL native path issue를 언급한다. 한 Git executable이 만든 worktree가 다른 executable에서도 portable하다고 가정하지 않는다.
 
 ## Forward-test 프롬프트
 
 다음 프롬프트로 skill이 올바르게 trigger되고 동작하는지 평가한다.
 
-1. "Create a worktree for `fix/api-timeout` under `.hyper/git-worktree` and open Cursor there."
+1. "Create a worktree for `fix/api-timeout` under `.hyper/worktree` and open Cursor there."
 2. "List all worktrees and tell me which ones are dirty."
 3. "Remove the stale worktree for `experiment-cache`, but don't delete the branch."
 4. "Spin up Codex and Claude in two separate branches without conflicts."

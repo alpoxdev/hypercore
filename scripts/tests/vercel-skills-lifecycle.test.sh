@@ -152,9 +152,9 @@ case_live_lifecycle() {
   use_out=$root/use.out
   use_err=$root/use.err
   rc=0
-  run_skills "$use_root" "$use_out" "$use_err" use alpoxdev/hypercore --skill git-maker || rc=$?
+  run_skills "$use_root" "$use_out" "$use_err" use alpoxdev/hypercore --skill hyper-git || rc=$?
   must assert_eq 0 "$rc" "use exit code"
-  must assert_contains "$(cat "$use_out")$(cat "$use_err")" "git-maker"
+  must assert_contains "$(cat "$use_out")$(cat "$use_err")" "hyper-git"
   must assert_not_file "$use_root/skills-lock.json"
   must assert_not_file "$use_root/.agents"
   must assert_not_file "$use_root/.claude"
@@ -162,21 +162,21 @@ case_live_lifecycle() {
   project_add_out=$root/project-add.out
   project_add_err=$root/project-add.err
   rc=0
-  run_skills "$root" "$project_add_out" "$project_add_err" add alpoxdev/hypercore --skill git-maker -a codex -y || rc=$?
+  run_skills "$root" "$project_add_out" "$project_add_err" add alpoxdev/hypercore --skill hyper-git -a codex -y || rc=$?
   must assert_eq 0 "$rc" "project add exit code"
 
   project_lock=$root/skills-lock.json
   must assert_json_eq "$project_lock" '.version' '1'
-  must assert_json_eq "$project_lock" '.skills["git-maker"].source' 'alpoxdev/hypercore'
-  must assert_jq "$project_lock" '.skills["git-maker"].computedHash'
-  source_before=$(json_get "$project_lock" '.skills["git-maker"].source')
-  hash_before=$(json_get "$project_lock" '.skills["git-maker"].computedHash')
+  must assert_json_eq "$project_lock" '.skills["hyper-git"].source' 'alpoxdev/hypercore'
+  must assert_jq "$project_lock" '.skills["hyper-git"].computedHash'
+  source_before=$(json_get "$project_lock" '.skills["hyper-git"].source')
+  hash_before=$(json_get "$project_lock" '.skills["hyper-git"].computedHash')
 
   rc=0
-  run_skills "$root" "$root/project-update.out" "$root/project-update.err" update git-maker -y || rc=$?
+  run_skills "$root" "$root/project-update.out" "$root/project-update.err" update hyper-git -y || rc=$?
   must assert_eq 0 "$rc" "project update exit code"
-  must assert_json_eq "$project_lock" '.skills["git-maker"].source' "$source_before"
-  must assert_json_eq "$project_lock" '.skills["git-maker"].computedHash' "$hash_before"
+  must assert_json_eq "$project_lock" '.skills["hyper-git"].source' "$source_before"
+  must assert_json_eq "$project_lock" '.skills["hyper-git"].computedHash' "$hash_before"
 
   project_list=$root/project-list.json
   rc=0
@@ -184,76 +184,76 @@ case_live_lifecycle() {
   must assert_eq 0 "$rc" "project list exit code"
   must assert_json_eq "$project_list" 'length' '1'
   must assert_json_eq "$project_list" '.[0].source' 'alpoxdev/hypercore'
-  must assert_contains "$(json_get "$project_list" '.[0].path')" "/.agents/skills/git-maker"
+  must assert_contains "$(json_get "$project_list" '.[0].path')" "/.agents/skills/hyper-git"
 
   rc=0
-  run_skills "$root" "$root/project-remove.out" "$root/project-remove.err" remove git-maker -y || rc=$?
+  run_skills "$root" "$root/project-remove.out" "$root/project-remove.err" remove hyper-git -y || rc=$?
   must assert_eq 0 "$rc" "project remove exit code"
   rc=0
   run_skills "$root" "$root/project-list-after.json" "$root/project-list-after.err" list --json || rc=$?
   must assert_eq 0 "$rc" "project list after remove exit code"
   must assert_json_eq "$root/project-list-after.json" 'length' '0'
-  must assert_not_file "$root/.agents/skills/git-maker"
-  must assert_json_eq "$project_lock" '(.skills["git-maker"] == null)' 'true'
+  must assert_not_file "$root/.agents/skills/hyper-git"
+  must assert_json_eq "$project_lock" '(.skills["hyper-git"] == null)' 'true'
 
   rc=0
-  run_skills "$root" "$root/copy-add.out" "$root/copy-add.err" add alpoxdev/hypercore --skill git-maker -a claude-code --copy -y || rc=$?
+  run_skills "$root" "$root/copy-add.out" "$root/copy-add.err" add alpoxdev/hypercore --skill hyper-git -a claude-code --copy -y || rc=$?
   must assert_eq 0 "$rc" "copy add exit code"
-  must assert_dir "$root/.claude/skills/git-maker"
-  must assert_exit 1 test -L "$root/.claude/skills/git-maker"
+  must assert_dir "$root/.claude/skills/hyper-git"
+  must assert_exit 1 test -L "$root/.claude/skills/hyper-git"
   rc=0
-  run_skills "$root" "$root/copy-remove.out" "$root/copy-remove.err" remove git-maker -y || rc=$?
+  run_skills "$root" "$root/copy-remove.out" "$root/copy-remove.err" remove hyper-git -y || rc=$?
   must assert_eq 0 "$rc" "copy remove exit code"
 
   rc=0
-  run_skills "$root" "$root/multi-add.out" "$root/multi-add.err" add alpoxdev/hypercore --skill git-maker -a claude-code -a codex -y || rc=$?
+  run_skills "$root" "$root/multi-add.out" "$root/multi-add.err" add alpoxdev/hypercore --skill hyper-git -a claude-code -a codex -y || rc=$?
   must assert_eq 0 "$rc" "multi add exit code"
-  must assert_dir "$root/.agents/skills/git-maker"
-  must assert_dir "$root/.claude/skills/git-maker"
+  must assert_dir "$root/.agents/skills/hyper-git"
+  must assert_dir "$root/.claude/skills/hyper-git"
 
   rc=0
-  run_skills "$root" "$root/partial-remove.out" "$root/partial-remove.err" remove git-maker -a claude-code -y || rc=$?
+  run_skills "$root" "$root/partial-remove.out" "$root/partial-remove.err" remove hyper-git -a claude-code -y || rc=$?
   must assert_eq 0 "$rc" "partial remove exit code"
-  must assert_dir "$root/.agents/skills/git-maker"
-  must assert_json_eq "$project_lock" '(.skills["git-maker"] == null)' 'true'
+  must assert_dir "$root/.agents/skills/hyper-git"
+  must assert_json_eq "$project_lock" '(.skills["hyper-git"] == null)' 'true'
 
   rc=0
-  run_skills "$root" "$root/managed-add.out" "$root/managed-add.err" add alpoxdev/hypercore --skill git-maker -a codex -y || rc=$?
+  run_skills "$root" "$root/managed-add.out" "$root/managed-add.err" add alpoxdev/hypercore --skill hyper-git -a codex -y || rc=$?
   must assert_eq 0 "$rc" "managed re-add exit code"
-  must assert_json_eq "$project_lock" '.skills["git-maker"].source' 'alpoxdev/hypercore'
-  must assert_jq "$project_lock" '.skills["git-maker"].computedHash'
+  must assert_json_eq "$project_lock" '.skills["hyper-git"].source' 'alpoxdev/hypercore'
+  must assert_jq "$project_lock" '.skills["hyper-git"].computedHash'
   rc=0
-  run_skills "$root" "$root/managed-remove.out" "$root/managed-remove.err" remove git-maker -y || rc=$?
+  run_skills "$root" "$root/managed-remove.out" "$root/managed-remove.err" remove hyper-git -y || rc=$?
   must assert_eq 0 "$rc" "managed remove exit code"
 
   rc=0
-  run_skills "$root" "$root/global-add.out" "$root/global-add.err" add alpoxdev/hypercore --skill git-maker -a codex -g -y || rc=$?
+  run_skills "$root" "$root/global-add.out" "$root/global-add.err" add alpoxdev/hypercore --skill hyper-git -a codex -g -y || rc=$?
   must assert_eq 0 "$rc" "global add exit code"
   global_lock=$root/xdg/skills/.skill-lock.json
   must assert_json_eq "$global_lock" '.version' '3'
-  must assert_json_eq "$global_lock" '.skills["git-maker"].source' 'alpoxdev/hypercore'
-  must assert_jq "$global_lock" '.skills["git-maker"].skillFolderHash'
-  source_before=$(json_get "$global_lock" '.skills["git-maker"].source')
-  hash_before=$(json_get "$global_lock" '.skills["git-maker"].skillFolderHash')
+  must assert_json_eq "$global_lock" '.skills["hyper-git"].source' 'alpoxdev/hypercore'
+  must assert_jq "$global_lock" '.skills["hyper-git"].skillFolderHash'
+  source_before=$(json_get "$global_lock" '.skills["hyper-git"].source')
+  hash_before=$(json_get "$global_lock" '.skills["hyper-git"].skillFolderHash')
 
   rc=0
-  run_skills "$root" "$root/global-update.out" "$root/global-update.err" update git-maker -g -y || rc=$?
+  run_skills "$root" "$root/global-update.out" "$root/global-update.err" update hyper-git -g -y || rc=$?
   must assert_eq 0 "$rc" "global update exit code"
-  must assert_json_eq "$global_lock" '.skills["git-maker"].source' "$source_before"
-  must assert_json_eq "$global_lock" '.skills["git-maker"].skillFolderHash' "$hash_before"
+  must assert_json_eq "$global_lock" '.skills["hyper-git"].source' "$source_before"
+  must assert_json_eq "$global_lock" '.skills["hyper-git"].skillFolderHash' "$hash_before"
 
   global_list=$root/global-list.json
   rc=0
   run_skills "$root" "$global_list" "$root/global-list.err" list -g --json || rc=$?
   must assert_eq 0 "$rc" "global list exit code"
-  must assert_contains "$(json_get "$global_list" '.[0].path')" "/home/.agents/skills/git-maker"
+  must assert_contains "$(json_get "$global_list" '.[0].path')" "/home/.agents/skills/hyper-git"
   must assert_not_contains "$(json_get "$global_list" '.[0].path')" "/codex/"
 
   rc=0
-  run_skills "$root" "$root/global-remove.out" "$root/global-remove.err" remove git-maker -g -y || rc=$?
+  run_skills "$root" "$root/global-remove.out" "$root/global-remove.err" remove hyper-git -g -y || rc=$?
   must assert_eq 0 "$rc" "global remove exit code"
-  must assert_not_file "$root/home/.agents/skills/git-maker"
-  must assert_json_eq "$global_lock" '(.skills["git-maker"] == null)' 'true'
+  must assert_not_file "$root/home/.agents/skills/hyper-git"
+  must assert_json_eq "$global_lock" '(.skills["hyper-git"] == null)' 'true'
 
   rc=0
   run_skills "$root" "$root/init.out" "$root/init.err" init fixture-skill || rc=$?

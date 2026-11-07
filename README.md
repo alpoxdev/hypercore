@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 23개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 22개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -40,7 +40,7 @@ npx skills add alpoxdev/hypercore --skill '*' -g -y
 
 ```bash
 npx skills add alpoxdev/hypercore --skill '*' -a claude-code codex -g -y   # 모든 스킬 → 지정 agent
-npx skills add alpoxdev/hypercore --skill git-maker hyper-documentation -g -y     # 스킬 여러 개 나열
+npx skills add alpoxdev/hypercore --skill hyper-git hyper-documentation -g -y     # 스킬 여러 개 나열
 npx skills add alpoxdev/hypercore --all -g                                 # 모든 스킬 → 모든 agent
 ```
 
@@ -55,8 +55,8 @@ npx skills add alpoxdev/hypercore --all -g                                 # 모
 ```bash
 npx skills list -g
 npx skills update -g
-npx skills remove git-maker -g
-npx skills use alpoxdev/hypercore --skill git-maker
+npx skills remove hyper-git -g
+npx skills use alpoxdev/hypercore --skill hyper-git
 npx skills find hypercore --owner alpoxdev
 npx skills init my-skill
 ```
@@ -87,7 +87,7 @@ Codex는 universal agent이므로 project에서는 `<cwd>/.agents/skills`, globa
 ```bash
 git clone https://github.com/alpoxdev/hypercore.git
 # 원하는 스킬 디렉터리를 자신의 프로젝트로 복사
-cp -R hypercore/skills/git-maker your-project/.claude/skills/
+cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 ```
 
 ## 빠른 사용 예시
@@ -95,7 +95,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 설치 후 자연어로 호출하거나 슬래시 명령으로 시작합니다.
 
 ```text
-/git-maker            # 변경 사항을 그룹별로 커밋하고 푸시까지 한 번에
+/hyper-git            # 변경 사항을 그룹별로 커밋하고 푸시까지 한 번에 (worktree·issue·workflow 모드도 포함)
 /hyper-documentation  # README·AGENTS.md·런북·규칙 팩·재사용 프롬프트 중 요청한 문서를 골라 생성/리팩터 (CLAUDE.md는 만들지 않음)
 /hyper "<작업>"         # 상황에 맞는 hyper 스킬 체인(리서치·아키텍처·계획·실행 등)을 골라 처음부터 끝까지 실행
 /hyper-research "<주제>"  # 출처가 있는 다중 소스 리서치 보고서
@@ -108,7 +108,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 /pre-deploy           # 배포 전 lint/타입/빌드 게이트
 ```
 
-자연어로도 트리거됩니다 — 예: "이 프로젝트 README 다시 써줘"·"이 저장소에 맞는 AGENTS.md 만들어줘" → `hyper-documentation`, "방금 변경 사항 커밋하고 푸시" → `git-maker`.
+자연어로도 트리거됩니다 — 예: "이 프로젝트 README 다시 써줘"·"이 저장소에 맞는 AGENTS.md 만들어줘" → `hyper-documentation`, "방금 변경 사항 커밋하고 푸시"·"이슈 42로 워크트리 만들어줘"·"dev, main에 머지하고 푸시" → `hyper-git`.
 
 ## 스킬 카탈로그
 
@@ -138,14 +138,13 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `git-maker` | 커밋과 푸시를 한 번에 (worktree 인지) | bash 3.2+ & git |
-| `git-worktree` | Git worktree 생성/진입/정리, 병렬 에이전트 워크스페이스 관리 | git worktree; bash 3.2+ & jq 1.6+ (검증기) |
+| `hyper-git` | Git 작업을 네 모드로 처리: `commit`(논리 단위 커밋 + 자동 푸시 + `&& <branch>` 전파), `worktree`(`.hyper/worktree/<이름>` 생성·진입·정리·복구), `issue`(`gh issue` 조회·등록·댓글·종료, 이슈에서 브랜치·워크트리 생성), `workflow`(브랜치 전략 제안, PR 생성, 지정 브랜치 병합 후 푸시). 게시·보호 브랜치 병합은 사용자가 요청할 때만 | bash 3.2+ & git; issue·workflow 모드는 인증된 `gh` |
 
 ### 계획 · 실행 오케스트레이션
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper` | 작업만 말하면 hyper-research·hyper-seo·hyper-architecture·hyper-mcp·hyper-ui-ux·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → ui-ux) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
+| `hyper` | 작업만 말하면 hyper-research·hyper-seo·hyper-architecture·hyper-mcp·hyper-ui-ux·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation·hyper-git 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → ui-ux) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
 | `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
 | `hyper-mass` | 의존 순서가 있는 하위 작업을 그래프로 정의해 단계별 병렬 실행, 재시도·수정·재개 지원 | All |
@@ -177,7 +176,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `hyper-mcp` | MCP(Model Context Protocol) 서버·클라이언트 구축, 보안·규격 점검과 수정, 2026-07-28 판 이전, 호스트 MCP 설정 연결, 레지스트리 메타데이터 준비를 MCP Inspector 검증과 `.hyper/mcp/` 보고서까지 처리 | 대상 언어 도구 모음; MCP Inspector는 Node.js 22.19+ |
 | `jev-maker` | TypeSafe Jev(System One) 판단 모델용 질문, 호출 코드, 템플릿, 평가 세트 생성과 코드 감사, 연결 설정 | bash 3.2+ · jq (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 23개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 22개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
 
@@ -208,7 +207,7 @@ instagram-card-maker로 우리 브랜드의 봄 신제품을 소개하는 카드
 **2) 모은 변경사항을 안전하게 출고**
 
 ```text
-/git-maker ALL
+/hyper-git ALL
 ```
 
 변경을 논리 단위로 묶어 Conventional Commit으로 나눠 커밋하고, 모든 커밋이 성공한 뒤에만 자동으로 푸시합니다. `main`/`master`에 대한 force push는 차단됩니다.
@@ -236,7 +235,7 @@ hypercore/
 ├── assets/                # README 이미지 등 저장소 수준 정적 asset
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
-└── skills/                # 23개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 22개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:
@@ -298,7 +297,7 @@ bash scripts/validate-skills-corpus.sh --root skills --only <스킬> --json   # 
 PR 환영합니다. 작업 흐름:
 
 1. 이슈를 열거나 기존 이슈에 의도를 적습니다 (한국어/영어 모두 환영).
-2. 새 브랜치에서 변경 후 `git-maker`로 Conventional Commits를 생성합니다.
+2. 새 브랜치에서 변경 후 `hyper-git`으로 Conventional Commits를 생성합니다.
 3. 스킬 변경은 `SKILL.md`(영어 정본)와 `SKILL.ko.md`(한국어 번역)을 함께 갱신합니다.
 4. 가능하면 `bash scripts/verify.sh` 검증 결과를 PR 본문에 첨부해 주세요.
 5. 큰 구조 변경은 [AGENTS.md](AGENTS.md)의 작업 원칙(작은 변경, 요청 범위 준수, 전역 환경 비의존)을 따릅니다.

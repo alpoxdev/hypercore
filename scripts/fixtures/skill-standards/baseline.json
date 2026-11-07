@@ -6,13 +6,9 @@
     "client-feedback": {
       "FRONTMATTER_TRIGGER": 1
     },
-    "git-maker": {},
-    "git-worktree": {
-      "FRONTMATTER_TRIGGER": 1
-    },
     "hyper": {
       "FRONTMATTER_TRIGGER": 1,
-      "CROSS_SKILL_REFERENCE": 483
+      "CROSS_SKILL_REFERENCE": 575
     },
     "hyper-architecture": {
       "FRONTMATTER_TRIGGER": 1
@@ -21,6 +17,9 @@
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-execute": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "hyper-git": {
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-mass": {

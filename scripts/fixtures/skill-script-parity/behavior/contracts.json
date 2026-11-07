@@ -2,10 +2,9 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 32,
+    "expectedRows": 31,
     "legacyOriginCounts": {
       "former-sh": 11,
-      "former-py": 1,
       "retained-mjs": 6,
       "authored-mjs": 14
     },
@@ -24,7 +23,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 96
+    "expectedFixtures": 93
   },
   "rows": [
     {
@@ -2701,9 +2700,9 @@
       }
     },
     {
-      "id": "git-maker--git-commit",
-      "path": "skills/git-maker/scripts/git-commit.sh",
-      "family": "git-maker",
+      "id": "hyper-git--git-commit",
+      "path": "skills/hyper-git/scripts/git-commit.sh",
+      "family": "hyper-git",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
         "path": "skills/git-maker/scripts/git-commit.sh",
@@ -2716,7 +2715,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-commit.sh"
+              "skills/hyper-git/scripts/git-commit.sh"
             ]
           },
           "input": {
@@ -2773,7 +2772,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-commit.sh"
+              "skills/hyper-git/scripts/git-commit.sh"
             ]
           },
           "input": {
@@ -2795,7 +2794,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "Usage: <repo>/skills/git-maker/scripts/git-commit.sh [--repo path] \"commit message\" [files...]\n"
+              "equals": "Usage: <repo>/skills/hyper-git/scripts/git-commit.sh [--repo path] \"commit message\" [files...]\n"
             },
             "exit": 1,
             "files": [
@@ -2826,7 +2825,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-commit.sh"
+              "skills/hyper-git/scripts/git-commit.sh"
             ]
           },
           "input": {
@@ -2882,20 +2881,20 @@
         }
       },
       "dimensions": {
-        "stdout": "git-maker--git-commit--stdout",
-        "stderr": "git-maker--git-commit--stderr",
-        "exit": "git-maker--git-commit--exit",
-        "files": "git-maker--git-commit--files",
-        "modes": "git-maker--git-commit--modes",
-        "cwd": "git-maker--git-commit--cwd",
-        "env": "git-maker--git-commit--env",
-        "argv": "git-maker--git-commit--argv"
+        "stdout": "hyper-git--git-commit--stdout",
+        "stderr": "hyper-git--git-commit--stderr",
+        "exit": "hyper-git--git-commit--exit",
+        "files": "hyper-git--git-commit--files",
+        "modes": "hyper-git--git-commit--modes",
+        "cwd": "hyper-git--git-commit--cwd",
+        "env": "hyper-git--git-commit--env",
+        "argv": "hyper-git--git-commit--argv"
       }
     },
     {
-      "id": "git-maker--git-maker-fast",
-      "path": "skills/git-maker/scripts/git-maker-fast.sh",
-      "family": "git-maker",
+      "id": "hyper-git--git-fast",
+      "path": "skills/hyper-git/scripts/git-fast.sh",
+      "family": "hyper-git",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
         "path": "skills/git-maker/scripts/git-maker-fast.sh",
@@ -2908,7 +2907,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-maker-fast.sh"
+              "skills/hyper-git/scripts/git-fast.sh"
             ]
           },
           "input": {
@@ -2967,7 +2966,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-maker-fast.sh"
+              "skills/hyper-git/scripts/git-fast.sh"
             ]
           },
           "input": {
@@ -2991,7 +2990,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "Usage:\n  git-maker-fast.sh inspect [start_dir] [--jobs N]\n  git-maker-fast.sh push [--force] [repo...]\n"
+              "equals": "Usage:\n  git-fast.sh inspect [start_dir] [--jobs N]\n  git-fast.sh push [--force] [repo...]\n"
             },
             "exit": 1,
             "files": [
@@ -3024,7 +3023,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-maker-fast.sh"
+              "skills/hyper-git/scripts/git-fast.sh"
             ]
           },
           "input": {
@@ -3080,20 +3079,20 @@
         }
       },
       "dimensions": {
-        "stdout": "git-maker--git-maker-fast--stdout",
-        "stderr": "git-maker--git-maker-fast--stderr",
-        "exit": "git-maker--git-maker-fast--exit",
-        "files": "git-maker--git-maker-fast--files",
-        "modes": "git-maker--git-maker-fast--modes",
-        "cwd": "git-maker--git-maker-fast--cwd",
-        "env": "git-maker--git-maker-fast--env",
-        "argv": "git-maker--git-maker-fast--argv"
+        "stdout": "hyper-git--git-fast--stdout",
+        "stderr": "hyper-git--git-fast--stderr",
+        "exit": "hyper-git--git-fast--exit",
+        "files": "hyper-git--git-fast--files",
+        "modes": "hyper-git--git-fast--modes",
+        "cwd": "hyper-git--git-fast--cwd",
+        "env": "hyper-git--git-fast--env",
+        "argv": "hyper-git--git-fast--argv"
       }
     },
     {
-      "id": "git-maker--git-push",
-      "path": "skills/git-maker/scripts/git-push.sh",
-      "family": "git-maker",
+      "id": "hyper-git--git-push",
+      "path": "skills/hyper-git/scripts/git-push.sh",
+      "family": "hyper-git",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
         "path": "skills/git-maker/scripts/git-push.sh",
@@ -3106,7 +3105,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-push.sh"
+              "skills/hyper-git/scripts/git-push.sh"
             ]
           },
           "input": {
@@ -3159,7 +3158,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-push.sh"
+              "skills/hyper-git/scripts/git-push.sh"
             ]
           },
           "input": {
@@ -3183,7 +3182,7 @@
               "equals": ""
             },
             "stderr": {
-              "equals": "Usage: <repo>/skills/git-maker/scripts/git-push.sh [--force] [repo...]\n"
+              "equals": "Usage: <repo>/skills/hyper-git/scripts/git-push.sh [--force] [repo...]\n"
             },
             "exit": 1,
             "files": [
@@ -3216,7 +3215,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/git-push.sh"
+              "skills/hyper-git/scripts/git-push.sh"
             ]
           },
           "input": {
@@ -3270,20 +3269,20 @@
         }
       },
       "dimensions": {
-        "stdout": "git-maker--git-push--stdout",
-        "stderr": "git-maker--git-push--stderr",
-        "exit": "git-maker--git-push--exit",
-        "files": "git-maker--git-push--files",
-        "modes": "git-maker--git-push--modes",
-        "cwd": "git-maker--git-push--cwd",
-        "env": "git-maker--git-push--env",
-        "argv": "git-maker--git-push--argv"
+        "stdout": "hyper-git--git-push--stdout",
+        "stderr": "hyper-git--git-push--stderr",
+        "exit": "hyper-git--git-push--exit",
+        "files": "hyper-git--git-push--files",
+        "modes": "hyper-git--git-push--modes",
+        "cwd": "hyper-git--git-push--cwd",
+        "env": "hyper-git--git-push--env",
+        "argv": "hyper-git--git-push--argv"
       }
     },
     {
-      "id": "git-maker--repo-discover",
-      "path": "skills/git-maker/scripts/repo-discover.sh",
-      "family": "git-maker",
+      "id": "hyper-git--repo-discover",
+      "path": "skills/hyper-git/scripts/repo-discover.sh",
+      "family": "hyper-git",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
         "path": "skills/git-maker/scripts/repo-discover.sh",
@@ -3296,7 +3295,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/repo-discover.sh"
+              "skills/hyper-git/scripts/repo-discover.sh"
             ]
           },
           "input": {
@@ -3353,7 +3352,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/repo-discover.sh"
+              "skills/hyper-git/scripts/repo-discover.sh"
             ]
           },
           "input": {
@@ -3410,7 +3409,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/repo-discover.sh"
+              "skills/hyper-git/scripts/repo-discover.sh"
             ]
           },
           "input": {
@@ -3464,20 +3463,20 @@
         }
       },
       "dimensions": {
-        "stdout": "git-maker--repo-discover--stdout",
-        "stderr": "git-maker--repo-discover--stderr",
-        "exit": "git-maker--repo-discover--exit",
-        "files": "git-maker--repo-discover--files",
-        "modes": "git-maker--repo-discover--modes",
-        "cwd": "git-maker--repo-discover--cwd",
-        "env": "git-maker--repo-discover--env",
-        "argv": "git-maker--repo-discover--argv"
+        "stdout": "hyper-git--repo-discover--stdout",
+        "stderr": "hyper-git--repo-discover--stderr",
+        "exit": "hyper-git--repo-discover--exit",
+        "files": "hyper-git--repo-discover--files",
+        "modes": "hyper-git--repo-discover--modes",
+        "cwd": "hyper-git--repo-discover--cwd",
+        "env": "hyper-git--repo-discover--env",
+        "argv": "hyper-git--repo-discover--argv"
       }
     },
     {
-      "id": "git-maker--repo-status",
-      "path": "skills/git-maker/scripts/repo-status.sh",
-      "family": "git-maker",
+      "id": "hyper-git--repo-status",
+      "path": "skills/hyper-git/scripts/repo-status.sh",
+      "family": "hyper-git",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
         "path": "skills/git-maker/scripts/repo-status.sh",
@@ -3490,7 +3489,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/repo-status.sh"
+              "skills/hyper-git/scripts/repo-status.sh"
             ]
           },
           "input": {
@@ -3547,7 +3546,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/repo-status.sh"
+              "skills/hyper-git/scripts/repo-status.sh"
             ]
           },
           "input": {
@@ -3604,7 +3603,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/git-maker/scripts/repo-status.sh"
+              "skills/hyper-git/scripts/repo-status.sh"
             ]
           },
           "input": {
@@ -3658,161 +3657,14 @@
         }
       },
       "dimensions": {
-        "stdout": "git-maker--repo-status--stdout",
-        "stderr": "git-maker--repo-status--stderr",
-        "exit": "git-maker--repo-status--exit",
-        "files": "git-maker--repo-status--files",
-        "modes": "git-maker--repo-status--modes",
-        "cwd": "git-maker--repo-status--cwd",
-        "env": "git-maker--repo-status--env",
-        "argv": "git-maker--repo-status--argv"
-      }
-    },
-    {
-      "id": "git-worktree--validate-git-worktree-skill",
-      "path": "skills/git-worktree/scripts/validate-git-worktree-skill.sh",
-      "family": "git-worktree",
-      "legacyOrigin": "former-py",
-      "sourcePreimage": {
-        "path": "skills/git-worktree/scripts/validate-git-worktree-skill.py",
-        "sha256": "d31022e84e72d9b8842d76f035fd21cb9723b447a7d15ba5a71f5b1a57f33b61",
-        "gitMode": "100755"
-      },
-      "fixtures": {
-        "happy": {
-          "scenario": "happy",
-          "command": {
-            "executable": "bash",
-            "arguments": [
-              "skills/git-worktree/scripts/validate-git-worktree-skill.sh"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": "{\n  \"score\": 18,\n  \"total\": 18,\n  \"percent\": 100,\n  \"metrics\": {\n    \"core_lines\": 195,\n    \"source_count\": 17\n  },\n  \"checks\": [\n    {\n      \"id\": \"frontmatter_present\",\n      \"pass\": true,\n      \"detail\": \"SKILL.md and SKILL.ko.md must retain parseable metadata blocks.\"\n    },\n    {\n      \"id\": \"core_under_300_lines\",\n      \"pass\": true,\n      \"detail\": \"SKILL.md has 195 lines; keep core instructions lean.\"\n    },\n    {\n      \"id\": \"one_level_support_refs\",\n      \"pass\": true,\n      \"detail\": \"Core skill should import only the lifecycle rule and link the source survey on demand.\"\n    },\n    {\n      \"id\": \"korean_intent_question_present\",\n      \"pass\": true,\n      \"detail\": \"Ambiguous create requests from Korean users need a Korean work-intent question.\"\n    },\n    {\n      \"id\": \"korean_operation_question_present\",\n      \"pass\": true,\n      \"detail\": \"Only truly ambiguous operation selection should use a localized Korean menu.\"\n    },\n    {\n      \"id\": \"exact_english_operation_menu_absent\",\n      \"pass\": true,\n      \"detail\": \"The user-reported English operation menu must not appear in operative guidance.\"\n    },\n    {\n      \"id\": \"infer_before_asking\",\n      \"pass\": true,\n      \"detail\": \"Agents should infer create/open/remove/etc. before asking another question.\"\n    },\n    {\n      \"id\": \"direct_argument_create_fast_path\",\n      \"pass\": true,\n      \"detail\": \"Direct git-worktree <ARGUMENT> invocations should create from the argument without a work-intent question.\"\n    },\n    {\n      \"id\": \"create_not_done_until_context_moved\",\n      \"pass\": true,\n      \"detail\": \"Creation must include moving the active context into the new worktree.\"\n    },\n    {\n      \"id\": \"create_enter_open_switch_single_operation\",\n      \"pass\": true,\n      \"detail\": \"Create+enter/open/switch requests should be treated as one completed operation.\"\n    },\n    {\n      \"id\": \"agent_workdir_and_parent_shell_cd\",\n      \"pass\": true,\n      \"detail\": \"Agent environments need workdir guidance and parent-shell cd reporting.\"\n    },\n    {\n      \"id\": \"no_cd_only_after_create\",\n      \"pass\": true,\n      \"detail\": \"Creation should require a real persistent-session cd when available, or a tool workdir fallback.\"\n    },\n    {\n      \"id\": \"post_create_status_verification\",\n      \"pass\": true,\n      \"detail\": \"Post-create examples should verify status and demonstrate entry.\"\n    },\n    {\n      \"id\": \"current_worktree_delete_safety\",\n      \"pass\": true,\n      \"detail\": \"Deleting the current linked worktree must save target path, refuse main, move out, then remove saved target.\"\n    },\n    {\n      \"id\": \"dirty_remove_requires_explicit_force\",\n      \"pass\": true,\n      \"detail\": \"Dirty worktree deletion must require explicit force/discard intent.\"\n    },\n    {\n      \"id\": \"nested_worktree_exclude_rule\",\n      \"pass\": true,\n      \"detail\": \"Nested project-local worktrees need local exclude protection.\"\n    },\n    {\n      \"id\": \"validation_checklist_covers_new_edges\",\n      \"pass\": true,\n      \"detail\": \"Validation checklists should lock the language and post-create context edges.\"\n    },\n    {\n      \"id\": \"source_survey_still_available\",\n      \"pass\": true,\n      \"detail\": \"Source survey should retain external rationale breadth; found 17 numbered sources.\"\n    }\n  ]\n}\n"
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 0,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": []
-          }
-        },
-        "malformed": {
-          "scenario": "malformed",
-          "command": {
-            "executable": "bash",
-            "arguments": [
-              "skills/git-worktree/scripts/validate-git-worktree-skill.sh"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root",
-              "missing-root"
-            ],
-            "files": []
-          },
-          "expected": {
-            "stdout": {
-              "equals": "{\n  \"score\": 18,\n  \"total\": 18,\n  \"percent\": 100,\n  \"metrics\": {\n    \"core_lines\": 195,\n    \"source_count\": 17\n  },\n  \"checks\": [\n    {\n      \"id\": \"frontmatter_present\",\n      \"pass\": true,\n      \"detail\": \"SKILL.md and SKILL.ko.md must retain parseable metadata blocks.\"\n    },\n    {\n      \"id\": \"core_under_300_lines\",\n      \"pass\": true,\n      \"detail\": \"SKILL.md has 195 lines; keep core instructions lean.\"\n    },\n    {\n      \"id\": \"one_level_support_refs\",\n      \"pass\": true,\n      \"detail\": \"Core skill should import only the lifecycle rule and link the source survey on demand.\"\n    },\n    {\n      \"id\": \"korean_intent_question_present\",\n      \"pass\": true,\n      \"detail\": \"Ambiguous create requests from Korean users need a Korean work-intent question.\"\n    },\n    {\n      \"id\": \"korean_operation_question_present\",\n      \"pass\": true,\n      \"detail\": \"Only truly ambiguous operation selection should use a localized Korean menu.\"\n    },\n    {\n      \"id\": \"exact_english_operation_menu_absent\",\n      \"pass\": true,\n      \"detail\": \"The user-reported English operation menu must not appear in operative guidance.\"\n    },\n    {\n      \"id\": \"infer_before_asking\",\n      \"pass\": true,\n      \"detail\": \"Agents should infer create/open/remove/etc. before asking another question.\"\n    },\n    {\n      \"id\": \"direct_argument_create_fast_path\",\n      \"pass\": true,\n      \"detail\": \"Direct git-worktree <ARGUMENT> invocations should create from the argument without a work-intent question.\"\n    },\n    {\n      \"id\": \"create_not_done_until_context_moved\",\n      \"pass\": true,\n      \"detail\": \"Creation must include moving the active context into the new worktree.\"\n    },\n    {\n      \"id\": \"create_enter_open_switch_single_operation\",\n      \"pass\": true,\n      \"detail\": \"Create+enter/open/switch requests should be treated as one completed operation.\"\n    },\n    {\n      \"id\": \"agent_workdir_and_parent_shell_cd\",\n      \"pass\": true,\n      \"detail\": \"Agent environments need workdir guidance and parent-shell cd reporting.\"\n    },\n    {\n      \"id\": \"no_cd_only_after_create\",\n      \"pass\": true,\n      \"detail\": \"Creation should require a real persistent-session cd when available, or a tool workdir fallback.\"\n    },\n    {\n      \"id\": \"post_create_status_verification\",\n      \"pass\": true,\n      \"detail\": \"Post-create examples should verify status and demonstrate entry.\"\n    },\n    {\n      \"id\": \"current_worktree_delete_safety\",\n      \"pass\": true,\n      \"detail\": \"Deleting the current linked worktree must save target path, refuse main, move out, then remove saved target.\"\n    },\n    {\n      \"id\": \"dirty_remove_requires_explicit_force\",\n      \"pass\": true,\n      \"detail\": \"Dirty worktree deletion must require explicit force/discard intent.\"\n    },\n    {\n      \"id\": \"nested_worktree_exclude_rule\",\n      \"pass\": true,\n      \"detail\": \"Nested project-local worktrees need local exclude protection.\"\n    },\n    {\n      \"id\": \"validation_checklist_covers_new_edges\",\n      \"pass\": true,\n      \"detail\": \"Validation checklists should lock the language and post-create context edges.\"\n    },\n    {\n      \"id\": \"source_survey_still_available\",\n      \"pass\": true,\n      \"detail\": \"Source survey should retain external rationale breadth; found 17 numbered sources.\"\n    }\n  ]\n}\n"
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 0,
-            "files": [],
-            "modes": {},
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--root",
-              "missing-root"
-            ]
-          }
-        },
-        "familyEdge": {
-          "scenario": "familyEdge",
-          "command": {
-            "executable": "bash",
-            "arguments": [
-              "skills/git-worktree/scripts/validate-git-worktree-skill.sh"
-            ]
-          },
-          "input": {
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--evals",
-              "bad-evals.jsonl"
-            ],
-            "files": [
-              {
-                "path": "bad-evals.jsonl",
-                "text": "{bad}\n"
-              }
-            ]
-          },
-          "expected": {
-            "stdout": {
-              "equals": "{\n  \"score\": 18,\n  \"total\": 18,\n  \"percent\": 100,\n  \"metrics\": {\n    \"core_lines\": 195,\n    \"source_count\": 17\n  },\n  \"checks\": [\n    {\n      \"id\": \"frontmatter_present\",\n      \"pass\": true,\n      \"detail\": \"SKILL.md and SKILL.ko.md must retain parseable metadata blocks.\"\n    },\n    {\n      \"id\": \"core_under_300_lines\",\n      \"pass\": true,\n      \"detail\": \"SKILL.md has 195 lines; keep core instructions lean.\"\n    },\n    {\n      \"id\": \"one_level_support_refs\",\n      \"pass\": true,\n      \"detail\": \"Core skill should import only the lifecycle rule and link the source survey on demand.\"\n    },\n    {\n      \"id\": \"korean_intent_question_present\",\n      \"pass\": true,\n      \"detail\": \"Ambiguous create requests from Korean users need a Korean work-intent question.\"\n    },\n    {\n      \"id\": \"korean_operation_question_present\",\n      \"pass\": true,\n      \"detail\": \"Only truly ambiguous operation selection should use a localized Korean menu.\"\n    },\n    {\n      \"id\": \"exact_english_operation_menu_absent\",\n      \"pass\": true,\n      \"detail\": \"The user-reported English operation menu must not appear in operative guidance.\"\n    },\n    {\n      \"id\": \"infer_before_asking\",\n      \"pass\": true,\n      \"detail\": \"Agents should infer create/open/remove/etc. before asking another question.\"\n    },\n    {\n      \"id\": \"direct_argument_create_fast_path\",\n      \"pass\": true,\n      \"detail\": \"Direct git-worktree <ARGUMENT> invocations should create from the argument without a work-intent question.\"\n    },\n    {\n      \"id\": \"create_not_done_until_context_moved\",\n      \"pass\": true,\n      \"detail\": \"Creation must include moving the active context into the new worktree.\"\n    },\n    {\n      \"id\": \"create_enter_open_switch_single_operation\",\n      \"pass\": true,\n      \"detail\": \"Create+enter/open/switch requests should be treated as one completed operation.\"\n    },\n    {\n      \"id\": \"agent_workdir_and_parent_shell_cd\",\n      \"pass\": true,\n      \"detail\": \"Agent environments need workdir guidance and parent-shell cd reporting.\"\n    },\n    {\n      \"id\": \"no_cd_only_after_create\",\n      \"pass\": true,\n      \"detail\": \"Creation should require a real persistent-session cd when available, or a tool workdir fallback.\"\n    },\n    {\n      \"id\": \"post_create_status_verification\",\n      \"pass\": true,\n      \"detail\": \"Post-create examples should verify status and demonstrate entry.\"\n    },\n    {\n      \"id\": \"current_worktree_delete_safety\",\n      \"pass\": true,\n      \"detail\": \"Deleting the current linked worktree must save target path, refuse main, move out, then remove saved target.\"\n    },\n    {\n      \"id\": \"dirty_remove_requires_explicit_force\",\n      \"pass\": true,\n      \"detail\": \"Dirty worktree deletion must require explicit force/discard intent.\"\n    },\n    {\n      \"id\": \"nested_worktree_exclude_rule\",\n      \"pass\": true,\n      \"detail\": \"Nested project-local worktrees need local exclude protection.\"\n    },\n    {\n      \"id\": \"validation_checklist_covers_new_edges\",\n      \"pass\": true,\n      \"detail\": \"Validation checklists should lock the language and post-create context edges.\"\n    },\n    {\n      \"id\": \"source_survey_still_available\",\n      \"pass\": true,\n      \"detail\": \"Source survey should retain external rationale breadth; found 17 numbered sources.\"\n    }\n  ]\n}\n"
-            },
-            "stderr": {
-              "equals": ""
-            },
-            "exit": 0,
-            "files": [
-              {
-                "path": "bad-evals.jsonl",
-                "bytes": 6,
-                "sha256": "9c1b9a81fd4dad8959a7e958eda355b060a24ae388be9abdd5ac1cfbea6fa538"
-              }
-            ],
-            "modes": {
-              "bad-evals.jsonl": "644"
-            },
-            "cwd": "isolated-temp-tree",
-            "env": {
-              "NO_COLOR": "1"
-            },
-            "argv": [
-              "--evals",
-              "bad-evals.jsonl"
-            ]
-          }
-        }
-      },
-      "dimensions": {
-        "stdout": "git-worktree--validate-git-worktree-skill--stdout",
-        "stderr": "git-worktree--validate-git-worktree-skill--stderr",
-        "exit": "git-worktree--validate-git-worktree-skill--exit",
-        "files": "git-worktree--validate-git-worktree-skill--files",
-        "modes": "git-worktree--validate-git-worktree-skill--modes",
-        "cwd": "git-worktree--validate-git-worktree-skill--cwd",
-        "env": "git-worktree--validate-git-worktree-skill--env",
-        "argv": "git-worktree--validate-git-worktree-skill--argv"
+        "stdout": "hyper-git--repo-status--stdout",
+        "stderr": "hyper-git--repo-status--stderr",
+        "exit": "hyper-git--repo-status--exit",
+        "files": "hyper-git--repo-status--files",
+        "modes": "hyper-git--repo-status--modes",
+        "cwd": "hyper-git--repo-status--cwd",
+        "env": "hyper-git--repo-status--env",
+        "argv": "hyper-git--repo-status--argv"
       }
     },
     {

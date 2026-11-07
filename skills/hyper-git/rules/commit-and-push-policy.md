@@ -1,6 +1,6 @@
 # Commit And Push Policy
 
-Use this rule when `git-maker` is active and you need the durable commit/push contract after the fast inspection pass.
+Use this rule when the commit mode of `hyper-git` is active and you need the durable commit/push contract after the fast inspection pass.
 
 ## Argument Modes
 
@@ -77,7 +77,7 @@ If the natural draft is past tense, descriptive ("this commit ..."), or vague, r
 |------|------|
 | Commit first | All commit groups must succeed before any push. |
 | No confirmation | Do not ask whether to push after successful commits; push automatically. |
-| Explicit repos | Prefer passing the repo list from `scripts/git-maker-fast.sh inspect` into `scripts/git-maker-fast.sh push` to avoid duplicate discovery. |
+| Explicit repos | Prefer passing the repo list from `scripts/git-fast.sh inspect` into `scripts/git-fast.sh push` to avoid duplicate discovery. |
 | Worktrees | Linked worktrees are valid push targets when on a named branch; pass their checkout root paths, not `.git/worktrees/...` or the common git dir. |
 | Upstream | If no upstream exists, push with `-u origin <branch>`. |
 | Safety | Never force push to `main` or `master`. Never push from detached HEAD. |

@@ -254,7 +254,7 @@ run_live_gate() {
   combined_second=$(cat "$out.find.out")$'\n'$(cat "$out.find.err")
 
   case $first in
-    *git-maker*) ;;
+    *hyper-git*) ;;
     *) die "live add --list did not discover Hypercore skills" ;;
   esac
   case $combined_second in

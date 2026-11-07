@@ -1,6 +1,6 @@
 # 커밋 및 푸시 정책
 
-빠른 inspection pass 이후 `git-maker`가 활성화되어 있고 durable commit/push contract가 필요할 때 이 규칙을 사용한다.
+빠른 inspection pass 이후 `hyper-git`의 commit 모드가 활성화되어 있고 durable commit/push contract가 필요할 때 이 규칙을 사용한다.
 
 ## 인자 모드
 
@@ -77,7 +77,7 @@ Refs: #142
 |------|------|
 | Commit first | 모든 commit group이 성공해야 push를 시작한다. |
 | No confirmation | 성공적인 commit 이후 push 여부를 묻지 말고 자동으로 push한다. |
-| Explicit repos | 중복 discovery를 피하려면 `scripts/git-maker-fast.sh inspect`의 repo list를 `scripts/git-maker-fast.sh push`에 전달하는 것을 선호한다. |
+| Explicit repos | 중복 discovery를 피하려면 `scripts/git-fast.sh inspect`의 repo list를 `scripts/git-fast.sh push`에 전달하는 것을 선호한다. |
 | Worktrees | named branch에 있으면 linked worktree는 유효한 push target이다. `.git/worktrees/...` 또는 common git dir가 아니라 checkout root path를 전달한다. |
 | Upstream | upstream이 없으면 `-u origin <branch>`로 push한다. |
 | Safety | `main` 또는 `master`에는 절대 force push하지 않는다. detached HEAD에서는 절대 push하지 않는다. |

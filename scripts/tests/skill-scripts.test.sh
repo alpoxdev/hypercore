@@ -21,10 +21,10 @@ LEGACY_REF=990359457e2ccbf2bd4bb65065037d456c5940bc
 MIGRATION_REF=d648cf6eeba28402f0b3c1265ca5d9f05995a131
 
 DEPLOY_CHECK=$ROOT/skills/pre-deploy/scripts/deploy-check.sh
-GIT_MAKER_COMMIT=$ROOT/skills/git-maker/scripts/git-commit.sh
-REPO_DISCOVER=$ROOT/skills/git-maker/scripts/repo-discover.sh
-REPO_STATUS=$ROOT/skills/git-maker/scripts/repo-status.sh
-GIT_MAKER_FAST=$ROOT/skills/git-maker/scripts/git-maker-fast.sh
+HYPER_GIT_COMMIT=$ROOT/skills/hyper-git/scripts/git-commit.sh
+REPO_DISCOVER=$ROOT/skills/hyper-git/scripts/repo-discover.sh
+REPO_STATUS=$ROOT/skills/hyper-git/scripts/repo-status.sh
+HYPER_GIT_FAST=$ROOT/skills/hyper-git/scripts/git-fast.sh
 
 # Pre-migration preimages keyed by the renamed script's current path, exactly as
 # the bun test pins them. Columns: current path, from path, sha256, mode, ref.
@@ -280,10 +280,10 @@ run_repo_validator() { # <stdout> <stderr> — prints exit code
 case_manifest_inventory() {
   require_cmd jq
   require_cmd git
-  assert_eq 32 "$(jq '.scripts | length' "$MANIFEST")" "script count"
-  assert_eq 32 "$(jq '[.scripts[].path] | unique | length' "$MANIFEST")" "unique script paths"
+  assert_eq 31 "$(jq '.scripts | length' "$MANIFEST")" "script count"
+  assert_eq 31 "$(jq '[.scripts[].path] | unique | length' "$MANIFEST")" "unique script paths"
   assert_eq 0 "$(jq '[.scripts[] | select((.path // "") == "" or (.family // "") == "" or (.legacyOrigin // "") == "" or (.usage // "") == "" or (.behavior // "") == "")] | length' "$MANIFEST")" "every row carries its required fields"
-  assert_eq '{"authored-mjs":14,"former-py":1,"former-sh":11,"retained-mjs":6}' \
+  assert_eq '{"authored-mjs":14,"former-sh":11,"retained-mjs":6}' \
     "$(jq -S -c '[.scripts[].legacyOrigin] | group_by(.) | map({key: .[0], value: length}) | from_entries' "$MANIFEST")" \
     "legacy origin counts"
 
@@ -354,11 +354,11 @@ case_behavior_contracts() {
   assert_eq "$(cd "$ROOT" && echo "${MANIFEST#"$ROOT"/}")" "$(jq -r '.requiredBy' "$CONTRACTS")" "contracts point at the manifest"
   assert_eq "$LEGACY_REF" "$(jq -r '.legacyPreimageBase' "$MANIFEST")" "manifest legacy ref"
   assert_eq "$LEGACY_REF" "$(jq -r '.legacyPreimageBase' "$CONTRACTS")" "contracts legacy ref"
-  assert_eq 32 "$(jq '.coverage.expectedRows' "$CONTRACTS")"
-  assert_eq 96 "$(jq '.coverage.expectedFixtures' "$CONTRACTS")"
-  assert_eq '{"authored-mjs":14,"former-py":1,"former-sh":11,"retained-mjs":6}' \
+  assert_eq 31 "$(jq '.coverage.expectedRows' "$CONTRACTS")"
+  assert_eq 93 "$(jq '.coverage.expectedFixtures' "$CONTRACTS")"
+  assert_eq '{"authored-mjs":14,"former-sh":11,"retained-mjs":6}' \
     "$(jq -S -c '.coverage.legacyOriginCounts' "$CONTRACTS")" "coverage origins"
-  assert_eq 32 "$(jq '.rows | length' "$CONTRACTS")" "contract rows"
+  assert_eq 31 "$(jq '.rows | length' "$CONTRACTS")" "contract rows"
   assert_eq "$(printf '%s\n' "$MIGRATION_PREIMAGES" | cut -f1 | LC_ALL=C sort)" \
     "$(jq -r '.rows[] | select(.sourcePreimage.migration) | .path' "$CONTRACTS" | LC_ALL=C sort)" \
     "renamed rows pinned to the migration ref"
@@ -466,7 +466,7 @@ case_behavior_contracts() {
     fi
     i=$((i + 1))
   done
-  assert_eq 96 "$cases" "fixture executions"
+  assert_eq 93 "$cases" "fixture executions"
 }
 
 case_validator_accepts_inventory() {
@@ -479,7 +479,7 @@ case_validator_accepts_inventory() {
   rc=$(run_repo_validator "$out" "$err")
   assert_empty "$(cat "$err")" "validator stderr"
   assert_eq 0 "$rc" "validator exit"
-  assert_contains "$(cat "$out")" "Validated 32 bash skill scripts (11 former-sh, 1 former-py, 6 retained-mjs, 14 authored-mjs historical origins)." "validator summary"
+  assert_contains "$(cat "$out")" "Validated 31 bash skill scripts (11 former-sh, 0 former-py, 6 retained-mjs, 14 authored-mjs historical origins)." "validator summary"
 }
 
 case_validator_rejects_mutations() {
@@ -594,7 +594,7 @@ wait_for_file() { # <path> <attempts>
   [ -e "$1" ]
 }
 
-case_git_maker_commit_rejects_option_paths() {
+case_hyper_git_commit_rejects_option_paths() {
   local fixture out err rc
   fixture=$(workdir)
   init_git "$fixture"
@@ -607,14 +607,14 @@ case_git_maker_commit_rejects_option_paths() {
 
   out=$(mktemp "$fixture/stdout.XXXXXX")
   err=$(mktemp "$fixture/stderr.XXXXXX")
-  rc=$(run_in "$fixture" "$out" "$err" bash "$GIT_MAKER_COMMIT" "test: injection" "--all")
+  rc=$(run_in "$fixture" "$out" "$err" bash "$HYPER_GIT_COMMIT" "test: injection" "--all")
   assert_eq 1 "$rc" "option-like path rejected"
   assert_contains "$(cat "$err")" "Usage:" "option-like path usage"
   assert_eq "" "$(git -C "$fixture" diff --cached --name-only | tr -d '\n')" "nothing staged"
   assert_eq "initial" "$(git -C "$fixture" log -1 --format=%s)" "no commit was created"
 }
 
-case_git_maker_discover_status_reject_option_paths() {
+case_hyper_git_discover_status_reject_option_paths() {
   local fixture path out err rc script
   fixture=$(workdir)
   path=$(write_fake_git "$fixture" '#!/bin/sh
@@ -747,7 +747,7 @@ GIT
   printf '%s' "$fixture/bin:$PATH"
 }
 
-case_git_maker_fast_reaps_children() {
+case_hyper_git_fast_reaps_children() {
   local entry mode signal expected
   set -m
   for entry in "failure::1" "signal:SIGTERM:143" "signal:SIGINT:130"; do
@@ -766,7 +766,7 @@ case_git_maker_fast_reaps_children() {
     err=$fixture/stderr
     (
       cd "$fixture" || exit 1
-      exec env "PATH=$path" "PROBE_ROOT=$fixture" "MODE=$mode" bash "$GIT_MAKER_FAST" inspect "$fixture" --jobs 2
+      exec env "PATH=$path" "PROBE_ROOT=$fixture" "MODE=$mode" bash "$HYPER_GIT_FAST" inspect "$fixture" --jobs 2
     ) >"$out" 2>"$err" &
     pid=$!
 
@@ -793,7 +793,7 @@ case_git_maker_fast_reaps_children() {
     fi
     rc=0
     wait "$pid" 2>/dev/null || rc=$?
-    assert_eq "$expected" "$rc" "git-maker-fast exit ($mode/$signal)"
+    assert_eq "$expected" "$rc" "git-fast exit ($mode/$signal)"
     if [ -z "$signal" ]; then
       if [ "$(wc -c <"$err")" -lt 2097152 ]; then
         fail "stderr was not drained in failure mode: $(wc -c <"$err") bytes"
@@ -822,7 +822,7 @@ case_git_maker_fast_reaps_children() {
   set +m
 }
 
-case_git_maker_fast_paths_with_spaces() {
+case_hyper_git_fast_paths_with_spaces() {
   local fixture repository out err rc stdout
   fixture=$(workdir)
   repository="$fixture/repository with spaces"
@@ -834,7 +834,7 @@ case_git_maker_fast_paths_with_spaces() {
 
   out=$fixture/stdout
   err=$fixture/stderr
-  rc=$(run_in "$fixture" "$out" "$err" bash "$GIT_MAKER_FAST" inspect "$repository" --jobs=1)
+  rc=$(run_in "$fixture" "$out" "$err" bash "$HYPER_GIT_FAST" inspect "$repository" --jobs=1)
   assert_eq 0 "$rc" "inspect exit for a path with spaces"
   stdout=$(cat "$out")
   assert_contains "$stdout" "repos|begin" "repo stream opener"
@@ -1109,8 +1109,8 @@ EOF
   done
 }
 
-# image-maker and git-worktree ship their own validators outside the standard gate,
-# so the repository suite runs them here to catch drift in their fixtures and core.
+# image-maker ships its own validator outside the standard gate,
+# so the repository suite runs it here to catch drift in their fixtures and core.
 case_image_maker_validator() {
   require_cmd jq
   local out err rc work
@@ -1126,19 +1126,6 @@ case_image_maker_validator() {
     "$(jq -r '.counts.automatic + .counts.manual_required' "$out")" "image-maker case total"
   assert_eq "$(jq -r '.counts.manual_required' "$out")" \
     "$(jq -r '.manual_required | length' "$out")" "image-maker manual cases"
-}
-
-case_git_worktree_validator() {
-  require_cmd jq
-  local out err rc work
-  work=$(workdir)
-  out=$work/git-worktree.json
-  err=$work/git-worktree.err
-  rc=$(run_in "$ROOT" "$out" "$err" bash "$ROOT/skills/git-worktree/scripts/validate-git-worktree-skill.sh")
-  assert_eq 0 "$rc" "git-worktree validator exit"
-  assert_json_valid "$out" "git-worktree validator output"
-  assert_eq "$(jq -r '.total' "$out")" "$(jq -r '.score' "$out")" "git-worktree validator score"
-  assert_jq "$out" '.total > 0 and (.checks | length) > 0 and all(.checks[]; .pass)' "git-worktree validator checks"
 }
 
 STRUCTURE_GATE_MARKERS='필수 키가 없습니다
@@ -1239,20 +1226,19 @@ EOF
 case_hyper_seo_renderer_second_write() { renderer_atomic_case hyper-seo second-write; }
 case_hyper_seo_renderer_second_rename() { renderer_atomic_case hyper-seo second-rename; }
 
-run_case "manifest centrally inventories 32 scripts including fourteen authored baseline-absent MJS paths" case_manifest_inventory
-run_case "behavior contracts execute all 96 isolated semantic fixtures with exact observables" case_behavior_contracts
+run_case "manifest centrally inventories 31 scripts including fourteen authored baseline-absent MJS paths" case_manifest_inventory
+run_case "behavior contracts execute all 93 isolated semantic fixtures with exact observables" case_behavior_contracts
 run_case "validator accepts the approved inventory" case_validator_accepts_inventory
 run_case "validator rejects bash policy mutations a real regression would introduce" case_validator_rejects_mutations
-run_case "git-maker commit rejects option-like paths without staging unrelated changes" case_git_maker_commit_rejects_option_paths
-run_case "git-maker discover and status reject option-like paths before Git inspection" case_git_maker_discover_status_reject_option_paths
+run_case "hyper-git commit rejects option-like paths without staging unrelated changes" case_hyper_git_commit_rejects_option_paths
+run_case "hyper-git discover and status reject option-like paths before Git inspection" case_hyper_git_discover_status_reject_option_paths
 run_case "pre-deploy drains multi-MiB children and forwards termination without orphaning sequential or parallel work" case_pre_deploy_forwards_termination
-run_case "git-maker-fast drains concurrent fake Git children, stops queued work, and reaps children on failures and signals" case_git_maker_fast_reaps_children
-run_case "git-maker-fast inspects a repository whose path contains spaces without remote access" case_git_maker_fast_paths_with_spaces
+run_case "hyper-git git-fast drains concurrent fake Git children, stops queued work, and reaps children on failures and signals" case_hyper_git_fast_reaps_children
+run_case "hyper-git git-fast inspects a repository whose path contains spaces without remote access" case_hyper_git_fast_paths_with_spaces
 run_case "pre-deploy rejects malformed package metadata" case_pre_deploy_rejects_malformed_metadata
 run_case "self-containment check catches cross-skill references, including with no sibling present" case_self_containment_check
 run_case "script-runtime check rejects non-bash bundled scripts and non-bash shebangs" case_script_runtime_check
 run_case "the image-maker validator accepts its own skill folder and eval corpus" case_image_maker_validator
-run_case "the git-worktree validator scores its own skill folder at full marks" case_git_worktree_validator
 run_case "hyper-seo preserves both prior outputs when its second-write fails" case_hyper_seo_renderer_second_write
 run_case "hyper-seo preserves both prior outputs when its second-rename fails" case_hyper_seo_renderer_second_rename
 

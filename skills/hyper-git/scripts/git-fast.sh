@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# git-maker-fast.sh - fast inspect/push helper for git-maker
+# git-fast.sh - fast inspect/push helper for the hyper-git commit mode
 # Usage:
-#   git-maker-fast.sh inspect [start_dir] [--jobs N]
-#   git-maker-fast.sh push [--force] [repo...]
+#   git-fast.sh inspect [start_dir] [--jobs N]
+#   git-fast.sh push [--force] [repo...]
 #
 # Inspect gathers repository state with pruned discovery and bounded parallel per-repo status
 # while keeping the emitted blocks in repository order. Linked git worktrees are treated as
 # first-class checkout roots; never assume .git is a directory. Push accepts explicit repo paths so
-# git-maker can reuse inspect results instead of rediscovering them.
+# the commit mode can reuse inspect results instead of rediscovering them.
 
 set -euo pipefail
 
@@ -27,7 +27,7 @@ harden_path
 ORIG_PWD=$(pwd)
 tmp_base=${TMPDIR:-/tmp}
 tmp_base=${tmp_base%/}
-TMP_ROOT=$(mktemp -d "$tmp_base/git-maker-fast.XXXXXX")
+TMP_ROOT=$(mktemp -d "$tmp_base/git-fast.XXXXXX")
 GIT_TMP=$TMP_ROOT
 GIT_EXIT=0
 GIT_STDOUT=""
@@ -439,7 +439,7 @@ normalize_jobs() {
 
 inspect_command() {
   local start_dir="."
-  local jobs=${GIT_MAKER_JOBS:-4}
+  local jobs=${HYPER_GIT_JOBS:-4}
   local seen_start=0
   local arg line
 
@@ -661,7 +661,7 @@ push_command() {
 }
 
 usage() {
-  printf 'Usage:\n  git-maker-fast.sh inspect [start_dir] [--jobs N]\n  git-maker-fast.sh push [--force] [repo...]\n' >&2
+  printf 'Usage:\n  git-fast.sh inspect [start_dir] [--jobs N]\n  git-fast.sh push [--force] [repo...]\n' >&2
 }
 
 main() {

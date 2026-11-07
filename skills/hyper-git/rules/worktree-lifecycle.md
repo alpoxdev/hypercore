@@ -1,6 +1,6 @@
 # Worktree Lifecycle Rules
 
-Use these rules when operating on Git worktrees for the `git-worktree` skill.
+Use these rules when the worktree mode of `hyper-git` is active.
 
 ## 1. Repository discovery
 
@@ -19,14 +19,14 @@ If not inside a Git repository, stop the operation and report that a repository 
 Default root:
 
 ```text
-<repo-root>/.hyper/git-worktree/<folder_name>
+<repo-root>/.hyper/worktree/<folder_name>
 ```
 
 Direct argument fast path:
 
-- If the invocation is `git-worktree <ARGUMENT>`, treat `<ARGUMENT>` as the create target and do not ask what worktree to create.
+- If the invocation is `hyper-git worktree <ARGUMENT>`, treat `<ARGUMENT>` as the create target and do not ask what worktree to create.
 - Interpret the argument as a branch/task label unless it clearly denotes a PR, issue, ref, or explicit path.
-- Preserve the branch/ref text for Git operations; sanitize only the folder label for `.hyper/git-worktree/<folder_name>`.
+- Preserve the branch/ref text for Git operations; sanitize only the folder label for `.hyper/worktree/<folder_name>`.
 - Continue to ask only for unsafe, reserved, conflicting, or unmappable arguments.
 
 Interaction language:
@@ -38,7 +38,7 @@ Interaction language:
 
 Before creating a worktree, establish what will happen there:
 
-- If a direct `git-worktree <ARGUMENT>` argument exists, it is the work intent; skip the work-intent question.
+- If a direct `hyper-git worktree <ARGUMENT>` argument exists, it is the work intent; skip the work-intent question.
 - If the user already named a branch, PR, issue, task, or concrete work item, use that context.
 - If the user only says to create a worktree and the task is unclear, ask exactly one concise localized question before creating it. For Korean users, ask what work they plan to do in this worktree.
 - Derive `<folder_name>` from the answer. Do not use a random timestamp or generic `worktree-1` unless the user explicitly wants that.
@@ -58,7 +58,7 @@ Because this project’s requested convention nests worktrees under the reposito
 ```bash
 exclude_file="$(git rev-parse --git-path info/exclude)"
 mkdir -p "$(dirname "$exclude_file")"
-grep -qxF ".hyper/git-worktree/" "$exclude_file" 2>/dev/null || printf '\n.hyper/git-worktree/\n' >> "$exclude_file"
+grep -qxF ".hyper/worktree/" "$exclude_file" 2>/dev/null || printf '\n.hyper/worktree/\n' >> "$exclude_file"
 ```
 
 Prefer local excludes over editing `.gitignore` unless the user asks to commit the convention.
@@ -235,19 +235,31 @@ If paths were moved manually, repair before recreating:
 git worktree repair <path>
 ```
 
-## 8. Merge-back handoff
+Move a linked worktree with Git so its registry entry follows; a locked worktree must be unlocked first:
+
+```bash
+git worktree move <path> <new-path>
+```
+
+Scripts that parse the registry use `git worktree list --porcelain -z`, because a path may contain a newline.
+
+## 8. Issue-backed worktrees
+
+When the worktree is for a GitHub issue and `gh` is authenticated, `gh issue develop <n> --base <base> --name <branch> --worktree <path>` creates the linked branch and the worktree in one step (`rules/issue-workflow.md`). The path still follows section 2, and the exclude, verification, and context-move checks of section 3 still apply.
+
+## 9. Merge-back handoff
 
 When a worktree’s task is complete:
 
 1. Verify status is clean or intentionally staged/committed.
 2. Run the project’s tests/build in that worktree.
-3. Merge, rebase, or open a PR according to the project’s normal Git workflow.
-4. Remove the worktree only after work is merged, pushed, or intentionally abandoned.
+3. Merge, rebase, or open a PR according to the project’s workflow (`rules/branch-workflow.md`).
+4. Remove the worktree only after work is merged, pushed, or intentionally abandoned. For a squash or cherry-pick merge, `git branch --merged` does not prove it; confirm with `git cherry <target> <branch>` showing no `+` lines or a merged pull request.
 5. Prune stale metadata with a dry run first.
 
-## 9. Common hazards
+## 10. Common hazards
 
-- Nested worktrees under `.hyper/git-worktree/` must be ignored locally or the main worktree becomes noisy.
+- Nested worktrees under `.hyper/worktree/` must be ignored locally or the main worktree becomes noisy.
 - Same branch cannot normally be checked out in two worktrees at once.
 - Linked worktrees share Git object storage and config but have independent working files.
 - Per-worktree dependency folders, ports, databases, and generated artifacts may still collide; use separate env files or ports when needed.
@@ -255,11 +267,12 @@ When a worktree’s task is complete:
 
 ## Sources
 
-> Links checked 2026-09-21.
+> Links checked 2026-11-07.
 
 | Claim | Source |
 |---|---|
-| `git worktree add`, `list`, `remove`, `prune`, `lock`, `unlock`, `repair`, `--porcelain`, `--detach`, and the already-checked-out-branch error this rule set builds on | <https://git-scm.com/docs/git-worktree.html> |
+| `git worktree add`, `list`, `move`, `remove`, `prune`, `lock`, `unlock`, `repair`, `--porcelain -z`, `--detach`, and the already-checked-out-branch error this rule set builds on | <https://git-scm.com/docs/git-worktree> |
+| `gh issue develop --worktree` creating an issue branch and its worktree together | <https://cli.github.com/manual/gh_issue_develop> |
 | `git rev-parse --show-toplevel`, `--git-dir`, `--git-common-dir`, and `--git-path info/exclude` used by the discovery and local-exclude steps | <https://git-scm.com/docs/git-rev-parse> |
-| The local-exclude file semantics that keep `.hyper/git-worktree/` out of status output | <https://git-scm.com/docs/gitignore> |
-| Why this package prefers native Git, one task per worktree, and checks before delete | [`../references/source-survey.md`](../references/source-survey.md) |
+| The local-exclude file semantics that keep `.hyper/worktree/` out of status output | <https://git-scm.com/docs/gitignore> |
+| Why this package prefers native Git, one task per worktree, and checks before delete | [`../references/worktree-source-survey.md`](../references/worktree-source-survey.md) |
