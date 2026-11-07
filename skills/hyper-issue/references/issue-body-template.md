@@ -1,6 +1,6 @@
 # Issue Body Template
 
-Use this reference when writing the body. Copy the skeleton and replace every placeholder. Keep the `##` names and the `hyper:` keys exactly as written.
+Use this reference when writing the body. Copy the skeleton and replace every placeholder. Keep the `##` names and the `hyper:` keys exactly as written. Write the title and every placeholder replacement in English (`rules/issue-contract.md` §2a); the title takes the commit-subject form `type(scope): imperative summary`.
 
 ## Contents
 
@@ -21,7 +21,7 @@ Use this reference when writing the body. Copy the skeleton and replace every pl
 - `<command>` -> <the observed output, trimmed to the lines that matter>
 
 <Assumption lines, when anything above is inferred:>
-- 가정: <the inferred statement> - 확인 방법: <what would confirm it>
+- Assumption: <the inferred statement> - Confirm by: <what would confirm it>
 
 ## Cause
 
@@ -65,6 +65,10 @@ Pass: <what the output looks like when the work is done>.
 ```
 
 ## Worked Example
+
+Real issues are written in English, so the example is the exact text an issue carries.
+
+Title: `fix(orders): return 409 on idempotency key replay`
 
 ```markdown
 ## What
@@ -118,7 +122,7 @@ Pass: every case green, and the replay case logs `409` rather than `500`.
 
 ## Rules
 
-- The body stands alone: no "as discussed", no link required to understand it.
+- The body stands alone: no "as discussed", no link required to understand it, and English throughout except quoted output.
 - Keep quotes short and attributed; redact secrets.
 - One `hyper:` block per body, and it is the only fenced `yaml` block in `## Scope`.
 - `verify` must be runnable without a browser, credentials, or a network call unless the issue says otherwise.

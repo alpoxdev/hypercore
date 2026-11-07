@@ -1,6 +1,6 @@
 # Issue Contract
 
-Use this rule before writing any issue body. It owns classification, the evidence standard, the required sections, the `hyper:` block, the duplicate check, metadata, and the write verification.
+Use this rule before writing any issue body. It owns classification, the evidence standard, the body language, the required sections, the `hyper:` block, the duplicate check, metadata, and the write verification.
 
 ## 1. Classify
 
@@ -12,7 +12,7 @@ Classify by the requested behavior, not by the word the user used.
 | `feature` | New user-visible behavior, or a material expansion of existing behavior | The decided outcome, the affected surface, and the resolved open decisions |
 | `task` | Maintenance, refactor, docs, tests, hardening, migration, cleanup | Current state and the exact boundary of the change |
 
-A defect whose cause is not confirmed on the named revision is not a `bug`. Either confirm it, or record it as `bug` with `가정:` on the cause line and say what would confirm it. Never relabel an unconfirmed defect as a `task` to skip the cause standard.
+A defect whose cause is not confirmed on the named revision is not a `bug`. Either confirm it, or record it as `bug` with `Assumption:` on the cause line and say what would confirm it. Never relabel an unconfirmed defect as a `task` to skip the cause standard.
 
 Split into separate issues when two items can be implemented and verified independently. Keep them together when they share one intended outcome, one change boundary, or one verification.
 
@@ -23,6 +23,16 @@ Split into separate issues when two items can be implemented and verified indepe
 - Distinguish the symptom, the trigger, the propagation path, and the root cause.
 - Do not copy secrets, tokens, personal data, or customer values into a body. Redact them and say what was redacted.
 - A body must stay actionable after the original logs, database, or session is gone: convert an inaccessible fact into a minimal fixture, a test vector, or an exact local setup.
+
+## 2a. Body Language
+
+The reader of an issue is an agent starting a fresh session with no access to this conversation. Write for that reader.
+
+- Write the title and the whole body in English, even when the conversation and the run report are in Korean. Keep a quoted error message, log line, or UI string in its original language.
+- Write the title like a commit subject: imperative, lowercase after an optional `type(scope):` prefix, no trailing period, at most 72 characters (`fix(orders): return 409 on idempotency key replay`).
+- Write body lines as short declarative or imperative sentences with concrete nouns: paths, symbols, commands, status codes. No pronouns that point back into the conversation ("the thing we saw", "as discussed").
+- Mark inference with `Assumption: <statement> - Confirm by: <check>`; never hedge a whole paragraph.
+- A repository issue template or an explicit user instruction that sets another language wins; record that choice in the run notes.
 
 ## 3. Required Sections
 
@@ -102,6 +112,7 @@ When the tracker is unavailable or not writable, save the body at `.hyper/issues
 | Per-task dependency and conflict metadata, and one owner for shared files | [automazeio/ccpm](https://github.com/automazeio/ccpm) |
 | One issue per independently implementable unit, sized to a single context | [MrLesk/Backlog.md](https://github.com/MrLesk/Backlog.md) |
 | A cause must be confirmed on the named revision before it is reported as a defect | [kdy1-scripts add-issue](https://github.com/kdy1/kdy1-scripts) root-cause standard |
+| Issue titles and bodies are written in English for a fresh-session agent, like commit messages | user instruction, 2026-11-07 |
 
 ### Evidence grade
 
