@@ -10,6 +10,9 @@
 > This [surface] helps [audience] do [task] in [situation]; it keeps [confirmed identity, data, and behavior]; [unknowns] are unverified.
 
 - Visitor mode: `Persuade | Operate | Read | Experience`, and why
+- Design Read: Reading this as: <page kind> for <audience>, in a <visual language> style, visitor mode <mode>, dials ENERGY <1-3> / RHYTHM <1-3> / MOTION <1-3>.
+- Direction status: `direction from <source> | draft without direction (dials 1 / 1 / 1)`
+- Focal point per screen, the one accent, and the identity motif:
 - Unknowns:
 
 ## Reference
@@ -45,6 +48,21 @@
 | empty | | |
 | error | | |
 | success | | |
+
+## Decision reasons
+
+| Decision | One-line reason |
+|---|---|
+| Color | |
+| Layout | |
+| Typography | |
+| Spacing | |
+| Containers (cards or not) | |
+| Icons and illustrations | |
+
+Swap test: if the logo and product name were swapped out, what still belongs to this product?
+
+Conflicts with the brief (element, gate line, owner's answer): <none, or list>
 
 ## Rejected alternatives
 

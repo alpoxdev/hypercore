@@ -68,6 +68,7 @@ Count a finding only when its exception status is `not-checked` or the check fou
 - Judge the absence of a decision, not the presence of a style. A value is a finding when nothing in the brief, the reference, or the project's system explains it.
 - The list of defaults moves. Purple gradients, glass, and neon glow gave way to cream backgrounds with italic serif displays, bento grids, emerald accents, and neobrutalist hard shadows. Replacing one default with its successor is not a fix; `references/anti-pattern-catalog.md` lists both waves.
 - Every catalog rule keeps its exceptions. A documented brand value, a real data shape, or a real state outranks the rule.
+- The question for every technique is what it serves. A gradient, glass, a badge, or a card grid is a tool; the finding is the technique used with no written purpose, or past its dose cap (`rules/delivery-gate.md` §5).
 
 ## Sources
 
@@ -80,6 +81,7 @@ Count a finding only when its exception status is `not-checked` or the check fou
 | Tiered counting of deterministic pattern checks (4+ high, 2-3 medium, 0-1 low) over 1,590 sites, with about 5-10% false positives on manual review | <https://www.adriankrebs.ch/blog/design-slop/> (2026-04-20) |
 | Three eras of defaults (purple and glass, beige editorial, neobrutalist) | <https://impeccable.style/slop/> |
 | A new default (emerald) appearing after the old one (indigo) was banned | <https://solodesign.cc/blog/ai-design-slop-the-tells/> (2026-06-06) |
+| Reject technique without purpose, not technique itself | <https://github.com/miqdadbadjuber/anti-slop> (commit `9504989`, `antislop/SKILL.md` Core Principle; MIT) |
 
 ### Evidence grade
 

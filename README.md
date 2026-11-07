@@ -156,7 +156,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 |------|------|------|
 | `hyper-research` | 질문을 축으로 나눠 확장 웨이브로 수렴시키고, 고위험 주장을 게이트로 검증한 다중 출처 마크다운 리서치 보고서 | All |
 | `client-feedback` | 고객사 피드백을 코드 영향·선택지·리스크로 해석하고 확인 후 구현 | All |
-| `hyper-ui-ux` | 새 화면 디자인, 기존 UI 리디자인, 히어로·데모용 연출 화면(mockup), AI형 generic 패턴 점검·정리를 디자인 브리프→정석 수치(WCAG 2.2·플랫폼·KRDS)→정적 검출기→독립 검토 순서로 처리하고 `.hyper/ui-ux/`에 브리프와 보고서 저장 | Bash 3.2+ & jq 1.6+; browser optional |
+| `hyper-ui-ux` | 새 화면 디자인, 기존 UI 리디자인, 히어로·데모용 연출 화면(mockup), AI형 generic 패턴 점검·정리를 디자인 브리프·생동감 다이얼→정석 수치(WCAG 2.2·플랫폼·KRDS)와 대비 계산→정적 검출기→독립 검토→증거 기반 납품 게이트 순서로 처리하고 `.hyper/ui-ux/`에 브리프와 보고서 저장 | Bash 3.2+ & jq 1.6+; browser optional |
 
 ### 콘텐츠 · SEO
 

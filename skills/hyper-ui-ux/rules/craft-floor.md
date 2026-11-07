@@ -6,7 +6,7 @@ Read before building and before judging any finding against a number. This file 
 
 | Rule | Value | Level |
 |---|---|---|
-| Body text against its background | at least 4.5:1, computed without rounding | MUST (WCAG 2.2 AA) |
+| Body text against its background | at least 4.5:1, computed without rounding (`references/contrast-check.md`); never asserted for a gray pair without computing it | MUST (WCAG 2.2 AA) |
 | Large text (about 24px, or about 18.5px bold) | at least 3:1 | MUST |
 | Icons, control boundaries, state indicators, chart marks needed to understand content | at least 3:1 against adjacent colors | MUST |
 | Text over an image or video | a solid or gradient scrim so the worst-case pixel pair still passes 4.5:1 | MUST |
@@ -14,6 +14,7 @@ Read before building and before judging any finding against a number. This file 
 | Both color schemes | every pair passes in light and dark when both ship | MUST |
 | Accent share | one accent hue; accent fills stay a small share of a screen (KRDS: at most 5%) | DEFAULT |
 | Neutral tint | tint neutrals toward the brand hue instead of pure gray when the brand allows | DEFAULT |
+| Palette size | two or three core colors plus one accent; neutrals do not count; more only with a documented system | DEFAULT |
 
 WCAG 3 is a Working Draft and APCA is not normative anywhere; keep WCAG 2.2 AA as the contrast baseline.
 
@@ -28,6 +29,9 @@ WCAG 3 is a Working Draft and APCA is not normative anywhere; keep WCAG 2.2 AA a
 | Focus indicator contrast | at least 3:1 against the adjacent background | MUST |
 | Focus not obscured | sticky headers, footers, and non-modal panels never fully cover the focused control (`scroll-padding`) | MUST |
 | Focus style | keep the user agent ring or the project's documented ring; a custom ring is at least 2px | DEFAULT |
+| Affordance | every enabled control is a native element (`button` for actions, `a href` for navigation), shows `cursor: pointer` from one base rule, has an accessible name, and has distinct hover, active, and disabled states that do not rely on color alone (`references/accessible-interaction.md`) | MUST (name, role, color alone) / DEFAULT (cursor) |
+| Zoom | the viewport meta never sets `user-scalable=no` or `maximum-scale=1` | MUST |
+| Touch spacing | adjacent touch targets keep a clear gap so a thumb press cannot hit both | DEFAULT |
 
 ## 3. Type
 
@@ -58,6 +62,10 @@ WCAG 3 is a Working Draft and APCA is not normative anywhere; keep WCAG 2.2 AA a
 | Radius | a scale tied to element size (for example 4 / 8 / 12 / 16 and full); nested radius = outer minus padding | DEFAULT |
 | Depth | a few elevation steps; a layered shadow (ambient plus direct) or a border, not both at full strength on every card | DEFAULT |
 | Containers | a card only when the content is a separable object; never a card inside a card for decoration | DEFAULT |
+| Responsive states | as many layout states as the content needs (usually single column, two columns, full grid), with breakpoints placed where the content breaks, not at device widths; the middle band (about 600-1024px) is designed, not inherited (`references/responsive-reflow.md`) | DEFAULT |
+| Full-height sections | size to content; use `dvh` (never `100vh`) only when a section must fill the screen | DEFAULT |
+| Fixed chrome | sticky headers and bottom bars stay compact, reserve their height in the page, and respect safe-area insets | DEFAULT |
+| Dose caps | glass or backdrop blur on at most one or two elements; glow on at most one or two focus elements; shadows only where an element lifts | DEFAULT |
 
 ## 5. Motion
 
@@ -97,21 +105,32 @@ WCAG 3 is a Working Draft and APCA is not normative anywhere; keep WCAG 2.2 AA a
 | Copy | specific verbs and nouns of this product; no slogan filler ("seamless", "supercharge", "next-gen"); no invented numbers | DEFAULT |
 | Icons | one set; an icon-only button has an accessible name; emoji are content, never icons | DEFAULT |
 
-## 8. Checklist
+## 8. Performance Mechanisms
+
+| Rule | Value | Level |
+|---|---|---|
+| Media dimensions | every `img`, `video`, and `iframe` has `width` and `height` or an `aspect-ratio`; space for late content (embeds, banners) is reserved | DEFAULT |
+| Hero image | the largest above-the-fold image is an `img` in the HTML, never `loading="lazy"`, with `fetchpriority="high"`; lazy-load only below the fold | DEFAULT |
+| Third-party scripts | no synchronous third-party script in `<head>`; use `defer`, `async`, or load on interaction | DEFAULT |
+| Field metrics | LCP, INP, and CLS are field data at the 75th percentile (good: LCP at most 2.5 s, INP at most 200 ms, CLS at most 0.1); report them only when measured in this run, otherwise write `not measured` | MUST (no unmeasured number) |
+
+## 9. Checklist
 
 Run per changed screen and record each item `pass`, `fail`, `n/a`, or `not run` with the reason:
 
-1. Contrast pairs from the token plan computed for both schemes.
-2. Focus visible and not obscured on every interactive element, by keyboard.
-3. Target sizes at the smallest width.
-4. Reflow at 320px and text at 200%.
+1. Contrast pairs from the token plan computed for both schemes, and text over images checked at its worst point.
+2. Focus visible and not obscured on every interactive element, by keyboard; dialogs close with Escape.
+3. Target sizes and spacing at the smallest width.
+4. Reflow at 320px, text at 200%, and the middle band of widths.
 5. Every value in changed code belongs to the token plan or the project's tokens.
 6. Line length, heading levels, and font supply.
 7. Reduced-motion path and no `transition: all`.
-8. Every listed state rendered or implemented.
+8. Every listed state rendered or implemented, and each empty, loading, or error state names its cause and next action.
 9. Korean rules when the product language is Korean.
+10. Affordance: native elements, accessible names, pointer cursor, hover, active, and disabled states; no zoom block.
+11. Performance mechanisms in §8.
 
-A static run can pass items 5 and 6 and the source half of 7. Items that need rendering are `static_only` without a rendered capture.
+A static run can pass items 5, 6, 10, and 11 and the source half of 7. Items that need rendering are `static_only` without a rendered capture.
 
 ## Sources
 
@@ -132,6 +151,8 @@ A static run can pass items 5 and 6 and the source half of 7. Items that need re
 | Korean body 17px default with a 16px floor, line height at least 150%, `keep-all`, breakpoints 360/768/1024/1280, accent at most 5% | <https://www.krds.go.kr/html/site/style/style_03.html> and its sibling style pages |
 | `word-break: keep-all` behavior | <https://developer.mozilla.org/en-US/docs/Web/CSS/word-break> |
 | Pretendard is SIL OFL 1.1 with a reserved font name | <https://github.com/orioncactus/pretendard> |
+| Palette cap, affordance rules (native elements, names, pointer cursor, distinct states), zoom never blocked, touch spacing, responsive states beyond two, `dvh` over `100vh`, compact fixed chrome, glass and glow dose caps, media dimensions, hero image priority, deferred third-party scripts, and never reporting an unmeasured metric | <https://github.com/miqdadbadjuber/anti-slop> (commit `9504989`, `antislop/SKILL.md` R-03, R-10, R-13, R-29, R-39, R-40; `antislop-layoutmobile/SKILL.md`; MIT) |
+| Core Web Vitals thresholds at p75 | <https://web.dev/articles/vitals> |
 
 ### Evidence grade
 

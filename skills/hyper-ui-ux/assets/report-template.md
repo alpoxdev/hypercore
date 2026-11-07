@@ -13,6 +13,7 @@
 - Edit passes: `0 | 1 | 2 | 3`
 - Craft-floor check: `pass | fail (items) | static_only`
 - Independent review: `subagent | self (degraded) | user | not run (reason)`
+- Delivery gate: `pass | fail (lines) | not run (reason)`
 - Final status: `pass | review_required | blocked`
 
 ## Brief inference
@@ -28,9 +29,9 @@
 
 ## Findings
 
-| ID | Class | Severity | Detection / remediation confidence | Engine / evidence | Exception | Action | Status |
-|---|---|---|---|---|---|---|---|
-| `rule.id` | `default-risk` | `P2` | `high / low` | `text / static-source` at `file:line` | `not-checked` | `review` | `open` |
+| # | ID | Class | Severity | Detection / remediation confidence | Engine / evidence | Exception | Action | Status |
+|---|---|---|---|---|---|---|---|---|
+| 1 | `rule.id` | `default-risk` | `P2` | `high / low` | `text / static-source` at `file:line` | `not-checked` | `review` | `open` |
 
 ## Applied changes
 
@@ -49,6 +50,10 @@
 - Reduced motion:
 - Behavior regression:
 - Report validator:
+
+| Gate line | Result | Evidence |
+|---|---|---|
+| H1 to H11, craft floor, P1 to P13, L1 to L7 | `PASS / FAIL / n/a / not run` | file:line, command output, capture, or click-through |
 
 ## Residual risk
 

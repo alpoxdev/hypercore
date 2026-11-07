@@ -78,6 +78,42 @@ Removing a default must not produce an empty or lifeless result: keep feedback m
 
 When the product language is Korean, the plan also states the Hangul font stack, body size, line height, and line-breaking rule from `rules/craft-floor.md` §6.
 
+## 10. Design Read, Dials, and Levers
+
+Removing defaults leaves a void; liveliness is added on purpose. Before markup, write one Design Read line in `brief.md`:
+
+> Reading this as: [page kind] for [audience], in a [visual language] style, visitor mode [mode], dials ENERGY [1-3] / RHYTHM [1-3] / MOTION [1-3].
+
+| Dial | 1 (calm) | 2 (balanced) | 3 (bold) | It answers |
+|---|---|---|---|---|
+| ENERGY | quiet public-service or tool screen | confident product marketing | portfolio or campaign | How hard does the design say hello? |
+| RHYTHM | uniform, predictable grid | consistent with a few breaks | asymmetric, mixed compositions | How much do sections differ? |
+| MOTION | hover and state feedback only | transitions and one reveal | authored choreography | How much motion, and why? |
+
+Three levels are used because a reviewer can check "uniform or varied" but cannot check "6 or 7". Starting points by visitor mode: Operate and Read 1 / 1 / 1, Persuade 2 / 2 / 1, Experience 3 / 3 / 2. A `DESIGN.md` line such as `Dial: ENERGY 2 / RHYTHM 3 / MOTION 1` is used as written.
+
+Hit the dials with these levers:
+
+- **One focal point per screen:** exactly one element is clearly the most important; the rest defer to it.
+- **Hierarchical contrast:** size, weight, and color differ on purpose, not at random.
+- **Whitespace as structure:** space separates groups and sets rhythm; it is never leftover.
+- **One deliberate accent:** one color or gesture at the key moment. Zero accents is sterile; an accent everywhere is a default.
+- **One identity motif:** one specific, repeated pattern, gesture, or typographic voice that makes the screen belong to this product.
+
+How the dials are set:
+
+1. Direction exists (`DESIGN.md`, a brand guide, the existing product in `restyle`, or a brief with mood): infer the dials from it.
+2. Direction is open on a new product and the user can be asked: ask exactly one decisive question (for example "closer to a calm tool or to an expressive campaign?"), never a list of questions.
+3. No direction and no chance to ask: label the result "draft without direction", use ENERGY 1 / RHYTHM 1 / MOTION 1, and do not present it as a deliverable.
+
+Never fall back silently to a neutral, sterile default: flat near-white, thin gray borders, small radius, a generic font, and no identity is a failure, not a safe result.
+
+## 11. Decision Reasons
+
+Before calling the design done, write one line in `brief.md` for each major decision: color, layout, typography, spacing, containers (cards or not), and every illustration or icon set. A decision whose reason does not fit in one line is revisited. "It is the default" or "it looks modern" is not a reason. The swap test closes the list: if the logo and product name were swapped out, the design must still read as this product.
+
+When `DESIGN.md`, a brand guide, or a user sample asks for a pattern that `rules/delivery-gate.md` forbids or caps, name the element and the line, ask once, and record the answer here. A bold palette or an unusual typeface is identity and is never questioned.
+
 ## Sources
 
 > Checked 2026-11-07.
@@ -86,6 +122,7 @@ When the product language is Korean, the plan also states the Hangul font stack,
 |---|---|
 | Models converge on statistically common choices, and banning one default moves them to another | <https://claude.com/resources/articles/improving-frontend-design-through-skills> (Anthropic, 2025-11-12) |
 | Plan first, check "would this be produced for any similar page", and the brief's own words win | <https://github.com/anthropics/skills> (`frontend-design`, commit `2c5958e`) (Apache-2.0) |
+| Design Read line, the three dials and their levers, "draft without direction" with dials 1 / 1 / 1, one decisive question, the sterile default as a failure, one-line decision reasons, the swap test, and the conflict protocol for a brief that asks for a named pattern | <https://github.com/miqdadbadjuber/anti-slop> (commit `9504989`, `antislop/SKILL.md` Part 3, R-31, R-37; MIT). The starting dials per visitor mode are this package's mapping. |
 | Visitor modes Persuade, Operate, Read, Experience, chosen from the surface | <https://github.com/pbakaus/impeccable/tree/687bc381bc9091bf252c0a05303640561014a425/.agent/skills/impeccable> (Apache-2.0) |
 | A specific reference carries more than adjectives; tokens and ordered sections for a `DESIGN.md` | <https://github.com/google-labs-code/design.md/tree/1ed38aa9dd4451b9039f9aeb9ed1d2579edafddf> (Apache-2.0) |
 | Section jobs and a recorded rejected alternative | <https://github.com/changeroa/StyleGallery> |

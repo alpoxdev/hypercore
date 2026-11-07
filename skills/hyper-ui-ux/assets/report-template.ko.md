@@ -13,6 +13,7 @@
 - 수정 pass: `0 | 1 | 2 | 3`
 - 정석 수치 점검: `pass | fail (항목) | static_only`
 - 독립 검토: `subagent | self (degraded) | user | 미실행 (사유)`
+- 납품 게이트: `pass | fail (항목) | 미실행 (사유)`
 - 최종 상태: `pass | review_required | blocked`
 
 ## Brief inference
@@ -28,9 +29,9 @@
 
 ## 발견 사항
 
-| ID | 분류 | 심각도 | 탐지 / 수정 신뢰도 | Engine / 증거 | Exception | 처리 | 상태 |
-|---|---|---|---|---|---|---|---|
-| `rule.id` | `default-risk` | `P2` | `high / low` | `text / static-source` at `file:line` | `not-checked` | `review` | `open` |
+| # | ID | 분류 | 심각도 | 탐지 / 수정 신뢰도 | Engine / 증거 | Exception | 처리 | 상태 |
+|---|---|---|---|---|---|---|---|---|
+| 1 | `rule.id` | `default-risk` | `P2` | `high / low` | `text / static-source` at `file:line` | `not-checked` | `review` | `open` |
 
 ## 적용한 변경
 
@@ -49,6 +50,10 @@
 - Reduced motion:
 - 기능 regression:
 - Report validator:
+
+| 게이트 항목 | 결과 | 증거 |
+|---|---|---|
+| H1~H11, 정석 수치, P1~P13, L1~L7 | `PASS / FAIL / n/a / not run` | file:line, 명령 출력, 캡처, 클릭 확인 기록 |
 
 ## 남은 위험
 

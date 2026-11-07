@@ -32,6 +32,7 @@ Tie-breaks:
 - "Make it look better" on an existing screen is `restyle`; "remove the AI look, keep everything else" is `clean`. When the words allow both, choose `clean` and say so: it is the smaller change.
 - A screenshot with no source is `audit`, and it cannot claim source, behavior, or accessibility results.
 - An upstream caller that says "audit only; report findings; do not edit" gets `audit` for an existing UI and `brief-only` for a UI that does not exist yet.
+- A finished project the user wants reviewed before deciding what to fix is `audit`: findings are numbered in the report so the user can answer with numbers. A later "fix 2, 5, 7" runs `clean` or `restyle` on exactly those numbers and leaves every other finding untouched.
 
 ## 3. Phases by Mode
 
@@ -44,9 +45,10 @@ Tie-breaks:
 | Craft-floor checklist | yes | yes | mockup subset | yes | changed areas | yes | no |
 | Rendered evidence | when available | when available | when available | when available | when available | when available | no |
 | Independent review | yes | yes | yes | yes | optional | yes | no |
+| Delivery gate (`rules/delivery-gate.md`) | full | full | full | as findings | Block 1 and touched lines | full | no |
 | Report | yes | yes | yes | yes | yes | yes | brief only |
 
-`design`, `restyle`, and `mockup` read `rules/design-direction.md` before writing tokens or markup. `mockup` also reads `references/mockup-craft.md`. `clean` follows `rules/safe-editing.md` and applies the smallest safe category first.
+`design`, `restyle`, and `mockup` read `rules/design-direction.md` before writing tokens or markup, including the Design Read and dials (§10) and the decision reasons (§11). `mockup` also reads `references/mockup-craft.md`. `clean` follows `rules/safe-editing.md` and applies the smallest safe category first. Every mode that delivers runs the delivery gate last; a `FAIL` line blocks delivery until it is fixed or reported as open.
 
 ## 4. Budgets
 
@@ -99,6 +101,7 @@ When the requested result depends on one of these, block that step and report it
 | A plan-first workflow for faux product UI: medium, look, story, example, screen, choreography, rehearsal | <https://github.com/benjitaylor/skills> (`stageshow` folder, commit `299140f`) (MIT) |
 | Audit stays read-only, clean takes the smallest category first, and pass acceptance guards | this package's earlier cleanup workflow, carried over unchanged in substance |
 | Written guidance alone scored equal-or-worse than none, while a mechanical gate moved the result | <https://solodesign.cc/blog/ai-design-slop-the-tells/> (2026-06-06) |
+| A numbered audit the user answers by number, with untouched numbers left alone, and a delivery gate that runs in every mode | <https://github.com/miqdadbadjuber/anti-slop> (commit `9504989`, `antislop/SKILL.md` Two Usage Modes and Delivery Gate; MIT). The source's per-session mode question and settings file are not adopted; this package picks the mode from the request. |
 
 ### Evidence grade
 

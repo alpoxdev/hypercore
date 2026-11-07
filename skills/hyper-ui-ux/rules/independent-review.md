@@ -18,9 +18,9 @@ Never give the reviewer the builder's rationale, the `brief.md` reasoning sectio
 
 ## 3. Reviewer Inputs
 
-- the one-sentence brief and the visitor mode (not the rest of `brief.md`)
+- the one-sentence brief, the visitor mode, and the Design Read line with its dials (not the rest of `brief.md`)
 - rendered captures at the checked widths and states, or, without rendering, the changed source paths
-- `rules/craft-floor.md` §8 and the "You see / You do" table in §5 below
+- `rules/craft-floor.md` §9 and the "You see / You do" table in §5 below
 - for mockups, the failure modes in `references/mockup-craft.md` §2
 
 ## 4. Questions, in Order
@@ -31,6 +31,8 @@ Never give the reviewer the builder's rationale, the `brief.md` reasoning sectio
 4. Which values break the system: a one-off color, size, space, radius, or duration?
 5. Which states are missing or look unfinished?
 6. Which floor items fail, with the measured value?
+7. Does the result match its declared dials (ENERGY, RHYTHM, MOTION), and is there one focal point, one accent, and one identity motif?
+8. If the logo and product name were swapped out, would anything here still belong to this product?
 
 Fix the largest visible failure first, then re-check from the top.
 
@@ -79,6 +81,7 @@ A finding without a region and a rule is a comment, not a finding; record it but
 | A fresh-eye reviewer gets frames and the checklist, never the builder's plan; fix the largest visible failure first | <https://github.com/benjitaylor/skills> (`stageshow` folder, commit `299140f`) (MIT) |
 | A detector score rose while hand ratings fell; a motion rule produced motion collapse | <https://solodesign.cc/blog/ai-design-slop-the-tells/> (2026-06-06) |
 | A `Before / After / Why` table as the review format | <https://github.com/emilkowalski/skills> (commit `c8a7962`) (MIT) |
+| The dial-consistency question and the swap-the-logo test | <https://github.com/miqdadbadjuber/anti-slop> (commit `9504989`, `antislop/SKILL.md` Core Principle and Delivery Gate Block 3; MIT) |
 
 ### Evidence grade
 

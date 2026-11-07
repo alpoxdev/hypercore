@@ -18,9 +18,9 @@
 
 ## 3. 검토자 입력
 
-- 한 문장 브리프와 방문 모드(`brief.md`의 나머지는 제외)
+- 한 문장 브리프, 방문 모드, 다이얼이 붙은 디자인 읽기(Design Read) 줄(`brief.md`의 나머지는 제외)
 - 검사한 너비와 상태의 렌더 캡처, 렌더링이 없으면 바뀐 소스 경로
-- `rules/craft-floor.md` §8과 아래 §5의 "보이는 것 / 할 일" 표
+- `rules/craft-floor.md` §9와 아래 §5의 "보이는 것 / 할 일" 표
 - mockup이면 `references/mockup-craft.md` §2의 실패 모드
 
 ## 4. 질문, 순서대로
@@ -31,6 +31,8 @@
 4. 시스템을 깨는 값은 무엇인가. 한 번만 쓴 색, 크기, 간격, 반경, 시간.
 5. 빠졌거나 미완으로 보이는 상태는 무엇인가?
 6. 실패한 정석 수치 항목은 무엇이고 측정값은 얼마인가?
+7. 결과가 선언한 다이얼(ENERGY, RHYTHM, MOTION)과 맞고, 초점 하나와 강조 하나, 정체성 모티프 하나가 있는가?
+8. 로고와 제품 이름을 바꿔도 이 제품의 것으로 남는 것이 있는가?
 
 가장 크게 보이는 실패를 먼저 고치고, 그다음 처음부터 다시 확인한다.
 
@@ -79,6 +81,7 @@
 | 새 눈의 검토자는 프레임과 체크리스트를 받고 만든 쪽의 계획은 받지 않는다. 가장 크게 보이는 실패를 먼저 고친다 | <https://github.com/benjitaylor/skills> (`stageshow` folder, commit `299140f`) (MIT) |
 | 검출기 점수는 올랐는데 수동 평가는 떨어졌고, 모션 규칙이 모션 붕괴를 낳았다 | <https://solodesign.cc/blog/ai-design-slop-the-tells/> (2026-06-06) |
 | 검토 형식으로서의 `Before / After / Why` 표 | <https://github.com/emilkowalski/skills> (commit `c8a7962`) (MIT) |
+| 다이얼 일관성 질문과 로고 바꾸기 시험 | <https://github.com/miqdadbadjuber/anti-slop> (commit `9504989`, `antislop/SKILL.md` Core Principle and Delivery Gate Block 3; MIT) |
 
 ### Evidence grade
 

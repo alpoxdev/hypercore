@@ -7,6 +7,7 @@ compatibility: Needs file read, search, and edit over the target project and wri
 @rules/workflow.md
 @rules/design-direction.md
 @rules/craft-floor.md
+@rules/delivery-gate.md
 @rules/validation-and-reporting.md
 
 # Hyper UI/UX
@@ -27,6 +28,7 @@ Use a different language only when the user explicitly requests it, an existing 
 
 - Give one entry point for interface work that has to read as deliberately designed: a new screen, a restyle, a staged product mockup, and an audit or cleanup of generic template patterns.
 - Replace taste-by-adjective with a written direction (brief, visitor mode, one specific reference, tokens, a rejected alternative) chosen before any markup.
+- Hold every technique to a purpose test and every result to a liveliness bar (Design Read, three dials, one focal point, one accent, one identity motif), and refuse delivery until a delivery gate passes with evidence on every line.
 - Hold every output to a numeric craft floor drawn from WCAG 2.2, platform guidelines, and national design systems, and catch the recurring generic defaults with a bundled static detector.
 - Keep evidence honest: static source, rendered captures, accessibility checks, and review judgment stay separate, and no finding ever claims AI authorship.
 
@@ -58,7 +60,7 @@ Do not use it when:
 | Tools | File read, search, edit, the bundled bash helpers, the project's own build and test commands, and an already available browser or subagent capability. A missing capability is named and its checks are reported `static_only`, `unavailable`, or `self (degraded)`, never `passed`. |
 | Loop | One bounded correction loop per mode, defined in `rules/workflow.md`: design, restyle, and mockup allow two correction passes; clean allows one; audit and verify never edit. |
 | Output | Changed interface files in write modes, plus a Korean `brief.md` (design, restyle, mockup, brief-only) and a Korean `report.md` validated by `scripts/validate-report.sh` under `.hyper/ui-ux/<slug>/`. |
-| Verification | `rules/validation-and-reporting.md`: detector delta, craft-floor checklist, project checks, rendered evidence when available, independent review, and the report validator. |
+| Verification | `rules/validation-and-reporting.md` and `rules/delivery-gate.md`: detector delta, craft-floor checklist, the delivery gate with evidence per line, project checks, rendered evidence when available, independent review, and the report validator. |
 | Stop condition | Every applicable floor item passes or is reported with its blocker, no P0 remains, the review's high findings are fixed or answered, and the report matches the files on disk; or the run needs a brand decision, a credential, an install, or a production action and stops to ask; or the correction budget is spent and the remaining failures are reported. |
 
 </instruction_contract>
@@ -106,8 +108,8 @@ Boundary requests:
 <skill_architecture>
 
 - Core (`SKILL.md`): trigger, modes, contract, workflow, stop conditions.
-- Rules: [rules/workflow.md](rules/workflow.md) (modes, phases, budgets, artifacts, side-effect gates); [rules/design-direction.md](rules/design-direction.md) (brief, visitor mode, reference, tokens, rejected alternative); [rules/craft-floor.md](rules/craft-floor.md) (numeric floor); [rules/slop-taxonomy.md](rules/slop-taxonomy.md) (finding classes, co-occurrence, dispositions); [rules/evidence-and-severity.md](rules/evidence-and-severity.md) (finding record and severity); [rules/safe-editing.md](rules/safe-editing.md) (what write modes may change); [rules/waivers-and-baselines.md](rules/waivers-and-baselines.md); [rules/rendered-evidence.md](rules/rendered-evidence.md); [rules/independent-review.md](rules/independent-review.md); [rules/validation-and-reporting.md](rules/validation-and-reporting.md).
-- References: [references/anti-pattern-catalog.md](references/anti-pattern-catalog.md), [references/context-signals.md](references/context-signals.md), [references/fix-playbook.md](references/fix-playbook.md), [references/replacement-patterns.md](references/replacement-patterns.md), [references/mockup-craft.md](references/mockup-craft.md), [references/browser-evidence-schema.md](references/browser-evidence-schema.md), [references/eval-rubric.md](references/eval-rubric.md).
+- Rules: [rules/workflow.md](rules/workflow.md) (modes, phases, budgets, artifacts, side-effect gates); [rules/design-direction.md](rules/design-direction.md) (brief, visitor mode, reference, tokens, Design Read and dials, decision reasons, rejected alternative); [rules/craft-floor.md](rules/craft-floor.md) (numeric floor); [rules/slop-taxonomy.md](rules/slop-taxonomy.md) (finding classes, co-occurrence, dispositions); [rules/evidence-and-severity.md](rules/evidence-and-severity.md) (finding record and severity); [rules/safe-editing.md](rules/safe-editing.md) (what write modes may change); [rules/waivers-and-baselines.md](rules/waivers-and-baselines.md); [rules/rendered-evidence.md](rules/rendered-evidence.md); [rules/independent-review.md](rules/independent-review.md); [rules/delivery-gate.md](rules/delivery-gate.md) (honesty, craft floor, purpose and dose, liveliness); [rules/validation-and-reporting.md](rules/validation-and-reporting.md).
+- References: [references/anti-pattern-catalog.md](references/anti-pattern-catalog.md), [references/context-signals.md](references/context-signals.md), [references/fix-playbook.md](references/fix-playbook.md), [references/replacement-patterns.md](references/replacement-patterns.md), [references/mockup-craft.md](references/mockup-craft.md), [references/screen-patterns.md](references/screen-patterns.md), [references/responsive-reflow.md](references/responsive-reflow.md), [references/accessible-interaction.md](references/accessible-interaction.md), [references/ui-copy.md](references/ui-copy.md), [references/contrast-check.md](references/contrast-check.md), [references/performance-baseline.md](references/performance-baseline.md), [references/browser-evidence-schema.md](references/browser-evidence-schema.md), [references/eval-rubric.md](references/eval-rubric.md).
 - Scripts (bash 3.2+, jq 1.6+): `scripts/detect-slop.sh` and `scripts/analyze-structure.sh` for static detection; `scripts/validate-report.sh`, `scripts/validate-waivers.sh`, and `scripts/collect-rendered-evidence.sh` for validation; `scripts/run-detector-evals.sh` and `scripts/run-contract-evals.sh` for the package's own regression suites; the engine, context, and registry helpers they source.
 - Assets: `assets/design-brief-template.ko.md` and `assets/report-template.ko.md` (English siblings beside them), `assets/waiver.schema.json`, detector fixtures, and `assets/evals/hyper-ui-ux-cases.jsonl`.
 
@@ -142,7 +144,14 @@ Write briefs, reports, status lines, and questions in Korean. Keep code, token n
 - Read [references/context-signals.md](references/context-signals.md) when the brief, identity, or data shape is uncertain.
 - Read [references/anti-pattern-catalog.md](references/anti-pattern-catalog.md) when mapping a detector result or an observation to a rule, then [references/fix-playbook.md](references/fix-playbook.md) for its fix and [references/replacement-patterns.md](references/replacement-patterns.md) only when the fix needs a different structure.
 - Read [references/mockup-craft.md](references/mockup-craft.md) in mockup mode.
+- Read [references/screen-patterns.md](references/screen-patterns.md) when the work is a landing page, marketing section, dashboard, or signed-in screen.
+- Read [references/responsive-reflow.md](references/responsive-reflow.md) when a layout must hold from phone to desktop.
+- Read [references/accessible-interaction.md](references/accessible-interaction.md) when building or reviewing controls, forms, dialogs, tabs, or dynamic content.
+- Read [references/ui-copy.md](references/ui-copy.md) when writing or reviewing headlines, buttons, labels, and state messages.
+- Read [references/contrast-check.md](references/contrast-check.md) before judging any color pair.
+- Read [references/performance-baseline.md](references/performance-baseline.md) for a production page, a layout-shift or first-paint finding, or a web-quality review.
 - Read [references/eval-rubric.md](references/eval-rubric.md) only when changing detector rules, fixtures, or eval cases.
+- Read [rules/delivery-gate.md](rules/delivery-gate.md) before handing over any result and before writing audit findings.
 - Read [rules/validation-and-reporting.md](rules/validation-and-reporting.md) before writing the report.
 
 </reference_routing>
@@ -156,7 +165,8 @@ Write briefs, reports, status lines, and questions in Korean. Keep code, token n
 5. `rules/slop-taxonomy.md`, `rules/evidence-and-severity.md`, and `rules/safe-editing.md` before the first finding or edit.
 6. The conditional rules and references named in `reference_routing`, only when their condition holds.
 7. `rules/independent-review.md` at the review phase.
-8. `rules/validation-and-reporting.md` and `assets/report-template.ko.md` before the report, then `scripts/validate-report.sh`.
+8. `rules/delivery-gate.md` before delivery.
+9. `rules/validation-and-reporting.md` and `assets/report-template.ko.md` before the report, then `scripts/validate-report.sh`.
 
 </support_file_read_order>
 
@@ -170,7 +180,7 @@ Write briefs, reports, status lines, and questions in Korean. Keep code, token n
 | 3 | Build against the tokens and the floor, or audit the target | Changed files, or findings |
 | 4 | Check: detector delta, craft-floor checklist, project build and tests, rendered evidence when available | Check results |
 | 5 | Independent review of the rendered result or the source, findings citing region, rule, and measured value | Review findings |
-| 6 | Correct within the budget, then write and validate the report | `.hyper/ui-ux/<slug>/report.md` |
+| 6 | Correct within the budget, run the delivery gate, then write and validate the report | `.hyper/ui-ux/<slug>/report.md` |
 
 Phase rules:
 
@@ -187,7 +197,9 @@ Phase rules:
 - Every screen designed or restyled covers its real states: default, hover, focus-visible, active, disabled, loading, empty, error, and success where the surface has them.
 - The detector runs on the changed target, or its unavailability is recorded with the reason.
 - Every finding carries a rule ID, a severity, an evidence kind, a location, and a disposition.
-- The report states the mode, the rendered-evidence status, the review mode, the detector result, and every residual risk.
+- A Design Read line with ENERGY, RHYTHM, and MOTION dials in `brief.md` before markup, and one-line reasons for color, layout, typography, spacing, containers, and icons before delivery.
+- A delivery gate table in the report with evidence on every `PASS`, including a click-through of every interactive element or the reason it could not be run.
+- The report states the mode, the rendered-evidence status, the review mode, the detector result, the delivery gate result, and every residual risk.
 
 </required>
 
@@ -200,6 +212,8 @@ Phase rules:
 - Installing packages, fonts, browsers, or hooks; writing configuration outside the target; calling external services; deploying or publishing.
 - Claiming a visual, accessibility, or behavior pass from static source, a detector run, or the builder's own screenshot judgment.
 - Calling a finding evidence of AI authorship; the report measures generic-output risk only.
+- Presenting a draft without direction as a deliverable, or falling back silently to a sterile default.
+- Asserting that a color pair passes contrast without computing it, or reporting a performance number that was not measured.
 
 </forbidden>
 
@@ -211,6 +225,7 @@ Phase rules:
 - [ ] The detector ran, or its unavailability is recorded; candidate exceptions stayed visible.
 - [ ] The independent review ran as a subagent or is marked `self (degraded)`, and its high findings are fixed or answered.
 - [ ] No more passes ran than the mode's budget allows, and each correction names the failure it fixed.
+- [ ] The delivery gate ran, every `PASS` cites evidence, and no `FAIL` was delivered.
 - [ ] `scripts/validate-report.sh --report .hyper/ui-ux/<slug>/report.md` passed, and the report matches the files on disk.
 - [ ] The cases in `assets/evals/hyper-ui-ux-cases.jsonl` still match this contract.
 
@@ -227,6 +242,7 @@ Phase rules:
 | Generic patterns count by co-occurrence and every rule keeps its exceptions | `rules/slop-taxonomy.md`, `references/anti-pattern-catalog.md` |
 | A builder grading its own output favors the median, so review is separated from building | `rules/independent-review.md` |
 | Faux product UI rules for mockup mode | `references/mockup-craft.md` |
+| The purpose test, the liveliness dials, the delivery gate, and the landing, dashboard, responsive, interaction, copy, contrast, and performance patterns | `rules/delivery-gate.md` and the references above, which cite <https://github.com/miqdadbadjuber/anti-slop> (commit `9504989`, MIT) |
 | The `[Hyper]` trigger-first description, the required sections, the bilingual package shape, and the eval case shape | `instructions/skill/SKILL_AUTHORING.md` in this repository, read when present |
 
 ### Evidence grade

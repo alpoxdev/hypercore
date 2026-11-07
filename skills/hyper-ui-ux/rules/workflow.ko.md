@@ -32,6 +32,7 @@
 - 기존 화면에 "더 예쁘게 만들어 줘"는 `restyle`이고, "AI 느낌만 걷어내고 나머지는 다 유지"는 `clean`이다. 어휘가 둘 다를 허용하면 `clean`을 고르고 그렇다고 밝힌다. 변경이 더 작다.
 - 소스 없는 스크린샷은 `audit`이고, 소스·동작·접근성 결과를 주장할 수 없다.
 - "감사만. 발견 사항 보고. 편집 금지"라고 말하는 상위 호출자는 기존 UI면 `audit`, 아직 없는 UI면 `brief-only`를 받는다.
+- 고치기 전에 검토부터 원하는 완성된 프로젝트는 `audit`이다. 발견 사항에 보고서에서 번호를 붙여 사용자가 번호로 답할 수 있게 한다. 나중에 "2, 5, 7번 고쳐 줘"라는 요청은 그 번호만 `clean`이나 `restyle`로 처리하고 나머지 발견 사항은 건드리지 않는다.
 
 ## 3. 모드별 단계
 
@@ -44,9 +45,10 @@
 | 정석 수치 체크리스트 | 한다 | 한다 | mockup 부분 집합 | 한다 | 바뀐 영역 | 한다 | 안 한다 |
 | 렌더 증거 | 가능할 때 | 가능할 때 | 가능할 때 | 가능할 때 | 가능할 때 | 가능할 때 | 안 한다 |
 | 독립 검토 | 한다 | 한다 | 한다 | 한다 | 선택 | 한다 | 안 한다 |
+| 납품 게이트(`rules/delivery-gate.md`) | 전체 | 전체 | 전체 | 발견 사항으로 | 블록 1과 손댄 줄 | 전체 | 안 한다 |
 | 보고서 | 한다 | 한다 | 한다 | 한다 | 한다 | 한다 | 브리프만 |
 
-`design`, `restyle`, `mockup`은 token이나 마크업을 쓰기 전에 `rules/design-direction.md`를 읽는다. `mockup`은 `references/mockup-craft.md`도 읽는다. `clean`은 `rules/safe-editing.md`를 따르고 가장 안전한 분류를 먼저 적용한다.
+`design`, `restyle`, `mockup`은 token이나 마크업을 쓰기 전에 `rules/design-direction.md`를 읽는다. 디자인 읽기와 다이얼(§10), 결정 이유(§11)도 포함한다. `mockup`은 `references/mockup-craft.md`도 읽는다. `clean`은 `rules/safe-editing.md`를 따르고 가장 안전한 분류를 먼저 적용한다. 납품하는 모든 모드는 마지막에 납품 게이트를 돌린다. `FAIL` 줄이 있으면 고치거나 열린 항목으로 보고할 때까지 납품을 막는다.
 
 ## 4. 예산
 
@@ -99,6 +101,7 @@
 | 연출 화면을 위한 계획 우선 워크플로: 매체, 겉모습, 스토리, 예시, 화면, 안무, 리허설 | <https://github.com/benjitaylor/skills> (`stageshow` folder, commit `299140f`) (MIT) |
 | audit은 읽기 전용으로 남고, clean은 가장 작은 분류를 먼저 잡고, pass 승인 가드를 둔다 | 이 패키지의 이전 정리 워크플로로, 실질 내용을 그대로 이어받았다 |
 | 문서화된 지침만으로는 없느니만 못한 점수를 냈고 기계적 게이트가 결과를 움직였다 | <https://solodesign.cc/blog/ai-design-slop-the-tells/> (2026-06-06) |
+| 사용자가 번호로 답하는 번호 붙은 감사, 건드리지 않은 번호는 그대로 두기, 모든 모드에서 도는 납품 게이트 | <https://github.com/miqdadbadjuber/anti-slop> (commit `9504989`, `antislop/SKILL.md` Two Usage Modes and Delivery Gate; MIT). The source's per-session mode question and settings file are not adopted; this package picks the mode from the request. |
 
 ### Evidence grade
 

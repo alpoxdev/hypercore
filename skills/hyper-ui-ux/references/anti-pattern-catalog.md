@@ -2,6 +2,15 @@
 
 Load this catalog only when mapping detector output or a rendered observation to a rule. The registry is a judgment aid, not a universal ban list. `autofix` means a deterministic replacement may be safe only after the stated exception check.
 
+## Contents
+
+- Rule table
+- Registry interpretation
+- Second wave and review date
+- Sources
+
+## Rule table
+
 | ID | Category | Scope | Default severity | Static | Autofix | Pattern and exception |
 |---|---|---|---|---:|---:|---|
 | `surface.gradient-text` | surface | default-risk | P2 | yes | no | Gradient-clipped headline; preserve explicit brand/reference typography |
@@ -54,6 +63,37 @@ Load this catalog only when mapping detector output or a rendered observation to
 | `quality.missing-states` | quality | universal | P1 | no | no | Loading, empty, or error state missing or left blank; preserve deliberate absence only when the surface cannot reach that state |
 | `quality.contrast-below-floor` | quality | universal | P1 | no | no | Text or a required non-text element under the contrast floor; rendering or token math must confirm |
 | `structure.mockup-boxed` | structure | review-only | P2 | no | no | Faux product window shrunk into a card with even margins; preserve when the slot itself is a card thumbnail |
+| `quality.focus-suppressed` | quality | universal | P1 | yes | no | `outline: none` or `focus:outline-none` source signature; preserve when an equally visible `:focus-visible` replacement exists |
+| `quality.zoom-blocked` | quality | universal | P1 | yes | no | Viewport meta with `user-scalable=no` or `maximum-scale=1`; no exception |
+| `quality.clickable-div` | quality | universal | P1 | yes | no | `div` or `span` with a click handler; preserve only a custom control that has a role, state attributes, and keyboard support |
+| `quality.dead-anchor` | quality | universal | P2 | yes | no | `href="#"` with no destination; preserve a real in-page anchor written as `#id` |
+| `quality.media-unsized` | quality | universal | P2 | yes | no | `img`, `video`, or `iframe` with no width, height, or aspect-ratio; preserve when CSS on the element sets an aspect ratio |
+| `copy.em-dash` | typography-copy | default-risk | P3 | yes | no | Em dash in source text; preserve quoted sources and an owner-approved voice sample |
+| `copy.generic-cta` | typography-copy | context-dependent | P3 | yes | no | "Get started", "Learn more", "Try now", "Explore", "Discover" as the label; preserve a label the brand guide requires |
+| `structure.viewport-height` | structure | context-dependent | P3 | yes | no | `100vh` or `h-screen` section; preserve a deliberate full-screen view that uses `dvh` on mobile |
+| `quality.dead-control` | quality | universal | P1 | no | no | Button, link, dropdown, or form with no real behavior, or a nav item with no destination; preserve a visibly labelled "Coming soon" |
+| `quality.theme-broken` | quality | universal | P1 | no | no | A shipped light or dark theme that breaks contrast, fonts, or layout |
+| `quality.patch-script` | quality | universal | P1 | no | no | A feature added by a script that rewrites source or CSS with string replacement |
+| `copy.fabricated-claim` | typography-copy | universal | P1 | no | no | Security, compliance, performance, or customer claim with no evidence |
+| `copy.assumed-asset` | typography-copy | default-risk | P1 | no | no | Logo, avatar, product mark, or photo of people created as final without confirmation; preserve labelled placeholders |
+| `copy.emoji-decoration` | typography-copy | default-risk | P3 | no | no | Emoji in headings, bullets, badges, or buttons; preserve emoji that are user content |
+| `structure.template-faq` | structure | universal | P2 | no | no | FAQ of template questions not asked by this product's users |
+| `structure.uniform-rhythm` | structure | context-dependent | P2 | no | no | Every section the same title + subtitle + card grid; preserve when RHYTHM 1 is the declared choice |
+| `structure.alternating-background` | structure | review-only | P3 | no | no | The only variation between sections is the background color |
+| `structure.three-step-default` | structure | context-dependent | P3 | no | no | "How it works" always three numbered round icons; preserve when the real process has three steps |
+| `structure.pricing-default` | structure | context-dependent | P2 | no | no | Three tiers with the middle badged "Most popular" whatever the real plans; preserve the real plan count and a reasoned highlight |
+| `structure.demo-without-product` | structure | default-risk | P1 | no | no | A page selling a product never shown working, or signup with no terms or privacy page |
+| `structure.skeleton-product-shot` | structure | default-risk | P2 | no | no | Skeleton bars used as the hero or feature "screenshot" |
+| `structure.dashboard-shell` | structure | context-dependent | P2 | no | no | Sidebar + top bar + four stat cards + chart + table chosen before the screen's job |
+| `structure.filler-feed` | structure | universal | P1 | no | no | Activity feed of invented people and events |
+| `structure.chart-without-question` | structure | review-only | P3 | no | no | Chart with a generic title and no question it answers |
+| `structure.generic-columns` | structure | review-only | P3 | no | no | Name / Status / Date / Actions columns regardless of the data |
+| `structure.product-clone` | structure | default-risk | P2 | no | no | Overall look copied from a well-known product the user did not ask for |
+| `surface.dark-default` | surface | context-dependent | P3 | no | no | Dark theme only because it looks technical; preserve developer, media, and creative tools with a stated reason |
+| `surface.arrow-everywhere` | surface | review-only | P3 | no | no | Arrows on almost every button |
+| `surface.generic-illustration` | surface | default-risk | P3 | no | no | Stock or 3D blob illustrations with no connection to the product |
+| `surface.dose-exceeded` | surface | default-risk | P2 | no | no | Blur on navbar, cards, modals, and sidebar together, glow on everything, pill shapes on every element, or large shadows everywhere |
+| `type.default-icon-set` | typography-copy | review-only | P3 | no | no | Every icon from one default thin-stroke library with no decision behind it |
 
 ## Registry interpretation
 
@@ -63,7 +103,7 @@ Detector v2 reports `engine`, `evidenceKind`, detection/remediation confidence, 
 
 ## Second wave and review date
 
-The rows `type.unchosen-default-font`, `surface.second-wave-default`, `structure.bento-escape`, `copy.ai-sparkle`, `quality.missing-states`, `quality.contrast-below-floor`, and `structure.mockup-boxed` are review rules: the bundled detector does not emit them, and they are reported from source reading, the craft-floor checklist, or the independent review. Defaults change each year; re-read the sources below and this table at least every six months.
+The rows from `type.unchosen-default-font` to `structure.mockup-boxed`, and every row after `structure.viewport-height` whose Static column is `no`, are review rules: the bundled detector does not emit them, and they are reported from source reading, the delivery gate, the craft-floor checklist, or the independent review. Defaults change each year; re-read the sources below and this table at least every six months. `references/screen-patterns.md` gives the instead-of for the landing, dashboard, and decoration rows.
 
 ## Sources
 
@@ -76,6 +116,7 @@ The rows `type.unchosen-default-font`, `surface.second-wave-default`, `structure
 | Second-wave defaults and their eras | <https://impeccable.style/slop/>, <https://solodesign.cc/blog/ai-design-slop-the-tells/> |
 | A declared font must exist in the build | <https://tailthemes.com/blog/ai-design-slop-quality-gate> (2026-08-20) |
 | AI features shown without sparkle icons or a purple AI color; a boxed window reads as a pasted screenshot | <https://github.com/benjitaylor/skills> (`stageshow` folder, commit `299140f`) (MIT) |
+| The detector rows from `quality.zoom-blocked` to `structure.viewport-height` and the review rows after them (dead controls, broken themes, patch scripts, fabricated claims, assumed assets, template FAQ, section rhythm, pricing and three-step defaults, dashboard shell, filler feed, charts without a question, generic columns, product clones, dark default, arrows, illustrations, dose caps, default icon set) | <https://github.com/miqdadbadjuber/anti-slop> (commit `9504989`, `antislop/SKILL.md` Part 1 and R-01 to R-40, `antislop-ui/SKILL.md`; MIT, Copyright 2026 Miqdad Badjuber). The IDs, scopes, and severities are this package's own. |
 
 ### Evidence grade
 
