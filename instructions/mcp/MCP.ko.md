@@ -114,7 +114,7 @@ MCP는 "AI 애플리케이션을 외부 시스템에 연결하는 오픈소스 �
 
 ## References
 
-- [`references/protocol-2026-07-28.ko.md`](references/protocol-2026-07-28.ko.md): 메시지 모양, 호환성을 깨는 변경, MRTR, 구독, 캐싱, 트랜스포트, 시대 구분, 폐기, 마이그레이션 체크리스트.
+- [`references/protocol-2026-07-28.ko.md`](references/protocol-2026-07-28.ko.md): 메시지 모양, 호환성을 깨는 변경, MRTR, 구독, 캐싱, 트랜스포트, era 구분, 폐기, 마이그레이션 체크리스트.
 - [`references/server-design.ko.md`](references/server-design.ko.md): 프리미티브, 도구 표면, 오류, 상태 핸들, elicitation, instructions, annotation, 확장.
 - [`references/security-and-authorization.ko.md`](references/security-and-authorization.ko.md): 위협 근거, 인가 프로파일, 공격 완화, 로컬 서버 관행, 체크리스트.
 - [`references/host-integration.ko.md`](references/host-integration.ko.md): 비용 모델, 설정 신뢰, 승인, 지연 로딩과 코드 모드, 런타임별 사실.
@@ -127,7 +127,7 @@ MCP는 "AI 애플리케이션을 외부 시스템에 연결하는 오픈소스 �
 | 주장 | 출처 | 게재 |
 |---|---|---|
 | MCP 정의 | <https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro> | 2026-07-28 판 |
-| 현재 판, 시대 구분, 폐기 유예 기간 | <https://modelcontextprotocol.io/docs/2026-07-28/learn/versioning> | 2026-07-28 판 |
+| 현재 판, era 구분, 폐기 유예 기간 | <https://modelcontextprotocol.io/docs/2026-07-28/learn/versioning> | 2026-07-28 판 |
 | 호환성을 깨는 변경과 폐기 | <https://modelcontextprotocol.io/specification/2026-07-28/changelog> | 2026-07-28 판 |
 | 무상태 코어 릴리스 | <https://blog.modelcontextprotocol.io/posts/2026-07-28/> | 2026-07-28 |
 | 프리미티브 제어 모델 | <https://modelcontextprotocol.io/specification/2026-07-28/server> | 2026-07-28 판 |

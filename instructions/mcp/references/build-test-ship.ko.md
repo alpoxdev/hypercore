@@ -59,7 +59,7 @@ MCP 인스펙터는 웹, CLI, 터미널 UI 세 클라이언트를 한 패키지�
 
 디버깅 안내서가 도구 순서를 정한다. 호스트에서 시작하지 말고 그 순서를 따른다(2026-11-07 확인).
 
-1. **인스펙터**를 올바른 시대에 서버에만 붙인다. 서버 버그를 호스트 버그와 분리한다.
+1. **인스펙터**를 올바른 era로 서버에만 붙인다. 서버 버그를 호스트 버그와 분리한다.
 2. **서버 로그.** stdio 서버는 `stderr`에 기록하고 호스트가 흔히 이를 수집한다(Claude Desktop은 `mcp-server-SERVERNAME.log`를 쓴다). Streamable HTTP는 수집되는 `stderr`가 없으므로 자체 로그 집계나 OpenTelemetry를 쓴다. `notifications/message`로 남기는 프로토콜 수준 로깅은 폐기 예정(Deprecated)이고 요청의 `logLevel`에 걸린다.
 3. **호스트 설정.** 절대 경로를 쓴다(stdio 서버의 작업 디렉터리는 정의되지 않을 수 있다). 필수 환경 변수는 명시적으로 넘긴다. stdio 서버는 제한된 환경 변수 일부만 물려받기 때문이다.
 4. **오류 코드.** `-32022` 지원하지 않는 버전(그 `supported` 목록을 읽는다), `-32602` 빠진 `_meta` 필드나 잘못된 파라미터, `-32021` 서버가 선언하지 않은 클라이언트 능력을 요구한다.
@@ -84,7 +84,7 @@ MCP 인스펙터는 웹, CLI, 터미널 UI 세 클라이언트를 한 패키지�
 
 ### Before you publish
 
-- [ ] 서버가 `server/discover`에 응답하고 자기가 주장하는 모든 시대에서 인스펙터 실행을 통과한다.
+- [ ] 서버가 `server/discover`에 응답하고 자기가 지원한다고 밝힌 모든 era에서 인스펙터 실행을 통과한다.
 - [ ] `remotes`에 나열한 원격 서버가 Streamable HTTP로 공개 접근 가능하다. 레지스트리는 폐기 예정인 `sse` 유형을 여전히 받지만 새 SSE 엔드포인트를 배포하지 않는다.
 - [ ] 도구 이름, 설명, annotation이 이 버전에서 최종이다. 호스트와 캐시가 이것을 키로 삼는다([`../../cache/CACHE.ko.md`](../../cache/CACHE.ko.md)).
 - [ ] [`security-and-authorization.ko.md`](security-and-authorization.ko.md)의 보안 점검 목록을 통과한다.
@@ -96,7 +96,7 @@ MCP 인스펙터는 웹, CLI, 터미널 UI 세 클라이언트를 한 패키지�
 | 주장 | 출처 | 게재 |
 |---|---|---|
 | 배포 경로와 원격 기본값 | <https://modelcontextprotocol.io/docs/2026-07-28/develop/build-with-agent-skills> | 날짜 없음 |
-| 서버 골격, `stdout` 규칙, `serveStdio` 시대 커버리지, Python SDK 2.0.0 | <https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server> | 날짜 없음 |
+| 서버 골격, `stdout` 규칙, `serveStdio`의 era 지원 범위, Python SDK 2.0.0 | <https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server> | 날짜 없음 |
 | 클라이언트 수명 주기, 예외가 아니라 결과로 반환되는 `isError` | <https://modelcontextprotocol.io/docs/2026-07-28/develop/build-client> | 날짜 없음 |
 | SDK 목록과 판 주의 | <https://modelcontextprotocol.io/docs/2026-07-28/sdk> | 날짜 없음 |
 | 등급 정의, 적합성 하한, 필수가 아닌 확장 | <https://modelcontextprotocol.io/community/sdk-tiers> | 날짜 없음 |
@@ -104,7 +104,7 @@ MCP 인스펙터는 웹, CLI, 터미널 UI 세 클라이언트를 한 패키지�
 | Python v2 이중 판 지원, `MCPServer` 개명, Tasks 미구현 | <https://py.sdk.modelcontextprotocol.io/whats-new/> | 날짜 없음 |
 | 인스펙터 클라이언트와 Node 요구 사항 | <https://modelcontextprotocol.io/docs/2026-07-28/tools/inspector> | 날짜 없음 |
 | CLI 메서드 모델, 종료 코드, CI 플래그 | <https://modelcontextprotocol.io/docs/2026-07-28/tools/inspector/cli> | 날짜 없음 |
-| 기본 `legacy` 시대, 자동 탐색 없음 | <https://modelcontextprotocol.io/docs/2026-07-28/tools/inspector/protocol-eras> | 날짜 없음 |
+| 기본 era `legacy`, 자동 탐색 없음 | <https://modelcontextprotocol.io/docs/2026-07-28/tools/inspector/protocol-eras> | 날짜 없음 |
 | 디버깅 순서, 로그 위치, 절대 경로 | <https://modelcontextprotocol.io/docs/2026-07-28/tools/debugging> | 날짜 없음 |
 | 레지스트리 프리뷰 상태, 비공개 서버 없음, 호스트 직접 사용 아님 | <https://modelcontextprotocol.io/registry/about> | 날짜 없음 |
 | 패키지 유형별 소유권 표시 | <https://modelcontextprotocol.io/registry/package-types> | 날짜 없음 |
