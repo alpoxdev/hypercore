@@ -19,5 +19,6 @@
   "prd-maker|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
   "pre-deploy|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
   "tone-manner-maker|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
-  "version-update|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence."
+  "version-update|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
+  "hyper-ui-ux|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence."
 }

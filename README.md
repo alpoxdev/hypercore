@@ -103,6 +103,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 /hyper-execute <slug>  # .hyper/plans 계획을 웨이브별 worktree에서 검증하며 실행
 /hyper-mass "<작업>"    # 의존성이 있는 하위 작업을 단계별 DAG로 병렬 실행
 /hyper-mcp "<작업>"     # MCP 서버·클라이언트 구축, 점검·수정, 새 판 이전, 호스트 연결, 레지스트리 준비를 검증까지
+/hyper-ui-ux "<작업>"   # AI 티 없는 화면 디자인·리디자인·연출 화면(mockup)과 generic 패턴 점검·정리를 정석 수치와 독립 검토로 검증
 /prd-maker "<아이디어>"  # 다이어그램·플로우·와이어프레임을 포함한 기획 패키지
 /pre-deploy           # 배포 전 lint/타입/빌드 게이트
 ```
@@ -148,7 +149,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper` | 작업만 말하면 hyper-research·hyper-seo·hyper-architecture·hyper-mcp·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 런북 정리 → documentation, MCP 서버 만들기 → mcp) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
+| `hyper` | 작업만 말하면 hyper-research·hyper-seo·hyper-architecture·hyper-mcp·hyper-ui-ux·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → ui-ux) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
 | `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
 | `hyper-mass` | 의존 순서가 있는 하위 작업을 그래프로 정의해 단계별 병렬 실행, 재시도·수정·재개 지원 | All |
@@ -159,7 +160,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 |------|------|------|
 | `hyper-research` | 질문을 축으로 나눠 확장 웨이브로 수렴시키고, 고위험 주장을 게이트로 검증한 다중 출처 마크다운 리서치 보고서 | All |
 | `client-feedback` | 고객사 피드백을 코드 영향·선택지·리스크로 해석하고 확인 후 구현 | All |
-| `ai-design-slop-remover` | 기존 UI의 브랜드·기능을 보존하며 AI형 generic 디자인 패턴을 감사·제거·검증 | Bash 3.2+ & jq 1.6+; browser optional |
+| `hyper-ui-ux` | 새 화면 디자인, 기존 UI 리디자인, 히어로·데모용 연출 화면(mockup), AI형 generic 패턴 점검·정리를 디자인 브리프→정석 수치(WCAG 2.2·플랫폼·KRDS)→정적 검출기→독립 검토 순서로 처리하고 `.hyper/ui-ux/`에 브리프와 보고서 저장 | Bash 3.2+ & jq 1.6+; browser optional |
 
 ### 콘텐츠 · SEO
 

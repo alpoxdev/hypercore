@@ -46,22 +46,22 @@ code_lines_file() {
 
 approved_sources() {
   case $1 in
-    skills/ai-design-slop-remover/scripts/analyze-structure.sh) printf '%s\n' 'rule-shared.sh' ;;
-    skills/ai-design-slop-remover/scripts/detect-slop.sh) printf '%s\n' 'engine-css.sh' 'engine-markup.sh' 'engine-text.sh' 'resolve-context.sh' 'rule-shared.sh' ;;
-    skills/ai-design-slop-remover/scripts/validate-waivers.sh) printf '%s\n' 'rule-registry.sh' ;;
-    skills/ai-design-slop-remover/scripts/engine-css.sh) printf '%s\n' 'engine-text.sh' ;;
-    skills/ai-design-slop-remover/scripts/engine-markup.sh) printf '%s\n' 'engine-text.sh' ;;
-    skills/ai-design-slop-remover/scripts/engine-text.sh) printf '%s\n' 'rule-shared.sh' ;;
-    skills/ai-design-slop-remover/scripts/resolve-context.sh) printf '%s\n' 'rule-shared.sh' ;;
-    skills/ai-design-slop-remover/scripts/rule-shared.sh) printf '%s\n' 'rule-registry.sh' ;;
+    skills/hyper-ui-ux/scripts/analyze-structure.sh) printf '%s\n' 'rule-shared.sh' ;;
+    skills/hyper-ui-ux/scripts/detect-slop.sh) printf '%s\n' 'engine-css.sh' 'engine-markup.sh' 'engine-text.sh' 'resolve-context.sh' 'rule-shared.sh' ;;
+    skills/hyper-ui-ux/scripts/validate-waivers.sh) printf '%s\n' 'rule-registry.sh' ;;
+    skills/hyper-ui-ux/scripts/engine-css.sh) printf '%s\n' 'engine-text.sh' ;;
+    skills/hyper-ui-ux/scripts/engine-markup.sh) printf '%s\n' 'engine-text.sh' ;;
+    skills/hyper-ui-ux/scripts/engine-text.sh) printf '%s\n' 'rule-shared.sh' ;;
+    skills/hyper-ui-ux/scripts/resolve-context.sh) printf '%s\n' 'rule-shared.sh' ;;
+    skills/hyper-ui-ux/scripts/rule-shared.sh) printf '%s\n' 'rule-registry.sh' ;;
     *) : ;;
   esac
 }
 
 approved_child_scripts() {
   case $1 in
-    skills/ai-design-slop-remover/scripts/run-contract-evals.sh) printf '%s\n' 'collect-rendered-evidence.sh' 'validate-report.sh' 'validate-waivers.sh' ;;
-    skills/ai-design-slop-remover/scripts/run-detector-evals.sh) printf '%s\n' 'detect-slop.sh' ;;
+    skills/hyper-ui-ux/scripts/run-contract-evals.sh) printf '%s\n' 'collect-rendered-evidence.sh' 'validate-report.sh' 'validate-waivers.sh' ;;
+    skills/hyper-ui-ux/scripts/run-detector-evals.sh) printf '%s\n' 'detect-slop.sh' ;;
     skills/pre-deploy/scripts/build-run.sh) printf '%s\n' 'pm-detect.sh' 'stack-detect.sh' ;;
     skills/pre-deploy/scripts/deploy-check.sh) printf '%s\n' 'build-run.sh' 'lint-check.sh' 'stack-detect.sh' ;;
     skills/pre-deploy/scripts/lint-check.sh) printf '%s\n' 'pm-detect.sh' 'stack-detect.sh' ;;
@@ -74,19 +74,19 @@ approved_child_scripts() {
 # usage and behavior for each concrete path, tab-separated.
 metadata_for() {
   case $1 in
-    skills/ai-design-slop-remover/scripts/analyze-structure.sh) printf 'analyze-structure\tstructure-analysis\n' ;;
-    skills/ai-design-slop-remover/scripts/collect-rendered-evidence.sh) printf 'collect-rendered-evidence\trendered-evidence-collection\n' ;;
-    skills/ai-design-slop-remover/scripts/detect-slop.sh) printf 'detect-slop\tslop-detection\n' ;;
-    skills/ai-design-slop-remover/scripts/engine-css.sh) printf 'slop-engine-css\tslop-engine-css\n' ;;
-    skills/ai-design-slop-remover/scripts/engine-markup.sh) printf 'slop-engine-markup\tslop-engine-markup\n' ;;
-    skills/ai-design-slop-remover/scripts/engine-text.sh) printf 'slop-engine-text\tslop-engine-text\n' ;;
-    skills/ai-design-slop-remover/scripts/resolve-context.sh) printf 'resolve-context\tcontext-resolution\n' ;;
-    skills/ai-design-slop-remover/scripts/rule-registry.sh) printf 'slop-rule-registry\tslop-rule-registry\n' ;;
-    skills/ai-design-slop-remover/scripts/rule-shared.sh) printf 'slop-rule-shared\tslop-rule-shared\n' ;;
-    skills/ai-design-slop-remover/scripts/run-contract-evals.sh) printf 'run-contract-evals\tcontract-eval-run\n' ;;
-    skills/ai-design-slop-remover/scripts/run-detector-evals.sh) printf 'run-detector-evals\tdetector-eval-run\n' ;;
-    skills/ai-design-slop-remover/scripts/validate-report.sh) printf 'validate-report\treport-validation\n' ;;
-    skills/ai-design-slop-remover/scripts/validate-waivers.sh) printf 'validate-waivers\twaiver-validation\n' ;;
+    skills/hyper-ui-ux/scripts/analyze-structure.sh) printf 'analyze-structure\tstructure-analysis\n' ;;
+    skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh) printf 'collect-rendered-evidence\trendered-evidence-collection\n' ;;
+    skills/hyper-ui-ux/scripts/detect-slop.sh) printf 'detect-slop\tslop-detection\n' ;;
+    skills/hyper-ui-ux/scripts/engine-css.sh) printf 'slop-engine-css\tslop-engine-css\n' ;;
+    skills/hyper-ui-ux/scripts/engine-markup.sh) printf 'slop-engine-markup\tslop-engine-markup\n' ;;
+    skills/hyper-ui-ux/scripts/engine-text.sh) printf 'slop-engine-text\tslop-engine-text\n' ;;
+    skills/hyper-ui-ux/scripts/resolve-context.sh) printf 'resolve-context\tcontext-resolution\n' ;;
+    skills/hyper-ui-ux/scripts/rule-registry.sh) printf 'slop-rule-registry\tslop-rule-registry\n' ;;
+    skills/hyper-ui-ux/scripts/rule-shared.sh) printf 'slop-rule-shared\tslop-rule-shared\n' ;;
+    skills/hyper-ui-ux/scripts/run-contract-evals.sh) printf 'run-contract-evals\tcontract-eval-run\n' ;;
+    skills/hyper-ui-ux/scripts/run-detector-evals.sh) printf 'run-detector-evals\tdetector-eval-run\n' ;;
+    skills/hyper-ui-ux/scripts/validate-report.sh) printf 'validate-report\treport-validation\n' ;;
+    skills/hyper-ui-ux/scripts/validate-waivers.sh) printf 'validate-waivers\twaiver-validation\n' ;;
     skills/autoresearch-skill/scripts/render-dashboard.sh) printf 'render-dashboard\trender-dashboard\n' ;;
     skills/git-maker/scripts/git-commit.sh) printf 'commit-files\tscoped-git-commit\n' ;;
     skills/git-maker/scripts/git-maker-fast.sh) printf 'commit-files\tfast-git-commit\n' ;;

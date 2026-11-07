@@ -1,6 +1,5 @@
 {
   "skills": {
-    "ai-design-slop-remover": {},
     "autoresearch-skill": {
       "FRONTMATTER_TRIGGER": 1
     },
@@ -47,6 +46,9 @@
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-skill": {},
+    "hyper-ui-ux": {
+      "FRONTMATTER_TRIGGER": 1
+    },
     "image-maker": {},
     "instagram-card-maker": {},
     "jev-maker": {},

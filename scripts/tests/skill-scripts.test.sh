@@ -34,19 +34,19 @@ GIT_MAKER_FAST=$ROOT/skills/git-maker/scripts/git-maker-fast.sh
 # the bun test pins them. Columns: current path, from path, sha256, mode, ref.
 MIGRATION_PREIMAGES=$(
   cat <<'TSV'
-skills/ai-design-slop-remover/scripts/analyze-structure.sh	skills/ai-design-slop-remover/scripts/analyze-structure.cjs	9b379e486755ea09729d7b52097718868ef8817dbb4e9169e9bcab34152eb8d0	100644	migrationPreimageRef
-skills/ai-design-slop-remover/scripts/collect-rendered-evidence.sh	skills/ai-design-slop-remover/scripts/collect-rendered-evidence.cjs	562f561401694e9e8b0377a88e0a48884812929ca50c7c6e202896119ab1d7a3	100644	migrationPreimageRef
-skills/ai-design-slop-remover/scripts/detect-slop.sh	skills/ai-design-slop-remover/scripts/detect-slop.cjs	17e5c21a8eec75f0f4638196f67aca8de0bf5ff49b6bb6ff71c9d156e56e847a	100644	migrationPreimageRef
-skills/ai-design-slop-remover/scripts/engine-css.sh	skills/ai-design-slop-remover/scripts/engines/css.cjs	2cc502ed2086a4ff293a153e7981da7738dc019cbd3fd0d64ce1da1418d7a03c	100644	migrationPreimageRef
-skills/ai-design-slop-remover/scripts/engine-markup.sh	skills/ai-design-slop-remover/scripts/engines/markup.cjs	d283db47e8a7464a29a08ad2035e77e46a895a11693eb4b40842628caff06161	100644	migrationPreimageRef
-skills/ai-design-slop-remover/scripts/engine-text.sh	skills/ai-design-slop-remover/scripts/engines/text.cjs	d892fa19e78bc785631ec8ca0d472566a160898b035345a9c9136db49c91a7df	100644	migrationPreimageRef
-skills/ai-design-slop-remover/scripts/resolve-context.sh	skills/ai-design-slop-remover/scripts/resolve-context.cjs	4cd95ded813c423e0c3deba3e4af9240d38e4c88d5ca6e15e5be9fae5f8a27cc	100644	migrationPreimageRef
-skills/ai-design-slop-remover/scripts/rule-registry.sh	skills/ai-design-slop-remover/scripts/rules/registry.cjs	67492b55d8417e73ecdad9b32de902aca674cdd576f7cc9f920c595f8694db05	100644	migrationPreimageRef
-skills/ai-design-slop-remover/scripts/rule-shared.sh	skills/ai-design-slop-remover/scripts/rules/shared.cjs	0d4f0fec0192872ec25a459426ceae5707c45befa71a203de21a12f4088a40ce	100644	migrationPreimageRef
-skills/ai-design-slop-remover/scripts/run-contract-evals.sh	skills/ai-design-slop-remover/scripts/run-contract-evals.cjs	f9d5abe484d028aebcd7dad92e90dbc77ee6144f9ee96db98cb9393d5c7bca5b	100644	migrationPreimageRef
-skills/ai-design-slop-remover/scripts/run-detector-evals.sh	skills/ai-design-slop-remover/scripts/run-detector-evals.cjs	fddb35e5a47670733d2b85f657b88e6136d0bad7482d3e652bd3129466c4dbf4	100644	migrationPreimageRef
-skills/ai-design-slop-remover/scripts/validate-report.sh	skills/ai-design-slop-remover/scripts/validate-report.cjs	0876b9f0c9291cc590c406fb6552363de33303b9fdb244dfcd940d85798c7d1f	100644	migrationPreimageRef
-skills/ai-design-slop-remover/scripts/validate-waivers.sh	skills/ai-design-slop-remover/scripts/validate-waivers.cjs	f288eaeca8342136488d50ba456dfc00acc2fa78177ce356cb9256691075f1f7	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/analyze-structure.sh	skills/ai-design-slop-remover/scripts/analyze-structure.cjs	9b379e486755ea09729d7b52097718868ef8817dbb4e9169e9bcab34152eb8d0	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh	skills/ai-design-slop-remover/scripts/collect-rendered-evidence.cjs	562f561401694e9e8b0377a88e0a48884812929ca50c7c6e202896119ab1d7a3	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/detect-slop.sh	skills/ai-design-slop-remover/scripts/detect-slop.cjs	17e5c21a8eec75f0f4638196f67aca8de0bf5ff49b6bb6ff71c9d156e56e847a	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/engine-css.sh	skills/ai-design-slop-remover/scripts/engines/css.cjs	2cc502ed2086a4ff293a153e7981da7738dc019cbd3fd0d64ce1da1418d7a03c	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/engine-markup.sh	skills/ai-design-slop-remover/scripts/engines/markup.cjs	d283db47e8a7464a29a08ad2035e77e46a895a11693eb4b40842628caff06161	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/engine-text.sh	skills/ai-design-slop-remover/scripts/engines/text.cjs	d892fa19e78bc785631ec8ca0d472566a160898b035345a9c9136db49c91a7df	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/resolve-context.sh	skills/ai-design-slop-remover/scripts/resolve-context.cjs	4cd95ded813c423e0c3deba3e4af9240d38e4c88d5ca6e15e5be9fae5f8a27cc	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/rule-registry.sh	skills/ai-design-slop-remover/scripts/rules/registry.cjs	67492b55d8417e73ecdad9b32de902aca674cdd576f7cc9f920c595f8694db05	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/rule-shared.sh	skills/ai-design-slop-remover/scripts/rules/shared.cjs	0d4f0fec0192872ec25a459426ceae5707c45befa71a203de21a12f4088a40ce	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/run-contract-evals.sh	skills/ai-design-slop-remover/scripts/run-contract-evals.cjs	f9d5abe484d028aebcd7dad92e90dbc77ee6144f9ee96db98cb9393d5c7bca5b	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/run-detector-evals.sh	skills/ai-design-slop-remover/scripts/run-detector-evals.cjs	fddb35e5a47670733d2b85f657b88e6136d0bad7482d3e652bd3129466c4dbf4	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/validate-report.sh	skills/ai-design-slop-remover/scripts/validate-report.cjs	0876b9f0c9291cc590c406fb6552363de33303b9fdb244dfcd940d85798c7d1f	100644	migrationPreimageRef
+skills/hyper-ui-ux/scripts/validate-waivers.sh	skills/ai-design-slop-remover/scripts/validate-waivers.cjs	f288eaeca8342136488d50ba456dfc00acc2fa78177ce356cb9256691075f1f7	100644	migrationPreimageRef
 skills/skill-tester/scripts/validate-skill-tester.sh	skills/skill-tester/scripts/validate-skill-tester.js	978399934eee9ee856d07ae6703c6181ab4ec2c25e19ab420107682b0bebee56	100644	migrationPreimageRef
 TSV
 )
@@ -294,19 +294,19 @@ case_manifest_inventory() {
 
   local authored
   authored=$(cat <<'LIST'
-skills/ai-design-slop-remover/scripts/analyze-structure.sh
-skills/ai-design-slop-remover/scripts/collect-rendered-evidence.sh
-skills/ai-design-slop-remover/scripts/detect-slop.sh
-skills/ai-design-slop-remover/scripts/engine-css.sh
-skills/ai-design-slop-remover/scripts/engine-markup.sh
-skills/ai-design-slop-remover/scripts/engine-text.sh
-skills/ai-design-slop-remover/scripts/resolve-context.sh
-skills/ai-design-slop-remover/scripts/rule-registry.sh
-skills/ai-design-slop-remover/scripts/rule-shared.sh
-skills/ai-design-slop-remover/scripts/run-contract-evals.sh
-skills/ai-design-slop-remover/scripts/run-detector-evals.sh
-skills/ai-design-slop-remover/scripts/validate-report.sh
-skills/ai-design-slop-remover/scripts/validate-waivers.sh
+skills/hyper-ui-ux/scripts/analyze-structure.sh
+skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh
+skills/hyper-ui-ux/scripts/detect-slop.sh
+skills/hyper-ui-ux/scripts/engine-css.sh
+skills/hyper-ui-ux/scripts/engine-markup.sh
+skills/hyper-ui-ux/scripts/engine-text.sh
+skills/hyper-ui-ux/scripts/resolve-context.sh
+skills/hyper-ui-ux/scripts/rule-registry.sh
+skills/hyper-ui-ux/scripts/rule-shared.sh
+skills/hyper-ui-ux/scripts/run-contract-evals.sh
+skills/hyper-ui-ux/scripts/run-detector-evals.sh
+skills/hyper-ui-ux/scripts/validate-report.sh
+skills/hyper-ui-ux/scripts/validate-waivers.sh
 skills/jev-maker/scripts/check-jev-request.sh
 skills/skill-tester/scripts/validate-skill-tester.sh
 LIST

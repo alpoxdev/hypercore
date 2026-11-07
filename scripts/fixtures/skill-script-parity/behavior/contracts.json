@@ -28,14 +28,14 @@
   },
   "rows": [
     {
-      "id": "ai-design-slop-remover--analyze-structure",
-      "path": "skills/ai-design-slop-remover/scripts/analyze-structure.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--analyze-structure",
+      "path": "skills/hyper-ui-ux/scripts/analyze-structure.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/analyze-structure.mjs",
+          "path": "skills/hyper-ui-ux/scripts/analyze-structure.mjs",
           "absent": true
         },
         "migration": {
@@ -46,14 +46,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--analyze-structure--stdout",
-        "stderr": "ai-design-slop-remover--analyze-structure--stderr",
-        "exit": "ai-design-slop-remover--analyze-structure--exit",
-        "files": "ai-design-slop-remover--analyze-structure--files",
-        "modes": "ai-design-slop-remover--analyze-structure--modes",
-        "cwd": "ai-design-slop-remover--analyze-structure--cwd",
-        "env": "ai-design-slop-remover--analyze-structure--env",
-        "argv": "ai-design-slop-remover--analyze-structure--argv"
+        "stdout": "hyper-ui-ux--analyze-structure--stdout",
+        "stderr": "hyper-ui-ux--analyze-structure--stderr",
+        "exit": "hyper-ui-ux--analyze-structure--exit",
+        "files": "hyper-ui-ux--analyze-structure--files",
+        "modes": "hyper-ui-ux--analyze-structure--modes",
+        "cwd": "hyper-ui-ux--analyze-structure--cwd",
+        "env": "hyper-ui-ux--analyze-structure--env",
+        "argv": "hyper-ui-ux--analyze-structure--argv"
       },
       "fixtures": {
         "happy": {
@@ -61,7 +61,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/analyze-structure.sh"
+              "skills/hyper-ui-ux/scripts/analyze-structure.sh"
             ]
           },
           "input": {
@@ -115,7 +115,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/analyze-structure.sh"
+              "skills/hyper-ui-ux/scripts/analyze-structure.sh"
             ]
           },
           "input": {
@@ -169,7 +169,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/analyze-structure.sh"
+              "skills/hyper-ui-ux/scripts/analyze-structure.sh"
             ]
           },
           "input": {
@@ -241,14 +241,14 @@
       }
     },
     {
-      "id": "ai-design-slop-remover--collect-rendered-evidence",
-      "path": "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--collect-rendered-evidence",
+      "path": "skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.mjs",
+          "path": "skills/hyper-ui-ux/scripts/collect-rendered-evidence.mjs",
           "absent": true
         },
         "migration": {
@@ -259,14 +259,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--collect-rendered-evidence--stdout",
-        "stderr": "ai-design-slop-remover--collect-rendered-evidence--stderr",
-        "exit": "ai-design-slop-remover--collect-rendered-evidence--exit",
-        "files": "ai-design-slop-remover--collect-rendered-evidence--files",
-        "modes": "ai-design-slop-remover--collect-rendered-evidence--modes",
-        "cwd": "ai-design-slop-remover--collect-rendered-evidence--cwd",
-        "env": "ai-design-slop-remover--collect-rendered-evidence--env",
-        "argv": "ai-design-slop-remover--collect-rendered-evidence--argv"
+        "stdout": "hyper-ui-ux--collect-rendered-evidence--stdout",
+        "stderr": "hyper-ui-ux--collect-rendered-evidence--stderr",
+        "exit": "hyper-ui-ux--collect-rendered-evidence--exit",
+        "files": "hyper-ui-ux--collect-rendered-evidence--files",
+        "modes": "hyper-ui-ux--collect-rendered-evidence--modes",
+        "cwd": "hyper-ui-ux--collect-rendered-evidence--cwd",
+        "env": "hyper-ui-ux--collect-rendered-evidence--env",
+        "argv": "hyper-ui-ux--collect-rendered-evidence--argv"
       },
       "fixtures": {
         "happy": {
@@ -274,7 +274,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.sh"
+              "skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh"
             ]
           },
           "input": {
@@ -328,7 +328,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.sh"
+              "skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh"
             ]
           },
           "input": {
@@ -384,7 +384,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/collect-rendered-evidence.sh"
+              "skills/hyper-ui-ux/scripts/collect-rendered-evidence.sh"
             ]
           },
           "input": {
@@ -436,14 +436,14 @@
       }
     },
     {
-      "id": "ai-design-slop-remover--detect-slop",
-      "path": "skills/ai-design-slop-remover/scripts/detect-slop.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--detect-slop",
+      "path": "skills/hyper-ui-ux/scripts/detect-slop.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/detect-slop.mjs",
+          "path": "skills/hyper-ui-ux/scripts/detect-slop.mjs",
           "absent": true
         },
         "migration": {
@@ -454,14 +454,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--detect-slop--stdout",
-        "stderr": "ai-design-slop-remover--detect-slop--stderr",
-        "exit": "ai-design-slop-remover--detect-slop--exit",
-        "files": "ai-design-slop-remover--detect-slop--files",
-        "modes": "ai-design-slop-remover--detect-slop--modes",
-        "cwd": "ai-design-slop-remover--detect-slop--cwd",
-        "env": "ai-design-slop-remover--detect-slop--env",
-        "argv": "ai-design-slop-remover--detect-slop--argv"
+        "stdout": "hyper-ui-ux--detect-slop--stdout",
+        "stderr": "hyper-ui-ux--detect-slop--stderr",
+        "exit": "hyper-ui-ux--detect-slop--exit",
+        "files": "hyper-ui-ux--detect-slop--files",
+        "modes": "hyper-ui-ux--detect-slop--modes",
+        "cwd": "hyper-ui-ux--detect-slop--cwd",
+        "env": "hyper-ui-ux--detect-slop--env",
+        "argv": "hyper-ui-ux--detect-slop--argv"
       },
       "fixtures": {
         "happy": {
@@ -469,7 +469,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/detect-slop.sh"
+              "skills/hyper-ui-ux/scripts/detect-slop.sh"
             ]
           },
           "input": {
@@ -523,7 +523,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/detect-slop.sh"
+              "skills/hyper-ui-ux/scripts/detect-slop.sh"
             ]
           },
           "input": {
@@ -577,7 +577,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/detect-slop.sh"
+              "skills/hyper-ui-ux/scripts/detect-slop.sh"
             ]
           },
           "input": {
@@ -645,14 +645,14 @@
       }
     },
     {
-      "id": "ai-design-slop-remover--engine-css",
-      "path": "skills/ai-design-slop-remover/scripts/engine-css.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--engine-css",
+      "path": "skills/hyper-ui-ux/scripts/engine-css.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/engine-css.mjs",
+          "path": "skills/hyper-ui-ux/scripts/engine-css.mjs",
           "absent": true
         },
         "migration": {
@@ -663,14 +663,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--engine-css--stdout",
-        "stderr": "ai-design-slop-remover--engine-css--stderr",
-        "exit": "ai-design-slop-remover--engine-css--exit",
-        "files": "ai-design-slop-remover--engine-css--files",
-        "modes": "ai-design-slop-remover--engine-css--modes",
-        "cwd": "ai-design-slop-remover--engine-css--cwd",
-        "env": "ai-design-slop-remover--engine-css--env",
-        "argv": "ai-design-slop-remover--engine-css--argv"
+        "stdout": "hyper-ui-ux--engine-css--stdout",
+        "stderr": "hyper-ui-ux--engine-css--stderr",
+        "exit": "hyper-ui-ux--engine-css--exit",
+        "files": "hyper-ui-ux--engine-css--files",
+        "modes": "hyper-ui-ux--engine-css--modes",
+        "cwd": "hyper-ui-ux--engine-css--cwd",
+        "env": "hyper-ui-ux--engine-css--env",
+        "argv": "hyper-ui-ux--engine-css--argv"
       },
       "fixtures": {
         "happy": {
@@ -678,7 +678,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-css.sh"
+              "skills/hyper-ui-ux/scripts/engine-css.sh"
             ]
           },
           "input": {
@@ -724,7 +724,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-css.sh"
+              "skills/hyper-ui-ux/scripts/engine-css.sh"
             ]
           },
           "input": {
@@ -788,7 +788,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-css.sh"
+              "skills/hyper-ui-ux/scripts/engine-css.sh"
             ]
           },
           "input": {
@@ -846,14 +846,14 @@
       }
     },
     {
-      "id": "ai-design-slop-remover--engine-markup",
-      "path": "skills/ai-design-slop-remover/scripts/engine-markup.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--engine-markup",
+      "path": "skills/hyper-ui-ux/scripts/engine-markup.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/engine-markup.mjs",
+          "path": "skills/hyper-ui-ux/scripts/engine-markup.mjs",
           "absent": true
         },
         "migration": {
@@ -864,14 +864,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--engine-markup--stdout",
-        "stderr": "ai-design-slop-remover--engine-markup--stderr",
-        "exit": "ai-design-slop-remover--engine-markup--exit",
-        "files": "ai-design-slop-remover--engine-markup--files",
-        "modes": "ai-design-slop-remover--engine-markup--modes",
-        "cwd": "ai-design-slop-remover--engine-markup--cwd",
-        "env": "ai-design-slop-remover--engine-markup--env",
-        "argv": "ai-design-slop-remover--engine-markup--argv"
+        "stdout": "hyper-ui-ux--engine-markup--stdout",
+        "stderr": "hyper-ui-ux--engine-markup--stderr",
+        "exit": "hyper-ui-ux--engine-markup--exit",
+        "files": "hyper-ui-ux--engine-markup--files",
+        "modes": "hyper-ui-ux--engine-markup--modes",
+        "cwd": "hyper-ui-ux--engine-markup--cwd",
+        "env": "hyper-ui-ux--engine-markup--env",
+        "argv": "hyper-ui-ux--engine-markup--argv"
       },
       "fixtures": {
         "happy": {
@@ -879,7 +879,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-markup.sh"
+              "skills/hyper-ui-ux/scripts/engine-markup.sh"
             ]
           },
           "input": {
@@ -925,7 +925,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-markup.sh"
+              "skills/hyper-ui-ux/scripts/engine-markup.sh"
             ]
           },
           "input": {
@@ -989,7 +989,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-markup.sh"
+              "skills/hyper-ui-ux/scripts/engine-markup.sh"
             ]
           },
           "input": {
@@ -1047,14 +1047,14 @@
       }
     },
     {
-      "id": "ai-design-slop-remover--engine-text",
-      "path": "skills/ai-design-slop-remover/scripts/engine-text.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--engine-text",
+      "path": "skills/hyper-ui-ux/scripts/engine-text.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/engine-text.mjs",
+          "path": "skills/hyper-ui-ux/scripts/engine-text.mjs",
           "absent": true
         },
         "migration": {
@@ -1065,14 +1065,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--engine-text--stdout",
-        "stderr": "ai-design-slop-remover--engine-text--stderr",
-        "exit": "ai-design-slop-remover--engine-text--exit",
-        "files": "ai-design-slop-remover--engine-text--files",
-        "modes": "ai-design-slop-remover--engine-text--modes",
-        "cwd": "ai-design-slop-remover--engine-text--cwd",
-        "env": "ai-design-slop-remover--engine-text--env",
-        "argv": "ai-design-slop-remover--engine-text--argv"
+        "stdout": "hyper-ui-ux--engine-text--stdout",
+        "stderr": "hyper-ui-ux--engine-text--stderr",
+        "exit": "hyper-ui-ux--engine-text--exit",
+        "files": "hyper-ui-ux--engine-text--files",
+        "modes": "hyper-ui-ux--engine-text--modes",
+        "cwd": "hyper-ui-ux--engine-text--cwd",
+        "env": "hyper-ui-ux--engine-text--env",
+        "argv": "hyper-ui-ux--engine-text--argv"
       },
       "fixtures": {
         "happy": {
@@ -1080,7 +1080,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-text.sh"
+              "skills/hyper-ui-ux/scripts/engine-text.sh"
             ]
           },
           "input": {
@@ -1126,7 +1126,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-text.sh"
+              "skills/hyper-ui-ux/scripts/engine-text.sh"
             ]
           },
           "input": {
@@ -1190,7 +1190,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/engine-text.sh"
+              "skills/hyper-ui-ux/scripts/engine-text.sh"
             ]
           },
           "input": {
@@ -1248,14 +1248,14 @@
       }
     },
     {
-      "id": "ai-design-slop-remover--resolve-context",
-      "path": "skills/ai-design-slop-remover/scripts/resolve-context.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--resolve-context",
+      "path": "skills/hyper-ui-ux/scripts/resolve-context.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/resolve-context.mjs",
+          "path": "skills/hyper-ui-ux/scripts/resolve-context.mjs",
           "absent": true
         },
         "migration": {
@@ -1266,14 +1266,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--resolve-context--stdout",
-        "stderr": "ai-design-slop-remover--resolve-context--stderr",
-        "exit": "ai-design-slop-remover--resolve-context--exit",
-        "files": "ai-design-slop-remover--resolve-context--files",
-        "modes": "ai-design-slop-remover--resolve-context--modes",
-        "cwd": "ai-design-slop-remover--resolve-context--cwd",
-        "env": "ai-design-slop-remover--resolve-context--env",
-        "argv": "ai-design-slop-remover--resolve-context--argv"
+        "stdout": "hyper-ui-ux--resolve-context--stdout",
+        "stderr": "hyper-ui-ux--resolve-context--stderr",
+        "exit": "hyper-ui-ux--resolve-context--exit",
+        "files": "hyper-ui-ux--resolve-context--files",
+        "modes": "hyper-ui-ux--resolve-context--modes",
+        "cwd": "hyper-ui-ux--resolve-context--cwd",
+        "env": "hyper-ui-ux--resolve-context--env",
+        "argv": "hyper-ui-ux--resolve-context--argv"
       },
       "fixtures": {
         "happy": {
@@ -1281,7 +1281,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/resolve-context.sh"
+              "skills/hyper-ui-ux/scripts/resolve-context.sh"
             ]
           },
           "input": {
@@ -1327,7 +1327,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/resolve-context.sh"
+              "skills/hyper-ui-ux/scripts/resolve-context.sh"
             ]
           },
           "input": {
@@ -1391,7 +1391,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/resolve-context.sh"
+              "skills/hyper-ui-ux/scripts/resolve-context.sh"
             ]
           },
           "input": {
@@ -1449,14 +1449,14 @@
       }
     },
     {
-      "id": "ai-design-slop-remover--rule-registry",
-      "path": "skills/ai-design-slop-remover/scripts/rule-registry.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--rule-registry",
+      "path": "skills/hyper-ui-ux/scripts/rule-registry.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/rule-registry.mjs",
+          "path": "skills/hyper-ui-ux/scripts/rule-registry.mjs",
           "absent": true
         },
         "migration": {
@@ -1467,14 +1467,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--rule-registry--stdout",
-        "stderr": "ai-design-slop-remover--rule-registry--stderr",
-        "exit": "ai-design-slop-remover--rule-registry--exit",
-        "files": "ai-design-slop-remover--rule-registry--files",
-        "modes": "ai-design-slop-remover--rule-registry--modes",
-        "cwd": "ai-design-slop-remover--rule-registry--cwd",
-        "env": "ai-design-slop-remover--rule-registry--env",
-        "argv": "ai-design-slop-remover--rule-registry--argv"
+        "stdout": "hyper-ui-ux--rule-registry--stdout",
+        "stderr": "hyper-ui-ux--rule-registry--stderr",
+        "exit": "hyper-ui-ux--rule-registry--exit",
+        "files": "hyper-ui-ux--rule-registry--files",
+        "modes": "hyper-ui-ux--rule-registry--modes",
+        "cwd": "hyper-ui-ux--rule-registry--cwd",
+        "env": "hyper-ui-ux--rule-registry--env",
+        "argv": "hyper-ui-ux--rule-registry--argv"
       },
       "fixtures": {
         "happy": {
@@ -1482,7 +1482,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/rule-registry.sh"
+              "skills/hyper-ui-ux/scripts/rule-registry.sh"
             ]
           },
           "input": {
@@ -1528,7 +1528,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/rule-registry.sh"
+              "skills/hyper-ui-ux/scripts/rule-registry.sh"
             ]
           },
           "input": {
@@ -1592,7 +1592,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/rule-registry.sh"
+              "skills/hyper-ui-ux/scripts/rule-registry.sh"
             ]
           },
           "input": {
@@ -1650,14 +1650,14 @@
       }
     },
     {
-      "id": "ai-design-slop-remover--rule-shared",
-      "path": "skills/ai-design-slop-remover/scripts/rule-shared.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--rule-shared",
+      "path": "skills/hyper-ui-ux/scripts/rule-shared.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/rule-shared.mjs",
+          "path": "skills/hyper-ui-ux/scripts/rule-shared.mjs",
           "absent": true
         },
         "migration": {
@@ -1668,14 +1668,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--rule-shared--stdout",
-        "stderr": "ai-design-slop-remover--rule-shared--stderr",
-        "exit": "ai-design-slop-remover--rule-shared--exit",
-        "files": "ai-design-slop-remover--rule-shared--files",
-        "modes": "ai-design-slop-remover--rule-shared--modes",
-        "cwd": "ai-design-slop-remover--rule-shared--cwd",
-        "env": "ai-design-slop-remover--rule-shared--env",
-        "argv": "ai-design-slop-remover--rule-shared--argv"
+        "stdout": "hyper-ui-ux--rule-shared--stdout",
+        "stderr": "hyper-ui-ux--rule-shared--stderr",
+        "exit": "hyper-ui-ux--rule-shared--exit",
+        "files": "hyper-ui-ux--rule-shared--files",
+        "modes": "hyper-ui-ux--rule-shared--modes",
+        "cwd": "hyper-ui-ux--rule-shared--cwd",
+        "env": "hyper-ui-ux--rule-shared--env",
+        "argv": "hyper-ui-ux--rule-shared--argv"
       },
       "fixtures": {
         "happy": {
@@ -1683,7 +1683,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/rule-shared.sh"
+              "skills/hyper-ui-ux/scripts/rule-shared.sh"
             ]
           },
           "input": {
@@ -1729,7 +1729,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/rule-shared.sh"
+              "skills/hyper-ui-ux/scripts/rule-shared.sh"
             ]
           },
           "input": {
@@ -1793,7 +1793,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/rule-shared.sh"
+              "skills/hyper-ui-ux/scripts/rule-shared.sh"
             ]
           },
           "input": {
@@ -1851,14 +1851,14 @@
       }
     },
     {
-      "id": "ai-design-slop-remover--run-contract-evals",
-      "path": "skills/ai-design-slop-remover/scripts/run-contract-evals.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--run-contract-evals",
+      "path": "skills/hyper-ui-ux/scripts/run-contract-evals.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/run-contract-evals.mjs",
+          "path": "skills/hyper-ui-ux/scripts/run-contract-evals.mjs",
           "absent": true
         },
         "migration": {
@@ -1869,14 +1869,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--run-contract-evals--stdout",
-        "stderr": "ai-design-slop-remover--run-contract-evals--stderr",
-        "exit": "ai-design-slop-remover--run-contract-evals--exit",
-        "files": "ai-design-slop-remover--run-contract-evals--files",
-        "modes": "ai-design-slop-remover--run-contract-evals--modes",
-        "cwd": "ai-design-slop-remover--run-contract-evals--cwd",
-        "env": "ai-design-slop-remover--run-contract-evals--env",
-        "argv": "ai-design-slop-remover--run-contract-evals--argv"
+        "stdout": "hyper-ui-ux--run-contract-evals--stdout",
+        "stderr": "hyper-ui-ux--run-contract-evals--stderr",
+        "exit": "hyper-ui-ux--run-contract-evals--exit",
+        "files": "hyper-ui-ux--run-contract-evals--files",
+        "modes": "hyper-ui-ux--run-contract-evals--modes",
+        "cwd": "hyper-ui-ux--run-contract-evals--cwd",
+        "env": "hyper-ui-ux--run-contract-evals--env",
+        "argv": "hyper-ui-ux--run-contract-evals--argv"
       },
       "fixtures": {
         "happy": {
@@ -1884,7 +1884,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/run-contract-evals.sh"
+              "skills/hyper-ui-ux/scripts/run-contract-evals.sh"
             ]
           },
           "input": {
@@ -1907,7 +1907,7 @@
                 "text": "# AI Design Slop 정리 결과\n\n## 처리 요약\n- Detector: v2\n- 실행한 engine: text | context\n- Baseline delta: 미사용\n- Generic-output risk: low\n- 렌더링 검증: static_only\n- 최종 상태: pass\n\n## Brief inference\n- 확인됨\n\n## 발견 사항\n- 없음\n\n## 적용한 변경\n- 없음\n\n## 검증\n- Detector/baseline: pass\n\n## 남은 위험\n- 없음\n"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/validate-report.sh",
+                "path": "skills/hyper-ui-ux/scripts/validate-report.sh",
                 "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"ok\":true}'\n"
               }
             ]
@@ -1932,7 +1932,7 @@
                 "sha256": "005f78aecf2fa7795767c0808c5bb33a79f75ae2a8dcc0a464025d6e7fcd4865"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/validate-report.sh",
+                "path": "skills/hyper-ui-ux/scripts/validate-report.sh",
                 "bytes": 48,
                 "sha256": "d1f983f2d4728fb3564260395cbe69c13625dca5c6f11125488d719ef815c87b"
               }
@@ -1940,7 +1940,7 @@
             "modes": {
               "report.md": "644",
               "cases.jsonl": "644",
-              "skills/ai-design-slop-remover/scripts/validate-report.sh": "644"
+              "skills/hyper-ui-ux/scripts/validate-report.sh": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -1958,7 +1958,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/run-contract-evals.sh"
+              "skills/hyper-ui-ux/scripts/run-contract-evals.sh"
             ]
           },
           "input": {
@@ -2014,7 +2014,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/run-contract-evals.sh"
+              "skills/hyper-ui-ux/scripts/run-contract-evals.sh"
             ]
           },
           "input": {
@@ -2037,7 +2037,7 @@
                 "text": "# AI Design Slop 정리 결과\n\n## 처리 요약\n- Detector: v2\n- 실행한 engine: text | context\n- Baseline delta: 미사용\n- Generic-output risk: low\n- 렌더링 검증: static_only\n- 최종 상태: pass\n\n## Brief inference\n- 확인됨\n\n## 발견 사항\n- 없음\n\n## 적용한 변경\n- 없음\n\n## 검증\n- Detector/baseline: pass\n\n## 남은 위험\n- 없음\n"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/validate-report.sh",
+                "path": "skills/hyper-ui-ux/scripts/validate-report.sh",
                 "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"ok\":true}'\n"
               }
             ]
@@ -2062,7 +2062,7 @@
                 "sha256": "005f78aecf2fa7795767c0808c5bb33a79f75ae2a8dcc0a464025d6e7fcd4865"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/validate-report.sh",
+                "path": "skills/hyper-ui-ux/scripts/validate-report.sh",
                 "bytes": 48,
                 "sha256": "d1f983f2d4728fb3564260395cbe69c13625dca5c6f11125488d719ef815c87b"
               }
@@ -2070,7 +2070,7 @@
             "modes": {
               "report.md": "644",
               "cases.jsonl": "644",
-              "skills/ai-design-slop-remover/scripts/validate-report.sh": "644"
+              "skills/hyper-ui-ux/scripts/validate-report.sh": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -2086,14 +2086,14 @@
       }
     },
     {
-      "id": "ai-design-slop-remover--run-detector-evals",
-      "path": "skills/ai-design-slop-remover/scripts/run-detector-evals.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--run-detector-evals",
+      "path": "skills/hyper-ui-ux/scripts/run-detector-evals.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/run-detector-evals.mjs",
+          "path": "skills/hyper-ui-ux/scripts/run-detector-evals.mjs",
           "absent": true
         },
         "migration": {
@@ -2104,14 +2104,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--run-detector-evals--stdout",
-        "stderr": "ai-design-slop-remover--run-detector-evals--stderr",
-        "exit": "ai-design-slop-remover--run-detector-evals--exit",
-        "files": "ai-design-slop-remover--run-detector-evals--files",
-        "modes": "ai-design-slop-remover--run-detector-evals--modes",
-        "cwd": "ai-design-slop-remover--run-detector-evals--cwd",
-        "env": "ai-design-slop-remover--run-detector-evals--env",
-        "argv": "ai-design-slop-remover--run-detector-evals--argv"
+        "stdout": "hyper-ui-ux--run-detector-evals--stdout",
+        "stderr": "hyper-ui-ux--run-detector-evals--stderr",
+        "exit": "hyper-ui-ux--run-detector-evals--exit",
+        "files": "hyper-ui-ux--run-detector-evals--files",
+        "modes": "hyper-ui-ux--run-detector-evals--modes",
+        "cwd": "hyper-ui-ux--run-detector-evals--cwd",
+        "env": "hyper-ui-ux--run-detector-evals--env",
+        "argv": "hyper-ui-ux--run-detector-evals--argv"
       },
       "fixtures": {
         "happy": {
@@ -2119,7 +2119,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/run-detector-evals.sh"
+              "skills/hyper-ui-ux/scripts/run-detector-evals.sh"
             ]
           },
           "input": {
@@ -2142,7 +2142,7 @@
                 "text": "<div class=\"panel\" style=\"transition: all 150ms\"></div>\n"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/detect-slop.sh",
+                "path": "skills/hyper-ui-ux/scripts/detect-slop.sh",
                 "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"detectorVersion\":2,\"findings\":[{\"id\":\"copy.cliche\",\"exceptionStatus\":\"not-checked\"}],\"summary\":{\"P0\":0,\"P1\":0,\"P2\":0,\"P3\":1}}'\n"
               }
             ]
@@ -2167,7 +2167,7 @@
                 "sha256": "dba76d031b3ccf0b0d9e65c4a13474478cdb2727d2594ef7bcd5aa99b574ef8e"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/detect-slop.sh",
+                "path": "skills/hyper-ui-ux/scripts/detect-slop.sh",
                 "bytes": 164,
                 "sha256": "51b25b6532e460e00dd4e023bd3618cf1e99be1ebef50faf0734c52d1fe4dcb4"
               }
@@ -2175,7 +2175,7 @@
             "modes": {
               "cases.jsonl": "644",
               "site/page.html": "644",
-              "skills/ai-design-slop-remover/scripts/detect-slop.sh": "644"
+              "skills/hyper-ui-ux/scripts/detect-slop.sh": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -2193,7 +2193,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/run-detector-evals.sh"
+              "skills/hyper-ui-ux/scripts/run-detector-evals.sh"
             ]
           },
           "input": {
@@ -2249,7 +2249,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/run-detector-evals.sh"
+              "skills/hyper-ui-ux/scripts/run-detector-evals.sh"
             ]
           },
           "input": {
@@ -2272,7 +2272,7 @@
                 "text": "<div class=\"panel\" style=\"transition: all 150ms\"></div>\n"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/detect-slop.sh",
+                "path": "skills/hyper-ui-ux/scripts/detect-slop.sh",
                 "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"detectorVersion\":2,\"findings\":[{\"id\":\"copy.cliche\",\"exceptionStatus\":\"not-checked\"}],\"summary\":{\"P0\":0,\"P1\":0,\"P2\":0,\"P3\":1}}'\n"
               }
             ]
@@ -2297,7 +2297,7 @@
                 "sha256": "dba76d031b3ccf0b0d9e65c4a13474478cdb2727d2594ef7bcd5aa99b574ef8e"
               },
               {
-                "path": "skills/ai-design-slop-remover/scripts/detect-slop.sh",
+                "path": "skills/hyper-ui-ux/scripts/detect-slop.sh",
                 "bytes": 164,
                 "sha256": "51b25b6532e460e00dd4e023bd3618cf1e99be1ebef50faf0734c52d1fe4dcb4"
               }
@@ -2305,7 +2305,7 @@
             "modes": {
               "cases.jsonl": "644",
               "site/page.html": "644",
-              "skills/ai-design-slop-remover/scripts/detect-slop.sh": "644"
+              "skills/hyper-ui-ux/scripts/detect-slop.sh": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -2321,14 +2321,14 @@
       }
     },
     {
-      "id": "ai-design-slop-remover--validate-report",
-      "path": "skills/ai-design-slop-remover/scripts/validate-report.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--validate-report",
+      "path": "skills/hyper-ui-ux/scripts/validate-report.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/validate-report.mjs",
+          "path": "skills/hyper-ui-ux/scripts/validate-report.mjs",
           "absent": true
         },
         "migration": {
@@ -2339,14 +2339,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--validate-report--stdout",
-        "stderr": "ai-design-slop-remover--validate-report--stderr",
-        "exit": "ai-design-slop-remover--validate-report--exit",
-        "files": "ai-design-slop-remover--validate-report--files",
-        "modes": "ai-design-slop-remover--validate-report--modes",
-        "cwd": "ai-design-slop-remover--validate-report--cwd",
-        "env": "ai-design-slop-remover--validate-report--env",
-        "argv": "ai-design-slop-remover--validate-report--argv"
+        "stdout": "hyper-ui-ux--validate-report--stdout",
+        "stderr": "hyper-ui-ux--validate-report--stderr",
+        "exit": "hyper-ui-ux--validate-report--exit",
+        "files": "hyper-ui-ux--validate-report--files",
+        "modes": "hyper-ui-ux--validate-report--modes",
+        "cwd": "hyper-ui-ux--validate-report--cwd",
+        "env": "hyper-ui-ux--validate-report--env",
+        "argv": "hyper-ui-ux--validate-report--argv"
       },
       "fixtures": {
         "happy": {
@@ -2354,7 +2354,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/validate-report.sh"
+              "skills/hyper-ui-ux/scripts/validate-report.sh"
             ]
           },
           "input": {
@@ -2408,7 +2408,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/validate-report.sh"
+              "skills/hyper-ui-ux/scripts/validate-report.sh"
             ]
           },
           "input": {
@@ -2462,7 +2462,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/validate-report.sh"
+              "skills/hyper-ui-ux/scripts/validate-report.sh"
             ]
           },
           "input": {
@@ -2506,14 +2506,14 @@
       }
     },
     {
-      "id": "ai-design-slop-remover--validate-waivers",
-      "path": "skills/ai-design-slop-remover/scripts/validate-waivers.sh",
-      "family": "ai-design-slop-remover",
+      "id": "hyper-ui-ux--validate-waivers",
+      "path": "skills/hyper-ui-ux/scripts/validate-waivers.sh",
+      "family": "hyper-ui-ux",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/ai-design-slop-remover/scripts/validate-waivers.mjs",
+          "path": "skills/hyper-ui-ux/scripts/validate-waivers.mjs",
           "absent": true
         },
         "migration": {
@@ -2524,14 +2524,14 @@
         }
       },
       "dimensions": {
-        "stdout": "ai-design-slop-remover--validate-waivers--stdout",
-        "stderr": "ai-design-slop-remover--validate-waivers--stderr",
-        "exit": "ai-design-slop-remover--validate-waivers--exit",
-        "files": "ai-design-slop-remover--validate-waivers--files",
-        "modes": "ai-design-slop-remover--validate-waivers--modes",
-        "cwd": "ai-design-slop-remover--validate-waivers--cwd",
-        "env": "ai-design-slop-remover--validate-waivers--env",
-        "argv": "ai-design-slop-remover--validate-waivers--argv"
+        "stdout": "hyper-ui-ux--validate-waivers--stdout",
+        "stderr": "hyper-ui-ux--validate-waivers--stderr",
+        "exit": "hyper-ui-ux--validate-waivers--exit",
+        "files": "hyper-ui-ux--validate-waivers--files",
+        "modes": "hyper-ui-ux--validate-waivers--modes",
+        "cwd": "hyper-ui-ux--validate-waivers--cwd",
+        "env": "hyper-ui-ux--validate-waivers--env",
+        "argv": "hyper-ui-ux--validate-waivers--argv"
       },
       "fixtures": {
         "happy": {
@@ -2539,7 +2539,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/validate-waivers.sh"
+              "skills/hyper-ui-ux/scripts/validate-waivers.sh"
             ]
           },
           "input": {
@@ -2593,7 +2593,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/validate-waivers.sh"
+              "skills/hyper-ui-ux/scripts/validate-waivers.sh"
             ]
           },
           "input": {
@@ -2649,7 +2649,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/ai-design-slop-remover/scripts/validate-waivers.sh"
+              "skills/hyper-ui-ux/scripts/validate-waivers.sh"
             ]
           },
           "input": {
