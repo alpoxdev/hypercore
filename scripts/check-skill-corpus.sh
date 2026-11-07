@@ -105,7 +105,7 @@ metadata_for() {
     skills/hyper-google-tagmanager/scripts/gtm-site-check.sh) printf 'check-gtm-site\tgtm-site-check\n' ;;
     skills/hyper-seo/scripts/render-dashboard.sh) printf 'render-dashboard\trender-dashboard\n' ;;
     skills/hyper-skill/scripts/validate-hyper-skill.sh) printf 'validate-skill\tskill-validation\n' ;;
-    skills/jev-maker/scripts/check-jev-request.sh) printf 'check-jev-request\tjev-request-validation\n' ;;
+    skills/hyper-decision/scripts/check-decision-request.sh) printf 'check-decision-request\tdecision-request-validation\n' ;;
     *) : ;;
   esac
 }
@@ -293,8 +293,8 @@ row_count=$(jq -r '.scripts | length' "$manifest")
 jq -e 'all(.scripts[]; type == "object")' "$manifest" >/dev/null 2>&1 || die "manifest rows must be objects"
 
 legacy_origins=$(printf '%s\n' former-sh former-py retained-mjs authored-mjs)
-usage_enum=$(printf '%s\n' analyze-structure audit-gtm-container build-preview check-deployment check-gtm-site check-jev-request check-lint collect-rendered-evidence commit-files detect-engines detect-gtm-install detect-package-manager detect-slop detect-stack inspect-repository push-commit render-dashboard render-planning-map resolve-context run-build run-contract-evals run-detector-evals slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared validate-report validate-skill validate-waivers)
-behavior_enum=$(printf '%s\n' context-resolution contract-eval-run deployment-readiness-check detector-eval-run engine-detection fast-git-commit git-push gtm-container-audit gtm-install-detection gtm-site-check jev-request-validation lint-readiness-check package-manager-detection planning-map-render preview-build project-build render-dashboard rendered-evidence-collection report-validation repository-discovery repository-status scoped-git-commit skill-validation slop-detection slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared stack-detection structure-analysis waiver-validation)
+usage_enum=$(printf '%s\n' analyze-structure audit-gtm-container build-preview check-decision-request check-deployment check-gtm-site check-lint collect-rendered-evidence commit-files detect-engines detect-gtm-install detect-package-manager detect-slop detect-stack inspect-repository push-commit render-dashboard render-planning-map resolve-context run-build run-contract-evals run-detector-evals slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared validate-report validate-skill validate-waivers)
+behavior_enum=$(printf '%s\n' context-resolution contract-eval-run decision-request-validation deployment-readiness-check detector-eval-run engine-detection fast-git-commit git-push gtm-container-audit gtm-install-detection gtm-site-check lint-readiness-check package-manager-detection planning-map-render preview-build project-build render-dashboard rendered-evidence-collection report-validation repository-discovery repository-status scoped-git-commit skill-validation slop-detection slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared stack-detection structure-analysis waiver-validation)
 
 former_sh=0
 former_py=0

@@ -6568,26 +6568,26 @@
       }
     },
     {
-      "id": "jev-maker--check-jev-request",
-      "path": "skills/jev-maker/scripts/check-jev-request.sh",
-      "family": "jev-maker",
+      "id": "hyper-decision--check-decision-request",
+      "path": "skills/hyper-decision/scripts/check-decision-request.sh",
+      "family": "hyper-decision",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/jev-maker/scripts/check-jev-request.mjs",
+          "path": "skills/hyper-decision/scripts/check-decision-request.mjs",
           "absent": true
         }
       },
       "dimensions": {
-        "stdout": "jev-maker--check-jev-request--stdout",
-        "stderr": "jev-maker--check-jev-request--stderr",
-        "exit": "jev-maker--check-jev-request--exit",
-        "files": "jev-maker--check-jev-request--files",
-        "modes": "jev-maker--check-jev-request--modes",
-        "cwd": "jev-maker--check-jev-request--cwd",
-        "env": "jev-maker--check-jev-request--env",
-        "argv": "jev-maker--check-jev-request--argv"
+        "stdout": "hyper-decision--check-decision-request--stdout",
+        "stderr": "hyper-decision--check-decision-request--stderr",
+        "exit": "hyper-decision--check-decision-request--exit",
+        "files": "hyper-decision--check-decision-request--files",
+        "modes": "hyper-decision--check-decision-request--modes",
+        "cwd": "hyper-decision--check-decision-request--cwd",
+        "env": "hyper-decision--check-decision-request--env",
+        "argv": "hyper-decision--check-decision-request--argv"
       },
       "fixtures": {
         "happy": {
@@ -6595,7 +6595,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/jev-maker/scripts/check-jev-request.sh"
+              "skills/hyper-decision/scripts/check-decision-request.sh"
             ]
           },
           "input": {
@@ -6615,7 +6615,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "{\n  \"ok\": true,\n  \"route\": \"direct\",\n  \"errors\": [],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 3,\n    \"noul\": 1,\n    \"choice\": 1,\n    \"score\": 1,\n    \"estimatedStateTokens\": 99\n  }\n}\n"
+              "equals": "{\n  \"ok\": true,\n  \"route\": \"systemone\",\n  \"errors\": [],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 3,\n    \"noul\": 1,\n    \"boolean\": 0,\n    \"predicate\": 0,\n    \"choice\": 1,\n    \"score\": 1,\n    \"box\": 0,\n    \"estimatedStateTokens\": 99\n  }\n}\n"
             },
             "stderr": {
               "equals": ""
@@ -6645,7 +6645,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/jev-maker/scripts/check-jev-request.sh"
+              "skills/hyper-decision/scripts/check-decision-request.sh"
             ]
           },
           "input": {
@@ -6665,7 +6665,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "{\n  \"ok\": false,\n  \"route\": \"direct\",\n  \"errors\": [\n    {\n      \"code\": \"INVALID_JSON\",\n      \"path\": \"$\",\n      \"message\": \"The request file is not valid JSON.\"\n    }\n  ],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 0,\n    \"noul\": 0,\n    \"choice\": 0,\n    \"score\": 0,\n    \"estimatedStateTokens\": 0\n  }\n}\n"
+              "equals": "{\n  \"ok\": false,\n  \"route\": \"systemone\",\n  \"errors\": [\n    {\n      \"code\": \"INVALID_JSON\",\n      \"path\": \"$\",\n      \"message\": \"The request file is not valid JSON.\"\n    }\n  ],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 0,\n    \"noul\": 0,\n    \"boolean\": 0,\n    \"predicate\": 0,\n    \"choice\": 0,\n    \"score\": 0,\n    \"box\": 0,\n    \"estimatedStateTokens\": 0\n  }\n}\n"
             },
             "stderr": {
               "equals": ""
@@ -6695,7 +6695,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/jev-maker/scripts/check-jev-request.sh"
+              "skills/hyper-decision/scripts/check-decision-request.sh"
             ]
           },
           "input": {
@@ -6717,7 +6717,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "{\n  \"ok\": false,\n  \"route\": \"bai\",\n  \"errors\": [\n    {\n      \"code\": \"STREAM_NOT_SUPPORTED\",\n      \"path\": \"$.stream\",\n      \"message\": \"The b.ai Decisions API returns one complete result; omit stream or set it to false.\"\n    }\n  ],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 3,\n    \"noul\": 1,\n    \"choice\": 1,\n    \"score\": 1,\n    \"estimatedStateTokens\": 99\n  }\n}\n"
+              "equals": "{\n  \"ok\": false,\n  \"route\": \"bai\",\n  \"errors\": [\n    {\n      \"code\": \"STREAM_NOT_SUPPORTED\",\n      \"path\": \"$.stream\",\n      \"message\": \"The b.ai Decisions API returns one complete result; omit stream or set it to false.\"\n    }\n  ],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 3,\n    \"noul\": 1,\n    \"boolean\": 0,\n    \"predicate\": 0,\n    \"choice\": 1,\n    \"score\": 1,\n    \"box\": 0,\n    \"estimatedStateTokens\": 99\n  }\n}\n"
             },
             "stderr": {
               "equals": ""
