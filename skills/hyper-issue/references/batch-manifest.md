@@ -15,8 +15,8 @@ Use this reference before writing `.hyper/issues/<slug>/batch.md`. It owns the m
 
 - 생성 일시: YYYY-MM-DD HH:MM
 - 저장소: <owner/repo>
-- 질의: `<the exact query>`
-- 수집: <rows returned> / 총계 <total> | 페이지 <n>개 | 잘림 없음
+- 질의: `<the exact query>` | 번호: `<the numbers as written>` -> <expanded list>
+- 수집: <rows returned> / 총계 <total> | 페이지 <n>개 | 잘림 없음 (번호 모드: 남김 <k> / 지목 <n>)
 - 대상 브랜치: <base branch>
 - 레인 상한: <n>
 - 차단: <none | the blockers, one per line>
@@ -44,12 +44,14 @@ Use this reference before writing `.hyper/issues/<slug>/batch.md`. It owns the m
 
 - <issue> - `hyper:` 블록 없음, `## Scope`에서 재도출함
 - <issue> - `size: l`, 배정 전 분할 필요
+- #<n> - 제외: <pull request | closed | not found | read failed>
 
 ## 핸드오프
 
 - 배치 명세: `.hyper/issues/<slug>/batch.md`
 - 이슈 <n>건, 레인 <m>개, 차단 <k>건
 - 다음 단계는 이 파일을 고정 입력으로 읽는다. 목록을 바꾸지 않는다.
+- 다음 단계: hyper (넘김, YYYY-MM-DD HH:MM) | 없음 (<--no-run | --from-hyper | 실행 가능한 레인 없음>)
 ```
 
 ## Rules
@@ -58,7 +60,7 @@ Use this reference before writing `.hyper/issues/<slug>/batch.md`. It owns the m
 - `## Lane 표` lists the union of written paths per lane, so a reader can confirm the lanes are disjoint at a glance.
 - A lane with one issue still appears; a lane is not "parallelism", it is a write set.
 - `## 그래프` records edges with their origin: declared, overlap-derived, or ordering-only.
-- `## 공백과 차단` is never empty unless every issue had a parseable block and no split was needed; write `none` explicitly.
+- `## 공백과 차단` is never empty unless every issue had a parseable block, no split was needed, and no named number was excluded; write `none` explicitly.
 - The handoff line's counts are read off the tables, never estimated.
 
 ## Worked Example Lane Split

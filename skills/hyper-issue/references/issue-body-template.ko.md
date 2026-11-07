@@ -1,6 +1,6 @@
 # Issue Body Template
 
-본문을 쓸 때 이 참고 파일을 사용한다. 골격을 복사해 모든 자리표시자를 바꾼다. `##` 이름과 `hyper:` 키는 적힌 그대로 유지한다.
+본문을 쓸 때 이 참고 파일을 사용한다. 골격을 복사해 모든 자리표시자를 바꾼다. `##` 이름과 `hyper:` 키는 적힌 그대로 유지한다. 제목과 자리표시자를 바꾼 내용은 모두 영어로 쓴다(`rules/issue-contract.md` 2a절). 제목은 커밋 제목 형태 `type(scope): imperative summary`를 따른다.
 
 ## Contents
 
@@ -20,8 +20,8 @@
 - `<path>:<line>` - 이것이 보여 주는 것
 - `<command>` -> 관측한 출력 중 중요한 줄만
 
-<위 내용 중 추론한 것이 있으면 가정 줄:>
-- 가정: <추론한 진술> - 확인 방법: <무엇이 확인해 주는지>
+<위 내용 중 추론한 것이 있으면 Assumption 줄:>
+- Assumption: <the inferred statement> - Confirm by: <what would confirm it>
 
 ## Cause
 
@@ -66,24 +66,28 @@ Pass: <작업이 끝났을 때 출력이 어떤 모습인지>.
 
 ## 작성 예
 
+실제 이슈는 영어로 쓰므로 작성 예도 영어 그대로 둔다.
+
+Title: `fix(orders): return 409 on idempotency key replay`
+
 ```markdown
 ## What
 
-`POST /api/orders`가 재시도 창 안에서 같은 멱등성 키를 다시 받으면 409 대신 500을 반환한다. 타임아웃 뒤 재시도하는 호출자가 중복 주문을 만든다.
+`POST /api/orders` returns 500 instead of 409 when the same idempotency key is replayed within the retry window. Callers retrying after a timeout create duplicate orders.
 
 ## Evidence
 
-- `src/api/orders.ts:88` - 멱등성 키를 인서트 시도 뒤에 읽는다
-- `bun test src/api/orders.test.ts` -> `1 fail: replays a duplicate key`, `duplicate key value violates unique constraint`
-- `docs/contracts/orders.md:14` - 재입력 시 409를 요구한다
+- `src/api/orders.ts:88` - the idempotency key is read after the insert attempt
+- `bun test src/api/orders.test.ts` -> `1 fail: replays a duplicate key` with `duplicate key value violates unique constraint`
+- `docs/contracts/orders.md:14` - the contract requires 409 on replay
 
 ## Cause
 
-`src/api/orders.ts:88`에서 인서트가 키 조회보다 먼저 실행되어, 재입력이 데이터베이스 유니크 제약에 닿고 처리되지 않은 오류가 500이 된다. 계약 조회는 나중에 `:95`에 추가되었고 인서트 앞으로 옮겨지지 않았다.
+The insert runs before the key lookup at `src/api/orders.ts:88`, so a replay reaches the database unique constraint and the unhandled error becomes a 500. The contract lookup was added later at `:95` and never moved ahead of the insert.
 
 ## Scope
 
-키 조회를 인서트 앞으로 옮기고, 재입력이면 저장된 주문 id와 함께 409를 반환한다. 새 주문의 인서트 경로와 응답 형태는 그대로 둔다.
+Move the key lookup before the insert and return 409 with the stored order id when a replay is found. The insert path and the response shape for new orders stay unchanged.
 
 ```yaml
 hyper:
@@ -99,13 +103,13 @@ hyper:
 
 ## Out of scope
 
-- 재시도 창 길이 변경
-- 이미 만들어진 중복 주문 백필
+- Changing the retry window length
+- Backfilling duplicate orders already created
 
 ## Acceptance
 
-- [ ] `bun test src/api/orders.test.ts` 통과. 409와 원래 주문 id를 확인하는 재입력 케이스 포함
-- [ ] 첫 요청은 새 주문 id와 함께 여전히 201을 반환
+- [ ] `bun test src/api/orders.test.ts` passes, including the replay case asserting 409 and the original order id
+- [ ] A first request still returns 201 with a new order id
 
 ## Verify
 
@@ -113,12 +117,12 @@ hyper:
 bun test src/api/orders.test.ts
 ```
 
-Pass: 모든 케이스 통과, 재입력 케이스가 500이 아니라 409를 기록.
+Pass: every case green, and the replay case logs `409` rather than `500`.
 ```
 
 ## 규칙
 
-- 본문은 홀로 선다. "앞서 논의한 대로"도, 이해에 필요한 링크도 없다.
+- 본문은 홀로 선다. "앞서 논의한 대로"도, 이해에 필요한 링크도 없고, 인용한 출력 말고는 모두 영어다.
 - 인용은 짧게, 출처를 붙이고, 비밀은 가린다.
 - 본문 하나에 `hyper:` 블록 하나이며 `## Scope`의 유일한 펜스 `yaml` 블록이다.
 - `verify`는 이슈가 다르게 말하지 않는 한 브라우저, 자격증명, 네트워크 호출 없이 실행 가능해야 한다.
