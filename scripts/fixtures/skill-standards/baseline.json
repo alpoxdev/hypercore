@@ -49,7 +49,7 @@
     },
     "hyper-skill": {},
     "hyper-decision": {},
-    "prd-maker": {
+    "hyper-prd": {
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-deploy": {

@@ -92,8 +92,6 @@ metadata_for() {
     skills/hyper-git/scripts/repo-status.sh) printf 'inspect-repository\trepository-status\n' ;;
     skills/hyper-imagegen/scripts/validate-hyper-imagegen.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/hyper-architecture/scripts/validate-architecture.sh) printf 'validate-skill\tskill-validation\n' ;;
-    skills/prd-maker/scripts/build-preview.sh) printf 'build-preview\tpreview-build\n' ;;
-    skills/prd-maker/scripts/render-planning-map.sh) printf 'render-planning-map\tplanning-map-render\n' ;;
     skills/hyper-database/scripts/detect-engines.sh) printf 'detect-engines\tengine-detection\n' ;;
     skills/hyper-deploy/scripts/build-run.sh) printf 'run-build\tproject-build\n' ;;
     skills/hyper-deploy/scripts/deploy-check.sh) printf 'check-deployment\tdeployment-readiness-check\n' ;;
@@ -289,12 +287,12 @@ validate_script_edges() {
 jq -e 'type == "object"' "$manifest" >/dev/null 2>&1 || die "manifest must be a JSON object"
 jq -e '(.scripts | type) == "array"' "$manifest" >/dev/null 2>&1 || die "manifest scripts must be an array"
 row_count=$(jq -r '.scripts | length' "$manifest")
-[ "$row_count" -eq 34 ] || die "manifest must contain exactly 34 scripts"
+[ "$row_count" -eq 32 ] || die "manifest must contain exactly 32 scripts"
 jq -e 'all(.scripts[]; type == "object")' "$manifest" >/dev/null 2>&1 || die "manifest rows must be objects"
 
 legacy_origins=$(printf '%s\n' former-sh former-py retained-mjs authored-mjs)
-usage_enum=$(printf '%s\n' analyze-structure audit-gtm-container build-preview check-decision-request check-deployment check-gtm-site check-lint collect-rendered-evidence commit-files detect-engines detect-gtm-install detect-package-manager detect-slop detect-stack inspect-repository push-commit render-dashboard render-planning-map resolve-context run-build run-contract-evals run-detector-evals slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared validate-report validate-skill validate-waivers)
-behavior_enum=$(printf '%s\n' context-resolution contract-eval-run decision-request-validation deployment-readiness-check detector-eval-run engine-detection fast-git-commit git-push gtm-container-audit gtm-install-detection gtm-site-check lint-readiness-check package-manager-detection planning-map-render preview-build project-build render-dashboard rendered-evidence-collection report-validation repository-discovery repository-status scoped-git-commit skill-validation slop-detection slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared stack-detection structure-analysis waiver-validation)
+usage_enum=$(printf '%s\n' analyze-structure audit-gtm-container check-decision-request check-deployment check-gtm-site check-lint collect-rendered-evidence commit-files detect-engines detect-gtm-install detect-package-manager detect-slop detect-stack inspect-repository push-commit render-dashboard resolve-context run-build run-contract-evals run-detector-evals slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared validate-report validate-skill validate-waivers)
+behavior_enum=$(printf '%s\n' context-resolution contract-eval-run decision-request-validation deployment-readiness-check detector-eval-run engine-detection fast-git-commit git-push gtm-container-audit gtm-install-detection gtm-site-check lint-readiness-check package-manager-detection project-build render-dashboard rendered-evidence-collection report-validation repository-discovery repository-status scoped-git-commit skill-validation slop-detection slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared stack-detection structure-analysis waiver-validation)
 
 former_sh=0
 former_py=0
@@ -379,8 +377,8 @@ while IFS=$'\x1f' read -r idx rtype field_ok path family legacy usage behavior s
   i=$((i + 1))
 done <"$tmp/manifest-rows.tsv"
 
-[ "$former_sh" -eq 11 ] && [ "$former_py" -eq 0 ] && [ "$retained_mjs" -eq 4 ] && [ "$authored_mjs" -eq 19 ] ||
-  die "manifest historical origin counts must be exactly 11/0/4/19"
+[ "$former_sh" -eq 11 ] && [ "$former_py" -eq 0 ] && [ "$retained_mjs" -eq 2 ] && [ "$authored_mjs" -eq 19 ] ||
+  die "manifest historical origin counts must be exactly 11/0/2/19"
 
 if ! jq -e '.portPreimage | (type == "object") and (.baselineRef | type == "string" and test("^[a-f0-9]{40}$")) and (.model | type == "string" and test("\\S")) and (.note | type == "string" and test("\\S")) and (.workingTreeEdited | type == "array" and length == 4)' "$manifest" >/dev/null 2>&1; then
   die "manifest portPreimage must record the port baseline and the uncommitted pre-port edits"
@@ -397,11 +395,11 @@ sort "$tmp/approved" | uniq -d >"$tmp/approved-dupes"
 jq -e 'type == "object"' "$contracts" >/dev/null 2>&1 || die "behavior contracts must be a JSON object"
 [ "$(jq -r '.requiredBy' "$contracts")" = "scripts/fixtures/skill-script-parity/manifest.json" ] ||
   die "behavior contracts must name the manifest as their central owner"
-if ! jq -e '(.coverage | type == "object") and .coverage.expectedRows == 34 and .coverage.expectedFixtures == 102' "$contracts" >/dev/null 2>&1; then
-  die "behavior contract coverage must be exactly 34 rows and 102 fixtures"
+if ! jq -e '(.coverage | type == "object") and .coverage.expectedRows == 32 and .coverage.expectedFixtures == 96' "$contracts" >/dev/null 2>&1; then
+  die "behavior contract coverage must be exactly 32 rows and 96 fixtures"
 fi
 contract_rows=$(jq -r '.rows | length' "$contracts")
-[ "$contract_rows" -eq 34 ] || die "behavior contracts must contain exactly 34 rows"
+[ "$contract_rows" -eq 32 ] || die "behavior contracts must contain exactly 32 rows"
 
 jq -r '.scripts[] | [(.path // ""), (.behaviorContractId // "")] | join("\u001f")' "$manifest" >"$tmp/script-contract-ids"
 cat >"$tmp/contract-rows.jq" <<'JQ'
@@ -537,4 +535,4 @@ while IFS= read -r file; do
   fi
 done <"$tmp/approved"
 
-printf 'Validated %s bash skill scripts (11 former-sh, 0 former-py, 4 retained-mjs, 19 authored-mjs historical origins).\n' "$(wc -l <"$tmp/approved" | tr -d ' ')"
+printf 'Validated %s bash skill scripts (11 former-sh, 0 former-py, 2 retained-mjs, 19 authored-mjs historical origins).\n' "$(wc -l <"$tmp/approved" | tr -d ' ')"
