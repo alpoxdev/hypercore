@@ -40,6 +40,7 @@ One object, overwritten at every phase boundary. It is the run's position, not i
 | `status` | string | `active`, `paused`, `blocked`, or `complete` |
 | `current_wave` | integer or null | Wave being executed, null before the first wave |
 | `worktree_path` | string or null | Absolute path of the current wave worktree |
+| `lane_worktrees` | array of strings, optional | Absolute per-lane worktree paths, in lane join order, when the wave runs parallel lanes |
 | `wave_bases` | object | Map from wave number to the branch that wave started from: `"1": "main"`, `"2": "hyper/billing-retry/w1"` |
 | `started_at` | string | ISO 8601 timestamp |
 
@@ -55,7 +56,7 @@ Optional fields, when the runtime or the run needs them: `updated_at`, `goal_id`
   "delivery": "local",
   "status": "active",
   "current_wave": 2,
-  "worktree_path": "/Users/me/dev/shop-wt/billing-retry-w2",
+  "worktree_path": "/Users/me/dev/shop/.hyper/worktree/billing-retry-w2",
   "wave_bases": { "1": "main", "2": "main" },
   "started_at": "2026-11-03T09:10:00+09:00"
 }

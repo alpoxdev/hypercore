@@ -40,6 +40,7 @@
 | `status` | string | `active`, `paused`, `blocked`, `complete` 중 하나 |
 | `current_wave` | integer 또는 null | 실행 중인 웨이브, 첫 웨이브 전에는 null |
 | `worktree_path` | string 또는 null | 현재 웨이브 워크트리의 절대 경로 |
+| `lane_worktrees` | 문자열 배열, 선택 | 웨이브가 병렬 레인으로 돌 때 레인별 워크트리 절대 경로, 레인 합치기 순서대로 |
 | `wave_bases` | object | 웨이브 번호에서 그 웨이브가 시작한 브랜치로 가는 맵: `"1": "main"`, `"2": "hyper/billing-retry/w1"` |
 | `started_at` | string | ISO 8601 시각 |
 
@@ -55,7 +56,7 @@
   "delivery": "local",
   "status": "active",
   "current_wave": 2,
-  "worktree_path": "/Users/me/dev/shop-wt/billing-retry-w2",
+  "worktree_path": "/Users/me/dev/shop/.hyper/worktree/billing-retry-w2",
   "wave_bases": { "1": "main", "2": "main" },
   "started_at": "2026-11-03T09:10:00+09:00"
 }

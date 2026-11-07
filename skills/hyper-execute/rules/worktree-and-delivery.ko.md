@@ -90,7 +90,7 @@ git worktree add -b hyper/<slug>/w<N> <repo-root>/.hyper/worktree/<slug>-w<N> <w
 3. 더러운 상태, 미추적 파일, 잠금 때문에 제거가 거부되면 멈추고 경로를 보고합니다. 워크트리는 그대로 둡니다. `--force`로 올리지 않습니다.
 4. 브랜치는 반영된 커밋이 그 웨이브의 기준에 있는 것을 확인한 뒤에만 삭제합니다. 로컬 웨이브면 통합 기준, 쌓은 웨이브면 부모 웨이브 브랜치입니다. `git merge-base --is-ancestor <landed-sha> <wave_base>`로 확인합니다. squash 병합이면 브랜치 끝이 조상이 아니므로, 대신 기준의 반영 커밋이나 PR의 병합 상태로 확인합니다. `git branch --merged`를 판정 기준으로 쓰지 않습니다.
 5. 원격 브랜치는 푸시되었고 그 PR이 병합된 경우에만 삭제합니다.
-6. `<repo>-wt/`가 비면 그 디렉터리도 제거합니다.
+6. `<repo-root>/.hyper/worktree/`가 비면 그 디렉터리만 제거하고 `.hyper/`의 나머지는 남깁니다.
 7. `cleanup` 원장 행에 제거한 경로와 브랜치, 남긴 항목과 그 사유를 적습니다.
 
 ## 8. 실패 대응
