@@ -22,21 +22,8 @@
       "CROSS_SKILL_REFERENCE": 416
     },
     "hyper-architecture": {
-      "FRONTMATTER_TRIGGER": 1,
-      "CROSS_SKILL_REFERENCE": 62
-    },
-    "hyper-architecture-axum": {},
-    "hyper-architecture-expo": {},
-    "hyper-architecture-flutter": {},
-    "hyper-architecture-hono": {
       "FRONTMATTER_TRIGGER": 1
     },
-    "hyper-architecture-nextjs": {
-      "FRONTMATTER_TRIGGER": 1
-    },
-    "hyper-architecture-tanstack-start": {},
-    "hyper-architecture-tauri": {},
-    "hyper-architecture-vite": {},
     "hyper-documentation": {
       "FRONTMATTER_TRIGGER": 1
     },

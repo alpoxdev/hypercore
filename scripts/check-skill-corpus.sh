@@ -95,7 +95,7 @@ metadata_for() {
     skills/git-maker/scripts/repo-status.sh) printf 'inspect-repository\trepository-status\n' ;;
     skills/git-worktree/scripts/validate-git-worktree-skill.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/image-maker/scripts/validate-image-maker.sh) printf 'validate-skill\tskill-validation\n' ;;
-    skills/hyper-architecture-nextjs/scripts/validate-hyper-architecture-nextjs-skill.sh) printf 'validate-skill\tskill-validation\n' ;;
+    skills/hyper-architecture/scripts/validate-nextjs-stack.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/prd-maker/scripts/build-preview.sh) printf 'build-preview\tpreview-build\n' ;;
     skills/prd-maker/scripts/render-planning-map.sh) printf 'render-planning-map\tplanning-map-render\n' ;;
     skills/pre-deploy/scripts/build-run.sh) printf 'run-build\tproject-build\n' ;;
@@ -115,7 +115,7 @@ metadata_for() {
     skills/version-update/scripts/version-bump.sh) printf 'calculate-version\tversion-calculation\n' ;;
     skills/version-update/scripts/version-current.sh) printf 'read-version\tversion-reading\n' ;;
     skills/version-update/scripts/version-find.sh) printf 'discover-version\tversion-discovery\n' ;;
-    skills/hyper-architecture-vite/scripts/validate-hyper-architecture-vite-skill.sh) printf 'validate-skill\tskill-validation\n' ;;
+    skills/hyper-architecture/scripts/validate-vite-stack.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/jev-maker/scripts/check-jev-request.sh) printf 'check-jev-request\tjev-request-validation\n' ;;
     *) : ;;
   esac
