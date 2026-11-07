@@ -2,7 +2,7 @@
   "skills": {
     "hyper": {
       "FRONTMATTER_TRIGGER": 1,
-      "CROSS_SKILL_REFERENCE": 1016
+      "CROSS_SKILL_REFERENCE": 1089
     },
     "hyper-architecture": {
       "FRONTMATTER_TRIGGER": 1
@@ -48,7 +48,7 @@
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-skill": {},
-    "jev-maker": {},
+    "hyper-decision": {},
     "prd-maker": {
       "FRONTMATTER_TRIGGER": 1
     },

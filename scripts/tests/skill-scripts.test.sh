@@ -307,7 +307,7 @@ skills/hyper-design/scripts/run-contract-evals.sh
 skills/hyper-design/scripts/run-detector-evals.sh
 skills/hyper-design/scripts/validate-report.sh
 skills/hyper-design/scripts/validate-waivers.sh
-skills/jev-maker/scripts/check-jev-request.sh
+skills/hyper-decision/scripts/check-decision-request.sh
 LIST
 )
   local work expected_migration
