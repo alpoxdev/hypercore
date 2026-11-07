@@ -508,6 +508,21 @@
         }
       },
       "behaviorContractId": "jev-maker--check-jev-request"
+    },
+    {
+      "path": "skills/hyper-database/scripts/detect-engines.sh",
+      "family": "hyper-database",
+      "legacyOrigin": "authored-mjs",
+      "usage": "detect-engines",
+      "behavior": "engine-detection",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-database/scripts/detect-engines.mjs",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-database--detect-engines"
     }
   ],
   "forbiddenDetectorReferences": {
