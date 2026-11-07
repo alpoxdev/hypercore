@@ -19,7 +19,19 @@ Use this reference when choosing evidence channels and writing the query plan.
 - Use live search whenever the request is current, latest, or date-sensitive.
 - For codebase-only questions, stay inside the repository unless outside evidence is explicitly needed.
 - When a package version is specified, start with the official docs for that version.
-- Raw files (PDF, JSON, feeds, sitemaps) are fetched directly; a rendered page that a fetch cannot read is opened with a browsing capability when one exists, and otherwise recorded as inaccessible.
+- Raw files (PDF, JSON, feeds, sitemaps) are fetched directly; a rendered page or any other source that a plain fetch cannot read follows Blocked Sources below.
+
+## Blocked Sources
+
+A source the plan needs but a plain fetch cannot read - a 403 or 429, a bot challenge such as `Just a moment...`, an empty JavaScript shell, or a dead or removed page - is never dropped silently. Repository-only questions never take this path.
+
+1. When the runtime exposes a blocked-page access capability (a skill or tool the caller named, or a browsing capability), use it for that one source after its `sources.md` row is open.
+2. Record the route in that row: `Channel` holds the access route and its provenance label (`live`, `api`, `reader`, `snapshot`, `rendered`); `Version/freshness` holds the snapshot timestamp of a `snapshot`; `Caveat` names the report path the capability saved, when it saved one.
+3. Cite a `snapshot` as a dated copy ("<archive> copy as of <timestamp>"), never as the current page, and never use it for a recency claim its date cannot support.
+4. An HTTP 200 from a reader or an archive is not access. A body that still shows a challenge, an interstitial, or binary bytes is recorded as inaccessible.
+5. A login wall, a paywall, or a legal block (451) stays inaccessible even when a copy exists: record it and look for another source.
+6. The source counts once against the collection budget like any other; the capability's own attempts open no new budget.
+7. With no such capability, record the source as inaccessible with its signal (status code or challenge title) and move to the next channel.
 
 ## Search Craft
 
@@ -46,6 +58,7 @@ Use this reference when choosing evidence channels and writing the query plan.
 |---|---|
 | English-first search with a later local-language sweep, the operator table, the high-yield angles, and sitemap discovery, adapted from the `ulw-research` skill | <https://github.com/code-yeongyu/oh-my-openagent/tree/0d80470e4201925727e88afbafcdf24d7801a588> |
 | Name tools by capability rather than one runtime's tool name | <https://github.com/alpoxdev/hypercore/blob/01be78de5973eb75a616e5156058621a6fabbc97/instructions/cli/capability-contract.md> |
+| Blocked-source handling: one capability call per source, provenance labels, dated snapshot citation, and paywalls staying inaccessible | this package's chosen design, not a validated optimum |
 
 ### Evidence grade
 

@@ -119,7 +119,7 @@ Boundary requests:
 
 - One bounded escalation loop. Feedback is each attempt's verdict; the metric is whether an attempt reaches `strong_ok` or `weak_ok`; the guard is `rules/access-policy.md` (no gated action without the user); the budget is the per-tier attempt cap in `rules/access-ladder.md` §3; the stop is the first accepted attempt, the last allowed tier spent, or a gate.
 - Never repeat an identical attempt. A retry changes one axis (URL variant, client fingerprint, referer, device class, tier) and records which one.
-- A `weak_ok` result is accepted only when no cheaper tier can raise it to `strong_ok`; otherwise the ladder continues one more tier and keeps the better result.
+- A `weak_ok` result is kept, and the ladder tries one more axis in the same tier or the next tier only while budget remains; the better of the two results is accepted. When no budget remains, the `weak_ok` result ends the run as `fetched_partial`.
 
 </loop_policy>
 

@@ -8,7 +8,7 @@ Load each stage skill through the runtime's skill mechanism (or read its `SKILL.
 
 | Stage | Request passed to the stage | Artifact that must exist before the next stage | Passed forward |
 |---|---|---|---|
-| `hyper-research` | The question the job depends on, with the decision it must support ("which state library fits this repo, to adopt it next") | `.hyper/research/[NN].<slug>.md` | Report path and its recommendation line |
+| `hyper-research` | The question the job depends on, with the decision it must support ("which state library fits this repo, to adopt it next"); for web-sourced research also "for each source a plain fetch cannot read, load `hyper-browsing` for that one source and record its provenance label and report path in `sources.md`" | `.hyper/research/[NN].<slug>.md`, plus every `.hyper/browsing/<slug>/report.md` its `sources.md` cites | Report path and its recommendation line |
 | `hyper-issue` | The item to record, or the selection condition, plus the tracker, the repository, and any user restriction such as draft-only | The issue record, and for a batch `.hyper/issues/<slug>/batch.md` | The issue numbers with URLs, the manifest path, and the lane table |
 | `hyper-seo` | The target, plus `recommend` as the allowed action in a Build job, or the user's own mode in a Report job | The report under `.hyper/seo/<slug>/` | Report path and its critical and warning findings |
 | `hyper-architecture` | In a Build job: "architecture audit only; report findings with file paths; do not edit", plus the target paths. As the last stage: the user's request unchanged | Its routing line plus findings, copied into the workflow record's stage notes, because the stage saves no file of its own in audit mode | The stage-notes section path and the findings |
@@ -29,6 +29,13 @@ Rules for every hand-off:
 - A `hyper-git` stage starts only after the previous stage's completion evidence passed; a failed validator never reaches delivery.
 - Pass upstream artifacts by path, and add at most three lines of the conclusion that the next stage needs. Do not paste whole reports.
 - Pass the user's constraints (scope limits, excluded paths, "커밋하지 말고") to every stage unchanged.
+
+Companion rules for `hyper-browsing` inside a `hyper-research` stage:
+
+- Load it through the runtime's skill mechanism like a stage skill, for one blocked source at a time, and pass the source URL, the research question it serves, and whether a dated copy is acceptable for that claim.
+- Its `blocked` and `needs_user` terminals do not stop the chain: the research stage records the source as inaccessible and continues with other channels. The chain stops only when the research stage itself stops.
+- A `sources.md` row that cites a browsing report whose file is missing fails the research hand-off like a missing artifact.
+- When no `hyper-browsing` skill is installed, the research stage records blocked sources as inaccessible, and the closing report names `npx skills add alpoxdev/hypercore --skill hyper-browsing`.
 
 ## 2. The Plan-to-Execute Step
 
@@ -98,7 +105,7 @@ When the chain ends early, print in Korean:
 
 ## 7. Closing Report
 
-Report in Korean: the final chain with statuses, each artifact path, the last stage's completion evidence (the execution completion block, the mass run's verification result, the skill validator result, the issue record's number and URL with the manifest path, the documentation mode's validation handoff, the database report's verification section, the MCP report's verification table, the UI report's validator result and craft-floor line, the image stage's terminal with its path, digest, and inspection record, the Git delivery's commit SHAs found on each remote target, or the report path), the delivery result (local commits, PR URL, or merge), and every skipped or stopped stage with its reason.
+Report in Korean: the final chain with statuses, each artifact path, the last stage's completion evidence (the execution completion block, the mass run's verification result, the skill validator result, the issue record's number and URL with the manifest path, the documentation mode's validation handoff, the database report's verification section, the MCP report's verification table, the UI report's validator result and craft-floor line, the image stage's terminal with its path, digest, and inspection record, the Git delivery's commit SHAs found on each remote target, or the report path), the delivery result (local commits, PR URL, or merge), every companion access report with its terminal, and every skipped or stopped stage with its reason.
 
 ## Sources
 
@@ -111,3 +118,4 @@ Report in Korean: the final chain with statuses, each artifact path, the last st
 | The architecture stage stops on an unsupported stack and reports the install command for a missing skill | the architecture skill's stack-detection rule in this repository, 2026-11-06 |
 | Hand-off through saved artifacts and durable state rather than chat | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |
 | The workflow record shape, the skip rule, and the single re-route | this package's chosen design, not a validated optimum |
+| The `hyper-browsing` companion rules: one blocked source per call, non-stopping terminals, and the missing-report check | this package's chosen design, not a validated optimum |

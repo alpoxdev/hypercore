@@ -36,7 +36,7 @@
 | 빈 JavaScript 껍데기 | `<div id="root"></div>`, `<div id="__next"></div>` 같은 루트 요소에 텍스트가 없고 스크립트 태그만 있음 |
 | 동의 벽 | 선택 전에는 내용을 가리는 쿠키 동의 페이지 |
 | AMP 캐시 리다이렉트 | AMP 캐시 호스트의 짧은 `Redirecting` 페이지가 클라이언트를 원본으로 되돌림 |
-| 원본을 다시 받아 온 아카이브 | 아카이브가 스냅숏을 만들 때 원본을 요청해서, 본문이 원본의 403이나 챌린지 페이지인 경우(2026-11-07에 `web/<ts>/<url>`에서 관측). 원본 `web/<ts>id_/<url>` 경로를 쓰거나 다른 스냅숏 시각을 씁니다 |
+| 아카이브 호스트의 챌린지 본문 | 스냅숏 대신 챌린지 페이지가 본문인 아카이브 응답(2026-11-07에 재작성본 `web/<ts>/<url>`에서 한 번 관측, 몇 분 뒤에는 재현되지 않음). 축 하나를 바꿉니다: 원본 `web/<ts>id_/<url>` 경로나 다른 스냅숏 시각 |
 
 ## 4. 상태 코드
 
@@ -56,8 +56,8 @@
 
 | Claim | Source |
 |---|---|
-| 제품 표식, 쿠키 계열, 실제 TLS 필요 여부 | `code-yeongyu/oh-my-openagent`(`dev` 브랜치)의 `ultimate-browsing` 스킬, `engine/waf_profiles.yaml`(`last_reviewed` 2026-04-21), 2026-11-07에 읽음 |
-| Google Cache 인터스티셜과 AMP 리다이렉트 스텁 | 같은 스킬의 `references/insane-search/cache-archive.md`, 그리고 2026-11-07에 이 저장소의 네트워크에서 한 측정 |
+| 제품 표식, 쿠키 계열, 실제 TLS 필요 여부 | `code-yeongyu/oh-my-openagent`(`dev` 브랜치)의 `ultimate-browsing` 스킬, 2026-11-07에 읽음 |
+| Google Cache 인터스티셜과 AMP 리다이렉트 스텁 | 같은 스킬, 그리고 2026-11-07에 이 저장소의 네트워크에서 한 측정 |
 | Cloudflare 호스트의 `server: cloudflare`와 `cf-ray` 헤더 | 2026-11-07에 `https://www.cloudflare.com/` 측정 |
 | 상태 코드 의미 | RFC 9110, <https://www.rfc-editor.org/rfc/rfc9110.html>; RFC 6585; RFC 7725 |
 | 신호 두 개 규칙과 스텁 목록 | 이 패키지가 고른 설계이며 검증된 최적값이 아님 |

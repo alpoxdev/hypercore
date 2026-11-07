@@ -52,6 +52,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-databa
 - `hyper-git`은 혼자서 꼬리 단계가 되지 않습니다. 파일은 바꾸지만 전달은 맡지 않는 꼬리 뒤에 붙습니다. `hyper-plan`, `hyper-execute`, `hyper-mass`는 스스로 전달하므로 `hyper-git`이 뒤따르지 않습니다.
 - Report 작업에서는 요청한 마지막 단계에서 체인이 끝납니다. 계획을 요청한 Report 작업은 `--plan-only`로 `hyper-plan`에서 끝납니다.
 - 최대 네 단계까지 실행합니다. 더 필요해 보이는 체인은 작업 두 개입니다. 첫 작업을 실행하고 두 번째는 다음 단계로 보고합니다.
+- `hyper-browsing`은 단계가 아니라 동반 스킬입니다. 이 순서에서 자리를 차지하지 않고 네 단계 상한에도 세지 않습니다. 리서치가 웹 조사형일 때 `hyper-research` 단계에 붙입니다. 질문이 실시간 웹 출처(검색 결과, 벤더·커뮤니티·뉴스 페이지, 시장·동향 데이터, 외부 문서, 이름을 댄 URL)에 기대는 경우이며, "인터넷 검색", "웹에서", "최신", "동향", "사례", "latest" 같은 말이나 URL이 신호입니다. 리서치가 저장소만 다루거나(소스 코드 분석, 로컬 파일과 이력) `hyper-research` 단계를 고르지 않았으면 붙이지 않습니다.
 
 ## 4. 체인 레시피
 
@@ -100,6 +101,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-databa
 ## 5. 동률 처리
 
 - 긴 요청 안에서 사용자가 이름을 댄 단계("hyper-research로 조사하고 바로 적용해")는 고르고, 나머지 단계는 여전히 신호를 따릅니다.
+- 결과물 전체가 막힌 페이지 하나의 내용인 요청("이 403 페이지 본문만 가져와")은 `hyper` 작업이 아닙니다. `hyper-browsing`이 단독으로 처리합니다. 조사 중에 만난 막힌 출처는 동반 스킬로서 `hyper-research` 단계 안에 둡니다.
 - `hyper-issue`는 `hyper-skill`이나 `hyper-documentation`과 한 체인에서 실행하지 않습니다. 이슈 기록이나 배치 명세는 그 자체가 산출물이고, 스킬 폴더나 일반 문서는 각자의 단계로 갑니다.
 - `hyper-issue`는 계획이 그 배치 명세나 이슈 기록을 소비할 때만 `hyper-plan` 앞에 놓습니다. 뒤에 구현이 없는 이슈 기록은 `hyper-issue`에서 체인을 끝냅니다.
 - `hyper-mass`와 `hyper-plan`은 한 체인에서 함께 실행하지 않습니다. 명시 신호가 있을 때만 `hyper-mass`를 고르고, 아니면 `hyper-plan`을 고릅니다.
@@ -154,13 +156,15 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-databa
 
 첫 단계 전에 멈추는 실행은 같은 줄에 체인 대신 정지 사유를 씁니다.
 
+동반 스킬이 붙은 `hyper-research` 단계는 `hyper-research(+hyper-browsing)`으로 쓰고, 근거에는 웹 조사를 가리키는 말을 적습니다: `근거: hyper-research(+hyper-browsing)="인터넷 검색으로 동향 조사"`.
+
 ## Sources
 
 > Checked 2026-11-07.
 
 | Claim | Source |
 |---|---|
-| 열세 단계 스킬과 오케스트레이터 역할 | user instruction, 2026-11-06(오케스트레이터 역할); 현재의 열세 단계로 늘린 사용자 지시, 2026-11-07 |
+| 열네 단계 스킬, 동반 스킬, 오케스트레이터 역할 | user instruction, 2026-11-06(오케스트레이터 역할); 현재의 열네 단계로 늘린 사용자 지시, 2026-11-07; 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
 | 각 단계의 트리거, 결과물, 제외 범위. `hyper-mass`가 계획 파일 실행을 제외하고 `hyper-execute`가 기존 계획을 요구한다는 점 포함 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 전달 단어, 계획만·승인 보류 단어, 계획에서 실행으로 자동 연결 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 단계 순서, 네 단계 상한, 레시피, 동률 처리 | 이 패키지가 고른 설계이며 검증된 최적값이 아님 |

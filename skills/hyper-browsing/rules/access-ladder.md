@@ -25,8 +25,8 @@ Tiers run in this order. Skip a tier only for the reason in its row, and record 
 |---|---|---|---|
 | 0 | Official public endpoint of the same platform (JSON, Atom, oEmbed, syndication, registry API) | Platform is `official-endpoint` | No endpoint covers the requested content |
 | 1 | Headless request grid: plain curl with browser-like headers, then URL variants, referer strategies, device classes, client fingerprint impersonation (curl_cffi when installed), readers, structured-metadata extraction, feed discovery, and the media extractor for `media` | Always for `generic` and `media`, and after tier 0 fails | The previous tier was accepted |
-| 2 | Archive copy: Wayback availability lookup, then other archives | Freshness is `copy-acceptable`, or tier 1 ended with a WAF that needs a real browser and a dated copy answers the request | Freshness is `live-required` and the user did not accept a copy |
-| 3 | Owned browser: a browser the run launches with a fresh task-owned profile, headless first, a stealth-patched build when the runtime has one | Tier 1 and tier 2 failed or were skipped, or the content needs JavaScript, clicks, scrolling, media playback, or a screenshot | No browser-automation capability: mark `skipped`, terminal `blocked` or `fetched_partial` |
+| 2 | Archive copy: Wayback availability lookup, then other archives | Freshness is `copy-acceptable` | Freshness is `live-required`; when tiers 3 and 4 then fail or are skipped, offer the copy once and run tier 2 only if the user accepts it |
+| 3 | Owned browser: a browser the run launches with a fresh task-owned profile, headless first, through the runtime's own browser capability | Tier 1 and tier 2 failed or were skipped, or the content needs JavaScript, clicks, scrolling, media playback, or a screenshot | No browser-automation capability: mark `skipped`, terminal `blocked` or `fetched_partial` |
 | 4 | Attached browser: the user's own signed-in browser, driven through the runtime's attach capability | Authorization is `own-account`, or the host blocks every owned browser and the user agrees to open it in their own browser | No attach capability, or the user is not present for a login or challenge step |
 
 `references/headless-recipes.md` holds the tier 1 and tier 2 commands; `references/public-endpoints.md` holds tier 0; `references/browser-tier.md` holds tiers 3 and 4.
@@ -36,7 +36,7 @@ Tiers run in this order. Skip a tier only for the reason in its row, and record 
 | Tier | Attempt budget | Leave the tier early when |
 |---|---|---|
 | 0 | 2 endpoint calls per target | The endpoint returns 401, 403, or a documented "auth required" error twice |
-| 1 | 12 attempts per target | Three attempts in a row return the same WAF challenge for a product whose row in `references/block-signals.md` says it needs a real browser |
+| 1 | 12 attempts per target | Three attempts in a row, each changing a different axis, return the same challenge for a product whose row in `references/block-signals.md` is `needs_js` or `needs_real_browser`; a `needs_real_tls` product leaves only after every impersonation family was tried |
 | 2 | 1 Wayback lookup plus 1 snapshot fetch, then 1 attempt per other archive | Every archive returns no snapshot, a timeout, or a stub |
 | 3 | 1 browser session, at most 3 navigations | The rendered page still shows a challenge after one reload and a 10-second wait |
 | 4 | 1 attached session | The user declines, or a login or challenge step needs them and they are not present |
@@ -58,11 +58,11 @@ Each retry inside a tier changes exactly one axis from the previous attempt and 
 ## 5. Escalation Rules
 
 - An HTTP 200 starts the proof check; it never ends the tier by itself (`rules/evidence-and-report.md` §1).
-- A `challenge` verdict from a WAF whose row in `references/block-signals.md` says `needs_real_browser` ends tier 1 after the early-leave condition in §3; go to tier 2 when freshness allows a copy, otherwise tier 3.
+- A `challenge` verdict from a product whose row in `references/block-signals.md` says `needs_js` or `needs_real_browser` ends tier 1 after the early-leave condition in §3; go to tier 2 when freshness allows a copy, otherwise tier 3.
 - A `stub` verdict (redirect page, interstitial, cache shell that points back to the origin) never counts as success and never ends a tier early.
 - In tier 3, read the page's own JSON calls before the DOM when the content is data (product lists, feeds, search results): capture the network requests, then re-request the JSON URL in tier 1. API layers are often less guarded than HTML.
 - For a `bulk` target, find one working route on the first item, then reuse that route for the rest; climb again only for items that fail.
-- Stop at the first accepted attempt. When the accepted verdict is `weak_ok` and a cheaper axis or the next tier can give positive proof within budget, run it and keep the better result.
+- Stop at the first `strong_ok` attempt. A `weak_ok` attempt is kept while one more axis in the same tier, or the next tier, runs within budget; the better result is accepted, and a `weak_ok` result left at the end gives `fetched_partial`.
 
 ## 6. No-Site-Name Rule
 
@@ -74,6 +74,6 @@ This package stores no site-specific selectors, byte sizes, cookie values, or qu
 
 | Claim | Source |
 |---|---|
-| The tier order, the 12-attempt grid, the retry axes (URL transform, TLS impersonation, referer, device class), the API-first branch through captured network requests, and the no-site-name rule | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), its `references/insane-search/README.md` and `engine/waf_profiles.yaml`, read 2026-11-07 |
+| The tier order, the 12-attempt grid, the retry axes (URL transform, TLS impersonation, referer, device class), the API-first branch through captured network requests, and the no-site-name rule | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), read 2026-11-07 |
 | curl_cffi browser impersonation targets | <https://pypi.org/project/curl-cffi/>, version 0.17.0 observed 2026-11-07 |
 | Per-tier budgets, the one-axis retry rule, and the early-leave conditions | this package's chosen design, not a validated optimum |

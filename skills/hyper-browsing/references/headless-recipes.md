@@ -14,8 +14,9 @@
 ## 1. Plain Request
 
 ```bash
+mkdir -p .hyper/browsing/<slug>/attempts .hyper/browsing/<slug>/content
 out=.hyper/browsing/<slug>/attempts/<n>.html
-curl -sL -m 25 -o "$out" -w '%{http_code}\t%{size_download}\t%{url_effective}\n' \
+curl -sL --compressed -m 25 -o "$out" -w '%{http_code}\t%{size_download}\t%{url_effective}\n' \
   -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15' \
   -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' \
   -H 'Accept-Language: ko-KR,ko;q=0.9,en;q=0.8' \
@@ -30,11 +31,14 @@ Change one axis per retry: the URL variant, the user agent family (Safari, Safar
 curl_cffi reproduces a browser's TLS and HTTP/2 fingerprint. Use it only when it is installed, or in a task-owned virtual environment that is removed afterwards.
 
 ```bash
-python3 -I -c 'import curl_cffi' 2>/dev/null || {
+if python3 -I -c 'import curl_cffi' 2>/dev/null; then
+  PY=python3
+else
   python3 -m venv .hyper/browsing/<slug>/venv &&
-  .hyper/browsing/<slug>/venv/bin/pip install -q 'curl_cffi>=0.15'
-}
-PY=.hyper/browsing/<slug>/venv/bin/python3   # or python3 when it was already installed
+  .hyper/browsing/<slug>/venv/bin/pip install -q curl_cffi &&   # no pin: pip picks the newest wheel for this Python
+  PY=.hyper/browsing/<slug>/venv/bin/python3
+fi
+"$PY" -I -c 'import curl_cffi; print(curl_cffi.__version__)'   # record this version in the report
 "$PY" -I - "<URL>" safari .hyper/browsing/<slug>/attempts/<n>.html <<'EOF'
 import sys
 from curl_cffi import requests
@@ -45,7 +49,7 @@ print(r.status_code, len(r.content), r.url, sep="\t")
 EOF
 ```
 
-Impersonation families to rotate, one per attempt: `safari`, `safari_ios`, `chrome`, `chrome_android`, `firefox`. Exact target names change between curl_cffi releases; list them from the installed version's documentation before naming a specific version.
+Impersonation families to rotate, one per attempt: `safari`, `safari_ios`, `chrome`, `chrome_android`, `firefox`. All five aliases ran on curl_cffi 0.13.0 under Python 3.9 on 2026-11-07. Do not pin a minimum version: recent releases (0.15 and later) ship wheels only for newer Python versions, so `curl_cffi>=0.15` fails on an older default interpreter. Version-specific target names (`chrome131`, `safari2601`) change between releases; use one only after checking the installed version's documentation.
 
 ## 3. Structured Metadata
 
@@ -106,9 +110,9 @@ Probe results on 2026-11-07 from this repository's network:
 |---|---|
 | Wayback availability API | 200, returned a snapshot URL and timestamp |
 | Wayback CDX API | 200 with JSON rows (the upstream skill recorded 503 in 2026-08; it has recovered for now) |
-| Wayback `web/<ts>/<URL>` (rewritten) | On a strongly guarded target the archive re-fetches the origin and stores the 403 `Attention Required! \| Cloudflare` page; that copy is not a success |
+| Wayback `web/<ts>/<URL>` (rewritten) | Unstable: one request returned 403 with a `Attention Required! \| Cloudflare` page, and the same URL minutes later returned 200 with the real page. Judge each body; on a challenge body, change one axis (the raw `id_` path) instead of resending the same request |
 | Wayback `web/<ts>id_/<URL>` with `--compressed` | 200, 148,648 bytes, title `OpenAI - Crunchbase Company Profile & Funding`, 13,801 characters of body. A real copy |
-| Wayback `web/<ts>id_/<URL>` without `--compressed` | 200 and 148,648 bytes, but gzip binary content; size checks pass, so a text check is required |
+| Wayback `web/<ts>id_/<URL>` without `--compressed` | 200 and 148,648 bytes, but gzip binary content (the raw view replays the stored `Content-Encoding: gzip`); size checks pass, so a text check is required |
 | archive.today hosts (`.ph`, `.md`, `.li`, `.is`) | no response (connection failed) from this network |
 | Google web cache | search interstitial, not a cache |
 
@@ -120,7 +124,7 @@ Check every archive body with the proof layers: archive hosts also serve rate-li
 
 | Claim | Source |
 |---|---|
-| The request grid, curl_cffi impersonation, reader, media extractor, and archive order | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), `references/insane-search/*.md`, read 2026-11-07 |
+| The request grid, curl_cffi impersonation, reader, media extractor, and archive order | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), read 2026-11-07 |
 | curl_cffi 0.17.0 and yt-dlp 2026.10.26 as current releases | <https://pypi.org/pypi/curl-cffi/json> and <https://pypi.org/pypi/yt-dlp/json>, read 2026-11-07 |
 | Endpoint probe rows | requests from this repository's network on 2026-11-07; results depend on the network and change without notice |
 | Wayback availability and CDX APIs | <https://archive.org/help/wayback_api.php> |

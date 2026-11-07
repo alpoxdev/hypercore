@@ -35,7 +35,7 @@
 
 | Claim | Source |
 |---|---|
-| The endpoint list | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), `references/insane-search/public-api.md`, `json-api.md`, and `twitter.md`, read 2026-11-07 |
+| The endpoint list | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), read 2026-11-07 |
 | Probe results | requests from this repository's network on 2026-11-07; results depend on the network and change without notice |
 | arXiv request spacing | <https://info.arxiv.org/help/api/tou.html> |
 | Bluesky public API host | <https://docs.bsky.app/docs/advanced-guides/api-directory> |

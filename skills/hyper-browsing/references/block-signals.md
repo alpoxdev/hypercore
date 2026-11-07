@@ -36,7 +36,7 @@ Detect the product with at least two signals before trusting its row; one signal
 | Empty JavaScript shell | A root element such as `<div id="root"></div>` or `<div id="__next"></div>` with no text, and script tags only |
 | Consent wall | A cookie-consent page that hides the content until a choice is made |
 | AMP cache redirect | A short `Redirecting` page on an AMP cache host that sends the client back to the origin |
-| Archive re-fetch of the blocked origin | An archive page whose body is the origin's own 403 or challenge page, because the archive fetched the origin while building the snapshot (observed on `web/<ts>/<url>` in 2026-11-07); use the raw `web/<ts>id_/<url>` path or another snapshot timestamp |
+| Challenge body on an archive host | An archive response whose body is a challenge page instead of the snapshot (seen once on a rewritten `web/<ts>/<url>` view on 2026-11-07, not reproduced minutes later); change one axis: the raw `web/<ts>id_/<url>` path or another snapshot timestamp |
 
 ## 4. Status Codes
 
@@ -56,8 +56,8 @@ Detect the product with at least two signals before trusting its row; one signal
 
 | Claim | Source |
 |---|---|
-| Product markers, cookie families, and real-TLS needs | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), `engine/waf_profiles.yaml` (`last_reviewed` 2026-04-21), read 2026-11-07 |
-| Google Cache interstitial and AMP redirect stubs | the same skill's `references/insane-search/cache-archive.md`, plus a probe from this repository's network on 2026-11-07 |
+| Product markers, cookie families, and real-TLS needs | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), read 2026-11-07 |
+| Google Cache interstitial and AMP redirect stubs | the same skill, plus a probe from this repository's network on 2026-11-07 |
 | `server: cloudflare` and `cf-ray` headers on a Cloudflare host | probe of `https://www.cloudflare.com/` on 2026-11-07 |
 | Status code meanings | RFC 9110, <https://www.rfc-editor.org/rfc/rfc9110.html>; RFC 6585; RFC 7725 |
 | The two-signal rule and the stub list | this package's chosen design, not a validated optimum |

@@ -4,12 +4,12 @@
 
 ## 1. Capability Check
 
-Before tier 3, find which browser capability the runtime exposes: a browser-automation tool, a CDP or Playwright library, or a headless browser binary. Record its name and version in the report. With none, mark tiers 3 and 4 `skipped` and end at `blocked` or `fetched_partial`; never describe a page as rendered from reasoning.
+Before tier 3, find which browser capability the runtime exposes: a browser-automation tool or library the runtime already provides, or a headless browser binary already installed; never install one for this run. Record its name and version in the report. With none, mark tiers 3 and 4 `skipped` and end at `blocked` or `fetched_partial`; never describe a page as rendered from reasoning.
 
 ## 2. Tier 3: Owned Browser
 
 1. Create a fresh profile directory under `.hyper/browsing/<slug>/profile/`. Never point the browser at the user's own profile.
-2. Launch headless first. When the runtime offers a stealth-patched browser build, use it for `needs_real_browser` products; do not inject stealth scripts or override `navigator.webdriver` by hand.
+2. Launch headless first through the runtime's own browser capability. Do not install a separate browser build, inject stealth scripts, or override `navigator.webdriver` by hand; a challenge the runtime's browser cannot pass ends the tier.
 3. Navigate once, wait for the network to settle or up to 10 seconds, then read the page as text or an accessibility snapshot rather than a screenshot when text answers the request.
 4. When the content is data, capture the page's own network requests and look for JSON calls (`/api/`, `/graphql`, `.json`). Re-request a JSON URL in tier 1; record it as provenance `api` when it is the platform's own call.
 5. A challenge that remains after one reload and a 10-second wait ends the tier. A challenge that asks a human to act goes to `rules/access-policy.md` §4.
@@ -47,6 +47,6 @@ Cookies never move from the user's browser into the run. A cookie export from th
 
 | Claim | Source |
 |---|---|
-| Owned engine with a task-owned profile, a stealth-patched build instead of injected stealth scripts, reading the page's JSON calls, the attached engine for the user's account, and never copying or clearing the user's live profile | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), `SKILL.md` and `references/chrome-stealth.md`, read 2026-11-07 |
-| Reading network requests to find internal JSON endpoints | the same skill's `references/insane-search/README.md`, rule R7 |
+| A browser with a task-owned profile, no injected stealth scripts, reading the page's JSON calls, the user's own signed-in browser for their account, and never copying or clearing the user's live profile | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), read 2026-11-07 |
+| Reading network requests to find internal JSON endpoints | the same skill, read 2026-11-07 |
 | The 10-second wait, the read-only default, and the capability check | this package's chosen design, not a validated optimum |

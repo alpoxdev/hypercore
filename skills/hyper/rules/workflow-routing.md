@@ -52,6 +52,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-databa
 - `hyper-git` is never a tail on its own: it runs after a tail that changed files but owns no delivery. `hyper-plan`, `hyper-execute`, and `hyper-mass` deliver for themselves, so `hyper-git` never follows them.
 - In a Report job the chain ends at the last requested stage. A Report job that asks for a plan ends at `hyper-plan` with `--plan-only`.
 - At most four stages run. A chain that seems to need more is two jobs: run the first and report the second as the next step.
+- `hyper-browsing` is a companion, not a stage: it takes no position in this order and does not count toward the four-stage cap. Attach it to the `hyper-research` stage when the research is web-sourced - the question depends on live web sources (search results, vendor, community, or news pages, market or trend data, external documentation, a named URL), signalled by words such as "인터넷 검색", "웹에서", "최신", "동향", "사례", "latest", or a URL. Do not attach it when the research is repository-only (source-code analysis, local files and history), or when no `hyper-research` stage is chosen.
 
 ## 4. Chain Recipes
 
@@ -100,6 +101,7 @@ Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report 
 ## 5. Tie-Breaks
 
 - A stage the user names inside a longer request ("hyper-research로 조사하고 바로 적용해") is chosen, and the other stages still follow the signals.
+- A request whose whole output is one blocked page's content ("이 403 페이지 본문만 가져와") is not a `hyper` job: `hyper-browsing` handles it alone. A blocked source met while researching stays inside the `hyper-research` stage as its companion.
 - `hyper-issue` never runs with `hyper-skill` or `hyper-documentation`; an issue record or a manifest is its own deliverable, and a skill folder or general document goes to its own stage.
 - `hyper-issue` runs before `hyper-plan` only when the plan consumes its manifest or issue records. Issue recording with no implementation afterwards ends the chain at `hyper-issue`.
 - `hyper-mass` and `hyper-plan` never run in one chain. Choose `hyper-mass` only on its explicit signal; otherwise choose `hyper-plan`.
@@ -154,13 +156,15 @@ Print one Korean line before the first stage:
 
 A run that stops before the first stage prints the same line with the stop reason in place of the chain.
 
+A `hyper-research` stage with its companion is written `hyper-research(+hyper-browsing)`, and its signal names the web-sourcing word: `근거: hyper-research(+hyper-browsing)="인터넷 검색으로 동향 조사"`.
+
 ## Sources
 
 > Checked 2026-11-07.
 
 | Claim | Source |
 |---|---|
-| The thirteen stage skills and the orchestrator role | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current thirteen by user instruction, 2026-11-07 |
+| The fourteen stage skills, the companion skill, and the orchestrator role | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current fourteen by user instruction, 2026-11-07; `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
 | Each stage's trigger, output, and exclusions, including `hyper-mass` excluding plan-file execution and `hyper-execute` requiring an existing plan | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The delivery words, the plan-only and approval-hold words, and the plan-to-execute auto-continue | the plan skill's handoff rule in this repository, 2026-11-06 |
 | The stage order, the four-stage cap, the recipes, and the tie-breaks | this package's chosen design, not a validated optimum |

@@ -72,5 +72,5 @@
 | robots 규칙과 크롤러 동작 | RFC 9309, <https://www.rfc-editor.org/rfc/rfc9309.html> |
 | 법적 차단 상태 코드로서의 451 | RFC 7725, <https://www.rfc-editor.org/rfc/rfc7725.html> |
 | 429와 `Retry-After` | RFC 6585 §4, <https://www.rfc-editor.org/rfc/rfc6585.html#section-4>; RFC 9110 §10.2.3, <https://www.rfc-editor.org/rfc/rfc9110.html#section-10.2.3> |
-| 사용자 실제 프로필에서 세션을 복사하지 않기, 프록시로 헤더를 보내지 않기, 사용자 본인 계정에는 연결 브라우저 사용 | `code-yeongyu/oh-my-openagent`(`dev` 브랜치)의 `ultimate-browsing` 스킬, `SKILL.md`와 `references/chrome-stealth.md`, 2026-11-07에 읽음 |
+| 사용자 실제 프로필에서 세션을 복사하지 않기, 프록시로 헤더를 보내지 않기, 사용자 본인 계정에는 연결 브라우저 사용 | `code-yeongyu/oh-my-openagent`(`dev` 브랜치)의 `ultimate-browsing` 스킬, 2026-11-07에 읽음 |
 | 경계 표, 대량 상한·속도 기본값, 게이트가 걸린 행동 목록 | 이 패키지가 고른 설계이며 검증된 최적값이 아님 |

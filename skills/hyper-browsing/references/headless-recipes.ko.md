@@ -14,8 +14,9 @@
 ## 1. 평범한 요청
 
 ```bash
+mkdir -p .hyper/browsing/<slug>/attempts .hyper/browsing/<slug>/content
 out=.hyper/browsing/<slug>/attempts/<n>.html
-curl -sL -m 25 -o "$out" -w '%{http_code}\t%{size_download}\t%{url_effective}\n' \
+curl -sL --compressed -m 25 -o "$out" -w '%{http_code}\t%{size_download}\t%{url_effective}\n' \
   -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15' \
   -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' \
   -H 'Accept-Language: ko-KR,ko;q=0.9,en;q=0.8' \
@@ -30,11 +31,14 @@ grep -o '<title>[^<]*' "$out" | head -1
 curl_cffi는 브라우저의 TLS와 HTTP/2 지문을 재현합니다. 이미 설치됐을 때, 또는 끝나면 지우는 작업 전용 가상 환경에서만 씁니다.
 
 ```bash
-python3 -I -c 'import curl_cffi' 2>/dev/null || {
+if python3 -I -c 'import curl_cffi' 2>/dev/null; then
+  PY=python3
+else
   python3 -m venv .hyper/browsing/<slug>/venv &&
-  .hyper/browsing/<slug>/venv/bin/pip install -q 'curl_cffi>=0.15'
-}
-PY=.hyper/browsing/<slug>/venv/bin/python3   # 이미 설치됐으면 python3
+  .hyper/browsing/<slug>/venv/bin/pip install -q curl_cffi &&   # 버전 고정 없음: pip가 이 Python에 맞는 최신 wheel을 고른다
+  PY=.hyper/browsing/<slug>/venv/bin/python3
+fi
+"$PY" -I -c 'import curl_cffi; print(curl_cffi.__version__)'   # 이 버전을 보고서에 기록한다
 "$PY" -I - "<URL>" safari .hyper/browsing/<slug>/attempts/<n>.html <<'EOF'
 import sys
 from curl_cffi import requests
@@ -45,7 +49,7 @@ print(r.status_code, len(r.content), r.url, sep="\t")
 EOF
 ```
 
-시도마다 하나씩 돌릴 위장 계열: `safari`, `safari_ios`, `chrome`, `chrome_android`, `firefox`. 정확한 대상 이름은 curl_cffi 판마다 바뀌므로 특정 버전 이름을 쓰기 전에 설치된 판의 문서에서 확인합니다.
+시도마다 하나씩 돌릴 위장 계열: `safari`, `safari_ios`, `chrome`, `chrome_android`, `firefox`. 2026-11-07에 Python 3.9의 curl_cffi 0.13.0에서 다섯 별칭이 모두 동작했습니다. 최소 버전을 고정하지 않습니다. 최근 판(0.15 이후)은 새 Python용 wheel만 내놓아서 오래된 기본 인터프리터에서는 `curl_cffi>=0.15`가 설치에 실패합니다. 판에 묶인 대상 이름(`chrome131`, `safari2601`)은 판마다 바뀌므로 설치된 판의 문서를 확인한 뒤에만 씁니다.
 
 ## 3. 구조화 메타데이터
 
@@ -105,9 +109,9 @@ done
 |---|---|
 | Wayback availability API | 200, 스냅숏 URL과 시각을 돌려줌 |
 | Wayback CDX API | JSON 행과 함께 200(상위 스킬은 2026-08에 503을 기록했으나 지금은 회복) |
-| Wayback `web/<ts>/<URL>`(재작성본) | 방어가 센 대상에서는 아카이브가 원본을 다시 받아 오며 403 `Attention Required! \| Cloudflare`를 저장함. 이 사본은 성공이 아님 |
+| Wayback `web/<ts>/<URL>`(재작성본) | 불안정함: 한 번은 403과 `Attention Required! \| Cloudflare` 페이지를, 몇 분 뒤 같은 URL은 200과 진짜 페이지를 돌려줌. 본문마다 판정하고, 챌린지 본문이면 같은 요청을 다시 보내지 말고 축 하나(원본 `id_` 경로)를 바꿈 |
 | Wayback `web/<ts>id_/<URL>` + `--compressed` | 200, 148,648바이트, 제목 `OpenAI - Crunchbase Company Profile & Funding`, 본문 13,801자. 진짜 사본 |
-| Wayback `web/<ts>id_/<URL>` without `--compressed` | 200, 148,648바이트지만 gzip 이진 내용. 크기 검사는 통과하므로 텍스트 검사가 필요 |
+| `--compressed` 없는 Wayback `web/<ts>id_/<URL>` | 200, 148,648바이트지만 gzip 이진 내용(원본 보기가 저장된 `Content-Encoding: gzip`을 그대로 재생함). 크기 검사는 통과하므로 텍스트 검사가 필요 |
 | archive.today 호스트(`.ph`, `.md`, `.li`, `.is`) | 이 네트워크에서 응답 없음(연결 실패) |
 | 구글 웹 캐시 | 캐시가 아니라 검색 인터스티셜 |
 
@@ -119,7 +123,7 @@ done
 
 | Claim | Source |
 |---|---|
-| 요청 격자, curl_cffi 위장, 리더, 미디어 추출기, 아카이브 순서 | `code-yeongyu/oh-my-openagent`(`dev` 브랜치)의 `ultimate-browsing` 스킬, `references/insane-search/*.md`, 2026-11-07에 읽음 |
+| 요청 격자, curl_cffi 위장, 리더, 미디어 추출기, 아카이브 순서 | `code-yeongyu/oh-my-openagent`(`dev` 브랜치)의 `ultimate-browsing` 스킬, 2026-11-07에 읽음 |
 | curl_cffi 0.17.0과 yt-dlp 2026.10.26이 현재 판 | <https://pypi.org/pypi/curl-cffi/json>, <https://pypi.org/pypi/yt-dlp/json>, 2026-11-07에 읽음 |
 | 엔드포인트 측정 행 | 2026-11-07에 이 저장소의 네트워크에서 한 요청. 결과는 네트워크에 따라 다르고 예고 없이 바뀜 |
 | Wayback availability·CDX API | <https://archive.org/help/wayback_api.php> |

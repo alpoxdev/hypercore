@@ -13,14 +13,14 @@ Give every attempt exactly one verdict. The status code is an input, never the v
 | `challenge` | A challenge marker, a WAF cookie signal with a small body, or a JavaScript-check page (`references/block-signals.md` §1) |
 | `stub` | A redirect page, a search or consent interstitial, an empty JavaScript shell, or a cache page that points back to the blocked origin (`references/block-signals.md` §3) |
 | `blocked` | 401, 403, 407, 429, 451, or 5xx without a usable body, or a connection refused, reset, or timed out |
-| `error` | The tool failed before a response (missing binary, DNS failure, invalid URL); the attempt does not count against the tier budget once |
+| `error` | The tool failed before a response (missing binary, DNS failure, invalid URL, or a compressed body saved undecoded). The first `error` for a given method does not count against the tier budget; fix the cause and rerun once, and a repeated `error` counts |
 
 ## 2. Proof Layers
 
 The accepted attempt passes all four, in this order. Record the result of each layer in the report.
 
 1. **No challenge marker.** The body contains none of the markers in `references/block-signals.md` §1, and the title is not a challenge or interstitial title.
-2. **Plausible size, type, and text.** The body is not under 3 KB for an HTML page unless the page is known to be small, matches the expected content type, and decodes as text (a gzip or otherwise binary body that decodes as text only to mojibake fails here); a body whose declared type is compressed but was saved undecoded is `error`, not content.
+2. **Plausible size, type, and text.** All three hold: the body is at least 3 KB for an HTML page (smaller only when the page is known to be small) and is not the size of a challenge page seen earlier in this run; the content type matches what was requested; and the body decodes as text, not as binary or mojibake (check with `file <path>`). A compressed body saved undecoded is `error`, not content.
 3. **No failed-sensor state.** No WAF cookie or header signals an unfinished challenge (`references/block-signals.md` §2).
 4. **Positive proof.** At least one caller-supplied or request-derived signal is present: a CSS selector, the expected title or headline, a canonical URL that matches the target, a structured-data type (`Article`, `Product`, `VideoObject`), or for an endpoint a documented JSON key with a non-empty value.
 
@@ -111,6 +111,6 @@ Save extracted text as `content/<name>.md` or `content/<name>.json`, and raw bod
 
 | Claim | Source |
 |---|---|
-| HTTP 200 as a start condition, the four-layer check (marker, size, cookie sensor, success selector), `strong_ok` and `weak_ok`, and the snapshot provenance with its timestamp | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), `references/insane-search/README.md` and `references/insane-search/cache-archive.md`, read 2026-11-07 |
+| HTTP 200 as a start condition, the four-layer check (marker, size, cookie sensor, success selector), `strong_ok` and `weak_ok`, and the snapshot provenance with its timestamp | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), read 2026-11-07 |
 | Status code meanings (401, 403, 407, 429, 451, 5xx) | RFC 9110, <https://www.rfc-editor.org/rfc/rfc9110.html>; RFC 6585; RFC 7725 |
 | The verdict set, the provenance labels, the terminals, and the report shape | this package's chosen design, not a validated optimum |

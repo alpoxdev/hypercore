@@ -72,5 +72,5 @@ Run these only when the user asked for them in this run, and record the request 
 | Robots rules and crawler behavior | RFC 9309, <https://www.rfc-editor.org/rfc/rfc9309.html> |
 | 451 as the status for a legal block | RFC 7725, <https://www.rfc-editor.org/rfc/rfc7725.html> |
 | 429 and `Retry-After` | RFC 6585 §4, <https://www.rfc-editor.org/rfc/rfc6585.html#section-4>; RFC 9110 §10.2.3, <https://www.rfc-editor.org/rfc/rfc9110.html#section-10.2.3> |
-| Never copying a session out of the user's live profile, no headers through proxies, and attached-browser use for the user's own account | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), `SKILL.md` and `references/chrome-stealth.md`, read 2026-11-07 |
+| Never copying a session out of the user's live profile, no headers through proxies, and attached-browser use for the user's own account | The `ultimate-browsing` skill in `code-yeongyu/oh-my-openagent` (branch `dev`), read 2026-11-07 |
 | The boundary table, the bulk cap and rate defaults, and the gated-action list | this package's chosen design, not a validated optimum |

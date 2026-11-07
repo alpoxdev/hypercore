@@ -34,7 +34,7 @@ compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대�
 
 요청한 결과물이 아래 단계 스킬 하나 이상을 차례로 거쳐야 끝나는 개발 결과이거나, 사용자가 `hyper`를 이름으로 부르면 이 스킬을 씁니다.
 
-사용자 지시에 따라 이 패키지는 오케스트레이터입니다. 아래 단계 표, `rules/workflow-routing.md`, `rules/stage-handoff.md`, Sources 행, 평가 라우트에서만 열네 단계 스킬의 이름을 씁니다. 이 패키지가 가진 스킬 간 연결은 이것뿐입니다.
+사용자 지시에 따라 이 패키지는 오케스트레이터입니다. 아래 단계 표, `rules/workflow-routing.md`, `rules/stage-handoff.md`, Sources 행, 평가 라우트에서만 열네 단계 스킬과 동반 스킬 하나의 이름을 씁니다. 이 패키지가 가진 스킬 간 연결은 이것뿐입니다.
 
 | Stage skill | What the stage produces |
 |---|---|
@@ -52,6 +52,8 @@ compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대�
 | `hyper-skill` | `skills/<name>/` 아래에 새로 만들거나 리팩터링한 스킬 폴더와 그 검증기 실행 결과 |
 | `hyper-documentation` | 요청한 경로에 새로 만들거나 리팩터링한 README, `AGENTS.md`, AI가 읽기 좋은 문서, 지침 베이스, 런북, 규칙 묶음, 재사용 프롬프트, 프롬프트 템플릿, 프롬프트 팩, 프롬프트 평가 픽스처와 고른 모드의 검증 handoff |
 | `hyper-git` | 전달하지 않는 꼬리 단계 뒤의 전달 단계로서, 이번 실행의 커밋을 지정 브랜치에 푸시해 옮겨 싣거나 작업 브랜치를 그 브랜치들에 병합해 푸시하며, 각각을 원격에서 확인한 상태 |
+
+동반 스킬: `hyper-browsing`은 평범한 요청으로 읽지 못하는 출처(WAF·봇 챌린지, JavaScript 전용 페이지, 사라진 페이지)를 열고 접근 보고서를 `.hyper/browsing/<slug>/` 아래에 저장합니다. 체인 자리를 차지하지 않고 네 단계 상한에도 세지 않습니다. 웹 조사형 `hyper-research` 단계 안에서 막힌 출처마다 한 번씩 실행합니다(`rules/workflow-routing.md` §3, `rules/stage-handoff.md` §1).
 
 다음 경우에는 쓰지 않습니다.
 
@@ -88,6 +90,7 @@ Positive requests:
 - "Upgrade this TanStack Start app to the new major version and fix everything it breaks." -> `hyper-research` -> `hyper-architecture` -> `hyper-plan` -> `hyper-execute`
 - "hyper로 우리 사이트 SEO 점검하고 고칠 거 다 고쳐줘." -> `hyper-seo` -> `hyper-plan` -> `hyper-execute`
 - "상태관리 라이브러리 뭐 쓸지 비교해보고 골라서 적용까지 해줘." -> `hyper-research` -> `hyper-plan` -> `hyper-execute`
+- "2026년 국내 SaaS 가격 동향 인터넷 검색으로 조사해서 리포트로 줘." -> `hyper-research`, 막힌 출처에는 동반 스킬 `hyper-browsing`
 - "사내 배포 체크리스트를 스킬로 만들어줘. 최신 Agent Skills 규격 확인해서." -> `hyper-research` -> `hyper-skill`
 - "이 저장소 배포 런북을 에이전트가 읽기 좋게 다시 정리해줘." -> `hyper-documentation`
 - "Build a reusable code-review system prompt with an eval fixture, checked against the latest provider prompting guide." -> `hyper-research` -> `hyper-documentation`
@@ -244,7 +247,7 @@ Phase 규칙:
 
 | Claim | Source |
 |---|---|
-| 오케스트레이터 역할, 처음부터 끝까지 실행, 이 패키지가 열네 단계 스킬의 이름을 쓰도록 허용한 사용자 지시 예외 | user instruction, 2026-11-06(오케스트레이터 역할); 현재의 열네 단계로 늘린 사용자 지시, 2026-11-07 |
+| 오케스트레이터 역할, 처음부터 끝까지 실행, 이 패키지가 열네 단계 스킬과 동반 스킬의 이름을 쓰도록 허용한 사용자 지시 예외 | user instruction, 2026-11-06(오케스트레이터 역할); 현재의 열네 단계로 늘린 사용자 지시, 2026-11-07; 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
 | 각 단계 스킬의 결과물, 산출물 경로, 경계 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 계획 단계가 스스로 실행으로 이어지고 전달 플래그를 넘김 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 순차 체인은 저장된 산출물로 상태를 넘기고 라우터는 코드 같은 규칙으로 갈래를 고름 | `instructions/graph-engineering/references/graph-patterns.md` |

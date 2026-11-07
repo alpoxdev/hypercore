@@ -34,7 +34,7 @@ Use a different language only when the user explicitly requests it or a machine-
 
 Use this skill when the requested output is a finished development result that needs one or more of the stage skills below in sequence, or when the user calls `hyper` by name.
 
-By user instruction, this package is an orchestrator: it names its fourteen stage skills in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
+By user instruction, this package is an orchestrator: it names its fourteen stage skills and its one companion skill in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
 
 | Stage skill | What the stage produces |
 |---|---|
@@ -52,6 +52,8 @@ By user instruction, this package is an orchestrator: it names its fourteen stag
 | `hyper-skill` | A created or refactored skill folder under `skills/<name>/` with its own validator run |
 | `hyper-documentation` | A created or refactored README, `AGENTS.md`, AI-readable document, instruction base, runbook, rule pack, reusable prompt, prompt template, prompt pack, or prompt eval fixture at the requested path, with the selected mode's validation handoff |
 | `hyper-git` | As the delivery stage after a tail that does not deliver: this run's commits pushed and propagated to the named branches, or the work branch merged into them and pushed, each confirmed on the remote |
+
+Companion skill: `hyper-browsing` reaches a source a plain fetch cannot read (a WAF or bot challenge, a JavaScript-only page, a dead page) and saves its access report under `.hyper/browsing/<slug>/`. It takes no chain position and does not count toward the four-stage cap: it runs inside a web-sourced `hyper-research` stage, once per blocked source (`rules/workflow-routing.md` §3, `rules/stage-handoff.md` §1).
 
 Do not use it when:
 
@@ -88,6 +90,7 @@ Positive requests:
 - "Upgrade this TanStack Start app to the new major version and fix everything it breaks." -> `hyper-research` -> `hyper-architecture` -> `hyper-plan` -> `hyper-execute`
 - "hyper로 우리 사이트 SEO 점검하고 고칠 거 다 고쳐줘." -> `hyper-seo` -> `hyper-plan` -> `hyper-execute`
 - "상태관리 라이브러리 뭐 쓸지 비교해보고 골라서 적용까지 해줘." -> `hyper-research` -> `hyper-plan` -> `hyper-execute`
+- "2026년 국내 SaaS 가격 동향 인터넷 검색으로 조사해서 리포트로 줘." -> `hyper-research` with `hyper-browsing` as its companion for blocked sources
 - "사내 배포 체크리스트를 스킬로 만들어줘. 최신 Agent Skills 규격 확인해서." -> `hyper-research` -> `hyper-skill`
 - "이 저장소 배포 런북을 에이전트가 읽기 좋게 다시 정리해줘." -> `hyper-documentation`
 - "Build a reusable code-review system prompt with an eval fixture, checked against the latest provider prompting guide." -> `hyper-research` -> `hyper-documentation`
@@ -244,7 +247,7 @@ Phase rules:
 
 | Claim | Source |
 |---|---|
-| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its fourteen stage skills | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current fourteen by user instruction, 2026-11-07 |
+| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its fourteen stage skills and its companion skill | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current fourteen by user instruction, 2026-11-07; `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
 | The output, artifact path, and boundary of each stage skill | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The plan stage continues into execution by itself and passes the delivery flag through | the plan skill's handoff rule in this repository, 2026-11-06 |
 | A sequential chain hands state forward through saved artifacts, and a router picks a branch by code-like rules | `instructions/graph-engineering/references/graph-patterns.md` |

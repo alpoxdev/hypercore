@@ -68,6 +68,7 @@ One row per source the moment it is opened. `S<n>` ids are stable for the whole 
 - Grade: S for primary, official, standard, or first-party; A for independent methodology or major institutions; B for practitioner or vendor material; C for promotional, unattributed, outdated, or lead-only.
 - A row written from a snippet or a lane's summary is marked `unverified` in `Caveat` until the artifact is opened.
 - Under each high-risk row, keep the exact quoted span or line the claim rests on.
+- A source reached through a blocked-page route records the route and its provenance label in `Channel`, a snapshot timestamp in `Version/freshness`, and the access report path in `Caveat` (`references/channel-selection.md`, Blocked Sources). An unreachable source keeps its row with `Used?` `no` and the blocking signal in `Caveat`.
 
 ## `queries.md`
 

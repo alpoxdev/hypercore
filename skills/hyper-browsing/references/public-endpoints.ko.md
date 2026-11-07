@@ -35,7 +35,7 @@
 
 | Claim | Source |
 |---|---|
-| 엔드포인트 목록 | `code-yeongyu/oh-my-openagent`(`dev` 브랜치)의 `ultimate-browsing` 스킬, `references/insane-search/public-api.md`, `json-api.md`, `twitter.md`, 2026-11-07에 읽음 |
+| 엔드포인트 목록 | `code-yeongyu/oh-my-openagent`(`dev` 브랜치)의 `ultimate-browsing` 스킬, 2026-11-07에 읽음 |
 | 측정 결과 | 2026-11-07에 이 저장소의 네트워크에서 한 요청. 결과는 네트워크에 따라 다르고 예고 없이 바뀜 |
 | arXiv 요청 간격 | <https://info.arxiv.org/help/api/tou.html> |
 | Bluesky 공개 API 호스트 | <https://docs.bsky.app/docs/advanced-guides/api-directory> |
