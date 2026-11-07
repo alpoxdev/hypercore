@@ -13,6 +13,9 @@
     "hyper-architecture": {
       "FRONTMATTER_TRIGGER": 1
     },
+    "hyper-browsing": {
+      "FRONTMATTER_TRIGGER": 1
+    },
     "hyper-database": {
       "FRONTMATTER_TRIGGER": 1
     },
