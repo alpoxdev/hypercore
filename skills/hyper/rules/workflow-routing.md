@@ -8,7 +8,7 @@ Decide the job from the requested output, then confirm it with repository files.
 
 | Job class | Requested output | Example words |
 |---|---|---|
-| Build | Changed code: a feature, fix, refactor, migration, or adoption | 만들어, 추가해, 고쳐, 리팩토링해, 옮겨, 적용해, implement, refactor, migrate |
+| Build | Changed code: a feature, fix, refactor, migration, or adoption; or a created or refactored skill folder | 만들어, 추가해, 고쳐, 리팩토링해, 옮겨, 적용해, 스킬로 만들어, implement, refactor, migrate |
 | Report | A saved report, audit, review, or plan with no code change | 조사만, 점검만, 리뷰만, 리포트만, 계획만, audit only, just the plan |
 | Resume | An earlier run continued | 이어서, 계속, 재개, resume, continue |
 
@@ -26,17 +26,18 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 | `hyper-plan` | A Build job touches several files or steps, or a Report job asks for a plan | The request phrase |
 | `hyper-execute` | Only as the first stage: a plan file under `.hyper/plans/` already exists and the user wants it run or resumed | The plan path that was read |
 | `hyper-mass` | The user asks for a dependency graph, a DAG, "의존성 그래프", "단계별 병렬", or several tasks where some must finish before others start, and no plan file is wanted | The request phrase |
+| `hyper-skill` | The requested output is a reusable skill folder: a new skill, or a refactor of an existing skill's trigger, contract, resources, or validation | The request phrase, plus the target `skills/<name>/SKILL.md` when it already exists |
 
 ## 3. Stage Order
 
 Chosen stages always run in this order. Skip the ones that were not chosen.
 
 ```text
-hyper-research -> hyper-seo -> hyper-architecture -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute)
+hyper-research -> hyper-seo -> hyper-architecture -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill)
 ```
 
 - Upstream stages (`hyper-research`, `hyper-seo`, `hyper-architecture`) produce evidence for the tail. In a Build job they run in report mode; the tail makes the code change.
-- The tail is exactly one of: `hyper-plan` (which continues into `hyper-execute` by itself), `hyper-mass`, or `hyper-execute` alone for an existing plan.
+- The tail is exactly one of: `hyper-plan` (which continues into `hyper-execute` by itself), `hyper-mass`, `hyper-execute` alone for an existing plan, or `hyper-skill` for a skill folder.
 - In a Report job the chain ends at the last requested stage. A Report job that asks for a plan ends at `hyper-plan` with `--plan-only`.
 - At most four stages run. A chain that seems to need more is two jobs: run the first and report the second as the next step.
 
@@ -56,6 +57,8 @@ hyper-research -> hyper-seo -> hyper-architecture -> (hyper-plan [-> hyper-execu
 | SEO fixes implemented as a planned change | `hyper-seo` -> `hyper-plan` |
 | Dependency-ordered multi-agent phase | `hyper-mass`, with upstream stages before it when their signals are present |
 | Existing plan run or resumed | `hyper-execute` |
+| Skill folder created or refactored | `hyper-skill` |
+| Skill folder that depends on current provider docs ("최신 규격", "latest spec") | `hyper-research` -> `hyper-skill` |
 
 Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report job.
 
@@ -63,6 +66,7 @@ Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report 
 
 - A stage the user names inside a longer request ("hyper-research로 조사하고 바로 적용해") is chosen, and the other stages still follow the signals.
 - `hyper-mass` and `hyper-plan` never run in one chain. Choose `hyper-mass` only on its explicit signal; otherwise choose `hyper-plan`.
+- `hyper-skill` and `hyper-plan` never run in one chain. When the requested output is a skill folder, choose `hyper-skill`; a plan file is not its input.
 - An existing plan file wins over a new plan only when the user points at it or says to resume. A new Build request with an unrelated old plan gets a new plan.
 - When the stack is outside the architecture stage's supported set, keep the stage anyway: it decides support from files and stops with a reason, and `rules/stage-handoff.md` §4 records that stop as a skip.
 
@@ -96,11 +100,11 @@ A run that stops before the first stage prints the same line with the stop reaso
 
 ## Sources
 
-> Checked 2026-11-06.
+> Checked 2026-11-07.
 
 | Claim | Source |
 |---|---|
-| The six stage skills and the orchestrator role | user instruction, 2026-11-06 |
+| The seven stage skills and the orchestrator role | user instruction, 2026-11-06; `hyper-skill` added by user instruction, 2026-11-07 |
 | Each stage's trigger, output, and exclusions, including `hyper-mass` excluding plan-file execution and `hyper-execute` requiring an existing plan | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The delivery words, the plan-only and approval-hold words, and the plan-to-execute auto-continue | the plan skill's handoff rule in this repository, 2026-11-06 |
 | The stage order, the four-stage cap, the recipes, and the tie-breaks | this package's chosen design, not a validated optimum |

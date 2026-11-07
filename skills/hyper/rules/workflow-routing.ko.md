@@ -8,7 +8,7 @@
 
 | Job class | Requested output | Example words |
 |---|---|---|
-| Build | 바뀐 코드: 기능, 수정, 리팩토링, 마이그레이션, 도입 | 만들어, 추가해, 고쳐, 리팩토링해, 옮겨, 적용해, implement, refactor, migrate |
+| Build | 바뀐 코드: 기능, 수정, 리팩토링, 마이그레이션, 도입. 또는 새로 만들거나 리팩터링한 스킬 폴더 | 만들어, 추가해, 고쳐, 리팩토링해, 옮겨, 적용해, 스킬로 만들어, implement, refactor, migrate |
 | Report | 코드 변경 없는 저장 보고서, 감사, 리뷰, 계획 | 조사만, 점검만, 리뷰만, 리포트만, 계획만, audit only, just the plan |
 | Resume | 앞선 실행 이어가기 | 이어서, 계속, 재개, resume, continue |
 
@@ -26,17 +26,18 @@
 | `hyper-plan` | Build 작업이 여러 파일이나 단계를 건드리거나, Report 작업이 계획을 요청합니다 | 요청 문구 |
 | `hyper-execute` | 첫 단계일 때만: `.hyper/plans/` 아래 계획 파일이 이미 있고 사용자가 실행이나 재개를 원합니다 | 읽은 계획 경로 |
 | `hyper-mass` | 사용자가 의존성 그래프, DAG, "의존성 그래프", "단계별 병렬"을 요청하거나, 일부가 먼저 끝나야 다른 일이 시작되는 여러 작업이 있고 계획 파일을 원하지 않습니다 | 요청 문구 |
+| `hyper-skill` | 요청한 결과물이 재사용 스킬 폴더입니다. 새 스킬, 또는 기존 스킬의 트리거, 계약, 리소스, 검증 리팩터링 | 요청 문구, 그리고 이미 있으면 대상 `skills/<name>/SKILL.md` |
 
 ## 3. 단계 순서
 
 고른 단계는 항상 이 순서로 실행합니다. 고르지 않은 단계는 건너뜁니다.
 
 ```text
-hyper-research -> hyper-seo -> hyper-architecture -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute)
+hyper-research -> hyper-seo -> hyper-architecture -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill)
 ```
 
 - 앞 단계(`hyper-research`, `hyper-seo`, `hyper-architecture`)는 꼬리 단계에 쓸 근거를 만듭니다. Build 작업에서는 보고서 모드로 실행하고, 코드 변경은 꼬리 단계가 합니다.
-- 꼬리 단계는 정확히 하나입니다. `hyper-plan`(스스로 `hyper-execute`로 이어짐), `hyper-mass`, 기존 계획에 대한 `hyper-execute` 단독 중 하나입니다.
+- 꼬리 단계는 정확히 하나입니다. `hyper-plan`(스스로 `hyper-execute`로 이어짐), `hyper-mass`, 기존 계획에 대한 `hyper-execute` 단독, 스킬 폴더에 대한 `hyper-skill` 중 하나입니다.
 - Report 작업에서는 요청한 마지막 단계에서 체인이 끝납니다. 계획을 요청한 Report 작업은 `--plan-only`로 `hyper-plan`에서 끝납니다.
 - 최대 네 단계까지 실행합니다. 더 필요해 보이는 체인은 작업 두 개입니다. 첫 작업을 실행하고 두 번째는 다음 단계로 보고합니다.
 
@@ -56,6 +57,8 @@ hyper-research -> hyper-seo -> hyper-architecture -> (hyper-plan [-> hyper-execu
 | SEO 수정을 계획된 변경으로 구현 | `hyper-seo` -> `hyper-plan` |
 | 의존 순서가 있는 다중 에이전트 작업 | `hyper-mass`. 앞 단계 신호가 있으면 그 단계를 앞에 둡니다 |
 | 기존 계획 실행이나 재개 | `hyper-execute` |
+| 스킬 폴더를 새로 만들거나 리팩터링 | `hyper-skill` |
+| 최신 공식 문서에 기대는 스킬 폴더("최신 규격", "latest spec") | `hyper-research` -> `hyper-skill` |
 
 `hyper-plan`이 들어간 행은 Report 작업이 아니면 `hyper-execute`로 이어집니다.
 
@@ -63,6 +66,7 @@ hyper-research -> hyper-seo -> hyper-architecture -> (hyper-plan [-> hyper-execu
 
 - 긴 요청 안에서 사용자가 이름을 댄 단계("hyper-research로 조사하고 바로 적용해")는 고르고, 나머지 단계는 여전히 신호를 따릅니다.
 - `hyper-mass`와 `hyper-plan`은 한 체인에서 함께 실행하지 않습니다. 명시 신호가 있을 때만 `hyper-mass`를 고르고, 아니면 `hyper-plan`을 고릅니다.
+- `hyper-skill`과 `hyper-plan`은 한 체인에서 함께 실행하지 않습니다. 요청한 결과물이 스킬 폴더면 `hyper-skill`을 고릅니다. 계획 파일은 그 단계의 입력이 아닙니다.
 - 기존 계획 파일이 새 계획보다 우선하는 경우는 사용자가 그 파일을 가리키거나 재개를 말했을 때뿐입니다. 관계없는 옛 계획이 있는 새 Build 요청은 새 계획을 씁니다.
 - 스택이 아키텍처 단계의 지원 범위 밖이어도 그 단계는 유지합니다. 그 단계가 파일로 지원 여부를 정하고 사유와 함께 멈추며, `rules/stage-handoff.md` §4가 그 정지를 건너뜀으로 기록합니다.
 
@@ -96,11 +100,11 @@ hyper-research -> hyper-seo -> hyper-architecture -> (hyper-plan [-> hyper-execu
 
 ## Sources
 
-> Checked 2026-11-06.
+> Checked 2026-11-07.
 
 | Claim | Source |
 |---|---|
-| 여섯 단계 스킬과 오케스트레이터 역할 | user instruction, 2026-11-06 |
+| 일곱 단계 스킬과 오케스트레이터 역할 | user instruction, 2026-11-06; `hyper-skill` 추가 사용자 지시, 2026-11-07 |
 | 각 단계의 트리거, 결과물, 제외 범위. `hyper-mass`가 계획 파일 실행을 제외하고 `hyper-execute`가 기존 계획을 요구한다는 점 포함 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 전달 단어, 계획만·승인 보류 단어, 계획에서 실행으로 자동 연결 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 단계 순서, 네 단계 상한, 레시피, 동률 처리 | 이 패키지가 고른 설계이며 검증된 최적값이 아님 |
