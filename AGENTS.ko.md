@@ -63,7 +63,6 @@ bash scripts/check-sources.sh --offline
 - skill 또는 skill validation script 변경: focused corpus validator를 먼저 실행한 뒤 `bash scripts/verify.sh`를 실행합니다.
 - `instructions/**` 아래의 source-sensitive 변경: 최소 `bash scripts/check-sources.sh --offline`을 실행합니다. release 전에는 문서화된 strict external-link gate를 사용합니다.
 - Markdown 지침 변경: local link, balanced fence, 영어/한국어 동등성, 요청하지 않은 파일이 없는지 검증합니다.
-- instagram-card-maker와 storyboard-maker의 visual rendering 검사는 브라우저가 필요하므로 `scripts/verify.sh` 범위 밖이며, 필요할 때 브라우저에서 직접 수행합니다.
 
 실행하지 않은 명령이 통과했다고 주장하지 않습니다. 경고를 억제하거나 검사를 약화하거나 실패를 숨기지 않습니다.
 

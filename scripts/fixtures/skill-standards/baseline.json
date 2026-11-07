@@ -1,8 +1,5 @@
 {
   "skills": {
-    "blog-maker": {
-      "FRONTMATTER_TRIGGER": 1
-    },
     "client-feedback": {
       "FRONTMATTER_TRIGGER": 1
     },
@@ -52,19 +49,11 @@
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-skill": {},
-    "instagram-card-maker": {},
     "jev-maker": {},
-    "korean-writer": {
-      "FRONTMATTER_TRIGGER": 1
-    },
     "prd-maker": {
       "FRONTMATTER_TRIGGER": 1
     },
     "pre-deploy": {
-      "FRONTMATTER_TRIGGER": 1
-    },
-    "storyboard-maker": {},
-    "tone-manner-maker": {
       "FRONTMATTER_TRIGGER": 1
     }
   }

@@ -65,7 +65,6 @@ Use the smallest check that covers the change, then the required broader gate:
 - Skill or skill-validation-script changes: run the focused corpus validator first, then `bash scripts/verify.sh`.
 - Source-sensitive changes under `instructions/**`: run at least `bash scripts/check-sources.sh --offline`. Use the documented strict external-link gate before a release.
 - Markdown instruction changes: verify local links, balanced fences, English/Korean parity, and absence of unrequested files.
-- Visual rendering checks for instagram-card-maker and storyboard-maker need a browser; they are outside `scripts/verify.sh` and are done manually in a browser when needed.
 
 Never claim an unrun command passed. Do not suppress warnings, weaken checks, or hide failures.
 

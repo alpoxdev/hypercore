@@ -11,9 +11,7 @@
 #   6. scripts/check-vercel-skills.sh
 #
 # Every step runs even when an earlier step fails; the script exits 1 when any
-# step failed. Visual rendering checks for instagram-card-maker and
-# storyboard-maker need a browser, so they are outside this suite and are done
-# manually in a browser when needed.
+# step failed.
 set -uo pipefail
 
 SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" && pwd)
