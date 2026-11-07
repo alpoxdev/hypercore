@@ -28,20 +28,19 @@
 | `hyper-execute` | 첫 단계일 때만: `.hyper/plans/` 아래 계획 파일이 이미 있고 사용자가 실행이나 재개를 원합니다 | 읽은 계획 경로 |
 | `hyper-mass` | 사용자가 의존성 그래프, DAG, "의존성 그래프", "단계별 병렬"을 요청하거나, 일부가 먼저 끝나야 다른 일이 시작되는 여러 작업이 있고 계획 파일을 원하지 않습니다 | 요청 문구 |
 | `hyper-skill` | 요청한 결과물이 재사용 스킬 폴더입니다. 새 스킬, 또는 기존 스킬의 트리거, 계약, 리소스, 검증 리팩터링 | 요청 문구, 그리고 이미 있으면 대상 `skills/<name>/SKILL.md` |
-| `hyper-docs` | 요청한 결과물이 AI가 읽기 좋은 문서입니다. 새로 만들거나 리팩터링하는 지침 베이스, 에이전트 가이드, 런북, 스펙, 규칙 묶음 | 요청 문구, 그리고 이미 있으면 대상 문서 경로 |
-| `hyper-prompt` | 요청한 결과물이 재사용 프롬프트 산출물입니다. 역할·시스템·에이전트 프롬프트, 프롬프트 템플릿이나 팩, 프롬프트 평가 픽스처 | 요청 문구, 그리고 이미 있으면 대상 프롬프트 경로 |
+| `hyper-documentation` | 요청한 결과물이 새로 만들거나 리팩터링하는 문서 산출물입니다. README, `AGENTS.md`, AI가 읽기 좋은 문서(지침 베이스, 에이전트 가이드, 런북, 스펙, 규칙 묶음), 재사용 프롬프트 산출물(역할·시스템·에이전트 프롬프트, 프롬프트 템플릿이나 팩, 프롬프트 평가 픽스처) | 요청 문구, 그리고 이미 있으면 대상 경로 |
 
 ## 3. 단계 순서
 
 고른 단계는 항상 이 순서로 실행합니다. 고르지 않은 단계는 건너뜁니다.
 
 ```text
-hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-docs | hyper-prompt)
+hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation)
 ```
 
 - 앞 단계(`hyper-research`, `hyper-seo`, `hyper-architecture`)는 꼬리 단계에 쓸 근거를 만듭니다. Build 작업에서는 보고서 모드로 실행하고, 코드 변경은 꼬리 단계가 합니다.
 - `hyper-mcp`가 마지막으로 고른 단계면 꼬리 단계입니다. 직접 만들거나 고치거나 이전하거나 연결하고 결과를 검증합니다. 뒤에 `hyper-plan`이나 `hyper-mass`가 오면 점검 모드로 실행하고 그 보고서가 계획의 입력이 됩니다.
-- 그 밖의 경우 꼬리 단계는 정확히 하나입니다. `hyper-plan`(스스로 `hyper-execute`로 이어짐), `hyper-mass`, 기존 계획에 대한 `hyper-execute` 단독, 스킬 폴더에 대한 `hyper-skill`, 문서에 대한 `hyper-docs`, 프롬프트 산출물에 대한 `hyper-prompt` 중 하나입니다.
+- 그 밖의 경우 꼬리 단계는 정확히 하나입니다. `hyper-plan`(스스로 `hyper-execute`로 이어짐), `hyper-mass`, 기존 계획에 대한 `hyper-execute` 단독, 스킬 폴더에 대한 `hyper-skill`, 문서나 프롬프트 산출물에 대한 `hyper-documentation` 중 하나입니다.
 - Report 작업에서는 요청한 마지막 단계에서 체인이 끝납니다. 계획을 요청한 Report 작업은 `--plan-only`로 `hyper-plan`에서 끝납니다.
 - 최대 네 단계까지 실행합니다. 더 필요해 보이는 체인은 작업 두 개입니다. 첫 작업을 실행하고 두 번째는 다음 단계로 보고합니다.
 
@@ -67,10 +66,8 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> (hyper-plan [-
 | 기존 계획 실행이나 재개 | `hyper-execute` |
 | 스킬 폴더를 새로 만들거나 리팩터링 | `hyper-skill` |
 | 최신 공식 문서에 기대는 스킬 폴더("최신 규격", "latest spec") | `hyper-research` -> `hyper-skill` |
-| 문서, 지침 베이스, 런북, 규칙 묶음을 새로 만들거나 리팩터링 | `hyper-docs` |
-| 내용이 최신 외부 출처에 기대는 문서 | `hyper-research` -> `hyper-docs` |
-| 재사용 프롬프트, 템플릿, 팩, 프롬프트 평가 픽스처를 새로 만들거나 리팩터링 | `hyper-prompt` |
-| 최신 공급자 지침에 기대는 프롬프트 | `hyper-research` -> `hyper-prompt` |
+| README, `AGENTS.md`, 문서, 규칙 묶음, 재사용 프롬프트, 템플릿, 팩, 프롬프트 평가 픽스처를 새로 만들거나 리팩터링 | `hyper-documentation` |
+| 최신 외부 출처나 공급자 지침에 기대는 문서나 프롬프트 | `hyper-research` -> `hyper-documentation` |
 
 `hyper-plan`이 들어간 행은 Report 작업이 아니면 `hyper-execute`로 이어집니다.
 
@@ -79,7 +76,7 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> (hyper-plan [-
 - 긴 요청 안에서 사용자가 이름을 댄 단계("hyper-research로 조사하고 바로 적용해")는 고르고, 나머지 단계는 여전히 신호를 따릅니다.
 - `hyper-mass`와 `hyper-plan`은 한 체인에서 함께 실행하지 않습니다. 명시 신호가 있을 때만 `hyper-mass`를 고르고, 아니면 `hyper-plan`을 고릅니다.
 - `hyper-skill`과 `hyper-plan`은 한 체인에서 함께 실행하지 않습니다. 요청한 결과물이 스킬 폴더면 `hyper-skill`을 고릅니다. 계획 파일은 그 단계의 입력이 아닙니다.
-- `hyper-docs`와 `hyper-prompt`는 `hyper-plan`과도, 서로도 한 체인에서 함께 실행하지 않습니다. 주된 결과물로 고릅니다. 문서는 `hyper-docs`, 재사용 프롬프트 산출물은 `hyper-prompt`, 스킬 폴더는 `hyper-skill`입니다.
+- `hyper-documentation`은 `hyper-plan`과 한 체인에서 함께 실행하지 않습니다. 주된 결과물로 고릅니다. README, `AGENTS.md`, 문서, 재사용 프롬프트 산출물은 모드를 스스로 고르는 `hyper-documentation`, 스킬 폴더는 `hyper-skill`입니다.
 - `hyper-mcp`와 `hyper-skill`은 한 체인에서 함께 실행하지 않습니다. 요청한 결과물이 스킬 폴더면 MCP에 관한 스킬이라도 `hyper-skill`을 고릅니다.
 - `hyper-mcp`와 `hyper-architecture`는 작업이 MCP 밖의 폴더, 라우트, 모듈도 재구성할 때만 함께 실행합니다. MCP만 다루는 작업은 아키텍처 단계 없이 `hyper-mcp`로 보냅니다.
 - MCP 작업에 전달 단어("PR까지", "ship")가 있으면 `hyper-mcp`를 점검 모드로 `hyper-plan` 앞에 둡니다. 전달은 계획과 실행 단계만 맡기 때문입니다.
@@ -120,7 +117,7 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> (hyper-plan [-
 
 | Claim | Source |
 |---|---|
-| 열 단계 스킬과 오케스트레이터 역할 | user instruction, 2026-11-06; `hyper-skill`, `hyper-docs`, `hyper-prompt`, `hyper-mcp` 추가 사용자 지시, 2026-11-07 |
+| 아홉 단계 스킬과 오케스트레이터 역할 | user instruction, 2026-11-06; `hyper-skill`, `hyper-mcp`, 문서 단계 추가 사용자 지시, 2026-11-07; 문서 단계를 `hyper-documentation` 하나로 합친 사용자 지시, 2026-11-07 |
 | 각 단계의 트리거, 결과물, 제외 범위. `hyper-mass`가 계획 파일 실행을 제외하고 `hyper-execute`가 기존 계획을 요구한다는 점 포함 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 전달 단어, 계획만·승인 보류 단어, 계획에서 실행으로 자동 연결 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 단계 순서, 네 단계 상한, 레시피, 동률 처리 | 이 패키지가 고른 설계이며 검증된 최적값이 아님 |

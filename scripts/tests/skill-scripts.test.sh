@@ -285,10 +285,10 @@ run_repo_validator() { # <stdout> <stderr> — prints exit code
 case_manifest_inventory() {
   require_cmd jq
   require_cmd git
-  assert_eq 44 "$(jq '.scripts | length' "$MANIFEST")" "script count"
-  assert_eq 44 "$(jq '[.scripts[].path] | unique | length' "$MANIFEST")" "unique script paths"
+  assert_eq 43 "$(jq '.scripts | length' "$MANIFEST")" "script count"
+  assert_eq 43 "$(jq '[.scripts[].path] | unique | length' "$MANIFEST")" "unique script paths"
   assert_eq 0 "$(jq '[.scripts[] | select((.path // "") == "" or (.family // "") == "" or (.legacyOrigin // "") == "" or (.usage // "") == "" or (.behavior // "") == "")] | length' "$MANIFEST")" "every row carries its required fields"
-  assert_eq '{"authored-mjs":15,"former-py":1,"former-sh":19,"retained-mjs":9}' \
+  assert_eq '{"authored-mjs":15,"former-py":1,"former-sh":19,"retained-mjs":8}' \
     "$(jq -S -c '[.scripts[].legacyOrigin] | group_by(.) | map({key: .[0], value: length}) | from_entries' "$MANIFEST")" \
     "legacy origin counts"
 
@@ -364,11 +364,11 @@ case_behavior_contracts() {
   assert_eq "$(cd "$ROOT" && echo "${MANIFEST#"$ROOT"/}")" "$(jq -r '.requiredBy' "$CONTRACTS")" "contracts point at the manifest"
   assert_eq "$LEGACY_REF" "$(jq -r '.legacyPreimageBase' "$MANIFEST")" "manifest legacy ref"
   assert_eq "$LEGACY_REF" "$(jq -r '.legacyPreimageBase' "$CONTRACTS")" "contracts legacy ref"
-  assert_eq 44 "$(jq '.coverage.expectedRows' "$CONTRACTS")"
-  assert_eq 132 "$(jq '.coverage.expectedFixtures' "$CONTRACTS")"
-  assert_eq '{"authored-mjs":15,"former-py":1,"former-sh":19,"retained-mjs":9}' \
+  assert_eq 43 "$(jq '.coverage.expectedRows' "$CONTRACTS")"
+  assert_eq 129 "$(jq '.coverage.expectedFixtures' "$CONTRACTS")"
+  assert_eq '{"authored-mjs":15,"former-py":1,"former-sh":19,"retained-mjs":8}' \
     "$(jq -S -c '.coverage.legacyOriginCounts' "$CONTRACTS")" "coverage origins"
-  assert_eq 44 "$(jq '.rows | length' "$CONTRACTS")" "contract rows"
+  assert_eq 43 "$(jq '.rows | length' "$CONTRACTS")" "contract rows"
   assert_eq "$(printf '%s\n' "$MIGRATION_PREIMAGES" | cut -f1 | LC_ALL=C sort)" \
     "$(jq -r '.rows[] | select(.sourcePreimage.migration) | .path' "$CONTRACTS" | LC_ALL=C sort)" \
     "renamed rows pinned to the migration ref"
@@ -448,7 +448,7 @@ case_behavior_contracts() {
     done
 
     case " $family " in
-      " hyper-architecture-nextjs "|" hyper-prompt "|" hyper-skill "|" hyper-architecture-vite ")
+      " hyper-architecture-nextjs "|" hyper-skill "|" hyper-architecture-vite ")
         assert_eq 3 "$(LC_ALL=C sort -u "$observables" | wc -l | tr -d ' ')" "three distinct observables for $family"
         ;;
     esac
@@ -476,7 +476,7 @@ case_behavior_contracts() {
     fi
     i=$((i + 1))
   done
-  assert_eq 132 "$cases" "fixture executions"
+  assert_eq 129 "$cases" "fixture executions"
 }
 
 case_detector_absent_correction() {
@@ -584,7 +584,7 @@ case_validator_accepts_inventory() {
   rc=$(run_repo_validator "$out" "$err")
   assert_empty "$(cat "$err")" "validator stderr"
   assert_eq 0 "$rc" "validator exit"
-  assert_contains "$(cat "$out")" "Validated 44 bash skill scripts (19 former-sh, 1 former-py, 9 retained-mjs, 15 authored-mjs historical origins)." "validator summary"
+  assert_contains "$(cat "$out")" "Validated 43 bash skill scripts (19 former-sh, 1 former-py, 8 retained-mjs, 15 authored-mjs historical origins)." "validator summary"
 }
 
 case_validator_rejects_mutations() {
@@ -1722,8 +1722,8 @@ case_autoresearch_renderer_second_rename() { renderer_atomic_case autoresearch-s
 case_hyper_seo_renderer_second_write() { renderer_atomic_case hyper-seo second-write; }
 case_hyper_seo_renderer_second_rename() { renderer_atomic_case hyper-seo second-rename; }
 
-run_case "manifest centrally inventories 44 scripts including fifteen authored baseline-absent MJS paths" case_manifest_inventory
-run_case "behavior contracts execute all 132 isolated semantic fixtures with exact observables" case_behavior_contracts
+run_case "manifest centrally inventories 43 scripts including fifteen authored baseline-absent MJS paths" case_manifest_inventory
+run_case "behavior contracts execute all 129 isolated semantic fixtures with exact observables" case_behavior_contracts
 run_case "detector-absent correction restores legacy bytes and reapplies the exact final filesystem state" case_detector_absent_correction
 run_case "validator accepts the approved inventory" case_validator_accepts_inventory
 run_case "validator rejects bash policy mutations a real regression would introduce" case_validator_rejects_mutations

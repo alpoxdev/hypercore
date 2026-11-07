@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 39개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 36개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -40,7 +40,7 @@ npx skills add alpoxdev/hypercore --skill '*' -g -y
 
 ```bash
 npx skills add alpoxdev/hypercore --skill '*' -a claude-code codex -g -y   # 모든 스킬 → 지정 agent
-npx skills add alpoxdev/hypercore --skill git-maker readme-maker -g -y     # 스킬 여러 개 나열
+npx skills add alpoxdev/hypercore --skill git-maker hyper-documentation -g -y     # 스킬 여러 개 나열
 npx skills add alpoxdev/hypercore --all -g                                 # 모든 스킬 → 모든 agent
 ```
 
@@ -96,8 +96,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 
 ```text
 /git-maker            # 변경 사항을 그룹별로 커밋하고 푸시까지 한 번에
-/readme-maker         # 코드를 읽고 프로젝트의 실제 모양에 맞는 README 생성/리팩터
-/agents-md-maker        # 저장소를 읽고 프로젝트 전용 AGENTS.md + AGENTS.ko.md 생성/리팩터 (CLAUDE.md는 만들지 않음)
+/hyper-documentation  # README·AGENTS.md·런북·규칙 팩·재사용 프롬프트 중 요청한 문서를 골라 생성/리팩터 (CLAUDE.md는 만들지 않음)
 /hyper "<작업>"         # 상황에 맞는 hyper 스킬 체인(리서치·아키텍처·계획·실행 등)을 골라 처음부터 끝까지 실행
 /hyper-research "<주제>"  # 출처가 있는 다중 소스 리서치 보고서
 /hyper-plan "<작업>"    # 결정이 끝난 작업 계획을 쓰고 기본으로 hyper-execute까지 이어서 실행
@@ -108,7 +107,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 /pre-deploy           # 배포 전 lint/타입/빌드 게이트
 ```
 
-자연어로도 트리거됩니다 — 예: "이 프로젝트 README 다시 써줘" → `readme-maker`, "이 저장소에 맞는 AGENTS.md 만들어줘" → `agents-md-maker`, "방금 변경 사항 커밋하고 푸시" → `git-maker`.
+자연어로도 트리거됩니다 — 예: "이 프로젝트 README 다시 써줘"·"이 저장소에 맞는 AGENTS.md 만들어줘" → `hyper-documentation`, "방금 변경 사항 커밋하고 푸시" → `git-maker`.
 
 ## 스킬 카탈로그
 
@@ -121,11 +120,8 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `hyper-skill` | 유지보수하기 쉬운 Codex/AI 에이전트 스킬 생성 및 리팩터링 | All |
 | `skill-tester` | 스킬 트리거/동작을 시나리오 기반으로 검증하고, 확인된 결함은 대상 스킬 안에서 안전하게 수리 | All |
 | `autoresearch-skill` | 반복 실행과 이진 eval 기반으로 기존 스킬을 자동 최적화 | All |
-| `readme-maker` | 코드베이스 분석 기반 README 생성 및 리팩터링 | All |
-| `agents-md-maker` | 저장소 근거 기반 `AGENTS.md`(영어) + `AGENTS.ko.md`(한국어 미러) 생성·리팩터링. `CLAUDE.md`는 만들지 않으며, 기존 파일이 `AGENTS.md` 직접 읽기를 막으면 경로만 보고 | All |
-| `hyper-docs` | AI가 읽기 좋은 구조화된 문서/룰 팩 생성 및 리팩터링 | All |
+| `hyper-documentation` | 요청한 산출물에 맞춰 네 모드 중 하나로 작업: `readme`(코드베이스 기반 README), `agents-md`(영어 `AGENTS.md` + 한국어 `AGENTS.ko.md`, `CLAUDE.md`는 만들지 않음), `prompt`(재사용 프롬프트·템플릿/팩·eval 픽스처), `docs`(AI가 읽기 좋은 문서·런북·룰 팩) | All |
 | `prd-maker` | 증거 기반 Living PRD + 다이어그램·플로우·와이어프레임 생성·갱신 | All |
-| `hyper-prompt` | 재사용 가능한 프롬프트·역할 프롬프트·프롬프트 템플릿/팩·프롬프트 eval 픽스처 생성 및 리팩터링 | All |
 
 ### 아키텍처 가드
 
@@ -160,7 +156,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper` | 작업만 말하면 hyper-research·hyper-seo·hyper-architecture·hyper-mcp·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-docs·hyper-prompt 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 런북 정리 → docs, MCP 서버 만들기 → mcp) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
+| `hyper` | 작업만 말하면 hyper-research·hyper-seo·hyper-architecture·hyper-mcp·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 런북 정리 → documentation, MCP 서버 만들기 → mcp) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
 | `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
 | `hyper-mass` | 의존 순서가 있는 하위 작업을 그래프로 정의해 단계별 병렬 실행, 재시도·수정·재개 지원 | All |
@@ -193,7 +189,7 @@ cp -R hypercore/skills/git-maker your-project/.claude/skills/
 | `hyper-mcp` | MCP(Model Context Protocol) 서버·클라이언트 구축, 보안·규격 점검과 수정, 2026-07-28 판 이전, 호스트 MCP 설정 연결, 레지스트리 메타데이터 준비를 MCP Inspector 검증과 `.hyper/mcp/` 보고서까지 처리 | 대상 언어 도구 모음; MCP Inspector는 Node.js 22.19+ |
 | `jev-maker` | TypeSafe Jev(System One) 판단 모델용 질문, 호출 코드, 템플릿, 평가 세트 생성과 코드 감사, 연결 설정 | bash 3.2+ · jq (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 39개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 36개 스킬. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
 
@@ -219,7 +215,7 @@ instagram-card-maker로 우리 브랜드의 봄 신제품을 소개하는 카드
 이 저장소를 꼼꼼히 읽고 README를 다시 써줘
 ```
 
-`readme-maker`가 매니페스트, 진입점, 스크립트, 라이선스, 기존 문서를 스캔해 프로젝트 형태(CLI/라이브러리/플러그인 등)에 맞는 섹션을 골라 작성합니다. 명령·API를 지어내지 않고, 모르는 부분은 `<!-- TODO -->`로 표시합니다.
+`hyper-documentation`의 `readme` 모드가 매니페스트, 진입점, 스크립트, 라이선스, 기존 문서를 스캔해 프로젝트 형태(CLI/라이브러리/플러그인 등)에 맞는 섹션을 골라 작성합니다. 명령·API를 지어내지 않고, 모르는 부분은 `<!-- TODO -->`로 표시합니다.
 
 **2) 모은 변경사항을 안전하게 출고**
 
@@ -256,7 +252,7 @@ hypercore/
 │       └── naver-api/     # @kood/naver-api-cli — Naver API HUB 검색·DataLab·쇼핑인사이트 CLI
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
-└── skills/                # 39개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 36개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:

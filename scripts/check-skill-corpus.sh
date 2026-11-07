@@ -103,7 +103,6 @@ metadata_for() {
     skills/pre-deploy/scripts/lint-check.sh) printf 'check-lint\tlint-readiness-check\n' ;;
     skills/pre-deploy/scripts/pm-detect.sh) printf 'detect-package-manager\tpackage-manager-detection\n' ;;
     skills/pre-deploy/scripts/stack-detect.sh) printf 'detect-stack\tstack-detection\n' ;;
-    skills/hyper-prompt/scripts/validate-hyper-prompt.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/hyper-seo/scripts/render-dashboard.sh) printf 'render-dashboard\trender-dashboard\n' ;;
     skills/hyper-skill/scripts/validate-hyper-skill.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/skill-tester/scripts/validate-skill.sh) printf 'validate-skill\tskill-validation\n' ;;
@@ -301,7 +300,7 @@ validate_script_edges() {
 jq -e 'type == "object"' "$manifest" >/dev/null 2>&1 || die "manifest must be a JSON object"
 jq -e '(.scripts | type) == "array"' "$manifest" >/dev/null 2>&1 || die "manifest scripts must be an array"
 row_count=$(jq -r '.scripts | length' "$manifest")
-[ "$row_count" -eq 44 ] || die "manifest must contain exactly 44 scripts"
+[ "$row_count" -eq 43 ] || die "manifest must contain exactly 43 scripts"
 jq -e 'all(.scripts[]; type == "object")' "$manifest" >/dev/null 2>&1 || die "manifest rows must be objects"
 
 legacy_origins=$(printf '%s\n' former-sh former-py retained-mjs authored-mjs)
@@ -391,8 +390,8 @@ while IFS=$'\x1f' read -r idx rtype field_ok path family legacy usage behavior s
   i=$((i + 1))
 done <"$tmp/manifest-rows.tsv"
 
-[ "$former_sh" -eq 19 ] && [ "$former_py" -eq 1 ] && [ "$retained_mjs" -eq 9 ] && [ "$authored_mjs" -eq 15 ] ||
-  die "manifest historical origin counts must be exactly 19/1/9/15"
+[ "$former_sh" -eq 19 ] && [ "$former_py" -eq 1 ] && [ "$retained_mjs" -eq 8 ] && [ "$authored_mjs" -eq 15 ] ||
+  die "manifest historical origin counts must be exactly 19/1/8/15"
 
 if ! jq -e '.portPreimage | (type == "object") and (.baselineRef | type == "string" and test("^[a-f0-9]{40}$")) and (.model | type == "string" and test("\\S")) and (.note | type == "string" and test("\\S")) and (.workingTreeEdited | type == "array" and length == 4)' "$manifest" >/dev/null 2>&1; then
   die "manifest portPreimage must record the port baseline and the uncommitted pre-port edits"
@@ -409,11 +408,11 @@ sort "$tmp/approved" | uniq -d >"$tmp/approved-dupes"
 jq -e 'type == "object"' "$contracts" >/dev/null 2>&1 || die "behavior contracts must be a JSON object"
 [ "$(jq -r '.requiredBy' "$contracts")" = "scripts/fixtures/skill-script-parity/manifest.json" ] ||
   die "behavior contracts must name the manifest as their central owner"
-if ! jq -e '(.coverage | type == "object") and .coverage.expectedRows == 44 and .coverage.expectedFixtures == 132' "$contracts" >/dev/null 2>&1; then
-  die "behavior contract coverage must be exactly 44 rows and 132 fixtures"
+if ! jq -e '(.coverage | type == "object") and .coverage.expectedRows == 43 and .coverage.expectedFixtures == 129' "$contracts" >/dev/null 2>&1; then
+  die "behavior contract coverage must be exactly 43 rows and 129 fixtures"
 fi
 contract_rows=$(jq -r '.rows | length' "$contracts")
-[ "$contract_rows" -eq 44 ] || die "behavior contracts must contain exactly 44 rows"
+[ "$contract_rows" -eq 43 ] || die "behavior contracts must contain exactly 43 rows"
 
 jq -r '.scripts[] | [(.path // ""), (.behaviorContractId // "")] | join("\u001f")' "$manifest" >"$tmp/script-contract-ids"
 cat >"$tmp/contract-rows.jq" <<'JQ'
@@ -575,4 +574,4 @@ while IFS= read -r file; do
   fi
 done <"$tmp/approved"
 
-printf 'Validated %s bash skill scripts (19 former-sh, 1 former-py, 9 retained-mjs, 15 authored-mjs historical origins).\n' "$(wc -l <"$tmp/approved" | tr -d ' ')"
+printf 'Validated %s bash skill scripts (19 former-sh, 1 former-py, 8 retained-mjs, 15 authored-mjs historical origins).\n' "$(wc -l <"$tmp/approved" | tr -d ' ')"

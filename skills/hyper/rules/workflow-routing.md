@@ -28,20 +28,19 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 | `hyper-execute` | Only as the first stage: a plan file under `.hyper/plans/` already exists and the user wants it run or resumed | The plan path that was read |
 | `hyper-mass` | The user asks for a dependency graph, a DAG, "의존성 그래프", "단계별 병렬", or several tasks where some must finish before others start, and no plan file is wanted | The request phrase |
 | `hyper-skill` | The requested output is a reusable skill folder: a new skill, or a refactor of an existing skill's trigger, contract, resources, or validation | The request phrase, plus the target `skills/<name>/SKILL.md` when it already exists |
-| `hyper-docs` | The requested output is an AI-readable document: an instruction base, agent guide, runbook, specification, or rule pack, new or refactored | The request phrase, plus the target document path when it already exists |
-| `hyper-prompt` | The requested output is a reusable prompt artifact: a role, system, or agent prompt, a prompt template or pack, or a prompt eval fixture | The request phrase, plus the target prompt path when it already exists |
+| `hyper-documentation` | The requested output is a documentation artifact, new or refactored: a README, an `AGENTS.md`, an AI-readable document (instruction base, agent guide, runbook, specification, or rule pack), or a reusable prompt artifact (role, system, or agent prompt, prompt template or pack, or prompt eval fixture) | The request phrase, plus the target path when it already exists |
 
 ## 3. Stage Order
 
 Chosen stages always run in this order. Skip the ones that were not chosen.
 
 ```text
-hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-docs | hyper-prompt)
+hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation)
 ```
 
 - Upstream stages (`hyper-research`, `hyper-seo`, `hyper-architecture`) produce evidence for the tail. In a Build job they run in report mode; the tail makes the code change.
 - `hyper-mcp` is the tail when it is the last chosen stage: it builds, fixes, migrates, or connects and verifies the result itself. When `hyper-plan` or `hyper-mass` follows it, it runs in audit mode and its report is the plan's input.
-- Otherwise the tail is exactly one of: `hyper-plan` (which continues into `hyper-execute` by itself), `hyper-mass`, `hyper-execute` alone for an existing plan, `hyper-skill` for a skill folder, `hyper-docs` for a document, or `hyper-prompt` for a prompt artifact.
+- Otherwise the tail is exactly one of: `hyper-plan` (which continues into `hyper-execute` by itself), `hyper-mass`, `hyper-execute` alone for an existing plan, `hyper-skill` for a skill folder, or `hyper-documentation` for a document or prompt artifact.
 - In a Report job the chain ends at the last requested stage. A Report job that asks for a plan ends at `hyper-plan` with `--plan-only`.
 - At most four stages run. A chain that seems to need more is two jobs: run the first and report the second as the next step.
 
@@ -67,10 +66,8 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> (hyper-plan [-
 | Existing plan run or resumed | `hyper-execute` |
 | Skill folder created or refactored | `hyper-skill` |
 | Skill folder that depends on current provider docs ("최신 규격", "latest spec") | `hyper-research` -> `hyper-skill` |
-| Document, instruction base, runbook, or rule pack created or refactored | `hyper-docs` |
-| Document whose claims depend on current external sources | `hyper-research` -> `hyper-docs` |
-| Reusable prompt, template, pack, or prompt eval fixture created or refactored | `hyper-prompt` |
-| Prompt that depends on current provider guidance | `hyper-research` -> `hyper-prompt` |
+| README, `AGENTS.md`, document, rule pack, reusable prompt, template, pack, or prompt eval fixture created or refactored | `hyper-documentation` |
+| Document or prompt that depends on current external sources or provider guidance | `hyper-research` -> `hyper-documentation` |
 
 Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report job.
 
@@ -79,7 +76,7 @@ Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report 
 - A stage the user names inside a longer request ("hyper-research로 조사하고 바로 적용해") is chosen, and the other stages still follow the signals.
 - `hyper-mass` and `hyper-plan` never run in one chain. Choose `hyper-mass` only on its explicit signal; otherwise choose `hyper-plan`.
 - `hyper-skill` and `hyper-plan` never run in one chain. When the requested output is a skill folder, choose `hyper-skill`; a plan file is not its input.
-- `hyper-docs` and `hyper-prompt` never run with `hyper-plan` or with each other. Choose by the primary deliverable: a document goes to `hyper-docs`, a reusable prompt artifact goes to `hyper-prompt`, and a skill folder goes to `hyper-skill`.
+- `hyper-documentation` never runs with `hyper-plan`. Choose by the primary deliverable: a README, `AGENTS.md`, document, or reusable prompt artifact goes to `hyper-documentation`, which picks its own mode, and a skill folder goes to `hyper-skill`.
 - `hyper-mcp` and `hyper-skill` never run in one chain. When the requested output is a skill folder, even one about MCP, choose `hyper-skill`.
 - `hyper-mcp` and `hyper-architecture` both run only when the job also restructures non-MCP folders, routes, or modules; an MCP-only job routes to `hyper-mcp` without the architecture stage.
 - Delivery words ("PR까지", "ship") on an MCP job put `hyper-mcp` in audit mode before `hyper-plan`, because only the plan and execute stages own delivery.
@@ -120,7 +117,7 @@ A run that stops before the first stage prints the same line with the stop reaso
 
 | Claim | Source |
 |---|---|
-| The ten stage skills and the orchestrator role | user instruction, 2026-11-06; `hyper-skill`, `hyper-docs`, `hyper-prompt`, and `hyper-mcp` added by user instruction, 2026-11-07 |
+| The nine stage skills and the orchestrator role | user instruction, 2026-11-06; `hyper-skill`, `hyper-mcp`, and the documentation stage added by user instruction, 2026-11-07; the documentation stages merged into `hyper-documentation` by user instruction, 2026-11-07 |
 | Each stage's trigger, output, and exclusions, including `hyper-mass` excluding plan-file execution and `hyper-execute` requiring an existing plan | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The delivery words, the plan-only and approval-hold words, and the plan-to-execute auto-continue | the plan skill's handoff rule in this repository, 2026-11-06 |
 | The stage order, the four-stage cap, the recipes, and the tie-breaks | this package's chosen design, not a validated optimum |

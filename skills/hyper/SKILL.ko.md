@@ -1,6 +1,6 @@
 ---
 name: hyper
-description: "[Hyper] 사용자가 스킬을 직접 고르지 않고 hyper 스킬 묶음으로 개발 작업을 처음부터 끝까지 맡길 때 사용합니다. 리팩토링, 기능 추가, 버그 수정, 마이그레이션, 기술 선택, 검색 노출 개선, MCP 서버나 호스트 설정 작업, 재사용 스킬 폴더, AI가 읽기 좋은 문서, 재사용 프롬프트처럼 아키텍처 점검, 출처 있는 리서치, SEO 감사, MCP 작업, 작성된 계획, 계획 실행, 의존 순서가 있는 병렬 작업, 스킬 작성, 문서 작성, 프롬프트 작성을 조합해야 하는 일이거나 사용자가 hyper를 이름으로 부른 경우가 대상입니다. 작업을 분류해 hyper-research, hyper-seo, hyper-architecture, hyper-mcp, hyper-plan, hyper-execute, hyper-mass, hyper-skill, hyper-docs, hyper-prompt 중 가장 짧은 체인을 고르고 단계를 순서대로 실행하며 각 단계가 저장한 산출물을 다음 단계에 넘깁니다. 사용자가 hyper 스킬 하나를 직접 지정했거나, 계획이 필요 없는 한 곳 수정, 커밋만 하는 요청, PRD 패키지, 일반 질문에는 쓰지 않습니다."
+description: "[Hyper] 사용자가 스킬을 직접 고르지 않고 hyper 스킬 묶음으로 개발 작업을 처음부터 끝까지 맡길 때 사용합니다. 리팩토링, 기능 추가, 버그 수정, 마이그레이션, 기술 선택, 검색 노출 개선, MCP 서버나 호스트 설정 작업, 재사용 스킬 폴더, AI가 읽기 좋은 문서, 재사용 프롬프트처럼 아키텍처 점검, 출처 있는 리서치, SEO 감사, MCP 작업, 작성된 계획, 계획 실행, 의존 순서가 있는 병렬 작업, 스킬 작성, 문서 작성, 프롬프트 작성을 조합해야 하는 일이거나 사용자가 hyper를 이름으로 부른 경우가 대상입니다. 작업을 분류해 hyper-research, hyper-seo, hyper-architecture, hyper-mcp, hyper-plan, hyper-execute, hyper-mass, hyper-skill, hyper-documentation 중 가장 짧은 체인을 고르고 단계를 순서대로 실행하며 각 단계가 저장한 산출물을 다음 단계에 넘깁니다. 사용자가 hyper 스킬 하나를 직접 지정했거나, 계획이 필요 없는 한 곳 수정, 커밋만 하는 요청, PRD 패키지, 일반 질문에는 쓰지 않습니다."
 compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대상 저장소의 파일 읽기와 검색, `.hyper/workflows/` 쓰기 권한이 필요합니다. 불러온 각 단계는 자기 요구 사항(git worktree, 하위 에이전트, 실시간 웹)을 따로 가집니다. 스킬을 불러올 수 없으면 단계를 실행하지 않고 고른 체인과 설치 명령을 보고합니다.
 ---
 
@@ -34,7 +34,7 @@ compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대�
 
 요청한 결과물이 아래 단계 스킬 하나 이상을 차례로 거쳐야 끝나는 개발 결과이거나, 사용자가 `hyper`를 이름으로 부르면 이 스킬을 씁니다.
 
-사용자 지시에 따라 이 패키지는 오케스트레이터입니다. 아래 단계 표, `rules/workflow-routing.md`, `rules/stage-handoff.md`, Sources 행, 평가 라우트에서만 열 단계 스킬의 이름을 씁니다. 이 패키지가 가진 스킬 간 연결은 이것뿐입니다.
+사용자 지시에 따라 이 패키지는 오케스트레이터입니다. 아래 단계 표, `rules/workflow-routing.md`, `rules/stage-handoff.md`, Sources 행, 평가 라우트에서만 아홉 단계 스킬의 이름을 씁니다. 이 패키지가 가진 스킬 간 연결은 이것뿐입니다.
 
 | Stage skill | What the stage produces |
 |---|---|
@@ -46,8 +46,7 @@ compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대�
 | `hyper-execute` | 기존 계획을 웨이브별로 실행하고 로컬, PR, ship 중 하나로 전달 |
 | `hyper-mass` | 의존 순서가 있는 작업 한 단계를 `.hyper/mass/<run-key>/` 그래프로 실행 |
 | `hyper-skill` | `skills/<name>/` 아래에 새로 만들거나 리팩터링한 스킬 폴더와 그 검증기 실행 결과 |
-| `hyper-docs` | 요청한 경로에 새로 만들거나 리팩터링한 AI가 읽기 좋은 문서, 지침 베이스, 런북, 규칙 묶음과 그 단계의 검증 handoff |
-| `hyper-prompt` | 요청한 경로에 새로 만들거나 리팩터링한 재사용 프롬프트, 프롬프트 템플릿, 프롬프트 팩, 프롬프트 평가 픽스처와 그 단계의 검증 handoff |
+| `hyper-documentation` | 요청한 경로에 새로 만들거나 리팩터링한 README, `AGENTS.md`, AI가 읽기 좋은 문서, 지침 베이스, 런북, 규칙 묶음, 재사용 프롬프트, 프롬프트 템플릿, 프롬프트 팩, 프롬프트 평가 픽스처와 고른 모드의 검증 handoff |
 
 다음 경우에는 쓰지 않습니다.
 
@@ -85,8 +84,8 @@ Positive requests:
 - "hyper로 우리 사이트 SEO 점검하고 고칠 거 다 고쳐줘." -> `hyper-seo` -> `hyper-plan` -> `hyper-execute`
 - "상태관리 라이브러리 뭐 쓸지 비교해보고 골라서 적용까지 해줘." -> `hyper-research` -> `hyper-plan` -> `hyper-execute`
 - "사내 배포 체크리스트를 스킬로 만들어줘. 최신 Agent Skills 규격 확인해서." -> `hyper-research` -> `hyper-skill`
-- "이 저장소 배포 런북을 에이전트가 읽기 좋게 다시 정리해줘." -> `hyper-docs`
-- "Build a reusable code-review system prompt with an eval fixture, checked against the latest provider prompting guide." -> `hyper-research` -> `hyper-prompt`
+- "이 저장소 배포 런북을 에이전트가 읽기 좋게 다시 정리해줘." -> `hyper-documentation`
+- "Build a reusable code-review system prompt with an eval fixture, checked against the latest provider prompting guide." -> `hyper-research` -> `hyper-documentation`
 - "사내 DB 조회하는 MCP 서버 만들어서 Claude Code에 연결까지 해줘." -> `hyper-mcp`
 - "Migrate our MCP server to the current spec and open a PR." -> `hyper-mcp`(점검) -> `hyper-plan` -> `hyper-execute`와 `--make-pr`
 
@@ -117,8 +116,7 @@ Boundary requests:
 | SEO, AEO, GEO 감사 뒤 수정을 계획된 변경으로 구현 | `hyper-seo` -> `hyper-plan` -> `hyper-execute` |
 | 계획 파일 없이 의존 순서가 있는 다중 에이전트 작업 | `hyper-mass` |
 | 재사용 스킬 폴더를 새로 만들거나 리팩터링. 필요하면 공식 문서 리서치 뒤에 | `hyper-skill`. 요청이 최신 외부 문서에 기대면 앞에 `hyper-research` |
-| AI가 읽기 좋은 문서, 지침 베이스, 런북, 규칙 묶음을 새로 만들거나 리팩터링 | `hyper-docs`. 내용이 최신 외부 출처에 기대면 앞에 `hyper-research` |
-| 재사용 프롬프트, 프롬프트 템플릿, 프롬프트 팩, 프롬프트 평가 픽스처를 새로 만들거나 리팩터링 | `hyper-prompt`. 최신 공급자 지침에 기대면 앞에 `hyper-research` |
+| README, `AGENTS.md`, AI가 읽기 좋은 문서, 지침 베이스, 런북, 규칙 묶음, 재사용 프롬프트, 프롬프트 템플릿, 프롬프트 팩, 프롬프트 평가 픽스처를 새로 만들거나 리팩터링 | `hyper-documentation`. 내용이 최신 외부 출처나 공급자 지침에 기대면 앞에 `hyper-research` |
 | MCP 서버, 클라이언트, 이전, 보안 수정, 호스트 MCP 설정 | `hyper-mcp`. 서버가 낯선 외부 API를 감싸면 앞에 `hyper-research`, 사용자가 PR이나 배포 전달을 요청했거나 MCP 밖 모듈까지 바뀌면 `hyper-mcp`를 점검 모드로 두고 뒤에 `hyper-plan` |
 | 이미 있는 계획 파일을 실행 | `hyper-execute` |
 | 보고서만 원하는 리서치, 감사, 아키텍처 점검 | 맞는 단계 하나 |
@@ -223,7 +221,7 @@ Phase 규칙:
 
 | Claim | Source |
 |---|---|
-| 오케스트레이터 역할, 처음부터 끝까지 실행, 이 패키지가 열 단계 스킬의 이름을 쓰도록 허용한 사용자 지시 예외 | user instruction, 2026-11-06; `hyper-skill`, `hyper-docs`, `hyper-prompt`, `hyper-mcp`를 단계로 추가한 사용자 지시, 2026-11-07 |
+| 오케스트레이터 역할, 처음부터 끝까지 실행, 이 패키지가 아홉 단계 스킬의 이름을 쓰도록 허용한 사용자 지시 예외 | user instruction, 2026-11-06; `hyper-skill`, `hyper-mcp`, 문서 단계를 추가한 사용자 지시, 2026-11-07; 문서 단계를 `hyper-documentation` 하나로 합친 사용자 지시, 2026-11-07 |
 | 각 단계 스킬의 결과물, 산출물 경로, 경계 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 계획 단계가 스스로 실행으로 이어지고 전달 플래그를 넘김 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 순차 체인은 저장된 산출물로 상태를 넘기고 라우터는 코드 같은 규칙으로 갈래를 고름 | `instructions/graph-engineering/references/graph-patterns.md` |

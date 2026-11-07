@@ -16,8 +16,7 @@ Load each stage skill through the runtime's skill mechanism (or read its `SKILL.
 | `hyper-execute` | The plan slug and the delivery flag | `.hyper/execute/<slug>/state.json` with `status` of `complete` and the printed completion block | - |
 | `hyper-mass` | The goal, its success criteria, and every upstream artifact path | `.hyper/mass/<run-key>/run.jsonl` ending in a `run.settled` event with `status` of `completed` | - |
 | `hyper-skill` | The user's original request, the target `skills/<name>/` path when it exists, and every upstream artifact path as required reading | `skills/<name>/SKILL.md` and `SKILL.ko.md`, plus the stage's validator run reporting zero errors in its validation handoff | - |
-| `hyper-docs` | The user's original request, the target document path when it exists, and every upstream artifact path as required reading | The created or updated document at the requested path, plus the stage's validation handoff | - |
-| `hyper-prompt` | The user's original request, the target prompt path when it exists, and every upstream artifact path as required reading | The created or updated prompt artifact at the requested path, plus the stage's validation handoff and, for machine-readable artifacts, its deterministic validator result | - |
+| `hyper-documentation` | The user's original request, the target path when it exists, and every upstream artifact path as required reading | The created or updated artifact at the requested path, plus the selected mode's validation handoff and, for a machine-readable prompt artifact, its parse result | - |
 
 Rules for every hand-off:
 
@@ -92,7 +91,7 @@ When the chain ends early, print in Korean:
 
 ## 7. Closing Report
 
-Report in Korean: the final chain with statuses, each artifact path, the last stage's completion evidence (the execution completion block, the mass run's verification result, the skill or prompt validator result, the document validation handoff, the MCP report's verification table, or the report path), the delivery result (local commits, PR URL, or merge), and every skipped or stopped stage with its reason.
+Report in Korean: the final chain with statuses, each artifact path, the last stage's completion evidence (the execution completion block, the mass run's verification result, the skill validator result, the documentation mode's validation handoff, the MCP report's verification table, or the report path), the delivery result (local commits, PR URL, or merge), and every skipped or stopped stage with its reason.
 
 ## Sources
 
@@ -100,7 +99,7 @@ Report in Korean: the final chain with statuses, each artifact path, the last st
 
 | Claim | Source |
 |---|---|
-| The stage artifact paths and state values (`.hyper/research/`, `.hyper/seo/<slug>/`, `.hyper/mcp/<slug>/report.md`, `.hyper/plans/<slug>.md`, `state.json` `status`, `run.settled`, `skills/<name>/SKILL.md`, the document and prompt paths) | each stage skill's own `SKILL.md` and references in this repository, 2026-11-07 |
+| The stage artifact paths and state values (`.hyper/research/`, `.hyper/seo/<slug>/`, `.hyper/mcp/<slug>/report.md`, `.hyper/plans/<slug>.md`, `state.json` `status`, `run.settled`, `skills/<name>/SKILL.md`, the documentation artifact paths) | each stage skill's own `SKILL.md` and references in this repository, 2026-11-07 |
 | The plan stage's `## Handoff` lines and its auto-continue into execution | the plan skill's handoff rule in this repository, 2026-11-06 |
 | The architecture stage stops on an unsupported stack and reports the install command for a missing skill | the architecture skill's stack-detection rule in this repository, 2026-11-06 |
 | Hand-off through saved artifacts and durable state rather than chat | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |

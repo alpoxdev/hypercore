@@ -10,8 +10,8 @@
 # What it deliberately does NOT check: section heading TEXT (Korean headings vs English
 # headings differ by design), and numerals inside prose (numerals are localized).
 #
-# Four pair sets, each with its OWN root: the instructions set (hardcoded pairs), the discovered
-# hyper-skill set, and the explicit hyper-docs and hyper-prompt single pairs. `--root` addresses the
+# Three pair sets, each with its OWN root: the instructions set (hardcoded pairs), the discovered
+# hyper-skill set, and the explicit hyper-documentation single pair. `--root` addresses the
 # instruction set; `--root-skills` keeps its historical meaning as the hyper-skill root and
 # additionally overrides the selected skill set when exactly one skill set is selected.
 #
@@ -21,7 +21,7 @@
 #   --root <dir>        root of the instructions/skill pair set (default: ../instructions/skill)
 #   --root-skills <dir> skill-set root override: the hyper-skill root when no set is selected, and
 #                       the selected set's own root when exactly one skill set is selected
-#   --set <name>        restrict to one set: instructions-skill | hyper-skill | hyper-docs | hyper-prompt
+#   --set <name>        restrict to one set: instructions-skill | hyper-skill | hyper-documentation
 #                       (default: all)
 #   --list              print one line per pair as set<TAB>root<TAB>en<TAB>ko, then exit 0
 #
@@ -33,9 +33,9 @@ export LC_ALL
 REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
 VALUE_FLAGS="--root --root-skills --set"
-SKILL_SET_NAMES="hyper-skill hyper-docs hyper-prompt"
-ALLOWED_SETS_LABEL="instructions-skill|hyper-skill|hyper-docs|hyper-prompt"
-ALLOWED_SETS_PADDED=" instructions-skill hyper-skill hyper-docs hyper-prompt "
+SKILL_SET_NAMES="hyper-skill hyper-documentation"
+ALLOWED_SETS_LABEL="instructions-skill|hyper-skill|hyper-documentation"
+ALLOWED_SETS_PADDED=" instructions-skill hyper-skill hyper-documentation "
 
 argc=$#
 args=("$@")
@@ -133,7 +133,7 @@ fi
 if [ "$has_set" -eq 1 ]; then
   case "$ALLOWED_SETS_PADDED" in
     *" $requested_set "*) ;;
-    *) problems[${#problems[@]}]="--set must be one of instructions-skill | hyper-skill | hyper-docs | hyper-prompt, got \"$requested_set\"" ;;
+    *) problems[${#problems[@]}]="--set must be one of instructions-skill | hyper-skill | hyper-documentation, got \"$requested_set\"" ;;
   esac
 fi
 
@@ -170,8 +170,7 @@ else
 fi
 
 sroot_hyper_skill="$REPO_ROOT/skills/hyper-skill"
-sroot_hyper_docs="$REPO_ROOT/skills/hyper-docs"
-sroot_hyper_prompt="$REPO_ROOT/skills/hyper-prompt"
+sroot_hyper_documentation="$REPO_ROOT/skills/hyper-documentation"
 
 for name in $SKILL_SET_NAMES; do
   override_applies=0
@@ -191,8 +190,7 @@ for name in $SKILL_SET_NAMES; do
   fi
   case "$name" in
     hyper-skill) sroot_hyper_skill="$resolved_root" ;;
-    hyper-docs) sroot_hyper_docs="$resolved_root" ;;
-    hyper-prompt) sroot_hyper_prompt="$resolved_root" ;;
+    hyper-documentation) sroot_hyper_documentation="$resolved_root" ;;
   esac
 done
 
@@ -200,8 +198,7 @@ root_for_set() {
   case "$1" in
     instructions-skill) printf '%s' "$instruction_root" ;;
     hyper-skill) printf '%s' "$sroot_hyper_skill" ;;
-    hyper-docs) printf '%s' "$sroot_hyper_docs" ;;
-    hyper-prompt) printf '%s' "$sroot_hyper_prompt" ;;
+    hyper-documentation) printf '%s' "$sroot_hyper_documentation" ;;
   esac
 }
 
@@ -348,8 +345,7 @@ while IFS="$(printf '\t')" read -r en ko; do
   add_pair "hyper-skill" "$sroot_hyper_skill" "$en" "$ko"
 done <"$PAIRS_FILE"
 
-add_pair "hyper-docs" "$sroot_hyper_docs" "SKILL.md" "SKILL.ko.md"
-add_pair "hyper-prompt" "$sroot_hyper_prompt" "SKILL.md" "SKILL.ko.md"
+add_pair "hyper-documentation" "$sroot_hyper_documentation" "SKILL.md" "SKILL.ko.md"
 
 # Every configured set must yield at least one pair; a wrong root makes a whole set vanish silently.
 if [ "$has_set" -eq 1 ]; then

@@ -4,7 +4,7 @@
 
 This is the base document to read when creating, refactoring, or reviewing a repository's agent instruction files. Its purpose is to make `AGENTS.md` and `CLAUDE.md` a **small, evidenced, portable contract** rather than a growing pile of advice.
 
-The executable procedure lives in the `agents-md-maker` skill. This document is the source-grounded knowledge that procedure rests on.
+The executable procedure lives in the `agents-md` mode of the `hyper-documentation` skill. This document is the source-grounded knowledge that procedure rests on.
 
 ---
 
