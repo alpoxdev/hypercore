@@ -136,7 +136,7 @@ A run that stops before the first stage prints the same line with the stop reaso
 
 | Claim | Source |
 |---|---|
-| The eleven stage skills and the orchestrator role | user instruction, 2026-11-06; `hyper-skill`, `hyper-mcp`, and the documentation stage added by user instruction, 2026-11-07; the documentation stages merged into `hyper-documentation` by user instruction, 2026-11-07; `hyper-ui-ux` added by user instruction, 2026-11-07; `hyper-git` added as the delivery stage by user instruction, 2026-11-07 |
+| The eleven stage skills and the orchestrator role | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current eleven by user instruction, 2026-11-07 |
 | Each stage's trigger, output, and exclusions, including `hyper-mass` excluding plan-file execution and `hyper-execute` requiring an existing plan | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The delivery words, the plan-only and approval-hold words, and the plan-to-execute auto-continue | the plan skill's handoff rule in this repository, 2026-11-06 |
 | The stage order, the four-stage cap, the recipes, and the tie-breaks | this package's chosen design, not a validated optimum |

@@ -48,7 +48,7 @@
 
 - 요청: <the user's request, verbatim>
 - 작업 종류: build | report | resume
-- 전달: local | make-pr | ship | plan-only
+- 전달: local | make-pr | ship | plan-only | git:<mode> <targets>
 - 상태: running | done | stopped
 - 정지 사유: <reason, or 없음>
 

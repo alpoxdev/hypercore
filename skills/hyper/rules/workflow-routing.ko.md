@@ -136,7 +136,7 @@ hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> hyper-ui-ux ->
 
 | Claim | Source |
 |---|---|
-| 열한 단계 스킬과 오케스트레이터 역할 | user instruction, 2026-11-06; `hyper-skill`, `hyper-mcp`, 문서 단계 추가 사용자 지시, 2026-11-07; 문서 단계를 `hyper-documentation` 하나로 합친 사용자 지시, 2026-11-07; `hyper-ui-ux` 추가 사용자 지시, 2026-11-07; `hyper-git`을 전달 단계로 추가한 사용자 지시, 2026-11-07 |
+| 열한 단계 스킬과 오케스트레이터 역할 | user instruction, 2026-11-06(오케스트레이터 역할); 현재의 열한 단계로 늘린 사용자 지시, 2026-11-07 |
 | 각 단계의 트리거, 결과물, 제외 범위. `hyper-mass`가 계획 파일 실행을 제외하고 `hyper-execute`가 기존 계획을 요구한다는 점 포함 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 전달 단어, 계획만·승인 보류 단어, 계획에서 실행으로 자동 연결 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 단계 순서, 네 단계 상한, 레시피, 동률 처리 | 이 패키지가 고른 설계이며 검증된 최적값이 아님 |
