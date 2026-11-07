@@ -8,7 +8,7 @@ Decide the job from the requested output, then confirm it with repository files.
 
 | Job class | Requested output | Example words |
 |---|---|---|
-| Build | Changed code: a feature, fix, refactor, migration, or adoption; or a created or refactored skill folder, document, or prompt artifact | 만들어, 추가해, 고쳐, 리팩토링해, 옮겨, 적용해, 스킬로 만들어, 문서로 정리해, 프롬프트 만들어, implement, refactor, migrate |
+| Build | Changed code: a feature, fix, refactor, migration, or adoption; an MCP server, client, or host configuration; or a created or refactored skill folder, document, or prompt artifact | 만들어, 추가해, 고쳐, 리팩토링해, 옮겨, 적용해, 연결해, 스킬로 만들어, 문서로 정리해, 프롬프트 만들어, implement, refactor, migrate, connect |
 | Report | A saved report, audit, review, or plan with no code change | 조사만, 점검만, 리뷰만, 리포트만, 계획만, audit only, just the plan |
 | Resume | An earlier run continued | 이어서, 계속, 재개, resume, continue |
 
@@ -23,6 +23,7 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 | `hyper-research` | The job depends on facts outside the repository: choosing between libraries or services, a new major version, an unfamiliar external API, or "최신" / "latest" behavior | The request phrase |
 | `hyper-seo` | The job is about search or AI-answer visibility of a named site or page set | The request phrase and the target URL or app path |
 | `hyper-architecture` | The job restructures folders, routes, modules, data or server boundaries, or platform setup, or adds a feature that creates a new route, module, or server boundary | The request phrase plus a stack manifest that was read, such as `package.json`, `pubspec.yaml`, or `Cargo.toml` |
+| `hyper-mcp` | The job builds, fixes, migrates, audits, or connects an MCP (Model Context Protocol) server, client, or host MCP configuration, or prepares MCP registry metadata | The request phrase, plus the MCP dependency or configuration file that was read when one exists, such as `@modelcontextprotocol/*` in `package.json`, `mcp` in `pyproject.toml`, `.mcp.json`, or `server.json` |
 | `hyper-plan` | A Build job touches several files or steps, or a Report job asks for a plan | The request phrase |
 | `hyper-execute` | Only as the first stage: a plan file under `.hyper/plans/` already exists and the user wants it run or resumed | The plan path that was read |
 | `hyper-mass` | The user asks for a dependency graph, a DAG, "의존성 그래프", "단계별 병렬", or several tasks where some must finish before others start, and no plan file is wanted | The request phrase |
@@ -35,11 +36,12 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 Chosen stages always run in this order. Skip the ones that were not chosen.
 
 ```text
-hyper-research -> hyper-seo -> hyper-architecture -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-docs | hyper-prompt)
+hyper-research -> hyper-seo -> hyper-architecture -> hyper-mcp -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-docs | hyper-prompt)
 ```
 
 - Upstream stages (`hyper-research`, `hyper-seo`, `hyper-architecture`) produce evidence for the tail. In a Build job they run in report mode; the tail makes the code change.
-- The tail is exactly one of: `hyper-plan` (which continues into `hyper-execute` by itself), `hyper-mass`, `hyper-execute` alone for an existing plan, `hyper-skill` for a skill folder, `hyper-docs` for a document, or `hyper-prompt` for a prompt artifact.
+- `hyper-mcp` is the tail when it is the last chosen stage: it builds, fixes, migrates, or connects and verifies the result itself. When `hyper-plan` or `hyper-mass` follows it, it runs in audit mode and its report is the plan's input.
+- Otherwise the tail is exactly one of: `hyper-plan` (which continues into `hyper-execute` by itself), `hyper-mass`, `hyper-execute` alone for an existing plan, `hyper-skill` for a skill folder, `hyper-docs` for a document, or `hyper-prompt` for a prompt artifact.
 - In a Report job the chain ends at the last requested stage. A Report job that asks for a plan ends at `hyper-plan` with `--plan-only`.
 - At most four stages run. A chain that seems to need more is two jobs: run the first and report the second as the next step.
 
@@ -53,6 +55,10 @@ hyper-research -> hyper-seo -> hyper-architecture -> (hyper-plan [-> hyper-execu
 | Feature that adds a route, module, or server boundary | `hyper-architecture` -> `hyper-plan` |
 | Library or technology choice, then adoption | `hyper-research` -> `hyper-plan` |
 | Framework or major-version migration | `hyper-research` -> `hyper-architecture` -> `hyper-plan` |
+| MCP server or client built, fixed, migrated, or connected | `hyper-mcp` |
+| MCP audit or report only | `hyper-mcp` in audit mode, alone |
+| MCP server that wraps an unfamiliar external API ("Notion API를 MCP로") | `hyper-research` -> `hyper-mcp` |
+| MCP change delivered as a PR or ship, or one that also changes non-MCP modules | `hyper-mcp` (audit) -> `hyper-plan` |
 | Research report only | `hyper-research` |
 | SEO audit or report only | `hyper-seo` |
 | SEO score loop ("최대 점수까지", "keep improving the score") | `hyper-seo` in its optimize mode, alone |
@@ -74,6 +80,9 @@ Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report 
 - `hyper-mass` and `hyper-plan` never run in one chain. Choose `hyper-mass` only on its explicit signal; otherwise choose `hyper-plan`.
 - `hyper-skill` and `hyper-plan` never run in one chain. When the requested output is a skill folder, choose `hyper-skill`; a plan file is not its input.
 - `hyper-docs` and `hyper-prompt` never run with `hyper-plan` or with each other. Choose by the primary deliverable: a document goes to `hyper-docs`, a reusable prompt artifact goes to `hyper-prompt`, and a skill folder goes to `hyper-skill`.
+- `hyper-mcp` and `hyper-skill` never run in one chain. When the requested output is a skill folder, even one about MCP, choose `hyper-skill`.
+- `hyper-mcp` and `hyper-architecture` both run only when the job also restructures non-MCP folders, routes, or modules; an MCP-only job routes to `hyper-mcp` without the architecture stage.
+- Delivery words ("PR까지", "ship") on an MCP job put `hyper-mcp` in audit mode before `hyper-plan`, because only the plan and execute stages own delivery.
 - An existing plan file wins over a new plan only when the user points at it or says to resume. A new Build request with an unrelated old plan gets a new plan.
 - When the stack is outside the architecture stage's supported set, keep the stage anyway: it decides support from files and stops with a reason, and `rules/stage-handoff.md` §4 records that stop as a skip.
 
@@ -111,7 +120,7 @@ A run that stops before the first stage prints the same line with the stop reaso
 
 | Claim | Source |
 |---|---|
-| The nine stage skills and the orchestrator role | user instruction, 2026-11-06; `hyper-skill`, `hyper-docs`, and `hyper-prompt` added by user instruction, 2026-11-07 |
+| The ten stage skills and the orchestrator role | user instruction, 2026-11-06; `hyper-skill`, `hyper-docs`, `hyper-prompt`, and `hyper-mcp` added by user instruction, 2026-11-07 |
 | Each stage's trigger, output, and exclusions, including `hyper-mass` excluding plan-file execution and `hyper-execute` requiring an existing plan | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The delivery words, the plan-only and approval-hold words, and the plan-to-execute auto-continue | the plan skill's handoff rule in this repository, 2026-11-06 |
 | The stage order, the four-stage cap, the recipes, and the tie-breaks | this package's chosen design, not a validated optimum |

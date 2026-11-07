@@ -11,6 +11,7 @@ Load each stage skill through the runtime's skill mechanism (or read its `SKILL.
 | `hyper-research` | The question the job depends on, with the decision it must support ("which state library fits this repo, to adopt it next") | `.hyper/research/[NN].<slug>.md` | Report path and its recommendation line |
 | `hyper-seo` | The target, plus `recommend` as the allowed action in a Build job, or the user's own mode in a Report job | The report under `.hyper/seo/<slug>/` | Report path and its critical and warning findings |
 | `hyper-architecture` | In a Build job: "architecture audit only; report findings with file paths; do not edit", plus the target paths. As the last stage: the user's request unchanged | Its routing line plus findings, copied into the workflow record's stage notes, because the stage saves no file of its own in audit mode | The stage-notes section path and the findings |
+| `hyper-mcp` | Before a plan or mass stage: "audit only; report findings with file paths; do not edit", plus the target paths and every upstream artifact path. As the last stage: the user's request unchanged, plus every upstream artifact path | `.hyper/mcp/<slug>/report.md`; as the last stage its verification table also lists the MCP Inspector run in the era the target claims | Report path and its critical and high findings |
 | `hyper-plan` | The user's original request, every upstream artifact path as required reading, the delivery flag, and `--plan-only` or the approval hold when the user said so | `.hyper/plans/<slug>.md` with a `## Handoff` section | Nothing: the stage continues into `hyper-execute` itself |
 | `hyper-execute` | The plan slug and the delivery flag | `.hyper/execute/<slug>/state.json` with `status` of `complete` and the printed completion block | - |
 | `hyper-mass` | The goal, its success criteria, and every upstream artifact path | `.hyper/mass/<run-key>/run.jsonl` ending in a `run.settled` event with `status` of `completed` | - |
@@ -91,7 +92,7 @@ When the chain ends early, print in Korean:
 
 ## 7. Closing Report
 
-Report in Korean: the final chain with statuses, each artifact path, the last stage's completion evidence (the execution completion block, the mass run's verification result, the skill or prompt validator result, the document validation handoff, or the report path), the delivery result (local commits, PR URL, or merge), and every skipped or stopped stage with its reason.
+Report in Korean: the final chain with statuses, each artifact path, the last stage's completion evidence (the execution completion block, the mass run's verification result, the skill or prompt validator result, the document validation handoff, the MCP report's verification table, or the report path), the delivery result (local commits, PR URL, or merge), and every skipped or stopped stage with its reason.
 
 ## Sources
 
@@ -99,7 +100,7 @@ Report in Korean: the final chain with statuses, each artifact path, the last st
 
 | Claim | Source |
 |---|---|
-| The stage artifact paths and state values (`.hyper/research/`, `.hyper/seo/<slug>/`, `.hyper/plans/<slug>.md`, `state.json` `status`, `run.settled`, `skills/<name>/SKILL.md`, the document and prompt paths) | each stage skill's own `SKILL.md` and references in this repository, 2026-11-07 |
+| The stage artifact paths and state values (`.hyper/research/`, `.hyper/seo/<slug>/`, `.hyper/mcp/<slug>/report.md`, `.hyper/plans/<slug>.md`, `state.json` `status`, `run.settled`, `skills/<name>/SKILL.md`, the document and prompt paths) | each stage skill's own `SKILL.md` and references in this repository, 2026-11-07 |
 | The plan stage's `## Handoff` lines and its auto-continue into execution | the plan skill's handoff rule in this repository, 2026-11-06 |
 | The architecture stage stops on an unsupported stack and reports the install command for a missing skill | the architecture skill's stack-detection rule in this repository, 2026-11-06 |
 | Hand-off through saved artifacts and durable state rather than chat | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |

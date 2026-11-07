@@ -22,7 +22,7 @@
     },
     "hyper": {
       "FRONTMATTER_TRIGGER": 1,
-      "CROSS_SKILL_REFERENCE": 378
+      "CROSS_SKILL_REFERENCE": 445
     },
     "hyper-architecture": {
       "FRONTMATTER_TRIGGER": 1,
@@ -47,6 +47,9 @@
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-mass": {
+      "FRONTMATTER_TRIGGER": 1
+    },
+    "hyper-mcp": {
       "FRONTMATTER_TRIGGER": 1
     },
     "hyper-plan": {
