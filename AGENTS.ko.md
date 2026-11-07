@@ -19,7 +19,7 @@
 - `assets/`: 프로젝트 문서가 사용하는 저장소 수준의 정적 asset입니다.
 - `README.md`: 설치, skill catalog, 프로젝트 구조, 개발 workflow 문서입니다.
 
-배포 경계는 루트 `skills/` 트리와 Vercel `npx skills` remote-source 규약입니다. 이 저장소는 Claude/Codex plugin manifest나 mirror adapter를 배포하지 않습니다. 오래된 설명 문서보다 `skills/`, `instructions/`, `scripts/`, 실행 가능한 설정을 우선합니다.
+배포 경계는 루트 `skills/` 트리와 Vercel `npx skills` remote-source 규약입니다. 루트 `.codex-plugin/plugin.json`(`assets/icon.svg`, `SECURITY.md`, `.codexignore` 포함)은 awesome-codex-plugins 목록이 같은 `skills/` 트리를 가져가도록 두는 파일입니다. `skills` 경로는 `./skills/`로 유지하고 Claude plugin manifest, marketplace 파일, mirror adapter는 추가하지 않습니다. 오래된 설명 문서보다 `skills/`, `instructions/`, `scripts/`, 실행 가능한 설정을 우선합니다.
 
 ## 조건부 지침 로딩
 

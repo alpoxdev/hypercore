@@ -21,7 +21,7 @@ Korean mirror: [`AGENTS.ko.md`](AGENTS.ko.md).
 - `assets/`: repository-level static assets used by project documentation.
 - `README.md`: installation, skill catalog, project structure, and development workflow.
 
-The distribution boundary is the root `skills/` tree and the Vercel `npx skills` remote-source convention. This repository does not ship Claude/Codex plugin manifests or mirror adapters. Prefer `skills/`, `instructions/`, `scripts/`, and executable configuration over stale explanatory prose.
+The distribution boundary is the root `skills/` tree and the Vercel `npx skills` remote-source convention. The root `.codex-plugin/plugin.json` (with `assets/icon.svg`, `SECURITY.md`, and `.codexignore`) exists only so the awesome-codex-plugins catalog can mirror the same `skills/` tree; keep its `skills` path at `./skills/` and do not add Claude plugin manifests, marketplace files, or mirror adapters. Prefer `skills/`, `instructions/`, `scripts/`, and executable configuration over stale explanatory prose.
 
 ## Conditional Instruction Loading
 

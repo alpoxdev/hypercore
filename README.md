@@ -17,7 +17,7 @@ Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 �
 
 ## 호환성
 
-Hypercore는 [Vercel Skills CLI](https://github.com/vercel-labs/skills)의 원격 소스 규약만 지원합니다. Claude Code, Codex, Cursor 등 런타임 선택은 `npx skills`의 `--agent` 옵션으로 처리하며 별도 plugin/marketplace adapter는 제공하지 않습니다.
+Hypercore의 표준 설치·관리 경로는 [Vercel Skills CLI](https://github.com/vercel-labs/skills)의 원격 소스 규약입니다. Claude Code, Codex, Cursor 등 런타임 선택은 `npx skills`의 `--agent` 옵션으로 처리합니다. 저장소 루트의 `.codex-plugin/plugin.json`은 [awesome-codex-plugins](https://github.com/hashgraph-online/awesome-codex-plugins) 목록 등록용 Codex 플러그인 설명서이며 같은 `skills/`를 가리킵니다. 별도 marketplace adapter는 제공하지 않습니다.
 
 | 런타임 | 설치 예시 | 비고 |
 |---|---|---|
@@ -259,7 +259,8 @@ lint, typecheck, build 같은 프로젝트 게이트를 재현하고, 실패가 
 
 ```text
 hypercore/
-├── assets/                # README 이미지 등 저장소 수준 정적 asset
+├── .codex-plugin/         # Codex 플러그인 설명서 (awesome-codex-plugins 등록용, skills/를 가리킴)
+├── assets/                # 플러그인 아이콘, README 이미지 등 저장소 수준 정적 asset
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
 └── skills/                # 20개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
