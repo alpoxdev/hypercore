@@ -367,32 +367,6 @@
       "behaviorContractId": "hyper-architecture--validate-architecture"
     },
     {
-      "path": "skills/prd-maker/scripts/build-preview.sh",
-      "family": "prd-maker",
-      "legacyOrigin": "retained-mjs",
-      "usage": "build-preview",
-      "behavior": "preview-build",
-      "sourcePreimage": {
-        "path": "skills/prd-maker/scripts/build-preview.mjs",
-        "sha256": "62a11024c5ef0427ac4c21eeddac05ce9ef3f4dfa65b7bfbc6f76511e6e1dcfb",
-        "gitMode": "100755"
-      },
-      "behaviorContractId": "prd-maker--build-preview"
-    },
-    {
-      "path": "skills/prd-maker/scripts/render-planning-map.sh",
-      "family": "prd-maker",
-      "legacyOrigin": "retained-mjs",
-      "usage": "render-planning-map",
-      "behavior": "planning-map-render",
-      "sourcePreimage": {
-        "path": "skills/prd-maker/scripts/render-planning-map.mjs",
-        "sha256": "eac9f1351b42352567b9c143c5460ae9eda7af7c85e44aaee02294c4752fe6bc",
-        "gitMode": "100755"
-      },
-      "behaviorContractId": "prd-maker--render-planning-map"
-    },
-    {
       "path": "skills/hyper-deploy/scripts/build-run.sh",
       "family": "hyper-deploy",
       "legacyOrigin": "former-sh",
