@@ -107,7 +107,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 /hyper-design "<작업>"   # AI 티 없는 화면 디자인·리디자인·연출 화면(mockup)과 generic 패턴 점검·정리를 정석 수치와 독립 검토로 검증
 /hyper-browsing "<대상>"  # 403·WAF·챌린지·JavaScript·사라진 페이지처럼 평범한 요청으로 안 열리는 페이지 내용을 단계 사다리로 가져오고 출처·종료 상태까지 기록
 /prd-maker "<아이디어>"  # 다이어그램·플로우·와이어프레임을 포함한 기획 패키지
-/pre-deploy           # 배포 전 lint/타입/빌드 게이트
+/hyper-deploy "<작업>"   # Railway·Cloudflare·Docker·Compose·VPS 배포 전 점검·첫 설정·배포·설정 변경·실패 진단과 수정을 플랫폼 최종 상태로 검증
 ```
 
 자연어로도 트리거됩니다 — 예: "이 프로젝트 README 다시 써줘"·"이 저장소에 맞는 AGENTS.md 만들어줘" → `hyper-documentation`, "방금 변경 사항 커밋하고 푸시"·"이슈 42로 워크트리 만들어줘"·"dev, main에 머지하고 푸시" → `hyper-git`.
@@ -126,6 +126,8 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 | "이 버그 이슈로 남겨줘" | `hyper-issue` |
 | "label:bug 이슈들 배치로 돌려줘" | `hyper-issue` -> `hyper-plan` -> `hyper-execute` |
 | "스킬 만들고 dev에 머지·푸시" | `hyper-skill` -> `hyper-git` |
+| "결제 버그 고치고 staging에 배포까지" | `hyper-plan` -> `hyper-execute` -> `hyper-deploy` |
+| "배포 실패했어, 로그 보고 고쳐줘" | `hyper-deploy` |
 
 ### 전달 방식
 
@@ -177,7 +179,7 @@ flowchart LR
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `pre-deploy` | 배포 전 lint/타입/빌드 검증 | Node.js·Rust·Python 툴체인; bash 3.2+ & jq 1.6+ |
+| `hyper-deploy` | 저장소 파일로 배포 대상(Railway, Cloudflare Workers, Docker 이미지, docker-compose, VPS·Kamal·Coolify·Dokploy)을 감지해 같은 스킬 안의 대상별 가이드로 배포 전 lint·타입·빌드 점검, 첫 배포 설정, 배포, 설정 변경, 실패한 배포의 로그 진단·수정·재배포를 처리. 성공은 플랫폼의 최종 상태와 헬스 체크로만 판정하고, 프로덕션 롤백·데이터·삭제·비용·DNS·방화벽 변경은 명시 승인 후에만 실행하며 `.hyper/deploy/` 보고서까지 저장 | 점검 스크립트는 Node.js·Rust·Python 툴체인과 bash 3.2+ & jq 1.6+; 배포는 대상 CLI(railway, wrangler·cf, docker·compose·buildx, kamal·ssh)와 환경 변수 자격 증명 |
 
 ### Git 워크플로
 
@@ -189,7 +191,7 @@ flowchart LR
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-architecture·hyper-database·hyper-mcp·hyper-design·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation·hyper-git 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute, 인터넷 검색 리서치 → research(막힌 출처는 hyper-browsing 동반)) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
+| `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-architecture·hyper-database·hyper-mcp·hyper-design·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation·hyper-git·hyper-deploy 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute, 인터넷 검색 리서치 → research(막힌 출처는 hyper-browsing 동반), 기능 고치고 배포 → plan → execute → deploy, 배포 실패 고치기 → deploy) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
 | `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
 | `hyper-issue` | 확정된 발견이나 결정된 작업을 바로 구현 가능한 이슈로 기록하고, 열린 이슈 묶음을 서로 겹치지 않는 작업 레인으로 묶어 배치 매니페스트 생성(구현은 하지 않음) | 인증된 이슈 트래커 CLI(`gh`); 쓰기 권한이 없으면 본문을 디스크에 초안으로 남김 |
@@ -242,10 +244,10 @@ flowchart LR
 **3) 배포 전 점검**
 
 ```text
-/pre-deploy
+/hyper-deploy "배포 전 점검만 해줘"
 ```
 
-lint, typecheck, build 같은 프로젝트 게이트를 재현하고, 실패가 있으면 원인을 추적해서 고쳐 다시 검증합니다.
+lint, typecheck, build 같은 프로젝트 게이트를 재현하고, 실패가 있으면 원인을 추적해서 고쳐 다시 검증합니다. 같은 스킬로 배포·설정 변경·실패 진단까지 이어서 맡길 수 있고, 점검 통과는 배포 승인이 아닙니다.
 
 **4) 새 스킬 만들기**
 

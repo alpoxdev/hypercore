@@ -62,9 +62,9 @@ approved_child_scripts() {
   case $1 in
     skills/hyper-design/scripts/run-contract-evals.sh) printf '%s\n' 'collect-rendered-evidence.sh' 'validate-report.sh' 'validate-waivers.sh' ;;
     skills/hyper-design/scripts/run-detector-evals.sh) printf '%s\n' 'detect-slop.sh' ;;
-    skills/pre-deploy/scripts/build-run.sh) printf '%s\n' 'pm-detect.sh' 'stack-detect.sh' ;;
-    skills/pre-deploy/scripts/deploy-check.sh) printf '%s\n' 'build-run.sh' 'lint-check.sh' 'stack-detect.sh' ;;
-    skills/pre-deploy/scripts/lint-check.sh) printf '%s\n' 'pm-detect.sh' 'stack-detect.sh' ;;
+    skills/hyper-deploy/scripts/build-run.sh) printf '%s\n' 'pm-detect.sh' 'stack-detect.sh' ;;
+    skills/hyper-deploy/scripts/deploy-check.sh) printf '%s\n' 'build-run.sh' 'lint-check.sh' 'stack-detect.sh' ;;
+    skills/hyper-deploy/scripts/lint-check.sh) printf '%s\n' 'pm-detect.sh' 'stack-detect.sh' ;;
     *) : ;;
   esac
 }
@@ -95,11 +95,11 @@ metadata_for() {
     skills/prd-maker/scripts/build-preview.sh) printf 'build-preview\tpreview-build\n' ;;
     skills/prd-maker/scripts/render-planning-map.sh) printf 'render-planning-map\tplanning-map-render\n' ;;
     skills/hyper-database/scripts/detect-engines.sh) printf 'detect-engines\tengine-detection\n' ;;
-    skills/pre-deploy/scripts/build-run.sh) printf 'run-build\tproject-build\n' ;;
-    skills/pre-deploy/scripts/deploy-check.sh) printf 'check-deployment\tdeployment-readiness-check\n' ;;
-    skills/pre-deploy/scripts/lint-check.sh) printf 'check-lint\tlint-readiness-check\n' ;;
-    skills/pre-deploy/scripts/pm-detect.sh) printf 'detect-package-manager\tpackage-manager-detection\n' ;;
-    skills/pre-deploy/scripts/stack-detect.sh) printf 'detect-stack\tstack-detection\n' ;;
+    skills/hyper-deploy/scripts/build-run.sh) printf 'run-build\tproject-build\n' ;;
+    skills/hyper-deploy/scripts/deploy-check.sh) printf 'check-deployment\tdeployment-readiness-check\n' ;;
+    skills/hyper-deploy/scripts/lint-check.sh) printf 'check-lint\tlint-readiness-check\n' ;;
+    skills/hyper-deploy/scripts/pm-detect.sh) printf 'detect-package-manager\tpackage-manager-detection\n' ;;
+    skills/hyper-deploy/scripts/stack-detect.sh) printf 'detect-stack\tstack-detection\n' ;;
     skills/hyper-seo/scripts/render-dashboard.sh) printf 'render-dashboard\trender-dashboard\n' ;;
     skills/hyper-skill/scripts/validate-hyper-skill.sh) printf 'validate-skill\tskill-validation\n' ;;
     skills/jev-maker/scripts/check-jev-request.sh) printf 'check-jev-request\tjev-request-validation\n' ;;

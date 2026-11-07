@@ -22,6 +22,7 @@ Load each stage skill through the runtime's skill mechanism (or read its `SKILL.
 | `hyper-skill` | The user's original request, the target `skills/<name>/` path when it exists, and every upstream artifact path as required reading | `skills/<name>/SKILL.md` and `SKILL.ko.md`, plus the stage's validator run reporting zero errors in its validation handoff | The changed paths, when `hyper-git` follows |
 | `hyper-documentation` | The user's original request, the target path when it exists, and every upstream artifact path as required reading | The created or updated artifact at the requested path, plus the selected mode's validation handoff and, for a machine-readable prompt artifact, its parse result | The changed paths, when `hyper-git` follows |
 | `hyper-git` | The mode (commit, or workflow for a pull request or a whole-branch merge), the changed paths from the previous stage as the commit scope, the target branches in the user's order, and the user's limits ("커밋만", "main 빼고") unchanged | Each commit SHA it reports found on every remote target (`git fetch origin <target>`, then `git branch -r --contains <sha>` or `git cherry origin/<target> <branch>` with no `+` lines), or the pull request URL with its state from `gh pr view` | - |
+| `hyper-deploy` | The user's request unchanged, the environment name words ("staging", "프로덕션", "preview"), every upstream artifact path as required reading, and the execution completion block when it follows a plan stage | `.hyper/deploy/<slug>/report.md` with its `Result` line naming one of `ready`, `unproven`, `deployed`, `changed`, `fixed`, `exhausted`, `stopped-for-approval`, `blocked`, or `handoff`, and the evidence behind it | Nothing: it is the last stage of the chain |
 
 Rules for every hand-off:
 
@@ -29,6 +30,7 @@ Rules for every hand-off:
 - A `hyper-git` stage starts only after the previous stage's completion evidence passed; a failed validator never reaches delivery.
 - Pass upstream artifacts by path, and add at most three lines of the conclusion that the next stage needs. Do not paste whole reports.
 - Pass the user's constraints (scope limits, excluded paths, "커밋하지 말고") to every stage unchanged.
+- A `hyper-deploy` stage that follows a plan stage starts only after the execution completion block, so it receives the completion block as part of its request and deploys the delivered result rather than a tree still under change.
 
 Companion rules for `hyper-browsing` inside a `hyper-research` stage:
 
@@ -105,7 +107,7 @@ When the chain ends early, print in Korean:
 
 ## 7. Closing Report
 
-Report in Korean: the final chain with statuses, each artifact path, the last stage's completion evidence (the execution completion block, the mass run's verification result, the skill validator result, the issue record's number and URL with the manifest path, the documentation mode's validation handoff, the database report's verification section, the MCP report's verification table, the UI report's validator result and craft-floor line, the image stage's terminal with its path, digest, and inspection record, the Git delivery's commit SHAs found on each remote target, or the report path), the delivery result (local commits, PR URL, or merge), every companion access report with its terminal, and every skipped or stopped stage with its reason.
+Report in Korean: the final chain with statuses, each artifact path, the last stage's completion evidence (the execution completion block, the mass run's verification result, the skill validator result, the issue record's number and URL with the manifest path, the documentation mode's validation handoff, the database report's verification section, the MCP report's verification table, the UI report's validator result and craft-floor line, the image stage's terminal with its path, digest, and inspection record, the Git delivery's commit SHAs found on each remote target, the deploy report's `Result` line with the deployment ID and terminal state, or the report path), the delivery result (local commits, PR URL, or merge), every companion access report with its terminal, and every skipped or stopped stage with its reason.
 
 ## Sources
 
@@ -113,7 +115,7 @@ Report in Korean: the final chain with statuses, each artifact path, the last st
 
 | Claim | Source |
 |---|---|
-| The stage artifact paths and state values (`.hyper/research/`, `.hyper/seo/<slug>/`, `.hyper/database/<slug>/report.md`, `.hyper/mcp/<slug>/report.md`, `.hyper/design/<slug>/brief.md` and `report.md`, `.hyper/imagegen/<topic>/` and the image stage's five terminals, `.hyper/plans/<slug>.md`, `state.json` `status`, `run.settled`, `skills/<name>/SKILL.md`, the documentation artifact paths, the Git delivery's remote-branch checks) | each stage skill's own `SKILL.md` and references in this repository, 2026-11-07 |
+| The stage artifact paths and state values (`.hyper/research/`, `.hyper/seo/<slug>/`, `.hyper/database/<slug>/report.md`, `.hyper/mcp/<slug>/report.md`, `.hyper/design/<slug>/brief.md` and `report.md`, `.hyper/imagegen/<topic>/` and the image stage's five terminals, `.hyper/deploy/<slug>/report.md` and its nine result values, `.hyper/plans/<slug>.md`, `state.json` `status`, `run.settled`, `skills/<name>/SKILL.md`, the documentation artifact paths, the Git delivery's remote-branch checks) | each stage skill's own `SKILL.md` and references in this repository, 2026-11-07 |
 | The plan stage's `## Handoff` lines and its auto-continue into execution | the plan skill's handoff rule in this repository, 2026-11-06 |
 | The architecture stage stops on an unsupported stack and reports the install command for a missing skill | the architecture skill's stack-detection rule in this repository, 2026-11-06 |
 | Hand-off through saved artifacts and durable state rather than chat | `instructions/harness-engineering/HARNESS_ENGINEERING.md` |

@@ -4708,9 +4708,9 @@
       }
     },
     {
-      "id": "pre-deploy--build-run",
-      "path": "skills/pre-deploy/scripts/build-run.sh",
-      "family": "pre-deploy",
+      "id": "hyper-deploy--build-run",
+      "path": "skills/hyper-deploy/scripts/build-run.sh",
+      "family": "hyper-deploy",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
         "path": "skills/pre-deploy/scripts/build-run.sh",
@@ -4723,7 +4723,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/build-run.sh"
+              "skills/hyper-deploy/scripts/build-run.sh"
             ]
           },
           "input": {
@@ -4769,7 +4769,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/build-run.sh"
+              "skills/hyper-deploy/scripts/build-run.sh"
             ]
           },
           "input": {
@@ -4815,7 +4815,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/build-run.sh"
+              "skills/hyper-deploy/scripts/build-run.sh"
             ]
           },
           "input": {
@@ -4858,20 +4858,20 @@
         }
       },
       "dimensions": {
-        "stdout": "pre-deploy--build-run--stdout",
-        "stderr": "pre-deploy--build-run--stderr",
-        "exit": "pre-deploy--build-run--exit",
-        "files": "pre-deploy--build-run--files",
-        "modes": "pre-deploy--build-run--modes",
-        "cwd": "pre-deploy--build-run--cwd",
-        "env": "pre-deploy--build-run--env",
-        "argv": "pre-deploy--build-run--argv"
+        "stdout": "hyper-deploy--build-run--stdout",
+        "stderr": "hyper-deploy--build-run--stderr",
+        "exit": "hyper-deploy--build-run--exit",
+        "files": "hyper-deploy--build-run--files",
+        "modes": "hyper-deploy--build-run--modes",
+        "cwd": "hyper-deploy--build-run--cwd",
+        "env": "hyper-deploy--build-run--env",
+        "argv": "hyper-deploy--build-run--argv"
       }
     },
     {
-      "id": "pre-deploy--deploy-check",
-      "path": "skills/pre-deploy/scripts/deploy-check.sh",
-      "family": "pre-deploy",
+      "id": "hyper-deploy--deploy-check",
+      "path": "skills/hyper-deploy/scripts/deploy-check.sh",
+      "family": "hyper-deploy",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
         "path": "skills/pre-deploy/scripts/deploy-check.sh",
@@ -4884,7 +4884,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/deploy-check.sh"
+              "skills/hyper-deploy/scripts/deploy-check.sh"
             ]
           },
           "input": {
@@ -4921,7 +4921,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/deploy-check.sh"
+              "skills/hyper-deploy/scripts/deploy-check.sh"
             ]
           },
           "input": {
@@ -4958,7 +4958,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/deploy-check.sh"
+              "skills/hyper-deploy/scripts/deploy-check.sh"
             ]
           },
           "input": {
@@ -4992,20 +4992,20 @@
         }
       },
       "dimensions": {
-        "stdout": "pre-deploy--deploy-check--stdout",
-        "stderr": "pre-deploy--deploy-check--stderr",
-        "exit": "pre-deploy--deploy-check--exit",
-        "files": "pre-deploy--deploy-check--files",
-        "modes": "pre-deploy--deploy-check--modes",
-        "cwd": "pre-deploy--deploy-check--cwd",
-        "env": "pre-deploy--deploy-check--env",
-        "argv": "pre-deploy--deploy-check--argv"
+        "stdout": "hyper-deploy--deploy-check--stdout",
+        "stderr": "hyper-deploy--deploy-check--stderr",
+        "exit": "hyper-deploy--deploy-check--exit",
+        "files": "hyper-deploy--deploy-check--files",
+        "modes": "hyper-deploy--deploy-check--modes",
+        "cwd": "hyper-deploy--deploy-check--cwd",
+        "env": "hyper-deploy--deploy-check--env",
+        "argv": "hyper-deploy--deploy-check--argv"
       }
     },
     {
-      "id": "pre-deploy--lint-check",
-      "path": "skills/pre-deploy/scripts/lint-check.sh",
-      "family": "pre-deploy",
+      "id": "hyper-deploy--lint-check",
+      "path": "skills/hyper-deploy/scripts/lint-check.sh",
+      "family": "hyper-deploy",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
         "path": "skills/pre-deploy/scripts/lint-check.sh",
@@ -5018,7 +5018,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/lint-check.sh"
+              "skills/hyper-deploy/scripts/lint-check.sh"
             ]
           },
           "input": {
@@ -5064,7 +5064,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/lint-check.sh"
+              "skills/hyper-deploy/scripts/lint-check.sh"
             ]
           },
           "input": {
@@ -5110,7 +5110,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/lint-check.sh"
+              "skills/hyper-deploy/scripts/lint-check.sh"
             ]
           },
           "input": {
@@ -5153,20 +5153,20 @@
         }
       },
       "dimensions": {
-        "stdout": "pre-deploy--lint-check--stdout",
-        "stderr": "pre-deploy--lint-check--stderr",
-        "exit": "pre-deploy--lint-check--exit",
-        "files": "pre-deploy--lint-check--files",
-        "modes": "pre-deploy--lint-check--modes",
-        "cwd": "pre-deploy--lint-check--cwd",
-        "env": "pre-deploy--lint-check--env",
-        "argv": "pre-deploy--lint-check--argv"
+        "stdout": "hyper-deploy--lint-check--stdout",
+        "stderr": "hyper-deploy--lint-check--stderr",
+        "exit": "hyper-deploy--lint-check--exit",
+        "files": "hyper-deploy--lint-check--files",
+        "modes": "hyper-deploy--lint-check--modes",
+        "cwd": "hyper-deploy--lint-check--cwd",
+        "env": "hyper-deploy--lint-check--env",
+        "argv": "hyper-deploy--lint-check--argv"
       }
     },
     {
-      "id": "pre-deploy--pm-detect",
-      "path": "skills/pre-deploy/scripts/pm-detect.sh",
-      "family": "pre-deploy",
+      "id": "hyper-deploy--pm-detect",
+      "path": "skills/hyper-deploy/scripts/pm-detect.sh",
+      "family": "hyper-deploy",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
         "path": "skills/pre-deploy/scripts/pm-detect.sh",
@@ -5179,7 +5179,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/pm-detect.sh"
+              "skills/hyper-deploy/scripts/pm-detect.sh"
             ]
           },
           "input": {
@@ -5225,7 +5225,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/pm-detect.sh"
+              "skills/hyper-deploy/scripts/pm-detect.sh"
             ]
           },
           "input": {
@@ -5271,7 +5271,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/pm-detect.sh"
+              "skills/hyper-deploy/scripts/pm-detect.sh"
             ]
           },
           "input": {
@@ -5314,20 +5314,20 @@
         }
       },
       "dimensions": {
-        "stdout": "pre-deploy--pm-detect--stdout",
-        "stderr": "pre-deploy--pm-detect--stderr",
-        "exit": "pre-deploy--pm-detect--exit",
-        "files": "pre-deploy--pm-detect--files",
-        "modes": "pre-deploy--pm-detect--modes",
-        "cwd": "pre-deploy--pm-detect--cwd",
-        "env": "pre-deploy--pm-detect--env",
-        "argv": "pre-deploy--pm-detect--argv"
+        "stdout": "hyper-deploy--pm-detect--stdout",
+        "stderr": "hyper-deploy--pm-detect--stderr",
+        "exit": "hyper-deploy--pm-detect--exit",
+        "files": "hyper-deploy--pm-detect--files",
+        "modes": "hyper-deploy--pm-detect--modes",
+        "cwd": "hyper-deploy--pm-detect--cwd",
+        "env": "hyper-deploy--pm-detect--env",
+        "argv": "hyper-deploy--pm-detect--argv"
       }
     },
     {
-      "id": "pre-deploy--stack-detect",
-      "path": "skills/pre-deploy/scripts/stack-detect.sh",
-      "family": "pre-deploy",
+      "id": "hyper-deploy--stack-detect",
+      "path": "skills/hyper-deploy/scripts/stack-detect.sh",
+      "family": "hyper-deploy",
       "legacyOrigin": "former-sh",
       "sourcePreimage": {
         "path": "skills/pre-deploy/scripts/stack-detect.sh",
@@ -5340,7 +5340,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/stack-detect.sh"
+              "skills/hyper-deploy/scripts/stack-detect.sh"
             ]
           },
           "input": {
@@ -5386,7 +5386,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/stack-detect.sh"
+              "skills/hyper-deploy/scripts/stack-detect.sh"
             ]
           },
           "input": {
@@ -5432,7 +5432,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/pre-deploy/scripts/stack-detect.sh"
+              "skills/hyper-deploy/scripts/stack-detect.sh"
             ]
           },
           "input": {
@@ -5475,14 +5475,14 @@
         }
       },
       "dimensions": {
-        "stdout": "pre-deploy--stack-detect--stdout",
-        "stderr": "pre-deploy--stack-detect--stderr",
-        "exit": "pre-deploy--stack-detect--exit",
-        "files": "pre-deploy--stack-detect--files",
-        "modes": "pre-deploy--stack-detect--modes",
-        "cwd": "pre-deploy--stack-detect--cwd",
-        "env": "pre-deploy--stack-detect--env",
-        "argv": "pre-deploy--stack-detect--argv"
+        "stdout": "hyper-deploy--stack-detect--stdout",
+        "stderr": "hyper-deploy--stack-detect--stderr",
+        "exit": "hyper-deploy--stack-detect--exit",
+        "files": "hyper-deploy--stack-detect--files",
+        "modes": "hyper-deploy--stack-detect--modes",
+        "cwd": "hyper-deploy--stack-detect--cwd",
+        "env": "hyper-deploy--stack-detect--env",
+        "argv": "hyper-deploy--stack-detect--argv"
       }
     },
     {

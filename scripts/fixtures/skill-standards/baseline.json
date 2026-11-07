@@ -5,7 +5,7 @@
     },
     "hyper": {
       "FRONTMATTER_TRIGGER": 1,
-      "CROSS_SKILL_REFERENCE": 771
+      "CROSS_SKILL_REFERENCE": 864
     },
     "hyper-architecture": {
       "FRONTMATTER_TRIGGER": 1
@@ -53,7 +53,7 @@
     "prd-maker": {
       "FRONTMATTER_TRIGGER": 1
     },
-    "pre-deploy": {
+    "hyper-deploy": {
       "FRONTMATTER_TRIGGER": 1
     }
   }

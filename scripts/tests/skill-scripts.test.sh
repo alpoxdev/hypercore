@@ -20,7 +20,7 @@ CONTRACTS=$FIXTURES/behavior/contracts.json
 LEGACY_REF=990359457e2ccbf2bd4bb65065037d456c5940bc
 MIGRATION_REF=d648cf6eeba28402f0b3c1265ca5d9f05995a131
 
-DEPLOY_CHECK=$ROOT/skills/pre-deploy/scripts/deploy-check.sh
+DEPLOY_CHECK=$ROOT/skills/hyper-deploy/scripts/deploy-check.sh
 HYPER_GIT_COMMIT=$ROOT/skills/hyper-git/scripts/git-commit.sh
 REPO_DISCOVER=$ROOT/skills/hyper-git/scripts/repo-discover.sh
 REPO_STATUS=$ROOT/skills/hyper-git/scripts/repo-status.sh
@@ -494,7 +494,7 @@ case_validator_rejects_mutations() {
   mkdir -p "$fixture"
   cp -R "$ROOT/skills" "$fixture/skills"
   install_validator "$fixture"
-  target=$fixture/skills/pre-deploy/scripts/stack-detect.sh
+  target=$fixture/skills/hyper-deploy/scripts/stack-detect.sh
   original=$work/original.sh
   cp "$target" "$original"
   original_mode=$(file_mode "$target")
@@ -633,7 +633,7 @@ exit 99
   assert_not_file "$fixture/git-calls.log" "no Git inspection ran"
 }
 
-pre_deploy_child_source() { # <role>
+preflight_child_source() { # <role>
   cat <<CHILD
 #!/usr/bin/env bash
 set -u
@@ -649,7 +649,7 @@ exit 99
 CHILD
 }
 
-case_pre_deploy_forwards_termination() {
+case_preflight_forwards_termination() {
   local mode
   for mode in --sequential --parallel; do
     local fixture scripts out err pid rc combined
@@ -660,8 +660,8 @@ case_pre_deploy_forwards_termination() {
     chmod 755 "$scripts/deploy-check.sh"
     printf '%s\n' '#!/usr/bin/env bash' 'exit 0' >"$scripts/stack-detect.sh"
     chmod 755 "$scripts/stack-detect.sh"
-    pre_deploy_child_source lint >"$scripts/lint-check.sh"
-    pre_deploy_child_source build >"$scripts/build-run.sh"
+    preflight_child_source lint >"$scripts/lint-check.sh"
+    preflight_child_source build >"$scripts/build-run.sh"
     chmod 755 "$scripts/lint-check.sh" "$scripts/build-run.sh"
 
     out=$fixture/stdout
@@ -849,7 +849,7 @@ status|end"*) : ;;
   esac
 }
 
-case_pre_deploy_rejects_malformed_metadata() {
+case_preflight_rejects_malformed_metadata() {
   local fixture out err rc combined
   fixture=$(workdir)
   printf '%s' '{broken' >"$fixture/package.json"
@@ -1234,10 +1234,10 @@ run_case "validator accepts the approved inventory" case_validator_accepts_inven
 run_case "validator rejects bash policy mutations a real regression would introduce" case_validator_rejects_mutations
 run_case "hyper-git commit rejects option-like paths without staging unrelated changes" case_hyper_git_commit_rejects_option_paths
 run_case "hyper-git discover and status reject option-like paths before Git inspection" case_hyper_git_discover_status_reject_option_paths
-run_case "pre-deploy drains multi-MiB children and forwards termination without orphaning sequential or parallel work" case_pre_deploy_forwards_termination
+run_case "hyper-deploy preflight drains multi-MiB children and forwards termination without orphaning sequential or parallel work" case_preflight_forwards_termination
 run_case "hyper-git git-fast drains concurrent fake Git children, stops queued work, and reaps children on failures and signals" case_hyper_git_fast_reaps_children
 run_case "hyper-git git-fast inspects a repository whose path contains spaces without remote access" case_hyper_git_fast_paths_with_spaces
-run_case "pre-deploy rejects malformed package metadata" case_pre_deploy_rejects_malformed_metadata
+run_case "hyper-deploy preflight rejects malformed package metadata" case_preflight_rejects_malformed_metadata
 run_case "self-containment check catches cross-skill references, including with no sibling present" case_self_containment_check
 run_case "script-runtime check rejects non-bash bundled scripts and non-bash shebangs" case_script_runtime_check
 run_case "the hyper-imagegen validator accepts its own skill folder and eval corpus" case_hyper_imagegen_validator

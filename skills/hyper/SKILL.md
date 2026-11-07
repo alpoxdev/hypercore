@@ -1,6 +1,6 @@
 ---
 name: hyper
-description: "[Hyper] Use this skill when the user wants a development job carried from start to finish - a feature, fix, refactor, migration, technology choice, search-visibility improvement, database job, MCP job, UI design or restyle, generated or edited image, skill folder, document, or reusable prompt - without naming one hyper stage skill, or invokes hyper by name. It picks the shortest chain of hyper stage skills (research, SEO, architecture, database, MCP, UI/UX, image generation, plan, execute, mass, skill, documentation, and Git delivery), runs the stages in order, and passes each stage's saved artifact to the next. Do not use it when the user names one hyper skill directly, or for a one-place edit with no plan, commit-only requests, PRD packages, or general questions."
+description: "[Hyper] Use this skill when the user wants a development job carried from start to finish - a feature, fix, refactor, migration, technology choice, search-visibility improvement, database job, MCP job, UI design or restyle, generated or edited image, deployment or deploy fix, skill folder, document, or reusable prompt - without naming one hyper stage skill, or invokes hyper by name. It picks the shortest chain of hyper stage skills (research, SEO, architecture, database, MCP, UI/UX, image generation, plan, execute, mass, skill, documentation, deploy, and Git delivery), runs the stages in order, and passes each stage's saved artifact to the next. Do not use it when the user names one hyper skill directly, or for a one-place edit with no plan, commit-only requests, PRD packages, or general questions."
 compatibility: Needs the ability to load another installed skill by name, file read and search over the target repository, and write access for `.hyper/workflows/`. Each loaded stage brings its own requirements (git worktrees, subagents, live web). Without skill loading, it reports the chosen chain and the install commands instead of running stages.
 ---
 
@@ -34,7 +34,7 @@ Use a different language only when the user explicitly requests it or a machine-
 
 Use this skill when the requested output is a finished development result that needs one or more of the stage skills below in sequence, or when the user calls `hyper` by name.
 
-By user instruction, this package is an orchestrator: it names its fourteen stage skills and its one companion skill in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
+By user instruction, this package is an orchestrator: it names its fifteen stage skills and its one companion skill in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
 
 | Stage skill | What the stage produces |
 |---|---|
@@ -52,6 +52,7 @@ By user instruction, this package is an orchestrator: it names its fourteen stag
 | `hyper-skill` | A created or refactored skill folder under `skills/<name>/` with its own validator run |
 | `hyper-documentation` | A created or refactored README, `AGENTS.md`, AI-readable document, instruction base, runbook, rule pack, reusable prompt, prompt template, prompt pack, or prompt eval fixture at the requested path, with the selected mode's validation handoff |
 | `hyper-git` | As the delivery stage after a tail that does not deliver: this run's commits pushed and propagated to the named branches, or the work branch merged into them and pushed, each confirmed on the remote |
+| `hyper-deploy` | A readiness verdict, a first deployment setup, a deploy verified by the platform's terminal state and a health check, a configuration change, or a diagnosed and redeployed fix, reported under `.hyper/deploy/<slug>/report.md` |
 
 Companion skill: `hyper-browsing` reaches a source a plain fetch cannot read (a WAF or bot challenge, a JavaScript-only page, a dead page) and saves its access report under `.hyper/browsing/<slug>/`. It takes no chain position and does not count toward the four-stage cap: it runs inside a web-sourced `hyper-research` stage, once per blocked source (`rules/workflow-routing.md` §3, `rules/stage-handoff.md` §1).
 
@@ -104,6 +105,9 @@ Positive requests:
 - "hyper: replace only the background of my product photo with a dawn market." -> `hyper-imagegen`
 - "주문 서비스 DB 스키마 설계하고 마이그레이션까지 만들어줘. Postgres야." -> `hyper-database`
 - "결제 테이블 구조 바꾸고 관련 API까지 고쳐서 PR까지." -> `hyper-database` (review) -> `hyper-plan` -> `hyper-execute` with `--make-pr`
+- "배포가 healthcheck에서 계속 실패해. 로그 보고 원인 찾아서 고쳐줘." -> `hyper-deploy` (diagnose)
+- "Fix the payment bug and deploy it to staging." -> `hyper-plan` -> `hyper-deploy`
+- "이 저장소 Railway에 처음 배포 세팅하고 staging에 올려줘." -> `hyper-deploy` (setup, then deploy)
 
 Negative requests:
 
@@ -121,6 +125,7 @@ Boundary requests:
 - "어제 하던 거 이어서 해줘." An open workflow record resumes at its first unfinished stage; with none, an open execution state routes to `hyper-execute` alone.
 - "이 런북 정리하고 PR까지." `hyper-documentation` -> `hyper-git` in workflow mode; delivery words on a plan chain still go to `hyper-plan` instead.
 - "랜딩 페이지 디자인하고 히어로 이미지도 넣어줘." The interface is the deliverable, so `hyper-design` owns it; `hyper-imagegen` runs only when one image or one image prompt is the whole output.
+- "배포 런북 정리해줘." A document about deploying, so `hyper-documentation` owns it; `hyper-deploy` is for a deployment that runs, not for writing about one.
 
 </activation_examples>
 
@@ -142,6 +147,7 @@ Boundary requests:
 | A screen, page, or component designed or restyled, faux product UI, or a generic "AI look" removed | `hyper-design`, with `hyper-research` first when it depends on current external guidance, and with `hyper-design` in brief-only or audit mode before `hyper-plan` when the user asks for a PR or ship delivery or the change also needs non-UI work |
 | One new image, one edit of a supplied image, or one ready-to-use image prompt | `hyper-imagegen`, with `hyper-research` first when it depends on current external guidance or references; never followed by `hyper-git` |
 | A skill, document, MCP, interface, or database tail followed by commit-and-push or merge-and-push words, or a skill or document tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
+| A deployment readiness verdict, a first deployment setup, a deploy, a deployment configuration change, or a failed deployment to diagnose and fix | `hyper-deploy`, after the code chain when the same request also changes code, and never followed by `hyper-git` |
 | A plan file already exists and the user wants it run | `hyper-execute` |
 | Report-only research, audit, architecture review, or database review | The one matching stage alone |
 | Lint, format, or type tooling set up or unified, or build or runtime performance optimized in a supported stack | `hyper-architecture` alone |
@@ -236,6 +242,7 @@ Phase rules:
 - [ ] `hyper-plan` handled the execute hand-off itself; no second execution was started.
 - [ ] Delivery and report-only words reached the stage that owns them.
 - [ ] A `hyper-git` delivery stage ran only after a tail that does not deliver and only on the user's delivery words, and each of its commits was confirmed on every remote target.
+- [ ] `hyper-deploy` ran last, after the code chain that precedes it, and no `hyper-git` stage followed it.
 - [ ] The workflow record matches the final stage statuses and artifact paths.
 - [ ] The cases in `assets/evals/hyper-cases.jsonl` still match this contract.
 
@@ -247,7 +254,7 @@ Phase rules:
 
 | Claim | Source |
 |---|---|
-| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its fourteen stage skills and its companion skill | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current fourteen by user instruction, 2026-11-07; `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
+| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its fifteen stage skills and its companion skill | user instruction, 2026-11-06 (orchestrator role); the stage set extended to the current fifteen by user instruction, 2026-11-07; `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
 | The output, artifact path, and boundary of each stage skill | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The plan stage continues into execution by itself and passes the delivery flag through | the plan skill's handoff rule in this repository, 2026-11-06 |
 | A sequential chain hands state forward through saved artifacts, and a router picks a branch by code-like rules | `instructions/graph-engineering/references/graph-patterns.md` |

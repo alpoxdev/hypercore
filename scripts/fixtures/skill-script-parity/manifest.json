@@ -393,8 +393,8 @@
       "behaviorContractId": "prd-maker--render-planning-map"
     },
     {
-      "path": "skills/pre-deploy/scripts/build-run.sh",
-      "family": "pre-deploy",
+      "path": "skills/hyper-deploy/scripts/build-run.sh",
+      "family": "hyper-deploy",
       "legacyOrigin": "former-sh",
       "usage": "run-build",
       "behavior": "project-build",
@@ -403,11 +403,11 @@
         "sha256": "86570e0a3335684817f8184bcaf5613ab13cb2e3d2d2a1995f6553911670cfdb",
         "gitMode": "100755"
       },
-      "behaviorContractId": "pre-deploy--build-run"
+      "behaviorContractId": "hyper-deploy--build-run"
     },
     {
-      "path": "skills/pre-deploy/scripts/deploy-check.sh",
-      "family": "pre-deploy",
+      "path": "skills/hyper-deploy/scripts/deploy-check.sh",
+      "family": "hyper-deploy",
       "legacyOrigin": "former-sh",
       "usage": "check-deployment",
       "behavior": "deployment-readiness-check",
@@ -416,11 +416,11 @@
         "sha256": "c1ae6bf6cc47295354d265e3c79d58efad89a89bf947971bafc5af08ccf15afe",
         "gitMode": "100755"
       },
-      "behaviorContractId": "pre-deploy--deploy-check"
+      "behaviorContractId": "hyper-deploy--deploy-check"
     },
     {
-      "path": "skills/pre-deploy/scripts/lint-check.sh",
-      "family": "pre-deploy",
+      "path": "skills/hyper-deploy/scripts/lint-check.sh",
+      "family": "hyper-deploy",
       "legacyOrigin": "former-sh",
       "usage": "check-lint",
       "behavior": "lint-readiness-check",
@@ -429,11 +429,11 @@
         "sha256": "924107e8dc338f4b79b570a2af0d1cfb783afdec5b1fbcc2fa1d618d39dc3a15",
         "gitMode": "100755"
       },
-      "behaviorContractId": "pre-deploy--lint-check"
+      "behaviorContractId": "hyper-deploy--lint-check"
     },
     {
-      "path": "skills/pre-deploy/scripts/pm-detect.sh",
-      "family": "pre-deploy",
+      "path": "skills/hyper-deploy/scripts/pm-detect.sh",
+      "family": "hyper-deploy",
       "legacyOrigin": "former-sh",
       "usage": "detect-package-manager",
       "behavior": "package-manager-detection",
@@ -442,11 +442,11 @@
         "sha256": "092abc4a2cd57e1939284490c920247bf72e0daf74ff309215c6f3857d49d3c9",
         "gitMode": "100755"
       },
-      "behaviorContractId": "pre-deploy--pm-detect"
+      "behaviorContractId": "hyper-deploy--pm-detect"
     },
     {
-      "path": "skills/pre-deploy/scripts/stack-detect.sh",
-      "family": "pre-deploy",
+      "path": "skills/hyper-deploy/scripts/stack-detect.sh",
+      "family": "hyper-deploy",
       "legacyOrigin": "former-sh",
       "usage": "detect-stack",
       "behavior": "stack-detection",
@@ -455,7 +455,7 @@
         "sha256": "0f22f0bd18052be6d6acbfa6092f7ca8cf59e638f2105aca3f315717724a8326",
         "gitMode": "100755"
       },
-      "behaviorContractId": "pre-deploy--stack-detect"
+      "behaviorContractId": "hyper-deploy--stack-detect"
     },
     {
       "path": "skills/hyper-seo/scripts/render-dashboard.sh",
