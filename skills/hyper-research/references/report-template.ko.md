@@ -85,6 +85,16 @@
 - Source floor: [충족 또는 미달, 검토 수 대비 인용 수]
 - Dedupe: [질의와 중복 소스 처리]
 
+## Report gates
+| 게이트 | 상태 (pass / fail / not_run) | 열려 있는 결함 심각도 (blocker / major / minor) | 이유 |
+|---|---|---|---|
+| structure | | | |
+| citation | | | |
+| claim gate | | | |
+| number lineage | | | |
+| recency | | | |
+| read-back | | | |
+
 ## References
 - [S1] [제목](https://example.com/source), 접근 YYYY-MM-DD
 ```

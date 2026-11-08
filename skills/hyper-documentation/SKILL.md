@@ -90,7 +90,7 @@ Boundary requests:
 | Situation | Mode | Sub-mode |
 |---|---|---|
 | A project or package has no README, a stale one, or sections that contradict the code | `readme` | create, refactor, update |
-| A repository needs a grounded `AGENTS.md`, an overlong one split into linked `rules/*.md`, a nested one for a real subtree difference, or a repaired `AGENTS.ko.md` | `agents-md` | create, refactor, split |
+| A repository needs a grounded `AGENTS.md`, an overlong one split into linked `rules/*.md`, a nested `AGENTS.md` whose placement is checked against the placement score, a hierarchy `re-derive` that keeps every user-written line, or a repaired `AGENTS.ko.md` | `agents-md` | create, refactor, split, nested, re-derive |
 | A prompt meant for reuse, delegation, automation, or evaluation is created, refactored, optimized, or given eval fixtures | `prompt` | standalone, template, pack, eval fixture |
 | An instruction base, runbook, specification, rule pack, or harness document is created or made denser, better scoped, source-grounded, and verifiable | `docs` | create, refactor |
 
@@ -119,7 +119,7 @@ Every mode is bounded; the mode contract holds the full rule.
 | Mode | Loop |
 |---|---|
 | `readme` | No loop. A failed check gets at most two focused fixes, then the gap is reported. |
-| `agents-md` | One validation-repair loop with at most two repair passes; scope, evidence, and safety gates must not regress. |
+| `agents-md` | One validation-repair loop with at most two repair passes; scope, evidence, and safety gates must not regress; an independent verification phase follows, with a fresh reviewer when the runtime provides one and `review: self` recorded otherwise. |
 | `prompt` | No loop for creation or refactoring. Optimization runs at most three candidates against a fixed eval set, fixed judge, and declared guards. |
 | `docs` | No loop by default. A revision loop runs only with an observable feedback source, rubric, guard, iteration limit, and keep/discard rule. |
 
@@ -159,9 +159,10 @@ Read only the selected mode's list, in order.
 
 1. [rules/agents-md/mode-contract.md](rules/agents-md/mode-contract.md)
 2. [rules/agents-md/project-discovery.md](rules/agents-md/project-discovery.md)
-3. [rules/agents-md/instruction-design.md](rules/agents-md/instruction-design.md)
-4. [rules/agents-md/rule-file-splitting.md](rules/agents-md/rule-file-splitting.md), when the root stays long after the admission test
-5. [rules/agents-md/validation.md](rules/agents-md/validation.md)
+3. [rules/agents-md/nested-placement.md](rules/agents-md/nested-placement.md), when a nested `AGENTS.md` or a hierarchy `re-derive` is in scope
+4. [rules/agents-md/instruction-design.md](rules/agents-md/instruction-design.md)
+5. [rules/agents-md/rule-file-splitting.md](rules/agents-md/rule-file-splitting.md), when the root stays long after the admission test
+6. [rules/agents-md/validation.md](rules/agents-md/validation.md)
 
 `prompt`:
 

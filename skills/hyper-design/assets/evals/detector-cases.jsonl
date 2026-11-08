@@ -21,3 +21,14 @@
 {"id":"em-dash","target":"skills/hyper-design/assets/fixtures/rules/em-dash.html","expectedContains":["copy.em-dash"],"expectedDetectorVersion":2}
 {"id":"generic-cta","target":"skills/hyper-design/assets/fixtures/rules/generic-cta.html","expectedContains":["copy.generic-cta"],"expectedDetectorVersion":2}
 {"id":"viewport-height","target":"skills/hyper-design/assets/fixtures/rules/viewport-height.css","expectedContains":["structure.viewport-height"],"expectedDetectorVersion":2}
+{"id":"thin-side-stripe","target":"skills/hyper-design/assets/fixtures/rules/thin-side-stripe.css","expectedContains":["surface.thin-side-stripe"],"expectedDetectorVersion":2}
+{"id":"thin-side-stripe-negative","target":"skills/hyper-design/assets/fixtures/rules/thin-side-stripe-negative.css","expectedContains":[],"expectedAbsent":["surface.thin-side-stripe","surface.gradient-border-image","surface.hard-stop-band","surface.inset-stripe","surface.pseudo-stripe"],"expectedDetectorVersion":2}
+{"id":"pseudo-stripe","target":"skills/hyper-design/assets/fixtures/rules/pseudo-stripe.css","expectedContains":["surface.pseudo-stripe"],"expectedDetectorVersion":2}
+{"id":"pseudo-stripe-negative","target":"skills/hyper-design/assets/fixtures/rules/pseudo-stripe-negative.css","expectedContains":[],"expectedAbsent":["surface.pseudo-stripe"],"expectedDetectorVersion":2}
+{"id":"inset-stripe","target":"skills/hyper-design/assets/fixtures/rules/inset-stripe.css","expectedContains":["surface.inset-stripe"],"expectedDetectorVersion":2}
+{"id":"inset-stripe-negative","target":"skills/hyper-design/assets/fixtures/rules/inset-stripe-negative.css","expectedContains":[],"expectedAbsent":["surface.inset-stripe"],"expectedDetectorVersion":2}
+{"id":"gradient-border-image","target":"skills/hyper-design/assets/fixtures/rules/gradient-border-image.css","expectedContains":["surface.gradient-border-image"],"expectedDetectorVersion":2}
+{"id":"gradient-border-image-negative","target":"skills/hyper-design/assets/fixtures/rules/gradient-border-image-negative.css","expectedContains":[],"expectedAbsent":["surface.gradient-border-image"],"expectedDetectorVersion":2}
+{"id":"hard-stop-band","target":"skills/hyper-design/assets/fixtures/rules/hard-stop-band.css","expectedContains":["surface.hard-stop-band"],"expectedDetectorVersion":2}
+{"id":"hard-stop-band-negative","target":"skills/hyper-design/assets/fixtures/rules/hard-stop-band-negative.css","expectedContains":[],"expectedAbsent":["surface.hard-stop-band","surface.gradient-border-image"],"expectedDetectorVersion":2}
+{"id":"neutral-border-no-stripe","target":"skills/hyper-design/assets/fixtures/rules/thin-side-stripe-negative.css","expectedContains":[],"expectedAbsent":["surface.thin-side-stripe","surface.pseudo-stripe","surface.inset-stripe","surface.gradient-border-image","surface.hard-stop-band"],"expectedDetectorVersion":2}

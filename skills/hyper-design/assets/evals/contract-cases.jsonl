@@ -4,3 +4,5 @@
 {"id":"global-waiver-rejected","command":"waiver","input":"skills/hyper-design/assets/fixtures/waivers/invalid-global.json","expectedExit":1,"expectedError":"narrow file path"}
 {"id":"valid-rendered-handoff","command":"rendered","input":"skills/hyper-design/assets/fixtures/rendered-evidence/valid.json","expectedExit":0}
 {"id":"invalid-rendered-handoff-rejected","command":"rendered","input":"skills/hyper-design/assets/fixtures/rendered-evidence/invalid.json","expectedExit":1,"expectedError":"surface must be a non-empty string"}
+{"id":"contrast-fails-body-text","command":"rendered","input":"skills/hyper-design/assets/fixtures/rendered-evidence/measurements.json","expectedExit":1,"expectedError":"contrast","expectedMeasurements":"measured"}
+{"id":"not-run-when-no-measurements","command":"rendered","input":"skills/hyper-design/assets/fixtures/rendered-evidence/no-measurements.json","expectedExit":0,"expectedMeasurements":"not_run"}

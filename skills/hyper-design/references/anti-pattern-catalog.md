@@ -18,6 +18,11 @@ Load this catalog only when mapping detector output or a rendered observation to
 | `surface.random-glow` | surface | review-only | P3 | partial | no | Glow without hierarchy/brand role |
 | `surface.decorative-orb` | surface | default-risk | P2 | partial | yes | Orb/blob without content, interaction, semantic, or brand role |
 | `surface.thick-side-stripe` | surface | default-risk | P2 | yes | no | Thick colored card edge without meaning |
+| `surface.thin-side-stripe` | surface | default-risk | P2 | yes | no | Thin one-sided border on a rounded or card-like box; confirm it carries state or brand meaning |
+| `surface.pseudo-stripe` | surface | default-risk | P2 | yes | no | `::before`/`::after` bar of 1–6px with a solid background; confirm it carries state or brand meaning |
+| `surface.inset-stripe` | surface | default-risk | P2 | yes | no | `inset` box-shadow that paints a single edge; confirm it carries state or brand meaning |
+| `surface.gradient-border-image` | surface | default-risk | P2 | yes | no | Gradient `border-image`; confirm it carries state or brand meaning |
+| `surface.hard-stop-band` | surface | default-risk | P2 | yes | no | Hard-stop linear gradient band; confirm it carries state or brand meaning |
 | `surface.uniform-radius` | surface | context-dependent | P3 | partial | no | One radius on every hierarchy level; design-system token may justify it |
 | `surface.uniform-shadow` | surface | context-dependent | P3 | partial | no | Same elevation everywhere; explicit elevation system may justify it |
 | `surface.status-dot` | surface | default-risk | P3 | partial | yes | Dot without state or legend |

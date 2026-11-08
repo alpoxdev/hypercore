@@ -123,6 +123,8 @@ review_required: true | false
 approval: auto | user | pending
 status: exploring | planning | reviewing | delivered | stopped
 plan_path: .hyper/plans/<slug>.md
+round_id: <id of the current review round>
+plan_sha256: <shasum -a 256 of the plan file at review time>
 ---
 ## Request
 ## Affected user and ideal state
@@ -144,6 +146,7 @@ plan_path: .hyper/plans/<slug>.md
 - open-assumptions 원장은 묻지 않고 채택한 모든 기본값을 담습니다. 무엇을 가정했고, 어떤 기본값을 골랐고, 왜 그런지, 되돌릴 수 있는지를 적습니다.
 - components 원장은 토폴로지 고정 결과를 컴포넌트별 한 행으로 담습니다.
 - `review`는 라운드 수, 판정, 받아들인 블로커, 열린 노트를 담습니다.
+- `round_id`와 `plan_sha256`은 현재 라운드의 digest 바인딩을 담습니다. 계획 편집 뒤마다 `plan_sha256`을 갱신합니다. 편집은 승인된 라운드를 `pending`으로 되돌립니다.
 - 이후 턴에서는 드래프트를 먼저 읽고 그 필드에서 재개합니다. 기억으로 라우팅을 다시 하지 않습니다. 범위가 바뀌었으면 드래프트를 갱신하고 영향받는 단계만 다시 실행합니다.
 - slug는 소문자 ASCII 케밥 표기로 `^[a-z0-9]+(-[a-z0-9]+)*$`에 맞고 48자 이하여야 합니다. `..`, `/`, 절대 경로는 거부합니다.
 

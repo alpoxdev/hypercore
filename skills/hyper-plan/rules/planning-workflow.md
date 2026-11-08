@@ -123,6 +123,8 @@ review_required: true | false
 approval: auto | user | pending
 status: exploring | planning | reviewing | delivered | stopped
 plan_path: .hyper/plans/<slug>.md
+round_id: <id of the current review round>
+plan_sha256: <shasum -a 256 of the plan file at review time>
 ---
 ## Request
 ## Affected user and ideal state
@@ -144,6 +146,7 @@ plan_path: .hyper/plans/<slug>.md
 - The open-assumptions ledger holds every default adopted instead of asked: what was assumed, which default was chosen, why, and whether it can be reversed.
 - The components ledger holds the topology lock with one row per component.
 - `review` holds the round count, each verdict, accepted blockers, and open notes.
+- `round_id` and `plan_sha256` hold the current round's digest binding. Update `plan_sha256` after every plan edit; the edit returns an approved round to `pending`.
 - On any later turn, read the draft first and resume from its fields. Never reroute from memory. When the scope changed, update the draft and re-run only the affected phases.
 - A slug is lowercase ASCII kebab-case matching `^[a-z0-9]+(-[a-z0-9]+)*$`, at most 48 characters. Reject `..`, `/`, and absolute paths.
 
