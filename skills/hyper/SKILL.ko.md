@@ -1,6 +1,6 @@
 ---
 name: hyper
-description: "[Hyper] 사용자가 기능 추가, 버그 수정, 리팩토링, 마이그레이션, 기술 선택, 검색 노출 개선, 데이터베이스 작업, MCP 작업, decision API 작업, 화면 디자인이나 리디자인, 사용자·고객사·기획자의 변경 요청, 이미지 생성이나 편집, 배포나 배포 실패 수정, 스킬 폴더, 문서, 재사용 프롬프트 같은 개발 작업을 hyper 단계 스킬 하나를 지정하지 않고 처음부터 끝까지 맡기거나 hyper를 이름으로 부를 때 사용합니다. 리서치, 이슈 기록, SEO, 아키텍처, 데이터베이스, MCP, decision API, UI/UX, 변경 요청 반영, 이미지 생성, 계획, 실행, 의존 그래프 병렬 실행, 스킬, 문서, 배포, Git 전달 단계 스킬 중 가장 짧은 체인을 골라 순서대로 실행하고 각 단계가 저장한 산출물을 다음 단계에 넘깁니다. 사용자가 hyper 스킬 하나를 직접 지정했거나, 계획이 필요 없는 한 곳 수정, 커밋만 하는 요청, PRD 패키지, 일반 질문에는 쓰지 않습니다."
+description: "[Hyper] 사용자가 기능 추가, 버그 수정, 리팩토링, 마이그레이션, 기술 선택, 검색 노출 개선, 데이터베이스 작업, MCP 작업, decision API 작업, 화면 디자인이나 리디자인, 사용자·고객사·기획자의 변경 요청, 이미지 생성이나 편집, 배포나 배포 실패 수정, 스킬 폴더, 문서, 재사용 프롬프트 같은 개발 작업을 hyper 단계 스킬 하나를 지정하지 않고 처음부터 끝까지 맡기거나 hyper를 이름으로 부를 때 사용합니다. 리서치, 이슈 기록, SEO, GA4 분석, 아키텍처, 데이터베이스, MCP, decision API, UI/UX, 변경 요청 반영, 이미지 생성, 계획, 실행, 의존 그래프 병렬 실행, 스킬, 문서, 배포, Git 전달 단계 스킬 중 가장 짧은 체인을 골라 순서대로 실행하고 각 단계가 저장한 산출물을 다음 단계에 넘깁니다. 사용자가 hyper 스킬 하나를 직접 지정했거나, 계획이 필요 없는 한 곳 수정, 커밋만 하는 요청, PRD 패키지, 일반 질문에는 쓰지 않습니다."
 compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대상 저장소의 파일 읽기와 검색, `.hyper/workflows/` 쓰기 권한이 필요합니다. 불러온 각 단계는 자기 요구 사항(git worktree, 하위 에이전트, 실시간 웹)을 따로 가집니다. 스킬을 불러올 수 없으면 단계를 실행하지 않고 고른 체인과 설치 명령을 보고합니다.
 ---
 
@@ -34,13 +34,14 @@ compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대�
 
 요청한 결과물이 아래 단계 스킬 하나 이상을 차례로 거쳐야 끝나는 개발 결과이거나, 사용자가 `hyper`를 이름으로 부르면 이 스킬을 씁니다.
 
-사용자 지시에 따라 이 패키지는 오케스트레이터입니다. 아래 단계 표, `rules/workflow-routing.md`, `rules/stage-handoff.md`, Sources 행, 평가 라우트에서만 열일곱 단계 스킬과 동반 스킬 하나의 이름을 씁니다. 이 패키지가 가진 스킬 간 연결은 이것뿐입니다.
+사용자 지시에 따라 이 패키지는 오케스트레이터입니다. 아래 단계 표, `rules/workflow-routing.md`, `rules/stage-handoff.md`, Sources 행, 평가 라우트에서만 열여덟 단계 스킬과 동반 스킬 하나의 이름을 씁니다. 이 패키지가 가진 스킬 간 연결은 이것뿐입니다.
 
 | Stage skill | What the stage produces |
 |---|---|
 | `hyper-research` | `.hyper/research/` 아래의 출처 있는 리서치 보고서 |
 | `hyper-issue` | `hyper:` 블록을 담아 트래커에 영어로 등록한 이슈, 그리고 계획 단계가 병렬 레인으로 돌리는 `.hyper/issues/<slug>/` 아래 레인 묶음 배치 명세 |
 | `hyper-seo` | `.hyper/seo/<slug>/` 아래의 검색 노출 감사, 보고서, 횟수 제한이 있는 최적화 루프 |
+| `hyper-google-analytics` | GA4 감사, 설치, 속성 변경, 분석 보고서, 진단한 수정. `.hyper/google-analytics/<slug>/report.md`에 보고서를 남깁니다 |
 | `hyper-architecture` | 스택에 맞춘 아키텍처, 셋업(린트·포맷·타입 도구), 성능 점검 결과, 마지막 단계일 때는 그 수정 |
 | `hyper-database` | `.hyper/database/<slug>/`에 저장한 데이터베이스 점검 결과(스키마·마이그레이션 리뷰, 설계 브리프, 엔진 선택). 마지막 단계일 때는 근거 게이트로 검증한 스키마 설계, 무중단 마이그레이션, 쿼리·인덱스 튜닝, 운영 변경 |
 | `hyper-mcp` | `.hyper/mcp/<slug>/`에 저장한 MCP 점검 결과. 마지막 단계일 때는 MCP Inspector로 검증한 MCP 서버, 클라이언트, 호스트 설정의 구축, 수정, 이전, 연결 |
@@ -92,6 +93,8 @@ Positive requests:
 - "결제 재시도 기능 추가해줘. PR까지." -> `hyper-plan` -> `hyper-execute`, `--make-pr`
 - "Upgrade this TanStack Start app to the new major version and fix everything it breaks." -> `hyper-research` -> `hyper-architecture` -> `hyper-plan` -> `hyper-execute`
 - "hyper로 우리 사이트 SEO 점검하고 고칠 거 다 고쳐줘." -> `hyper-seo` -> `hyper-plan` -> `hyper-execute`
+- "사이트에 GA4 달아줘" -> `hyper-google-analytics`
+- "SEO 점검하고 GA4 측정까지 세팅해줘" -> `hyper-seo` -> `hyper-google-analytics`
 - "상태관리 라이브러리 뭐 쓸지 비교해보고 골라서 적용까지 해줘." -> `hyper-research` -> `hyper-plan` -> `hyper-execute`
 - "2026년 국내 SaaS 가격 동향 인터넷 검색으로 조사해서 리포트로 줘." -> `hyper-research`, 막힌 출처에는 동반 스킬 `hyper-browsing`
 - "사내 배포 체크리스트를 스킬로 만들어줘. 최신 Agent Skills 규격 확인해서." -> `hyper-research` -> `hyper-skill`
@@ -150,6 +153,7 @@ Boundary requests:
 | `hyper-issue`가 넘긴 요청으로, `.hyper/issues/<slug>/batch.md`를 지목하고 이슈 단계가 끝났다고 밝힘 | `hyper-plan` -> `hyper-execute`, `hyper-issue`는 `done`으로 기록 |
 | 프레임워크나 메이저 버전 마이그레이션 | `hyper-research` -> `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | SEO, AEO, GEO 감사 뒤 수정을 계획된 변경으로 구현 | `hyper-seo` -> `hyper-plan` -> `hyper-execute` |
+| GA4 작업. GA4나 Google 태그의 설치·수정, 속성이나 태그 감사, 속성 설정 변경, 보고서 데이터 분석, 빠지거나 틀린 데이터 진단 | `hyper-google-analytics`. 같은 요청이 검색 노출 감사까지 원하면 앞에 `hyper-seo`, 사용자가 커밋·푸시 전달을 요청하면 뒤에 `hyper-git` |
 | 계획 파일 없이 의존 순서가 있는 다중 에이전트 작업 | `hyper-mass` |
 | 재사용 스킬 폴더를 새로 만들거나 리팩터링. 필요하면 공식 문서 리서치 뒤에 | `hyper-skill`. 요청이 최신 외부 문서에 기대면 앞에 `hyper-research` |
 | README, `AGENTS.md`, AI가 읽기 좋은 문서, 지침 베이스, 런북, 규칙 묶음, 재사용 프롬프트, 프롬프트 템플릿, 프롬프트 팩, 프롬프트 평가 픽스처를 새로 만들거나 리팩터링 | `hyper-documentation`. 내용이 최신 외부 출처나 공급자 지침에 기대면 앞에 `hyper-research` |
@@ -159,7 +163,7 @@ Boundary requests:
 | 화면·페이지·컴포넌트 디자인이나 리디자인, 연출 화면, generic한 "AI 티" 제거 | `hyper-design`. 최신 외부 지침에 기대면 앞에 `hyper-research`, 사용자가 PR이나 배포 전달을 요청했거나 UI 밖 작업까지 필요하면 `hyper-design`를 brief-only나 점검 모드로 두고 뒤에 `hyper-plan` |
 | 사용자, 고객사, 기획자가 기존 동작에 대해 제품 언어로 보낸 변경 요청(피드백, 불만, 티켓, 회의 메모, 기획 수정, 새 문구) | `hyper-feedback`. `handoff`로 끝나면 그 `brief.md`를 들고 `hyper-plan`이 뒤따릅니다 |
 | 새 이미지 한 장, 제공한 이미지 한 장의 편집, 바로 쓸 수 있는 이미지 프롬프트 하나 | `hyper-imagegen`. 최신 외부 지침이나 참고 자료에 기대면 앞에 `hyper-research`. 뒤에 `hyper-git`을 붙이지 않습니다 |
-| 스킬, 문서, MCP, decision API, 인터페이스, 데이터베이스, 변경 요청 꼬리 뒤에 커밋·푸시나 병합·푸시 단어가 붙거나, 스킬, 문서, 변경 요청 꼬리 뒤에 PR 단어가 붙음 | 위 체인 그대로 두고 뒤에 `hyper-git`을 전달 단계로 붙입니다 |
+| 스킬, 문서, MCP, decision API, 인터페이스, 데이터베이스, GA4 분석, 변경 요청 꼬리 뒤에 커밋·푸시나 병합·푸시 단어가 붙거나, 스킬, 문서, 변경 요청 꼬리 뒤에 PR 단어가 붙음 | 위 체인 그대로 두고 뒤에 `hyper-git`을 전달 단계로 붙입니다 |
 | 배포 준비 판정, 첫 배포 구성, 배포, 배포 설정 변경, 실패한 배포의 원인 진단과 수정 | `hyper-deploy`. 같은 요청이 코드까지 바꾸면 코드 체인 뒤에 두고, 뒤에 `hyper-git`을 붙이지 않습니다 |
 | 이미 있는 계획 파일을 실행 | `hyper-execute` |
 | 보고서만 원하는 리서치, 감사, 아키텍처 점검, 데이터베이스 리뷰 | 맞는 단계 하나 |
@@ -268,7 +272,7 @@ Phase 규칙:
 
 | Claim | Source |
 |---|---|
-| 오케스트레이터 역할, 처음부터 끝까지 실행, 이 패키지가 열일곱 단계 스킬과 동반 스킬의 이름을 쓰도록 허용한 사용자 지시 예외 | user instruction, 2026-11-06(오케스트레이터 역할); `hyper-deploy`를 더해 열다섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-feedback`을 더해 열여섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-decision`을 더해 현재의 열일곱 단계로 늘린 사용자 지시, 2026-11-08; 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
+| 오케스트레이터 역할, 처음부터 끝까지 실행, 이 패키지가 열여덟 단계 스킬과 동반 스킬의 이름을 쓰도록 허용한 사용자 지시 예외 | user instruction, 2026-11-06(오케스트레이터 역할); `hyper-deploy`를 더해 열다섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-feedback`을 더해 열여섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-decision`을 더해 열일곱 단계로 늘린 사용자 지시, 2026-11-08; `hyper-google-analytics`를 더해 현재의 열여덟 단계로 늘린 사용자 지시, 2026-11-08; 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
 | 각 단계 스킬의 결과물, 산출물 경로, 경계 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 계획 단계가 스스로 실행으로 이어지고 전달 플래그를 넘김 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 순차 체인은 저장된 산출물로 상태를 넘기고 라우터는 코드 같은 규칙으로 갈래를 고름 | `instructions/graph-engineering/references/graph-patterns.md` |

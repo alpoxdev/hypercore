@@ -23,6 +23,7 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 | `hyper-research` | The job depends on facts outside the repository: choosing between libraries or services, a new major version, an unfamiliar external API, or "최신" / "latest" behavior | The request phrase |
 | `hyper-issue` | The request asks to register or record issues ("이슈 등록해줘", "이슈로 남겨줘", "register these as issues"), names issue numbers (`#1~3`, `#4, #7`, `1~3번 이슈`), names a condition over open issues to select and group, or names an issue whose scope or acceptance is missing | The request phrase, plus the tracker and the named numbers, label, or query |
 | `hyper-seo` | The job is about search or AI-answer visibility of a named site or page set | The request phrase and the target URL or app path |
+| `hyper-google-analytics` | The output is GA4 work: installing or fixing GA4 or the Google tag on a site, auditing a GA4 property or its tag, changing property settings (custom dimensions, key events, retention, filters), analyzing GA4 report data, or finding why GA4 data is missing or wrong | The request phrase, plus the tag file that was read: a file containing `gtag(`, `googletagmanager.com`, a `G-` measurement ID, or `@next/third-parties/google` |
 | `hyper-architecture` | The job restructures folders, routes, modules, data or server boundaries, or platform setup; adds a feature that creates a new route, module, or server boundary; sets up or unifies the lint, format, and type tooling (oxlint, Prettier, rustfmt, clippy); or optimizes build or runtime performance | The request phrase plus a stack manifest that was read, such as `package.json` or `Cargo.toml` |
 | `hyper-database` | The job designs or reviews a data model or schema, writes or reviews a database migration or backfill, tunes a slow query, an index, a hot key, or a hot partition, chooses a database engine or managed data service, or changes database operations (backup and restore, replication and failover, connection pooling, upgrades, database security, monitoring) | The request phrase, plus the schema, migration, ORM, or driver file that was read when one exists, such as `schema.prisma`, `drizzle.config.ts`, a `migrations/` folder, `pg` or `ioredis` in `package.json`, or a database image in a compose file |
 | `hyper-mcp` | The job builds, fixes, migrates, audits, or connects an MCP (Model Context Protocol) server, client, or host MCP configuration, or prepares MCP registry metadata | The request phrase, plus the MCP dependency or configuration file that was read when one exists, such as `@modelcontextprotocol/*` in `package.json`, `mcp` in `pyproject.toml`, `.mcp.json`, or `server.json` |
@@ -35,7 +36,7 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 | `hyper-mass` | The user asks for a dependency graph, a DAG, "의존성 그래프", "단계별 병렬", or several tasks where some must finish before others start, and no plan file is wanted | The request phrase |
 | `hyper-skill` | The requested output is a reusable skill folder: a new skill, or a refactor of an existing skill's trigger, contract, resources, or validation | The request phrase, plus the target `skills/<name>/SKILL.md` when it already exists |
 | `hyper-documentation` | The requested output is a documentation artifact, new or refactored: a README, an `AGENTS.md`, an AI-readable document (instruction base, agent guide, runbook, specification, or rule pack), or a reusable prompt artifact (role, system, or agent prompt, prompt template or pack, or prompt eval fixture) | The request phrase, plus the target path when it already exists |
-| `hyper-git` | After a tail that does not deliver (`hyper-skill`, `hyper-documentation`, `hyper-feedback`, or `hyper-database`, `hyper-mcp`, `hyper-decision`, or `hyper-design` as the last build stage), when the user asks to commit and push or to merge into named branches and push; after `hyper-skill`, `hyper-documentation`, or `hyper-feedback` also for a pull request. It runs before `hyper-deploy` when the same chain also deploys. Never after `hyper-imagegen`, whose artifact is the delivered image or the gitignored `.hyper/imagegen/` file, and never after `hyper-deploy` | The delivery phrase and the named target branches |
+| `hyper-git` | After a tail that does not deliver (`hyper-skill`, `hyper-documentation`, `hyper-feedback`, or `hyper-database`, `hyper-mcp`, `hyper-decision`, `hyper-design`, or `hyper-google-analytics` as the last build stage), when the user asks to commit and push or to merge into named branches and push; after `hyper-skill`, `hyper-documentation`, or `hyper-feedback` also for a pull request. It runs before `hyper-deploy` when the same chain also deploys. Never after `hyper-imagegen`, whose artifact is the delivered image or the gitignored `.hyper/imagegen/` file, and never after `hyper-deploy` | The delivery phrase and the named target branches |
 | `hyper-deploy` | The job is a deployment or a deployment finding: a readiness verdict, a first deployment setup, a deploy to a named environment, a change to an existing deployment's settings, or a failed or unhealthy deployment to diagnose and fix | The request phrase, plus the deployment file that was read, such as `Dockerfile`, `compose.yaml`, `wrangler.jsonc`, `.railway/railway.ts`, `railway.toml`, or `config/deploy.yml` |
 
 ## 3. Stage Order
@@ -43,12 +44,13 @@ Add a stage only when one of its signals is present. Quote the signal in the rou
 Chosen stages always run in this order. Skip the ones that were not chosen.
 
 ```text
-hyper-research -> hyper-issue -> hyper-seo -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-decision -> hyper-design -> hyper-feedback -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git] [-> hyper-deploy]
+hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-decision -> hyper-design -> hyper-feedback -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git] [-> hyper-deploy]
 ```
 
 When both delivery brackets are chosen, `hyper-git` runs first and `hyper-deploy` last; nothing runs after `hyper-deploy`.
 
 - Upstream stages (`hyper-research`, `hyper-seo`, `hyper-architecture`) produce evidence for the tail. In a Build job they run in report mode; the tail makes the code change.
+- `hyper-google-analytics` is a last build stage: it edits the site code and the property settings itself and proves collection, so `hyper-git` may follow it like `hyper-database`. It runs before `hyper-git` and `hyper-deploy` when the same chain also delivers or deploys, and it never follows `hyper-deploy`. When `hyper-seo` is chosen too, `hyper-seo` runs first and this stage measures the result.
 - `hyper-database` is the tail when it is the last chosen stage: it designs the schema, writes the online migration, tunes the query or index, or changes the operations setup and verifies the result itself. When `hyper-plan` or `hyper-mass` follows it, it runs in review mode (design brief, schema or migration review, or engine choice) and its saved report is the plan's input.
 - `hyper-mcp` is the tail when it is the last chosen stage: it builds, fixes, migrates, or connects and verifies the result itself. When `hyper-plan` or `hyper-mass` follows it, it runs in audit mode and its report is the plan's input.
 - `hyper-decision` is the tail when it is the last chosen stage: it writes the decision artifact (questions, a caller, a template, an eval plan, an audit table, or a route setup) and runs its offline request checker itself. When `hyper-plan` or `hyper-mass` follows it, it runs in `design` or `audit` mode and its saved decision contract or audit table is the plan's input.
@@ -103,13 +105,17 @@ When both delivery brackets are chosen, `hyper-git` runs first and `hyper-deploy
 | SEO audit or report only | `hyper-seo` |
 | SEO score loop ("최대 점수까지", "keep improving the score") | `hyper-seo` in its optimize mode, alone |
 | SEO fixes implemented as a planned change | `hyper-seo` -> `hyper-plan` |
+| GA4 installed or fixed on a site ("사이트에 GA4 달아줘") | `hyper-google-analytics` |
+| GA4 installed or fixed, then merged and pushed ("GA4 달고 dev에 머지·푸시") | `hyper-google-analytics` -> `hyper-git` |
+| Search-visibility audit, then GA4 measurement set up ("SEO 점검하고 GA4 측정까지 세팅해줘") | `hyper-seo` -> `hyper-google-analytics` |
+| GA4 report data analyzed for the last month ("지난달 GA 유입 데이터 분석해서 리포트 줘") | `hyper-google-analytics` in `analyze` mode, alone |
 | Dependency-ordered multi-agent phase | `hyper-mass`, with upstream stages before it when their signals are present |
 | Existing plan run or resumed | `hyper-execute` |
 | Skill folder created or refactored | `hyper-skill` |
 | Skill folder that depends on current provider docs ("최신 규격", "latest spec") | `hyper-research` -> `hyper-skill` |
 | README, `AGENTS.md`, document, rule pack, reusable prompt, template, pack, or prompt eval fixture created or refactored | `hyper-documentation` |
 | Document or prompt that depends on current external sources or provider guidance | `hyper-research` -> `hyper-documentation` |
-| Skill folder, document, MCP, decision-API, interface, database, or feedback change, then commit and push ("커밋하고 푸시까지") | that chain -> `hyper-git` in commit mode |
+| Skill folder, document, MCP, decision-API, interface, database, GA4 analytics, or feedback change, then commit and push ("커밋하고 푸시까지") | that chain -> `hyper-git` in commit mode |
 | Same, then merge into named branches ("dev, main에 머지하고 푸시") | that chain -> `hyper-git` in commit mode with `&& <branch>` targets for this run's commits, or workflow mode when a whole work branch must be merged |
 | Skill folder, document, or feedback change, then a pull request ("PR까지") | that chain -> `hyper-git` in workflow mode; an MCP, decision-API, interface, or database job with "PR까지" or "ship" keeps the review or audit -> `hyper-plan` route above |
 | Deploy to a named environment ("배포해줘", "staging에 올려줘", "deploy it to staging") | `hyper-deploy` in `deploy` mode |
@@ -148,6 +154,8 @@ Each `hyper-plan` row continues into `hyper-execute` unless the job is a Report 
 - Delivery words on a feedback job go to `hyper-git` when the feedback stage ends `applied`; when it ends `handoff`, they pass to the added `hyper-plan` as its delivery flag and `hyper-git` is dropped, because the plan and execute stages deliver for themselves.
 - A `hyper-feedback` stage that ends `awaiting_input` asked its one question; the chain stops there and resumes on the answer.
 - `hyper-database` never runs with `hyper-skill` or `hyper-documentation` in one chain. A skill folder or a document about databases goes to its own stage.
+- A document about GA ("GA 운영 가이드 문서 써줘") goes to `hyper-documentation`; building the GA skill folder itself goes to `hyper-skill`; a search-visibility audit stays with `hyper-seo` even when it lists GA4 as one measurement row.
+- Approval questions for property writes - creating a property, activating a filter, lowering retention, changing consent defaults on a live site, archiving or deleting - belong to the `hyper-google-analytics` stage, not to `hyper`. This orchestrator passes the property ID or site URL from the request unchanged and never approves on the user's behalf.
 - An MCP server that queries a database ("사내 DB 조회하는 MCP 서버") routes to `hyper-mcp`; add `hyper-database` only when the job also changes the schema, a migration, an index, or a database setting.
 - `hyper-architecture` and `hyper-database` both run only when the job restructures folders or modules and also changes the schema or queries; persistence-layer placement alone ("repository 레이어 정리") stays with `hyper-architecture`.
 - When `hyper-database` and another build tail (`hyper-mcp`, `hyper-decision`, or `hyper-design`) are both chosen, the job spans modules: run each of them in its report mode (review, audit, `design`, or `brief-only`) and end the chain at `hyper-plan`.
@@ -203,7 +211,7 @@ A `hyper-research` stage with its companion is written `hyper-research(+hyper-br
 
 | Claim | Source |
 |---|---|
-| The seventeen stage skills, the companion skill, and the orchestrator role | user instruction, 2026-11-06 (orchestrator role); the stage set extended to fifteen with `hyper-deploy` by user instruction, 2026-11-07, to sixteen with `hyper-feedback` by user instruction, 2026-11-07, and to the current seventeen with `hyper-decision` by user instruction, 2026-11-08; `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
+| The eighteen stage skills, the companion skill, and the orchestrator role | user instruction, 2026-11-06 (orchestrator role); the stage set extended to fifteen with `hyper-deploy` by user instruction, 2026-11-07, to sixteen with `hyper-feedback` by user instruction, 2026-11-07, to seventeen with `hyper-decision` by user instruction, 2026-11-08, and to the current eighteen with `hyper-google-analytics` by user instruction, 2026-11-08; `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
 | Each stage's trigger, output, and exclusions, including `hyper-mass` excluding plan-file execution and `hyper-execute` requiring an existing plan | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The delivery words, the plan-only and approval-hold words, and the plan-to-execute auto-continue | the plan skill's handoff rule in this repository, 2026-11-06 |
 | The stage order, the four-stage cap, the recipes, and the tie-breaks | this package's chosen design, not a validated optimum |
