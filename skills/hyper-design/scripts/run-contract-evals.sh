@@ -77,7 +77,14 @@ rc_main() {
     if [ "$code" != "$expected" ]; then
       failures="Expected exit $expected, received $code"
     fi
-    local expected_error matches
+    local expected_error matches expected_measurements actual_measurements
+    expected_measurements=$(printf '%s' "$case_json" | jq -r '.expectedMeasurements // ""')
+    if [ -n "$expected_measurements" ]; then
+      actual_measurements=$(printf '%s' "$out" | jq -r '.measurements.status // ""' 2>/dev/null || true)
+      if [ "$actual_measurements" != "$expected_measurements" ]; then
+        if [ -z "$failures" ]; then failures="Expected measurements $expected_measurements, received ${actual_measurements:-missing}"; else failures="$failures; Expected measurements $expected_measurements, received ${actual_measurements:-missing}"; fi
+      fi
+    fi
     expected_error=$(printf '%s' "$case_json" | jq -r '.expectedError // ""')
     if [ -n "$expected_error" ]; then
       matches=$(printf '%s\n%s' "$out" "$err" | LC_ALL=C grep -c -F -- "$expected_error" || true)

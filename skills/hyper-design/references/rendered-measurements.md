@@ -29,8 +29,14 @@ When no browser capability exists, or a handoff carries none of these fields, th
 
 ## Sources
 
-> The measurement set and the 4.5 / 4 / 2 thresholds are this package's own re-authoring. The idea of treating a rendered detector as a linter over measured numbers follows `dbc-hbin/omp-ulw @ 74df40f` (2026-11-09, no license, re-authored, no text or code copied). The contrast arithmetic follows the WCAG 2.x definitions cited in `contrast-check.md` (Apache-2.0 thresholds upstream): relative luminance uses the `0.03928` linearization threshold and the ratio formula there; this package computes them in jq instead of awk and adds the three finding thresholds above.
+> Checked 2026-11-09.
+
+| Claim | Source |
+|---|---|
+| Relative luminance, the `0.03928` linearization threshold, the contrast ratio, and the 4.5:1 threshold for normal text | <https://www.w3.org/TR/2024/REC-WCAG22-20241212/> (definitions of relative luminance and contrast ratio) |
+| The idea of treating a rendered measurement set as a linter over numeric findings (contrast on the painted background, computed type sizes, overlap, overflow) | `dbc-hbin/omp-ulw @ 74df40f` (2026-11-09), re-authored in this package's own words; the source repository has no license and no text or code was copied |
+| The 4px overlap and 2px overflow finding thresholds, and the `not_run` rule for missing measurements | this package's own choice, stated in §2 and §3 above |
 
 ### Evidence grade
 
-Thresholds are this package's contract. The contrast formula is normative WCAG 2.2; the worked values (`#999999` on `#ffffff` = 2.85, `#000000` on `#ffffff` = 21.00) are reproducible from the reference table in `contrast-check.md`.
+The contrast formula is normative WCAG 2.2; the worked values (`#999999` on `#ffffff` = 2.85, `#000000` on `#ffffff` = 21.00) are reproducible from the reference table in `contrast-check.md`. The overlap and overflow thresholds are this package's contract, not a WCAG requirement.

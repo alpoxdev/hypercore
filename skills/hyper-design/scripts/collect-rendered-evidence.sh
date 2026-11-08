@@ -93,12 +93,25 @@ def contrast_finding($cap; $o; $fg; $bg; $label):
           ratio: ($r | round4),
           failure: ($r < 4.5)}
      end);
-def overlap_px($o):
-  if (($o.rect | rect_shape) and ($o.textRect | rect_shape)) then
-    ([([$o.rect.x, $o.textRect.x] | max), ([($o.rect.x + $o.rect.width), ($o.textRect.x + $o.textRect.width)] | min)] | (.[1] - .[0])) as $w
-    | ([([$o.rect.y, $o.textRect.y] | max), ([($o.rect.y + $o.rect.height), ($o.textRect.y + $o.textRect.height)] | min)] | (.[1] - .[0])) as $h
+def pair_overlap_px($a; $b):
+  if (($a | rect_shape) and ($b | rect_shape)) then
+    ([([$a.x, $b.x] | max), ([($a.x + $a.width), ($b.x + $b.width)] | min)] | (.[1] - .[0])) as $w
+    | ([([$a.y, $b.y] | max), ([($a.y + $a.height), ($b.y + $b.height)] | min)] | (.[1] - .[0])) as $h
     | if $w <= 0 or $h <= 0 then 0 elif $w < $h then $w else $h end
   else 0 end;
+def capture_overlap_findings($cap):
+  [$cap.observations[]? | select(type == "object") | select((.textRect | rect_shape))
+      | {locator: .locator, textRect: .textRect}] as $boxes
+  | [range(0; $boxes | length) | select(. < (($boxes | length) - 1))
+      as $i | range(($i + 1); $boxes | length)
+      | [$boxes[$i], $boxes[.]] | max_by(0)] as $dummy
+  | [range(0; $boxes | length) as $i | range(($i + 1); $boxes | length)
+      | [$boxes[$i], $boxes[.]]] | .[]
+  | (pair_overlap_px(.[0].textRect; .[1].textRect)) as $px
+  | select($px > 4)
+  | {type: "overlap", locator: (.[1].locator // .[0].locator), otherLocator: .[0].locator,
+     viewport: $cap.viewport, state: $cap.state,
+     threshold: 4, overlapPx: ($px | round4), failure: true};
 def observation_findings($cap):
   . as $o
   | if ($o | is_record) | not then []
@@ -111,10 +124,6 @@ def observation_findings($cap):
          | select(type == "object")
          | contrast_finding($cap; $o; .foreground; .background; (.label // $o.locator))
        else empty end),
-      (if ((overlap_px($o)) > 4) then
-         {type: "overlap", locator: $o.locator, viewport: $cap.viewport, state: $cap.state,
-          threshold: 4, overlapPx: (overlap_px($o) | round4), failure: true}
-       else empty end),
       (if (((($o.overflowX | type) == "number") and ($o.overflowX > 2))) then
          {type: "overflow", locator: $o.locator, viewport: $cap.viewport, state: $cap.state,
           threshold: 2, overflowPx: ($o.overflowX | round4),
@@ -123,8 +132,11 @@ def observation_findings($cap):
   end;
 def report_findings:
   if (.captures | type) == "array" then
-    [ .captures[] as $c | select(($c | is_record) and (($c.observations | type) == "array")) |
-      $c.observations[] | select(type == "object") | observation_findings($c) ] | add // []
+    {per: ([ .captures[] as $c | select(($c | is_record) and (($c.observations | type) == "array")) |
+      $c.observations[] | select(type == "object") | observation_findings($c) ] | flatten),
+     over: ([ .captures[] as $c | select(($c | is_record) and (($c.observations | type) == "array")) |
+      capture_overlap_findings($c) ] | flatten)}
+    | (.per + .over)
   else [] end;
 def measurement_summary:
   (if (.captures | type) == "array" then
@@ -217,14 +229,9 @@ ce_main() {
   ok=false
   if [ "$(printf '%s' "$errors" | jq 'length')" = 0 ] && [ "$failing" = 0 ]; then ok=true; fi
   if [ "$json" = 1 ]; then
-    if [ "$measure" = 1 ] || [ "$measurements_status" = measured ]; then
-      jq -n --argjson ok "$ok" --argjson errors "$errors" --argjson observations "$observations" \
-        --argjson findings "$findings" --argjson measurements "$measurements" \
-        '{ok: $ok, errors: $errors, observations: $observations, findings: $findings, measurements: $measurements}'
-    else
-      jq -n --argjson ok "$ok" --argjson errors "$errors" --argjson observations "$observations" \
-        '{ok: $ok, errors: $errors, observations: $observations}'
-    fi
+    jq -n --argjson ok "$ok" --argjson errors "$errors" --argjson observations "$observations" \
+      --argjson findings "$findings" --argjson measurements "$measurements" \
+      '{ok: $ok, errors: $errors, observations: $observations, findings: $findings, measurements: $measurements}'
   elif [ "$ok" != true ]; then
     printf '%s' "$errors" | jq -r '.[]'
     printf '%s' "$findings" | jq -r '.[] | select(.failure == true) | "\(.type) at \(.locator): measured \(.ratio // .overlapPx // .overflowPx), threshold \(.threshold)"'
