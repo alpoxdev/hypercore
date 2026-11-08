@@ -12,3 +12,6 @@
 {"id":"dimension-mismatch-rejected","command":"rendered","input":"skills/hyper-design/assets/fixtures/rendered-evidence/dimension-mismatch.json","expectedExit":1,"expectedError":"do not match viewport"}
 {"id":"fresh-capture-accepted","command":"rendered","input":"skills/hyper-design/assets/fixtures/rendered-evidence/fresh.json","expectedExit":0}
 {"id":"missing-wcag-table-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/missing-wcag-table.ko.md","expectedExit":1,"expectedError":"WCAG_TABLE_MISSING"}
+{"id":"passing-complete-missing-wcag-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/passing-no-wcag-table.ko.md","expectedExit":1,"expectedError":"WCAG_TABLE_MISSING"}
+{"id":"wcag-list-without-table-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/wcag-list-no-table.ko.md","expectedExit":1,"expectedError":"WCAG_TABLE_MISSING"}
+{"id":"valid-wcag-table-accepted","command":"report","input":"skills/hyper-design/assets/fixtures/reports/valid-wcag-table.ko.md","expectedExit":0}

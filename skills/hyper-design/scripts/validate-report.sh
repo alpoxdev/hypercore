@@ -132,11 +132,26 @@ BEGIN {
     emit("AUTHORSHIP_CLAIM", "", "Reports must not claim AI authorship.")
   if (waiver_conflict(lower) && lower !~ /reason|사유/)
     emit("WAIVER_REASON_MISSING", "", "A reported waiver needs a reason.")
-  if (lower ~ /wcag/) {
+  wcag_heading = line_has(lower, "^## .*wcag")
+  wcag_required = ((status == "pass") && (rendered == "complete")) || (wcag_heading == 1)
+  if (wcag_required) {
     n = split("1.4.3 1.4.11 2.4.7 2.4.11 2.5.8 2.1.1 2.1.2 1.4.10 1.4.12 2.5.7 3.3.8 3.2.6 3.3.7", ids, " ")
+    # split text into lines once for the per-criterion row check
+    nlines = split(lower, lines, "\n")
     for (k = 1; k <= n; k++) {
-      if (index(lower, ids[k]) == 0)
-        emit("WCAG_TABLE_MISSING", "", "WCAG 2.2 table must list criterion " ids[k] " with PASS, FAIL, or N/A, reason, and evidence.")
+      found = 0
+      for (j = 1; j <= nlines; j++) {
+        ln = lines[j]
+        if (index(ln, ids[k]) == 0) continue
+        # structural row check: the criterion id must sit in a pipe-delimited table row
+        # that carries a verdict (pass/fail/n/a) plus non-empty reason and evidence cells
+        pipes = 0
+        for (q = 1; q <= length(ln); q++) if (substr(ln, q, 1) == "|") pipes++
+        if (pipes < 4) continue
+        if (ln ~ /(^|[^a-z])pass([^a-z]|$)/ || ln ~ /(^|[^a-z])fail([^a-z]|$)/ || ln ~ /(^|[^a-z])n\/a([^a-z]|$)/) { found = 1; break }
+      }
+      if (!found)
+        emit("WCAG_TABLE_MISSING", "", "WCAG 2.2 table must list criterion " ids[k] " as a table row with PASS, FAIL, or N/A, a reason, and evidence.")
     }
   }
 }
