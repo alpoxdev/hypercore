@@ -25,7 +25,7 @@ Run each item over the saved text, not over the intention behind it.
 | 5 | No implementation mechanism appears | A file path, function or type name, newly chosen library, or invented schema name is named outside an existing external constraint |
 | 6 | Every story has a happy path and a failure-or-edge scenario citing `FR-###` ids | One path is missing, or a scenario cites no requirement |
 | 7 | Every `A-###` has an evidence grade and a consequence | An assumption sits in the body as fact, or has no "if wrong" line |
-| 8 | `[확인 필요: …]` appears at most 3 times | A fourth marker exists |
+| 8 | `[확인 필요: …]` appears at most 3 times outside the release gate tables | A fourth inline marker exists in the prose sections |
 | 9 | No empty or `N/A` section remains | A heading has no content, or says `N/A`/`TBD` |
 | 10 | The handoff block is complete | It lacks platforms, size, P1 scope, remaining blocking questions, or next-stage inputs |
 | 11 | The meta block carries status, platforms, size, and the updated date | One field is missing |
@@ -33,7 +33,7 @@ Run each item over the saved text, not over the intention behind it.
 | 13 | Every `[M]` and `[M-조건]` item of each decided platform appears in that platform's release gate table with a conclusion | A decided platform's checklist has an `[M]` or `[M-조건]` item with no row, or a row with no conclusion |
 | 14 | No breakpoint is named after a device | A breakpoint reads `iPhone 375px`, `iPad`, `desktop 1440`, or any other device class instead of a content width in CSS pixels |
 
-Item 13 counts items, not rows: an `[M-조건]` item that reads "not applicable" with the condition and its reason passes, and so does an `[M]` item marked `[확인 필요: <question>]` as long as the document stays `status: draft`. Item 14 applies to every width the document names, in the goals, the platform block, or a requirement. A breakpoint is written as the content width in CSS pixels plus what in the content needs it, for example `640px where the metric row wraps`; a device name in a breakpoint is a defect because the device list changes while the content width does not.
+Item 13 counts items, not rows: an `[M-조건]` item that reads "not applicable" with the condition and its reason passes, and so does an `[M]` item marked `[확인 필요: <question>]` as long as the document stays `status: draft`. Item 8 counts only the inline markers in the prose sections: a `[확인 필요: <question>]` standing as a gate row's conclusion is excluded from the cap, and the document stays `status: draft` while any gate row is `[확인 필요]`. Item 14 applies to every width the document names, in the goals, the platform block, or a requirement. A breakpoint is written as the content width in CSS pixels plus what in the content needs it, for example `640px where the metric row wraps`; a device name in a breakpoint is a defect because the device list changes while the content width does not.
 
 Fix a failure in place and re-run only the failing item. Do not re-run the whole checklist to feel finished.
 

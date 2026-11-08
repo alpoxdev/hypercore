@@ -13,7 +13,7 @@ Use this reference when creating or restructuring `prd.md`. It owns the section 
 
 ## Section order
 
-1. Meta: status, platforms, size, updated
+1. Meta: status, platforms, size, questions asked of the budget, sources read, updated
 2. One-line definition
 3. Problem and evidence
 4. Target users and explicit exclusions
@@ -40,6 +40,8 @@ Delete a section that does not apply. Never keep a heading without content, and 
 - Status: draft | ready | revised
 - Platforms: web | ios | android | desktop (one or more)
 - Size: S | M | L
+- Questions: <asked>/<budget>
+- Sources read: <repository paths, documents, and pasted context read before the first question>
 - Updated: YYYY-MM-DD
 
 ## Definition
@@ -125,20 +127,20 @@ Then <observable outcome>
 
 #### Release gate
 
-| ID | Grade | Item | Conclusion | Evidence |
-|---|---|---|---|---|
-| W5 | `[M-조건]` | <the item sentence, short form> | applies, or not applicable with the condition, or `[확인 필요: <question>]` | <document, screen, or measurement that settles it> |
-| W6 | `[M-조건]` | <...> | <...> | <...> |
-| W1 | `[G]` | <only when relevant to this product> | <...> | <...> |
+| ID | Grade | Item | Conclusion | Evidence | Re-check |
+|---|---|---|---|---|---|
+| W5 | `[M-조건]` | <the item sentence, short form> | applies, or not applicable with the condition, or `[확인 필요: <question>]` | <document, screen, or measurement that settles it> | <the date the dated value is checked again, or `none`> |
+| W6 | `[M-조건]` | <...> | <...> | <...> | <...> |
+| W1 | `[G]` | <only when relevant to this product> | <...> | <...> | <...> |
 
 ### Data collection matrix (ios and android)
 
 Write this once, inside the platform requirements section and outside any single platform block, only when the decided platforms include both `ios` and `android`.
 
-| Data type | Collected | Shared with third parties | Linked to the user's identity | Used for tracking | Purpose |
-|---|---|---|---|---|---|
-| <e.g. email address> | yes | no | yes | no | account sign-in |
-| <e.g. coarse location> | no | - | - | - | not collected; named so both stores agree |
+| Data type | Collected | Shared with third parties | Linked to the user's identity | Used for tracking | Purpose | Optional | Ephemeral |
+|---|---|---|---|---|---|---|---|
+| <e.g. email address> | yes | no | yes | no | account sign-in | no | no |
+| <e.g. coarse location> | no | - | - | - | not collected; named so both stores agree | - | - |
 
 Apple privacy label view: <which rows of the table map to which App Privacy label data types, and what the label says for each>.
 
@@ -191,6 +193,8 @@ Play Data safety view: <which rows map to which Data safety data types, and what
 - Status: draft
 - Platforms: ios, android
 - Size: S
+- Questions: 1/1
+- Sources read: the support thread quoted in Problem and evidence; no repository documents (new product)
 - Updated: 2026-11-07
 
 ## Definition
@@ -222,7 +226,7 @@ A single-purpose focus timer that starts a fixed session and blocks mid-session 
 
 - Priority reason: without a run-to-completion path there is no product; nothing else is measurable.
 - Independent test: start a 25-minute session, background the app, return after 25 minutes, see the completion state.
-- Requirements: FR-001, FR-002
+- Requirements: FR-001, FR-002, FR-010
 
 ### P2 - Resume after an interruption
 
@@ -248,6 +252,7 @@ A single-purpose focus timer that starts a fixed session and blocks mid-session 
 | FR-002 | P0 | IF the session reaches zero, THEN the timer SHALL show the completion state and stop counting. | Run a one-minute test session to zero; the completion state appears and the count stops. |
 | FR-003 | P1 | WHEN the process is killed mid-session and relaunched within 24 hours, the timer SHALL restore the remaining time. [가정: users return within a day] | Kill the process at 10 minutes remaining, relaunch, see 10 minutes. |
 | FR-004 | P1 | WHERE the device is in silent mode, the completion state SHALL appear without an audible alert yet still show a visible banner. [확인 필요: is a haptic required by the design review?] | Enable silent mode, run to zero, see the banner and no sound. |
+| FR-010 | P1 | WHEN the app returns from the background during a session, the system SHALL CONTINUE TO show the remaining time without restarting the session. | Background the app mid-session for two minutes, return, and see the countdown continue from the reduced remaining time. |
 
 ## Acceptance scenarios
 
@@ -287,16 +292,16 @@ Filled from `references/platforms/ios.md`.
 
 #### Release gate
 
-| ID | Grade | Item | Conclusion | Evidence |
-|---|---|---|---|---|
-| I1 | `[M-조건]` | In-app account deletion under 5.1.1(v) | not applicable - the app creates no account and has no sign-in, so 5.1.1(v) has no subject | product scope above: no account, no sync |
-| I2 | `[M-조건]` | In-app purchase under 3.1.1 | not applicable - no paid digital goods or services | non-goals: no paid tier |
-| I3 | `[M-조건]` | Subscription terms under 3.1.2 | not applicable - no subscription | non-goals: no paid tier |
-| I4 | `[M]` | App Privacy label for every data type the release handles | applies - session events and crash reports, neither linked to identity nor used for tracking; the label reads from the data collection matrix below | data collection matrix |
-| I5 | `[M]` | Privacy manifest content and its owner | applies - manifest lists the same data types as the label, no tracking domains, owner is the release owner | data collection matrix |
-| I6 | `[M-조건]` | Review demo account under 2.1 | not applicable - no sign-in, so the reviewer needs no credentials | product scope: no account |
-| I7 | `[M]` | Minimum functionality under 4.2 and 4.2.2 | applies - the timer, its session state, and its completion state are the app's own function, not a repackaged site or a link collection | scope P1 |
-| I8 | `[G]` | Notification permission request in context | applies - the completion alert asks on first session start, with one sentence naming the timer | scope P1 |
+| ID | Grade | Item | Conclusion | Evidence | Re-check |
+|---|---|---|---|---|---|
+| I1 | `[M-조건]` | In-app account deletion under 5.1.1(v) | not applicable - the app creates no account and has no sign-in, so 5.1.1(v) has no subject | product scope above: no account, no sync | 2027-02-07 |
+| I2 | `[M-조건]` | In-app purchase under 3.1.1 | not applicable - no paid digital goods or services | non-goals: no paid tier | 2027-02-07 |
+| I3 | `[M-조건]` | Subscription terms under 3.1.2 | not applicable - no subscription | non-goals: no paid tier | 2027-02-07 |
+| I4 | `[M]` | App Privacy label for every data type the release handles | applies - session events and crash reports, neither linked to identity nor used for tracking; the label reads from the data collection matrix below | data collection matrix | 2027-02-07 |
+| I5 | `[M]` | Privacy manifest content and its owner | applies - manifest lists the same data types as the label, no tracking domains, owner is the release owner | data collection matrix | 2027-02-07 |
+| I6 | `[M-조건]` | Review demo account under 2.1 | not applicable - no sign-in, so the reviewer needs no credentials | product scope: no account | 2027-02-07 |
+| I7 | `[M]` | Minimum functionality under 4.2 and 4.2.2 | applies - the timer, its session state, and its completion state are the app's own function, not a repackaged site or a link collection | scope P1 | 2027-02-07 |
+| I8 | `[G]` | Notification permission request in context | applies - the completion alert asks on first session start, with one sentence naming the timer | scope P1 | 2027-02-07 |
 
 ### android
 
@@ -304,28 +309,28 @@ Filled from `references/platforms/android.md`.
 
 #### Release gate
 
-| ID | Grade | Item | Conclusion | Evidence |
-|---|---|---|---|---|
-| A1 | `[M]` | Target API level of the release | applies - the release targets API level 36, the floor in force from 2026-08-31 | build config at release time |
-| A2 | `[M]` | Play Data safety declaration | applies - the declaration is written from the data collection matrix below | data collection matrix |
-| A3 | `[M]` | Per-type collected, shared, purpose, optional, ephemeral | applies - session events and crash reports, not shared, not optional, not ephemeral | data collection matrix |
-| A4 | `[M]` | Permission list limited to promoted current features | applies - the notification permission serves the completion alert promoted in the listing | scope P1 |
-| A5 | `[M]` | Permission-to-feature mapping table | applies - one row: notification permission, completion alert, listing screenshot 2, asked on first session start | store listing plan |
-| A6 | `[M-조건]` | Sensitive or restricted permission declaration | not applicable - the release requests no sensitive or restricted permission | permission list above |
-| A7 | `[M-조건]` | Play billing for digital goods | not applicable - no digital goods are sold | non-goals: no paid tier |
-| A8 | `[M-조건]` | Play Billing library version | not applicable - the app does not use Play Billing | non-goals: no paid tier |
-| A9 | `[M]` | Published artifact format | applies - an Android App Bundle is uploaded, with no delivery split relied on | build config at release time |
-| A10 | `[G]` | Stability floor read from Android vitals | applies - the counter-metric reads user-perceived crash rate below 1.09% and ANR rate below 0.47%, per app version, in Play Console | goal 3 in the metrics table |
-| A11 | `[G]` | Interactive touch targets at 48 dp or more | applies - the start and stop controls are measured at 56 dp on one compact and one large screen | layout inspection record |
-
-### Data collection matrix
-
-| Data type | Collected | Shared with third parties | Linked to the user's identity | Used for tracking | Purpose |
+| ID | Grade | Item | Conclusion | Evidence | Re-check |
 |---|---|---|---|---|---|
-| Session start and end events | yes | no | no | no | measuring the completed-session rate |
-| Crash reports | yes | no | no | no | stability |
-| Account identifiers | no | - | - | - | no account exists |
-| Precise location | no | - | - | - | not requested |
+| A1 | `[M]` | Target API level of the release | applies - the release targets API level 36, the floor in force from 2026-08-31 | build config at release time | 2027-02-07 |
+| A2 | `[M]` | Play Data safety declaration | applies - the declaration is written from the data collection matrix below | data collection matrix | 2027-02-07 |
+| A3 | `[M]` | Per-type collected, shared, purpose, optional, ephemeral | applies - session events and crash reports, not shared, not optional, not ephemeral | data collection matrix | 2027-02-07 |
+| A4 | `[M]` | Permission list limited to promoted current features | applies - the notification permission serves the completion alert promoted in the listing | scope P1 | 2027-02-07 |
+| A5 | `[M]` | Permission-to-feature mapping table | applies - one row: notification permission, completion alert, listing screenshot 2, asked on first session start | store listing plan | 2027-02-07 |
+| A6 | `[M-조건]` | Sensitive or restricted permission declaration | not applicable - the release requests no sensitive or restricted permission | permission list above | 2027-02-07 |
+| A7 | `[M-조건]` | Play billing for digital goods | not applicable - no digital goods are sold | non-goals: no paid tier | 2027-02-07 |
+| A8 | `[M-조건]` | Play Billing library version | not applicable - the app does not use Play Billing | non-goals: no paid tier | 2027-02-07 |
+| A9 | `[M]` | Published artifact format | applies - an Android App Bundle is uploaded, with no delivery split relied on | build config at release time | 2027-02-07 |
+| A10 | `[G]` | Stability floor read from Android vitals | applies - the counter-metric reads user-perceived crash rate below 1.09% and ANR rate below 0.47%, per app version, in Play Console | goal 3 in the metrics table | 2027-02-07 |
+| A11 | `[G]` | Interactive touch targets at 48 dp or more | applies - the start and stop controls are measured at 56 dp on one compact and one large screen | layout inspection record | 2027-02-07 |
+
+### Data collection matrix (ios and android)
+
+| Data type | Collected | Shared with third parties | Linked to the user's identity | Used for tracking | Purpose | Optional | Ephemeral |
+|---|---|---|---|---|---|---|---|
+| Session start and end events | yes | no | no | no | measuring the completed-session rate | no | no |
+| Crash reports | yes | no | no | no | stability | no | no |
+| Account identifiers | no | - | - | - | no account exists | - | - |
+| Precise location | no | - | - | - | not requested | - | - |
 
 Apple privacy label view: session events and crash reports are declared as usage and diagnostics, not linked to identity, not used for tracking; the label names no other type.
 
@@ -360,7 +365,7 @@ Play Data safety view: the same two types are declared as collected, not shared,
 
 - Platforms: ios, android
 - Size: S
-- P1 scope: FR-001, FR-002 with the start-and-finish story
+- P1 scope: FR-001, FR-002, FR-010 with the start-and-finish story
 - Remaining blocking questions: none
 - Inputs for the next stage: the fixed duration, the completion state, the resume window, the iOS and Android release gate tables, and the shared data collection matrix
 ```
@@ -376,10 +381,11 @@ One table per decided platform block, filled from that platform's checklist file
 | Item | The obligation in one short sentence, with the threshold, measurement method, and percentile for a numeric item |
 | Conclusion | `applies`, `not applicable` with the condition or reason, or `[확인 필요: <question>]` |
 | Evidence | The document, console screen, or measurement that settles the conclusion |
+| Re-check | The date the dated value is checked again, or `none` for an item with no dated value |
 
 - Every `[M]` and `[M-조건]` item of the loaded checklist gets a row. A `[M-조건]` row whose condition is false reads "not applicable" with the reason; the row does not disappear.
 - A `[G]` item gets a row only when it is relevant to this product.
-- A `[M]` row left at `[확인 필요]` keeps the document at `status: draft`.
+- A `[M]` row left at `[확인 필요]` keeps the document at `status: draft`. That row is not counted toward the three-marker cap, which applies to inline markers in the prose sections.
 - A store obligation is written as the clause plus the observable state the clause requires. "Follow the store guidelines" is not a conclusion.
 
 ## Data collection matrix
@@ -394,6 +400,8 @@ One matrix for the document, written only when the decided platforms include bot
 | Linked to the user's identity | `yes` or `no` |
 | Used for tracking | `yes` or `no` |
 | Purpose | Why the release handles it |
+| Optional | `yes` or `no`: whether the user may decline to provide the data and still use the feature |
+| Ephemeral | `yes` or `no`: whether the data is processed only in transit and never stored |
 
 - The matrix is written once. The App Privacy label and the Play Data safety declaration both read from it; neither restates the data types from memory.
 - A type one platform handles and the other does not is a product decision: record the difference and its reason next to the matrix.
@@ -409,7 +417,7 @@ One matrix for the document, written only when the decided platforms include bot
 - A numeric gate item states its threshold, its measurement method, and its percentile in the same cell.
 - When `ios` and `android` are both decided, the data collection matrix is written once for the document, with the Apple privacy label view and the Play Data safety view derived from it.
 - A store obligation is written as the clause plus the observable state the clause requires. A sentence that says to follow the guidelines without naming the clause and the state is not a requirement.
-- At most three `[확인 필요: …]` markers in the whole document.
+- At most three `[확인 필요: …]` markers in the whole document. This cap counts inline markers in the prose sections; a `[확인 필요: <question>]` that stands as a release gate table's conclusion is excluded from the count, and the document stays `status: draft` while any gate row is `[확인 필요]`.
 - The handoff block is the only place the next stage's inputs are described; this document never contains a task list, a design, or a flow.
 
 ## Sources
