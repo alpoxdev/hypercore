@@ -55,21 +55,38 @@ function line_is_prose(s) {
   return 1
 }
 # number_tokens appends each distinct unsourced number in s to the global list.
-function number_tokens(s,   tok, seen, re, cnt) {
+# A token is one quantity: digits with optional thousands separators, an
+# optional fraction (3.5), an optional percent suffix (37%), or a ratio (4:1).
+# Words that merely contain digits (p95, h2, S1) are not tokens. Version-like
+# forms are exempt: a v2.1 prefix, the word version followed by a number, and
+# dotted sequences with two or more dots (1.2.3). A bare decimal stays a
+# quantity (3.5%, 2.5 GB per second).
+function number_tokens(s,   tok, seen, cnt, simple) {
   gsub(/\[S[0-9]+\]/, " ", s)
   gsub(/`[^`]*`/, " ", s)
   gsub(/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/, " ", s)
   gsub(/[0-9][0-9]?:[0-9][0-9](:[0-9][0-9])?/, " ", s)
   gsub(/([Ff]igure|[Ff]ig\.|[Tt]able)[ \t]*[0-9]+/, " ", s)
   gsub(/[vV][0-9]+(\.[0-9]+)+/, " ", s)
-  gsub(/[0-9]+(\.[0-9]+)+/, " ", s)
+  gsub(/([Vv]ersion|[Vv])[ \t]+[0-9]+(\.[0-9]+)+/, " ", s)
+  gsub(/[0-9]+(\.[0-9]+){2,}/, " ", s)
   split("", seen)
   cnt = 0
-  re = "[0-9]+([.,][0-9]+)*"
-  while (match(s, re) > 0) {
+  s = " " s " "
+  while (match(s, /([^A-Za-z0-9_]|^)[0-9][0-9,]*([.][0-9]+)?%?([:][0-9]+)?/)) {
     tok = substr(s, RSTART, RLENGTH)
+    # Drop any leading separator character the match may have included.
+    sub(/^[^0-9]/, "", tok)
     s = substr(s, RSTART + RLENGTH)
-    if (tok ~ /^(19|20)[0-9][0-9]$/) continue
+    # A percent suffix was captured; keep it so 37% and 37 differ.
+    if (tok ~ /%/) {
+      simple = tok
+      sub(/%/, "", simple)
+    } else {
+      simple = tok
+    }
+    if (simple ~ /^(19|20)[0-9][0-9]$/) continue
+    # A ratio stands alone as one token; its digits are never split out.
     if (tok in seen) continue
     seen[tok] = 1
     cnt++
@@ -254,54 +271,79 @@ vd_codes() {
   vd_validate "$1" "$2" | cut -f2 | LC_ALL=C sort
 }
 
+# vd_case <id> <want> <actual> <pass> appends one case; its pass flag decides ok.
+# The verdict comes from the same comparison that sets the case's actual, so a
+# case never reports a pass it did not earn.
+vd_case() {
+  local id=$1 want=$2 actual=$3 pass=$4
+  cases=$(jq -cn --argjson c "$cases" --arg id "$id" --argjson e "$want" --argjson a "$actual" \
+    '$c + [{id: $id, expected: $e, actual: $a}]')
+  [ "$pass" = true ] || { ok=false; }
+}
+
 vd_self_test() {
-  local work base defects codes ok=true cases='[]' one
+  local work base defects codes actual pass ok=true cases='[]'
   work=$(mktemp -d "${TMPDIR:-/tmp}/research-report.XXXXXX")
   vd_self_ledger >"$work/ledger.md"
   vd_self_report >"$work/base.md"
   base=$work/base.md
 
   defects=$(vd_validate "$base" "$work/ledger.md" | wc -l | tr -d ' ')
-  cases=$(jq -cn --argjson c "$cases" --argjson a "$([ "$defects" -eq 0 ] && echo true || echo false)" \
-    '$c + [{id: "valid-report-clean", expected: true, actual: $a}]')
-  [ "$defects" -eq 0 ] || ok=false
+  actual=$([ "$defects" -eq 0 ] && echo true || echo false)
+  pass=$([ "$defects" -eq 0 ] && echo true || echo false)
+  vd_case valid-report-clean true "$actual" "$pass"
 
   awk '/^## Executive Summary$/ { print; print ""; print "Adoption grew 37% in 2025."; next } { print }' \
     "$base" >"$work/unsourced.md"
   defects=$(vd_validate "$work/unsourced.md" "$work/ledger.md" | wc -l | tr -d ' ')
   codes=$(vd_codes "$work/unsourced.md" "$work/ledger.md" | tr '\n' ' ')
-  cases=$(jq -cn --argjson c "$cases" --argjson a "$([ "$defects" -eq 1 ] && [ "$codes" = "unsourced_number " ] && echo true || echo false)" \
-    '$c + [{id: "unsourced-number-detected", expected: true, actual: $a}]')
-  [ "$defects" -eq 1 ] && [ "$codes" = "unsourced_number " ] || ok=false
+  actual=$([ "$defects" -eq 1 ] && [ "$codes" = "unsourced_number " ] && echo true || echo false)
+  pass=$actual
+  vd_case unsourced-number-detected true "$actual" "$pass"
+
+  awk '/^## Executive Summary$/ { print; print ""; print "Revenue grew 3.5% in 2025."; next } { print }' \
+    "$base" >"$work/decimal.md"
+  defects=$(vd_validate "$work/decimal.md" "$work/ledger.md" | wc -l | tr -d ' ')
+  codes=$(vd_codes "$work/decimal.md" "$work/ledger.md" | tr '\n' ' ')
+  actual=$([ "$defects" -eq 1 ] && [ "$codes" = "unsourced_number " ] && echo true || echo false)
+  pass=$actual
+  vd_case decimal-quantity-detected true "$actual" "$pass"
+
+  awk '/^## Executive Summary$/ { print; print ""; print "Ships with v2.1 and 1.2.3."; next } { print }' \
+    "$base" >"$work/version.md"
+  defects=$(vd_validate "$work/version.md" "$work/ledger.md" | wc -l | tr -d ' ')
+  actual=$([ "$defects" -eq 0 ] && echo true || echo false)
+  pass=$actual
+  vd_case version-tokens-clean true "$actual" "$pass"
 
   awk '/^## Executive Summary$/ { print; print ""; print "Released in 2025."; next } { print }' \
     "$base" >"$work/year-only.md"
   defects=$(vd_validate "$work/year-only.md" "$work/ledger.md" | wc -l | tr -d ' ')
-  cases=$(jq -cn --argjson c "$cases" --argjson a "$([ "$defects" -eq 0 ] && echo true || echo false)" \
-    '$c + [{id: "year-only-sentence-clean", expected: true, actual: $a}]')
-  [ "$defects" -eq 0 ] || ok=false
+  actual=$([ "$defects" -eq 0 ] && echo true || echo false)
+  pass=$actual
+  vd_case year-only-sentence-clean true "$actual" "$pass"
 
   awk '{ print } /^\| Price \|/ { print "| Volume | 37 | 42 | [S2] |" }' \
     "$base" >"$work/table.md"
   defects=$(vd_validate "$work/table.md" "$work/ledger.md" | wc -l | tr -d ' ')
-  cases=$(jq -cn --argjson c "$cases" --argjson a "$([ "$defects" -eq 0 ] && echo true || echo false)" \
-    '$c + [{id: "table-row-numbers-ignored", expected: true, actual: $a}]')
-  [ "$defects" -eq 0 ] || ok=false
+  actual=$([ "$defects" -eq 0 ] && echo true || echo false)
+  pass=$actual
+  vd_case table-row-numbers-ignored true "$actual" "$pass"
 
   awk '/^## Executive Summary$/ { print; print ""; print "Market share is 12% [S9]."; next } { print }' \
     "$base" >"$work/unresolved.md"
   defects=$(vd_validate "$work/unresolved.md" "$work/ledger.md" | wc -l | tr -d ' ')
   codes=$(vd_codes "$work/unresolved.md" "$work/ledger.md" | tr '\n' ' ')
-  cases=$(jq -cn --argjson c "$cases" --argjson a "$([ "$defects" -eq 1 ] && [ "$codes" = "unresolved_citation " ] && echo true || echo false)" \
-    '$c + [{id: "unresolved-citation-detected", expected: true, actual: $a}]')
-  [ "$defects" -eq 1 ] && [ "$codes" = "unresolved_citation " ] || ok=false
+  actual=$([ "$defects" -eq 1 ] && [ "$codes" = "unresolved_citation " ] && echo true || echo false)
+  pass=$actual
+  vd_case unresolved-citation-detected true "$actual" "$pass"
 
   awk '!/^## References$/ && !/^- \[S1\]/ && !/^- \[S2\]/' "$base" >"$work/missing.md"
   defects=$(vd_validate "$work/missing.md" "$work/ledger.md" | wc -l | tr -d ' ')
   codes=$(vd_codes "$work/missing.md" "$work/ledger.md" | tr '\n' ' ')
-  cases=$(jq -cn --argjson c "$cases" --argjson a "$([ "$defects" -eq 1 ] && [ "$codes" = "missing_required_section " ] && echo true || echo false)" \
-    '$c + [{id: "missing-required-section-detected", expected: true, actual: $a}]')
-  [ "$defects" -eq 1 ] && [ "$codes" = "missing_required_section " ] || ok=false
+  actual=$([ "$defects" -eq 1 ] && [ "$codes" = "missing_required_section " ] && echo true || echo false)
+  pass=$actual
+  vd_case missing-required-section-detected true "$actual" "$pass"
 
   rm -rf "$work"
   jq -n --argjson ok "$([ "$ok" = true ] && echo true || echo false)" --argjson cases "$cases" \
