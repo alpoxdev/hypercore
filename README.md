@@ -109,8 +109,8 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 /hyper-browsing "<대상>"  # 403·WAF·챌린지·JavaScript·사라진 페이지처럼 평범한 요청으로 안 열리는 페이지 내용을 단계 사다리로 가져오고 출처·종료 상태까지 기록
 /hyper-prd "<아이디어>"  # 웹·iOS·Android·데스크톱 PRD를 `prd.md` 한 파일로, 규모별 질문 상한과 테스트 가능한 요구사항까지
 /hyper-deploy "<작업>"   # Railway·Cloudflare·Docker·Compose·VPS 배포 전 점검·첫 설정·배포·설정 변경·실패 진단과 수정을 플랫폼 최종 상태로 검증
-/hyper-google-tagmanager "<작업>"  # GTM 점검·사이트 탑재·컨테이너 설정·발화 검증·추적 오류 진단·데이터 분석을 요청 증거와 게시 승인 게이트로 처리
 /hyper-google-analytics "<작업>"  # GA4 점검·탑재·속성 설정·데이터 분석·수집 진단을 네트워크 요청과 read-back으로 검증
+/hyper-google-tagmanager "<작업>"  # GTM 점검·사이트 탑재·컨테이너 설정·발화 검증·추적 오류 진단·데이터 분석을 요청 증거와 게시 승인 게이트로 처리
 ```
 
 자연어로도 트리거됩니다 — 예: "이 프로젝트 README 다시 써줘"·"이 저장소에 맞는 AGENTS.md 만들어줘" → `hyper-documentation`, "방금 변경 사항 커밋하고 푸시"·"이슈 42로 워크트리 만들어줘"·"dev, main에 머지하고 푸시" → `hyper-git`.
@@ -219,8 +219,8 @@ flowchart LR
 | 스킬 | 설명 | 호환 |
 |------|------|------|
 | `hyper-seo` | SEO / AEO / GEO / LLMO 통합 감사와 최적화 리포트, 점수 개선 루프, 새 홈페이지 출시 세팅 계획(검색·AI 크롤러 정책·등록·측정) | All |
-| `hyper-google-tagmanager` | Google Tag Manager를 웹사이트에 탑재(현재 공식 스니펫, Next.js·Nuxt·Astro·SvelteKit·Vite·WordPress 등 프레임워크별 위치, SPA page_view, CSP nonce, 동의 기본값 순서)하고, 저장소·서버 응답 페이지·컨테이너 내보내기 JSON을 번들 스크립트 3개로 점검하며, dataLayer·태그·트리거·변수·이커머스·Consent Mode v2 설정, Preview·네트워크 요청으로 발화 검증, 중복 집계·동의 순서·빈 컨테이너 같은 오류 진단, 컨테이너 상태와 GA4 수신 데이터 분석까지 처리. 컨테이너 게시·삭제·권한·라이브 동의 변경은 명시 승인 후에만 실행하고 `.hyper/gtm/` 보고서 저장 | bash 3.2+ & jq 1.6+ & curl; 렌더링 검증은 브라우저 자동화, 컨테이너 API는 사용자가 준 자격 증명 |
 | `hyper-google-analytics` | GA4 점검·탑재·속성 설정·Data API 분석·수집 진단을 코드·실제 `/g/collect` 요청·속성 read-back으로 검증하고, 영구적인 필터·보존 변경은 승인 뒤에 두며 `.hyper/google-analytics/` 보고서까지 저장 | bash 3.2+ & curl; Data·Admin API는 `analytics.readonly`/`analytics.edit` 자격 증명 |
+| `hyper-google-tagmanager` | Google Tag Manager를 웹사이트에 탑재(현재 공식 스니펫, Next.js·Nuxt·Astro·SvelteKit·Vite·WordPress 등 프레임워크별 위치, SPA page_view, CSP nonce, 동의 기본값 순서)하고, 저장소·서버 응답 페이지·컨테이너 내보내기 JSON을 번들 스크립트 3개로 점검하며, dataLayer·태그·트리거·변수·이커머스·Consent Mode v2 설정, Preview·네트워크 요청으로 발화 검증, 중복 집계·동의 순서·빈 컨테이너 같은 오류 진단, 컨테이너 상태와 GA4 수신 데이터 분석까지 처리. 컨테이너 게시·삭제·권한·라이브 동의 변경은 명시 승인 후에만 실행하고 `.hyper/gtm/` 보고서 저장 | bash 3.2+ & jq 1.6+ & curl; 렌더링 검증은 브라우저 자동화, 컨테이너 API는 사용자가 준 자격 증명 |
 | `hyper-imagegen` | 관찰된 이미지 기능으로 이미지를 생성하고, 미지원 환경에서는 실행 가능한 프롬프트를 안전하게 저장 | Capability-based |
 
 ### 도메인 도구
