@@ -13,6 +13,12 @@ Use this checklist before claiming the research is done. Run the gates in order;
 
 Repair is bounded: after a failed gate, fix and re-run that gate and everything after it, at most two repair passes. After that, ship with the residual defects listed in the validation notes - except that a high-risk claim still failing gate 3 is removed or moved to the annex, never shipped.
 
+### Gate status and defect severity
+
+Each gate records a stored status in the report's `## Report gates` table (`references/report-template.md`): `pass`, `fail`, or `not_run`, with a short reason. `pass` means the gate ran and no blocker remains open. `fail` means the gate ran and a blocker defect is still open. `not_run` means the gate never ran, for example when the run ended before it or the evidence it needs is missing.
+
+Each defect found during a gate run carries a severity: `blocker`, `major`, or `minor`. A blocker defect breaks a claim, a citation, or a delivery requirement, and only a blocker fails a gate. A major defect weakens the result without breaking it, and a minor defect is cosmetic; majors and minors are either repaired or listed as residuals with the decision they need. A residual blocker after the bounded repair passes fails the gate and blocks delivery unless the affected claim is removed or moved to the annex.
+
 ## 2. Required Checks
 
 - Topic explicit, or asked for before collection.

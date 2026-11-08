@@ -54,7 +54,7 @@ Do not use it when:
 | Tools | Search, fetch, GitHub or repo search, a local shell for execution checks in a disposable directory, optional bounded subagents, and an optional blocked-page access capability for a source a plain fetch cannot read (`references/channel-selection.md`, Blocked Sources). A missing capability is named and replaced by the next-best channel, never invented. |
 | Loop | A bounded expansion loop: feedback is the lanes' `## EXPAND` leads and claim-gate failures; the metric is unchecked leads plus the source floor; the guard is the claim gate; the cap is the depth's wave budget; the stop rules are in `rules/expansion-and-convergence.md`. |
 | Output | A report at `.hyper/research/[NN].slug.md`, plus the journal directory `.hyper/research/[NN].slug/` for default, deep, and parallel runs, and a short closing briefing in chat. |
-| Verification | The ordered gates in `rules/validation.md`: structure, citation, claim gate, number lineage, recency, and read-back against the core question. |
+| Verification | The ordered gates in `rules/validation.md` with stored status and defect severity: structure, citation, claim gate, number lineage, recency, and read-back against the core question. |
 | Stop condition | Converged with the floor met and the gates passed; or `exhausted` at the wave cap with open leads listed; or blocked on a missing topic, authority, or access, with the gap disclosed. |
 
 </instruction_contract>
@@ -170,7 +170,7 @@ Search in English first, then add a local-language sweep when the topic is local
 | 2 | Collect the first wave across every axis at once, recording each source the moment it is opened | Source ledger, observation notes |
 | 3 | Expand on `## EXPAND` leads, run excursions only on a named trigger, stop on the convergence rules | Expansion log, converged or `exhausted` |
 | 4 | Gate high-risk claims, run execution checks on code-shaped disputes, label every number's lineage | Claim table, `verify-<slug>.md` files |
-| 5 | Write the conclusion-first report, run the ordered gates, save, and give the closing briefing | Saved report and briefing |
+| 5 | Write the conclusion-first report with `STATUS: draft` in its first five lines and the journal's deliverable promise, run the ordered gates, remove `STATUS: draft` only after the last gate, save, and give the closing briefing | Saved report and briefing |
 
 Phase rules:
 

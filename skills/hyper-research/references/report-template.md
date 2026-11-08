@@ -85,6 +85,16 @@ Example: `.hyper/research/03.websocket-vs-sse.md` and `.hyper/research/03.websoc
 - Source floor: [met or shortfall, reviewed vs cited]
 - Dedupe: [queries and duplicate sources handled]
 
+## Report gates
+| Gate | Status (pass / fail / not_run) | Open-defect severity (blocker / major / minor) | Reason |
+|---|---|---|---|
+| structure | | | |
+| citation | | | |
+| claim gate | | | |
+| number lineage | | | |
+| recency | | | |
+| read-back | | | |
+
 ## References
 - [S1] [Title](https://example.com/source), accessed YYYY-MM-DD
 ```

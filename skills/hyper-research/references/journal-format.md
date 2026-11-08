@@ -53,7 +53,13 @@ asked: <fields asked, or none>
 
 ## Steering
 - <exact user wording> - <wave it took effect>
+
+## Deliverable
+format: md (answered_by: default | user | request)
+path: .hyper/research/[NN].slug.md
 ```
+
+The `Deliverable` promise names what the run promises to deliver: the format (`md` by default), its path, and the `answered_by` value that chose the format. When the user asked for a different format, that answer is folded into the `Fidelity` block like the other fields; otherwise `answered_by: default` stands.
 
 ## `sources.md`
 

@@ -54,7 +54,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 | Tools | 검색, 페이지 열람, GitHub나 저장소 검색, 일회용 디렉터리에서 실행 확인을 하는 로컬 셸, 선택적인 범위 제한 subagent, 평범한 요청으로 읽을 수 없는 출처를 위한 선택적인 막힌 페이지 접근 기능을 씁니다(`references/channel-selection.ko.md`, 막힌 출처). 없는 기능은 이름을 밝히고 차선 채널로 대체하며, 만들어 내지 않습니다. |
 | Loop | 범위가 정해진 확장 루프입니다. feedback은 lane의 `## EXPAND` 단서와 claim gate 실패이고, 지표는 확인하지 않은 단서에 source floor를 더한 값이며, 보호 장치는 claim gate이고, 상한은 깊이별 wave 예산이며, 종료 규칙은 `rules/expansion-and-convergence.ko.md`에 있습니다. |
 | Output | `.hyper/research/[NN].slug.md` 리포트와, 기본·deep·parallel 실행이면 journal 디렉터리 `.hyper/research/[NN].slug/`를 남기고, 채팅에 짧은 마감 브리핑을 줍니다. |
-| Verification | `rules/validation.ko.md`의 게이트를 순서대로 적용합니다. 구조, 인용, claim gate, 숫자 계보, 최신성, 핵심 질문과 견줘 다시 읽기를 확인합니다. |
+| Verification | `rules/validation.ko.md`의 게이트를 저장된 상태와 결함 심각도까지 기록하면서 순서대로 적용합니다. 구조, 인용, claim gate, 숫자 계보, 최신성, 핵심 질문과 견줘 다시 읽기를 확인합니다. |
 | Stop condition | source floor를 채우고 게이트를 통과한 `converged` 상태이거나, wave 상한에서 남은 단서를 나열한 `exhausted` 상태이거나, 주제·권한·접근이 없어 공백을 밝힌 `blocked` 상태입니다. |
 
 </instruction_contract>
@@ -170,7 +170,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 | 2 | 모든 축에 걸쳐 첫 wave를 한꺼번에 수집하고, 각 출처는 연 즉시 기록 | Source ledger, 관찰 메모 |
 | 3 | `## EXPAND` 단서로 확장하고, 이름이 붙은 트리거에서만 excursion을 돌리고, 수렴 규칙에서 멈춤 | 확장 로그, `converged` 또는 `exhausted` |
 | 4 | 위험도가 높은 주장을 게이트로 거르고, 코드 형태의 다툼은 실행으로 확인하고, 모든 숫자에 계보를 붙임 | Claim 표, `verify-<slug>.md` 파일 |
-| 5 | 결론을 앞세운 리포트를 쓰고, 순서가 있는 게이트를 돌리고, 저장하고, 마감 브리핑 | 저장된 리포트와 브리핑 |
+| 5 | `STATUS: draft`을 처음 다섯 줄 안에 넣고 저널의 납품 약속을 적어 결론을 앞세운 리포트를 쓰고, 순서가 있는 게이트를 돌리고, 마지막 게이트 뒤에 `STATUS: draft`를 제거하고, 저장하고, 마감 브리핑 | 저장된 리포트와 브리핑 |
 
 단계 규칙:
 
