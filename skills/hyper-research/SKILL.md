@@ -112,7 +112,7 @@ The user's own floor or cap wins over this table. The numbers are this package's
 <skill_architecture>
 
 - Core (`SKILL.md`): trigger, contract, depth table, phase order, and stop condition.
-- Rules: `research-workflow.md` (framing, journal, collection, save), `expansion-and-convergence.md` (EXPAND leads, waves, excursions, stop rules), `claim-verification.md` (claim gate, execution checks, number lineage), `parallel-research.md` (lane contract and join), `validation.md` (ordered gates and closeout).
+- Rules: `research-workflow.md` (framing, journal, collection, save), `expansion-and-convergence.md` (EXPAND leads, waves, excursions, stop rules), `claim-verification.md` (claim gate, execution checks, number lineage, debate record), `parallel-research.md` (lane contract and join), `validation.md` (ordered gates and closeout).
 - References: `channel-selection.md` (channels and search craft), `journal-format.md` (journal files and their columns), `report-template.md` (the saved report).
 - Assets: `assets/evals/hyper-research-cases.jsonl`, the trigger and behavior cases.
 - Scripts (bash 3.2+, jq 1.6+): `scripts/validate-report.sh` runs the mechanical citation and number-lineage gates against the saved report and the sources ledger. `scripts/report-state.sh` records every repair pass with `repair`, writes `outcome.json` with `finish`, and prints the counted facts with `briefing`; its state file lives in the run journal (`--state <path>` or `REPORT_STATE_FILE`, default `.hyper/research/report-state.json`). The judgment gates stay a checklist the agent runs against the journal and the report.
@@ -169,7 +169,7 @@ Search in English first, then add a local-language sweep when the topic is local
 | 1 | Plan channels and distinct queries per axis | Query log |
 | 2 | Collect the first wave across every axis at once, recording each source the moment it is opened | Source ledger, observation notes |
 | 3 | Expand on `## EXPAND` leads, run excursions only on a named trigger, stop on the convergence rules | Expansion log, converged or `exhausted` |
-| 4 | Gate high-risk claims, run execution checks on code-shaped disputes, label every number's lineage | Claim table, `verify-<slug>.md` files |
+| 4 | Gate high-risk claims, run execution checks on code-shaped disputes, record the debate, label every number's lineage | Claim table, `debate.md`, `verify-<slug>.md` files |
 | 5 | Write the conclusion-first report with `STATUS: draft` in its first five lines and the journal's deliverable promise, run the ordered gates, remove `STATUS: draft` only after the last gate, save, and give the closing briefing | Saved report and briefing |
 
 Phase rules:
@@ -187,7 +187,7 @@ Phase rules:
 - Distinct queries across the whole run, including lanes; the same wording is never re-sent to another channel.
 - Primary or official sources first for technical, legal, financial, and product claims.
 - A `[S<n>]` citation on every non-obvious claim, resolving to an opened ledger row.
-- Every high-risk claim passes the claim gate or sits in the unresolved or refuted annex.
+- Every high-risk claim passes the claim gate, including at least two debate attacks from different perspectives, or sits in the unresolved or refuted annex as `unverified`.
 - Every number carries `MEASURED`, `ASSUMED`, or `DERIVED`, and derived numbers show their formula and inputs.
 - Comparison tables when judging alternatives, and conflicts kept visible.
 - Exact dates for every recency claim and an "as of" anchor in the report header.
@@ -234,6 +234,7 @@ Phase rules:
 | The contract fields, the trigger-first `description`, and the bilingual package shape | `instructions/skill/SKILL_AUTHORING.md` |
 | The mechanical citation and number-lineage gates run by `scripts/validate-report.sh` | `dbc-hbin/omp-ulw` at commit `74df40f` (2026-11-09); the source repository has no license, so the mechanism was re-authored in this package's own words and no text or code was copied |
 | The repair-pass tracker and outcome manifest run by `scripts/report-state.sh` | `dbc-hbin/omp-ulw` at commit `74df40f` (2026-11-09); the source repository has no license, so the mechanism was re-authored in this package's own words and no text or code was copied |
+| The two-attack debate record for high-risk claims, journaled as `debate.md` and annexed as `## Debate record` | `dbc-hbin/omp-ulw` at commit `74df40f` (2026-11-09); the source repository has no license, so the mechanism was re-authored in this package's own words and no text or code was copied |
 
 ### Evidence grade
 

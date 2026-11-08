@@ -112,7 +112,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 <skill_architecture>
 
 - 코어(`SKILL.ko.md`): 트리거, 계약, 깊이 표, 단계 순서, 종료 조건.
-- 규칙: `research-workflow.ko.md`(틀 잡기, journal, 수집, 저장), `expansion-and-convergence.ko.md`(`## EXPAND` 단서, wave, excursion, 종료 규칙), `claim-verification.ko.md`(claim gate, 실행 확인, 숫자 계보), `parallel-research.ko.md`(lane 계약과 join), `validation.ko.md`(순서가 있는 게이트와 마감).
+- 규칙: `research-workflow.ko.md`(틀 잡기, journal, 수집, 저장), `expansion-and-convergence.ko.md`(`## EXPAND` 단서, wave, excursion, 종료 규칙), `claim-verification.ko.md`(claim gate, 실행 확인, 숫자 계보, debate 기록), `parallel-research.ko.md`(lane 계약과 join), `validation.ko.md`(순서가 있는 게이트와 마감).
 - 참조: `channel-selection.ko.md`(채널과 검색 요령), `journal-format.ko.md`(journal 파일과 각 열), `report-template.ko.md`(저장하는 리포트).
 - 자산: `assets/evals/hyper-research-cases.jsonl`, 트리거와 동작 사례.
 - 스크립트(bash 3.2+, jq 1.6+): `scripts/validate-report.sh`가 저장한 리포트와 출처 ledger를 상대로 기계적인 인용·숫자 계보 게이트를 실행합니다. `scripts/report-state.sh`는 `repair`로 모든 수리 재시도를 기록하고, `finish`로 `outcome.json`을 쓰며, `briefing`으로 센 사실을 출력합니다. 상태 파일은 조사 일지 안에 두며(`--state <path>`나 `REPORT_STATE_FILE`, 기본 `.hyper/research/report-state.json`), 판단이 필요한 게이트는 에이전트가 journal과 리포트를 보며 실행하는 점검 목록으로 남습니다.
@@ -169,7 +169,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 | 1 | 축마다 채널과 서로 다른 쿼리 계획 | 쿼리 로그 |
 | 2 | 모든 축에 걸쳐 첫 wave를 한꺼번에 수집하고, 각 출처는 연 즉시 기록 | Source ledger, 관찰 메모 |
 | 3 | `## EXPAND` 단서로 확장하고, 이름이 붙은 트리거에서만 excursion을 돌리고, 수렴 규칙에서 멈춤 | 확장 로그, `converged` 또는 `exhausted` |
-| 4 | 위험도가 높은 주장을 게이트로 거르고, 코드 형태의 다툼은 실행으로 확인하고, 모든 숫자에 계보를 붙임 | Claim 표, `verify-<slug>.md` 파일 |
+| 4 | 위험도가 높은 주장을 게이트로 거르고, 코드 형태의 다툼은 실행으로 확인하고, debate를 기록하고, 모든 숫자에 계보를 붙임 | Claim 표, `debate.md`, `verify-<slug>.md` 파일 |
 | 5 | `STATUS: draft`을 처음 다섯 줄 안에 넣고 저널의 납품 약속을 적어 결론을 앞세운 리포트를 쓰고, 순서가 있는 게이트를 돌리고, 마지막 게이트 뒤에 `STATUS: draft`를 제거하고, 저장하고, 마감 브리핑 | 저장된 리포트와 브리핑 |
 
 단계 규칙:
@@ -187,7 +187,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 - 전체 실행과 lane을 통틀어 서로 다른 쿼리를 씁니다. 같은 문구를 채널만 바꿔 다시 보내지 않습니다.
 - 기술, 법률, 금융, 제품 주장은 1차 출처나 공식 출처를 먼저 씁니다.
 - 비자명한 모든 주장에 `[S<n>]` 인용을 붙이고, 그 인용이 실제로 연 ledger 행으로 이어지게 합니다.
-- 위험도가 높은 모든 주장은 claim gate를 통과하거나 미해결·반박 부록에 들어갑니다.
+- 위험도가 높은 모든 주장은 관점이 다른 debate 공격 최소 두 개를 포함한 claim gate를 통과하거나, `unverified`로 미해결·반박 부록에 들어갑니다.
 - 모든 숫자에 `MEASURED`, `ASSUMED`, `DERIVED` 가운데 하나를 붙이고, derived numbers는 계산식과 입력값을 함께 보여줍니다.
 - 대안을 판단할 때는 비교 표를 쓰고, 충돌은 드러낸 채로 둡니다.
 - 최신성 주장마다 정확한 날짜를 적고, 리포트 머리에 "as of" 기준점을 둡니다.
@@ -234,6 +234,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 | 계약 필드, 트리거를 앞세운 `description`, 두 언어 패키지 형태 | `instructions/skill/SKILL_AUTHORING.md` |
 | `scripts/validate-report.sh`가 실행하는 기계적인 인용·숫자 계보 게이트 | `dbc-hbin/omp-ulw`의 커밋 `74df40f` (2026-11-09). 소스 저장소에 license가 없어 메커니즘을 이 패키지의 문장으로 다시 썼고 텍스트나 코드를 복사하지 않았다 |
 | `scripts/report-state.sh`가 실행하는 수리 재시도 추적기와 outcome manifest | `dbc-hbin/omp-ulw`의 커밋 `74df40f` (2026-11-09). 소스 저장소에 license가 없어 메커니즘을 이 패키지의 문장으로 다시 썼고 텍스트나 코드를 복사하지 않았다 |
+| 고위험 claim용 두 공격 debate 기록, `debate.md` 저널과 `## Debate record` 부록 | `dbc-hbin/omp-ulw`의 커밋 `74df40f` (2026-11-09). 소스 저장소에 license가 없어 메커니즘을 이 패키지의 문장으로 다시 썼고 텍스트나 코드를 복사하지 않았다 |
 
 ### 근거 등급
 
