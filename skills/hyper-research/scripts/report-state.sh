@@ -76,6 +76,10 @@ rs_ledger_counts() {
 function trim(s) { sub(/^[ \t\r\n]+/, "", s); sub(/[ \t\r\n]+$/, "", s); return s }
 function domain_of(u,   s, d) {
   s = trim(u)
+  sub(/^</, "", s); sub(/>$/, "", s)
+  if (match(s, /\]\([^)]*\)/)) {
+    s = substr(s, RSTART + 2, RLENGTH - 3)
+  }
   sub(/^https?:\/\//, "", s)
   sub(/^www\./, "", s)
   if (s ~ /^\//) {
@@ -91,11 +95,22 @@ function domain_of(u,   s, d) {
 }
 {
   if (split($0, cells, "|") >= 3) {
+    if (url_col == 0 && trim(cells[2]) == "#") {
+      # Header row: find the URL/path column so a repeated source title is
+      # never mistaken for the host.
+      for (i = 3; i <= length(cells); i++) {
+        label = trim(cells[i])
+        if (label == "URL/path" || label == "URL" || label ~ /^URL\//) { url_col = i; break }
+      }
+      next
+    }
     id = trim(cells[2])
     sub(/^\[/, "", id); sub(/\]$/, "", id)
     if (id ~ /^S[0-9]+$/) {
       n++
-      d = domain_of(cells[3])
+      col = url_col
+      if (col == 0) col = (length(cells) >= 4 ? 4 : 3)
+      d = domain_of(cells[col])
       if (d != "" && !(d in seen_dom)) { seen_dom[d] = 1; nd++ }
     }
   }
@@ -141,18 +156,18 @@ rs_command_repair() {
   # Oscillation: the same code set was recorded by an earlier pass.
   if printf '%s' "$current" | jq -e --arg norm "$norm" \
     '.passes | length >= 2 and (.[:-1] | any(.codes == $norm))' >/dev/null 2>&1; then
-    printf '%s\n' 'oscillation'
+    printf '%s\n' 'stop:oscillation'
     return 0
   fi
   # Plateau: the total did not improve over the previous pass.
   if printf '%s' "$current" | jq -e \
     '(.passes | length >= 2) and ((.passes[-1].counts | add) >= (.passes[-2].counts | add))' >/dev/null 2>&1; then
-    printf '%s\n' 'plateau'
+    printf '%s\n' 'stop:plateau'
     return 0
   fi
   # Limit: two recorded passes is the package bound.
   if printf '%s' "$current" | jq -e '(.passes | length >= 2)' >/dev/null 2>&1; then
-    printf '%s\n' 'limit'
+    printf '%s\n' 'stop:limit'
     return 0
   fi
   printf '%s\n' 'continue'
@@ -309,7 +324,7 @@ RS_REPORT
 }
 
 rs_self_test() {
-  local work verdict
+  local work verdict repeated
   work=$(mktemp -d "${TMPDIR:-/tmp}/report-state.XXXXXX")
   ok=true
   cases='[]'
@@ -319,8 +334,8 @@ rs_self_test() {
   pass=$([ "$verdict" = continue ] && echo true || echo false)
   rs_case first-pass-continues true "$actual" "$pass"
   verdict=$(rs_command_repair "$work/a.json" 1 2 0 b)
-  actual=$([ "$verdict" = plateau ] && echo true || echo false)
-  pass=$([ "$verdict" = plateau ] && echo true || echo false)
+  actual=$([ "$verdict" = "stop:plateau" ] && echo true || echo false)
+  pass=$([ "$verdict" = "stop:plateau" ] && echo true || echo false)
   rs_case same-total-plateaus true "$actual" "$pass"
 
   verdict=$(rs_command_repair "$work/b.json" 3 1 0 a)
@@ -328,15 +343,28 @@ rs_self_test() {
   pass=$([ "$verdict" = continue ] && echo true || echo false)
   rs_case improving-first-continues true "$actual" "$pass"
   verdict=$(rs_command_repair "$work/b.json" 1 0 0 b)
-  actual=$([ "$verdict" = limit ] && echo true || echo false)
-  pass=$([ "$verdict" = limit ] && echo true || echo false)
+  actual=$([ "$verdict" = "stop:limit" ] && echo true || echo false)
+  pass=$([ "$verdict" = "stop:limit" ] && echo true || echo false)
   rs_case two-passes-hit-limit true "$actual" "$pass"
 
   rs_command_repair "$work/c.json" 1 2 0 a >/dev/null 2>&1
   verdict=$(rs_command_repair "$work/c.json" 0 1 0 a)
-  actual=$([ "$verdict" = oscillation ] && echo true || echo false)
-  pass=$([ "$verdict" = oscillation ] && echo true || echo false)
+  actual=$([ "$verdict" = "stop:oscillation" ] && echo true || echo false)
+  pass=$([ "$verdict" = "stop:oscillation" ] && echo true || echo false)
   rs_case repeated-codes-oscillate-first true "$actual" "$pass"
+
+  cat >"$work/repeated-title.md" <<'RS_REPEATED'
+# Sources
+
+| # | Source | URL/path | Publisher |
+|---|---|---|---|
+| S1 | Same title | https://example.org/a | Example |
+| S2 | Same title | https://other.net/b | Example |
+RS_REPEATED
+  repeated=$(rs_ledger_counts "$work/repeated-title.md" | sed -n '2p')
+  actual=$([ "$repeated" = 2 ] && echo true || echo false)
+  pass=$([ "$repeated" = 2 ] && echo true || echo false)
+  rs_case repeated-titles-count-distinct-hosts true "$actual" "$pass"
 
   rs_self_ledger >"$work/ledger.md"
   rs_self_report >"$work/report.md"
