@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 21개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 22개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -231,7 +231,7 @@ flowchart LR
 | `hyper-mcp` | MCP(Model Context Protocol) 서버·클라이언트 구축, 보안·규격 점검과 수정, 2026-07-28 판 이전, 호스트 MCP 설정 연결, 레지스트리 메타데이터 준비를 MCP Inspector 검증과 `.hyper/mcp/` 보고서까지 처리 | 대상 언어 도구 모음; MCP Inspector는 Node.js 22.19+ |
 | `hyper-decision` | 글 대신 타입 판단(예/아니오 확률, 선택, 점수, 이미지 상자)을 돌려주는 decision API(TypeSafe Jev, OpenAI Decisions, Perplexity, Liquid, Cloudflare Clef, Vercel AI SDK·AI Gateway, OpenRouter, 범용 LLM 에뮬레이션)용 적합성 판정, 방언별 질문, 호출 코드, 요청 템플릿, 평가 계획, 라벨 전용 LLM 호출 감사, 경로 설정. 경로를 네 층으로 나눠 확률을 돌려주는지 밝히고 방언별 오프라인 요청 검사기로 확인 | bash 3.2+ · jq (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 21개 스킬. 기획·마케팅·비즈니스용 스킬(blog-maker, instagram-card-maker, korean-writer, storyboard-maker, tone-manner-maker)은 [Hypercore Business](https://github.com/alpoxdev/hypercore-business)로 옮겼습니다. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 22개 스킬. 기획·마케팅·비즈니스용 스킬(blog-maker, instagram-card-maker, korean-writer, storyboard-maker, tone-manner-maker)은 [Hypercore Business](https://github.com/alpoxdev/hypercore-business)로 옮겼습니다. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
 
@@ -275,7 +275,7 @@ hypercore/
 ├── assets/                # 플러그인 아이콘, README 이미지 등 저장소 수준 정적 asset
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
-└── skills/                # 21개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 22개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:
