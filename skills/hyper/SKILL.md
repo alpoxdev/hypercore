@@ -1,6 +1,6 @@
 ---
 name: hyper
-description: "[Hyper] Use this skill when the user wants a development job carried from start to finish - a feature, fix, refactor, migration, technology choice, search-visibility improvement, database job, MCP job, decision-API job, UI design or restyle, a user, client, or planner change request, generated or edited image, deployment or deploy fix, skill folder, document, or reusable prompt - without naming one hyper stage skill, or invokes hyper by name. It picks the shortest chain of hyper stage skills (research, SEO, architecture, database, MCP, decision API, UI/UX, change-request feedback, image generation, plan, execute, mass, skill, documentation, deploy, and Git delivery), runs the stages in order, and passes each stage's saved artifact to the next. Do not use it when the user names one hyper skill directly, or for a one-place edit with no plan, commit-only requests, PRD packages, or general questions."
+description: "[Hyper] Use this skill when the user wants a development job carried from start to finish - a feature, fix, refactor, migration, technology choice, search-visibility improvement, database job, MCP job, decision-API job, UI design or restyle, a user, client, or planner change request, generated or edited image, deployment or deploy fix, skill folder, document, or reusable prompt - without naming one hyper stage skill, or invokes hyper by name. It picks the shortest chain of hyper stage skills (research, SEO, GA4 analytics, architecture, database, MCP, decision API, UI/UX, change-request feedback, image generation, plan, execute, mass, skill, documentation, deploy, and Git delivery), runs the stages in order, and passes each stage's saved artifact to the next. Do not use it when the user names one hyper skill directly, or for a one-place edit with no plan, commit-only requests, PRD packages, or general questions."
 compatibility: Needs the ability to load another installed skill by name, file read and search over the target repository, and write access for `.hyper/workflows/`. Each loaded stage brings its own requirements (git worktrees, subagents, live web). Without skill loading, it reports the chosen chain and the install commands instead of running stages.
 ---
 
@@ -34,13 +34,14 @@ Use a different language only when the user explicitly requests it or a machine-
 
 Use this skill when the requested output is a finished development result that needs one or more of the stage skills below in sequence, or when the user calls `hyper` by name.
 
-By user instruction, this package is an orchestrator: it names its seventeen stage skills and its one companion skill in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
+By user instruction, this package is an orchestrator: it names its eighteen stage skills and its one companion skill in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
 
 | Stage skill | What the stage produces |
 |---|---|
 | `hyper-research` | A cited research report under `.hyper/research/` |
 | `hyper-issue` | Issues registered on the tracker in English with their `hyper:` blocks, and a lane-grouped manifest under `.hyper/issues/<slug>/` that the plan stage runs as parallel lanes |
 | `hyper-seo` | A search-visibility audit, report, or bounded optimize loop under `.hyper/seo/<slug>/` |
+| `hyper-google-analytics` | A GA4 audit, install, property change, analysis report, or diagnosed fix, reported under `.hyper/google-analytics/<slug>/report.md` |
 | `hyper-architecture` | Stack-matched architecture, setup (lint, format, type tooling), or performance findings, or those edits when it is the last stage |
 | `hyper-database` | Database findings saved under `.hyper/database/<slug>/` (a schema or migration review, a design brief, an engine choice), or, when it is the last stage, a designed schema, an online migration, a tuned query or index, or an operations change verified by its evidence gates |
 | `hyper-mcp` | MCP findings saved under `.hyper/mcp/<slug>/`, or, when it is the last stage, a built, fixed, migrated, or connected MCP server, client, or host configuration verified with the MCP Inspector |
@@ -92,6 +93,8 @@ Positive requests:
 - "결제 재시도 기능 추가해줘. PR까지." -> `hyper-plan` -> `hyper-execute` with `--make-pr`
 - "Upgrade this TanStack Start app to the new major version and fix everything it breaks." -> `hyper-research` -> `hyper-architecture` -> `hyper-plan` -> `hyper-execute`
 - "hyper로 우리 사이트 SEO 점검하고 고칠 거 다 고쳐줘." -> `hyper-seo` -> `hyper-plan` -> `hyper-execute`
+- "사이트에 GA4 달아줘" -> `hyper-google-analytics`
+- "SEO 점검하고 GA4 측정까지 세팅해줘" -> `hyper-seo` -> `hyper-google-analytics`
 - "상태관리 라이브러리 뭐 쓸지 비교해보고 골라서 적용까지 해줘." -> `hyper-research` -> `hyper-plan` -> `hyper-execute`
 - "2026년 국내 SaaS 가격 동향 인터넷 검색으로 조사해서 리포트로 줘." -> `hyper-research` with `hyper-browsing` as its companion for blocked sources
 - "사내 배포 체크리스트를 스킬로 만들어줘. 최신 Agent Skills 규격 확인해서." -> `hyper-research` -> `hyper-skill`
@@ -150,6 +153,7 @@ Boundary requests:
 | A request handed over by `hyper-issue` that names `.hyper/issues/<slug>/batch.md` and says the issue stage is done | `hyper-plan` -> `hyper-execute`, with `hyper-issue` recorded as `done` |
 | Framework or major-version migration | `hyper-research` -> `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | SEO, AEO, or GEO audit with fixes implemented as a planned change | `hyper-seo` -> `hyper-plan` -> `hyper-execute` |
+| GA4 work: installing or fixing GA4 or the Google tag, auditing a property or its tag, changing property settings, analyzing report data, or diagnosing missing or wrong data | `hyper-google-analytics`, with `hyper-seo` first when the same request also asks for a search-visibility audit, and with `hyper-git` after it when the user asks for commit and push delivery |
 | Dependency-ordered multi-agent phase with no plan file wanted | `hyper-mass` |
 | A reusable skill folder created or refactored, optionally after provider-doc research | `hyper-skill`, with `hyper-research` first when the request depends on current external docs |
 | A README, `AGENTS.md`, AI-readable document, instruction base, runbook, rule pack, reusable prompt, prompt template, prompt pack, or prompt eval fixture created or refactored | `hyper-documentation`, with `hyper-research` first when its claims depend on current external sources or provider guidance |
@@ -159,7 +163,7 @@ Boundary requests:
 | A screen, page, or component designed or restyled, faux product UI, or a generic "AI look" removed | `hyper-design`, with `hyper-research` first when it depends on current external guidance, and with `hyper-design` in brief-only or audit mode before `hyper-plan` when the user asks for a PR or ship delivery or the change also needs non-UI work |
 | A change request in product language from the user, a client, or a planner (feedback, complaint, ticket, meeting notes, spec revision, new wording) against existing behavior | `hyper-feedback`; when it ends `handoff`, `hyper-plan` follows with its `brief.md` |
 | One new image, one edit of a supplied image, or one ready-to-use image prompt | `hyper-imagegen`, with `hyper-research` first when it depends on current external guidance or references; never followed by `hyper-git` |
-| A skill, document, MCP, decision-API, interface, database, or feedback tail followed by commit-and-push or merge-and-push words, or a skill, document, or feedback tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
+| A skill, document, MCP, decision-API, interface, database, GA4 analytics, or feedback tail followed by commit-and-push or merge-and-push words, or a skill, document, or feedback tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
 | A deployment readiness verdict, a first deployment setup, a deploy, a deployment configuration change, or a failed deployment to diagnose and fix | `hyper-deploy`, after the code chain when the same request also changes code, and never followed by `hyper-git` |
 | A plan file already exists and the user wants it run | `hyper-execute` |
 | Report-only research, audit, architecture review, or database review | The one matching stage alone |
@@ -268,7 +272,7 @@ Phase rules:
 
 | Claim | Source |
 |---|---|
-| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its seventeen stage skills and its companion skill | user instruction, 2026-11-06 (orchestrator role); the stage set extended to fifteen with `hyper-deploy` by user instruction, 2026-11-07, to sixteen with `hyper-feedback` by user instruction, 2026-11-07, and to the current seventeen with `hyper-decision` by user instruction, 2026-11-08; `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
+| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its eighteen stage skills and its companion skill | user instruction, 2026-11-06 (orchestrator role); the stage set extended to fifteen with `hyper-deploy` by user instruction, 2026-11-07, to sixteen with `hyper-feedback` by user instruction, 2026-11-07, to seventeen with `hyper-decision` by user instruction, 2026-11-08, and to the current eighteen with `hyper-google-analytics` by user instruction, 2026-11-08; `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
 | The output, artifact path, and boundary of each stage skill | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The plan stage continues into execution by itself and passes the delivery flag through | the plan skill's handoff rule in this repository, 2026-11-06 |
 | A sequential chain hands state forward through saved artifacts, and a router picks a branch by code-like rules | `instructions/graph-engineering/references/graph-patterns.md` |
