@@ -229,9 +229,14 @@ ce_main() {
   ok=false
   if [ "$(printf '%s' "$errors" | jq 'length')" = 0 ] && [ "$failing" = 0 ]; then ok=true; fi
   if [ "$json" = 1 ]; then
-    jq -n --argjson ok "$ok" --argjson errors "$errors" --argjson observations "$observations" \
-      --argjson findings "$findings" --argjson measurements "$measurements" \
-      '{ok: $ok, errors: $errors, observations: $observations, findings: $findings, measurements: $measurements}'
+    if [ "$measure" = 1 ] || [ "$measurements_status" = measured ]; then
+      jq -n --argjson ok "$ok" --argjson errors "$errors" --argjson observations "$observations" \
+        --argjson findings "$findings" --argjson measurements "$measurements" \
+        '{ok: $ok, errors: $errors, observations: $observations, findings: $findings, measurements: $measurements}'
+    else
+      jq -n --argjson ok "$ok" --argjson errors "$errors" --argjson observations "$observations" \
+        '{ok: $ok, errors: $errors, observations: $observations}'
+    fi
   elif [ "$ok" != true ]; then
     printf '%s' "$errors" | jq -r '.[]'
     printf '%s' "$findings" | jq -r '.[] | select(.failure == true) | "\(.type) at \(.locator): measured \(.ratio // .overlapPx // .overflowPx), threshold \(.threshold)"'

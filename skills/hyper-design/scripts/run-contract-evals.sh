@@ -22,7 +22,7 @@ rc_command_script() {
 
 rc_main() {
   local cases=$RC_DEFAULT_CASES json=0 help=0 line index=0 total=0 results='' output ok
-  local case_json case_status id command input expected case_script flag code out err work
+  local case_json case_status id command input expected case_script flag code out err work extra
   while [ $# -gt 0 ]; do
     case "$1" in
       --cases)
@@ -67,8 +67,10 @@ rc_main() {
     input=$(printf '%s' "$case_json" | jq -r '.input')
     expected=$(printf '%s' "$case_json" | jq -r '.expectedExit')
     if [ "$command" = report ]; then flag='--report'; else flag='--input'; fi
+    extra=()
+    if [ -n "$(printf '%s' "$case_json" | jq -r '.expectedMeasurements // ""')" ]; then extra=(--measurements); fi
     set +e
-    bash "$case_script" "$flag" "$input" --json > "$work.out" 2> "$work.err"
+    bash "$case_script" "$flag" "$input" --json ${extra[@]+"${extra[@]}"} > "$work.out" 2> "$work.err"
     code=$?
     set -e
     out=$(cat -- "$work.out")
