@@ -34,7 +34,7 @@ Use a different language only when the user explicitly requests it or a machine-
 
 Use this skill when the requested output is a finished development result that needs one or more of the stage skills below in sequence, or when the user calls `hyper` by name.
 
-By user instruction, this package is an orchestrator: it names its twenty stage skills and its one companion skill in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
+By user instruction, this package is an orchestrator: it names its twenty-one stage skills and its one companion skill in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
 
 | Stage skill | What the stage produces |
 |---|---|
@@ -49,6 +49,7 @@ By user instruction, this package is an orchestrator: it names its twenty stage 
 | `hyper-design` | A designed, restyled, or mocked-up interface checked against a craft floor and an independent review, or, before a plan, a design brief or an interface audit, saved under `.hyper/design/<slug>/` |
 | `hyper-feedback` | A product-language change request from the user, a client, or a planner, itemized, mapped to every affected surface, and applied and verified directly, with its report under `.hyper/feedback/<slug>/` and a `brief.md` for the items over its direct-edit budget |
 | `hyper-debug` | A runtime failure (stack trace, failing or intermittent test, crash, wrong output) reproduced and explained by a toggle-proven cause in `.hyper/debug/<slug>.md`, plus a minimal red-to-green fix when the user asked for one, or a fix brief for the plan stage when the fix spans several files |
+| `hyper-data` | An answer computed from a dataset (CSV, Parquet, JSON, or an export) saved as `.hyper/data/<slug>/report.md` with the answer first, then the query, grain, filters, null and duplicate handling, row counts, timing, and an input digest |
 | `hyper-imagegen` | One generated or edited image, or one ready-to-use image prompt, delivered as the runtime's returned image or saved under `.hyper/imagegen/<topic>/`, with its terminal state and inspection record |
 | `hyper-plan` | A decision-complete plan under `.hyper/plans/<slug>.md`, which continues into execution by itself |
 | `hyper-execute` | An existing plan executed wave by wave and delivered locally, as a PR, or shipped |
@@ -167,6 +168,7 @@ Boundary requests:
 | A screen, page, or component designed or restyled, faux product UI, or a generic "AI look" removed | `hyper-design`, with `hyper-research` first when it depends on current external guidance, and with `hyper-design` in brief-only or audit mode before `hyper-plan` when the user asks for a PR or ship delivery or the change also needs non-UI work |
 | A change request in product language from the user, a client, or a planner (feedback, complaint, ticket, meeting notes, spec revision, new wording) against existing behavior | `hyper-feedback`; when it ends `handoff`, `hyper-plan` follows with its `brief.md` |
 | A runtime failure to explain or fix outside a deployment: a stack trace, a failing or intermittent test, a crash, or wrong output | `hyper-debug`; when it ends `handoff`, `hyper-plan` follows with its journal |
+| A question answered by computing over a dataset (a CSV, Parquet, or JSON file, or a spreadsheet or database export) | `hyper-data` alone; never followed by `hyper-git` |
 | One new image, one edit of a supplied image, or one ready-to-use image prompt | `hyper-imagegen`, with `hyper-research` first when it depends on current external guidance or references; never followed by `hyper-git` |
 | A skill, document, MCP, decision-API, interface, database, GA4 analytics, feedback, debug, or loop tail followed by commit-and-push or merge-and-push words, or a skill, document, or feedback tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
 | A deployment readiness verdict, a first deployment setup, a deploy, a deployment configuration change, or a failed deployment to diagnose and fix | `hyper-deploy`, after the code chain when the same request also changes code, and never followed by `hyper-git` |
@@ -277,7 +279,7 @@ Phase rules:
 
 | Claim | Source |
 |---|---|
-| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its twenty stage skills and its companion skill | user instruction, 2026-11-06 (orchestrator role); the stage set extended to fifteen with `hyper-deploy` by user instruction, 2026-11-07, to sixteen with `hyper-feedback` by user instruction, 2026-11-07, to seventeen with `hyper-decision` by user instruction, 2026-11-08, to eighteen with `hyper-google-analytics` by user instruction, 2026-11-08, to nineteen with `hyper-debug` by user instruction, 2026-11-09 (issue #22), and to the current twenty with `hyper-loop` by user instruction, 2026-11-09 (issue #21); `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
+| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its twenty-one stage skills and its companion skill | user instruction, 2026-11-06 (orchestrator role); the stage set extended to fifteen with `hyper-deploy` by user instruction, 2026-11-07, to sixteen with `hyper-feedback` by user instruction, 2026-11-07, to seventeen with `hyper-decision` by user instruction, 2026-11-08, to eighteen with `hyper-google-analytics` by user instruction, 2026-11-08, to nineteen with `hyper-debug` by user instruction, 2026-11-09 (issue #22), to twenty with `hyper-loop` by user instruction, 2026-11-09 (issue #21), and to the current twenty-one with `hyper-data` by user instruction, 2026-11-09 (issue #25); `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
 | The output, artifact path, and boundary of each stage skill | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The plan stage continues into execution by itself and passes the delivery flag through | the plan skill's handoff rule in this repository, 2026-11-06 |
 | A sequential chain hands state forward through saved artifacts, and a router picks a branch by code-like rules | `instructions/graph-engineering/references/graph-patterns.md` |
