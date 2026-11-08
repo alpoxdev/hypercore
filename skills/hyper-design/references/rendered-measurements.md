@@ -20,7 +20,7 @@ A measurement is only a number with a locator and a viewport. A screenshot suppo
 `scripts/collect-rendered-evidence.sh` computes three finding types from these numbers. Each finding carries the locator, viewport, state, measured value, threshold, and whether it failed.
 
 - **Contrast.** The WCAG 2.x ratio `(L1 + 0.05) / (L2 + 0.05)` over linearized relative luminance, computed in jq with the same `0.03928` linearization threshold as the contrast-check awk command. Below 4.5 the pair fails for normal text. The unrounded ratio decides; the stored `ratio` is the rounded display value.
-- **Overlap.** The smaller of the shared horizontal and vertical extents of `rect` and `textRect`. Above 4 CSS px of text-on-text overlap the finding fails.
+- **Overlap.** The smaller of the shared horizontal and vertical extents of two distinct observations' `textRect` values, within one capture and width. Above 4 CSS px of text-on-text overlap the finding fails.
 - **Overflow.** A numeric `overflowX` above 2 CSS px at a checked width fails, and the finding records that width.
 
 ## 3. When measurements do not exist
