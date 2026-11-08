@@ -114,7 +114,7 @@ Boundary requests:
 
 - Core (`SKILL.md`): trigger, output-shape routing, modes, contract, workflow, stop conditions.
 - Rules: [rules/ga-workflow.md](rules/ga-workflow.md) owns mode selection and per-mode phases; [rules/safety-gates.md](rules/safety-gates.md) owns approval tiers, property identification, PII, and credentials; [rules/validation.md](rules/validation.md) owns completion evidence and the repair bound.
-- References: [references/report-template.md](references/report-template.md) for the saved report, [references/install-methods.md](references/install-methods.md), [references/consent-and-privacy.md](references/consent-and-privacy.md), [references/site-config.md](references/site-config.md), [references/events-and-limits.md](references/events-and-limits.md), and [references/verification.md](references/verification.md). Follow-up notes for Data API reporting, Admin API audit, MCP and auth, and BigQuery export are named as plain text here until they exist, so this package links only files it ships.
+- References: [references/report-template.md](references/report-template.md) for the saved report, [references/install-methods.md](references/install-methods.md), [references/consent-and-privacy.md](references/consent-and-privacy.md), [references/site-config.md](references/site-config.md), [references/events-and-limits.md](references/events-and-limits.md), [references/verification.md](references/verification.md), [references/data-api-reporting.md](references/data-api-reporting.md), [references/admin-api-audit.md](references/admin-api-audit.md), [references/mcp-and-auth.md](references/mcp-and-auth.md), and [references/bigquery-export.md](references/bigquery-export.md).
 - Assets: `assets/evals/hyper-google-analytics-cases.jsonl`, the trigger and behavior cases.
 
 </skill_architecture>
@@ -139,7 +139,7 @@ Write the target line, questions, findings, and the report in Korean. Keep event
 - Read [rules/safety-gates.md](rules/safety-gates.md) before the first call that writes to a property or changes a live site's consent behavior.
 - Read [rules/validation.md](rules/validation.md) before declaring any mode complete.
 - Read [references/report-template.md](references/report-template.md) when writing the report.
-- Read a follow-up reference note only after its file exists in this skill folder: [references/install-methods.md](references/install-methods.md) for `install`, [references/consent-and-privacy.md](references/consent-and-privacy.md) for a consent, PII, retention, or Korean disclosure question, [references/site-config.md](references/site-config.md) for cross-domain, referrals, and traffic filters, [references/events-and-limits.md](references/events-and-limits.md) for an event or ecommerce question, and [references/verification.md](references/verification.md) for a collection proof. Data API reporting for `analyze`, Admin API audit for `audit` and `configure`, MCP and auth for a credential or tool question, and BigQuery export when the question needs unsampled raw events are named as plain text until their files exist.
+- Read a follow-up reference note only when the question matches it: [references/install-methods.md](references/install-methods.md) for `install`, [references/consent-and-privacy.md](references/consent-and-privacy.md) for a consent, PII, retention, or Korean disclosure question, [references/site-config.md](references/site-config.md) for cross-domain, referrals, and traffic filters, [references/events-and-limits.md](references/events-and-limits.md) for an event or ecommerce question, [references/verification.md](references/verification.md) for a collection proof, [references/data-api-reporting.md](references/data-api-reporting.md) for an `analyze` report, [references/admin-api-audit.md](references/admin-api-audit.md) for an `audit` or `configure` property read or write, [references/mcp-and-auth.md](references/mcp-and-auth.md) for a credential, API-enablement, or MCP question, and [references/bigquery-export.md](references/bigquery-export.md) when the question needs unsampled event-level rows.
 - Read no second reference when the first one answers the question.
 
 </reference_routing>
@@ -150,7 +150,7 @@ Write the target line, questions, findings, and the report in Korean. Keep event
 2. `rules/ga-workflow.md`, for the mode's phases and, in `diagnose`, the fixed cause order.
 3. The site code and configuration the mode reads, then the live page's requests, then the property's own Admin API response.
 4. `rules/safety-gates.md` before the first writing call or any consent-default change.
-5. The follow-up reference note for the question, when it exists.
+5. The follow-up reference note the question matches, from the routing list above.
 6. `references/report-template.md` while writing, then `rules/validation.md` before closing.
 
 </support_file_read_order>
