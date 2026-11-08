@@ -5,13 +5,26 @@
 ## 1. 순서가 있는 게이트
 
 1. **구조.** 리포트가 `.hyper/research/[NN].slug.md`에 있고, 머리말에 as-of 기준점, 깊이, run state, reviewed·cited 수가 있으며, `references/report-template.ko.md`에서 해당하는 모든 섹션이 들어 있습니다.
-2. **인용.** 리포트의 모든 `[S<n>]`가 실제로 열어 본 ledger 행으로 이어지며, 스니펫으로 읽은 행으로는 부족합니다. 비자명한 주장마다 인용이 붙습니다. reviewed·cited 수는 중복을 제거한 ledger에서 다시 계산해 머리말과 일치합니다.
+2. **인용.** `bash scripts/validate-report.sh --report <report.md> --ledger <journal>/sources.md --json`을 실행하고 보고된 `unresolved_citation`을 모두 확인합니다. 이것은 ledger 행이 없는 `[S<n>]`입니다. 표시마다 실제로 열어 본 ledger 행으로 이어지게 하며, 스니펫으로 읽은 행으로는 부족합니다. 비자명한 주장마다 인용이 붙습니다. reviewed·cited 수는 중복을 제거한 ledger에서 다시 계산해 머리말과 일치합니다. 스크립트는 표시가 있는지만 확인하고, 인용한 출처가 주장을 뒷받침하는지는 확인하지 않습니다. 그 판단은 읽기 작업으로 남습니다.
 3. **claim gate.** 리포트의 모든 고위험 서술이 `verified-claims` 행으로 대응하거나, `partial` 행에 대응하면서 출처에 귀속한 형태로만 쓰입니다(`rules/claim-verification.ko.md` §3). 미해결이거나 반박된 부록 항목은 발견 내용이나 권고에서 단정하지 않습니다.
-4. **숫자 계보.** 모든 숫자에 `MEASURED`, `ASSUMED`, `DERIVED` 중 하나가 붙습니다. 파생 숫자는 계산식과 입력값을 함께 보여 줍니다. `derived numbers`가 `none`이면 파생 숫자가 나오지 않습니다.
+4. **숫자 계보.** 같은 스크립트를 실행하고 보고된 `unsourced_number`를 모두 확인합니다. 이것은 문단에 `[S<n>]`도 없고 계보 표시도 없는 산문 속 숫자입니다. 연도, ISO 날짜, 버전, 그림·표 참조, 시각은 제외하고 표 행도 제외합니다. 그다음 나머지 숫자마다 `MEASURED`, `ASSUMED`, `DERIVED` 중 하나가 붙는지, 파생 숫자가 계산식과 입력값을 함께 보여 주는지, `derived numbers`가 `none`일 때 파생 숫자가 나오지 않는지 읽어서 확인합니다. 스크립트는 표시가 빠진 숫자를 알릴 뿐이고, 그 표시가 올바른지는 읽기 점검으로만 확인합니다.
 5. **최신성.** 최신성 주장은 모두 절대 날짜를 씁니다. 실행일보다 늦은 날짜는 없습니다. as-of 기준점 전까지만 유효한 주장은 stale로 표시합니다.
 6. **되읽기.** 리포트를 핵심 질문과 예상 진실에 대고 다시 읽습니다. 각 예상 진실은 `true`, `violated`, `unknown` 중 하나로 끝나고, 요약은 핵심 질문에 답합니다.
 
 수리는 범위가 정해져 있습니다. 게이트가 실패하면 그 게이트와 그 뒤의 게이트를 고쳐 다시 실행하며, 재시도는 최대 두 번입니다. 그 뒤에는 검증 노트에 남은 결함을 적고 배포합니다. 다만 게이트 3에서 계속 실패하는 고위험 주장은 삭제하거나 부록으로 옮기며, 그대로 배포하지 않습니다.
+
+### 스크립트가 맡는 범위
+
+`scripts/validate-report.sh`는 저장한 리포트와 출처 ledger를 상대로 네 가지 기계 점검을 실행합니다.
+
+| 코드 | 뜻 |
+|---|---|
+| `unsourced_number` | 산문 문단의 숫자에 같은 문단의 `[S<n>]`도 없고 `MEASURED`, `ASSUMED`, `DERIVED` 표시도 없습니다. 연도, ISO 날짜, 버전, 그림·표 참조, 시각은 탐지 전에 지우고, 표 행과 제목, 코드 블록, 머리말 인용 블록은 제외합니다. |
+| `section_without_citation` | `##` 절의 산문이 120자를 넘는데 `[S<n>]`가 없습니다. |
+| `unresolved_citation` | 리포트의 `[S<n>]` 표시에 대응하는 `[S<n>]` 행이 ledger에 없습니다. |
+| `missing_required_section` | 리포트 템플릿의 제목이 빠졌습니다. Executive Summary, Key Findings, Source Ledger, Query Log, Validation Notes, References 가운데 하나입니다. |
+
+`--json`을 붙이면 결함을 JSON으로 출력하고, 결함이 없으면 0, 있으면 1, 사용법 오류면 2로 끝나며, 결함 기록은 50건에서 멈춥니다. 게이트 1, 3, 5, 6은 읽기 작업으로 남습니다. 판단이 필요한 게이트, 즉 출처가 주장을 뒷받침하는지, claim gate, 최신성, 되읽기는 여기서 스크립트로 처리하지 않습니다.
 
 ### 게이트 상태와 결함 심각도
 
@@ -62,14 +75,15 @@ lane을 사용했다면 `rules/parallel-research.ko.md` §6의 흔적 검사(ass
 
 ## Sources
 
-> 확인 2026-11-03.
+> 확인 2026-11-09.
 
 | Claim | Source |
 |---|---|
 | 순서가 있는 전달 게이트, 횟수가 정해진 수리 재시도, 마감 브리핑을 `ulw-research` 스킬에서 각색 | <https://github.com/code-yeongyu/oh-my-openagent/tree/0d80470e4201925727e88afbafcdf24d7801a588> |
 | 완료 판정의 연쇄와 검증 깊이 | `instructions/validation/index.md` |
 | 뒤의 게이트는 앞선 guard의 실패를 보상하지 않음 | `instructions/autoresearch/AUTORESEARCH.md` |
+| `unsourced_number`, `section_without_citation`, `unresolved_citation`, `missing_required_section` 게이트와 숫자 예외, 결함 상한 | `dbc-hbin/omp-ulw`의 커밋 `74df40f` (2026-11-09). 소스 저장소에 license가 없어 메커니즘을 이 패키지의 문장으로 다시 썼고 텍스트나 코드를 복사하지 않았다 |
 
 ### 근거 등급
 
-`LOCAL` - 이 파일은 이 패키지 자체의 종료 전 체크리스트를 서술합니다. 업스트림에서는 게이트를 스크립트로 실행하지만, 이 패키지는 체크리스트로 실행하며 두 번의 수리 제한은 이 패키지가 스스로 고른 선택입니다.
+`LOCAL` - 이 파일은 이 패키지 자체의 종료 전 체크리스트를 서술합니다. 기계 게이트 네 개는 이제 `scripts/validate-report.sh`로 실행하고, 판단이 필요한 게이트는 체크리스트로 남기며, 두 번의 수리 제한은 이 패키지가 스스로 고른 선택입니다.

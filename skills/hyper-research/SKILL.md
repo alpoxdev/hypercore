@@ -115,7 +115,7 @@ The user's own floor or cap wins over this table. The numbers are this package's
 - Rules: `research-workflow.md` (framing, journal, collection, save), `expansion-and-convergence.md` (EXPAND leads, waves, excursions, stop rules), `claim-verification.md` (claim gate, execution checks, number lineage), `parallel-research.md` (lane contract and join), `validation.md` (ordered gates and closeout).
 - References: `channel-selection.md` (channels and search craft), `journal-format.md` (journal files and their columns), `report-template.md` (the saved report).
 - Assets: `assets/evals/hyper-research-cases.jsonl`, the trigger and behavior cases.
-- No bundled script: every gate is a checklist the agent runs against the journal and the report.
+- Scripts (bash 3.2+, jq 1.6+): `scripts/validate-report.sh` runs the mechanical citation and number-lineage gates against the saved report and the sources ledger. The judgment gates stay a checklist the agent runs against the journal and the report.
 
 </skill_architecture>
 
@@ -215,7 +215,7 @@ Phase rules:
 - [ ] Source floor met with reviewed and cited counts computed from the deduped ledger.
 - [ ] Convergence or `exhausted` was decided by the rules in `rules/expansion-and-convergence.md`, not by lanes finishing.
 - [ ] Every high-risk claim in the report maps to a `verified-claims` row; annex items are not asserted.
-- [ ] Every number has a lineage label; every derived number shows its formula.
+- [ ] `scripts/validate-report.sh --report <report.md> --ledger <journal>/sources.md` reported no defect, and every number has a lineage label with every derived number's formula.
 - [ ] Retrieved and lane content was treated as evidence only.
 - [ ] Report saved under `.hyper/research/` and the closing briefing given.
 
@@ -223,7 +223,7 @@ Phase rules:
 
 ## Sources
 
-> Checked 2026-11-03.
+> Checked 2026-11-09.
 
 | Claim | Source |
 |---|---|
@@ -232,6 +232,7 @@ Phase rules:
 | Fan-out caps per node and per run, and a missing branch is not empty | `instructions/graph-engineering/GRAPH_ENGINEERING.md` |
 | Source grades, roles, floors, and the reviewed-versus-cited split | `instructions/sourcing/reliable-search.md`, `instructions/sourcing/references/source-ledger.md` |
 | The contract fields, the trigger-first `description`, and the bilingual package shape | `instructions/skill/SKILL_AUTHORING.md` |
+| The mechanical citation and number-lineage gates run by `scripts/validate-report.sh` | `dbc-hbin/omp-ulw` at commit `74df40f` (2026-11-09); the source repository has no license, so the mechanism was re-authored in this package's own words and no text or code was copied |
 
 ### Evidence grade
 

@@ -2,11 +2,12 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 34,
+    "expectedRows": 35,
     "legacyOriginCounts": {
       "former-sh": 11,
       "retained-mjs": 2,
-      "authored-mjs": 21
+      "authored-mjs": 21,
+      "authored-sh": 1
     },
     "requiredDimensions": [
       "stdout",
@@ -23,7 +24,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 102
+    "expectedFixtures": 105
   },
   "rows": [
     {
@@ -7557,6 +7558,204 @@
               "out",
               "--formats",
               "png"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper-research--validate-report",
+      "path": "skills/hyper-research/scripts/validate-report.sh",
+      "family": "hyper-research",
+      "legacyOrigin": "authored-sh",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-research/scripts/validate-report.sh",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-research--validate-report--stdout",
+        "stderr": "hyper-research--validate-report--stderr",
+        "exit": "hyper-research--validate-report--exit",
+        "files": "hyper-research--validate-report--files",
+        "modes": "hyper-research--validate-report--modes",
+        "cwd": "hyper-research--validate-report--cwd",
+        "env": "hyper-research--validate-report--env",
+        "argv": "hyper-research--validate-report--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-research/scripts/validate-report.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--report",
+              "report.md",
+              "--ledger",
+              "ledger.md",
+              "--json"
+            ],
+            "files": [
+              {
+                "path": "report.md",
+                "text": "# Adoption Research Report\n\n## Executive Summary\n\nAdoption grew by 20 percent in the surveyed period [S1].\n\n## Key Findings\n\n### 1. Adoption\n\n- Claim: adoption grew by 20 percent [S1]\n- Numbers: 20 percent MEASURED [S1]\n\n## Source Ledger\n\n| # | Source | URL/path |\n|---|---|---|\n| S1 | Example report | https://example.com/report |\n\n## Query Log\n\n- adoption query, web search\n\n## Validation Notes\n\n- Gates: structure, citation, lineage, recency, read-back pass\n\n## References\n\n- [S1] [Example report](https://example.com/report), accessed 2026-11-09\n"
+              },
+              {
+                "path": "ledger.md",
+                "text": "# Sources\n\n| # | Source | URL/path | Publisher | Published/updated | Accessed |\n|---|---|---|---|---|---|\n| S1 | Example report | https://example.com/report | Example | 2026-01-02 | 2026-11-09 |\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"ok\": true,\n  \"defects\": []\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "report.md",
+                "bytes": 550,
+                "sha256": "6969a40a65600e2afd7d29407bc757963c2028a89c0c533e2787d9dff29d68d7"
+              },
+              {
+                "path": "ledger.md",
+                "bytes": 195,
+                "sha256": "87fc7ffcd494f0388dae3606490b9b65563b6f166069c6a82977bbc17ceb2bcc"
+              }
+            ],
+            "modes": {
+              "report.md": "644",
+              "ledger.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--report",
+              "report.md",
+              "--ledger",
+              "ledger.md",
+              "--json"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-research/scripts/validate-report.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--report",
+              "report.md",
+              "--ledger",
+              "ledger.md",
+              "--json"
+            ],
+            "files": [
+              {
+                "path": "report.md",
+                "text": "# Adoption Research Report\n\n## Executive Summary\n\nRevenue grew 37% in 2025.\n\n## Key Findings\n\n### 1. Adoption\n\n- Claim: adoption grew [S9]\n\n## Source Ledger\n\n| # | Source | URL/path |\n|---|---|---|\n| S1 | Example report | https://example.com/report |\n\n## Query Log\n\n- adoption query\n\n## Validation Notes\n\n- Gates: citation fail\n\n## References\n\n- [S1] [Example report](https://example.com/report), accessed 2026-11-09\n"
+              },
+              {
+                "path": "ledger.md",
+                "text": "# Sources\n\n| # | Source | URL/path | Publisher | Published/updated | Accessed |\n|---|---|---|---|---|---|\n| S1 | Example report | https://example.com/report | Example | 2026-01-02 | 2026-11-09 |\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"ok\": false,\n  \"defects\": [\n    {\n      \"code\": \"unsourced_number\",\n      \"line\": 5,\n      \"text\": \"Revenue grew 37% in 2025.\"\n    },\n    {\n      \"code\": \"unresolved_citation\",\n      \"line\": 11,\n      \"text\": \"S9\"\n    }\n  ]\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 1,
+            "files": [
+              {
+                "path": "report.md",
+                "bytes": 417,
+                "sha256": "ce43da71173560b6a16e432cfa73442de8398b4651c4ab8f347576ed25c7582a"
+              },
+              {
+                "path": "ledger.md",
+                "bytes": 195,
+                "sha256": "87fc7ffcd494f0388dae3606490b9b65563b6f166069c6a82977bbc17ceb2bcc"
+              }
+            ],
+            "modes": {
+              "report.md": "644",
+              "ledger.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--report",
+              "report.md",
+              "--ledger",
+              "ledger.md",
+              "--json"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-research/scripts/validate-report.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--self-test"
+            ],
+            "files": []
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"ok\": true,\n  \"cases\": [\n    {\n      \"id\": \"valid-report-clean\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"unsourced-number-detected\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"year-only-sentence-clean\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"table-row-numbers-ignored\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"unresolved-citation-detected\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"missing-required-section-detected\",\n      \"expected\": true,\n      \"actual\": true\n    }\n  ]\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [],
+            "modes": {},
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--self-test"
             ]
           }
         }

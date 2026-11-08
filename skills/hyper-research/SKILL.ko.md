@@ -115,7 +115,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 - 규칙: `research-workflow.ko.md`(틀 잡기, journal, 수집, 저장), `expansion-and-convergence.ko.md`(`## EXPAND` 단서, wave, excursion, 종료 규칙), `claim-verification.ko.md`(claim gate, 실행 확인, 숫자 계보), `parallel-research.ko.md`(lane 계약과 join), `validation.ko.md`(순서가 있는 게이트와 마감).
 - 참조: `channel-selection.ko.md`(채널과 검색 요령), `journal-format.ko.md`(journal 파일과 각 열), `report-template.ko.md`(저장하는 리포트).
 - 자산: `assets/evals/hyper-research-cases.jsonl`, 트리거와 동작 사례.
-- 묶인 스크립트는 없습니다. 모든 게이트는 에이전트가 journal과 리포트를 보며 실행하는 점검 목록입니다.
+- 스크립트(bash 3.2+, jq 1.6+): `scripts/validate-report.sh`가 저장한 리포트와 출처 ledger를 상대로 기계적인 인용·숫자 계보 게이트를 실행합니다. 판단이 필요한 게이트는 에이전트가 journal과 리포트를 보며 실행하는 점검 목록으로 남습니다.
 
 </skill_architecture>
 
@@ -215,7 +215,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 - [ ] 중복을 제거한 ledger에서 계산한 검토 수와 인용 수로 source floor를 채웠는가.
 - [ ] 수렴이나 `exhausted`를 lane이 끝났는지로 판단하지 않고 `rules/expansion-and-convergence.ko.md`의 규칙으로 정했는가.
 - [ ] 리포트의 위험도가 높은 모든 주장이 `verified-claims` 행으로 이어지는가. 부록 항목은 단정하지 않았는가.
-- [ ] 모든 숫자에 계보 표시가 있고, 모든 derived 숫자에 계산식이 있는가.
+- [ ] `scripts/validate-report.sh --report <report.md> --ledger <journal>/sources.md`가 결함 0건을 보고했고, 모든 숫자에 계보 표시가 있으며 모든 derived 숫자에 계산식이 있는가.
 - [ ] 가져온 내용과 lane 내용을 근거로만 취급했는가.
 - [ ] 리포트를 `.hyper/research/` 아래에 저장하고 마감 브리핑을 했는가.
 
@@ -223,7 +223,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 
 ## Sources
 
-> 확인 2026-11-03.
+> 확인 2026-11-09.
 
 | Claim | Source |
 |---|---|
@@ -232,6 +232,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 | 노드당·실행당 fan-out 상한, 없는 분기는 빈 것이 아니다 | `instructions/graph-engineering/GRAPH_ENGINEERING.md` |
 | 출처 등급, 역할, floor, 검토 수와 인용 수의 구분 | `instructions/sourcing/reliable-search.md`, `instructions/sourcing/references/source-ledger.md` |
 | 계약 필드, 트리거를 앞세운 `description`, 두 언어 패키지 형태 | `instructions/skill/SKILL_AUTHORING.md` |
+| `scripts/validate-report.sh`가 실행하는 기계적인 인용·숫자 계보 게이트 | `dbc-hbin/omp-ulw`의 커밋 `74df40f` (2026-11-09). 소스 저장소에 license가 없어 메커니즘을 이 패키지의 문장으로 다시 썼고 텍스트나 코드를 복사하지 않았다 |
 
 ### 근거 등급
 
