@@ -223,7 +223,7 @@ ce_main() {
         '{ok: $ok, errors: $errors, observations: $observations, findings: $findings, measurements: $measurements}'
     else
       jq -n --argjson ok "$ok" --argjson errors "$errors" --argjson observations "$observations" \
-        '{ok: $ok, errors: $errors, observations: $observations, findings: [], measurements: {status: "not_run", reason: "No contrast, size, overlap, or overflow measurement fields were present."}}'
+        '{ok: $ok, errors: $errors, observations: $observations}'
     fi
   elif [ "$ok" != true ]; then
     printf '%s' "$errors" | jq -r '.[]'
