@@ -90,7 +90,7 @@ Boundary requests:
 | 상황 | 모드 | 세부 모드 |
 |---|---|---|
 | 프로젝트나 패키지에 README가 없거나, 오래됐거나, 코드와 어긋나는 섹션이 있음 | `readme` | create, refactor, update |
-| 저장소에 근거 있는 `AGENTS.md`가 필요하거나, 너무 긴 파일을 링크된 `rules/*.md`로 나눠야 하거나, 실제 하위 트리 차이로 중첩 파일이 필요하거나, `AGENTS.ko.md`를 고쳐야 함 | `agents-md` | create, refactor, split |
+| 저장소에 근거 있는 `AGENTS.md`가 필요하거나, 너무 긴 파일을 링크된 `rules/*.md`로 나눠야 하거나, 배치 점수로 배치 권한을 검사하는 중첩 `AGENTS.md`가 필요하거나, 사용자가 쓴 모든 줄을 보존하는 계층 `re-derive`가 필요하거나, `AGENTS.ko.md`를 고쳐야 함 | `agents-md` | create, refactor, split, nested, re-derive |
 | 재사용, 위임, 자동화, 평가용 프롬프트를 만들거나, 리팩터링하거나, 최적화하거나, eval 픽스처를 붙임 | `prompt` | standalone, template, pack, eval fixture |
 | instruction base, 런북, 명세, 규칙 팩, 하네스 문서를 만들거나 더 촘촘하고 범위가 분명하며 출처 있고 검증 가능하게 고침 | `docs` | create, refactor |
 
@@ -119,7 +119,7 @@ Boundary requests:
 | 모드 | 루프 |
 |---|---|
 | `readme` | 루프 없음. 실패한 검사는 최대 두 번만 고치고 그 뒤에는 남은 차이를 보고합니다. |
-| `agents-md` | 검증·수정 루프 한 번, 수정은 최대 두 번. 범위, 근거, 안전 게이트는 퇴보하면 안 됩니다. |
+| `agents-md` | 검증·수정 루프 한 번, 수정은 최대 두 번. 범위, 근거, 안전 게이트는 퇴보하면 안 되며, 루프 뒤에 독립 검증 단계가 옵니다. 런타임이 새 reviewer를 제공하면 그 reviewer를 쓰고, 그렇지 않으면 `review: self`를 기록합니다. |
 | `prompt` | 생성과 리팩터링은 루프 없음. 최적화는 고정한 eval 세트, 고정한 judge, 선언한 guard로 후보를 최대 세 개까지 돌립니다. |
 | `docs` | 기본은 루프 없음. 관찰 가능한 피드백 출처, 루브릭, guard, 반복 한계, 유지·폐기 규칙이 있을 때만 수정 루프를 돌립니다. |
 
@@ -159,9 +159,10 @@ Boundary requests:
 
 1. [rules/agents-md/mode-contract.ko.md](rules/agents-md/mode-contract.ko.md)
 2. [rules/agents-md/project-discovery.ko.md](rules/agents-md/project-discovery.ko.md)
-3. [rules/agents-md/instruction-design.ko.md](rules/agents-md/instruction-design.ko.md)
-4. [rules/agents-md/rule-file-splitting.ko.md](rules/agents-md/rule-file-splitting.ko.md). 편입 기준을 적용한 뒤에도 루트가 길 때
-5. [rules/agents-md/validation.ko.md](rules/agents-md/validation.ko.md)
+3. [rules/agents-md/nested-placement.ko.md](rules/agents-md/nested-placement.ko.md). 중첩 `AGENTS.md`나 계층 `re-derive`가 범위일 때
+4. [rules/agents-md/instruction-design.ko.md](rules/agents-md/instruction-design.ko.md)
+5. [rules/agents-md/rule-file-splitting.ko.md](rules/agents-md/rule-file-splitting.ko.md). 편입 기준을 적용한 뒤에도 루트가 길 때
+6. [rules/agents-md/validation.ko.md](rules/agents-md/validation.ko.md)
 
 `prompt`:
 
