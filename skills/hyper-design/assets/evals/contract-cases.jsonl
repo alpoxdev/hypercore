@@ -15,3 +15,6 @@
 {"id":"passing-complete-missing-wcag-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/passing-no-wcag-table.ko.md","expectedExit":1,"expectedError":"WCAG_TABLE_MISSING"}
 {"id":"wcag-list-without-table-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/wcag-list-no-table.ko.md","expectedExit":1,"expectedError":"WCAG_TABLE_MISSING"}
 {"id":"valid-wcag-table-accepted","command":"report","input":"skills/hyper-design/assets/fixtures/reports/valid-wcag-table.ko.md","expectedExit":0}
+{"id":"empty-reason-evidence-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/empty-reason-evidence.ko.md","expectedExit":1,"expectedError":"WCAG_ROW_INCOMPLETE"}
+{"id":"all-ids-one-row-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/all-ids-one-row.ko.md","expectedExit":1,"expectedError":"WCAG_ROW_INCOMPLETE"}
+{"id":"wrong-criterion-id-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/wrong-criterion-id.ko.md","expectedExit":1,"expectedError":"WCAG_TABLE_MISSING"}
