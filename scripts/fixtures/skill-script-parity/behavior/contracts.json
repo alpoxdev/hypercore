@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 30,
+    "expectedRows": 33,
     "legacyOriginCounts": {
       "former-sh": 11,
       "retained-mjs": 2,
-      "authored-mjs": 17
+      "authored-mjs": 20
     },
     "requiredDimensions": [
       "stdout",
@@ -23,7 +23,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 90
+    "expectedFixtures": 99
   },
   "rows": [
     {
@@ -6184,26 +6184,26 @@
       }
     },
     {
-      "id": "jev-maker--check-jev-request",
-      "path": "skills/jev-maker/scripts/check-jev-request.sh",
-      "family": "jev-maker",
+      "id": "hyper-decision--check-decision-request",
+      "path": "skills/hyper-decision/scripts/check-decision-request.sh",
+      "family": "hyper-decision",
       "legacyOrigin": "authored-mjs",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/jev-maker/scripts/check-jev-request.mjs",
+          "path": "skills/hyper-decision/scripts/check-decision-request.mjs",
           "absent": true
         }
       },
       "dimensions": {
-        "stdout": "jev-maker--check-jev-request--stdout",
-        "stderr": "jev-maker--check-jev-request--stderr",
-        "exit": "jev-maker--check-jev-request--exit",
-        "files": "jev-maker--check-jev-request--files",
-        "modes": "jev-maker--check-jev-request--modes",
-        "cwd": "jev-maker--check-jev-request--cwd",
-        "env": "jev-maker--check-jev-request--env",
-        "argv": "jev-maker--check-jev-request--argv"
+        "stdout": "hyper-decision--check-decision-request--stdout",
+        "stderr": "hyper-decision--check-decision-request--stderr",
+        "exit": "hyper-decision--check-decision-request--exit",
+        "files": "hyper-decision--check-decision-request--files",
+        "modes": "hyper-decision--check-decision-request--modes",
+        "cwd": "hyper-decision--check-decision-request--cwd",
+        "env": "hyper-decision--check-decision-request--env",
+        "argv": "hyper-decision--check-decision-request--argv"
       },
       "fixtures": {
         "happy": {
@@ -6211,7 +6211,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/jev-maker/scripts/check-jev-request.sh"
+              "skills/hyper-decision/scripts/check-decision-request.sh"
             ]
           },
           "input": {
@@ -6231,7 +6231,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "{\n  \"ok\": true,\n  \"route\": \"direct\",\n  \"errors\": [],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 3,\n    \"noul\": 1,\n    \"choice\": 1,\n    \"score\": 1,\n    \"estimatedStateTokens\": 99\n  }\n}\n"
+              "equals": "{\n  \"ok\": true,\n  \"route\": \"systemone\",\n  \"errors\": [],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 3,\n    \"noul\": 1,\n    \"boolean\": 0,\n    \"predicate\": 0,\n    \"choice\": 1,\n    \"score\": 1,\n    \"box\": 0,\n    \"estimatedStateTokens\": 99\n  }\n}\n"
             },
             "stderr": {
               "equals": ""
@@ -6261,7 +6261,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/jev-maker/scripts/check-jev-request.sh"
+              "skills/hyper-decision/scripts/check-decision-request.sh"
             ]
           },
           "input": {
@@ -6281,7 +6281,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "{\n  \"ok\": false,\n  \"route\": \"direct\",\n  \"errors\": [\n    {\n      \"code\": \"INVALID_JSON\",\n      \"path\": \"$\",\n      \"message\": \"The request file is not valid JSON.\"\n    }\n  ],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 0,\n    \"noul\": 0,\n    \"choice\": 0,\n    \"score\": 0,\n    \"estimatedStateTokens\": 0\n  }\n}\n"
+              "equals": "{\n  \"ok\": false,\n  \"route\": \"systemone\",\n  \"errors\": [\n    {\n      \"code\": \"INVALID_JSON\",\n      \"path\": \"$\",\n      \"message\": \"The request file is not valid JSON.\"\n    }\n  ],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 0,\n    \"noul\": 0,\n    \"boolean\": 0,\n    \"predicate\": 0,\n    \"choice\": 0,\n    \"score\": 0,\n    \"box\": 0,\n    \"estimatedStateTokens\": 0\n  }\n}\n"
             },
             "stderr": {
               "equals": ""
@@ -6311,7 +6311,7 @@
           "command": {
             "executable": "bash",
             "arguments": [
-              "skills/jev-maker/scripts/check-jev-request.sh"
+              "skills/hyper-decision/scripts/check-decision-request.sh"
             ]
           },
           "input": {
@@ -6333,7 +6333,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "{\n  \"ok\": false,\n  \"route\": \"bai\",\n  \"errors\": [\n    {\n      \"code\": \"STREAM_NOT_SUPPORTED\",\n      \"path\": \"$.stream\",\n      \"message\": \"The b.ai Decisions API returns one complete result; omit stream or set it to false.\"\n    }\n  ],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 3,\n    \"noul\": 1,\n    \"choice\": 1,\n    \"score\": 1,\n    \"estimatedStateTokens\": 99\n  }\n}\n"
+              "equals": "{\n  \"ok\": false,\n  \"route\": \"bai\",\n  \"errors\": [\n    {\n      \"code\": \"STREAM_NOT_SUPPORTED\",\n      \"path\": \"$.stream\",\n      \"message\": \"The b.ai Decisions API returns one complete result; omit stream or set it to false.\"\n    }\n  ],\n  \"warnings\": [],\n  \"stats\": {\n    \"questions\": 3,\n    \"noul\": 1,\n    \"boolean\": 0,\n    \"predicate\": 0,\n    \"choice\": 1,\n    \"score\": 1,\n    \"box\": 0,\n    \"estimatedStateTokens\": 99\n  }\n}\n"
             },
             "stderr": {
               "equals": ""
@@ -6793,6 +6793,579 @@
             },
             "argv": [
               "."
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper-google-tagmanager--gtm-detect",
+      "path": "skills/hyper-google-tagmanager/scripts/gtm-detect.sh",
+      "family": "hyper-google-tagmanager",
+      "legacyOrigin": "authored-mjs",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-google-tagmanager/scripts/gtm-detect.mjs",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-google-tagmanager--gtm-detect--stdout",
+        "stderr": "hyper-google-tagmanager--gtm-detect--stderr",
+        "exit": "hyper-google-tagmanager--gtm-detect--exit",
+        "files": "hyper-google-tagmanager--gtm-detect--files",
+        "modes": "hyper-google-tagmanager--gtm-detect--modes",
+        "cwd": "hyper-google-tagmanager--gtm-detect--cwd",
+        "env": "hyper-google-tagmanager--gtm-detect--env",
+        "argv": "hyper-google-tagmanager--gtm-detect--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-google-tagmanager/scripts/gtm-detect.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--root",
+              "."
+            ],
+            "files": [
+              {
+                "path": "package.json",
+                "text": "{\n  \"dependencies\": {\n    \"next\": \"16.0.0\",\n    \"@next/third-parties\": \"16.0.0\"\n  }\n}\n"
+              },
+              {
+                "path": "app/layout.tsx",
+                "text": "import { GoogleTagManager } from '@next/third-parties/google'\nexport default function RootLayout({ children }) {\n  return (<html lang=\"ko\"><GoogleTagManager gtmId=\"GTM-ABC1234\" /><body>{children}</body></html>)\n}\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"root\": \".\",\n  \"frameworks\": [\n    {\n      \"framework\": \"next\",\n      \"evidence\": [\n        {\n          \"file\": \"package.json\",\n          \"signal\": \"\\\"next\\\":\"\n        }\n      ]\n    }\n  ],\n  \"signals\": [\n    {\n      \"kind\": \"gtm-id\",\n      \"value\": \"GTM-ABC1234\",\n      \"file\": \"app/layout.tsx\",\n      \"line\": 3\n    },\n    {\n      \"kind\": \"next-gtm-component\",\n      \"file\": \"app/layout.tsx\",\n      \"line\": 3\n    }\n  ],\n  \"containerIds\": [\n    \"GTM-ABC1234\"\n  ],\n  \"googleTagIds\": [],\n  \"findings\": [\n    {\n      \"severity\": \"info\",\n      \"code\": \"NO_CONSENT_DEFAULT_IN_CODE\",\n      \"detail\": \"no consent default in page code; confirm a Consent Initialization tag or CMP template sets it in the container\"\n    }\n  ]\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "package.json",
+                "bytes": 86,
+                "sha256": "29b9ebea6366988e65f49a7f3b052a2da43762738dcdf48ee1c5cdae1934a560"
+              },
+              {
+                "path": "app/layout.tsx",
+                "bytes": 213,
+                "sha256": "34dcb5bc97e215642f152bbfe78aad8a88653f808a7aa5eb8b9927c56e175549"
+              }
+            ],
+            "modes": {
+              "package.json": "644",
+              "app/layout.tsx": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--root",
+              "."
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-google-tagmanager/scripts/gtm-detect.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--root",
+              "missing-dir"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "# empty\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "equals": "gtm-detect: not a directory: missing-dir\n"
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "f7ff302fd49cbfcfc2b3c1c9c891c6bf1d6fc1712bb2ebe5b00a8d64b709411d"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--root",
+              "missing-dir"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-google-tagmanager/scripts/gtm-detect.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--root",
+              "."
+            ],
+            "files": [
+              {
+                "path": "index.html",
+                "text": "<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-TEST12345\"></script>\n<script>window.dataLayer = window.dataLayer || []; gtag('config', 'G-TEST12345');</script>\n<script>(function(w,d,s,l,i){})(window,document,'script','dataLayer','GTM-ABC1234');var u='https://www.googletagmanager.com/gtm.js';</script>\n<script>dataLayer = [];</script>\n"
+              },
+              {
+                "path": "node_modules/x/index.html",
+                "text": "GTM-IGNORED1 https://www.googletagmanager.com/gtm.js\n"
+              },
+              {
+                "path": ".env",
+                "text": "GTM_ID=GTM-SECRET99\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"root\": \".\",\n  \"frameworks\": [\n    {\n      \"framework\": \"static-html\",\n      \"evidence\": [\n        {\n          \"file\": \"index.html\",\n          \"signal\": \"index.html\"\n        }\n      ]\n    }\n  ],\n  \"signals\": [\n    {\n      \"kind\": \"google-tag-id\",\n      \"value\": \"G-TEST12345\",\n      \"file\": \"index.html\",\n      \"line\": 1\n    },\n    {\n      \"kind\": \"gtag-loader\",\n      \"file\": \"index.html\",\n      \"line\": 1\n    },\n    {\n      \"kind\": \"datalayer-init\",\n      \"file\": \"index.html\",\n      \"line\": 2\n    },\n    {\n      \"kind\": \"google-tag-id\",\n      \"value\": \"G-TEST12345\",\n      \"file\": \"index.html\",\n      \"line\": 2\n    },\n    {\n      \"kind\": \"gtag-config\",\n      \"file\": \"index.html\",\n      \"line\": 2\n    },\n    {\n      \"kind\": \"gtm-id\",\n      \"value\": \"GTM-ABC1234\",\n      \"file\": \"index.html\",\n      \"line\": 3\n    },\n    {\n      \"kind\": \"gtm-loader\",\n      \"file\": \"index.html\",\n      \"line\": 3\n    },\n    {\n      \"kind\": \"datalayer-reset\",\n      \"file\": \"index.html\",\n      \"line\": 4\n    }\n  ],\n  \"containerIds\": [\n    \"GTM-ABC1234\"\n  ],\n  \"googleTagIds\": [\n    \"G-TEST12345\"\n  ],\n  \"findings\": [\n    {\n      \"severity\": \"warn\",\n      \"code\": \"GTAG_CONFIG_WITH_GTM\",\n      \"detail\": \"page code calls gtag(\\\"config\\\") next to GTM; the command is deprecated, gtm.js no longer waits for it, and it now surfaces as a gtag.config event that wildcard custom event triggers match\"\n    },\n    {\n      \"severity\": \"warn\",\n      \"code\": \"GTM_AND_GTAG\",\n      \"detail\": \"GTM and a direct Google tag are both installed; a measurement ID configured in both sends duplicate hits\"\n    },\n    {\n      \"severity\": \"warn\",\n      \"code\": \"DATALAYER_RESET\",\n      \"detail\": \"dataLayer is assigned a new array; after GTM loads this breaks its dataLayer listener\"\n    },\n    {\n      \"severity\": \"info\",\n      \"code\": \"NO_CONSENT_DEFAULT_IN_CODE\",\n      \"detail\": \"no consent default in page code; confirm a Consent Initialization tag or CMP template sets it in the container\"\n    }\n  ]\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "index.html",
+                "bytes": 352,
+                "sha256": "d91743adfc6bb96992aa59b04738bcf1f4ced9969c9febc274fcba5171431c5f"
+              },
+              {
+                "path": "node_modules/x/index.html",
+                "bytes": 53,
+                "sha256": "f8232affd0b622f2b561a43edec28ec6f7d809a0506ff4129ec5d13754daccca"
+              },
+              {
+                "path": ".env",
+                "bytes": 20,
+                "sha256": "6b67d40e93515d2015ea1e15f41a0ab7298fcb3f87cb88a485efed73c18e6827"
+              }
+            ],
+            "modes": {
+              "index.html": "644",
+              "node_modules/x/index.html": "644",
+              ".env": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--root",
+              "."
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper-google-tagmanager--gtm-site-check",
+      "path": "skills/hyper-google-tagmanager/scripts/gtm-site-check.sh",
+      "family": "hyper-google-tagmanager",
+      "legacyOrigin": "authored-mjs",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-google-tagmanager/scripts/gtm-site-check.mjs",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-google-tagmanager--gtm-site-check--stdout",
+        "stderr": "hyper-google-tagmanager--gtm-site-check--stderr",
+        "exit": "hyper-google-tagmanager--gtm-site-check--exit",
+        "files": "hyper-google-tagmanager--gtm-site-check--files",
+        "modes": "hyper-google-tagmanager--gtm-site-check--modes",
+        "cwd": "hyper-google-tagmanager--gtm-site-check--cwd",
+        "env": "hyper-google-tagmanager--gtm-site-check--env",
+        "argv": "hyper-google-tagmanager--gtm-site-check--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-google-tagmanager/scripts/gtm-site-check.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--html-file",
+              "page.html"
+            ],
+            "files": [
+              {
+                "path": "page.html",
+                "text": "<!doctype html><html><head>\n<script>window.dataLayer = window.dataLayer || [];\ngtag('consent', 'default', {analytics_storage: 'denied'});</script>\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\nnew Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\nj=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\n'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\n})(window,document,'script','dataLayer','GTM-ZZZZ9999');</script>\n</head><body>\n<noscript><iframe src=\"https://www.googletagmanager.com/ns.html?id=GTM-ZZZZ9999\" height=\"0\" width=\"0\" style=\"display:none;visibility:hidden\"></iframe></noscript>\n</body></html>\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"source\": \"page.html\",\n  \"httpStatus\": null,\n  \"bytes\": 698,\n  \"containers\": [\n    {\n      \"id\": \"GTM-ZZZZ9999\",\n      \"loaderCount\": 1,\n      \"noscript\": true,\n      \"loaderInHead\": true,\n      \"loaderStatus\": null,\n      \"loaderBytes\": null,\n      \"loaderResourceVersion\": null,\n      \"loaderEmpty\": null\n    }\n  ],\n  \"googleTagIds\": [],\n  \"order\": {\n    \"dataLayerInit\": 43,\n    \"consentDefault\": 84,\n    \"firstGtmLoader\": 371\n  },\n  \"findings\": []\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "page.html",
+                "bytes": 698,
+                "sha256": "79fd391901bb0bc4b4c3075b920185fb58876f1f033e8dc8319e6ab31d27b27e"
+              }
+            ],
+            "modes": {
+              "page.html": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--html-file",
+              "page.html"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-google-tagmanager/scripts/gtm-site-check.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--url",
+              "ftp://example.com/"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "# empty\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "equals": "gtm-site-check: --url must start with http:// or https://\n"
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "f7ff302fd49cbfcfc2b3c1c9c891c6bf1d6fc1712bb2ebe5b00a8d64b709411d"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--url",
+              "ftp://example.com/"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-google-tagmanager/scripts/gtm-site-check.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--html-file",
+              "late.html"
+            ],
+            "files": [
+              {
+                "path": "late.html",
+                "text": "<!doctype html><html><head><title>x</title></head><body>\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];j=d.createElement(s);j.src='https://www.googletagmanager.com/gtm.js?id='+i;})(window,document,'script','dataLayer','GTM-LATE0001');</script>\n<script>gtag('consent', 'default', {ad_storage: 'denied'});</script>\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-TEST12345\"></script>\n</body></html>\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"source\": \"late.html\",\n  \"httpStatus\": null,\n  \"bytes\": 411,\n  \"containers\": [\n    {\n      \"id\": \"GTM-LATE0001\",\n      \"loaderCount\": 1,\n      \"noscript\": false,\n      \"loaderInHead\": false,\n      \"loaderStatus\": null,\n      \"loaderBytes\": null,\n      \"loaderResourceVersion\": null,\n      \"loaderEmpty\": null\n    }\n  ],\n  \"googleTagIds\": [\n    \"G-TEST12345\"\n  ],\n  \"order\": {\n    \"dataLayerInit\": null,\n    \"consentDefault\": 254,\n    \"firstGtmLoader\": 140\n  },\n  \"findings\": [\n    {\n      \"severity\": \"warn\",\n      \"code\": \"LOADER_NOT_IN_HEAD\",\n      \"detail\": \"GTM-LATE0001 loader is not inside <head>\"\n    },\n    {\n      \"severity\": \"warn\",\n      \"code\": \"GTM_AND_GTAG\",\n      \"detail\": \"the page loads GTM and a direct Google tag (G-TEST12345); one measurement ID configured in both double-counts\"\n    },\n    {\n      \"severity\": \"warn\",\n      \"code\": \"CONSENT_AFTER_LOADER\",\n      \"detail\": \"the consent default appears after the gtm.js loader; put the default command above the container snippet so it runs before any measurement command\"\n    }\n  ]\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "late.html",
+                "bytes": 411,
+                "sha256": "e58f972babf8c33e5f3c6629a56c22749f739719bbcde95418cb759cf13d9a8e"
+              }
+            ],
+            "modes": {
+              "late.html": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--html-file",
+              "late.html"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper-google-tagmanager--gtm-container-audit",
+      "path": "skills/hyper-google-tagmanager/scripts/gtm-container-audit.sh",
+      "family": "hyper-google-tagmanager",
+      "legacyOrigin": "authored-mjs",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-google-tagmanager/scripts/gtm-container-audit.mjs",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-google-tagmanager--gtm-container-audit--stdout",
+        "stderr": "hyper-google-tagmanager--gtm-container-audit--stderr",
+        "exit": "hyper-google-tagmanager--gtm-container-audit--exit",
+        "files": "hyper-google-tagmanager--gtm-container-audit--files",
+        "modes": "hyper-google-tagmanager--gtm-container-audit--modes",
+        "cwd": "hyper-google-tagmanager--gtm-container-audit--cwd",
+        "env": "hyper-google-tagmanager--gtm-container-audit--env",
+        "argv": "hyper-google-tagmanager--gtm-container-audit--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-google-tagmanager/scripts/gtm-container-audit.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "container.json"
+            ],
+            "files": [
+              {
+                "path": "container.json",
+                "text": "{\n  \"exportFormatVersion\": 2,\n  \"containerVersion\": {\n    \"containerVersionId\": \"7\",\n    \"container\": {\n      \"publicId\": \"GTM-ABC1234\",\n      \"name\": \"shop\"\n    },\n    \"tag\": [\n      {\n        \"tagId\": \"1\",\n        \"name\": \"Google tag\",\n        \"type\": \"googtag\",\n        \"parameter\": [\n          {\n            \"type\": \"template\",\n            \"key\": \"tagId\",\n            \"value\": \"G-TEST12345\"\n          }\n        ],\n        \"firingTriggerId\": [\n          \"2147479553\"\n        ],\n        \"consentSettings\": {\n          \"consentStatus\": \"notSet\"\n        }\n      },\n      {\n        \"tagId\": \"2\",\n        \"name\": \"GA4 - purchase\",\n        \"type\": \"gaawe\",\n        \"parameter\": [\n          {\n            \"type\": \"template\",\n            \"key\": \"eventName\",\n            \"value\": \"purchase\"\n          },\n          {\n            \"type\": \"template\",\n            \"key\": \"value\",\n            \"value\": \"{{DLV - value}}\"\n          }\n        ],\n        \"firingTriggerId\": [\n          \"6\"\n        ],\n        \"consentSettings\": {\n          \"consentStatus\": \"needed\"\n        }\n      },\n      {\n        \"tagId\": \"3\",\n        \"name\": \"CMP - default\",\n        \"type\": \"cvt_123\",\n        \"firingTriggerId\": [\n          \"2147479572\"\n        ],\n        \"consentSettings\": {\n          \"consentStatus\": \"notNeeded\"\n        }\n      }\n    ],\n    \"trigger\": [\n      {\n        \"triggerId\": \"6\",\n        \"name\": \"CE - purchase\",\n        \"type\": \"customEvent\"\n      }\n    ],\n    \"variable\": [\n      {\n        \"variableId\": \"1\",\n        \"name\": \"DLV - value\",\n        \"type\": \"v\"\n      }\n    ]\n  }\n}\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"container\": {\n    \"publicId\": \"GTM-ABC1234\",\n    \"name\": \"shop\",\n    \"containerVersionId\": \"7\"\n  },\n  \"counts\": {\n    \"tags\": 3,\n    \"triggers\": 1,\n    \"variables\": 1,\n    \"builtInVariables\": 0,\n    \"customTemplates\": 0,\n    \"folders\": 0,\n    \"pausedTags\": 0,\n    \"customHtmlTags\": 0\n  },\n  \"tagTypes\": {\n    \"cvt_123\": 1,\n    \"gaawe\": 1,\n    \"googtag\": 1\n  },\n  \"findings\": [\n    {\n      \"severity\": \"info\",\n      \"code\": \"CONSENT_NOT_SET\",\n      \"subject\": \"Google tag\",\n      \"detail\": \"tag has no consent setting (Not set); confirm its built-in consent checks cover it\"\n    }\n  ]\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "container.json",
+                "bytes": 1569,
+                "sha256": "f534afdf86626591b6b09f5fcae256e8e5bbed9184e28aa6b5bb84eaa8f88a64"
+              }
+            ],
+            "modes": {
+              "container.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "container.json"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-google-tagmanager/scripts/gtm-container-audit.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "not-export.json"
+            ],
+            "files": [
+              {
+                "path": "not-export.json",
+                "text": "{\"a\": 1}\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "equals": "gtm-container-audit: not a GTM container export: not-export.json\n"
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "not-export.json",
+                "bytes": 9,
+                "sha256": "e8c628edc9968ef0c668f54e0ba2636b35503357eb1aca0ddc828aeace432f67"
+              }
+            ],
+            "modes": {
+              "not-export.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "not-export.json"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-google-tagmanager/scripts/gtm-container-audit.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "legacy.json"
+            ],
+            "files": [
+              {
+                "path": "legacy.json",
+                "text": "{\n  \"exportFormatVersion\": 2,\n  \"containerVersion\": {\n    \"containerVersionId\": \"3\",\n    \"container\": {\n      \"publicId\": \"GTM-OLD0001\",\n      \"name\": \"legacy\"\n    },\n    \"tag\": [\n      {\n        \"tagId\": \"1\",\n        \"name\": \"UA pageview\",\n        \"type\": \"ua\",\n        \"firingTriggerId\": [\n          \"2147479553\"\n        ]\n      },\n      {\n        \"tagId\": \"2\",\n        \"name\": \"Google tag A\",\n        \"type\": \"googtag\",\n        \"parameter\": [\n          {\n            \"type\": \"template\",\n            \"key\": \"tagId\",\n            \"value\": \"G-DUP00001\"\n          }\n        ],\n        \"firingTriggerId\": [\n          \"2147479553\"\n        ],\n        \"consentSettings\": {\n          \"consentStatus\": \"NOT_SET\"\n        }\n      },\n      {\n        \"tagId\": \"3\",\n        \"name\": \"Google tag B\",\n        \"type\": \"googtag\",\n        \"parameter\": [\n          {\n            \"type\": \"template\",\n            \"key\": \"tagId\",\n            \"value\": \"G-DUP00001\"\n          }\n        ],\n        \"firingTriggerId\": [\n          \"9\"\n        ]\n      },\n      {\n        \"tagId\": \"4\",\n        \"name\": \"Pixel\",\n        \"type\": \"html\",\n        \"parameter\": [\n          {\n            \"type\": \"template\",\n            \"key\": \"html\",\n            \"value\": \"<script>document.write('x')</script>\"\n          }\n        ],\n        \"paused\": true\n      }\n    ],\n    \"trigger\": [\n      {\n        \"triggerId\": \"9\",\n        \"name\": \"History\",\n        \"type\": \"HISTORY_CHANGE\"\n      },\n      {\n        \"triggerId\": \"10\",\n        \"name\": \"Unused click\",\n        \"type\": \"CLICK\"\n      }\n    ],\n    \"variable\": [\n      {\n        \"variableId\": \"1\",\n        \"name\": \"Orphan\",\n        \"type\": \"c\"\n      }\n    ]\n  }\n}\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"container\": {\n    \"publicId\": \"GTM-OLD0001\",\n    \"name\": \"legacy\",\n    \"containerVersionId\": \"3\"\n  },\n  \"counts\": {\n    \"tags\": 4,\n    \"triggers\": 2,\n    \"variables\": 1,\n    \"builtInVariables\": 0,\n    \"customTemplates\": 0,\n    \"folders\": 0,\n    \"pausedTags\": 1,\n    \"customHtmlTags\": 1\n  },\n  \"tagTypes\": {\n    \"googtag\": 2,\n    \"html\": 1,\n    \"ua\": 1\n  },\n  \"findings\": [\n    {\n      \"severity\": \"error\",\n      \"code\": \"UA_TAG\",\n      \"subject\": \"UA pageview\",\n      \"detail\": \"Universal Analytics tag; UA stopped processing data, remove it or replace it with a GA4 event tag\"\n    },\n    {\n      \"severity\": \"warn\",\n      \"code\": \"CUSTOM_HTML_DOCUMENT_WRITE\",\n      \"subject\": \"Pixel\",\n      \"detail\": \"Custom HTML tag calls document.write\"\n    },\n    {\n      \"severity\": \"warn\",\n      \"code\": \"DUPLICATE_GOOGLE_TAG\",\n      \"subject\": \"G-DUP00001\",\n      \"detail\": \"more than one Google tag is configured with this tag ID\"\n    },\n    {\n      \"severity\": \"warn\",\n      \"code\": \"HISTORY_CHANGE_PAGEVIEW\",\n      \"subject\": \"History Change\",\n      \"detail\": \"a History Change trigger exists next to a Google tag; if it sends page_view, turn off enhanced measurement history events to avoid double page_view\"\n    },\n    {\n      \"severity\": \"warn\",\n      \"code\": \"NO_FIRING_TRIGGER\",\n      \"subject\": \"Pixel\",\n      \"detail\": \"tag has no firing trigger and is not a setup or cleanup tag, so it never fires\"\n    },\n    {\n      \"severity\": \"info\",\n      \"code\": \"CONSENT_NOT_SET\",\n      \"subject\": \"Google tag A\",\n      \"detail\": \"tag has no consent setting (Not set); confirm its built-in consent checks cover it\"\n    },\n    {\n      \"severity\": \"info\",\n      \"code\": \"CONSENT_NOT_SET\",\n      \"subject\": \"Google tag B\",\n      \"detail\": \"tag has no consent setting (Not set); confirm its built-in consent checks cover it\"\n    },\n    {\n      \"severity\": \"info\",\n      \"code\": \"CONSENT_NOT_SET\",\n      \"subject\": \"UA pageview\",\n      \"detail\": \"tag has no consent setting (Not set); confirm its built-in consent checks cover it\"\n    },\n    {\n      \"severity\": \"info\",\n      \"code\": \"CUSTOM_HTML\",\n      \"subject\": \"Pixel\",\n      \"detail\": \"Custom HTML tag runs unsandboxed page script; prefer a template and keep it under review\"\n    },\n    {\n      \"severity\": \"info\",\n      \"code\": \"NO_CONSENT_INIT\",\n      \"subject\": \"Consent Initialization\",\n      \"detail\": \"no tag fires on Consent Initialization; consent defaults must then come from page code before the container snippet\"\n    },\n    {\n      \"severity\": \"info\",\n      \"code\": \"PAUSED_TAG\",\n      \"subject\": \"Pixel\",\n      \"detail\": \"tag is paused\"\n    },\n    {\n      \"severity\": \"info\",\n      \"code\": \"UNUSED_TRIGGER\",\n      \"subject\": \"Unused click\",\n      \"detail\": \"no tag fires on or is blocked by this trigger\"\n    },\n    {\n      \"severity\": \"info\",\n      \"code\": \"UNUSED_VARIABLE\",\n      \"subject\": \"Orphan\",\n      \"detail\": \"no tag, trigger, variable, or template references {{Orphan}}\"\n    }\n  ]\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "legacy.json",
+                "bytes": 1665,
+                "sha256": "a5dbe6ec48cf77494980d2dfb1021b25fd30b004b3bca47811393f4472962852"
+              }
+            ],
+            "modes": {
+              "legacy.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "legacy.json"
             ]
           }
         }

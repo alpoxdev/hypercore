@@ -52,7 +52,7 @@ Rules for every question:
 - Exactly one option marked as recommended, with a one-sentence reason.
 - Ask only what the user alone can decide: business priority, target audience, pricing intent, legal posture, launch scope, a tradeoff between two acceptable outcomes.
 - Do not ask what the document can state as an assumption. If the answer is derivable from convention, take the convention and mark it.
-- Silence, "알아서", "적당히", or an answer that does not pick an option means: take the recommended option, record it as `[가정: …]`, and continue. Do not re-ask.
+- Silence, "알아서", "적당히", or an answer that does not pick an option means: take the recommended option, record it as `[가정: …]`, and continue. Do not re-ask. The marker sits in the sentence that uses the value: a value chosen by silence is never written as fact, even in a section far from the question.
 - A question left unanswered and blocking (the document cannot be scoped without it) keeps `status: draft` and appears in the open questions section with the answerer named.
 
 ## 5. Defaults that are not worth asking

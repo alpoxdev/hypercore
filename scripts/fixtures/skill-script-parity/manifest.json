@@ -458,19 +458,19 @@
       "behaviorContractId": "hyper-skill--validate-hyper-skill"
     },
     {
-      "path": "skills/jev-maker/scripts/check-jev-request.sh",
-      "family": "jev-maker",
+      "path": "skills/hyper-decision/scripts/check-decision-request.sh",
+      "family": "hyper-decision",
       "legacyOrigin": "authored-mjs",
-      "usage": "check-jev-request",
-      "behavior": "jev-request-validation",
+      "usage": "check-decision-request",
+      "behavior": "decision-request-validation",
       "sourcePreimage": {
         "baselineAbsence": {
           "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
-          "path": "skills/jev-maker/scripts/check-jev-request.mjs",
+          "path": "skills/hyper-decision/scripts/check-decision-request.mjs",
           "absent": true
         }
       },
-      "behaviorContractId": "jev-maker--check-jev-request"
+      "behaviorContractId": "hyper-decision--check-decision-request"
     },
     {
       "path": "skills/hyper-database/scripts/detect-engines.sh",
@@ -501,6 +501,51 @@
         }
       },
       "behaviorContractId": "hyper-google-analytics--ga-detect"
+    },
+    {
+      "path": "skills/hyper-google-tagmanager/scripts/gtm-detect.sh",
+      "family": "hyper-google-tagmanager",
+      "legacyOrigin": "authored-mjs",
+      "usage": "detect-gtm-install",
+      "behavior": "gtm-install-detection",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-google-tagmanager/scripts/gtm-detect.mjs",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-google-tagmanager--gtm-detect"
+    },
+    {
+      "path": "skills/hyper-google-tagmanager/scripts/gtm-site-check.sh",
+      "family": "hyper-google-tagmanager",
+      "legacyOrigin": "authored-mjs",
+      "usage": "check-gtm-site",
+      "behavior": "gtm-site-check",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-google-tagmanager/scripts/gtm-site-check.mjs",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-google-tagmanager--gtm-site-check"
+    },
+    {
+      "path": "skills/hyper-google-tagmanager/scripts/gtm-container-audit.sh",
+      "family": "hyper-google-tagmanager",
+      "legacyOrigin": "authored-mjs",
+      "usage": "audit-gtm-container",
+      "behavior": "gtm-container-audit",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-google-tagmanager/scripts/gtm-container-audit.mjs",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-google-tagmanager--gtm-container-audit"
     }
   ],
   "forbiddenDetectorReferences": {
