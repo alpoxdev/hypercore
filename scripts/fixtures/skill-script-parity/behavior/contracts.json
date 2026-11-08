@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 33,
+    "expectedRows": 34,
     "legacyOriginCounts": {
       "former-sh": 11,
       "retained-mjs": 2,
-      "authored-mjs": 20
+      "authored-mjs": 21
     },
     "requiredDimensions": [
       "stdout",
@@ -23,7 +23,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 99
+    "expectedFixtures": 102
   },
   "rows": [
     {
@@ -7366,6 +7366,197 @@
             "argv": [
               "--file",
               "legacy.json"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper-diagram--render-diagram",
+      "path": "skills/hyper-diagram/scripts/render-diagram.sh",
+      "family": "hyper-diagram",
+      "legacyOrigin": "authored-mjs",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-diagram/scripts/render-diagram.mjs",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-diagram--render-diagram--stdout",
+        "stderr": "hyper-diagram--render-diagram--stderr",
+        "exit": "hyper-diagram--render-diagram--exit",
+        "files": "hyper-diagram--render-diagram--files",
+        "modes": "hyper-diagram--render-diagram--modes",
+        "cwd": "hyper-diagram--render-diagram--cwd",
+        "env": "hyper-diagram--render-diagram--env",
+        "argv": "hyper-diagram--render-diagram--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-diagram/scripts/render-diagram.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--help"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "Usage: bash render-diagram.sh --spec <name.diagram.json> --out-dir <dir>\n       [--name <slug>] [--formats html,jpg[,pdf]] [--scale <1-4>] [--theme light|dark]\n       [--browser <path>] [--budget-ms <ms>]\n       bash render-diagram.sh --list-browsers\n\nExit codes: 0 rendered and every check passed; 1 rendered but a check failed\n(files are written for inspection, not for delivery); 2 usage or spec error;\n3 blocked (no browser, no layout engine, or no runtime result).\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--help"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-diagram/scripts/render-diagram.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--spec",
+              "missing.diagram.json",
+              "--out-dir",
+              "out"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"status\":\"error\",\"code\":\"SPEC_MISSING\",\"message\":\"spec file not found: missing.diagram.json\"}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--spec",
+              "missing.diagram.json",
+              "--out-dir",
+              "out"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-diagram/scripts/render-diagram.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--spec",
+              "d.diagram.json",
+              "--out-dir",
+              "out",
+              "--formats",
+              "png"
+            ],
+            "files": [
+              {
+                "path": "d.diagram.json",
+                "text": "{\"type\":\"flowchart\",\"title\":\"t\",\"description\":\"twenty characters long text\",\"nodes\":[{\"id\":\"a\"}],\"edges\":[]}\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"status\":\"error\",\"code\":\"BAD_FORMAT\",\"message\":\"unknown format 'png'; use html, jpg, pdf\"}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "d.diagram.json",
+                "bytes": 109,
+                "sha256": "92d8c81d1e8efda71ca0671a62eb67b4099b66a8d3157eed7f28f7bf3240cacd"
+              }
+            ],
+            "modes": {
+              "d.diagram.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--spec",
+              "d.diagram.json",
+              "--out-dir",
+              "out",
+              "--formats",
+              "png"
             ]
           }
         }

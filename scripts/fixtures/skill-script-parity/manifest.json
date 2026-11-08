@@ -546,6 +546,21 @@
         }
       },
       "behaviorContractId": "hyper-google-tagmanager--gtm-container-audit"
+    },
+    {
+      "path": "skills/hyper-diagram/scripts/render-diagram.sh",
+      "family": "hyper-diagram",
+      "legacyOrigin": "authored-mjs",
+      "usage": "render-diagram",
+      "behavior": "diagram-rendering",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-diagram/scripts/render-diagram.mjs",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-diagram--render-diagram"
     }
   ],
   "forbiddenDetectorReferences": {

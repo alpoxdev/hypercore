@@ -57,6 +57,7 @@
     },
     "hyper-google-analytics": {
       "FRONTMATTER_TRIGGER": 1
-    }
+    },
+    "hyper-diagram": {}
   }
 }
