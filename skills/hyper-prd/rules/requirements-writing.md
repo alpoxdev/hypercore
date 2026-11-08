@@ -84,9 +84,9 @@ Two markers, placed in the sentence where the gap is, never collected only at th
 | Marker | Meaning | Limit |
 |---|---|---|
 | `[가정: <statement>]` | Plausible but unverified; the document proceeds on it | No fixed limit, but each one that changes scope gets an `A-###` entry |
-| `[확인 필요: <question>]` | Unknown; someone must answer before the statement is final | At most 3 in the document |
+| `[확인 필요: <question>]` | Unknown; someone must answer before the statement is final | At most 3 inline markers in the prose sections |
 
-A `[확인 필요: …]` over the limit means the document is not ready: either resolve the extra one, convert it to an assumption with an owner, or leave `status: draft` and report it.
+A `[확인 필요: …]` over the limit means the document is not ready: either resolve the extra one, convert it to an assumption with an owner, or leave `status: draft` and report it. A `[확인 필요: <question>]` that stands as a release gate row's conclusion is excluded from the cap, and the document stays `status: draft` while any gate row is `[확인 필요]`.
 
 ## Assumptions
 
@@ -131,7 +131,7 @@ A requirement never states an implementation mechanism:
 - schema names, table names, column names, event names invented by this document
 - a task list, an estimate, or a staffing plan
 
-Existing external constraints are the only exception, and they are quoted as constraints: a mandated third-party API, an offline requirement, a store rule, a legal obligation. Write the constraint and its source; do not derive an internal design from it.
+Existing external constraints are the only exception, and they are quoted as constraints: a mandated third-party API, an offline requirement, a store rule, a legal obligation. Write the constraint and its source; do not derive an internal design from it. A store-rule value or a file or format name a store or OS mandates is an external constraint, not an invented mechanism: a target API level, `.aab` as the uploaded artifact, and a privacy manifest file name are quoted with the rule that requires them.
 
 Also forbidden: vague quality words with no observable meaning - `빠르게`, `쉽게`, `적절히`, `충분히`, `사용자 친화적`, `fast`, `easy`, `appropriate`, `robust`, `seamless`. Replace each with a number, a state, or a check.
 

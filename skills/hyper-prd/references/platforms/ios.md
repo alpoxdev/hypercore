@@ -49,8 +49,8 @@ Every `[M]` and `[M-조건]` item in this file gets its own row in the PRD relea
 
 When the decided platforms include both iOS and Android, write the matrix once and read it from two directions. Writing it twice lets the two statements drift, and the two stores then receive different descriptions of the same behavior.
 
-| Data type | Collected | Shared with third parties | Linked to the user's identity | Used for tracking | Purpose | Optional |
-|---|---|---|---|---|---|---|
+| Data type | Collected | Shared with third parties | Linked to the user's identity | Used for tracking | Purpose | Optional | Ephemeral |
+|---|---|---|---|---|---|---|---|
 
 - The App Privacy label row (`I4`) and the Play Data safety row both resolve from this table; neither restates the data types from memory.
 - A data type that one platform collects and the other does not is a product decision, not a declaration detail: record the difference and its reason in the PRD.
@@ -60,8 +60,9 @@ When the decided platforms include both iOS and Android, write the matrix once a
 
 | Column | Content |
 |---|---|
-| Id | The item id from this file, for example `I1` |
+| ID | The item id from this file, for example `I1` |
 | Grade | The grade copied from this file, unaltered |
+| Item | The obligation in one short sentence, with the threshold, measurement method, and percentile for a numeric item |
 | Conclusion | `applies`, `not applicable` with the condition or reason, or `[확인 필요: <question>]` |
 | Evidence | The document, App Store Connect screen, or measurement that settles the conclusion |
 | Re-check | The date the dated value is checked again, or `none` for undated items |
