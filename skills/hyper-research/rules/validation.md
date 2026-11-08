@@ -11,7 +11,7 @@ Use this checklist before claiming the research is done. Run the gates in order;
 5. **Recency.** Every recency claim uses an absolute date, no date is later than the run date, and claims valid only before the as-of anchor are marked stale.
 6. **Read-back.** Re-read the report against the core question and the expected truths: each expected truth ends `true`, `violated`, or `unknown`, and the executive summary answers the core question.
 
-Repair is bounded: after a failed gate, fix and re-run that gate and everything after it, at most two repair passes. After that, ship with the residual defects listed in the validation notes - except that a high-risk claim still failing gate 3 is removed or moved to the annex, never shipped.
+Repair is bounded by `scripts/report-state.sh`, which records every repair pass in the journal's state file (pass with `--state <path>` or the `REPORT_STATE_FILE` environment variable; the default is `.hyper/research/report-state.json`). After a failed gate, run `report-state.sh repair --counts <blocker> <major> <minor> --codes <a,b>` to record the pass and fix and re-run that gate and everything after it. The command prints `continue` or `stop:<reason>`: `oscillation` when the same defect-code set was recorded before, `plateau` when the `[blocker, major, minor]` total did not improve over the previous pass, or `limit` at two recorded passes. The reasons are checked in that order after each record, so a repeated code set is always reported as oscillation even when the counts improved. When the command prints a `stop:` verdict, stop repairing and list the residual defects in the validation notes. Even then, a high-risk claim that still fails gate 3 is removed or moved to the annex, never shipped, and `finish` refuses delivery when a blocker remains. `report-state.sh finish --report <report.md> --ledger <ledger>` verifies the report exists and is non-empty, every gate has a stored status, and no blocker remains, then writes `outcome.json` beside the state file with the gate statuses, residual counts, repair count, source count, and distinct domain count parsed from the ledger. `report-state.sh briefing` prints those counted facts for the closing briefing.
 
 ### Script coverage
 
@@ -30,7 +30,7 @@ It prints defects as JSON with `--json`, exits 0 when clean, 1 when it found a d
 
 Each gate records a stored status in the report's `## Report gates` table (`references/report-template.md`): `pass`, `fail`, or `not_run`, with a short reason. `pass` means the gate ran and no blocker remains open. `fail` means the gate ran and a blocker defect is still open. `not_run` means the gate never ran, for example when the run ended before it or the evidence it needs is missing.
 
-Each defect found during a gate run carries a severity: `blocker`, `major`, or `minor`. A blocker defect breaks a claim, a citation, or a delivery requirement, and only a blocker fails a gate. A major defect weakens the result without breaking it, and a minor defect is cosmetic; majors and minors are either repaired or listed as residuals with the decision they need. A residual blocker after the bounded repair passes fails the gate and blocks delivery unless the affected claim is removed or moved to the annex.
+Each defect found during a gate run carries a severity: `blocker`, `major`, or `minor`. A blocker defect breaks a claim, a citation, or a delivery requirement, and only a blocker fails a gate. A major defect weakens the result without breaking it, and a minor defect is cosmetic; majors and minors are either repaired or listed as residuals with the decision they need. A residual blocker after the `stop:` verdict fails the gate and blocks delivery unless the affected claim is removed or moved to the annex. `report-state.sh finish` enforces the same check: it returns non-zero and writes no `outcome.json` when a blocker remains or a gate status is still unset.
 
 ## 2. Required Checks
 
@@ -83,7 +83,8 @@ Close with the closing briefing in `rules/research-workflow.md` §8.
 | The completion chain and verification depth | `instructions/validation/index.md` |
 | A later gate never compensates for a failed guard | `instructions/autoresearch/AUTORESEARCH.md` |
 | The `unsourced_number`, `section_without_citation`, `unresolved_citation`, and `missing_required_section` gates, the number exemptions, and the defect cap | `dbc-hbin/omp-ulw` at commit `74df40f` (2026-11-09); the source repository has no license, so the mechanism was re-authored in this package's own words and no text or code was copied |
+| The repair-pass tracker with oscillation, plateau, and limit verdicts, and the outcome manifest that refuses an empty report, an unset gate, or a remaining blocker | `dbc-hbin/omp-ulw` at commit `74df40f` (2026-11-09); the source repository has no license, so the mechanism was re-authored in this package's own words and no text or code was copied |
 
 ### Evidence grade
 
-`LOCAL` - this file states this package's own pre-closeout checklist. The four mechanical gates now run as `scripts/validate-report.sh`; the judgment gates stay a checklist, and the two-pass repair bound is this package's own choice.
+`LOCAL` - this file states this package's own pre-closeout checklist. The four mechanical gates now run as `scripts/validate-report.sh`, repair passes and the outcome manifest run as `scripts/report-state.sh`, the judgment gates stay a checklist, and the two-pass limit is this package's own choice.

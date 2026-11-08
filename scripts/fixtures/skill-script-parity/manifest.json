@@ -576,6 +576,21 @@
         }
       },
       "behaviorContractId": "hyper-research--validate-report"
+    },
+    {
+      "path": "skills/hyper-research/scripts/report-state.sh",
+      "family": "hyper-research",
+      "legacyOrigin": "authored-sh",
+      "usage": "research-report-state",
+      "behavior": "research-run-state",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-research/scripts/report-state.sh",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-research--report-state"
     }
   ],
   "forbiddenDetectorReferences": {

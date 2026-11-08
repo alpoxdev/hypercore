@@ -71,6 +71,7 @@ The final chat message carries, in this order:
 - the headline conclusion in one to three sentences
 - the saved report path, and the journal path when one exists
 - an effort line: sources reviewed and cited, distinct domains, waves, excursions, and execution checks, read off the journal rather than recalled
+- after the gates run, `bash scripts/report-state.sh finish --report <report.md> --ledger <journal>/sources.md` writes `outcome.json` beside the state file; `report-state.sh briefing` prints the sources, domains, repairs, gate results, and residual defects counted from `outcome.json`. Use those printed numbers in the effort line, not recalled ones.
 - the run state (`converged` or `exhausted`) and the main caveat or open gap when confidence is limited
 
 ## Sources

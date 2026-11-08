@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 35,
+    "expectedRows": 36,
     "legacyOriginCounts": {
       "former-sh": 11,
       "retained-mjs": 2,
       "authored-mjs": 21,
-      "authored-sh": 1
+      "authored-sh": 2
     },
     "requiredDimensions": [
       "stdout",
@@ -24,7 +24,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 105
+    "expectedFixtures": 108
   },
   "rows": [
     {
@@ -7743,6 +7743,238 @@
           "expected": {
             "stdout": {
               "equals": "{\n  \"ok\": true,\n  \"cases\": [\n    {\n      \"id\": \"valid-report-clean\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"unsourced-number-detected\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"decimal-quantity-detected\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"version-tokens-clean\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"year-only-sentence-clean\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"table-row-numbers-ignored\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"unresolved-citation-detected\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"missing-required-section-detected\",\n      \"expected\": true,\n      \"actual\": true\n    }\n  ]\n}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [],
+            "modes": {},
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--self-test"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper-research--report-state",
+      "path": "skills/hyper-research/scripts/report-state.sh",
+      "family": "hyper-research",
+      "legacyOrigin": "authored-sh",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-research/scripts/report-state.sh",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-research--report-state--stdout",
+        "stderr": "hyper-research--report-state--stderr",
+        "exit": "hyper-research--report-state--exit",
+        "files": "hyper-research--report-state--files",
+        "modes": "hyper-research--report-state--modes",
+        "cwd": "hyper-research--report-state--cwd",
+        "env": "hyper-research--report-state--env",
+        "argv": "hyper-research--report-state--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-research/scripts/report-state.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--state",
+              "state.json",
+              "finish",
+              "--report",
+              "report.md",
+              "--ledger",
+              "ledger.md"
+            ],
+            "files": [
+              {
+                "path": "report.md",
+                "text": "# Example Research Report\n\n> As of: 2026-11-09 | Depth: default | Run state: converged\n\n## Report gates\n\n| Gate | Status (pass / fail / not_run) | Open-defect severity (blocker / major / minor) | Reason |\n|---|---|---|---|\n| structure | pass |  | ok |\n| citation | pass |  | ok |\n| claim gate | pass |  | ok |\n| number lineage | pass |  | ok |\n| recency | pass |  | ok |\n| read-back | pass |  | ok |\n\n## References\n\n- [S1] [Example report](https://example.com/report), accessed 2026-11-09\n"
+              },
+              {
+                "path": "ledger.md",
+                "text": "# Sources\n\n| # | Source | URL/path | Publisher | Published/updated |\n|---|---|---|---|---|\n| S1 | Example report | https://example.com/report | Example | 2026-01-02 |\n| S2 | Example registry | https://example.org/registry | Example | 2026-02-03 |\n"
+              },
+              {
+                "path": "state.json",
+                "text": "{\"version\":1,\"passes\":[],\"outcome\":null}\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"gates\":{\"pass\":6,\"fail\":0,\"not_run\":0},\"residual\":{\"blocker\":0,\"major\":0,\"minor\":0},\"repairs\":0,\"sources\":2,\"domains\":2,\"report\":\"report.md\"}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "ledger.md",
+                "bytes": 247,
+                "sha256": "aec459645fdf42b7799bd6adfc23f6722519e1743f632396ecbbe50ee2c96947"
+              },
+              {
+                "path": "outcome.json",
+                "bytes": 211,
+                "sha256": "ffdd0a2bbc467c5a3d0adae6e6370f97d6fa475188bdb25115c7742c77a81a13"
+              },
+              {
+                "path": "report.md",
+                "bytes": 489,
+                "sha256": "c64996098a72b69fbb66872b9e02008dae66401458d7606f31abbd1fc57f676e"
+              },
+              {
+                "path": "state.json",
+                "bytes": 180,
+                "sha256": "b25b82407bfa5dc5e121550af44035609324f07422c46b4b4261fa591115b865"
+              }
+            ],
+            "modes": {
+              "ledger.md": "644",
+              "outcome.json": "644",
+              "report.md": "644",
+              "state.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--state",
+              "state.json",
+              "finish",
+              "--report",
+              "report.md",
+              "--ledger",
+              "ledger.md"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-research/scripts/report-state.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--state",
+              "state.json",
+              "finish",
+              "--report",
+              "report.md",
+              "--ledger",
+              "ledger.md"
+            ],
+            "files": [
+              {
+                "path": "report.md",
+                "text": ""
+              },
+              {
+                "path": "ledger.md",
+                "text": "# Sources\n\n| # | Source | URL/path | Publisher | Published/updated |\n|---|---|---|---|---|\n| S1 | Example report | https://example.com/report | Example | 2026-01-02 |\n| S2 | Example registry | https://example.org/registry | Example | 2026-02-03 |\n"
+              },
+              {
+                "path": "state.json",
+                "text": "{\"version\":1,\"passes\":[],\"outcome\":null}\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "equals": "{\"ok\":false,\"error\":\"report is missing or empty\"}\n"
+            },
+            "exit": 1,
+            "files": [
+              {
+                "path": "ledger.md",
+                "bytes": 247,
+                "sha256": "aec459645fdf42b7799bd6adfc23f6722519e1743f632396ecbbe50ee2c96947"
+              },
+              {
+                "path": "report.md",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "path": "state.json",
+                "bytes": 41,
+                "sha256": "6dad844e20269cc4a6f43a186f5c609415b3bd28ac103a582908ed7986cfdcca"
+              }
+            ],
+            "modes": {
+              "ledger.md": "644",
+              "report.md": "644",
+              "state.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--state",
+              "state.json",
+              "finish",
+              "--report",
+              "report.md",
+              "--ledger",
+              "ledger.md"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-research/scripts/report-state.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--self-test"
+            ],
+            "files": []
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\n  \"ok\": true,\n  \"cases\": [\n    {\n      \"id\": \"first-pass-continues\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"same-total-plateaus\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"improving-first-continues\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"two-passes-hit-limit\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"repeated-codes-oscillate-first\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"empty-report-blocked\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"corrupt-state-fails-loudly\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"happy-finish-writes-outcome\",\n      \"expected\": true,\n      \"actual\": true\n    },\n    {\n      \"id\": \"briefing-counts-match-ledger\",\n      \"expected\": true,\n      \"actual\": true\n    }\n  ]\n}\n"
             },
             "stderr": {
               "equals": ""

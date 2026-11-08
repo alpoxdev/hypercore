@@ -115,7 +115,7 @@ The user's own floor or cap wins over this table. The numbers are this package's
 - Rules: `research-workflow.md` (framing, journal, collection, save), `expansion-and-convergence.md` (EXPAND leads, waves, excursions, stop rules), `claim-verification.md` (claim gate, execution checks, number lineage), `parallel-research.md` (lane contract and join), `validation.md` (ordered gates and closeout).
 - References: `channel-selection.md` (channels and search craft), `journal-format.md` (journal files and their columns), `report-template.md` (the saved report).
 - Assets: `assets/evals/hyper-research-cases.jsonl`, the trigger and behavior cases.
-- Scripts (bash 3.2+, jq 1.6+): `scripts/validate-report.sh` runs the mechanical citation and number-lineage gates against the saved report and the sources ledger. The judgment gates stay a checklist the agent runs against the journal and the report.
+- Scripts (bash 3.2+, jq 1.6+): `scripts/validate-report.sh` runs the mechanical citation and number-lineage gates against the saved report and the sources ledger. `scripts/report-state.sh` records every repair pass with `repair`, writes `outcome.json` with `finish`, and prints the counted facts with `briefing`; its state file lives in the run journal (`--state <path>` or `REPORT_STATE_FILE`, default `.hyper/research/report-state.json`). The judgment gates stay a checklist the agent runs against the journal and the report.
 
 </skill_architecture>
 
@@ -125,7 +125,7 @@ The user's own floor or cap wins over this table. The numbers are this package's
 - Default and deep run the bounded expansion loop from the contract: feedback, metric, guard, cap, and stop are fixed before the first wave.
 - A lane's claim of completion is never the stop signal; the leader's convergence check is.
 - Budget exhaustion is reported as `exhausted` with the distance to convergence, never as done.
-- Repairs after a failed gate are bounded to two passes; a high-risk claim that still fails is removed or moved to the unresolved annex, never softened into the findings.
+- Repairs after a failed gate are bounded to two recorded passes via `scripts/report-state.sh repair`, whose `stop:` verdict (oscillation, plateau, or limit, in that order) ends the loop; a high-risk claim that still fails is removed or moved to the unresolved annex, never softened into the findings. `finish` refuses delivery when the report is empty, a gate is unset, or a blocker remains.
 
 </loop_policy>
 
@@ -233,6 +233,7 @@ Phase rules:
 | Source grades, roles, floors, and the reviewed-versus-cited split | `instructions/sourcing/reliable-search.md`, `instructions/sourcing/references/source-ledger.md` |
 | The contract fields, the trigger-first `description`, and the bilingual package shape | `instructions/skill/SKILL_AUTHORING.md` |
 | The mechanical citation and number-lineage gates run by `scripts/validate-report.sh` | `dbc-hbin/omp-ulw` at commit `74df40f` (2026-11-09); the source repository has no license, so the mechanism was re-authored in this package's own words and no text or code was copied |
+| The repair-pass tracker and outcome manifest run by `scripts/report-state.sh` | `dbc-hbin/omp-ulw` at commit `74df40f` (2026-11-09); the source repository has no license, so the mechanism was re-authored in this package's own words and no text or code was copied |
 
 ### Evidence grade
 

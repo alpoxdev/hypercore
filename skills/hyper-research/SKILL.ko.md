@@ -115,7 +115,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 - 규칙: `research-workflow.ko.md`(틀 잡기, journal, 수집, 저장), `expansion-and-convergence.ko.md`(`## EXPAND` 단서, wave, excursion, 종료 규칙), `claim-verification.ko.md`(claim gate, 실행 확인, 숫자 계보), `parallel-research.ko.md`(lane 계약과 join), `validation.ko.md`(순서가 있는 게이트와 마감).
 - 참조: `channel-selection.ko.md`(채널과 검색 요령), `journal-format.ko.md`(journal 파일과 각 열), `report-template.ko.md`(저장하는 리포트).
 - 자산: `assets/evals/hyper-research-cases.jsonl`, 트리거와 동작 사례.
-- 스크립트(bash 3.2+, jq 1.6+): `scripts/validate-report.sh`가 저장한 리포트와 출처 ledger를 상대로 기계적인 인용·숫자 계보 게이트를 실행합니다. 판단이 필요한 게이트는 에이전트가 journal과 리포트를 보며 실행하는 점검 목록으로 남습니다.
+- 스크립트(bash 3.2+, jq 1.6+): `scripts/validate-report.sh`가 저장한 리포트와 출처 ledger를 상대로 기계적인 인용·숫자 계보 게이트를 실행합니다. `scripts/report-state.sh`는 `repair`로 모든 수리 재시도를 기록하고, `finish`로 `outcome.json`을 쓰며, `briefing`으로 센 사실을 출력합니다. 상태 파일은 조사 일지 안에 두며(`--state <path>`나 `REPORT_STATE_FILE`, 기본 `.hyper/research/report-state.json`), 판단이 필요한 게이트는 에이전트가 journal과 리포트를 보며 실행하는 점검 목록으로 남습니다.
 
 </skill_architecture>
 
@@ -125,7 +125,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 - 기본과 deep은 계약에 적힌 범위 제한 확장 루프를 돕니다. 첫 wave 전에 feedback, 지표, 보호 장치, 상한, 종료를 확정합니다.
 - lane이 완료를 선언하는 것은 종료 신호가 아닙니다. 종료 신호는 리더의 수렴 점검입니다.
 - 예산을 다 쓰면 완료가 아니라 `exhausted`로 보고하고 수렴까지 남은 거리를 함께 밝힙니다.
-- 게이트가 실패한 뒤의 수리는 두 번까지로 제한합니다. 그래도 실패하는 위험도가 높은 주장은 보고서 본문에서 빼거나 미해결 부록으로 옮기며, 완화해서 findings에 넣지 않습니다.
+- 게이트가 실패한 뒤의 수리는 `scripts/report-state.sh repair`로 기록한 두 번까지로 제한합니다. `stop:` 판정(순서대로 oscillation, plateau, limit)이 루프를 끝내며, 그래도 실패하는 위험도가 높은 주장은 보고서 본문에서 빼거나 미해결 부록으로 옮기고 완화해서 findings에 넣지 않습니다. 리포트가 비어 있거나, 게이트가 아직 기록되지 않았거나, blocker가 남아 있으면 `finish`는 납품을 거부합니다.
 
 </loop_policy>
 
@@ -233,6 +233,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 | 출처 등급, 역할, floor, 검토 수와 인용 수의 구분 | `instructions/sourcing/reliable-search.md`, `instructions/sourcing/references/source-ledger.md` |
 | 계약 필드, 트리거를 앞세운 `description`, 두 언어 패키지 형태 | `instructions/skill/SKILL_AUTHORING.md` |
 | `scripts/validate-report.sh`가 실행하는 기계적인 인용·숫자 계보 게이트 | `dbc-hbin/omp-ulw`의 커밋 `74df40f` (2026-11-09). 소스 저장소에 license가 없어 메커니즘을 이 패키지의 문장으로 다시 썼고 텍스트나 코드를 복사하지 않았다 |
+| `scripts/report-state.sh`가 실행하는 수리 재시도 추적기와 outcome manifest | `dbc-hbin/omp-ulw`의 커밋 `74df40f` (2026-11-09). 소스 저장소에 license가 없어 메커니즘을 이 패키지의 문장으로 다시 썼고 텍스트나 코드를 복사하지 않았다 |
 
 ### 근거 등급
 

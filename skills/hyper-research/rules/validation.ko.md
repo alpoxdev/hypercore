@@ -11,7 +11,7 @@
 5. **최신성.** 최신성 주장은 모두 절대 날짜를 씁니다. 실행일보다 늦은 날짜는 없습니다. as-of 기준점 전까지만 유효한 주장은 stale로 표시합니다.
 6. **되읽기.** 리포트를 핵심 질문과 예상 진실에 대고 다시 읽습니다. 각 예상 진실은 `true`, `violated`, `unknown` 중 하나로 끝나고, 요약은 핵심 질문에 답합니다.
 
-수리는 범위가 정해져 있습니다. 게이트가 실패하면 그 게이트와 그 뒤의 게이트를 고쳐 다시 실행하며, 재시도는 최대 두 번입니다. 그 뒤에는 검증 노트에 남은 결함을 적고 배포합니다. 다만 게이트 3에서 계속 실패하는 고위험 주장은 삭제하거나 부록으로 옮기며, 그대로 배포하지 않습니다.
+수리는 `scripts/report-state.sh`가 맡습니다. 이 스크립트는 조사 일지의 상태 파일에 모든 수리 재시도를 기록합니다. 경로를 `--state <path>` 인자나 `REPORT_STATE_FILE` 환경 변수로 넘기고, 기본값은 `.hyper/research/report-state.json`입니다. 게이트가 실패하면 `report-state.sh repair --counts <blocker> <major> <minor> --codes <a,b>`로 그 재시도를 기록한 뒤 고치고 그 게이트와 그 뒤의 게이트를 다시 실행합니다. 이 명령은 `continue`나 `stop:<이유>`를 출력합니다. 같은 결함 코드 집합이 예전에 기록된 경우 `oscillation`, `[blocker, major, minor]` 합계가 이전 재시도보다 줄지 않은 경우 `plateau`, 기록한 재시도가 두 번에 이른 경우 `limit`입니다. 판단은 기록한 뒤에 이 순서대로 하므로, 코드 집합이 반복되면 개수와 상관없이 항상 oscillation으로 보고됩니다. `stop:` 판정이 나오면 수리를 멈추고 남은 결함을 검증 노트에 적습니다. 그래도 게이트 3에서 계속 실패하는 고위험 주장은 삭제하거나 부록으로 옮기며, 그대로 배포하지 않습니다. `finish`도 blocker가 남아 있으면 납품을 거부합니다. `report-state.sh finish --report <report.md> --ledger <ledger>`는 리포트가 비어 있지 않은지, 모든 게이트에 상태가 기록됐는지, 나머지 blocker가 없는지 확인하고, 상태 파일 옆에 `outcome.json`을 써서 게이트 상태와 남은 결함 수, 수리 횟수, ledger에서 센 출처 수와 서로 다른 도메인 수를 담습니다. `report-state.sh briefing`은 그 센 사실을 출력해 마감 브리핑에 씁니다.
 
 ### 스크립트가 맡는 범위
 
@@ -30,7 +30,7 @@
 
 각 게이트는 저장된 상태와 함께 리포트의 `## Report gates` 표(`references/report-template.ko.md`)에 기록합니다. 상태는 `pass`, `fail`, `not_run` 중 하나이고 짧은 이유를 붙입니다. `pass`는 게이트가 돌았고 열려 있는 blocker가 없다는 뜻입니다. `fail`은 게이트가 돌았고 열려 있는 blocker 결함이 남아 있다는 뜻입니다. `not_run`은 게이트가 돌지 않았다는 뜻이며, 실행이 그전에 끝났거나 필요한 근거가 없을 때 씁니다.
 
-게이트 실행에서 찾은 결함마다 심각도를 붙입니다(`blocker`, `major`, `minor`). blocker는 주장이나 인용, 납품 요구를 깨뜨리는 결함이고, 게이트를 실패로 만드는 것은 blocker뿐입니다. major는 결과를 약화하지만 깨뜨리지 않고, minor는 외형상의 결함입니다. major와 minor는 수리하거나, 필요한 결정을 함께 남은 결함으로 적습니다. 제한된 수리 횟수를 쓰고도 남는 blocker는 그 게이트를 실패로 하고, 영향을 받는 주장을 삭제하거나 부록으로 옮기기 전에는 납품을 막습니다.
+게이트 실행에서 찾은 결함마다 심각도를 붙입니다(`blocker`, `major`, `minor`). blocker는 주장이나 인용, 납품 요구를 깨뜨리는 결함이고, 게이트를 실패로 만드는 것은 blocker뿐입니다. major는 결과를 약화하지만 깨뜨리지 않고, minor는 외형상의 결함입니다. major와 minor는 수리하거나, 필요한 결정을 함께 남은 결함으로 적습니다. `stop:` 판정 뒤에도 남는 blocker는 그 게이트를 실패로 하고, 영향을 받는 주장을 삭제하거나 부록으로 옮기기 전에는 납품을 막습니다. `report-state.sh finish`는 같은 검사를 하며, blocker가 남아 있거나 게이트 상태가 아직 기록되지 않았으면 0이 아닌 값으로 끝나고 `outcome.json`을 쓰지 않습니다.
 
 ## 2. 필수 점검
 
@@ -83,7 +83,8 @@ lane을 사용했다면 `rules/parallel-research.ko.md` §6의 흔적 검사(ass
 | 완료 판정의 연쇄와 검증 깊이 | `instructions/validation/index.md` |
 | 뒤의 게이트는 앞선 guard의 실패를 보상하지 않음 | `instructions/autoresearch/AUTORESEARCH.md` |
 | `unsourced_number`, `section_without_citation`, `unresolved_citation`, `missing_required_section` 게이트와 숫자 예외, 결함 상한 | `dbc-hbin/omp-ulw`의 커밋 `74df40f` (2026-11-09). 소스 저장소에 license가 없어 메커니즘을 이 패키지의 문장으로 다시 썼고 텍스트나 코드를 복사하지 않았다 |
+| oscillation·plateau·limit 판정의 수리 재시도 추적기와 빈 리포트·미기록 게이트·남은 blocker를 거부하는 outcome manifest | `dbc-hbin/omp-ulw`의 커밋 `74df40f` (2026-11-09). 소스 저장소에 license가 없어 메커니즘을 이 패키지의 문장으로 다시 썼고 텍스트나 코드를 복사하지 않았다 |
 
 ### 근거 등급
 
-`LOCAL` - 이 파일은 이 패키지 자체의 종료 전 체크리스트를 서술합니다. 기계 게이트 네 개는 이제 `scripts/validate-report.sh`로 실행하고, 판단이 필요한 게이트는 체크리스트로 남기며, 두 번의 수리 제한은 이 패키지가 스스로 고른 선택입니다.
+`LOCAL` - 이 파일은 이 패키지 자체의 종료 전 체크리스트를 서술합니다. 기계 게이트 네 개는 `scripts/validate-report.sh`로 실행하고, 수리 재시도와 outcome manifest는 `scripts/report-state.sh`로 실행하며, 판단이 필요한 게이트는 체크리스트로 남기고, 두 번의 제한은 이 패키지가 스스로 고른 선택입니다.
