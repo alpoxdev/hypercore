@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 24개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 25개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -112,6 +112,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 /hyper-google-analytics "<작업>"  # GA4 점검·탑재·속성 설정·데이터 분석·수집 진단을 네트워크 요청과 read-back으로 검증
 /hyper-google-tagmanager "<작업>"  # GTM 점검·사이트 탑재·컨테이너 설정·발화 검증·추적 오류 진단·데이터 분석을 요청 증거와 게시 승인 게이트로 처리
 /hyper-diagram "<대상>"  # 구조도·플로차트·시퀀스·ERD·상태·클래스·트리·마인드맵·타임라인·일정표·계층 구조를 자동 배치 HTML+JPG(요청 시 1쪽 PDF)로 그리고 겹침·잘림 검사까지
+/hyper-loop "<목표들>"  # 서로 의존하는 여러 목표를 기준별 증거와 작업 트리 지문으로 묶어 끝까지 실행, 코드가 바뀌면 증거를 stale로 표시하고 최종 게이트로 마감
 /hyper-debug "<실패>"    # 스택 트레이스·실패하는 테스트·크래시·가끔 실패하는 테스트를 재현하고 토글로 원인을 증명, 요청하면 최소 수정까지
 ```
 
@@ -137,6 +138,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 | "라벨만 돌려주는 GPT 호출을 결정 모델로 바꿀 질문과 호출 코드" | `hyper-decision` |
 | "고객사 피드백 반영하고 dev, main에 머지·푸시" | `hyper-feedback` -> `hyper-git` (큰 항목이 있으면 `hyper-feedback` -> `hyper-plan` -> `hyper-execute`) |
 | "사이트에 GA4 달아줘" | `hyper-google-analytics` (GA4 달고 dev에 머지·푸시 → `hyper-google-analytics` -> `hyper-git`) |
+| "이 목표 세 개 다 끝날 때까지 돌려줘" | `hyper-loop` (머지·푸시까지면 `hyper-loop` -> `hyper-git`) |
 | "이 테스트 가끔 실패하는데 원인 찾아서 고쳐줘" | `hyper-debug` (수정이 여러 파일에 걸치면 `hyper-debug` -> `hyper-plan` -> `hyper-execute`) |
 
 ### 전달 방식
@@ -202,11 +204,12 @@ flowchart LR
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-google-analytics·hyper-architecture·hyper-database·hyper-mcp·hyper-decision·hyper-design·hyper-feedback·hyper-debug·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-skill·hyper-documentation·hyper-git·hyper-deploy 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 고객·기획자 변경 요청 → feedback(큰 항목은 → plan), 실패 원인 찾기 → debug(여러 파일 수정은 → plan), 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute, 인터넷 검색 리서치 → research(막힌 출처는 hyper-browsing 동반), 기능 고치고 배포 → plan → execute → deploy, 배포 실패 고치기 → deploy) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
+| `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-google-analytics·hyper-architecture·hyper-database·hyper-mcp·hyper-decision·hyper-design·hyper-feedback·hyper-debug·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-loop·hyper-skill·hyper-documentation·hyper-git·hyper-deploy 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 고객·기획자 변경 요청 → feedback(큰 항목은 → plan), 실패 원인 찾기 → debug(여러 파일 수정은 → plan), 여러 목표 끝까지 → loop, 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute, 인터넷 검색 리서치 → research(막힌 출처는 hyper-browsing 동반), 기능 고치고 배포 → plan → execute → deploy, 배포 실패 고치기 → deploy) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
 | `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
 | `hyper-issue` | 확정된 발견이나 결정된 작업을 새 세션 에이전트가 읽는 영어 이슈로 등록하고, 열린 이슈 묶음이나 `#1~3` 같은 번호를 서로 겹치지 않는 작업 레인으로 묶어 배치 매니페스트 생성. 작업까지 원하면 `hyper`에 넘겨 레인별로 실행(스킬 자체는 구현하지 않음) | 인증된 이슈 트래커 CLI(`gh`); 쓰기 권한이 없으면 본문을 디스크에 초안으로 남김; 레인 실행에는 `hyper` 스킬 |
 | `hyper-mass` | 의존 순서가 있는 하위 작업을 그래프로 정의해 단계별 병렬 실행, 재시도·수정·재개 지원 | All |
+| `hyper-loop` | 서로 의존하는 여러 목표를 `.hyper/loop/`의 목표·장부·최종 게이트로 끝까지 실행. 기준마다 증거를 git tree·diff 해시·미추적 파일 지문에 묶어 코드가 바뀌면 stale로 표시하고, 같은 실패 3회면 멈추며, 모든 기준이 새 증거로 덮였을 때만 완료. 푸시·병합·PR은 하지 않음 | bash 3.2+ & jq 1.6+ & git |
 
 ### 리서치 · 디버깅 · QA
 
@@ -236,7 +239,7 @@ flowchart LR
 | `hyper-mcp` | MCP(Model Context Protocol) 서버·클라이언트 구축, 보안·규격 점검과 수정, 2026-07-28 판 이전, 호스트 MCP 설정 연결, 레지스트리 메타데이터 준비를 MCP Inspector 검증과 `.hyper/mcp/` 보고서까지 처리 | 대상 언어 도구 모음; MCP Inspector는 Node.js 22.19+ |
 | `hyper-decision` | 글 대신 타입 판단(예/아니오 확률, 선택, 점수, 이미지 상자)을 돌려주는 decision API(TypeSafe Jev, OpenAI Decisions, Perplexity, Liquid, Cloudflare Clef, Vercel AI SDK·AI Gateway, OpenRouter, 범용 LLM 에뮬레이션)용 적합성 판정, 방언별 질문, 호출 코드, 요청 템플릿, 평가 계획, 라벨 전용 LLM 호출 감사, 경로 설정. 경로를 네 층으로 나눠 확률을 돌려주는지 밝히고 방언별 오프라인 요청 검사기로 확인 | bash 3.2+ · jq (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 24개 스킬. 기획·마케팅·비즈니스용 스킬(blog-maker, instagram-card-maker, korean-writer, storyboard-maker, tone-manner-maker)은 [Hypercore Business](https://github.com/alpoxdev/hypercore-business)로 옮겼습니다. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 25개 스킬. 기획·마케팅·비즈니스용 스킬(blog-maker, instagram-card-maker, korean-writer, storyboard-maker, tone-manner-maker)은 [Hypercore Business](https://github.com/alpoxdev/hypercore-business)로 옮겼습니다. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
 
@@ -280,7 +283,7 @@ hypercore/
 ├── assets/                # 플러그인 아이콘, README 이미지 등 저장소 수준 정적 asset
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
 ├── scripts/               # source/lifecycle 검증 및 보조 스크립트
-└── skills/                # 24개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 25개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:

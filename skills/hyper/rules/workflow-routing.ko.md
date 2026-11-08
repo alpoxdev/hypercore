@@ -35,9 +35,10 @@
 | `hyper-plan` | Build 작업이 여러 파일이나 단계를 건드리거나, Report 작업이 계획을 요청합니다 | 요청 문구 |
 | `hyper-execute` | 첫 단계일 때만: `.hyper/plans/` 아래 계획 파일이 이미 있고 사용자가 실행이나 재개를 원합니다 | 읽은 계획 경로 |
 | `hyper-mass` | 사용자가 의존성 그래프, DAG, "의존성 그래프", "단계별 병렬"을 요청하거나, 일부가 먼저 끝나야 다른 일이 시작되는 여러 작업이 있고 계획 파일을 원하지 않습니다 | 요청 문구 |
+| `hyper-loop` | 요청이 서로 의존하는 여러 목표를 모두 끝내는 일이고, 목표마다 새 증거가 필요한 수락 기준이 있습니다("목표 여러 개 끝까지", "이 목표들 다 끝날 때까지 돌려", "keep going until every goal passes"). 또는 `.hyper/loop/<slug>/` 아래 멈춘 루프를 재개합니다 | 요청 문구, 또는 읽은 `.hyper/loop/<slug>/goals.json` 경로 |
 | `hyper-skill` | 요청한 결과물이 재사용 스킬 폴더입니다. 새 스킬, 또는 기존 스킬의 트리거, 계약, 리소스, 검증 리팩터링 | 요청 문구, 그리고 이미 있으면 대상 `skills/<name>/SKILL.md` |
 | `hyper-documentation` | 요청한 결과물이 새로 만들거나 리팩터링하는 문서 산출물입니다. README, `AGENTS.md`, AI가 읽기 좋은 문서(지침 베이스, 에이전트 가이드, 런북, 스펙, 규칙 묶음), 재사용 프롬프트 산출물(역할·시스템·에이전트 프롬프트, 프롬프트 템플릿이나 팩, 프롬프트 평가 픽스처) | 요청 문구, 그리고 이미 있으면 대상 경로 |
-| `hyper-git` | 전달하지 않는 꼬리(`hyper-skill`, `hyper-documentation`, `hyper-feedback`, `hyper-debug`, 또는 마지막 구축 단계인 `hyper-database`, `hyper-mcp`, `hyper-decision`, `hyper-design`, `hyper-google-analytics`) 뒤에서 사용자가 커밋과 푸시, 또는 지정 브랜치로 병합과 푸시를 요청합니다. `hyper-skill`, `hyper-documentation`, `hyper-feedback` 뒤에서는 PR도 해당합니다. 같은 체인이 배포까지 하면 `hyper-deploy` 앞에서 실행합니다. `hyper-imagegen` 뒤에는 붙지 않습니다. 그 산출물은 전달된 이미지이거나 git이 무시하는 `.hyper/imagegen/` 파일이기 때문입니다. `hyper-deploy` 뒤에도 붙지 않습니다 | 전달 문구와 지정한 대상 브랜치 |
+| `hyper-git` | 전달하지 않는 꼬리(`hyper-skill`, `hyper-documentation`, `hyper-feedback`, `hyper-debug`, `hyper-loop`, 또는 마지막 구축 단계인 `hyper-database`, `hyper-mcp`, `hyper-decision`, `hyper-design`, `hyper-google-analytics`) 뒤에서 사용자가 커밋과 푸시, 또는 지정 브랜치로 병합과 푸시를 요청합니다. `hyper-skill`, `hyper-documentation`, `hyper-feedback` 뒤에서는 PR도 해당합니다. 같은 체인이 배포까지 하면 `hyper-deploy` 앞에서 실행합니다. `hyper-imagegen` 뒤에는 붙지 않습니다. 그 산출물은 전달된 이미지이거나 git이 무시하는 `.hyper/imagegen/` 파일이기 때문입니다. `hyper-deploy` 뒤에도 붙지 않습니다 | 전달 문구와 지정한 대상 브랜치 |
 | `hyper-deploy` | 작업이 배포나 배포 관련 발견입니다. 배포 준비 판정, 첫 배포 구성, 지목한 환경으로의 배포, 기존 배포 설정 변경, 실패했거나 비정상인 배포의 원인 진단과 수정 | 요청 문구와, 읽은 배포 파일(`Dockerfile`, `compose.yaml`, `wrangler.jsonc`, `.railway/railway.ts`, `railway.toml`, `config/deploy.yml` 등) |
 
 ## 3. 단계 순서
@@ -45,7 +46,7 @@
 고른 단계는 항상 이 순서로 실행합니다. 고르지 않은 단계는 건너뜁니다.
 
 ```text
-hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-decision -> hyper-design -> hyper-feedback -> hyper-debug -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-execute | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git] [-> hyper-deploy]
+hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-decision -> hyper-design -> hyper-feedback -> hyper-debug -> (hyper-plan [-> hyper-execute] | hyper-mass | hyper-loop | hyper-execute | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git] [-> hyper-deploy]
 ```
 
 두 전달 갈래를 모두 고르면 `hyper-git`이 먼저, `hyper-deploy`가 마지막에 실행합니다. `hyper-deploy` 뒤에는 어떤 단계도 오지 않습니다.
@@ -60,7 +61,8 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-ar
 - `hyper-debug`가 마지막으로 고른 단계면 꼬리 단계입니다. 실패를 재현하고 토글로 원인을 증명하며, 사용자가 수정을 요청했을 때만 최소 수정을 빨강에서 초록으로 바뀌는 증거와 함께 적용합니다. 실행이 `handoff`(확인한 수정이 여러 파일에 걸침)로 끝나면 같은 실행에서 그 뒤에 `hyper-plan`을 붙이고 `.hyper/debug/<slug>.md`를 필수 입력으로 넘깁니다. 라우팅 줄에는 이 조건부 단계를 `hyper-debug [-> hyper-plan]`으로 씁니다. `confirmed`, `fixed`, `unconfirmed`로 끝나면 계획 단계는 실행하지 않습니다.
 - `hyper-issue`는 다른 상류 단계처럼 꼬리에 쓸 근거를 만듭니다. 이슈를 등록하고 레인 명세를 쓰며, `hyper-plan`이 명세의 레인 하나를 웨이브 안의 병렬 레인 하나로 바꿉니다. 등록 단어나 이슈 번호가 있으면 기본으로 `hyper-plan`까지 이어지므로, 레인을 실행하고 전달한 뒤에야 실행이 끝납니다. 기록만 원하는 단어("등록만", "이슈만", "작업은 하지 마", "manifest only")가 있을 때만 `hyper-issue`가 마지막 단계입니다.
 - `hyper-issue`가 직접 넘긴 요청(`.hyper/issues/<slug>/batch.md`를 지목하고 이슈 단계가 끝났다고 밝힘)은 `hyper-issue`를 다시 실행하지 않습니다. 1단계를 명세 경로와 함께 `done`으로 기록하고 `hyper-plan`에서 시작합니다.
-- 그 밖의 경우 꼬리 단계는 정확히 하나입니다. `hyper-plan`(스스로 `hyper-execute`로 이어짐), `hyper-mass`, 기존 계획에 대한 `hyper-execute` 단독, 스킬 폴더에 대한 `hyper-skill`, 문서나 프롬프트 산출물에 대한 `hyper-documentation`, 이미지 한 장이나 이미지 프롬프트 하나에 대한 `hyper-imagegen` 중 하나입니다.
+- 그 밖의 경우 꼬리 단계는 정확히 하나입니다. `hyper-plan`(스스로 `hyper-execute`로 이어짐), `hyper-mass`, 기준이 있는 여러 의존 목표에 대한 `hyper-loop`, 기존 계획에 대한 `hyper-execute` 단독, 스킬 폴더에 대한 `hyper-skill`, 문서나 프롬프트 산출물에 대한 `hyper-documentation`, 이미지 한 장이나 이미지 프롬프트 하나에 대한 `hyper-imagegen` 중 하나입니다.
+- `hyper-loop`를 고르면 꼬리 단계입니다. `.hyper/loop/<slug>/`(`brief.md`, `goals.json`, `ledger.jsonl`, `final-gate.json`)를 유지하며 의존 순서대로 목표를 실행하고, `final-gate.json`의 `status`가 `complete`일 때만 끝납니다. 목표 안에서 커밋은 할 수 있지만 푸시, 병합, PR은 하지 않으므로 전달 단어가 있으면 뒤에 `hyper-git`을 붙입니다.
 - `hyper-git`은 혼자서 꼬리 단계가 되지 않습니다. 파일은 바꾸지만 전달은 맡지 않는 꼬리 뒤에 붙습니다. `hyper-plan`, `hyper-execute`, `hyper-mass`는 스스로 전달하므로 `hyper-git`이 뒤따르지 않습니다.
 - `hyper-deploy`는 체인의 마지막 단계입니다. 앞 단계가 만든 결과를 배포하며, 뒤에 `hyper-git`이 붙지 않습니다. 사용자가 커밋·푸시·병합 전달까지 요청했으면 `hyper-git`이 `hyper-deploy` 앞에 실행합니다.
 - 같은 요청이 코드까지 바꾸면 코드 체인을 먼저 실행하고, `hyper-deploy` 단계는 실행 완료 블록 뒤에 시작합니다. 아직 완성되지 않은 트리가 아니라 끝난 변경을 배포하기 위해서입니다.
@@ -115,6 +117,8 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-ar
 | 검색 노출 감사 뒤 GA4 측정 구성("SEO 점검하고 GA4 측정까지 세팅해줘") | `hyper-seo` -> `hyper-google-analytics` |
 | 지난달 GA4 보고서 데이터 분석("지난달 GA 유입 데이터 분석해서 리포트 줘") | `analyze` 모드의 `hyper-google-analytics` 단독 |
 | 의존 순서가 있는 다중 에이전트 작업 | `hyper-mass`. 앞 단계 신호가 있으면 그 단계를 앞에 둡니다 |
+| 새 증거가 필요한 기준을 가진 여러 의존 목표를 모두 끝냄("이 목표들 다 끝날 때까지", "finish all of these goals") | `hyper-loop`. 앞 단계 신호가 있으면 그 단계를 앞에 둡니다 |
+| 멈춘 다중 목표 루프 재개("루프 이어서") | `.hyper/loop/<slug>/`에서 재개하는 `hyper-loop` |
 | 기존 계획 실행이나 재개 | `hyper-execute` |
 | 스킬 폴더를 새로 만들거나 리팩터링 | `hyper-skill` |
 | 최신 공식 문서에 기대는 스킬 폴더("최신 규격", "latest spec") | `hyper-research` -> `hyper-skill` |
@@ -140,6 +144,8 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-ar
 - `hyper-issue`는 `hyper-skill`이나 `hyper-documentation`과 한 체인에서 실행하지 않습니다. 이슈 기록이나 배치 명세는 그 자체가 산출물이고, 스킬 폴더나 일반 문서는 각자의 단계로 갑니다.
 - 이슈를 등록하거나 번호를 적으면 `hyper-issue`를 `hyper-plan` 앞에 놓습니다. 사용자가 기록만 원하는 단어를 썼을 때만 체인이 `hyper-issue`에서 끝납니다.
 - `hyper-mass`와 `hyper-plan`은 한 체인에서 함께 실행하지 않습니다. 명시 신호가 있을 때만 `hyper-mass`를 고르고, 아니면 `hyper-plan`을 고릅니다.
+- `hyper-loop`는 `hyper-plan`, `hyper-mass`, `hyper-execute`와 한 체인에서 함께 실행하지 않습니다. 요청이 목표마다 기준을 둔 여러 목표를 모두 끝내라고 할 때 `hyper-loop`를 고릅니다. 결과물 하나는 `hyper-plan`, 의존 그래프를 명시한 단계는 `hyper-mass`로 갑니다.
+- 루프 작업의 전달 단어는 루프 단계가 `complete`로 끝난 뒤 `hyper-git`으로 갑니다. `blocked`나 `paused`로 끝난 루프 뒤에는 `hyper-git`을 시작하지 않습니다.
 - `hyper-skill`과 `hyper-plan`은 한 체인에서 함께 실행하지 않습니다. 요청한 결과물이 스킬 폴더면 `hyper-skill`을 고릅니다. 계획 파일은 그 단계의 입력이 아닙니다.
 - `hyper-documentation`은 `hyper-plan`과 한 체인에서 함께 실행하지 않습니다. 주된 결과물로 고릅니다. README, `AGENTS.md`, 문서, 재사용 프롬프트 산출물은 모드를 스스로 고르는 `hyper-documentation`, 스킬 폴더는 `hyper-skill`입니다.
 - `hyper-mcp`와 `hyper-skill`은 한 체인에서 함께 실행하지 않습니다. 요청한 결과물이 스킬 폴더면 MCP에 관한 스킬이라도 `hyper-skill`을 고릅니다.
@@ -219,7 +225,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-ar
 
 | Claim | Source |
 |---|---|
-| 열아홉 단계 스킬, 동반 스킬, 오케스트레이터 역할 | user instruction, 2026-11-06(오케스트레이터 역할); `hyper-deploy`를 더해 열다섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-feedback`을 더해 열여섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-decision`을 더해 열일곱 단계로 늘린 사용자 지시, 2026-11-08; `hyper-google-analytics`를 더해 열여덟 단계로 늘린 사용자 지시, 2026-11-08; `hyper-debug`를 더해 현재의 열아홉 단계로 늘린 사용자 지시, 2026-11-09(이슈 #22); 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
+| 스무 단계 스킬, 동반 스킬, 오케스트레이터 역할 | user instruction, 2026-11-06(오케스트레이터 역할); `hyper-deploy`를 더해 열다섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-feedback`을 더해 열여섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-decision`을 더해 열일곱 단계로 늘린 사용자 지시, 2026-11-08; `hyper-google-analytics`를 더해 열여덟 단계로 늘린 사용자 지시, 2026-11-08; `hyper-debug`를 더해 열아홉 단계로 늘린 사용자 지시, 2026-11-09(이슈 #22); `hyper-loop`를 더해 현재의 스무 단계로 늘린 사용자 지시, 2026-11-09(이슈 #21); 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
 | 각 단계의 트리거, 결과물, 제외 범위. `hyper-mass`가 계획 파일 실행을 제외하고 `hyper-execute`가 기존 계획을 요구한다는 점 포함 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 전달 단어, 계획만·승인 보류 단어, 계획에서 실행으로 자동 연결 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 단계 순서, 네 단계 상한, 레시피, 동률 처리 | 이 패키지가 고른 설계이며 검증된 최적값이 아님 |

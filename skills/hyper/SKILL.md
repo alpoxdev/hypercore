@@ -34,7 +34,7 @@ Use a different language only when the user explicitly requests it or a machine-
 
 Use this skill when the requested output is a finished development result that needs one or more of the stage skills below in sequence, or when the user calls `hyper` by name.
 
-By user instruction, this package is an orchestrator: it names its nineteen stage skills and its one companion skill in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
+By user instruction, this package is an orchestrator: it names its twenty stage skills and its one companion skill in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
 
 | Stage skill | What the stage produces |
 |---|---|
@@ -53,6 +53,7 @@ By user instruction, this package is an orchestrator: it names its nineteen stag
 | `hyper-plan` | A decision-complete plan under `.hyper/plans/<slug>.md`, which continues into execution by itself |
 | `hyper-execute` | An existing plan executed wave by wave and delivered locally, as a PR, or shipped |
 | `hyper-mass` | One phase of dependency-ordered work run as a graph under `.hyper/mass/<run-key>/` |
+| `hyper-loop` | Several dependent goals run to completion under `.hyper/loop/<slug>/`, each criterion proven by evidence bound to a worktree fingerprint, finished only by a `final-gate.json` with every criterion covered by non-stale evidence |
 | `hyper-skill` | A created or refactored skill folder under `skills/<name>/` with its own validator run |
 | `hyper-documentation` | A created or refactored README, `AGENTS.md`, AI-readable document, instruction base, runbook, rule pack, reusable prompt, prompt template, prompt pack, or prompt eval fixture at the requested path, with the selected mode's validation handoff |
 | `hyper-git` | As the delivery stage after a tail that does not deliver: this run's commits pushed and propagated to the named branches, or the work branch merged into them and pushed, each confirmed on the remote |
@@ -157,6 +158,7 @@ Boundary requests:
 | SEO, AEO, or GEO audit with fixes implemented as a planned change | `hyper-seo` -> `hyper-plan` -> `hyper-execute` |
 | GA4 work: installing or fixing GA4 or the Google tag, auditing a property or its tag, changing property settings, analyzing report data, or diagnosing missing or wrong data | `hyper-google-analytics`, with `hyper-seo` first when the same request also asks for a search-visibility audit, and with `hyper-git` after it when the user asks for commit and push delivery |
 | Dependency-ordered multi-agent phase with no plan file wanted | `hyper-mass` |
+| Several dependent goals that must all finish, each with criteria that need fresh evidence, or a stopped loop resumed | `hyper-loop`, with `hyper-git` after it when the user asks for commit and push delivery |
 | A reusable skill folder created or refactored, optionally after provider-doc research | `hyper-skill`, with `hyper-research` first when the request depends on current external docs |
 | A README, `AGENTS.md`, AI-readable document, instruction base, runbook, rule pack, reusable prompt, prompt template, prompt pack, or prompt eval fixture created or refactored | `hyper-documentation`, with `hyper-research` first when its claims depend on current external sources or provider guidance |
 | An MCP server, client, migration, security fix, or host MCP configuration | `hyper-mcp`, with `hyper-research` first when the server wraps an unfamiliar external API, and with `hyper-mcp` in audit mode before `hyper-plan` when the user asks for a PR or ship delivery or the change spans non-MCP modules |
@@ -166,7 +168,7 @@ Boundary requests:
 | A change request in product language from the user, a client, or a planner (feedback, complaint, ticket, meeting notes, spec revision, new wording) against existing behavior | `hyper-feedback`; when it ends `handoff`, `hyper-plan` follows with its `brief.md` |
 | A runtime failure to explain or fix outside a deployment: a stack trace, a failing or intermittent test, a crash, or wrong output | `hyper-debug`; when it ends `handoff`, `hyper-plan` follows with its journal |
 | One new image, one edit of a supplied image, or one ready-to-use image prompt | `hyper-imagegen`, with `hyper-research` first when it depends on current external guidance or references; never followed by `hyper-git` |
-| A skill, document, MCP, decision-API, interface, database, GA4 analytics, feedback, or debug tail followed by commit-and-push or merge-and-push words, or a skill, document, or feedback tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
+| A skill, document, MCP, decision-API, interface, database, GA4 analytics, feedback, debug, or loop tail followed by commit-and-push or merge-and-push words, or a skill, document, or feedback tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
 | A deployment readiness verdict, a first deployment setup, a deploy, a deployment configuration change, or a failed deployment to diagnose and fix | `hyper-deploy`, after the code chain when the same request also changes code, and never followed by `hyper-git` |
 | A plan file already exists and the user wants it run | `hyper-execute` |
 | Report-only research, audit, architecture review, or database review | The one matching stage alone |
@@ -275,7 +277,7 @@ Phase rules:
 
 | Claim | Source |
 |---|---|
-| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its nineteen stage skills and its companion skill | user instruction, 2026-11-06 (orchestrator role); the stage set extended to fifteen with `hyper-deploy` by user instruction, 2026-11-07, to sixteen with `hyper-feedback` by user instruction, 2026-11-07, to seventeen with `hyper-decision` by user instruction, 2026-11-08, to eighteen with `hyper-google-analytics` by user instruction, 2026-11-08, and to the current nineteen with `hyper-debug` by user instruction, 2026-11-09 (issue #22); `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
+| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its twenty stage skills and its companion skill | user instruction, 2026-11-06 (orchestrator role); the stage set extended to fifteen with `hyper-deploy` by user instruction, 2026-11-07, to sixteen with `hyper-feedback` by user instruction, 2026-11-07, to seventeen with `hyper-decision` by user instruction, 2026-11-08, to eighteen with `hyper-google-analytics` by user instruction, 2026-11-08, to nineteen with `hyper-debug` by user instruction, 2026-11-09 (issue #22), and to the current twenty with `hyper-loop` by user instruction, 2026-11-09 (issue #21); `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
 | The output, artifact path, and boundary of each stage skill | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The plan stage continues into execution by itself and passes the delivery flag through | the plan skill's handoff rule in this repository, 2026-11-06 |
 | A sequential chain hands state forward through saved artifacts, and a router picks a branch by code-like rules | `instructions/graph-engineering/references/graph-patterns.md` |
