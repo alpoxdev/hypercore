@@ -43,7 +43,7 @@ The fields a measurement-capable renderer produces, consumed by `collect-rendere
 - `contrastPairs`: extra pairs as `{label, foreground, background}` objects, each measured the same way.
 - `fontSizePx` (or `measuredFontSize`): computed font size in CSS px for the observation's role.
 - `gapAbovePx`: vertical gap above the element in CSS px.
-- `textRect`: the text box rectangle, checked against `rect` for overlap above 4px.
+- `textRect`: the text box rectangle. The collector compares the `textRect` boxes of distinct observations in the same capture and fails overlap above 4px; a text box inside its own container is not an overlap.
 - `overflowX`: either `false` (no overflow observed) or a number of CSS px past the viewport edge; numbers above 2 fail at that capture's width.
 - `stressString` (on the capture): the unbroken string present while overflow was measured.
 

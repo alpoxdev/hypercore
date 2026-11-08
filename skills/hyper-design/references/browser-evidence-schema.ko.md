@@ -43,7 +43,7 @@ measurement-capable renderer가 만드는 field이며, `collect-rendered-evidenc
 - `contrastPairs`: 추가 pair이며 `{label, foreground, background}` object로 기록하고 같은 방식으로 측정한다.
 - `fontSizePx`(또는 `measuredFontSize`): observation role의 computed font size를 CSS px로 기록한다.
 - `gapAbovePx`: element 위쪽 vertical gap을 CSS px로 기록한다.
-- `textRect`: text box rectangle이며, 4px 초과 overlap을 검사하기 위해 `rect`와 비교한다.
+- `textRect`: text box rectangle이다. collector는 같은 capture 안의 서로 다른 observation에 속한 `textRect`끼리 비교하며 4px 초과 overlap을 failing으로 처리한다. 자기 container 안에 있는 text box는 overlap이 아니다.
 - `overflowX`: `false`(overflow 없음) 또는 viewport edge를 넘은 CSS px 수 중 하나이며, number가 2를 초과하면 capture width에서 failing 처리한다.
 - `stressString`(capture): overflow 측정 시 함께 놓인 끊기지 않은 string이다.
 
