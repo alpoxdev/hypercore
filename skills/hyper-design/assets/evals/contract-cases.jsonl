@@ -11,3 +11,4 @@
 {"id":"window-frame-rejected","command":"rendered","input":"skills/hyper-design/assets/fixtures/rendered-evidence/window-frame.json","expectedExit":1,"expectedError":"must be a page frame"}
 {"id":"dimension-mismatch-rejected","command":"rendered","input":"skills/hyper-design/assets/fixtures/rendered-evidence/dimension-mismatch.json","expectedExit":1,"expectedError":"do not match viewport"}
 {"id":"fresh-capture-accepted","command":"rendered","input":"skills/hyper-design/assets/fixtures/rendered-evidence/fresh.json","expectedExit":0}
+{"id":"missing-wcag-table-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/missing-wcag-table.ko.md","expectedExit":1,"expectedError":"WCAG_TABLE_MISSING"}

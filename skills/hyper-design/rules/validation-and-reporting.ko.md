@@ -40,6 +40,10 @@ report를 쓰기 전에 읽는다. 이 파일은 검증 순서, report 구성, �
 
 `audit`은 변경을 적용하지 않았다고 쓸 수 있다. `verify`는 확인한 변경 또는 finding set을 식별해야 한다. `design`, `restyle`, `mockup`은 만들거나 바꾼 token과 파일을 나열한다. 빈 section은 허용하지 않으며 이유와 함께 `없음` 또는 `미검증`을 쓴다.
 
+### WCAG 표
+
+렌더 검증이 `complete | static_only | unavailable`인 모든 보고서에는 `assets/report-template.md`(`## Processing summary` 사본)의 WCAG 2.2 표도 함께 넣는다. 표에는 나열된 성공 기준마다 한 행이 있고(1.4.3, 1.4.11, 2.4.7, 2.4.11, 2.5.8, 2.1.1, 2.1.2, 1.4.10, 1.4.12, 2.5.7, 3.3.8, 3.2.6, 3.3.7), 각 행은 이유와 사용한 브라우저 증거를 갖춘 `PASS`, `FAIL`, `N/A` 중 하나다. 브라우저 증거 없는 `PASS`는 통과가 아니다. 보고서 validator는 WCAG를 언급한 모든 보고서에 표를 요구하며, 13개 기준이 모두 있어야 하고 WCAG를 이름만 대고 표를 갖추지 않은 보고서는 `WCAG_TABLE_MISSING`으로 거부한다.
+
 ## 완료 결정
 
 - `pass`: 모든 해당 critical guard가 통과하고 사용자 결정이 남지 않음.
@@ -50,8 +54,17 @@ report를 쓰기 전에 읽는다. 이 파일은 검증 순서, report 구성, �
 
 ## Sources
 
-> 확인 2026-11-07.
+> 확인 2026-11-09.
 
-이 파일에서 외부 출처는 사용하지 않았다.
+이 파일의 WCAG 표는 위 출처에 따른다.
 
 검증 순서, claim 규칙, report section은 이 패키지 자체 것이다. 필수 한국어 heading은 이 패키지의 report template과 report validator에 맞춘다.
+
+| 주장 | 출처 |
+|---|---|
+| 기준별 WCAG 2.2 표의 형태와 브라우저 증거 필요성 | `dbc-hbin/omp-ulw @ 74df40f` (2026-11-09)에서 이 패키지의 자체 말로 재작성했다. 원본 저장소에는 라이선스가 없으며 텍스트나 코드를 복사하지 않았다 |
+| 13개 성공 기준과 통과 조건 | <https://www.w3.org/TR/2024/REC-WCAG22-20241212/> |
+
+### Evidence grade
+
+기준별 표는 이 패키지의 계약이다. 각 기준의 통과 규칙은 위 WCAG 2.2를 따른다. `PASS`는 해당 행에 기록한 브라우저 증거만큼만 강하다.

@@ -132,6 +132,13 @@ BEGIN {
     emit("AUTHORSHIP_CLAIM", "", "Reports must not claim AI authorship.")
   if (waiver_conflict(lower) && lower !~ /reason|사유/)
     emit("WAIVER_REASON_MISSING", "", "A reported waiver needs a reason.")
+  if (lower ~ /wcag/) {
+    n = split("1.4.3 1.4.11 2.4.7 2.4.11 2.5.8 2.1.1 2.1.2 1.4.10 1.4.12 2.5.7 3.3.8 3.2.6 3.3.7", ids, " ")
+    for (k = 1; k <= n; k++) {
+      if (index(lower, ids[k]) == 0)
+        emit("WCAG_TABLE_MISSING", "", "WCAG 2.2 table must list criterion " ids[k] " with PASS, FAIL, or N/A, reason, and evidence.")
+    }
+  }
 }
 VR_AWK
 }

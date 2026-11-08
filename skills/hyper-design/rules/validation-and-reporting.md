@@ -40,6 +40,10 @@ The summary also records the mode, the `brief.md` path or `해당 없음`, detec
 
 `audit` may state that no changes were applied. `verify` must identify the change or finding set it checked. `design`, `restyle`, and `mockup` list the tokens and files they created or changed. Empty sections are invalid; use an explicit `없음` or `미검증` with a reason.
 
+### WCAG table
+
+Every report with render verification `complete | static_only | unavailable` also carries the WCAG 2.2 table in `assets/report-template.md` (`## Processing summary` copy). The table has one row per listed success criterion (1.4.3, 1.4.11, 2.4.7, 2.4.11, 2.5.8, 2.1.1, 2.1.2, 1.4.10, 1.4.12, 2.5.7, 3.3.8, 3.2.6, 3.3.7); each row is `PASS`, `FAIL`, or `N/A` with a reason and the browser evidence used. A `PASS` without browser evidence is not a pass. The report validator enforces the table on any report that mentions WCAG: each of the 13 criteria must appear, and a report that names WCAG without the complete table is rejected with `WCAG_TABLE_MISSING`.
+
 ## Completion decision
 
 - `pass`: all applicable critical guards passed and no user decision remains.
@@ -50,6 +54,15 @@ A caveated result is valid only when limitations are explicit and no hidden crit
 
 ## Sources
 
-> Checked 2026-11-07. No external source was used in this file.
+> Checked 2026-11-09.
 
 The verification order, claim rules, and report sections are this package's own. The required Korean headings match the package's report template and its report validator.
+
+| Claim | Source |
+|---|---|
+| The WCAG 2.2 per-criterion table shape and the need for browser evidence per criterion | `dbc-hbin/omp-ulw @ 74df40f` (2026-11-09), re-authored in this package's own words; the source repository has no license and no text or code was copied |
+| The 13 success criteria and their pass conditions | <https://www.w3.org/TR/2024/REC-WCAG22-20241212/> |
+
+### Evidence grade
+
+The per-criterion table is this package's contract; each criterion's pass/fail rule is WCAG 2.2 as cited. A `PASS` is only as strong as the browser evidence recorded for that row.
