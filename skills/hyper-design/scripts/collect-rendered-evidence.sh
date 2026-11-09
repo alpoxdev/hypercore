@@ -55,6 +55,74 @@ def date_ok:
   else (capture("^(?<y>[0-9]{4})-(?<m>[0-9]{2})-(?<d>[0-9]{2})")) as $p
     | (($p.m | tonumber) >= 1 and ($p.m | tonumber) <= 12 and ($p.d | tonumber) >= 1 and ($p.d | tonumber) <= 31)
   end;
+def iso_epoch:
+  if type != "string" then null
+  else
+    ([capture("^(?<y>[0-9]{4})-(?<m>[0-9]{2})-(?<d>[0-9]{2})(?:T(?<hh>[0-9]{2}):(?<mi>[0-9]{2})(?::(?<ss>[0-9]{2}))?(?:\\.[0-9]+)?(?<tz>Z|[+-][0-9]{2}:[0-9]{2})?)?$")] | first) as $p
+    | if $p == null then null
+      else
+        (($p.y + "-" + $p.m + "-" + $p.d + "T" + ($p.hh // "00") + ":" + ($p.mi // "00") + ":" + ($p.ss // "00") + "Z")
+         | try fromdateiso8601 catch null) as $base
+        | if $base == null then null
+          else ($p.tz // "Z") as $tz
+            | if $tz == "Z" then $base
+              else (if ($tz[0:1] == "-") then -1 else 1 end) as $sign
+                | (($tz[1:3] | tonumber) * 3600 + ($tz[4:6] | tonumber) * 60) as $off
+                | ($base - ($sign * $off))
+              end
+          end
+      end
+  end;
+def file_extension: gsub("^[\\s]+|[\\s]+$"; "") | ascii_downcase | (capture("(?<e>\\.[a-z0-9]+)$") // {e: ""}) | .e;
+def extension_signature:
+  if . == ".png" then "png" elif (. == ".jpg" or . == ".jpeg") then "jpeg" else null end;
+def hygiene_errors($label):
+  if is_record | not then []
+  else
+    . as $c
+    | [ (if ($c | has("frameKind")) then
+           (if $c.frameKind == "page" then empty
+            elif $c.frameKind == "window" then "\($label).frameKind is window; a capture must be a page frame."
+            else "\($label).frameKind must be page or window." end)
+         else empty end),
+        (if ($c | has("fileSignature")) then
+           (if (($c.fileSignature | type) != "string") or ((["png", "jpeg", "jpg"] | index($c.fileSignature)) == null) then
+              "\($label).fileSignature must be png or jpeg."
+            elif (($c.file | type) != "string") or (($c.file | gsub("^[\\s]+|[\\s]+$"; "")) == "") then
+              "\($label).fileSignature requires \($label).file to name the capture file."
+            else ($c.file | file_extension) as $ext
+              | ($ext | extension_signature) as $want
+              | if $want == null then "\($label).file must end in .png, .jpg, or .jpeg."
+                elif ($want == "jpeg" and ($c.fileSignature == "jpeg" or $c.fileSignature == "jpg")) or $want == $c.fileSignature then empty
+                else "\($label).fileSignature \($c.fileSignature) does not match file extension \($ext)." end
+            end)
+         else empty end),
+        (if ($c | has("dimensions")) then
+           (if (($c.dimensions | is_record) and ($c.dimensions.width | is_positive) and ($c.dimensions.height | is_positive)) then
+              (if (($c.viewport | is_record) and ($c.viewport.width | is_positive) and ($c.viewport.height | is_positive)) then
+                 (if $c.dimensions.width == $c.viewport.width and $c.dimensions.height == $c.viewport.height then empty
+                  else "\($label).dimensions \($c.dimensions.width)x\($c.dimensions.height) do not match viewport \($c.viewport.width)x\($c.viewport.height)." end)
+               else empty end)
+            else "\($label).dimensions requires positive width and height." end)
+         else empty end),
+        (if ($c | has("sourceMtime")) then
+           ($c.sourceMtime
+            | if type == "string" then (if date_ok then [.] else null end)
+              elif type == "array" and length > 0 and ([.[] | date_ok] | all) then .
+              else null end) as $times
+           | if $times == null then "\($label).sourceMtime must be an ISO date-time or a non-empty array of them."
+             elif ($c.capturedAt | date_ok) | not then empty
+             else ($times | map({t: ., e: iso_epoch}) | map(select(.e != null))) as $dated
+               | ($c.capturedAt | iso_epoch) as $captured
+               | if ($dated | length) == 0 or $captured == null then empty
+                 else ($dated | max_by(.e)) as $newest
+                   | if $captured < $newest.e then
+                       "\($label) is stale: capturedAt \($c.capturedAt) is earlier than sourceMtime \($newest.t)."
+                     else empty end
+                 end
+             end
+         else empty end) ]
+  end;
 def states: ["default", "hover", "focus", "active", "disabled", "loading", "empty", "error"];
 def observation_errors($label):
   if is_record | not then ["\($label) must be an object."]
@@ -73,6 +141,7 @@ def capture_errors($label):
       (if (.capturedAt | date_ok) then empty else "\($label).capturedAt must be an ISO date-time." end),
       (if ((.observations | type) == "array") and ((.observations | length) > 0)
          then empty else "\($label).observations must be non-empty." end) ]
+    + (. | hygiene_errors($label))
     + (if (.observations | type) == "array" then
          [ range(0; (.observations | length)) as $j
            | "\($label).observations[\($j)]" as $ol
