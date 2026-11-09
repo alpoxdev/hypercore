@@ -102,7 +102,7 @@ snapshot은 provenance이며 검사 통과를 증명하지 않는다. 기록하�
 - 모든 줄에 admission test를 적용한다 — 비자명, 하중 있음, 지속적, 권고 산문에 적합. 기본 결론은 삭제다.
 - 매번 반드시 일어나야 하는 것은 산문으로 요청하지 말고 hook, CI 검사, lint 규칙, schema로 보낸다.
 - 비대한 root가 nested file을 절단하지 않도록 32 KiB 합산 예산에서 여유를 남긴다.
-- admission test 뒤에도 `AGENTS.md`가 길면 항상 필요한 계약은 그대로 두고, 같은 범위의 조건부 세부 내용은 `rules/rule-file-splitting.ko.md`에 따라 인접한 `rules/*.md`로 분리한다.
+- admission test 뒤에도 `AGENTS.md`가 길면 항상 필요한 계약은 그대로 두고, 같은 범위의 조건부 세부 내용은 `rules/agents-md/rule-file-splitting.ko.md`에 따라 인접한 `rules/*.md`로 분리한다.
 - project fact와 generic agent advice를 분리하고 이 저장소에서 동작을 바꾸는 규칙만 포함한다.
 - 모든 command, path, package-manager choice, architecture claim을 조사한 파일에 매핑한다.
 - 적용 scope와 precedence를 명시하고 nested file은 root contract 복사본이 아니라 delta를 담는다.

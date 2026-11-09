@@ -18,3 +18,5 @@
 {"id":"empty-reason-evidence-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/empty-reason-evidence.ko.md","expectedExit":1,"expectedError":"WCAG_ROW_INCOMPLETE"}
 {"id":"all-ids-one-row-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/all-ids-one-row.ko.md","expectedExit":1,"expectedError":"WCAG_ROW_INCOMPLETE"}
 {"id":"wrong-criterion-id-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/wrong-criterion-id.ko.md","expectedExit":1,"expectedError":"WCAG_TABLE_MISSING"}
+{"id":"authorship-claim-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/authorship-claim.ko.md","expectedExit":1,"expectedError":"AUTHORSHIP_CLAIM"}
+{"id":"empty-section-rejected","command":"report","input":"skills/hyper-design/assets/fixtures/reports/empty-section.ko.md","expectedExit":1,"expectedError":"SECTION_EMPTY"}

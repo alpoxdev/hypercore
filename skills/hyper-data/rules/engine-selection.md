@@ -21,7 +21,8 @@ It prints exactly one JSON object and writes nothing:
  "memory":{"freeBytes":5019926528,"source":"vm_stat"}}
 ```
 
-- A package with `null` version is not importable by that interpreter. Never guess a version that the probe did not print.
+- The probe reads installed-distribution metadata (`pip list`, then a `dist-info` scan); it imports nothing. A `null` version means that interpreter's metadata showed no such distribution, so treat the package as unavailable and never guess a version the probe did not print.
+- The import itself happens in the query run. An import failure there is a missing prerequisite, and it outranks the probe: report `prerequisite_missing` even when the probe printed a version.
 - When `python3` is present but a package is `null`, the interpreter is unsuitable for that engine; the `duckdb` CLI field carries the file-query route.
 - `memory` is `null` when the platform reports no free-memory figure. A `null` memory means "unknown", never "zero".
 - `--help` prints usage and exits 0; `--self-test` exercises the JSON shape with stubbed `python3` and `duckdb` in a temporary directory and exits 0 when every check passes; any other argument exits 2.
@@ -51,7 +52,7 @@ It prints exactly one JSON object and writes nothing:
 ## 4. File Formats
 
 - CSV, Parquet, and JSON are read directly by DuckDB or Polars. A Parquet file keeps column statistics that let a filter skip row groups; a CSV file is scanned as a stream.
-- Excel files (`.xlsx`, `.xls`) are never read directly. Export the sheet to CSV or Parquet first and keep the export beside the source; the export step is part of the report, not a silent preprocessing.
+- Excel files (`.xlsx`, `.xls`) are never read directly. Export the sheet to CSV or Parquet first and keep the export under `.hyper/data/<slug>/` beside the report, never next to the source file, so the run changes no tracked file; the export step is part of the report, not a silent preprocessing.
 - A database export (a `.sql` dump, a CSV taken from a query, or a parquet export) is read as the file it is. When the question is about data that lives in a database the user can query, aggregate inside that database and return the result rows; never pull the whole table down to compute a sum locally.
 - Remote files over `https` or S3 keep their own format. DuckDB reads Parquet and CSV remotely with projection and predicate pushdown when the storage supports it; CSV generally means scanning the stream. Only claim reduced network reads when the engine reports them.
 

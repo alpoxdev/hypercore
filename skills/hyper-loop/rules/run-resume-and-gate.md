@@ -7,7 +7,7 @@ Use this rule at every checkpoint, every resume, when a steering verb arrives, w
 A checkpoint is the moment a goal's evidence is judged, not the moment the work feels finished.
 
 - Non-final checkpoint: every `essential` criterion of the goal passes on fresh evidence, and every goal in `depends_on` is `complete`. Non-essential criteria may stay pending here; they may not at the final gate.
-- Run the verifier first: `bash scripts/verify-loop-state.sh --goal <id> --dir .hyper/loop/<slug>`. Exit 0 is the condition to append a checkpoint row; exit 1 means the checkpoint does not exist yet.
+- Run the verifier first: `bash <skill-dir>/scripts/verify-loop-state.sh --goal <id> --dir .hyper/loop/<slug>`. Exit 0 is the condition to append a checkpoint row; exit 1 means the checkpoint does not exist yet.
 - The verifier writes nothing. After exit 0, append the checkpoint row and update the goal status in `goals.json` yourself; a validator run is not a state change.
 - A checkpoint that adds a failing criterion, or that passes only after a passing criterion broke, is not a checkpoint. Revert the fix and report it.
 
@@ -70,7 +70,7 @@ Rules:
 - Every distinct `surface` declared by any goal needs at least one passing row on that surface. A declared surface with no row fails the gate.
 - The gate's own fingerprint must equal a snapshot taken now. A fix after the gate was written invalidates the gate, so write it last.
 - An independent reviewer is used when the runtime provides one. Recording `review: deterministic` is honest only when no reviewer was available; it is not a way to skip review that was available.
-- `bash scripts/verify-loop-state.sh --final .hyper/loop/<slug>/final-gate.json` exits 0 for a complete, covered, snapshot-bound gate with status `complete`; exit 1 lists what is missing; exit 2 means the file itself is unusable.
+- `bash <skill-dir>/scripts/verify-loop-state.sh --final .hyper/loop/<slug>/final-gate.json` exits 0 for a complete, covered, snapshot-bound gate with status `complete`; exit 1 lists what is missing; exit 2 means the file itself is unusable.
 
 ## 5. Ending the Run
 

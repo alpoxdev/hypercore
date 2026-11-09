@@ -17,7 +17,7 @@ Ignored files are excluded, so build output, dependency folders, and caches do n
 The bundled verifier computes this value; do not compute it by hand:
 
 ```bash
-bash scripts/verify-loop-state.sh snapshot --dir .hyper/loop/<slug>
+bash <skill-dir>/scripts/verify-loop-state.sh snapshot --dir .hyper/loop/<slug>
 ```
 
 It prints `tree`, `diff_sha256`, the untracked entries, and the excluded path. [references/state-schemas.md](../references/state-schemas.md) holds the exact field list.

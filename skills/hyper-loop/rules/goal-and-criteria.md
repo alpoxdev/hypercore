@@ -73,7 +73,8 @@ Rules that keep a criterion provable:
 | `in_progress` | `blocked` | A dependency is unmet, a capability is missing, or the user must decide something |
 | `in_progress` | `cancelled` | The user cancelled; cleanup is recorded |
 | `blocked` | `pending` | The unblocking step happened and the user or the record says to retry |
-| `pending` | `cancelled` | Superseded by `mark_blocked_superseded` |
+| `pending` | `cancelled` | The user cancelled a goal that had not started; cleanup is recorded |
+| `blocked` | `cancelled` | Retired by `mark_blocked_superseded`, which keeps the old evidence |
 
 `paused` belongs to the run, not to a goal: a paused goal keeps `in_progress` and resumes only on the user's direction. A cancelled goal never resumes automatically.
 

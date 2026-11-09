@@ -200,7 +200,7 @@ Phase rules:
 - Journal events for `run.created`, `run.resumed`, `node.started`, `node.completed`, `node.failed`, `node.retried`, `node.sent`, `node.cancelled`, `run.amended`, and `run.settled`, with timestamps.
 - One terminal reduction: any reducer over more than one batch emits a digest with a stated size bound and a handoff citation on every claim, and the final reducer reads only digests, so no synthesis node consumes unbounded raw node output.
 - When a node declares `solutionSpace`, its prompt lists the allowed approaches, the approach it reports using is checked against the list, and `resolvedModel` is written only from the observed result.
-- A completion report with the run key, node outcomes, handoff paths, verification output, recovery actions, and residual risk.
+- A completion report with the run key, node outcomes, handoff paths, verification output, the landed commits or the reason none were made, recovery actions, and residual risk.
 
 </required>
 
@@ -235,13 +235,14 @@ Phase rules:
 - [ ] Caps were respected, or the run was split under a new key.
 - [ ] Every transition is in `run.jsonl`, and a resumed run did not re-run a completed node.
 - [ ] The run settled on the success criteria with captured evidence, not on the last node's report.
+- [ ] The verified changes were landed before settlement, or the settlement names why nothing was committed.
 - [ ] Every reducer over more than one batch emitted a digest with a stated size bound and handoff citations, the final reducer read only digests, and every declared `solutionSpace` approach was checked against its list.
 
 </validation>
 
 ## Sources
 
-> Checked 2026-11-03.
+> Checked 2026-11-09.
 
 | Claim | Source |
 |---|---|

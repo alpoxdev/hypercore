@@ -129,7 +129,7 @@ One JSON object per line, append-only. Common fields: `ts` (ISO 8601 UTC), `even
 | `node.sent` | `node`, `boundary` |
 | `node.cancelled` | `node`, `reason` |
 | `run.amended` | `changed`, `reason` |
-| `run.settled` | `status`, `reason`, `criteria` |
+| `run.settled` | `status`, `reason`, `criteria`, `landed` |
 
 Example:
 
@@ -140,7 +140,7 @@ Example:
 {"ts":"2026-11-03T09:04:11Z","event":"node.started","run":"checkout-refactor-2026-11-03","node":"api","attempt":1}
 {"ts":"2026-11-03T09:30:00Z","event":"node.failed","run":"checkout-refactor-2026-11-03","node":"api","attempt":1,"error":"handoff missing; node exited before writing"}
 {"ts":"2026-11-03T09:31:00Z","event":"node.retried","run":"checkout-refactor-2026-11-03","node":"api","attempt":2,"reason":"missing handoff, rerun with write-first instruction"}
-{"ts":"2026-11-03T10:20:00Z","event":"run.settled","run":"checkout-refactor-2026-11-03","status":"completed","reason":"all criteria pass","criteria":["checkout tests exit 0","e2e log attached"]}
+{"ts":"2026-11-03T10:20:00Z","event":"run.settled","run":"checkout-refactor-2026-11-03","status":"completed","reason":"all criteria pass","criteria":["checkout tests exit 0","e2e log attached"],"landed":["9f2c1ab","41d7e02"]}
 ```
 
 Rules:
@@ -261,7 +261,7 @@ The audit fans out to three disjoint surfaces, `e2e` joins the two code producer
 
 ## Sources
 
-> Checked 2026-11-03.
+> Checked 2026-11-09.
 
 | Claim | Source |
 |---|---|

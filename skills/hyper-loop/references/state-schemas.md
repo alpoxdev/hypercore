@@ -126,7 +126,7 @@ Failure row:
     "userOutcomeReview": "each criterion has a fresh capture and the surfaces were exercised"
   },
   "review": {"by": "deterministic", "recommendation": "approve",
-             "evidence": "bash scripts/verify-loop-state.sh --final … exited 0"},
+             "evidence": "bash <skill-dir>/scripts/verify-loop-state.sh --final … exited 0"},
   "blockers": []
 }
 ```
@@ -135,7 +135,7 @@ Failure row:
 |---|---|
 | `status` | `complete`, `blocked`, or `paused`; only `complete` passes |
 | `tree`, `diff_sha256` | Must equal a snapshot taken after the last change |
-| `surfaceEvidence[].criterionRef` | `<goal-id>:<criterion-id>`; a bare criterion id is accepted when unique |
+| `surfaceEvidence[].criterionRef` | `<goal-id>:<criterion-id>`; a bare criterion id counts only when no other goal uses that id, because one bare row would otherwise cover several criteria |
 | `surfaceEvidence[].verdict` | `passed` for a passing row |
 | `surfaceEvidence[].surface` | Matches a declared surface, for example `cli`, `http`, `browser`, `data` |
 | `criteriaCoverage` | Counts include `essential: false` criteria |
@@ -146,11 +146,11 @@ Failure row:
 ## 4. Verifier Commands, Output, and Exit Codes
 
 ```bash
-bash scripts/verify-loop-state.sh snapshot [--dir <loop-dir>] [--repo <path>] [--limit <n>]
-bash scripts/verify-loop-state.sh --goal <goal-id> --dir <loop-dir> [--repo <path>]
-bash scripts/verify-loop-state.sh --final <final-gate.json> [--dir <loop-dir>] [--repo <path>]
-bash scripts/verify-loop-state.sh --self-test
-bash scripts/verify-loop-state.sh --help
+bash <skill-dir>/scripts/verify-loop-state.sh snapshot [--dir <loop-dir>] [--repo <path>] [--limit <n>]
+bash <skill-dir>/scripts/verify-loop-state.sh --goal <goal-id> --dir <loop-dir> [--repo <path>]
+bash <skill-dir>/scripts/verify-loop-state.sh --final <final-gate.json> [--dir <loop-dir>] [--repo <path>]
+bash <skill-dir>/scripts/verify-loop-state.sh --self-test
+bash <skill-dir>/scripts/verify-loop-state.sh --help
 ```
 
 `--dir` is the loop directory holding `goals.json` and `ledger.jsonl`; it is excluded from the fingerprint. `--repo` defaults to the worktree containing `--dir`. For `--final`, `--dir` defaults to the gate file's directory. `--limit` caps the listed untracked entries in `snapshot` output, default 200.

@@ -41,7 +41,7 @@ If one of the four is missing and the report does not supply it, ask for that on
 
 Write to `.hyper/debug/<slug>.md`. `<slug>` is a short kebab-case name of the symptom, not of the guessed cause. Create the directory if it does not exist.
 
-```markdown
+````markdown
 # <symptom in one line>
 
 - 모드: findings-only | minimal-fix
@@ -100,8 +100,8 @@ Write to `.hyper/debug/<slug>.md`. `<slug>` is a short kebab-case name of the sy
 - Green: `<command>` → <verbatim pass>
 - Area checks: `<command>` → <result>
 
-## Result: <terminal>
-```
+Result: <terminal>
+````
 
 Rules for the journal:
 

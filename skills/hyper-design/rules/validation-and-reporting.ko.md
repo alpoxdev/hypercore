@@ -56,8 +56,6 @@ report를 쓰기 전에 읽는다. 이 파일은 검증 순서, report 구성, �
 
 > 확인 2026-11-09.
 
-이 파일의 WCAG 표는 위 출처에 따른다.
-
 검증 순서, claim 규칙, report section은 이 패키지 자체 것이다. 필수 한국어 heading은 이 패키지의 report template과 report validator에 맞춘다.
 
 | 주장 | 출처 |

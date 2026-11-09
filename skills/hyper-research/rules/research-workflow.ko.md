@@ -71,7 +71,7 @@ Expected truths는 이번 조사가 현실과 대조하는 기준입니다. 각 
 - 핵심 결론 한두세 문장
 - 저장한 리포트 경로, 일지가 있으면 일지 경로
 - 노력 한 줄: 검토한 출처와 인용한 출처, 서로 다른 도메인, 파동, 예외 조사, 실행 확인. 기억이 아니라 일지에서 읽어 씁니다.
-- 게이트를 돌린 뒤 `bash scripts/report-state.sh finish --report <report.md> --ledger <journal>/sources.md`가 상태 파일 옆에 `outcome.json`을 쓰고, `report-state.sh briefing`은 `outcome.json`에서 센 출처·도메인·수리 횟수·게이트 결과와 남은 결함을 출력합니다. 노력 한 줄에는 기억한 숫자가 아니라 그 출력 숫자를 넣습니다.
+- 게이트를 돌린 뒤 `bash scripts/report-state.sh finish --state <journal>/report-state.json --report <report.md> --ledger <journal>/sources.md`가 저널 안에 `outcome.json`을 쓰고, `report-state.sh briefing --state <journal>/report-state.json`은 그 파일에서 센 출처·도메인·수리 횟수·게이트 결과와 남은 결함을 출력합니다. 노력 한 줄에는 기억한 숫자가 아니라 그 출력 숫자를 넣습니다.
 - 실행 상태(`converged` 또는 `exhausted`), 신뢰도가 제한적일 때는 주요 주의점이나 남은 공백
 
 ## Sources

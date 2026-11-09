@@ -200,7 +200,7 @@ compatibility: "subagent나 background agent 기능이 있고, 런타임이 제�
 - `run.created`, `run.resumed`, `node.started`, `node.completed`, `node.failed`, `node.retried`, `node.sent`, `node.cancelled`, `run.amended`, `run.settled` 이벤트를 타임스탬프와 함께 journal에 남깁니다.
 - 종단 축약 하나: 배치 하나를 넘는 모든 reducer는 밝힌 크기 상한과 모든 주장에 붙는 handoff 인용이 있는 digest를 내고, 최종 reducer는 digest만 읽으므로 종합 노드가 제한 없는 날 노드 출력을 소비하지 않습니다.
 - 노드가 `solutionSpace`를 선언하면 prompt에 허용된 접근을 적고, 보고한 접근을 목록과 대조하며, `resolvedModel`은 관찰한 결과에서만 씁니다.
-- 실행 key, 노드 결과, handoff 경로, 검증 출력, 복구 조치, 잔여 위험을 담은 마감 보고를 냅니다.
+- 실행 key, 노드 결과, handoff 경로, 검증 출력, 반영된 커밋 또는 반영하지 않은 사유, 복구 조치, 잔여 위험을 담은 마감 보고를 냅니다.
 
 </required>
 
@@ -235,13 +235,14 @@ compatibility: "subagent나 background agent 기능이 있고, 런타임이 제�
 - [ ] 상한을 지켰거나, 새 key로 실행을 나눴습니다.
 - [ ] 모든 전이가 `run.jsonl`에 있고, 재개한 실행이 완료 노드를 다시 돌리지 않았습니다.
 - [ ] 마지막 노드의 보고가 아니라 성공 기준과 캡처한 근거로 실행을 정산했습니다.
+- [ ] 검증된 변경을 정산 전에 반영했거나, 정산이 커밋하지 않은 사유를 밝혔습니다.
 - [ ] 배치 하나를 넘는 모든 reducer가 밝힌 크기 상한과 handoff 인용이 붙은 digest를 냈고, 최종 reducer가 digest만 읽었으며, 선언한 모든 `solutionSpace` 접근을 목록과 대조했습니다.
 
 </validation>
 
 ## Sources
 
-> 확인 2026-11-03.
+> 확인 2026-11-09.
 
 | Claim | Source |
 |---|---|

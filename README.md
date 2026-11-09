@@ -6,9 +6,9 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 26개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 27개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
-- **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
+- **설치 경로 두 가지**: 모든 런타임은 `npx skills`, Claude Code는 마켓플레이스 플러그인으로도 설치합니다. 한 환경에는 한 경로만 씁니다([선택 기준](#claude-code-플러그인-마켓플레이스)).
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
 - **한국어 우선**: 모든 스킬에 한국어 사양이 정렬되어 있으며 영어 원본도 함께 유지.
 - **검증 가능한 결과물**: 각 스킬은 evidence/validation/stop-condition 계약을 따라 결과를 남깁니다.
@@ -17,16 +17,53 @@ Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 �
 
 ## 호환성
 
-Hypercore의 표준 설치·관리 경로는 [Vercel Skills CLI](https://github.com/vercel-labs/skills)의 원격 소스 규약입니다. Claude Code, Codex, Cursor 등 런타임 선택은 `npx skills`의 `--agent` 옵션으로 처리합니다. 저장소 루트의 `.codex-plugin/plugin.json`은 [awesome-codex-plugins](https://github.com/hashgraph-online/awesome-codex-plugins) 목록 등록용 Codex 플러그인 설명서이며 같은 `skills/`를 가리킵니다. 별도 marketplace adapter는 제공하지 않습니다.
+Hypercore의 표준 설치·관리 경로는 [Vercel Skills CLI](https://github.com/vercel-labs/skills)의 원격 소스 규약입니다. Claude Code, Codex, Cursor 등 런타임 선택은 `npx skills`의 `--agent` 옵션으로 처리합니다. Claude Code만 쓴다면 저장소 자체가 마켓플레이스이므로 `/plugin` 설치도 가능합니다([Claude Code 플러그인](#claude-code-플러그인-마켓플레이스)). 저장소 루트의 `.codex-plugin/plugin.json`은 [awesome-codex-plugins](https://github.com/hashgraph-online/awesome-codex-plugins) 목록 등록용 Codex 플러그인 설명서이고, `.claude-plugin/`은 Claude Code 플러그인·마켓플레이스 설명서입니다. 두 설명서 모두 같은 `skills/`를 가리키며 다른 mirror adapter는 제공하지 않습니다.
 
 | 런타임 | 설치 예시 | 비고 |
 |---|---|---|
-| Claude Code | `npx skills add alpoxdev/hypercore -a claude-code -g` | `-g` 생략 시 프로젝트 설치 |
+| Claude Code | `npx skills add alpoxdev/hypercore -a claude-code -g` | `-g` 생략 시 프로젝트 설치. 스킬 이름은 `/hyper-git` |
+| Claude Code (플러그인) | `claude plugin marketplace add alpoxdev/hypercore` → `claude plugin install hypercore@alpoxdev` | 위와 택일. 스킬 이름은 `/hypercore:hyper-git` |
 | Codex CLI | `npx skills add alpoxdev/hypercore -a codex -g` | project/global 모두 `.agents/skills` canonical 경로 사용 |
 | Cursor | `npx skills add alpoxdev/hypercore -a cursor -g` | `npx skills` 표준 대상 |
 | 기타 | `npx skills add alpoxdev/hypercore -g` | CLI가 지원하는 agent에 한함 |
 
 스킬별 실행 호환은 아래 [스킬 카탈로그](#스킬-카탈로그)의 **호환** 컬럼 또는 각 `SKILL.md`의 `compatibility` 필드에서 확인합니다.
+
+## Claude Code 플러그인 (마켓플레이스)
+
+이 저장소는 `.claude-plugin/marketplace.json`으로 마켓플레이스 `alpoxdev`를 제공하고, 그 안의 플러그인 `hypercore`(`.claude-plugin/plugin.json`)가 루트의 `skills/`를 그대로 읽습니다(Claude Code 공식 문서 2026-11-09 기준).
+
+```bash
+claude plugin marketplace add alpoxdev/hypercore
+claude plugin install hypercore@alpoxdev            # 기본 scope는 user. 프로젝트에 고정하려면 --scope project
+claude plugin details hypercore                     # Skills (27) 확인
+claude plugin update hypercore@alpoxdev
+claude plugin uninstall hypercore@alpoxdev
+claude plugin marketplace remove alpoxdev           # 마켓플레이스와 그 플러그인을 함께 제거
+```
+
+세션 안에서는 `/plugin marketplace add alpoxdev/hypercore`와 `/plugin install hypercore@alpoxdev`를 씁니다. 설치 뒤 스킬은 `/hypercore:<스킬>` 형식으로 호출하며, 플러그인을 켠 환경에서만 보입니다.
+
+`main`에 `.claude-plugin/`이 반영되기 전에는 기본 브랜치에 마켓플레이스 파일이 없어 추가가 실패하므로 `claude plugin marketplace add alpoxdev/hypercore#dev`로 `dev` 브랜치를 지정합니다(2026-11-09 격리 HOME에서 확인).
+
+동작 규칙:
+
+- **업데이트는 버전 단위입니다.** `plugin.json`이 `version`을 고정하므로 사용자는 그 문자열이 바뀐 릴리스에서만 새 사본을 받습니다. 서드파티 마켓플레이스의 자동 업데이트는 기본으로 꺼져 있으므로 `claude plugin marketplace update alpoxdev`로 카탈로그를 갱신한 뒤 `claude plugin update hypercore@alpoxdev`를 실행하거나, `/plugin`의 Marketplaces에서 auto-update를 켭니다. 업데이트는 재시작 후 적용됩니다.
+- **버전의 정본은 `.claude-plugin/plugin.json`입니다.** `.codex-plugin/plugin.json`과 같은 값이어야 하며(`bash scripts/check-plugin-manifests.sh`가 검사) 마켓플레이스 항목에는 `version`을 쓰지 않습니다.
+- **플러그인 사본에 `skills/` 외 파일도 들어갑니다.** 마켓플레이스 항목의 source가 저장소 루트(`./`)라서 `instructions/`, `scripts/` 등 추적 파일 전체(약 17MB)가 캐시에 복사됩니다. Claude Code에는 제외 목록 기능이 없고, 로드되는 구성 요소는 `skills/`뿐입니다.
+
+### `npx skills`와 플러그인 중 하나만 고르기
+
+두 경로를 함께 설치하면 같은 스킬이 `/hyper-git`와 `/hypercore:hyper-git`로 두 번 로드됩니다. 이름 충돌로 실패하지는 않지만 스킬 목록과 description이 두 벌 실려 컨텍스트를 두 배로 쓰고(플러그인만 켜도 항상 실리는 분량이 약 4.1k 토큰으로 측정됨), 업데이트 경로가 둘이라 버전이 어긋날 수 있습니다.
+
+| 상황 | 권장 경로 |
+|---|---|
+| Claude Code만 쓰고 버전 단위 업데이트·제거를 `claude plugin`으로 관리하고 싶다 | 플러그인 |
+| Codex, Cursor, Antigravity도 함께 쓰거나 같은 설치를 여러 agent에 맞추고 싶다 | `npx skills` |
+| 스킬 일부만 고르거나(`--skill hyper-git`) 프로젝트마다 다르게 설치하고 싶다 | `npx skills` (플러그인은 스킬 27개를 통째로 설치) |
+| 스킬을 `/hyper-git`처럼 접두어 없이 부르고 싶다 | `npx skills` |
+
+한 경로에서 다른 경로로 옮길 때는 먼저 기존 설치를 제거합니다. `npx skills`에서 플러그인으로 옮기려면 아래 [설치 및 수명주기](#설치-및-수명주기)의 `remove`로 hypercore 스킬을 지운 뒤 위 플러그인 명령을 실행합니다. 플러그인에서 `npx skills`로 옮기려면 `claude plugin uninstall hypercore@alpoxdev`를 실행한 뒤 아래 설치 절차를 따릅니다.
 
 ## 설치 및 수명주기
 
@@ -61,11 +98,11 @@ npx skills find hypercore --owner alpoxdev
 npx skills init my-skill
 ```
 
-`update`는 원격 source 정보가 기록된 lock에 의존합니다. 로컬 경로로 설치한 항목은 lock에 `sourceType: local`로 남아 `update`가 건너뛰고, 기존 plugin 설치나 수동 복사에는 lock 항목 자체가 없으므로, `update`로 관리하려면 아래처럼 원격 source로 다시 설치해야 합니다. `remove`는 lock이 없어도 설치 디렉터리를 찾아 지웁니다(2026-11-04 `vercel-labs/skills` 소스 기준).
+`update`는 원격 source 정보가 기록된 lock에 의존합니다. 로컬 경로로 설치한 항목은 lock에 `sourceType: local`로 남아 `update`가 건너뛰고, 수동 복사에는 lock 항목 자체가 없으므로, `update`로 관리하려면 아래처럼 원격 source로 다시 설치해야 합니다. Claude Code 플러그인은 이 lock과 무관하게 `claude plugin update`로 관리합니다. `remove`는 lock이 없어도 설치 디렉터리를 찾아 지웁니다(2026-11-04 `vercel-labs/skills` 소스 기준).
 
-### 기존 plugin 또는 lock 없는 설치 마이그레이션
+### 수동 복사 또는 lock 없는 설치 마이그레이션
 
-1. 기존 스킬을 백업하고 사용 중인 runtime의 plugin/marketplace 설치를 제거합니다.
+1. 기존 스킬을 백업하고 수동으로 복사한 스킬 디렉터리나 다른 경로(Claude Code 플러그인 포함)의 설치를 제거합니다.
 2. 실제 원격 source를 지정해 원하는 scope와 agent로 다시 설치합니다.
 3. `npx skills list -g --json`과 project `skills-lock.json` 또는 global `.skill-lock.json`에서 source가 `alpoxdev/hypercore`인지 확인합니다.
 4. 이후 `update`와 `remove`를 실행합니다.
@@ -107,6 +144,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 /hyper-database "<작업>" # 엔진을 감지해 스키마 설계·무중단 마이그레이션·쿼리·인덱스 튜닝·엔진 선택·DBA 운영을 근거 게이트로 검증
 /hyper-design "<작업>"   # AI 티 없는 화면 디자인·리디자인·연출 화면(mockup)과 generic 패턴 점검·정리를 정석 수치와 독립 검토로 검증
 /hyper-browsing "<대상>"  # 403·WAF·챌린지·JavaScript·사라진 페이지처럼 평범한 요청으로 안 열리는 페이지 내용을 단계 사다리로 가져오고 출처·종료 상태까지 기록
+/hyper-frontend "<작업>" # 웹 프런트엔드 구현·수정·레퍼런스 맞춤·브라우저 점검을 스크롤 소유권, 상태 매트릭스, 렌더링 증거 라벨로 검증
 /hyper-prd "<아이디어>"  # 웹·iOS·Android·데스크톱 PRD를 `prd.md` 한 파일로, 규모별 질문 상한과 테스트 가능한 요구사항까지
 /hyper-deploy "<작업>"   # Railway·Cloudflare·Docker·Compose·VPS 배포 전 점검·첫 설정·배포·설정 변경·실패 진단과 수정을 플랫폼 최종 상태로 검증
 /hyper-google-analytics "<작업>"  # GA4 점검·탑재·속성 설정·데이터 분석·수집 진단을 네트워크 요청과 read-back으로 검증
@@ -138,6 +176,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 | "배포 실패했어, 로그 보고 고쳐줘" | `hyper-deploy` |
 | "라벨만 돌려주는 GPT 호출을 결정 모델로 바꿀 질문과 호출 코드" | `hyper-decision` |
 | "고객사 피드백 반영하고 dev, main에 머지·푸시" | `hyper-feedback` -> `hyper-git` (큰 항목이 있으면 `hyper-feedback` -> `hyper-plan` -> `hyper-execute`) |
+| "표가 길어지면 푸터가 밀려나, 본문만 스크롤되게 고쳐줘" | `hyper-frontend` (새 모습까지 정해야 하면 `hyper-design` -> `hyper-frontend`) |
 | "사이트에 GA4 달아줘" | `hyper-google-analytics` (GA4 달고 dev에 머지·푸시 → `hyper-google-analytics` -> `hyper-git`) |
 | "사이트에 GTM 달고 구매 이벤트 태그까지" | `hyper-google-tagmanager` (GA4 속성 설정까지 바꾸면 `hyper-google-analytics` -> `hyper-google-tagmanager`) |
 | "이 CSV에서 지역별 매출 집계해줘" | `hyper-data` |
@@ -182,7 +221,7 @@ flowchart LR
 | 스킬 | 설명 | 호환 |
 |------|------|------|
 | `hyper-skill` | 유지보수하기 쉬운 Codex/AI 에이전트 스킬 생성 및 리팩터링 | All |
-| `hyper-documentation` | 요청한 산출물에 맞춰 네 모드 중 하나로 작업: `readme`(코드베이스 기반 README), `agents-md`(영어 `AGENTS.md` + 한국어 `AGENTS.ko.md`, `CLAUDE.md`는 만들지 않음), `prompt`(재사용 프롬프트·템플릿/팩·eval 픽스처), `docs`(AI가 읽기 좋은 문서·런북·룰 팩) | All |
+| `hyper-documentation` | 요청한 산출물에 맞춰 다섯 모드 중 하나로 작업: `readme`(코드베이스 기반 README), `agents-md`(영어 `AGENTS.md` + 한국어 `AGENTS.ko.md`, `CLAUDE.md`는 만들지 않음), `prompt`(재사용 프롬프트·템플릿/팩·eval 픽스처), `docs`(AI가 읽기 좋은 문서·런북·룰 팩), `memory`(에이전트 메모리 파일: 색인·주제 파일 구조, 크기 예산, 저장 금지 항목, 갱신·만료·삭제 규칙) | All |
 | `hyper-prd` | 웹·iOS·Android·데스크톱 PRD를 `prd.md` 한 파일로 작성·갱신·검토 — 규모별 질문 상한, EARS 테스트 가능한 요구사항, 인수 시나리오, 핸드오프 블록 | All |
 
 ### 아키텍처 가드
@@ -207,7 +246,7 @@ flowchart LR
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-google-analytics·hyper-google-tagmanager·hyper-architecture·hyper-database·hyper-mcp·hyper-decision·hyper-design·hyper-feedback·hyper-debug·hyper-data·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-loop·hyper-skill·hyper-documentation·hyper-git·hyper-deploy 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 고객·기획자 변경 요청 → feedback(큰 항목은 → plan), 실패 원인 찾기 → debug(여러 파일 수정은 → plan), 여러 목표 끝까지 → loop, 데이터셋 질문 → data, 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute, 인터넷 검색 리서치 → research(막힌 출처는 hyper-browsing 동반), 기능 고치고 배포 → plan → execute → deploy, 배포 실패 고치기 → deploy) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
+| `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-google-analytics·hyper-google-tagmanager·hyper-architecture·hyper-database·hyper-mcp·hyper-decision·hyper-design·hyper-frontend·hyper-feedback·hyper-debug·hyper-data·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-loop·hyper-skill·hyper-documentation·hyper-git·hyper-deploy 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 레이아웃·상태 버그 수정 → frontend, 고객·기획자 변경 요청 → feedback(큰 항목은 → plan), 실패 원인 찾기 → debug(여러 파일 수정은 → plan), 여러 목표 끝까지 → loop, 데이터셋 질문 → data, 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute, 인터넷 검색 리서치 → research(막힌 출처는 hyper-browsing 동반), 기능 고치고 배포 → plan → execute → deploy, 배포 실패 고치기 → deploy) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
 | `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
 | `hyper-issue` | 확정된 발견이나 결정된 작업을 새 세션 에이전트가 읽는 영어 이슈로 등록하고, 열린 이슈 묶음이나 `#1~3` 같은 번호를 서로 겹치지 않는 작업 레인으로 묶어 배치 매니페스트 생성. 작업까지 원하면 `hyper`에 넘겨 레인별로 실행(스킬 자체는 구현하지 않음) | 인증된 이슈 트래커 CLI(`gh`); 쓰기 권한이 없으면 본문을 디스크에 초안으로 남김; 레인 실행에는 `hyper` 스킬 |
@@ -224,6 +263,7 @@ flowchart LR
 | `hyper-feedback` | 사용자·고객사·기획자의 변경 요청(피드백, 불만, 티켓, 회의 메모, 문구)을 원자 항목으로 나누고, 복제본·로케일·다른 채널·테스트·문서까지 9개 영향 위치 점검표로 수정할 곳을 모두 찾아 바로 반영·검증. 해석이 크게 갈리거나 되돌릴 수 없는 변경일 때만 묻고, 스키마·라우트·API 계약처럼 직접 수정 범위를 넘는 항목은 `.hyper/feedback/`에 브리프로 남김 | All |
 | `hyper-debug` | 스택 트레이스·실패하는 테스트·크래시·잘못된 출력·가끔 실패하는 테스트를 가장 작은 재현부터 잡고, 서로 다른 축의 가설 2개 이상을 구별하는 관찰로 좁혀 원인을 토글(넣으면 실패, 빼면 통과)로 증명. 요청하면 빨강→초록 순서로 최소 수정, 넣었던 계측은 모두 제거. 재시도 래퍼·sleep 늘리기·격리·테스트 삭제는 금지 수정으로 막고 `.hyper/debug/` 기록 저장 | All |
 | `hyper-design` | 새 화면 디자인, 기존 UI 리디자인, 히어로·데모용 연출 화면(mockup), AI형 generic 패턴 점검·정리를 디자인 브리프·생동감 다이얼→정석 수치(WCAG 2.2·플랫폼·KRDS)와 대비 계산→정적 검출기→독립 검토→증거 기반 납품 게이트 순서로 처리하고 `.hyper/design/`에 브리프와 보고서 저장 | Bash 3.2+ & jq 1.6+; browser optional |
+| `hyper-frontend` | 웹 프런트엔드 구현·수정·스크린샷·라이브 페이지 맞춤·실제 브라우저 점검. 스크롤 소유권 이름 붙이기→상태 매트릭스→모션 목적 지도와 reduced-motion→캡처 매트릭스에서 `static`·`rendered`·`not verified` 증거 라벨 순서로 처리하고 `.hyper/frontend/`에 보고서 저장. 시각 방향·감사는 `hyper-design` | 브라우저 optional |
 
 ### 콘텐츠 · SEO
 
@@ -243,7 +283,7 @@ flowchart LR
 | `hyper-mcp` | MCP(Model Context Protocol) 서버·클라이언트 구축, 보안·규격 점검과 수정, 2026-07-28 판 이전, 호스트 MCP 설정 연결, 레지스트리 메타데이터 준비를 MCP Inspector 검증과 `.hyper/mcp/` 보고서까지 처리 | 대상 언어 도구 모음; MCP Inspector는 Node.js 22.19+ |
 | `hyper-decision` | 글 대신 타입 판단(예/아니오 확률, 선택, 점수, 이미지 상자)을 돌려주는 decision API(TypeSafe Jev, OpenAI Decisions, Perplexity, Liquid, Cloudflare Clef, Vercel AI SDK·AI Gateway, OpenRouter, 범용 LLM 에뮬레이션)용 적합성 판정, 방언별 질문, 호출 코드, 요청 템플릿, 평가 계획, 라벨 전용 LLM 호출 감사, 경로 설정. 경로를 네 층으로 나눠 확률을 돌려주는지 밝히고 방언별 오프라인 요청 검사기로 확인 | bash 3.2+ · jq (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 26개 스킬. 기획·마케팅·비즈니스용 스킬(blog-maker, instagram-card-maker, korean-writer, storyboard-maker, tone-manner-maker)은 [Hypercore Business](https://github.com/alpoxdev/hypercore-business)로 옮겼습니다. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 27개 스킬. 기획·마케팅·비즈니스용 스킬(blog-maker, instagram-card-maker, korean-writer, storyboard-maker, tone-manner-maker)은 [Hypercore Business](https://github.com/alpoxdev/hypercore-business)로 옮겼습니다. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
 
@@ -283,11 +323,12 @@ lint, typecheck, build 같은 프로젝트 게이트를 재현하고, 실패가 
 
 ```text
 hypercore/
+├── .claude-plugin/        # Claude Code 플러그인(plugin.json)과 마켓플레이스(marketplace.json) 설명서, skills/를 가리킴
 ├── .codex-plugin/         # Codex 플러그인 설명서 (awesome-codex-plugins 등록용, skills/를 가리킴)
 ├── assets/                # 플러그인 아이콘, README 이미지 등 저장소 수준 정적 asset
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
-├── scripts/               # source/lifecycle 검증 및 보조 스크립트
-└── skills/                # 26개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+├── scripts/               # source/lifecycle/plugin manifest 검증 및 보조 스크립트
+└── skills/                # 27개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:

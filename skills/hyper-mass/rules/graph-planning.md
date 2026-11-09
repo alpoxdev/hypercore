@@ -186,7 +186,7 @@ The same key with the same definition is a resume. A changed definition under an
 
 ## Sources
 
-> Checked 2026-11-03.
+> Checked 2026-11-09.
 
 | Claim | Source |
 |---|---|

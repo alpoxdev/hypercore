@@ -24,9 +24,11 @@ Every `\cite{Sn}` in the `.tex` file must resolve to a `[Sn]` row in the run's s
 - A cite key with no ledger row blocks delivery. Add the missing row from the opened source, or remove the cite and its claim, then recheck. Do not compile a report that cites a source the run never opened.
 - Citation shape follows the report itself: `\cite{S1}` cites one row, `\cite{S1,S4}` cites two rows. Numbers and other figures still carry their `MEASURED`, `ASSUMED`, or `DERIVED` lineage from the report.
 
+The `.tex` file also carries the bibliography those cite keys resolve to, one entry per cited ledger row: either a `thebibliography` item whose label is `S<n>`, or a `.bib` entry whose key is `S<n>`. Fill each entry from the ledger row's title, publisher, URL or path, and publication date, and leave out a field the ledger does not hold instead of inventing one. A cite key that resolves to a ledger row but has no bibliography entry still renders as `?` in the PDF, so add the entry in the same pass that adds the cite.
+
 ## Compile Order
 
-Compile with `latexmk -xelatex` first. It drives the engine, the bibliography tool, and the extra engine passes for references and cross-references by itself:
+Compile with `latexmk -xelatex` first. It drives the engine, the bibliography tool when the file uses a `.bib`, and the extra engine passes for references and cross-references by itself:
 
 ```sh
 latexmk -xelatex [NN].slug.tex
@@ -41,7 +43,7 @@ xelatex [NN].slug.tex
 xelatex [NN].slug.tex
 ```
 
-Substitute `bibtex` for `biber` when the bibliography is BibTeX-shaped. Two engine passes after the bibliography tool are required so that citation numbers and cross-references settle. A single pass or a bibliography tool without follow-up passes leaves `?` markers in the PDF.
+Substitute `bibtex` for `biber` when the bibliography is BibTeX-shaped. Skip the bibliography tool entirely when the file uses a `thebibliography` list: there is no `.bib` to process, and running `biber` then fails with `Cannot find 'control' file`. Two engine passes are required so that citation numbers and cross-references settle; with a bibliography tool they come after it, and with `thebibliography` they follow the first pass. A single pass leaves `?` markers in the PDF.
 
 ## Log-First Repair
 

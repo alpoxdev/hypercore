@@ -202,11 +202,11 @@ Phase rules:
 - [ ] Goal ids are unique, dependencies exist and are acyclic.
 - [ ] Every criterion has a binary `pass_condition`, an `expected_evidence` path that resolves to a non-empty file, `essential`, and `cleanup`.
 - [ ] Every proof row carries `tree`, `diff_sha256`, and `command` from an actual capture.
-- [ ] `bash scripts/verify-loop-state.sh --goal <id> --dir .hyper/loop/<slug>` exits 0 for each completed goal.
-- [ ] `bash scripts/verify-loop-state.sh --final .hyper/loop/<slug>/final-gate.json` exits 0 at completion.
+- [ ] `bash <skill-dir>/scripts/verify-loop-state.sh --goal <id> --dir .hyper/loop/<slug>` exits 0 for each completed goal.
+- [ ] `bash <skill-dir>/scripts/verify-loop-state.sh --final .hyper/loop/<slug>/final-gate.json` exits 0 at completion.
 - [ ] The final gate names every user-visible surface with a passing row, and its status is `complete`, `blocked`, or `paused`.
 - [ ] Nothing was pushed, merged, or published.
-- [ ] When this package changes, `assets/evals/hyper-loop-cases.jsonl` still matches this contract and `scripts/verify-loop-state.sh --self-test` still exits 0.
+- [ ] When this package changes, `assets/evals/hyper-loop-cases.jsonl` still matches this contract and `bash <skill-dir>/scripts/verify-loop-state.sh --self-test` still exits 0.
 
 </validation>
 

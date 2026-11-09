@@ -21,7 +21,7 @@ Korean mirror: [`AGENTS.ko.md`](AGENTS.ko.md).
 - `assets/`: repository-level static assets used by project documentation.
 - `README.md`: installation, skill catalog, project structure, and development workflow.
 
-The distribution boundary is the root `skills/` tree and the Vercel `npx skills` remote-source convention. The root `.codex-plugin/plugin.json` (with `assets/icon.svg`, `SECURITY.md`, and `.codexignore`) exists only so the awesome-codex-plugins catalog can mirror the same `skills/` tree; keep its `skills` path at `./skills/` and do not add Claude plugin manifests, marketplace files, or mirror adapters. Prefer `skills/`, `instructions/`, `scripts/`, and executable configuration over stale explanatory prose.
+The distribution boundary is the root `skills/` tree, the Vercel `npx skills` remote-source convention, and two plugin manifests that point at the same tree. The root `.codex-plugin/plugin.json` (with `assets/icon.svg`, `SECURITY.md`, and `.codexignore`) lets the awesome-codex-plugins catalog mirror `skills/`. The root `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` make this repository a Claude Code marketplace (`alpoxdev`) holding one plugin (`hypercore`, source `./`) that loads `skills/` from its default location. Keep the plugin `name`, `version`, and display fields identical across both plugin manifests, keep `version` out of the marketplace entry, and keep the Codex `skills` path at `./skills/`; `bash scripts/check-plugin-manifests.sh` enforces this. Do not add other mirror adapters. Prefer `skills/`, `instructions/`, `scripts/`, and executable configuration over stale explanatory prose.
 
 ## Conditional Instruction Loading
 

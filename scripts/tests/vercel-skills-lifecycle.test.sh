@@ -65,7 +65,7 @@ apply_defect() {
       rm -f "$root/skills/example/SKILL.ko.md"
       ;;
     adapter)
-      mkdir -p "$root/.claude-plugin"
+      mkdir -p "$root/.agents/plugins"
       ;;
     readme)
       printf 'npx skills\n' >"$root/README.md"
@@ -81,7 +81,7 @@ defect_message() {
   case $1 in
     frontmatter) printf '%s' 'skills/example/SKILL.md must start with YAML frontmatter' ;;
     bilingual) printf '%s' 'skills/example/SKILL.ko.md must be a file' ;;
-    adapter) printf '%s' '.claude-plugin must not remain' ;;
+    adapter) printf '%s' '.agents/plugins must not remain' ;;
     readme) printf '%s' 'README.md must document npx skills add' ;;
   esac
 }

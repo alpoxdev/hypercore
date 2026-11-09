@@ -275,7 +275,7 @@ hl_mode_goal() {
 
 hl_mode_final() {
   local gate=$1 dir=$2 repo excl work goals tree diff gate_tree gate_diff gate_status bound
-  local rows surfaces required covered surface_raw crit goal_ref row state verdict missing_rows=0
+  local rows surfaces required covered surface_raw unique_bare crit goal_ref row state verdict missing_rows=0
   local pass=0 stale=0 missing=0 failing=0 unverified=0 all_ok=true status_ok=false surfaces_ok=true
   local essential=true expected surface
 
@@ -303,6 +303,9 @@ hl_mode_final() {
   required=$work/required-surfaces
   covered=$work/covered-surfaces
   surface_raw=$work/surface-rows.jsonl
+  unique_bare=$work/unique-bare.json
+  jq -c '[.goals[].criteria[].id] | group_by(.) | map(select(length == 1) | .[0])' "$goals" >"$unique_bare" \
+    || hl_fail GOALS_INVALID "cannot list criterion ids from goals.json: $goals"
   : >"$rows"
   : >"$surfaces"
   : >"$required"
@@ -337,8 +340,8 @@ hl_mode_final() {
       else
         essential=false
       fi
-      verdict=$(jq -r -s --arg ref "$crit" --arg bare "${crit#*:}" \
-        '[.[] | select(.criterionRef == $ref or .criterionRef == $bare) | .verdict // ""] | last // ""' \
+      verdict=$(jq -r -s --arg ref "$crit" --arg bare "${crit#*:}" --argjson uniq "$(cat "$unique_bare")" \
+        '[.[] | select(.criterionRef == $ref or (.criterionRef == $bare and ($uniq | index($bare) != null))) | .verdict // ""] | last // ""' \
         "$surface_raw")
       if [ "$verdict" != passed ]; then
         missing_rows=$((missing_rows + 1))

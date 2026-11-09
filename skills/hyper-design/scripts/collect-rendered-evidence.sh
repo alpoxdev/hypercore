@@ -171,9 +171,6 @@ def pair_overlap_px($a; $b):
 def capture_overlap_findings($cap):
   [$cap.observations[]? | select(type == "object") | select((.textRect | rect_shape))
       | {locator: .locator, textRect: .textRect}] as $boxes
-  | [range(0; $boxes | length) | select(. < (($boxes | length) - 1))
-      as $i | range(($i + 1); $boxes | length)
-      | [$boxes[$i], $boxes[.]] | max_by(0)] as $dummy
   | [range(0; $boxes | length) as $i | range(($i + 1); $boxes | length)
       | [$boxes[$i], $boxes[.]]] | .[]
   | (pair_overlap_px(.[0].textRect; .[1].textRect)) as $px
