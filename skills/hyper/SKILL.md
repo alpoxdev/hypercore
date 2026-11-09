@@ -1,6 +1,6 @@
 ---
 name: hyper
-description: "[Hyper] Use this skill when the user wants a development job carried from start to finish - a feature, fix, refactor, migration, technology choice, search-visibility improvement, GA4 or GTM tracking job, database job, MCP job, decision-API job, UI design, restyle, or frontend work, a user, client, or planner change request, a runtime failure, a dataset question, a multi-goal run, image generation, deployment, skill folder, document, or reusable prompt - without naming one hyper stage skill, or invokes hyper by name. It picks the shortest chain of hyper stage skills (research, issue, SEO, GA4, GTM, architecture, database, MCP, decision API, UI/UX, feedback, debug, data, image generation, plan, execute, mass, loop, skill, documentation, deploy, and Git delivery), runs the stages in order, and passes each stage's saved artifact to the next. Do not use it when the user names one hyper skill directly, or for a one-place edit with no plan, commit-only requests, PRD packages, diagrams, or general questions."
+description: "[Hyper] Use this skill when the user wants a development job carried from start to finish - a feature, fix, refactor, migration, technology choice, search-visibility improvement, GA4 or GTM tracking job, database job, MCP job, decision-API job, UI design, restyle, or frontend work, a user, client, or planner change request, a runtime failure, a dataset question, a multi-goal run, image generation, deployment, skill folder, document, or reusable prompt - without naming one hyper stage skill, or invokes hyper by name. It picks the shortest chain of hyper stage skills (research, issue, SEO, GA4, GTM, architecture, database, MCP, decision API, UI/UX, feedback, debug, data, handoff, image generation, plan, execute, mass, loop, skill, documentation, deploy, and Git delivery), runs the stages in order, and passes each stage's saved artifact to the next. Do not use it when the user names one hyper skill directly, or for a one-place edit with no plan, commit-only requests, PRD packages, diagrams, or general questions."
 compatibility: Needs the ability to load another installed skill by name, file read and search over the target repository, and write access for `.hyper/workflows/`. Each loaded stage brings its own requirements (git worktrees, subagents, live web). Without skill loading, it reports the chosen chain and the install commands instead of running stages.
 ---
 
@@ -52,7 +52,7 @@ By user instruction, this package is an orchestrator: it names its twenty-four s
 | `hyper-feedback` | A product-language change request from the user, a client, or a planner, itemized, mapped to every affected surface, and applied and verified directly, with its report under `.hyper/feedback/<slug>/` and a `brief.md` for the items over its direct-edit budget |
 | `hyper-debug` | A runtime failure (stack trace, failing or intermittent test, crash, wrong output) reproduced and explained by a toggle-proven cause in `.hyper/debug/<slug>.md`, plus a minimal red-to-green fix when the user asked for one, or a fix brief for the plan stage when the fix spans several files |
 | `hyper-data` | An answer computed from a dataset (CSV, Parquet, JSON, or an export) saved as `.hyper/data/<slug>/report.md` with the answer first, then the query, grain, filters, null and duplicate handling, row counts, timing, and an input digest |
-| `hyper-handoff` | A state memo under `.hyper/handoff/<slug>/memo.md` (the original request verbatim, what is done and next, the done-when conditions, and where everything is) with its stand-alone check line, so a session with no conversation can continue from it, or a session resumed from such a memo |
+| `hyper-handoff` | A state memo under `.hyper/handoff/<slug>/memo.md` (the original request verbatim, what is done and next, the done-when conditions, and where everything is) with its stand-alone check line, so a session with no conversation can continue from it; writing or checking one is a tail with nothing after it, and resuming from one is a re-entry step that runs first, takes no chain position, and leaves the remaining work to the run the memo points to |
 | `hyper-imagegen` | One generated or edited image, or one ready-to-use image prompt, delivered as the runtime's returned image or saved under `.hyper/imagegen/<topic>/`, with its terminal state and inspection record |
 | `hyper-plan` | A decision-complete plan under `.hyper/plans/<slug>.md`, which continues into execution by itself |
 | `hyper-execute` | An existing plan executed wave by wave and delivered locally, as a PR, or shipped |
@@ -104,7 +104,7 @@ Positive requests:
 - "이 Next.js 사이트에 GTM 달고 구매 이벤트까지 태그로 보내줘. 컨테이너는 GTM-ABC1234." -> `hyper-google-tagmanager`
 - "이 CSV에서 지역별 월 매출 집계해줘." -> `hyper-data`
 - "컨텍스트 거의 찼어. 새 세션에서 이어서 할 수 있게 핸드오프 메모 써줘." -> `hyper-handoff`
-- "`.hyper/handoff/billing/memo.md` 읽고 이어서 작업해줘." -> `hyper-handoff` (resume)
+- "`.hyper/handoff/billing/memo.md` 읽고 이어서 작업해줘." -> `hyper-handoff` (resume) first, then the open run at its first unfinished stage
 - "이 목표 세 개 다 끝날 때까지 돌리고 dev에 머지·푸시해줘. 목표마다 테스트 통과가 기준이야." -> `hyper-loop` -> `hyper-git` (`&& dev`)
 - "상태관리 라이브러리 뭐 쓸지 비교해보고 골라서 적용까지 해줘." -> `hyper-research` -> `hyper-plan` -> `hyper-execute`
 - "2026년 국내 SaaS 가격 동향 인터넷 검색으로 조사해서 리포트로 줘." -> `hyper-research` with `hyper-browsing` as its companion for blocked sources
@@ -148,7 +148,7 @@ Boundary requests:
 - "아키텍처 점검만 해줘." One stage, `hyper-architecture`, with no plan tail.
 - "리팩토링 계획만 세워줘." `hyper-architecture` -> `hyper-plan` with `--plan-only`; execution does not start.
 - "이 작업들 의존성 그래프로 단계별 병렬 실행해줘." `hyper-mass` replaces the plan and execute stages.
-- "어제 하던 거 이어서 해줘." An open workflow record resumes at its first unfinished stage; with none, an open execution state routes to `hyper-execute` alone.
+- "어제 하던 거 이어서 해줘." An open memo under `.hyper/handoff/` matching the branch is read first, then the open workflow record resumes at its first unfinished stage; with no record, an open execution state routes to `hyper-execute` alone. With none of those, this is not a handoff trigger.
 - "이 런북 정리하고 PR까지." `hyper-documentation` -> `hyper-git` in workflow mode; delivery words on a plan chain still go to `hyper-plan` instead.
 - "랜딩 페이지 디자인하고 히어로 이미지도 넣어줘." The interface is the deliverable, so `hyper-design` owns it; `hyper-imagegen` runs only when one image or one image prompt is the whole output.
 - "배포 런북 정리해줘." A document about deploying, so `hyper-documentation` owns it; `hyper-deploy` is for a deployment that runs, not for writing about one.
@@ -185,7 +185,7 @@ Boundary requests:
 | A change request in product language from the user, a client, or a planner (feedback, complaint, ticket, meeting notes, spec revision, new wording) against existing behavior | `hyper-feedback`; when it ends `handoff`, `hyper-plan` follows with its `brief.md` |
 | A runtime failure to explain or fix outside a deployment: a stack trace, a failing or intermittent test, a crash, or wrong output | `hyper-debug`; when it ends `handoff`, `hyper-plan` follows with its journal |
 | A question answered by computing over a dataset (a CSV, Parquet, or JSON file, or a spreadsheet or database export) | `hyper-data` alone; never followed by `hyper-git` |
-| Work that must continue from a short state memo: the context is nearly full, the session, agent, or machine is about to change, a handoff or continuation note is requested, or a memo is named to continue from | `hyper-handoff` alone; never followed by `hyper-git` |
+| Work that must continue from a short state memo: the context is nearly full, the session, agent, or machine is about to change, a handoff or continuation note is requested, or a memo is named to continue from | `hyper-handoff` in write or check mode alone, with nothing after it; a resume is a re-entry step that runs first and hands the remaining work to the open run at its first unfinished stage, and a delivery stage follows only on delivery words in the current request |
 | One new image, one edit of a supplied image, or one ready-to-use image prompt | `hyper-imagegen`, with `hyper-research` first when it depends on current external guidance or references; never followed by `hyper-git` |
 | A skill, document, MCP, decision-API, interface, frontend, database, GA4 analytics, tag manager, feedback, debug, or loop tail followed by commit-and-push or merge-and-push words, or a non-delivering tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
 | A deployment readiness verdict, a first deployment setup, a deploy, a deployment configuration change, or a failed deployment to diagnose and fix | `hyper-deploy`, after the code chain when the same request also changes code, and never followed by `hyper-git` |
@@ -238,7 +238,7 @@ Write the route line, stage status lines, questions, the workflow record, and th
 
 | Phase | Task | Output |
 |---|---|---|
-| 0 | Check for an open workflow record or execution state to resume; otherwise classify the requested output | Resume point or job class |
+| 0 | On "이어서" / "continue", check in this order: a memo path named in the request, an open memo under `.hyper/handoff/` matching the current branch or worktree, the open workflow record, the open execution state. An open memo is read first in resume mode, then the record or run it points to resumes; a closed memo is ignored unless named. Otherwise classify the requested output | Resume point or job class |
 | 1 | Collect the selecting signals from the request and repository files, and choose the chain in the fixed stage order | Chain with one signal per stage |
 | 2 | Resolve delivery words, report-only words, and ambiguity (one question at most) | Delivery mode and final chain |
 | 3 | Print the Korean route line and write `.hyper/workflows/<slug>.md` | Route line and workflow record |
@@ -292,7 +292,7 @@ Phase rules:
 
 ## Sources
 
-> Checked 2026-11-09.
+> Checked 2026-11-10.
 
 | Claim | Source |
 |---|---|
@@ -302,6 +302,7 @@ Phase rules:
 | A sequential chain hands state forward through saved artifacts, and a router picks a branch by code-like rules | `instructions/graph-engineering/references/graph-patterns.md` |
 | Issue registration words and issue numbers run through `hyper-issue` into the lane batch by default, and a `hyper-issue` hand-off enters at the plan stage | user instruction, 2026-11-07 |
 | The `[Hyper]` trigger-first description, the bilingual package shape, and the one-level reference rule | `instructions/skill/SKILL_AUTHORING.md` |
+| Handoff write and check modes as a tail with nothing after them, resume mode as a re-entry step outside the chain and the four-stage cap, and the resume lookup order (named memo, open memo, workflow record, execution state) | this package's chosen design, not a validated optimum |
 
 ### Evidence grade
 

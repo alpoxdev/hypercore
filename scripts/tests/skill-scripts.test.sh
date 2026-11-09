@@ -18,7 +18,7 @@ FIXTURES=$SCRIPTS/fixtures/skill-script-parity
 MANIFEST=$FIXTURES/manifest.json
 CONTRACTS=$FIXTURES/behavior/contracts.json
 LEGACY_REF=990359457e2ccbf2bd4bb65065037d456c5940bc
-MIGRATION_REF=d648cf6eeba28402f0b3c1265ca5d9f05995a131
+MIGRATION_REF=04adf4a209a1e35131ecf9ebb4e7791addbe944f
 
 DEPLOY_CHECK=$ROOT/skills/hyper-deploy/scripts/deploy-check.sh
 HYPER_GIT_COMMIT=$ROOT/skills/hyper-git/scripts/git-commit.sh
