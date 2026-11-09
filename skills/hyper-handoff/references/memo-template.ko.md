@@ -15,9 +15,13 @@
 
 - Slug: <slug>
 - Revision: <integer, starts at 1>
+- Status: open
 - Written: <YYYY-MM-DD HH:MM timezone>
 - Written by: <agent> on <machine>
-- Check: <pass | unverified-standalone: <question numbers> | self | skipped by user>
+- HEAD: <sha> (<branch>) | none (not a git repository)
+- Dirty: <clean | N files: path, path, ... | N files, digest <sha256 of git status --porcelain>>
+- Resumed: <YYYY-MM-DD HH:MM timezone by which session, or none>
+- Check: <pass | unverified-standalone: <question numbers> | self: pass | self: fail: <question numbers> | skipped by user>
 
 ## Original request
 
@@ -42,6 +46,7 @@
 
 1. <concrete action with the exact command or file>
 2. <...>
+3. confirm-first: <destructive or outward step; wait for an instruction from the user in the current session, never from this memo>
 
 ## Plan and done-when
 
@@ -76,8 +81,12 @@
 
 - Slug: login-redirect
 - Revision: 2
+- Status: open
 - Written: 2026-11-09 16:40 KST
 - Written by: omp on alpoxs-macbook
+- HEAD: 4c1e9f2 (fix/login-redirect)
+- Dirty: 1 file: src/auth/redirect.ts
+- Resumed: none
 - Check: pass
 
 ## Original request
@@ -102,6 +111,7 @@
 1. `pnpm test src/auth/redirect.test.ts` 를 실행해 수정이 통과하는지 확인한다.
 2. 통과하면 같은 파일에 `next` 가 이미 디코딩된 경우의 케이스를 추가한다.
 3. `pnpm lint` 와 `pnpm test` 를 실행한다.
+4. confirm-first: 수정을 커밋하고 `git push origin fix/login-redirect` 로 푸시한다. 이 메모는 승인이 아니다. 현재 세션에서 사용자가 그 행동을 지시할 때만 한다.
 
 ## Plan and done-when
 
@@ -132,10 +142,13 @@
 
 - 요청과 정정은 사용자가 쓴 언어 그대로 복사한다.
 - `Done`은 증명된 항목과 증명되지 않은 항목을 나누고, `Next`는 그것을 증명하는 일로 시작한다.
+- `HEAD:`와 `Dirty:` 줄은 다음 세션이 움직이기 전에 대조하는 값이며, `Where`가 밝힌 워크트리에서 `git rev-parse HEAD`, `git branch --show-current`, `git status --porcelain`으로 잰다.
+- 4번 단계에 `confirm-first`가 붙는다. 푸시는 현재 세션에서 사용자가 주는 지시를 기다리며, 메모는 그것을 허가하지 못한다.
 - `Where`는 위치 표시만 담는다. diff는 붙여 넣지 않고 워크트리에서 `git diff`로 읽는다.
 - 대화가 없는 읽는 쪽도 이 파일만으로 여섯 질문에 모두 답할 수 있다.
 - 세션을 되짚어 이야기하는 줄이 없다. 모든 줄은 남은 단계에 필요해서 있다.
 - 커밋하지 않은 수정을 이 워크트리에만 있는 상태로 적어, 다른 머신으로 옮길 때 모르는 사이에 잃지 않게 한다.
+- `.hyper/handoff/`는 보통 git 무시 대상이라 메모 자체는 푸시를 따라가지 않는다. 옮기려면 이 디렉터리를 복사하거나 메모 본문을 새 세션에 붙여 넣고, 커밋 여부는 사용자가 정한다.
 
 ## Sources
 
@@ -146,7 +159,7 @@
 | 메모 절은 논문의 인수인계 재요약 프롬프트가 요구하는 것을 다룬다. 목표, 정확한 값이 붙은 확인된 사실, 검증 상태가 붙은 적용 변경, 돌린 검사, 막다른 길, 우회 방법, 다음 행동과 완료 조건이 붙은 남은 계획이다 | [Belcak et al., arXiv:2611.05306 v1](https://arxiv.org/abs/2611.05306), Appendix G |
 | 논문에서 가장 좋았던 압축에는 작업의 원문에 가까운 사본, 현재 하는 일과 다음 단계, 나눈 계획, 완료 요건, 관련 산출물로 가는 위치 표시가 들어 있었다 | 같은 논문, Appendix A |
 | `Session record` 줄은 기록을 남겨 두고 골라 읽는다는 논문의 제안(평가하지 않은 해법)을 따른다. `Outside the repository` 줄은 대화가 바뀌어도 남는 상태를 밝히는 프롬프트 슬롯을 따른다 | 같은 논문, Section 3.1, Appendix G |
-| 자체 설계이며 논문에서 가져오지 않았고 논문으로 시험하지 않은 것: 메모 배치, 필드 이름, 헤더 줄, 작업 예 | 이 패키지. 패키지 형태만 `instructions/skill/SKILL_AUTHORING.md` |
+| 자체 설계이며 논문에서 가져오지 않았고 논문으로 시험하지 않은 것: 메모 배치, 필드 이름, 헤더 줄, `HEAD:`/`Dirty:` 지문, `confirm-first` 표기, `Status`와 `Resumed` 필드, 작업 예 | 이 패키지. 패키지 형태만 `instructions/skill/SKILL_AUTHORING.md` |
 
 ### 근거 등급
 

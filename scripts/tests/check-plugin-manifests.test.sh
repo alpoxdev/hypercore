@@ -92,6 +92,7 @@ case_invalid_yaml_escape_fails() {
   local dir
   dir=$(new_workdir)
   fixture_tree "$dir"
+  # shellcheck disable=SC2016 # literal backticks: the fixture needs an unexpanded YAML escape
   printf -- '---\nname: demo\ndescription: "Saves `\\.hyper/x`."\n---\n' >"$dir/skills/demo/SKILL.md"
   local out
   out=$(bash "$CHECK" "$dir" 2>&1) && fail "expected failure"

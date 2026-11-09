@@ -16,8 +16,10 @@ Write at a natural boundary, not at the last token. A memo written while the ses
 
 - Path: `.hyper/handoff/<slug>/memo.md`. The slug is a lowercase hyphenated name for the work, taken from the user's words or the branch name.
 - `.hyper/` must be git-ignored. Check with `git check-ignore -q --no-index .hyper/`; when it is not ignored, add `.hyper/` to the repository's ignore file as part of this write and say so in the report.
+- Because the path is normally ignored, a push or clone does not carry the memo. When the trigger is a move to another machine, the report says so, gives the memo's absolute path, and names the two ways to move it without performing them: copy the `.hyper/handoff/<slug>/` directory, companion files included, to the same path on the other machine, or paste the memo text into the new session, which saves it at that path before resuming. Committing the memo is the user's call, never the default, and the memo never holds a secret value, only where the value lives.
 - Outside a git repository, use the same relative path in the working directory.
-- Keep one memo file. The history of earlier memos is not kept: the point is that the current state is enough. A data file the memo points to (section 4) may sit beside it.
+- One slug is one line of work. Keep one memo file per slug and revise it in place; a different piece of work gets its own slug. The history of earlier memos is not kept: the point is that the current state is enough. A data file the memo points to (section 4) may sit beside it.
+- Several open memos: a path named by the user wins; otherwise match the current branch or worktree against `Where`; if more than one still matches, list them (slug, `Written`, `Now`) and ask once. Never pick silently by newest.
 
 ## 3. Required Sections
 
@@ -25,12 +27,12 @@ Section names are English and verbatim. Fill every section; write `none` where n
 
 |Section|Holds|Rule|
 |---|---|---|
-|Header lines|`Slug`, `Revision`, `Written` (date and time), `Written by` (agent and machine), `Check`|The check line is `pass`, `unverified-standalone: <failed questions>`, `self`, or `skipped by user`|
+|Header lines|`Slug`, `Revision`, `Status` (`open` or `closed (<date>: <reason>)`), `Written` (date and time), `Written by` (agent and machine), `HEAD:` (`<sha> (<branch>)`, or `none (not a git repository)`), `Dirty:` (`clean`, or the count and the `git status --porcelain` paths; past 20, the count and a short digest of that output), `Resumed:` (the time a session resumed it, or `none`), `Check`|The fingerprint is taken in the worktree named in `Where` at write time. The check line has one spelling, `Check:`, with `pass`, `unverified-standalone: <question numbers>`, `self: pass`, `self: fail: <question numbers>`, or `skipped by user`|
 |`## Original request`|The user's request, quoted verbatim|Never paraphrased, shortened, or translated|
 |`## Corrections`|Each later user instruction that changes or narrows the request, and each standing preference or steering instruction about how to work (what to use, what not to touch, what to report), quoted verbatim, with its date|`none` when there were none|
 |`## Now`|What is being done and why, in at most five sentences|Names the one outcome the work is moving toward|
 |`## Done`|Finished items and established findings, each with the check that proved it or the word `unverified`|One line per item; a finding keeps its exact value and where it was observed|
-|`## Next`|Ordered steps; the first is a concrete action with the exact command or file|At most eight steps; later ones may be coarser|
+|`## Next`|Ordered steps; the first is a concrete action with the exact command or file|At most eight steps; later ones may be coarser. A step that is destructive or reaches outside the working tree carries the tag `confirm-first`, so the reader sees the gate before reaching it; the tag adds no authority|
 |`## Plan and done-when`|The plan source (a path or `none`), every completion requirement the request and corrections state, and the checks that must pass before the work is called finished|At least one condition a command or a look at a file can confirm|
 |`## Where`|Repository path, branch, worktree, machine, pull requests, services, state directories, the old session's record, and state the work depends on that lives outside the repository|Pointers only; each resolves or is marked `external`; state that will not survive the session or the move is named as such|
 |`## Decisions and dead ends`|Decisions the user made (who, when), approaches that failed and must not be repeated, and workarounds that were needed|Each dead end names why it failed; a workaround names the command that worked|
@@ -59,7 +61,7 @@ The memo is a brief for the work that remains, not a history of the session and 
 
 ## 7. Facts, Not Recall
 
-- Gather branch, worktree, changed files, last test result, and running processes with commands in the current repository. Do not write them from memory of the conversation.
+- Gather branch, worktree, `HEAD`, dirty set, changed files, last test result, and running processes with commands in the current repository. Do not write them from memory of the conversation. The fingerprint is `git rev-parse HEAD` and `git branch --show-current` for `HEAD:`, and `git status --porcelain` for `Dirty:`, both run in the worktree named in `Where`.
 - A line that cannot be checked is marked `unverified`. A reader trusts an honest `unverified` more than a confident guess.
 - Dates are absolute. Write `2026-11-09`, never `yesterday`.
 - Name things by their identifier, not by a word that only made sense in the conversation: not "the bug" or "that file", but `login redirect loop in src/auth/redirect.ts`.
@@ -67,12 +69,15 @@ The memo is a brief for the work that remains, not a history of the session and 
 - For work that reads a large input, record which parts were read and what they showed, so the next session does not read them again.
 - State outside version control cannot be rebuilt from the repository: uncommitted changes when the machine changes, installed dependencies, applied migrations, running processes, temporary files. Name each one the work depends on in `Where` and say whether it survives.
 
-## 8. Revising
+## 8. Revising and Lifecycle
 
 - Increase `Revision`, update `Written` and `Check`, and re-run the check from `rules/cold-read-and-resume.md` after any change to `Now`, `Next`, or `Plan and done-when`.
 - Revise by editing, not by rewriting from the previous memo. Carry lines that are still true unchanged and re-check changed facts against the repository. A memo rewritten from a memo loses a little more each time.
 - Move a finished `Next` step into `Done` with its proof. Drop a dead end that is no longer reachable.
 - Never delete the original request or a correction.
+- Close with `Status: closed (<date>: <reason>)` when the done-when conditions are met, the memo is superseded, or the user drops the work. A closed memo is kept unless the user asks to delete it, and it is never resumed unless the user names it.
+- On resume, write `Resumed: <time>` in the header. A memo that shows a recent `Resumed` from another session and is still open is reported to the user before continuing.
+- Re-read the header right before writing. If `Revision` changed since this session read it, another session wrote: do not overwrite, re-read and edit, or stop and report.
 
 ## Sources
 
@@ -87,7 +92,7 @@ The memo is a brief for the work that remains, not a history of the session and 
 | A compaction is lossy, compacting a history that already holds a compaction loses more, and a task that needs exact past outcomes fails under a fixed compaction budget; the paper's proposed remedy, which it did not evaluate, is a kept record read selectively (sections 4 and 8, the session record in `Where`) | same paper, Section 3.1 |
 | The harness triggered compaction at a threshold below the context limit to leave room for the compaction turn, and ended a run whose compaction did not finish in that room (section 1) | same paper, Section 2.4.1, Appendix C |
 | Total work can grow under tight compaction: on Terminal-Bench 2.1 one model's mean total length was 72K tokens at a 24K limit against 28K with full history, and one open-weight model fell from 53.0% to 3.6% on SWE-bench Verified at a 16K limit, which the paper puts down mostly to verbose steps leaving little room for progress between compactions (section 1) | same paper, Table 5, Appendix D |
-| Own design, not from the paper and not tested against it: the section names and their order, the 100-line budget, the file location, the secret rule, the `unverified` marker, re-checking state with commands while writing (the paper's compaction turn runs none), and carrying the request inside the memo (the paper's harness supplies the task again, so its recap does not repeat it) | this package; `instructions/skill/SKILL_AUTHORING.md` for the package shape only |
+| Own design, not from the paper and not tested against it: the section names and their order, the 100-line budget, the file location, the secret rule, the `unverified` marker, re-checking state with commands while writing (the paper's compaction turn runs none), carrying the request inside the memo (the paper's harness supplies the task again, so its recap does not repeat it), the `HEAD:`/`Dirty:` fingerprint, the `confirm-first` tag, the `Status` and `Resumed` lifecycle, and the rule against overwriting an unread `Revision` | this package; `instructions/skill/SKILL_AUTHORING.md` for the package shape only |
 
 ### Evidence grade
 
