@@ -153,6 +153,12 @@ ds_load_config() {
     ds_error "Invalid config: schema error: $detail" "$json"
   fi
   DS_CFG_APPLIED=1
+  while IFS= read -r rid; do
+    [ -n "$rid" ] || continue
+    if ! rule_by_id_exists "$rid"; then
+      ds_error "Invalid config: schema error: unknown rule id '$rid'" "$json"
+    fi
+  done < <(jq -r 'if has("rules") and ((.rules | type) == "object") then (.rules | keys[]) else empty end' "$abs")
   while IFS=$'\t' read -r id action; do
     [ -n "$id" ] || continue
     if [ "$action" = off ]; then

@@ -13,17 +13,17 @@
     },
     "allowFonts": {
       "type": "array",
-      "description": "Font families the project allows. A font-family value matching one of these entries never fires type.decorative-monospace.",
+      "description": "Font families the project allows. All allowFonts, allowEasings, and designTokens values form one pooled allowlist: a finding whose matched excerpt contains any listed value moves to the skipped count instead of the findings list.",
       "items": { "type": "string" }
     },
     "allowEasings": {
       "type": "array",
-      "description": "Named easing functions the project allows, for example cubic-bezier(0.2, 0.6, 0.2, 1). Allowlisted easing functions are exempt from the generic hover-scale utility rule.",
+      "description": "Named easing functions the project allows, for example cubic-bezier(0.2, 0.6, 0.2, 1). All allowFonts, allowEasings, and designTokens values form one pooled allowlist: a finding whose matched excerpt contains any listed value moves to the skipped count instead of the findings list.",
       "items": { "type": "string" }
     },
     "designTokens": {
       "type": "object",
-      "description": "Declared design tokens as name to CSS value map, for example colors and lengths the project standardizes on.",
+      "description": "Declared design tokens as name to CSS value map, for example colors and lengths the project standardizes on. All allowFonts, allowEasings, and designTokens values form one pooled allowlist: a finding whose matched excerpt contains any listed value moves to the skipped count instead of the findings list.",
       "additionalProperties": { "type": "string" }
     }
   },
