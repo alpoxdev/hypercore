@@ -1,0 +1,26 @@
+name: Skill Verification
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+concurrency:
+  group: skill-verification-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          # Some tests read preimages with `git show <sha>:<path>`, so the
+          # pinned legacy commits must be present.
+          fetch-depth: 0
+      - name: Verify skills
+        run: bash scripts/verify.sh
