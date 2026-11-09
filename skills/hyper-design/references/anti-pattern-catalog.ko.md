@@ -18,6 +18,11 @@ Detector 출력이나 렌더링 관찰을 rule에 연결할 때만 이 목록을
 | `surface.random-glow` | surface | review-only | P3 | partial | no | hierarchy·brand 역할 없는 glow |
 | `surface.decorative-orb` | surface | default-risk | P2 | partial | yes | content, interaction, semantic, brand 역할 없는 orb/blob |
 | `surface.thick-side-stripe` | surface | default-risk | P2 | yes | no | 의미 없는 두꺼운 card edge |
+| `surface.thin-side-stripe` | surface | default-risk | P2 | yes | no | 둥근 모서리나 카드형 상자의 얇은 한쪽 테두리; state나 브랜드 의미를 담는지 확인한다 |
+| `surface.pseudo-stripe` | surface | default-risk | P2 | yes | no | 단색 배경의 1–6px `::before`/`::after` 바; state나 브랜드 의미를 담는지 확인한다 |
+| `surface.inset-stripe` | surface | default-risk | P2 | yes | no | 한쪽 가장자리만 그리는 `inset` box-shadow; state나 브랜드 의미를 담는지 확인한다 |
+| `surface.gradient-border-image` | surface | default-risk | P2 | yes | no | 그라디언트 `border-image`; state나 브랜드 의미를 담는지 확인한다 |
+| `surface.hard-stop-band` | surface | default-risk | P2 | yes | no | 하드 스톱 선형 그라디언트 밴드; state나 브랜드 의미를 담는지 확인한다 |
 | `surface.uniform-radius` | surface | context-dependent | P3 | partial | no | 모든 hierarchy level의 동일 radius; design-system token 예외 |
 | `surface.uniform-shadow` | surface | context-dependent | P3 | partial | no | 모든 곳의 동일 elevation; 명시적 elevation system 예외 |
 | `surface.status-dot` | surface | default-risk | P3 | partial | yes | state·legend 없는 dot |

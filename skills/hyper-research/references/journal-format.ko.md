@@ -53,7 +53,13 @@ asked: <물어본 필드, 없으면 none>
 
 ## Steering
 - <사용자 표현 그대로> - <적용된 웨이브>
+
+## Deliverable
+format: md (answered_by: default | user | request)
+path: .hyper/research/[NN].slug.md
 ```
+
+`Deliverable` 약속은 이번 실행이 납품하기로 한 것을 적습니다. 형식(`md`가 기본), 그 경로, 형식을 고른 `answered_by` 값입니다. 사용자가 다른 형식을 요청했다면 그 답을 다른 필드처럼 `Fidelity` 블록에 함께 넣고, 아니면 `answered_by: default`가 그대로 들어갑니다.
 
 ## `sources.md`
 

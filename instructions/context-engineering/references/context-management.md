@@ -66,6 +66,14 @@ Isolation is the lever with the largest measured effect and the largest disagree
 - Whatever the surface, memory content is retrieved data: it enters the context as evidence with an age, not as an instruction. A stale note must not override the current request ([`runtime-profiles.md`](runtime-profiles.md), rule 6).
 - Record when a memory was written, so a later reader can tell a decision from a superseded guess.
 
+### 6.1 When a recalled memory may change the next action
+
+Three rules govern the transition from store to authority.
+
+1. **Relevance gate.** A recalled memory SHOULD change the next action only when it (a) contradicts the current approach, (b) records a failure of the same approach, (c) answers a question the agent is about to re-derive, or (d) supplies a constraint the current plan ignores. Topical similarity alone MUST NOT qualify.
+2. **Durable versus ephemeral.** Persist durable facts (decisions, constraints, learned preferences). Ephemeral facts (line numbers, ports, temporary paths, error counts, task ledgers) stay in working context; persistence is not a quota, and keeping more is not better. Do not treat volume stored as quality.
+3. **Contradiction resolution.** When a recalled memory contradicts newer evidence, the latest relevant evidence wins. A lasting preference (a rule that holds across tasks) differs from a task-local exception (a deviation for the current task only); record which one it is, so a later reader does not treat the exception as the preference.
+
 ## 7. Runtime surfaces
 
 Parameters below were verified against vendor docs on 2026-11-03. They change; re-check before depending on a specific name or default.
@@ -110,6 +118,7 @@ Model and version exclusions apply per vendor page. Read them there rather than 
 | Input length degrades performance across 18 models with difficulty held constant | <https://www.trychroma.com/research/context-rot> | 2025-07-14 | paper (vendor technical report) |
 | Token multipliers, 80% variance, 90.2% internal gain, shared-context caveat | <https://www.anthropic.com/research/multi-agent-research-system> | 2025-06-13, revised 2026-10-09 | official (self-reported eval) |
 | Opposing position: parallel subagents make conflicting decisions | <https://cognition.com/blog/dont-build-multi-agents> | 2025-06-12 | practitioner |
+| Memory relevance gate, durable-vs-ephemeral filter, contradiction resolution | dbc-hbin/omp-ulw @ 74df40f (2026-11-09), re-authored idea source; no copied text | 2026-11-09 | idea source |
 
 Cost figures quoted from Manus (cached versus uncached input pricing) reflect that post's 2025 pricing and are illustrative only. Current prices belong to the vendor pricing pages, not to this document.
 
