@@ -157,7 +157,7 @@ validate_skills() {
 
 validate_no_plugin_adapters() {
   local adapter
-  for adapter in ".claude-plugin" ".agents/plugins" "plugins/hypercore" "scripts/validate-codex-plugin.mjs"; do
+  for adapter in ".agents/plugins" "plugins/hypercore" "scripts/validate-codex-plugin.mjs"; do
     if [ -e "$ROOT/$adapter" ]; then
       die "$adapter must not remain after removing plugin adapters"
     fi

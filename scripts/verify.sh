@@ -9,6 +9,7 @@
 #   4. scripts/check-skill-contract-parity.sh
 #   5. scripts/check-skill-standards.sh
 #   6. scripts/check-vercel-skills.sh
+#   7. scripts/check-plugin-manifests.sh
 #
 # Every step runs even when an earlier step fails; the script exits 1 when any
 # step failed.
@@ -59,6 +60,7 @@ run_step "skill-script corpus" bash scripts/check-skill-corpus.sh
 run_step "skill contract parity" bash scripts/check-skill-contract-parity.sh
 run_step "skill standards" bash scripts/check-skill-standards.sh
 run_step "vercel skills lifecycle" bash scripts/check-vercel-skills.sh
+run_step "plugin manifests" bash scripts/check-plugin-manifests.sh
 
 printf '\n'
 if [ "$FAILED" -eq 0 ]; then
