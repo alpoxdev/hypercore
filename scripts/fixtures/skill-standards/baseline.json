@@ -2,7 +2,7 @@
   "skills": {
     "hyper": {
       "FRONTMATTER_TRIGGER": 1,
-      "CROSS_SKILL_REFERENCE": 1161
+      "CROSS_SKILL_REFERENCE": 1406
     },
     "hyper-architecture": {
       "FRONTMATTER_TRIGGER": 1
@@ -58,6 +58,9 @@
     "hyper-google-analytics": {
       "FRONTMATTER_TRIGGER": 1
     },
-    "hyper-diagram": {}
+    "hyper-diagram": {},
+    "hyper-debug": {},
+    "hyper-loop": {},
+    "hyper-data": {}
   }
 }
