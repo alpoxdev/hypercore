@@ -25,7 +25,7 @@ The exact skeleton for `.hyper/handoff/<slug>/memo.md`, then a worked example. S
 
 ## Corrections
 
-- <YYYY-MM-DD> > <later user instruction, verbatim>
+- <YYYY-MM-DD> > <later user instruction or standing preference, verbatim>
 (or `none`)
 
 ## Now
@@ -35,6 +35,7 @@ The exact skeleton for `.hyper/handoff/<slug>/memo.md`, then a worked example. S
 ## Done
 
 - <item> - verified by `<command>` (exit 0)
+- <finding, with its exact value> - observed in `<file or command>`
 - <item> - unverified
 
 ## Next
@@ -45,7 +46,7 @@ The exact skeleton for `.hyper/handoff/<slug>/memo.md`, then a worked example. S
 ## Plan and done-when
 
 - Plan: <path or none>
-- Done when: <observable condition, ideally a command and its expected result>
+- Done when: <each completion requirement; at least one as a command and its expected result>
 
 ## Where
 
@@ -53,12 +54,15 @@ The exact skeleton for `.hyper/handoff/<slug>/memo.md`, then a worked example. S
 - Branch / worktree: <branch> / <path>
 - Machine: <hostname>
 - State owned by other stages: <path of a plan run or goal loop state directory, or none>
+- Session record: <path or id of the old session's transcript, or none>
+- Outside the repository: <state the work depends on that git does not hold, and whether it survives the session or the move, or none>
 - External: <pull request, issue, service, with the identifier>
 
 ## Decisions and dead ends
 
 - Decision (<who>, <date>): <what and why>
 - Dead end: <approach> - failed because <reason>
+- Workaround: <obstacle> - passed with `<command>`
 
 ## Open questions and risks
 
@@ -110,6 +114,8 @@ The exact skeleton for `.hyper/handoff/<slug>/memo.md`, then a worked example. S
 - Branch / worktree: fix/login-redirect / /Users/alpox/dev/acme/web/.hyper/worktree/login-redirect
 - Machine: alpoxs-macbook
 - State owned by other stages: none
+- Session record: /Users/alpox/.omp/agent/sessions/-dev-acme-web/2026-11-09T05-58-11.jsonl
+- Outside the repository: `src/auth/redirect.ts` 수정은 커밋하지 않아 이 워크트리에만 있다. 다른 머신으로 옮기려면 먼저 커밋하고 푸시해야 한다.
 - External: none
 
 ## Decisions and dead ends
@@ -128,16 +134,20 @@ The exact skeleton for `.hyper/handoff/<slug>/memo.md`, then a worked example. S
 - `Done` separates the proven item from the unproven one, and `Next` starts by proving it.
 - `Where` holds pointers only; the diff is read with `git diff` in the worktree, not pasted.
 - A reader with no conversation can answer all six questions from this file.
+- Nothing retells the session. Each line is there because a remaining step needs it.
+- The uncommitted fix is named as state that lives only in this worktree, so a move to another machine cannot lose it silently.
 
 ## Sources
 
-> Checked 2026-11-09.
+> Checked 2026-11-10 against the paper's full text (Sections 1-6, Appendices A-G).
 
 | Claim | Source |
 |---|---|
-| The memo's sections follow the shape of the handoff recap prompt: objective, established facts, applied changes with verification status, dead ends, remaining plan with the next command and the completion condition | [Belcak et al., arXiv:2611.05306](https://arxiv.org/abs/2611.05306), Appendix G |
-| The memo layout, field names, and the worked example are this package's own design | `instructions/skill/SKILL_AUTHORING.md` for the package shape only |
+| The memo's sections cover what the paper's handoff recap prompts ask for: the objective, established facts with exact values, applied changes with verification status, checks run, dead ends, workarounds, and the remaining plan with the next action and the completion condition | [Belcak et al., arXiv:2611.05306 v1](https://arxiv.org/abs/2611.05306), Appendix G |
+| The best compactions in the paper held a near-verbatim copy of the task, the current activity and next steps, a decomposed plan, the completion requirements, and pointers to relevant artifacts | same paper, Appendix A |
+| The `Session record` line follows the paper's proposed, unevaluated remedy of a kept record read selectively; the `Outside the repository` line follows the prompt slot that names which state persists across conversations | same paper, Section 3.1, Appendix G |
+| Own design, not from the paper and not tested against it: the memo layout, the field names, the header lines, and the worked example | this package; `instructions/skill/SKILL_AUTHORING.md` for the package shape only |
 
 ### Evidence grade
 
-`LOCAL` - the skeleton and the example are this package's design. The paper's prompt is the idea source; no wording is copied from it.
+`LOCAL` - the skeleton and the example are this package's design. The paper's prompts and its Appendix A findings are the idea source (`EXTERNAL-PREPRINT`, one unreviewed arXiv v1); no wording is copied from them.

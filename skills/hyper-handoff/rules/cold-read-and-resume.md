@@ -46,12 +46,12 @@ An unresolved pointer is fixed or marked `unverified` before the reader runs.
 
 A session that starts from a memo does the following, in order:
 
-1. Read the memo in full. Do not read earlier transcripts. Read a pointed-to file only when the next step needs it.
+1. Read the memo in full. Do not read earlier transcripts. Read a pointed-to file only when the next step needs it, and read a large one by searching for the term the step hinges on and opening a bounded window around the match, not by loading it whole.
 2. Restate in three lines, to the user or in the first message of the work: the task (from `Original request` and `Corrections`), the next step, and the done-when condition. If the restatement does not come out in three lines, the memo failed the check; say so.
 3. Verify the cheap claims against the repository before acting: the branch and worktree exist, `git status` matches what `Done` implies, the first `Next` step's file or command exists. This takes seconds and catches a memo that went stale.
 4. On a mismatch, trust the repository, correct the memo (raise `Revision`), and say what changed. Do not continue from a claim the repository contradicts.
-5. Start the first `Next` step. Do not ask the user to repeat the task or to confirm what the memo already records.
-6. When a fact is missing, retrieve it narrowly (one file, one command, one search of the old session) and add it to the memo, so the next reader does not need the same trip.
+5. Start the first `Next` step. Do not ask the user to repeat the task or to confirm what the memo already records. Do not redo a `Done` item that carries its proof, and do not retry a dead end.
+6. When a fact is missing, retrieve it narrowly (one file, one command, one search of the old session's record named in `Where`) and add it to the memo, so the next reader does not need the same trip. The old record is for lookups like this, never for replay.
 
 ## 6. Authority While Resuming
 
@@ -66,13 +66,16 @@ When a plan run or a goal loop state directory exists for the work, the memo's `
 
 ## Sources
 
-> Checked 2026-11-09.
+> Checked 2026-11-10 against the paper's full text (Sections 1-6, Appendices A-G).
 
 | Claim | Source |
 |---|---|
-| A session restarted from a compact state continued long software tasks with little or no accuracy loss in the paper's harness | [Belcak et al., arXiv:2611.05306](https://arxiv.org/abs/2611.05306), Sections 3 and 5 |
-| The six questions, the reader setup, the repair bound, and the resume steps are this package's own design and were not tested against the paper | this package |
+| Sessions restarted from a compacted state stayed within -3.7 to +5.6 accuracy points (Claude Opus 4.5) and -3.3 to +4.4 points (GPT 5.6 Sol) of the full-history baseline across six long-horizon benchmarks; one of them, FRAMES, lost accuracy at every setting | [Belcak et al., arXiv:2611.05306 v1](https://arxiv.org/abs/2611.05306), Section 3, Appendix C |
+| The paper names re-doing finished work or revisiting seen information after a compaction as a possible failure that raises total tokens, and reports that it was generally not the case in its runs (section 5, step 5) | same paper, Section 3 |
+| A kept record of every message, read selectively and only as needed, is the paper's proposed remedy for what a compaction loses; the paper did not evaluate it (section 5, steps 1 and 6) | same paper, Section 3.1 |
+| On long-input tasks the agents searched for what the answer hinges on, read a bounded window around the match, and verified, instead of loading the whole input; conversation length stayed broadly bounded as inputs grew (section 5, step 1) | same paper, Section 4, Appendix E |
+| Own design, not from the paper and not tested against it: the six questions, the reader setup, the pointer check, the repair bound, the three-line restatement, and the authority rules | this package |
 
 ### Evidence grade
 
-`LOCAL` - the check and the resume procedure are untested design. The paper supports only the premise that a compact state can carry long work.
+`LOCAL` for the check and the resume procedure: they are untested design. `EXTERNAL-PREPRINT` for the rows that cite the paper: one unreviewed arXiv v1 that measured autonomous runs on its own harness, so it supports the premise that a compact state can carry long work, not this procedure.

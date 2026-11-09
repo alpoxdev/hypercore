@@ -25,7 +25,7 @@
 
 ## Corrections
 
-- <YYYY-MM-DD> > <later user instruction, verbatim>
+- <YYYY-MM-DD> > <later user instruction or standing preference, verbatim>
 (or `none`)
 
 ## Now
@@ -35,6 +35,7 @@
 ## Done
 
 - <item> - verified by `<command>` (exit 0)
+- <finding, with its exact value> - observed in `<file or command>`
 - <item> - unverified
 
 ## Next
@@ -45,7 +46,7 @@
 ## Plan and done-when
 
 - Plan: <path or none>
-- Done when: <observable condition, ideally a command and its expected result>
+- Done when: <each completion requirement; at least one as a command and its expected result>
 
 ## Where
 
@@ -53,12 +54,15 @@
 - Branch / worktree: <branch> / <path>
 - Machine: <hostname>
 - State owned by other stages: <path of a plan run or goal loop state directory, or none>
+- Session record: <path or id of the old session's transcript, or none>
+- Outside the repository: <state the work depends on that git does not hold, and whether it survives the session or the move, or none>
 - External: <pull request, issue, service, with the identifier>
 
 ## Decisions and dead ends
 
 - Decision (<who>, <date>): <what and why>
 - Dead end: <approach> - failed because <reason>
+- Workaround: <obstacle> - passed with `<command>`
 
 ## Open questions and risks
 
@@ -110,6 +114,8 @@
 - Branch / worktree: fix/login-redirect / /Users/alpox/dev/acme/web/.hyper/worktree/login-redirect
 - Machine: alpoxs-macbook
 - State owned by other stages: none
+- Session record: /Users/alpox/.omp/agent/sessions/-dev-acme-web/2026-11-09T05-58-11.jsonl
+- Outside the repository: `src/auth/redirect.ts` 수정은 커밋하지 않아 이 워크트리에만 있다. 다른 머신으로 옮기려면 먼저 커밋하고 푸시해야 한다.
 - External: none
 
 ## Decisions and dead ends
@@ -128,16 +134,20 @@
 - `Done`은 증명된 항목과 증명되지 않은 항목을 나누고, `Next`는 그것을 증명하는 일로 시작한다.
 - `Where`는 위치 표시만 담는다. diff는 붙여 넣지 않고 워크트리에서 `git diff`로 읽는다.
 - 대화가 없는 읽는 쪽도 이 파일만으로 여섯 질문에 모두 답할 수 있다.
+- 세션을 되짚어 이야기하는 줄이 없다. 모든 줄은 남은 단계에 필요해서 있다.
+- 커밋하지 않은 수정을 이 워크트리에만 있는 상태로 적어, 다른 머신으로 옮길 때 모르는 사이에 잃지 않게 한다.
 
 ## Sources
 
-> 확인 2026-11-09.
+> 확인 2026-11-10. 논문 전문(Section 1-6, Appendix A-G)과 대조했다.
 
 | Claim | Source |
 |---|---|
-| 메모 절은 인수인계 요약 프롬프트의 모양을 따른다. 목표, 확립된 사실, 검증 상태가 붙은 적용 변경, 막다른 길, 다음 명령과 완료 조건이 붙은 남은 계획이다 | [Belcak et al., arXiv:2611.05306](https://arxiv.org/abs/2611.05306), Appendix G |
-| 메모 배치, 필드 이름, 작업 예는 이 패키지의 설계다 | 패키지 형태만 `instructions/skill/SKILL_AUTHORING.md` |
+| 메모 절은 논문의 인수인계 재요약 프롬프트가 요구하는 것을 다룬다. 목표, 정확한 값이 붙은 확인된 사실, 검증 상태가 붙은 적용 변경, 돌린 검사, 막다른 길, 우회 방법, 다음 행동과 완료 조건이 붙은 남은 계획이다 | [Belcak et al., arXiv:2611.05306 v1](https://arxiv.org/abs/2611.05306), Appendix G |
+| 논문에서 가장 좋았던 압축에는 작업의 원문에 가까운 사본, 현재 하는 일과 다음 단계, 나눈 계획, 완료 요건, 관련 산출물로 가는 위치 표시가 들어 있었다 | 같은 논문, Appendix A |
+| `Session record` 줄은 기록을 남겨 두고 골라 읽는다는 논문의 제안(평가하지 않은 해법)을 따른다. `Outside the repository` 줄은 대화가 바뀌어도 남는 상태를 밝히는 프롬프트 슬롯을 따른다 | 같은 논문, Section 3.1, Appendix G |
+| 자체 설계이며 논문에서 가져오지 않았고 논문으로 시험하지 않은 것: 메모 배치, 필드 이름, 헤더 줄, 작업 예 | 이 패키지. 패키지 형태만 `instructions/skill/SKILL_AUTHORING.md` |
 
 ### 근거 등급
 
-`LOCAL` - 골격과 예는 이 패키지의 설계다. 논문의 프롬프트는 아이디어 출처이며 문구를 복사하지 않았다.
+`LOCAL` - 골격과 예는 이 패키지의 설계다. 논문의 프롬프트와 Appendix A의 발견은 아이디어 출처이며(`EXTERNAL-PREPRINT`, 검토하지 않은 arXiv v1 하나) 문구를 복사하지 않았다.

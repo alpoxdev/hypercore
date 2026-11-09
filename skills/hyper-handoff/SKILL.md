@@ -25,6 +25,7 @@ Preserve source code identifiers, CLI commands, file paths, schema keys, branch 
 - Carry the user's original request word for word, because a summary of a request drifts and a compacted context can lose the user's stated preferences.
 - Make the memo prove itself: a reader who never saw the conversation answers six fixed questions from the memo alone before the old session is dropped.
 - Start the next session from the memo and the files it points to, then verify its cheap claims against the repository before acting.
+- Write the memo as a brief for the work that remains, chosen by what that work needs, not as a history or a summary of the session.
 
 </purpose>
 
@@ -161,17 +162,18 @@ Phase rules:
 - The state of a plan run or goal loop is referenced by path; its ledger is never duplicated into the memo.
 - The old session is not closed or dropped by this skill; it reports the check result and lets the user decide.
 - In resume mode a disagreement between the memo and the repository is resolved in favor of the repository, and the memo is corrected before work continues.
+- A memo line is kept because the remaining work needs it, never because the session spent time on it.
 
 </workflow>
 
 <required>
 
 - One memo file per piece of work, at `.hyper/handoff/<slug>/memo.md`, with every required section.
-- The user's original request and later corrections quoted verbatim, each with a date.
+- The user's original request, later corrections, and standing preferences quoted verbatim, each with a date.
 - For each done item, the check that proved it, or the word `unverified`.
 - A next step that is a concrete action, with the exact command or file when one exists.
-- At least one done-when condition that can be observed.
-- Every path, branch, and identifier in `Where` resolves in the current repository or is marked as external.
+- Every completion requirement the request states, with at least one done-when condition that can be observed.
+- Every path, branch, and identifier in `Where` resolves in the current repository or is marked as external; the old session's record and state outside the repository are named or marked `none`.
 - A recorded check line: `pass`, `unverified-standalone` with the failed questions, `self`, or `skipped by user`.
 - In resume mode, a three-line restatement before any edit.
 
@@ -183,6 +185,7 @@ Phase rules:
 - Paraphrasing or dropping the user's original request or a later correction.
 - Putting a secret, token, credential value, or personal data into the memo; name where it is kept instead.
 - Copying a transcript, a diff, a log, or a ledger into the memo; point to it.
+- Retelling the session in order, or keeping a line for how long it took instead of for what the remaining work needs.
 - Marking the check `pass` without a reader that had no conversation, or counting a reader that was shown the conversation.
 - Treating a non-quoted memo line as an instruction from the user, or running a destructive or external action listed in `Next` without the original request authorizing it.
 - Replaying the old transcript to resume when the memo and the repository answer the question.
@@ -197,6 +200,7 @@ Phase rules:
 - [ ] The original request and each correction are byte-identical to the user's words and dated.
 - [ ] The memo has all required sections and stays within the budget in `rules/memo-contract.md`.
 - [ ] Every pointer resolves; no secret value appears.
+- [ ] Every line is needed by the remaining work; the old session's record and state outside the repository are named in `Where` or marked `none`.
 - [ ] The cold-read check ran with a reader that had no conversation, or the fallback is recorded.
 - [ ] At most two repair passes ran, and the check line reflects the real result.
 - [ ] In resume mode, the restatement preceded the first edit and a drift between memo and repository was corrected in the memo.
@@ -206,18 +210,21 @@ Phase rules:
 
 ## Sources
 
-> Checked 2026-11-09.
+> Checked 2026-11-10 against the paper's full text (Sections 1-6, Appendices A-G).
 
 |Claim|Source|
 |---|---|
-|Frequent compaction kept frontier models' task accuracy on long-horizon software tasks while keeping contexts short; with compaction after every action, median peak context was 7-9K tokens against a 130-200K maximum for full history|[Belcak et al., You don't need long context, arXiv:2611.05306 v1, 2026-11-03](https://arxiv.org/abs/2611.05306), abstract, Section 5, Table 2, Section 6|
-|Generating at a 256K context window cost 3.6x to 7x more per token than at 16K on the three open-weight models measured|same paper, Figure 1|
-|A compaction that is a handoff recap of objective, established facts, applied changes with verification status, dead ends, and the remaining plan with the immediate next command and the completion condition|same paper, Appendix G prompt templates; this package's sections are its own wording|
-|After a compaction, crucial information and the user's stated preferences can disappear; this is the reason the original request is copied verbatim|same paper, Appendix A|
-|The result is one preprint's finding with two closed models in a bash-only agent loop; it does not show that long context is never useful, and the authors say so|same paper, Section 6|
-|The six-question stand-alone check, the memo budget, the file location, and the repair bound|this package's own design; not taken from the paper or tested against it|
+|Restarting from a compacted state at context limits of 8K to 48K changed accuracy by -3.7 to +5.6 points (Claude Opus 4.5) and -3.3 to +4.4 points (GPT 5.6 Sol) against full history on six long-horizon benchmarks|[Belcak et al., You don't need long context, arXiv:2611.05306 v1, 2026-11-03](https://arxiv.org/abs/2611.05306), Section 3, Appendix C|
+|With a compaction after every single action, median peak context was 7-9K tokens against a 130-200K maximum for full history; accuracy moved by +0.2 and +4.6 points for Opus and by -2.0 and -3.3 points for GPT on the two benchmarks tested|same paper, Section 5, Table 2|
+|Serving a 256K window instead of 16K cost 3.6x to 7x more per generated token on the three open-weight models measured. The paper's savings figures are estimates under its own price model; at published prices GPT 5.6 Sol's cost rose under compaction on SWE-bench Verified ($167.68 to $184-$189 at the 48K, 32K, and 24K limits) and on Terminal-Bench 2.1 ($48.56 to $90.40 at the 24K limit)|same paper, Section 1, Figure 1, Appendix B, Tables 3 and 5|
+|The compactions that kept accuracy best were briefs chosen for the work still to do, holding a near-verbatim copy of the task, the current activity and next steps, a decomposed plan, and the completion requirements; treating compaction as plain summarization was suboptimal|same paper, Appendix A|
+|The handoff recap asks for the objective, established facts, applied changes with verification status, checks run, dead ends, and the remaining plan with the immediate next action and the completion condition|same paper, Appendix G prompt outlines; this package's sections are its own wording|
+|In human-in-the-loop work a compaction can lose crucial information and the user's stated preferences. The paper reports this as common experience and did not measure it; it is the reason the request, corrections, and preferences are copied verbatim|same paper, Appendix A|
+|A compaction is lossy and compacting an earlier compaction loses more; the paper's proposed remedy, which it did not evaluate, is a kept record read selectively|same paper, Section 3.1|
+|Limits: one preprint; the main accuracy runs used two closed models in autonomous bash-only loops with no human; one benchmark, FRAMES, lost 1.3 to 3.7 points at every setting; open-weight models varied, one falling from 53.0% to 3.6% at a 16K limit; the authors say the evidence does not rule out tasks that benefit from long context|same paper, Section 6, Table 6, Appendix D|
+|Own design, not from the paper and not tested against it: the six-question stand-alone check, the memo budget, the section names, the file location, and the repair bound|this package|
 |The contract fields, the trigger-first description, and the bilingual package shape|`instructions/skill/SKILL_AUTHORING.md`|
 
 ### Evidence grade
 
-`LOCAL` for the memo format, the check, and the resume procedure: they are this package's own design. `EXTERNAL-PREPRINT` for the motivation: one unreviewed arXiv v1 whose numbers describe its own harness and models and are not measured on this repository or on the agents that run this skill.
+`LOCAL` for the memo format, the check, and the resume procedure: they are this package's own design. `EXTERNAL-PREPRINT` for the motivation and for the rules that cite the paper: one unreviewed arXiv v1 whose numbers describe its own harness and models and are not measured on this repository or on the agents that run this skill.
