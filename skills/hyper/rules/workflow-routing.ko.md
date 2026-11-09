@@ -135,7 +135,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-go
 | 기존 계획 실행이나 재개 | `hyper-execute` |
 | 스킬 폴더를 새로 만들거나 리팩터링 | `hyper-skill` |
 | 최신 공식 문서에 기대는 스킬 폴더("최신 규격", "latest spec") | `hyper-research` -> `hyper-skill` |
-| README, `AGENTS.md`, 문서, 규칙 묶음, 재사용 프롬프트, 템플릿, 팩, 프롬프트 평가 픽스처를 새로 만들거나 리팩터링 | `hyper-documentation` |
+| README, `AGENTS.md`, 문서, 규칙 묶음, 재사용 프롬프트, 템플릿, 팩, 프롬프트 평가 픽스처, 에이전트 메모리 파일(`MEMORY.md`, 메모리 뱅크, 교훈 파일)을 새로 만들거나 리팩터링 | `hyper-documentation` |
 | 최신 외부 출처나 공급자 지침에 기대는 문서나 프롬프트 | `hyper-research` -> `hyper-documentation` |
 | 스킬 폴더, 문서, MCP, decision API, 인터페이스, 프런트엔드, 데이터베이스, GA4 분석, GTM, 변경 요청 반영, 디버그, 루프 뒤 커밋과 푸시("커밋하고 푸시까지") | 그 체인 -> 커밋 모드의 `hyper-git` |
 | 같은 작업 뒤 지정 브랜치로 병합과 푸시("dev, main에 머지하고 푸시") | 그 체인 -> 이번 실행의 커밋에 `&& <branch>` 대상을 붙인 커밋 모드의 `hyper-git`, 작업 브랜치 전체를 병합해야 하면 워크플로 모드 |

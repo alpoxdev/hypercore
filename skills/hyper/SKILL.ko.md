@@ -172,7 +172,7 @@ Boundary requests:
 | 계획 파일 없이 의존 순서가 있는 다중 에이전트 작업 | `hyper-mass` |
 | 모두 끝내야 하는 여러 의존 목표(목표마다 새 증거가 필요한 기준이 있음), 또는 멈춘 루프 재개 | `hyper-loop`. 사용자가 커밋·푸시 전달을 요청하면 뒤에 `hyper-git` |
 | 재사용 스킬 폴더를 새로 만들거나 리팩터링. 필요하면 공식 문서 리서치 뒤에 | `hyper-skill`. 요청이 최신 외부 문서에 기대면 앞에 `hyper-research` |
-| README, `AGENTS.md`, AI가 읽기 좋은 문서, 지침 베이스, 런북, 규칙 묶음, 재사용 프롬프트, 프롬프트 템플릿, 프롬프트 팩, 프롬프트 평가 픽스처를 새로 만들거나 리팩터링 | `hyper-documentation`. 내용이 최신 외부 출처나 공급자 지침에 기대면 앞에 `hyper-research` |
+| README, `AGENTS.md`, AI가 읽기 좋은 문서, 지침 베이스, 런북, 규칙 묶음, 재사용 프롬프트, 프롬프트 템플릿, 프롬프트 팩, 프롬프트 평가 픽스처, 에이전트 메모리 파일(`MEMORY.md`, 메모리 뱅크, 교훈 파일)을 새로 만들거나 리팩터링 | `hyper-documentation`. 내용이 최신 외부 출처나 공급자 지침에 기대면 앞에 `hyper-research` |
 | MCP 서버, 클라이언트, 이전, 보안 수정, 호스트 MCP 설정 | `hyper-mcp`. 서버가 낯선 외부 API를 감싸면 앞에 `hyper-research`, 사용자가 PR이나 배포 전달을 요청했거나 MCP 밖 모듈까지 바뀌면 `hyper-mcp`를 점검 모드로 두고 뒤에 `hyper-plan` |
 | decision API 작업. 글 대신 타입 판단(예/아니오 확률, 선택, 점수, 상자)을 돌려주는 모델 호출을 TypeSafe Jev, OpenAI Decisions, 다른 결정 공급자, AI SDK나 게이트웨이, 범용 LLM 위 에뮬레이션으로 다루는 적합성 판정, 질문, 호출 코드, 템플릿, 평가 계획, 라벨 전용 호출 감사, 경로 설정 | `hyper-decision`. 그 참조가 다루지 않는 공급자나 경로에 기대면 앞에 `hyper-research`, 사용자가 PR이나 배포 전달을 요청했거나 애플리케이션 전반의 호출을 다시 연결하면 `hyper-decision`을 `design`이나 `audit` 모드로 두고 뒤에 `hyper-plan` |
 | 데이터 모델, 스키마, 마이그레이션, 느린 쿼리나 인덱스, 엔진 선택, 데이터베이스 운영 변경(백업, 복제, 커넥션 풀, 업그레이드, 보안) | `hyper-database`. 저장소가 아직 쓰지 않는 엔진이나 서비스에 기대면 앞에 `hyper-research`, 사용자가 PR이나 배포 전달을 요청했거나 애플리케이션 코드까지 바뀌면 `hyper-database`를 리뷰 모드로 두고 뒤에 `hyper-plan` |

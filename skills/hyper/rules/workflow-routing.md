@@ -135,7 +135,7 @@ When both delivery brackets are chosen, `hyper-git` runs first and `hyper-deploy
 | Existing plan run or resumed | `hyper-execute` |
 | Skill folder created or refactored | `hyper-skill` |
 | Skill folder that depends on current provider docs ("최신 규격", "latest spec") | `hyper-research` -> `hyper-skill` |
-| README, `AGENTS.md`, document, rule pack, reusable prompt, template, pack, or prompt eval fixture created or refactored | `hyper-documentation` |
+| README, `AGENTS.md`, document, rule pack, reusable prompt, template, pack, prompt eval fixture, or agent memory files (`MEMORY.md`, memory bank, lessons file) created or refactored | `hyper-documentation` |
 | Document or prompt that depends on current external sources or provider guidance | `hyper-research` -> `hyper-documentation` |
 | Skill folder, document, MCP, decision-API, interface, frontend, database, GA4 analytics, GTM, feedback, debug, or loop change, then commit and push ("커밋하고 푸시까지") | that chain -> `hyper-git` in commit mode |
 | Same, then merge into named branches ("dev, main에 머지하고 푸시") | that chain -> `hyper-git` in commit mode with `&& <branch>` targets for this run's commits, or workflow mode when a whole work branch must be merged |
