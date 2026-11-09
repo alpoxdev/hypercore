@@ -113,7 +113,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 
 - 코어(`SKILL.ko.md`): 트리거, 계약, 깊이 표, 단계 순서, 종료 조건.
 - 규칙: `research-workflow.ko.md`(틀 잡기, journal, 수집, 저장), `expansion-and-convergence.ko.md`(`## EXPAND` 단서, wave, excursion, 종료 규칙), `claim-verification.ko.md`(claim gate, 실행 확인, 숫자 계보, debate 기록), `parallel-research.ko.md`(lane 계약과 join), `validation.ko.md`(순서가 있는 게이트와 마감).
-- 참조: `channel-selection.ko.md`(채널과 검색 요령), `journal-format.ko.md`(journal 파일과 각 열), `report-template.ko.md`(저장하는 리포트).
+- 참조: `channel-selection.ko.md`(채널과 검색 요령), `journal-format.ko.md`(journal 파일과 각 열), `report-template.ko.md`(저장하는 리포트), `latex-report.ko.md`(선택적인 조판 PDF 경로).
 - 자산: `assets/evals/hyper-research-cases.jsonl`, 트리거와 동작 사례.
 - 스크립트(bash 3.2+, jq 1.6+): `scripts/validate-report.sh`가 저장한 리포트와 출처 ledger를 상대로 기계적인 인용·숫자 계보 게이트를 실행합니다. `scripts/report-state.sh`는 `repair`로 모든 수리 재시도를 기록하고, `finish`로 `outcome.json`을 쓰며, `briefing`으로 센 사실을 출력합니다. 상태 파일은 조사 일지 안에 두며(`--state <path>`나 `REPORT_STATE_FILE`, 기본 `.hyper/research/report-state.json`), 판단이 필요한 게이트는 에이전트가 journal과 리포트를 보며 실행하는 점검 목록으로 남습니다.
 
@@ -144,6 +144,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 - subagent나 background lane을 띄우기 전에 [rules/parallel-research.ko.md](rules/parallel-research.ko.md)를 읽습니다.
 - 위험도가 높거나 숫자가 들어가거나 코드 동작에 관한 주장을 리포트에 쓰기 전에 [rules/claim-verification.ko.md](rules/claim-verification.ko.md)를 읽습니다.
 - 리포트 초안을 쓸 때는 기본으로 [references/report-template.ko.md](references/report-template.ko.md)를 읽고, 영어가 요청되거나 필요할 때만 [references/report-template.md](references/report-template.md)를 씁니다.
+- 사용자가 LaTeX나 조판된 PDF를 요청할 때만 [references/latex-report.ko.md](references/latex-report.ko.md)를 읽고, 영어가 요청되거나 필요할 때만 [references/latex-report.md](references/latex-report.md)를 씁니다.
 - 조사를 완료했다고 말하기 전에 [rules/validation.ko.md](rules/validation.ko.md)를 읽습니다.
 
 </reference_routing>

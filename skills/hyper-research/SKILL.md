@@ -113,7 +113,7 @@ The user's own floor or cap wins over this table. The numbers are this package's
 
 - Core (`SKILL.md`): trigger, contract, depth table, phase order, and stop condition.
 - Rules: `research-workflow.md` (framing, journal, collection, save), `expansion-and-convergence.md` (EXPAND leads, waves, excursions, stop rules), `claim-verification.md` (claim gate, execution checks, number lineage, debate record), `parallel-research.md` (lane contract and join), `validation.md` (ordered gates and closeout).
-- References: `channel-selection.md` (channels and search craft), `journal-format.md` (journal files and their columns), `report-template.md` (the saved report).
+- References: `channel-selection.md` (channels and search craft), `journal-format.md` (journal files and their columns), `report-template.md` (the saved report), `latex-report.md` (the optional typeset PDF route).
 - Assets: `assets/evals/hyper-research-cases.jsonl`, the trigger and behavior cases.
 - Scripts (bash 3.2+, jq 1.6+): `scripts/validate-report.sh` runs the mechanical citation and number-lineage gates against the saved report and the sources ledger. `scripts/report-state.sh` records every repair pass with `repair`, writes `outcome.json` with `finish`, and prints the counted facts with `briefing`; its state file lives in the run journal (`--state <path>` or `REPORT_STATE_FILE`, default `.hyper/research/report-state.json`). The judgment gates stay a checklist the agent runs against the journal and the report.
 
@@ -144,6 +144,7 @@ Search in English first, then add a local-language sweep when the topic is local
 - Read [rules/parallel-research.md](rules/parallel-research.md) before spawning any subagent or background lane.
 - Read [rules/claim-verification.md](rules/claim-verification.md) before writing any high-risk, numeric, or code-behavior claim into the report.
 - Read [references/report-template.ko.md](references/report-template.ko.md) by default when drafting the report; use [references/report-template.md](references/report-template.md) only when English is requested or required.
+- Read [references/latex-report.ko.md](references/latex-report.ko.md) only when the user asks for LaTeX or a typeset PDF; use [references/latex-report.md](references/latex-report.md) only when English is requested or required.
 - Read [rules/validation.md](rules/validation.md) before declaring the research complete.
 
 </reference_routing>
