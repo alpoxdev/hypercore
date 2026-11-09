@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 27개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 28개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **설치 경로 두 가지**: 모든 런타임은 `npx skills`, Claude Code는 마켓플레이스 플러그인으로도 설치합니다. 한 환경에는 한 경로만 씁니다([선택 기준](#claude-code-플러그인-마켓플레이스)).
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -36,7 +36,7 @@ Hypercore의 표준 설치·관리 경로는 [Vercel Skills CLI](https://github.
 ```bash
 claude plugin marketplace add alpoxdev/hypercore
 claude plugin install hypercore@alpoxdev            # 기본 scope는 user. 프로젝트에 고정하려면 --scope project
-claude plugin details hypercore                     # Skills (27) 확인
+claude plugin details hypercore                     # Skills (28) 확인
 claude plugin update hypercore@alpoxdev
 claude plugin uninstall hypercore@alpoxdev
 claude plugin marketplace remove alpoxdev           # 마켓플레이스와 그 플러그인을 함께 제거
@@ -58,7 +58,7 @@ claude plugin marketplace remove alpoxdev           # 마켓플레이스와 그 
 |---|---|
 | Claude Code만 쓰고 버전 단위 업데이트·제거를 `claude plugin`으로 관리하고 싶다 | 플러그인 |
 | Codex, Cursor, Antigravity도 함께 쓰거나 같은 설치를 여러 agent에 맞추고 싶다 | `npx skills` |
-| 스킬 일부만 고르거나(`--skill hyper-git`) 프로젝트마다 다르게 설치하고 싶다 | `npx skills` (플러그인은 스킬 27개를 통째로 설치) |
+| 스킬 일부만 고르거나(`--skill hyper-git`) 프로젝트마다 다르게 설치하고 싶다 | `npx skills` (플러그인은 스킬 28개를 통째로 설치) |
 | 스킬을 `/hyper-git`처럼 접두어 없이 부르고 싶다 | `npx skills` |
 
 한 경로에서 다른 경로로 옮길 때는 먼저 기존 설치를 제거합니다. `npx skills`에서 플러그인으로 옮기려면 아래 [설치 및 수명주기](#설치-및-수명주기)의 `remove`로 hypercore 스킬을 지운 뒤 위 플러그인 명령을 실행합니다. 플러그인에서 `npx skills`로 옮기려면 `claude plugin uninstall hypercore@alpoxdev`를 실행한 뒤 아래 설치 절차를 따릅니다.
@@ -250,6 +250,7 @@ flowchart LR
 | `hyper-issue` | 확정된 발견이나 결정된 작업을 새 세션 에이전트가 읽는 영어 이슈로 등록하고, 열린 이슈 묶음이나 `#1~3` 같은 번호를 서로 겹치지 않는 작업 레인으로 묶어 배치 매니페스트 생성. 작업까지 원하면 `hyper`에 넘겨 레인별로 실행(스킬 자체는 구현하지 않음) | 인증된 이슈 트래커 CLI(`gh`); 쓰기 권한이 없으면 본문을 디스크에 초안으로 남김; 레인 실행에는 `hyper` 스킬 |
 | `hyper-mass` | 의존 순서가 있는 하위 작업을 그래프로 정의해 단계별 병렬 실행, 재시도·수정·재개 지원 | All |
 | `hyper-loop` | 서로 의존하는 여러 목표를 `.hyper/loop/`의 목표·장부·최종 게이트로 끝까지 실행. 기준마다 증거를 git tree·diff 해시·미추적 파일 지문에 묶어 코드가 바뀌면 stale로 표시하고, 같은 실패 3회면 멈추며, 모든 기준이 새 증거로 덮였을 때만 완료. 푸시·병합·PR은 하지 않음 | bash 3.2+ & jq 1.6+ & git |
+| `hyper-handoff` | 컨텍스트가 차거나 세션·에이전트·머신이 바뀔 때 긴 대화 대신 `.hyper/handoff/<slug>/memo.md` 한 장으로 이어서 일하게 함. 메모에 사용자의 원 요청을 그대로, 지금 하는 일과 이유, 끝난 일(검증 증거 또는 unverified), 다음 단계, 계획과 완료 조건, 위치를 담고, 대화를 못 본 읽는 쪽이 고정된 여섯 질문에 메모만으로 답하는지 확인(보완 최대 2회). 새 세션은 메모만 읽고 세 줄로 되풀이한 뒤 저장소 상태로 검증하고 이어받음. 비밀 값은 쓰지 않음 | 파일 읽기·쓰기와 셸; 읽는 쪽으로 하위 에이전트 선택(없으면 자체 점검으로 기록) |
 
 ### 리서치 · 디버깅 · QA
 
@@ -281,7 +282,7 @@ flowchart LR
 | `hyper-mcp` | MCP(Model Context Protocol) 서버·클라이언트 구축, 보안·규격 점검과 수정, 2026-07-28 판 이전, 호스트 MCP 설정 연결, 레지스트리 메타데이터 준비를 MCP Inspector 검증과 `.hyper/mcp/` 보고서까지 처리 | 대상 언어 도구 모음; MCP Inspector는 Node.js 22.19+ |
 | `hyper-decision` | 글 대신 타입 판단(예/아니오 확률, 선택, 점수, 이미지 상자)을 돌려주는 decision API(TypeSafe Jev, OpenAI Decisions, Perplexity, Liquid, Cloudflare Clef, Vercel AI SDK·AI Gateway, OpenRouter, 범용 LLM 에뮬레이션)용 적합성 판정, 방언별 질문, 호출 코드, 요청 템플릿, 평가 계획, 라벨 전용 LLM 호출 감사, 경로 설정. 경로를 네 층으로 나눠 확률을 돌려주는지 밝히고 방언별 오프라인 요청 검사기로 확인 | bash 3.2+ · jq (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 27개 스킬. 기획·마케팅·비즈니스용 스킬(blog-maker, instagram-card-maker, korean-writer, storyboard-maker, tone-manner-maker)은 [Hypercore Business](https://github.com/alpoxdev/hypercore-business)로 옮겼습니다. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 28개 스킬. 기획·마케팅·비즈니스용 스킬(blog-maker, instagram-card-maker, korean-writer, storyboard-maker, tone-manner-maker)은 [Hypercore Business](https://github.com/alpoxdev/hypercore-business)로 옮겼습니다. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
 
@@ -326,7 +327,7 @@ hypercore/
 ├── assets/                # 플러그인 아이콘, README 이미지 등 저장소 수준 정적 asset
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
 ├── scripts/               # source/lifecycle/plugin manifest 검증 및 보조 스크립트
-└── skills/                # 27개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 28개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:
