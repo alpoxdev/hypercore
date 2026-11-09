@@ -44,8 +44,6 @@ claude plugin marketplace remove alpoxdev           # 마켓플레이스와 그 
 
 세션 안에서는 `/plugin marketplace add alpoxdev/hypercore`와 `/plugin install hypercore@alpoxdev`를 씁니다. 설치 뒤 스킬은 `/hypercore:<스킬>` 형식으로 호출하며, 플러그인을 켠 환경에서만 보입니다.
 
-`main`에 `.claude-plugin/`이 반영되기 전에는 기본 브랜치에 마켓플레이스 파일이 없어 추가가 실패하므로 `claude plugin marketplace add alpoxdev/hypercore#dev`로 `dev` 브랜치를 지정합니다(2026-11-09 격리 HOME에서 확인).
-
 동작 규칙:
 
 - **업데이트는 버전 단위입니다.** `plugin.json`이 `version`을 고정하므로 사용자는 그 문자열이 바뀐 릴리스에서만 새 사본을 받습니다. 서드파티 마켓플레이스의 자동 업데이트는 기본으로 꺼져 있으므로 `claude plugin marketplace update alpoxdev`로 카탈로그를 갱신한 뒤 `claude plugin update hypercore@alpoxdev`를 실행하거나, `/plugin`의 Marketplaces에서 auto-update를 켭니다. 업데이트는 재시작 후 적용됩니다.
