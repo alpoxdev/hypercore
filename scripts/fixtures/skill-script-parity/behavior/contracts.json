@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 36,
+    "expectedRows": 38,
     "legacyOriginCounts": {
       "former-sh": 11,
       "retained-mjs": 2,
-      "authored-mjs": 21,
+      "authored-mjs": 23,
       "authored-sh": 2
     },
     "requiredDimensions": [
@@ -24,7 +24,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 108
+    "expectedFixtures": 114
   },
   "rows": [
     {
@@ -7982,6 +7982,358 @@
             "exit": 0,
             "files": [],
             "modes": {},
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--self-test"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper-loop--verify-loop-state",
+      "path": "skills/hyper-loop/scripts/verify-loop-state.sh",
+      "family": "hyper-loop",
+      "legacyOrigin": "authored-mjs",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-loop/scripts/verify-loop-state.mjs",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-loop--verify-loop-state--stdout",
+        "stderr": "hyper-loop--verify-loop-state--stderr",
+        "exit": "hyper-loop--verify-loop-state--exit",
+        "files": "hyper-loop--verify-loop-state--files",
+        "modes": "hyper-loop--verify-loop-state--modes",
+        "cwd": "hyper-loop--verify-loop-state--cwd",
+        "env": "hyper-loop--verify-loop-state--env",
+        "argv": "hyper-loop--verify-loop-state--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-loop/scripts/verify-loop-state.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--help"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "Usage: bash verify-loop-state.sh [snapshot] [--dir <loop-dir>] [--repo <path>] [--limit <n>]\n       bash verify-loop-state.sh --goal <goal-id> --dir <loop-dir> [--repo <path>] [--limit <n>]\n       bash verify-loop-state.sh --final <final-gate.json> [--dir <loop-dir>] [--repo <path>]\n       bash verify-loop-state.sh --self-test\n       bash verify-loop-state.sh --help\n\nsnapshot    print the current fingerprint as JSON: tree, diff_sha256, untracked entries.\n--goal ID   compare goal ID's criteria in <loop-dir>/ledger.jsonl with the current\n            fingerprint and report pass, stale, failing, missing, or missing-evidence-file\n            per criterion. Exits 1 when an essential criterion lacks fresh passing proof.\n--final F   check <loop-dir>/final-gate.json: every criterion needs a fresh passing ledger\n            row and a passing surface row, every declared surface needs a row, the gate\n            status must be complete, and the gate must be bound to the current fingerprint.\n--self-test build a throwaway git repository, prove a fresh snapshot passes, prove an edited\n            file turns the proof stale, and prove --final rejects a missing criterion.\n\nThe fingerprint covers `git rev-parse HEAD^{tree}` and the SHA-256 of\n`git diff --binary HEAD` concatenated with one \"<sha256>\\t<path>\" line per sorted\nuntracked file. Ignored files and the loop directory itself are excluded, so\nappending to ledger.jsonl never invalidates an earlier proof.\n\nExit codes: 0 verified; 1 proof does not hold; 2 usage, input, or git failure.\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--help"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-loop/scripts/verify-loop-state.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--bogus"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"status\":\"error\",\"code\":\"BAD_ARGUMENT\",\"message\":\"unknown argument: --bogus\"}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--bogus"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-loop/scripts/verify-loop-state.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--final",
+              "missing-gate.json"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"status\":\"error\",\"code\":\"GATE_MISSING\",\"message\":\"gate file not found: missing-gate.json\"}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--final",
+              "missing-gate.json"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper-data--probe-engines",
+      "path": "skills/hyper-data/scripts/probe-engines.sh",
+      "family": "hyper-data",
+      "legacyOrigin": "authored-mjs",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-data/scripts/probe-engines.mjs",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-data--probe-engines--stdout",
+        "stderr": "hyper-data--probe-engines--stderr",
+        "exit": "hyper-data--probe-engines--exit",
+        "files": "hyper-data--probe-engines--files",
+        "modes": "hyper-data--probe-engines--modes",
+        "cwd": "hyper-data--probe-engines--cwd",
+        "env": "hyper-data--probe-engines--env",
+        "argv": "hyper-data--probe-engines--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-data/scripts/probe-engines.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--help"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "# probe fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "# probe-engines.sh - report the local data toolchain as one JSON object.\n#\n# Usage: bash probe-engines.sh [--help | --self-test]\n#   (no argument)  probe this machine and print one JSON object\n#   --help         print this usage block and exit 0\n#   --self-test    run the bundled shape test in a temporary directory and exit 0\n#\n# Output (stdout, exactly one JSON object):\n#   {\"schemaVersion\": 1,\n#    \"platform\": \"darwin\" | \"linux\" | \"other\",\n#    \"python3\": {\"path\": \"...\", \"version\": \"3.13.1\"} | null,\n#    \"packages\": {\"duckdb\": {\"version\": \"1.3.2\"} | null,\n#                 \"polars\": {\"version\": \"...\"} | null,\n#                 \"pyarrow\": {\"version\": \"...\"} | null,\n#                 \"numpy\": {\"version\": \"...\"} | null,\n#                 \"matplotlib\": {\"version\": \"...\"} | null},\n#    \"duckdbCli\": {\"path\": \"...\", \"version\": \"v1.3.2\"} | null,\n#    \"memory\": {\"freeBytes\": 123456789, \"source\": \"vm_stat\" | \"meminfo\"} | null}\n#\n# Exit codes: 0 printed the object or the usage/self-test path, 2 usage error,\n# 3 jq is missing.\n#\n# The script writes nothing outside the --self-test temporary directory, installs\n# nothing, and reports a missing engine instead of adding it. Versions come from the\n# interpreter's own installed-distribution metadata (`python3 -m pip list --format=json`,\n# then a dist-info scan of the interpreter's site directories). The script runs no\n# Python program of its own: the query run that follows performs the import, and an\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 16,
+                "sha256": "6e5ce8dd2764ba3ca5477660a2ae3cd728f40dfc8c87d5ac827bf29666881306"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--help"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-data/scripts/probe-engines.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--bogus"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "# probe fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "equals": "probe-engines: unknown argument: --bogus\n"
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 16,
+                "sha256": "6e5ce8dd2764ba3ca5477660a2ae3cd728f40dfc8c87d5ac827bf29666881306"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--bogus"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-data/scripts/probe-engines.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--self-test"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "# probe fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"ok\":true,\"checks\":{\"python\":true,\"packages\":true,\"duckdbCli\":true,\"json\":true,\"usageError\":true}}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 16,
+                "sha256": "6e5ce8dd2764ba3ca5477660a2ae3cd728f40dfc8c87d5ac827bf29666881306"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
             "cwd": "isolated-temp-tree",
             "env": {
               "NO_COLOR": "1"

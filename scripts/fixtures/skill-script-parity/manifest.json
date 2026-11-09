@@ -591,6 +591,36 @@
         }
       },
       "behaviorContractId": "hyper-research--report-state"
+    },
+    {
+      "path": "skills/hyper-loop/scripts/verify-loop-state.sh",
+      "family": "hyper-loop",
+      "legacyOrigin": "authored-mjs",
+      "usage": "verify-loop-state",
+      "behavior": "loop-state-verification",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-loop/scripts/verify-loop-state.mjs",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-loop--verify-loop-state"
+    },
+    {
+      "path": "skills/hyper-data/scripts/probe-engines.sh",
+      "family": "hyper-data",
+      "legacyOrigin": "authored-mjs",
+      "usage": "probe-engines",
+      "behavior": "engine-probe",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-data/scripts/probe-engines.mjs",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-data--probe-engines"
     }
   ],
   "forbiddenDetectorReferences": {

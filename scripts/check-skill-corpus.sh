@@ -95,6 +95,8 @@ metadata_for() {
     skills/hyper-database/scripts/detect-engines.sh) printf 'detect-engines\tengine-detection\n' ;;
     skills/hyper-google-analytics/scripts/ga-detect.sh) printf 'detect-ga-signals\tga-signal-detection\n' ;;
     skills/hyper-diagram/scripts/render-diagram.sh) printf 'render-diagram\tdiagram-rendering\n' ;;
+    skills/hyper-data/scripts/probe-engines.sh) printf 'probe-engines\tengine-probe\n' ;;
+    skills/hyper-loop/scripts/verify-loop-state.sh) printf 'verify-loop-state\tloop-state-verification\n' ;;
     skills/hyper-deploy/scripts/build-run.sh) printf 'run-build\tproject-build\n' ;;
     skills/hyper-deploy/scripts/deploy-check.sh) printf 'check-deployment\tdeployment-readiness-check\n' ;;
     skills/hyper-deploy/scripts/lint-check.sh) printf 'check-lint\tlint-readiness-check\n' ;;
@@ -291,12 +293,12 @@ validate_script_edges() {
 jq -e 'type == "object"' "$manifest" >/dev/null 2>&1 || die "manifest must be a JSON object"
 jq -e '(.scripts | type) == "array"' "$manifest" >/dev/null 2>&1 || die "manifest scripts must be an array"
 row_count=$(jq -r '.scripts | length' "$manifest")
-[ "$row_count" -eq 36 ] || die "manifest must contain exactly 36 scripts"
+[ "$row_count" -eq 38 ] || die "manifest must contain exactly 38 scripts"
 jq -e 'all(.scripts[]; type == "object")' "$manifest" >/dev/null 2>&1 || die "manifest rows must be objects"
 
-legacy_origins=$(printf '%s\n' former-sh former-py retained-mjs authored-mjs authored-sh)
-usage_enum=$(printf '%s\n' analyze-structure audit-gtm-container check-decision-request check-deployment check-gtm-site check-lint collect-rendered-evidence commit-files detect-engines detect-ga-signals detect-gtm-install detect-package-manager detect-slop detect-stack inspect-repository push-commit render-dashboard render-diagram research-report-state research-validate-report resolve-context run-build run-contract-evals run-detector-evals slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared validate-report validate-skill validate-waivers)
-behavior_enum=$(printf '%s\n' context-resolution contract-eval-run decision-request-validation deployment-readiness-check detector-eval-run diagram-rendering engine-detection fast-git-commit ga-signal-detection git-push gtm-container-audit gtm-install-detection gtm-site-check lint-readiness-check package-manager-detection project-build render-dashboard rendered-evidence-collection report-validation repository-discovery repository-status research-report-validation research-run-state scoped-git-commit skill-validation slop-detection slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared stack-detection structure-analysis waiver-validation)
+legacy_origins=$(printf '%s\n' authored-mjs authored-sh former-py former-sh retained-mjs)
+usage_enum=$(printf '%s\n' analyze-structure audit-gtm-container check-decision-request check-deployment check-gtm-site check-lint collect-rendered-evidence commit-files detect-engines detect-ga-signals detect-gtm-install detect-package-manager detect-slop detect-stack inspect-repository probe-engines push-commit render-dashboard render-diagram research-report-state research-validate-report resolve-context run-build run-contract-evals run-detector-evals slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared validate-report validate-skill validate-waivers verify-loop-state)
+behavior_enum=$(printf '%s\n' context-resolution contract-eval-run decision-request-validation deployment-readiness-check detector-eval-run diagram-rendering engine-detection engine-probe fast-git-commit ga-signal-detection git-push gtm-container-audit gtm-install-detection gtm-site-check lint-readiness-check loop-state-verification package-manager-detection project-build render-dashboard rendered-evidence-collection report-validation repository-discovery repository-status research-report-validation research-run-state scoped-git-commit skill-validation slop-detection slop-engine-css slop-engine-markup slop-engine-text slop-rule-registry slop-rule-shared stack-detection structure-analysis waiver-validation)
 
 former_sh=0
 former_py=0
@@ -390,8 +392,8 @@ while IFS=$'\x1f' read -r idx rtype field_ok path family legacy usage behavior s
   i=$((i + 1))
 done <"$tmp/manifest-rows.tsv"
 
-[ "$former_sh" -eq 11 ] && [ "$former_py" -eq 0 ] && [ "$retained_mjs" -eq 2 ] && [ "$authored_mjs" -eq 21 ] && [ "$authored_sh" -eq 2 ] ||
-  die "manifest historical origin counts must be exactly 11/0/2/21/2"
+[ "$former_sh" -eq 11 ] && [ "$former_py" -eq 0 ] && [ "$retained_mjs" -eq 2 ] && [ "$authored_mjs" -eq 23 ] && [ "$authored_sh" -eq 2 ] ||
+  die "manifest historical origin counts must be exactly 11/0/2/23/2"
 
 if ! jq -e '.portPreimage | (type == "object") and (.baselineRef | type == "string" and test("^[a-f0-9]{40}$")) and (.model | type == "string" and test("\\S")) and (.note | type == "string" and test("\\S")) and (.workingTreeEdited | type == "array" and length == 4)' "$manifest" >/dev/null 2>&1; then
   die "manifest portPreimage must record the port baseline and the uncommitted pre-port edits"
@@ -408,11 +410,11 @@ sort "$tmp/approved" | uniq -d >"$tmp/approved-dupes"
 jq -e 'type == "object"' "$contracts" >/dev/null 2>&1 || die "behavior contracts must be a JSON object"
 [ "$(jq -r '.requiredBy' "$contracts")" = "scripts/fixtures/skill-script-parity/manifest.json" ] ||
   die "behavior contracts must name the manifest as their central owner"
-if ! jq -e '(.coverage | type == "object") and .coverage.expectedRows == 36 and .coverage.expectedFixtures == 108' "$contracts" >/dev/null 2>&1; then
-  die "behavior contract coverage must be exactly 36 rows and 108 fixtures"
+if ! jq -e '(.coverage | type == "object") and .coverage.expectedRows == 38 and .coverage.expectedFixtures == 114' "$contracts" >/dev/null 2>&1; then
+  die "behavior contract coverage must be exactly 38 rows and 114 fixtures"
 fi
 contract_rows=$(jq -r '.rows | length' "$contracts")
-[ "$contract_rows" -eq 36 ] || die "behavior contracts must contain exactly 36 rows"
+[ "$contract_rows" -eq 38 ] || die "behavior contracts must contain exactly 38 rows"
 
 jq -r '.scripts[] | [(.path // ""), (.behaviorContractId // "")] | join("\u001f")' "$manifest" >"$tmp/script-contract-ids"
 cat >"$tmp/contract-rows.jq" <<'JQ'
@@ -552,4 +554,4 @@ while IFS= read -r file; do
   fi
 done <"$tmp/approved"
 
-printf 'Validated %s bash skill scripts (11 former-sh, 0 former-py, 2 retained-mjs, 21 authored-mjs, 2 authored-sh historical origins).\n' "$(wc -l <"$tmp/approved" | tr -d ' ')"
+printf 'Validated %s bash skill scripts (11 former-sh, 0 former-py, 2 retained-mjs, 23 authored-mjs, 2 authored-sh historical origins).\n' "$(wc -l <"$tmp/approved" | tr -d ' ')"
