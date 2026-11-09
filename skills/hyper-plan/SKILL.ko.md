@@ -99,6 +99,7 @@ compatibility: 파일 읽기와 검색 도구, 읽기 전용 점검용 셸, `.hy
 | "승인은 내가 할게", "내가 승인할게", "I'll approve", "wait for my approval" | `approval: user`. 계획을 전달하고 `Auto-execute: no (approval requested)`로 멈춤 |
 | "ship", "merge it", "머지까지", "배포까지", `--ship` | `Delivery: ship`, 그대로 전달 |
 | "make a PR", "PR만", "PR까지만", "PR로", `--make-pr` | `Delivery: make-pr`, 그대로 전달 |
+| "선형 이력", "cherry-pick으로 반영", `--land cherry-pick` | `## Commit strategy`에 `Landing: cherry-pick`을 적고, 전달 플래그와 함께 실행 인계로 넘김. 전달 방식은 아님 |
 | PRD 패키지, 직접 수정, 리서치 리포트 | 이 스킬의 범위가 아님 |
 
 </trigger_conditions>

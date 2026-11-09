@@ -116,7 +116,7 @@ Every review round binds its verdicts to the exact plan bytes they describe:
 - Accept a verdict only when its `plan_sha256` and `round_id` match the current round. A verdict whose `plan_sha256` or `round_id` does not match the current round is recorded as `stale` and ignored; it never counts as approval.
 - A duplicate result for an already-closed round is also `stale`. A late result for a round that a newer round has superseded is `stale` and must not overwrite the newer result.
 - Any edit to the plan changes the digest and returns an approved round to `pending`. The approval is void until the required review reruns against the new digest. The `## Handoff` exception in §8 still applies.
-- A round left in `launching` or `in_flight` when a run resumes becomes `inconclusive` and starts a new round; it never counts as approval. `launching` and `in_flight` are the two in-progress states recorded between dispatch and collection of results.
+- A round left in `launching` or `in_flight` when a run resumes becomes `inconclusive` and starts a new round; it never counts as approval. `launching` and `in_flight` are the two in-progress states recorded between dispatch and collection of results; record the round's state in the draft's `## Review` section as `launching`, `in_flight`, `collected`, or `stale`, next to its `round_id`.
 
 The existing caps are unchanged: two reviewers, three rounds.
 

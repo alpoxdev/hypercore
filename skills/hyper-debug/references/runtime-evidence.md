@@ -115,7 +115,7 @@ The symptom is a success response with no effect. Check every row that matches t
 
 A silent failure found outside the reported symptom is a journal follow-up, not a fix in this run. Record `path:line`, the pattern, a one-line fix sketch, and the risk of leaving it.
 
-## 8. Sources
+## Sources
 
 > Checked 2026-11-09.
 

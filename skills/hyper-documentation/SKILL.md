@@ -249,7 +249,7 @@ Shared gates for every run:
 - [ ] No `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` was created or changed.
 - [ ] The Korean handoff lists files inspected, checks run with results, caveats, and `ship`, `caveated ship`, or `block`.
 
-When this package itself changes, run the repository's skill gates from the repository root, and parse `assets/evals/hyper-documentation-cases.jsonl` to confirm every case still carries its `mode`:
+When this package itself changes, run the repository's skill gates from the repository root, and parse `assets/evals/hyper-documentation-cases.jsonl` to confirm every case still carries its `mode`, the category floors still hold (positive 3, negative 2, and 1 each of boundary, workflow, source, safety, adversarial, regression, and coexistence), and the language floors still hold (at least one `en`, one `ko`, and one `mixed` case):
 
 ```bash
 bash scripts/check-skill-standards.sh --skill hyper-documentation --json

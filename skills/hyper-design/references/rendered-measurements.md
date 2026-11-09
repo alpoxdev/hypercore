@@ -4,7 +4,7 @@ Read whenever a rendered-evidence handoff is reviewed or a claim depends on what
 
 ## 1. What a renderer must produce
 
-A browser capability that claims rendered measurements **MUST** produce numbers, not adjectives. Each capture records the viewport width and height, the surface state, and per-observation values at every checked width. The default checked widths are 320, 768, 1024, and 1440 CSS px; project breakpoints override them when known.
+A browser capability that claims rendered measurements **MUST** produce numbers, not adjectives. Each capture records the viewport width and height, the surface state, and per-observation values at every checked width. The default checked widths are 375, 768, and 1280 CSS px, with the 320 px reflow check every layout owes; `rules/craft-floor.md` §4 owns the set, and project breakpoints override it when known.
 
 - Computed foreground and painted background color pairs as `#rgb` or `#rrggbb` hex, foreground first. The background is the color actually painted under the text, including any scrim.
 - Computed font size per text role (`display`, `heading`, `body`, `caption`, `control`) in CSS px, measured from the layout rather than read from the stylesheet.

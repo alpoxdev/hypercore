@@ -41,7 +41,7 @@
 | `hyper-loop` | 요청이 서로 의존하는 여러 목표를 모두 끝내는 일이고, 목표마다 새 증거가 필요한 수락 기준이 있습니다("목표 여러 개 끝까지", "이 목표들 다 끝날 때까지 돌려", "keep going until every goal passes"). 또는 `.hyper/loop/<slug>/` 아래 멈춘 루프를 재개합니다 | 요청 문구, 또는 읽은 `.hyper/loop/<slug>/goals.json` 경로 |
 | `hyper-skill` | 요청한 결과물이 재사용 스킬 폴더입니다. 새 스킬, 또는 기존 스킬의 트리거, 계약, 리소스, 검증 리팩터링 | 요청 문구, 그리고 이미 있으면 대상 `skills/<name>/SKILL.md` |
 | `hyper-documentation` | 요청한 결과물이 새로 만들거나 리팩터링하는 문서 산출물입니다. README, `AGENTS.md`, AI가 읽기 좋은 문서(지침 베이스, 에이전트 가이드, 런북, 스펙, 규칙 묶음), 재사용 프롬프트 산출물(역할·시스템·에이전트 프롬프트, 프롬프트 템플릿이나 팩, 프롬프트 평가 픽스처) | 요청 문구, 그리고 이미 있으면 대상 경로 |
-| `hyper-git` | 전달하지 않는 꼬리(`hyper-skill`, `hyper-documentation`, `hyper-feedback`, `hyper-debug`, `hyper-loop`, 또는 마지막 구축 단계인 `hyper-database`, `hyper-mcp`, `hyper-decision`, `hyper-design`, `hyper-frontend`, `hyper-google-analytics`, `hyper-google-tagmanager`) 뒤에서 사용자가 커밋과 푸시, 또는 지정 브랜치로 병합과 푸시를 요청합니다. `hyper-skill`, `hyper-documentation`, `hyper-feedback` 뒤에서는 PR도 해당합니다. 같은 체인이 배포까지 하면 `hyper-deploy` 앞에서 실행합니다. `hyper-imagegen` 뒤에는 붙지 않습니다. 그 산출물은 전달된 이미지이거나 git이 무시하는 `.hyper/imagegen/` 파일이기 때문입니다. `hyper-deploy` 뒤에도 붙지 않습니다 | 전달 문구와 지정한 대상 브랜치 |
+| `hyper-git` | 전달하지 않는 꼬리(`hyper-skill`, `hyper-documentation`, `hyper-feedback`, `hyper-debug`, `hyper-loop`, 또는 마지막 구축 단계인 `hyper-database`, `hyper-mcp`, `hyper-decision`, `hyper-design`, `hyper-frontend`, `hyper-google-analytics`, `hyper-google-tagmanager`) 뒤에서 사용자가 커밋과 푸시, 또는 지정 브랜치로 병합과 푸시를 요청합니다. 위 꼬리 뒤(`fixed`로 끝난 디버그, `complete`로 끝난 루프 포함)에서는 PR도 해당합니다. 단 `hyper-database`, `hyper-mcp`, `hyper-decision`, `hyper-design`, `hyper-frontend`는 PR을 `hyper-plan`으로 보냅니다. 같은 체인이 배포까지 하면 `hyper-deploy` 앞에서 실행합니다. `hyper-imagegen` 뒤에는 붙지 않습니다. 그 산출물은 전달된 이미지이거나 git이 무시하는 `.hyper/imagegen/` 파일이기 때문입니다. `hyper-deploy` 뒤에도 붙지 않습니다 | 전달 문구와 지정한 대상 브랜치 |
 | `hyper-deploy` | 작업이 배포나 배포 관련 발견입니다. 배포 준비 판정, 첫 배포 구성, 지목한 환경으로의 배포, 기존 배포 설정 변경, 실패했거나 비정상인 배포의 원인 진단과 수정 | 요청 문구와, 읽은 배포 파일(`Dockerfile`, `compose.yaml`, `wrangler.jsonc`, `.railway/railway.ts`, `railway.toml`, `config/deploy.yml` 등) |
 
 ## 3. 단계 순서
@@ -139,7 +139,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-go
 | 최신 외부 출처나 공급자 지침에 기대는 문서나 프롬프트 | `hyper-research` -> `hyper-documentation` |
 | 스킬 폴더, 문서, MCP, decision API, 인터페이스, 프런트엔드, 데이터베이스, GA4 분석, GTM, 변경 요청 반영, 디버그, 루프 뒤 커밋과 푸시("커밋하고 푸시까지") | 그 체인 -> 커밋 모드의 `hyper-git` |
 | 같은 작업 뒤 지정 브랜치로 병합과 푸시("dev, main에 머지하고 푸시") | 그 체인 -> 이번 실행의 커밋에 `&& <branch>` 대상을 붙인 커밋 모드의 `hyper-git`, 작업 브랜치 전체를 병합해야 하면 워크플로 모드 |
-| 스킬 폴더, 문서, 변경 요청 반영 뒤 PR("PR까지") | 그 체인 -> 워크플로 모드의 `hyper-git`. MCP, decision API, 인터페이스, 프런트엔드, 데이터베이스 작업에 "PR까지"나 "ship"이 붙으면 위의 리뷰나 점검 -> `hyper-plan` 경로를 유지합니다 |
+| 데이터베이스·MCP·decision API·인터페이스·프런트엔드 외 전달하지 않는 꼬리 뒤 PR("PR까지") | 그 체인 -> 워크플로 모드의 `hyper-git`. MCP, decision API, 인터페이스, 프런트엔드, 데이터베이스 작업에 "PR까지"나 "ship"이 붙으면 위의 리뷰나 점검 -> `hyper-plan` 경로를 유지합니다 |
 | 지목한 환경으로 배포("배포해줘", "staging에 올려줘", "deploy it to staging") | `deploy` 모드의 `hyper-deploy` |
 | 실패했거나 죽거나 비정상인 배포 수정("배포 실패 고쳐줘", "로그 보고 원인 찾아서 고쳐줘") | `diagnose` 모드의 `hyper-deploy` |
 | 배포 전 준비 점검("배포 전 점검", "배포 전 검사만") | `preflight` 모드의 `hyper-deploy`. "고치지 말고"가 붙으면 validate-only입니다 |
@@ -220,7 +220,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-go
 | "승인은 내가 할게", "I'll approve" | 말한 그대로 승인 보류를 넘깁니다. 체인은 계획 뒤에 끝납니다 |
 | 전달하지 않는 꼬리 뒤의 "커밋하고 푸시", "commit and push" | 커밋 모드의 `hyper-git` 전달 단계 |
 | 전달하지 않는 꼬리 뒤의 "<branch>, <branch>에 머지하고 푸시", "merge into dev and main" | 그 대상을 지정 순서대로 받는 `hyper-git` 전달 단계 |
-| `hyper-skill`, `hyper-documentation`, `hyper-feedback` 뒤의 "PR까지" | 워크플로 모드(PR)의 `hyper-git` 전달 단계 |
+| 데이터베이스·MCP·decision API·인터페이스 외 전달하지 않는 꼬리 뒤의 "PR까지" | 워크플로 모드(PR)의 `hyper-git` 전달 단계 |
 
 코드 변경 체인에서 "배포까지"의 동률 처리: "배포까지"는 두 뜻을 함께 가집니다. 그래서 두 뜻을 모두 반영합니다. 계획 단계는 `--ship`(병합 전달)을 받고 체인은 꼬리 뒤에 `hyper-deploy`를 더합니다. 배포 단계는 실행 완료 블록 뒤에만 시작하므로 ship 전달이 먼저 끝나고, 그다음 병합된 결과에 배포를 실행합니다. 사용자가 플랫폼 언급 없이 ship 전달만 뜻하면("머지까지") `--ship`만 넘기고 `hyper-deploy`를 건너뜁니다. 병합 없이 배포만 뜻하면("배포만") `--ship` 없이 `hyper-deploy`만 실행합니다.
 

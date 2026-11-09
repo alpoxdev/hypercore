@@ -106,7 +106,7 @@ Stage status values: `pending`, `running`, `done`, `skipped`, `stopped`. Update 
 | `hyper-frontend` ends `delivered_unverified` | Mark `done` and carry the missing browser capability from the report into the closing report as a caveat; a `hyper-git` stage follows only on the user's delivery words |
 | `hyper-frontend` ends `awaiting_input` | Relay its one question unchanged and mark `stopped`; on the answer, resume at the same stage |
 | `hyper-frontend` ends `blocked` | Mark `stopped` with the failing capture and its evidence from the report; a `hyper-git` or `hyper-plan` stage does not start |
-| `hyper-google-tagmanager` ends `proposed`, `exhausted`, or `blocked` | Mark `stopped` with the proposed approval-gated actions, the failing check, or the blocker from the report; a `hyper-git` or `hyper-deploy` stage does not start, and "이어서" resumes at the same stage after the approval or the fix |
+| `hyper-google-analytics` ends `exhausted`, `stopped-for-approval`, `delayed`, `blocked`, or `handoff`, or `hyper-google-tagmanager` ends `proposed`, `exhausted`, or `blocked` | Mark `stopped` with the proposed approval-gated actions, the failing check, or the blocker from the report; a `hyper-git` or `hyper-deploy` stage does not start, and "이어서" resumes at the same stage after the approval or the fix |
 | A stage stops for a user decision, a credential, a conflict, or a failed gate | Mark `stopped` and end the chain (§5) |
 | The stage skill is not installed or cannot be loaded | Mark `stopped`; report the chain and `npx skills add alpoxdev/hypercore --skill <stage>` |
 

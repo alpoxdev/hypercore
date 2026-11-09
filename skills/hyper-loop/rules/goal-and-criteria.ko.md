@@ -73,7 +73,8 @@
 | `in_progress` | `blocked` | 의존이 충족되지 않았거나, 능력이 없거나, 사용자가 판단해야 한다 |
 | `in_progress` | `cancelled` | 사용자가 취소했고 정리를 기록했다 |
 | `blocked` | `pending` | 해소 단계가 실제로 일어났고 사용자나 기록이 재시도를 말한다 |
-| `pending` | `cancelled` | `mark_blocked_superseded`로 대체됐다 |
+| `pending` | `cancelled` | 사용자가 시작하지 않은 목표를 취소했고 정리를 기록했다 |
+| `blocked` | `cancelled` | 옛 증거를 보존한 채 `mark_blocked_superseded`로 은퇴했다 |
 
 `paused`는 목표가 아니라 실행의 상태다. 멈춘 목표는 `in_progress`를 유지하고 사용자의 지시가 있을 때만 재개한다. 취소한 목표는 자동으로 재개하지 않는다.
 

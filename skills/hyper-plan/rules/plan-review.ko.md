@@ -116,7 +116,7 @@ subagent 기능이 없으면 다음과 같이 합니다.
 - 판정은 `plan_sha256`과 `round_id`가 현재 라운드와 일치할 때만 받아들입니다. `plan_sha256`이나 `round_id`가 현재 라운드와 맞지 않는 판정은 `stale`로 기록해 무시합니다. 승인으로 세지 않습니다.
 - 이미 닫힌 라운드에 대한 중복 결과도 `stale`입니다. 더 새 라운드가 대체한 라운드에 대한 늦은 결과도 `stale`이며 새 결과를 덮어쓰지 않습니다.
 - 계획 편집은 digest를 바꾸고 승인된 라운드를 `pending`으로 되돌립니다. 새 digest에 대한 필요한 리뷰를 다시 돌리기 전에는 승인이 무효입니다. §8의 `## Handoff` 예외는 그대로 적용됩니다.
-- 실행이 재개될 때 `launching`이나 `in_flight`에 멈춘 라운드는 `inconclusive`가 되고 새 라운드가 시작됩니다. 승인으로는 세지 않습니다. `launching`과 `in_flight`은 디스패치와 결과 수집 사이에 기록되는 진행 중 상태 두 개입니다.
+- 실행이 재개될 때 `launching`이나 `in_flight`에 멈춘 라운드는 `inconclusive`가 되고 새 라운드가 시작됩니다. 승인으로는 세지 않습니다. `launching`과 `in_flight`은 디스패치와 결과 수집 사이에 기록되는 진행 중 상태 두 개이며, 라운드 상태는 드래프트의 `## Review` 절에 `launching`, `in_flight`, `collected`, `stale` 중 하나로 그 라운드의 `round_id` 옆에 적습니다.
 
 기존 상한은 그대로입니다: 리뷰어 두 명, 라운드 세 개.
 

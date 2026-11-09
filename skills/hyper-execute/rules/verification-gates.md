@@ -128,7 +128,7 @@ Under `--make-pr` the last wave branch holds every earlier wave through stacking
 
 ## Sources
 
-> Checked 2026-11-03.
+> Checked 2026-11-09.
 
 | Claim | Source |
 |---|---|

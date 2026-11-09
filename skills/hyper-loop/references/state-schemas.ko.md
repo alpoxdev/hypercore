@@ -126,7 +126,7 @@
     "userOutcomeReview": "기준마다 신선한 캡처가 있고 표면을 실제로 건드렸다"
   },
   "review": {"by": "deterministic", "recommendation": "approve",
-             "evidence": "bash scripts/verify-loop-state.sh --final … 이 종료 코드 0"},
+             "evidence": "bash <skill-dir>/scripts/verify-loop-state.sh --final … 이 종료 코드 0"},
   "blockers": []
 }
 ```
@@ -135,7 +135,7 @@
 |---|---|
 | `status` | `complete`, `blocked`, `paused`. `complete`만 통과한다 |
 | `tree`, `diff_sha256` | 마지막 변경 뒤에 뜬 스냅샷과 같아야 한다 |
-| `surfaceEvidence[].criterionRef` | `<goal-id>:<criterion-id>`. 기준 id가 실행 전체에서 고유하면 기준 id만 써도 된다 |
+| `surfaceEvidence[].criterionRef` | `<goal-id>:<criterion-id>`. 기준 id만 쓰는 것은 다른 목표가 같은 id를 쓰지 않을 때만 인정된다. 아니면 행 하나가 여러 기준을 덮어 버린다 |
 | `surfaceEvidence[].verdict` | 통과 행은 `passed` |
 | `surfaceEvidence[].surface` | 선언한 표면과 일치한다. 예: `cli`, `http`, `browser`, `data` |
 | `criteriaCoverage` | 개수에는 `essential: false` 기준도 포함한다 |
@@ -146,11 +146,11 @@
 ## 4. 검증기 명령, 출력, 종료 코드
 
 ```bash
-bash scripts/verify-loop-state.sh snapshot [--dir <loop-dir>] [--repo <path>] [--limit <n>]
-bash scripts/verify-loop-state.sh --goal <goal-id> --dir <loop-dir> [--repo <path>]
-bash scripts/verify-loop-state.sh --final <final-gate.json> [--dir <loop-dir>] [--repo <path>]
-bash scripts/verify-loop-state.sh --self-test
-bash scripts/verify-loop-state.sh --help
+bash <skill-dir>/scripts/verify-loop-state.sh snapshot [--dir <loop-dir>] [--repo <path>] [--limit <n>]
+bash <skill-dir>/scripts/verify-loop-state.sh --goal <goal-id> --dir <loop-dir> [--repo <path>]
+bash <skill-dir>/scripts/verify-loop-state.sh --final <final-gate.json> [--dir <loop-dir>] [--repo <path>]
+bash <skill-dir>/scripts/verify-loop-state.sh --self-test
+bash <skill-dir>/scripts/verify-loop-state.sh --help
 ```
 
 `--dir`는 `goals.json`과 `ledger.jsonl`이 있는 루프 디렉터리이며 지문에서 제외된다. `--repo`의 기본값은 `--dir`을 담은 작업 트리다. `--final`에서 `--dir`의 기본값은 게이트 파일의 디렉터리다. `--limit`은 `snapshot` 출력에 나열할 미추적 항목 수를 제한하며 기본값은 200이다.

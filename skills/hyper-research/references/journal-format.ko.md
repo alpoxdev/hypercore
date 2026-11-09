@@ -10,6 +10,7 @@
 - `queries.md`
 - `expansion.md`
 - `claims.md`
+- `debate.md`
 - `verify-<slug>.md`
 - 작성 규칙
 
@@ -24,6 +25,9 @@
     ├── queries.md
     ├── expansion.md
     ├── claims.md
+    ├── debate.md         # 고위험 주장 공격, 있을 때만
+    ├── report-state.json # 수리 재시도와 outcome manifest
+    ├── outcome.json      # report-state.sh finish가 씀
     └── verify-<slug>.md  # 실행 검사마다 하나, 있을 때만
 ```
 
@@ -123,6 +127,23 @@ converged | exhausted (상한, 열린 lead, 마지막 결과, 확장 계획) | b
 ```
 
 상태는 `supported`, `partial`, `refuted`, `unresolved` 중 하나입니다. 리포트에서 위험도가 높은 주장으로 단정할 수 있는 것은 `## verified-claims`의 행뿐입니다.
+
+## `debate.md`
+
+고위험 주장에 대한 공격마다 한 행이며, 열 순서는 `rules/claim-verification.md` §7이 정합니다.
+
+```markdown
+| claim id | attack | attacker perspective | defense | verdict (holds, weakened, withdrawn) | change to the claim |
+|---|---|---|---|---|---|
+| C1 | <반론> | evidence quality | <반박> | holds | |
+| C1 | <반론> | source independence | <반박> | weakened | 조사한 구간으로 좁힘 |
+```
+
+`attacker perspective` 값이 다를 때만 두 번의 공격으로 셉니다. 이 표의 행이 두 개 미만인 고위험 주장은 `unverified`로 남아 `## verified-claims`에 들어가지 못하고, 리포트의 `## Debate record` 부록이 주장마다 판정을 적습니다.
+
+## `report-state.json`과 `outcome.json`
+
+이 두 파일은 `scripts/report-state.sh`가 소유합니다. 손으로 고치지 않습니다. `repair`는 재시도와 결함 코드를 `report-state.json`에 덧붙입니다. `finish`는 게이트 상태가 비었거나 blocker가 남았거나 리포트나 ledger가 비었으면 납품을 거부하고, 받아들일 때만 상태 파일 옆에 `outcome.json`을 씁니다. `briefing`은 `outcome.json`의 집계값을 마무리 보고의 노력 줄에 쓰도록 출력합니다.
 
 ## `verify-<slug>.md`
 

@@ -115,7 +115,7 @@ compatibility: 라이브 검색이나 페이지 열람 도구, 공식 문서 접
 - 규칙: `research-workflow.ko.md`(틀 잡기, journal, 수집, 저장), `expansion-and-convergence.ko.md`(`## EXPAND` 단서, wave, excursion, 종료 규칙), `claim-verification.ko.md`(claim gate, 실행 확인, 숫자 계보, debate 기록), `parallel-research.ko.md`(lane 계약과 join), `validation.ko.md`(순서가 있는 게이트와 마감).
 - 참조: `channel-selection.ko.md`(채널과 검색 요령), `journal-format.ko.md`(journal 파일과 각 열), `report-template.ko.md`(저장하는 리포트), `latex-report.ko.md`(선택적인 조판 PDF 경로).
 - 자산: `assets/evals/hyper-research-cases.jsonl`, 트리거와 동작 사례.
-- 스크립트(bash 3.2+, jq 1.6+): `scripts/validate-report.sh`가 저장한 리포트와 출처 ledger를 상대로 기계적인 인용·숫자 계보 게이트를 실행합니다. `scripts/report-state.sh`는 `repair`로 모든 수리 재시도를 기록하고, `finish`로 `outcome.json`을 쓰며, `briefing`으로 센 사실을 출력합니다. 상태 파일은 조사 일지 안에 두며(`--state <path>`나 `REPORT_STATE_FILE`, 기본 `.hyper/research/report-state.json`), 판단이 필요한 게이트는 에이전트가 journal과 리포트를 보며 실행하는 점검 목록으로 남습니다.
+- 스크립트(bash 3.2+, jq 1.6+): `scripts/validate-report.sh`가 저장한 리포트와 출처 ledger를 상대로 기계적인 인용·숫자 계보 게이트를 실행합니다. `scripts/report-state.sh`는 `repair`로 모든 수리 재시도를 기록하고, `finish`로 `outcome.json`을 쓰며, `briefing`으로 센 사실을 출력합니다. 일지가 있는 실행은 매번 `--state .hyper/research/[NN].slug/report-state.json`(또는 같은 값의 `REPORT_STATE_FILE`)을 넘겨 실행마다 자기 재시도와 `outcome.json`을 따로 둡니다. 스크립트 기본값 `.hyper/research/report-state.json`은 일지 없는 단일 실행용 대체값이며, 한 디렉터리의 두 실행이 함께 쓰면 안 됩니다. 판단이 필요한 게이트는 에이전트가 journal과 리포트를 보며 실행하는 점검 목록으로 남습니다.
 
 </skill_architecture>
 

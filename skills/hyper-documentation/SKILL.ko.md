@@ -1,7 +1,7 @@
 ---
 name: hyper-documentation
-description: "[Hyper] Use this skill when the user asks to create, refactor, or update a documentation artifact: a project or package README.md, a repository AGENTS.md with its AGENTS.ko.md mirror, an AI-readable instruction base, runbook, specification, or rule pack, a reusable prompt, prompt template, prompt pack, or prompt eval fixture, or an agent's persistent memory files (MEMORY.md index, memory bank, lessons file) with their write, pruning, and deletion rules. It picks one mode from the requested output and grounds every claim in the project and its sources. Do not use for reusable skill folders, CHANGELOG, CONTRIBUTING, LICENSE, release notes, answer-only research, or implementation work; it never writes CLAUDE.md."
-compatibility: Requires file-reading and file-editing capabilities, plus repository search for the readme and agents-md modes. Source-sensitive work also requires an approved retrieval capability; unavailable optional capabilities are skipped and reported, while unavailable outcome-critical capabilities block completion.
+description: "[Hyper] 프로젝트나 패키지 README.md, 저장소 AGENTS.md와 그 AGENTS.ko.md 미러, AI가 읽는 지침 베이스·런북·명세·규칙 팩, 재사용 프롬프트·프롬프트 템플릿·프롬프트 팩·프롬프트 eval 픽스처, 또는 에이전트의 영속 메모리 파일(MEMORY.md 색인, 메모리 뱅크, 교훈 파일)과 그 기록·정리·삭제 규칙 같은 문서 산출물을 만들거나 고치거나 갱신해 달라고 요청할 때 사용합니다. 요청한 산출물로 모드 하나를 고르고 모든 주장을 프로젝트와 그 출처에 근거합니다. 재사용 스킬 폴더, CHANGELOG, CONTRIBUTING, LICENSE, 릴리스 노트, 저장 문서가 없는 조사, 구현 작업에는 사용하지 않으며 CLAUDE.md는 쓰지 않습니다."
+compatibility: 파일 읽기와 파일 편집 기능이 필요하고, readme·agents-md 모드에서는 저장소 검색도 필요합니다. 출처 민감한 작업에는 승인된 검색 기능이 더 필요합니다. 쓸 수 없는 선택 기능은 건너뛰고 보고하며, 결과에 꼭 필요한 기능을 쓸 수 없으면 완료를 막습니다.
 ---
 
 @rules/mode-routing.ko.md
@@ -249,7 +249,7 @@ Boundary requests:
 - [ ] `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md`를 만들거나 바꾸지 않았습니다.
 - [ ] 한국어 인수인계에 살펴본 파일, 실행한 검사와 결과, 단서, `ship`, `caveated ship`, `block` 중 하나가 있습니다.
 
-이 패키지 자체를 바꿨을 때는 저장소 루트에서 저장소의 스킬 게이트를 실행하고, `assets/evals/hyper-documentation-cases.jsonl`을 파싱해 모든 케이스에 `mode`가 남아 있는지 확인합니다.
+이 패키지 자체를 바꿨을 때는 저장소 루트에서 저장소의 스킬 게이트를 실행하고, `assets/evals/hyper-documentation-cases.jsonl`을 파싱해 모든 케이스에 `mode`가 남아 있는지, 범주 하한(positive 3, negative 2, boundary·workflow·source·safety·adversarial·regression·coexistence 각 1)과 언어 하한(`en`·`ko`·`mixed` 각 1)이 유지되는지 확인합니다.
 
 ```bash
 bash scripts/check-skill-standards.sh --skill hyper-documentation --json

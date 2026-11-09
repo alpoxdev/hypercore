@@ -92,7 +92,7 @@ ds_emit_rows() {
   while IFS=$'\t' read -r id _engine line excerpt; do
     [ -n "$id" ] || continue
     if [ -n "${DS_SKIP_FILE:-}" ] && [ -s "$DS_SKIP_FILE" ]; then
-      skip=$(LC_ALL=C awk -F '\t' -v id="$id" -v line="$line" '$1 <= line && line <= $2 && (index("," $3 ",", "," id ",") || index("," $3 ",", ",*,") || index("," $3 ",", ",*,")) { print "yes"; exit }' "$DS_SKIP_FILE")
+      skip=$(LC_ALL=C awk -F '\t' -v id="$id" -v line="$line" '$1 <= line && line <= $2 && (index("," $3 ",", "," id ",") || index("," $3 ",", ",*,")) { print "yes"; exit }' "$DS_SKIP_FILE")
       if [ "$skip" = yes ]; then
         printf '%s\t%s\t%s\t\x01\n' "$rel" "$line" "$id" >> "$rows"
         continue
@@ -185,16 +185,18 @@ ds_config_error_detail() {
   local file=$1
   jq -r '
     def knownid: test("^(surface|motion|structure|quality|copy|type)\\.[a-z0-9-]+$");
+    def textlist: if type == "array" then all(.[]; type == "string" and ((gsub("^[\\s]+|[\\s]+$"; "") | length) > 0)) else false end;
+    def rulevalue: (type == "string") and (test("^(off|P1|P2|P3)$"));
     if type != "object" then "root must be an object"
     elif has("version") | not then "version is required and must equal 1"
     elif .version != 1 then "version must equal 1"
     elif ([keys_unsorted[] | select(. != "version" and . != "rules" and . != "allowFonts" and . != "allowEasings" and . != "designTokens")] | length) != 0 then "unknown top-level key"
     elif has("rules") and ((.rules | type) != "object") then "rules must be an object"
-    elif has("allowFonts") and ((.allowFonts | type) != "array" or (.allowFonts | any(. == "" or (type | not)))) then "allowFonts must be an array of non-empty strings"
-    elif has("allowEasings") and ((.allowEasings | type) != "array" or (.allowEasings | any(. == "" or (type | not)))) then "allowEasings must be an array of non-empty strings"
+    elif has("allowFonts") and ((.allowFonts | textlist) | not) then "allowFonts must be an array of non-empty strings"
+    elif has("allowEasings") and ((.allowEasings | textlist) | not) then "allowEasings must be an array of non-empty strings"
     elif has("designTokens") and ((.designTokens | type) != "object") then "designTokens must be an object"
     elif has("designTokens") and (.designTokens | to_entries | map(select((.value | type) != "string")) | length) > 0 then "designTokens values must be strings"
-    elif has("rules") and ((.rules | to_entries | map(select((.key | knownid | not) or ((.value | test("^(off|P1|P2|P3)$") | not)))) | length) > 0) then "rules keys must name a known rule and values must be off, P1, P2, or P3"
+    elif has("rules") and ((.rules | to_entries | map(select((.key | type) != "string" or (.key | knownid | not) or (.value | rulevalue | not))) | length) > 0) then "rules keys must name a known rule and values must be off, P1, P2, or P3"
     else empty end' "$file" 2>/dev/null | head -n 1
 }
 
@@ -381,17 +383,24 @@ markup"
   done < "$files_file"
 
   if [ "$reduced" != 1 ] && LC_ALL=C grep -E -i -q 'animation[[:space:]]*:|@keyframes|(^|[^A-Za-z0-9_])animate-[A-Za-z0-9_-]+' "$alltext"; then
-    first_file=$(head -n 1 "$files_file")
-    rel=${first_file#"$root"/}
-    [ -n "$rel" ] || rel=$first_file
-    printf '%s\t1\tmotion.missing-reduced-motion\t%s\n' "$rel" "$(jq -cn --arg file "$rel" \
-      '{id: "motion.missing-reduced-motion", severity: "P1", confidence: "high", scope: "universal",
-        location: {file: $file, line: 1},
-        evidence: "Motion signature exists without a project reduced-motion signature.: animation signature",
-        action: "review", fix: "Check project-wide reduced-motion handling before adding a scoped fallback.",
-        engine: "css", evidenceKind: "static-source", detectionConfidence: "high",
-        remediationConfidence: "low", ruleClass: "universal", clusterKey: "motion-reduced-preference",
-        renderConfirmationRequired: false, exceptionStatus: "not-checked"}')" >> "$rows"
+    if { [ "$rules_given" != 1 ] || case ",$selected," in *,motion.missing-reduced-motion,*) true ;; *) false ;; esac; } \
+      && ! ds_rule_disabled motion.missing-reduced-motion; then
+      first_file=$(head -n 1 "$files_file")
+      rel=${first_file#"$root"/}
+      [ -n "$rel" ] || rel=$first_file
+      printf '%s\t1\tmotion.missing-reduced-motion\t%s\n' "$rel" "$(jq -cn --arg file "$rel" \
+        --arg severity "$(ds_rule_severity motion.missing-reduced-motion P1)" \
+        --arg evidence "$(rule_registry_field motion.missing-reduced-motion 5): animation signature" \
+        --arg fix "$(rule_registry_field motion.missing-reduced-motion 7)" \
+        --arg clusterKey "$(rule_registry_field motion.missing-reduced-motion 11)" \
+        '{id: "motion.missing-reduced-motion", severity: $severity, confidence: "high", scope: "universal",
+          location: {file: $file, line: 1},
+          evidence: $evidence,
+          action: "review", fix: $fix,
+          engine: "css", evidenceKind: "static-source", detectionConfidence: "high",
+          remediationConfidence: "low", ruleClass: "universal", clusterKey: $clusterKey,
+          renderConfirmationRequired: false, exceptionStatus: "not-checked"}')" >> "$rows"
+    fi
   fi
 
   if [ -s "$rows" ]; then

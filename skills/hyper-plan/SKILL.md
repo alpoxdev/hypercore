@@ -99,6 +99,7 @@ Boundary requests:
 | "승인은 내가 할게", "내가 승인할게", "I'll approve", "wait for my approval" | `approval: user`; deliver and stop with `Auto-execute: no (approval requested)` |
 | "ship", "merge it", "머지까지", "배포까지", `--ship` | `Delivery: ship`, passed through |
 | "make a PR", "PR만", "PR까지만", "PR로", `--make-pr` | `Delivery: make-pr`, passed through |
+| "linear history", "cherry-pick으로 반영", `--land cherry-pick` | `Landing: cherry-pick` in `## Commit strategy`, passed to the execution handoff with the delivery flag; it is not a delivery mode |
 | PRD package, direct edit, research report | Not this skill |
 
 </trigger_conditions>

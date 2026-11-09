@@ -7,7 +7,7 @@
 체크포인트는 작업이 끝난 듯한 순간이 아니라 목표의 증거를 판정하는 순간이다.
 
 - 비최종 체크포인트: 목표의 `essential` 기준이 모두 신선한 증거로 통과하고 `depends_on`의 목표가 모두 `complete`다. 비핵심 기준은 여기서 대기해도 되지만 최종 게이트에서는 안 된다.
-- 먼저 검증기를 돌린다. `bash scripts/verify-loop-state.sh --goal <id> --dir .hyper/loop/<slug>`. 종료 코드 0이면 체크포인트 행을 덧붙이고, 1이면 아직 체크포인트가 없다.
+- 먼저 검증기를 돌린다. `bash <skill-dir>/scripts/verify-loop-state.sh --goal <id> --dir .hyper/loop/<slug>`. 종료 코드 0이면 체크포인트 행을 덧붙이고, 1이면 아직 체크포인트가 없다.
 - 검증기는 아무것도 쓰지 않는다. 종료 코드 0 뒤에 체크포인트 행을 덧붙이고 `goals.json`의 목표 상태를 직접 고친다. 검증기 실행은 상태 변경이 아니다.
 - 실패하는 기준을 추가한 체크포인트, 또는 통과하던 기준이 깨진 뒤에야 통과한 체크포인트는 체크포인트가 아니다. 수리를 되돌리고 보고한다.
 
@@ -70,7 +70,7 @@
 - 목표가 선언한 `surface`마다 그 표면의 통과 행이 최소 하나 필요하다. 선언한 표면에 행이 없으면 게이트가 실패한다.
 - 게이트 자체의 지문이 지금 뜬 스냅샷과 같아야 한다. 게이트를 쓴 뒤의 수리는 게이트를 무효로 만드니 가장 마지막에 쓴다.
 - 런타임이 독립 리뷰어를 제공하면 그 리뷰어를 쓴다. `review: deterministic`은 리뷰어가 없을 때만 정직한 기록이다. 리뷰가 가능했는데 건너뛰는 수단이 아니다.
-- `bash scripts/verify-loop-state.sh --final .hyper/loop/<slug>/final-gate.json`은 완전하고 덮였고 스냅샷에 묶인 `complete` 게이트에서 종료 코드 0이다. 1은 빠진 것을 열거하고, 2는 파일 자체를 쓸 수 없다는 뜻이다.
+- `bash <skill-dir>/scripts/verify-loop-state.sh --final .hyper/loop/<slug>/final-gate.json`은 완전하고 덮였고 스냅샷에 묶인 `complete` 게이트에서 종료 코드 0이다. 1은 빠진 것을 열거하고, 2는 파일 자체를 쓸 수 없다는 뜻이다.
 
 ## 5. 실행 끝내기
 

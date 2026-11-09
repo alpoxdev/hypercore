@@ -48,6 +48,8 @@ waiver는 다음을 절대 하지 않는다.
 ```
 
 - `rules`는 rule id를 `off`, `P1`, `P2`, `P3` 중 하나로 대응한다. `off`는 그 rule을 검사에서 빼고, severity 값은 report에서 registry 기본값을 대체한다.
+- `--rules <id,id>`는 한 번의 실행을 지정한 rule id로 좁히고 모르는 id에서는 exit 2로 끝난다. 이 flag는 선택만 하며, 설정이 `off`로 끈 rule을 되살리지는 않는다. 어떤 id가 존재하는지는 catalog의 Static 열이 정한다. 등록되는 것은 `yes`와 `partial` 행뿐이다(`references/anti-pattern-catalog.md`).
+- `motion.missing-reduced-motion`은 파일별이 아니라 스캔 전체를 보는 프로젝트 단위 rule이다. 다른 id와 똑같이 선택, 비활성화, severity override가 된다.
 - `allowFonts`, `allowEasings`, `designTokens`는 허용 목록이다. 일치한 evidence 조각에 허용 값이 들어 있으면 그 finding은 findings 목록 대신 skipped 개수로 옮긴다.
 - markup 요소의 `data-detect-ignore="<rule-id>"`(또는 `*`)는 그 요소 구간을 지정한 rule에서 제외한다. 해당 hit은 skipped 개수로 옮겨 예외가 드러나게 한다.
 - JSON report는 `--config`를 쓴 경우에만 최상위 `skipped` 개수를 담는다.

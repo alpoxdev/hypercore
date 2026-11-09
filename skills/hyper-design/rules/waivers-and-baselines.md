@@ -48,6 +48,8 @@ Prefer a value waiver for an explicit brand font/gradient and a file waiver only
 ```
 
 - `rules` maps a rule id to `off`, `P1`, `P2`, or `P3`. `off` removes the rule from the scan; a severity value replaces the registry default in the report.
+- `--rules <id,id>` narrows one run to the named rule ids and exits 2 on an unknown id; it selects, it never re-enables a rule the config turned `off`. The catalogue's Static column decides which ids exist: only `yes` and `partial` rows are registered (`references/anti-pattern-catalog.md`).
+- `motion.missing-reduced-motion` is a project-wide rule the detector evaluates across the whole scan rather than per file; it is selected, disabled, and severity-overridden like any other id.
 - `allowFonts`, `allowEasings`, and `designTokens` are allowlists. A finding whose matched excerpt contains an allowlisted value moves to the skipped count instead of the findings list.
 - `data-detect-ignore="<rule-id>"` (or `*`) on a markup element exempts that element's span for the named rule. Its hits move to the skipped count, so exemptions stay visible.
 - The JSON report carries a top-level `skipped` count only when `--config` was used.

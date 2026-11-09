@@ -13,7 +13,7 @@ Use this rule before writing the report and before choosing a terminal. It owns 
 
 Save `.hyper/data/<slug>/report.md`. The answer is first, the evidence after it, and the terminal last:
 
-```markdown
+````markdown
 # <Question title>
 
 ## Answer
@@ -51,7 +51,7 @@ Wall-clock: <milliseconds> ms on <machine>
 <headline figure by a second route, agreement or the quantified difference>
 
 Result: answered
-```
+````
 
 - The question line names the grain in words: per day, per region, per customer, per order. A total without its grain is not comparable to anything.
 - The query is the exact text that ran, copied out of the run, not reconstructed from memory. A row count and a timing that were not measured are marked as not measured.

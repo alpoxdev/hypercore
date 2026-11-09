@@ -20,6 +20,27 @@ References'
 
 VD_DEFECT_CAP=50
 
+# Sections that describe the run or disclose an absence rather than make a
+# sourced claim. They never carry a citation, so citation coverage skips them;
+# a claim-bearing section without a citation is still a defect.
+VD_EXEMPT='Scope And Fidelity
+Query Log
+Expansion Trace
+Validation Notes
+Report gates
+Risks And Caveats
+Known Gaps'
+
+# A narrower set whose prose is pure run bookkeeping (budgets, counts, anchors,
+# attempt logs). Its numbers are parameters of the run, not sourced claims.
+# Risks And Caveats and Known Gaps stay out: a number there still needs a
+# lineage label or a citation.
+VD_NUMBER_EXEMPT='Scope And Fidelity
+Query Log
+Expansion Trace
+Validation Notes
+Report gates'
+
 vd_awk_prog() {
   cat <<'VD_AWK'
 function trim(s) {
@@ -99,6 +120,18 @@ BEGIN {
   if (cap <= 0) cap = 50
   nout = 0
 
+  ne = split(ENVIRON["VD_EXEMPT"], elist, "\n")
+  for (i = 1; i <= ne; i++) {
+    name = trim(elist[i])
+    if (name != "") exempt[name] = 1
+  }
+
+  nn = split(ENVIRON["VD_NUMBER_EXEMPT"], nlist, "\n")
+  for (i = 1; i <= nn; i++) {
+    name = trim(nlist[i])
+    if (name != "") num_exempt[name] = 1
+  }
+
   n = 0
   while ((getline line < ENVIRON["VD_REPORT"]) > 0) {
     n++
@@ -135,6 +168,7 @@ BEGIN {
     if (infence) continue
     if (L[j] !~ /^## /) continue
     heading = trim(L[j])
+    if ((substr(heading, 4)) in exempt) continue
     chars = 0
     cited = 0
     for (k = j + 1; k <= n; k++) {
@@ -159,6 +193,16 @@ BEGIN {
       continue
     }
     if (infence || !line_is_prose(L[j])) {
+      j++
+      continue
+    }
+    # A paragraph inside an exempt run-metadata section describes the run
+    # (budgets, counts, anchors), so its numbers are not sourced claims.
+    sec = ""
+    for (s = j; s >= 1; s--) {
+      if (L[s] ~ /^## /) { sec = substr(trim(L[s]), 4); break }
+    }
+    if (sec in num_exempt) {
       j++
       continue
     }
@@ -201,6 +245,7 @@ VD_AWK
 vd_validate() {
   local report=$1 ledger=$2
   VD_REPORT=$report VD_LEDGER=$ledger VD_REQUIRED=$VD_REQUIRED VD_CAP=$VD_DEFECT_CAP \
+    VD_EXEMPT=$VD_EXEMPT VD_NUMBER_EXEMPT=$VD_NUMBER_EXEMPT \
     LC_ALL=C awk "$(vd_awk_prog)"
 }
 
@@ -292,6 +337,23 @@ vd_self_test() {
   actual=$([ "$defects" -eq 0 ] && echo true || echo false)
   pass=$([ "$defects" -eq 0 ] && echo true || echo false)
   vd_case valid-report-clean true "$actual" "$pass"
+
+  # An exempt run-metadata section may hold long prose without a citation, but
+  # a claim-bearing section may not.
+  awk '/^## Scope And Fidelity$/ { print; print ""; print "This run covers the whole product line, every region, and both the current and previous major release, so the answer applies to the migration decision."; next } { print }' \
+    "$base" >"$work/exempt-section.md"
+  defects=$(vd_validate "$work/exempt-section.md" "$work/ledger.md" | wc -l | tr -d ' ')
+  actual=$([ "$defects" -eq 0 ] && echo true || echo false)
+  pass=$actual
+  vd_case exempt-section-without-citation-clean true "$actual" "$pass"
+
+  awk '/^## References$/ { print "## Recommendation"; print ""; print "Adopt the widget for the next migration cycle across every team that already runs the previous generation, and revisit the decision once the maintainers publish their next support policy."; print ""; print; next } { print }' \
+    "$base" >"$work/uncited-findings.md"
+  defects=$(vd_validate "$work/uncited-findings.md" "$work/ledger.md" | wc -l | tr -d ' ')
+  codes=$(vd_codes "$work/uncited-findings.md" "$work/ledger.md" | tr '\n' ' ')
+  actual=$([ "$defects" -eq 1 ] && [ "$codes" = "section_without_citation " ] && echo true || echo false)
+  pass=$actual
+  vd_case claim-section-without-citation-detected true "$actual" "$pass"
 
   awk '/^## Executive Summary$/ { print; print ""; print "Adoption grew 37% in 2025."; next } { print }' \
     "$base" >"$work/unsourced.md"

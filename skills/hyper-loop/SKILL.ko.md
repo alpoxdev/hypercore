@@ -202,11 +202,11 @@ Phase rules:
 - [ ] 목표 id가 고유하고, 의존 대상이 존재하며 순환이 없다.
 - [ ] 모든 기준에 이분형 `pass_condition`, 비어 있지 않은 파일로 해석되는 `expected_evidence`, `essential`, `cleanup`이 있다.
 - [ ] 모든 증명 행에 실제 캡처에서 나온 `tree`, `diff_sha256`, `command`가 있다.
-- [ ] 완료한 목표마다 `bash scripts/verify-loop-state.sh --goal <id> --dir .hyper/loop/<slug>`가 종료 코드 0이다.
-- [ ] 완료 시 `bash scripts/verify-loop-state.sh --final .hyper/loop/<slug>/final-gate.json`이 종료 코드 0이다.
+- [ ] 완료한 목표마다 `bash <skill-dir>/scripts/verify-loop-state.sh --goal <id> --dir .hyper/loop/<slug>`가 종료 코드 0이다.
+- [ ] 완료 시 `bash <skill-dir>/scripts/verify-loop-state.sh --final .hyper/loop/<slug>/final-gate.json`이 종료 코드 0이다.
 - [ ] 최종 게이트가 사용자 표면마다 통과 행을 갖고 상태가 `complete`, `blocked`, `paused` 중 하나다.
 - [ ] 푸시, 병합, 배포를 하지 않았다.
-- [ ] 이 패키지가 바뀌면 `assets/evals/hyper-loop-cases.jsonl`이 이 계약과 여전히 맞고 `scripts/verify-loop-state.sh --self-test`가 종료 코드 0이다.
+- [ ] 이 패키지가 바뀌면 `assets/evals/hyper-loop-cases.jsonl`이 이 계약과 여전히 맞고 `bash <skill-dir>/scripts/verify-loop-state.sh --self-test`가 종료 코드 0이다.
 
 </validation>
 

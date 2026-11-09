@@ -41,7 +41,7 @@ probe를 돌리기 전에 네 가지를 일지에 적는다. 여기서 값이 �
 
 `.hyper/debug/<slug>.md`에 쓴다. `<slug>`는 짐작한 원인이 아니라 증상의 짧은 kebab-case 이름이다. 디렉터리가 없으면 만든다.
 
-```markdown
+````markdown
 # <증상 한 줄>
 
 - 모드: findings-only | minimal-fix
@@ -101,7 +101,7 @@ probe를 돌리기 전에 네 가지를 일지에 적는다. 여기서 값이 �
 - Area checks: `<command>` → <result>
 
 ## Result: <terminal>
-```
+````
 
 일지 규칙:
 

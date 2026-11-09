@@ -106,7 +106,7 @@
 | `hyper-frontend`가 `delivered_unverified`로 끝남 | `done`으로 표시하고 보고서의 없었던 브라우저 기능을 마무리 보고에 주의 사항으로 옮깁니다. `hyper-git` 단계는 사용자의 전달 단어가 있을 때만 이어집니다 |
 | `hyper-frontend`가 `awaiting_input`으로 끝남 | 그 단계의 질문 하나를 그대로 전하고 `stopped`로 표시합니다. 답을 받으면 같은 단계부터 재개합니다 |
 | `hyper-frontend`가 `blocked`로 끝남 | 보고서의 실패한 캡처와 증거를 적어 `stopped`로 표시합니다. `hyper-git`이나 `hyper-plan` 단계는 시작하지 않습니다 |
-| `hyper-google-tagmanager`가 `proposed`, `exhausted`, `blocked`로 끝남 | 보고서의 승인이 필요한 제안 동작, 실패한 확인, 막힌 이유를 적고 `stopped`로 표시합니다. `hyper-git`이나 `hyper-deploy` 단계는 시작하지 않고, 승인이나 수정 뒤 "이어서"로 같은 단계에서 재개합니다 |
+| `hyper-google-analytics`가 `exhausted`, `stopped-for-approval`, `delayed`, `blocked`, `handoff`로 끝나거나 `hyper-google-tagmanager`가 `proposed`, `exhausted`, `blocked`로 끝남 | 보고서의 승인이 필요한 제안 동작, 실패한 확인, 막힌 이유를 적고 `stopped`로 표시합니다. `hyper-git`이나 `hyper-deploy` 단계는 시작하지 않고, 승인이나 수정 뒤 "이어서"로 같은 단계에서 재개합니다 |
 | 단계가 사용자 결정, 자격 증명, 충돌, 실패한 게이트로 멈춤 | `stopped`로 표시하고 체인을 끝냅니다(§5) |
 | 단계 스킬이 설치되지 않았거나 불러올 수 없음 | `stopped`로 표시하고 체인과 `npx skills add alpoxdev/hypercore --skill <stage>`를 보고합니다 |
 

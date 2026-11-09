@@ -28,6 +28,7 @@
 ## Verification
 
 - Detector/baseline: pass
+- WCAG 2.2: pass
 
 ## Residual risk
 

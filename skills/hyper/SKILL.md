@@ -182,7 +182,7 @@ Boundary requests:
 | A runtime failure to explain or fix outside a deployment: a stack trace, a failing or intermittent test, a crash, or wrong output | `hyper-debug`; when it ends `handoff`, `hyper-plan` follows with its journal |
 | A question answered by computing over a dataset (a CSV, Parquet, or JSON file, or a spreadsheet or database export) | `hyper-data` alone; never followed by `hyper-git` |
 | One new image, one edit of a supplied image, or one ready-to-use image prompt | `hyper-imagegen`, with `hyper-research` first when it depends on current external guidance or references; never followed by `hyper-git` |
-| A skill, document, MCP, decision-API, interface, frontend, database, GA4 analytics, tag manager, feedback, debug, or loop tail followed by commit-and-push or merge-and-push words, or a skill, document, or feedback tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
+| A skill, document, MCP, decision-API, interface, frontend, database, GA4 analytics, tag manager, feedback, debug, or loop tail followed by commit-and-push or merge-and-push words, or a non-delivering tail followed by pull request words | the chain above, then `hyper-git` as the delivery stage |
 | A deployment readiness verdict, a first deployment setup, a deploy, a deployment configuration change, or a failed deployment to diagnose and fix | `hyper-deploy`, after the code chain when the same request also changes code, and never followed by `hyper-git` |
 | A plan file already exists and the user wants it run | `hyper-execute` |
 | Report-only research, audit, architecture review, or database review | The one matching stage alone |

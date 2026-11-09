@@ -4,7 +4,7 @@
 
 ## 1. What a renderer must produce
 
-측정값을 주장하는 browser capability는 **MUST** 숫자를 만들어야 한다. 각 capture는 viewport width/height, surface state, 그리고 확인한 각 폭에서의 observation 값을 기록한다. 기본 확인 폭은 320, 768, 1024, 1440 CSS px이며, 알려진 project breakpoint가 있으면 그 값을 우선한다.
+측정값을 주장하는 browser capability는 **MUST** 숫자를 만들어야 한다. 각 capture는 viewport width/height, surface state, 그리고 확인한 각 폭에서의 observation 값을 기록한다. 기본 확인 폭은 375, 768, 1280 CSS px이고 모든 layout이 져야 하는 320px 리플로 검사를 함께 본다. 이 폭 집합은 `rules/craft-floor.md` §4가 소유하며, 알려진 project breakpoint가 있으면 그 값을 우선한다.
 
 - computed foreground와 painted background color pair를 `#rgb` 또는 `#rrggbb` hex로 기록한다. background는 글자 아래 실제로 칠해진 색이며 scrim을 포함한다. foreground를 먼저 쓴다.
 - text role별 computed font size(`display`, `heading`, `body`, `caption`, `control`)를 CSS px로 측정해 기록하며, stylesheet에서 읽은 값이 아니라 layout에서 측정한 값이다.

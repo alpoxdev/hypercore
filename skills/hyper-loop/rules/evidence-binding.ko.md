@@ -17,7 +17,7 @@
 이 값은 번들 검증기가 계산한다. 손으로 계산하지 않는다.
 
 ```bash
-bash scripts/verify-loop-state.sh snapshot --dir .hyper/loop/<slug>
+bash <skill-dir>/scripts/verify-loop-state.sh snapshot --dir .hyper/loop/<slug>
 ```
 
 `tree`, `diff_sha256`, 미추적 항목, 제외 경로를 출력한다. 정확한 필드 목록은 [references/state-schemas.md](../references/state-schemas.md)에 있다.
