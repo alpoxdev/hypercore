@@ -59,6 +59,16 @@ A rendered finding records the viewport, state, locator, captured values, and th
 
 When a handoff carries measurement fields (contrast pairs, font sizes, rect pairs, overflow), `collect-rendered-evidence.sh` computes contrast below 4.5, text-on-text overlap above 4px, and horizontal overflow above 2px as findings with locators. See `references/rendered-measurements.md` for the definitions and `references/browser-evidence-schema.md` for the fields.
 
+## Chart geometry checks
+
+For a chart artifact (`references/chart-artifact.md`), three geometry checks are measured on rendered output:
+
+1. The largest bar's rendered height is within **1px** of `value / axisMax * plotHeight`.
+2. The legend swatch's computed color equals the series color it names.
+3. The first and last axis labels are inside the plot box, not clipped at its edges.
+
+Without rendered measurements these three checks are `unverified`, not a pass.
+
 Without measurement fields the status is `not_run` — never a pass. A failing measurement never passes as rendered evidence.
 
 ## Sources

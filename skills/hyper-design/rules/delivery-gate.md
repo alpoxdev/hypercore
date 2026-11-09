@@ -47,6 +47,7 @@ Every item of `rules/craft-floor.md` §9 is `pass`, `n/a`, or `static_only` with
 - every enabled control shows `cursor: pointer`, is a native element, has an accessible name, and has distinct hover, active, and disabled states (`references/accessible-interaction.md`)
 - no horizontal overflow, nothing clipped, and targets at least 24×24 CSS px (44 px on touch surfaces) with space between them at the narrowest width (`references/responsive-reflow.md`)
 - every media element sized, the hero image not lazy, no render-blocking third-party script
+- chart geometry (`rules/rendered-evidence.md`, chart geometry checks) measured, or reported `unverified` when rendered measurements are unavailable (`references/chart-artifact.md`)
 - the WCAG 2.2 table in `assets/report-template.md` (`## Processing summary`): every listed criterion is `PASS`, `FAIL`, or `N/A` with a reason and browser evidence; a missing criterion or an evidence-free `PASS` fails
 
 ## 5. Block 3: Purpose and Dose (technique allowed, reason required)

@@ -153,6 +153,7 @@ compatibility: 대상 프로젝트에 대한 파일 읽기·검색·편집과 `.
 - 검출기 규칙, fixture, eval case를 바꿀 때만 [references/eval-rubric.md](references/eval-rubric.md)를 읽는다.
 - iOS나 Android 화면 작업이면 [references/native-platforms.md](references/native-platforms.md)를 읽는다.
 - 출력이 페이지를 나눠 타면(인쇄, PDF, 청구서, 보고서) [references/print-paged.md](references/print-paged.md)를 읽는다.
+- 산출물이 단독 파일로 내보내지는 숫자 차트(하나의 HTML 파일에 묶인 막대·꺾은선·점 값)이면 [references/chart-artifact.md](references/chart-artifact.md)를 읽는다.
 - 결과를 넘기기 전과 감사 발견 사항을 쓰기 전에 [rules/delivery-gate.md](rules/delivery-gate.md)를 읽는다.
 - 보고서를 쓰기 전에 [rules/validation-and-reporting.md](rules/validation-and-reporting.md)를 읽는다.
 

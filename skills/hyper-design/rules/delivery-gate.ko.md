@@ -47,6 +47,7 @@
 - 켜진 모든 컨트롤이 `cursor: pointer`를 보이고 네이티브 요소이며 접근 가능한 이름이 있고 서로 다른 hover, active, disabled 상태를 가진다(`references/accessible-interaction.md`).
 - 가로 넘침이 없고 잘린 것이 없으며 가장 좁은 폭에서 타깃이 최소 24×24 CSS px(터치 표면은 44 px)이고 서로 간격이 있다(`references/responsive-reflow.md`).
 - 모든 미디어 요소에 크기가 있고 히어로 이미지가 지연 로드가 아니며 렌더링을 막는 서드파티 스크립트가 없다.
+- 차트 기하(`rules/rendered-evidence.md`의 chart geometry checks)를 측정했거나, 렌더링 측정값이 없으면 `unverified`로 보고한다(`references/chart-artifact.md`).
 - `assets/report-template.md`(`## Processing summary`)의 WCAG 2.2 표: 나열된 모든 기준이 이유와 브라우저 증거를 갖춘 `PASS`, `FAIL`, `N/A` 중 하나다. 누락된 기준이나 증거 없는 `PASS`는 실패다
 
 ## 5. 블록 3: 목적과 사용량 (기법은 허용, 이유는 필수)

@@ -153,6 +153,7 @@ Write briefs, reports, status lines, and questions in Korean. Keep code, token n
 - Read [references/eval-rubric.md](references/eval-rubric.md) only when changing detector rules, fixtures, or eval cases.
 - Read [references/native-platforms.md](references/native-platforms.md) when the work is an iOS or Android screen.
 - Read [references/print-paged.md](references/print-paged.md) when the output paginates (print, PDF, invoice, report).
+- Read [references/chart-artifact.md](references/chart-artifact.md) when the output is a numeric chart shipped as a standalone file (bar, line, or point values in one HTML file).
 - Read [rules/delivery-gate.md](rules/delivery-gate.md) before handing over any result and before writing audit findings.
 - Read [rules/validation-and-reporting.md](rules/validation-and-reporting.md) before writing the report.
 

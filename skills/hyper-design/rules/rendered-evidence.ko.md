@@ -59,6 +59,16 @@ rendered finding에는 viewport, state, locator, captured value, 뒷받침하는
 
 handoff에 measurement field(contrast pair, font size, rectangle pair, overflow)가 있으면, `collect-rendered-evidence.sh`는 locator를 포함한 finding으로 4.5 미만의 contrast, 4px 초과 text-on-text overlap, 2px 초과 horizontal overflow를 계산한다. 정의는 `references/rendered-measurements.md`, field는 `references/browser-evidence-schema.md`를 참조한다.
 
+## Chart geometry checks
+
+차트 산출물(`references/chart-artifact.md`)에서는 렌더링 결과로 세 가지 기하 검사를 측정한다.
+
+1. 가장 큰 막대의 렌더링 높이는 `value / axisMax * plotHeight`에서 **1px** 이내다.
+2. 범례 스와치의 computed color는 그 스와치가 가리키는 시리즈 색과 같다.
+3. 첫 번째와 마지막 축 라벨은 플롯 상자 가장자리에서 잘리지 않고 안에 있다.
+
+렌더링 측정값이 없으면 이 세 검사는 `unverified`이며 통과가 아니다.
+
 measurement field가 없으면 status는 `not_run`이며 절대 pass가 되지 않는다. failing 측정값 하나라도 있으면 rendered evidence로는 통과하지 않는다.
 
 ## Sources
