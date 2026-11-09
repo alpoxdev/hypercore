@@ -1,0 +1,17 @@
+{
+  "name": "alpoxdev",
+  "description": "Plugins by alpoxdev",
+  "owner": {
+    "name": "alpoxdev",
+    "url": "https://github.com/alpoxdev"
+  },
+  "plugins": [
+    {
+      "name": "hypercore",
+      "source": "./",
+      "description": "Korean-first agent skills for Codex, Claude Code, Cursor, and Antigravity, from codebase analysis to release.",
+      "category": "development",
+      "tags": ["skills", "korean", "planning", "git", "research"]
+    }
+  ]
+}

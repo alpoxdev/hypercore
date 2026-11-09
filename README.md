@@ -8,7 +8,7 @@
 
 Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 27개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
-- **표준 설치**: 모든 지원 런타임에서 `npx skills` 하나로 설치하고 관리.
+- **설치 경로 두 가지**: 모든 런타임은 `npx skills`, Claude Code는 마켓플레이스 플러그인으로도 설치합니다. 한 환경에는 한 경로만 씁니다([선택 기준](#claude-code-플러그인-마켓플레이스)).
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
 - **한국어 우선**: 모든 스킬에 한국어 사양이 정렬되어 있으며 영어 원본도 함께 유지.
 - **검증 가능한 결과물**: 각 스킬은 evidence/validation/stop-condition 계약을 따라 결과를 남깁니다.
@@ -17,16 +17,53 @@ Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 �
 
 ## 호환성
 
-Hypercore의 표준 설치·관리 경로는 [Vercel Skills CLI](https://github.com/vercel-labs/skills)의 원격 소스 규약입니다. Claude Code, Codex, Cursor 등 런타임 선택은 `npx skills`의 `--agent` 옵션으로 처리합니다. 저장소 루트의 `.codex-plugin/plugin.json`은 [awesome-codex-plugins](https://github.com/hashgraph-online/awesome-codex-plugins) 목록 등록용 Codex 플러그인 설명서이며 같은 `skills/`를 가리킵니다. 별도 marketplace adapter는 제공하지 않습니다.
+Hypercore의 표준 설치·관리 경로는 [Vercel Skills CLI](https://github.com/vercel-labs/skills)의 원격 소스 규약입니다. Claude Code, Codex, Cursor 등 런타임 선택은 `npx skills`의 `--agent` 옵션으로 처리합니다. Claude Code만 쓴다면 저장소 자체가 마켓플레이스이므로 `/plugin` 설치도 가능합니다([Claude Code 플러그인](#claude-code-플러그인-마켓플레이스)). 저장소 루트의 `.codex-plugin/plugin.json`은 [awesome-codex-plugins](https://github.com/hashgraph-online/awesome-codex-plugins) 목록 등록용 Codex 플러그인 설명서이고, `.claude-plugin/`은 Claude Code 플러그인·마켓플레이스 설명서입니다. 두 설명서 모두 같은 `skills/`를 가리키며 다른 mirror adapter는 제공하지 않습니다.
 
 | 런타임 | 설치 예시 | 비고 |
 |---|---|---|
-| Claude Code | `npx skills add alpoxdev/hypercore -a claude-code -g` | `-g` 생략 시 프로젝트 설치 |
+| Claude Code | `npx skills add alpoxdev/hypercore -a claude-code -g` | `-g` 생략 시 프로젝트 설치. 스킬 이름은 `/hyper-git` |
+| Claude Code (플러그인) | `claude plugin marketplace add alpoxdev/hypercore` → `claude plugin install hypercore@alpoxdev` | 위와 택일. 스킬 이름은 `/hypercore:hyper-git` |
 | Codex CLI | `npx skills add alpoxdev/hypercore -a codex -g` | project/global 모두 `.agents/skills` canonical 경로 사용 |
 | Cursor | `npx skills add alpoxdev/hypercore -a cursor -g` | `npx skills` 표준 대상 |
 | 기타 | `npx skills add alpoxdev/hypercore -g` | CLI가 지원하는 agent에 한함 |
 
 스킬별 실행 호환은 아래 [스킬 카탈로그](#스킬-카탈로그)의 **호환** 컬럼 또는 각 `SKILL.md`의 `compatibility` 필드에서 확인합니다.
+
+## Claude Code 플러그인 (마켓플레이스)
+
+이 저장소는 `.claude-plugin/marketplace.json`으로 마켓플레이스 `alpoxdev`를 제공하고, 그 안의 플러그인 `hypercore`(`.claude-plugin/plugin.json`)가 루트의 `skills/`를 그대로 읽습니다(Claude Code 공식 문서 2026-11-09 기준).
+
+```bash
+claude plugin marketplace add alpoxdev/hypercore
+claude plugin install hypercore@alpoxdev            # 기본 scope는 user. 프로젝트에 고정하려면 --scope project
+claude plugin details hypercore                     # Skills (27) 확인
+claude plugin update hypercore@alpoxdev
+claude plugin uninstall hypercore@alpoxdev
+claude plugin marketplace remove alpoxdev           # 마켓플레이스와 그 플러그인을 함께 제거
+```
+
+세션 안에서는 `/plugin marketplace add alpoxdev/hypercore`와 `/plugin install hypercore@alpoxdev`를 씁니다. 설치 뒤 스킬은 `/hypercore:<스킬>` 형식으로 호출하며, 플러그인을 켠 환경에서만 보입니다.
+
+`main`에 `.claude-plugin/`이 반영되기 전에는 기본 브랜치에 마켓플레이스 파일이 없어 추가가 실패하므로 `claude plugin marketplace add alpoxdev/hypercore#dev`로 `dev` 브랜치를 지정합니다(2026-11-09 격리 HOME에서 확인).
+
+동작 규칙:
+
+- **업데이트는 버전 단위입니다.** `plugin.json`이 `version`을 고정하므로 사용자는 그 문자열이 바뀐 릴리스에서만 새 사본을 받습니다. 서드파티 마켓플레이스의 자동 업데이트는 기본으로 꺼져 있으므로 `claude plugin marketplace update alpoxdev`로 카탈로그를 갱신한 뒤 `claude plugin update hypercore@alpoxdev`를 실행하거나, `/plugin`의 Marketplaces에서 auto-update를 켭니다. 업데이트는 재시작 후 적용됩니다.
+- **버전의 정본은 `.claude-plugin/plugin.json`입니다.** `.codex-plugin/plugin.json`과 같은 값이어야 하며(`bash scripts/check-plugin-manifests.sh`가 검사) 마켓플레이스 항목에는 `version`을 쓰지 않습니다.
+- **플러그인 사본에 `skills/` 외 파일도 들어갑니다.** 마켓플레이스 항목의 source가 저장소 루트(`./`)라서 `instructions/`, `scripts/` 등 추적 파일 전체(약 17MB)가 캐시에 복사됩니다. Claude Code에는 제외 목록 기능이 없고, 로드되는 구성 요소는 `skills/`뿐입니다.
+
+### `npx skills`와 플러그인 중 하나만 고르기
+
+두 경로를 함께 설치하면 같은 스킬이 `/hyper-git`와 `/hypercore:hyper-git`로 두 번 로드됩니다. 이름 충돌로 실패하지는 않지만 스킬 목록과 description이 두 벌 실려 컨텍스트를 두 배로 쓰고(플러그인만 켜도 항상 실리는 분량이 약 4.1k 토큰으로 측정됨), 업데이트 경로가 둘이라 버전이 어긋날 수 있습니다.
+
+| 상황 | 권장 경로 |
+|---|---|
+| Claude Code만 쓰고 버전 단위 업데이트·제거를 `claude plugin`으로 관리하고 싶다 | 플러그인 |
+| Codex, Cursor, Antigravity도 함께 쓰거나 같은 설치를 여러 agent에 맞추고 싶다 | `npx skills` |
+| 스킬 일부만 고르거나(`--skill hyper-git`) 프로젝트마다 다르게 설치하고 싶다 | `npx skills` (플러그인은 스킬 27개를 통째로 설치) |
+| 스킬을 `/hyper-git`처럼 접두어 없이 부르고 싶다 | `npx skills` |
+
+한 경로에서 다른 경로로 옮길 때는 먼저 기존 설치를 제거합니다. `npx skills`에서 플러그인으로 옮기려면 아래 [설치 및 수명주기](#설치-및-수명주기)의 `remove`로 hypercore 스킬을 지운 뒤 위 플러그인 명령을 실행합니다. 플러그인에서 `npx skills`로 옮기려면 `claude plugin uninstall hypercore@alpoxdev`를 실행한 뒤 아래 설치 절차를 따릅니다.
 
 ## 설치 및 수명주기
 
@@ -61,11 +98,11 @@ npx skills find hypercore --owner alpoxdev
 npx skills init my-skill
 ```
 
-`update`는 원격 source 정보가 기록된 lock에 의존합니다. 로컬 경로로 설치한 항목은 lock에 `sourceType: local`로 남아 `update`가 건너뛰고, 기존 plugin 설치나 수동 복사에는 lock 항목 자체가 없으므로, `update`로 관리하려면 아래처럼 원격 source로 다시 설치해야 합니다. `remove`는 lock이 없어도 설치 디렉터리를 찾아 지웁니다(2026-11-04 `vercel-labs/skills` 소스 기준).
+`update`는 원격 source 정보가 기록된 lock에 의존합니다. 로컬 경로로 설치한 항목은 lock에 `sourceType: local`로 남아 `update`가 건너뛰고, 수동 복사에는 lock 항목 자체가 없으므로, `update`로 관리하려면 아래처럼 원격 source로 다시 설치해야 합니다. Claude Code 플러그인은 이 lock과 무관하게 `claude plugin update`로 관리합니다. `remove`는 lock이 없어도 설치 디렉터리를 찾아 지웁니다(2026-11-04 `vercel-labs/skills` 소스 기준).
 
-### 기존 plugin 또는 lock 없는 설치 마이그레이션
+### 수동 복사 또는 lock 없는 설치 마이그레이션
 
-1. 기존 스킬을 백업하고 사용 중인 runtime의 plugin/marketplace 설치를 제거합니다.
+1. 기존 스킬을 백업하고 수동으로 복사한 스킬 디렉터리나 다른 경로(Claude Code 플러그인 포함)의 설치를 제거합니다.
 2. 실제 원격 source를 지정해 원하는 scope와 agent로 다시 설치합니다.
 3. `npx skills list -g --json`과 project `skills-lock.json` 또는 global `.skill-lock.json`에서 source가 `alpoxdev/hypercore`인지 확인합니다.
 4. 이후 `update`와 `remove`를 실행합니다.
@@ -286,10 +323,11 @@ lint, typecheck, build 같은 프로젝트 게이트를 재현하고, 실패가 
 
 ```text
 hypercore/
+├── .claude-plugin/        # Claude Code 플러그인(plugin.json)과 마켓플레이스(marketplace.json) 설명서, skills/를 가리킴
 ├── .codex-plugin/         # Codex 플러그인 설명서 (awesome-codex-plugins 등록용, skills/를 가리킴)
 ├── assets/                # 플러그인 아이콘, README 이미지 등 저장소 수준 정적 asset
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
-├── scripts/               # source/lifecycle 검증 및 보조 스크립트
+├── scripts/               # source/lifecycle/plugin manifest 검증 및 보조 스크립트
 └── skills/                # 27개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
