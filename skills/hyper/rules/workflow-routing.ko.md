@@ -34,6 +34,7 @@
 | `hyper-feedback` | 입력이 기존 동작에 대해 제품 언어로 쓴 변경 요청입니다. 사용자, 고객사, 기획자가 직접 보내거나 전달된 피드백, 불만, 티켓, 회의 메모, 기획 수정, 새 문구이고, 사용자가 그것을 파악해 반영하길 원합니다("알아서 파악해서 고쳐", "피드백 반영해", "이 메모대로 반영") | 요청 문구와 인용한 피드백 원문, 그리고 작성자나 전달 경로 |
 | `hyper-debug` | 입력이 배포가 아닌 곳에서 난 실행 실패이고 원인 설명이나 수정을 원합니다. 스택 트레이스, 실패하거나 가끔 실패하는 테스트, 크래시, 잘못된 출력이고 "왜 실패하는지", "에러 원인", "flaky test", "why does this fail" 같은 말이 있습니다 | 요청 문구와 읽은 실패 명령, 테스트 이름, 트레이스 발췌 |
 | `hyper-data` | 요청한 결과물이 데이터셋(CSV, Parquet, JSON 파일, 스프레드시트 내보내기, 데이터베이스 내보내기)을 계산해 얻은 답입니다. 건수, 합계, 추이, 비교, 또는 사용자가 요청한 차트이고 "이 CSV에서", "데이터 분석해서", "집계해줘", "how many rows" 같은 말이 있습니다 | 요청 문구와 읽은 데이터셋 경로 |
+| `hyper-review` | 요청한 결과물이 이미 있는 변경에 대한 판정이고 수정 요청은 없습니다. 지정한 diff, 커밋 범위, 브랜치, 풀 리퀘스트, 작업 트리이며 "리뷰만", "판정만", "고치지는 마", "review this diff", "review the PR", "can this merge" 같은 말이 붙습니다 | 요청 문구와 읽은 diff, 브랜치, PR 번호 또는 작업 트리 상태 |
 | `hyper-handoff` | 요청한 결과물이 이어받기 메모, 그 메모의 확인, 또는 그 메모로 시작하는 세션입니다. 컨텍스트가 거의 찼거나, 압축이나 세션·에이전트·머신 전환이 곧 일어나거나, 핸드오프·이어받기 노트를 요청했거나, 메모로 이어서 하라는 요청이고 "핸드오프 써줘", "write a handoff" 같은 말이 있습니다. 이어받기는 지목한 메모 경로나, 현재 브랜치·워크트리와 맞는 `.hyper/handoff/` 아래 열린 메모나, 이어갈 열린 실행이 있어야 합니다. 셋 다 없는 "이어서 해줘"는 이 단계의 트리거가 아닙니다 | 요청 문구와, 지목한 메모 경로 |
 | `hyper-imagegen` | 요청한 결과물 전부가 새 이미지 한 장, 제공한 이미지 한 장의 편집, 바로 쓸 수 있는 이미지 프롬프트 하나입니다 | 요청 문구, 그리고 있으면 제공한 편집 원본이나 참고 자료 경로 |
 | `hyper-plan` | Build 작업이 여러 파일이나 단계를 건드리거나, Report 작업이 계획을 요청합니다. 대립형 요청을 사용자가 직접 밝히지 않았을 때입니다 | 요청 문구 |
@@ -51,7 +52,7 @@
 고른 단계는 항상 이 순서로 실행합니다. 고르지 않은 단계는 건너뜁니다.
 
 ```text
-hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-google-tagmanager -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-decision -> hyper-design -> hyper-frontend -> hyper-feedback -> hyper-debug -> (hyper-plan [-> hyper-execute] | hyper-debate [-> hyper-execute] | hyper-mass | hyper-loop | hyper-execute | hyper-data | hyper-handoff (쓰기 | 확인) | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git] [-> hyper-deploy]
+hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-google-tagmanager -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-decision -> hyper-design -> hyper-frontend -> hyper-feedback -> hyper-debug -> hyper-review -> (hyper-plan [-> hyper-execute] | hyper-debate [-> hyper-execute] | hyper-mass | hyper-loop | hyper-execute | hyper-data | hyper-handoff (쓰기 | 확인) | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git] [-> hyper-deploy]
 이어받기 재진입, 체인 자리 없음: hyper-handoff (이어받기) -> 열린 실행의 끝나지 않은 첫 단계
 ```
 
@@ -122,6 +123,8 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-go
 | 실행 실패의 원인만 설명("원인만 찾아줘", "why does this test fail") | 원인만 찾는 모드의 `hyper-debug` |
 | 실행 실패의 원인을 찾아 수정("에러 원인 찾아서 고쳐줘", "flaky test 잡아줘") | `hyper-debug`. 디버그 단계가 `handoff`로 끝나면 `hyper-plan`을 덧붙임 |
 | 지금 동작을 먼저 확인해야 하는 낯선 라이브러리나 서비스에서 난 실행 실패 | `hyper-research` -> `hyper-debug` |
+| 이미 있는 변경을 판정만("리뷰만 해줘", "이 브랜치 판정만", "review PR #412") | review-only 모드의 `hyper-review` 단독 |
+| 이미 있는 변경을 리뷰하고 확인된 블로커를 수정("리뷰하고 확인된 것만 고쳐줘") | review-and-fix 모드의 `hyper-review` 단독. 같은 요청에 커밋·푸시 말이 있을 때만 `hyper-git`을 덧붙임 |
 | 이미지 한 장 생성, 제공한 이미지 한 장 편집, 이미지 프롬프트 하나 작성 | `hyper-imagegen` |
 | 최신 외부 지침이나 참고 자료에 기대는 이미지("최신 프롬프트 가이드 참고해서") | `hyper-research` -> `hyper-imagegen` |
 | 리서치 보고서만 | `hyper-research` |
@@ -193,6 +196,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-go
 - 실패했거나 크래시가 나거나 비정상인 배포는 `hyper-deploy`로 가고, 코드나 테스트나 로컬 실행에서 재현되는 실행 실패는 `hyper-debug`로 갑니다. `hyper-debug`와 `hyper-deploy`는 사용자가 수정본 배포까지 요청했을 때만 한 체인에서 실행하고, 그때 `hyper-deploy`는 전달된 수정본 뒤에 옵니다.
 - `hyper-debug`는 `hyper-feedback`, `hyper-skill`, `hyper-documentation`, `hyper-imagegen`, `hyper-mass`와 한 체인에서 함께 실행하지 않습니다. 스택 트레이스, 실패한 테스트, 크래시는 `hyper-debug`로 가고, 제품 언어로 쓴 변경 요청은 `hyper-feedback`으로 갑니다.
 - 디버그 작업의 전달 단어는 디버그 단계가 `fixed`로 끝나면 `hyper-git`으로 갑니다. `handoff`로 끝나면 덧붙인 `hyper-plan`의 전달 플래그로 넘기고 `hyper-git`은 뺍니다. 디버그 단계가 `awaiting_input`으로 끝나면 질문 하나를 이미 했으므로 체인은 그 자리에서 멈추고 답을 받으면 재개합니다.
+- 이미 있는 변경에 판정만 필요하면 `hyper-review`로 갑니다. 아직 없는 변경은 `hyper-plan`, 설명할 실행 실패는 `hyper-debug`입니다. `hyper-review`는 `hyper-plan`이나 `hyper-execute`와 한 체인에서 돌지 않고, review-and-fix 모드가 수정까지 직접 맡습니다.
 - 데이터셋을 계산해 답하는 질문은 `hyper-data`로 가고, 스키마, 마이그레이션, 느린 쿼리, 인덱스, 데이터베이스 설정은 `hyper-database`, GA4 속성 보고서 데이터는 `hyper-google-analytics`, 대시보드 화면은 `hyper-design`으로 갑니다. `hyper-data`는 `.hyper/data/<slug>/report.md`만 쓰고 추적 파일을 바꾸지 않으므로 뒤에 `hyper-git`이 붙지 않습니다.
 - `hyper-data` 단계가 `awaiting_input`으로 끝나면 질문 하나를 이미 했고, `prerequisite_missing`으로 끝나면 없는 엔진과 설치 명령을 보고하되 설치하지 않습니다. 두 경우 모두 체인은 그 자리에서 멈추고 답이나 설치 뒤에 재개합니다.
 - "이어서" / "continue"이면 라우터가 이 순서로 이어갈 실행을 찾습니다. 요청에서 지목한 메모 경로, 현재 브랜치나 워크트리와 맞는 `.hyper/handoff/` 아래 열린 메모, 열린 워크플로 기록, 열린 실행 상태. 열린 메모는 이어받기 모드로 먼저 읽고, 그다음 메모가 가리키는 기록이나 실행을 이어갑니다. 닫힌 메모는 사용자가 지목하지 않으면 무시합니다. 메모도 열린 워크플로 기록도 실행 상태도 없는 평범한 "이어서 해줘"는 핸드오프 트리거가 아닙니다. 체인 중간에 쓴 메모는 `Where`에 워크플로 기록 경로를 적고, 기록은 그대로 두며 다음 세션은 메모를 먼저 읽습니다.
@@ -260,7 +264,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-go
 
 | Claim | Source |
 |---|---|
-| 스물다섯 단계 스킬, 동반 스킬, 오케스트레이터 역할 | user instruction, 2026-11-06(오케스트레이터 역할); `hyper-deploy`를 더해 열다섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-feedback`을 더해 열여섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-decision`을 더해 열일곱 단계로 늘린 사용자 지시, 2026-11-08; `hyper-google-analytics`를 더해 열여덟 단계로 늘린 사용자 지시, 2026-11-08; `hyper-debug`를 더해 열아홉 단계로 늘린 사용자 지시, 2026-11-09(이슈 #22); `hyper-loop`를 더해 스무 단계로 늘린 사용자 지시, 2026-11-09(이슈 #21); `hyper-data`를 더해 스물한 단계로 늘린 사용자 지시, 2026-11-09(이슈 #25); `hyper-google-tagmanager`를 더해 스물두 단계로 늘린 사용자 지시, 2026-11-09(hyper 라우팅 갱신); `hyper-frontend`를 더해 스물세 단계로 늘린 사용자 지시, 2026-11-09(이슈 #46); `hyper-handoff`를 더해 스물네 단계로 늘린 사용자 지시, 2026-11-10; `hyper-debate`를 더해 현재의 스물다섯 단계로 늘린 사용자 지시, 2026-11-10(이슈 #26); 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
+| 스물여섯 단계 스킬, 동반 스킬, 오케스트레이터 역할 | user instruction, 2026-11-06(오케스트레이터 역할); `hyper-deploy`를 더해 열다섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-feedback`을 더해 열여섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-decision`을 더해 열일곱 단계로 늘린 사용자 지시, 2026-11-08; `hyper-google-analytics`를 더해 열여덟 단계로 늘린 사용자 지시, 2026-11-08; `hyper-debug`를 더해 열아홉 단계로 늘린 사용자 지시, 2026-11-09(이슈 #22); `hyper-loop`를 더해 스무 단계로 늘린 사용자 지시, 2026-11-09(이슈 #21); `hyper-data`를 더해 스물한 단계로 늘린 사용자 지시, 2026-11-09(이슈 #25); `hyper-google-tagmanager`를 더해 스물두 단계로 늘린 사용자 지시, 2026-11-09(hyper 라우팅 갱신); `hyper-frontend`를 더해 스물세 단계로 늘린 사용자 지시, 2026-11-09(이슈 #46); `hyper-handoff`를 더해 스물네 단계로 늘린 사용자 지시, 2026-11-10; `hyper-debate`를 더해 스물다섯 단계로 늘린 사용자 지시, 2026-11-10(이슈 #26); `hyper-review`를 더해 현재의 스물여섯 단계로 늘린 사용자 지시, 2026-11-10(이슈 #23); 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
 | 각 단계의 트리거, 결과물, 제외 범위. `hyper-mass`가 계획 파일 실행을 제외하고 `hyper-execute`가 기존 계획을 요구한다는 점 포함 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 전달 단어, 계획만·승인 보류 단어, 계획에서 실행으로 자동 연결 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 단계 순서, 네 단계 상한, 레시피, 동률 처리 | 이 패키지가 고른 설계이며 검증된 최적값이 아님 |
