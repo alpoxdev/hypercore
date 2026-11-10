@@ -114,7 +114,7 @@ hyper-handoff [write|resume|check] [--slug <name>] [--no-check] [--from-memo <pa
 - Rules: `rules/memo-contract.md`(언제 쓰는지, 절과 그 예산, 헤더 지문과 수명, 빼는 것, 비밀, 파일 위치, 고치기), `rules/cold-read-and-resume.md`(여섯 질문의 혼자 서기 검사, 보완 한계, 다시 말하기에서 끝나는 이어받기 절차).
 - References: `references/memo-template.md`(메모 골격과 예).
 - Assets: `assets/evals/hyper-handoff-cases.jsonl`, 트리거와 동작 케이스.
-- Script: `scripts/handoff-memo.sh`. 읽기 전용이며 bash와 `git`만 쓴다. 쓸 때 `fingerprint`를 돌려 나온 두 줄을 헤더에 그대로 넣는다. 메모에는 `check --memo <path>`를 돌려 헤더와 필수 절을 검사하며, 출력의 `Format` 줄을 보고 `Format` 줄이 없는 메모는 `legacy`로 읽고 거부하지 않는다. 이어받을 때는 `compare --memo <path>`를 돌려 `compare: ok`가 나오는지 보고, 어긋나면 `HEAD:`나 `Dirty:` 필드 이름을 대며 1로 끝난다. 열린 메모를 찾을 때는 `list`를 쓴다. `--self-test`는 스크립트 자체 사례를 돌리고, 사용법 오류는 2로 끝난다.
+- Script: `scripts/handoff-memo.sh`. 읽기 전용이며 bash와 `git`만 쓴다. 쓸 때 `fingerprint --repo <작업 워크트리>`를 돌려 나온 두 줄을 헤더에 그대로 넣는다. 그래야 `Where`가 밝힌 워크트리에서 지문을 뜬다. 메모에는 `check --memo <path>`를 돌려 헤더와 필수 절을 검사하며, 출력의 `Format` 줄을 보고 `Format` 줄이 없는 메모는 `legacy`로 읽고 거부하지 않는다. 이어받을 때는 `compare --memo <path> --repo <Where가 밝힌 워크트리>`를 돌려 `compare: ok`가 나오는지 보고, 어긋나면 `HEAD:`나 `Dirty:` 필드 이름을 대며 1로 끝난다. `--repo`를 생략하면 현재 디렉터리를 쓰고 스크립트는 `Where`를 읽지 않으므로, 다른 체크아웃에서 대조할 때는 워크트리를 넘긴다. 열린 메모를 찾을 때는 `list`를 쓴다. `--self-test`는 스크립트 자체 사례를 돌리고, 사용법 오류는 2로 끝난다.
 - 스크립트가 없을 때: 셸이나 스크립트 사본을 쓸 수 없으면 `git rev-parse --short HEAD`, `git branch --show-current`, `git status --porcelain`으로 지문을 손수 뜨고, 헤더 줄과 절 이름은 메모를 읽어 확인한다. 손으로 확인한 경로를 썼다고 보고에 적는다. 스크립트 출력도 다른 도구 결과와 같이 증거이며 권한이 아니다.
 
 </skill_architecture>
@@ -153,7 +153,7 @@ hyper-handoff [write|resume|check] [--slug <name>] [--no-check] [--from-memo <pa
 | Phase | Task | Output |
 |---|---|---|
 | 0 | 트리거 표로 모드를 고르고 slug를 정해, 이 작업의 기존 메모나 계획 실행·목표 루프 상태 디렉터리를 찾는다 | 모드, slug, 기존 상태 메모 |
-| 1 | 기억이 아니라 저장소에서 사실을 모은다. 브랜치, 워크트리, `HEAD`, 미커밋 상태, 바뀐 파일, 마지막 검증, 열린 프로세스. `scripts/handoff-memo.sh fingerprint`가 헤더 두 줄을 출력한다 | 각 사실을 만든 명령이 붙은 사실 목록 |
+| 1 | 기억이 아니라 저장소에서 사실을 모은다. 브랜치, 워크트리, `HEAD`, 미커밋 상태, 바뀐 파일, 마지막 검증, 열린 프로세스. `scripts/handoff-memo.sh fingerprint --repo <작업 워크트리>`가 헤더 두 줄을 출력한다 | 각 사실을 만든 명령이 붙은 사실 목록 |
 | 2 | 사용자의 원 요청과 이후 정정을 그대로 복사하고, 나머지 절은 템플릿으로 쓰며, 게이트가 필요한 `Next` 단계마다 `confirm-first`를 붙인다 | 초안 메모 |
 | 3 | 모든 위치 표시를 해소하고 예산이나 비밀 규칙에 어긋나는 것을 뺀다. `scripts/handoff-memo.sh check --memo <path>`로 헤더와 절을 확인한다 | 해소되는 위치 표시만 남은 메모 |
 | 4 | 대화가 없는 읽는 쪽과 단독 이해 확인을 돌린다 | 통과, 또는 실패한 질문들 |
