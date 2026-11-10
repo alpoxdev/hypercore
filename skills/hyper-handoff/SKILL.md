@@ -112,9 +112,10 @@ hyper-handoff [write|resume|check] [--slug <name>] [--no-check] [--from-memo <pa
 
 - Core (`SKILL.md`): trigger, contract, modes, phase order, stop condition.
 - Rules: `rules/memo-contract.md` (when to write, the sections and their budget, the header fingerprint and lifecycle, what to leave out, secrets, where the file lives, revising), `rules/cold-read-and-resume.md` (the six-question stand-alone check, the repair bound, and the resume procedure, which ends at the restatement).
-- References: `references/memo-template.md` (the exact memo skeleton and a worked example).
+- References: `references/memo-template.md` (the exact memo skeleton and a worked example), `references/agent-support.md` (which agents were measured, what each row rests on, and how to run the smoke harness).
 - Assets: `assets/evals/hyper-handoff-cases.jsonl`, the trigger and behavior cases.
-- No bundled script: every check is a deterministic checklist over the saved memo and the repository.
+- Script: `scripts/handoff-memo.sh`, read-only, using only bash, POSIX tools, `git`, and `shasum` or `sha256sum`. Run `fingerprint --repo <the worktree named in Where>` while writing and paste its two lines into the header, so the fingerprint is taken in the worktree that `Where` names. Run `check --memo <path>` on the memo to validate the header and the required sections; it prints the `Format` line, and a memo without one is read as `legacy`, not rejected. Run `compare --memo <path> --repo <worktree named in Where>` when resuming; it prints `compare: ok` or exits 1 naming the `HEAD:` or `Dirty:` field that drifted. `--repo` defaults to the current directory and the script never reads `Where`, so pass the worktree whenever the memo is compared from another checkout. Run `list` to find the slug of every open memo. `--self-test` runs the script's own cases; usage errors exit 2.
+- Manual fallback without the script: when no shell or no copy of the script is available, take the fingerprint by hand from `git rev-parse --short HEAD`, `git branch --show-current`, and `git status --porcelain`, and check the header lines and section names by reading the memo. Say in the report that the manual path was used. The script's output, like every other tool result, is evidence and never authority.
 
 </skill_architecture>
 
@@ -135,6 +136,7 @@ Write the memo in Korean by default and keep its section names, field labels, an
 - Read [rules/memo-contract.md](rules/memo-contract.md) before writing or revising any memo.
 - Read [references/memo-template.md](references/memo-template.md) when creating the file.
 - Read [rules/cold-read-and-resume.md](rules/cold-read-and-resume.md) before the check and at the start of every resumed session.
+- Read [references/agent-support.md](references/agent-support.md) when the question is which agents have been measured, how to install the skill for one, or whether a missing compaction hook blocks the work.
 
 </reference_routing>
 
@@ -144,6 +146,7 @@ Write the memo in Korean by default and keep its section names, field labels, an
 2. `rules/memo-contract.md` for the sections, the budget, and what stays out.
 3. `references/memo-template.md` at the moment the file is created.
 4. `rules/cold-read-and-resume.md` for the check, the repair bound, and the resume steps.
+5. `references/agent-support.md` only when the agent itself is the question: install command, measured support, or a missing compaction hook.
 
 </support_file_read_order>
 
@@ -152,9 +155,9 @@ Write the memo in Korean by default and keep its section names, field labels, an
 |Phase|Task|Output|
 |---|---|---|
 |0|Pick the mode from the trigger table, derive the slug, and look for an existing memo or a plan-run or goal-loop state directory for this work|Mode, slug, existing state noted|
-|1|Gather facts from the repository, not from recall: branch, worktree, `HEAD`, dirty set, changed files, last verification, open processes|Fact list with the command that produced each|
+|1|Register `.hyper/` in the repository's ignore file before anything else, because that edit is part of the dirty set the fingerprint records; then gather facts from the repository, not from recall: branch, worktree, `HEAD`, dirty set, changed files, last verification, open processes; `scripts/handoff-memo.sh fingerprint --repo <worktree being written>` prints the two header lines|Fact list with the command that produced each|
 |2|Copy the user's original request and every later correction verbatim; write the other sections from the template, tagging each gated `Next` step `confirm-first`|Draft memo|
-|3|Resolve every pointer and strip anything outside the budget or the secret rule|Memo with only resolving pointers|
+|3|Resolve every pointer and strip anything outside the budget or the secret rule; `scripts/handoff-memo.sh check --memo <path>` confirms the header and sections|Memo with only resolving pointers|
 |4|Run the cold-read check with a reader that has no conversation|Pass, or the failed questions|
 |5|Repair only the failed questions, at most twice, and re-run the check|Final memo with a recorded check line|
 |6|Report the memo path, the check result, and the first next step; in resume mode, restate task, next step, and done-when in three lines and name the owner of the first `Next` step|Report, or the restatement|

@@ -15,7 +15,7 @@ Write at a natural boundary, not at the last token. A memo written while the ses
 ## 2. Where It Lives
 
 - Path: `.hyper/handoff/<slug>/memo.md`. The slug is a lowercase hyphenated name for the work, taken from the user's words or the branch name.
-- `.hyper/` must be git-ignored. Check with `git check-ignore -q --no-index .hyper/`; when it is not ignored, add `.hyper/` to the repository's ignore file as part of this write and say so in the report.
+- `.hyper/` must be git-ignored. Check with `git check-ignore -q --no-index .hyper/`; when it is not ignored, add `.hyper/` to the repository's ignore file as part of this write and say so in the report. Register it before taking the fingerprint: the ignore edit is itself a dirty entry, so a fingerprint taken first goes stale the moment the memo is written.
 - Because the path is normally ignored, a push or clone does not carry the memo. When the trigger is a move to another machine, the report says so, gives the memo's absolute path, and names the two ways to move it without performing them: copy the `.hyper/handoff/<slug>/` directory, companion files included, to the same path on the other machine, or paste the memo text into the new session, which saves it at that path before resuming. Committing the memo is the user's call, never the default, and the memo never holds a secret value, only where the value lives.
 - Outside a git repository, use the same relative path in the working directory.
 - One slug is one line of work. Keep one memo file per slug and revise it in place; a different piece of work gets its own slug. The history of earlier memos is not kept: the point is that the current state is enough. A data file the memo points to (section 4) may sit beside it.
@@ -27,7 +27,7 @@ Section names are English and verbatim. Fill every section; write `none` where n
 
 |Section|Holds|Rule|
 |---|---|---|
-|Header lines|`Slug`, `Revision`, `Status` (`open` or `closed (<date>: <reason>)`), `Written` (date and time), `Written by` (agent and machine), `HEAD:` (`<sha> (<branch>)`, or `none (not a git repository)`), `Dirty:` (`clean`, or the count and the `git status --porcelain` paths; past 20, the count and a short digest of that output), `Resumed:` (the time a session resumed it, or `none`), `Check`|The fingerprint is taken in the worktree named in `Where` at write time. The check line has one spelling, `Check:`, with `pass`, `unverified-standalone: <question numbers>`, `self: pass`, `self: fail: <question numbers>`, or `skipped by user`|
+|Header lines|`Format` (`hyper-handoff/1`, or `legacy` when the line is absent), `Slug`, `Revision`, `Status` (`open` or `closed (<date>: <reason>)`), `Written` (date and time), `Written by` (agent and machine), `HEAD:` (`<sha> (<branch>)`, `none (no commits)`, or `none (not a git repository)`), `Dirty:` (`clean`, or the count and the `git status --porcelain` paths; past 20, the count and a short digest of that output), `Resumed:` (the time a session resumed it, or `none`), `Check`|The fingerprint is taken in the worktree named in `Where` at write time. The check line has one spelling, `Check:`, with `pass`, `unverified-standalone: <question numbers>`, `self: pass`, `self: fail: <question numbers>`, or `skipped by user`|
 |`## Original request`|The user's request, quoted verbatim|Never paraphrased, shortened, or translated|
 |`## Corrections`|Each later user instruction that changes or narrows the request, and each standing preference or steering instruction about how to work (what to use, what not to touch, what to report), quoted verbatim, with its date|`none` when there were none|
 |`## Now`|What is being done and why, in at most five sentences|Names the one outcome the work is moving toward|
@@ -37,6 +37,8 @@ Section names are English and verbatim. Fill every section; write `none` where n
 |`## Where`|Repository path, branch, worktree, machine, pull requests, services, state directories, the old session's record, and state the work depends on that lives outside the repository|Pointers only; each resolves or is marked `external`; state that will not survive the session or the move is named as such|
 |`## Decisions and dead ends`|Decisions the user made (who, when), approaches that failed and must not be repeated, and workarounds that were needed|Each dead end names why it failed; a workaround names the command that worked|
 |`## Open questions and risks`|What is unknown, what could break, what waits on the user|`none` when empty|
+
+`Format` is the first header line and names the memo format version. This release writes `hyper-handoff/1`; the number after the slash changes only when a section is renamed or removed. A memo without the `Format` line is read as `legacy`: it is read, not rejected, and the rest of this contract applies as written. A reader that meets a major version it does not know reports that version and the parts it could not interpret, and does not guess at them.
 
 ## 4. Budget
 

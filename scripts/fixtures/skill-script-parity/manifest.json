@@ -651,6 +651,21 @@
         }
       },
       "behaviorContractId": "hyper-cleanup--mutation-proof"
+    },
+    {
+      "path": "skills/hyper-handoff/scripts/handoff-memo.sh",
+      "family": "hyper-handoff",
+      "legacyOrigin": "authored-sh",
+      "usage": "handoff-memo",
+      "behavior": "memo-fingerprint-check",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-handoff/scripts/handoff-memo.sh",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-handoff--handoff-memo"
     }
   ],
   "forbiddenDetectorReferences": {

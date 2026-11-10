@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 40,
+    "expectedRows": 41,
     "legacyOriginCounts": {
       "former-sh": 11,
       "retained-mjs": 2,
       "authored-mjs": 23,
-      "authored-sh": 4
+      "authored-sh": 5
     },
     "requiredDimensions": [
       "stdout",
@@ -24,7 +24,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 120
+    "expectedFixtures": 123
   },
   "rows": [
     {
@@ -8749,6 +8749,193 @@
         }
       },
       "behaviorContractId": "hyper-cleanup--mutation-proof"
+    },
+    {
+      "id": "hyper-handoff--handoff-memo",
+      "path": "skills/hyper-handoff/scripts/handoff-memo.sh",
+      "family": "hyper-handoff",
+      "legacyOrigin": "authored-sh",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-handoff/scripts/handoff-memo.sh",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-handoff--handoff-memo--stdout",
+        "stderr": "hyper-handoff--handoff-memo--stderr",
+        "exit": "hyper-handoff--handoff-memo--exit",
+        "files": "hyper-handoff--handoff-memo--files",
+        "modes": "hyper-handoff--handoff-memo--modes",
+        "cwd": "hyper-handoff--handoff-memo--cwd",
+        "env": "hyper-handoff--handoff-memo--env",
+        "argv": "hyper-handoff--handoff-memo--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-handoff/scripts/handoff-memo.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "check",
+              "--memo",
+              "memo.md"
+            ],
+            "files": [
+              {
+                "path": "memo.md",
+                "text": "- Format: hyper-handoff/1\n- Slug: demo\n- Revision: 1\n- Status: open\n- Written: 2026-11-10 10:00 KST\n- Written by: omp on test-machine\n- HEAD: 4c1e9f2 (main)\n- Dirty: clean\n- Resumed: none\n- Check: pass\n\n## Original request\n\n> Do the demo task.\n\n## Corrections\n\n- none\n\n## Now\n\nWriting the demo memo.\n\n## Done\n\n- none\n\n## Next\n\n1. Run the demo command.\n\n## Plan and done-when\n\n- Plan: none\n- Done when: the demo command exits 0.\n\n## Where\n\n- Repository: none\n- Branch: none\n\n## Decisions and dead ends\n\n- none\n\n## Open questions and risks\n\n- none\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "Format: hyper-handoff/1\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "memo.md",
+                "bytes": 546,
+                "sha256": "303d173d5f7f8e384b8ed475121eb96bb6716824e3d10e69f8df7c2a36429003"
+              }
+            ],
+            "modes": {
+              "memo.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "check",
+              "--memo",
+              "memo.md"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-handoff/scripts/handoff-memo.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "check",
+              "--memo",
+              "memo.md"
+            ],
+            "files": [
+              {
+                "path": "memo.md",
+                "text": "- Format: hyper-handoff/1\n- Slug: demo\n- Revision: 1\n- Status: open\n- Written: 2026-11-10 10:00 KST\n- Written by: omp on test-machine\n- HEAD: 4c1e9f2 (main)\n- Dirty: clean\n- Resumed: none\n- Check: pass\n\n## Original request\n\n> Do the demo task.\n\n## Corrections\n\n- none\n\n## Now\n\nWriting the demo memo.\n\n## Done\n\n- none\n\n## Plan and done-when\n\n- Plan: none\n- Done when: the demo command exits 0.\n\n## Where\n\n- Repository: none\n- Branch: none\n\n## Decisions and dead ends\n\n- none\n\n## Open questions and risks\n\n- none\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "equals": "check: missing section: ## Next\n"
+            },
+            "exit": 1,
+            "files": [
+              {
+                "path": "memo.md",
+                "bytes": 511,
+                "sha256": "64853653e032de7026d09a35aa881cc7f62ce12ef8a74f93f9ce5d86b1c8d440"
+              }
+            ],
+            "modes": {
+              "memo.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "check",
+              "--memo",
+              "memo.md"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-handoff/scripts/handoff-memo.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "check",
+              "--memo",
+              "memo dir/memo.md"
+            ],
+            "files": [
+              {
+                "path": "memo dir/memo.md",
+                "text": "- Slug: demo\n- Revision: 1\n- Status: open\n- Written: 2026-11-10 10:00 KST\n- Written by: omp on test-machine\n- HEAD: 4c1e9f2 (main)\n- Dirty: clean\n- Resumed: none\n- Check: pass\n\n## Original request\n\n> Do the demo task.\n\n## Corrections\n\n- none\n\n## Now\n\nWriting the demo memo.\n\n## Done\n\n- none\n\n## Next\n\n1. Run the demo command.\n\n## Plan and done-when\n\n- Plan: none\n- Done when: the demo command exits 0.\n\n## Where\n\n- Repository: none\n- Branch: none\n\n## Decisions and dead ends\n\n- none\n\n## Open questions and risks\n\n- none\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "Format: legacy\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "memo dir/memo.md",
+                "bytes": 520,
+                "sha256": "695160f3306bbff455643a8403a8f2bf0c6d06bb60f0cddc5d38cec9e55acd65"
+              }
+            ],
+            "modes": {
+              "memo dir/memo.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "check",
+              "--memo",
+              "memo dir/memo.md"
+            ]
+          }
+        }
+      }
     }
   ],
   "legacyPreimageBase": "990359457e2ccbf2bd4bb65065037d456c5940bc"
