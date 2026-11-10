@@ -155,7 +155,7 @@ Write the memo in Korean by default and keep its section names, field labels, an
 |Phase|Task|Output|
 |---|---|---|
 |0|Pick the mode from the trigger table, derive the slug, and look for an existing memo or a plan-run or goal-loop state directory for this work|Mode, slug, existing state noted|
-|1|Gather facts from the repository, not from recall: branch, worktree, `HEAD`, dirty set, changed files, last verification, open processes; `scripts/handoff-memo.sh fingerprint --repo <worktree being written>` prints the two header lines|Fact list with the command that produced each|
+|1|Register `.hyper/` in the repository's ignore file before anything else, because that edit is part of the dirty set the fingerprint records; then gather facts from the repository, not from recall: branch, worktree, `HEAD`, dirty set, changed files, last verification, open processes; `scripts/handoff-memo.sh fingerprint --repo <worktree being written>` prints the two header lines|Fact list with the command that produced each|
 |2|Copy the user's original request and every later correction verbatim; write the other sections from the template, tagging each gated `Next` step `confirm-first`|Draft memo|
 |3|Resolve every pointer and strip anything outside the budget or the secret rule; `scripts/handoff-memo.sh check --memo <path>` confirms the header and sections|Memo with only resolving pointers|
 |4|Run the cold-read check with a reader that has no conversation|Pass, or the failed questions|

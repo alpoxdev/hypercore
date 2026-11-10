@@ -7,6 +7,7 @@
 # write target for a tool.
 set -euo pipefail
 
+# shellcheck disable=SC2016  # the backticks in the usage text are literal
 HM_USAGE='Usage: bash handoff-memo.sh fingerprint [--repo <dir>]
        bash handoff-memo.sh check --memo <path>
        bash handoff-memo.sh compare --memo <path> [--repo <dir>]
@@ -15,6 +16,7 @@ HM_USAGE='Usage: bash handoff-memo.sh fingerprint [--repo <dir>]
        bash handoff-memo.sh --help
 
 fingerprint  print two lines. `HEAD: <short sha> (<branch>)`, or
+             `HEAD: none (no commits)` in a repository without a commit, or
              `HEAD: none (not a git repository)`. `Dirty: clean`, or
              `Dirty: <n> file(s): <porcelain paths>` up to 20 entries, or
              `Dirty: <n> files, digest <sha256 of git status --porcelain>` past
@@ -114,6 +116,12 @@ hm_fingerprint() { # <dir>
     printf 'Dirty: none (not a git repository)\n'
     return 0
   fi
+  # Take the status before printing anything: a bare repository fails here, and
+  # a fingerprint that printed its first line before the failure would read as a
+  # partial verdict on stdout. --no-optional-locks keeps the command from
+  # refreshing .git/index, so a memo written after it still compares clean.
+  status=$(git --no-optional-locks -C "$dir" status --porcelain 2>/dev/null) ||
+    hm_input_fail "git status failed in $dir"
   sha=$(git -C "$dir" rev-parse --verify --short HEAD 2>/dev/null || true)
   branch=$(git -C "$dir" symbolic-ref --quiet --short HEAD 2>/dev/null || true)
   if [ -z "$sha" ]; then
@@ -123,8 +131,6 @@ hm_fingerprint() { # <dir>
   else
     printf 'HEAD: %s (detached)\n' "$sha"
   fi
-  status=$(git -C "$dir" status --porcelain 2>/dev/null) ||
-    hm_input_fail "git status failed in $dir"
   if [ -z "$status" ]; then
     printf 'Dirty: clean\n'
     return 0
@@ -428,7 +434,7 @@ hm_self_test() {
   printf '21\n' >"$repo/dirty-21.txt"
   rc=0
   out=$(bash "$self" fingerprint --repo "$repo" 2>"$tmp/err") || rc=$?
-  digest=$(git -C "$repo" status --porcelain | hm_sha256_stream)
+  digest=$(git --no-optional-locks -C "$repo" status --porcelain | hm_sha256_stream)
   hm_self_expect fingerprint-past-twenty-dirty "Dirty: 21 files, digest $digest" \
     "${out#*$'\n'}"
   rm -f "$repo"/dirty-*.txt

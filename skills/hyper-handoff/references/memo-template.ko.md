@@ -19,7 +19,7 @@
 - Status: open
 - Written: <YYYY-MM-DD HH:MM timezone>
 - Written by: <agent> on <machine>
-- HEAD: <sha> (<branch>) | none (not a git repository)
+- HEAD: <sha> (<branch>) | none (no commits) | none (not a git repository)
 - Dirty: <clean | N files: path, path, ... | N files, digest <sha256 of git status --porcelain>>
 - Resumed: <YYYY-MM-DD HH:MM timezone by which session, or none>
 - Check: <pass | unverified-standalone: <question numbers> | self: pass | self: fail: <question numbers> | skipped by user>

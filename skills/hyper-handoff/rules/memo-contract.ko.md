@@ -15,7 +15,7 @@
 ## 2. Where It Lives
 
 - 경로: `.hyper/handoff/<slug>/memo.md`. slug는 사용자의 말이거나 브랜치 이름에서 따는 소문자 하이픈 이름이다.
-- `.hyper/`는 git 무시 대상이어야 한다. `git check-ignore -q --no-index .hyper/`로 확인하고, 무시되지 않았으면 저장소의 무시 파일에 `.hyper/`를 이번 쓰기의 일부로 넣고 보고에 그렇게 적는다.
+- `.hyper/`는 git 무시 대상이어야 한다. `git check-ignore -q --no-index .hyper/`로 확인하고, 무시되지 않았으면 저장소의 무시 파일에 `.hyper/`를 이번 쓰기의 일부로 넣고 보고에 그렇게 적는다. 지문을 뜨기 전에 등록한다. 무시 파일 편집 자체가 미커밋 항목이므로, 먼저 뜬 지문은 메모를 쓰는 순간 이미 낡는다.
 - 그 경로가 보통 무시 대상이라 푸시나 클론이 메모를 실어 나르지 않는다. 트리거가 다른 머신으로의 이동이면 보고가 그 사실과 메모의 절대 경로를 알리고, 옮기는 두 방법을 이름으로 밝히되 실행하지 않는다. `.hyper/handoff/<slug>/` 디렉터리를 딸린 파일째 다른 머신의 같은 경로로 복사하거나, 메모 본문을 새 세션에 붙여 넣어 그 세션이 이어받기 전에 같은 경로에 저장하게 한다. 메모를 커밋하는 것은 사용자의 몫이며 기본값이 아니다. 메모는 비밀 값을 담지 않고 값이 있는 곳만 가리킨다.
 - git 저장소 밖에서는 같은 상대 경로를 작업 디렉터리에 쓴다.
 - slug 하나가 작업 한 줄이다. slug마다 메모 파일 하나를 두고 제자리에서 개정하며, 다른 작업은 자기 slug를 갖는다. 이전 메모의 이력은 남기지 않는다. 지금 상태로 충분하다는 것이 요점이다. 메모가 가리키는 데이터 파일(4절)은 옆에 둘 수 있다.
@@ -27,7 +27,7 @@
 
 | Section | Holds | Rule |
 |---|---|---|
-| Header lines | `Format`(`hyper-handoff/1`, 이 줄이 없으면 `legacy`), `Slug`, `Revision`, `Status`(`open` 또는 `closed (<date>: <reason>)`), `Written`(날짜와 시간), `Written by`(에이전트와 머신), `HEAD:`(`<sha> (<branch>)`, 또는 `none (not a git repository)`), `Dirty:`(`clean`, 또는 개수와 `git status --porcelain` 경로. 20개를 넘으면 개수와 그 출력의 짧은 다이제스트), `Resumed:`(세션이 이어받은 시각, 또는 `none`), `Check` | 지문은 쓰는 시점에 `Where`가 밝힌 워크트리에서 잰다. 검사 줄은 `Check:` 한 철자로 쓰고 `pass`, `unverified-standalone: <question numbers>`, `self: pass`, `self: fail: <question numbers>`, `skipped by user` 중 하나다 |
+| Header lines | `Format`(`hyper-handoff/1`, 이 줄이 없으면 `legacy`), `Slug`, `Revision`, `Status`(`open` 또는 `closed (<date>: <reason>)`), `Written`(날짜와 시간), `Written by`(에이전트와 머신), `HEAD:`(`<sha> (<branch>)`, `none (no commits)`, 또는 `none (not a git repository)`), `Dirty:`(`clean`, 또는 개수와 `git status --porcelain` 경로. 20개를 넘으면 개수와 그 출력의 짧은 다이제스트), `Resumed:`(세션이 이어받은 시각, 또는 `none`), `Check` | 지문은 쓰는 시점에 `Where`가 밝힌 워크트리에서 잰다. 검사 줄은 `Check:` 한 철자로 쓰고 `pass`, `unverified-standalone: <question numbers>`, `self: pass`, `self: fail: <question numbers>`, `skipped by user` 중 하나다 |
 | `## Original request` | 사용자의 요청을 그대로 인용 | 바꾸지 않음. 줄이지 않음. 번역하지 않음 |
 | `## Corrections` | 요청을 바꾸거나 좁히는 이후 사용자 지시, 그리고 일하는 방식에 대한 상시 선호와 방향 지시(무엇을 쓸지, 무엇을 건드리지 않을지, 무엇을 보고할지). 그대로 인용하고 날짜를 붙임 | 없으면 `none` |
 | `## Now` | 지금 무엇을 왜 하는지. 최대 다섯 문장 | 작업이 향하는 하나의 결과를 지목함 |

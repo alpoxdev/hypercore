@@ -38,6 +38,12 @@
 # dropped stream cannot be told apart from a lost answer. A pass therefore
 # always ends on exit 0 with an `answer.md` created during that same attempt.
 #
+# Every memo command behind a verdict runs the worktree copy of
+# `scripts/handoff-memo.sh`, never the copy the agent could edit. A scenario
+# fails with reason `installed script modified` when the project copy under
+# `.agents/skills/hyper-handoff/` differs from the worktree copy (`cmp`), so a
+# rewritten script cannot buy a pass.
+#
 # Scenarios (each judged only from files, never from model prose):
 #   write      The agent writes `.hyper/handoff/<slug>/memo.md` from the project
 #              skill copy and must include the scenario token. Pass when the
@@ -82,8 +88,11 @@
 # Output: `<out>/result.json` with `agent`, `agent_version`, `date`,
 # `scenarios[]` (`name`, `status`, `reason`, `attempts`, `first_attempt_reason`)
 # and `summary` (`pass`, `fail`, `skip`). Scenario logs, answer files, memos and
-# the cross snapshot live beside it. Nothing is written outside the temp
-# directory and `--out`.
+# the cross snapshot live beside it. This script writes only the temp directory
+# and `--out`; the run still uses the npx cache under `~/.npm` and the agent's
+# own user configuration (omp reads `~/.omp/agent`, horon gets a throwaway
+# `HORON_HOME`), so a machine-local cache or config can change what is seen. No
+# project file outside the temporary repository and `--out` is touched.
 #
 # Exit codes: 0 every scenario passed or skipped; 1 at least one scenario failed;
 # 2 usage, environment, or harness error.
@@ -322,23 +331,49 @@ smoke_exit_reason() {
   printf 'agent exit %s' "$rc"
 }
 
-# smoke_memo_script <repo> prints the installed copy of the memo script.
+# smoke_memo_script <repo> prints the installed copy of the memo script. It is
+# only compared against the worktree copy, never run for a verdict.
 smoke_memo_script() {
   printf '%s/%s\n' "$1/.agents/skills/hyper-handoff" "$MEMO_SCRIPT"
 }
 
-# smoke_check_memo <repo> <memo> <logfile> runs `check` from the installed copy.
+# smoke_memo_source prints the worktree copy of the memo script. Every verdict
+# runs this one, so a script the agent rewrote cannot change a verdict.
+smoke_memo_source() {
+  printf '%s/%s\n' "$SKILL_SRC" "$MEMO_SCRIPT"
+}
+
+# smoke_guard_memo_script <repo> sets the scenario verdict and returns 1 when the
+# project copy of the memo script is missing or differs from the worktree copy.
+smoke_guard_memo_script() {
+  local repo=$1 installed source
+  installed=$(smoke_memo_script "$repo")
+  source=$(smoke_memo_source)
+  if [ ! -f "$installed" ]; then
+    SC_STATUS=fail
+    SC_REASON='installed script missing'
+    return 1
+  fi
+  if ! cmp -s "$installed" "$source"; then
+    SC_STATUS=fail
+    SC_REASON='installed script modified'
+    return 1
+  fi
+  return 0
+}
+
+# smoke_check_memo <memo> <logfile> runs `check` from the worktree copy.
 smoke_check_memo() {
-  local repo=$1 memo=$2 logfile=$3 script
-  script=$(smoke_memo_script "$repo")
+  local memo=$1 logfile=$2 script
+  script=$(smoke_memo_source)
   [ -f "$script" ] || return 2
   bash "$script" check --memo "$memo" >"$logfile" 2>&1
 }
 
-# smoke_compare_memo <repo> <memo> <logfile> runs `compare` from the installed copy.
+# smoke_compare_memo <repo> <memo> <logfile> runs `compare` from the worktree copy.
 smoke_compare_memo() {
   local repo=$1 memo=$2 logfile=$3 script
-  script=$(smoke_memo_script "$repo")
+  script=$(smoke_memo_source)
   [ -f "$script" ] || return 2
   bash "$script" compare --memo "$memo" --repo "$repo" >"$logfile" 2>&1
 }
@@ -346,7 +381,7 @@ smoke_compare_memo() {
 # smoke_open_memo <repo> prints the path of the first open memo, or nothing.
 smoke_open_memo() {
   local repo=$1 script slug
-  script=$(smoke_memo_script "$repo")
+  script=$(smoke_memo_source)
   [ -f "$script" ] || return 1
   slug=$(bash "$script" list --repo "$repo" 2>/dev/null | sed -n '1p')
   [ -n "$slug" ] || return 1
@@ -361,7 +396,7 @@ smoke_write_memo() {
   memo=$dir/memo.md
   mkdir -p "$dir" || return 1
   : >"$memo" || return 1
-  fps=$(bash "$(smoke_memo_script "$repo")" fingerprint --repo "$repo" 2>/dev/null) || return 1
+  fps=$(bash "$(smoke_memo_source)" fingerprint --repo "$repo" 2>/dev/null) || return 1
   head=${fps%%$'\n'*}
   dirty=${fps#*$'\n'}
   branch=${head#*(}
@@ -472,6 +507,7 @@ Before you stop, run bash .agents/skills/hyper-handoff/scripts/handoff-memo.sh c
     SC_REASON=$(smoke_exit_reason "$rc" "$logfile" "$repo")
     return
   fi
+  smoke_guard_memo_script "$repo" || return
   if [ -z "$memo" ]; then
     printf 'no open memo found\n' >>"$OUT/write-judge.txt"
     SC_STATUS=fail
@@ -482,7 +518,7 @@ Before you stop, run bash .agents/skills/hyper-handoff/scripts/handoff-memo.sh c
   printf '%s\n' "$token" >"$OUT/write-token.txt"
 
   checklog=$OUT/write-check.log
-  if ! smoke_check_memo "$repo" "$memo" "$checklog"; then
+  if ! smoke_check_memo "$memo" "$checklog"; then
     printf 'check failed\n' >>"$OUT/write-judge.txt"
     SC_STATUS=fail
     SC_REASON='handoff-memo.sh check failed on the written memo'
@@ -533,6 +569,7 @@ scenario_resume() {
     SC_REASON=$(smoke_exit_reason "$rc" "$logfile" "$repo")
     return
   fi
+  smoke_guard_memo_script "$repo" || return
   if ! smoke_fresh "$repo/answer.md"; then
     printf 'no answer.md written by this attempt\n' >>"$OUT/resume-judge.txt"
     SC_STATUS=fail
@@ -594,6 +631,7 @@ scenario_drift() {
     SC_REASON=$(smoke_exit_reason "$rc" "$logfile" "$repo")
     return
   fi
+  smoke_guard_memo_script "$repo" || return
   if ! smoke_fresh "$answer"; then
     printf 'no answer.md written by this attempt\n' >>"$OUT/drift-judge.txt"
     SC_STATUS=fail
@@ -653,6 +691,7 @@ scenario_authority() {
     SC_REASON=$(smoke_exit_reason "$rc" "$logfile" "$repo")
     return
   fi
+  smoke_guard_memo_script "$repo" || return
   if [ ! -f "$repo/answer.md" ] || ! smoke_fresh "$repo/answer.md"; then
     printf 'no answer.md written by this attempt\n' >>"$OUT/authority-judge.txt"
     SC_STATUS=fail
@@ -703,6 +742,7 @@ scenario_install() {
     SC_REASON=$(smoke_exit_reason "$rc" "$logfile" "$repo")
     return
   fi
+  smoke_guard_memo_script "$repo" || return
   if ! smoke_fresh "$repo/answer.md"; then
     printf 'no answer.md written by this attempt\n' >>"$OUT/install-judge.txt"
     SC_STATUS=fail
@@ -765,7 +805,7 @@ scenario_cross() {
   cp "$memo" "$OUT/cross-memo.md" 2>/dev/null || true
 
   checklog=$OUT/cross-check.log
-  if ! smoke_check_memo "$repo" "$memo" "$checklog"; then
+  if ! smoke_check_memo "$memo" "$checklog"; then
     SC_STATUS=fail
     SC_REASON='handoff-memo.sh check failed on the other agent'"'"'s memo'
     return
@@ -790,6 +830,7 @@ scenario_cross() {
     SC_REASON=$(smoke_exit_reason "$rc" "$logfile" "$repo")
     return
   fi
+  smoke_guard_memo_script "$repo" || return
   if ! smoke_fresh "$repo/answer.md"; then
     printf 'no answer.md written by this attempt\n' >>"$OUT/cross-judge.txt"
     SC_STATUS=fail
