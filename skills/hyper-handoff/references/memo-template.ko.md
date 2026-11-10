@@ -13,12 +13,13 @@
 ```markdown
 # Handoff: <slug>
 
+- Format: hyper-handoff/1
 - Slug: <slug>
 - Revision: <integer, starts at 1>
 - Status: open
 - Written: <YYYY-MM-DD HH:MM timezone>
 - Written by: <agent> on <machine>
-- HEAD: <sha> (<branch>) | none (not a git repository)
+- HEAD: <sha> (<branch>) | none (no commits) | none (not a git repository)
 - Dirty: <clean | N files: path, path, ... | N files, digest <sha256 of git status --porcelain>>
 - Resumed: <YYYY-MM-DD HH:MM timezone by which session, or none>
 - Check: <pass | unverified-standalone: <question numbers> | self: pass | self: fail: <question numbers> | skipped by user>
@@ -79,11 +80,12 @@
 ```markdown
 # Handoff: login-redirect
 
+- Format: hyper-handoff/1
 - Slug: login-redirect
 - Revision: 2
 - Status: open
 - Written: 2026-11-09 16:40 KST
-- Written by: omp on alpoxs-macbook
+- Written by: an agent on dev-laptop
 - HEAD: 4c1e9f2 (fix/login-redirect)
 - Dirty: 1 file: src/auth/redirect.ts
 - Resumed: none
@@ -120,11 +122,11 @@
 
 ## Where
 
-- Repository: /Users/alpox/dev/acme/web
-- Branch / worktree: fix/login-redirect / /Users/alpox/dev/acme/web/.hyper/worktree/login-redirect
-- Machine: alpoxs-macbook
+- Repository: /srv/work/acme/web
+- Branch / worktree: fix/login-redirect / /srv/work/acme/web/.hyper/worktree/login-redirect
+- Machine: dev-laptop
 - State owned by other stages: none
-- Session record: /Users/alpox/.omp/agent/sessions/-dev-acme-web/2026-11-09T05-58-11.jsonl
+- Session record: 2026-11-09T05-58-11 in the agent's session store (external)
 - Outside the repository: `src/auth/redirect.ts` 수정은 커밋하지 않아 이 워크트리에만 있다. 다른 머신으로 옮기려면 먼저 커밋하고 푸시해야 한다.
 - External: none
 
@@ -148,6 +150,7 @@
 - 대화가 없는 읽는 쪽도 이 파일만으로 여섯 질문에 모두 답할 수 있다.
 - 세션을 되짚어 이야기하는 줄이 없다. 모든 줄은 남은 단계에 필요해서 있다.
 - 커밋하지 않은 수정을 이 워크트리에만 있는 상태로 적어, 다른 머신으로 옮길 때 모르는 사이에 잃지 않게 한다.
+- `Format`은 헤더의 첫 줄이다. 읽는 쪽은 이 줄로 절 배치를 고르고, 이 줄이 없는 메모는 `legacy`로 읽되 거부하지 않는다.
 - `.hyper/handoff/`는 보통 git 무시 대상이라 메모 자체는 푸시를 따라가지 않는다. 옮기려면 이 디렉터리를 복사하거나 메모 본문을 새 세션에 붙여 넣고, 커밋 여부는 사용자가 정한다.
 
 ## Sources
