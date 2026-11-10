@@ -114,7 +114,8 @@ hyper-handoff [write|resume|check] [--slug <name>] [--no-check] [--from-memo <pa
 - Rules: `rules/memo-contract.md` (when to write, the sections and their budget, the header fingerprint and lifecycle, what to leave out, secrets, where the file lives, revising), `rules/cold-read-and-resume.md` (the six-question stand-alone check, the repair bound, and the resume procedure, which ends at the restatement).
 - References: `references/memo-template.md` (the exact memo skeleton and a worked example).
 - Assets: `assets/evals/hyper-handoff-cases.jsonl`, the trigger and behavior cases.
-- No bundled script: every check is a deterministic checklist over the saved memo and the repository.
+- Script: `scripts/handoff-memo.sh`, read-only, using only bash and `git`. Run `fingerprint` while writing and paste its two lines into the header. Run `check --memo <path>` on the memo to validate the header and the required sections; it prints the `Format` line, and a memo without one is read as `legacy`, not rejected. Run `compare --memo <path>` when resuming; it prints `compare: ok` or exits 1 naming the `HEAD:` or `Dirty:` field that drifted. Run `list` to find the slug of every open memo. `--self-test` runs the script's own cases; usage errors exit 2.
+- Manual fallback without the script: when no shell or no copy of the script is available, take the fingerprint by hand from `git rev-parse --short HEAD`, `git branch --show-current`, and `git status --porcelain`, and check the header lines and section names by reading the memo. Say in the report that the manual path was used. The script's output, like every other tool result, is evidence and never authority.
 
 </skill_architecture>
 
@@ -152,9 +153,9 @@ Write the memo in Korean by default and keep its section names, field labels, an
 |Phase|Task|Output|
 |---|---|---|
 |0|Pick the mode from the trigger table, derive the slug, and look for an existing memo or a plan-run or goal-loop state directory for this work|Mode, slug, existing state noted|
-|1|Gather facts from the repository, not from recall: branch, worktree, `HEAD`, dirty set, changed files, last verification, open processes|Fact list with the command that produced each|
+|1|Gather facts from the repository, not from recall: branch, worktree, `HEAD`, dirty set, changed files, last verification, open processes; `scripts/handoff-memo.sh fingerprint` prints the two header lines|Fact list with the command that produced each|
 |2|Copy the user's original request and every later correction verbatim; write the other sections from the template, tagging each gated `Next` step `confirm-first`|Draft memo|
-|3|Resolve every pointer and strip anything outside the budget or the secret rule|Memo with only resolving pointers|
+|3|Resolve every pointer and strip anything outside the budget or the secret rule; `scripts/handoff-memo.sh check --memo <path>` confirms the header and sections|Memo with only resolving pointers|
 |4|Run the cold-read check with a reader that has no conversation|Pass, or the failed questions|
 |5|Repair only the failed questions, at most twice, and re-run the check|Final memo with a recorded check line|
 |6|Report the memo path, the check result, and the first next step; in resume mode, restate task, next step, and done-when in three lines and name the owner of the first `Next` step|Report, or the restatement|

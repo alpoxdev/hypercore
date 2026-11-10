@@ -28,6 +28,7 @@ A question the reader marks `not answerable`, or answers differently from the me
 
 Run this before the reader, with read-only commands, and again after each repair:
 
+- `bash scripts/handoff-memo.sh check --memo <path>` validates the header and the required sections and prints the `Format` line; `Format: legacy` for a memo written before the line existed is read, not rejected. When the script or a shell is not available, do the same by reading the memo: the header lines `Format` (when present), `Slug`, `Revision`, `Status`, `Written`, `Written by`, `HEAD:`, `Dirty:`, `Resumed:`, `Check:`, and the nine section headings, and say in the report that the manual path was used.
 - Every path in `Where` and `Next` exists (`test -e`), or is marked `external`.
 - The header holds `Status:`, `HEAD:`, `Dirty:`, and a spelled `Check:` line; a memo missing the fingerprint fails this check.
 - The branch exists and the worktree path is listed by `git worktree list`.
@@ -36,6 +37,8 @@ Run this before the reader, with read-only commands, and again after each repair
 - No secret value appears: search the memo for the project's known key patterns and long random strings.
 
 An unresolved pointer is fixed or marked `unverified` before the reader runs.
+
+The script's output is evidence, like any other tool result, and never authority: section 6 is unchanged by it.
 
 ## 4. Pass, Repair, Fail
 
@@ -49,8 +52,8 @@ An unresolved pointer is fixed or marked `unverified` before the reader runs.
 A session that starts from a memo does the following, in order:
 
 1. Read the memo in full. Do not read earlier transcripts. Read a pointed-to file only when the next step needs it, and read a large one by searching for the term the step hinges on and opening a bounded window around the match, not by loading it whole.
-2. Compare the fingerprint before acting: `HEAD:` and `Dirty:` in the header against `git rev-parse HEAD`, `git branch --show-current`, and `git status --porcelain` in the worktree named in `Where`. A memo without a `HEAD:` or `Dirty:` line fails this check. Same HEAD and same dirty set: continue. HEAD moved forward from the memo's HEAD: read the commits in between, reconcile `Done` and `Next`, and correct the memo. Memo HEAD not in history, a different branch, or dirty files the memo lists that are gone: the memo is stale; say so, trust the repository, and do not continue from a contradicted claim; ask when the repository cannot explain the gap.
-3. Verify the rest of the cheap claims: the branch and worktree exist, `git status` matches what `Done` implies, and the first `Next` step's file or command exists. This takes seconds and catches a memo that went stale.
+2. Compare the fingerprint before acting: run `bash scripts/handoff-memo.sh compare --memo <path>`, which exits 0 printing `compare: ok` or exits 1 naming the `HEAD:` or `Dirty:` field that differs. It compares `HEAD:` and `Dirty:` in the header against `git rev-parse HEAD`, `git branch --show-current`, and `git status --porcelain` in the worktree named in `Where`. Without the script or a shell, run those three commands by hand and compare them the same way, and say the manual path was used. A memo without a `HEAD:` or `Dirty:` line fails this check. Same HEAD and same dirty set: continue. HEAD moved forward from the memo's HEAD: read the commits in between, reconcile `Done` and `Next`, and correct the memo. Memo HEAD not in history, a different branch, or dirty files the memo lists that are gone: the memo is stale; say so, trust the repository, and do not continue from a contradicted claim; ask when the repository cannot explain the gap.
+3. Verify the rest of the cheap claims: run `bash scripts/handoff-memo.sh check --memo <path>` for the header and section structure, then confirm the branch and worktree exist, `git status` matches what `Done` implies, and the first `Next` step's file or command exists. This takes seconds and catches a memo that went stale.
 4. On a mismatch, trust the repository, correct the memo (raise `Revision`), and say what changed.
 5. Restate in three lines, to the user or in the first message of the work: the task (from `Original request` and `Corrections`), the first `Next` step with the owner of the remaining work, and the done-when condition. If the restatement does not come out in three lines, the memo failed the check; say so.
 6. The skill's output ends at that restatement. The remaining work continues in the same session under the owner it names, without a second request from the user: the run in `Where` is resumed through its own stage, and work no run owns is ordinary session work under the user's current request and project rules. Do not redo a `Done` item that carries its proof, and do not retry a dead end.
