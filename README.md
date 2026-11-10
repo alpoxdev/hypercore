@@ -19,6 +19,8 @@ Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 �
 
 Hypercore의 표준 설치·관리 경로는 [Vercel Skills CLI](https://github.com/vercel-labs/skills)의 원격 소스 규약입니다. Claude Code, Codex, Cursor 등 런타임 선택은 `npx skills`의 `--agent` 옵션으로 처리합니다. Claude Code만 쓴다면 저장소 자체가 마켓플레이스이므로 `/plugin` 설치도 가능합니다([Claude Code 플러그인](#claude-code-플러그인-마켓플레이스)). 저장소 루트의 `.codex-plugin/plugin.json`은 [awesome-codex-plugins](https://github.com/hashgraph-online/awesome-codex-plugins) 목록 등록용 Codex 플러그인 설명서이고, `.claude-plugin/`은 Claude Code 플러그인·마켓플레이스 설명서, `.cursor-plugin/plugin.json`은 Cursor 플러그인 설명서입니다. 세 설명서 모두 같은 `skills/`를 가리키며 다른 mirror adapter는 제공하지 않습니다.
 
+omp, Horon, jcode는 `npx skills`의 agent 대상 표에 없어 `-a omp`처럼 이름을 주면 `Invalid agents`로 실패합니다. 이 셋은 같은 프로젝트 `.agents/skills`에 쓰는 `-a codex`로 설치하고, 전역 설치(`-g`) 대신 프로젝트 단위로 두는 편이 안전합니다.
+
 | 런타임 | 설치 예시 | 비고 |
 |---|---|---|
 | Claude Code | `npx skills add alpoxdev/hypercore -a claude-code -g` | `-g` 생략 시 프로젝트 설치. 스킬 이름은 `/hyper-git` |
@@ -26,6 +28,10 @@ Hypercore의 표준 설치·관리 경로는 [Vercel Skills CLI](https://github.
 | Codex CLI | `npx skills add alpoxdev/hypercore -a codex -g` | project/global 모두 `.agents/skills` canonical 경로 사용 |
 | Cursor | `npx skills add alpoxdev/hypercore -a cursor -g` | `npx skills` 표준 대상 |
 | Cursor (플러그인) | 팀 marketplace: Dashboard → Plugins & MCPs → Add Marketplace → Import from Repo에 `https://github.com/alpoxdev/hypercore` 입력. 로컬 시험: 저장소를 `~/.cursor/plugins/local/hypercore`에 복사한 뒤 Developer: Reload Window | 위와 택일. 팀 marketplace는 Teams·Enterprise 요금제 전용. 로컬 폴더는 심링크가 아니라 복사본이어야 함(바깥을 가리키는 심링크는 건너뜀). Cursor Marketplace 공개 등록은 별도 심사 |
+| omp | `npx skills add alpoxdev/hypercore -a codex` | `npx skills` 대상 표에 없어 `-a omp`는 `Invalid agents: omp`로 실패합니다. 프로젝트 `.agents/skills`에 설치하면 omp가 읽습니다(2026-11-10 omp 1대에서 프로젝트 사본 로딩 확인) |
+| Horon | `npx skills add alpoxdev/hypercore -a codex` | omp와 같은 이유로 `-a codex`를 씁니다. 프로젝트 `.agents/skills` 사본을 Horon이 읽는 것을 확인했습니다(2026-11-10) |
+| pi | `npx skills add alpoxdev/hypercore -a pi` | `npx skills` 표준 대상. 프로젝트 `.agents/skills`에 설치 |
+| jcode | `npx skills add alpoxdev/hypercore -a codex` | omp·Horon과 같은 프로젝트 `.agents/skills` 경로. jcode의 로딩은 이 기기에 없어 미확인(`not_run`) |
 | 기타 | `npx skills add alpoxdev/hypercore -g` | CLI가 지원하는 agent에 한함 |
 
 스킬별 실행 호환은 아래 [스킬 카탈로그](#스킬-카탈로그)의 **호환** 컬럼 또는 각 `SKILL.md`의 `compatibility` 필드에서 확인합니다.
