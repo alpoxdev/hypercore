@@ -33,6 +33,7 @@
 | `hyper-frontend` | 요청한 결과물이 정해진 모습 안에서 동작하는 프런트엔드 동작이나 레이아웃임: 컴포넌트·페이지·폼 구현, 레이아웃·넘침·반응형·상태·애니메이션 결함 수정, 스크린샷·목업·라이브 페이지에 맞춘 구현, 실제 브라우저에서의 기존 UI 점검. "레이아웃 깨져", "반응형", "스크롤이 이상해", "상태마다 흔들려", "스크린샷대로 똑같이", "브라우저에서 확인", "fix the overflow", "match this mockup" 같은 말 | 요청 문구, 그리고 읽은 대상 UI 경로와 프레임워크 매니페스트(`react`, `vue`, `svelte`, `astro`가 있는 `package.json` 등) |
 | `hyper-feedback` | 입력이 기존 동작에 대해 제품 언어로 쓴 변경 요청입니다. 사용자, 고객사, 기획자가 직접 보내거나 전달된 피드백, 불만, 티켓, 회의 메모, 기획 수정, 새 문구이고, 사용자가 그것을 파악해 반영하길 원합니다("알아서 파악해서 고쳐", "피드백 반영해", "이 메모대로 반영") | 요청 문구와 인용한 피드백 원문, 그리고 작성자나 전달 경로 |
 | `hyper-debug` | 입력이 배포가 아닌 곳에서 난 실행 실패이고 원인 설명이나 수정을 원합니다. 스택 트레이스, 실패하거나 가끔 실패하는 테스트, 크래시, 잘못된 출력이고 "왜 실패하는지", "에러 원인", "flaky test", "why does this fail" 같은 말이 있습니다 | 요청 문구와 읽은 실패 명령, 테스트 이름, 트레이스 발췌 |
+| `hyper-cleanup` | 요청한 결과물이 이미 동작하는 코드의 동작 보존 정리입니다. 관찰 가능한 동작과 공개 표면을 그대로 두고 코드, 주석, 테스트를 제거·단순화·중복 제거·합칩니다. "정리해줘", "군더더기 지워줘", "clean up", "remove dead code", "deduplicate" 같은 말이 있습니다 | 요청 문구와, 이름을 댔을 때 읽은 파일 집합 |
 | `hyper-data` | 요청한 결과물이 데이터셋(CSV, Parquet, JSON 파일, 스프레드시트 내보내기, 데이터베이스 내보내기)을 계산해 얻은 답입니다. 건수, 합계, 추이, 비교, 또는 사용자가 요청한 차트이고 "이 CSV에서", "데이터 분석해서", "집계해줘", "how many rows" 같은 말이 있습니다 | 요청 문구와 읽은 데이터셋 경로 |
 | `hyper-review` | 요청한 결과물이 이미 있는 변경에 대한 판정이고 수정 요청은 없습니다. 지정한 diff, 커밋 범위, 브랜치, 풀 리퀘스트, 작업 트리이며 "리뷰만", "판정만", "고치지는 마", "review this diff", "review the PR", "can this merge" 같은 말이 붙습니다 | 요청 문구와 읽은 diff, 브랜치, PR 번호 또는 작업 트리 상태 |
 | `hyper-handoff` | 요청한 결과물이 이어받기 메모, 그 메모의 확인, 또는 그 메모로 시작하는 세션입니다. 컨텍스트가 거의 찼거나, 압축이나 세션·에이전트·머신 전환이 곧 일어나거나, 핸드오프·이어받기 노트를 요청했거나, 메모로 이어서 하라는 요청이고 "핸드오프 써줘", "write a handoff" 같은 말이 있습니다. 이어받기는 지목한 메모 경로나, 현재 브랜치·워크트리와 맞는 `.hyper/handoff/` 아래 열린 메모나, 이어갈 열린 실행이 있어야 합니다. 셋 다 없는 "이어서 해줘"는 이 단계의 트리거가 아닙니다 | 요청 문구와, 지목한 메모 경로 |
@@ -52,7 +53,7 @@
 고른 단계는 항상 이 순서로 실행합니다. 고르지 않은 단계는 건너뜁니다.
 
 ```text
-hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-google-tagmanager -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-decision -> hyper-design -> hyper-frontend -> hyper-feedback -> hyper-debug -> hyper-review -> (hyper-plan [-> hyper-execute] | hyper-debate [-> hyper-execute] | hyper-mass | hyper-loop | hyper-execute | hyper-data | hyper-handoff (쓰기 | 확인) | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git] [-> hyper-deploy]
+hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-google-tagmanager -> hyper-architecture -> hyper-database -> hyper-mcp -> hyper-decision -> hyper-design -> hyper-frontend -> hyper-feedback -> hyper-debug -> hyper-review -> hyper-cleanup -> (hyper-plan [-> hyper-execute] | hyper-debate [-> hyper-execute] | hyper-mass | hyper-loop | hyper-execute | hyper-data | hyper-handoff (쓰기 | 확인) | hyper-skill | hyper-documentation | hyper-imagegen) [-> hyper-git] [-> hyper-deploy]
 이어받기 재진입, 체인 자리 없음: hyper-handoff (이어받기) -> 열린 실행의 끝나지 않은 첫 단계
 ```
 
@@ -73,7 +74,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-go
 - `hyper-debate`는 사용자가 대립형·다관점·악마의 대변인 계획을 직접 밝혔을 때 `hyper-plan`을 대신하고, 계획 단계처럼 스스로 `hyper-execute`로 이어집니다. 둘을 한 체인에 넣지 않습니다. 토론이 계획을 쓰므로 두 단계를 함께 적은 체인은 계획 단계를 뺀 토론 체인으로 봅니다. 사용자 문장에 대립형 선택이 없으면 `hyper-plan`으로 가고, 문제가 어렵다는 이유만으로 토론이 기본이 되지 않습니다.
 - `hyper-issue`는 다른 상류 단계처럼 꼬리에 쓸 근거를 만듭니다. 이슈를 등록하고 레인 명세를 쓰며, `hyper-plan`이 명세의 레인 하나를 웨이브 안의 병렬 레인 하나로 바꿉니다. 등록 단어나 이슈 번호가 있으면 기본으로 `hyper-plan`까지 이어지므로, 레인을 실행하고 전달한 뒤에야 실행이 끝납니다. 기록만 원하는 단어("등록만", "이슈만", "작업은 하지 마", "manifest only")가 있을 때만 `hyper-issue`가 마지막 단계입니다.
 - `hyper-issue`가 직접 넘긴 요청(`.hyper/issues/<slug>/batch.md`를 지목하고 이슈 단계가 끝났다고 밝힘)은 `hyper-issue`를 다시 실행하지 않습니다. 1단계를 명세 경로와 함께 `done`으로 기록하고 `hyper-plan`에서 시작합니다.
-- 그 밖의 경우 꼬리 단계는 정확히 하나입니다. `hyper-plan`(스스로 `hyper-execute`로 이어지며, 대립형 선택을 밝힌 요청에서는 `hyper-debate`가 이를 대신함), `hyper-mass`, 기준이 있는 여러 의존 목표에 대한 `hyper-loop`, 데이터셋을 계산해 얻는 답에 대한 `hyper-data`, 기존 계획에 대한 `hyper-execute` 단독, 스킬 폴더에 대한 `hyper-skill`, 문서나 프롬프트 산출물에 대한 `hyper-documentation`, 이어받기 메모에 대한 쓰기·확인 모드의 `hyper-handoff`, 이미지 한 장이나 이미지 프롬프트 하나에 대한 `hyper-imagegen` 중 하나입니다. 메모로 이어받는 일은 꼬리 단계가 아닙니다. 먼저 열린 실행으로 재진입합니다(§3).
+- 그 밖의 경우 꼬리 단계는 정확히 하나입니다. `hyper-plan`(스스로 `hyper-execute`로 이어지며, 대립형 선택을 밝힌 요청에서는 `hyper-debate`가 이를 대신함), `hyper-mass`, 기준이 있는 여러 의존 목표에 대한 `hyper-loop`, 동작 보존 정리에 대한 `hyper-cleanup`, 데이터셋을 계산해 얻는 답에 대한 `hyper-data`, 기존 계획에 대한 `hyper-execute` 단독, 스킬 폴더에 대한 `hyper-skill`, 문서나 프롬프트 산출물에 대한 `hyper-documentation`, 이어받기 메모에 대한 쓰기·확인 모드의 `hyper-handoff`, 이미지 한 장이나 이미지 프롬프트 하나에 대한 `hyper-imagegen` 중 하나입니다. 메모로 이어받는 일은 꼬리 단계가 아닙니다. 먼저 열린 실행으로 재진입합니다(§3).
 - `hyper-loop`를 고르면 꼬리 단계입니다. `.hyper/loop/<slug>/`(`brief.md`, `goals.json`, `ledger.jsonl`, `final-gate.json`)를 유지하며 의존 순서대로 목표를 실행하고, `final-gate.json`의 `status`가 `complete`일 때만 끝납니다. 목표 안에서 커밋은 할 수 있지만 푸시, 병합, PR은 하지 않으므로 전달 단어가 있으면 뒤에 `hyper-git`을 붙입니다.
 - `hyper-git`은 혼자서 꼬리 단계가 되지 않습니다. 파일은 바꾸지만 전달은 맡지 않는 꼬리 뒤에 붙습니다. `hyper-plan`, `hyper-execute`, `hyper-mass`는 스스로 전달하므로 `hyper-git`이 뒤따르지 않습니다.
 - `hyper-deploy`는 체인의 마지막 단계입니다. 앞 단계가 만든 결과를 배포하며, 뒤에 `hyper-git`이 붙지 않습니다. 사용자가 커밋·푸시·병합 전달까지 요청했으면 `hyper-git`이 `hyper-deploy` 앞에 실행합니다.
@@ -128,6 +129,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-go
 | 이미지 한 장 생성, 제공한 이미지 한 장 편집, 이미지 프롬프트 하나 작성 | `hyper-imagegen` |
 | 최신 외부 지침이나 참고 자료에 기대는 이미지("최신 프롬프트 가이드 참고해서") | `hyper-research` -> `hyper-imagegen` |
 | 리서치 보고서만 | `hyper-research` |
+| 동작하는 코드·테스트·주석의 동작 보존 정리("군더더기 정리해줘", "remove dead code and prove it") | `hyper-cleanup` 단독. 공개 API, 시그니처, 의존성, 동작을 옮기는 변경은 다른 단계입니다 |
 | 데이터셋으로 답하는 질문("이 CSV에서 월별 매출 집계해줘", "how many orders per region in this export") | `hyper-data` |
 | 이어받기 메모를 쓰거나 확인("핸드오프 써줘", "컨텍스트 거의 찼어, 새 세션에서 이어서") | 쓰기나 확인 모드의 `hyper-handoff` 단독 |
 | 메모로 이어받기("memo.md 읽고 이어서 해줘", "continue from the memo") | 먼저 이어받기 모드의 `hyper-handoff`, 그다음 열린 실행을 끝나지 않은 첫 단계부터. 전달 단계는 현재 요청에 전달 단어가 있을 때만 |
@@ -264,7 +266,7 @@ hyper-research -> hyper-issue -> hyper-seo -> hyper-google-analytics -> hyper-go
 
 | Claim | Source |
 |---|---|
-| 스물여섯 단계 스킬, 동반 스킬, 오케스트레이터 역할 | user instruction, 2026-11-06(오케스트레이터 역할); `hyper-deploy`를 더해 열다섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-feedback`을 더해 열여섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-decision`을 더해 열일곱 단계로 늘린 사용자 지시, 2026-11-08; `hyper-google-analytics`를 더해 열여덟 단계로 늘린 사용자 지시, 2026-11-08; `hyper-debug`를 더해 열아홉 단계로 늘린 사용자 지시, 2026-11-09(이슈 #22); `hyper-loop`를 더해 스무 단계로 늘린 사용자 지시, 2026-11-09(이슈 #21); `hyper-data`를 더해 스물한 단계로 늘린 사용자 지시, 2026-11-09(이슈 #25); `hyper-google-tagmanager`를 더해 스물두 단계로 늘린 사용자 지시, 2026-11-09(hyper 라우팅 갱신); `hyper-frontend`를 더해 스물세 단계로 늘린 사용자 지시, 2026-11-09(이슈 #46); `hyper-handoff`를 더해 스물네 단계로 늘린 사용자 지시, 2026-11-10; `hyper-debate`를 더해 스물다섯 단계로 늘린 사용자 지시, 2026-11-10(이슈 #26); `hyper-review`를 더해 현재의 스물여섯 단계로 늘린 사용자 지시, 2026-11-10(이슈 #23); 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
+| 스물일곱 단계 스킬, 동반 스킬, 오케스트레이터 역할 | user instruction, 2026-11-06(오케스트레이터 역할); `hyper-deploy`를 더해 열다섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-feedback`을 더해 열여섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-decision`을 더해 열일곱 단계로 늘린 사용자 지시, 2026-11-08; `hyper-google-analytics`를 더해 열여덟 단계로 늘린 사용자 지시, 2026-11-08; `hyper-debug`를 더해 열아홉 단계로 늘린 사용자 지시, 2026-11-09(이슈 #22); `hyper-loop`를 더해 스무 단계로 늘린 사용자 지시, 2026-11-09(이슈 #21); `hyper-data`를 더해 스물한 단계로 늘린 사용자 지시, 2026-11-09(이슈 #25); `hyper-google-tagmanager`를 더해 스물두 단계로 늘린 사용자 지시, 2026-11-09(hyper 라우팅 갱신); `hyper-frontend`를 더해 스물세 단계로 늘린 사용자 지시, 2026-11-09(이슈 #46); `hyper-handoff`를 더해 스물네 단계로 늘린 사용자 지시, 2026-11-10; `hyper-debate`를 더해 스물다섯 단계로 늘린 사용자 지시, 2026-11-10(이슈 #26); `hyper-review`를 더해 스물여섯 단계로 늘린 사용자 지시, 2026-11-10(이슈 #23); `hyper-cleanup`을 더해 현재의 스물일곱 단계로 늘린 사용자 지시, 2026-11-10(이슈 #24); 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
 | 각 단계의 트리거, 결과물, 제외 범위. `hyper-mass`가 계획 파일 실행을 제외하고 `hyper-execute`가 기존 계획을 요구한다는 점 포함 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 전달 단어, 계획만·승인 보류 단어, 계획에서 실행으로 자동 연결 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 단계 순서, 네 단계 상한, 레시피, 동률 처리 | 이 패키지가 고른 설계이며 검증된 최적값이 아님 |
