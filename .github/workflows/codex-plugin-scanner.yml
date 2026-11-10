@@ -2,9 +2,9 @@ name: Codex Plugin Quality Gate
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
-    branches: [main]
+    branches: [main, dev]
 
 concurrency:
   group: codex-plugin-scanner-${{ github.ref }}
