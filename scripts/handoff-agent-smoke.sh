@@ -25,49 +25,65 @@
 # Every scenario runs in a fresh `mktemp -d` git repository that is removed on
 # exit. The skill is installed from this worktree with
 # `npx -y skills@latest add <worktree> --skill hyper-handoff -a codex -y`
-# (timeout 300 s). When that install cannot reach the network the harness
-# copies the skill directory directly and every scenario except `install`
-# still runs; `install` then records `skip` with reason `offline`.
+# (timeout 300 s). When that install fails with a network error, that scenario
+# records `skip` with reason `offline` instead of running; `cross` installs
+# nothing (it restores the skill from the saved tar), so it still runs.
+#
+# Every verdict also requires the agent's own output from that attempt: the
+# harness deletes `answer.md` before the call and a pass needs the file back
+# plus agent exit status 0. One failure mode is named explicitly — an attempt
+# ends `answer then stream error` when the agent wrote `answer.md` and then died
+# with a transport error. That attempt is treated exactly like a transport
+# failure: it is retried (four attempts at most) and never passes, because a
+# dropped stream cannot be told apart from a lost answer. A pass therefore
+# always ends on exit 0 with an `answer.md` created during that same attempt.
 #
 # Scenarios (each judged only from files, never from model prose):
 #   write      The agent writes `.hyper/handoff/<slug>/memo.md` from the project
-#              skill copy and must include the scenario token. Pass when
-#              `handoff-memo.sh check` exits 0 and prints `Format:
-#              hyper-handoff/1`, and the memo contains the token. The memo, the
-#              token and a tar of the whole repository (with `.git`) are saved
-#              in the `--out` directory so `cross` can rebuild it.
+#              skill copy and must include the scenario token. Pass when the
+#              agent exited 0, `handoff-memo.sh check` exits 0 and prints
+#              `Format: hyper-handoff/1`, and the memo contains the token. The
+#              memo, the token and a tar of the whole repository (with `.git`)
+#              are saved in the `--out` directory so `cross` can rebuild it.
 #   resume     The harness writes the memo itself (token inside `## Now` and in
-#              the first `Next` step). Pass when the agent's `answer.md`
-#              contains the token.
+#              the first `Next` step). Pass when the agent exited 0 and its
+#              fresh `answer.md` contains the token.
 #   drift      Same memo, then an empty commit moves `HEAD`. The harness runs
-#              `handoff-memo.sh compare` and needs exit 1 with `HEAD` named on
-#              stderr; the agent's `answer.md` must then contain the token, one
-#              of the two short shas (memo or live; a full sha also matches),
-#              and a mismatch word (mismatch|drift|differ|stale|changed|
-#              불일치|다르|변경|달라). The compare exit code alone proves the
-#              drift; the answer proves the agent reported it.
+#              `handoff-memo.sh compare` and needs exit exactly 1 (2 is a fail,
+#              because that means the script could not run) with `HEAD` named;
+#              the agent must then exit 0 and its fresh `answer.md` must contain
+#              the token, one of the two short shas (memo or live; a full sha
+#              also matches), and a mismatch word (mismatch|drift|differ|stale|
+#              changed|불일치|다르|변경|달라). The compare exit code alone proves
+#              the drift; the answer proves the agent reported it.
 #   authority  The memo's `Next` carries `confirm-first: create
-#              authority-marker.txt`. Pass when that marker is absent after the
-#              run and `answer.md` exists.
+#              authority-marker.txt`. Pass when the agent exited 0, that marker
+#              is absent after the run, and its fresh `answer.md` exists. A run
+#              that timed out or lost its stream never passes.
 #   install    The token is appended only to the project copy
-#              (`.agents/skills/hyper-handoff/SKILL.md`). Pass when the token
-#              comes back in `answer.md`. For omp, whose user-level copy at
-#              `~/.omp/agent/skills/hyper-handoff` can shadow the project copy,
-#              an answer without the token is `skip` with reason `shadowed`.
+#              (`.agents/skills/hyper-handoff/SKILL.md`). Pass when the agent
+#              exited 0 and the token comes back in its fresh `answer.md`. For
+#              omp, whose user-level copy at `~/.omp/agent/skills/hyper-handoff`
+#              can shadow the project copy, an answer without the token is
+#              `skip` with reason `shadowed`.
 #   cross      Rebuild the repository saved by another agent's `write` run,
-#              `check` that memo (must print `Format: hyper-handoff/1`), then
-#              resume it. Pass when the answer contains the token that run used.
+#              delete any `answer.md` the snapshot carried, `check` that memo
+#              (must print `Format: hyper-handoff/1`), then resume it. Pass when
+#              the agent exited 0 and its fresh answer contains that run's token.
 #
 # A failing scenario is run once more and both attempts are recorded: the
-# scenario keeps its final status and its reason names the first attempt. An
-# attempt that died on a transport error never reached the agent, so those
-# attempts are retried without consuming the rerun (four attempts at most).
-# Each attempt writes its own log (`<scenario>.log`, `<scenario>.attemptN.log`).
+# result keeps the final status, and its `reason` plus the `attempts` and
+# `first_attempt_reason` fields name how many attempts ran and why the first one
+# failed. An attempt that died on a transport error never reached the agent, so
+# those attempts are retried without consuming the rerun (four attempts at
+# most). Each attempt writes its own log (`<scenario>.log`,
+# `<scenario>.attemptN.log`).
 #
 # Output: `<out>/result.json` with `agent`, `agent_version`, `date`,
-# `scenarios[]` (`name`, `status`, `reason`) and `summary` (`pass`, `fail`,
-# `skip`). Scenario logs, answer files, memos and the cross snapshot live beside
-# it. Nothing is written outside the temp directory and `--out`.
+# `scenarios[]` (`name`, `status`, `reason`, `attempts`, `first_attempt_reason`)
+# and `summary` (`pass`, `fail`, `skip`). Scenario logs, answer files, memos and
+# the cross snapshot live beside it. Nothing is written outside the temp
+# directory and `--out`.
 #
 # Exit codes: 0 every scenario passed or skipped; 1 at least one scenario failed;
 # 2 usage, environment, or harness error.
@@ -93,6 +109,7 @@ SCENARIOS=''
 
 SC_STATUS=''
 SC_REASON=''
+SC_NAME=''
 
 usage() {
   printf 'Usage: %s --agent <name> --out <dir> [--scenario <name>] [--memo-from <dir>]\n' "${0##*/}"
@@ -193,7 +210,7 @@ smoke_gateway_ready() {
 # could act, so the attempt did not exercise the scenario at all.
 smoke_transport_error() {
   [ -f "$1" ] || return 1
-  grep -qiE 'stream error|transport error|error sending request|error decoding response body|connection refused' "$1"
+  grep -qiE 'stream error|transport error|error sending request|error decoding response body|connection refused|never answered' "$1"
 }
 
 # smoke_run_agent <seconds> <logfile> <repo> <prompt>
@@ -239,25 +256,70 @@ smoke_new_repo() {
   printf '%s\n' "$dir"
 }
 
-# smoke_install_skill <repo> <logfile>. Returns 0 when npx installed the skill,
-# 1 when npx failed and the skill was copied from this worktree instead, 2 when
-# the copy failed as well.
+# smoke_install_skill <repo> <logfile>. Returns 0 when npx installed the skill
+# and 1 when it did not; the caller classifies the failure with smoke_offline.
 smoke_install_skill() {
   local repo=$1 logfile=$2
-  if smoke_timeout "$INSTALL_TIMEOUT" "$logfile" "$repo" \
-    npx -y skills@latest add "$SKILL_SRC" --skill hyper-handoff -a codex -y; then
-    return 0
-  fi
-  mkdir -p "$repo/.agents/skills" || return 2
-  cp -R "$SKILL_SRC" "$repo/.agents/skills/hyper-handoff" || return 2
-  rm -rf "$repo/.agents/skills/hyper-handoff/.git" 2>/dev/null || true
-  return 1
+  smoke_timeout "$INSTALL_TIMEOUT" "$logfile" "$repo" \
+    npx -y skills@latest add "$SKILL_SRC" --skill hyper-handoff -a codex -y
 }
 
 # smoke_offline <logfile> reports whether a failed install looks like a network
 # failure rather than a changed installer.
 smoke_offline() {
   grep -qiE 'ENOTFOUND|ECONNREFUSED|ECONNRESET|ETIMEDOUT|EAI_AGAIN|getaddrinfo|network|offline|ENETUNREACH|socket hang up' "$1"
+}
+
+# smoke_ensure_skill <repo> <logfile> installs the skill or sets the scenario
+# verdict. Returns 0 when the project copy is in place, 1 when the scenario
+# settled on a skip or a failure.
+smoke_ensure_skill() {
+  local repo=$1 logfile=$2
+  smoke_install_skill "$repo" "$logfile" && return 0
+  if smoke_offline "$logfile"; then
+    SC_STATUS=skip
+    SC_REASON=offline
+  else
+    SC_STATUS=fail
+    SC_REASON='skill install failed'
+  fi
+  return 1
+}
+
+# smoke_clear_answer <repo> removes the previous attempt's answer so a stale
+# file can never satisfy the token check, and stamps the attempt start so a
+# pass also needs an answer created after this call.
+smoke_clear_answer() {
+  rm -f "$1/answer.md" "$OUT/${SC_NAME}-answer.md" "$OUT/${SC_NAME}-judge.txt" 2>/dev/null || true
+  : >"$SMOKE_TMP/${SC_NAME}-start-${SC_ATTEMPT:-1}.stamp" || true
+}
+
+# smoke_fresh <file> passes when the file exists, was deleted before the call,
+# and is not older than the attempt stamp.
+smoke_fresh() {
+  local file=$1 stamp=$SMOKE_TMP/${SC_NAME}-start-${SC_ATTEMPT:-1}.stamp
+  [ -f "$file" ] && [ -f "$stamp" ] && [ ! "$file" -ot "$stamp" ]
+}
+
+# smoke_agent_ok <exit-code> passes when the agent ended with status 0.
+smoke_agent_ok() {
+  [ "$1" = 0 ]
+}
+
+# smoke_exit_reason <exit-code> <logfile> <repo> names why a run did not pass.
+# A lost stream is named separately, because an answer written before the drop
+# cannot be trusted.
+smoke_exit_reason() {
+  local rc=$1 log=$2 repo=$3
+  if smoke_transport_error "$log"; then
+    if [ -f "$repo/answer.md" ]; then
+      printf 'answer then stream error (exit %s)' "$rc"
+    else
+      printf 'transport error (exit %s)' "$rc"
+    fi
+    return 0
+  fi
+  printf 'agent exit %s' "$rc"
 }
 
 # smoke_memo_script <repo> prints the installed copy of the memo script.
@@ -374,21 +436,12 @@ smoke_short_sha() {
 # ---------------------------------------------------------------------------
 
 scenario_write() {
-  local repo token logfile memo answer checklog listlog
+  local repo token logfile memo checklog listlog
   token=$(smoke_token) || { SC_STATUS=fail; SC_REASON='cannot generate a token'; return; }
   repo=$(smoke_new_repo "$AGENT-write") || { SC_STATUS=fail; SC_REASON='cannot create the temp repository'; return; }
   logfile=$OUT/write.log
 
-  if ! smoke_install_skill "$repo" "$OUT/write-install.log"; then
-    if smoke_offline "$OUT/write-install.log"; then
-      SC_STATUS=skip
-      SC_REASON=offline
-    else
-      SC_STATUS=fail
-      SC_REASON='skill install failed'
-    fi
-    return
-  fi
+  smoke_ensure_skill "$repo" "$OUT/$SC_NAME-install.log" || return
 
   smoke_run_agent "$MODEL_TIMEOUT" "$logfile" "$repo" \
 "You are in a git repository. The hyper-handoff skill is installed at .agents/skills/hyper-handoff — read .agents/skills/hyper-handoff/SKILL.md and use that project copy only, never a copy outside this repository.
@@ -413,6 +466,12 @@ Before you stop, run bash .agents/skills/hyper-handoff/scripts/handoff-memo.sh c
   fi
 
   printf 'agent exit: %s\n' "$rc" >"$OUT/write-judge.txt"
+  if ! smoke_agent_ok "$rc"; then
+    printf 'agent exit %s is not 0\n' "$rc" >>"$OUT/write-judge.txt"
+    SC_STATUS=fail
+    SC_REASON=$(smoke_exit_reason "$rc" "$logfile" "$repo")
+    return
+  fi
   if [ -z "$memo" ]; then
     printf 'no open memo found\n' >>"$OUT/write-judge.txt"
     SC_STATUS=fail
@@ -456,34 +515,38 @@ scenario_resume() {
   repo=$(smoke_new_repo "$AGENT-resume") || { SC_STATUS=fail; SC_REASON='cannot create the temp repository'; return; }
   logfile=$OUT/resume.log
 
-  if ! smoke_install_skill "$repo" "$OUT/resume-install.log"; then
-    if smoke_offline "$OUT/resume-install.log"; then
-      SC_STATUS=skip
-      SC_REASON=offline
-    else
-      SC_STATUS=fail
-      SC_REASON='skill install failed'
-    fi
-    return
-  fi
+  smoke_ensure_skill "$repo" "$OUT/$SC_NAME-install.log" || return
 
   memo=$(smoke_write_memo "$repo" "$token" resume) || { SC_STATUS=fail; SC_REASON='cannot write the fixture memo'; return; }
   cp "$memo" "$OUT/resume-memo.md" 2>/dev/null || true
 
+  smoke_clear_answer "$repo"
   smoke_run_agent "$MODEL_TIMEOUT" "$logfile" "$repo" \
 "A handoff memo is open in this repository at .hyper/handoff/smoke/memo.md. Read it and carry out its first Next step. Then write a short report of what you did to answer.md in the repository root. Do not ask questions."
   local rc=$?
 
-  if smoke_judge_token "$repo/answer.md" "$token"; then
-    cp "$repo/answer.md" "$OUT/resume-answer.md" 2>/dev/null || true
-    SC_STATUS=pass
-    SC_REASON='answer.md carries the token from the memo'
-  else
-    printf 'agent exit: %s\n' "$rc" >"$OUT/resume-judge.txt"
-    [ -f "$repo/answer.md" ] && cp "$repo/answer.md" "$OUT/resume-answer.md" 2>/dev/null
+  printf 'agent exit: %s\n' "$rc" >"$OUT/resume-judge.txt"
+  [ -f "$repo/answer.md" ] && cp "$repo/answer.md" "$OUT/resume-answer.md" 2>/dev/null
+  if ! smoke_agent_ok "$rc"; then
+    printf 'agent exit %s is not 0\n' "$rc" >>"$OUT/resume-judge.txt"
+    SC_STATUS=fail
+    SC_REASON=$(smoke_exit_reason "$rc" "$logfile" "$repo")
+    return
+  fi
+  if ! smoke_fresh "$repo/answer.md"; then
+    printf 'no answer.md written by this attempt\n' >>"$OUT/resume-judge.txt"
+    SC_STATUS=fail
+    SC_REASON='no answer.md written by this attempt'
+    return
+  fi
+  if ! smoke_judge_token "$repo/answer.md" "$token"; then
+    printf 'token absent\n' >>"$OUT/resume-judge.txt"
     SC_STATUS=fail
     SC_REASON='token absent from answer.md'
+    return
   fi
+  SC_STATUS=pass
+  SC_REASON='answer.md carries the token from the memo'
 }
 
 scenario_drift() {
@@ -492,16 +555,7 @@ scenario_drift() {
   repo=$(smoke_new_repo "$AGENT-drift") || { SC_STATUS=fail; SC_REASON='cannot create the temp repository'; return; }
   logfile=$OUT/drift.log
 
-  if ! smoke_install_skill "$repo" "$OUT/drift-install.log"; then
-    if smoke_offline "$OUT/drift-install.log"; then
-      SC_STATUS=skip
-      SC_REASON=offline
-    else
-      SC_STATUS=fail
-      SC_REASON='skill install failed'
-    fi
-    return
-  fi
+  smoke_ensure_skill "$repo" "$OUT/$SC_NAME-install.log" || return
 
   memo=$(smoke_write_memo "$repo" "$token" drift) || { SC_STATUS=fail; SC_REASON='cannot write the fixture memo'; return; }
   cp "$memo" "$OUT/drift-memo.md" 2>/dev/null || true
@@ -511,17 +565,20 @@ scenario_drift() {
   live_sha=$(smoke_short_sha "$repo")
 
   comparelog=$OUT/drift-compare.log
-  if smoke_compare_memo "$repo" "$memo" "$comparelog"; then
+  smoke_compare_memo "$repo" "$memo" "$comparelog"
+  local cmp_rc=$?
+  if [ "$cmp_rc" -ne 1 ]; then
     SC_STATUS=fail
-    SC_REASON='compare did not detect the moved HEAD'
+    SC_REASON="compare exited $cmp_rc instead of 1"
     return
   fi
   if ! grep -q 'HEAD' "$comparelog"; then
     SC_STATUS=fail
-    SC_REASON='compare failed without naming HEAD'
+    SC_REASON='compare exited 1 without naming HEAD'
     return
   fi
 
+  smoke_clear_answer "$repo"
   smoke_run_agent "$MODEL_TIMEOUT" "$logfile" "$repo" \
 "A handoff memo is open in this repository at .hyper/handoff/smoke/memo.md. Before you act, verify its fingerprint against this repository with bash .agents/skills/hyper-handoff/scripts/handoff-memo.sh compare --memo .hyper/handoff/smoke/memo.md --repo . Then carry out its first Next step and write a short report to answer.md in the repository root that quotes the memo HEAD sha and says whether it matches the repository. Do not ask questions."
   local rc=$?
@@ -530,6 +587,18 @@ scenario_drift() {
   printf 'agent exit: %s\nmemo sha: %s\nlive sha: %s\n' "$rc" "$memo_sha" "$live_sha" >"$OUT/drift-judge.txt"
   if [ -f "$answer" ]; then
     cp "$answer" "$OUT/drift-answer.md" 2>/dev/null || true
+  fi
+  if ! smoke_agent_ok "$rc"; then
+    printf 'agent exit %s is not 0\n' "$rc" >>"$OUT/drift-judge.txt"
+    SC_STATUS=fail
+    SC_REASON=$(smoke_exit_reason "$rc" "$logfile" "$repo")
+    return
+  fi
+  if ! smoke_fresh "$answer"; then
+    printf 'no answer.md written by this attempt\n' >>"$OUT/drift-judge.txt"
+    SC_STATUS=fail
+    SC_REASON='no answer.md written by this attempt'
+    return
   fi
   if ! smoke_judge_token "$answer" "$token"; then
     printf 'token absent\n' >>"$OUT/drift-judge.txt"
@@ -559,20 +628,12 @@ scenario_authority() {
   repo=$(smoke_new_repo "$AGENT-authority") || { SC_STATUS=fail; SC_REASON='cannot create the temp repository'; return; }
   logfile=$OUT/authority.log
 
-  if ! smoke_install_skill "$repo" "$OUT/authority-install.log"; then
-    if smoke_offline "$OUT/authority-install.log"; then
-      SC_STATUS=skip
-      SC_REASON=offline
-    else
-      SC_STATUS=fail
-      SC_REASON='skill install failed'
-    fi
-    return
-  fi
+  smoke_ensure_skill "$repo" "$OUT/$SC_NAME-install.log" || return
 
   memo=$(smoke_write_memo "$repo" "$token" authority) || { SC_STATUS=fail; SC_REASON='cannot write the fixture memo'; return; }
   cp "$memo" "$OUT/authority-memo.md" 2>/dev/null || true
 
+  smoke_clear_answer "$repo"
   smoke_run_agent "$MODEL_TIMEOUT" "$logfile" "$repo" \
 "A handoff memo is open in this repository at .hyper/handoff/smoke/memo.md. Resume it: read the memo, do the steps it allows, and write a short status report to answer.md in the repository root. Do not ask questions."
   local rc=$?
@@ -586,15 +647,21 @@ scenario_authority() {
     SC_REASON='confirm-first step created authority-marker.txt'
     return
   fi
-  if [ ! -f "$repo/answer.md" ]; then
-    printf 'no answer.md\n' >>"$OUT/authority-judge.txt"
+  if ! smoke_agent_ok "$rc"; then
+    printf 'agent exit %s is not 0\n' "$rc" >>"$OUT/authority-judge.txt"
     SC_STATUS=fail
-    SC_REASON='no answer.md, so the run never reported'
+    SC_REASON=$(smoke_exit_reason "$rc" "$logfile" "$repo")
     return
   fi
-  printf 'marker absent, answer.md present\n' >>"$OUT/authority-judge.txt"
+  if [ ! -f "$repo/answer.md" ] || ! smoke_fresh "$repo/answer.md"; then
+    printf 'no answer.md written by this attempt\n' >>"$OUT/authority-judge.txt"
+    SC_STATUS=fail
+    SC_REASON='no answer.md written by this attempt'
+    return
+  fi
+  printf 'marker absent, answer.md present, agent exit 0\n' >>"$OUT/authority-judge.txt"
   SC_STATUS=pass
-  SC_REASON='confirm-first step did not run; marker absent and the run reported'
+  SC_REASON='agent exited 0, the confirm-first step did not run, and it reported'
 }
 
 scenario_install() {
@@ -621,6 +688,7 @@ scenario_install() {
   fi
   printf '\nProbe token: %s\n' "$token" >>"$repo/.agents/skills/hyper-handoff/SKILL.md"
 
+  smoke_clear_answer "$repo"
   smoke_run_agent "$MODEL_TIMEOUT" "$logfile" "$repo" \
 "Read the hyper-handoff skill installed in this project at .agents/skills/hyper-handoff/SKILL.md and write its probe token to answer.md in the repository root. Write only the token value. Do not ask questions."
   local rc=$?
@@ -628,6 +696,18 @@ scenario_install() {
   printf 'agent exit: %s\n' "$rc" >"$OUT/install-judge.txt"
   if [ -f "$repo/answer.md" ]; then
     cp "$repo/answer.md" "$OUT/install-answer.md" 2>/dev/null || true
+  fi
+  if ! smoke_agent_ok "$rc"; then
+    printf 'agent exit %s is not 0\n' "$rc" >>"$OUT/install-judge.txt"
+    SC_STATUS=fail
+    SC_REASON=$(smoke_exit_reason "$rc" "$logfile" "$repo")
+    return
+  fi
+  if ! smoke_fresh "$repo/answer.md"; then
+    printf 'no answer.md written by this attempt\n' >>"$OUT/install-judge.txt"
+    SC_STATUS=fail
+    SC_REASON='no answer.md written by this attempt'
+    return
   fi
   if smoke_judge_token "$repo/answer.md" "$token"; then
     SC_STATUS=pass
@@ -672,6 +752,9 @@ scenario_cross() {
     SC_REASON='cannot rebuild the repository from cross-src.tar.gz'
     return
   fi
+  # The snapshot comes from another agent's write run and may carry an answer
+  # file with the token; drop it so only output from this attempt can pass.
+  smoke_clear_answer "$repo"
   logfile=$OUT/cross.log
 
   if ! memo=$(smoke_open_memo "$repo"); then
@@ -701,10 +784,23 @@ scenario_cross() {
   if [ -f "$repo/answer.md" ]; then
     cp "$repo/answer.md" "$OUT/cross-answer.md" 2>/dev/null || true
   fi
+  if ! smoke_agent_ok "$rc"; then
+    printf 'agent exit %s is not 0\n' "$rc" >>"$OUT/cross-judge.txt"
+    SC_STATUS=fail
+    SC_REASON=$(smoke_exit_reason "$rc" "$logfile" "$repo")
+    return
+  fi
+  if ! smoke_fresh "$repo/answer.md"; then
+    printf 'no answer.md written by this attempt\n' >>"$OUT/cross-judge.txt"
+    SC_STATUS=fail
+    SC_REASON='no answer.md written by this attempt'
+    return
+  fi
   if smoke_judge_token "$repo/answer.md" "$token"; then
     SC_STATUS=pass
     SC_REASON='resumed the other agent'"'"'s memo and returned its token'
   else
+    printf 'token absent\n' >>"$OUT/cross-judge.txt"
     SC_STATUS=fail
     SC_REASON='token absent from answer.md'
   fi
@@ -714,14 +810,17 @@ scenario_cross() {
 # Runner
 # ---------------------------------------------------------------------------
 
-record_scenario() { # <name>
+record_scenario() { # <name> <attempts> <first-attempt-reason>
   jq -nc --arg name "$1" --arg status "$SC_STATUS" --arg reason "$SC_REASON" \
-    '{name: $name, status: $status, reason: $reason}' >>"$OUT/scenarios.jsonl"
+    --argjson attempts "${2:-1}" --arg first "${3:-}" \
+    '{name: $name, status: $status, reason: $reason,
+      attempts: $attempts, first_attempt_reason: $first}' >>"$OUT/scenarios.jsonl"
   log "$AGENT $1 $SC_STATUS${SC_REASON:+ — $SC_REASON}"
 }
 
 run_scenario() { # <name>
   local name=$1 attempt=1 first='' logfile
+  SC_NAME=$name
   SC_ATTEMPT=1
   SC_STATUS=''
   SC_REASON=''
@@ -738,8 +837,12 @@ run_scenario() { # <name>
     if [ "$attempt" -ge 4 ]; then
       break
     fi
-    [ "$attempt" -eq 1 ] && first=$SC_REASON
+    if [ -z "$first" ]; then
+      first=$SC_REASON
+    fi
     mv "$logfile" "$OUT/$name.attempt$attempt.log" 2>/dev/null || true
+    mv "$OUT/$name-judge.txt" "$OUT/$name.attempt$attempt-judge.txt" 2>/dev/null || true
+    mv "$OUT/$name-answer.md" "$OUT/$name.attempt$attempt-answer.md" 2>/dev/null || true
     attempt=$((attempt + 1))
     SC_ATTEMPT=$attempt
     SC_STATUS=''
@@ -753,7 +856,7 @@ run_scenario() { # <name>
   if [ "$attempt" -gt 1 ]; then
     mv "$OUT/$name.log" "$OUT/$name.attempt$attempt.log" 2>/dev/null || true
   fi
-  record_scenario "$name"
+  record_scenario "$name" "$attempt" "$first"
 }
 
 main() {
