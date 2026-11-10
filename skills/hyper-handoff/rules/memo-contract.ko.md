@@ -27,7 +27,7 @@
 
 | Section | Holds | Rule |
 |---|---|---|
-| Header lines | `Slug`, `Revision`, `Status`(`open` 또는 `closed (<date>: <reason>)`), `Written`(날짜와 시간), `Written by`(에이전트와 머신), `HEAD:`(`<sha> (<branch>)`, 또는 `none (not a git repository)`), `Dirty:`(`clean`, 또는 개수와 `git status --porcelain` 경로. 20개를 넘으면 개수와 그 출력의 짧은 다이제스트), `Resumed:`(세션이 이어받은 시각, 또는 `none`), `Check` | 지문은 쓰는 시점에 `Where`가 밝힌 워크트리에서 잰다. 검사 줄은 `Check:` 한 철자로 쓰고 `pass`, `unverified-standalone: <question numbers>`, `self: pass`, `self: fail: <question numbers>`, `skipped by user` 중 하나다 |
+| Header lines | `Format`(`hyper-handoff/1`, 이 줄이 없으면 `legacy`), `Slug`, `Revision`, `Status`(`open` 또는 `closed (<date>: <reason>)`), `Written`(날짜와 시간), `Written by`(에이전트와 머신), `HEAD:`(`<sha> (<branch>)`, 또는 `none (not a git repository)`), `Dirty:`(`clean`, 또는 개수와 `git status --porcelain` 경로. 20개를 넘으면 개수와 그 출력의 짧은 다이제스트), `Resumed:`(세션이 이어받은 시각, 또는 `none`), `Check` | 지문은 쓰는 시점에 `Where`가 밝힌 워크트리에서 잰다. 검사 줄은 `Check:` 한 철자로 쓰고 `pass`, `unverified-standalone: <question numbers>`, `self: pass`, `self: fail: <question numbers>`, `skipped by user` 중 하나다 |
 | `## Original request` | 사용자의 요청을 그대로 인용 | 바꾸지 않음. 줄이지 않음. 번역하지 않음 |
 | `## Corrections` | 요청을 바꾸거나 좁히는 이후 사용자 지시, 그리고 일하는 방식에 대한 상시 선호와 방향 지시(무엇을 쓸지, 무엇을 건드리지 않을지, 무엇을 보고할지). 그대로 인용하고 날짜를 붙임 | 없으면 `none` |
 | `## Now` | 지금 무엇을 왜 하는지. 최대 다섯 문장 | 작업이 향하는 하나의 결과를 지목함 |
@@ -37,6 +37,8 @@
 | `## Where` | 저장소 경로, 브랜치, 워크트리, 머신, 풀 리퀘스트, 서비스, 상태 디렉터리, 이전 세션의 기록, 작업이 기대는 저장소 밖 상태 | 위치 표시만. 각 항목은 해소되거나 `external`이라고 표시함. 세션이나 이동 뒤에 남지 않는 상태는 그렇다고 적음 |
 | `## Decisions and dead ends` | 사용자가 내린 결정(누가, 언제), 실패해서 반복하면 안 되는 접근, 필요했던 우회 방법 | 각 막다른 길마다 실패 이유를 적음. 우회 방법에는 통한 명령을 적음 |
 | `## Open questions and risks` | 모르는 것, 깨질 수 있는 것, 사용자 차례를 기다리는 것 | 비었으면 `none` |
+
+`Format`은 헤더의 첫 줄이며 메모 형식 버전을 밝힌다. 이 배포는 `hyper-handoff/1`을 쓴다. 슬래시 뒤 숫자는 절을 이름 바꾸거나 뺄 때만 바뀐다. `Format` 줄이 없는 메모는 `legacy`로 읽는다. 읽되 거부하지 않으며 나머지 규칙은 적힌 대로 적용한다. 모르는 주 버전을 만난 읽는 쪽은 그 버전과 해석하지 못한 부분을 보고하고, 그 부분을 추측하지 않는다.
 
 ## 4. Budget
 

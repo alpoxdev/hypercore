@@ -13,6 +13,7 @@ The exact skeleton for `.hyper/handoff/<slug>/memo.md`, then a worked example. S
 ```markdown
 # Handoff: <slug>
 
+- Format: hyper-handoff/1
 - Slug: <slug>
 - Revision: <integer, starts at 1>
 - Status: open
@@ -79,11 +80,12 @@ The exact skeleton for `.hyper/handoff/<slug>/memo.md`, then a worked example. S
 ```markdown
 # Handoff: login-redirect
 
+- Format: hyper-handoff/1
 - Slug: login-redirect
 - Revision: 2
 - Status: open
 - Written: 2026-11-09 16:40 KST
-- Written by: omp on alpoxs-macbook
+- Written by: an agent on dev-laptop
 - HEAD: 4c1e9f2 (fix/login-redirect)
 - Dirty: 1 file: src/auth/redirect.ts
 - Resumed: none
@@ -120,11 +122,11 @@ The exact skeleton for `.hyper/handoff/<slug>/memo.md`, then a worked example. S
 
 ## Where
 
-- Repository: /Users/alpox/dev/acme/web
-- Branch / worktree: fix/login-redirect / /Users/alpox/dev/acme/web/.hyper/worktree/login-redirect
-- Machine: alpoxs-macbook
+- Repository: /srv/work/acme/web
+- Branch / worktree: fix/login-redirect / /srv/work/acme/web/.hyper/worktree/login-redirect
+- Machine: dev-laptop
 - State owned by other stages: none
-- Session record: /Users/alpox/.omp/agent/sessions/-dev-acme-web/2026-11-09T05-58-11.jsonl
+- Session record: 2026-11-09T05-58-11 in the agent's session store (external)
 - Outside the repository: `src/auth/redirect.ts` 수정은 커밋하지 않아 이 워크트리에만 있다. 다른 머신으로 옮기려면 먼저 커밋하고 푸시해야 한다.
 - External: none
 
@@ -148,6 +150,7 @@ The exact skeleton for `.hyper/handoff/<slug>/memo.md`, then a worked example. S
 - A reader with no conversation can answer all six questions from this file.
 - Nothing retells the session. Each line is there because a remaining step needs it.
 - The uncommitted fix is named as state that lives only in this worktree, so a move to another machine cannot lose it silently.
+- `Format` is the first header line: a reader picks the section layout by it, and a memo without it is read as `legacy`, never rejected.
 - `.hyper/handoff/` is normally git-ignored, so the memo itself does not travel with a push. Moving it means copying this directory or pasting the memo text into the new session, and committing it is the user's call.
 
 ## Sources

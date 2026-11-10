@@ -27,7 +27,7 @@ Section names are English and verbatim. Fill every section; write `none` where n
 
 |Section|Holds|Rule|
 |---|---|---|
-|Header lines|`Slug`, `Revision`, `Status` (`open` or `closed (<date>: <reason>)`), `Written` (date and time), `Written by` (agent and machine), `HEAD:` (`<sha> (<branch>)`, or `none (not a git repository)`), `Dirty:` (`clean`, or the count and the `git status --porcelain` paths; past 20, the count and a short digest of that output), `Resumed:` (the time a session resumed it, or `none`), `Check`|The fingerprint is taken in the worktree named in `Where` at write time. The check line has one spelling, `Check:`, with `pass`, `unverified-standalone: <question numbers>`, `self: pass`, `self: fail: <question numbers>`, or `skipped by user`|
+|Header lines|`Format` (`hyper-handoff/1`, or `legacy` when the line is absent), `Slug`, `Revision`, `Status` (`open` or `closed (<date>: <reason>)`), `Written` (date and time), `Written by` (agent and machine), `HEAD:` (`<sha> (<branch>)`, or `none (not a git repository)`), `Dirty:` (`clean`, or the count and the `git status --porcelain` paths; past 20, the count and a short digest of that output), `Resumed:` (the time a session resumed it, or `none`), `Check`|The fingerprint is taken in the worktree named in `Where` at write time. The check line has one spelling, `Check:`, with `pass`, `unverified-standalone: <question numbers>`, `self: pass`, `self: fail: <question numbers>`, or `skipped by user`|
 |`## Original request`|The user's request, quoted verbatim|Never paraphrased, shortened, or translated|
 |`## Corrections`|Each later user instruction that changes or narrows the request, and each standing preference or steering instruction about how to work (what to use, what not to touch, what to report), quoted verbatim, with its date|`none` when there were none|
 |`## Now`|What is being done and why, in at most five sentences|Names the one outcome the work is moving toward|
@@ -37,6 +37,8 @@ Section names are English and verbatim. Fill every section; write `none` where n
 |`## Where`|Repository path, branch, worktree, machine, pull requests, services, state directories, the old session's record, and state the work depends on that lives outside the repository|Pointers only; each resolves or is marked `external`; state that will not survive the session or the move is named as such|
 |`## Decisions and dead ends`|Decisions the user made (who, when), approaches that failed and must not be repeated, and workarounds that were needed|Each dead end names why it failed; a workaround names the command that worked|
 |`## Open questions and risks`|What is unknown, what could break, what waits on the user|`none` when empty|
+
+`Format` is the first header line and names the memo format version. This release writes `hyper-handoff/1`; the number after the slash changes only when a section is renamed or removed. A memo without the `Format` line is read as `legacy`: it is read, not rejected, and the rest of this contract applies as written. A reader that meets a major version it does not know reports that version and the parts it could not interpret, and does not guess at them.
 
 ## 4. Budget
 
