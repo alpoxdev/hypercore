@@ -24,7 +24,10 @@ check        validate the memo header and its required sections, then print
              `Format: hyper-handoff/1`, or `Format: legacy` for a memo written
              before the format line existed; a legacy memo is read, not rejected.
 compare      compare the memo `HEAD:` and `Dirty:` lines with the fingerprint of
-             the repository and exit 1 naming each field that differs.
+             the repository and exit 1 naming each field that differs. A memo
+             sha and the live sha count as equal when one is a prefix of the
+             other, so a memo holding the full 40-character sha still matches
+             the short fingerprint; a different commit still differs.
 list         print the slug of every open memo under .hyper/handoff/*/memo.md.
 
 The fingerprint is taken with git rev-parse, git symbolic-ref, and git status
@@ -77,6 +80,8 @@ hm_sha256_stream() { # stdin
 
 # hm_field <file> <key> prints the first header value for the key, accepting
 # both the `- Key: value` bullet form the template uses and a bare `Key: value`.
+# The scan stops at the first `## ` heading, so a body line that looks like a
+# header never stands in for a missing header.
 hm_field() { # <file> <key>
   local key=$2
   case $key in
@@ -87,6 +92,7 @@ hm_field() { # <file> <key>
     {
       line = $0
       sub(/\r$/, "", line)
+      if (line ~ /^## /) exit
       if (line ~ /^- /) line = substr(line, 3)
       if (index(line, k) == 1) {
         v = substr(line, length(k) + 1)
@@ -200,6 +206,7 @@ hm_check() { # <memo>
 # hm_compare <memo> <dir> compares the memo fingerprint with the live one.
 hm_compare() { # <memo> <dir>
   local memo=$1 dir=$2 rc=0 memo_head memo_dirty live live_head live_dirty
+  local memo_sha live_sha memo_tail live_tail head_match
   [ -f "$memo" ] || hm_input_fail "memo not found: $memo"
   [ -r "$memo" ] || hm_input_fail "memo is not readable: $memo"
   memo_head=$(hm_field "$memo" 'HEAD:')
@@ -218,8 +225,33 @@ hm_compare() { # <memo> <dir>
   live_dirty=${live#*$'\n'}
   live_dirty=${live_dirty#Dirty: }
   if [ -n "$memo_head" ] && [ "$memo_head" != "$live_head" ]; then
-    printf 'compare: HEAD mismatch\n  memo: %s\n  live: %s\n' "$memo_head" "$live_head" >&2
-    rc=1
+    # The line is `<sha> (<branch>)`. Compare the sha part as equal when one is
+    # a prefix of the other (min length 7) because the memo may carry the full
+    # 40-character sha while the live fingerprint is shortened.
+    memo_sha=${memo_head%% *}
+    live_sha=${live_head%% *}
+    memo_tail=''
+    live_tail=''
+    case $memo_head in
+      *' '*) memo_tail=${memo_head#* } ;;
+    esac
+    case $live_head in
+      *' '*) live_tail=${live_head#* } ;;
+    esac
+    head_match=0
+    if [ "$memo_tail" = "$live_tail" ] &&
+      [ "${#memo_sha}" -ge 7 ] && [ "${#live_sha}" -ge 7 ]; then
+      case "$memo_sha" in
+        "$live_sha"*) head_match=1 ;;
+      esac
+      case "$live_sha" in
+        "$memo_sha"*) head_match=1 ;;
+      esac
+    fi
+    if [ "$head_match" -eq 0 ]; then
+      printf 'compare: HEAD mismatch\n  memo: %s\n  live: %s\n' "$memo_head" "$live_head" >&2
+      rc=1
+    fi
   fi
   if [ -n "$memo_dirty" ] && [ "$memo_dirty" != "$live_dirty" ]; then
     printf 'compare: Dirty mismatch\n  memo: %s\n  live: %s\n' "$memo_dirty" "$live_dirty" >&2
@@ -347,6 +379,7 @@ hm_self_test() {
     hm_input_fail 'shasum or sha256sum is required for --self-test'
 
   local self tmp repo spaced sha branch out err rc before_hash after_hash
+  local full_sha other_sha
   local expected digest
   self=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)/$(basename -- "$0")
   tmp=$(mktemp -d "${TMPDIR:-/tmp}/handoff-memo.XXXXXX") ||
@@ -463,6 +496,48 @@ hm_self_test() {
   out=$(bash "$self" compare --memo "$tmp/memo.md" --repo "$repo" 2>"$tmp/err") || rc=$?
   hm_self_expect compare-clean-exit 0 "$rc"
   hm_self_expect compare-clean 'compare: ok' "$out"
+
+  # Full 40-character sha from the memo must match the short live fingerprint.
+  full_sha=$(git -C "$repo" rev-parse --verify HEAD)
+  hm_self_memo "$tmp/full.md" "$full_sha" "$branch" clean
+  rc=0
+  out=$(bash "$self" compare --memo "$tmp/full.md" --repo "$repo" 2>"$tmp/err") || rc=$?
+  hm_self_expect compare-full-sha-exit 0 "$rc"
+  hm_self_expect compare-full-sha 'compare: ok' "$out"
+
+  # A different commit's full sha must still fail.
+  other_sha='deadbeefdeadbeefdeadbeefdeadbeefdeadbeef'
+  hm_self_memo "$tmp/other-full.md" "$other_sha" "$branch" clean
+  rc=0
+  out=$(bash "$self" compare --memo "$tmp/other-full.md" --repo "$repo" 2>"$tmp/err") || rc=$?
+  err=$(cat "$tmp/err")
+  hm_self_expect compare-different-full-sha-exit 1 "$rc"
+  hm_self_expect_contains compare-different-full-sha 'HEAD' "$err"
+
+  # Body `- Format:` must not override a missing header Format line.
+  hm_self_memo "$tmp/body-format.md" "$sha" "$branch" clean
+  grep -v '^- Format:' "$tmp/body-format.md" >"$tmp/body-format.tmp"
+  awk '
+    /^## Now$/ && !done { print; print ""; print "- Format: JSON chosen by the user"; done = 1; next }
+    { print }
+  ' "$tmp/body-format.tmp" >"$tmp/body-format.md"
+  rc=0
+  out=$(bash "$self" check --memo "$tmp/body-format.md" 2>"$tmp/err") || rc=$?
+  hm_self_expect check-body-format-exit 0 "$rc"
+  hm_self_expect check-body-format 'Format: legacy' "$out"
+
+  # A body `- Check:` must not hide a missing header Check line.
+  hm_self_memo "$tmp/body-check.md" "$sha" "$branch" clean
+  grep -v '^- Check:' "$tmp/body-check.md" >"$tmp/body-check.tmp"
+  awk '
+    /^## Now$/ && !done { print; print ""; print "- Check: pass"; done = 1; next }
+    { print }
+  ' "$tmp/body-check.tmp" >"$tmp/body-check.md"
+  rc=0
+  out=$(bash "$self" check --memo "$tmp/body-check.md" 2>"$tmp/err") || rc=$?
+  err=$(cat "$tmp/err")
+  hm_self_expect check-body-check-exit 1 "$rc"
+  hm_self_expect_contains check-body-check 'Check' "$err"
 
   printf 'second\n' >"$repo/second.txt"
   git -C "$repo" add second.txt
