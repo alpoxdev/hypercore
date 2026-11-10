@@ -398,6 +398,16 @@ GitHub Actions는 아래 시점에 검사를 돌립니다. 검사 내용은 `scr
 1. [README의 스킬 표](#스킬-카탈로그)와 `npx skills add alpoxdev/hypercore --list` 결과를 갱신·확인.
 2. `bash scripts/validate-skills-corpus.sh --root skills --only <스킬> --json`과 `bash scripts/verify.sh`로 구조를 검증.
 
+### 버전과 릴리스
+
+저장소 전체가 SemVer 버전 하나를 씁니다. 정본은 `.claude-plugin/plugin.json`의 `version`이고 `.codex-plugin`, `.cursor-plugin` 설명서가 같은 값을 따릅니다. 버전은 `dev`에서만 올립니다.
+
+1. `dev`에서 `bash scripts/bump-version.sh minor`(또는 `major`, `patch`, `X.Y.Z`)를 실행합니다. 세 설명서를 같은 값으로 바꾸고 `check-plugin-manifests.sh`로 확인합니다. 지금보다 낮거나 같은 버전, 잘못된 인자는 파일을 바꾸지 않고 exit 1로 끝납니다. 커밋·태그·푸시는 하지 않습니다.
+2. 바뀐 설명서를 커밋하고 `dev` → `main` PR을 병합합니다.
+3. `main`에 푸시되면 `.github/workflows/release.yml`이 태그 `v<버전>`과 GitHub Release(변경 내역 자동 생성)를 만듭니다. 태그와 릴리스가 이미 있으면 아무것도 만들지 않고 성공으로 끝납니다.
+
+`release.yml`은 저장소 변수 `RELEASE_ENABLED`가 `true`일 때만 돕니다. 켜기 전에는 `main` 병합이 태그나 릴리스를 만들지 않습니다. 켜는 명령은 `gh variable set RELEASE_ENABLED --body true`이고, 켠 뒤 Actions의 Release를 수동 실행(`workflow_dispatch`)하면 지금 버전의 첫 릴리스가 만들어집니다.
+
 ## 기여
 
 PR 환영합니다. 작업 흐름:
