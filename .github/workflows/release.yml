@@ -1,0 +1,48 @@
+name: Release
+
+# Tags main with v<version> from .claude-plugin/plugin.json and creates the
+# GitHub Release for that tag. Running again for a version that already has
+# its tag and release changes nothing, so re-merging the same version is safe.
+#
+# The job runs only when the repository variable RELEASE_ENABLED is "true"
+# (gh variable set RELEASE_ENABLED --body true). Until then every run is
+# skipped and no tag or release is created.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main' && vars.RELEASE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Check plugin manifests
+        run: bash scripts/check-plugin-manifests.sh
+      - name: Tag and release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version=$(jq -r '.version' .claude-plugin/plugin.json)
+          tag="v$version"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+            echo "tag $tag already exists"
+          else
+            git tag "$tag" "$GITHUB_SHA"
+            git push origin "refs/tags/$tag"
+            echo "created tag $tag at $GITHUB_SHA"
+          fi
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "release $tag already exists; nothing to do"
+          else
+            gh release create "$tag" --generate-notes --verify-tag
+          fi
