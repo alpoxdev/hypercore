@@ -1,7 +1,9 @@
 #!/usr/bin/env bun
 // Measures how often a model picks one skill from the full skill catalog for each
 // eval case of that skill. Reproduces the routing prompt used for the trigger runs
-// recorded in skills/<skill>/assets/evals/<skill>-measurements.json.
+// recorded in skills/<skill>/assets/evals/<skill>-measurements.json. Raw run output
+// is kept under scripts/fixtures/skill-trigger-runs/<skill>/, outside the skill
+// directory, because it records the catalog name each call answered.
 //
 // Usage:
 //   bun scripts/measure-skill-trigger.mjs --repo <root> --skill <name> --model <model> \
