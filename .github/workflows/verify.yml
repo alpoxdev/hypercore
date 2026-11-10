@@ -5,6 +5,7 @@ on:
     branches: [main, dev]
   pull_request:
     branches: [main, dev]
+  workflow_dispatch:
 
 concurrency:
   group: skill-verification-${{ github.ref }}
@@ -24,3 +25,26 @@ jobs:
           fetch-depth: 0
       - name: Verify skills
         run: bash scripts/verify.sh
+
+  sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Check instruction sources (offline)
+        run: bash scripts/check-sources.sh --offline
+
+  plugin-manifests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Check plugin manifests
+        run: bash scripts/check-plugin-manifests.sh
+      - name: Claude Code plugin validate
+        # Runs without a Claude login (checked 2026-11-10 with an empty HOME).
+        run: npx -y @anthropic-ai/claude-code@2.1.322 plugin validate .

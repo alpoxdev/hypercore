@@ -381,7 +381,17 @@ bash scripts/verify.sh                                                     # 저
 bash scripts/validate-skills-corpus.sh --root skills --only <스킬> --json   # 스킬 하나의 구조 검증
 ```
 
-`main`과 `dev`로 가는 PR과 푸시에서는 GitHub Actions(`.github/workflows/verify.yml`)가 같은 `bash scripts/verify.sh`를 실행합니다.
+GitHub Actions는 아래 시점에 검사를 돌립니다. 검사 내용은 `scripts/`에 있고 워크플로는 그 스크립트를 부르기만 합니다.
+
+| 워크플로 (잡) | 언제 | 무엇을 |
+|---|---|---|
+| `verify.yml` (`verify`) | `dev`·`main` 대상 PR과 푸시, 수동 실행 | `bash scripts/verify.sh` 전체(shellcheck, 테스트, corpus, parity, standards, 수명주기, 플러그인 설명서) |
+| `verify.yml` (`sources`) | 같음 | `bash scripts/check-sources.sh --offline`(날짜 표기, 300줄 제한) |
+| `verify.yml` (`plugin-manifests`) | 같음 | `bash scripts/check-plugin-manifests.sh`와 `claude plugin validate .`(로그인 없이 동작) |
+| `codex-plugin-scanner.yml` (`scan`) | `dev`·`main` 대상 PR과 푸시 | Codex 플러그인 품질 검사 |
+| `links.yml` (`links`) | 매주 월요일, 수동 실행 | `bash scripts/check-sources.sh --strict`(외부 링크 포함). 링크 상태는 PR과 상관없이 바뀌므로 병합을 막지 않습니다 |
+
+`.github/dependabot.yml`은 매주 GitHub Actions 고정 버전을 갱신하는 PR을 `dev`로 엽니다.
 
 새 스킬을 추가했을 때:
 
