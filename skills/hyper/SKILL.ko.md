@@ -34,7 +34,7 @@ compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대�
 
 요청한 결과물이 아래 단계 스킬 하나 이상을 차례로 거쳐야 끝나는 개발 결과이거나, 사용자가 `hyper`를 이름으로 부르면 이 스킬을 씁니다.
 
-사용자 지시에 따라 이 패키지는 오케스트레이터입니다. 아래 단계 표, `rules/workflow-routing.md`, `rules/stage-handoff.md`, Sources 행, 평가 라우트에서만 스물네 단계 스킬과 동반 스킬 하나의 이름을 씁니다. 이 패키지가 가진 스킬 간 연결은 이것뿐입니다.
+사용자 지시에 따라 이 패키지는 오케스트레이터입니다. 아래 단계 표, `rules/workflow-routing.md`, `rules/stage-handoff.md`, Sources 행, 평가 라우트에서만 스물다섯 단계 스킬과 동반 스킬 하나의 이름을 씁니다. 이 패키지가 가진 스킬 간 연결은 이것뿐입니다.
 
 | Stage skill | What the stage produces |
 |---|---|
@@ -55,6 +55,7 @@ compatibility: 설치된 다른 스킬을 이름으로 불러오는 기능, 대�
 | `hyper-handoff` | 대화 없이도 이어서 일할 수 있는 상태 메모. `.hyper/handoff/<slug>/memo.md`에 사용자의 원 요청 그대로, 끝난 일과 다음 단계, 완료 조건, 모든 위치를 담고 단독 이해 확인 결과 줄을 붙입니다. 메모를 쓰거나 확인하는 일은 뒤에 아무것도 오지 않는 단독 꼬리 단계이고, 메모로 이어받는 일은 먼저 실행하는 재진입 단계라 체인 자리를 차지하지 않으며 남은 작업은 메모가 가리키는 실행이 맡습니다 |
 | `hyper-imagegen` | 새로 만들거나 편집한 이미지 한 장, 또는 바로 쓸 수 있는 이미지 프롬프트 하나. 런타임이 돌려준 이미지로 전달하거나 `.hyper/imagegen/<topic>/`에 저장하며 종료 상태와 검사 기록을 함께 남깁니다 |
 | `hyper-plan` | `.hyper/plans/<slug>.md`의 결정이 끝난 계획. 스스로 실행 단계로 이어집니다 |
+| `hyper-debate` | 사용자가 명시적으로 요청한 대립형 계획. 고정된 다섯 관점이 세 라운드 동안 따져 `.hyper/debate/<slug>/`에 영수증을 남기고, 승인 지점 하나로 통찰 묶음을 확정한 뒤 살아남은 발견만으로 `.hyper/plans/<slug>.md`의 결정이 끝난 계획을 씁니다. 토론을 요청한 작업에서는 `hyper-plan`을 대신하며 둘을 함께 실행하지 않습니다 |
 | `hyper-execute` | 기존 계획을 웨이브별로 실행하고 로컬, PR, ship 중 하나로 전달 |
 | `hyper-mass` | 의존 순서가 있는 작업 한 단계를 `.hyper/mass/<run-key>/` 그래프로 실행 |
 | `hyper-loop` | 서로 의존하는 여러 목표를 `.hyper/loop/<slug>/`에서 끝까지 실행한 결과. 기준마다 작업 트리 지문에 묶인 증거로 증명하고, 모든 기준이 오래되지 않은 증거로 덮인 `final-gate.json`으로만 끝냅니다 |
@@ -166,6 +167,7 @@ Boundary requests:
 |---|---|
 | 지원 스택의 리팩토링이나 구조 변경 | `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | 새 기능, 버그 수정, 여러 단계 구축 | `hyper-plan` -> `hyper-execute`. 아키텍처 경계를 넘으면 앞에 `hyper-architecture` |
+| 대립형·악마의 대변인 계획을 직접 밝힘("찬반으로 붙여서 계획", "여러 관점으로 따져보고 계획", "red team this plan", "debate it then plan") | `hyper-debate` -> `hyper-execute`. `hyper-plan`을 대신하고 둘을 한 체인에 넣지 않습니다. 그 표현이 없는 어려운 문제는 `hyper-plan`으로 갑니다 |
 | 라이브러리나 기술 선택, 낯선 외부 API 뒤에 구현 | `hyper-research` -> `hyper-plan` -> `hyper-execute` |
 | 이슈 등록 요청("이슈 등록해줘", "이슈로 남겨줘", "register these as issues"), 이슈 번호(`#1~3`, `#4, #7`), 또는 열린 이슈에 대한 조건 | 기본은 `hyper-issue` -> `hyper-plan` -> `hyper-execute`이므로 등록부터 레인 작업까지 끝까지 갑니다. 기록만 원하는 단어("등록만", "이슈만", "작업은 하지 마")가 있을 때만 `hyper-issue` 단독 |
 | `hyper-issue`가 넘긴 요청으로, `.hyper/issues/<slug>/batch.md`를 지목하고 이슈 단계가 끝났다고 밝힘 | `hyper-plan` -> `hyper-execute`, `hyper-issue`는 `done`으로 기록 |
@@ -296,7 +298,7 @@ Phase 규칙:
 
 | Claim | Source |
 |---|---|
-| 오케스트레이터 역할, 처음부터 끝까지 실행, 이 패키지가 스물네 단계 스킬과 동반 스킬의 이름을 쓰도록 허용한 사용자 지시 예외 | user instruction, 2026-11-06(오케스트레이터 역할); `hyper-deploy`를 더해 열다섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-feedback`을 더해 열여섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-decision`을 더해 열일곱 단계로 늘린 사용자 지시, 2026-11-08; `hyper-google-analytics`를 더해 열여덟 단계로 늘린 사용자 지시, 2026-11-08; `hyper-debug`를 더해 열아홉 단계로 늘린 사용자 지시, 2026-11-09(이슈 #22); `hyper-loop`를 더해 스무 단계로 늘린 사용자 지시, 2026-11-09(이슈 #21); `hyper-data`를 더해 스물한 단계로 늘린 사용자 지시, 2026-11-09(이슈 #25); `hyper-google-tagmanager`를 더해 스물두 단계로 늘린 사용자 지시, 2026-11-09(hyper 라우팅 갱신); `hyper-frontend`를 더해 스물세 단계로 늘린 사용자 지시, 2026-11-09(이슈 #46); `hyper-handoff`를 더해 현재의 스물네 단계로 늘린 사용자 지시, 2026-11-10; 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
+| 오케스트레이터 역할, 처음부터 끝까지 실행, 이 패키지가 스물다섯 단계 스킬과 동반 스킬의 이름을 쓰도록 허용한 사용자 지시 예외 | user instruction, 2026-11-06(오케스트레이터 역할); `hyper-deploy`를 더해 열다섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-feedback`을 더해 열여섯 단계로 늘린 사용자 지시, 2026-11-07; `hyper-decision`을 더해 열일곱 단계로 늘린 사용자 지시, 2026-11-08; `hyper-google-analytics`를 더해 열여덟 단계로 늘린 사용자 지시, 2026-11-08; `hyper-debug`를 더해 열아홉 단계로 늘린 사용자 지시, 2026-11-09(이슈 #22); `hyper-loop`를 더해 스무 단계로 늘린 사용자 지시, 2026-11-09(이슈 #21); `hyper-data`를 더해 스물한 단계로 늘린 사용자 지시, 2026-11-09(이슈 #25); `hyper-google-tagmanager`를 더해 스물두 단계로 늘린 사용자 지시, 2026-11-09(hyper 라우팅 갱신); `hyper-frontend`를 더해 스물세 단계로 늘린 사용자 지시, 2026-11-09(이슈 #46); `hyper-handoff`를 더해 스물네 단계로 늘린 사용자 지시, 2026-11-10; `hyper-debate`를 더해 현재의 스물다섯 단계로 늘린 사용자 지시, 2026-11-10(이슈 #26); 웹 조사형 리서치에 `hyper-browsing`을 붙인 사용자 지시, 2026-11-07 |
 | 각 단계 스킬의 결과물, 산출물 경로, 경계 | 이 저장소의 각 단계 스킬 `SKILL.md`, 2026-11-06 |
 | 계획 단계가 스스로 실행으로 이어지고 전달 플래그를 넘김 | 이 저장소의 계획 스킬 handoff 규칙, 2026-11-06 |
 | 순차 체인은 저장된 산출물로 상태를 넘기고 라우터는 코드 같은 규칙으로 갈래를 고름 | `instructions/graph-engineering/references/graph-patterns.md` |

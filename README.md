@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 28개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 29개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **설치 경로 두 가지**: 모든 런타임은 `npx skills`, Claude Code는 마켓플레이스 플러그인으로도 설치합니다. 한 환경에는 한 경로만 씁니다([선택 기준](#claude-code-플러그인-마켓플레이스)).
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -37,7 +37,7 @@ Hypercore의 표준 설치·관리 경로는 [Vercel Skills CLI](https://github.
 ```bash
 claude plugin marketplace add alpoxdev/hypercore
 claude plugin install hypercore@alpoxdev            # 기본 scope는 user. 프로젝트에 고정하려면 --scope project
-claude plugin details hypercore                     # Skills (28) 확인
+claude plugin details hypercore                     # Skills (29) 확인
 claude plugin update hypercore@alpoxdev
 claude plugin uninstall hypercore@alpoxdev
 claude plugin marketplace remove alpoxdev           # 마켓플레이스와 그 플러그인을 함께 제거
@@ -136,6 +136,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 /hyper "<작업>"         # 상황에 맞는 hyper 스킬 체인(리서치·아키텍처·계획·실행 등)을 골라 처음부터 끝까지 실행
 /hyper-research "<주제>"  # 출처가 있는 다중 소스 리서치 보고서
 /hyper-plan "<작업>"    # 결정이 끝난 작업 계획을 쓰고 기본으로 hyper-execute까지 이어서 실행
+/hyper-debate "<작업>"  # 대립형 계획을 명시적으로 요청했을 때만 다섯 관점·세 라운드 토론 뒤 승인 한 번으로 계획 작성
 /hyper-execute <slug>  # .hyper/plans 계획을 웨이브별 worktree에서 검증하며 실행
 /hyper-mass "<작업>"    # 의존성이 있는 하위 작업을 단계별 DAG로 병렬 실행
 /hyper-mcp "<작업>"     # MCP 서버·클라이언트 구축, 점검·수정, 새 판 이전, 호스트 연결, 레지스트리 준비를 검증까지
@@ -245,8 +246,9 @@ flowchart LR
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-google-analytics·hyper-google-tagmanager·hyper-architecture·hyper-database·hyper-mcp·hyper-decision·hyper-design·hyper-frontend·hyper-feedback·hyper-debug·hyper-data·hyper-handoff·hyper-imagegen·hyper-plan·hyper-execute·hyper-mass·hyper-loop·hyper-skill·hyper-documentation·hyper-git·hyper-deploy 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 레이아웃·상태 버그 수정 → frontend, 고객·기획자 변경 요청 → feedback(큰 항목은 → plan), 실패 원인 찾기 → debug(여러 파일 수정은 → plan), 여러 목표 끝까지 → loop, 데이터셋 질문 → data, 이어받기 메모 → handoff, 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute, 인터넷 검색 리서치 → research(막힌 출처는 hyper-browsing 동반), 기능 고치고 배포 → plan → execute → deploy, 배포 실패 고치기 → deploy) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
+| `hyper` | 작업만 말하면 hyper-research·hyper-issue·hyper-seo·hyper-google-analytics·hyper-google-tagmanager·hyper-architecture·hyper-database·hyper-mcp·hyper-decision·hyper-design·hyper-frontend·hyper-feedback·hyper-debug·hyper-data·hyper-handoff·hyper-imagegen·hyper-plan·hyper-debate·hyper-execute·hyper-mass·hyper-loop·hyper-skill·hyper-documentation·hyper-git·hyper-deploy 중 필요한 것만 골라 체인을 짜고 처음부터 끝까지 실행(예: 리팩토링 → architecture → plan → execute, 스킬 만들기 → research → skill, 스킬 만들고 머지·푸시 → skill → git, 런북 정리 → documentation, MCP 서버 만들기 → mcp, 화면 디자인 → design, 레이아웃·상태 버그 수정 → frontend, 고객·기획자 변경 요청 → feedback(큰 항목은 → plan), 실패 원인 찾기 → debug(여러 파일 수정은 → plan), 여러 목표 끝까지 → loop, 데이터셋 질문 → data, 이어받기 메모 → handoff, 스키마 설계 → database, 이미지 한 장 → imagegen, 이슈 배치 → issue → plan → execute, 인터넷 검색 리서치 → research(막힌 출처는 hyper-browsing 동반), 기능 고치고 배포 → plan → execute → deploy, 배포 실패 고치기 → deploy) | 스킬 불러오기 필요; 단계별 요구 사항 따름 |
 | `hyper-plan` | 탐색 후 결정이 끝난 작업 계획(`.hyper/plans/`)을 쓰고, 사용자가 막지 않으면 실행 단계로 자동 연결 | All |
+| `hyper-debate` | 사용자가 대립형 계획을 직접 요청했을 때만 다섯 고정 관점(회의론·검증자·조사자·설계자·창의)이 세 라운드(발견→공격·유지→방어·정련·철회)로 계획의 전제를 따지고, `.hyper/debate/<slug>/` 영수증에 근거와 판정을 남긴 뒤 통찰 묶음 한 번의 승인으로 살아남은 발견만 `.hyper/plans/<slug>.md` 결정 완료 계획으로 씁니다. 하위 에이전트가 없으면 순차 실행으로 줄어든 사실을 보고합니다 | All; 병렬 하위 에이전트 선택(Sources) |
 | `hyper-execute` | 계획의 체크박스를 웨이브별 worktree에서 위임·검증·병합하며 끝까지 실행, 선택적 PR 전달 | git worktree; 하위 에이전트 선택 |
 | `hyper-issue` | 확정된 발견이나 결정된 작업을 새 세션 에이전트가 읽는 영어 이슈로 등록하고, 열린 이슈 묶음이나 `#1~3` 같은 번호를 서로 겹치지 않는 작업 레인으로 묶어 배치 매니페스트 생성. 작업까지 원하면 `hyper`에 넘겨 레인별로 실행(스킬 자체는 구현하지 않음) | 인증된 이슈 트래커 CLI(`gh`); 쓰기 권한이 없으면 본문을 디스크에 초안으로 남김; 레인 실행에는 `hyper` 스킬 |
 | `hyper-mass` | 의존 순서가 있는 하위 작업을 그래프로 정의해 단계별 병렬 실행, 재시도·수정·재개 지원 | All |

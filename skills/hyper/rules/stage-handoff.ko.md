@@ -25,6 +25,7 @@
 | `hyper-handoff` | 사용자 요청 그대로, 모드(쓰기, 확인, 이어받기), 지목한 메모 경로나 slug, 앞 단계 산출물 경로 전부 | `Check:` 줄(`pass`, `unverified-standalone: <질문 번호>`, `self: pass`, `self: fail: <질문 번호>`, `skipped by user` 중 하나)이 있는 `.hyper/handoff/<slug>/memo.md`. 이어받기 모드는 세 줄 되풀이 | - |
 | `hyper-imagegen` | 사용자 요청 그대로, 있으면 제공한 편집 원본이나 참고 자료 경로, 모든 앞 단계 산출물 경로 | 종료 상태 한 줄(`generated_verified`, `generated_caveated`, `prompt_saved`, `awaiting_input`, `blocked` 중 하나)과 그 근거. 런타임이 돌려준 이미지 기록이나 `.hyper/imagegen/<topic>/` 아래 파일의 상대 경로와 digest | - |
 | `hyper-plan` | 사용자의 원래 요청, 꼭 읽어야 할 앞 단계 산출물 경로 전부, 전달 플래그, 사용자가 말했다면 `--plan-only`나 승인 보류 | `## Handoff` 섹션이 있는 `.hyper/plans/<slug>.md` | 없음. 이 단계가 스스로 `hyper-execute`로 이어집니다 |
+| `hyper-debate` | 토론을 선택한 표현이 그대로 들어간 사용자의 원래 요청, 꼭 읽어야 할 앞 단계 산출물 경로 전부, 전달 플래그. 승인 지점은 정확히 한 번이고 두 번째 질문을 하지 않는다는 점을 함께 넘깁니다 | `.hyper/debate/<slug>/` 영수증(라운드 1~3과 장부)과, 같은 계획 모양으로 쓴 `.hyper/plans/<slug>.md`. 묶음 끝의 `Result:`는 `planned`, `reduced-planned`, `awaiting-approval`, `declined`, `blocked` 중 하나 | 없음. 승인 뒤에 이 단계가 스스로 `hyper-execute`로 이어집니다 |
 | `hyper-execute` | 계획 slug와 전달 플래그 | `status`가 `complete`인 `.hyper/execute/<slug>/state.json`과 출력된 완료 블록 | - |
 | `hyper-mass` | 목표, 성공 기준, 앞 단계 산출물 경로 전부 | `status`가 `completed`인 `run.settled` 이벤트로 끝나는 `.hyper/mass/<run-key>/run.jsonl` | - |
 | `hyper-loop` | 사용자 요청 그대로와 그 목표·기준, 재개라면 루프 slug, 사용자의 제약, 앞 단계 산출물 경로 전부 | `status`가 `complete`, `blocked`, `paused` 중 하나인 `.hyper/loop/<slug>/final-gate.json`. `complete`면 종료 코드 0으로 끝난 `verify-loop-state.sh --final` 실행 결과 | `hyper-git`이 뒤따를 때는 바뀐 경로 |
