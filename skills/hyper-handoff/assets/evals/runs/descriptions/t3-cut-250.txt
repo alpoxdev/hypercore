@@ -1,0 +1,1 @@
+Use this skill when work must continue from a short state memo, not the long conversation: the context is nearly full, the session is to be compacted, replaced, or moved to another agent or machine, or the user asks for a handoff, a continuation note
