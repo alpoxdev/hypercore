@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 38,
+    "expectedRows": 40,
     "legacyOriginCounts": {
       "former-sh": 11,
       "retained-mjs": 2,
       "authored-mjs": 23,
-      "authored-sh": 2
+      "authored-sh": 4
     },
     "requiredDimensions": [
       "stdout",
@@ -24,7 +24,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 114
+    "expectedFixtures": 120
   },
   "rows": [
     {
@@ -8344,6 +8344,411 @@
           }
         }
       }
+    },
+    {
+      "id": "hyper-cleanup--scan-test-junk",
+      "path": "skills/hyper-cleanup/scripts/scan-test-junk.sh",
+      "family": "hyper-cleanup",
+      "legacyOrigin": "authored-sh",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-cleanup/scripts/scan-test-junk.sh",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-cleanup--scan-test-junk--stdout",
+        "stderr": "hyper-cleanup--scan-test-junk--stderr",
+        "exit": "hyper-cleanup--scan-test-junk--exit",
+        "files": "hyper-cleanup--scan-test-junk--files",
+        "modes": "hyper-cleanup--scan-test-junk--modes",
+        "cwd": "hyper-cleanup--scan-test-junk--cwd",
+        "env": "hyper-cleanup--scan-test-junk--env",
+        "argv": "hyper-cleanup--scan-test-junk--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-cleanup/scripts/scan-test-junk.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "tests"
+            ],
+            "files": [
+              {
+                "path": "tests/junk.spec.ts",
+                "text": "import { test } from 'node:test'\n\ntest.only('adds two numbers', () => {\n  expect(add(1, 2)).toBe(add(1, 2))\n  expect(items.length).toBeGreaterThan(0)\n})\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "tests/junk.spec.ts:3:FOCUSED_TEST: a focused test narrows the run to one case\ntests/junk.spec.ts:4:SELF_COMPARISON: the assertion compares a value with itself\ntests/junk.spec.ts:5:WEAK_ASSERTION: the assertion proves only that the collection is not empty\nsummary: 3 finding(s) in 1 file(s)\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "tests/junk.spec.ts",
+                "bytes": 153,
+                "sha256": "80a7f980f69c2af5401d8be954d5b2f631a7721b6f8b0d241ee7db456f9a1a45"
+              }
+            ],
+            "modes": {
+              "tests/junk.spec.ts": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "tests"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-cleanup/scripts/scan-test-junk.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--bogus"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "# fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "equals": "{\"ok\":false,\"code\":\"BAD_ARGUMENT\",\"message\":\"unknown argument: --bogus\"}\n"
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 10,
+                "sha256": "faa5b4816800b8cbe1595e5533fe36c53f396c0c26a3a876dd3e4085232348a1"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--bogus"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-cleanup/scripts/scan-test-junk.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--self-test"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "# fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"ok\":true,\"classes\":6,\"fixtures\":3,\"findings\":8,\"clean_fixture_findings\":0}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 10,
+                "sha256": "faa5b4816800b8cbe1595e5533fe36c53f396c0c26a3a876dd3e4085232348a1"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--self-test"
+            ]
+          }
+        }
+      },
+      "behaviorContractId": "hyper-cleanup--scan-test-junk"
+    },
+    {
+      "id": "hyper-cleanup--mutation-proof",
+      "path": "skills/hyper-cleanup/scripts/mutation-proof.sh",
+      "family": "hyper-cleanup",
+      "legacyOrigin": "authored-sh",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-cleanup/scripts/mutation-proof.sh",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-cleanup--mutation-proof--stdout",
+        "stderr": "hyper-cleanup--mutation-proof--stderr",
+        "exit": "hyper-cleanup--mutation-proof--exit",
+        "files": "hyper-cleanup--mutation-proof--files",
+        "modes": "hyper-cleanup--mutation-proof--modes",
+        "cwd": "hyper-cleanup--mutation-proof--cwd",
+        "env": "hyper-cleanup--mutation-proof--env",
+        "argv": "hyper-cleanup--mutation-proof--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-cleanup/scripts/mutation-proof.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "calc.sh",
+              "--find",
+              "+ $2",
+              "--replace",
+              "- $2",
+              "--test",
+              "bash calc-test.sh"
+            ],
+            "files": [
+              {
+                "path": "calc.sh",
+                "text": "#!/usr/bin/env bash\nadd() { echo $(( $1 + $2 )); }\nadd \"$1\" \"$2\"\n",
+                "mode": "755"
+              },
+              {
+                "path": "calc-test.sh",
+                "text": "#!/usr/bin/env bash\nresult=$(bash calc.sh 2 3)\n[ \"$result\" = \"5\" ] || { echo \"expected 5, got $result\"; exit 1; }\n",
+                "mode": "755"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "file: calc.sh\nmutation: + $2 -> - $2\ntest: bash calc-test.sh (exit 1)\noutput: expected 5, got -1 \nverdict: caught — the test failed with the mutation in place\nrestore: byte-identical, sha256 938532ef1fd9e1c18e50fccf089069890ae2da7b64d67676b1ec68e0d0673e4f\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "calc-test.sh",
+                "bytes": 114,
+                "sha256": "92e1097e07dbfca976459a5cc17be77e834ab8aa9e8a41c8dd7797300baac8cf"
+              },
+              {
+                "path": "calc.sh",
+                "bytes": 65,
+                "sha256": "938532ef1fd9e1c18e50fccf089069890ae2da7b64d67676b1ec68e0d0673e4f"
+              }
+            ],
+            "modes": {
+              "calc-test.sh": "755",
+              "calc.sh": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "calc.sh",
+              "--find",
+              "+ $2",
+              "--replace",
+              "- $2",
+              "--test",
+              "bash calc-test.sh"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-cleanup/scripts/mutation-proof.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "README.md",
+              "--find",
+              "absent-token",
+              "--test",
+              "true"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "# fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "equals": "{\"ok\":false,\"code\":\"FIND_ABSENT\",\"message\":\"the find text does not occur in README.md\"}\n"
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 10,
+                "sha256": "faa5b4816800b8cbe1595e5533fe36c53f396c0c26a3a876dd3e4085232348a1"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "README.md",
+              "--find",
+              "absent-token",
+              "--test",
+              "true"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-cleanup/scripts/mutation-proof.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "calc.sh",
+              "--find",
+              "+ $2",
+              "--replace",
+              "* $2",
+              "--test",
+              "exit 7",
+              "--json"
+            ],
+            "files": [
+              {
+                "path": "calc.sh",
+                "text": "#!/usr/bin/env bash\nadd() { echo $(( $1 + $2 )); }\nadd \"$1\" \"$2\"\n",
+                "mode": "755"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"ok\":true,\"file\":\"calc.sh\",\"mutation\":{\"find\":\"+ $2\",\"replace\":\"* $2\"},\"test\":{\"command\":\"exit 7\",\"exit_code\":7,\"output\":[]},\"verdict\":\"caught\",\"restored\":true,\"original_sha256\":\"938532ef1fd9e1c18e50fccf089069890ae2da7b64d67676b1ec68e0d0673e4f\",\"restored_sha256\":\"938532ef1fd9e1c18e50fccf089069890ae2da7b64d67676b1ec68e0d0673e4f\"}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "calc.sh",
+                "bytes": 65,
+                "sha256": "938532ef1fd9e1c18e50fccf089069890ae2da7b64d67676b1ec68e0d0673e4f"
+              }
+            ],
+            "modes": {
+              "calc.sh": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "calc.sh",
+              "--find",
+              "+ $2",
+              "--replace",
+              "* $2",
+              "--test",
+              "exit 7",
+              "--json"
+            ]
+          }
+        }
+      },
+      "behaviorContractId": "hyper-cleanup--mutation-proof"
     }
   ],
   "legacyPreimageBase": "990359457e2ccbf2bd4bb65065037d456c5940bc"

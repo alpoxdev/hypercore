@@ -621,6 +621,36 @@
         }
       },
       "behaviorContractId": "hyper-data--probe-engines"
+    },
+    {
+      "path": "skills/hyper-cleanup/scripts/scan-test-junk.sh",
+      "family": "hyper-cleanup",
+      "legacyOrigin": "authored-sh",
+      "usage": "scan-test-junk",
+      "behavior": "test-junk-scan",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-cleanup/scripts/scan-test-junk.sh",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-cleanup--scan-test-junk"
+    },
+    {
+      "path": "skills/hyper-cleanup/scripts/mutation-proof.sh",
+      "family": "hyper-cleanup",
+      "legacyOrigin": "authored-sh",
+      "usage": "prove-mutation",
+      "behavior": "mutation-proof",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-cleanup/scripts/mutation-proof.sh",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-cleanup--mutation-proof"
     }
   ],
   "forbiddenDetectorReferences": {
