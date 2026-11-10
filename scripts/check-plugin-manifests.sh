@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# check-plugin-manifests.sh — validate the Codex and Claude Code plugin manifests.
+# check-plugin-manifests.sh — validate the Codex, Claude Code and Cursor plugin
+# manifests.
 #
 # Usage: check-plugin-manifests.sh [repository-root]
 #
 # Checks (needs jq):
-#   - .codex-plugin/plugin.json, .claude-plugin/plugin.json and
-#     .claude-plugin/marketplace.json are valid JSON objects.
-#   - Both plugin manifests share name, SemVer version, description, homepage,
-#     repository, license, author and keywords.
+#   - .codex-plugin/plugin.json, .claude-plugin/plugin.json,
+#     .claude-plugin/marketplace.json and .cursor-plugin/plugin.json are valid
+#     JSON objects.
+#   - All three plugin manifests share name, SemVer version, description,
+#     homepage, repository, license, author and keywords.
 #   - The marketplace lists the plugin once, under the manifest name, with a
 #     relative source that starts with ./ and has no "..", and no version
 #     (plugin.json is the single version source).
@@ -24,6 +26,7 @@ ROOT=${1:-$(cd "$(dirname "$0")/.." && pwd)} || exit 1
 CODEX=$ROOT/.codex-plugin/plugin.json
 CLAUDE=$ROOT/.claude-plugin/plugin.json
 MARKET=$ROOT/.claude-plugin/marketplace.json
+CURSOR=$ROOT/.cursor-plugin/plugin.json
 DESCRIPTION_CAP=1536
 
 fail() {
@@ -33,23 +36,26 @@ fail() {
 
 command -v jq >/dev/null 2>&1 || fail "jq is required"
 
-for file in "$CODEX" "$CLAUDE" "$MARKET"; do
+for file in "$CODEX" "$CLAUDE" "$MARKET" "$CURSOR"; do
   [ -f "$file" ] || fail "${file#"$ROOT"/} is missing"
   jq -e 'type == "object"' "$file" >/dev/null 2>&1 || fail "${file#"$ROOT"/} is not a valid JSON object"
 done
 
 name=$(jq -r '.name // empty' "$CLAUDE")
 [ -n "$name" ] || fail ".claude-plugin/plugin.json has no name"
-[ "$(jq -r '.name // empty' "$CODEX")" = "$name" ] || fail "plugin name differs between .codex-plugin and .claude-plugin"
 
 version=$(jq -r '.version // empty' "$CLAUDE")
 semver='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
 printf '%s' "$version" | grep -Eq -- "$semver" || fail ".claude-plugin/plugin.json version '$version' is not SemVer"
-[ "$(jq -r '.version // empty' "$CODEX")" = "$version" ] || fail "version differs between .codex-plugin and .claude-plugin"
 
-for field in description homepage repository license author keywords; do
-  [ "$(jq -c --arg f "$field" '.[$f]' "$CODEX")" = "$(jq -c --arg f "$field" '.[$f]' "$CLAUDE")" ] \
-    || fail "$field differs between .codex-plugin and .claude-plugin"
+for other in "$CODEX" "$CURSOR"; do
+  label=$(basename -- "$(dirname -- "$other")")
+  [ "$(jq -r '.name // empty' "$other")" = "$name" ] || fail "plugin name differs between $label and .claude-plugin"
+  [ "$(jq -r '.version // empty' "$other")" = "$version" ] || fail "version differs between $label and .claude-plugin"
+  for field in description homepage repository license author keywords; do
+    [ "$(jq -c --arg f "$field" '.[$f]' "$other")" = "$(jq -c --arg f "$field" '.[$f]' "$CLAUDE")" ] \
+      || fail "$field differs between $label and .claude-plugin"
+  done
 done
 
 [ "$(jq -r '.name // empty' "$MARKET")" != "" ] || fail "marketplace.json has no name"
@@ -73,6 +79,7 @@ plugin_root=$ROOT/${source_path#./}
 codex_skills=$(jq -r '.skills // empty' "$CODEX")
 [ "$codex_skills" = "./skills/" ] || fail ".codex-plugin skills path '$codex_skills' must be ./skills/"
 jq -e 'has("skills") | not' "$CLAUDE" >/dev/null || fail ".claude-plugin/plugin.json must rely on the default skills/ directory"
+jq -e 'has("skills") | not' "$CURSOR" >/dev/null || fail ".cursor-plugin/plugin.json must rely on the default skills/ directory"
 
 count=0
 for dir in "$ROOT"/skills/*/; do

@@ -17,7 +17,7 @@ Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 �
 
 ## 호환성
 
-Hypercore의 표준 설치·관리 경로는 [Vercel Skills CLI](https://github.com/vercel-labs/skills)의 원격 소스 규약입니다. Claude Code, Codex, Cursor 등 런타임 선택은 `npx skills`의 `--agent` 옵션으로 처리합니다. Claude Code만 쓴다면 저장소 자체가 마켓플레이스이므로 `/plugin` 설치도 가능합니다([Claude Code 플러그인](#claude-code-플러그인-마켓플레이스)). 저장소 루트의 `.codex-plugin/plugin.json`은 [awesome-codex-plugins](https://github.com/hashgraph-online/awesome-codex-plugins) 목록 등록용 Codex 플러그인 설명서이고, `.claude-plugin/`은 Claude Code 플러그인·마켓플레이스 설명서입니다. 두 설명서 모두 같은 `skills/`를 가리키며 다른 mirror adapter는 제공하지 않습니다.
+Hypercore의 표준 설치·관리 경로는 [Vercel Skills CLI](https://github.com/vercel-labs/skills)의 원격 소스 규약입니다. Claude Code, Codex, Cursor 등 런타임 선택은 `npx skills`의 `--agent` 옵션으로 처리합니다. Claude Code만 쓴다면 저장소 자체가 마켓플레이스이므로 `/plugin` 설치도 가능합니다([Claude Code 플러그인](#claude-code-플러그인-마켓플레이스)). 저장소 루트의 `.codex-plugin/plugin.json`은 [awesome-codex-plugins](https://github.com/hashgraph-online/awesome-codex-plugins) 목록 등록용 Codex 플러그인 설명서이고, `.claude-plugin/`은 Claude Code 플러그인·마켓플레이스 설명서, `.cursor-plugin/plugin.json`은 Cursor 플러그인 설명서입니다. 세 설명서 모두 같은 `skills/`를 가리키며 다른 mirror adapter는 제공하지 않습니다.
 
 | 런타임 | 설치 예시 | 비고 |
 |---|---|---|
@@ -25,6 +25,7 @@ Hypercore의 표준 설치·관리 경로는 [Vercel Skills CLI](https://github.
 | Claude Code (플러그인) | `claude plugin marketplace add alpoxdev/hypercore` → `claude plugin install hypercore@alpoxdev` | 위와 택일. 스킬 이름은 `/hypercore:hyper-git` |
 | Codex CLI | `npx skills add alpoxdev/hypercore -a codex -g` | project/global 모두 `.agents/skills` canonical 경로 사용 |
 | Cursor | `npx skills add alpoxdev/hypercore -a cursor -g` | `npx skills` 표준 대상 |
+| Cursor (플러그인) | 팀 marketplace: Dashboard → Plugins & MCPs → Add Marketplace → Import from Repo에 `https://github.com/alpoxdev/hypercore` 입력. 로컬 시험: 저장소를 `~/.cursor/plugins/local/hypercore`에 복사한 뒤 Developer: Reload Window | 위와 택일. 팀 marketplace는 Teams·Enterprise 요금제 전용. 로컬 폴더는 심링크가 아니라 복사본이어야 함(바깥을 가리키는 심링크는 건너뜀). Cursor Marketplace 공개 등록은 별도 심사 |
 | 기타 | `npx skills add alpoxdev/hypercore -g` | CLI가 지원하는 agent에 한함 |
 
 스킬별 실행 호환은 아래 [스킬 카탈로그](#스킬-카탈로그)의 **호환** 컬럼 또는 각 `SKILL.md`의 `compatibility` 필드에서 확인합니다.
@@ -47,7 +48,7 @@ claude plugin marketplace remove alpoxdev           # 마켓플레이스와 그 
 동작 규칙:
 
 - **업데이트는 버전 단위입니다.** `plugin.json`이 `version`을 고정하므로 사용자는 그 문자열이 바뀐 릴리스에서만 새 사본을 받습니다. 서드파티 마켓플레이스의 자동 업데이트는 기본으로 꺼져 있으므로 `claude plugin marketplace update alpoxdev`로 카탈로그를 갱신한 뒤 `claude plugin update hypercore@alpoxdev`를 실행하거나, `/plugin`의 Marketplaces에서 auto-update를 켭니다. 업데이트는 재시작 후 적용됩니다.
-- **버전의 정본은 `.claude-plugin/plugin.json`입니다.** `.codex-plugin/plugin.json`과 같은 값이어야 하며(`bash scripts/check-plugin-manifests.sh`가 검사) 마켓플레이스 항목에는 `version`을 쓰지 않습니다.
+- **버전의 정본은 `.claude-plugin/plugin.json`입니다.** `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`과 같은 값이어야 하며(`bash scripts/check-plugin-manifests.sh`가 검사) 마켓플레이스 항목에는 `version`을 쓰지 않습니다.
 - **플러그인 사본에 `skills/` 외 파일도 들어갑니다.** 마켓플레이스 항목의 source가 저장소 루트(`./`)라서 `instructions/`, `scripts/` 등 추적 파일 전체(약 17MB)가 캐시에 복사됩니다. Claude Code에는 제외 목록 기능이 없고, 로드되는 구성 요소는 `skills/`뿐입니다.
 
 ### `npx skills`와 플러그인 중 하나만 고르기
@@ -324,6 +325,7 @@ lint, typecheck, build 같은 프로젝트 게이트를 재현하고, 실패가 
 hypercore/
 ├── .claude-plugin/        # Claude Code 플러그인(plugin.json)과 마켓플레이스(marketplace.json) 설명서, skills/를 가리킴
 ├── .codex-plugin/         # Codex 플러그인 설명서 (awesome-codex-plugins 등록용, skills/를 가리킴)
+├── .cursor-plugin/        # Cursor 플러그인 설명서 (plugin.json, 기본 위치의 skills/를 읽음)
 ├── assets/                # 플러그인 아이콘, README 이미지 등 저장소 수준 정적 asset
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
 ├── scripts/               # source/lifecycle/plugin manifest 검증 및 보조 스크립트
