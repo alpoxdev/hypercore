@@ -1,6 +1,6 @@
 ---
 name: hyper-handoff
-description: "Use this skill when work must continue from a short state memo instead of the long conversation: the context is nearly full, the session is about to be compacted, replaced, or moved to another agent or machine, or the user asks for a handoff, a continuation note, or to resume from one. It writes one memo file under `.hyper/handoff/` holding the user's original request verbatim, what is being done and why, what is done and verified, the next steps, the plan, the done-when conditions, and where everything is; proves the memo stands alone by having a reader with no conversation answer fixed questions from it; and starts a fresh session from that memo alone. Do not use for durable agent memory files, for a written work plan, for the run state of a plan or goal loop, or for a chat summary."
+description: "Use this skill when work must continue from a short state memo instead of the long conversation: the context is nearly full, the session is about to be compacted, replaced, or moved to another agent or machine, or the user asks for a handoff, a continuation note, or to read, restate, or continue from a memo under `.hyper/handoff/`. It writes one memo file under `.hyper/handoff/` holding the user's original request verbatim, what is being done and why, what is done and verified, the next steps, the plan, the done-when conditions, and where everything is; proves the memo stands alone by having a reader with no conversation answer fixed questions from it; and starts a fresh session from that memo alone, restating it in three lines before the work continues. Do not use for durable agent memory files, for a written work plan, for the run state of a plan or goal loop, for a chat summary, or for a plain request to continue that names no memo while none is open."
 compatibility: Needs file read and write in a working directory that can hold `.hyper/handoff/`, and a shell for read-only checks such as path existence and `git status`. The cold-read check prefers a subagent or a fresh session that receives only the memo file; without one it falls back to a recorded self-check, which proves less. No network access.
 ---
 
@@ -38,7 +38,7 @@ Use this skill when the requested output is a continuation memo or a session tha
 
 - the context is nearly full, a compaction is about to happen, or the user says to wrap up and continue elsewhere
 - the work moves to a new session, another agent, or another machine and must continue without the transcript
-- the user asks for a handoff, a continuation note, a state memo, or says to continue from one ("이어서 해줘", "핸드오프 써줘", "pick this up from the memo")
+- the user asks for a handoff, a continuation note, a state memo, or says to read, restate, or continue from one that is named or open under `.hyper/handoff/` ("memo.md 읽고 이어서 해줘", "핸드오프 써줘", "pick this up from the memo")
 - an existing memo needs the stand-alone check before the old session is closed
 
 Do not use it when:
@@ -47,6 +47,7 @@ Do not use it when:
 - the output is a written work plan to execute later (that is planning)
 - the work is a plan run or a goal loop that already keeps its own state directory; this skill writes only a pointer to that state and never copies its ledger
 - the output is a summary of the conversation for the user to read
+- the request is a plain "이어서 해줘" or "continue" that names no memo while no open memo exists under `.hyper/handoff/` (that is ordinary work in the current conversation)
 
 </routing_rule>
 
