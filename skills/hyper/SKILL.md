@@ -34,7 +34,7 @@ Use a different language only when the user explicitly requests it or a machine-
 
 Use this skill when the requested output is a finished development result that needs one or more of the stage skills below in sequence, or when the user calls `hyper` by name.
 
-By user instruction, this package is an orchestrator: it names its twenty-four stage skills and its one companion skill in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
+By user instruction, this package is an orchestrator: it names its twenty-five stage skills and its one companion skill in the stage map below, in `rules/workflow-routing.md`, in `rules/stage-handoff.md`, in its Sources rows, and in its eval routes. That is the only cross-skill coupling it carries.
 
 | Stage skill | What the stage produces |
 |---|---|
@@ -55,6 +55,7 @@ By user instruction, this package is an orchestrator: it names its twenty-four s
 | `hyper-handoff` | A state memo under `.hyper/handoff/<slug>/memo.md` (the original request verbatim, what is done and next, the done-when conditions, and where everything is) with its stand-alone check line, so a session with no conversation can continue from it; writing or checking one is a tail with nothing after it, and resuming from one is a re-entry step that runs first, takes no chain position, and leaves the remaining work to the run the memo points to |
 | `hyper-imagegen` | One generated or edited image, or one ready-to-use image prompt, delivered as the runtime's returned image or saved under `.hyper/imagegen/<topic>/`, with its terminal state and inspection record |
 | `hyper-plan` | A decision-complete plan under `.hyper/plans/<slug>.md`, which continues into execution by itself |
+| `hyper-debate` | An opt-in adversarial plan: five fixed perspectives argue through three rounds over saved receipts under `.hyper/debate/<slug>/`, one approval point settles the insight bundle, and only the surviving findings become the decision-complete plan under `.hyper/plans/<slug>.md`; it replaces `hyper-plan` for a request that asks for the debate, and never runs alongside it |
 | `hyper-execute` | An existing plan executed wave by wave and delivered locally, as a PR, or shipped |
 | `hyper-mass` | One phase of dependency-ordered work run as a graph under `.hyper/mass/<run-key>/` |
 | `hyper-loop` | Several dependent goals run to completion under `.hyper/loop/<slug>/`, each criterion proven by evidence bound to a worktree fingerprint, finished only by a `final-gate.json` with every criterion covered by non-stale evidence |
@@ -166,6 +167,7 @@ Boundary requests:
 |---|---|
 | Refactor or restructure in a supported stack | `hyper-architecture` -> `hyper-plan` -> `hyper-execute` |
 | New feature, fix, or multi-step build | `hyper-plan` -> `hyper-execute`, with `hyper-architecture` first when the change crosses an architecture boundary |
+| Explicit adversarial or devil's-advocate planning opt-in ("찬반으로 붙여서 계획", "여러 관점으로 따져보고 계획", "red team this plan", "debate it then plan") | `hyper-debate` -> `hyper-execute`, in place of `hyper-plan`; the two never run in one chain, and a hard problem without those words stays on `hyper-plan` |
 | Library or technology choice, or unfamiliar external API, followed by implementation | `hyper-research` -> `hyper-plan` -> `hyper-execute` |
 | Issues to register ("이슈 등록해줘", "이슈로 남겨줘", "register these as issues"), issue numbers (`#1~3`, `#4, #7`), or a condition over open issues | `hyper-issue` -> `hyper-plan` -> `hyper-execute` by default, so registration runs through the lanes to the end; `hyper-issue` alone only with record-only words ("등록만", "이슈만", "작업은 하지 마") |
 | A request handed over by `hyper-issue` that names `.hyper/issues/<slug>/batch.md` and says the issue stage is done | `hyper-plan` -> `hyper-execute`, with `hyper-issue` recorded as `done` |
@@ -296,7 +298,7 @@ Phase rules:
 
 | Claim | Source |
 |---|---|
-| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its twenty-four stage skills and its companion skill | user instruction, 2026-11-06 (orchestrator role); the stage set extended to fifteen with `hyper-deploy` by user instruction, 2026-11-07, to sixteen with `hyper-feedback` by user instruction, 2026-11-07, to seventeen with `hyper-decision` by user instruction, 2026-11-08, to eighteen with `hyper-google-analytics` by user instruction, 2026-11-08, to nineteen with `hyper-debug` by user instruction, 2026-11-09 (issue #22), to twenty with `hyper-loop` by user instruction, 2026-11-09 (issue #21), to twenty-one with `hyper-data` by user instruction, 2026-11-09 (issue #25), to twenty-two with `hyper-google-tagmanager` by user instruction, 2026-11-09 (hyper routing refresh), to twenty-three with `hyper-frontend` by user instruction, 2026-11-09 (issue #46), and to the current twenty-four with `hyper-handoff` by user instruction, 2026-11-10; `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
+| The orchestrator role, the end-to-end run, and the user-directed exception that lets this package name its twenty-five stage skills and its companion skill | user instruction, 2026-11-06 (orchestrator role); the stage set extended to fifteen with `hyper-deploy` by user instruction, 2026-11-07, to sixteen with `hyper-feedback` by user instruction, 2026-11-07, to seventeen with `hyper-decision` by user instruction, 2026-11-08, to eighteen with `hyper-google-analytics` by user instruction, 2026-11-08, to nineteen with `hyper-debug` by user instruction, 2026-11-09 (issue #22), to twenty with `hyper-loop` by user instruction, 2026-11-09 (issue #21), to twenty-one with `hyper-data` by user instruction, 2026-11-09 (issue #25), to twenty-two with `hyper-google-tagmanager` by user instruction, 2026-11-09 (hyper routing refresh), to twenty-three with `hyper-frontend` by user instruction, 2026-11-09 (issue #46), to twenty-four with `hyper-handoff` by user instruction, 2026-11-10, and to the current twenty-five with `hyper-debate` by user instruction, 2026-11-10 (issue #26); `hyper-browsing` attached to web-sourced research by user instruction, 2026-11-07 |
 | The output, artifact path, and boundary of each stage skill | each stage skill's own `SKILL.md` in this repository, 2026-11-06 |
 | The plan stage continues into execution by itself and passes the delivery flag through | the plan skill's handoff rule in this repository, 2026-11-06 |
 | A sequential chain hands state forward through saved artifacts, and a router picks a branch by code-like rules | `instructions/graph-engineering/references/graph-patterns.md` |
