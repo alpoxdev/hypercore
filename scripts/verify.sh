@@ -7,9 +7,10 @@
 #   2. the bash test suite (scripts/run-tests.sh)
 #   3. scripts/check-skill-corpus.sh
 #   4. scripts/check-skill-contract-parity.sh
-#   5. scripts/check-skill-standards.sh
-#   6. scripts/check-vercel-skills.sh
-#   7. scripts/check-plugin-manifests.sh
+#   5. scripts/check-hyper-stage-parity.sh
+#   6. scripts/check-skill-standards.sh
+#   7. scripts/check-vercel-skills.sh
+#   8. scripts/check-plugin-manifests.sh
 #
 # Every step runs even when an earlier step fails; the script exits 1 when any
 # step failed.
@@ -58,6 +59,7 @@ fi
 run_step "bash test suite" bash scripts/run-tests.sh
 run_step "skill-script corpus" bash scripts/check-skill-corpus.sh
 run_step "skill contract parity" bash scripts/check-skill-contract-parity.sh
+run_step "hyper stage parity" bash scripts/check-hyper-stage-parity.sh
 run_step "skill standards" bash scripts/check-skill-standards.sh
 run_step "vercel skills lifecycle" bash scripts/check-vercel-skills.sh
 run_step "plugin manifests" bash scripts/check-plugin-manifests.sh
