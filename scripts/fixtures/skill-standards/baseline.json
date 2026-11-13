@@ -19,6 +19,7 @@
     "hyper-documentation": {
       "FRONTMATTER_TRIGGER": 1
     },
+    "hyper-docx": {},
     "hyper-execute": {
       "FRONTMATTER_TRIGGER": 1
     },
