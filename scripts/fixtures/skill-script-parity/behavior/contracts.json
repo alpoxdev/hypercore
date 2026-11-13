@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 41,
+    "expectedRows": 44,
     "legacyOriginCounts": {
       "former-sh": 11,
       "retained-mjs": 2,
       "authored-mjs": 23,
-      "authored-sh": 5
+      "authored-sh": 8
     },
     "requiredDimensions": [
       "stdout",
@@ -24,7 +24,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 123
+    "expectedFixtures": 132
   },
   "rows": [
     {
@@ -8932,6 +8932,607 @@
               "check",
               "--memo",
               "memo dir/memo.md"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper-pptx--render-deck",
+      "path": "skills/hyper-pptx/scripts/render-deck.sh",
+      "family": "hyper-pptx",
+      "legacyOrigin": "authored-sh",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-pptx/scripts/render-deck.sh",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-pptx--render-deck--stdout",
+        "stderr": "hyper-pptx--render-deck--stderr",
+        "exit": "hyper-pptx--render-deck--exit",
+        "files": "hyper-pptx--render-deck--files",
+        "modes": "hyper-pptx--render-deck--modes",
+        "cwd": "hyper-pptx--render-deck--cwd",
+        "env": "hyper-pptx--render-deck--env",
+        "argv": "hyper-pptx--render-deck--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-pptx/scripts/render-deck.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--help"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "Usage: bash render-deck.sh --spec <deck.json> --out-dir <dir>\n       [--name <slug>] [--formats pptx,html,png[,pdf]] [--scale <1-3>]\n       [--browser <path>] [--budget-ms <ms>] [--no-check]\n       bash render-deck.sh --list-browsers\n\nExit codes: 0 built and every check passed; 1 built but a layout check failed\n(artifacts are written for inspection, not for delivery); 2 usage or spec\nerror; 3 blocked (no browser, no jq, or no runtime result).\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--help"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-pptx/scripts/render-deck.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--spec",
+              "deck.json",
+              "--out-dir",
+              "out",
+              "--formats",
+              "docx"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              },
+              {
+                "path": "deck.json",
+                "text": "{\"slides\":[{\"kind\":\"title\",\"title\":\"Fixture\",\"subtitle\":\"one\"}]}"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"status\":\"error\",\"code\":\"BAD_FORMAT\",\"message\":\"unknown format 'docx'; use pptx, html, png, pdf\"}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              },
+              {
+                "path": "deck.json",
+                "bytes": 64,
+                "sha256": "eb0276583b3d45f51739dd689ad0a2b5e67a66714db9939c9278f612b90dc2bc"
+              }
+            ],
+            "modes": {
+              "README.md": "644",
+              "deck.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--spec",
+              "deck.json",
+              "--out-dir",
+              "out",
+              "--formats",
+              "docx"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-pptx/scripts/render-deck.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--spec",
+              "missing.deck.json",
+              "--out-dir",
+              "out"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"status\":\"error\",\"code\":\"SPEC_MISSING\",\"message\":\"spec file not found: missing.deck.json\"}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--spec",
+              "missing.deck.json",
+              "--out-dir",
+              "out"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper-pptx--inspect-deck",
+      "path": "skills/hyper-pptx/scripts/inspect-deck.sh",
+      "family": "hyper-pptx",
+      "legacyOrigin": "authored-sh",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-pptx/scripts/inspect-deck.sh",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-pptx--inspect-deck--stdout",
+        "stderr": "hyper-pptx--inspect-deck--stderr",
+        "exit": "hyper-pptx--inspect-deck--exit",
+        "files": "hyper-pptx--inspect-deck--files",
+        "modes": "hyper-pptx--inspect-deck--modes",
+        "cwd": "hyper-pptx--inspect-deck--cwd",
+        "env": "hyper-pptx--inspect-deck--env",
+        "argv": "hyper-pptx--inspect-deck--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-pptx/scripts/inspect-deck.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--help"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "Usage: bash inspect-deck.sh --file <deck.pptx> [--outline] [--json]\n       [--slide <n>] [--check]\n\n--outline  print slide-by-slide text only (what a reader sees)\n--json     print the full report as JSON\n--slide N  restrict --outline/--json to slide N (1-based)\n--check    exit 1 when a structural problem was found (see report.problems)\n\nExit codes: 0 report produced; 1 report produced with problems (--check);\n2 usage or file error.\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--help"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-pptx/scripts/inspect-deck.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "stub.pptx"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              },
+              {
+                "path": "stub.pptx",
+                "text": "stub"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"status\":\"error\",\"code\":\"NOT_A_PPTX\",\"message\":\"not a readable zip package: stub.pptx\"}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              },
+              {
+                "path": "stub.pptx",
+                "bytes": 4,
+                "sha256": "725c546b990dd1b41f3d5791b37c3c0edcb1f08cf150bdae32a73dfd166e02d7"
+              }
+            ],
+            "modes": {
+              "README.md": "644",
+              "stub.pptx": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "stub.pptx"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-pptx/scripts/inspect-deck.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "missing.pptx"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"status\":\"error\",\"code\":\"FILE_MISSING\",\"message\":\"not a file: missing.pptx\"}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "missing.pptx"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper-pptx--edit-deck",
+      "path": "skills/hyper-pptx/scripts/edit-deck.sh",
+      "family": "hyper-pptx",
+      "legacyOrigin": "authored-sh",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-pptx/scripts/edit-deck.sh",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper-pptx--edit-deck--stdout",
+        "stderr": "hyper-pptx--edit-deck--stderr",
+        "exit": "hyper-pptx--edit-deck--exit",
+        "files": "hyper-pptx--edit-deck--files",
+        "modes": "hyper-pptx--edit-deck--modes",
+        "cwd": "hyper-pptx--edit-deck--cwd",
+        "env": "hyper-pptx--edit-deck--env",
+        "argv": "hyper-pptx--edit-deck--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-pptx/scripts/edit-deck.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--help"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "Usage: bash edit-deck.sh --file <in.pptx> --out <out.pptx> [options]\n       [--replace \"old=>new\"]...   replace literal text inside runs (repeatable)\n       [--set-font <name>]         rewrite every latin+eastAsian typeface\n       [--drop-slide <n>]...       remove slide n (1-based, repeatable)\n       [--allow-miss]              success even when a --replace matched nothing\n\nInspect the deck first: --replace matches the text of one run, and a phrase\nsplit across runs is reported as a miss rather than silently mangled.\n\nExit codes: 0 written; 1 written but a replacement matched nothing; 2 usage or\npackage error; 3 write failure.\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              }
+            ],
+            "modes": {
+              "README.md": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--help"
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-pptx/scripts/edit-deck.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "stub.pptx",
+              "--out",
+              "o.pptx"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              },
+              {
+                "path": "stub.pptx",
+                "text": "stub"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"status\":\"error\",\"code\":\"NOTHING_TO_DO\",\"message\":\"nothing to do: pass --replace, --set-font, or --drop-slide\"}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              },
+              {
+                "path": "stub.pptx",
+                "bytes": 4,
+                "sha256": "725c546b990dd1b41f3d5791b37c3c0edcb1f08cf150bdae32a73dfd166e02d7"
+              }
+            ],
+            "modes": {
+              "README.md": "644",
+              "stub.pptx": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "stub.pptx",
+              "--out",
+              "o.pptx"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper-pptx/scripts/edit-deck.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "stub.pptx",
+              "--out",
+              "o.pptx",
+              "--set-font",
+              "Pretendard"
+            ],
+            "files": [
+              {
+                "path": "README.md",
+                "text": "fixture\n"
+              },
+              {
+                "path": "stub.pptx",
+                "text": "stub"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "{\"status\":\"error\",\"code\":\"NOT_A_PPTX\",\"message\":\"cannot unpack: stub.pptx\"}\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 2,
+            "files": [
+              {
+                "path": "README.md",
+                "bytes": 8,
+                "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+              },
+              {
+                "path": "stub.pptx",
+                "bytes": 4,
+                "sha256": "725c546b990dd1b41f3d5791b37c3c0edcb1f08cf150bdae32a73dfd166e02d7"
+              }
+            ],
+            "modes": {
+              "README.md": "644",
+              "stub.pptx": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "--file",
+              "stub.pptx",
+              "--out",
+              "o.pptx",
+              "--set-font",
+              "Pretendard"
             ]
           }
         }
