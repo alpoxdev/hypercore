@@ -102,6 +102,9 @@ compatibility: bash 3.2+, jq, zip, unzip, xmllint, perl과 Chromium 계열 브�
 | 읽기만 할 기존 파일 | `inspect-deck.sh --outline` |
 | 여덟 장을 넘는 덱 | 장이 바뀌는 곳에 `section` 슬라이드 |
 | 팔레트를 말하지 않음 | `ink`. 기업 문서는 `navy`, 편집물은 `paper`, 인쇄물은 `mono` |
+| 한 차트에 단위 둘(부피와 비율) | `combo`로 막대는 왼쪽 축, 선은 오른쪽 보조 축 |
+| 그림이 증거라 잘리면 안 됨 | `fit: contain`. `fill`은 `srcRect`로 잘라 내며 질감과 hero에만 씁니다 |
+| 쓸 그림이 없음 | 없다고 말하고 그림 없이 전달합니다. 이 스킬은 그림을 배치하지 생성하지 않습니다 |
 
 </trigger_conditions>
 
@@ -109,8 +112,8 @@ compatibility: bash 3.2+, jq, zip, unzip, xmllint, perl과 Chromium 계열 브�
 
 - 핵심(`SKILL.md`): 발동, 계약, 작업 순서, 정지 조건.
 - 규칙: `rules/deck-narrative.md`(무엇을 어느 순서로 놓고 무엇을 뺄지), `rules/layout-and-typography.md`(격자, 활자 크기, 여백, 색, 표, 이미지), `rules/render-and-verify.md`(명령 셋, 보고 필드, 수정 반복, 전달).
-- 참고: `references/spec-format.md`(덱과 슬라이드의 모든 필드와 단위), `references/pptx-internals.md`(패키지 파트, 절대 좌표를 쓰는 이유, 덱이 깨지는 조건, 글자 편집이 빗나가는 이유).
-- 자산: `assets/runtime/layout.jq`(spec에서 절대 좌표로), `assets/runtime/pptx-package.jq`(좌표에서 OOXML 파트로), `assets/preview/viewer.{js,css}`(좌표에서 HTML과 슬라이드 이미지, 배치 보고로), `assets/evals/hyper-pptx-cases.jsonl`.
+- 참고: `references/spec-format.md`(덱과 슬라이드의 모든 필드와 단위), `references/pptx-internals.md`(패키지 파트, 절대 좌표를 쓰는 이유, 덱이 깨지는 조건, 글자 편집이 빗나가는 이유), `references/research-{design,charts,images,verification}.md`(배치·차트·이미지 규칙이 존재하는 이유와 무엇을 쟀는지).
+- 자산: `assets/runtime/layout.jq`(spec에서 절대 좌표로), `assets/runtime/pptx-package.jq`(좌표에서 OOXML 파트로), `assets/runtime/workbook.jq`(차트 데이터에서 임베디드 시트로), `assets/preview/viewer.{js,css}`(좌표에서 HTML과 슬라이드 이미지, 배치 보고로), `assets/examples/report.deck.json`(모양을 베낄 검증된 여덟 장 spec), `assets/evals/hyper-pptx-cases.jsonl`.
 - 스크립트: `scripts/render-deck.sh`는 만들고 검사하고, `scripts/inspect-deck.sh`는 기존 덱을 읽고, `scripts/edit-deck.sh`는 그 자리에서 고칩니다.
 
 </skill_architecture>
@@ -131,7 +134,8 @@ compatibility: bash 3.2+, jq, zip, unzip, xmllint, perl과 Chromium 계열 브�
 
 - 슬라이드마다 무엇을 넣을지 정하기 전에 [rules/deck-narrative.md](rules/deck-narrative.md)를 읽습니다.
 - 슬라이드가 빽빽하거나 활자를 판단해야 할 때 [rules/layout-and-typography.md](rules/layout-and-typography.md)를 읽습니다.
-- spec을 쓰기 전에 [references/spec-format.md](references/spec-format.md)를 읽습니다. 모든 필드와 단위가 있습니다.
+- spec을 쓰기 전에 [references/spec-format.md](references/spec-format.md)를 읽습니다. 모든 필드와 단위, 슬라이드 종류 열다섯 가지, 차트 유형 전부가 있습니다. `assets/examples/report.deck.json`은 모양을 베낄 검증된 spec입니다.
+- 차트 선택이 뻔하지 않을 때(한 장에 단위 둘, x가 날짜인 산점도) [references/research-charts.md](references/research-charts.md)를 읽습니다.
 - 남의 덱을 고치기 전과 덱이 복구 안내 없이 열려야 할 때 [references/pptx-internals.md](references/pptx-internals.md)를 읽습니다.
 - 첫 렌더링 전과 전달 전에 [rules/render-and-verify.md](rules/render-and-verify.md)를 읽습니다.
 

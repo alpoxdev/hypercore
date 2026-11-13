@@ -102,6 +102,9 @@ Boundary requests:
 | Existing file only to read | `inspect-deck.sh --outline` |
 | Deck longer than about 8 slides | add `section` slides at chapter breaks |
 | No palette named | `ink`; `navy` for corporate, `paper` for editorial, `mono` for print |
+| Two units on one chart (volume and rate) | `combo`: bars on the left axis, lines on a second axis on the right |
+| A picture is evidence and must not be cropped | `fit: contain`; `fill` crops through `srcRect` and is right for texture and hero only |
+| No picture available | say so and deliver without it; this skill places pictures, it does not generate them |
 
 </trigger_conditions>
 
@@ -109,8 +112,8 @@ Boundary requests:
 
 - Core (`SKILL.md`): trigger, contract, workflow, stop condition.
 - Rules: `rules/deck-narrative.md` (what goes on a slide, in what order, what to cut); `rules/layout-and-typography.md` (grid, type scale, spacing, colour, tables, images); `rules/render-and-verify.md` (the three commands, report fields, repair loop, delivery).
-- References: `references/spec-format.md` (every deck and slide field, with units); `references/pptx-internals.md` (package parts, why absolute geometry, what breaks a deck, why a text edit misses).
-- Assets: `assets/runtime/layout.jq` (spec → absolute geometry), `assets/runtime/pptx-package.jq` (geometry → OOXML parts), `assets/preview/viewer.{js,css}` (geometry → HTML and slide images, and the layout report), `assets/evals/hyper-pptx-cases.jsonl`.
+- References: `references/spec-format.md` (every deck and slide field, with units); `references/pptx-internals.md` (package parts, why absolute geometry, what breaks a deck, why a text edit misses); `references/research-{design,charts,images,verification}.md` (why each layout, chart, and image rule exists, and what was measured).
+- Assets: `assets/runtime/layout.jq` (spec → absolute geometry), `assets/runtime/pptx-package.jq` (geometry → OOXML parts), `assets/runtime/workbook.jq` (chart data → embedded worksheet), `assets/preview/viewer.{js,css}` (geometry → HTML and slide images, and the layout report), `assets/examples/report.deck.json` (a checked eight-slide spec to copy the shape from), `assets/evals/hyper-pptx-cases.jsonl`.
 - Scripts: `scripts/render-deck.sh` builds and checks; `scripts/inspect-deck.sh` reads an existing deck; `scripts/edit-deck.sh` changes one in place.
 
 </skill_architecture>
@@ -131,7 +134,8 @@ Canonical skill files are English with structurally aligned `*.ko.md` translatio
 
 - Read [rules/deck-narrative.md](rules/deck-narrative.md) before deciding what goes on each slide.
 - Read [rules/layout-and-typography.md](rules/layout-and-typography.md) when a slide is crowded or type needs a decision.
-- Read [references/spec-format.md](references/spec-format.md) before writing the spec; it lists every field and its unit.
+- Read [references/spec-format.md](references/spec-format.md) before writing the spec; it lists every field and its unit, all fifteen kinds, and every chart type. `assets/examples/report.deck.json` is a checked spec to copy the shape from.
+- Read [references/research-charts.md](references/research-charts.md) when a chart choice is not obvious (two units on one page, or a scatter whose x is a date).
 - Read [references/pptx-internals.md](references/pptx-internals.md) before editing someone else's deck, and when a deck must open without a repair prompt.
 - Read [rules/render-and-verify.md](rules/render-and-verify.md) before the first render and before delivery.
 

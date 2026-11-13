@@ -25,7 +25,7 @@ Left edge is one margin for every element, including cards and tables. Nothing i
 | section title | 36 | |
 | slide title | 30 | one line, about 20 Korean characters |
 | lead line | 17 | one sentence under the title |
-| body bullet | 18 | the size a room reads |
+| body bullet | 18 to 22, grown from the block | the size a room reads; capped below the 30-point title |
 | sub-bullet | 16 | derived: body minus 2 |
 | column heading | 17, accent colour | |
 | column bullet | 15 | |
@@ -38,6 +38,8 @@ Left edge is one margin for every element, including cards and tables. Nothing i
 | footer and page number | 11, muted | |
 
 Two rules follow. Body is never smaller than 15 points, because below that a projector turns text into texture. Emphasis comes from weight and colour, not from size: a 30-point title and an 18-point body differ enough that a 24-point "important" bullet only looks inconsistent.
+
+A bullets slide grows its text to the block, not past it: the block is tried at 18, 19, 20, 21 and 22 points and the largest size that fits the body wins. The cap is 22 (`T_BODY_MAX`), so a four-bullet slide never renders its body larger than two thirds of the title. When the block still leaves room, the leftover is spread as extra space before each paragraph, up to 18 points per paragraph, rather than left as one dead strip at the bottom of the page.
 
 ## 3. Spacing
 
@@ -60,12 +62,18 @@ Two rules follow. Body is never smaller than 15 points, because below that a pro
 - A table row height is derived from the body area divided by the row count and clamped to 0.35-0.8 inch. The 0.35 floor wins from 15 rows including the header (14 with a caption), the table then runs past the body bottom, and the renderer reports it as an overflow. Split the table before that.
 - Chart: the first series takes the accent, the rest fall back to muted, line, and surface. A pie with more than five slices is unreadable; use a bar chart.
 - Chart values must be numbers. A string value renders as a category label and silently produces a flat chart.
+- Two units on one page take a `combo`: bars read the left axis, lines read a second axis on the right with no gridlines. Putting a rate and a volume on one axis flattens the rate onto the baseline, which reads as zero.
+- A horizontal chart is for long category names; a vertical one rotates them. A stacked chart shows composition only when the total means something.
+- A scatter's category is its x when it parses as a number. Do not plot the value on both axes: it draws a diagonal through the origin.
 
 ## 6. Images
 
-- Set `aspect` to the real width divided by height. The layout fits the picture into the body area without cropping, so a wrong aspect letterboxes the slide.
-- A caption reserves 411480 EMU below the picture. Do not place text over a photograph; a scrim strong enough to read over any photo dulls the photo.
-- One picture per slide. Two pictures with text is a layout problem, not a picture problem.
+- `fit` decides what is lost. `contain` keeps the whole picture and letterboxes the box, which is right when the picture is evidence such as a screenshot. `fill` keeps the box and crops the centre through `srcRect`, which is right for texture and for `hero`.
+- Set `aspect` to the real width divided by height only when the file's size cannot be read. The layout reads pixel dimensions from the file header first, and a wrong `aspect` crops the wrong band or letterboxes a correct crop.
+- Every picture carries `alt`. It is written as `descr`, announced by a screen reader, and shown when the image fails to load; a delivery without it is reported as `IMAGE_NO_ALT`.
+- A caption reserves its own band above the picture's height, so it can never land on the picture it describes.
+- `gallery` takes one to four pictures with a caption under each. Two pictures beside a paragraph of text is a layout problem, not a picture problem: use `imagetext` for one and `gallery` for the set.
+- A photograph under text takes a flat scrim, `0.55` by default. Raise it for a busy picture, lower it for a dark one. A gradient scrim is invisible over a picture with its own light gradient and cannot be checked by reading a value.
 
 ## 7. What To Check Before Delivering
 
