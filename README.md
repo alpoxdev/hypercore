@@ -43,7 +43,7 @@ omp, Horon, jcode는 `npx skills`의 agent 대상 표에 없어 `-a omp`처럼 �
 ```bash
 claude plugin marketplace add alpoxdev/hypercore
 claude plugin install hypercore@alpoxdev            # 기본 scope는 user. 프로젝트에 고정하려면 --scope project
-claude plugin details hypercore                     # Skills (31) 확인
+claude plugin details hypercore                     # Skills (32) 확인
 claude plugin update hypercore@alpoxdev
 claude plugin uninstall hypercore@alpoxdev
 claude plugin marketplace remove alpoxdev           # 마켓플레이스와 그 플러그인을 함께 제거
@@ -152,6 +152,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 /hyper-browsing "<대상>"  # 403·WAF·챌린지·JavaScript·사라진 페이지처럼 평범한 요청으로 안 열리는 페이지 내용을 단계 사다리로 가져오고 출처·종료 상태까지 기록
 /hyper-frontend "<작업>" # 웹 프런트엔드 구현·수정·레퍼런스 맞춤·브라우저 점검을 스크롤 소유권, 상태 매트릭스, 렌더링 증거 라벨로 검증
 /hyper-prd "<아이디어>"  # 웹·iOS·Android·데스크톱 PRD를 `prd.md` 한 파일로, 규모별 질문 상한과 테스트 가능한 요구사항까지
+/hyper-report "<대상>"  # 보고서를 Markdown 정본에서 HTML·PDF·쪽별 PNG/JPG·DOCX로 렌더하고 쪽 나눔·넘침·그림 잘림을 측정
 /hyper-deploy "<작업>"   # Railway·Cloudflare·Docker·Compose·VPS 배포 전 점검·첫 설정·배포·설정 변경·실패 진단과 수정을 플랫폼 최종 상태로 검증
 /hyper-google-analytics "<작업>"  # GA4 점검·탑재·속성 설정·데이터 분석·수집 진단을 네트워크 요청과 read-back으로 검증
 /hyper-google-tagmanager "<작업>"  # GTM 점검·사이트 탑재·컨테이너 설정·발화 검증·추적 오류 진단·데이터 분석을 요청 증거와 게시 승인 게이트로 처리
@@ -234,6 +235,7 @@ flowchart LR
 | `hyper-skill` | 유지보수하기 쉬운 Codex/AI 에이전트 스킬 생성 및 리팩터링 | All |
 | `hyper-documentation` | 요청한 산출물에 맞춰 다섯 모드 중 하나로 작업: `readme`(코드베이스 기반 README), `agents-md`(영어 `AGENTS.md` + 한국어 `AGENTS.ko.md`, `CLAUDE.md`는 만들지 않음), `prompt`(재사용 프롬프트·템플릿/팩·eval 픽스처), `docs`(AI가 읽기 좋은 문서·런북·룰 팩), `memory`(에이전트 메모리 파일: 색인·주제 파일 구조, 크기 예산, 저장 금지 항목, 갱신·만료·삭제 규칙) | All |
 | `hyper-prd` | 웹·iOS·Android·데스크톱 PRD를 `prd.md` 한 파일로 작성·갱신·검토 — 규모별 질문 상한, EARS 테스트 가능한 요구사항, 인수 시나리오, 핸드오프 블록 | All |
+| `hyper-report` | 완성된 문서로서의 보고서(브리핑·업무·리서치·제안·상태·분석·1쪽 요약)를 Markdown 정본 하나에서 HTML·인쇄 PDF·쪽별 PNG/JPG·DOCX·Markdown으로 렌더. 대상·결정을 먼저 고정하고 모든 수치와 주장을 출처에 묶으며, 표·그림이 독자를 위해 쓰일 때만 넣고 쪽 나눔·넘침·그림 잘림을 측정해 확인 | bash 3.2+ & awk; Chromium 계열 헤드리스 브라우저(HTML·PDF·PNG), `sips` 또는 ImageMagick(JPG), `textutil`(DOCX) |
 
 ### 아키텍처 가드
 
