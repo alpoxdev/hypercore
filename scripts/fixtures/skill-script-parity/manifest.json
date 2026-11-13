@@ -666,6 +666,51 @@
         }
       },
       "behaviorContractId": "hyper-handoff--handoff-memo"
+    },
+    {
+      "path": "skills/hyper-pptx/scripts/render-deck.sh",
+      "family": "hyper-pptx",
+      "legacyOrigin": "authored-sh",
+      "usage": "render-deck",
+      "behavior": "deck-rendering",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-pptx/scripts/render-deck.sh",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-pptx--render-deck"
+    },
+    {
+      "path": "skills/hyper-pptx/scripts/inspect-deck.sh",
+      "family": "hyper-pptx",
+      "legacyOrigin": "authored-sh",
+      "usage": "inspect-deck",
+      "behavior": "deck-inspection",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-pptx/scripts/inspect-deck.sh",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-pptx--inspect-deck"
+    },
+    {
+      "path": "skills/hyper-pptx/scripts/edit-deck.sh",
+      "family": "hyper-pptx",
+      "legacyOrigin": "authored-sh",
+      "usage": "edit-deck",
+      "behavior": "deck-editing",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper-pptx/scripts/edit-deck.sh",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper-pptx--edit-deck"
     }
   ],
   "forbiddenDetectorReferences": {
