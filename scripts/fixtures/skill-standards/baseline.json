@@ -71,6 +71,7 @@
     "hyper-frontend": {},
     "hyper-pptx": {},
     "hyper-cleanup": {},
-    "hyper-hwp": {}
+    "hyper-hwp": {},
+    "hyper-pdf": {}
   }
 }

@@ -6,7 +6,7 @@
 
 > Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
 
-Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 36개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
+Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 37개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
 - **설치 경로 두 가지**: 모든 런타임은 `npx skills`, Claude Code는 마켓플레이스 플러그인으로도 설치합니다. 한 환경에는 한 경로만 씁니다([선택 기준](#claude-code-플러그인-마켓플레이스)).
 - **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
@@ -43,7 +43,7 @@ omp, Horon, jcode는 `npx skills`의 agent 대상 표에 없어 `-a omp`처럼 �
 ```bash
 claude plugin marketplace add alpoxdev/hypercore
 claude plugin install hypercore@alpoxdev            # 기본 scope는 user. 프로젝트에 고정하려면 --scope project
-claude plugin details hypercore                     # Skills (36) 확인
+claude plugin details hypercore                     # Skills (37) 확인
 claude plugin update hypercore@alpoxdev
 claude plugin uninstall hypercore@alpoxdev
 claude plugin marketplace remove alpoxdev           # 마켓플레이스와 그 플러그인을 함께 제거
@@ -65,7 +65,7 @@ claude plugin marketplace remove alpoxdev           # 마켓플레이스와 그 
 |---|---|
 | Claude Code만 쓰고 버전 단위 업데이트·제거를 `claude plugin`으로 관리하고 싶다 | 플러그인 |
 | Codex, Cursor, Antigravity도 함께 쓰거나 같은 설치를 여러 agent에 맞추고 싶다 | `npx skills` |
-| 스킬 일부만 고르거나(`--skill hyper-git`) 프로젝트마다 다르게 설치하고 싶다 | `npx skills` (플러그인은 스킬 36개를 통째로 설치) |
+| 스킬 일부만 고르거나(`--skill hyper-git`) 프로젝트마다 다르게 설치하고 싶다 | `npx skills` (플러그인은 스킬 37개를 통째로 설치) |
 | 스킬을 `/hyper-git`처럼 접두어 없이 부르고 싶다 | `npx skills` |
 
 한 경로에서 다른 경로로 옮길 때는 먼저 기존 설치를 제거합니다. `npx skills`에서 플러그인으로 옮기려면 아래 [설치 및 수명주기](#설치-및-수명주기)의 `remove`로 hypercore 스킬을 지운 뒤 위 플러그인 명령을 실행합니다. 플러그인에서 `npx skills`로 옮기려면 `claude plugin uninstall hypercore@alpoxdev`를 실행한 뒤 아래 설치 절차를 따릅니다.
@@ -161,6 +161,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 /hyper-excel "<작업>"   # .xlsx·.xlsm·CSV를 읽어 시트·수식 구조를 확인하고, 지목된 셀만 고쳐 나머지 파트를 바이트 그대로 보존하며, 수식을 재계산해 캐시 값과 대조
 /hyper-docx "<작업>"    # .docx를 스펙에서 만들고 패키지를 파트 단위로 읽고, 추적 변경·댓글을 남기며, 구조 검증과 렌더 증거로 열림·배치를 확인
 /hyper-hwp "<작업>"     # .hwp·.hwpx를 rhwp CLI로 읽어 본문·표·서식 필드를 뽑고, 지목된 글자·칸·필드만 고친 뒤 왕복 검사로 형식이 살아남았는지 증명
+/hyper-pdf "<작업>"     # PDF를 텍스트·표·이미지·양식 필드·메타데이터로 읽고, HTML이나 JSON 스펙에서 한국어 계약서·청구서·보고서를 만들고, 병합·분할·회전·워터마크·암호화·OCR·접근성 태그를 검사까지
 /hyper-loop "<목표들>"  # 서로 의존하는 여러 목표를 기준별 증거와 작업 트리 지문으로 묶어 끝까지 실행, 코드가 바뀌면 증거를 stale로 표시하고 최종 게이트로 마감
 /hyper-debug "<실패>"    # 스택 트레이스·실패하는 테스트·크래시·가끔 실패하는 테스트를 재현하고 토글로 원인을 증명, 요청하면 최소 수정까지
 /hyper-review "<대상>"  # 지정한 diff·브랜치·PR·작업 트리를 리뷰하고 통과·실패·판정 불가로 판정. 기본은 파일을 고치지 않고, 수정까지 요청할 때만 블로커를 고침
@@ -304,9 +305,10 @@ flowchart LR
 | `hyper-excel` | 엑셀 워크북(.xlsx·.xlsm)과 CSV를 읽고·분석하고·만들고·고침. OOXML 패키지를 표준 라이브러리만으로 직접 다뤄 시트·수식·서식·조건부 서식·데이터 유효성·차트 구조를 파악하고, 셀 단위 패치로 지목된 파트만 바꾸며 미변경 파트를 SHA-256 다이제스트로 증명, 수식 재계산 결과를 캐시 값과 대조해 짧은 합계 범위·낡은 캐시·퍼센트 100배 오류·날짜 로캘 반전을 잡고, cp949 CSV와 `#,##0"원"`·`yyyy-mm-dd` 서식을 처리 | Python 3.8+ 표준 라이브러리(제3자 패키지 불필요); 독립 읽기 확인은 선택으로 openpyxl |
 | `hyper-docx` | 워드 문서(.docx)를 만들고·읽고·고치고·검토. 선언형 JSON 스펙에서 본문·표·그림·바닥글을 만들고, 기존 패키지는 파트 단위로 읽어 지목된 파트만 바꾸며, 추적 변경(`w:ins`·`w:del`·`w:delText`)과 댓글 고정 구간을 남기고, 수락·거부 사본을 만들고, `verify`로 콘텐츠 타입·관계·스타일·이미지·댓글 고정·여백·자리표시자를 검사한 뒤 렌더한 쪽 이미지로 배치를 증명. 한국어 공문서 관례(항목 계층, 15포인트·200퍼센트, 붙임·끝)를 적용 | Python 3.8+ 표준 라이브러리(제3자 패키지 불필요); 배치 증거는 Chromium 계열 헤드리스 브라우저(HTML→PDF) 또는 LibreOffice |
 | `hyper-hwp` | 한글 문서(.hwp 3.x·5.x, .hwpx)를 rhwp CLI로 읽고·고치고·만듦. 본문·개요·표·서식 필드를 JSON으로 뽑고, 글자 치환·칸 값·필드 채우기·문단과 각주 삽입으로 지목된 부분만 바꾸며, JSON 명세로 새 문서를 만들고 HWPX와 HWP5 사이를 변환. 편집 결과는 재읽기와 `hwpx-roundtrip`/`hwp5-roundtrip`으로, 변환은 `convert --verify`로 증명하고 조판 이상 수를 입력과 비교. 공문서·기안문의 일곱 단계 항목 번호와 표기 규칙을 같은 스킬에 담음 | rhwp CLI v0.9.0+ (Rust 바이너리; Python·Node·한글 설치 불필요), bash 3.2+; PDF·SVG·PNG 렌더는 Skia 빌드와 한글 웹폰트 캐시 필요 |
+| `hyper-pdf` | PDF를 읽고·만들고·고치고·검증. 텍스트·표·이미지·양식 필드·메타데이터를 추출하고, HTML 경로(Chromium, CSS 그대로·구조 트리)와 JSON 스펙 경로(브라우저 없이 결정적 배치)로 한국어 계약서·청구서·보고서를 만들며, 병합·분할·회전·워터마크·스탬프·암호화·복호화·양식 채우기·평탄화·OCR을 처리. 글꼴 임베딩·언어 태그·Type3 대체·구조 트리·스캔 쪽을 `check`가 코드로 보고하고, 렌더한 쪽과 추출 텍스트로 눈과 글자를 함께 확인 | macOS 11+(PDFKit·CoreGraphics·CoreText·Vision), bash 3.2+; HTML 경로만 Chromium 계열 브라우저 1개 필요 |
 | `hyper-decision` | 글 대신 타입 판단(예/아니오 확률, 선택, 점수, 이미지 상자)을 돌려주는 decision API(TypeSafe Jev, OpenAI Decisions, Perplexity, Liquid, Cloudflare Clef, Vercel AI SDK·AI Gateway, OpenRouter, 범용 LLM 에뮬레이션)용 적합성 판정, 방언별 질문, 호출 코드, 요청 템플릿, 평가 계획, 라벨 전용 LLM 호출 감사, 경로 설정. 경로를 네 층으로 나눠 확률을 돌려주는지 밝히고 방언별 오프라인 요청 검사기로 확인 | bash 3.2+ · jq (선택); 네트워크와 API 키는 승인된 실호출에만 |
 
-총 36개 스킬. 기획·마케팅·비즈니스용 스킬(blog-maker, instagram-card-maker, korean-writer, storyboard-maker, tone-manner-maker)은 [Hypercore Business](https://github.com/alpoxdev/hypercore-business)로 옮겼습니다. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
+총 37개 스킬. 기획·마케팅·비즈니스용 스킬(blog-maker, instagram-card-maker, korean-writer, storyboard-maker, tone-manner-maker)은 [Hypercore Business](https://github.com/alpoxdev/hypercore-business)로 옮겼습니다. 새 스킬은 `skills/<이름>/` 디렉터리를 추가하기만 하면 됩니다 — 자세한 형태는 [스킬 만들기](#스킬-만들기) 참고.
 
 ## 시나리오 예시
 
@@ -352,7 +354,7 @@ hypercore/
 ├── assets/                # 플러그인 아이콘, README 이미지 등 저장소 수준 정적 asset
 ├── instructions/          # 프로젝트 LLM 작업 베이스 (context/harness/loop/graph/mcp/sourcing/validation 등)
 ├── scripts/               # source/lifecycle/plugin manifest 검증 및 보조 스크립트
-└── skills/                # 36개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
+└── skills/                # 37개 스킬의 단일 원본 (각 폴더에 SKILL.md / SKILL.ko.md)
 ```
 
 스킬 한 개의 표준 구조:
