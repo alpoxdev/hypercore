@@ -45,6 +45,7 @@ Two rules follow. Body is never smaller than 15 points, because below that a pro
 - Cards and stats use a 304800 EMU gap (0.333 inch). A wider gap breaks the row into separate things; a narrower one fuses them.
 - A lead line pushes the body down by 640080 EMU. Do not also add space to the first bullet; the layout already moved the box.
 - Vertical centring is for single-line boxes only. A multi-line box anchored to centre moves when text is edited, which makes two versions of the same slide look different.
+- A columns card is only as tall as its tallest column needs, measured from the heading band, the wrapped bullets, and the bottom pad. A card fixed to a share of the body leaves a large empty panel under three short bullets, and a card that grows past the body is reported as `LAYOUT_OVERFLOW` instead of being cropped silently.
 
 ## 4. Colour
 

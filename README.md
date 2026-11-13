@@ -281,6 +281,7 @@ flowchart LR
 | `hyper-review` | 이미 있는 변경(diff·커밋 범위·브랜치·PR·작업 트리)을 리뷰하고 판정함. 리더가 실제 표면에서 QA 매트릭스를 채우고 독립 읽기 전용 리뷰어 한 명이 여덟 항목 루브릭·테스트 품질 게이트·냄새 트리거를 적용하며, 판정을 내용 정체성(`HEAD`+diff·미추적 파일 SHA-256)에 묶어 이후 변경을 stale로 표시. 기본은 파일을 고치지 않고, 명시적으로 요청할 때만 확인된 블로커를 수정. `.hyper/review/` 보고서 저장 | All |
 | `hyper-cleanup` | 이미 동작하는 코드의 동작 보존 정리. 아홉 가지 슬롭 분류와 분류별 KEEP 예외로 후보를 이름 붙이고, 삭제·재사용·플랫폼·제자리 단순화 사다리에 배치하며, 첫 수정 전에 기준 명령으로 동작을 잠그고, 지운 테스트나 합친 테스트마다 소스 변이를 넣어 판정한 뒤 SHA-256으로 바이트 동일 복원을 확인. `.hyper/cleanup/` 보고서를 `Result:` 줄로 마감 | bash 3.2+ & jq; 변이 증명은 `shasum` |
 | `hyper-design` | 새 화면 디자인, 기존 UI 리디자인, 히어로·데모용 연출 화면(mockup), AI형 generic 패턴 점검·정리를 디자인 브리프·생동감 다이얼→정석 수치(WCAG 2.2·플랫폼·KRDS)와 대비 계산→정적 검출기→독립 검토→증거 기반 납품 게이트 순서로 처리하고 `.hyper/design/`에 브리프와 보고서 저장 | Bash 3.2+ & jq 1.6+; browser optional |
+| `hyper-pptx` | JSON spec 하나로 .pptx를 만들고 슬라이드 PNG를 직접 본 뒤 전달. 표·차트·이미지·발표자 노트가 실제 OOXML 파트로 들어가고, 글자 넘침·캔버스 이탈을 렌더링 단계에서 잡음. 남의 덱은 먼저 읽고 글자·글꼴·슬라이드만 골라 고쳐 레이아웃·마스터·이미지를 건드리지 않음 | bash 3.2+ & jq & zip; Chromium 계열 브라우저(Playwright headless shell 등)는 미리보기·PNG·PDF·배치 검사용 |
 | `hyper-frontend` | 웹 프런트엔드 구현·수정·스크린샷·라이브 페이지 맞춤·실제 브라우저 점검. 스크롤 소유권 이름 붙이기→상태 매트릭스→모션 목적 지도와 reduced-motion→캡처 매트릭스에서 `static`·`rendered`·`not verified` 증거 라벨 순서로 처리하고 `.hyper/frontend/`에 보고서 저장. 시각 방향·감사는 `hyper-design` | 브라우저 optional |
 
 ### 콘텐츠 · SEO

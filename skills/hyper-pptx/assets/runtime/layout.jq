@@ -73,6 +73,34 @@ def rshape($x; $y; $cx; $cy; $fill; $line; $radius):
    x: ($x | floor), y: ($y | floor), cx: ($cx | floor), cy: ($cy | floor),
    fill: $fill, line: $line, radius: $radius};
 
+# Advance width of one code point in ems. Hangul, CJK, and fullwidth forms take
+# a full em; everything else averages about half. Slightly generous, so a card
+# sized from this never comes out shorter than its text.
+def em_advance:
+  if (. >= 4352 and . <= 4607)
+     or (. >= 11904 and . <= 42191)
+     or (. >= 44032 and . <= 55203)
+     or (. >= 63744 and . <= 64255)
+     or (. >= 65280 and . <= 65376)
+  then 1 else 0.52 end;
+
+def em_width: explode | map(em_advance) | add // 0;
+
+# Greedy line count for a string in a box that fits $emAvail ems per line.
+# The renderer breaks lines itself; this is only used to size a card, never to
+# place text.
+def line_count($s; $emAvail):
+  if ($s | length) == 0 or $emAvail <= 0 then 0
+  else
+    reduce ($s | explode[]) as $c ({lines: 1, used: 0};
+      ($c | em_advance) as $adv
+      | if .used > 0 and (.used + $adv) > $emAvail
+        then {lines: (.lines + 1), used: $adv}
+        else {lines: .lines, used: (.used + $adv)}
+        end)
+    | .lines
+  end;
+
 def bullets_of($list; $size; $color; $mutedColor):
   [ $list[] |
     if type == "string" then para(.; $size; $color; false; 0; true; 6)
@@ -145,7 +173,24 @@ def slide_columns($s; $t; $idx):
   | (if $n > 3 then 3 else $n end) as $cols
   | 304800 as $gap
   | (((CW - ($cols - 1) * $gap) / $cols) | floor) as $cwd
-  | (if BODY_H > 3840480 then 3840480 else BODY_H end) as $cardH
+  # Card height follows the tallest column: heading band, the wrapped bullet
+  # text at 15pt with its per-paragraph spacing, then the bottom pad. Clamped
+  # to the body so a long column still fails the overflow check instead of
+  # pushing the card off the slide.
+  | (((($cwd - 365760 - 342900) / 190500) | floor)) as $emAvail
+  | ([ range(0; $cols) as $i |
+       ($s.columns[$i].bullets // []) as $bl
+       | ([ $bl[] |
+            (if type == "string" then {text: ., level: 0, space: 6}
+             else {text: (.text // ""), level: (.level // 0),
+                   space: (if .space != null then .space elif (.level // 0) > 0 then 0 else 6 end)} end)
+            | (line_count(.text;
+                 ($emAvail - (if .level > 0 then 2 else 0 end))) as $lines
+              | $lines * 228600 + (.space * 12700))
+          ] | add // 0)
+     ] | max // 0) as $bodyNeed
+  | (777240 + $bodyNeed + 182880) as $wanted
+  | (if $wanted < 1600200 then 1600200 elif $wanted > BODY_H then BODY_H else $wanted end) as $cardH
   | {
     index: $idx, kind: "columns", dark: false,
     shapes: (
