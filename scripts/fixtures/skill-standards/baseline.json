@@ -22,6 +22,7 @@
     "hyper-execute": {
       "FRONTMATTER_TRIGGER": 1
     },
+    "hyper-excel": {},
     "hyper-feedback": {},
     "hyper-git": {
       "FRONTMATTER_TRIGGER": 1
