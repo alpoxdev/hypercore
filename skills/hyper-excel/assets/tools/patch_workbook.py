@@ -60,15 +60,23 @@ class PatchError(Exception):
 # Small XML utilities that never re-serialize a whole document
 # ---------------------------------------------------------------------------
 
+CELL_ATTRS = r"(?:[^>/]|/(?!>))*"
+"""Attribute run that stops before a self-closing `/>`.
+
+Plain `[^>]*` also consumes the trailing slash, so `(?:/>|>.*?</c>)` then matches
+`>.*?</c>` and swallows the following sibling cell as if it were this one's body.
+"""
+
+
 def find_cell_span(xml, ref):
     """Return (start, end) of the <c r="ref"> element, or None."""
-    pattern = re.compile(r'<c\b[^>]*\br="%s"[^>]*(?:/>|>.*?</c>)' % re.escape(ref), re.DOTALL)
+    pattern = re.compile(r'<c\b%s\br="%s"%s(?:/>|>.*?</c>)' % (CELL_ATTRS, re.escape(ref), CELL_ATTRS), re.DOTALL)
     m = pattern.search(xml)
     return (m.start(), m.end()) if m else None
 
 
 def find_row_span(xml, row_no):
-    pattern = re.compile(r'<row\b[^>]*\br="%d"[^>]*(?:/>|>.*?</row>)' % row_no, re.DOTALL)
+    pattern = re.compile(r'<row\b%s\br="%d"%s(?:/>|>.*?</row>)' % (CELL_ATTRS, row_no, CELL_ATTRS), re.DOTALL)
     m = pattern.search(xml)
     return (m.start(), m.end()) if m else None
 
@@ -89,7 +97,7 @@ def sheet_data_span(xml):
 def rows_of(sheet_xml):
     """[(row_no, span_start, span_end)] in document order."""
     out = []
-    for m in re.finditer(r'<row\b[^>]*\br="(\d+)"[^>]*(?:/>|>.*?</row>)', sheet_xml, re.DOTALL):
+    for m in re.finditer(r'<row\b%s\br="(\d+)"%s(?:/>|>.*?</row>)' % (CELL_ATTRS, CELL_ATTRS), sheet_xml, re.DOTALL):
         out.append((int(m.group(1)), m.start(), m.end()))
     return out
 
@@ -149,7 +157,7 @@ def insert_into_row(row_xml, row_no, ref, cell_xml):
     inner_start = row_xml.find(">") + 1
     inner_end = row_xml.rfind("</row>")
     inner = row_xml[inner_start:inner_end]
-    for m in re.finditer(r'<c\b[^>]*\br="([A-Z]{1,3})\d+"[^>]*(?:/>|>.*?</c>)', inner, re.DOTALL):
+    for m in re.finditer(r'<c\b%s\br="([A-Z]{1,3})\d+"%s(?:/>|>.*?</c>)' % (CELL_ATTRS, CELL_ATTRS), inner, re.DOTALL):
         col = xlsxlib.col_index(m.group(1))
         if col > target_col:
             pos = inner_start + m.start()

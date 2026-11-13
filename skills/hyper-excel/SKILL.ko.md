@@ -1,7 +1,7 @@
 ---
 name: hyper-excel
 description: "사용자가 엑셀 워크북(.xlsx, .xlsm)을 읽거나 분석하거나 만들거나 고쳐 달라고 할 때, 또는 CSV 데이터를 스프레드시트로 바꿔 달라고 할 때 사용합니다. 시트와 수식 구조 확인, 기존 서식과 수식을 유지한 채 셀 편집, 차트가 있는 서식 보고서 작성, 깨진 범위와 오류 값을 찾는 수식 감사가 여기에 해당합니다. 단순 데이터프레임 답변, PDF·슬라이드 산출, VBA 매크로 작성에는 쓰지 않습니다."
-compatibility: bash 3.2+, POSIX 셸, 그리고 표준 라이브러리만 쓰는 Python 3.8+에서 동작합니다. 번들 스크립트 중 제3자 패키지가 필요한 것은 없습니다. .xlsx/.xlsm/.xltx 패키지를 직접 읽습니다.
+compatibility: 표준 라이브러리만 쓰는 Python 3.8+에서 동작합니다. 번들 스크립트 중 제3자 패키지가 필요한 것은 없습니다. .xlsx/.xlsm/.xltx 패키지를 직접 읽습니다.
 ---
 
 @rules/workflow.ko.md
@@ -25,7 +25,7 @@ compatibility: bash 3.2+, POSIX 셸, 그리고 표준 라이브러리만 쓰는 
 
 <purpose>
 
-- 실제 엑셀 워크북을 읽고, 분석하고, 만들고, 고칩니다. 시트, 수식, 서식, 숫자 서식, 조건부 서식, 데이터 유효성, 차트, 표, 행으로 계산한 피벗이 대상입니다.
+- 실제 엑셀 워크북을 읽고, 분석하고, 만들고, 고칩니다. 시트, 수식, 서식, 숫자 서식, 조건부 서식, 데이터 유효성, 차트, 자동 필터 범위, 행으로 계산한 피벗이 대상입니다.
 - 수정할 때 원본을 보존합니다. 패치는 지목된 셀만 바꾸고 나머지 패키지 파트를 바이트 단위로 그대로 두므로 차트, 테마, 이미지, 메모, 피벗, 매크로가 살아남습니다.
 - 파일에 없는 숫자를 보고하지 않고, 재계산하지 않은 수식을 맞다고 보고하지 않습니다.
 - 한국어 워크북을 제대로 다룹니다. 한글 시트 이름, `#,##0"원"`과 `yyyy-mm-dd` 서식, cp949 CSV 입력, 로캘에 흔들리는 날짜 파싱이 여기에 해당합니다.
@@ -114,7 +114,7 @@ compatibility: bash 3.2+, POSIX 셸, 그리고 표준 라이브러리만 쓰는 
 - 코어(`SKILL.md`): 트리거, 계약, 모드, 워크플로 순서, 정지 조건.
 - 규칙: `workflow.md`(모드 선택, 단계 순서, 보고 형식), `preservation.md`(미변경 파트 계약과 매크로·차트·피벗 안전), `verification.md`(워크북을 넘기기 전에 증명해야 하는 것), `failure-modes.md`(자신 있게 틀린 스프레드시트를 만드는 실패와 그 탐지).
 - 참조: `readers-and-writers.md`(각 도구와 라이브러리가 실제로 보존하는 것), `korean-formats.md`(숫자·날짜·통화 서식과 로캘 함정), `large-data-and-pivots.md`(행 한도, 스트리밍, 행으로 계산한 피벗).
-- 자산: `assets/tools/`에 파이썬 스크립트 여섯 개와 bash 디스패처가 있고, `assets/evals/hyper-excel-cases.jsonl`에 트리거·동작 케이스가 있습니다.
+- 자산: `assets/tools/`에 도구 스크립트 일곱 개와 공용 `xlsxlib.py`, `hyper_excel.py` 디스패처가 있고, `assets/evals/hyper-excel-cases.jsonl`에 트리거·동작 케이스가 있습니다.
 
 </skill_architecture>
 
@@ -165,7 +165,7 @@ compatibility: bash 3.2+, POSIX 셸, 그리고 표준 라이브러리만 쓰는 
 | `inspect` | 패키지 전체 | 없음 | 파일에서 인용한 값과 수식 |
 | `verify` | 패키지 전체 | 없음 | 모든 수식이 캐시와 맞거나 미검증으로 나열됨 |
 | `patch` | 패키지 전체 | 지목된 파트만 | 미변경 파트 바이트 동일, 결과가 열림 |
-| `build` | 스펙이나 CSV | 새 파일 | 파일이 열리고, 값 타입이 맞고, 차트가 해석됨 |
+| `build` | 스펙이나 CSV | 새 파일 | 파일이 열리고, 값 타입이 맞고, 차트가 해석됨. 시트를 이미 지정한 계열 참조(`Data!B2:B3`)는 그대로 쓰고, 지정하지 않은 참조는 차트가 놓인 시트로 한 번만 한정함 |
 | `recalc` | 수식 | 캐시 값만 | 수식이 유지되고 캐시가 재계산과 일치 |
 
 </mode_contract>
@@ -243,7 +243,7 @@ compatibility: bash 3.2+, POSIX 셸, 그리고 표준 라이브러리만 쓰는 
 | `fullCalcOnLoad`가 설정되면 엑셀이 열 때 다시 계산한다 | <https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.spreadsheet.calculationproperties.fullcalconload> |
 | 열 차트는 `barChart`에 `barDir="col"`로 저장된다 | <https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.drawing.charts.barchart.bardirection> |
 | 조건부 서식 규칙의 `dxfId`는 워크북의 `dxfs` 표를 가리킨다 | <https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.spreadsheet.differentialformat> |
-| 수식에서 시트 이름은 공백이나 한글 인접 연산자가 있으면 인용한다 | <https://support.microsoft.com/en-us/office/reference-cells-in-another-worksheet-ff487f16-4ce1-4c1a-8a71-2b0e4b5f5b15> |
+| 수식에서 시트 이름은 공백이나 인용 없는 참조를 깨는 문자가 있으면 인용한다 | <https://support.microsoft.com/en-us/office/reference-cells-in-another-worksheet-ff487f16-4ce1-4c1a-8a71-2b0e4b5f5b15> |
 
 ### Evidence grade
 

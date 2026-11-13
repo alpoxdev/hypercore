@@ -31,9 +31,18 @@ import zipfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import xlsxlib  # noqa: E402
 import verify_formulas  # noqa: E402
+from patch_workbook import CELL_ATTRS  # noqa: E402
 
 
 def fmt_cached(value):
+    """Render one evaluated value as (text, cell type) for the cached `<v>`.
+
+    `None` means the evaluator did not produce a value (an empty result or a
+    dependent shared-formula cell); writing it would put the literal string
+    "None" into the file, so the caller must skip instead.
+    """
+    if value is None:
+        raise ValueError("no value to cache")
     if isinstance(value, bool):
         return ("1" if value else "0", "b")
     if isinstance(value, str):
@@ -98,7 +107,12 @@ def recalc(path, out_path):
                         skipped.append({"sheet": sheet_name, "ref": cell["ref"],
                                         "formula": cell["formula"], "reason": reason})
                         continue
-                cached, ctype = fmt_cached(value)
+                try:
+                    cached, ctype = fmt_cached(value)
+                except ValueError:
+                    skipped.append({"sheet": sheet_name, "ref": cell["ref"],
+                                    "formula": cell["formula"], "reason": "evaluated to no value"})
+                    continue
                 span = _find_cell(xml, cell["ref"])
                 if not span:
                     skipped.append({"sheet": sheet_name, "ref": cell["ref"],
@@ -161,7 +175,7 @@ def recalc(path, out_path):
 
 
 def _find_cell(xml, ref):
-    m = re.search(r'<c\b[^>]*\br="%s"[^>]*(?:/>|>.*?</c>)' % re.escape(ref), xml, re.DOTALL)
+    m = re.search(r'<c\b%s\br="%s"%s(?:/>|>.*?</c>)' % (CELL_ATTRS, re.escape(ref), CELL_ATTRS), xml, re.DOTALL)
     return (m.start(), m.end()) if m else None
 
 

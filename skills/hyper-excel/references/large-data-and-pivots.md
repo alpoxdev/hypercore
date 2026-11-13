@@ -11,7 +11,7 @@
 | Cell text length | 32,767 characters | longer is truncated silently by some writers |
 | Distinct cell formats per workbook | 65,490 | a per-row style breaks the file |
 | Sheet name | 31 characters | longer is rejected |
-| Cell reference in a formula | 8,192 characters | long array formulas hit this |
+| Formula contents | 8,192 characters | long array formulas hit this |
 
 The row limit is the one that bites. A conversion that silently drops rows past 1,048,576 is worse than a failure, so `build_workbook.py` refuses rather than truncating, and `profile` reports the row count before you convert.
 
@@ -23,14 +23,14 @@ Conditions: this machine (Apple silicon), 2026-11-13, `inspect` over a 120,000-r
 |---|---|
 | CSV → `.xlsx` (`build --csv`) | completed |
 | `inspect` of the result (≈720,000 cells) | ≈6 s |
-| peak behaviour | streaming read; the package is opened part by part, not held as an object graph |
+| peak behaviour | every package part is read into memory once; rows are then streamed from that bytes object, so nothing is parsed into an object graph |
 
-So roughly 8 µs per cell for a full structural inspection. Budget a minute for a million cells and plan the read window accordingly: `inspect --rows N` limits the per-sheet sample without limiting the scan.
+That is roughly 8 µs per cell for a full structural inspection, so a million cells takes on the order of ten seconds of CPU and a few tens of MB per part. Plan the read window from that, not from a promise of streaming: `inspect --rows N` limits the per-sheet sample without limiting the scan.
 
 ## Streaming rules
 
-- Read one sheet part at a time; never build a workbook-wide cell dict for a large file.
-- Convert with the CSV path, not by loading the sheet and re-writing it: the CSV path streams rows into the sheet XML.
+- Read one sheet at a time; `verify` does build a cell dict for the sheet it is evaluating, so do not point it at a sheet of millions of rows.
+- Convert with the CSV path, not by loading the sheet and re-writing it: the CSV path reads the file once into memory and builds the sheet XML from that row list, which is far cheaper than a per-cell rewrite.
 - Avoid writing a per-row style. Use a handful of range formats.
 - For analysis over more than a few hundred thousand rows, a spreadsheet is the wrong tool. Say so and compute in a script, then write only the summary to the workbook.
 
@@ -41,10 +41,10 @@ So roughly 8 µs per cell for a full structural inspection. Budget a minute for 
 What to do instead, and say so plainly:
 
 1. Compute the aggregation and write it as ordinary rows with a header, a total row, and a number format.
-2. If the user needs to re-pivot interactively, deliver the source as an Excel **table** (`Table` with a name and style). Excel's "Insert → PivotTable" then works on it in one click, and the table survives a `patch`.
+2. If the user needs to re-pivot interactively, deliver the source as ordinary rows with a header row and an autofilter (`"autofilter": "A1:D200"` in the build spec). Excel's Insert → PivotTable then accepts that range in one step. `build` does not write a native `Table` part, so do not promise one.
 3. If the user explicitly needs a native pivot and the machine has Excel, say the pivot must be created in Excel; do not fabricate one.
 
-The report line is: `피벗은 계산된 일반 행으로 만들었습니다. 원본은 표(Table)로 넣었으니 엑셀에서 피벗을 바로 만들 수 있습니다.`
+The report line is: `피벗은 계산된 일반 행으로 만들었습니다. 원본 범위에 필터를 걸어 두었으니 엑셀에서 그 범위로 피벗을 만들 수 있습니다.`
 
 ## Aggregation contract
 
@@ -62,7 +62,7 @@ A table with 300 columns is legal and unusable. Before building one, report the 
 
 ## Memory
 
-The Python scripts hold one part in memory at a time plus the parsed cell list for the sheet being inspected. A 120,000-row sheet is comfortable. Past roughly 500,000 rows in one sheet, expect several hundred MB and prefer `--rows` plus targeted reads. If a job needs more, it is a data-processing job, not a workbook job.
+Every package part is read into memory at open, and `verify`/`profile` additionally hold the parsed cell list for the sheets they touch. A 120,000-row sheet is comfortable. Past roughly 500,000 rows in one sheet, expect several hundred MB and prefer `--rows` plus targeted reads. If a job needs more, it is a data-processing job, not a workbook job.
 
 ## Sources
 

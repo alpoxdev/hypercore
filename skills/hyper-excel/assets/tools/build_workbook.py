@@ -93,10 +93,25 @@ def serial(value):
     raise BuildError("not a date: %r" % (value,))
 
 
-def classify(value):
-    """Return (kind, stored_value, default_format or None)."""
+def text_locked(style_xf):
+    """True when the cell's number format is Text (`@`), which must not be re-typed."""
+    if not style_xf:
+        return False
+    fmt_id, code = style_xf
+    return fmt_id == 49 or (code or "").strip() == "@"
+
+
+def classify(value, text_format=False):
+    """Return (kind, stored_value, default_format or None).
+
+    `text_format` is set when the cell carries a Text (`@`) number format: the value
+    is then written as text with its leading zeros intact, because a ZIP or phone
+    code stored as a number is data loss, not a type improvement.
+    """
     if value is None or value == "":
         return ("blank", None, None)
+    if text_format and not isinstance(value, bool) and not isinstance(value, (datetime, date, time)):
+        return ("text", str(value), None)
     if isinstance(value, bool):
         return ("bool", value, None)
     if isinstance(value, (int, float)):
@@ -169,7 +184,21 @@ class Styles:
         self.dxfs = []
         self._fmt_cache = {}
 
+    def numfmt_of(self, style_index):
+        """Return (numFmtId, formatCode) for a cellXfs index."""
+        xfs = self.xfs
+        if not isinstance(style_index, int) or not (0 <= style_index < len(xfs)):
+            return (0, "General")
+        fmt_id = xfs[style_index]["numFmtId"]
+        if fmt_id == 49:
+            return (49, "@")
+        return (fmt_id, self.numfmts.get(fmt_id, "General" if fmt_id == 0 else ""))
+
     def number_format(self, code):
+        # `@` is builtin format 49; registering it as a custom id would make every
+        # reader classify the cell as a number.
+        if (code or "").strip() == "@":
+            return 49
         if code in self._fmt_cache:
             return self._fmt_cache[code]
         for fmt_id, existing in self.numfmts.items():
@@ -294,17 +323,17 @@ def chart_xml(chart, sheet_name):
         out.append('<c:ser><c:idx val="%d"/><c:order val="%d"/>' % (idx - 1, idx - 1))
         name_ref = ser.get("name")
         if name_ref and ("!" in str(name_ref) or re.match(r"^\$?[A-Za-z]{1,3}\$?\d+$", str(name_ref))):
-            out.append('<c:tx><c:strRef><c:f>%s!%s</c:f></c:strRef></c:tx>'
-                       % (_quote(sheet_name), str(name_ref).replace("$", "")))
+            out.append('<c:tx><c:strRef><c:f>%s</c:f></c:strRef></c:tx>'
+                       % _series_ref(name_ref, sheet_name))
         elif name_ref:
             out.append('<c:tx><c:v>%s</c:v></c:tx>' % escape(str(name_ref)))
         if kind in ("bar", "col", "area"):
             out.append('<c:invertIfNegative val="0"/>')
         if categories:
-            out.append('<c:cat><c:strRef><c:f>%s!%s</c:f></c:strRef></c:cat>'
-                       % (_quote(sheet_name), str(categories).replace("$", "")))
-        out.append('<c:val><c:numRef><c:f>%s!%s</c:f></c:numRef></c:val>'
-                   % (_quote(sheet_name), str(ser.get("values")).replace("$", "")))
+            out.append('<c:cat><c:strRef><c:f>%s</c:f></c:strRef></c:cat>'
+                       % _series_ref(categories, sheet_name))
+        out.append('<c:val><c:numRef><c:f>%s</c:f></c:numRef></c:val>'
+                   % _series_ref(ser.get("values"), sheet_name))
         if kind == "line":
             out.append('<c:smooth val="0"/>')
         out.append('</c:ser>')
@@ -334,6 +363,19 @@ def chart_xml(chart, sheet_name):
     return "".join(out)
 
 
+def _series_ref(ref, sheet_name):
+    """Qualify a chart reference with the chart's own sheet unless it names one.
+
+    `categories: "Data!A2:A3"` already points at another sheet; prefixing the
+    chart sheet would produce `Chart!Data!A2:A3`, which Excel rejects as a
+    malformed reference and renders as an empty plot.
+    """
+    text = str(ref).replace("$", "")
+    if "!" in text:
+        return text
+    return "%s!%s" % (_quote(sheet_name), text)
+
+
 def _quote(sheet_name):
     if re.match(r"^[^\W\d][\w.]*$", sheet_name or "") and not any(ch in sheet_name for ch in " !'&*()[]{}+-/"):
         return sheet_name
@@ -361,6 +403,10 @@ def sheet_xml(sheet, styles, drawing_rid=None):
                 raise BuildError("sheet %r has a %d-character cell; the limit is %d"
                                  % (name, len(value), MAX_CELL_TEXT))
     formulas = {f["ref"]: f["formula"] for f in sheet.get("formulas") or []}
+    # Strings starting with = + - @ would execute as a formula or DDE call on open;
+    # they are written as text and counted so the caller can report them.
+    neutralized = []
+    coerced = []
     style_by_ref = {}
     default_styles = {}
     for item in sheet.get("formats") or []:
@@ -383,32 +429,49 @@ def sheet_xml(sheet, styles, drawing_rid=None):
                 if ref not in style_by_ref:
                     code = DEFAULT_DATETIME_FMT if isinstance(value, datetime) else DEFAULT_DATE_FMT
                     default_styles[ref] = styles.xf(numfmt_code=code)
-    out_rows = []
+    # Cells are collected per row before any row element is emitted: a formula may
+    # name a cell beyond the row's data (D2 next to A2:C2) or on a row the data never
+    # reached (B5), and a row element per formula would emit the same row twice.
+    row_cells = {}
     max_col = 0
     for r_index, row in enumerate(rows, start=1):
-        cells = []
+        cells = row_cells.setdefault(r_index, [])
         for c_index, value in enumerate(row, start=1):
             ref = "%s%d" % (col_letter(c_index), r_index)
             max_col = max(max_col, c_index)
-            style = style_by_ref.get(ref, default_styles.get(ref))
             if ref in formulas:
-                cells.append(formula_xml(ref, formulas[ref], style))
                 continue
-            kind, stored, auto_format = classify(value)
+            style = style_by_ref.get(ref, default_styles.get(ref))
+            numfmt = styles.numfmt_of(style) if style is not None else None
+            kind, stored, auto_format = classify(value, text_locked(numfmt))
+            if kind == "text" and isinstance(value, str) and value[:1] in ("=", "+", "-", "@") and value.strip():
+                neutralized.append({"sheet": name, "ref": ref, "prefix": value[0]})
+            # A digit string under an explicit numeric format is re-typed to a number,
+            # which is what Excel does too, but a dropped leading zero is silent data
+            # loss and the caller cannot see it in the result.
+            if (kind == "number" and re.fullmatch(r"0\d+", str(value)) and style is not None
+                    and numfmt is not None and not text_locked(numfmt)
+                    and _is_numeric_code(numfmt)):
+                coerced.append({"sheet": name, "ref": ref, "value": str(value)})
             if style is None and auto_format:
                 style = styles.xf(numfmt_code=auto_format)
-            cells.append(cell_xml(ref, kind, stored, style))
-        if cells:
-            height = (sheet.get("rowHeights") or {}).get(str(r_index))
-            head = '<row r="%d"' % r_index + (' ht="%s" customHeight="1"' % height if height else "") + ">"
-            out_rows.append(head + "".join(cells) + "</row>")
+            cells.append((c_index, cell_xml(ref, kind, stored, style)))
     for ref, formula in formulas.items():
         col, row = xlsxlib.parse_ref(ref)
-        if row > len(rows):
-            out_rows.append('<row r="%d">%s</row>' % (row, formula_xml(ref, formula, style_by_ref.get(ref))))
-            max_col = max(max_col, col)
-    # tail rows for formulas must stay ordered
-    out_rows.sort(key=lambda x: int(re.search(r'r="(\d+)"', x).group(1)))
+        if not col:
+            raise BuildError("sheet %r: bad formula reference %r" % (name, ref))
+        style = style_by_ref.get(ref, default_styles.get(ref))
+        row_cells.setdefault(row, []).append((col, formula_xml(ref, formula, style)))
+        max_col = max(max_col, col)
+    out_rows = []
+    for r_index in sorted(row_cells):
+        cells = row_cells[r_index]
+        if not cells:
+            continue
+        height = (sheet.get("rowHeights") or {}).get(str(r_index))
+        head = '<row r="%d"' % r_index + (' ht="%s" customHeight="1"' % height if height else "") + ">"
+        cells.sort(key=lambda item: item[0])
+        out_rows.append(head + "".join(xml for _c, xml in cells) + "</row>")
     last_row = max([len(rows), max([xlsxlib.parse_ref(r)[1] for r in formulas] or [0])])
 
     parts = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
@@ -485,7 +548,13 @@ def sheet_xml(sheet, styles, drawing_rid=None):
     if drawing_rid:
         parts.append('<drawing r:id="%s"/>' % drawing_rid)
     parts.append("</worksheet>")
-    return "".join(parts)
+    return "".join(parts), neutralized, coerced
+
+
+def _is_numeric_code(numfmt):
+    """True for a format that displays a number as digits (a code-shaped format)."""
+    code = (numfmt[1] or "").strip()
+    return bool(code) and code != "@"
 
 
 def drawing_xml(charts, rel_ids):
@@ -531,6 +600,8 @@ def build(spec, out_path):
     styles = Styles()
     parts = {}
     sheet_entries = []
+    neutralized = []
+    coerced = []
     drawing_entries = []
     chart_entries = []
     chart_index = 0
@@ -551,13 +622,16 @@ def build(spec, out_path):
                 chart_entries.append((chart_part, rid, "charts/chart%d.xml" % chart_index))
                 chart_rids.append(rid)
             parts[drawing_part] = drawing_xml(charts, chart_rids).encode("utf-8")
-            drawing_entries.append((drawing_part, "charts/chart%d.xml" % chart_index, len(charts)))
+            drawing_entries.append((drawing_part, "charts/chart%d.xml" % chart_index, len(charts), sheet_index))
             drawing_rid = "rIdDrawing1"
             parts["xl/drawings/_rels/drawing%d.xml.rels" % drawing_index] = rels_xml([
                 ("rIdChart%d" % (chart_index - len(charts) + i + 1), REL_CHART,
                  "../charts/chart%d.xml" % (chart_index - len(charts) + i + 1))
                 for i in range(len(charts))]).encode("utf-8")
-        parts[sheet_part] = sheet_xml(sheet, styles, drawing_rid).encode("utf-8")
+        sheet_body, sheet_neutralized, sheet_coerced = sheet_xml(sheet, styles, drawing_rid)
+        neutralized.extend(sheet_neutralized)
+        coerced.extend(sheet_coerced)
+        parts[sheet_part] = sheet_body.encode("utf-8")
         sheet_entries.append({"name": sheet["name"], "part": sheet_part, "rows": len(sheet.get("rows") or [])})
 
     # workbook.xml
@@ -582,7 +656,7 @@ def build(spec, out_path):
     wb_rels = [(("rId%d" % i), REL_SHEET, "worksheets/sheet%d.xml" % i) for i in range(1, len(sheets) + 1)]
     wb_rels.append(("rIdStyles", REL_STYLES, "styles.xml"))
     if drawing_entries:
-        for index, (part, _, _) in enumerate(drawing_entries, start=1):
+        for index, (part, _target, _count, _owner) in enumerate(drawing_entries, start=1):
             wb_rels.append(("rIdDraw%d" % index, REL_DRAWING, part.replace("xl/", "")))
     parts["xl/_rels/workbook.xml.rels"] = rels_xml(wb_rels).encode("utf-8")
     parts["xl/styles.xml"] = styles.xml().encode("utf-8")
@@ -602,17 +676,22 @@ def build(spec, out_path):
         '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
         '<Default Extension="xml" ContentType="application/xml"/>%s</Types>' % (CT_NS, "".join(overrides))
     ).encode("utf-8")
-    # sheet rels for drawings must live beside each sheet
-    for index, _ in enumerate(drawing_entries, start=1):
-        parts["xl/worksheets/_rels/sheet%d.xml.rels" % index] = rels_xml([
-            ("rIdDrawing1", REL_DRAWING, "../drawings/drawing%d.xml" % index)]).encode("utf-8")
+    # A drawing rels file must sit beside the sheet that holds the <drawing> element,
+    # numbered by that sheet's part index. Using the drawing's own sequence number
+    # attaches the chart to sheet 1 whenever the chart lives on a later sheet, and the
+    # real owner keeps a <drawing> pointing at a part that does not exist.
+    for drawing_part, _target, _count, owner_index in drawing_entries:
+        drawing_no = drawing_part.rsplit("drawing", 1)[1].split(".")[0]
+        parts["xl/worksheets/_rels/sheet%d.xml.rels" % owner_index] = rels_xml([
+            ("rIdDrawing1", REL_DRAWING, "../drawings/drawing%s.xml" % drawing_no)]).encode("utf-8")
 
     tmp = out_path + ".tmp"
     with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as zf:
         for name, data in parts.items():
             zf.writestr(name, data)
     os.replace(tmp, out_path)
-    return {"sheets": sheet_entries, "parts": len(parts)}
+    return {"sheets": sheet_entries, "parts": len(parts), "neutralized": neutralized,
+            "coercedCodes": coerced}
 
 
 # ---------------------------------------------------------------------------
@@ -654,15 +733,38 @@ def read_csv_rows(path, encoding="auto", delimiter=None, limit=None):
     return {"rows": rows, "encoding": used, "delimiter": delimiter}
 
 
+# A CSV field of digits with a leading zero is a code (postal code, product id, phone
+# prefix), not a number: converting 007 to 7 silently destroys the value. Those
+# columns get the Text (`@`) format so classify() keeps the literal.
+LEADING_ZERO = re.compile(r"^0\d+$")
+
+
+def text_columns(rows):
+    """Column indexes where a purely numeric field keeps a leading zero."""
+    columns = set()
+    for row in rows:
+        for index, value in enumerate(row, start=1):
+            if isinstance(value, str) and LEADING_ZERO.match(value.strip()):
+                columns.add(index)
+    return columns
+
+
 def csv_to_spec(rows, sheet_name="Sheet1"):
     widths = {}
     for row in rows[:200]:
         for index, value in enumerate(row, start=1):
             width = min(max(len(str(value)) + 2, 9), 48)
             widths[index] = max(widths.get(index, 0), width)
-    return {"sheets": [{"name": sheet_name, "rows": rows,
+    locked = text_columns(rows)
+    spec = {"sheets": [{"name": sheet_name, "rows": rows,
                         "cols": {col_letter(i): w for i, w in widths.items()},
                         "freeze": "A2"}]}
+    if locked:
+        # The whole column, not only the offending cells: mixed types in one column
+        # is itself the thing Excel users complain about.
+        spec["sheets"][0]["formats"] = [{"range": "%s:%s" % (col_letter(i), col_letter(i)), "code": "@"}
+                                        for i in sorted(locked)]
+    return spec
 
 
 def self_test():
@@ -741,6 +843,34 @@ def self_test():
         build(csv_to_spec(parsed["rows"], "품목"), csv_out)
         csv_wb = xlsxlib.Workbook(csv_out)
         checks.append(("csv sheet name", [n for n, _, _ in csv_wb.sheets] == ["품목"]))
+        # A leading = + - @ must land as literal text and be counted, never as a formula.
+        inj_path = os.path.join(tmp, "inj.csv")
+        with open(inj_path, "w", encoding="utf-8", newline="") as fh:
+            fh.write("name,val\n=cmd|x,1\n+8210,2\n@SUM(A1),3\n")
+        inj_out = os.path.join(tmp, "inj.xlsx")
+        inj_meta = build(csv_to_spec(read_csv_rows(inj_path)["rows"], "주입"), inj_out)
+        checks.append(("neutralized counted", len(inj_meta["neutralized"]) == 3))
+        inj_wb = xlsxlib.Workbook(inj_out)
+        inj_cells = {}
+        for _n, _p, _s in inj_wb.sheets:
+            for _rn, _cells in inj_wb.iter_rows(_p):
+                for _c in _cells:
+                    inj_cells[_c["ref"]] = _c
+        checks.append(("neutralized stays text",
+                       all(inj_cells[r]["value"] in ("=cmd|x", "+8210", "@SUM(A1)") and not inj_cells[r]["formula"]
+                           for r in ("A2", "A3", "A4"))))
+        # A Text (`@`) format must keep a leading zero instead of re-typing to a number.
+        zero_out = os.path.join(tmp, "zero.xlsx")
+        build({"sheets": [{"name": "코드", "rows": [["우편번호"], ["007"], ["01234"]],
+                           "formats": [{"range": "A2:A3", "code": "@"}]}]}, zero_out)
+        zero_wb = xlsxlib.Workbook(zero_out)
+        zero_cells = {}
+        for _n, _p, _s in zero_wb.sheets:
+            for _rn, _cells in zero_wb.iter_rows(_p):
+                for _c in _cells:
+                    zero_cells[_c["ref"]] = _c
+        checks.append(("text format keeps zero", zero_cells["A2"]["value"] == "007"))
+        checks.append(("text format kind", zero_cells["A2"]["kind"] == "text"))
         # Limits must be refused, not truncated. Check the two cheap ones; row overflow would need a
         # million-row fixture and tests the same branch.
         wide = {"sheets": [{"name": "넓음", "rows": [["x"] * (MAX_COLS + 1)]}]}
@@ -755,6 +885,54 @@ def self_test():
             checks.append(("oversized cell refused", False))
         except BuildError as exc:
             checks.append(("oversized cell refused", str(MAX_CELL_TEXT) in str(exc)))
+        # A formula may sit beyond the row's data or on a row the data never reached.
+        # Both used to be dropped, and a formula-only tail row was emitted once per
+        # formula, producing a duplicate <row r="5">.
+        mix_out = os.path.join(tmp, "mix.xlsx")
+        build({"sheets": [{"name": "S", "rows": [["a", "b", "c"], ["x", 1, 2], ["합계"]],
+                           "formulas": [{"ref": "D2", "formula": "=B2+C2"},
+                                        {"ref": "B3", "formula": "=SUM(B2:B2)"},
+                                        {"ref": "B5", "formula": "=1"},
+                                        {"ref": "C5", "formula": "=2"}]}]}, mix_out)
+        mix_wb = xlsxlib.Workbook(mix_out)
+        mix_cells = {}
+        for _n, _p, _s in mix_wb.sheets:
+            for _rn, _cells in mix_wb.iter_rows(_p):
+                for _c in _cells:
+                    mix_cells[_c["ref"]] = _c["formula"]
+        checks.append(("formula beside data kept", mix_cells.get("D2") == "=B2+C2"))
+        checks.append(("formula inside data kept", mix_cells.get("B3") == "=SUM(B2:B2)"))
+        checks.append(("formula tail row kept",
+                       mix_cells.get("B5") == "=1" and mix_cells.get("C5") == "=2"))
+        sheet_xml_text = mix_wb.parts["xl/worksheets/sheet1.xml"].decode("utf-8")
+        checks.append(("no duplicate row element", sheet_xml_text.count('<row r="5"') == 1))
+        # A chart reference that already names a sheet must not be qualified twice:
+        # `Chart!Data!A2:A3` is malformed and renders an empty plot.
+        chart_out = os.path.join(tmp, "chartref.xlsx")
+        build({"sheets": [{"name": "Data", "rows": [["월", "매출"], ["1월", 10], ["2월", 20]]},
+                          {"name": "차트", "rows": [["x"], [1]],
+                           "charts": [{"type": "column", "title": "t", "anchor": "D2",
+                                       "categories": "Data!A2:A3",
+                                       "series": [{"name": "매출", "values": "Data!B2:B3"}]}]}]},
+              chart_out)
+        chart_wb = xlsxlib.Workbook(chart_out)
+        chart_text = chart_wb.parts["xl/charts/chart1.xml"].decode("utf-8")
+        refs = re.findall(r"<c:f>([^<]*)</c:f>", chart_text)
+        checks.append(("chart ref not double qualified", refs == ["Data!A2:A3", "Data!B2:B3"]))
+        # A digit code under a numeric format is re-typed by Excel too, but the lost
+        # zero must be reported, not just happen.
+        loss_spec = {"sheets": [{"name": "S", "rows": [["코드"], ["00123"]],
+                                 "formats": [{"range": "A2", "code": "#,##0"}]}]}
+        loss_out = os.path.join(tmp, "loss.xlsx")
+        loss_meta = build(loss_spec, loss_out)
+        checks.append(("coerced code counted", len(loss_meta["coercedCodes"]) == 1))
+        text_spec = {"sheets": [{"name": "S", "rows": [["코드"], ["00123"]],
+                                 "formats": [{"range": "A2", "code": "@"}]}]}
+        text_meta = build(text_spec, os.path.join(tmp, "kept.xlsx"))
+        checks.append(("text format keeps code", text_meta["coercedCodes"] == []))
+        checks.append(("chart rels beside owner sheet",
+                       "xl/worksheets/_rels/sheet2.xml.rels" in chart_wb.parts
+                       and "xl/worksheets/_rels/sheet1.xml.rels" not in chart_wb.parts))
     failed = [name for name, ok in checks if not ok]
     print(json.dumps({"ok": not failed, "checks": len(checks), "failed": failed}, ensure_ascii=False))
     return 0 if not failed else 1
@@ -794,6 +972,29 @@ def main(argv):
         else:
             raise BuildError("give --spec or --csv")
         meta = build(spec, args.out)
+        if meta.get("coercedCodes"):
+            warnings.append({
+                "code": "W_LEADING_ZERO_LOST",
+                "detail": "%d digit code(s) sit under a numeric format and lose their leading zero: %s. "
+                          "Use the Text format ('@') on the cell or column to keep it."
+                          % (len(meta["coercedCodes"]),
+                             ", ".join("%s!%s (%s)" % (i["sheet"], i["ref"], i["value"])
+                                       for i in meta["coercedCodes"][:10])),
+                "count": len(meta["coercedCodes"]),
+                "cells": [{"sheet": i["sheet"], "ref": i["ref"]} for i in meta["coercedCodes"]],
+            })
+        if meta.get("neutralized"):
+            counts = {}
+            for item in meta["neutralized"]:
+                counts[item["sheet"]] = counts.get(item["sheet"], 0) + 1
+            warnings.append({
+                "code": "I_NEUTRALIZED",
+                "detail": "%d value(s) started with = + - @ and were written as text: %s"
+                          % (len(meta["neutralized"]),
+                             ", ".join("%s!%s" % (i["sheet"], i["ref"]) for i in meta["neutralized"][:10])),
+                "count": len(meta["neutralized"]),
+                "cells": [{"sheet": i["sheet"], "ref": i["ref"]} for i in meta["neutralized"]],
+            })
     except BuildError as exc:
         print(json.dumps({"ok": False, "error": "E_SPEC", "detail": str(exc)}, ensure_ascii=False))
         return 1

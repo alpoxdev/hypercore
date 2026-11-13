@@ -7,6 +7,7 @@
 | Gate | Command | Passes when | If it fails |
 |---|---|---|---|
 | Structural | `inspect <file>` | parses, no `E_*` warning | Report the failure; do not answer from the file |
+| Coverage | `verify <file> [--max-cells N]` | `cells_complete == pass` | The sheet was cut short; every count covers only the cells read, so say so |
 | Integrity | `verify <file>` | no `errorLiterals`, no mismatched cache, no cycle | List the cells; fix or disclose |
 | Preservation | `patch …` output | `verification.status == "pass"` | Nothing was written; fix the operation |
 | Read-back | re-`inspect` or an independent reader | opens, same sheet names, same cell values | Treat as a failed write |
@@ -15,7 +16,7 @@
 ## What each gate actually proves
 
 - **Structural** proves the package is readable and the parts the reader needs exist. It does not prove values are right.
-- **Integrity** proves each recomputed formula agrees with the stored value, that no cell holds an error literal, and that no formula depends on itself. A formula the evaluator cannot compute is `unevaluated`, never `pass`.
+- **Integrity** proves each recomputed formula agrees with the stored value, that no cell holds an error literal, and that no formula depends on itself. A formula the evaluator cannot compute is `unevaluated`, never `pass`, and one cell that makes the evaluator raise does not suppress the report for the others: `unevaluated` names the cell, the formula, and the error class.
 - **Preservation** proves untouched parts are byte-identical. It does not prove the changed part is what the user wanted; the report does that.
 - **Read-back** proves a second parser accepts the file. Without an independent reader installed, say the check was limited.
 - **Cache** proves a reader that does not calculate sees a value. It does not make the cached value authoritative; `fullCalcOnLoad` keeps Excel recomputing from source.

@@ -1,7 +1,7 @@
 ---
 name: hyper-excel
 description: "Use this skill when the user asks to read, analyze, create, or modify Excel workbooks (.xlsx, .xlsm) or turn CSV data into spreadsheets - inspecting sheets and formulas, editing cells while keeping existing formatting and formulas intact, building formatted reports with charts, or auditing formulas for broken ranges and error values. Do not use for plain dataframes, PDF or slide output, or VBA macro authoring."
-compatibility: Works with bash 3.2+, a POSIX shell, and Python 3.8+ using only the standard library; no third-party package is required for any bundled script. Reads .xlsx/.xlsm/.xltx packages directly.
+compatibility: Python 3.8+ using only the standard library; no third-party package is required for any bundled script. Reads .xlsx/.xlsm/.xltx packages directly.
 ---
 
 @rules/workflow.md
@@ -25,7 +25,7 @@ Use a different language only when the user explicitly requests it, an existing 
 
 <purpose>
 
-- Read, analyze, create, and modify real Excel workbooks: sheets, formulas, styles, number formats, conditional formats, data validation, charts, tables, and pivots-as-rows.
+- Read, analyze, create, and modify real Excel workbooks: sheets, formulas, styles, number formats, conditional formats, data validation, charts, autofilter ranges, and pivots-as-rows.
 - Preserve the original on edit. A patch changes the cells named and leaves every other part of the package byte-identical, so charts, themes, images, comments, pivots, and macros survive.
 - Never report a number the file does not contain and never report a formula as correct when it was not recomputed.
 - Handle Korean workbooks properly: Hangul sheet names, `#,##0"원"` and `yyyy-mm-dd` formats, cp949 CSV intake, and locale-dependent date parsing.
@@ -114,7 +114,7 @@ Reading more of a file to answer a question is not a loop. Rebuilding a workbook
 - Core (`SKILL.md`): trigger, contract, modes, workflow order, stop condition.
 - Rules: `workflow.md` (mode selection, step order, output report shape), `preservation.md` (the untouched-part contract and macro/chart/pivot safety), `verification.md` (what must be proven before a workbook is handed over), `failure-modes.md` (the failures that produce a confidently wrong spreadsheet and how each is caught).
 - References: `readers-and-writers.md` (what each tool and library actually preserves), `korean-formats.md` (number/date/currency formats and locale traps), `large-data-and-pivots.md` (row-count limits, streaming, pivot-as-rows).
-- Assets: `assets/tools/` holds six Python scripts plus a bash dispatcher; `assets/evals/hyper-excel-cases.jsonl` holds the trigger and behavior cases.
+- Assets: `assets/tools/` holds seven tool scripts, a shared `xlsxlib.py`, and the `hyper_excel.py` dispatcher; `assets/evals/hyper-excel-cases.jsonl` holds the trigger and behavior cases.
 
 </skill_architecture>
 
@@ -165,7 +165,7 @@ Phase rules:
 | `inspect` | whole package | nothing | values and formulas quoted from the file |
 | `verify` | whole package | nothing | every formula either matches its cache or is listed as unchecked |
 | `patch` | whole package | only named parts | untouched parts byte-identical, result opens |
-| `build` | spec or CSV | new file | file opens, values typed correctly, charts resolve |
+| `build` | spec or CSV | new file | file opens, values typed correctly, charts resolve; a series reference that already names a sheet (`Data!B2:B3`) is used verbatim, and one that does not is qualified with the chart's own sheet exactly once |
 | `recalc` | formulas | cached values only | formulas preserved, cache matches recomputation |
 
 </mode_contract>
@@ -243,7 +243,7 @@ Write the report in Korean. Quote cell values, formulas, and sheet names verbati
 | Excel recalculates on open when `fullCalcOnLoad` is set | <https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.spreadsheet.calculationproperties.fullcalconload> |
 | Column charts are stored as `barChart` with `barDir="col"` | <https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.drawing.charts.barchart.bardirection> |
 | `dxfId` on a conditional-formatting rule indexes the workbook's `dxfs` table | <https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.spreadsheet.differentialformat> |
-| Sheet names in formulas are quoted when they contain spaces or Hangul-adjacent operators | <https://support.microsoft.com/en-us/office/reference-cells-in-another-worksheet-ff487f16-4ce1-4c1a-8a71-2b0e4b5f5b15> |
+| Sheet names in formulas are quoted when they contain spaces or characters that break an unquoted reference | <https://support.microsoft.com/en-us/office/reference-cells-in-another-worksheet-ff487f16-4ce1-4c1a-8a71-2b0e4b5f5b15> |
 
 ### Evidence grade
 

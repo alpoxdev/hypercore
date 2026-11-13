@@ -29,7 +29,7 @@ Rules:
 Excel stores a date as a serial number counting days from 1899-12-30 (1900 date system) or 1904-01-01 (1904 date system). The format decides what it looks like.
 
 - Write the serial, apply `yyyy-mm-dd`. Do not write `"2026-01-31"` as text.
-- `inspect` reports `date1904` from `workbookPreference`; a file built under the 1904 system shows dates four years and a day off when opened under the 1900 system. Check it before trusting any date arithmetic.
+- `inspect` reports `date1904` from the workbook properties (`workbookPr`); a file built under the 1904 system shows dates four years and a day off when opened under the 1900 system. Check it before trusting any date arithmetic.
 - Korean Excel entered locally writes `2026. 1. 31.` when a date is typed in a text-formatted cell. That string parses as 2026-01-31 under a Korean locale and fails or misparses elsewhere.
 
 Measured on this machine 2026-11-13: `2026. 1. 31.`, `2026-01-31`, and `2026/01/31` all parse to the same date. `profile` reports them as `LOCALE_DATE_TEXT` — stored as text but not locale-flippable. A column holding `01/31/2026` or `31/01/2026` is reported as `AMBIGUOUS_DATE` with severity `high`, because nothing in the value says which of the two is meant.
@@ -42,7 +42,7 @@ Korean CSVs arrive in one of four encodings. Detection order that works in pract
 2. `utf-8` — strict decode succeeds.
 3. `cp949` — Microsoft's Korean codepage; superset of `euc-kr` for practical purposes, so decode with `cp949` and it covers both.
 4. `euc-kr` — only reached when `cp949` fails, which is rare.
-5. `latin-1` — last resort; decodes anything but produces mojibake, so it must be reported as a failure, not a success.
+5. `latin-1` — last resort; decodes any byte sequence but produces mojibake, so treat the result as a guess, not a decode. `profile` still succeeds and reports `encoding: latin-1`, and `build` raises `W_ENCODING_GUESS` for the same file; when you see either, report the encoding assumption instead of presenting the text as trusted.
 
 `profile_table.py` tries this order and reports which one was used. Always state the encoding in the report: a user who gets mojibake needs to know what was assumed.
 
@@ -50,18 +50,18 @@ Notepad on Korean Windows saves `cp949` without a BOM; Excel's own "CSV UTF-8" e
 
 ## Delimiters and decimal marks
 
-Korean CSVs use comma as delimiter and period as decimal separator, same as US. The problematic imports are the ones exported by European systems (semicolon delimiter, comma decimal) or from ERP exports that quote every field. `profile` reports the detected delimiter and warns when a single column contains what look like delimiters.
+Korean CSVs use comma as delimiter and period as decimal separator, same as US. The problematic imports are the ones exported by European systems (semicolon delimiter, comma decimal) or from ERP exports that quote every field. `profile` reports the detected delimiter in the `delimiter` field. It does not warn about a wrong guess, so if the column count is 1 on a file you expected to be wide, re-run with an explicit `--delimiter` and compare the column count.
 
 ## Sheet names
 
 - Hangul sheet names are valid and need no quoting in the UI, but a formula reference must be quoted when the name contains a space, a hyphen, or starts with a digit: `='월별 손익'!B2`.
 - Sheet name limit is 31 characters; forbidden characters are `: \ / ? * [ ]`.
-- Renaming a sheet updates formulas that reference it in Excel, but a raw XML rename does not. If a rename is needed, do it through `patch` so the reference rewrite is explicit, then `verify`.
-- Duplicate names differing only by case are rejected by Excel; `inspect` reports `E_SHEET_NAME_DUP`.
+- Renaming a sheet in Excel updates the formulas that reference it; a raw XML rename does not. `patch --rename-sheet` changes the `<sheet>` name only and warns that quoting formulas and defined names are not rewritten, so after a rename you must update those references yourself and then run `verify`.
+- Excel rejects duplicate sheet names, and names that differ only by case are also rejected on open. `build` refuses exact duplicates; it does not check case-only collisions, so check those yourself before shipping a file with names like `Data` and `data`.
 
 ## Text that looks like a formula
 
-A customer name beginning with `=`, `+`, `-`, or `@` is a formula injection vector (DDE). The builder writes such values as text and reports the count. Do not delete the value silently; report the column and count so a human can decide.
+A customer name beginning with `=`, `+`, `-`, or `@` is a formula injection vector (DDE). The builder writes such values as text and reports them in the build output as `I_NEUTRALIZED` with a count and the cells. Do not delete the value silently; report the column and count so a human can decide.
 
 ## Hangul in output
 

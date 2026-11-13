@@ -1,6 +1,6 @@
 # 읽기·쓰기 도구
 
-> 각 도구가 `.xlsx`를 건드릴 때 실제로 무엇을 지키는지. 여기 적힌 주장은 2026-11-13 이 기기에서 실행한 결과이며, 조건을 결과와 함께 적었습니다.
+> 각 도구가 `.xlsx`를 건드릴 때 실제로 무엇을 지키는지. 스킬 자체 도구 행은 2026-11-13 이 기기에서 실행한 결과입니다. `LOCAL`로 표시한 라이브러리 행도 여기서 실행했고, 나머지는 그 라이브러리 문서를 근거로 적었음을 표시했습니다.
 
 ## 목차
 
@@ -56,7 +56,7 @@ docProps/app.xml             docProps/core.xml
 
 openpyxl의 모델이 이들을 포함하므로 살아남습니다. "openpyxl이 내 차트를 잃나"에 단일 답이 없는 이유가 이것입니다.
 
-**피벗 파트**, 풍부한 파일에 `xl/pivotCache/pivotCacheDefinition1.xml`과 `xl/pivotTables/pivotTable1.xml`을 넣은 뒤 로드/저장: 두 파트가 **사라졌습니다**. openpyxl이 피벗 테이블을 모델링하지 않으므로 관계와 함께 버립니다.
+**피벗 파트**, 풍부한 파일에 `xl/pivotCache/pivotCacheDefinition1.xml`과 `xl/pivotTables/pivotTable1.xml`을 넣은 뒤 로드/저장: 두 파트가 **사라졌습니다**. openpyxl 3.1.5에 `openpyxl.pivot.table.TableDefinition`과 `openpyxl.pivot.cache.CacheDefinition`이 있는데도 이렇게 된 것은, 넣은 스텁이 그 리더가 받아들이는 모양이 아니어서 버려졌기 때문입니다. openpyxl을 거치는 피벗은 위험으로 보고 왕복 뒤 파트를 확인한다. 항상 보존된다거나 항상 사라진다고 단정하지 않는다.
 
 **매크로**:
 
@@ -65,7 +65,7 @@ openpyxl의 모델이 이들을 포함하므로 살아남습니다. "openpyxl이
 | `load_workbook(path)` | 사라짐 |
 | `load_workbook(path, keep_vba=True)` | 유지, 바이트 동일(`sha256` 같음), `macroEnabled` 콘텐츠 타입 유지 |
 
-기본 호출은 VBA를 조용히 지웁니다. `.xlsm`에는 `keep_vba=True`가 필수이고, 그래도 보장되는 것은 VBA 파트뿐입니다. 피벗 캐시와 알 수 없는 확장은 여전히 사라집니다.
+기본 호출은 VBA를 조용히 지웁니다. `.xlsm`에는 `keep_vba=True`가 필수이고, 그래도 보장되는 것은 VBA 파트뿐입니다. openpyxl이 모델링하지 않는 모양의 파트, 예컨대 인식되지 않는 피벗 스텁은 여전히 사라집니다.
 
 ## 측정: 번들 도구
 
@@ -100,7 +100,7 @@ openpyxl의 모델이 이들을 포함하므로 살아남습니다. "openpyxl이
 
 ## 여기서 하지 않는 것
 
-- 엑셀 엔진으로 계산하지 않는다. 평가기는 문서화된 함수 집합을 덮고 나머지는 미검증으로 보고한다.
+- 엑셀 엔진으로 계산하지 않는다. 평가기는 문서화된 함수 집합을 덮고 나머지는 미검증으로 보고한다. 범위는 `ROWS`·`COLUMNS`·`INDEX`·`VLOOKUP`·`HLOOKUP`을 위해 행·열 모양을 유지하고, `ISERROR`/`ISERR`/`ISNA`는 오류를 전파하지 않고 검사하며, 실패한 `MATCH`나 조회는 `IFNA`·`ISNA`가 검사하는 `#N/A`를 돌려주고, `POWER`/`^`는 음수 밑에 분수 지수를 주면 복소수가 아니라 `#NUM!`을 돌려준다.
 - 렌더링·인쇄하지 않는다. 레이아웃, 페이지 나눔, 인쇄 정확도는 실제 엔진이 필요하다.
 - VBA를 실행하지 않는다.
 - `.xls`나 `.xlsb`를 읽지 않는다.
@@ -119,4 +119,4 @@ openpyxl의 모델이 이들을 포함하므로 살아남습니다. "openpyxl이
 
 ### Evidence grade
 
-측정 행은 전부 `LOCAL`입니다. 라이브러리 동작 행은 문서를 읽은 것이 아니라 라이브러리를 실행해 확인했습니다. 버전과 날짜를 적었으니 다시 확인할 수 있습니다.
+이 스킬 도구가 만든 행과, 여기서 실행한 openpyxl 3.1.5 행이 `LOCAL`입니다. pandas, xlsxwriter, LibreOffice, Numbers 행은 그 문서의 동작에서 추론한 것이고, 이 기기에 LibreOffice가 없으므로 측정이 아니라 `DOC` 등급 근거입니다. 버전과 날짜를 적었으니 모든 주장을 다시 확인할 수 있습니다.

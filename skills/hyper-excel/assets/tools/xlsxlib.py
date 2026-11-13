@@ -59,6 +59,31 @@ def col_letters(index):
 REF_RE = re.compile(r"^\$?([A-Za-z]{1,3})\$?(\d+)$")
 
 
+def shift_formula(formula, row_delta, col_delta):
+    """Shift the relative references in a formula by the given deltas.
+
+    Absolute parts (`$A$1`) stay put, which is what Excel does when a shared
+    formula is filled down or across.
+    """
+    if not formula or (row_delta == 0 and col_delta == 0):
+        return formula
+    pattern = re.compile(r"(\$?)([A-Za-z]{1,3})(\$?)(\d+)")
+
+    def repl(m):
+        col_abs, col_text, row_abs, row_text = m.groups()
+        col = col_index(col_text)
+        row = int(row_text)
+        if not col or col > 16384 or row < 1:
+            return m.group(0)
+        new_col = col if col_abs else col + col_delta
+        new_row = row if row_abs else row + row_delta
+        if new_col < 1 or new_col > 16384 or new_row < 1 or new_row > 1048576:
+            return m.group(0)
+        return "%s%s%s%d" % (col_abs, col_letters(new_col), row_abs, new_row)
+
+    return pattern.sub(repl, formula)
+
+
 def parse_ref(ref):
     """'$B$7' -> (2, 7). Returns (0, 0) when the reference is not a single cell."""
     m = REF_RE.match(ref or "")
@@ -77,19 +102,38 @@ def split_sheet_qualified(ref):
     return (sheet, cell)
 
 
+MAX_ROW = 1048576
+
+
 def range_bounds(ref):
-    """'B2:D9' -> (2, 2, 4, 9) as (min_col, min_row, max_col, max_row)."""
+    """'B2:D9' -> (2, 2, 4, 9) as (min_col, min_row, max_col, max_row).
+
+    Whole-column (`A:A`) and whole-row (`3:3`) references are accepted so a format
+    can cover a column rather than an enumerated cell list; a missing side takes the
+    sheet limit.
+    """
     ref = (ref or "").replace("$", "")
     if not ref:
         return None
     first, _, last = ref.partition(":")
+    if first.isdigit() or (last and last.isdigit()):
+        rows = [int(x) for x in (first, last) if x.isdigit()]
+        if not rows:
+            return None
+        return (1, min(rows), MAX_COLS, max(rows))
     c1, r1 = parse_ref(first)
     if not c1:
-        return None
+        c1 = col_index(first) if first.isalpha() else 0
+        if not c1:
+            return None
+        r1 = 1
     if last:
         c2, r2 = parse_ref(last)
         if not c2:
-            return None
+            c2 = col_index(last) if last.isalpha() else 0
+            if not c2:
+                return None
+            r2 = MAX_ROW
     else:
         c2, r2 = c1, r1
     return (min(c1, c2), min(r1, r2), max(c1, c2), max(r1, r2))
@@ -116,6 +160,10 @@ class Workbook:
         self._rels = {}
         self._sheets = None
         self._shared = None
+        # Cells whose shared-string index points past the table. A broken index means
+        # lost text, so it is recorded instead of silently becoming an empty cell.
+        self.broken_string_refs = []
+        self.shared_si_conflicts = []
         self._styles = None
         self._workbook = None
 
@@ -296,6 +344,37 @@ class Workbook:
         return kind
 
     # -- sheet reading ------------------------------------------------------
+    def shared_formula_master(self, part_name):
+        """Return {si: (master_ref, formula)} for the shared formulas on a sheet.
+
+        A dependent cell stores only `<f t="shared" si="N"/>` with no text; Excel
+        means "the master formula shifted by the row/column delta". Without the
+        master, every filled-down formula reads as having no formula at all.
+        """
+        raw = self.parts.get(part_name)
+        if raw is None:
+            return {}
+        masters = {}
+        for event, elem in ET.iterparse(_bytes_reader(raw), events=("start", "end")):
+            if elem.tag != M + "c" or event != "end":
+                continue
+            ref = elem.get("r") or ""
+            for child in elem:
+                if child.tag != M + "f":
+                    continue
+                if child.get("t") == "shared" and child.get("si") is not None and child.get("ref"):
+                    si = child.get("si")
+                    if si in masters:
+                        # Two masters claim one si. A dependent cell can only match one
+                        # of them, so keeping the first and recording the clash beats
+                        # silently letting the later cell win.
+                        self.shared_si_conflicts.append(
+                            {"part": part_name, "si": si, "kept": masters[si][0], "ignored": ref})
+                        continue
+                    masters[si] = (ref, child.text or "")
+            elem.clear()
+        return masters
+
     def iter_rows(self, part_name):
         """Yield (row_number, [cell dicts]) streaming the sheet XML.
 
@@ -306,15 +385,16 @@ class Workbook:
         if raw is None:
             return
         shared = self.shared_strings
+        masters = self.shared_formula_master(part_name)
         for event, elem in ET.iterparse(_bytes_reader(raw), events=("end",)):
             if elem.tag != M + "row":
                 continue
             row_no = int(elem.get("r") or 0)
-            cells = [self._cell(c, row_no, shared) for c in elem if c.tag == M + "c"]
+            cells = [self._cell(c, row_no, shared, masters, part_name) for c in elem if c.tag == M + "c"]
             yield (row_no, cells)
             elem.clear()
 
-    def _cell(self, c, row_no, shared):
+    def _cell(self, c, row_no, shared, masters=None, part_name=None):
         ref = c.get("r") or ""
         col, row = parse_ref(ref)
         if not col:
@@ -338,6 +418,8 @@ class Workbook:
                 value = shared[int(v.text)]
             except (ValueError, IndexError):
                 value = None
+                self.broken_string_refs.append({"part": part_name, "ref": ref,
+                                                "index": v.text})
         elif ctype == "inlineStr" and is_elem is not None:
             value = rich_text(is_elem)
         elif ctype == "b" and v is not None:
@@ -357,9 +439,24 @@ class Workbook:
                     value = text
         formula = None
         if f is not None:
-            formula = "=" + (f.text or "")
+            text = f.text or ""
             if f.get("t") == "shared" and f.get("si") is not None:
-                formula += " [shared si=%s%s]" % (f.get("si"), " master" if f.get("ref") else "")
+                si = f.get("si")
+                if f.get("ref") or not masters:
+                    # Master cell, or the master is missing from this sheet: keep the
+                    # text as stored and mark it so a reader can tell it is shared.
+                    formula = "=" + text
+                    formula += " [shared si=%s%s]" % (si, " master" if f.get("ref") else "")
+                else:
+                    # Dependent cell: expand the master, shifted by this cell's offset.
+                    master = masters.get(si)
+                    if master:
+                        m_col, m_row = parse_ref(master[0])
+                        formula = "=" + shift_formula(master[1], row - m_row, col - m_col)
+                    else:
+                        formula = "=" + text
+            else:
+                formula = "=" + text
         return {
             "ref": ref,
             "col": col,
@@ -507,6 +604,11 @@ def builtin_format(fmt_id):
 
 
 FUNC_RE = re.compile(r"(?<![A-Z0-9_.])([A-Z][A-Z0-9_.]{1,40})\s*\(")
+# Excel stores functions newer than the file format under a compatibility prefix:
+# `_xlfn.XLOOKUP(`, `_xlws.FILTER(`, `_xludf.` for user functions. The prefix is
+# part of the stored formula, not of the function name, so it is stripped before
+# the name is compared against the known-function lists.
+XLL_PREFIX_RE = re.compile(r"(?<![A-Z0-9_.])(?:_XL(?:FN|WS|UDF)\.)+", re.I)
 
 
 def formula_functions(formula):
@@ -515,4 +617,5 @@ def formula_functions(formula):
         return []
     body = formula[1:] if formula.startswith("=") else formula
     body = re.sub(r'"[^"]*"', '""', body)
+    body = XLL_PREFIX_RE.sub("", body)
     return sorted({m.group(1).upper() for m in FUNC_RE.finditer(body)})

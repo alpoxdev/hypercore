@@ -111,13 +111,19 @@ def read_rows(path, sheet=None, encoding="auto", delimiter=None):
             delimiter = csv.Sniffer().sniff(raw[:65536], delimiters=",;\t|").delimiter
         except csv.Error:
             delimiter = ","
-    rows = [row for row in csv.reader(io.StringIO(raw), delimiter=delimiter)]
+    try:
+        rows = [row for row in csv.reader(io.StringIO(raw), delimiter=delimiter)]
+    except csv.Error as exc:
+        raise ValueError("%s is not readable as %s-delimited CSV: %s" % (path, delimiter, exc))
     return {"rows": rows, "source": "csv", "encoding": used, "delimiter": delimiter, "bom": bom}
 
 
 def profile_rows(rows, sample_limit=None):
+    # A blank file parses to one or more zero-width records; treating those as a
+    # header would report a table with rows but no columns.
+    rows = [r for r in rows if r]
     if not rows:
-        return {"header": [], "columns": [], "rows": 0}
+        return {"header": [], "columns": [], "rows": 0, "issues": [], "advice": []}
     header = [str(h).strip() or "컬럼%d" % (i + 1) for i, h in enumerate(rows[0])]
     body = rows[1:]
     if sample_limit:
@@ -189,6 +195,10 @@ def profile_rows(rows, sample_limit=None):
         # never become numbers, so counting them here was a false positive.
         leading_zeros = [v for v in non_blank if re.fullmatch(r"0\d+", str(v).strip())]
         column["leadingZeros"] = len(leading_zeros)
+        # A column of codes that only look numeric is a text column: reporting it as
+        # a number invites the conversion that erases the leading zero.
+        if leading_zeros and column["kind"] == "number":
+            column["kind"] = "text"
         columns.append(column)
 
         name = header[index]
@@ -231,11 +241,16 @@ def profile_rows(rows, sample_limit=None):
                 "detail": "앞자리 0이 있는 값 %d개. 숫자로 변환하면 0이 사라진다" % column["leadingZeros"],
                 "fix": "해당 열을 텍스트 서식 '@'으로 두고 값을 문자열로 쓴다",
             })
-        if dominant == "text" and kinds.get("number", 0) > 0 and kinds["number"] / max(len(non_blank), 1) > 0.5:
+        # A column where text and numbers both appear is a real data defect: sorting
+        # and totals silently skip half of it. The old test required a text majority
+        # while also requiring a numeric majority, so it could never fire.
+        numbers = kinds.get("number", 0)
+        texts = kinds.get("text", 0)
+        if numbers and texts and (numbers + texts) == len(non_blank):
             issues.append({
                 "code": "MIXED_TYPES", "column": name, "severity": "medium",
-                "count": kinds["number"],
-                "detail": "숫자 %d개가 텍스트와 섞여 있다" % kinds["number"],
+                "count": numbers,
+                "detail": "숫자 %d개와 텍스트 %d개가 한 열에 섞여 있다" % (numbers, texts),
                 "fix": "열을 하나의 타입으로 정리한다. 섞인 열은 정렬과 합계가 틀린다",
             })
     advice = []
@@ -281,6 +296,35 @@ def self_test():
         with open(cp, "w", encoding="cp949", newline="") as fh:
             fh.write("품목,수량\n사과,10\n")
         checks.append(("cp949 read", read_rows(cp)["encoding"] in ("cp949", "euc-kr")))
+        # Degenerate inputs must produce the documented shape, not a KeyError: an empty
+        # file has no header row, so profile_rows returns before any column analysis.
+        for name, body in (("empty.csv", b""), ("bomonly.csv", b"\xef\xbb\xbf"), ("blank.csv", b"\n\n")):
+            degenerate = os.path.join(tmp, name)
+            with open(degenerate, "wb") as fh:
+                fh.write(body)
+            shape = profile_rows(read_rows(degenerate)["rows"])
+            checks.append((name + " shape", shape["rows"] == 0 and shape["issues"] == [] and shape["advice"] == []))
+        # A NUL byte is not CSV; it has to arrive as E_READ, not as a csv.Error traceback.
+        binary = os.path.join(tmp, "binary.csv")
+        with open(binary, "wb") as fh:
+            fh.write(b"\xff\xfe\x00\x01junk\n")
+        try:
+            read_rows(binary)
+            checks.append(("binary csv rejected", False))
+        except ValueError:
+            checks.append(("binary csv rejected", True))
+        # A column mixing text and numbers must be reported; the old condition
+        # required a text majority and a numeric majority at once, so it never fired.
+        mixed = os.path.join(tmp, "mixed.csv")
+        with open(mixed, "w", encoding="utf-8", newline="") as fh:
+            fh.write("값\n가\n10\n나\n20\n다\n")
+        mixed_codes = {i["code"] for i in profile_rows(read_rows(mixed)["rows"])["issues"]}
+        checks.append(("mixed types reported", "MIXED_TYPES" in mixed_codes))
+        pure = os.path.join(tmp, "pure.csv")
+        with open(pure, "w", encoding="utf-8", newline="") as fh:
+            fh.write("값\n10\n20\n30\n")
+        checks.append(("pure numeric no mixed",
+                       "MIXED_TYPES" not in {i["code"] for i in profile_rows(read_rows(pure)["rows"])["issues"]}))
         # Year-first dates are unambiguous; only day/month-first flips with locale. The earlier code
         # flagged ISO as ambiguous, which would have made every ISO date column look dangerous.
         ymd = os.path.join(tmp, "ymd.csv")
@@ -297,10 +341,14 @@ def self_test():
         # A phone number keeps its leading zero as text; only an all-digit token loses one.
         phone = os.path.join(tmp, "phone.csv")
         with open(phone, "w", encoding="utf-8", newline="") as fh:
-            fh.write("연락처,코드\n010-1234-5678,00123\n")
+            fh.write("연락처,코드,수량\n010-1234-5678,00123,7\n")
         phone_cols = {c["name"]: c for c in profile_rows(read_rows(phone)["rows"])["columns"]}
         checks.append(("phone no zero warning", phone_cols["연락처"]["leadingZeros"] == 0))
         checks.append(("code zero warning", phone_cols["코드"]["leadingZeros"] == 1))
+        # A code column must not be called numeric: that label is what tells a caller
+        # to convert it, which is exactly the step that erases the zero.
+        checks.append(("code column is text", phone_cols["코드"]["kind"] == "text"))
+        checks.append(("plain number stays numeric", phone_cols["수량"]["kind"] == "number"))
     failed = [name for name, ok in checks if not ok]
     print(json.dumps({"ok": not failed, "checks": len(checks), "failed": failed}, ensure_ascii=False))
     return 0 if not failed else 1

@@ -8,7 +8,7 @@ Symptom: `SUM` over a column returns 0 or skips rows; the cell shows a small gre
 
 Why: CSV import, copy-paste from a web page, or a leading apostrophe leaves the value as a string.
 
-Detection: `profile` reports `MIXED_TYPES` for a column that is mostly text with numbers mixed in, and `LEADING_ZERO` for values whose leading zero would vanish; `verify_formulas` flags `TEXT_NUMBER` when arithmetic touches a text cell.
+Detection: `profile` reports `MIXED_TYPES` for a column where numbers and text both appear, and `LEADING_ZERO` for values whose leading zero would vanish; `verify_formulas` flags `TEXT_NUMBER` for a cell that holds a numeric-looking string under a number, currency, or percent format.
 
 Fix: convert with `--set-value` after confirming the intended type, or fix at build time by emitting numbers. Never "fix" by wrapping the formula in `VALUE()` — the underlying data stays wrong.
 
@@ -38,7 +38,7 @@ Symptom: a growth rate shows 1,500% instead of 15%.
 
 Why: the value was stored as `15` with a percent format, or as `0.15` with a general format. Only `0.15` plus `0.0%` is right.
 
-Detection: `verify_formulas` reports `PERCENT_AS_WHOLE` when a percent-formatted cell holds a value above 1, and `profile` reports `PERCENT_AS_TEXT` for a `%` suffix inside imported text.
+Detection: `verify_formulas` reports `PERCENT_AS_WHOLE` when a constant cell under a percent format holds a value above 1 (`15` is flagged, `0.15` is not), and `profile` reports `PERCENT_AS_TEXT` for a `%` suffix inside imported text.
 
 Fix: divide by 100 and apply the percent format; keep the numeric value fractional.
 
@@ -48,7 +48,7 @@ Symptom: `03/04/2026` became March 4 in one tool and April 3 in another.
 
 Why: a date typed or parsed under a day-first locale, stored as a string, or converted with an ambiguous format.
 
-Detection: `profile` reports `AMBIGUOUS_DATE` when a column mixes date patterns or holds ISO dates alongside locale dates, and `LOCALE_DATE_TEXT` when every value uses one non-ISO pattern.
+Detection: `profile` reports `AMBIGUOUS_DATE` when a column holds a day/month-first pattern (`01/31/2026`), whose meaning flips with the locale, and `LOCALE_DATE_TEXT` for any other date-shaped string that is stored as text, year-first forms included.
 
 Fix: store dates as serial numbers with an explicit `yyyy-mm-dd` format. Never store a date as text and never guess between day-first and month-first: report the ambiguity.
 
@@ -58,9 +58,9 @@ Symptom: a postal code or product ID `00123` became `123`.
 
 Why: the column was typed as a number during import or conversion.
 
-Detection: `profile` reports `LEADING_ZERO` with the count and the column, and the column record carries a `leadingZeros` count.
+Detection: `profile` reports `LEADING_ZERO` with the count and the column, and the column record carries a `leadingZeros` count. That column's `kind` is reported as `text`, not `number`, because the numeric label is what invites the conversion that loses the zero.
 
-Fix: store as text with an explicit text number format (`@`), and mark the column as text in the build spec.
+Fix: apply a Text (`@`) number format to the column in the build spec; `build` then keeps the value as text and the leading zero survives. `build --csv` does this on its own: any column where a field matches a run of digits starting with `0` gets the `@` format for the whole column, so `007` is never re-typed. When a code sits under an explicit numeric format instead, `build` reports `W_LEADING_ZERO_LOST` with the cells, because the format, not the value, is what forces the conversion. For an existing file, `patch` the cell `--as-text`. Re-reading the built file must show the zero still there, because a numeric re-type is silent data loss.
 
 ## 7. Self-reference and cycles
 
@@ -78,7 +78,7 @@ Symptom: none until someone opens the file — a value starting with `=`, `+`, `
 
 Why: imported CSV text was written as a formula because the writer did not escape a leading `=`.
 
-Detection: the builder escapes a leading `=`, `+`, `-`, `@` into a text cell and reports the count; review that report.
+Detection: the builder writes a value with a leading `=`, `+`, `-`, or `@` as a text cell and reports the count in the build output as `I_NEUTRALIZED`, naming the cells; review that report.
 
 Fix: store as text (string type), and report which column and how many values were neutralized. Never silently delete the value — the user may need to see it.
 
@@ -94,9 +94,9 @@ Fix: `recalc`. It writes values and sets `fullCalcOnLoad`, so Excel still recomp
 
 ## 10. Newer function unsupported by the target Excel
 
-Symptom: `#NAME?` on an older Excel; the file was written with `XLOOKUP`, `LET`, `FILTER`, or `TEXTJOIN`.
+Symptom: `#NAME?` on an older Excel; the file was written with `XLOOKUP`, `XMATCH`, `FILTER`, `SORT`, `UNIQUE`, `SEQUENCE`, `LET`, or `LAMBDA`.
 
-Detection: `verify_formulas` reports `NEWER_FUNCTION` with the function and the cell.
+Detection: `verify_formulas` reports `NEWER_FUNCTION` with the function and the cell. It sees through the `_xlfn.`/`_xlws.` compatibility prefix Excel stores these under, so a file written by Excel is still caught.
 
 Fix: replace with an equivalent, or state the minimum Excel version the file requires.
 
@@ -104,7 +104,7 @@ Fix: replace with an equivalent, or state the minimum Excel version the file req
 
 Symptom: the file is slow to open and every keystroke recalculates everything.
 
-Detection: `verify_formulas` reports `VOLATILE_FUNCTION` with a cell count per function.
+Detection: `verify_formulas` reports one `VOLATILE_FUNCTION` finding per function per cell, each naming the cell; sum them by function if a count is what the report needs.
 
 Fix: replace `OFFSET`/`INDIRECT`/`TODAY`/`NOW`/`RAND` with a static reference or a helper column, or state why it is needed.
 
@@ -117,6 +117,26 @@ Why: a column holds numbers and text, or blank rows sit inside the data block.
 Detection: `profile` reports per-column `kind`, `MIXED_TYPES` for a mixed column, and the column record counts blanks.
 
 Fix: normalize before building; report rows that were dropped or coerced.
+
+## 13. One formula erases the whole verification report
+
+Symptom: `verify` exits with a parse error and names no cells, so you cannot tell which formula is wrong or whether the rest are fine.
+
+Why: a single cell raised a plain Python error instead of a formula error — an out-of-range `DATE(2026,13,1)`, a `CHOOSE()` with no index, `10^400`, `POWER(-8,1/3)`.
+
+Detection: none is needed after the fix: the cell is listed in `unevaluated` with its formula and the error class, and every other formula is still evaluated and compared. The failure mode is a run that prints `E_PARSE` with no `unevaluated` list.
+
+Fix: nothing on the workbook. Read `unevaluated` first; a cell there is unverified, not correct. Only the cell whose formula is genuinely in range gets its value from `recalc`.
+
+## 14. Chart series that points nowhere
+
+Symptom: the chart is created, the file opens, and the plot is empty.
+
+Why: the series reference was qualified twice — `Chart!Data!A2:A3` when the spec already said `Data!A2:A3` — which Excel treats as a malformed reference. The same symptom comes from a drawing relationship attached to the wrong sheet, where the chart part exists but no sheet points at it.
+
+Detection: `inspect` reports the chart part and its type per sheet, so a chart listed under the wrong sheet is visible, and reading `xl/charts/chart1.xml` shows the `<c:f>` reference verbatim.
+
+Fix: give `categories`/`values` either a bare range (qualified once with the chart's own sheet) or a fully qualified one, never both; re-read the chart part and confirm each reference contains exactly one `!`.
 
 ## Sources
 

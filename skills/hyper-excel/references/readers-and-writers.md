@@ -1,6 +1,6 @@
 # Readers and Writers
 
-> What each tool actually keeps when it touches an `.xlsx`. Every claim here was run on this machine on 2026-11-13; the conditions are stated with the result.
+> What each tool actually keeps when it touches an `.xlsx`. The bundled-tool rows were run on this machine on 2026-11-13. The third-party-library rows marked `LOCAL` were run here too; the rest cite the library's own documentation and are marked as such.
 
 ## Contents
 
@@ -56,7 +56,7 @@ So on a file this shape, openpyxl keeps the content but rewrites the entire pack
 
 openpyxl's model covers those, so they survive. This is why "does openpyxl lose my chart" has no single answer: it depends on whether the artifact is in its model.
 
-**Pivot parts**, injected as `xl/pivotCache/pivotCacheDefinition1.xml` and `xl/pivotTables/pivotTable1.xml` into the rich file: after load and save, both parts were **gone**. openpyxl does not model pivot tables, so it drops them and their rels.
+**Pivot parts**, injected as `xl/pivotCache/pivotCacheDefinition1.xml` and `xl/pivotTables/pivotTable1.xml` into the rich file: after load and save, both parts were **gone**. openpyxl 3.1.5 does define `openpyxl.pivot.table.TableDefinition` and `openpyxl.pivot.cache.CacheDefinition`, but this injected stub was not in the shape its reader accepts, so it was dropped rather than preserved. Treat a pivot as at risk through openpyxl and verify the parts after any round trip; do not assume either that it is always kept or always lost.
 
 **Macros**:
 
@@ -65,7 +65,7 @@ openpyxl's model covers those, so they survive. This is why "does openpyxl lose 
 | `load_workbook(path)` | gone |
 | `load_workbook(path, keep_vba=True)` | kept, byte-identical (`sha256` equal), `macroEnabled` content type preserved |
 
-The default call silently strips VBA. `keep_vba=True` is mandatory for `.xlsm`, and even then only the VBA part is guaranteed: pivot caches and unknown extensions still go.
+The default call silently strips VBA. `keep_vba=True` is mandatory for `.xlsm`, and even then only the VBA part is guaranteed: part shapes openpyxl does not model, such as an unrecognized pivot stub, still go.
 
 ## Measured: the bundled tools
 
@@ -100,7 +100,7 @@ The single-part touch count is the reason to prefer `patch` for any edit to an e
 
 ## What no tool here does
 
-- Calculate with Excel's engine. The evaluator covers a documented function set and reports the rest as unevaluated.
+- Calculate with Excel's engine. The evaluator covers a documented function set and reports the rest as unevaluated. Ranges keep their row/column shape for `ROWS`, `COLUMNS`, `INDEX`, `VLOOKUP`, and `HLOOKUP`; `ISERROR`/`ISERR`/`ISNA` inspect an error instead of propagating it; a failed `MATCH` or lookup returns `#N/A`, which is what `IFNA` and `ISNA` test for; `POWER`/`^` return `#NUM!` for a negative base with a fractional exponent rather than a complex number.
 - Render or print. Layout, page breaks, and print fidelity need a real engine.
 - Run VBA.
 - Read `.xls` or `.xlsb`.
@@ -119,4 +119,4 @@ The single-part touch count is the reason to prefer `patch` for any edit to an e
 
 ### Evidence grade
 
-`LOCAL` for every measured row; the library-behavior rows were verified by running the libraries, not by reading their documentation. Version numbers and the date are stated so the claims can be re-checked.
+`LOCAL` for the rows this skill's own tools produced, and for openpyxl 3.1.5 where it was run here. The pandas, xlsxwriter, LibreOffice, and Numbers rows are reasoned from their documented behavior, and LibreOffice is not installed on this machine, so those are `DOC`-grade evidence, not measurements. Version numbers and the date are stated so every claim can be re-checked.

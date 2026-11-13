@@ -102,6 +102,26 @@ def inspect(path, max_cells=2_000_000):
     sheets = []
     for name, part, state in wb.sheets:
         sheets.append(summarize_sheet(wb, name, part, state, max_cells))
+    if wb.shared_si_conflicts:
+        warnings.append({
+            "code": "E_SHARED_FORMULA_SI",
+            "detail": "%d shared formula(s) reuse an si already claimed by another cell (%s)"
+                      % (len(wb.shared_si_conflicts),
+                         ", ".join("%s: si=%s kept %s" % (i["part"], i["si"], i["kept"])
+                                   for i in wb.shared_si_conflicts[:10])),
+        })
+    if wb.broken_string_refs:
+        # A shared-string index past the table means the text is gone; reporting it
+        # with the part and cell is the only way to find which values to recover.
+        seen = {}
+        for item in wb.broken_string_refs:
+            seen.setdefault(item["part"], []).append(item)
+        for part, items in sorted(seen.items()):
+            warnings.append({
+                "code": "E_SHARED_STRINGS_INDEX",
+                "detail": "%s: %d cell(s) point past the shared-string table (%s)"
+                          % (part, len(items), ", ".join(i["ref"] for i in items[:10])),
+            })
     if package["hasExternalLinks"]:
         warnings.append({"code": "W_EXTERNAL_LINKS", "detail": "workbook links another file; those cached values are not recomputable here"})
     if any(s["formulaWithoutCache"] for s in sheets):

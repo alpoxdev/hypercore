@@ -38,16 +38,18 @@ import xlsxlib  # noqa: E402
 
 SUPPORTED = (
     "SUM", "AVERAGE", "MIN", "MAX", "COUNT", "COUNTA", "COUNTBLANK", "PRODUCT",
+    "MEDIAN", "STDEV", "STDEVP", "VAR", "VARP",
     "ROUND", "ROUNDUP", "ROUNDDOWN", "ABS", "INT", "MOD", "POWER", "SQRT", "EXP", "LN", "LOG10",
     "IF", "IFERROR", "IFNA", "AND", "OR", "NOT", "TRUE", "FALSE",
     "SUMIF", "SUMIFS", "COUNTIF", "COUNTIFS", "AVERAGEIF", "AVERAGEIFS",
     "MAXIFS", "MINIFS", "SUMPRODUCT",
     "INDEX", "MATCH", "VLOOKUP", "HLOOKUP", "CHOOSE",
     "LEFT", "RIGHT", "MID", "LEN", "TRIM", "UPPER", "LOWER", "CONCATENATE", "CONCAT", "TEXTJOIN",
-    "TEXT", "VALUE", "DATE", "YEAR", "MONTH", "DAY", "EOMONTH",
-    "ISBLANK", "ISNUMBER", "ISTEXT", "ISERROR",
+    "TEXT", "VALUE", "DATE", "YEAR", "MONTH", "DAY", "EOMONTH", "WORKDAY", "NETWORKDAYS", "YEARFRAC",
+    "ISBLANK", "ISNUMBER", "ISTEXT", "ISERROR", "ISERR", "ISNA",
     "ROW", "COLUMN", "COLUMNS", "ROWS", "NA", "N",
 )
+IS_PREDICATES = ("ISBLANK", "ISNUMBER", "ISTEXT", "ISERROR", "ISERR", "ISNA")
 UNSUPPORTED_KNOWN = (
     "XLOOKUP", "XMATCH", "FILTER", "SORT", "SORTBY", "UNIQUE", "SEQUENCE", "LET", "LAMBDA",
     "OFFSET", "INDIRECT", "NOW", "TODAY", "RAND", "RANDBETWEEN", "GETPIVOTDATA",
@@ -143,6 +145,51 @@ def to_text(value):
     return str(value)
 
 
+class Range(list):
+    """A range flattened row-major that still knows its shape.
+
+    Most functions (SUM, COUNT, AND, ...) only need the flat values, but ROWS,
+    COLUMNS and INDEX are defined by the 2-D shape; a plain list loses it, which is
+    how ROWS(A1:B4) used to answer 8 and INDEX(A2:B4,2,1) answered an element of a
+    flattened list instead of A3.
+    """
+
+    def __init__(self, values, nrows, ncols):
+        super().__init__(values)
+        self.nrows = nrows
+        self.ncols = ncols
+
+
+def _same_value(left, right):
+    """Excel's lookup equality: numbers compare numerically, text case-insensitively."""
+    if left is None or right is None:
+        return False
+    if isinstance(left, str) and isinstance(right, str):
+        return left.lower() == right.lower()
+    if isinstance(left, bool) or isinstance(right, bool):
+        return bool(left) == bool(right)
+    try:
+        return to_number(left) == to_number(right)
+    except FormulaError:
+        return False
+
+
+def _power(base, exponent):
+    """Excel's `^`/`POWER` domain: a negative base with a fractional exponent is
+    `#NUM!`, never a complex number, and an overflowing result is `#NUM!` too.
+    Returning a Python complex silently poisons the JSON report downstream.
+    """
+    try:
+        result = base ** exponent
+    except (OverflowError, ZeroDivisionError, ValueError):
+        raise FormulaError("#NUM!")
+    if isinstance(result, complex):
+        raise FormulaError("#NUM!")
+    if isinstance(result, float) and (math.isinf(result) or math.isnan(result)):
+        raise FormulaError("#NUM!")
+    return result
+
+
 def truthy(value):
     if value is None:
         return False
@@ -206,6 +253,8 @@ def criteria_test(value, criterion):
         if target == "":
             target = None
     if target is None:
+        # An empty criterion counts blanks. Excel's "<>" counts non-empty cells,
+        # so a blank must fail it.
         empty = value is None or value == ""
         return {"=": empty, "<>": not empty, "<": False, ">": False, "<=": empty, ">=": empty}[op]
     if isinstance(target, str):
@@ -216,8 +265,21 @@ def criteria_test(value, criterion):
         if target_num is None:
             left, right = to_text(value).lower(), target.lower()
         else:
-            left, right = to_number(value), target_num
+            # A numeric criterion never matches a blank or a text cell in Excel:
+            # COUNTIF over 3 numbers and 5 blanks is 3, not 8.
+            if value is None or value == "":
+                return op == "<>"
+            if isinstance(value, str):
+                try:
+                    left = float(value)
+                except ValueError:
+                    return op == "<>"
+                right = target_num
+            else:
+                left, right = to_number(value), target_num
     else:
+        if value is None or value == "":
+            return op == "<>"
         left, right = to_number(value), to_number(target)
     if op == "=":
         return left == right
@@ -232,19 +294,20 @@ def criteria_test(value, criterion):
     return left >= right
 
 
-def excel_serial(d):
+DEFAULT_EPOCH = date(1899, 12, 30)
+
+
+def excel_serial(d, epoch=DEFAULT_EPOCH):
     if isinstance(d, float):
         return d
-    base = date(1899, 12, 30)
-    return float((d - base).days)
+    return float((d - epoch).days)
 
 
-def serial_to_date(serial):
-    base = date(1899, 12, 30)
-    return base + timedelta(days=int(math.floor(serial)))
+def serial_to_date(serial, epoch=DEFAULT_EPOCH):
+    return epoch + timedelta(days=int(math.floor(serial)))
 
 
-def numfmt_text(value, code):
+def numfmt_text(value, code, epoch=DEFAULT_EPOCH):
     """Render a number with the handful of format shapes a report needs to confirm."""
     low = (code or "").lower()
     num = to_number(value)
@@ -252,7 +315,7 @@ def numfmt_text(value, code):
         decimals = len(low.split("%")[0].split(".")[1]) if "." in low.split("%")[0] else 0
         return ("{:,.%df}%%" % decimals).replace("{:,.%df}", "{:,.%df}" % decimals).format(num * 100)
     if any(h in low for h in xlsxlib.DATE_FMT_HINTS):
-        d = serial_to_date(num)
+        d = serial_to_date(num, epoch)
         if "h:" in low or "h:" in low:
             return d.isoformat()
         if "yy" in low and "mm" in low and "dd" in low:
@@ -277,6 +340,10 @@ class Evaluator:
         self.sheet_cells = {}
         self.sheet_parts = {}
         self.defined = {}
+        # A 1904 workbook counts days from 1904-01-01; every date function has to
+        # shift or YEAR/MONTH/DAY come back four years and one day off.
+        self.date1904 = bool(getattr(wb, "date1904", False))
+        self.epoch = date(1904, 1, 1) if self.date1904 else date(1899, 12, 30)
         for name, part, state in wb.sheets:
             if state == "chartsheet" or not part:
                 continue
@@ -326,7 +393,7 @@ class Evaluator:
             for c in range(c1, c2 + 1):
                 cell = cells.get((c, r))
                 out.append(None if cell is None else (self.cell_value(sheet, c, r) if cell["formula"] else cell["value"]))
-        return out
+        return Range(out, r2 - r1 + 1, c2 - c1 + 1)
 
     def resolve_sheet(self, prefix, current_sheet):
         if prefix is None:
@@ -347,13 +414,13 @@ class Evaluator:
             c1, c2 = xlsxlib.col_index(first), xlsxlib.col_index(last)
             rows = [r for (c, r) in self.sheet_cells.get(sheet, {}) if c1 <= c <= c2]
             if not rows:
-                return []
+                return Range([], 0, abs(c2 - c1) + 1)
             return self.range_values(sheet, (min(c1, c2), min(rows), max(c1, c2), max(rows)))
         if re.match(r"^\d+:\d+$", cell_part):
             r1, r2 = (int(x) for x in cell_part.split(":"))
             cols = [c for (c, r) in self.sheet_cells.get(sheet, {}) if r1 <= r <= r2]
             if not cols:
-                return []
+                return Range([], abs(r2 - r1) + 1, 0)
             return self.range_values(sheet, (min(cols), min(r1, r2), max(cols), max(r1, r2)))
         bounds = xlsxlib.range_bounds(cell_part)
         if not bounds:
@@ -369,13 +436,22 @@ class Evaluator:
         text = re.sub(r"\s*\[shared[^\]]*\]$", "", text)
         if not text.strip():
             return None
-        self.tokens = tokenize(text)
-        self.pos = 0
-        self.ctx = (sheet, row, col, depth)
-        value = self.parse_comparison()
-        if self.pos != len(self.tokens):
-            raise Unsupported("trailing tokens: %r" % (self.tokens[self.pos:],))
-        return value
+        # A formula that references another formula cell re-enters evaluate() while
+        # the outer parse is mid-expression. The token stream and cursor are parse
+        # state, not evaluator state, so they are saved and restored around the call;
+        # without this the outer formula continues reading the inner formula's tokens
+        # and returns a wrong number.
+        saved = (getattr(self, "tokens", None), getattr(self, "pos", 0), getattr(self, "ctx", None))
+        try:
+            self.tokens = tokenize(text)
+            self.pos = 0
+            self.ctx = (sheet, row, col, depth)
+            value = self.parse_comparison()
+            if self.pos != len(self.tokens):
+                raise Unsupported("trailing tokens: %r" % (self.tokens[self.pos:],))
+            return value
+        finally:
+            self.tokens, self.pos, self.ctx = saved
 
     def peek(self):
         return self.tokens[self.pos] if self.pos < len(self.tokens) else (None, None)
@@ -447,7 +523,7 @@ class Evaluator:
         while self.peek()[1] == "^":
             self.take()
             right = self.parse_unary()
-            left = to_number(left) ** to_number(right)
+            left = _power(to_number(left), to_number(right))
         return left
 
     def parse_unary(self):
@@ -508,6 +584,11 @@ class Evaluator:
         # IF(FALSE,1/0,0) is 0 in Excel, and IFERROR(1/0,"-") is "-".
         if name in ("IF", "IFERROR", "IFNA"):
             return self.call_lazy(name)
+        # The IS* predicates inspect an error value instead of propagating it:
+        # ISERROR(1/0) is TRUE in Excel. Evaluating the argument eagerly would raise
+        # first, so `IF(ISERROR(1/0),0,1)` wrongly returned #DIV/0!.
+        if name in IS_PREDICATES:
+            return self.call_predicate(name)
         args = []
         if self.peek()[1] == ")":
             self.take()
@@ -546,6 +627,18 @@ class Evaluator:
         except Unsupported:
             self.resync()
             raise
+
+    def call_predicate(self, name):
+        """One-argument IS* predicate whose argument is evaluated guarded."""
+        value, err = self.guarded()
+        if self.peek()[1] == ")":
+            self.take()
+        elif err is None:
+            raise Unsupported("%s with more than one argument" % name)
+        else:
+            err = None  # the extra tokens were part of the failed argument
+            self.expect(")")
+        return self.apply(name, [err if err is not None else value])
 
     def call_lazy(self, name):
         """IF / IFERROR / IFNA with only the taken branch evaluated."""
@@ -641,6 +734,8 @@ class Evaluator:
             if not nums:
                 raise FormulaError("#DIV/0!")
             return math.fsum(nums) / len(nums)
+        if name in ("MEDIAN", "STDEV", "STDEVP", "VAR", "VARP"):
+            return self.distribution(name, args)
         if name == "MIN":
             nums = numbers_only(args)
             return min(nums) if nums else 0
@@ -678,7 +773,7 @@ class Evaluator:
                 raise FormulaError("#DIV/0!")
             return a - b * math.floor(a / b)
         if name == "POWER":
-            return to_number(args[0]) ** to_number(args[1])
+            return _power(to_number(args[0]), to_number(args[1]))
         if name == "SQRT":
             value = to_number(args[0])
             if value < 0:
@@ -759,12 +854,20 @@ class Evaluator:
             array = args[0]
             row_idx = int(to_number(args[1])) if len(args) > 1 else 1
             col_idx = int(to_number(args[2])) if len(args) > 2 else 1
+            if isinstance(array, Range):
+                # Flat list indexes would answer the wrong cell for any range wider
+                # than one column; the shape is what maps (row, col) to an offset.
+                if row_idx < 1 or col_idx < 1:
+                    raise FormulaError("#VALUE!")
+                if row_idx > array.nrows or col_idx > array.ncols:
+                    raise FormulaError("#REF!")
+                return array[(row_idx - 1) * array.ncols + (col_idx - 1)]
             if isinstance(array, list):
                 if row_idx < 1:
                     raise FormulaError("#VALUE!")
                 if col_idx == 1 and row_idx <= len(array):
                     return array[row_idx - 1]
-                raise Unsupported("INDEX over a 2-D range")
+                raise Unsupported("INDEX over a 2-D array")
             if row_idx != 1 or col_idx != 1:
                 raise FormulaError("#REF!")
             return array
@@ -785,8 +888,14 @@ class Evaluator:
                         if needle.lower() == item.lower():
                             return float(idx)
                     elif not isinstance(item, str) or not isinstance(needle, str):
-                        if item is not None and to_number(item) == to_number(needle):
-                            return float(idx)
+                        # A text needle against a numeric cell is simply not a match;
+                        # coercing it raised #VALUE! instead of reaching the #N/A the
+                        # caller's IFNA/ISNA expects.
+                        try:
+                            if item is not None and to_number(item) == to_number(needle):
+                                return float(idx)
+                        except FormulaError:
+                            continue
                 else:
                     try:
                         if to_number(item) <= to_number(needle):
@@ -795,19 +904,12 @@ class Evaluator:
                             break
                     except FormulaError:
                         continue
-            if match_type == 0:
-                raise FormulaError("#N/A")
-            if best is None:
-                raise FormulaError("#N/A")
+            # A failed lookup is #N/A in Excel, which is what IFNA/ISNA test for;
+            # #VALUE! would make every IFNA wrapper take the wrong branch.
+            raise FormulaError("#N/A")
             return float(best)
         if name in ("VLOOKUP", "HLOOKUP"):
-            needle = args[0]
-            table = args[1]
-            index = int(to_number(args[2]))
-            exact = len(args) > 3 and to_number(args[3]) == 0
-            if not isinstance(table, list):
-                raise Unsupported("%s over a non-range" % name)
-            raise Unsupported("%s grid lookup without shape metadata" % name)
+            return self.lookup_grid(name, args)
         if name == "CHOOSE":
             index = int(to_number(args[0]))
             if index < 1 or index >= len(args):
@@ -816,25 +918,29 @@ class Evaluator:
         if name in ("LEFT", "RIGHT", "MID", "LEN", "TRIM", "UPPER", "LOWER", "TEXTJOIN", "CONCATENATE", "CONCAT"):
             return self.text_function(name, args)
         if name == "TEXT":
-            return numfmt_text(args[0], to_text(args[1]))
+            return numfmt_text(args[0], to_text(args[1]), self.epoch)
         if name == "VALUE":
             return to_number(args[0])
         if name == "DATE":
             y, m, d = (int(to_number(a)) for a in args[:3])
-            return excel_serial(date(y, m, 1) + timedelta(days=d - 1))
+            return excel_serial(date(y, m, 1) + timedelta(days=d - 1), self.epoch)
         if name == "YEAR":
-            return float(serial_to_date(to_number(args[0])).year)
+            return float(serial_to_date(to_number(args[0]), self.epoch).year)
         if name == "MONTH":
-            return float(serial_to_date(to_number(args[0])).month)
+            return float(serial_to_date(to_number(args[0]), self.epoch).month)
         if name == "DAY":
-            return float(serial_to_date(to_number(args[0])).day)
+            return float(serial_to_date(to_number(args[0]), self.epoch).day)
+        if name in ("WORKDAY", "NETWORKDAYS"):
+            return self.workdays(name, args)
+        if name == "YEARFRAC":
+            return self.yearfrac(args)
         if name == "EOMONTH":
-            start = serial_to_date(to_number(args[0]))
+            start = serial_to_date(to_number(args[0]), self.epoch)
             months = int(to_number(args[1]))
             year = start.year + (start.month - 1 + months) // 12
             month = (start.month - 1 + months) % 12 + 1
             nxt = date(year + (1 if month == 12 else 0), 1 if month == 12 else month + 1, 1)
-            return excel_serial(nxt - timedelta(days=1))
+            return excel_serial(nxt - timedelta(days=1), self.epoch)
         if name == "ISBLANK":
             return args[0] is None or args[0] == ""
         if name == "ISNUMBER":
@@ -843,6 +949,10 @@ class Evaluator:
             return isinstance(args[0], str) and args[0] not in xlsxlib.ERROR_LITERALS
         if name == "ISERROR":
             return isinstance(args[0], str) and args[0] in xlsxlib.ERROR_LITERALS
+        if name == "ISERR":
+            return isinstance(args[0], str) and args[0] in xlsxlib.ERROR_LITERALS and args[0] != "#N/A"
+        if name == "ISNA":
+            return isinstance(args[0], str) and args[0] == "#N/A"
         if name == "ROW":
             if args:
                 raise Unsupported("ROW over a reference")
@@ -852,14 +962,160 @@ class Evaluator:
                 raise Unsupported("COLUMN over a reference")
             return float(self.ctx[2]) if self.ctx[2] else 1.0
         if name == "COLUMNS":
-            return float(len(args[0])) if isinstance(args[0], list) else 1.0
+            if isinstance(args[0], Range):
+                return float(args[0].ncols)
+            return 1.0
         if name == "ROWS":
-            return float(len(args[0])) if isinstance(args[0], list) else 1.0
+            if isinstance(args[0], Range):
+                return float(args[0].nrows)
+            return 1.0
         if name == "NA":
             raise FormulaError("#N/A")
         if name == "N":
             return to_number(args[0])
         raise Unsupported("function %s" % name)
+
+    # A Korean business calendar still counts Saturday and Sunday as the weekend,
+    # and no holiday list is supplied by the formula, so the two functions agree
+    # with Excel only when the workbook passes no holidays.
+    def workdays(self, name, args):
+        """WORKDAY(start, days) counts forward; NETWORKDAYS(start, end) counts both
+        ends. The second argument means different things, which is why they cannot
+        share one loop: WORKDAY takes a day count, NETWORKDAYS an end date serial.
+        """
+        start = serial_to_date(to_number(args[0]), self.epoch)
+        holidays = set()
+        if len(args) > 2:
+            for item in flatten(args[2:]):
+                if isinstance(item, (int, float)) and not isinstance(item, bool):
+                    holidays.add(serial_to_date(item, self.epoch))
+        if name == "WORKDAY":
+            span = int(to_number(args[1]))
+            remaining, cursor = abs(span), start
+            step = 1 if span >= 0 else -1
+            while remaining:
+                cursor += timedelta(days=step)
+                if cursor.weekday() < 5 and cursor not in holidays:
+                    remaining -= 1
+            return excel_serial(cursor, self.epoch)
+        end = serial_to_date(to_number(args[1]), self.epoch)
+        if end == start:
+            return 1.0 if start.weekday() < 5 and start not in holidays else 0.0
+        step = 1 if end > start else -1
+        cursor, counted = start, 0
+        while cursor != end:
+            if cursor.weekday() < 5 and cursor not in holidays:
+                counted += step
+            cursor += timedelta(days=step)
+        if end.weekday() < 5 and end not in holidays:
+            counted += step
+        return float(counted)
+
+    def yearfrac(self, args):
+        """YEARFRAC basis 0 (US 30/360) and 1 (actual/actual) as Excel defines them."""
+        start = serial_to_date(to_number(args[0]), self.epoch)
+        end = serial_to_date(to_number(args[1]), self.epoch)
+        basis = int(to_number(args[2])) if len(args) > 2 else 0
+        if basis == 1:
+            if start == end:
+                return 0.0
+            low, high = (start, end) if start < end else (end, start)
+            years = high.year - low.year
+            if years == 0:
+                return (high - low).days / (366.0 if self._leap(low.year) else 365.0)
+            total = 0.0
+            for year in range(low.year, high.year + 1):
+                first = max(low, date(year, 1, 1))
+                last = min(high, date(year, 12, 31))
+                total += max((last - first).days + 1, 0) / (366.0 if self._leap(year) else 365.0)
+            return total if start < end else -total
+        if basis == 0:
+            d1, d2 = start.day, end.day
+            if d1 == 31:
+                d1 = 30
+            if d2 == 31 and d1 == 30:
+                d2 = 30
+            days = (end.year - start.year) * 360 + (end.month - start.month) * 30 + (d2 - d1)
+            return days / 360.0
+        raise Unsupported("YEARFRAC basis %d" % basis)
+
+    @staticmethod
+    def _leap(year):
+        return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+
+    def lookup_grid(self, name, args):
+        """VLOOKUP/HLOOKUP with Excel's exact and approximate modes.
+
+        `range_lookup` 0/FALSE is an exact match and returns #N/A when absent;
+        omitted or TRUE walks the first row/column in ascending order and returns
+        the last value at or below the needle. The 2-D shape is required here, so a
+        flattened list cannot answer the wrong column without anyone noticing.
+        """
+        needle = args[0]
+        table = args[1]
+        if not isinstance(table, Range):
+            raise Unsupported("%s over a non-range" % name)
+        index = int(to_number(args[2]))
+        approximate = len(args) < 4 or truthy(args[3])
+        horizontal = name == "HLOOKUP"
+        span = table.ncols if horizontal else table.nrows
+        depth = table.nrows if horizontal else table.ncols
+        if index < 1 or index > depth:
+            raise FormulaError("#REF!")
+        if span == 0:
+            raise FormulaError("#N/A")
+        head = [table[i * table.ncols] if not horizontal else table[i] for i in range(span)]
+        hit = None
+        for pos, item in enumerate(head):
+            if _same_value(item, needle):
+                hit = pos
+                break
+            if approximate:
+                try:
+                    if to_number(item) <= to_number(needle):
+                        hit = pos
+                    else:
+                        break
+                except FormulaError:
+                    # Approximate mode orders text alphabetically; without this a
+                    # text key never matches and the lookup silently returns #N/A.
+                    if isinstance(item, str) and isinstance(needle, str):
+                        if item.lower() <= needle.lower():
+                            hit = pos
+                        else:
+                            break
+                    continue
+        if hit is None:
+            raise FormulaError("#N/A")
+        # The flat layout is row-major, so the offset is (row - 1) * ncols + (col - 1).
+        # VLOOKUP scans a column and returns across it; HLOOKUP scans a row and
+        # returns down it, which swaps the two indexes.
+        if horizontal:
+            return table[(index - 1) * table.ncols + hit]
+        return table[hit * table.ncols + (index - 1)]
+
+    def distribution(self, name, args):
+        """MEDIAN / STDEV / STDEVP / VAR / VARP over the numeric arguments.
+
+        Excel's sample variants (STDEV, VAR) divide by n-1 and return #DIV/0! for a
+        single value; the population variants (STDEVP, VARP) divide by n and accept
+        one value. MEDIAN averages the two middle values for an even count.
+        """
+        nums = sorted(numbers_only(args))
+        if not nums:
+            raise FormulaError("#NUM!")
+        if name == "MEDIAN":
+            middle = len(nums) // 2
+            if len(nums) % 2:
+                return nums[middle]
+            return (nums[middle - 1] + nums[middle]) / 2.0
+        sample = name in ("STDEV", "VAR")
+        if sample and len(nums) < 2:
+            raise FormulaError("#DIV/0!")
+        mean = math.fsum(nums) / len(nums)
+        divisor = len(nums) - 1 if sample else len(nums)
+        variance = math.fsum((n - mean) ** 2 for n in nums) / divisor
+        return math.sqrt(variance) if name.startswith("STDEV") else variance
 
     def text_function(self, name, args):
         if name == "LEN":
@@ -912,14 +1168,19 @@ class Evaluator:
         if mode in ("max", "min"):
             value_range = args[0] if isinstance(args[0], list) else [args[0]]
             pairs = list(zip(args[1::2], args[2::2]))
-        else:
+        elif mode == "count":
+            # COUNTIFS has no separate value range: every argument pair is a
+            # criterion, including the first one.
             pairs = list(zip(args[0::2], args[1::2]))
             value_range = pairs[0][0] if pairs and isinstance(pairs[0][0], list) else None
             if value_range is None:
-                raise Unsupported("%s without a value range" % mode)
-            pairs = pairs[1:]
-        if not pairs:
-            raise Unsupported("%s without criteria" % mode)
+                raise Unsupported("%s without a range" % mode)
+        else:
+            # SUMIFS/AVERAGEIFS take the value range first, then the criteria pairs.
+            pairs = list(zip(args[1::2], args[2::2]))
+            value_range = args[0] if isinstance(args[0], list) else [args[0]]
+            if not pairs:
+                raise Unsupported("%s without criteria" % mode)
         size = len(value_range)
         for test_range, _ in pairs:
             if not isinstance(test_range, list) or len(test_range) != size:
@@ -966,6 +1227,14 @@ def static_findings(wb, report, sheets):
                     add("TEXT_NUMBER", "medium", sheet_name, cell["ref"],
                         "숫자처럼 보이는 텍스트가 숫자 서식 칸에 있다: %r" % value,
                         "값을 숫자로 바꾸거나 TEXT 서식을 '%s'로 명시한다" % "@")
+            # 1b. Percent semantics: a literal such as 15 meant as 15%.
+            #    Checked before the formula guard: the usual mistake is a typed
+            #    constant, and a formula cell's cached value is not the input.
+            if not formula and cell["kind"] == "percent":
+                if isinstance(value, (int, float)) and not isinstance(value, bool) and abs(value) > 1:
+                    add("PERCENT_AS_WHOLE", "high", sheet_name, cell["ref"],
+                        "백분율 서식 칸에 %s가 들어 있다(렌더하면 %s)" % (value, "%s%%" % (value * 100)),
+                        "분수(0.15)로 저장해야 15%%로 보인다")
             if not formula:
                 continue
             funcs = xlsxlib.formula_functions(formula)
@@ -988,25 +1257,30 @@ def static_findings(wb, report, sheets):
             for fn in ("SUM", "AVERAGE", "MIN", "MAX", "COUNT"):
                 if fn not in funcs:
                     continue
-                for rng in re.findall(r"\$?([A-Z]{1,3})\$?(\d+):\$?([A-Z]{1,3})\$?(\d+)", formula):
-                    findings.extend(_gap_check(sheet_name, cell, fn, rng, cells))
+                for rng, sheet_prefix in _sum_ranges(formula):
+                    # A qualified range lives on another sheet; scanning the current
+                    # sheet would look in the wrong column and miss the gap (or warn
+                    # about unrelated data that happens to sit there).
+                    target = sheet_name
+                    if sheet_prefix:
+                        target = sheet_prefix.strip("'").replace("''", "'")
+                        if target not in sheets:
+                            continue
+                    findings.extend(_gap_check(target, cell, fn, rng, sheets[target]))
             # 5. Division with a denominator that is a plain cell reference and can be zero.
             if re.search(r"/\s*\$?[A-Z]{1,3}\$?\d+", body_no_funcs) and "IFERROR" not in funcs and "IF" not in funcs:
                 add("UNGUARDED_DIVISION", "low", sheet_name, cell["ref"],
                     "0이 될 수 있는 셀로 나누면서 보호가 없다: %s" % formula,
                     "IFERROR(...,\"\") 또는 IF(분모=0,0,...)로 감싼다")
-            # 6. Percent semantics: a literal such as 15 meant as 15%.
-            if cell["kind"] == "percent":
-                if isinstance(value, (int, float)) and abs(value) >= 100:
-                    add("PERCENT_AS_WHOLE", "high", sheet_name, cell["ref"],
-                        "백분율 서식 칸에 %s가 들어 있다(렌더하면 %s)" % (value, "%s%%" % (value * 100)),
-                        "분수(0.15)로 저장해야 15%%로 보인다")
-            # 7. Formula that points at its own cell.
+            # 6. Formula that points at its own cell.
+            #    A reference qualified by a sheet (`Other!A2`) is a different cell,
+            #    so `!` must be excluded alongside identifier characters.
             ref = cell["ref"]
-            if re.search(r"(?<![A-Z0-9_$])%s(?![0-9])" % re.escape(ref.replace("$", "")), formula):
+            self_ref_re = r"(?<![A-Z0-9_$!])%s(?![0-9])" % re.escape(ref.replace("$", ""))
+            if re.search(self_ref_re, formula):
                 add("SELF_REFERENCE", "high", sheet_name, ref,
                     "수식이 자기 셀을 참조한다: %s" % formula, "순환 참조이므로 참조 범위를 다시 잡는다")
-            # 8. Unsupported-or-newer function that a recalc runtime may not know.
+            # 7. Unsupported-or-newer function that a recalc runtime may not know.
             for fn in funcs:
                 if fn in xlsxlib.UNSUPPORTED_KNOWN_HINT:
                     add("NEWER_FUNCTION", "medium", sheet_name, ref,
@@ -1018,28 +1292,62 @@ def static_findings(wb, report, sheets):
 FALLBACK_HINT = ("XLOOKUP", "XMATCH", "FILTER", "SORT", "UNIQUE", "SEQUENCE", "LET", "LAMBDA")
 
 
+GAP_LOOKAHEAD = 100
+
+
+def _sum_ranges(formula):
+    """Yield (bounds, sheet prefix) for every A1:B2 range in a formula.
+
+    The prefix is what tells a cross-sheet total where to look; the bare regex
+    silently treated `SUM(Data!B2:B3)` as a gap check on the formula's own sheet.
+    """
+    pattern = re.compile(
+        r"(?:(?:'((?:[^']|'')+)'|([A-Za-z_\\][\w.]*))!)?"
+        r"\$?([A-Z]{1,3})\$?(\d+):\$?([A-Z]{1,3})\$?(\d+)")
+    for m in pattern.finditer(formula):
+        quoted, bare, col1, row1, col2, row2 = m.groups()
+        yield ((col1, row1, col2, row2), quoted or bare)
+
+
 def _gap_check(sheet_name, cell, fn, rng, cells):
     c1, r1, c2, r2 = (xlsxlib.col_index(rng[0]), int(rng[1]), xlsxlib.col_index(rng[2]), int(rng[3]))
     if c1 != c2:
         return []
-    below = cells.get((c1, r2 + 1))
-    above = cells.get((c1, r1 - 1))
-    # Only a numeric neighbour immediately outside the range is evidence of an
-    # off-by-one range; text, blanks and the total row itself are not.
-    for neighbour, where in ((below, "below"), (above, "above")):
-        if neighbour is None:
-            continue
-        value = neighbour["value"]
-        if neighbour["formula"]:
-            funcs = xlsxlib.formula_functions(neighbour["formula"])
-            if any(f in funcs for f in ("SUM", "AVERAGE", "MIN", "MAX", "COUNT")):
+    # A total that includes its own cell is circular; Excel flags it and other
+    # readers see a stale or zero value instead of an error.
+    if cell["col"] == c1 and r1 <= cell["row"] <= r2:
+        return [{
+            "code": "RANGE_GAP", "severity": "high", "sheet": sheet_name, "ref": cell["ref"],
+            "detail": "%s 범위 %s%s:%s%s 안에 합계 셀 자신이 들어 있다" % ((fn,) + rng),
+            "hint": "합계 셀을 범위 밖으로 옮기거나 범위를 데이터 끝에서 멈춘다",
+        }]
+    # Skip blanks outwards: data continuing past a blank row is still the same
+    # column of numbers, so the range is short. A text cell ends the search because
+    # the next block is a different table.
+    for start, step, where in ((r2 + 1, 1, "아래"), (r1 - 1, -1, "위")):
+        for offset in range(GAP_LOOKAHEAD):
+            probe = start + step * offset
+            if probe < 1:
+                break
+            neighbour = cells.get((c1, probe))
+            if neighbour is None:
                 continue
-        if isinstance(value, (int, float)) and not isinstance(value, bool):
-            return [{
-                "code": "RANGE_GAP", "severity": "high", "sheet": sheet_name, "ref": cell["ref"],
-                "detail": "%s 범위가 %s행에서 끝나는데 바로 %s에 숫자 셀이 있다(=%s)" % (fn, r2, where, value),
-                "hint": "합계 범위가 한 행 모자라지 않은지 확인하고, 의도한 것이면 범위에 맞춰 상수를 고정한다",
-            }]
+            if neighbour["formula"]:
+                funcs = xlsxlib.formula_functions(neighbour["formula"])
+                if any(f in funcs for f in ("SUM", "AVERAGE", "MIN", "MAX", "COUNT")):
+                    break
+            value = neighbour["value"]
+            if isinstance(value, bool):
+                continue
+            if isinstance(value, (int, float)):
+                edge = r2 if step > 0 else r1
+                return [{
+                    "code": "RANGE_GAP", "severity": "high", "sheet": sheet_name, "ref": cell["ref"],
+                    "detail": "%s 범위가 %s행에서 끝나는데 %s쪽에 숫자 셀이 더 있다(=%s)" % (fn, edge, where, value),
+                    "hint": "합계 범위가 한 행 모자라지 않은지 확인하고, 의도한 것이면 범위에 맞춰 상수를 고정한다",
+                }]
+            if isinstance(value, str) and value.strip():
+                break
     return []
 
 
@@ -1068,17 +1376,24 @@ def verify(path, sheet_filter=None, max_cells=2_000_000, static_only=False):
     with open(path, "rb") as fh:
         report["sha256"] = xlsxlib.digest(fh.read())
     sheets = {}
+    truncated = []
     for name, part, state in wb.sheets:
         if state == "chartsheet" or not part:
             continue
         if sheet_filter and name != sheet_filter:
             continue
         cells = {}
+        cut = False
         for row_no, row in wb.iter_rows(part):
+            if cut:
+                break
             for cell in row:
-                cells[(cell["col"], cell["row"])] = cell
-                if len(cells) > max_cells:
+                if len(cells) >= max_cells:
+                    cut = True
                     break
+                cells[(cell["col"], cell["row"])] = cell
+        if cut:
+            truncated.append(name)
         sheets[name] = cells
     findings = static_findings(wb, report, sheets)
     mismatches, unevaluated, error_cells, uncached = [], [], [], []
@@ -1122,6 +1437,16 @@ def verify(path, sheet_filter=None, max_cells=2_000_000, static_only=False):
                 unevaluated.append({"sheet": sheet_name, "ref": cell["ref"],
                                     "formula": cell["formula"], "reason": "recursion"})
                 continue
+            except Exception as exc:  # one bad cell must not erase the whole report
+                # An out-of-range DATE, a huge power, a bad CHOOSE index: the evaluator
+                # raises a plain Python error rather than FormulaError. Report that cell
+                # as unverified and keep going, so a single formula cannot turn the run
+                # into rc=2 with no per-cell detail at all.
+                totals["unevaluated"] += 1
+                unevaluated.append({"sheet": sheet_name, "ref": cell["ref"],
+                                    "formula": cell["formula"],
+                                    "reason": "%s: %s" % (exc.__class__.__name__, exc)})
+                continue
             totals["evaluated"] += 1
             if cell["value"] is None:
                 # An empty cache is not a disagreement: the file simply never stored a
@@ -1153,9 +1478,14 @@ def verify(path, sheet_filter=None, max_cells=2_000_000, static_only=False):
          "detail": "%d formula(s) use a function this evaluator does not implement; they are unverified, not correct" % totals["unevaluated"]},
         {"name": "no_cycle", "status": "pass" if totals["cycles"] == 0 else "fail",
          "detail": "%d cycle(s)" % totals["cycles"]},
+        {"name": "cells_complete", "status": "pass" if not truncated else "partial",
+         "detail": ("all cells read" if not truncated else
+                    "stopped at --max-cells %d; %s is incomplete, so every count below covers only the cells read"
+                    % (max_cells, ", ".join(truncated)))},
     ]
     report.update({"totals": totals, "mismatches": mismatches, "unevaluated": unevaluated,
                    "uncached": uncached, "errorCells": error_cells, "findings": findings,
+                   "truncatedSheets": truncated, "maxCells": max_cells,
                    "checks": checks,
                    "evaluator": {"supportedFunctions": len(SUPPORTED), "mode": "stdlib"}})
     return report
@@ -1221,6 +1551,33 @@ def self_test():
             zf.writestr("xl/worksheets/sheet1.xml", sheet)
         return target
 
+    def build_rows(target_path, rows_spec):
+        """Write a one-sheet workbook of uncached formula cells, ref order preserved."""
+        cells = []
+        for ref, formula, value in rows_spec:
+            body = "<f>%s</f>" % escape(formula)
+            if value is not None:
+                body += "<v>%s</v>" % escape(value)
+            cells.append('<c r="%s">%s</c>' % (ref, body))
+        sheet = ('<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="%s"><sheetData>'
+                 '<row r="1">%s</row></sheetData></worksheet>' % (xlsxlib.NS["m"], "".join(cells)))
+        wbxml = ('<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="%s" xmlns:r="%s">'
+                 '<sheets><sheet name="S" sheetId="1" r:id="rId1"/></sheets></workbook>'
+                 % (xlsxlib.NS["m"], xlsxlib.NS["r"]))
+        rels = ('<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="%s">'
+                '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'
+                '</Relationships>' % xlsxlib.NS["pr"])
+        root_rels = ('<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="%s">'
+                     '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+                     '</Relationships>' % xlsxlib.NS["pr"])
+        with zipfile.ZipFile(target_path, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr("[Content_Types].xml", '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"/>')
+            zf.writestr("_rels/.rels", root_rels)
+            zf.writestr("xl/workbook.xml", wbxml)
+            zf.writestr("xl/_rels/workbook.xml.rels", rels)
+            zf.writestr("xl/worksheets/sheet1.xml", sheet)
+        return target_path
+
     checks = []
     with tempfile.TemporaryDirectory() as tmp:
         path = build(tmp)
@@ -1255,6 +1612,123 @@ def self_test():
         checks.append(("unsupported raises", False))
     except Unsupported:
         checks.append(("unsupported raises", True))
+
+    # Percent-as-whole must fire on a constant cell with no formula, which is the
+    # shape of the real mistake (a typed 15 under a percent format).
+    fake = {"sheet": "P", "col": 2, "row": 2, "type": "n", "formula": None,
+            "value": 15, "style": 1, "kind": "percent", "ref": "B2"}
+    ok_pct = dict(fake, value=0.15, ref="B3")
+    big_pct = dict(fake, value=150, ref="B4")
+    pct_formula = dict(fake, value=15, formula="B2*1", ref="B5")
+    pct_findings = static_findings(
+        type("W", (), {})(),
+        {},
+        {"P": {(2, 2): fake, (2, 3): ok_pct, (2, 4): big_pct, (2, 5): pct_formula}},
+    )
+    flagged = {f["ref"] for f in pct_findings if f["code"] == "PERCENT_AS_WHOLE"}
+    checks.append(("percent-as-whole fires", "B2" in flagged and "B4" in flagged))
+    checks.append(("fraction percent clean", "B3" not in flagged))
+    checks.append(("formula percent skipped", "B5" not in flagged))
+
+    # A 1904 workbook measures serials from 1904-01-01; ignoring the flag makes
+    # every YEAR/MONTH/DAY result four years and one day off.
+    epoch_1900 = Evaluator(type("W", (), {"sheets": [], "defined_names": [], "date1904": False})())
+    epoch_1904 = Evaluator(type("W", (), {"sheets": [], "defined_names": [], "date1904": True})())
+    serial_1904 = float((date(2026, 1, 31) - date(1904, 1, 1)).days)
+    checks.append(("1900 epoch", epoch_1900.epoch == date(1899, 12, 30)))
+    checks.append(("1904 epoch", epoch_1904.epoch == date(1904, 1, 1)))
+    checks.append(("1904 YEAR", epoch_1904.evaluate("=YEAR(%d)" % serial_1904, "S") == 2026.0))
+    checks.append(("1904 MONTH", epoch_1904.evaluate("=MONTH(%d)" % serial_1904, "S") == 1.0))
+    checks.append(("1904 DAY", epoch_1904.evaluate("=DAY(%d)" % serial_1904, "S") == 31.0))
+    checks.append(("1904 round trip", epoch_1904.evaluate(
+        "=DATE(2026,1,31)", "S") == serial_1904))
+
+    # Excel stores post-2007 functions under a compatibility prefix, so detection
+    # has to see through `_xlfn.` or it never fires on real Excel output.
+    checks.append(("_xlfn stripped", xlsxlib.formula_functions("=_xlfn.XLOOKUP(A1,B1,C1)") == ["XLOOKUP"]))
+    checks.append(("_xlfn._xlws stripped",
+                   xlsxlib.formula_functions("=_xlfn._xlws.FILTER(A1:A3,B1:B3)") == ["FILTER"]))
+    xlfn_sheet = {"X": {(2, 2): {"ref": "B2", "col": 2, "row": 2, "formula": "=_xlfn.XLOOKUP(A1,A1:A2,A1:A2)",
+                                 "value": None, "style": 0, "kind": "general"}}}
+    xlfn_codes = {f["code"] for f in static_findings(type("W", (), {})(), {}, xlfn_sheet)}
+    checks.append(("_xlfn NEWER_FUNCTION", "NEWER_FUNCTION" in xlfn_codes))
+    # A reference qualified by another sheet is not a self reference.
+    cross = {"X": {(2, 2): {"ref": "A2", "col": 1, "row": 2, "formula": "=Other!A2+1",
+                            "value": None, "style": 0, "kind": "general"}}}
+    cross_codes = {f["code"] for f in static_findings(type("W", (), {})(), {}, cross)}
+    checks.append(("cross-sheet not self", "SELF_REFERENCE" not in cross_codes))
+    real_self = {"X": {(2, 2): {"ref": "A2", "col": 1, "row": 2, "formula": "=A2+1",
+                                "value": None, "style": 0, "kind": "general"}}}
+    checks.append(("real self ref", "SELF_REFERENCE" in {f["code"] for f in
+                                                        static_findings(type("W", (), {})(), {}, real_self)}))
+
+    # All three documented RANGE_GAP conditions must fire, and a clean total must not.
+    def gap_sheet(cells_spec, formula_cell):
+        grid = {}
+        for (c, r), val in cells_spec.items():
+            grid[(c, r)] = {"ref": "%s%d" % (chr(64 + c), r), "col": c, "row": r,
+                            "formula": val if isinstance(val, str) and val.startswith("=") else None,
+                            "value": None if isinstance(val, str) and val.startswith("=") else val,
+                            "style": 0, "kind": "general"}
+        return {"S": grid}
+    gap_blank = gap_sheet({(2, 2): 10, (2, 3): 20, (2, 5): 40,
+                           (2, 7): "=SUM(B2:B3)"}, (2, 7))
+    checks.append(("gap past blank row",
+                   any(f["code"] == "RANGE_GAP" for f in static_findings(type("W", (), {})(), {}, gap_blank))))
+    gap_self = gap_sheet({(2, 2): 10, (2, 3): 20, (2, 4): "=SUM(B2:B4)"}, (2, 4))
+    checks.append(("gap total inside range",
+                   any(f["code"] == "RANGE_GAP" for f in static_findings(type("W", (), {})(), {}, gap_self))))
+    gap_clean = gap_sheet({(1, 1): "a", (2, 1): "v", (2, 2): 10, (2, 3): 20, (2, 4): 30,
+                           (2, 5): "=SUM(B2:B4)"}, (2, 5))
+    checks.append(("gap clean sheet silent",
+                   not any(f["code"] == "RANGE_GAP" for f in static_findings(type("W", (), {})(), {}, gap_clean))))
+    # --- evaluator robustness and Excel-accurate semantics ---
+    # Column A holds text and column B numbers on rows 2-4, so A2:B4 is a 3x2 range.
+    with tempfile.TemporaryDirectory() as shape_tmp:
+        shape_path = build(shape_tmp)
+        ev = Evaluator(xlsxlib.Workbook(shape_path))
+    # A range keeps its 2-D shape: a flat list made ROWS answer the cell count.
+    checks.append(("ROWS keeps shape", ev.evaluate("=ROWS(A2:B4)", "검증") == 3.0))
+    checks.append(("COLUMNS keeps shape", ev.evaluate("=COLUMNS(A2:B4)", "검증") == 2.0))
+    checks.append(("INDEX row,col offset", ev.evaluate("=INDEX(A2:B4,2,2)", "검증") == 200.0))
+    # IS* must inspect an error instead of propagating it.
+    checks.append(("ISERROR catches error", ev.evaluate("=IF(ISERROR(1/0),0,1)", "S") == 0.0))
+    checks.append(("ISERR skips N/A", ev.evaluate("=ISERR(NA())", "S") is False))
+    checks.append(("ISNA catches N/A", ev.evaluate("=ISNA(NA())", "S") is True))
+    # A failed lookup is #N/A, so the IFNA/ISNA wrappers written around it work.
+    try:
+        ev.evaluate('=MATCH("없음",A2:A4,0)', "검증")
+        checks.append(("MATCH miss is #N/A", False))
+    except FormulaError as exc:
+        checks.append(("MATCH miss is #N/A", exc.code == "#N/A"))
+    checks.append(("ISNA over MATCH miss",
+                   ev.evaluate('=ISNA(MATCH("없음",A2:A4,0))', "검증") is True))
+    # VLOOKUP/HLOOKUP need the 2-D shape to pick the right column.
+    checks.append(("VLOOKUP exact", ev.evaluate('=VLOOKUP("2월",A2:B4,2,0)', "검증") == 200.0))
+    checks.append(("VLOOKUP approximate", ev.evaluate("=VLOOKUP(150,B2:B4,1)", "검증") == 100.0))
+    checks.append(("HLOOKUP exact", ev.evaluate('=HLOOKUP("매출",A1:B2,2,0)', "검증") == "1월"))
+    # A negative base with a fractional exponent is #NUM! in Excel, never a complex
+    # number; the complex value used to reach json.dumps and abort the whole report.
+    for label, formula in (("POWER negative base", "=POWER(-8,1/3)"),
+                           ("^ overflow", "=10^400")):
+        try:
+            ev.evaluate(formula, "S")
+            checks.append((label, False))
+        except FormulaError as exc:
+            checks.append((label, exc.code == "#NUM!"))
+    # One bad cell must be reported, not abort every other cell: a DATE out of range
+    # or a bad CHOOSE index used to escape as a Python error and kill the whole run.
+    with tempfile.TemporaryDirectory() as tmp2:
+        bad_path = os.path.join(tmp2, "bad.xlsx")
+        build_rows(bad_path, [("A1", "DATE(2026,13,1)", None),
+                              ("A2", "CHOOSE()", None),
+                              ("A3", "1+1", None),
+                              ("A4", "POWER(-8,1/3)", None)])
+        bad_report = verify(bad_path, static_only=False)
+        checks.append(("bad cell isolated", bad_report["totals"]["evaluated"] == 1))
+        checks.append(("bad cells reported", len(bad_report["unevaluated"]) == 2))
+        checks.append(("bad cells are errors",
+                       bad_report["totals"]["errors"] == 1 and bad_report["totals"]["unevaluated"] == 2))
     failed = [name for name, ok in checks if not ok]
     print(json.dumps({"ok": not failed, "checks": len(checks), "failed": failed}, ensure_ascii=False))
     return 0 if not failed else 1
