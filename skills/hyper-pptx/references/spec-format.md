@@ -7,7 +7,8 @@ Write a `<slug>.deck.json` before running `render-deck.sh`. Every field below is
 - Deck fields
 - Slide kinds
 - Text fields and units
-- Palettes
+- Palettes and gradients
+- Motion
 - Charts
 - Images
 - Notes and captions
@@ -24,6 +25,7 @@ Write a `<slug>.deck.json` before running `render-deck.sh`. Every field below is
 | `footer` | no | running footer text; also adds a page number |
 | `theme` | no | palette name (`ink` by default) or a palette override object |
 | `fonts` | no | `{ "latin": "...", "eastAsian": "...", "mono": "..." }` |
+| `transition` | no | default page transition for every slide; a slide may override it |
 
 `fonts.latin` defaults to `Pretendard` and `fonts.eastAsian` falls back to `fonts.latin`. A font name only works when the reader has it installed; the deck records the request, it does not embed the font file.
 
@@ -48,12 +50,21 @@ Every slide accepts `kind` (default `bullets`), `notes`, and the kind's own fiel
 | `hero` | `title`, `subtitle`, `image`, `scrim` | picture as the page, text over a scrim |
 | `gallery` | `title`, `lead`, `images`, `caption` | 1 to 4 pictures in a row, captions under each |
 | `quote` | `quote`, `attribution` | a single spoken line, dark background |
+| `statement` | `text`, `kicker`, `gradient` | one sentence as the page, dark background with a colour band |
+| `bigstat` | `value`, `label`, `note`, `kicker` | one number as the whole argument |
+| `process` | `title`, `steps` | 2 to 5 numbered steps in a row |
 
-`title`, `section`, `hero`, and `quote` slides render dark; everything else renders light. A slide never mixes two kinds: a table with three bullets needs two slides.
+`title`, `section`, `hero`, `quote`, and `statement` slides render dark; everything else renders light. A slide never mixes two kinds: a table with three bullets needs two slides.
 
 The `kpi` slide is the "one number" page. `value` is set as large as the string allows (96 points at three characters, 54 at eight or more), `label` names it, and `delta` carries the comparison in muted type. `bullets` sits in the right column and shares the card's row height, so a short card beside three bullets does not leave a step.
 
-`compare` takes two objects of `{ "heading": "...", "bullets": [...] }`. The bullet size is chosen from whichever side needs more room, 16 to 24 points, and the pair is centred together in the body.
+`compare` takes two objects of `{ "heading": "...", "bullets": [...] }`. The bullet size is chosen from whichever side needs more room, 16 to 24 points, and the pair is centred together in the space under the lead line.
+
+`statement` is one sentence with no bullets: `text` is set at 40, 34, or 28 points depending on its length, `kicker` is the small label above it, and `gradient` paints the band behind it. Use it for the sentence a reader should remember, not for a second title.
+
+`bigstat` differs from `stats`: `stats` compares two to four numbers on one grid, `bigstat` makes a single number the argument. `value` is set at 150 points up to four characters and steps down to 72 by nine; `label` states what the number means; `note` carries the source.
+
+`process` takes `steps` of `{ "heading": "...", "text": "..." }`, two to five. The card height comes from the longest heading and body, so a two-line step does not clip; a sixth step is an error (`PROCESS_TOO_MANY`) because the columns stop being readable.
 
 `timeline` takes `{ "label": "...", "title": "...", "text": "..." }`. `label` is the date or stage marker above the rule, `title` the step name, `text` the detail below. Five is the maximum; a sixth milestone is unreadable at projection size.
 
@@ -74,9 +85,9 @@ The `kpi` slide is the "one number" page. `value` is set as large as the string 
 
 Sizes and spacing are typographic points, not pixels. The layout converts them; a value copied from a CSS file will be about a third of the intended size.
 
-`columns` is an array of `{ "heading": "...", "bullets": [...] }`, and only the first three are laid out. `stats` is an array of `{ "value": "...", "label": "...", "note": "..." }`; only the first four are laid out, and `note` is drawn only when the first stat has one.
+`columns` is an array of `{ "heading": "...", "bullets": [...] }`, and only the first three are laid out; each card takes its height from its own heading and bullets, with a floor of 62% of the body so three short cards still hold the page, and the row never shows a blank block under the text. `stats` is an array of `{ "value": "...", "label": "...", "note": "..." }`; only the first four are laid out, every stat may carry its own `note`, the values in a row share one size taken from the longest string, so a short figure never outshouts a long one, and the cards take the same 62% floor as `columns` so a row of three figures holds the page.
 
-## Palettes
+## Palettes and Gradients
 
 | Name | Look |
 |---|---|
@@ -86,6 +97,10 @@ Sizes and spacing are typographic points, not pixels. The layout converts them; 
 | `forest` | deep green |
 | `slate` | cool grey blue |
 | `mono` | black on white, no color accent |
+| `ocean` | deep blue with a teal companion |
+| `plum` | purple with a magenta companion |
+| `ember` | burnt orange on a warm page |
+| `sand` | beige page with an earth accent |
 
 Override any token with an object:
 
@@ -93,7 +108,60 @@ Override any token with an object:
 { "theme": { "base": "navy", "accent": "0F766E", "surface": "E6F4F1" } }
 ```
 
-Colours are six-digit hex without `#`. `bg`, `fg`, `accent`, `muted`, `surface`, and `line` are the light tokens; the dark variant of a slide is derived from the same palette, so a custom `bg` does not change dark slides. A slide may override its own `dark`, `bg`, or `accent`, which is meant for a single exception, not for a per-slide colour scheme.
+Colours are six-digit hex without `#`. `bg`, `fg`, `accent`, `accent2`, `muted`, `surface`, `tint`, and `line` are the light tokens; `darkBg`, `darkFg`, `darkMuted`, `darkAccent`, `darkAccent2`, `darkSurface`, and `darkTint` are the dark ones, so a dark slide keeps the same hue family instead of falling back to grey. Colours are a deck-level decision: a slide inherits them, and a page that needs a different colour is a signal that the deck has two palettes.
+
+`accent2` is the companion colour: a second series in a chart, the badge on later process steps, a small block beside the main accent. It is a pairing, not a ranking.
+
+A gradient is two colours and an angle, either as a pair or as an object:
+
+```json
+{ "gradient": ["0F172A", "134E4A"] }
+{ "gradient": { "from": "0F172A", "to": "134E4A", "angle": 90 } }
+```
+
+`angle` is degrees counter-clockwise from the positive x axis, matching DrawingML: `0` runs left to right, `90` top to bottom. A malformed pair fails as `GRADIENT_INVALID` at layout time rather than producing a slide part that PowerPoint refuses to open.
+
+## Motion
+
+A transition belongs to a slide; an animation belongs to one or more shapes on it. Both are optional, and a deck without either renders exactly as before.
+
+```json
+{ "transition": "fade" }
+{ "transition": { "effect": "morph", "speed": "med", "duration": 700 } }
+{ "animation": [
+    { "effect": "fade", "target": "title", "trigger": "with-previous", "duration": 400 },
+    { "effect": "fly", "target": "body", "direction": "up", "delay": 100 }
+] }
+```
+
+| `transition` effect | Notes |
+|---|---|
+| `fade`, `cut`, `dissolve` | plain |
+| `push`, `wipe`, `cover`, `split`, `strips`, `zoom`, `plus`, `pull`, `randomBar` | take a fixed direction |
+| `checker`, `blinds`, `diamond`, `circle`, `wedge`, `wheel`, `random`, `comb`, `newsflash` | geometry only |
+| `morph` | PowerPoint 2019 and later; older readers fall back to a fade |
+| `none` | no transition on this slide |
+
+`speed` is `slow`, `med`, or `fast`. A name outside this list fails as `TRANSITION_UNKNOWN`: a transition element PowerPoint does not recognise makes it offer to repair the whole file, so an unknown name is rejected rather than substituted.
+
+| `animation` effect | Kind |
+|---|---|
+| `appear`, `fade`, `wipe`, `fly`, `zoom`, `split` | entrance |
+| `grow`, `spin` | emphasis |
+| `exitFade` | exit |
+
+| Field | Meaning |
+|---|---|
+| `effect` | one of the nine above; anything else is `ANIMATION_EFFECT_UNKNOWN` |
+| `target` | `all` (default, meaning every content shape), a role (`title`, `body`, `kicker`, `table`, `chart`, `image`, `decor`), a shape id, or an array of any of these |
+| `trigger` | `on-click` (default), `with-previous`, `after-previous` |
+| `direction` | `up` (default), `down`, `left`, `right`; used by `fly` and `wipe` |
+| `duration` | milliseconds, `500` by default |
+| `delay` | milliseconds after the trigger, `0` by default |
+
+`target: "all"` skips decoration and the page furniture: an entrance on the rule under a title makes the page look like it is assembling itself. A target that matches nothing fails as `ANIMATION_TARGET_EMPTY` instead of producing a timing tree with no target.
+
+Motion is written from the ECMA-376 schema. See `motion.md` for what this means in a projector and for what is deliberately not supported.
 
 ## Charts
 
@@ -137,7 +205,7 @@ Values must be JSON numbers, not strings, and every series carries one value per
 
 | Field | Meaning |
 |---|---|
-| `path` | absolute path to a local `png`, `jpg`, or `gif`; remote URLs are rejected so a deck never depends on a network |
+| `path` | path to a local `png`, `jpg`, or `gif`; relative paths resolve against the spec file's folder, and remote URLs are rejected so a deck never depends on a network |
 | `alt` | alternative text written into the picture; required for a delivery, because a picture with no text is invisible to a reader who cannot see it |
 | `fit` | `contain` (whole picture, letterboxed), `fill` (crop to the box), or `cover`; per kind defaults below |
 | `side` | `imagetext` only: `right` (default) or `left` |
@@ -198,7 +266,9 @@ Values must be JSON numbers, not strings, and every series carries one value per
 | Chart parts carry cached categories and values | <https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-charts> |
 | Combo charts are two chart groups sharing an axis pair | <https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-charts> |
 | `srcRect` crops a picture without rewriting the image | <http://www.datypic.com/sc/ooxml/e-a_srcRect-1.html> |
+| `p:transition` and `p:timing` are children of `p:sld` | <https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.presentation.slide> |
+| Morph is a `p159` extension with an `mc:AlternateContent` fallback | <https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-presentations> |
 
 ### Evidence grade
 
-`LOCAL` — every field name, default, and kind in this file is read from `assets/runtime/layout.jq`, and each kind and chart type was rendered and inspected on 2026-11-14.
+`LOCAL` — every field name, default, and kind in this file is read from `assets/runtime/layout.jq`, and each kind, chart type, transition, and animation was rendered on 2026-11-14. The PNGs were inspected; the transitions and animations were verified in the slide XML, not played in PowerPoint, which is not installed here.

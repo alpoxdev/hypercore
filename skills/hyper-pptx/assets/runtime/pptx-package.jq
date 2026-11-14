@@ -104,15 +104,35 @@ def textShape($s; $id; $fonts):
   + "<a:ln><a:noFill/></a:ln></p:spPr>"
   + txBody($s; $fonts) + "</p:sp>";
 
+# A linear gradient is two stops on one direction. PowerPoint measures the angle
+# counter-clockwise from the positive x axis, so a top-to-bottom page band is
+# 90 degrees and a left-to-right one is 0.
+def gradFill($g):
+  "<a:gradFill rotWithShape=\"1\"><a:gsLst>"
+  + "<a:gs pos=\"0\">" + clr($g.from) + "</a:gs>"
+  + "<a:gs pos=\"100000\">" + clr($g.to) + "</a:gs>"
+  + "</a:gsLst><a:lin ang=\"" + (((($g.angle // 90)) * 60000) | floor | tostring) + "\" scaled=\"1\"/>"
+  + "</a:gradFill>";
+
+def shapeGeom($s):
+  "<a:prstGeom prst=\"" + (if $s.type == "ellipse" then "ellipse"
+                            elif ($s.radius // 0) > 0 then "roundRect" else "rect" end) + "\"><a:avLst/></a:prstGeom>";
+
 def rectShape($s; $id):
   "<p:sp><p:nvSpPr><p:cNvPr id=\"" + ($id | tostring) + "\" name=\"Block " + ($id | tostring) + "\"/>"
   + "<p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr>"
   + xfrm($s.x; $s.y; $s.cx; $s.cy)
-  + "<a:prstGeom prst=\"" + (if ($s.radius // 0) > 0 then "roundRect" else "rect" end) + "\"><a:avLst/></a:prstGeom>"
-  + (if ($s.alpha // 0) > 0 then alphaFill($s.fill; $s.alpha) else solidFill($s.fill) end)
+  + shapeGeom($s)
+  + (if $s.gradient then gradFill($s.gradient)
+     elif ($s.alpha // 0) > 0 then alphaFill($s.fill; $s.alpha)
+     else solidFill($s.fill) end)
   + (if $s.line then "<a:ln w=\"12700\">" + solidFill($s.line) + "</a:ln>" else "<a:ln><a:noFill/></a:ln>" end)
   + "</p:spPr>"
   + "<p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:endParaRPr lang=\"" + lang + "\"/></a:p></p:txBody></p:sp>";
+
+# An ellipse is a rect with a different preset geometry, so it shares the shape
+# writer; a separate name documents intent at the call site.
+def ellipseShape($s; $id): rectShape($s; $id);
 
 # ---------------------------------------------------------------------------
 # Table
@@ -478,6 +498,199 @@ def chartFrame($c; $id; $rid):
 
 # Relationship ids are shared by the slide XML and its .rels part, so both read
 # them from one place: images take rId2.. in order, then the chart, then notes.
+# ---------------------------------------------------------------------------
+# Motion
+# ---------------------------------------------------------------------------
+#
+# p:transition and p:timing are children of p:sld. A reader that meets a
+# transition element it does not know offers to repair the whole file, so only
+# ECMA-376 direct children are emitted and morph goes through AlternateContent
+# with a fade fallback.
+
+def transSpeed($s): if $s == "slow" then "slow" elif $s == "fast" then "fast" else "med" end;
+
+def transEffDir($e):
+  if $e == "push" then "<p:push dir=\"u\"/>"
+  elif $e == "wipe" then "<p:wipe dir=\"l\"/>"
+  elif $e == "cover" then "<p:cover dir=\"l\"/>"
+  elif $e == "split" then "<p:split orient=\"horz\" dir=\"out\"/>"
+  elif $e == "strips" then "<p:strips dir=\"lu\"/>"
+  elif $e == "zoom" then "<p:zoom dir=\"in\"/>"
+  else "" end;
+
+# Morph has no ECMA-376 element: PowerPoint 2019+ reads p159:morph, everything
+# else needs a choice it understands, so the fallback is a plain fade.
+def transitionXml($tr):
+  if $tr == null or $tr.effect == "none" then ""
+  elif $tr.effect == "morph" then
+    "<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">"
+    + "<mc:Choice xmlns:p159=\"http://schemas.microsoft.com/office/powerpoint/2015/09/main\" Requires=\"p159\">"
+    + "<p:transition spd=\"" + transSpeed($tr.speed) + "\" p14:dur=\""
+    + ((($tr.duration // 700)) | tostring) + "\" xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\">"
+    + "<p159:morph option=\"byObject\"/></p:transition></mc:Choice>"
+    + "<mc:Fallback><p:transition spd=\"" + transSpeed($tr.speed) + "\"><p:fade/></p:transition></mc:Fallback>"
+    + "</mc:AlternateContent>"
+  else
+    "<p:transition spd=\"" + transSpeed($tr.speed) + "\">"
+    + "<p:" + $tr.effect + ">" + (if $tr.effect == "fade" then "" else "" end)
+    + "</p:" + $tr.effect + ">"
+    + "</p:transition>"
+  end;
+
+# Self-closing for the effects that carry no children; a paired empty element is
+# also legal, but PowerPoint rewrites it and the file stops being byte-stable.
+def transElement($tr):
+  if $tr == null or $tr.effect == "none" then ""
+  elif $tr.effect == "morph" then transitionXml($tr)
+  elif (["fade", "cut", "dissolve", "checker", "blinds", "diamond", "circle",
+         "wedge", "wheel", "random", "randomBar", "comb", "newsflash",
+         "plus", "pull"] | index($tr.effect)) != null then
+    "<p:transition spd=\"" + transSpeed($tr.speed) + "\"><p:" + $tr.effect + "/></p:transition>"
+  else
+    "<p:transition spd=\"" + transSpeed($tr.speed) + "\">" + transEffDir($tr.effect) + "</p:transition>"
+  end;
+
+# Preset ids are PowerPoint's own animation numbers, so the effects appear in the
+# animation pane as the named effects instead of a generic custom animation.
+def animPreset($e; $dir):
+  if $e == "appear" then {preset: 1, sub: 0, cls: "entr"}
+  elif $e == "fade" then {preset: 10, sub: 0, cls: "entr"}
+  elif $e == "split" then {preset: 16, sub: 21, cls: "entr"}
+  elif $e == "wipe" then
+    {preset: 22, cls: "entr",
+     sub: (if $dir == "up" then 1 elif $dir == "right" then 2 elif $dir == "left" then 8 else 4 end)}
+  elif $e == "fly" then
+    {preset: 2, cls: "entr",
+     sub: (if $dir == "up" then 4 elif $dir == "down" then 0 elif $dir == "right" then 4 else 8 end)}
+  elif $e == "zoom" then {preset: 23, sub: 16, cls: "entr"}
+  elif $e == "grow" then {preset: 6, sub: 0, cls: "emph"}
+  elif $e == "spin" then {preset: 8, sub: 0, cls: "emph"}
+  else {preset: 10, sub: 0, cls: "exit"} end;
+
+def animBody($a; $id; $spid):
+  ($a.effect) as $e
+  | ($a.duration | tostring) as $dur
+  | ($a.direction // "up") as $dir
+  | ("<p:set><p:cBhvr><p:cTn id=\"" + (($id + 1) | tostring) + "\" dur=\"1\" fill=\"hold\">"
+     + "<p:stCondLst><p:cond delay=\"0\"/></p:stCondLst></p:cTn>"
+     + "<p:tgtEl><p:spTgt spid=\"" + ($spid | tostring) + "\"/></p:tgtEl>"
+     + "<p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr>"
+     + "<p:to><p:strVal val=\"visible\"/></p:to></p:set>") as $vis
+  | if $e == "appear" then $vis
+    elif $e == "fade" or $e == "split" or $e == "wipe" then
+      $vis
+      + "<p:animEffect transition=\"in\" filter=\""
+      + (if $e == "fade" then "fade"
+         elif $e == "split" then "barn(inVertical)"
+         else "wipe(" + (if $dir == "up" then "up" elif $dir == "right" then "right"
+                         elif $dir == "left" then "left" else "down" end) + ")" end)
+      + "\"><p:cBhvr><p:cTn id=\"" + (($id + 2) | tostring) + "\" dur=\"" + $dur + "\"/>"
+      + "<p:tgtEl><p:spTgt spid=\"" + ($spid | tostring) + "\"/></p:tgtEl></p:cBhvr></p:animEffect>"
+    elif $e == "fly" then
+      $vis
+      + "<p:anim calcmode=\"lin\" valueType=\"num\"><p:cBhvr additive=\"base\">"
+      + "<p:cTn id=\"" + (($id + 2) | tostring) + "\" dur=\"" + $dur + "\" fill=\"hold\"/>"
+      + "<p:tgtEl><p:spTgt spid=\"" + ($spid | tostring) + "\"/></p:tgtEl>"
+      + "<p:attrNameLst><p:attrName>"
+      + (if $dir == "up" or $dir == "down" then "ppt_y" else "ppt_x" end)
+      + "</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>"
+      + "<p:tav tm=\"0\"><p:val><p:strVal val=\""
+      + (if $dir == "up" then "1+#ppt_h/2" elif $dir == "down" then "0-#ppt_h/2"
+         elif $dir == "right" then "1+#ppt_w/2" else "0-#ppt_w/2" end)
+      + "\"/></p:val></p:tav>"
+      + "<p:tav tm=\"100000\"><p:val><p:strVal val=\""
+      + (if $dir == "up" or $dir == "down" then "#ppt_y" else "#ppt_x" end)
+      + "\"/></p:val></p:tav></p:tavLst></p:anim>"
+    elif $e == "zoom" then
+      $vis
+      + "<p:anim calcmode=\"lin\" valueType=\"num\"><p:cBhvr>"
+      + "<p:cTn id=\"" + (($id + 2) | tostring) + "\" dur=\"" + $dur + "\" fill=\"hold\"/>"
+      + "<p:tgtEl><p:spTgt spid=\"" + ($spid | tostring) + "\"/></p:tgtEl>"
+      + "<p:attrNameLst><p:attrName>ppt_w</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>"
+      + "<p:tav tm=\"0\"><p:val><p:fltVal val=\"0\"/></p:val></p:tav>"
+      + "<p:tav tm=\"100000\"><p:val><p:strVal val=\"#ppt_w\"/></p:val></p:tav></p:tavLst></p:anim>"
+      + "<p:anim calcmode=\"lin\" valueType=\"num\"><p:cBhvr>"
+      + "<p:cTn id=\"" + (($id + 3) | tostring) + "\" dur=\"" + $dur + "\" fill=\"hold\"/>"
+      + "<p:tgtEl><p:spTgt spid=\"" + ($spid | tostring) + "\"/></p:tgtEl>"
+      + "<p:attrNameLst><p:attrName>ppt_h</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>"
+      + "<p:tav tm=\"0\"><p:val><p:fltVal val=\"0\"/></p:val></p:tav>"
+      + "<p:tav tm=\"100000\"><p:val><p:strVal val=\"#ppt_h\"/></p:val></p:tav></p:tavLst></p:anim>"
+    elif $e == "grow" then
+      "<p:animScale><p:cBhvr><p:cTn id=\"" + (($id + 1) | tostring) + "\" dur=\"" + $dur + "\" fill=\"hold\"/>"
+      + "<p:tgtEl><p:spTgt spid=\"" + ($spid | tostring) + "\"/></p:tgtEl></p:cBhvr>"
+      + "<p:by x=\"150000\" y=\"150000\"/></p:animScale>"
+    elif $e == "spin" then
+      "<p:animRot by=\"21600000\"><p:cBhvr><p:cTn id=\"" + (($id + 1) | tostring) + "\" dur=\"" + $dur + "\" fill=\"hold\"/>"
+      + "<p:tgtEl><p:spTgt spid=\"" + ($spid | tostring) + "\"/></p:tgtEl>"
+      + "<p:attrNameLst><p:attrName>r</p:attrName></p:attrNameLst></p:cBhvr></p:animRot>"
+    else
+      "<p:animEffect transition=\"out\" filter=\"fade\"><p:cBhvr>"
+      + "<p:cTn id=\"" + (($id + 1) | tostring) + "\" dur=\"" + $dur + "\"/><p:tgtEl><p:spTgt spid=\"" + ($spid | tostring) + "\"/></p:tgtEl></p:cBhvr></p:animEffect>"
+      + "<p:set><p:cBhvr><p:cTn id=\"" + (($id + 2) | tostring) + "\" dur=\"1\" fill=\"hold\">"
+      + "<p:stCondLst><p:cond delay=\"" + ((($a.duration - 1) | if . < 0 then 0 else . end) | tostring) + "\"/></p:stCondLst></p:cTn>"
+      + "<p:tgtEl><p:spTgt spid=\"" + ($spid | tostring) + "\"/></p:tgtEl>"
+      + "<p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr>"
+      + "<p:to><p:strVal val=\"hidden\"/></p:to></p:set>"
+    end;
+
+def animRow($a; $id; $spid):
+  (animPreset($a.effect; ($a.direction // "up"))) as $p
+  | "<p:cTn id=\"" + ($id | tostring) + "\" presetID=\"" + ($p.preset | tostring)
+    + "\" presetClass=\"" + $p.cls + "\" presetSubtype=\"" + ($p.sub | tostring)
+    + "\" fill=\"hold\" grpId=\"0\" nodeType=\"afterEffect\">"
+    + "<p:stCondLst><p:cond delay=\"" + ($a.delay | tostring) + "\"/></p:stCondLst>"
+    + "<p:childTnLst>" + animBody($a; $id; $spid) + "</p:childTnLst></p:cTn>";
+
+# An on-click animation opens a new click group; the other two triggers append to
+# the group already open, so "with previous" really starts together.
+def animGroups($anims):
+  reduce $anims[] as $a ({groups: [], cursor: -1};
+    if $a.trigger == "on-click" or .cursor < 0
+    then .groups += [[$a]] | .cursor = ((.groups | length) - 1)
+    else .groups[.cursor] += [$a] end);
+
+# Time-node ids must be unique inside the slide. Every row reserves four ids (the
+# row plus its up to three behaviours) and each wrapper takes one, so the counter
+# advances by 4 per target and 1 per wrapper; both are asserted after rendering.
+def timingXml($anims):
+  if ($anims // [] | length) == 0 then ""
+  else
+    (animGroups($anims)) as $groups
+    | (reduce range(0; ($groups.groups | length)) as $gi
+        ({xml: [], next: 3};
+         ($groups.groups[$gi]) as $beat
+         | (.next) as $groupId
+         | (reduce range(0; ($beat | length)) as $bi
+              ({xml: [], next: ($groupId + 1)};
+               ($beat[$bi]) as $a
+               | (.next) as $beatId
+               | (reduce range(0; ($a.targets | length)) as $k
+                    ({xml: [], next: ($beatId + 1)};
+                     animRow($a; .next; $a.targets[$k]) as $row
+                     | {xml: (.xml + ["<p:par>" + $row + "</p:par>"]), next: (.next + 4)})
+                  ) as $rows
+               | {xml: (.xml + ["<p:par><p:cTn id=\"" + ($beatId | tostring) + "\" fill=\"hold\">"
+                   + "<p:stCondLst><p:cond delay=\"" + ($a.delay | tostring) + "\"/></p:stCondLst>"
+                   + "<p:childTnLst>" + ($rows.xml | join("")) + "</p:childTnLst></p:cTn></p:par>"]),
+                  next: $rows.next})
+           ) as $built
+         | {xml: (.xml + ["<p:par><p:cTn id=\"" + ($groupId | tostring) + "\" fill=\"hold\"><p:stCondLst>"
+             + "<p:cond delay=\"indefinite\"/>"
+             + (if $gi == 0 and ($beat[0].trigger != "on-click")
+                then "<p:cond evt=\"onBegin\" delay=\"0\"><p:tn val=\"2\"/></p:cond>" else "" end)
+             + "</p:stCondLst><p:childTnLst>" + ($built.xml | join("")) + "</p:childTnLst></p:cTn></p:par>"]),
+            next: $built.next})
+      ) as $seq
+    | "<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\">"
+      + "<p:childTnLst><p:seq concurrent=\"1\" nextAc=\"seek\">"
+      + "<p:cTn id=\"2\" dur=\"indefinite\" nodeType=\"mainSeq\"><p:childTnLst>"
+      + ($seq.xml | join(""))
+      + "</p:childTnLst></p:cTn>"
+      + "<p:prevCondLst><p:cond evt=\"onPrev\" delay=\"0\"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:prevCondLst>"
+      + "<p:nextCondLst><p:cond evt=\"onNext\" delay=\"0\"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:nextCondLst>"
+      + "</p:seq></p:childTnLst></p:cTn></p:par></p:tnLst></p:timing>"
+  end;
+
 def slideRelIds($slide):
   (($slide.images // []) | length) as $ni
   | {images: [ range(0; $ni) | "rId" + ((2 + .) | tostring) ],
@@ -496,25 +709,33 @@ def slideXml($slide; $size; $fonts):
   | decl
   + "<p:sld xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\""
   + " xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
-  + " xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">"
+  + " xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\""
+  + (if ($slide.transition.effect // "none") == "morph"
+     then " xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\""
+          + " xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\""
+     else "" end) + ">"
   + "<p:cSld><p:bg><p:bgPr>" + solidFill($slide.bg) + "<a:effectLst/></p:bgPr></p:bg>"
   + "<p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr>"
   + "<p:grpSpPr><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/>"
   + "<a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>"
   # Background pictures first, then the scrim over them, then the text.
-  + ([ range(0; ($back | length)) as $k | pic($back[$k]; ($base + 600 + $k); $r.images[$k]) ] | join(""))
+  + ([ range(0; ($back | length)) as $k | pic($back[$k]; $back[$k].spid; $r.images[$k]) ] | join(""))
   + $scrimShape
   + ([ range(0; ($slide.shapes | length)) as $i |
        $slide.shapes[$i] |
-       if .type == "rect" then rectShape(.; $base + $i) else textShape(.; $base + $i; $fonts) end
+       if .type == "rect" then rectShape(.; .spid) elif .type == "ellipse" then ellipseShape(.; .spid)
+       elif .type == "picture" then pic(.; .spid; .rid) else textShape(.; .spid; $fonts) end
      ] | join(""))
-  + (if $slide.table then tableFrame($slide.table; ($base + 200); $fonts) else "" end)
-  + (if $slide.chart then chartFrame($slide.chart; ($base + 300); $r.chart) else "" end)
+  + (if $slide.table then tableFrame($slide.table; $slide.table.spid; $fonts) else "" end)
+  + (if $slide.chart then chartFrame($slide.chart; $slide.chart.spid; $r.chart) else "" end)
   + ([ range(0; ($front | length)) as $k |
-       pic($front[$k]; ($base + 600 + ($back | length) + $k);
-           $r.images[(($back | length) + $k)])
+       pic($front[$k]; $front[$k].spid; $r.images[(($back | length) + $k)])
      ] | join(""))
-  + "</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>";
+  + "</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>"
+  + transElement($slide.transition)
+  + timingXml($slide.animation)
+  + "</p:sld>";
+
 
 def notesXml($slide):
   decl

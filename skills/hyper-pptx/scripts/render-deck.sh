@@ -105,7 +105,7 @@ pp_image_size() { # <file> — prints "<w> <h>" or nothing
       ;;
     jpg|jpeg)
       # Walk the marker chain: each segment is FFxx followed by a 2-byte length.
-      local size=0 off=2 marker seglen precision
+      local off=2 marker seglen
       while [ "$off" -lt 2000000 ]; do
         marker=$(od -An -tx1 -j"$off" -N2 "$f" 2>/dev/null | tr -d ' \n')
         [ "$marker" = "ffd8" ] && { off=$((off + 2)); continue; }
@@ -115,9 +115,11 @@ pp_image_size() { # <file> — prints "<w> <h>" or nothing
         esac
         case $marker in
           ffc0|ffc1|ffc2|ffc3|ffc5|ffc6|ffc7|ffc9|ffca|ffcb|ffcd|ffce|ffcf)
-            precision=$(od -An -tu1 -j$((off + 4)) -N1 "$f" 2>/dev/null | tr -d ' ')
-            h=$(od -An -tu1 -j$((off + 5)) -N2 "$f" 2>/dev/null | awk '{print $1 * 256 + $2}')
-            w=$(od -An -tu1 -j$((off + 7)) -N2 "$f" 2>/dev/null | awk '{print $1 * 256 + $2}')
+            # od may break one byte per line, so the pair is joined before awk.
+            h=$(od -An -tu1 -j$((off + 5)) -N2 "$f" 2>/dev/null | tr -s ' \n' ' ' \
+              | awk '{print $1 * 256 + $2}')
+            w=$(od -An -tu1 -j$((off + 7)) -N2 "$f" 2>/dev/null | tr -s ' \n' ' ' \
+              | awk '{print $1 * 256 + $2}')
             if [ -n "$w" ] && [ -n "$h" ] && [ "$w" -gt 0 ] && [ "$h" -gt 0 ]; then
               printf '%s %s\n' "$w" "$h"
             fi
@@ -125,7 +127,8 @@ pp_image_size() { # <file> — prints "<w> <h>" or nothing
             ;;
           ffd9|ffda) break ;;
         esac
-        seglen=$(od -An -tu1 -j$((off + 2)) -N2 "$f" 2>/dev/null | awk '{print $1 * 256 + $2}')
+        seglen=$(od -An -tu1 -j$((off + 2)) -N2 "$f" 2>/dev/null | tr -s ' \n' ' ' \
+          | awk '{print $1 * 256 + $2}')
         case $seglen in ''|*[!0-9]*) break ;; esac
         [ "$seglen" -lt 2 ] && break
         off=$((off + 2 + seglen))
@@ -146,6 +149,34 @@ pp_check_relationships() { # <stage dir>
       if [ ! -f "$tpath" ]; then
         printf '%s -> %s\n' "$rel" "$tgt"
       fi
+    done
+  done
+}
+
+# A slide's motion is the one place where a wrong id does not fail loudly: the
+# file still opens, PowerPoint just offers to repair it. Three things are checked
+# per slide: one timing tree, unique time-node ids, and animation targets that
+# name a shape which actually exists on that slide.
+pp_check_motion() { # <stage dir>
+  local stage=$1 f
+  for f in "$stage"/ppt/slides/slide*.xml; do
+    [ -f "$f" ] || continue
+    local n=${f##*/slide}; n=${n%.xml}
+    local trees
+    trees=$(grep -o '<p:timing' "$f" | wc -l | tr -d ' ')
+    if [ "$trees" -gt 1 ]; then
+      printf 'slide %s: %s timing trees, PowerPoint keeps only one\n' "$n" "$trees"
+      continue
+    fi
+    [ "$trees" -eq 1 ] || continue
+    local dup
+    dup=$(grep -o '<p:cTn id="[0-9]*"' "$f" | sed -e 's/.*id="//' -e 's/"$//' | sort | uniq -d | head -n 1)
+    [ -z "$dup" ] || printf 'slide %s: time node id %s repeats\n' "$n" "$dup"
+    local ids spid
+    ids=$(grep -o '<p:cNvPr id="[0-9]*"' "$f" | sed -e 's/.*id="//' -e 's/"$//' | sort -u)
+    for spid in $(grep -o '<p:spTgt spid="[0-9]*"' "$f" | sed -e 's/.*spid="//' -e 's/"$//' | sort -u); do
+      printf '%s\n' "$ids" | grep -qx -- "$spid" \
+        || printf 'slide %s: animation targets shape %s, which is not on the slide\n' "$n" "$spid"
     done
   done
 }
@@ -184,7 +215,12 @@ pp_prepare_images() { # <spec> <out path>
       else ((.slides[$s.slide].images[$s.idx].alt) // "") end' "$out")
     [ -n "$alt" ] || pp_fail IMAGE_NO_ALT \
       "an image on slide $(jq -r --argjson s "$slot" '($s.slide + 1)' "$out") has no alt text: $path"
-    path=$(pp_abs "$path")
+    # A relative path is read against the spec's own folder, so a deck and its
+    # pictures can move together and a spec written in a subfolder still works.
+    case $path in
+      /*) : ;;
+      *) path="$(cd "$(dirname -- "$spec")" && pwd)/$path" ;;
+    esac
     [ -f "$path" ] || pp_die 2 IMAGE_MISSING "image file not found: $path"
     case $(printf '%s' "${path##*.}" | tr 'A-Z' 'a-z') in
       png|jpg|jpeg|gif) : ;;
@@ -293,7 +329,11 @@ pp_main() {
   pp_prepare_images "$spec" "$enriched"
 
   if ! jq -f "$PP_LAYOUT" "$enriched" > "$resolved" 2>"$PP_TMP/layout.err"; then
-    pp_die 2 SPEC_INVALID "layout failed: $(head -n 1 "$PP_TMP/layout.err")"
+    # jq prefixes its own diagnostic; the message that matters starts at the code.
+    local why
+    why=$(head -n 1 "$PP_TMP/layout.err" \
+      | sed -e 's/^jq: error ([^)]*): //' -e 's/^jq: error: //')
+    pp_die 2 SPEC_INVALID "$why"
   fi
 
   # Chart data must be well formed before a chart part is written; a NaN or a
@@ -514,6 +554,15 @@ pp_main() {
   pp_check_relationships "$stage" > "$PP_TMP/rel-missing" 2>/dev/null
   missing=$(head -n 1 "$PP_TMP/rel-missing")
   [ -z "$missing" ] || pp_fail RELATIONSHIP_BROKEN "$missing"
+
+  if [ "$want_pptx" -eq 1 ]; then
+    local motion_line
+    pp_check_motion "$stage" > "$PP_TMP/motion-bad" 2>/dev/null
+    while IFS= read -r motion_line; do
+      [ -n "$motion_line" ] || continue
+      pp_fail MOTION_INVALID "$motion_line"
+    done < "$PP_TMP/motion-bad"
+  fi
 
   local checks_ok
   checks_ok=$(printf '%s' "$PP_CHECKS" | jq 'length == 0')
