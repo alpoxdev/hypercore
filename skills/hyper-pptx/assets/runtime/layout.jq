@@ -27,6 +27,25 @@ def GAP: 304800;
 def GAP_TIGHT: 182880;
 def RULE_H: 27432;
 
+# A lead line is the opening sentence of the block under the title, so the block
+# is centred in what is left below it. Centring in the whole body instead puts a
+# visible gap between the lead and the thing it introduces.
+def LEAD_H: 640080;
+def lead_h($s): if $s.lead then LEAD_H else 0 end;
+def lead_top($s): BODY_Y + lead_h($s);
+def lead_avail($s): BODY_BOTTOM - lead_top($s);
+
+# A block shorter than the body is centred, but never dropped further than this
+# from the title: past about an inch of gap the block stops reading as belonging
+# to the headline and starts looking like a page whose content never arrived.
+def CENTRE_CAP: 640080;
+
+# A card row with three short items leaves the bottom third of a 16:9 page
+# empty. The row keeps this share of the body as a floor so it holds the page,
+# and the text stack is centred inside it, so the extra height reads as card
+# padding rather than as missing content.
+def CARD_FLOOR: 0.62;
+
 # Type scale in points. The body floor is 15: below that a projector turns text
 # into texture, so a slide that needs more room splits instead of shrinking.
 def T_TITLE: 30;
@@ -37,45 +56,74 @@ def T_SMALL: 15;
 def T_CAPTION: 12;
 def T_FOOTER: 11;
 
+# Each palette is one page value, one ink, one accent, a second accent for a
+# companion colour, a tint for cards, and a separate dark set: a page that flips
+# to dark keeps the same hue family instead of falling back to grey.
 def palette($name):
   {
     ink: {
-      bg: "FFFFFF", fg: "12171D", muted: "66707D", accent: "C2410C",
-      surface: "F2F4F7", line: "D7DCE4",
+      bg: "FFFFFF", fg: "12171D", muted: "66707D", accent: "C2410C", accent2: "0F766E",
+      tint: "FDF0E8", surface: "F2F4F7", line: "D7DCE4",
       darkBg: "12171D", darkFg: "F7F8FA", darkMuted: "A8B2BF", darkAccent: "F97316",
-      darkSurface: "1E252E"
+      darkAccent2: "2DD4BF", darkTint: "3A2114", darkSurface: "1E252E"
     },
     paper: {
-      bg: "FBF8F3", fg: "1A1613", muted: "6E655C", accent: "9A3412",
-      surface: "F0E9DF", line: "DED3C6",
+      bg: "FBF8F3", fg: "1A1613", muted: "6E655C", accent: "9A3412", accent2: "3F6212",
+      tint: "F5E9DC", surface: "F0E9DF", line: "DED3C6",
       darkBg: "241E19", darkFg: "FBF8F3", darkMuted: "BCAE9F", darkAccent: "E8A15C",
-      darkSurface: "322A23"
+      darkAccent2: "A3C86A", darkTint: "453322", darkSurface: "322A23"
     },
     navy: {
-      bg: "FFFFFF", fg: "0B1B33", muted: "5A6B84", accent: "1F5DA8",
-      surface: "EDF2F9", line: "CFDAEA",
+      bg: "FFFFFF", fg: "0B1B33", muted: "5A6B84", accent: "1F5DA8", accent2: "0E7490",
+      tint: "EAF2FC", surface: "EDF2F9", line: "CFDAEA",
       darkBg: "0B1B33", darkFg: "F5F8FC", darkMuted: "A3B4CC", darkAccent: "6EA8E8",
-      darkSurface: "162944"
+      darkAccent2: "45C4D9", darkTint: "123A5E", darkSurface: "162944"
     },
     forest: {
-      bg: "FFFFFF", fg: "10231A", muted: "5A6B62", accent: "1F6B4A",
-      surface: "EDF4EF", line: "C9DCCF",
+      bg: "FFFFFF", fg: "10231A", muted: "5A6B62", accent: "1F6B4A", accent2: "7C6A18",
+      tint: "E8F4EC", surface: "EDF4EF", line: "C9DCCF",
       darkBg: "0F2A1E", darkFg: "F3F8F5", darkMuted: "A5C0B0", darkAccent: "5BC493",
-      darkSurface: "183A2A"
+      darkAccent2: "D9C766", darkTint: "1B4A33", darkSurface: "183A2A"
     },
     slate: {
-      bg: "FFFFFF", fg: "1B2430", muted: "64707E", accent: "2F6F8F",
-      surface: "EFF3F6", line: "D2DBE2",
+      bg: "FFFFFF", fg: "1B2430", muted: "64707E", accent: "2F6F8F", accent2: "7C3AED",
+      tint: "E6F4F1", surface: "EFF3F6", line: "D2DBE2",
       darkBg: "111A22", darkFg: "F4F7F9", darkMuted: "A3B0BC", darkAccent: "6FB3D2",
-      darkSurface: "1C2733"
+      darkAccent2: "A78BFA", darkTint: "134E4A", darkSurface: "1C2733"
     },
     mono: {
-      bg: "FFFFFF", fg: "111111", muted: "6E6E6E", accent: "111111",
-      surface: "F2F2F2", line: "D8D8D8",
+      bg: "FFFFFF", fg: "111111", muted: "6E6E6E", accent: "111111", accent2: "525252",
+      tint: "F0F0F0", surface: "F2F2F2", line: "D8D8D8",
       darkBg: "111111", darkFg: "F7F7F7", darkMuted: "A9A9A9", darkAccent: "FFFFFF",
-      darkSurface: "1F1F1F"
+      darkAccent2: "C4C4C4", darkTint: "2E2E2E", darkSurface: "1F1F1F"
+    },
+    ocean: {
+      bg: "FFFFFF", fg: "0A2540", muted: "546E8A", accent: "0F5FA8", accent2: "0E7490",
+      tint: "E8F2FB", surface: "EFF5FB", line: "C9DCEF",
+      darkBg: "07233A", darkFg: "F2F8FD", darkMuted: "9DB7CE", darkAccent: "4FA3F7",
+      darkAccent2: "45C4D9", darkTint: "0E3A5C", darkSurface: "0C2E4A"
+    },
+    plum: {
+      bg: "FFFFFF", fg: "2A0F3A", muted: "6B5478", accent: "7E22CE", accent2: "C026D3",
+      tint: "F5EAFB", surface: "F7F2FA", line: "DCCBE6",
+      darkBg: "1E0A2B", darkFg: "FBF5FE", darkMuted: "C0A9CF", darkAccent: "C084FC",
+      darkAccent2: "F0ABFC", darkTint: "3B1355", darkSurface: "2C1140"
+    },
+    ember: {
+      bg: "FFFCF7", fg: "2A1206", muted: "7A5B49", accent: "B22307", accent2: "B45309",
+      tint: "FDEEE4", surface: "FBF1E8", line: "E8D5C5",
+      darkBg: "240D06", darkFg: "FDF6F1", darkMuted: "D3B4A3", darkAccent: "F97316",
+      darkAccent2: "FBBF24", darkTint: "4A1A0B", darkSurface: "33150B"
+    },
+    sand: {
+      bg: "FBF7EE", fg: "241D10", muted: "6E6552", accent: "92400E", accent2: "3F6212",
+      tint: "F3EBD6", surface: "F5EFE1", line: "DECFB4",
+      darkBg: "241D10", darkFg: "FBF7EE", darkMuted: "BFB49E", darkAccent: "E0A94B",
+      darkAccent2: "A3C86A", darkTint: "3B2F1A", darkSurface: "332B1B"
     }
   }[$name];
+
+def fail($code; $detail): error($code + ": " + $detail);
 
 def para($text; $size; $color; $bold; $level; $bullet; $space):
   {text: $text, size: $size, color: $color, bold: $bold,
@@ -94,6 +142,16 @@ def rshape($x; $y; $cx; $cy; $fill; $line; $radius):
   {type: "rect",
    x: ($x | floor), y: ($y | floor), cx: ($cx | floor), cy: ($cy | floor),
    fill: $fill, line: $line, radius: $radius};
+
+# A block that may carry a gradient instead of a flat colour. The renderer reads
+# `gradient` when present, so a call site opts in by passing one.
+def gshape($x; $y; $cx; $cy; $fill; $line; $radius; $gradient):
+  rshape($x; $y; $cx; $cy; $fill; $line; $radius) + {gradient: $gradient};
+
+def eshape($x; $y; $cx; $cy; $fill; $line):
+  {type: "ellipse",
+   x: ($x | floor), y: ($y | floor), cx: ($cx | floor), cy: ($cy | floor),
+   fill: $fill, line: $line, radius: 0};
 
 def pic($x; $y; $cx; $cy; $path; $ext; $crop; $alt):
   {x: ($x | floor), y: ($y | floor), cx: ($cx | floor), cy: ($cy | floor),
@@ -203,11 +261,223 @@ def spread_paras($ps; $room; $capEmu):
 def anchor_for($need; $avail): if $need < ($avail * 0.78) then "ctr" else "t" end;
 
 # ---------------------------------------------------------------------------
+# Gradient
+# ---------------------------------------------------------------------------
+#
+# A gradient is two hex colours and an angle. It fails at layout time with the
+# offending value, so a typo never reaches a slide part that PowerPoint reads as
+# corrupt.
+
+def hex_ok($h): ($h | type) == "string" and ($h | test("^[0-9A-Fa-f]{6}$"));
+
+def gradient_of($g):
+  if $g == null then null
+  elif ($g | type) == "array" and ($g | length) == 2
+       and hex_ok($g[0]) and hex_ok($g[1]) then
+    {from: ($g[0] | ascii_upcase), to: ($g[1] | ascii_upcase), angle: 90}
+  elif ($g | type) == "object" then
+    (if hex_ok($g.from // "") and hex_ok($g.to // "") then .
+     else fail("GRADIENT_INVALID";
+               "a gradient needs from and to as six hex digits without #, got "
+               + ($g | tostring)) end) as $_
+    | {from: ($g.from | ascii_upcase), to: ($g.to | ascii_upcase),
+       angle: (if ($g.angle // 90) >= 0 and ($g.angle // 90) <= 360 then ($g.angle // 90) else 90 end)}
+  else fail("GRADIENT_INVALID"; "a gradient is [from, to] or an object with from, to, angle") end;
+
+# A colour band standing in for a picture. It is a shape so text can sit over it
+# without the band moving, and it never leaves the slide bounds.
+def decor_band($x; $y; $cx; $cy; $fallback; $g):
+  (gradient_of($g)) as $grad
+  | gshape($x; $y; $cx; $cy; (if $grad then $grad.from else $fallback end); null; 0; $grad);
+
+# ---------------------------------------------------------------------------
 # Slide kinds
 # ---------------------------------------------------------------------------
-
 def title_shape($title; $t):
-  tshape(MARGIN; TITLE_Y; CW; TITLE_H; [ para($title; T_TITLE; $t.fg; true; 0; false; 0) ]; "l"; "b"; null);
+  tshape(MARGIN; TITLE_Y; CW; TITLE_H; [ para($title; T_TITLE; $t.fg; true; 0; false; 0) ]; "l"; "b"; null)
+  + {role: "title"};
+
+# One sentence, no bullets. The band behind the type is the palette's dark
+# surface with an optional gradient: a statement page needs a second value, or
+# it reads as a title slide whose content failed to arrive.
+def slide_statement($s; $t; $idx):
+  (($s.text // "") | length) as $n
+  | (if $n <= 44 then 40 elif $n <= 90 then 34 else 28 end) as $size
+  | (paras_h([ para($s.text; $size; "000000"; true; 0; false; 0) ]; ((CW * 88) / 100 | floor); [0, 0, 0, 0])) as $txtH
+  | (if $s.kicker then 548640 else 0 end) as $kickH
+  | ([ ($txtH + $kickH), (BODY_H - 457200) ] | min) as $blockH
+  | (BODY_Y + (((BODY_H - $blockH) / 2) | floor)) as $y0
+  | {
+    index: $idx, kind: "statement", dark: true,
+    shapes: (
+      [ decor_band(0; ($y0 - 320040); W; ($blockH + 640080); $t.darkSurface;
+                   ($s.gradient // {from: $t.darkBg, to: $t.darkSurface, angle: 0})) ]
+      + (if $s.kicker then
+           [ tshape(MARGIN; $y0; CW; 457200;
+               [ para($s.kicker; 13; $t.darkAccent; true; 0; false; 0) ]; "l"; "t"; [0, 0, 0, 0])
+             + {role: "kicker"} ]
+         else [] end)
+      + [ tshape(MARGIN; ($y0 + $kickH); ((CW * 88) / 100 | floor); $txtH;
+          [ para($s.text; $size; $t.darkFg; true; 0; false; 0) ]; "l"; "t"; [0, 0, 0, 0])
+          + {role: "body"} ] ),
+    notes: ($s.notes // "")
+  };
+
+# One number as the argument. Unlike `stats`, there is no grid to compare, so the
+# figure is the largest type on the page and the caption reads as a claim.
+def slide_bigstat($s; $t; $idx):
+  (($s.value // "") | length) as $n
+  | (if $n <= 4 then 150 elif $n <= 6 then 120 elif $n <= 9 then 96 else 72 end) as $vs
+  | (line_h($vs) | floor) as $valH
+  | (if $s.label then (22 * 12700 * 1.4 | floor) + 91440 else 0 end) as $labH
+  | (if $s.note then (T_SMALL * 12700 * 1.4 | floor) + 91440 else 0 end) as $noteH
+  | ($valH + $labH + $noteH) as $blockH
+  | (BODY_Y + (((BODY_H - $blockH) / 2) | floor)) as $y0
+  | {
+    index: $idx, kind: "bigstat", dark: false,
+    shapes: (
+      [ rshape(0; 0; 91440; H; $t.accent; null; 0) + {role: "decor"} ]
+      + (if $s.kicker then
+           [ tshape(MARGIN; (BODY_Y - 457200); CW; 365760;
+               [ para($s.kicker; 13; $t.muted; true; 0; false; 0) ]; "l"; "b"; [0, 0, 0, 0])
+             + {role: "kicker"} ]
+         else [] end)
+      + [ tshape(MARGIN; $y0; ((CW * 90) / 100 | floor); $valH;
+          [ para($s.value; $vs; $t.accent; true; 0; false; 0) ]; "l"; "b"; [0, 0, 0, 0])
+          + {role: "title"} ]
+      + (if $s.label then
+           [ tshape(MARGIN; ($y0 + $valH + 45720); ((CW * 80) / 100 | floor); ($labH - 45720);
+               [ para($s.label; 22; $t.fg; false; 0; false; 0) ]; "l"; "t"; [0, 0, 0, 0])
+             + {role: "body"} ]
+         else [] end)
+      + (if $s.note then
+           [ tshape(MARGIN; ($y0 + $valH + $labH + 45720); ((CW * 72) / 100 | floor); ($noteH - 45720);
+               [ para($s.note; T_SMALL; $t.muted; false; 0; false; 0) ]; "l"; "t"; [0, 0, 0, 0])
+             + {role: "body"} ]
+         else [] end) ),
+    notes: ($s.notes // "")
+  };
+
+# A numbered run of 2 to 5 steps. Connectors are short rules, not arrows, so the
+# row keeps reading as a row at projection distance, and the cards are sized from
+# the longest heading and body instead of a guessed height.
+# Two steps are not a row: two cards across a wide page become banners with a
+# sentence at the left edge and two thirds of the page empty under them. They
+# stack instead, each a full-width row with the badge beside the heading, and
+# the pair is centred as one block.
+def process_rows($s; $t; $idx; $n):
+  (CW - 64008 - GAP_TIGHT - 457200 - GAP - GAP_TIGHT) as $tw
+  | ([ 19, 17, 15 ] | map(
+       . as $ts
+       | ([ $s.steps[] | line_count((.text // ""); ($tw / ($ts * 12700))) ] | max // 1) as $tl
+       | {size: $ts, lines: $tl, textH: ($tl * line_h($ts))})) as $cand
+  | (line_h(22)) as $headH
+  | (([ $cand[] | select((.textH + $headH + 45720) <= (BODY_H / 2 - 548640)) ] | .[0])
+     // ($cand | .[2])) as $fit
+  | (GAP_TIGHT + $headH + 45720 + $fit.textH + GAP_TIGHT) as $inner
+  # The end caps carry 64008 EMU of accent rule inside the card, so the text
+  # block starts past it rather than on top of it.
+  | (([ $inner, 1005840 ] | max) + 2 * 228600) as $rowH
+  | (([ BODY_H - $rowH - 228600, 0 ] | max) / 2 | floor) as $top
+  | (BODY_Y + $top) as $y0
+  | ($y0 + $rowH + 228600) as $y1
+  | {
+    index: $idx, kind: "process", dark: false,
+    shapes: (
+      [ title_shape($s.title; $t) ]
+      + [ range(0; 2) as $i |
+          ($s.steps[$i]) as $st |
+          (if $i == 0 then $y0 else $y1 end) as $y |
+          (($y + (($rowH - $inner) / 2 | floor))) as $ty |
+          rshape(MARGIN; $y; CW; $rowH; $t.surface; null; 0) + {role: "decor"},
+          rshape(MARGIN; $y; 64008; $rowH; (if $i == 0 then $t.accent else $t.accent2 end); null; 0)
+            + {role: "decor"},
+          # The badge sits on the heading's first line, not in the middle of the
+          # card: a number floating between two lines reads as decoration.
+          eshape((MARGIN + 64008 + GAP_TIGHT); ($ty + (($headH - 457200) / 2 | floor));
+                 457200; 457200; (if $i == 0 then $t.accent else $t.accent2 end); null)
+            + {role: "decor"},
+          tshape((MARGIN + 64008 + GAP_TIGHT); ($ty + (($headH - 457200) / 2 | floor));
+                 457200; 457200;
+            [ para((($i + 1) | tostring); 16; "FFFFFF"; true; 0; false; 0) ]; "c"; "ctr";
+            [0, 0, 0, 0]) + {role: "decor"},
+          tshape((MARGIN + 64008 + GAP_TIGHT + 457200 + GAP); $ty; $tw; $inner;
+            ([ para($st.heading; 22; $t.fg; true; 0; false; 0),
+               para($st.text; $fit.size; $t.muted; false; 0; false; 8) ]);
+            "l"; "t"; [0, 0, 0, 0]) + {role: "body"}
+        ] ),
+    notes: ($s.notes // "")
+  };
+
+def slide_process($s; $t; $idx):
+  (($s.steps // []) | length) as $n
+  | if $n < 2 then fail("PROCESS_TOO_FEW"; "a process needs 2 to 5 steps, got " + ($n | tostring))
+    elif $n > 5 then fail("PROCESS_TOO_MANY";
+                          "a process takes at most 5 steps; group the run or split it, got " + ($n | tostring))
+    elif $n == 2 then process_rows($s; $t; $idx; $n)
+    else . end
+  | if ($n == 2) then . else
+  (((CW - ($n - 1) * GAP) / $n) | floor) as $cwd
+  | (($cwd - 2 * GAP_TIGHT) | floor) as $iw
+  # Four or five steps leave a narrow column, so the heading drops a size rather
+  # than wrapping into a second line that eats the card.
+  | (if $n >= 4 then 18 else 20 end) as $hsz
+  | ([ $s.steps[] | line_count((.heading // ""); ($iw / ($hsz * 12700))) ] | max // 1) as $hlines
+  | ($hlines * line_h($hsz)) as $headH
+  | (BODY_H * 0.6 | floor) as $chTarget
+  # A card that only fits two short sentences at 15pt leaves the row as a thin
+  # strip. The body steps down until the column is filled without the text
+  # outgrowing its heading.
+  | ([ ($hsz - 4), 15, 14 ] | map(
+       . as $ts
+       | ([ $s.steps[] | line_count((.text // ""); ($iw / ($ts * 12700))) ] | max // 1) as $tl
+       | (GAP_TIGHT + 548640 + 45720 + $headH + 45720 + ($tl * line_h($ts)) + GAP_TIGHT) as $w
+       | {size: $ts, want: $w, lines: $tl})) as $cand
+  | (([ $cand[] | select(.want <= $chTarget) ] | .[0]) // {size: 14, lines: 1}) as $body
+  | ($body.size) as $tsz
+  | ($body.lines * line_h($tsz)) as $bodyH
+  | (GAP_TIGHT + 548640 + 45720 + $headH + 45720 + $bodyH + GAP_TIGHT) as $wanted
+  # The card keeps the same 62% floor as a card row elsewhere, so four short
+  # steps hold the page instead of falling into a thin band across the middle,
+  # and the badge, heading and body are centred inside it as one stack.
+  | (([ $wanted, (lead_avail($s) * CARD_FLOOR | floor) ] | max)
+     | if . > lead_avail($s) then lead_avail($s) else . end) as $ch
+  | (lead_top($s) + (((lead_avail($s) - $ch) / 2) | floor)) as $cy
+  # The inset is measured from the stack alone, not from the card with its two
+  # pads, or the text sits a pad high and the extra height pools at the bottom.
+  | ([ (((($ch - ($wanted - 2 * GAP_TIGHT)) / 2) | floor)), GAP_TIGHT ] | max) as $inY
+  | {
+    index: $idx, kind: "process", dark: false,
+    shapes: (
+      [ title_shape($s.title; $t) ]
+      + [ range(0; $n) as $i |
+          ($s.steps[$i]) as $st |
+          ((MARGIN + $i * ($cwd + GAP)) | floor) as $x |
+          # The connector joins the two badges at their centre, so it lines up
+          # with the numbers rather than with the top edge of the card.
+          (if $i < ($n - 1) then
+             rshape(($x + $cwd); ($cy + $inY + 228600 - 9525); GAP; 19050;
+                    $t.line; null; 0) + {role: "decor"}
+           else empty end),
+          rshape($x; $cy; $cwd; $ch; $t.surface; null; 0) + {role: "decor"},
+          # The first badge carries the accent so the run shows where it starts;
+          # the rest use the companion colour, not a rank.
+          eshape(($x + GAP_TIGHT); ($cy + $inY); 457200; 457200;
+                 (if $i == 0 then $t.accent else $t.accent2 end); null) + {role: "decor"},
+          tshape(($x + GAP_TIGHT); ($cy + $inY); 457200; 457200;
+            [ para((($i + 1) | tostring); 16; "FFFFFF"; true; 0; false; 0) ]; "c"; "ctr";
+            [0, 0, 0, 0]) + {role: "decor"},
+          tshape(($x + GAP_TIGHT); ($cy + $inY + 548640); $iw; $headH;
+            [ para($st.heading; $hsz; $t.fg; true; 0; false; 0) ]; "l"; "t"; [0, 0, 0, 0])
+            + {role: "body"},
+          tshape(($x + GAP_TIGHT); ($cy + $inY + 548640 + $headH + 45720); $iw; $bodyH;
+            [ para($st.text; $tsz; $t.muted; false; 0; false; 0) ]; "l"; "t"; [0, 0, 0, 0])
+            + {role: "body"}
+        ] ),
+    notes: ($s.notes // "")
+  } end;
+
+
 
 # The cover holds one claim, so the block is centred on the page as a unit:
 # kicker, title, subtitle, then a short rule that stands clear of the subtitle
@@ -220,23 +490,27 @@ def slide_title($s; $t; $idx):
      else 0 end) as $subH
   | ($kickH + $titleH + $subH + 256032 + 45720) as $blockH
   | (((H - $blockH) / 2 - 274320) | floor) as $y0
-  | ($y0 + $kickH + $titleH + $subH) as $ruleY
+  # The rule stands in the space reserved below the text, not on the last
+  # baseline: a rule touching the subtitle reads as an underline.
+  | ($y0 + $kickH + $titleH + $subH + 228600) as $ruleY
   | {
     index: $idx, kind: "title", dark: true,
     shapes: (
       (if $s.kicker then
          [ tshape(MARGIN; $y0; CW; 457200;
-             [ para($s.kicker; 13; $t.darkAccent; true; 0; false; 0) ]; "l"; "b"; null) ]
+             [ para($s.kicker; 13; $t.darkAccent; true; 0; false; 0) ]; "l"; "b"; null)
+           + {role: "kicker"} ]
        else [] end)
       + [ tshape(MARGIN; ($y0 + $kickH); CW; ($titleH + $subH);
           ([ para($s.title; 44; $t.darkFg; true; 0; false; 0) ]
            + (if $s.subtitle then [ para($s.subtitle; 20; $t.darkMuted; false; 0; false; 8) ] else [] end));
-          "l"; "b"; null),
-        rshape(MARGIN; $ruleY; 1097280; 45720; $t.darkAccent; null; 0)
+          "l"; "b"; null) + {role: "title"},
+        rshape(MARGIN; $ruleY; 1097280; 45720; $t.darkAccent; null; 0) + {role: "decor"}
       ]
       + (if $s.meta then
            [ tshape(MARGIN; 5760720; CW; 457200;
-               [ para($s.meta; 13; $t.darkMuted; false; 0; false; 0) ]; "l"; "t"; null) ]
+               [ para($s.meta; 13; $t.darkMuted; false; 0; false; 0) ]; "l"; "t"; null)
+             + {role: "body"} ]
          else [] end) ),
     notes: ($s.notes // "")
   };
@@ -255,13 +529,17 @@ def slide_section($s; $t; $idx):
     index: $idx, kind: "section", dark: true,
     shapes: (
       (if $s.number then
-         [ tshape(MARGIN; $y0; CW; 548640; [ para($s.number; 15; $t.darkAccent; true; 0; false; 0) ]; "l"; "b"; null),
-           rshape(MARGIN; ($y0 + 548640 + 45720); 731520; 27432; $t.darkAccent; null; 0) ]
+         [ tshape(MARGIN; $y0; CW; 548640; [ para($s.number; 15; $t.darkAccent; true; 0; false; 0) ]; "l"; "b"; null)
+             + {role: "kicker"},
+           rshape(MARGIN; ($y0 + 548640 + 45720); 731520; 27432; $t.darkAccent; null; 0)
+             + {role: "decor"} ]
        else [] end)
-      + [ tshape(MARGIN; $titleY; CW; $titleH; [ para($s.title; 36; $t.darkFg; true; 0; false; 0) ]; "l"; "b"; null) ]
+      + [ tshape(MARGIN; $titleY; CW; $titleH; [ para($s.title; 36; $t.darkFg; true; 0; false; 0) ]; "l"; "b"; null)
+          + {role: "title"} ]
       + (if $s.subtitle then
            [ tshape(MARGIN; ($titleY + $titleH + 137160); ((CW * 4) / 5 | floor); 548640;
-               [ para($s.subtitle; 17; $t.darkMuted; false; 0; false; 0) ]; "l"; "t"; null) ]
+               [ para($s.subtitle; 17; $t.darkMuted; false; 0; false; 0) ]; "l"; "t"; null)
+             + {role: "body"} ]
          else [] end) ),
     notes: ($s.notes // "")
   };
@@ -317,9 +595,21 @@ def slide_columns($s; $t; $idx):
   | (if $n > 3 then 3 elif $n < 1 then 1 else $n end) as $cols
   | (((CW - ($cols - 1) * GAP) / $cols) | floor) as $cwd
   | (card_height($s.columns; $cwd; $cols; T_SMALL)) as $bodyNeed
-  | (777240 + $bodyNeed + 228600) as $wanted
-  | (if $wanted < 2011680 then 2011680 elif $wanted > BODY_H then BODY_H else $wanted end) as $cardH
-  | (if $cardH < (BODY_H * 0.66) then (BODY_Y + ((BODY_H - $cardH) / 2 | floor)) else BODY_Y end) as $cardY
+  # The heading band is measured too: a fixed reserve put the bullets high and
+  # left a blank block under them, which reads as content that failed to arrive.
+  | ([ range(0; $cols) | line_count(($s.columns[.].heading // ""); ($cwd / (17 * 12700))) ] | max // 1) as $headLines
+  | ($headLines * line_h(17)) as $headH
+  | (GAP_TIGHT + $headH + 91440 + $bodyNeed + GAP_TIGHT) as $wanted
+  # A card hugs its own text, but never drops below CARD_FLOOR of the body: three
+  # short cards at their own height stop a third of the way down the page and
+  # read as content that never arrived. The row is then centred, which the floor
+  # keeps honest -- a row that fills most of the body needs no cap.
+  | (([ $wanted, (lead_avail($s) * CARD_FLOOR | floor) ] | max)
+     | if . > lead_avail($s) then lead_avail($s) else . end) as $cardH
+  | (lead_top($s) + (((lead_avail($s) - $cardH) / 2) | floor)) as $cardY
+  # Heading and bullets are one stack inside the card, so spare height becomes
+  # equal padding above and below the text instead of a strip under the bullets.
+  | ([ (((($cardH - $headH - 91440 - $bodyNeed) / 2) | floor)), GAP_TIGHT ] | max) as $inTop
   | {
     index: $idx, kind: "columns", dark: false,
     shapes: (
@@ -333,10 +623,11 @@ def slide_columns($s; $t; $idx):
           ((MARGIN + $i * ($cwd + GAP)) | floor) as $x |
           rshape($x; $cardY; $cwd; $cardH; $t.surface; null; 0),
           rshape($x; $cardY; $cwd; RULE_H; $t.accent; null; 0),
-          tshape($x; ($cardY + 320040); $cwd; 457200;
+          tshape($x; ($cardY + $inTop); $cwd; $headH;
             [ para($c.heading; 17; $t.accent; true; 0; false; 0) ]; "l"; "t";
             [GAP_TIGHT, 0, GAP_TIGHT, 0]),
-          tshape($x; ($cardY + 822960); $cwd; ($cardH - 914400);
+          tshape($x; ($cardY + $inTop + $headH + 91440); $cwd;
+                 (($cardH - $inTop - $headH - 91440) | if . < 548640 then 548640 else . end);
             bullets_of(($c.bullets // []); T_SMALL; $t.fg; $t.muted); "l"; "t";
             [GAP_TIGHT, 0, GAP_TIGHT, 0])
         ] ),
@@ -353,10 +644,26 @@ def slide_stats($s; $t; $idx):
   ($s.stats | length) as $n
   | (if $n > 4 then 4 elif $n < 1 then 1 else $n end) as $cols
   | (((CW - ($cols - 1) * GAP) / $cols) | floor) as $cwd
-  # A card holds a number, a label and a note: 0.62 of the body is the tallest
-  # that still leaves the block reading as a row rather than three posters.
-  | ((BODY_H * (if $cols == 1 then 0.5 else 0.62 end)) | floor) as $cardH
-  | (BODY_Y + (((BODY_H - $cardH) / 2) | floor)) as $cardY
+  # One value size for the row, from the longest string: a three-character figure
+  # at 60pt beside a seven-character one at 44pt makes the second look minor.
+  | ([ $s.stats[] | stat_value_size(.value) ] | min // 60) as $vsize
+  | (line_h($vsize)) as $valH
+  # Labels and notes wrap: their bands are measured from the longest one at the
+  # card's inner width, so a two-line label pushes the note down instead of
+  # landing on it.
+  | (($cwd - 2 * GAP_TIGHT) / (T_SMALL * 12700)) as $labEm
+  | (($cwd - 2 * GAP_TIGHT) / (T_CAPTION * 12700)) as $noteEm
+  | ([ $s.stats[] | line_count((.label // ""); $labEm) ] | max // 0) as $labLines
+  | ([ $s.stats[] | line_count((.note // ""); $noteEm) ] | max // 0) as $noteLines
+  | (if $labLines > 0 then ($labLines * line_h(T_SMALL)) + 274320 else 0 end) as $labH
+  | (if $noteLines > 0 then ($noteLines * line_h(T_CAPTION)) + 182880 else 0 end) as $noteH
+  # The card is its own stack plus a pad. A card fixed to a share of the body
+  # leaves a dead strip under the note, which reads as content that never arrived.
+  | (([ ($valH + $labH + $noteH + 2 * GAP), (lead_avail($s) * CARD_FLOOR | floor) ] | max)
+     | if . > lead_avail($s) then lead_avail($s) else . end) as $cardH
+  # Centred like `columns`, with the same floor doing the work of holding the row.
+  | (lead_top($s) + (((lead_avail($s) - $cardH) / 2) | floor)) as $cardY
+  | (($cardH - ($valH + $labH + $noteH)) / 2 | floor) as $padTop
   | {
     index: $idx, kind: "stats", dark: false,
     shapes: (
@@ -368,13 +675,13 @@ def slide_stats($s; $t; $idx):
       + [ range(0; $cols) as $i |
           ($s.stats[$i]) as $st |
           ((MARGIN + $i * ($cwd + GAP)) | floor) as $x |
-          (stat_value_size($st.value)) as $vs |
+          $vsize as $vs |
           rshape($x; $cardY; $cwd; $cardH; $t.surface; null; 0),
           rshape($x; $cardY; $cwd; RULE_H; $t.accent; null; 0),
-          tshape($x; ($cardY + ($cardH * 0.14 | floor)); $cwd; 1097280;
+          tshape($x; ($cardY + $padTop); $cwd; $valH;
             [ para($st.value; $vs; $t.accent; true; 0; false; 0) ]; "l"; "b";
             [GAP_TIGHT, 0, GAP_TIGHT, 0]),
-          tshape($x; ($cardY + ($cardH * 0.6 | floor)); $cwd; 457200;
+          tshape($x; ($cardY + $padTop + $valH + 274320); $cwd; $labH;
             [ para($st.label; T_SMALL; $t.fg; false; 0; false; 0) ]; "l"; "t";
             [GAP_TIGHT, 0, GAP_TIGHT, 0])
         ]
@@ -382,7 +689,7 @@ def slide_stats($s; $t; $idx):
           ($s.stats[$i]) as $st |
           ((MARGIN + $i * ($cwd + GAP)) | floor) as $x |
           (if $st.note then
-             tshape($x; ($cardY + ($cardH * 0.8 | floor)); $cwd; 365760;
+             tshape($x; ($cardY + $padTop + $valH + $labH + 274320); $cwd; $noteH;
                [ para($st.note; T_CAPTION; $t.muted; false; 0; false; 0) ]; "l"; "t";
                [GAP_TIGHT, 0, GAP_TIGHT, 0])
            else empty end)
@@ -409,8 +716,8 @@ def slide_kpi($s; $t; $idx):
      then paras_h(bullets_of($s.bullets; 20; "000000"; "000000"); $rw; null)
      else 0 end) as $argH
   | (([ $stackH, $argH ] | max) + 2 * GAP) as $rowH
-  | ($rowH | if . > BODY_H then BODY_H else . end) as $cardH
-  | (BODY_Y + (((BODY_H - $cardH) / 2) | floor)) as $cy
+  | ($rowH | if . > lead_avail($s) then lead_avail($s) else . end) as $cardH
+  | (lead_top($s) + (((lead_avail($s) - $cardH) / 2) | floor)) as $cy
   | (($cardH - $stackH) / 2 | floor) as $padTop
   | {
     index: $idx, kind: "kpi", dark: false,
@@ -464,14 +771,16 @@ def slide_compare($s; $t; $idx):
   # The two panels are one block: measure the taller side and centre the block
   # in the body, so a three-point comparison does not sit in the top third with
   # two thirds of the page left white.
+  | (line_h(20)) as $cmpHeadH
+  | (137160 + $cmpHeadH + 182880) as $cmpBodyY
   | ([ $s.left, $s.right ] | map(
        (if . == null then 0
-        else 777240 + paras_h(bullets_of((.bullets // []); compare_size(.; $pw); "000000"; "000000"); $pw; null)
+        else $cmpBodyY + paras_h(bullets_of((.bullets // []); compare_size(.; $pw); "000000"; "000000"); $pw; null)
         end)) | max // 0) as $need
   | (([ $s.left, $s.right ] | map(select(. != null) | compare_size(.; $pw)) | min) // 16) as $bsize
   # Centring is capped: a short block dropped to the exact middle detaches from
   # the title, so the offset never exceeds a third of the body.
-  | (BODY_Y + (([ (BODY_H - $need) / 2, BODY_H / 3 ] | min) | floor)) as $py
+  | (lead_top($s) + (([ (lead_avail($s) - $need) / 2, CENTRE_CAP ] | min) | floor)) as $py
   | $need as $ph
   | {
     index: $idx, kind: "compare", dark: false,
@@ -487,10 +796,10 @@ def slide_compare($s; $t; $idx):
           (if $side == null then empty
            else
              rshape($x; $py; $pw; RULE_H; (if $i == 0 then $t.line else $t.accent end); null; 0),
-             tshape($x; ($py + 137160); $pw; 548640;
+             tshape($x; ($py + 137160); $pw; $cmpHeadH;
                [ para($side.heading; 20; $t.fg; true; 0; false; 0) ]; "l"; "t";
                [0, 0, 0, 0]),
-             tshape($x; ($py + 777240); $pw; (($ph - 777240) | if . < 914400 then 914400 else . end);
+             tshape($x; ($py + $cmpBodyY); $pw; (($ph - $cmpBodyY) | if . < 914400 then 914400 else . end);
                bullets_of(($side.bullets // []); $bsize; $t.fg; $t.muted); "l"; "t";
                [0, 0, 0, 0])
            end)
@@ -518,8 +827,12 @@ def slide_timeline($s; $t; $idx):
   | (($titLines * line_h(32))) as $titH
   | (($detLines * line_h(19))) as $detH
   | ($labH + 182880 + $titH + 320040 + 19050 + 182880 + $detH) as $blockH
-  | ($blockH | if . > BODY_H then BODY_H else . end) as $blockH2
-  | (BODY_Y + (((BODY_H - $blockH2) / 2) | floor)) as $y0
+  | ($blockH | if . > lead_avail($s) then lead_avail($s) else . end) as $blockH2
+  # The timeline is a horizontal band, not a block: it fills the width and only
+  # about a third of the height, so centring is what keeps the top and bottom
+  # margins equal. The cap that keeps a short two-column block near its title
+  # would instead strand this band high with a dead third of the page below.
+  | (lead_top($s) + (((lead_avail($s) - $blockH2) / 2) | floor)) as $y0
   | ($y0 + $labH + 182880) as $titleY
   | ($titleY + $titH + 320040) as $ruleY
   | ($ruleY + 182880) as $detailY
@@ -722,8 +1035,9 @@ def slide_hero($s; $t; $idx):
       [ tshape(MARGIN; $y0; ((CW * 78) / 100 | floor); $txtH;
           ([ para($s.title; 44; "FFFFFF"; true; 0; false; 0) ]
            + (if $s.subtitle then [ para($s.subtitle; 20; "FFFFFF"; false; 0; false; 8) ] else [] end));
-          "l"; "t"; null),
+          "l"; "t"; null) + {role: "title"},
         rshape(MARGIN; ($y0 + $txtH + 228600); 1097280; 45720; $t.darkAccent; null; 0)
+          + {role: "decor"}
       ] ),
     images: [ image_of($s.image; 0; 0; W; H; "fill"; $s.image.alt) + {layer: "back"} ],
     scrim: {color: "000000", alpha: ($s.scrim // 0.55)},
@@ -737,7 +1051,10 @@ def slide_gallery($s; $t; $idx):
   (($s.images // []) | length) as $n
   | (if $n > 4 then 4 elif $n < 1 then 1 else $n end) as $cols
   | (((CW - ($cols - 1) * GAP) / $cols) | floor) as $cwd
-  | (BODY_Y + 91440) as $y0
+  # The lead sits directly under the title, so the pictures start below it: a
+  # fixed offset put the row on top of the lead line and the only visible trace
+  # was the last two characters sticking out past the first picture.
+  | (BODY_Y + (if $s.lead then 640080 else 91440 end)) as $y0
   | ([ range(0; $cols) | ($s.images[.].caption // "") ] | any(. != "")) as $hasCap
   | (if $hasCap then 411480 else 0 end) as $perCapH
   | (if $s.caption then 411480 else 0 end) as $deckCapH
@@ -783,13 +1100,114 @@ def slide_quote($s; $t; $idx):
     index: $idx, kind: "quote", dark: true,
     shapes: (
       [ tshape(MARGIN; $y0; ((CW * 9) / 10 | floor); $qH;
-          [ para($s.quote; $qs; $t.darkFg; false; 0; false; 0) ]; "l"; "t"; null) ]
+          [ para($s.quote; $qs; $t.darkFg; false; 0; false; 0) ]; "l"; "t"; null)
+        + {role: "title"} ]
       + (if $s.attribution then
            [ tshape(MARGIN; ($y0 + $qH + 365760); CW; 457200;
-               [ para("— " + $s.attribution; 16; $t.darkAccent; false; 0; false; 0) ]; "l"; "t"; null) ]
+               [ para("— " + $s.attribution; 16; $t.darkAccent; false; 0; false; 0) ]; "l"; "t"; null)
+             + {role: "body"} ]
          else [] end) ),
     notes: ($s.notes // "")
   };
+
+# ---------------------------------------------------------------------------
+# Motion
+# ---------------------------------------------------------------------------
+#
+# A transition belongs to a slide; an animation belongs to one or more shapes on
+# it. Both resolve here into shape ids so the PPTX writer only turns numbers into
+# XML and the preview replays the same order.
+
+# Each name is a element ECMA-376 defines as a direct child of p:transition. An
+# invented name makes PowerPoint offer to repair the deck, so an unknown name is
+# an error rather than a jump to a near-match.
+def transition_names:
+  ["none", "fade", "push", "wipe", "split", "cover", "cut", "dissolve",
+   "checker", "blinds", "diamond", "circle", "wedge", "wheel",
+   "random", "randomBar", "strips", "comb", "zoom", "newsflash",
+   "plus", "pull", "morph"];
+
+def anim_effects:
+  ["appear", "fade", "wipe", "fly", "zoom", "split", "grow", "spin", "exitFade"];
+
+def anim_triggers: ["on-click", "with-previous", "after-previous"];
+
+def trans_of($v):
+  # null inherits the deck default; false and "none" switch this slide off.
+  if $v == null then null
+  elif $v == false then {effect: "none", speed: "med"}
+  elif ($v | type) == "string" then {effect: $v, speed: "med"}
+  elif ($v | type) == "object" then
+    {effect: ($v.effect // "fade"), speed: ($v.speed // "med"),
+     duration: ($v.duration // 700)}
+  else fail("TRANSITION_UNKNOWN"; "a transition is a name or an object") end;
+
+def check_transition($t):
+  if ($t.effect | IN(transition_names[])) then $t
+  else fail("TRANSITION_UNKNOWN";
+            "unknown transition '" + ($t.effect | tostring) + "'; use one of "
+            + (transition_names | join(", "))) end
+  | if (($t.speed // "med") | IN("slow", "med", "fast")) then . + {speed: ($t.speed // "med")}
+    else fail("TRANSITION_SPEED_UNKNOWN";
+              "unknown speed '" + ($t.speed | tostring) + "'; use slow, med, or fast") end;
+
+# A role is what an author names; the id is what a slide actually has. Both are
+# matched here so `target: "title"` and `target: "s3"` mean the same thing.
+# A shape with no declared role is still targetable: body text is the body, a
+# plain block is decoration. Without this default every animation would have to
+# name a shape id, which no author can know before the deck exists.
+def motion_role($sh):
+  ($sh.role // (if $sh.type == "text" then "body" else "decor" end));
+
+def motion_targets($slide):
+  ([ $slide.shapes[] | select((.role // "") != "chrome")
+     | {key: .id, role: motion_role(.), spid: .spid} ]
+   + (if $slide.table then [{key: "table", role: "table", spid: $slide.table.spid}] else [] end)
+   + (if $slide.chart then [{key: "chart", role: "chart", spid: $slide.chart.spid}] else [] end)
+   + [ $slide.images[] | {key: .id, role: "image", spid: .spid} ]);
+
+# "all" means all the content on the slide: decoration that is already behind the
+# text does not need its own entrance, and animating the rule under a title makes
+# the page look like it is assembling itself.
+def motion_select($targets; $sel):
+  (if $sel == null or $sel == "all" then [ $targets[] | select(.role != "decor" and .role != "chrome") ]
+   elif ($sel | type) == "array" then [ $sel[] as $x | $targets[] | select(.role == $x or .key == $x) ]
+   else [ $targets[] | select(.role == $sel or .key == $sel) ]
+   end
+   | map(.spid) | unique);
+
+def anim_of($v; $targets):
+  (($v.effect // "fade")) as $e
+  | (if ($e | IN(anim_effects[])) then .
+     else fail("ANIMATION_EFFECT_UNKNOWN";
+               "unknown animation '" + ($e | tostring) + "'; use one of "
+               + (anim_effects | join(", "))) end) as $_
+  | (($v.trigger // "on-click")) as $trig
+  | (if ($trig | IN(anim_triggers[])) then .
+     else fail("ANIMATION_TRIGGER_UNKNOWN";
+               "unknown trigger '" + ($trig | tostring)
+               + "'; use on-click, with-previous, or after-previous") end) as $_
+  | (($v.direction // "up")) as $dir
+  | (if ($dir | IN("up", "down", "left", "right")) then .
+     else fail("ANIMATION_DIRECTION_UNKNOWN";
+               "unknown direction '" + ($dir | tostring) + "'; use up, down, left, or right") end) as $_
+  | (motion_select($targets; $v.target)) as $spids
+  | if ($spids | length) == 0 then
+      fail("ANIMATION_TARGET_EMPTY";
+           "animation '" + $e + "' targets '" + (($v.target // "all") | tostring)
+           + "', which matches no shape on this slide")
+    else
+      {effect: $e, trigger: $trig, direction: $dir,
+       duration: ($v.duration // 500), delay: ($v.delay // 0), targets: $spids}
+    end;
+
+def motion_of($slide; $deckTrans):
+  (trans_of($slide.raw_transition)) as $own
+  | (if $own == null then $deckTrans else $own end) as $raw
+  | (if $raw == null then null else check_transition($raw) end) as $transition
+  | ([ ($slide.raw_animation // [])[] | anim_of(.; motion_targets($slide)) ]) as $anims
+  | {transition: $transition,
+     animation: (if ($anims | length) == 0 then null else $anims end)};
 
 def slide_of($t):
   . as $s
@@ -808,12 +1226,17 @@ def slide_of($t):
      elif $kind == "hero" then slide_hero($s; $t; 0)
      elif $kind == "gallery" then slide_gallery($s; $t; 0)
      elif $kind == "quote" then slide_quote($s; $t; 0)
+     elif $kind == "statement" then slide_statement($s; $t; 0)
+     elif $kind == "bigstat" then slide_bigstat($s; $t; 0)
+     elif $kind == "process" then slide_process($s; $t; 0)
      else slide_bullets($s; $t; 0) end)
   # Slide number and footer are added once the final index is known, in the
   # entry pipeline below, so a shape can never show the wrong page number.
   | . + {footer: ($t.footer // null),
          bg: (if .dark then $t.darkBg else $t.bg end),
-         images: (.images // [])};
+         images: (.images // []),
+         raw_transition: ($s.transition // null),
+         raw_animation: ($s.animation // null)};
 
 # Page number and running footer, appended after the final slide index exists.
 # Returns a list of shapes to append; a caller merges with `+` on the array, not
@@ -830,6 +1253,29 @@ def footer_shapes($t; $i; $kind):
   end;
 
 # ---------------------------------------------------------------------------
+# Slide finalisation
+# ---------------------------------------------------------------------------
+
+# Ids are assigned once, here, because p:spTgt points at them: a shape and the
+# animation that names it must never be numbered by two different passes. The
+# ranges keep what the writer already used -- shapes from 2, table 202, chart
+# 302, pictures from 602 in declaration order.
+def finalize_slide($i; $deckTrans; $t):
+  . as $sl
+  | ($sl.shapes + footer_shapes($t; $i; $sl.kind)) as $all
+  | ($all | to_entries
+     | map(.value + {id: ("s" + ((.key + 1) | tostring)), spid: (2 + .key)})) as $shapes
+  | ($sl.images | to_entries
+     | map(.value + {id: ("i" + ((.key + 1) | tostring)), spid: (602 + .key)})) as $images
+  | $sl
+  | .shapes = $shapes
+  | .images = $images
+  | (if .table then .table += {spid: 202} else . end)
+  | (if .chart then .chart += {spid: 302} else . end)
+  | . + {index: $i}
+  | . + motion_of(.; $deckTrans);
+
+# ---------------------------------------------------------------------------
 # Entry
 # ---------------------------------------------------------------------------
 
@@ -839,10 +1285,11 @@ def footer_shapes($t; $i; $kind):
    then
      (palette($themeName.base // "ink")) as $base
      | if $base == null then error("unknown palette: " + ($themeName.base // "ink")) else . end
-     | ($base
-        + {bg: ($themeName.bg // $base.bg), fg: ($themeName.fg // $base.fg),
-           accent: ($themeName.accent // $base.accent), muted: ($themeName.muted // $base.muted),
-           surface: ($themeName.surface // $base.surface), line: ($themeName.line // $base.line)})
+     | ($base as $b
+        | reduce ("bg", "fg", "muted", "accent", "accent2", "tint", "surface", "line",
+                  "darkBg", "darkFg", "darkMuted", "darkAccent", "darkAccent2",
+                  "darkTint", "darkSurface") as $k
+            ($b; if ($themeName[$k] // null) == null then . else . + {($k): $themeName[$k]} end))
    else
      (palette($themeName)) as $p
      | if $p == null then error("unknown palette: " + $themeName) else $p end
@@ -855,6 +1302,8 @@ def footer_shapes($t; $i; $kind):
       mono: ($spec.fonts.mono // "SF Mono")
     }
   }) as $t
+| (if $spec.transition == null then null
+   else check_transition(trans_of($spec.transition)) end) as $deckTrans
 | {
     title: ($spec.title // ""),
     author: ($spec.author // ""),
@@ -865,9 +1314,5 @@ def footer_shapes($t; $i; $kind):
     slides: ([ $spec.slides[] | slide_of($t) ] | to_entries | map(
       .key as $i
       | .value
-      | .shapes += footer_shapes($t; $i; .kind)
-      # A stable id lets a layout finding name the shape it is about.
-      | .shapes |= [ to_entries[] | .value + {id: ("s" + ((.key + 1) | tostring))} ]
-      | .images |= [ to_entries[] | .value + {id: ("i" + ((.key + 1) | tostring))} ]
-      | . + {index: $i}))
+      | finalize_slide($i; $deckTrans; $t)))
   }

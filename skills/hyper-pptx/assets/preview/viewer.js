@@ -137,16 +137,33 @@
     return box;
   }
 
+  // PowerPoint measures a linear gradient angle counter-clockwise from the
+  // positive x axis; CSS measures it clockwise from "to top". 90 - angle maps
+  // one to the other, and flipping the sign of the projection keeps a
+  // top-to-bottom band (90) pointing down in both.
+  // DrawingML measures the gradient vector clockwise from the x axis, so 0 runs
+  // left to right and 90 runs top to bottom. CSS measures from "to top", so the
+  // two differ by a quarter turn: 0 becomes 90deg, 90 becomes 180deg.
+  function cssAngle(deg) {
+    return (deg + 90) % 360;
+  }
+
   function renderRect(shape, host) {
     var box = el("div", "pp-rect");
     box.style.left = px(shape.x) + "px";
     box.style.top = px(shape.y) + "px";
     box.style.width = px(shape.cx) + "px";
     box.style.height = px(shape.cy) + "px";
-    box.style.background = "#" + shape.fill;
+    if (shape.type === "ellipse") box.style.borderRadius = "50%";
+    else if (shape.radius) box.style.borderRadius = px(shape.radius) + "px";
+    if (shape.gradient) {
+      box.style.background = "linear-gradient(" + cssAngle(shape.gradient.angle)
+        + "deg, #" + shape.gradient.from + ", #" + shape.gradient.to + ")";
+    } else {
+      box.style.background = "#" + shape.fill;
+    }
     if (shape.alpha) box.style.opacity = String(shape.alpha);
     if (shape.line) box.style.border = "1px solid #" + shape.line;
-    if (shape.radius) box.style.borderRadius = px(shape.radius) + "px";
     host.appendChild(box);
   }
 
@@ -774,7 +791,7 @@
       stage.appendChild(scrim);
     }
     slide.shapes.forEach(function (shape) {
-      if (shape.type === "rect") renderRect(shape, stage);
+      if (shape.type === "rect" || shape.type === "ellipse") renderRect(shape, stage);
       else renderText(shape, stage);
     });
     if (slide.table) renderTable(slide.table, t, stage);
