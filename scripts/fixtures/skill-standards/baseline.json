@@ -72,6 +72,9 @@
     "hyper-pptx": {},
     "hyper-cleanup": {},
     "hyper-hwp": {},
-    "hyper-pdf": {}
+    "hyper-pdf": {},
+    "hyper-uiux-design": {
+      "CROSS_SKILL_REFERENCE": 23
+    }
   }
 }
