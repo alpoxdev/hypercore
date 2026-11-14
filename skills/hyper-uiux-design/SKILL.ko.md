@@ -25,6 +25,7 @@ compatibility: Markdown 전용이며 번들 스크립트가 없습니다. `.hype
 <purpose>
 
 - 인터페이스 코드를 쓰기 전에 사용자가 검토할 화면 그림을 내놓습니다.
+- 그 그림을 출시된 화면처럼 만듭니다. 완성된 콘텐츠, 실제 같은 밀도, 하나의 분명한 위계, 단일 강조색입니다. 글자가 있어야 할 자리에 막대가 있는 영역 배치는 이 스킬의 산출물이 아닙니다.
 - 그 그림은 공개 레퍼런스에서 관찰한 패턴을 에이전트 자신의 말로 추상화한 것에 근거하고, 한 화면의 복제에 근거하지 않습니다.
 - 첫 이미지를 만들기 전에 색, 글꼴, 모서리, 간격 토큰을 정해 세트의 모든 화면이 한 언어를 쓰게 합니다.
 - 시안을 제자리에 둡니다. 시안은 레이아웃과 위계의 근거이고, 시안 속 글자, 숫자, 마크는 코드에서 교체합니다.
@@ -112,7 +113,7 @@ hyper-uiux-design [--platform mobile|tablet|web] [--theme light|dark|both] "<req
 
 - 코어(`SKILL.ko.md`): 트리거, 모드, 계약, 워크플로, 종료 상태.
 - 규칙: `rules/reference-use.ko.md`, `rules/mockup-workflow.ko.md`, `rules/mockup-is-evidence.ko.md`.
-- 참조: `references/reference-sites.ko.md`(두 레퍼런스 사이트의 날짜가 붙은 사실), `references/mockup-brief.ko.md`(캔버스, 최소 토큰, 브리프 뼈대), `references/review-checklist.ko.md`(검토 절차).
+- 참조: `references/reference-sites.ko.md`(두 레퍼런스 사이트의 날짜가 붙은 사실), `references/visual-quality-recipe.ko.md`(콘텐츠 규칙, 상용 수준 품질, 프롬프트 구조, 화면 유형별 구성, 밀도), `references/mockup-brief.ko.md`(캔버스, 최소 토큰, 브리프 뼈대), `references/review-checklist.ko.md`(검토 절차).
 - 에셋: `assets/evals/hyper-uiux-design-cases.jsonl`.
 - 번들 스크립트가 없고 자체 네트워크 의존도 없습니다. 이미지는 hyper-imagegen에서 나오고, 레퍼런스 페이지는 런타임에 이미 있는 웹 기능으로 읽습니다.
 
@@ -135,6 +136,7 @@ hyper-uiux-design [--platform mobile|tablet|web] [--theme light|dark|both] "<req
 - 레퍼런스 페이지를 열거나 사용자가 준 캡처를 읽기 전에 [rules/reference-use.ko.md](rules/reference-use.ko.md)를 읽습니다.
 - UIBowl이나 Mobbin을 읽는 실행에서는 계정 없이 무엇이 열리는지 알기 위해 [references/reference-sites.ko.md](references/reference-sites.ko.md)를 읽습니다.
 - 토큰을 정하거나 브리프를 쓰기 전에 [rules/mockup-workflow.ko.md](rules/mockup-workflow.ko.md)를 읽습니다.
+- 브리프를 쓰기 전에 [references/visual-quality-recipe.ko.md](references/visual-quality-recipe.ko.md)를 읽습니다. 콘텐츠, 밀도, 프롬프트 구조를 정해 와이어프레임이 아니라 출시된 앱 같은 화면을 만듭니다.
 - 브리프를 쓰거나 최소 토큰을 정할 때 [references/mockup-brief.ko.md](references/mockup-brief.ko.md)를 읽습니다.
 - 이미지를 검토하기 전과 인계를 쓰기 전에 [rules/mockup-is-evidence.ko.md](rules/mockup-is-evidence.ko.md)를 읽습니다.
 - 검토할 때마다 [references/review-checklist.ko.md](references/review-checklist.ko.md)를 읽습니다.
@@ -145,7 +147,7 @@ hyper-uiux-design [--platform mobile|tablet|web] [--theme light|dark|both] "<req
 
 1. 이 코어.
 2. `rules/reference-use.ko.md`, 이어서 두 사이트 중 하나를 읽을 때 `references/reference-sites.ko.md`.
-3. `rules/mockup-workflow.ko.md`, 이어서 `references/mockup-brief.ko.md`.
+3. `rules/mockup-workflow.ko.md`, 이어서 `references/visual-quality-recipe.ko.md`, 이어서 `references/mockup-brief.ko.md`.
 4. `rules/mockup-is-evidence.ko.md`, 이어서 이미지가 돌아오면 `references/review-checklist.ko.md`.
 
 </support_file_read_order>
@@ -158,9 +160,9 @@ hyper-uiux-design [--platform mobile|tablet|web] [--theme light|dark|both] "<req
 | 1 | 프로젝트의 디자인 문서와 토큰을 읽고, 없으면 최소 토큰 세트를 정함([rules/mockup-workflow.ko.md](rules/mockup-workflow.ko.md) §2) | 출처가 붙은 토큰 표 |
 | 2 | 읽기 예산 안에서 공개 레퍼런스를 읽고 하나씩 기록([rules/reference-use.ko.md](rules/reference-use.ko.md)) | 출처 기록 |
 | 3 | 패턴 요약: 구조, 위계, 간격, 컴포넌트, 흐름 | 패턴 요약 |
-| 4 | 화면·테마마다 브리프 하나 작성([references/mockup-brief.ko.md](references/mockup-brief.ko.md)) | 브리프 |
+| 4 | 화면의 완성 콘텐츠를 먼저 쓰고, 이어서 화면·테마마다 브리프 하나 작성([references/visual-quality-recipe.ko.md](references/visual-quality-recipe.ko.md) §2, [references/mockup-brief.ko.md](references/mockup-brief.ko.md)) | 콘텐츠 시트, 이어서 브리프 |
 | 5 | 기준 화면부터 브리프를 하나씩 hyper-imagegen에 넘김 | 이미지와 종료 상태 |
-| 6 | 이미지마다 검토([references/review-checklist.ko.md](references/review-checklist.ko.md)) | 검토 표 |
+| 6 | 이미지마다 검토하고 시각 품질까지 포함([references/review-checklist.ko.md](references/review-checklist.ko.md)) | 검토 표 |
 | 7 | 상한 안에서 한 가지를 고쳐 재생성 | 시도 이력 |
 | 8 | 승인을 요청하고, 승인되면 인계를 쓰고 `Result:` 한 줄로 끝냄 | `mockup-notes.md` |
 
@@ -170,19 +172,21 @@ hyper-uiux-design [--platform mobile|tablet|web] [--theme light|dark|both] "<req
 - 이미지 모델 이름을 대거나 모델 옵션을 넘기지 않습니다. hyper-imagegen의 기본값을 씁니다.
 - 로그인 요청, 유료 벽, 막힌 페이지가 나오면 그 레퍼런스에서 멈추고 메모에 밝힌 뒤 다른 공개 자료로 바꿉니다.
 - 사용자가 미리 승인했으면("바로 구현까지 진행") 검토를 통과한 시안을 승인된 것으로 보고, 승인이 미리 주어졌다고 메모에 적습니다.
+- 4단계는 이 순서로 두 걸음입니다. 콘텐츠 먼저: 화면이 보여 주는 모든 금액·개수·날짜·이름·라벨을 다 쓰고 앞뒤를 맞춥니다. 다음으로 그것을 배치하는 브리프입니다. 콘텐츠보다 먼저 쓴 브리프는 놓을 것이 없어 와이어프레임으로 돌아옵니다.
 
-메모 형태(한국어): 결과를 먼저 쓰고, 이어서 범위, 토큰, 저작권 안내가 붙은 출처 기록, 패턴 요약, 화면별 브리프와 이미지 경로·검토 표·시도 횟수, 승인 기록, 인계를 씁니다. 정확히 `Result:` 한 줄로 끝내고 값은 `approved`, `awaiting_approval`, `briefs_saved`, `awaiting_input`, `blocked` 중 하나입니다.
+메모 형태(한국어): 결과를 먼저 쓰고, 이어서 범위, 토큰, 저작권 안내가 붙은 출처 기록, 패턴 요약, 화면별 브리프와 이미지 경로·검토 표·시도 횟수·문자열 정확도 `정확 n/m`, 승인 기록, 인계를 씁니다. 정확히 `Result:` 한 줄로 끝내고 값은 `approved`, `awaiting_approval`, `briefs_saved`, `awaiting_input`, `blocked` 중 하나입니다.
 
 </workflow>
 
 <required>
 
 - 첫 브리프 전에 출처와 함께 정한 토큰.
+- 브리프 전의 완성 콘텐츠. 화면이 보여 주는 모든 문자열, 금액, 개수, 날짜, 이름을 다 쓰고 앞뒤를 맞춥니다. 화면의 어떤 자리도 막대, 블록, 라벨 없는 도형에 맡기지 않습니다.
 - 읽은 모든 레퍼런스의 출처 기록 항목과 에이전트 자신의 말로 쓴 패턴.
 - 화면·테마마다 브리프 하나와 이미지 하나, 세트의 모든 브리프에 반복한 공통 불변 요소.
-- 모든 이미지의 검토 표. 대비는 그림에서 읽지 않고 토큰으로 계산합니다.
+- 모든 이미지의 검토 표를 체크리스트 항목 전부에 대해. 대비는 그림에서 읽지 않고 토큰으로 계산하고, 시각 품질은 레시피 기준으로 판정합니다.
 - 코드에 쓸 문구, 시안이 보여 주지 않는 상태, 접근성 요구사항을 적은 인계.
-- 브리프마다 정확한 시도 횟수와 hyper-imagegen이 보고한 종료 상태.
+- 브리프마다 정확한 시도 횟수, hyper-imagegen이 보고한 종료 상태, 옆에 적은 요청 비율과 돌아온 픽셀 크기, 화면이 보여 주는 모든 문자열을 센 문자열 정확도.
 
 </required>
 
@@ -197,6 +201,8 @@ hyper-uiux-design [--platform mobile|tablet|web] [--theme light|dark|both] "<req
 - 재생성하지 않고 반환된 이미지에 글자를 편집하거나 합성하는 것.
 - 이미지 모델 이름을 정하거나, API 키 스크립트로 바꾸거나, 도구를 설치하는 것.
 - 밝힌 날짜에 읽지 않은 사이트 약관, 가격, 접근 제한을 단정하는 것.
+- 글자, 숫자, 날짜, 이름이 있어야 할 자리를 막대, 블록, 자리표시자, 라벨 없는 도형에 맡기는 것.
+- 렌더링이 안전해지도록 브리프에 콘텐츠를 덜 보여 달라고 하거나, 한글이 틀릴 확률을 낮추려고 화면을 몇 개 라벨로 줄이는 것.
 
 </forbidden>
 
@@ -206,7 +212,9 @@ hyper-uiux-design [--platform mobile|tablet|web] [--theme light|dark|both] "<req
 - [ ] 기록의 모든 레퍼런스에 URL, 읽은 날짜, 접근 상태가 있고 로그인이나 유료 벽 뒤에서 읽은 것이 없다.
 - [ ] 패턴 요약이 에이전트 자신의 말이고, 출처가 하나뿐인 패턴을 흔하다고 적지 않았다.
 - [ ] 화면·테마마다 브리프 하나, 이미지 하나, 검토 표, 세 번 이하의 시도 횟수가 있다.
-- [ ] 렌더링된 문자열을 한 글자씩 대조했고 이미지의 모든 문자열과 숫자를 교체 대상으로 나열했다.
+- [ ] 모든 화면이 완성되고 앞뒤가 맞는 콘텐츠를 갖고, 브리프와 이미지의 어떤 자리도 막대, 블록, 라벨 없는 도형이 아니다.
+- [ ] 이미지의 모든 문자열을 한 글자씩 대조하고 정확도를 전체 기준 `정확 n/m`으로 적었으며, 모든 문자열과 숫자를 교체 대상으로 나열했다.
+- [ ] 모든 이미지를 시각 품질 절로 검토하고 요소 수와 크기 비율을 적었다.
 - [ ] 메모의 대비 값은 토큰 값으로 계산했고 터치 대상 크기는 요구사항으로 적었다.
 - [ ] 승인 기록에 누가 언제 승인했는지 있거나, 실행이 `approved`가 아닌 종료 상태로 끝났다.
 - [ ] 메모가 정확히 `Result:` 한 줄로 끝나고 프로젝트 소스 파일을 바꾸지 않았다.

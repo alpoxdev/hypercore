@@ -84,6 +84,12 @@ The notes carry this notice under the log, in Korean:
 
 A site's terms are reported only as read on a stated date. When the terms were not read, the notes say so instead of summarizing them from memory.
 
+Terms pages are frequently rendered by script and do not arrive in a plain fetch. Read them the way the site presents them, through a browser that scrolls the container the text sits in. Some clauses still will not be reachable; when that happens, write this line under the log and continue:
+
+> 약관 본문 확인 실패(<이유>), 공개 목록 범위만 사용
+
+`<이유>` names what stopped the read: a script-rendered container, a wall, or a page that never resolved. Do not state a restriction, a price, or an access limit that was not read; an unread clause is recorded as unread, never as absent.
+
 ## 7. Substitutes When a Site Is Closed
 
 In order:

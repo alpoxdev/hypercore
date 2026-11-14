@@ -151,7 +151,7 @@ cp -R hypercore/skills/hyper-git your-project/.claude/skills/
 /hyper-design "<작업>"   # AI 티 없는 화면 디자인·리디자인·연출 화면(mockup)과 generic 패턴 점검·정리를 정석 수치와 독립 검토로 검증
 /hyper-browsing "<대상>"  # 403·WAF·챌린지·JavaScript·사라진 페이지처럼 평범한 요청으로 안 열리는 페이지 내용을 단계 사다리로 가져오고 출처·종료 상태까지 기록
 /hyper-frontend "<작업>" # 웹 프런트엔드 구현·수정·레퍼런스 맞춤·브라우저 점검을 스크롤 소유권, 상태 매트릭스, 렌더링 증거 라벨로 검증
-/hyper-uiux-design "<화면>" # 앱·웹 화면을 코드 전에 시안 이미지로 먼저: 공개 UI 레퍼런스 패턴 요약→토큰 확정→화면당 시안 1장 생성·검토·재생성 상한→승인 뒤 인계 메모
+/hyper-uiux-design "<화면>" # 앱·웹 화면을 코드 전에 시안 이미지로 먼저: 공개 UI 레퍼런스 패턴 요약→토큰 확정→완성 콘텐츠 작성→화면당 시안 1장 생성·검토·재생성 상한→승인 뒤 인계 메모
 /hyper-prd "<아이디어>"  # 웹·iOS·Android·데스크톱 PRD를 `prd.md` 한 파일로, 규모별 질문 상한과 테스트 가능한 요구사항까지
 /hyper-report "<대상>"  # 보고서를 Markdown 정본에서 HTML·PDF·쪽별 PNG/JPG·DOCX로 렌더하고 쪽 나눔·넘침·그림 잘림을 측정
 /hyper-deploy "<작업>"   # Railway·Cloudflare·Docker·Compose·VPS 배포 전 점검·첫 설정·배포·설정 변경·실패 진단과 수정을 플랫폼 최종 상태로 검증
@@ -286,7 +286,7 @@ flowchart LR
 | `hyper-design` | 새 화면 디자인, 기존 UI 리디자인, 히어로·데모용 연출 화면(mockup), AI형 generic 패턴 점검·정리를 디자인 브리프·생동감 다이얼→정석 수치(WCAG 2.2·플랫폼·KRDS)와 대비 계산→정적 검출기→독립 검토→증거 기반 납품 게이트 순서로 처리하고 `.hyper/design/`에 브리프와 보고서 저장 | Bash 3.2+ & jq 1.6+; browser optional |
 | `hyper-pptx` | JSON spec 하나로 .pptx를 만들고 슬라이드 PNG를 직접 본 뒤 전달. 표·차트·이미지·발표자 노트가 실제 OOXML 파트로 들어가고, 글자 넘침·캔버스 이탈을 렌더링 단계에서 잡음. 남의 덱은 먼저 읽고 글자·글꼴·슬라이드만 골라 고쳐 레이아웃·마스터·이미지를 건드리지 않음 | bash 3.2+ & jq & zip; Chromium 계열 브라우저(Playwright headless shell 등)는 미리보기·PNG·PDF·배치 검사용 |
 | `hyper-frontend` | 웹 프런트엔드 구현·수정·스크린샷·라이브 페이지 맞춤·실제 브라우저 점검. 스크롤 소유권 이름 붙이기→상태 매트릭스→모션 목적 지도와 reduced-motion→캡처 매트릭스에서 `static`·`rendered`·`not verified` 증거 라벨 순서로 처리하고 `.hyper/frontend/`에 보고서 저장. 시각 방향·감사는 `hyper-design` | 브라우저 optional |
-| `hyper-uiux-design` | 앱·웹 화면(모바일·태블릿·웹, 라이트·다크)을 구현 전에 시안 이미지로 먼저 확인. 공개 UI 레퍼런스(UIBowl, Mobbin 공개 페이지)를 로그인·대량 수집 없이 읽어 패턴만 자신의 말로 요약→토큰 확정→화면당 브리프 1개를 `hyper-imagegen`으로 렌더→브리프 충실도·가독성·생성 이미지 티·접근성·세트 일관성 검토→화면당 브리프 3개 상한 안에서 재생성→승인 뒤 `.hyper/uiux-design/`에 인계 메모 저장. 시안 속 글자·숫자·로고는 증거일 뿐 코드에서 교체. 시각 방향·감사는 `hyper-design`, 코드는 `hyper-frontend` | Markdown only; 이미지 도구·웹 읽기 optional |
+| `hyper-uiux-design` | 앱·웹 화면(모바일·태블릿·웹, 라이트·다크)을 구현 전에 시안 이미지로 먼저 확인. 공개 UI 레퍼런스(UIBowl, Mobbin 공개 페이지)를 로그인·대량 수집 없이 읽어 패턴만 자신의 말로 요약→토큰 확정→화면의 완성 콘텐츠(금액·건수·날짜·이름 전부, 막대·자리표시자 금지) 작성→화면당 브리프 1개를 `hyper-imagegen`으로 렌더→브리프 충실도·가독성·시각 품질·생성 이미지 티·접근성·세트 일관성 검토→화면당 브리프 3개 상한 안에서 재생성→승인 뒤 `.hyper/uiux-design/`에 인계 메모 저장. 글자 자리에 막대를 둔 와이어프레임은 불합격이고, 밀도·위계·강조색 배분을 화면 유형별 기준으로 판정. 시안 속 글자·숫자·로고는 증거일 뿐 코드에서 교체. 시각 방향·감사는 `hyper-design`, 코드는 `hyper-frontend` | Markdown only; 이미지 도구·웹 읽기 optional |
 
 ### 콘텐츠 · SEO
 
