@@ -13,6 +13,8 @@ Read this reference before writing any brief. It fixes the failure this skill sh
 7. Density by Screen Type
 8. What the Image Model Cannot Do
 9. Fixed Terms and Idioms
+10. Craft Defaults Seen Across Shipped Screens
+11. Gap Diagnosis
 
 ## 1. Why a Bar Is a Failure
 
@@ -165,6 +167,83 @@ Use these exact spellings in briefs. They rendered correctly on the first attemp
 | Photo card | `photo of <subject> in <light>, 16 radius, a scrim at the bottom with two lines of white text` | `an image` |
 | Amount | `"1,247,300원" in 40 bold with tabular figures` | `amount text` |
 
+## 10. Craft Defaults Seen Across Shipped Screens
+
+The rules below were abstracted from public screen listings read on 2026-11-15 (the read log is `.hyper/uiux-design/html-2026-11-15/ref-log.md`): a wallet and balance listing, a login listing, an add/create listing, a transfer listing, a home listing, and a Korean statistics/report listing. Each line is stated only when at least three screens from at least two listings showed it in common. They are defaults to start from, not measured platform requirements, and they live in the brief as numbers.
+
+**Frame and rhythm**
+
+| Observation | Default to write in the brief |
+|---|---|
+| Side padding is one number across the header, cards, and list rows; nothing touches the frame edge | `side padding 20`, used by every region |
+| Group separation is a gap, not a divider; dividers appear inside a group only | `group gap 24`; hairline between rows of one group only |
+| Row height clusters into two values, a compact and a comfortable one | `row 56` for a dense option row, `row 72` for a row with a two-line text block |
+| Cards sit flush in a column with one radius; a single card carries no shadow | `radius 16, fill <hex>, no border, no shadow` |
+| The bottom bar and the sticky action are the same height and sit on the same inset | `bottom bar 56 + safe area` |
+
+**Card and row anatomy**
+
+| Observation | Default to write in the brief |
+|---|---|
+| A wallet or account card carries the balance as one large number, a small caption above it, and a delta line below it | `caption 13 secondary, amount 32 bold tabular, delta 13` |
+| A list row is a leading tile, a two-line text block, and a trailing numeric or chevron | `tile 40 rounded-12 tint, title 15 medium, meta 13 secondary, value 15 right tabular` |
+| The leading tile repeats one radius and one fill across every row in the group | `tile fill accent tint, radius 12, 40x40` |
+| A card that can be opened has a small chevron or ellipsis at its top-right, not a button at its foot | `top-right 20 chevron, no footer button` |
+| A selected row or tab shows a tint pill behind the icon in addition to the colour change | `tint pill radius 10 behind the active icon` |
+
+**Type hierarchy**
+
+| Observation | Default to write in the brief |
+|---|---|
+| A screen shows at most four sizes above the caption | `32 / 20 / 15 / 13`, plus `12` for a badge |
+| Section titles sit one step above row titles, never the same size | `section 16 semibold, row title 15 medium` |
+| Numbers use tabular figures and one trailing unit, and the unit is smaller than the number | `1,247,300` in `32 bold` with `원` in `18 semibold` |
+| The largest number on a screen appears once | one hero amount per screen |
+
+**Colour discipline**
+
+| Observation | Default to write in the brief |
+|---|---|
+| The accent appears on the primary action, the active tab, and at most one tinted card or badge | the accent count is stated: `at most 3 accent surfaces` |
+| A tinted surface uses the accent tint, not the accent at low opacity | `fill <accent tint hex>, never a transparent accent` |
+| Positive and negative amounts differ by colour and by sign character | `+` prefixed and accent green, `-` prefixed and primary text |
+| Headers and tab bars are the page colour; the tint is reserved for content | `header fill <page hex>`, no coloured app bar |
+
+**Icon and asset discipline**
+
+| Observation | Default to write in the brief |
+|---|---|
+| One icon style per screen, one stroke weight, one grid | `24 grid, 2px stroke, rounded joins` says it once |
+| Icon-only controls carry a visible shape (a tile or a circle) so the tap target is visible | `40 circle fill <surface hex> with a 20 glyph inside` |
+| Photography appears as a full-bleed hero or a square thumbnail, never as a small inline chip | `hero photo 16:9 full width` or `thumb 56 rounded-12` |
+| No screen mixes photography and illustration unless a region is explicitly an illustration block | name which region is illustration or none |
+
+**Data display**
+
+| Observation | Default to write in the brief |
+|---|---|
+| A share bar is a thin track with one filled segment, and the percentage sits beside it | `track 6 tall radius 3, fill accent, "33%" 13 right` |
+| A delta row pairs an arrow, a value, and a period, in that order | `↑ 1.59% (+6.86%) 13 accent` |
+| A chart carries its own axis labels and a period selector above it | `segmented 1H 1D 1W 1M with 1D active` |
+| Totals and their parts always appear together on a statistics screen | total card, then the parts list, on one screen |
+
+## 11. Gap Diagnosis
+
+When a candidate looks weaker than a shipped screen, name the gap against this table before writing another brief. A gap named here is a brief change; a gap not on this table is the model's limit (§8) and is recorded instead of chased.
+
+| Gap | How it shows | The brief change |
+|---|---|---|
+| Thin density | Fewer than the §7 floor of elements; short rows, one card, an empty band | Add the missing row group and its secondary lines, not decoration |
+| Flat hierarchy | Title and hero amount read at similar weight; every card the same | State the four sizes and make the hero number the only one at the top size |
+| Loose rhythm | Gaps differ between like groups; rows of uneven height | Restate the four rhythm numbers and apply them by name to each region |
+| Weak row anatomy | Rows carry only a title, or only a title and a value | Add the meta line, the leading tile, and the trailing unit |
+| Icon soup | Mixed stroke weights, mixed sizes, invented glyphs | Name one glyph per icon and state the grid and stroke once |
+| Asset absence | A grey block or a rounded rectangle where a photo or illustration belongs | Name the subject, light, and framing, or drop the region and say the asset is needed |
+| Accent spread | The accent on headers, chips, and several buttons | Cap the accent surfaces at three and name them |
+| No data texture | One total and no parts; no percentages; no delta | Add the parts list, the shares, and the delta line with values that add up |
+
+The diagnosis is written into the notes as a table: gap, evidence in the current candidate, the brief line that changed, and the result after the change. A gap that persists after three briefs stays in the notes as an unresolved gap; it is never reported as closed.
+
 ## Sources
 
 > Checked 2026-11-15.
@@ -175,7 +254,9 @@ Use these exact spellings in briefs. They rendered correctly on the first attemp
 | The artifact-first opening, the pixel viewport, the numbered region list with inline content, the closing negative list, one screen per generation | the same experiment, prompts A through E |
 | Density ranges, the 60-30-10 area rule, and the region orders per screen type | this package's synthesis of the observed pattern summaries, stated as defaults and not as measured platform requirements |
 | The image model's ratio drift and Hangul unreliability | observed in this package's runs on 2026-11-15; a working observation, not a published rate |
+| The craft defaults in §10 (side padding, group gap, row heights, card anatomy, type cluster, accent count, icon grid, share bar, delta row) | this package's abstraction of public screen listings read on 2026-11-15, `.hyper/uiux-design/html-2026-11-15/ref-log.md`; stated as defaults, not measured platform requirements |
+| The gap table in §11 | the same read plus the comparison passes recorded in `.hyper/uiux-design/html-2026-11-15/` |
 
 ### Evidence grade
 
-`LOCAL` for the content rule, the quality table, the pattern table, the density ranges, and the limits. The before-and-after comparison is `PRIMARY` for this package: five screens were rendered on the same model with the same tokens and only the brief changed. The density numbers and the 60-30-10 split are this package's chosen defaults, not standards.
+`LOCAL` for the content rule, the quality table, the pattern table, the density ranges, the craft defaults, the gap table, and the limits. The before-and-after comparison is `PRIMARY` for this package: five screens were rendered on the same model with the same tokens and only the brief changed. The craft defaults are `LOCAL`: several public screens agreed on them, which makes them a reasonable starting default and not a requirement. The density numbers and the 60-30-10 split are this package's chosen defaults, not standards.
