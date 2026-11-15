@@ -12,7 +12,8 @@ Read this rule before settling tokens or writing a brief. It decides the order o
 6. Regeneration Cap
 7. Screen Sets and Themes
 8. Approval and Handoff
-9. Notes File
+9. HTML Stage
+10. Notes File
 
 ## 1. Scope and Modes
 
@@ -60,6 +61,13 @@ Find the image tool before deciding there is none, in this order, and record whi
 
 A session that concluded "no image tool" and rendered with code instead, while an image server was answering on the same machine, is the failure this order exists to prevent.
 
+Two runtime facts decide what step 2 looks like, and both are checked rather than assumed:
+
+- **A server enabled after the session started has no tool in this session's list.** The library and the session's tool list are different things: enabling a server for the runtime does not retroactively add its tools to a running session. Re-check the library (`magpie library mcp show <name>`) and the session's exposed tools before concluding anything.
+- **The runtime's own MCP endpoint is reachable even then.** When the gateway process that fronts the runtime's MCP servers is the one that also routes to the session, a JSON-RPC call to that endpoint starts the same server and runs the same tool. That is not an API-key script: it is the same server, with the same credentials the runtime already holds, called one layer lower. Record which endpoint answered and what the call returned.
+
+What is never acceptable is replacing the image step with a locally written rendering path. If the endpoint refuses, the terminal is the one the skill defines, and the notes say what refused and why.
+
 - Hand over the brief as the request, with the canvas passed as the image skill's structured canvas value and not inside the prompt text.
 - Do not name or choose a model. The image skill's default applies, and so do its own invocation cap and its terminals.
 - Record what the image skill reported for each brief: the terminal, the invocation count, the saved path or returned-artifact record, and the digest when one exists.
@@ -98,7 +106,24 @@ An image is a candidate when no item is `fail`. Items that cannot be checked in 
 - Without an answer, end `awaiting_approval`. Do not start implementation.
 - On approval, write the handoff section ([mockup-is-evidence.md](mockup-is-evidence.md) §5) and end `approved`. Implementation is a separate job that receives the notes; this skill writes no interface code.
 
-## 9. Notes File
+## 9. HTML Stage
+
+The mockup is approved (or approved in advance), and the deliverable the user opens is HTML. [../references/html-match.md](../references/html-match.md) owns the rules, the match bands, and the fail signals; this section owns the order and the handoff.
+
+1. **Read the match reference** before writing the first line of HTML.
+2. **Build from the brief, not from the image.** The token table, the region list, and the copy list are already written and already agreed. The HTML copies those. A value measured off the picture is not a source, and copying one is how a screen drifts from its own contract.
+3. **One file per screen**, at `.hyper/uiux-design/<slug>/html/<screen>.html`, opening from disk. The mockup stays beside it and is never embedded, never a background, never a hidden image.
+4. **Real text, inline SVG icons, a token block first.** No font, icon, or image is fetched at render time.
+5. **Compare in a browser** at the brief's logical viewport, capture a screenshot at the mockup's native scale, and work the bands in the reference's order. Write the diff list before changing anything, then fix the single highest item.
+6. **Repeat at most three times.** Each pass records the pass number, the diff count before and after, and the one thing that changed.
+7. **Stop** on an empty diff list or at the cap. Keep the attempt with the shortest diff list, list every remaining difference, and report a screen with a spacing difference as that difference rather than as a match.
+8. **Hand off both artifacts** with the token block as the project theme contract, the icon inventory, and the remaining differences.
+
+The HTML stage never becomes a production implementation. There is no data layer, no routing, no state beyond what the brief named, and no build integration. The implementer takes the tokens and the HTML as a reference and owns everything after that.
+
+If the runtime has no browser for the screenshot, write the HTML, skip the comparison, record that the match check was skipped and why, and do not report the screen as matched.
+
+## 10. Notes File
 
 Write `.hyper/uiux-design/<slug>/mockup-notes.md` in Korean, in this order:
 
@@ -108,9 +133,10 @@ Write `.hyper/uiux-design/<slug>/mockup-notes.md` in Korean, in this order:
 4. Source log and the copyright notice. When a site's terms could not be read, write the standard line: `약관 본문 확인 실패(이유), 공개 목록 범위만 사용`.
 5. Pattern summary, with the reference strength of each pattern.
 6. Per screen and theme: the brief, the image path or returned-artifact record, the image skill's terminal and invocation count, the returned pixel size with the requested ratio beside it, the review table, the attempt count, and the string accuracy as `정확 n/m` over every string the screen shows.
-7. Approval record.
-8. Handoff.
-9. Assumptions and what was not done.
+7. Per screen: the HTML path, the match table over all nine bands, the diff list per pass, and the pass count.
+8. Approval record.
+9. Handoff, with the token block, the icon inventory, and the remaining differences.
+10. Assumptions and what was not done.
 
 The file ends with exactly one `Result:` line. Images stay where the image skill put them; the notes link to them and never copy third-party screens beside them.
 
@@ -124,7 +150,8 @@ A review table in the notes carries one row per checklist item, not a shortened 
 |---|---|
 | The order from reference research to handoff, mockup before code, tokens from `DESIGN.md` or a minimal set first, one screen and screen sets, three platforms, light and dark, a stated regeneration cap, and the image skill with its default model | user instruction, 2026-11-15 (new skill request) |
 | One brief per image, the canvas passed as a structured value, shared invariants repeated in every brief of a series, a revision that changes one thing, no patching of rendered text, and no unprompted switch to an API-key path | this package's image-generation skill contract, restated for screens |
+| The HTML stage order, one standalone file per screen, building from the brief rather than the image, the browser comparison, and the three-pass cap | user instruction, 2026-11-15; the rules and bands are in [../references/html-match.md](../references/html-match.md) |
 
 ### Evidence grade
 
-`LOCAL`: the six-screen set size, the three-brief cap, the anchor-first order, and the notes layout are this package's chosen procedure and carry no external measurement.
+`LOCAL`: the six-screen set size, the three-brief cap, the anchor-first order, the HTML comparison order, and the notes layout are this package's chosen procedure and carry no external measurement.
