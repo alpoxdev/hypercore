@@ -27,28 +27,32 @@ Label each review item with one of three labels and never upgrade one by wording
 
 ## 2. Text, Numbers, and Marks in the Image
 
-- Every string in the image is a placeholder until the user's copy replaces it in code, including strings that rendered correctly.
-- Every number, chart value, date, price, name, and avatar in the image is invented and is listed as sample data.
+- The image shows complete content, and none of it is content: every string, number, date, and name is sample data until the user's copy replaces it in code, including the ones that rendered correctly.
+- Every number, chart value, date, price, name, and avatar in the image is invented and is listed as sample data. Invented and realistic is required; invented and left out is not.
 - Every logo, app icon, illustration, and photo in the image is a stand-in. The project's own assets, or assets the user has the right to use, replace them in code.
-- Icons in the image show where an icon goes and roughly what it means. The implementation uses the project's icon set.
+- Icons in the image show where an icon goes and what it means. The implementation uses the project's icon set.
 - The handoff lists these replacements in a table, so nothing from the image is transcribed as content.
+
+The distinction that matters: the mockup must look finished in order to show density, hierarchy, and alignment, and it must still be treated as replaceable in code. A mockup whose content is missing cannot show density at all, so it fails as evidence before it can be replaced.
 
 ## 3. Korean Text Rendering
 
-Generated images do not render Hangul reliably, and a wrong syllable can look right at a glance. Treat it as a known limit, not as a defect to fight.
+Generated images render Hangul well but not perfectly, and a wrong syllable can look right at a glance. The measured behaviour on this package's model is that a complete Korean screen comes back fully legible with at most one or two wrong syllables per screen, which is far better than the failure that made the old brief write bars instead of words.
 
 Before the call:
 
-- Render only the strings that carry the hierarchy: the screen title, the primary action, field and tab labels. Keep each one short.
-- Use the user's real copy for those strings when it exists. When it does not, write plain working copy and mark it `working copy` in the notes.
-- Describe longer body text as short neutral lines of text-colored bars rather than as sentences, so the image does not invent paragraphs.
+- Render every string the screen shows, at its real length and spelling. Do not reduce the screen to a few labels; an unlabelled screen has no density to review.
+- Use the user's real copy when it exists. When it does not, write plain working copy and mark it `working copy` in the notes.
+- Write body lines as complete sentences of the length a real screen uses, not as a paragraph. A three-line limit per block keeps the model from inventing paragraphs.
 - Give each rendered string once, in quotes, with its role and its place on the screen, and say how many times it appears.
+- Spell out every number, date, and amount as a literal in the brief.
 
 After the call:
 
-- Read each rendered string character by character against the brief. A missing, extra, or malformed syllable is a `fail` for that string.
-- On a failure, regenerate with a revised brief: fewer rendered strings first, then shorter ones. Do not patch the image.
-- When the cap is reached and a string is still wrong, keep the image for layout, record the string as `not rendered correctly`, and carry the correct string in the handoff copy table. The mockup remains usable because its text was never content.
+- Read every string in the image character by character against the brief, not only the ones listed as important. Record the count as `정확 n/m`, where `m` is every string the screen shows, not the number the brief happened to name.
+- A missing, extra, or malformed syllable is one `fail` against that string. It is not a pass because the rest of the screen is right.
+- On a failure, regenerate with the failing string respelled or moved; keep the rest of the brief intact. Do not patch the image.
+- When the cap is reached and a string is still wrong, keep the image for layout, record the string as `not rendered correctly` with the wrong and the correct spelling, and carry the correct string in the handoff copy table. The mockup remains usable because its text was never content.
 
 ## 4. Accessibility Checks
 
@@ -109,7 +113,8 @@ The implementer builds from the contract and the project's own components. A mis
 | 44x44 pt default control size on iOS and iPadOS | <https://developer.apple.com/design/human-interface-guidelines/accessibility> |
 | A touch target of at least 48dp by 48dp is recommended on Android | <https://developer.android.com/guide/topics/ui/accessibility/apps> |
 | Rendered text is quoted once with its role and place, and a wrong character is fixed by regenerating | this package's image-generation skill contract, restated for screens |
+| Complete content renders fully legible Hangul with at most one or two wrong syllables per screen, so bars are not needed to protect against rendering failure | this package's before-and-after experiment, `.hyper/uiux-design/quality-2026-11-15/`, 2026-11-15 |
 
 ### Evidence grade
 
-`LOCAL` for the evidence table, the three labels, and the Korean rendering procedure; the statement that Hangul rendering is unreliable is this package's working assumption, not a measured rate, and the procedure holds even when a runtime renders it well. The WCAG, Apple, and Android values are `PRIMARY` and were read on the date above.
+`LOCAL` for the evidence table, the three labels, and the Korean rendering procedure. The statement that Hangul now renders well with occasional errors is `PRIMARY` for this package: five complete Korean screens were rendered on 2026-11-15 and read character by character. The WCAG, Apple, and Android values are `PRIMARY` and were read on the date above.

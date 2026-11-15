@@ -42,16 +42,28 @@ Minimal tokens are a floor for consistency. A brand identity, a mood, or a full 
 
 1. Write the pattern summary from the source log ([reference-use.md](reference-use.md) §5): structure, hierarchy, spacing, components, flow.
 2. For each screen, decide the regions top to bottom, the one primary action, and the components, citing which pattern statement each choice follows.
-3. Write the brief with the skeleton in [../references/mockup-brief.md](../references/mockup-brief.md) §3. The brief carries token values, the region list, the exact strings to render, and the canvas. It carries no product name, no reference URL, and no model name.
-4. Write the checks the image must pass before the call is made, taken from [../references/review-checklist.md](../references/review-checklist.md).
+3. Choose the screen's type from [../references/visual-quality-recipe.md](../references/visual-quality-recipe.md) §5 and start from that region order. Note the element count it expects (§7) so the brief cannot come back under-built.
+4. Write the complete content before writing the brief: the headline number, every row's name, count, amount, and share, the dates, the names, the section counts. Make them add up. Budget one line per element and write them all.
+5. Write the brief with the skeleton in [../references/mockup-brief.md](../references/mockup-brief.md) §3. The brief carries token values, the region list with its content inline, every string, and the canvas. It carries no product name, no reference URL, and no model name.
+6. Run the content rule check before the call: open the brief and confirm that no position on the screen is left to a bar, a block, or an unlabelled shape. A bar that survives into the brief will survive into the image ([../references/visual-quality-recipe.md](../references/visual-quality-recipe.md) §2).
+7. Write the checks the image must pass before the call is made, taken from [../references/review-checklist.md](../references/review-checklist.md).
 
 ## 4. Generation
 
 Every image is made by hyper-imagegen, one brief to one image.
 
+Find the image tool before deciding there is none, in this order, and record which step answered:
+
+1. The tools the runtime already exposes to this session.
+2. The MCP servers configured for this runtime, including a locally running image server; a server that is configured but not exposed to the session is still the tool to use if the runtime can reach it.
+3. Only after both: the substitution path, and the notes say which substitution was used.
+
+A session that concluded "no image tool" and rendered with code instead, while an image server was answering on the same machine, is the failure this order exists to prevent.
+
 - Hand over the brief as the request, with the canvas passed as the image skill's structured canvas value and not inside the prompt text.
 - Do not name or choose a model. The image skill's default applies, and so do its own invocation cap and its terminals.
 - Record what the image skill reported for each brief: the terminal, the invocation count, the saved path or returned-artifact record, and the digest when one exists.
+- Record the returned pixel size and compare it with the requested ratio. When they differ, write one line in the notes: the ratio requested, the size returned, and that the frame is illustrative while the logical frame in the brief is the contract. Do not crop or resize the image to force the ratio.
 - A `prompt_saved` or `blocked` terminal because no image tool exists is not a failure of this skill: keep the briefs in the notes and end `briefs_saved`. Do not switch to an API key, a paid endpoint, or a different tool on your own.
 - No text is edited onto a returned image and no image is composited. A wrong image is answered with a revised brief.
 
@@ -66,8 +78,10 @@ An image is a candidate when no item is `fail`. Items that cannot be checked in 
 - At most three briefs per screen and theme: the first and two revisions.
 - A revision changes one thing, names it, and restates every invariant, because an unstated invariant drifts.
 - A user-requested change after delivery starts a `revise` run with its own cap.
-- After the third brief, keep the attempt with the fewest failing items, list what still fails, and either end `blocked` or, when the remaining failures are a matter of preference, present the attempts and let the user choose.
-- Never loop to chase a perfect image. A mockup that shows the layout and hierarchy has done its job.
+- A screen with two independent defects is still one change per brief. Rank the defects by the review order in [../references/review-checklist.md](../references/review-checklist.md) §9 and fix the highest one first; the second may not get a brief within the cap, and that is expected.
+- After the third brief, keep the attempt with the fewest failing items, list every remaining `fail` with its id and note, and end `awaiting_approval` when the remaining failures are only a matter of the user's preference. Present the attempts and the failing-item list. End `blocked` only when a remaining failure is structural, such as a missing region or an unreadable hierarchy that the cap prevented fixing.
+- The notes state plainly which checks the adopted attempt still fails. A screen that reached the cap with two wrong syllables is reported as two wrong syllables, not as a pass.
+- Never loop to chase a perfect image. A mockup that shows the layout, the hierarchy, and the density has done its job.
 
 ## 7. Screen Sets and Themes
 
@@ -91,14 +105,16 @@ Write `.hyper/uiux-design/<slug>/mockup-notes.md` in Korean, in this order:
 1. Result line summary and the terminal.
 2. Scope: screens, platform, theme, mode.
 3. Tokens and their source (`project` with the file, or `provisional`), with computed contrast.
-4. Source log and the copyright notice.
-5. Pattern summary.
-6. Per screen and theme: the brief, the image path or returned-artifact record, the image skill's terminal and invocation count, the review table, the attempt count.
+4. Source log and the copyright notice. When a site's terms could not be read, write the standard line: `약관 본문 확인 실패(이유), 공개 목록 범위만 사용`.
+5. Pattern summary, with the reference strength of each pattern.
+6. Per screen and theme: the brief, the image path or returned-artifact record, the image skill's terminal and invocation count, the returned pixel size with the requested ratio beside it, the review table, the attempt count, and the string accuracy as `정확 n/m` over every string the screen shows.
 7. Approval record.
 8. Handoff.
 9. Assumptions and what was not done.
 
 The file ends with exactly one `Result:` line. Images stay where the image skill put them; the notes link to them and never copy third-party screens beside them.
+
+A review table in the notes carries one row per checklist item, not a shortened summary of the sections. A table that collapses thirteen items into six rows is not a review and will hide a bar where content belongs.
 
 ## Sources
 

@@ -25,6 +25,7 @@ Use a different language only when the user explicitly requests it or an existin
 <purpose>
 
 - Put a reviewable picture of the screen in front of the user before any interface code is written.
+- Make that picture look like a screen that shipped: complete content, real density, one clear hierarchy, a single accent. A regional layout with bars where words belong is not this skill's output.
 - Ground that picture in patterns observed in public references, abstracted in the agent's own words, never in a copy of one screen.
 - Settle color, type, radius, and spacing tokens before the first image so every screen in a set shares one language.
 - Keep the mockup in its place: it is evidence for layout and hierarchy, and its text, numbers, and marks are replaced in code.
@@ -112,7 +113,7 @@ hyper-uiux-design [--platform mobile|tablet|web] [--theme light|dark|both] "<req
 
 - Core (`SKILL.md`): trigger, modes, contract, workflow, terminals.
 - Rules: `rules/reference-use.md`, `rules/mockup-workflow.md`, `rules/mockup-is-evidence.md`.
-- References: `references/reference-sites.md` (dated facts about the two reference sites), `references/mockup-brief.md` (canvas, minimal tokens, brief skeleton), `references/review-checklist.md` (the review pass).
+- References: `references/reference-sites.md` (dated facts about the two reference sites), `references/visual-quality-recipe.md` (content rule, commercial-grade quality, prompt structure, screen-type patterns, density), `references/mockup-brief.md` (canvas, minimal tokens, brief skeleton), `references/review-checklist.md` (the review pass).
 - Assets: `assets/evals/hyper-uiux-design-cases.jsonl`.
 - No bundled script and no network dependency of its own: images come from hyper-imagegen, and reference pages are read with whatever web capability the runtime already has.
 
@@ -135,6 +136,7 @@ Canonical skill files are English with structurally aligned `*.ko.md` translatio
 - Read [rules/reference-use.md](rules/reference-use.md) before opening any reference page or reading a capture the user supplied.
 - Read [references/reference-sites.md](references/reference-sites.md) when the run reads UIBowl or Mobbin, to know what is open without an account.
 - Read [rules/mockup-workflow.md](rules/mockup-workflow.md) before settling tokens or writing a brief.
+- Read [references/visual-quality-recipe.md](references/visual-quality-recipe.md) before writing a brief: it decides the content, the density, and the prompt structure that produce a shipped-app screen rather than a wireframe.
 - Read [references/mockup-brief.md](references/mockup-brief.md) when writing a brief or settling minimal tokens.
 - Read [rules/mockup-is-evidence.md](rules/mockup-is-evidence.md) before reviewing an image and before writing the handoff.
 - Read [references/review-checklist.md](references/review-checklist.md) for every review pass.
@@ -145,7 +147,7 @@ Canonical skill files are English with structurally aligned `*.ko.md` translatio
 
 1. This core.
 2. `rules/reference-use.md`, then `references/reference-sites.md` when either site is read.
-3. `rules/mockup-workflow.md`, then `references/mockup-brief.md`.
+3. `rules/mockup-workflow.md`, then `references/visual-quality-recipe.md`, then `references/mockup-brief.md`.
 4. `rules/mockup-is-evidence.md`, then `references/review-checklist.md` once an image is back.
 
 </support_file_read_order>
@@ -158,9 +160,9 @@ Canonical skill files are English with structurally aligned `*.ko.md` translatio
 | 1 | Read the project's design document and tokens; when none exist, settle the minimal token set ([rules/mockup-workflow.md](rules/mockup-workflow.md) §2) | Token table with its source |
 | 2 | Read public references within the reading budget and log each one ([rules/reference-use.md](rules/reference-use.md)) | Source log |
 | 3 | Summarize the patterns: structure, hierarchy, spacing, components, flow | Pattern summary |
-| 4 | Write one brief per screen and theme ([references/mockup-brief.md](references/mockup-brief.md)) | Briefs |
+| 4 | Write the screen's complete content, then one brief per screen and theme ([references/visual-quality-recipe.md](references/visual-quality-recipe.md) §2, [references/mockup-brief.md](references/mockup-brief.md)) | Content sheet, then briefs |
 | 5 | Hand each brief to hyper-imagegen, anchor screen first | Images and terminals |
-| 6 | Review each image ([references/review-checklist.md](references/review-checklist.md)) | Review table |
+| 6 | Review each image ([references/review-checklist.md](references/review-checklist.md)), visual quality included | Review table |
 | 7 | Revise one thing and regenerate within the cap | Attempt history |
 | 8 | Present for approval; on approval write the handoff and end with one `Result:` line | `mockup-notes.md` |
 
@@ -170,19 +172,21 @@ Phase rules:
 - Never name an image model or pass a model option; hyper-imagegen's default applies.
 - A login prompt, a paid wall, or a blocked page stops that reference, is stated in the notes, and is replaced by another public source.
 - When the user approved in advance ("바로 구현까지 진행"), a mockup that passes the review counts as approved and the notes say the approval was given in advance.
+- Phase 4 has two steps in that order. Content first: every amount, count, date, name, and label the screen shows, written out and made to add up. Then the brief that places it. A brief written before its content has nothing to place and comes back as a wireframe.
 
-Notes shape (Korean): the result first, then scope, tokens, source log with the copyright notice, pattern summary, per-screen brief and image path with its review table and attempt count, approval record, and the handoff. End with exactly one `Result:` line: `approved`, `awaiting_approval`, `briefs_saved`, `awaiting_input`, or `blocked`.
+Notes shape (Korean): the result first, then scope, tokens, source log with the copyright notice, pattern summary, per-screen brief and image path with its review table, attempt count, and string accuracy `정확 n/m`, approval record, and the handoff. End with exactly one `Result:` line: `approved`, `awaiting_approval`, `briefs_saved`, `awaiting_input`, or `blocked`.
 
 </workflow>
 
 <required>
 
 - Tokens settled, with their source, before the first brief.
+- Complete content before the brief: every string, amount, count, date, and name the screen shows, spelled out and internally consistent. No position on the screen is left to a bar, a block, or an unlabelled shape.
 - A source log entry for every reference read, and a pattern that is stated in the agent's own words.
 - One brief and one image per screen and theme, with shared invariants repeated in every brief of a set.
-- A review table for every image, with contrast computed from tokens rather than read off the picture.
+- A review table for every image covering every checklist item, with contrast computed from tokens rather than read off the picture, and visual quality judged against the recipe.
 - A handoff that lists the copy to use in code, the states the mockup does not show, and the accessibility requirements.
-- The exact attempt count and the terminal that hyper-imagegen reported for each brief.
+- The exact attempt count, the terminal that hyper-imagegen reported for each brief, the returned pixel size beside the requested ratio, and the string accuracy counted over every string the screen shows.
 
 </required>
 
@@ -197,6 +201,8 @@ Notes shape (Korean): the result first, then scope, tokens, source log with the 
 - Editing or compositing text onto a returned image instead of regenerating.
 - Naming an image model, switching to an API-key script, or installing a tool.
 - Stating a site's terms, prices, or access limits that were not read on the stated date.
+- Leaving a text, number, date, or name position to a bar, a block, a placeholder, or an unlabelled shape.
+- Asking a brief to show less content in order to make the render safer, or cutting the screen down to a few labels so that Hangul is less likely to fail.
 
 </forbidden>
 
@@ -206,7 +212,9 @@ Notes shape (Korean): the result first, then scope, tokens, source log with the 
 - [ ] Every reference in the log has a URL, a read date, and its access status; none was read behind a login or a paid wall.
 - [ ] The pattern summary is in the agent's own words and names no pattern as common on a single source.
 - [ ] Every screen and theme has one brief, one image, a review table, and an attempt count of three or fewer.
-- [ ] Rendered strings were checked character by character, and every string and number in the image is listed for replacement.
+- [ ] Every screen carries complete, internally consistent content, and no position in the brief or the image is a bar, a block, or an unlabelled shape.
+- [ ] Every string in the image was checked character by character, the accuracy is recorded as `정확 n/m` over all of them, and every string and number is listed for replacement.
+- [ ] Every image was reviewed against the visual-quality section, and its element count and size ratio are noted.
 - [ ] Contrast ratios in the notes were computed from token values, and touch target sizes are written as requirements.
 - [ ] The approval record says who approved and when, or the run ended on a terminal other than `approved`.
 - [ ] The notes end with exactly one `Result:` line and no project source file was changed.
