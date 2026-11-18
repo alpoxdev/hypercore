@@ -23,7 +23,7 @@ description: Helps with documentation.
 Strong example:
 
 ```yaml
-description: Use this skill when the user asks to create or refactor a reusable Codex skill folder, including SKILL.md trigger wording, rules, references, scripts, assets, and validation checks. Do not use for generic documentation that is not a skill.
+description: Use this skill when the user asks to create or refactor a reusable agent skill folder, including SKILL.md trigger wording, rules, references, scripts, assets, and validation checks. Do not use for generic documentation that is not a skill.
 ```
 
 ## 2. Authoring pattern

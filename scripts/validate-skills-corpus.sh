@@ -187,7 +187,8 @@ has_description() { # file
 }
 
 extract_links() { # text file
-  LC_ALL=C awk 'length($0) > 1 && /^@/ { s = substr($0, 2); sub(/^[ \t\r]+/, "", s); sub(/[ \t\r]+$/, "", s); print s }' "$1"
+  LC_ALL=C sed -En -e 's/^@[[:space:]]*(.*[^[:space:]])[[:space:]]*$/\1/p' \
+    -e 's/^- \[[^]]+\]\(([^:()[:space:]#]+\.md)\)[[:space:]]*$/\1/p' "$1"
 }
 
 # Prints one JSON object per unclosed fence entry; exits non-zero when unbalanced.

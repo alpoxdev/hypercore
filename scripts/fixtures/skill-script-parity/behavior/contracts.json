@@ -1905,10 +1905,6 @@
               {
                 "path": "report.md",
                 "text": "# AI Design Slop 정리 결과\n\n## 처리 요약\n- Detector: v2\n- 실행한 engine: text | context\n- Baseline delta: 미사용\n- Generic-output risk: low\n- 렌더링 검증: static_only\n- 최종 상태: pass\n\n## Brief inference\n- 확인됨\n\n## 발견 사항\n- 없음\n\n## 적용한 변경\n- 없음\n\n## 검증\n- Detector/baseline: pass\n\n## 남은 위험\n- 없음\n"
-              },
-              {
-                "path": "skills/hyper-design/scripts/validate-report.sh",
-                "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"ok\":true}'\n"
               }
             ]
           },
@@ -1930,17 +1926,11 @@
                 "path": "report.md",
                 "bytes": 361,
                 "sha256": "005f78aecf2fa7795767c0808c5bb33a79f75ae2a8dcc0a464025d6e7fcd4865"
-              },
-              {
-                "path": "skills/hyper-design/scripts/validate-report.sh",
-                "bytes": 48,
-                "sha256": "d1f983f2d4728fb3564260395cbe69c13625dca5c6f11125488d719ef815c87b"
               }
             ],
             "modes": {
               "report.md": "644",
-              "cases.jsonl": "644",
-              "skills/hyper-design/scripts/validate-report.sh": "644"
+              "cases.jsonl": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -2035,10 +2025,6 @@
               {
                 "path": "report.md",
                 "text": "# AI Design Slop 정리 결과\n\n## 처리 요약\n- Detector: v2\n- 실행한 engine: text | context\n- Baseline delta: 미사용\n- Generic-output risk: low\n- 렌더링 검증: static_only\n- 최종 상태: pass\n\n## Brief inference\n- 확인됨\n\n## 발견 사항\n- 없음\n\n## 적용한 변경\n- 없음\n\n## 검증\n- Detector/baseline: pass\n\n## 남은 위험\n- 없음\n"
-              },
-              {
-                "path": "skills/hyper-design/scripts/validate-report.sh",
-                "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"ok\":true}'\n"
               }
             ]
           },
@@ -2060,17 +2046,11 @@
                 "path": "report.md",
                 "bytes": 361,
                 "sha256": "005f78aecf2fa7795767c0808c5bb33a79f75ae2a8dcc0a464025d6e7fcd4865"
-              },
-              {
-                "path": "skills/hyper-design/scripts/validate-report.sh",
-                "bytes": 48,
-                "sha256": "d1f983f2d4728fb3564260395cbe69c13625dca5c6f11125488d719ef815c87b"
               }
             ],
             "modes": {
               "report.md": "644",
-              "cases.jsonl": "644",
-              "skills/hyper-design/scripts/validate-report.sh": "644"
+              "cases.jsonl": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -2135,15 +2115,11 @@
             "files": [
               {
                 "path": "cases.jsonl",
-                "text": "{\"id\":\"page\",\"target\":\"site/page.html\",\"expectedDetectorVersion\":2,\"expectedContains\":[\"copy.cliche\"],\"expectedSummary\":{\"P3\":1}}\n"
+                "text": "{\"id\":\"page\",\"target\":\"site/page.html\",\"expectedDetectorVersion\":2,\"expectedContains\":[\"motion.transition-all\"],\"expectedSummary\":{\"P0\":0,\"P1\":0,\"P2\":1,\"P3\":0}}\n"
               },
               {
                 "path": "site/page.html",
                 "text": "<div class=\"panel\" style=\"transition: all 150ms\"></div>\n"
-              },
-              {
-                "path": "skills/hyper-design/scripts/detect-slop.sh",
-                "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"detectorVersion\":2,\"findings\":[{\"id\":\"copy.cliche\",\"exceptionStatus\":\"not-checked\"}],\"summary\":{\"P0\":0,\"P1\":0,\"P2\":0,\"P3\":1}}'\n"
               }
             ]
           },
@@ -2158,24 +2134,18 @@
             "files": [
               {
                 "path": "cases.jsonl",
-                "bytes": 130,
-                "sha256": "45edd17f3ba58cda29c089c4dfb0de3d0a2ca5b4a604986e9deabe855a8c67f2"
+                "bytes": 161,
+                "sha256": "8693496b7ad62120b4f89040ff5288f3255815780121ce1b72a8fff8497f3045"
               },
               {
                 "path": "site/page.html",
                 "bytes": 56,
                 "sha256": "dba76d031b3ccf0b0d9e65c4a13474478cdb2727d2594ef7bcd5aa99b574ef8e"
-              },
-              {
-                "path": "skills/hyper-design/scripts/detect-slop.sh",
-                "bytes": 164,
-                "sha256": "51b25b6532e460e00dd4e023bd3618cf1e99be1ebef50faf0734c52d1fe4dcb4"
               }
             ],
             "modes": {
               "cases.jsonl": "644",
-              "site/page.html": "644",
-              "skills/hyper-design/scripts/detect-slop.sh": "644"
+              "site/page.html": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -2265,21 +2235,17 @@
             "files": [
               {
                 "path": "cases.jsonl",
-                "text": "{\"id\":\"page\",\"target\":\"site/page.html\",\"expectedAbsent\":[\"copy.cliche\"]}\n"
+                "text": "{\"id\":\"page\",\"target\":\"site/page.html\",\"expectedContains\":[\"copy.cliche\"]}\n"
               },
               {
                 "path": "site/page.html",
                 "text": "<div class=\"panel\" style=\"transition: all 150ms\"></div>\n"
-              },
-              {
-                "path": "skills/hyper-design/scripts/detect-slop.sh",
-                "text": "#!/usr/bin/env bash\nprintf '%s\\n' '{\"detectorVersion\":2,\"findings\":[{\"id\":\"copy.cliche\",\"exceptionStatus\":\"not-checked\"}],\"summary\":{\"P0\":0,\"P1\":0,\"P2\":0,\"P3\":1}}'\n"
               }
             ]
           },
           "expected": {
             "stdout": {
-              "equals": "{\n  \"ok\": false,\n  \"cases\": [\n    {\n      \"id\": \"page\",\n      \"ok\": false,\n      \"failures\": [\n        \"Unexpected finding: copy.cliche\"\n      ]\n    }\n  ]\n}\n"
+              "equals": "{\n  \"ok\": false,\n  \"cases\": [\n    {\n      \"id\": \"page\",\n      \"ok\": false,\n      \"failures\": [\n        \"Missing finding: copy.cliche\"\n      ]\n    }\n  ]\n}\n"
             },
             "stderr": {
               "equals": ""
@@ -2288,24 +2254,18 @@
             "files": [
               {
                 "path": "cases.jsonl",
-                "bytes": 73,
-                "sha256": "40d9732c50c0e37dfbdaeeca5cf1be286a4e66b16b5ec1c04a40f7f185c2f4b4"
+                "bytes": 75,
+                "sha256": "44e66994d648b1f1a914e38206b43bac546b4b53ed08fbba89551c418fd48b20"
               },
               {
                 "path": "site/page.html",
                 "bytes": 56,
                 "sha256": "dba76d031b3ccf0b0d9e65c4a13474478cdb2727d2594ef7bcd5aa99b574ef8e"
-              },
-              {
-                "path": "skills/hyper-design/scripts/detect-slop.sh",
-                "bytes": 164,
-                "sha256": "51b25b6532e460e00dd4e023bd3618cf1e99be1ebef50faf0734c52d1fe4dcb4"
               }
             ],
             "modes": {
               "cases.jsonl": "644",
-              "site/page.html": "644",
-              "skills/hyper-design/scripts/detect-slop.sh": "644"
+              "site/page.html": "644"
             },
             "cwd": "isolated-temp-tree",
             "env": {
@@ -3733,7 +3693,7 @@
           },
           "expected": {
             "stdout": {
-              "equals": "{\"ok\":false,\"errors\":[\"ENOENT: no such file or directory, open 'skills/hyper-imagegen/assets/evals/hyper-imagegen-cases.jsonl'\"],\"manual_required\":[],\"counts\":{\"errors\":1,\"manual_required\":0}}\n"
+              "equals": "{\"ok\":false,\"errors\":[\"ENOENT: no such file or directory, lstat 'missing-root'\"],\"manual_required\":[],\"counts\":{\"errors\":1,\"manual_required\":0}}\n"
             },
             "stderr": {
               "equals": ""
@@ -8794,7 +8754,7 @@
             "files": [
               {
                 "path": "memo.md",
-                "text": "- Format: hyper-handoff/1\n- Slug: demo\n- Revision: 1\n- Status: open\n- Written: 2026-11-10 10:00 KST\n- Written by: omp on test-machine\n- HEAD: 4c1e9f2 (main)\n- Dirty: clean\n- Resumed: none\n- Check: pass\n\n## Original request\n\n> Do the demo task.\n\n## Corrections\n\n- none\n\n## Now\n\nWriting the demo memo.\n\n## Done\n\n- none\n\n## Next\n\n1. Run the demo command.\n\n## Plan and done-when\n\n- Plan: none\n- Done when: the demo command exits 0.\n\n## Where\n\n- Repository: none\n- Branch: none\n\n## Decisions and dead ends\n\n- none\n\n## Open questions and risks\n\n- none\n"
+                "text": "- Format: hyper-handoff/1\n- Slug: demo\n- Revision: 1\n- Status: open\n- Written: 2026-11-10 10:00 KST\n- Written by: test runner on test-machine\n- HEAD: 4c1e9f2 (main)\n- Dirty: clean\n- Resumed: none\n- Check: pass\n\n## Original request\n\n> Do the demo task.\n\n## Corrections\n\n- none\n\n## Now\n\nWriting the demo memo.\n\n## Done\n\n- none\n\n## Next\n\n1. Run the demo command.\n\n## Plan and done-when\n\n- Plan: none\n- Done when: the demo command exits 0.\n\n## Where\n\n- Repository: none\n- Branch: none\n\n## Decisions and dead ends\n\n- none\n\n## Open questions and risks\n\n- none\n"
               }
             ]
           },
@@ -8809,8 +8769,8 @@
             "files": [
               {
                 "path": "memo.md",
-                "bytes": 546,
-                "sha256": "303d173d5f7f8e384b8ed475121eb96bb6716824e3d10e69f8df7c2a36429003"
+                "bytes": 554,
+                "sha256": "239b2875d12b4ac038f6502fa425cb1a3272f0c3c9119473fc38430485de1ec8"
               }
             ],
             "modes": {
@@ -8848,7 +8808,7 @@
             "files": [
               {
                 "path": "memo.md",
-                "text": "- Format: hyper-handoff/1\n- Slug: demo\n- Revision: 1\n- Status: open\n- Written: 2026-11-10 10:00 KST\n- Written by: omp on test-machine\n- HEAD: 4c1e9f2 (main)\n- Dirty: clean\n- Resumed: none\n- Check: pass\n\n## Original request\n\n> Do the demo task.\n\n## Corrections\n\n- none\n\n## Now\n\nWriting the demo memo.\n\n## Done\n\n- none\n\n## Plan and done-when\n\n- Plan: none\n- Done when: the demo command exits 0.\n\n## Where\n\n- Repository: none\n- Branch: none\n\n## Decisions and dead ends\n\n- none\n\n## Open questions and risks\n\n- none\n"
+                "text": "- Format: hyper-handoff/1\n- Slug: demo\n- Revision: 1\n- Status: open\n- Written: 2026-11-10 10:00 KST\n- Written by: test runner on test-machine\n- HEAD: 4c1e9f2 (main)\n- Dirty: clean\n- Resumed: none\n- Check: pass\n\n## Original request\n\n> Do the demo task.\n\n## Corrections\n\n- none\n\n## Now\n\nWriting the demo memo.\n\n## Done\n\n- none\n\n## Plan and done-when\n\n- Plan: none\n- Done when: the demo command exits 0.\n\n## Where\n\n- Repository: none\n- Branch: none\n\n## Decisions and dead ends\n\n- none\n\n## Open questions and risks\n\n- none\n"
               }
             ]
           },
@@ -8863,8 +8823,8 @@
             "files": [
               {
                 "path": "memo.md",
-                "bytes": 511,
-                "sha256": "64853653e032de7026d09a35aa881cc7f62ce12ef8a74f93f9ce5d86b1c8d440"
+                "bytes": 519,
+                "sha256": "ff5c3f11f88df70d7590270c2e5861a10fdea63c8ac3eb3e66ff877795478092"
               }
             ],
             "modes": {
@@ -8902,7 +8862,7 @@
             "files": [
               {
                 "path": "memo dir/memo.md",
-                "text": "- Slug: demo\n- Revision: 1\n- Status: open\n- Written: 2026-11-10 10:00 KST\n- Written by: omp on test-machine\n- HEAD: 4c1e9f2 (main)\n- Dirty: clean\n- Resumed: none\n- Check: pass\n\n## Original request\n\n> Do the demo task.\n\n## Corrections\n\n- none\n\n## Now\n\nWriting the demo memo.\n\n## Done\n\n- none\n\n## Next\n\n1. Run the demo command.\n\n## Plan and done-when\n\n- Plan: none\n- Done when: the demo command exits 0.\n\n## Where\n\n- Repository: none\n- Branch: none\n\n## Decisions and dead ends\n\n- none\n\n## Open questions and risks\n\n- none\n"
+                "text": "- Slug: demo\n- Revision: 1\n- Status: open\n- Written: 2026-11-10 10:00 KST\n- Written by: test runner on test-machine\n- HEAD: 4c1e9f2 (main)\n- Dirty: clean\n- Resumed: none\n- Check: pass\n\n## Original request\n\n> Do the demo task.\n\n## Corrections\n\n- none\n\n## Now\n\nWriting the demo memo.\n\n## Done\n\n- none\n\n## Next\n\n1. Run the demo command.\n\n## Plan and done-when\n\n- Plan: none\n- Done when: the demo command exits 0.\n\n## Where\n\n- Repository: none\n- Branch: none\n\n## Decisions and dead ends\n\n- none\n\n## Open questions and risks\n\n- none\n"
               }
             ]
           },
@@ -8917,8 +8877,8 @@
             "files": [
               {
                 "path": "memo dir/memo.md",
-                "bytes": 520,
-                "sha256": "695160f3306bbff455643a8403a8f2bf0c6d06bb60f0cddc5d38cec9e55acd65"
+                "bytes": 528,
+                "sha256": "c99cc39fb77db7a415b8bef8a26e898bc6b981d9cb5377f2c1bc031b13944aa7"
               }
             ],
             "modes": {
