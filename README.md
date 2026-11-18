@@ -4,12 +4,12 @@
   <img src="assets/readme/hypercore-agent-skills.webp" alt="Hypercore Agent Skills — Build once. Run anywhere." width="100%">
 </p>
 
-> Claude Code · Codex · Cursor · Antigravity에서 그대로 쓰는 한국어 우선 AI 에이전트 스킬 모음.
+> 파일을 읽는 AI 에이전트에서 사용할 수 있는 한국어 우선 스킬 모음입니다.
 
 Hypercore는 코드베이스 분석부터 릴리스까지의 반복 작업을 한 번에 줄여주는 38개 스킬을 한 패키지로 제공합니다. 각 스킬은 트리거, 워크플로, 검증 게이트가 명시되어 있어 어떤 CLI에서 호출해도 같은 의도로 동작합니다.
 
-- **설치 경로 두 가지**: 모든 런타임은 `npx skills`, Claude Code는 마켓플레이스 플러그인으로도 설치합니다. 한 환경에는 한 경로만 씁니다([선택 기준](#claude-code-플러그인-마켓플레이스)).
-- **다중 CLI**: Claude Code, Codex, Cursor, Antigravity에서 동일하게 사용.
+- **설치 경로**: 설치 도구가 지원하는 에이전트는 `npx skills`로 설치합니다. Claude Code와 Cursor의 플러그인도 같은 스킬 폴더를 사용합니다.
+- **파일로 직접 실행**: 전용 스킬 명령이 없는 에이전트에는 사용할 스킬의 `SKILL.md` 경로를 알려줍니다.
 - **한국어 우선**: 모든 스킬에 한국어 사양이 정렬되어 있으며 영어 원본도 함께 유지.
 - **검증 가능한 결과물**: 각 스킬은 evidence/validation/stop-condition 계약을 따라 결과를 남깁니다.
 
@@ -32,9 +32,11 @@ omp, Horon, jcode는 `npx skills`의 agent 대상 표에 없어 `-a omp`처럼 �
 | Horon | `npx skills add alpoxdev/hypercore -a codex` | omp와 같은 이유로 `-a codex`를 씁니다. 프로젝트 `.agents/skills` 사본을 Horon이 읽는 것을 확인했습니다(2026-11-10) |
 | pi | `npx skills add alpoxdev/hypercore -a pi` | `npx skills` 표준 대상. 프로젝트 `.agents/skills`에 설치 |
 | jcode | `npx skills add alpoxdev/hypercore -a codex` | omp·Horon과 같은 프로젝트 `.agents/skills` 경로. jcode의 로딩은 이 기기에 없어 미확인(`not_run`) |
-| 기타 | `npx skills add alpoxdev/hypercore -g` | CLI가 지원하는 agent에 한함 |
+| 기타 | 설치 도구가 지원하면 `npx skills add alpoxdev/hypercore`, 그 밖에는 스킬 폴더의 `SKILL.md`를 직접 엽니다. | 파일로 실행할 때는 `rules/`, `references/`, `assets/` 등 스킬 폴더 전체가 필요합니다. |
 
 스킬별 실행 호환은 아래 [스킬 카탈로그](#스킬-카탈로그)의 **호환** 컬럼 또는 각 `SKILL.md`의 `compatibility` 필드에서 확인합니다.
+
+스킬을 자동으로 찾지 못하는 환경에서는 `skills/<이름>/SKILL.md`를 열고 본문이 지정하는 시점에 상대 링크를 따라갑니다. 스킬 폴더를 별도로 설치했다면 그 폴더의 `SKILL.md`에서 시작합니다. 예를 들어 `bash scripts/…`가 번들 스크립트를 가리키면 설치된 스킬 폴더에서 스크립트의 전체 경로를 구하고, 작업 대상 프로젝트에서 `bash "<스크립트 전체 경로>"`로 실행합니다. 브라우저나 독립 검토가 필요한 작업은 각 스킬의 `compatibility`와 검증 절차를 따릅니다.
 
 ## Claude Code 플러그인 (마켓플레이스)
 
@@ -236,7 +238,7 @@ flowchart LR
 
 | 스킬 | 설명 | 호환 |
 |------|------|------|
-| `hyper-skill` | 유지보수하기 쉬운 Codex/AI 에이전트 스킬 생성 및 리팩터링 | All |
+| `hyper-skill` | 재사용할 에이전트 스킬을 만들거나 기존 스킬의 지침, 예제, 검증 절차를 정리합니다. | All |
 | `hyper-documentation` | 요청한 산출물에 맞춰 다섯 모드 중 하나로 작업: `readme`(코드베이스 기반 README), `agents-md`(영어 `AGENTS.md` + 한국어 `AGENTS.ko.md`, `CLAUDE.md`는 만들지 않음), `prompt`(재사용 프롬프트·템플릿/팩·eval 픽스처), `docs`(AI가 읽기 좋은 문서·런북·룰 팩), `memory`(에이전트 메모리 파일: 색인·주제 파일 구조, 크기 예산, 저장 금지 항목, 갱신·만료·삭제 규칙) | All |
 | `hyper-prd` | 웹·iOS·Android·데스크톱 PRD를 `prd.md` 한 파일로 작성·갱신·검토 — 규모별 질문 상한, EARS 테스트 가능한 요구사항, 인수 시나리오, 핸드오프 블록 | All |
 | `hyper-report` | 완성된 문서로서의 보고서(브리핑·업무·리서치·제안·상태·분석·1쪽 요약)를 Markdown 정본 하나에서 HTML·인쇄 PDF·쪽별 PNG/JPG·DOCX·Markdown으로 렌더. 대상·결정을 먼저 고정하고 모든 수치와 주장을 출처에 묶으며, 표·그림이 독자를 위해 쓰일 때만 넣고 쪽 나눔·넘침·그림 잘림을 측정해 확인 | bash 3.2+ & awk; Chromium 계열 헤드리스 브라우저(HTML·PDF·PNG), `sips` 또는 ImageMagick(JPG), `textutil`(DOCX) |

@@ -70,6 +70,19 @@ case_tag_drift_detected() {
   assert_contains "$(jq -r '[.failures[].code] | join(",")' "$work/after.json")" "BILINGUAL_TAG_DRIFT" "drift code"
 }
 
+case_missing_support_link() {
+  local work copy rc
+  work=$(new_workdir)
+  copy="$work/hyper-seo"
+  cp -R "$SKILL" "$copy"
+  printf '\n- [Extra rule](rules/missing-rule.md)\n' >>"$copy/SKILL.md"
+  rc=$(validate_skill "$copy" "$work/report.json")
+  assert_eq "1" "$rc" "validator exit for missing rule"
+  assert_json_eq "$work/report.json" '.failures[] | select(.code == "SUPPORT_LINK_MISSING") | .href' 'rules/missing-rule.md' "missing rule path"
+  assert_json_eq "$work/report.json" '.checks.coreParity' "false" "rule absent from the translation"
+}
+
 run_case "hyper-seo SKILL.md and SKILL.ko.md carry the same non-empty structural tags" case_structural_tags_parity
 run_case "removing one structural tag from a temp copy fails with BILINGUAL_TAG_DRIFT" case_tag_drift_detected
+run_case "an unresolved Markdown rule link identifies the missing file and the translation drift" case_missing_support_link
 test_summary
