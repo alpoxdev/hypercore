@@ -141,7 +141,7 @@ references/
 위 fixture는 입력입니다. 그것을 실행한 **결과**는 skill 폴더 밖에 둡니다. 배포되는 skill이 자기 실행 이력을 들고 다니면 안 되고, 이 저장소의 다른 실행도 이미 그 자리에 쓰기 때문입니다.
 
 ```text
-.omo/evidence/<skill>/iteration-N/
+.hyper/evidence/<skill>/iteration-N/
 ├── grading.json          # 필수 — SK-E-2
 ├── timing.json           # 필수 — SK-E-2
 ├── feedback.json         # 사람 검토가 있으면 필수 — SK-E-5
@@ -169,7 +169,7 @@ references/
 | `run-notes.json` | 선택 — iteration의 runner, 모델, 기준선 caveat | 이 저장소의 관행 |
 | `trajectory.md` | 선택 — 실행이 읽고 한 일을 readback용으로 기록 | 이 저장소의 관행 |
 
-선택 파일은 진단용입니다. `run-notes.json`이나 `trajectory.md`를 빼면 나중에 읽는 사람이 원할 맥락이 줄지만, `grading.json`과 `timing.json`, 기준선 쌍을 빼면 그 실행은 근거로 읽을 수 없습니다. 집계는 허용합니다. 하나의 점수 map을 내는 runner는 `.omo/evidence/hyper-mass/iteration-1/grading.json`처럼 eval id를 key로 `grading.json`을 iteration root에 둘 수 있습니다. Case별 assertion은 근거 문자열을 그대로 가져야 합니다.
+선택 파일은 진단용입니다. `run-notes.json`이나 `trajectory.md`를 빼면 나중에 읽는 사람이 원할 맥락이 줄지만, `grading.json`과 `timing.json`, 기준선 쌍을 빼면 그 실행은 근거로 읽을 수 없습니다. 집계는 허용합니다. 하나의 점수 map을 내는 runner는 `.hyper/evidence/hyper-mass/iteration-1/grading.json`처럼 eval id를 key로 `grading.json`을 iteration root에 둘 수 있습니다. Case별 assertion은 근거 문자열을 그대로 가져야 합니다.
 
 기준선이 "skill 없음"이 아니라 이전 버전이면 `without_skill/` 대신 `old_skill/`을 두고, 실행이 가리킨 스냅샷을 유지합니다.
 
@@ -216,4 +216,4 @@ references/
 
 ### 근거 등급
 
-배치와 비용 기록 규칙은 specification 사이트가 밝히므로 `PRIMARY`입니다. 구체적 디렉터리 배치(`.omo/evidence/...`)는 출처가 아니라 **저장소 결정**입니다. 출처는 skill 폴더 옆 `<name>-workspace/iteration-N/`를 씁니다. 이 파일은 그 선택과 대가를 함께 적었습니다. `SK-E-5`와 `SK-E-6`은 출처의 `feedback.json`·`old_skill/` 관례를 배치 규칙으로 확장한 것입니다. 파일 이름은 출처에서, 위치는 이 저장소에서 왔습니다.
+배치와 비용 기록 규칙은 specification 사이트가 밝히므로 `PRIMARY`입니다. 구체적 디렉터리 배치(`.hyper/evidence/...`)는 출처가 아니라 **저장소 결정**입니다. 출처는 skill 폴더 옆 `<name>-workspace/iteration-N/`를 씁니다. 이 파일은 그 선택과 대가를 함께 적었습니다. `SK-E-5`와 `SK-E-6`은 출처의 `feedback.json`·`old_skill/` 관례를 배치 규칙으로 확장한 것입니다. 파일 이름은 출처에서, 위치는 이 저장소에서 왔습니다.

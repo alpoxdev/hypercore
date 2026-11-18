@@ -141,7 +141,7 @@ So the rule is: keep `assets/evals/` as the place a human or this repository's r
 The fixtures above are inputs. The **results** of running them live outside the skill folder, because a shipped skill should not carry its own run history and because every other execution in this repository already writes there.
 
 ```text
-.omo/evidence/<skill>/iteration-N/
+.hyper/evidence/<skill>/iteration-N/
 ├── grading.json          # required — SK-E-2
 ├── timing.json           # required — SK-E-2
 ├── feedback.json         # required once a human reviews — SK-E-5
@@ -169,7 +169,7 @@ The fixtures above are inputs. The **results** of running them live outside the 
 | `run-notes.json` | Optional — runner, model, and baseline caveats for the iteration | This repository's practice |
 | `trajectory.md` | Optional — what the run read and did, kept for readback | This repository's practice |
 
-The optional files are diagnostic. A run that omits `run-notes.json` or `trajectory.md` loses context a later reader wants, but a run that omits `grading.json`, `timing.json`, or the paired baseline cannot be read as evidence at all. Aggregating is allowed: a runner that emits one grade map may keep `grading.json` at the iteration root keyed by eval id, as `.omo/evidence/hyper-mass/iteration-1/grading.json` does, as long as every case's assertions still carry their evidence string.
+The optional files are diagnostic. A run that omits `run-notes.json` or `trajectory.md` loses context a later reader wants, but a run that omits `grading.json`, `timing.json`, or the paired baseline cannot be read as evidence at all. Aggregating is allowed: a runner that emits one grade map may keep `grading.json` at the iteration root keyed by eval id, as `.hyper/evidence/hyper-mass/iteration-1/grading.json` does, as long as every case's assertions still carry their evidence string.
 
 When the baseline is a previous version rather than "no skill", replace `without_skill/` with `old_skill/` and keep the snapshot the run pointed at.
 
@@ -216,4 +216,4 @@ This repository already had two competing placements for eval material; adding a
 
 ### Evidence grade
 
-The placement and cost-recording rules are `PRIMARY` — the specification site states them. The specific directory layout (`.omo/evidence/...`) is a **repository decision**, not a sourced one: the source uses a sibling `<name>-workspace/iteration-N/` directory instead, and this file records both the choice and its trade-off. `SK-E-5` and `SK-E-6` extend the source's `feedback.json` and `old_skill/` conventions into a placement rule; the filenames come from the source, the location from this repository.
+The placement and cost-recording rules are `PRIMARY` — the specification site states them. The specific directory layout (`.hyper/evidence/...`) is a **repository decision**, not a sourced one: the source uses a sibling `<name>-workspace/iteration-N/` directory instead, and this file records both the choice and its trade-off. `SK-E-5` and `SK-E-6` extend the source's `feedback.json` and `old_skill/` conventions into a placement rule; the filenames come from the source, the location from this repository.

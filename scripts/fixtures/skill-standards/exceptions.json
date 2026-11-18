@@ -17,5 +17,6 @@
   "hyper-git|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
   "hyper-database|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
   "hyper-imagegen|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
-  "hyper-google-analytics|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence."
+  "hyper-google-analytics|FRONTMATTER_TRIGGER": "The [Hyper] prefix is kept by user decision, so the description cannot start with `Use this skill when`; the trigger clause follows the prefix in the first sentence.",
+  "hyper-uiux-design|CROSS_SKILL_REFERENCE": "User-directed exception (2026-11-15): the skill was requested to render every mockup through hyper-imagegen with that skill's default model, so it names hyper-imagegen only as its image-generation step in the description, compatibility, contract, workflow, rules, Sources rows, and eval expectations. Every other neighbor is described by output shape."
 }
