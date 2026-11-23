@@ -1,0 +1,19 @@
+{
+  "id": "paginate-off-by-one",
+  "prompt": "hyper로 처리해줘. `node --test test/`에서 paginate 테스트가 실패해. 원인 찾아서 최소한으로 고쳐줘. 커밋이나 푸시는 하지 마.",
+  "expected_chain": [
+    "hyper-debug"
+  ],
+  "debug_steps": 9,
+  "test_command": [
+    "node",
+    "--test",
+    "test/"
+  ],
+  "allowed_paths": [
+    "src/",
+    "test/",
+    ".hyper/",
+    ".gitignore"
+  ]
+}

@@ -29,6 +29,7 @@
 | Harness Evaluation Patterns | [`harness-engineering/references/evaluation-patterns.ko.md`](harness-engineering/references/evaluation-patterns.ko.md) | 에이전트 출력을 검사하는 결정적 단언과 그 밖의 eval 패턴 |
 | Harness Evidence & Recovery | [`harness-engineering/references/evidence-and-recovery.ko.md`](harness-engineering/references/evidence-and-recovery.ko.md) | 증거·검증 비용 축소·장기 실행 복구 규칙의 작업 형태 |
 | Skill Common Rules | [`harness-engineering/references/skill-common-rules.ko.md`](harness-engineering/references/skill-common-rules.ko.md) | 모든 스킬이 공유하는 한국어 기본 출력, 워크트리 격리, 테스트 규율, 조건부 트레일러, 디스크 상태·재개 규칙 |
+| Weak-Model Workflow Eval | [`harness-engineering/references/weak-model-eval.ko.md`](harness-engineering/references/weak-model-eval.ko.md) | 약한 모델이 `hyper`를 따를 때 단계·상태·체크리스트 누락을 세는 시나리오, 런타임별 명령, 채점기 |
 | Harness Agent Security | [`harness-engineering/references/agent-security.ko.md`](harness-engineering/references/agent-security.ko.md) | 최소 보안 단언 뒤의 OWASP 에이전트 위협 목록 |
 | Graph Framework Mapping | [`graph-engineering/references/framework-mapping.ko.md`](graph-engineering/references/framework-mapping.ko.md) | 다섯 런타임이 부르는 그래프 기본 요소를 문서에 적힌 범위에서 맞춘 번역표 |
 | Graph as Context | [`graph-engineering/references/graph-as-context.ko.md`](graph-engineering/references/graph-as-context.ko.md) | 다음 실행을 정하는 그래프와 분리해, 콘텐츠 위에 만들어 문맥으로 읽는 그래프 |
