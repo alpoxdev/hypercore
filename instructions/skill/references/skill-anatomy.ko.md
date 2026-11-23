@@ -76,6 +76,7 @@ Agent Skills specification 기준입니다(<https://agentskills.io/specification
 - `name`은 소문자 kebab-case로 쓰고 **폴더 이름과 일치**시킵니다(권장이 아니라 spec 요구입니다).
 - `description`은 트리거 문장입니다. 기능을 나열하는 것으로 끝내지 않습니다.
 - `compatibility`는 런타임, network, 시스템 패키지, 도구 요구가 있을 때만 씁니다. 대부분의 skill에는 필요하지 않습니다.
+- frontmatter 문자열 값(`description`, `compatibility` 등)에 `: `(콜론+공백), ` #`, 앞쪽 YAML 지시 문자가 들어가면 반드시 따옴표로 감싸거나 블록 스칼라(`>-`)를 써서 엄격한 YAML 파서가 거부하거나 자르지 않게 합니다.
 - `allowed-tools`는 spec상 Experimental이므로 해당 런타임에서 지원을 확인한 뒤에만 쓰고, 공통 규칙으로 강제하지 않습니다. Claude Code의 승인은 다음 메시지를 보내면 풀립니다.
 - 파일 참조는 skill root 기준 상대 경로로 쓰고 **한 단계 깊이**를 유지합니다. 깊게 중첩된 참조 사슬을 만들지 않습니다.
 - 런타임 전용 필드는 이식 가능한 핵심에서 빼고, 쓰는 필드마다 어느 런타임의 것인지 밝힙니다.

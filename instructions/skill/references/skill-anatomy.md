@@ -76,6 +76,7 @@ Neither runtime reports a truncated description as an error, so a skill that is 
 - Write `name` in lowercase kebab-case and **match the folder name** (a spec requirement, not a recommendation).
 - `description` is a trigger sentence. Do not merely enumerate features.
 - Use `compatibility` only when there are runtime, network, system package, or tool requirements. Most skills do not need it.
+- Quote any frontmatter string value (`description`, `compatibility`, etc.) that contains `: ` (colon + space), ` #`, or leading YAML indicator characters (or use a block scalar such as `>-`) so strict YAML parsers do not reject or truncate it.
 - `allowed-tools` is Experimental per the spec, so use it only after confirming support in that runtime, and do not enforce it as a shared rule. The Claude Code grant also clears when the next message is sent.
 - Write file references as paths relative to the skill root and keep them **one level deep**. Do not build deeply nested reference chains.
 - Keep runtime-only fields out of the portable core, and name the runtime beside every one you do use.

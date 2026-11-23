@@ -11,6 +11,7 @@
 #   6. scripts/check-skill-standards.sh
 #   7. scripts/check-vercel-skills.sh
 #   8. scripts/check-plugin-manifests.sh
+#   9. scripts/check-skill-frontmatter.sh
 #
 # Every step runs even when an earlier step fails; the script exits 1 when any
 # step failed.
@@ -63,6 +64,7 @@ run_step "hyper stage parity" bash scripts/check-hyper-stage-parity.sh
 run_step "skill standards" bash scripts/check-skill-standards.sh
 run_step "vercel skills lifecycle" bash scripts/check-vercel-skills.sh
 run_step "plugin manifests" bash scripts/check-plugin-manifests.sh
+run_step "skill frontmatter YAML" bash scripts/check-skill-frontmatter.sh
 
 printf '\n'
 if [ "$FAILED" -eq 0 ]; then
