@@ -1,0 +1,8 @@
+{
+  "name": "timeout-zero-default",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}

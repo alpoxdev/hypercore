@@ -163,7 +163,9 @@ Write the journal, questions, and closing report in Korean. Keep code, commands,
 
 <workflow>
 
-**Resume procedure**: Before Step 1, check `.hyper/debug/` for an existing `<slug>.md` journal and run `git status --porcelain` / `git diff`. If an unfinished journal (no terminal `Result:` line) exists for this failure, read its recorded mode, reproduction command, flaky classification, open hypotheses, probe outputs, and tracked instrumentation hunks first, then resume from the earliest incomplete step instead of starting from scratch. Print `[현재 단계: k/9 ...]` at each transition.
+**Resume procedure**: Before Step 1, check `.hyper/debug/` for an existing `<slug>.md` journal and run `git status --porcelain` / `git diff`. If an unfinished journal (no terminal `Result:` line) exists for this failure, read its recorded mode, reproduction command, flaky classification, open hypotheses, probe outputs, and tracked instrumentation hunks first, then resume from the earliest incomplete step instead of starting from scratch.
+
+**Step banner**: print one line before each step's first action, in your reply text, even when the step is quick: `[현재 단계: k/9 <step summary>]` (for example `[현재 단계: 2/9 재현]`). Nine steps mean nine lines; a step with nothing to do still gets its line with `— 해당 없음`.
 
 | Step | Action | Done when | Why not skip |
 |---|---|---|---|

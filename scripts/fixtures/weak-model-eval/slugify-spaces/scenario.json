@@ -1,0 +1,19 @@
+{
+  "id": "slugify-spaces",
+  "prompt": "hyper로 처리해줘. slugify가 앞뒤 공백이나 연속 공백이 있으면 이상한 슬러그를 만들어. `node --test test/` 실패하는 거 원인 찾아서 고쳐줘. 커밋이나 푸시는 하지 마.",
+  "expected_chain": [
+    "hyper-debug"
+  ],
+  "debug_steps": 9,
+  "test_command": [
+    "node",
+    "--test",
+    "test/"
+  ],
+  "allowed_paths": [
+    "src/",
+    "test/",
+    ".hyper/",
+    ".gitignore"
+  ]
+}
