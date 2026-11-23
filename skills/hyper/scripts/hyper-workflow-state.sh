@@ -2,16 +2,16 @@
 # hyper-workflow-state.sh — deterministic stage/step state manager for hyper and stateful skills.
 #
 # Usage:
-#   scripts/hyper-workflow-state.sh init --root <dir> --slug <slug> --job <build|report|resume> \
+#   bash <skill-dir>/scripts/hyper-workflow-state.sh init --root <dir> --slug <slug> --job <build|report|resume> \
 #     --delivery <mode> --request <text> --stages <s1,s2,...> [--reasons <r1|r2|...>] [--state-file <relpath>] [--reentry]
-#   scripts/hyper-workflow-state.sh enter --root <dir> --slug <slug> --stage <stage> [--state-file <relpath>]
-#   scripts/hyper-workflow-state.sh complete --root <dir> --slug <slug> --stage <stage> \
+#   bash <skill-dir>/scripts/hyper-workflow-state.sh enter --root <dir> --slug <slug> --stage <stage> [--state-file <relpath>]
+#   bash <skill-dir>/scripts/hyper-workflow-state.sh complete --root <dir> --slug <slug> --stage <stage> \
 #     --artifact <relpath|stage-note> [--note <text>] [--state-file <relpath>]
-#   scripts/hyper-workflow-state.sh skip --root <dir> --slug <slug> --stage <stage> --reason <text> [--state-file <relpath>]
-#   scripts/hyper-workflow-state.sh stop --root <dir> --slug <slug> --stage <stage> --reason <text> [--state-file <relpath>]
-#   scripts/hyper-workflow-state.sh append-stage --root <dir> --slug <slug> --stage <stage> --reason <text> [--state-file <relpath>]
-#   scripts/hyper-workflow-state.sh resume --root <dir> [--slug <slug>] [--state-file <relpath>]
-#   scripts/hyper-workflow-state.sh verify --root <dir> --slug <slug> [--state-file <relpath>]
+#   bash <skill-dir>/scripts/hyper-workflow-state.sh skip --root <dir> --slug <slug> --stage <stage> --reason <text> [--state-file <relpath>]
+#   bash <skill-dir>/scripts/hyper-workflow-state.sh stop --root <dir> --slug <slug> --stage <stage> --reason <text> [--state-file <relpath>]
+#   bash <skill-dir>/scripts/hyper-workflow-state.sh append-stage --root <dir> --slug <slug> --stage <stage> --reason <text> [--state-file <relpath>]
+#   bash <skill-dir>/scripts/hyper-workflow-state.sh resume --root <dir> [--slug <slug>] [--state-file <relpath>]
+#   bash <skill-dir>/scripts/hyper-workflow-state.sh verify --root <dir> --slug <slug> [--state-file <relpath>]
 #
 # Requires bash 3.2+, POSIX utilities, and jq. Zero network or external runtime dependencies.
 

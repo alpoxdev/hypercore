@@ -35,7 +35,7 @@ Shared execution rules referenced by `skills/*` so individual skill packages do 
 
 ## 6. Disk State and Resume Discipline
 
-- Any multi-step workflow or stateful skill records progress on disk (`.hyper/workflows/<slug>/state.json` via `scripts/hyper-workflow-state.sh`, or the skill's `.hyper/<skill>/...` state artifact) at step boundaries.
+- Any multi-step workflow or stateful skill records progress on disk (`.hyper/workflows/<slug>/state.json` via the `hyper` skill's bundled script, run as `bash <skill-dir>/scripts/hyper-workflow-state.sh`, or the skill's `.hyper/<skill>/...` state artifact) at step boundaries.
 - On start or `"이어서"` / `"continue"`, read the existing state file first, verify that artifacts from prior `done` steps still exist and are non-empty on disk, and resume from the first unfinished step rather than relying on chat memory.
 - Before claiming completion, run the skill's per-step Yes/No checklist and validation gate; if any item is `No`, return to the designated rollback step instead of reporting success.
 

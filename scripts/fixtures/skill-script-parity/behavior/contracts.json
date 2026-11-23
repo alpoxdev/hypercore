@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "requiredBy": "scripts/fixtures/skill-script-parity/manifest.json",
   "coverage": {
-    "expectedRows": 44,
+    "expectedRows": 45,
     "legacyOriginCounts": {
       "former-sh": 11,
       "retained-mjs": 2,
       "authored-mjs": 23,
-      "authored-sh": 8
+      "authored-sh": 9
     },
     "requiredDimensions": [
       "stdout",
@@ -24,7 +24,7 @@
       "malformed",
       "familyEdge"
     ],
-    "expectedFixtures": 132
+    "expectedFixtures": 135
   },
   "rows": [
     {
@@ -9493,6 +9493,202 @@
               "o.pptx",
               "--set-font",
               "Pretendard"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hyper--hyper-workflow-state",
+      "path": "skills/hyper/scripts/hyper-workflow-state.sh",
+      "family": "hyper",
+      "legacyOrigin": "authored-sh",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper/scripts/hyper-workflow-state.sh",
+          "absent": true
+        }
+      },
+      "dimensions": {
+        "stdout": "hyper--hyper-workflow-state--stdout",
+        "stderr": "hyper--hyper-workflow-state--stderr",
+        "exit": "hyper--hyper-workflow-state--exit",
+        "files": "hyper--hyper-workflow-state--files",
+        "modes": "hyper--hyper-workflow-state--modes",
+        "cwd": "hyper--hyper-workflow-state--cwd",
+        "env": "hyper--hyper-workflow-state--env",
+        "argv": "hyper--hyper-workflow-state--argv"
+      },
+      "fixtures": {
+        "happy": {
+          "scenario": "happy",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper/scripts/hyper-workflow-state.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "resume",
+              "--root",
+              "."
+            ],
+            "files": [
+              {
+                "path": ".hyper/workflows/auth-fix/state.json",
+                "text": "{\n  \"schema\": \"hyper-workflow-state/1\",\n  \"slug\": \"auth-fix\",\n  \"job\": \"build\",\n  \"delivery\": \"local\",\n  \"request\": \"로그인 오류 고쳐줘\",\n  \"reentry\": false,\n  \"status\": \"running\",\n  \"current_stage\": \"hyper-git\",\n  \"stop_reason\": null,\n  \"created_at\": \"2026-01-02T03:04:05Z\",\n  \"updated_at\": \"2026-01-02T03:04:05Z\",\n  \"stages\": [\n    {\n      \"index\": 1,\n      \"name\": \"hyper-debug\",\n      \"reason\": \"실행 실패\",\n      \"status\": \"done\",\n      \"artifact\": \".hyper/debug/auth-fix.md\",\n      \"note\": null,\n      \"entered_at\": \"2026-01-02T03:04:06Z\",\n      \"completed_at\": \"2026-01-02T03:04:07Z\"\n    },\n    {\n      \"index\": 2,\n      \"name\": \"hyper-git\",\n      \"reason\": \"커밋 요청\",\n      \"status\": \"pending\",\n      \"artifact\": null,\n      \"note\": null,\n      \"entered_at\": null,\n      \"completed_at\": null\n    }\n  ]\n}\n"
+              },
+              {
+                "path": ".hyper/debug/auth-fix.md",
+                "text": "Result: fixed\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": "[현재 단계: 2/2 hyper-git — 재개 대상 | 상태 파일: .hyper/workflows/auth-fix/state.json]\n"
+            },
+            "stderr": {
+              "equals": ""
+            },
+            "exit": 0,
+            "files": [
+              {
+                "path": ".hyper/debug/auth-fix.md",
+                "bytes": 14,
+                "sha256": "68c62976f30cf0f45e7c84cc2597e5176be5552d4d029a97fca3389a26e930af"
+              },
+              {
+                "path": ".hyper/workflows/auth-fix/state.json",
+                "bytes": 830,
+                "sha256": "3b95dddcf7916946c767a62c31a394b2a72fe5a9f8b38c3ab451bb78c931b098"
+              }
+            ],
+            "modes": {
+              ".hyper/debug/auth-fix.md": "644",
+              ".hyper/workflows/auth-fix/state.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "resume",
+              "--root",
+              "."
+            ]
+          }
+        },
+        "malformed": {
+          "scenario": "malformed",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper/scripts/hyper-workflow-state.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "enter",
+              "--root",
+              ".",
+              "--slug",
+              "order-check"
+            ],
+            "files": []
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "equals": "hyper-workflow-state: enter requires --stage\n"
+            },
+            "exit": 2,
+            "files": [],
+            "modes": {},
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "enter",
+              "--root",
+              ".",
+              "--slug",
+              "order-check"
+            ]
+          }
+        },
+        "familyEdge": {
+          "scenario": "familyEdge",
+          "command": {
+            "executable": "bash",
+            "arguments": [
+              "skills/hyper/scripts/hyper-workflow-state.sh"
+            ]
+          },
+          "input": {
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "enter",
+              "--root",
+              ".",
+              "--slug",
+              "order-check",
+              "--stage",
+              "hyper-plan"
+            ],
+            "files": [
+              {
+                "path": ".hyper/workflows/order-check/state.json",
+                "text": "{\n  \"schema\": \"hyper-workflow-state/1\",\n  \"slug\": \"order-check\",\n  \"job\": \"build\",\n  \"delivery\": \"local\",\n  \"request\": \"로그인 오류 고쳐줘\",\n  \"reentry\": false,\n  \"status\": \"running\",\n  \"current_stage\": null,\n  \"stop_reason\": null,\n  \"created_at\": \"2026-01-02T03:04:05Z\",\n  \"updated_at\": \"2026-01-02T03:04:05Z\",\n  \"stages\": [\n    {\n      \"index\": 1,\n      \"name\": \"hyper-architecture\",\n      \"reason\": \"폴더 구조 리팩토링\",\n      \"status\": \"pending\",\n      \"artifact\": null,\n      \"note\": null,\n      \"entered_at\": null,\n      \"completed_at\": null\n    },\n    {\n      \"index\": 2,\n      \"name\": \"hyper-plan\",\n      \"reason\": \"여러 파일 변경\",\n      \"status\": \"pending\",\n      \"artifact\": null,\n      \"note\": null,\n      \"entered_at\": null,\n      \"completed_at\": null\n    }\n  ]\n}\n"
+              }
+            ]
+          },
+          "expected": {
+            "stdout": {
+              "equals": ""
+            },
+            "stderr": {
+              "equals": "hyper-workflow-state: cannot enter 'hyper-plan' before prior stage(s) finish: hyper-architecture\n"
+            },
+            "exit": 1,
+            "files": [
+              {
+                "path": ".hyper/workflows/order-check/state.json",
+                "bytes": 799,
+                "sha256": "ca7b69ecb93d570fb2451acf0315d3c3266de817ee7e287d2da760d0e8cbf0a1"
+              }
+            ],
+            "modes": {
+              ".hyper/workflows/order-check/state.json": "644"
+            },
+            "cwd": "isolated-temp-tree",
+            "env": {
+              "NO_COLOR": "1"
+            },
+            "argv": [
+              "enter",
+              "--root",
+              ".",
+              "--slug",
+              "order-check",
+              "--stage",
+              "hyper-plan"
             ]
           }
         }

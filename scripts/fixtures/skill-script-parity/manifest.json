@@ -711,6 +711,21 @@
         }
       },
       "behaviorContractId": "hyper-pptx--edit-deck"
+    },
+    {
+      "path": "skills/hyper/scripts/hyper-workflow-state.sh",
+      "family": "hyper",
+      "legacyOrigin": "authored-sh",
+      "usage": "hyper-workflow-state",
+      "behavior": "workflow-stage-state",
+      "sourcePreimage": {
+        "baselineAbsence": {
+          "baselineRef": "990359457e2ccbf2bd4bb65065037d456c5940bc",
+          "path": "skills/hyper/scripts/hyper-workflow-state.sh",
+          "absent": true
+        }
+      },
+      "behaviorContractId": "hyper--hyper-workflow-state"
     }
   ],
   "forbiddenDetectorReferences": {
@@ -783,7 +798,7 @@
     "baselineRef": "fc4910a1b16ff439e274891f4cce1375599be3af",
     "model": "historical-origin-records",
     "portedTo": "bash",
-    "note": "The 44 skill scripts were ported from Bun MJS to bash at the same paths with a .sh extension. legacyOrigin and sourcePreimage remain historical origin records for the earlier .cjs/.sh/.py migrations, because the pre-port bytes are no longer the working tree. The MJS bytes at baselineRef are not hashed: four scripts (pre-deploy build-run, deploy-check, lint-check; hyper-skill validate-hyper-skill) carried uncommitted edits when the port started, so the HEAD blobs are not the final pre-port bytes.",
+    "note": "The 45 skill scripts were ported from Bun MJS to bash at the same paths with a .sh extension. legacyOrigin and sourcePreimage remain historical origin records for the earlier .cjs/.sh/.py migrations, because the pre-port bytes are no longer the working tree. The MJS bytes at baselineRef are not hashed: four scripts (pre-deploy build-run, deploy-check, lint-check; hyper-skill validate-hyper-skill) carried uncommitted edits when the port started, so the HEAD blobs are not the final pre-port bytes.",
     "workingTreeEdited": [
       "skills/pre-deploy/scripts/build-run.mjs",
       "skills/pre-deploy/scripts/deploy-check.mjs",
