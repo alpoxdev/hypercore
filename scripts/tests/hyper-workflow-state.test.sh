@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Behavior-anchored tests for scripts/hyper-workflow-state.sh.
+# Behavior-anchored tests for skills/hyper/scripts/hyper-workflow-state.sh.
 set -uo pipefail
 
 # shellcheck source=/dev/null
@@ -7,7 +7,7 @@ source "${HYPERCORE_TEST_LIB:-$(dirname "$0")/../lib/test-lib.sh}"
 test_init
 
 ROOT=${HYPERCORE_ROOT:-$(CDPATH='' cd -- "$(dirname "$0")/../.." && pwd)}
-SCRIPT="$ROOT/scripts/hyper-workflow-state.sh"
+SCRIPT="$ROOT/skills/hyper/scripts/hyper-workflow-state.sh"
 
 case_happy_lifecycle_and_verify() {
   local work out rc
